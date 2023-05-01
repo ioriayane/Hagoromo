@@ -1,11 +1,26 @@
-QT += quick
+QT += quick network
 
 TARGET = Hagoromo
 
 SOURCES += \
-        main.cpp
+        atprotocol/accessatprotocol.cpp \
+        atprotocol/comatprotoservercreatesession.cpp \
+        main.cpp \
+        qtquick/createsession.cpp
 
-resources.files = main.qml 
+HEADERS += \
+    atprotocol/accessatprotocol.h \
+    atprotocol/comatprotoservercreatesession.h \
+    qtquick/createsession.h
+
+QML_FILES = \
+    qml/main.qml \
+    qml/LoginDialog.qml
+
+#INCLUDEPATH += \
+#    atprotocol/
+
+resources.files = $$QML_FILES
 resources.prefix = /$${TARGET}
 RESOURCES += resources
 
@@ -15,7 +30,21 @@ QML_IMPORT_PATH =
 # Additional import path used to resolve QML modules just for Qt Quick Designer
 QML_DESIGNER_IMPORT_PATH =
 
-# Default rules for deployment.
-#qnx: target.path = /tmp/$${TARGET}/bin
-#else: unix:!android: target.path = /opt/$${TARGET}/bin
-#!isEmpty(target.path): INSTALLS += target
+
+win32:{
+    bin_dir=$$dirname(QMAKE_QMAKE)
+    ssl_dir=$${bin_dir}/../../../Tools/OpenSSL/Win_x64
+    ssl_dir=$$clean_path($$ssl_dir)
+
+    CONFIG(debug,debug|release):install_dir = $$OUT_PWD/debug
+    else: install_dir = $$OUT_PWD/release
+
+    depend_files.path = $$install_dir
+    depend_files.files = \
+        $${ssl_dir}/bin/libcrypto-1_1-x64.dll \
+        $${ssl_dir}/bin/libssl-1_1-x64.dll
+
+    INSTALLS += depend_files
+    QMAKE_POST_LINK += nmake -f $(MAKEFILE) install
+}
+
