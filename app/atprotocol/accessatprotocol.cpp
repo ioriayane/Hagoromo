@@ -45,7 +45,7 @@ void AccessAtProtocol::get(const QString &endpoint)
 
 void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json)
 {
-    qDebug() << "AccessAtProtocol::post" << endpoint << json;
+    qDebug() << "AccessAtProtocol::post()" << this << endpoint << json;
 
     QNetworkRequest request(QUrl(QString("%1/%2").arg(service(), endpoint)));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");

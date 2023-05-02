@@ -7,6 +7,14 @@
 ComAtprotoServerCreateSession::ComAtprotoServerCreateSession(QObject *parent)
     : AccessAtProtocol { parent }
 {
+    //    qDebug() << "ComAtprotoServerCreateSession::ComAtprotoServerCreateSession()" << this;
+}
+
+ComAtprotoServerCreateSession::~ComAtprotoServerCreateSession()
+{
+    //    qDebug() << "ComAtprotoServerCreateSession::~ComAtprotoServerCreateSession" << this <<
+    //    service()
+    //             << did();
 }
 
 void ComAtprotoServerCreateSession::create(const QString &id, const QString &password)

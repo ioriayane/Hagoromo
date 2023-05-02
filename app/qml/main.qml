@@ -2,6 +2,8 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
+import tech.relog.hagoromo.accountlistmodel 1.0
+
 ApplicationWindow {
     width: 800
     height: 480
@@ -11,8 +13,15 @@ ApplicationWindow {
     LoginDialog {
         id: login
         onAccepted: {
-
+            accountListModel.updateAccount(session.service, session.identifier, session.password,
+                                           session.did, session.handle, session.email,
+                                           session.accessJwt, session.refreshJwt)
         }
+    }
+
+    AccountListModel {
+        id: accountListModel
+
     }
 
     RowLayout {
@@ -31,37 +40,6 @@ ApplicationWindow {
                     // display: AbstractButton.TextBesideIcon
                     icon.source: "images/edit.png"
                     text: qsTr("New Post")
-                }
-
-                Label {
-                    text: "did:"
-                }
-                Label {
-                    text: login.session.did
-                }
-                Label {
-                    text: "handle:"
-                }
-                Label {
-                    text: login.session.handle
-                }
-                Label {
-                    text: "email:"
-                }
-                Label {
-                    text: login.session.email
-                }
-                Label {
-                    text: "accessJwt:"
-                }
-                Label {
-                    text: login.session.accessJwt
-                }
-                Label {
-                    text: "refreshJwt:"
-                }
-                Label {
-                    text: login.session.refreshJwt
                 }
 
                 Item {
@@ -97,19 +75,87 @@ ApplicationWindow {
             ScrollBar.vertical.snapMode: ScrollBar.SnapAlways
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOn
 
+            property int childHeight: scrollView.height - scrollView.ScrollBar.horizontal.height
+
             RowLayout {
                 spacing: 3
                 TimelineView {
-                    Layout.preferredHeight: scrollView.height - scrollView.ScrollBar.horizontal.height
+                    Layout.preferredHeight: scrollView.childHeight
                     Layout.minimumWidth: 100
                     Layout.preferredWidth: 400
                     Layout.maximumWidth: 500
                 }
                 TimelineView {
-                    Layout.preferredHeight: scrollView.height - scrollView.ScrollBar.horizontal.height
+                    Layout.preferredHeight: scrollView.childHeight
                     Layout.minimumWidth: 100
                     Layout.preferredWidth: 400
                     Layout.maximumWidth: 500
+                }
+                // debug
+                ListView {
+                    Layout.preferredHeight: scrollView.childHeight
+                    Layout.minimumWidth: 100
+                    Layout.preferredWidth: 400
+                    Layout.maximumWidth: 500
+                    model: accountListModel
+                    delegate: GridLayout {
+                        columns: 2
+                        Label {
+                            text: "service:"
+                        }
+                        Label {
+                            text: model.service
+                        }
+                        Label {
+                            text: "identifier:"
+                        }
+                        Label {
+                            text: model.identifier
+                        }
+                        Label {
+                            text: "password:"
+                        }
+                        Label {
+                            text: model.password
+                        }
+                        Label {
+                            text: "did:"
+                        }
+                        Label {
+                            text: model.did
+                        }
+                        Label {
+                            text: "handle:"
+                        }
+                        Label {
+                            text: model.handle
+                        }
+                        Label {
+                            text: "email:"
+                        }
+                        Label {
+                            text: model.email
+                        }
+                        Label {
+                            text: "accessJwt:"
+                        }
+                        Label {
+                            text: model.accessJwt
+                        }
+                        Label {
+                            text: "refreshJwt:"
+                        }
+                        Label {
+                            text: model.refreshJwt
+                        }
+                        Label {
+                            text: "-"
+                        }
+                        Label {
+                            text: "-"
+                        }
+
+                    }
                 }
             }
         }

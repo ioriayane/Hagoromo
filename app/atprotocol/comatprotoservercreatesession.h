@@ -7,6 +7,7 @@ class ComAtprotoServerCreateSession : public AccessAtProtocol
 {
 public:
     explicit ComAtprotoServerCreateSession(QObject *parent = nullptr);
+    ~ComAtprotoServerCreateSession();
 
     void create(const QString &id, const QString &password);
 
