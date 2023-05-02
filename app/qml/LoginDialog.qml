@@ -71,13 +71,18 @@ Dialog {
             Layout.fillWidth: true
             enabled: !session.running
             echoMode: TextInput.Password
+            Label {
+                anchors.fill: parent
+                visible: parent.text.length === 0
+                opacity: 0.5
+                text: "The use of App Password is recommended."
+            }
         }
 
         Button {
             enabled: !session.running
-            text: qsTr("Sign in")
+            text: qsTr("Login")
             onClicked: session.create()
         }
     }
-
 }

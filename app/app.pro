@@ -15,12 +15,26 @@ HEADERS += \
 
 QML_FILES = \
     qml/main.qml \
-    qml/LoginDialog.qml
+    qml/LoginDialog.qml \
+    qml/TimelineView.qml \
+    qml/IconButton.qml
+
+IMAGE_FILES += \
+    qml/images/add_user.png \
+    qml/images/edit.png \
+    qml/images/expand_less.png \
+    qml/images/expand_more.png \
+    qml/images/like.png \
+    qml/images/more.png \
+    qml/images/reply.png \
+    qml/images/repost.png \
+    qml/images/settings.png
+
 
 #INCLUDEPATH += \
 #    atprotocol/
 
-resources.files = $$QML_FILES
+resources.files = $$QML_FILES $$IMAGE_FILES
 resources.prefix = /$${TARGET}
 RESOURCES += resources
 
@@ -47,4 +61,3 @@ win32:{
     INSTALLS += depend_files
     QMAKE_POST_LINK += nmake -f $(MAKEFILE) install
 }
-
