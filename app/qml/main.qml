@@ -88,9 +88,9 @@ ApplicationWindow {
             }
         }
         Rectangle {
-            Layout.preferredWidth: 1
+            Layout.preferredWidth: 3
             Layout.fillHeight: true
-            color: "#999999"
+            color: Material.dividerColor
         }
         ScrollView {
             id: scrollView
@@ -145,20 +145,6 @@ ApplicationWindow {
                         }
                     }
                 }
-
-                //                TimelineView {
-                //                    id: timeline
-                //                    Layout.preferredHeight: scrollView.childHeight
-                //                    Layout.minimumWidth: 100
-                //                    Layout.preferredWidth: 400
-                //                    Layout.maximumWidth: 500
-                //                }
-                //                TimelineView {
-                //                    Layout.preferredHeight: scrollView.childHeight
-                //                    Layout.minimumWidth: 100
-                //                    Layout.preferredWidth: 400
-                //                    Layout.maximumWidth: 500
-                //                }
 
                 // debug
                 ListView {

@@ -17,6 +17,8 @@ private:
     virtual void parseJson(const QString reply_json);
 
     QList<AppBskyFeedDefs::FeedViewPost> m_feedList;
+
+    void copyAuthor(const QJsonObject &json_author, AppBskyActorDefs::ProfileViewBasic &author);
 };
 
 #endif // APPBSKYFEEDGETTIMELINE_H

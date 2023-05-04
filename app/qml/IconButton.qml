@@ -1,6 +1,8 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import QtQuick.Controls.Material 2.15
+import QtGraphicalEffects 1.15
 
 Button {
     id: button
@@ -22,8 +24,12 @@ Button {
             Layout.topMargin: 2
             Layout.bottomMargin: 2
             source: button.iconSource
+            layer.enabled: true
+            layer.effect: ColorOverlay {
+                color: Material.foreground
+            }
         }
-        Text {
+        Label {
             Layout.leftMargin: 0
             Layout.rightMargin: 5
             Layout.topMargin: 2

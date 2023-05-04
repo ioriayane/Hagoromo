@@ -1,6 +1,8 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import QtQuick.Controls.Material 2.15
+import QtGraphicalEffects 1.15
 
 import tech.relog.hagoromo.timelinelistmodel 1.0
 
@@ -32,12 +34,13 @@ ScrollView {
             icon.source: "images/expand_more.png"
         }
 
-        delegate: Rectangle{
-            border.width: 1
-            border.color: "#aaaaaa"
-            color: "#00000000"
-            width: timelineListView.width
-            height: postLayout.height
+        delegate: Frame {
+//            border.width: 1
+//            border.color: Material.dividerColor
+//            color: "#00000000"
+//            width: timelineListView.width
+//            height: postLayout.height
+
             RowLayout {
                 id: postLayout
                 spacing: 0
@@ -57,27 +60,33 @@ ScrollView {
                     RowLayout {
                         visible: model.hasParent
                         Image {
+                            id: replyImage
                             Layout.preferredWidth: 16
                             Layout.preferredHeight: 16
                             source: "images/reply.png"
+                            layer.enabled: true
+                            layer.effect: ColorOverlay {
+                                color: Material.color(Material.Blue)
+                            }
                         }
                         Label {
                             Layout.alignment: Qt.AlignCenter
                             text: model.parentDisplayName
                             font.pointSize: 10
+                            color: Material.color(Material.Blue)
                         }
                     }
 
                     RowLayout {
                         id: headerLayout
                         Layout.maximumWidth: parent.width
-                        Text {
+                        Label {
                             Layout.maximumWidth: headerLayout.width - handleText.width - indexAtText.width - headerLayout.spacing * 3
                             font.pointSize: 10
                             elide: Text.ElideRight
                             text: model.displayName
                         }
-                        Text {
+                        Label {
                             id: handleText
                             opacity: 0.8
                             font.pointSize: 8
@@ -87,14 +96,14 @@ ScrollView {
                             id: spacerLine1Item
                             Layout.fillWidth: true
                         }
-                        Text {
+                        Label {
                             id: indexAtText
                             opacity: 0.8
                             font.pointSize: 8
                             text: model.indexedAt
                         }
                     }
-                    Text {
+                    Label {
                         id: recordText
                         Layout.preferredWidth: timelineListView.width - 20 - 48
                         // wrapMode: Text.Wrap
