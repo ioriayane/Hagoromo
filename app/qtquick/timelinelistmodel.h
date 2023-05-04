@@ -29,7 +29,9 @@ public:
         EmbedImagesRole,
 
         HasParentRole,
-        ParentDisPlayName,
+        ParentDisplayNameRole,
+        IsRepostedByRole,
+        RepostedByDisplayNameRole,
     };
     Q_ENUM(TimelineListModelRoles)
 

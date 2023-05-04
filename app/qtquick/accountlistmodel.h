@@ -55,6 +55,9 @@ public:
 
     Q_INVOKABLE QVariant account(int row) const;
 
+signals:
+    void accountAppended(int row);
+
 protected:
     QHash<int, QByteArray> roleNames() const;
 
@@ -69,7 +72,8 @@ private:
 
     QString appDataFolder() const;
 
-    void updateSession(const QString &service, const QString &identifier, const QString &password);
+    void updateSession(int row, const QString &service, const QString &identifier,
+                       const QString &password);
 };
 
 #endif // ACCOUNTLISTMODEL_H

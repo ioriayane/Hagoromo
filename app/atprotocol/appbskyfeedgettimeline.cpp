@@ -40,50 +40,7 @@ void AppBskyFeedGetTimeline::parseJson(const QString reply_json)
         for (const auto &obj : json_doc.object().value("feed").toArray()) {
             AppBskyFeedDefs::FeedViewPost feed_item;
 
-            QJsonObject json_post = obj.toObject().value("post").toObject();
-            feed_item.post.cid = json_post.value("cid").toString();
-            feed_item.post.author.displayName =
-                    json_post.value("author").toObject().value("displayName").toString();
-            feed_item.post.indexedAt = json_post.value("indexedAt").toString();
-            feed_item.post.repostCount = json_post.value("repostCount").toInt();
-            feed_item.post.repostCount = json_post.value("repostCount").toInt();
-            feed_item.post.likeCount = json_post.value("likeCount").toInt();
-            AppBskyActorDefs::copyProfileViewBasic(json_post.value("author").toObject(),
-                                                   feed_item.post.author);
-            QJsonObject json_record = json_post.value("record").toObject();
-            if (!json_record.isEmpty()) {
-                if (json_record.value("$type").toString() == QStringLiteral("app.bsky.feed.post")) {
-                    AppBskyFeedPost::Record record;
-                    record.text = json_record.value("text").toString();
-                    record.createdAt = json_record.value("createdAt").toString();
-                    feed_item.post.record.setValue<AppBskyFeedPost::Record>(record);
-                }
-            }
-            QJsonObject json_embed = json_post.value("embed").toObject();
-            if (!json_embed.isEmpty()) {
-                if (json_embed.value("$type").toString()
-                    == QStringLiteral("app.bsky.embed.images#view")) {
-                    feed_item.post.embed_type =
-                            AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedImages_View;
-                    for (const auto &json_image : json_embed.value("images").toArray()) {
-                        AppBskyEmbedImages::ViewImage image;
-                        image.thumb = json_image.toObject().value("thumb").toString();
-                        image.fullsize = json_image.toObject().value("fullsize").toString();
-                        image.alt = json_image.toObject().value("alt").toString();
-                        feed_item.post.embed_AppBskyEmbedImages_View.images.append(image);
-                    }
-                }
-            }
-
-            QJsonObject json_reply = obj.toObject().value("reply").toObject();
-            if (!json_reply.isEmpty()) {
-                QJsonObject json_parent = json_reply.value("parent").toObject();
-                if (!json_parent.isEmpty()) {
-                    feed_item.reply.parent.cid = json_parent.value("cid").toString();
-                    AppBskyActorDefs::copyProfileViewBasic(json_parent.value("author").toObject(),
-                                                           feed_item.reply.parent.author);
-                }
-            }
+            AppBskyFeedDefs::copyFeedViewPost(obj.toObject(), feed_item);
 
             m_feedList.append(feed_item);
         }

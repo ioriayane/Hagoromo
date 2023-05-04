@@ -176,7 +176,8 @@ void AccountListModel::load()
 
                     m_accountList.append(item);
 
-                    updateSession(item.service, item.identifier, item.password);
+                    updateSession(m_accountList.count() - 1, item.service, item.identifier,
+                                  item.password);
                     //                    ComAtprotoServerCreateSession *session = new
                     //                    ComAtprotoServerCreateSession();
                     //                    session->setService(item.service);
@@ -287,7 +288,7 @@ QString AccountListModel::appDataFolder() const
             .arg(QCoreApplication::applicationName());
 }
 
-void AccountListModel::updateSession(const QString &service, const QString &identifier,
+void AccountListModel::updateSession(int row, const QString &service, const QString &identifier,
                                      const QString &password)
 {
     ComAtprotoServerCreateSession *session = new ComAtprotoServerCreateSession();
@@ -299,6 +300,7 @@ void AccountListModel::updateSession(const QString &service, const QString &iden
         if (success) {
             updateAccount(service, identifier, password, session->did(), session->handle(),
                           session->email(), session->accessJwt(), session->refreshJwt());
+            emit accountAppended(row);
         }
         session->deleteLater();
     });

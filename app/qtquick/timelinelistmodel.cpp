@@ -76,8 +76,13 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         }
     } else if (role == HasParentRole)
         return current.reply.parent.cid.length() > 0;
-    else if (role == ParentDisPlayName)
+    else if (role == ParentDisplayNameRole)
         return current.reply.parent.author.displayName;
+    else if (role == IsRepostedByRole)
+        return (current.reason_type
+                == AppBskyFeedDefs::FeedViewPostReasonType::reason_ReasonRepost);
+    else if (role == RepostedByDisplayNameRole)
+        return current.reason_ReasonRepost.by.displayName;
 
     return QVariant();
 }
@@ -126,7 +131,9 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[IndexedAtRole] = "indexedAt";
     roles[EmbedImagesRole] = "embedImages";
     roles[HasParentRole] = "hasParent";
-    roles[ParentDisPlayName] = "parentDisplayName";
+    roles[ParentDisplayNameRole] = "parentDisplayName";
+    roles[IsRepostedByRole] = "isRepostedBy";
+    roles[RepostedByDisplayNameRole] = "repostedByDisplayName";
 
     return roles;
 }
