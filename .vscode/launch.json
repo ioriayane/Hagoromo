@@ -12,7 +12,8 @@
             "console": "integratedTerminal",
             "justMyCode": true,
             "args": [
-                "../atproto/lexicons"
+                "../atproto/lexicons",
+                "./app/atprotocol"
             ]
         }
     ]

@@ -14,7 +14,153 @@
 #include <QVariant>
 
 namespace AppBskyActorDefs {
+void copyViewerState(const QJsonObject &src, AppBskyActorDefs::ViewerState &dest);
 void copyProfileViewBasic(const QJsonObject &src, AppBskyActorDefs::ProfileViewBasic &dest);
+void copyProfileView(const QJsonObject &src, AppBskyActorDefs::ProfileView &dest);
+void copyProfileViewDetailed(const QJsonObject &src, AppBskyActorDefs::ProfileViewDetailed &dest);
+
+}
+namespace ComAtprotoLabelDefs {
+void copyLabel(const QJsonObject &src, ComAtprotoLabelDefs::Label &dest);
+
+}
+namespace AppBskyEmbedExternal {
+void copyExternal(const QJsonObject &src, AppBskyEmbedExternal::External &dest);
+void copyMain(const QJsonObject &src, AppBskyEmbedExternal::Main &dest);
+void copyViewExternal(const QJsonObject &src, AppBskyEmbedExternal::ViewExternal &dest);
+void copyView(const QJsonObject &src, AppBskyEmbedExternal::View &dest);
+
+}
+namespace AppBskyEmbedImages {
+void copyImage(const QJsonObject &src, AppBskyEmbedImages::Image &dest);
+void copyMain(const QJsonObject &src, AppBskyEmbedImages::Main &dest);
+void copyViewImage(const QJsonObject &src, AppBskyEmbedImages::ViewImage &dest);
+void copyView(const QJsonObject &src, AppBskyEmbedImages::View &dest);
+
+}
+namespace AppBskyEmbedRecord {
+void copyMain(const QJsonObject &src, AppBskyEmbedRecord::Main &dest);
+void copyViewRecord(const QJsonObject &src, AppBskyEmbedRecord::ViewRecord &dest);
+void copyViewNotFound(const QJsonObject &src, AppBskyEmbedRecord::ViewNotFound &dest);
+void copyViewBlocked(const QJsonObject &src, AppBskyEmbedRecord::ViewBlocked &dest);
+void copyView(const QJsonObject &src, AppBskyEmbedRecord::View &dest);
+
+}
+namespace AppBskyEmbedRecordWithMedia {
+void copyView(const QJsonObject &src, AppBskyEmbedRecordWithMedia::View &dest);
+void copyMain(const QJsonObject &src, AppBskyEmbedRecordWithMedia::Main &dest);
+
+}
+namespace AppBskyFeedDefs {
+void copyViewerState(const QJsonObject &src, AppBskyFeedDefs::ViewerState &dest);
+void copyPostView(const QJsonObject &src, AppBskyFeedDefs::PostView &dest);
+void copyReplyRef(const QJsonObject &src, AppBskyFeedDefs::ReplyRef &dest);
+void copyReasonRepost(const QJsonObject &src, AppBskyFeedDefs::ReasonRepost &dest);
+void copyFeedViewPost(const QJsonObject &src, AppBskyFeedDefs::FeedViewPost &dest);
+void copyNotFoundPost(const QJsonObject &src, AppBskyFeedDefs::NotFoundPost &dest);
+void copyBlockedPost(const QJsonObject &src, AppBskyFeedDefs::BlockedPost &dest);
+void copyThreadViewPost(const QJsonObject &src, AppBskyFeedDefs::ThreadViewPost &dest);
+
+}
+namespace AppBskyFeedGetLikes {
+void copyLike(const QJsonObject &src, AppBskyFeedGetLikes::Like &dest);
+
+}
+namespace AppBskyFeedPost {
+void copyTextSlice(const QJsonObject &src, AppBskyFeedPost::TextSlice &dest);
+void copyEntity(const QJsonObject &src, AppBskyFeedPost::Entity &dest);
+void copyReplyRef(const QJsonObject &src, AppBskyFeedPost::ReplyRef &dest);
+
+}
+namespace AppBskyNotificationListNotifications {
+void copyNotification(const QJsonObject &src,
+                      AppBskyNotificationListNotifications::Notification &dest);
+
+}
+namespace AppBskyRichtextFacet {
+void copyByteSlice(const QJsonObject &src, AppBskyRichtextFacet::ByteSlice &dest);
+void copyMention(const QJsonObject &src, AppBskyRichtextFacet::Mention &dest);
+void copyLink(const QJsonObject &src, AppBskyRichtextFacet::Link &dest);
+void copyMain(const QJsonObject &src, AppBskyRichtextFacet::Main &dest);
+
+}
+namespace ComAtprotoAdminDefs {
+void copyActionType(const QJsonValue &src, ComAtprotoAdminDefs::ActionType &dest);
+void copyRepoRef(const QJsonObject &src, ComAtprotoAdminDefs::RepoRef &dest);
+void copyActionReversal(const QJsonObject &src, ComAtprotoAdminDefs::ActionReversal &dest);
+void copyActionView(const QJsonObject &src, ComAtprotoAdminDefs::ActionView &dest);
+void copyActionViewCurrent(const QJsonObject &src, ComAtprotoAdminDefs::ActionViewCurrent &dest);
+void copyModeration(const QJsonObject &src, ComAtprotoAdminDefs::Moderation &dest);
+void copyRepoView(const QJsonObject &src, ComAtprotoAdminDefs::RepoView &dest);
+void copyRecordView(const QJsonObject &src, ComAtprotoAdminDefs::RecordView &dest);
+void copyImageDetails(const QJsonObject &src, ComAtprotoAdminDefs::ImageDetails &dest);
+void copyVideoDetails(const QJsonObject &src, ComAtprotoAdminDefs::VideoDetails &dest);
+void copyBlobView(const QJsonObject &src, ComAtprotoAdminDefs::BlobView &dest);
+void copyReportView(const QJsonObject &src, ComAtprotoAdminDefs::ReportView &dest);
+void copyActionViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::ActionViewDetail &dest);
+void copyReportViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::ReportViewDetail &dest);
+void copyModerationDetail(const QJsonObject &src, ComAtprotoAdminDefs::ModerationDetail &dest);
+void copyRepoViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::RepoViewDetail &dest);
+void copyRecordViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::RecordViewDetail &dest);
+
+}
+namespace ComAtprotoServerDefs {
+void copyInviteCodeUse(const QJsonObject &src, ComAtprotoServerDefs::InviteCodeUse &dest);
+void copyInviteCode(const QJsonObject &src, ComAtprotoServerDefs::InviteCode &dest);
+
+}
+namespace ComAtprotoModerationDefs {
+void copyReasonType(const QJsonValue &src, ComAtprotoModerationDefs::ReasonType &dest);
+
+}
+namespace ComAtprotoLabelSubscribeLabels {
+void copyLabels(const QJsonObject &src, ComAtprotoLabelSubscribeLabels::Labels &dest);
+void copyInfo(const QJsonObject &src, ComAtprotoLabelSubscribeLabels::Info &dest);
+
+}
+namespace ComAtprotoRepoApplyWrites {
+void copyCreate(const QJsonObject &src, ComAtprotoRepoApplyWrites::Create &dest);
+void copyUpdate(const QJsonObject &src, ComAtprotoRepoApplyWrites::Update &dest);
+void copyDelete(const QJsonObject &src, ComAtprotoRepoApplyWrites::Delete &dest);
+
+}
+namespace ComAtprotoRepoListRecords {
+void copyRecord(const QJsonObject &src, ComAtprotoRepoListRecords::Record &dest);
+
+}
+namespace ComAtprotoRepoStrongRef {
+void copyMain(const QJsonObject &src, ComAtprotoRepoStrongRef::Main &dest);
+
+}
+namespace ComAtprotoServerCreateAppPassword {
+void copyAppPassword(const QJsonObject &src, ComAtprotoServerCreateAppPassword::AppPassword &dest);
+
+}
+namespace ComAtprotoServerCreateInviteCodes {
+void copyAccountCodes(const QJsonObject &src,
+                      ComAtprotoServerCreateInviteCodes::AccountCodes &dest);
+
+}
+namespace ComAtprotoServerDescribeServer {
+void copyLinks(const QJsonObject &src, ComAtprotoServerDescribeServer::Links &dest);
+
+}
+namespace ComAtprotoServerListAppPasswords {
+void copyAppPassword(const QJsonObject &src, ComAtprotoServerListAppPasswords::AppPassword &dest);
+
+}
+namespace ComAtprotoSyncListRepos {
+void copyRepo(const QJsonObject &src, ComAtprotoSyncListRepos::Repo &dest);
+
+}
+namespace ComAtprotoSyncSubscribeRepos {
+void copyRepoOp(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::RepoOp &dest);
+void copyCommit(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Commit &dest);
+void copyHandle(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Handle &dest);
+void copyMigrate(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Migrate &dest);
+void copyTombstone(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Tombstone &dest);
+void copyInfo(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Info &dest);
+
 }
 
 #endif // LEXICONS_FUNC_H

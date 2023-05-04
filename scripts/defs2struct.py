@@ -8,17 +8,23 @@ import sys
 import glob
 import json
 
+class FuncHistoryItem:
+    def __init__(self, type_name, qt_type) -> None:
+        self.type_name = type_name
+        self.qt_type = qt_type
 
 class Defs2Struct:
     def __init__(self) -> None:
         self.history = [] # <namespace>#<struct_name>
         self.history_namespace = []
         self.history_func = {}
+        self.history_pointer = []   # namespace#type#property#ref_namespace#ref_type
         self.json_obj = {}  # [namespace] = obj
         self.output_text = {} # [namespace] = list(line)
         self.output_func_text = {} # [namespace] = list(line)
         self.namespace_stack = []
         self.pre_define = {} # [namespace] = <struct_name>
+        self.history_type = {}  #[namespace#struct_name] = type
 
         # QVariantに入れる構造体をQ_DECLARE_METATYPE()で定義する構造体
         # （単純にすべてではない）
@@ -49,6 +55,13 @@ class Defs2Struct:
         if namespace not in self.history_namespace:
             self.history_namespace.append(namespace)
 
+    def append_func_history(self, namespace: str, function_define: str):
+        if namespace not in self.history_func:
+            self.history_func[namespace] = [function_define]
+        else:
+            self.history_func[namespace].append(function_define)
+
+
     def append_pre_define(self, namespace: str, type_name: str):
         key = self.to_namespace_style(namespace)
         value = self.to_struct_style(type_name)
@@ -58,7 +71,7 @@ class Defs2Struct:
         else:
             self.pre_define[key] = [value]
 
-    def output_ref(self, namespace: str, property_name: str, ref_obj: dict, is_array: bool = False):
+    def output_ref(self, namespace: str, type_name: str, property_name: str, ref_obj: dict, is_array: bool = False):
         (ref_namespace, ref_struct_name) = self.split_ref(ref_obj)
         if len(ref_struct_name) == 0:
             self.output_text[namespace].append('    // ref=%s' % (ref_namespace, ))
@@ -68,6 +81,7 @@ class Defs2Struct:
                 if (namespace + '#' + ref_struct_name) in self.namespace_stack:
                     extend_symbol = ' *'
                     self.append_pre_define(namespace, ref_struct_name)
+                    self.history_pointer.append(namespace + '#' + type_name + '#' + property_name + '#' + namespace + '#' + ref_struct_name)
                 if not is_array:
                     if len(extend_symbol) == 0:
                         extend_symbol = ' '
@@ -82,6 +96,7 @@ class Defs2Struct:
                 if (ref_namespace + '#' + ref_struct_name) in self.namespace_stack:
                     extend_symbol = ' *'
                     self.append_pre_define(ref_namespace, ref_struct_name)
+                    self.history_pointer.append(namespace + '#' + type_name + '#' + property_name + '#' + ref_namespace + '#' + ref_struct_name)
                 if not is_array:
                     if len(extend_symbol) == 0:
                         extend_symbol = ' '
@@ -108,6 +123,7 @@ class Defs2Struct:
                     if (namespace + '#' + ref_struct_name) in self.namespace_stack:
                         extend_symbol = ' *'
                         self.append_pre_define(namespace, ref_struct_name)
+                        self.history_pointer.append(namespace + '#' + type_name + '#' + property_name + '#' + namespace + '#' + ref_struct_name)
                     union_name = '%s_%s' % (property_name, self.to_struct_style(ref_struct_name))
                     union_name_list.append(union_name)
                     if not is_array:
@@ -124,6 +140,7 @@ class Defs2Struct:
                     if (ref_namespace + '#' + ref_struct_name) in self.namespace_stack:
                         extend_symbol = ' *'
                         self.append_pre_define(ref_namespace, ref_struct_name)
+                        self.history_pointer.append(namespace + '#' + type_name + '#' + property_name + '#' + ref_namespace + '#' + ref_struct_name)
                     union_name = '%s_%s_%s' % (property_name, self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name))
                     union_name_list.append(union_name)
                     if not is_array:
@@ -188,6 +205,8 @@ class Defs2Struct:
         if namespace not in self.output_text:
             self.output_text[namespace] = []
 
+        self.history_type[namespace + '#' + type_name] = obj.get('type')
+
         if obj.get('type') == 'object':
             # 構造体
             properties = obj.get('properties', {})
@@ -215,7 +234,7 @@ class Defs2Struct:
             for property_name in properties.keys():
                 p_type = properties[property_name].get('type')
                 if p_type == 'ref':
-                    self.output_ref(namespace, property_name, properties[property_name].get('ref', {}))
+                    self.output_ref(namespace, type_name, property_name, properties[property_name].get('ref', {}))
                 elif p_type == 'union':
                     self.output_union(namespace, type_name, property_name, properties[property_name].get('refs', []))
                 elif p_type == 'unknown':
@@ -231,7 +250,7 @@ class Defs2Struct:
                 elif p_type == 'array':
                     items_type = properties[property_name].get('items', {}).get('type', '')
                     if items_type == 'ref':
-                        self.output_ref(namespace, property_name, properties[property_name].get('items', {}).get('ref', {}), True)
+                        self.output_ref(namespace, type_name, property_name, properties[property_name].get('items', {}).get('ref', {}), True)
                     elif items_type == 'union':
                         self.output_union(namespace, type_name, property_name, properties[property_name].get('items', {}).get('refs', []), True)
 
@@ -259,6 +278,12 @@ class Defs2Struct:
 
         self.namespace_stack.pop()
 
+    def check_pointer(self,  namespace: str, type_name: str, property_name: str, ref_namespace: str, ref_type_name):
+        if len(ref_namespace) == 0:
+            return (namespace + '#' + type_name + '#' + property_name + '#' + namespace + '#' + ref_type_name in self.history_pointer)
+        else:
+            return (namespace + '#' + type_name + '#' + property_name + '#' + ref_namespace + '#' + ref_type_name in self.history_pointer)
+
     def output_function(self, namespace: str, type_name: str):
         
         obj = self.get_defs_obj(namespace, type_name)
@@ -267,13 +292,10 @@ class Defs2Struct:
 
             if namespace not in self.output_func_text:
                 self.output_func_text[namespace] = []
-            if namespace not in self.history_func:
-                self.history_func[namespace] = [type_name]
-            else:
-                self.history_func[namespace].append(type_name)
 
-            self.output_func_text[namespace].append('void copy%s(const QJsonObject &src, %s::%s &dest)' % (
-                self.to_struct_style(type_name), self.to_namespace_style(namespace), self.to_struct_style(type_name), ))
+            function_define = 'void copy%s(const QJsonObject &src, %s::%s &dest)' % (
+                self.to_struct_style(type_name), self.to_namespace_style(namespace), self.to_struct_style(type_name), )
+            self.output_func_text[namespace].append(function_define)
             self.output_func_text[namespace].append('{')
             self.output_func_text[namespace].append('    if (!src.isEmpty()) {')
             
@@ -284,20 +306,105 @@ class Defs2Struct:
             for property_name in properties.keys():
                 p_type = properties[property_name].get('type')
                 if p_type == 'ref':
-                    self.output_func_text[namespace].append('    // ref ' + property_name)
+                    ref_path = properties[property_name].get('ref', {})
+                    (ref_namespace, ref_type_name) = self.split_ref(ref_path)
+                    if len(ref_type_name) == 0:
+                        self.output_func_text[namespace].append('        // ref %s %s' % (property_name, ref_path, ))
+                    elif self.check_pointer(namespace, type_name, property_name, ref_namespace, ref_type_name):
+                        self.output_func_text[namespace].append('        // ref *%s %s' % (property_name, ref_path, ))
+                    else:
+                        if len(ref_namespace) == 0:
+                            extend_ns = ''
+                            forward_type = self.history_type[namespace + '#' + ref_type_name]
+                        else:
+                            extend_ns = '%s::' % (self.to_namespace_style(ref_namespace), )
+                            forward_type = self.history_type[ref_namespace + '#' + ref_type_name]
+                        if forward_type in ['integer', 'string']:
+                            convert_method = ''
+                        else:
+                            convert_method = '.toObject()'
+                        self.output_func_text[namespace].append('        %scopy%s(src.value("%s")%s, dest.%s);' % (
+                            extend_ns, self.to_struct_style(ref_type_name), property_name, convert_method, property_name,))
+
                 elif p_type == 'union':
-                    self.output_func_text[namespace].append('    // union ' + property_name)
+                    self.output_func_text[namespace].append('        QString %s_type = src.value("%s").toObject().value("$type").toString();' % (property_name, property_name, ))
+                    for ref_path in properties[property_name].get('refs', []):
+                        (ref_namespace, ref_type_name) = self.split_ref(ref_path)
+                        if len(ref_type_name) == 0:
+                            self.output_func_text[namespace].append('        // union %s %s' % (property_name, ref_path, ))
+                        elif self.check_pointer(namespace, type_name, property_name, ref_namespace, ref_type_name):
+                            self.output_func_text[namespace].append('        // union *%s %s' % (property_name, ref_path, ))
+                        else:
+                            if len(ref_namespace) == 0:
+                                extend_ns = '%s::' % (self.to_namespace_style(namespace), )
+                                union_name = '%s_%s' % (property_name, self.to_struct_style(ref_type_name))
+                            else:
+                                extend_ns = '%s::' % (self.to_namespace_style(ref_namespace), )
+                                union_name = '%s_%s_%s' % (property_name, self.to_namespace_style(ref_namespace), self.to_struct_style(ref_type_name))
+                            union_type_name = '%s%sType' % (self.to_struct_style(type_name), self.to_struct_style(property_name), )
+                            self.output_func_text[namespace].append('        if (%s_type == QStringLiteral("%s")) {' % (property_name, ref_path, ))
+                            self.output_func_text[namespace].append('            dest.%s_type = %s::%s::%s;' % (property_name, self.to_namespace_style(namespace), union_type_name, union_name, ))
+                            self.output_func_text[namespace].append('            %scopy%s(src.value("%s").toObject(), dest.%s);' % (extend_ns, self.to_struct_style(ref_type_name), property_name, union_name, ))
+                            self.output_func_text[namespace].append('        }')
+
                 elif p_type == 'unknown':
-                    self.output_func_text[namespace].append('    // unknown ' + property_name)
+                    self.output_func_text[namespace].append('        // unknown ' + property_name)
                 elif p_type == 'integer':
-                    self.output_func_text[namespace].append('    // integer ' + property_name)
+                    self.output_func_text[namespace].append('        dest.%s = src.value("%s").toInt();' % (property_name, property_name, ))
                 elif p_type == 'string':
                     self.output_func_text[namespace].append('        dest.%s = src.value("%s").toString();' % (property_name, property_name, ))
                 elif p_type == 'array':
-                    self.output_func_text[namespace].append('    // array ' + property_name)
+                    items_type = properties[property_name].get('items', {}).get('type', '')
+                    (ref_namespace, ref_type_name) = self.split_ref(properties[property_name].get('items', {}).get('ref', {}))
+                    if len(ref_namespace) == 0:
+                        extend_ns = ''
+                    else:
+                        extend_ns = '%s::' % (self.to_namespace_style(ref_namespace), )
+                    if items_type == 'ref':
+                        self.output_func_text[namespace].append('        for (const auto &s : src.value("%s").toArray()) {' % (property_name, ))
+                        self.output_func_text[namespace].append('            %s%s child;' % (extend_ns, self.to_struct_style(ref_type_name), ))
+                        self.output_func_text[namespace].append('            %scopy%s(s.toObject(), child);' % (extend_ns, self.to_struct_style(ref_type_name), ))
+                        self.output_func_text[namespace].append('            dest.%s.append(child);' % (property_name, )) 
+                        self.output_func_text[namespace].append('        }')
+
+                    elif items_type == 'union':
+                        # self.output_union(namespace, type_name, property_name, properties[property_name].get('items', {}).get('refs', []), True)
+                        self.output_func_text[namespace].append('        // array<union> ' + property_name)
 
             self.output_func_text[namespace].append('    }')
             self.output_func_text[namespace].append('}')
+
+            self.append_func_history(namespace, function_define)
+
+        elif obj.get('type') == 'string':
+            # 文字列は型定義にする
+            # self.output_text[namespace].append('typedef QString %s;' % (self.to_struct_style(type_name), ))
+            if namespace not in self.output_func_text:
+                self.output_func_text[namespace] = []
+
+            function_define = 'void copy%s(const QJsonValue &src, %s::%s &dest)' % (
+                self.to_struct_style(type_name), self.to_namespace_style(namespace), self.to_struct_style(type_name), )
+            self.output_func_text[namespace].append(function_define)
+            self.output_func_text[namespace].append('{')
+            self.output_func_text[namespace].append('    dest = src.toString();')
+            self.output_func_text[namespace].append('}')
+
+            self.append_func_history(namespace, function_define)
+
+        elif obj.get('type') == 'integer':
+            # 数値は型定義にする
+            # self.output_text[namespace].append('typedef int %s;' % (self.to_struct_style(type_name), ))
+            if namespace not in self.output_func_text:
+                self.output_func_text[namespace] = []
+
+            function_define = 'void copy%s(const QJsonValue &src, %s::%s &dest)' % (
+                self.to_struct_style(type_name), self.to_namespace_style(namespace), self.to_struct_style(type_name), )
+            self.output_func_text[namespace].append(function_define)
+            self.output_func_text[namespace].append('{')
+            self.output_func_text[namespace].append('    dest = src.toInt();')
+            self.output_func_text[namespace].append('}')
+
+            self.append_func_history(namespace, function_define)
 
 
     def output(self, output_path: str) -> None:
@@ -314,10 +421,18 @@ class Defs2Struct:
             for type_name in defs.keys():
                 self.output_type(namespace, type_name, self.get_defs_obj(namespace, type_name))
 
-        # app.bsky.actor.defs
-        # profileViewBasic
-        self.output_function('app.bsky.actor.defs', 'profileViewBasic')
-
+        # コピー関数のための解析
+        # self.output_function('app.bsky.actor.defs', 'profileViewBasic')
+        # self.output_function('app.bsky.actor.defs', 'viewerState')
+        # self.output_function('app.bsky.feed.defs', 'viewerState')
+        # self.output_function('app.bsky.feed.defs', 'postView')
+        # self.output_function('app.bsky.feed.defs', 'replyRef')
+        # self.output_function('app.bsky.feed.defs', 'feedViewPost')
+        # self.output_function('app.bsky.feed.defs', 'reasonRepost')
+        # self.output_function('com.atproto.label.defs', 'label')
+        for ref_path in self.history:
+            (ref_namespace, ref_type_name) = self.split_ref(ref_path)
+            self.output_function(ref_namespace, ref_type_name)
 
         # jinja2で出力できるようにしたいね
         with open(output_path + '/lexicons.h', 'w', encoding='utf-8') as fp:
@@ -394,11 +509,10 @@ class Defs2Struct:
             fp.write('#include <QVariant>\n')
             fp.write('\n')
 
-            for namespace, type_names in self.history_func.items():
+            for namespace, function_defines in self.history_func.items():
                 fp.write('namespace %s {\n' % (self.to_namespace_style(namespace), ))
-                for type_name in type_names:
-                    fp.write('void copy%s(const QJsonObject &src, %s::%s &dest);' % (
-                        self.to_struct_style(type_name), self.to_namespace_style(namespace), self.to_struct_style(type_name), ))
+                for function_define in function_defines:
+                    fp.write('%s;\n' % (function_define, ))
                 fp.write('\n')
                 fp.write('}\n')
 
