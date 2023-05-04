@@ -1,8 +1,10 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QtQuickControls2/QQuickStyle>
 
 #include <qtquick/createsession.h>
 #include <qtquick/accountlistmodel.h>
+#include <qtquick/timelinelistmodel.h>
 
 int main(int argc, char *argv[])
 {
@@ -12,6 +14,8 @@ int main(int argc, char *argv[])
 
     QGuiApplication app(argc, argv);
 
+    QQuickStyle::setStyle("Material");
+
     app.setOrganizationName(QStringLiteral("relog"));
     app.setOrganizationDomain(QStringLiteral("hagoromo.relog.tech"));
     app.setApplicationName(QStringLiteral("Hagoromo"));
@@ -19,6 +23,8 @@ int main(int argc, char *argv[])
     qmlRegisterType<CreateSession>("tech.relog.hagoromo.createsession", 1, 0, "CreateSession");
     qmlRegisterType<AccountListModel>("tech.relog.hagoromo.accountlistmodel", 1, 0,
                                       "AccountListModel");
+    qmlRegisterType<TimelineListModel>("tech.relog.hagoromo.timelinelistmodel", 1, 0,
+                                       "TimelineListModel");
 
     QQmlApplicationEngine engine;
     const QUrl url("qrc:/Hagoromo/qml/main.qml");

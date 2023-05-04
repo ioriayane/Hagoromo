@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import QtQuick.Controls.Material 2.15
 
 import tech.relog.hagoromo.accountlistmodel 1.0
 
@@ -9,6 +10,8 @@ ApplicationWindow {
     height: 480
     visible: true
     title: qsTr("Hagromo")
+
+    Material.theme: Material.Dark
 
     LoginDialog {
         id: login
@@ -21,19 +24,25 @@ ApplicationWindow {
 
     AccountListModel {
         id: accountListModel
+    }
 
+    Component {
+        id: timelineComponent
+        TimelineView {
+        }
     }
 
     RowLayout {
         anchors.fill: parent
+        spacing: 0
         Rectangle {
             Layout.fillHeight: true
             Layout.minimumWidth: 64
             Layout.maximumWidth: 128
-            border.width: 1
+            color: "#00000000"
             ColumnLayout {
                 anchors.fill: parent
-
+                anchors.margins: 1
                 Button {
                     Layout.fillWidth: true
                     display: AbstractButton.IconOnly
@@ -45,6 +54,18 @@ ApplicationWindow {
                 Item {
                     Layout.preferredWidth: 1
                     Layout.fillHeight: true
+                }
+
+                Button {
+                    Layout.fillWidth: true
+                    display: AbstractButton.IconOnly
+                    // display: AbstractButton.TextBesideIcon
+                    icon.source: "images/add_user.png"
+                    text: qsTr("Add user")
+
+                    onClicked: {
+                        repeater.append(0)
+                    }
                 }
 
                 Button {
@@ -66,6 +87,11 @@ ApplicationWindow {
                 }
             }
         }
+        Rectangle {
+            Layout.preferredWidth: 1
+            Layout.fillHeight: true
+            color: "#999999"
+        }
         ScrollView {
             id: scrollView
             Layout.fillWidth: true
@@ -79,18 +105,61 @@ ApplicationWindow {
 
             RowLayout {
                 spacing: 3
-                TimelineView {
-                    Layout.preferredHeight: scrollView.childHeight
-                    Layout.minimumWidth: 100
-                    Layout.preferredWidth: 400
-                    Layout.maximumWidth: 500
+                Repeater {
+                    id: repeater
+                    model: ListModel {}
+
+                    function append(account_index){
+                        // accountListModelで管理するアカウントのindexと表示に使うコンポを指定
+                        repeater.model.append({
+                                                  "account_index": account_index,
+                                                  "component": timelineComponent
+                                              })
+                    }
+                    onItemAdded: (index, item) => {
+                                     //console.log("" + index + ":" + item + ":" + repeater.model.get(index).account_index)
+                                     item.account_index = repeater.model.get(index).account_index
+                                     item.sourceComponent = repeater.model.get(index).component
+                                 }
+
+                    Loader {
+                        id: loader
+                        Layout.preferredHeight: scrollView.childHeight
+                        Layout.minimumWidth: 100
+                        Layout.preferredWidth: 400
+                        Layout.maximumWidth: 500
+
+                        property int account_index: -1
+                        onLoaded: {
+                            //console.log("loader:" + loader.account_index)
+                            if(loader.account_index < 0)
+                                return
+                            var i = loader.account_index
+                            item.model.updateAccount(accountListModel.item(i, AccountListModel.ServiceRole),
+                                                     accountListModel.item(i, AccountListModel.DidRole),
+                                                     accountListModel.item(i, AccountListModel.HandleRole),
+                                                     accountListModel.item(i, AccountListModel.EmailRole),
+                                                     accountListModel.item(i, AccountListModel.AccessJwtRole),
+                                                     accountListModel.item(i, AccountListModel.RefreshJwtRole))
+                            item.model.getLatest()
+                        }
+                    }
                 }
-                TimelineView {
-                    Layout.preferredHeight: scrollView.childHeight
-                    Layout.minimumWidth: 100
-                    Layout.preferredWidth: 400
-                    Layout.maximumWidth: 500
-                }
+
+                //                TimelineView {
+                //                    id: timeline
+                //                    Layout.preferredHeight: scrollView.childHeight
+                //                    Layout.minimumWidth: 100
+                //                    Layout.preferredWidth: 400
+                //                    Layout.maximumWidth: 500
+                //                }
+                //                TimelineView {
+                //                    Layout.preferredHeight: scrollView.childHeight
+                //                    Layout.minimumWidth: 100
+                //                    Layout.preferredWidth: 400
+                //                    Layout.maximumWidth: 500
+                //                }
+
                 // debug
                 ListView {
                     Layout.preferredHeight: scrollView.childHeight

@@ -93,9 +93,9 @@ void AccountListModel::update(int row, AccountListModelRoles role, const QVarian
 }
 
 void AccountListModel::updateAccount(const QString &service, const QString &identifier,
-                              const QString &password, const QString &did, const QString &handle,
-                              const QString &email, const QString &accessJwt,
-                              const QString &refreshJwt)
+                                     const QString &password, const QString &did,
+                                     const QString &handle, const QString &email,
+                                     const QString &accessJwt, const QString &refreshJwt)
 {
     bool updated = false;
     for (int i = 0; i < m_accountList.count(); i++) {
@@ -197,6 +197,13 @@ void AccountListModel::load()
     }
 }
 
+QVariant AccountListModel::account(int row) const
+{
+    if (row < 0 || row >= m_accountList.count())
+        return QVariant();
+    return QVariant::fromValue<AccountItem>(m_accountList.at(row));
+}
+
 QHash<int, QByteArray> AccountListModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
@@ -291,7 +298,7 @@ void AccountListModel::updateSession(const QString &service, const QString &iden
         //        qDebug() << service << identifier << password;
         if (success) {
             updateAccount(service, identifier, password, session->did(), session->handle(),
-                   session->email(), session->accessJwt(), session->refreshJwt());
+                          session->email(), session->accessJwt(), session->refreshJwt());
         }
         session->deleteLater();
     });

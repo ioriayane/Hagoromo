@@ -1,19 +1,24 @@
-QT += quick network
+QT += quick network quickcontrols2
 
 TARGET = Hagoromo
 
 SOURCES += \
         atprotocol/accessatprotocol.cpp \
+        atprotocol/appbskyfeedgettimeline.cpp \
         atprotocol/comatprotoservercreatesession.cpp \
         main.cpp \
         qtquick/accountlistmodel.cpp \
-        qtquick/createsession.cpp
+        qtquick/createsession.cpp \
+        qtquick/timelinelistmodel.cpp
 
 HEADERS += \
     atprotocol/accessatprotocol.h \
+    atprotocol/appbskyfeedgettimeline.h \
     atprotocol/comatprotoservercreatesession.h \
+    atprotocol/lexicons.h \
     qtquick/accountlistmodel.h \
-    qtquick/createsession.h
+    qtquick/createsession.h \
+    qtquick/timelinelistmodel.h
 
 QML_FILES = \
     qml/main.qml \

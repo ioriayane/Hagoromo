@@ -4,6 +4,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QObject>
+#include <QUrl>
 
 class AccessAtProtocol : public QObject
 {
@@ -27,7 +28,7 @@ signals:
 public slots:
 
 protected:
-    void get(const QString &endpoint);
+    void get(const QString &endpoint, const QUrlQuery &query);
     void post(const QString &endpoint, const QByteArray &json);
 
     void setDid(const QString &newDid);

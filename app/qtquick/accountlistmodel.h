@@ -16,6 +16,7 @@ struct AccountItem
     QString accessJwt;
     QString refreshJwt;
 };
+Q_DECLARE_METATYPE(AccountItem)
 
 class AccountListModel : public QAbstractListModel
 {
@@ -45,18 +46,21 @@ public:
                             const QVariant &value);
 
     Q_INVOKABLE void updateAccount(const QString &service, const QString &identifier,
-                            const QString &password, const QString &did, const QString &handle,
-                            const QString &email, const QString &accessJwt,
-                            const QString &refreshJwt);
+                                   const QString &password, const QString &did,
+                                   const QString &handle, const QString &email,
+                                   const QString &accessJwt, const QString &refreshJwt);
 
     Q_INVOKABLE void save() const;
     Q_INVOKABLE void load();
+
+    Q_INVOKABLE QVariant account(int row) const;
 
 protected:
     QHash<int, QByteArray> roleNames() const;
 
 private:
     QList<AccountItem> m_accountList;
+    QVariant m_accountTemp;
 
     QByteArray m_encryptKey;
     QByteArray m_encryptIv;

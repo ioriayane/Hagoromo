@@ -38,9 +38,14 @@ void AccessAtProtocol::setService(const QString &newService)
     m_service = newService;
 }
 
-void AccessAtProtocol::get(const QString &endpoint)
+void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query)
 {
-    m_manager.get(QNetworkRequest(QUrl(QString("%1/%2").arg(service()).arg(endpoint))));
+    QUrl url = QString("%1/%2").arg(service(), endpoint);
+    url.setQuery(query);
+    QNetworkRequest request(url);
+    request.setRawHeader(QByteArray("Authorization"), QByteArray("Bearer ") + accessJwt().toUtf8());
+
+    m_manager.get(request);
 }
 
 void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json)
