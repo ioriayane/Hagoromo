@@ -348,11 +348,14 @@ class Defs2Struct:
                             self.output_func_text[namespace].append('        }')
 
                 elif p_type == 'unknown':
-                    self.output_func_text[namespace].append('        // unknown ' + property_name)
+                    self.output_func_text[namespace].append('        LexiconsTypeUnknown::copyUnknown(src.value("%s").toObject(), QStringLiteral("%s"), dest.%s);' % (property_name, property_name, property_name))
+
                 elif p_type == 'integer':
                     self.output_func_text[namespace].append('        dest.%s = src.value("%s").toInt();' % (property_name, property_name, ))
+
                 elif p_type == 'string':
                     self.output_func_text[namespace].append('        dest.%s = src.value("%s").toString();' % (property_name, property_name, ))
+
                 elif p_type == 'array':
                     items_type = properties[property_name].get('items', {}).get('type', '')
                     (ref_namespace, ref_type_name) = self.split_ref(properties[property_name].get('items', {}).get('ref', {}))
@@ -480,6 +483,7 @@ class Defs2Struct:
             fp.write('#define LEXICONS_FUNC_CPP\n')
             fp.write('\n')
             fp.write('#include "lexicons_func.h"\n')
+            fp.write('#include "lexicons_func_unknown.h"\n')
             fp.write('\n')
 
             for namespace, type_names in self.output_func_text.items():

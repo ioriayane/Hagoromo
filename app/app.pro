@@ -7,6 +7,7 @@ SOURCES += \
         atprotocol/appbskyfeedgettimeline.cpp \
         atprotocol/comatprotoservercreatesession.cpp \
         atprotocol/lexicons_func.cpp \
+        atprotocol/lexicons_func_unknown.cpp \
         main.cpp \
         qtquick/accountlistmodel.cpp \
         qtquick/createsession.cpp \
@@ -18,6 +19,7 @@ HEADERS += \
     atprotocol/comatprotoservercreatesession.h \
     atprotocol/lexicons.h \
     atprotocol/lexicons_func.h \
+    atprotocol/lexicons_func_unknown.h \
     qtquick/accountlistmodel.h \
     qtquick/createsession.h \
     qtquick/timelinelistmodel.h
