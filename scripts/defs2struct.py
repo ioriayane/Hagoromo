@@ -338,11 +338,13 @@ class Defs2Struct:
                             if len(ref_namespace) == 0:
                                 extend_ns = '%s::' % (self.to_namespace_style(namespace), )
                                 union_name = '%s_%s' % (property_name, self.to_struct_style(ref_type_name))
+                                ref_path_full = namespace + '#' + ref_type_name
                             else:
                                 extend_ns = '%s::' % (self.to_namespace_style(ref_namespace), )
                                 union_name = '%s_%s_%s' % (property_name, self.to_namespace_style(ref_namespace), self.to_struct_style(ref_type_name))
+                                ref_path_full = ref_path
                             union_type_name = '%s%sType' % (self.to_struct_style(type_name), self.to_struct_style(property_name), )
-                            self.output_func_text[namespace].append('        if (%s_type == QStringLiteral("%s")) {' % (property_name, ref_path, ))
+                            self.output_func_text[namespace].append('        if (%s_type == QStringLiteral("%s")) {' % (property_name, ref_path_full, ))
                             self.output_func_text[namespace].append('            dest.%s_type = %s::%s::%s;' % (property_name, self.to_namespace_style(namespace), union_type_name, union_name, ))
                             self.output_func_text[namespace].append('            %scopy%s(src.value("%s").toObject(), dest.%s);' % (extend_ns, self.to_struct_style(ref_type_name), property_name, union_name, ))
                             self.output_func_text[namespace].append('        }')
@@ -425,14 +427,6 @@ class Defs2Struct:
                 self.output_type(namespace, type_name, self.get_defs_obj(namespace, type_name))
 
         # コピー関数のための解析
-        # self.output_function('app.bsky.actor.defs', 'profileViewBasic')
-        # self.output_function('app.bsky.actor.defs', 'viewerState')
-        # self.output_function('app.bsky.feed.defs', 'viewerState')
-        # self.output_function('app.bsky.feed.defs', 'postView')
-        # self.output_function('app.bsky.feed.defs', 'replyRef')
-        # self.output_function('app.bsky.feed.defs', 'feedViewPost')
-        # self.output_function('app.bsky.feed.defs', 'reasonRepost')
-        # self.output_function('com.atproto.label.defs', 'label')
         for ref_path in self.history:
             (ref_namespace, ref_type_name) = self.split_ref(ref_path)
             self.output_function(ref_namespace, ref_type_name)

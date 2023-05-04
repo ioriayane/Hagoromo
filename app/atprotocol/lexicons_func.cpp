@@ -189,17 +189,17 @@ void copyView(const QJsonObject &src, AppBskyEmbedRecord::View &dest)
 {
     if (!src.isEmpty()) {
         QString record_type = src.value("record").toObject().value("$type").toString();
-        if (record_type == QStringLiteral("#viewRecord")) {
+        if (record_type == QStringLiteral("app.bsky.embed.record#viewRecord")) {
             dest.record_type = AppBskyEmbedRecord::ViewRecordType::record_ViewRecord;
             AppBskyEmbedRecord::copyViewRecord(src.value("record").toObject(),
                                                dest.record_ViewRecord);
         }
-        if (record_type == QStringLiteral("#viewNotFound")) {
+        if (record_type == QStringLiteral("app.bsky.embed.record#viewNotFound")) {
             dest.record_type = AppBskyEmbedRecord::ViewRecordType::record_ViewNotFound;
             AppBskyEmbedRecord::copyViewNotFound(src.value("record").toObject(),
                                                  dest.record_ViewNotFound);
         }
-        if (record_type == QStringLiteral("#viewBlocked")) {
+        if (record_type == QStringLiteral("app.bsky.embed.record#viewBlocked")) {
             dest.record_type = AppBskyEmbedRecord::ViewRecordType::record_ViewBlocked;
             AppBskyEmbedRecord::copyViewBlocked(src.value("record").toObject(),
                                                 dest.record_ViewBlocked);
@@ -307,7 +307,7 @@ void copyFeedViewPost(const QJsonObject &src, AppBskyFeedDefs::FeedViewPost &des
         AppBskyFeedDefs::copyPostView(src.value("post").toObject(), dest.post);
         copyReplyRef(src.value("reply").toObject(), dest.reply);
         QString reason_type = src.value("reason").toObject().value("$type").toString();
-        if (reason_type == QStringLiteral("#reasonRepost")) {
+        if (reason_type == QStringLiteral("app.bsky.feed.defs#reasonRepost")) {
             dest.reason_type = AppBskyFeedDefs::FeedViewPostReasonType::reason_ReasonRepost;
             AppBskyFeedDefs::copyReasonRepost(src.value("reason").toObject(),
                                               dest.reason_ReasonRepost);
@@ -332,12 +332,12 @@ void copyThreadViewPost(const QJsonObject &src, AppBskyFeedDefs::ThreadViewPost 
         copyPostView(src.value("post").toObject(), dest.post);
         QString parent_type = src.value("parent").toObject().value("$type").toString();
         // union *parent #threadViewPost
-        if (parent_type == QStringLiteral("#notFoundPost")) {
+        if (parent_type == QStringLiteral("app.bsky.feed.defs#notFoundPost")) {
             dest.parent_type = AppBskyFeedDefs::ThreadViewPostParentType::parent_NotFoundPost;
             AppBskyFeedDefs::copyNotFoundPost(src.value("parent").toObject(),
                                               dest.parent_NotFoundPost);
         }
-        if (parent_type == QStringLiteral("#blockedPost")) {
+        if (parent_type == QStringLiteral("app.bsky.feed.defs#blockedPost")) {
             dest.parent_type = AppBskyFeedDefs::ThreadViewPostParentType::parent_BlockedPost;
             AppBskyFeedDefs::copyBlockedPost(src.value("parent").toObject(),
                                              dest.parent_BlockedPost);
@@ -454,7 +454,7 @@ void copyActionView(const QJsonObject &src, ComAtprotoAdminDefs::ActionView &des
         dest.id = src.value("id").toInt();
         copyActionType(src.value("action"), dest.action);
         QString subject_type = src.value("subject").toObject().value("$type").toString();
-        if (subject_type == QStringLiteral("#repoRef")) {
+        if (subject_type == QStringLiteral("com.atproto.admin.defs#repoRef")) {
             dest.subject_type = ComAtprotoAdminDefs::ActionViewSubjectType::subject_RepoRef;
             ComAtprotoAdminDefs::copyRepoRef(src.value("subject").toObject(), dest.subject_RepoRef);
         }
@@ -524,12 +524,12 @@ void copyBlobView(const QJsonObject &src, ComAtprotoAdminDefs::BlobView &dest)
         dest.size = src.value("size").toInt();
         dest.createdAt = src.value("createdAt").toString();
         QString details_type = src.value("details").toObject().value("$type").toString();
-        if (details_type == QStringLiteral("#imageDetails")) {
+        if (details_type == QStringLiteral("com.atproto.admin.defs#imageDetails")) {
             dest.details_type = ComAtprotoAdminDefs::BlobViewDetailsType::details_ImageDetails;
             ComAtprotoAdminDefs::copyImageDetails(src.value("details").toObject(),
                                                   dest.details_ImageDetails);
         }
-        if (details_type == QStringLiteral("#videoDetails")) {
+        if (details_type == QStringLiteral("com.atproto.admin.defs#videoDetails")) {
             dest.details_type = ComAtprotoAdminDefs::BlobViewDetailsType::details_VideoDetails;
             ComAtprotoAdminDefs::copyVideoDetails(src.value("details").toObject(),
                                                   dest.details_VideoDetails);
@@ -544,7 +544,7 @@ void copyReportView(const QJsonObject &src, ComAtprotoAdminDefs::ReportView &des
         ComAtprotoModerationDefs::copyReasonType(src.value("reasonType"), dest.reasonType);
         dest.reason = src.value("reason").toString();
         QString subject_type = src.value("subject").toObject().value("$type").toString();
-        if (subject_type == QStringLiteral("#repoRef")) {
+        if (subject_type == QStringLiteral("com.atproto.admin.defs#repoRef")) {
             dest.subject_type = ComAtprotoAdminDefs::ReportViewSubjectType::subject_RepoRef;
             ComAtprotoAdminDefs::copyRepoRef(src.value("subject").toObject(), dest.subject_RepoRef);
         }
@@ -559,12 +559,12 @@ void copyActionViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::ActionVie
         dest.id = src.value("id").toInt();
         copyActionType(src.value("action"), dest.action);
         QString subject_type = src.value("subject").toObject().value("$type").toString();
-        if (subject_type == QStringLiteral("#repoView")) {
+        if (subject_type == QStringLiteral("com.atproto.admin.defs#repoView")) {
             dest.subject_type = ComAtprotoAdminDefs::ActionViewDetailSubjectType::subject_RepoView;
             ComAtprotoAdminDefs::copyRepoView(src.value("subject").toObject(),
                                               dest.subject_RepoView);
         }
-        if (subject_type == QStringLiteral("#recordView")) {
+        if (subject_type == QStringLiteral("com.atproto.admin.defs#recordView")) {
             dest.subject_type =
                     ComAtprotoAdminDefs::ActionViewDetailSubjectType::subject_RecordView;
             ComAtprotoAdminDefs::copyRecordView(src.value("subject").toObject(),
@@ -593,12 +593,12 @@ void copyReportViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::ReportVie
         ComAtprotoModerationDefs::copyReasonType(src.value("reasonType"), dest.reasonType);
         dest.reason = src.value("reason").toString();
         QString subject_type = src.value("subject").toObject().value("$type").toString();
-        if (subject_type == QStringLiteral("#repoView")) {
+        if (subject_type == QStringLiteral("com.atproto.admin.defs#repoView")) {
             dest.subject_type = ComAtprotoAdminDefs::ReportViewDetailSubjectType::subject_RepoView;
             ComAtprotoAdminDefs::copyRepoView(src.value("subject").toObject(),
                                               dest.subject_RepoView);
         }
-        if (subject_type == QStringLiteral("#recordView")) {
+        if (subject_type == QStringLiteral("com.atproto.admin.defs#recordView")) {
             dest.subject_type =
                     ComAtprotoAdminDefs::ReportViewDetailSubjectType::subject_RecordView;
             ComAtprotoAdminDefs::copyRecordView(src.value("subject").toObject(),
