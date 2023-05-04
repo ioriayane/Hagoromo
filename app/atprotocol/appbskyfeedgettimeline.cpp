@@ -47,14 +47,7 @@ void AppBskyFeedGetTimeline::parseJson(const QString reply_json)
             feed_item.post.repostCount = json_post.value("repostCount").toInt();
             feed_item.post.repostCount = json_post.value("repostCount").toInt();
             feed_item.post.likeCount = json_post.value("likeCount").toInt();
-            QJsonObject json_author = json_post.value("author").toObject();
-            if (!json_author.isEmpty()) {
-                feed_item.post.author.avatar = json_author.value("avatar").toString();
-                feed_item.post.author.did = json_author.value("did").toString();
-                feed_item.post.author.displayName = json_author.value("displayName").toString();
-                feed_item.post.author.handle = json_author.value("handle").toString();
-                //            feed_item.post.author.labels = author.value("labels");
-            }
+            copyAuthor(json_post.value("author").toObject(), feed_item.post.author);
             QJsonObject json_record = json_post.value("record").toObject();
             if (!json_record.isEmpty()) {
                 if (json_record.value("$type").toString() == QStringLiteral("app.bsky.feed.post")) {
@@ -80,9 +73,28 @@ void AppBskyFeedGetTimeline::parseJson(const QString reply_json)
                 }
             }
 
+            QJsonObject json_reply = obj.toObject().value("reply").toObject();
+            if (!json_reply.isEmpty()) {
+                QJsonObject json_parent = json_reply.value("parent").toObject();
+                feed_item.reply.parent.cid = json_parent.value("cid").toString();
+                copyAuthor(json_parent.value("author").toObject(), feed_item.reply.parent.author);
+            }
+
             m_feedList.append(feed_item);
         }
     }
 
     emit finished(success);
+}
+
+void AppBskyFeedGetTimeline::copyAuthor(const QJsonObject &json_author,
+                                        AppBskyActorDefs::ProfileViewBasic &author)
+{
+    if (!json_author.isEmpty()) {
+        author.avatar = json_author.value("avatar").toString();
+        author.did = json_author.value("did").toString();
+        author.displayName = json_author.value("displayName").toString();
+        author.handle = json_author.value("handle").toString();
+        //            feed_item.post.author.labels = author.value("labels");
+    }
 }
