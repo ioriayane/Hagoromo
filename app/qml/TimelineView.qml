@@ -37,6 +37,7 @@ ScrollView {
         }
 
         delegate: Frame {
+            id: postFrame
             padding: 10
 
             ColumnLayout {
@@ -92,8 +93,9 @@ ScrollView {
                     id: postLayout
                     spacing: 10
                     Image {
-                        Layout.preferredWidth: 48
-                        Layout.preferredHeight: 48
+                        id: postImage
+                        Layout.preferredWidth: 36
+                        Layout.preferredHeight: 36
                         Layout.alignment: Qt.AlignTop
                         source: model.avatar
                     }
@@ -102,7 +104,7 @@ ScrollView {
                         Layout.fillWidth: true
                         spacing: 5
 
-                        property int basisWidth: timelineListView.width - 30 - 48
+                        property int basisWidth: timelineListView.width - postFrame.padding * 2 - postLayout.spacing - postImage.Layout.preferredWidth
 
                         Author {
                             Layout.maximumWidth: parent.basisWidth
@@ -130,8 +132,10 @@ ScrollView {
                             visible: model.hasChildRecord
                             Layout.fillWidth: true
                             RowLayout {
+                                id: childLayout
                                 spacing: 10
                                 Image {
+                                    id: childImage
                                     Layout.preferredWidth: 16
                                     Layout.preferredHeight: 16
                                     Layout.alignment: Qt.AlignTop
@@ -139,7 +143,7 @@ ScrollView {
                                 }
                                 ColumnLayout {
                                     Layout.fillWidth: true
-                                    property int basisWidth: recordText.width - childFrame.padding * 2 - 10 - 16
+                                    property int basisWidth: recordText.width - childFrame.padding * 2 - childLayout.spacing - childImage.Layout.preferredWidth
                                     Author {
                                         Layout.maximumWidth: parent.basisWidth
                                         displayName: model.childRecordDisplayName

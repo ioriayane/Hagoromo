@@ -69,6 +69,8 @@ private:
     AppBskyFeedGetTimeline m_timeline;
 
     AccountItem m_account;
+
+    QString formatDateTime(const QString &value) const;
 };
 
 #endif // TIMELINELISTMODEL_H

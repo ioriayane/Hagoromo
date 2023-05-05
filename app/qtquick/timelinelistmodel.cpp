@@ -55,7 +55,7 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     else if (role == LikeCountRole)
         return current.post.likeCount;
     else if (role == IndexedAtRole)
-        return current.post.indexedAt;
+        return formatDateTime(current.post.indexedAt);
     else if (role == EmbedImagesRole) {
         if (current.post.embed_type
             == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedImages_View) {
@@ -87,7 +87,8 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
                        current.post.embed_AppBskyEmbedRecord_View.record_ViewRecord.value)
                 .text;
     else if (role == ChildRecordIndexedAtRole)
-        return current.post.embed_AppBskyEmbedRecord_View.record_ViewRecord.indexedAt;
+        return formatDateTime(
+                current.post.embed_AppBskyEmbedRecord_View.record_ViewRecord.indexedAt);
     else if (role == ChildRecordEmbedImagesRole) {
         // unionの配列で読み込んでない
         const AppBskyEmbedRecord::ViewRecord &temp_record =
@@ -185,4 +186,9 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[RepostedByHandleRole] = "repostedByHandle";
 
     return roles;
+}
+
+QString TimelineListModel::formatDateTime(const QString &value) const
+{
+    return QDateTime::fromString(value, Qt::ISODateWithMs).toLocalTime().toString("MM/dd hh:mm");
 }
