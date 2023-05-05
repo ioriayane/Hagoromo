@@ -162,8 +162,7 @@ void copyViewRecord(const QJsonObject &src, AppBskyEmbedRecord::ViewRecord &dest
         dest.uri = src.value("uri").toString();
         dest.cid = src.value("cid").toString();
         AppBskyActorDefs::copyProfileViewBasic(src.value("author").toObject(), dest.author);
-        LexiconsTypeUnknown::copyUnknown(src.value("value").toObject(), QStringLiteral("value"),
-                                         dest.value);
+        LexiconsTypeUnknown::copyUnknown(src.value("value").toObject(), dest.value);
         for (const auto &s : src.value("labels").toArray()) {
             ComAtprotoLabelDefs::Label child;
             ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
@@ -251,8 +250,7 @@ void copyPostView(const QJsonObject &src, AppBskyFeedDefs::PostView &dest)
         dest.uri = src.value("uri").toString();
         dest.cid = src.value("cid").toString();
         AppBskyActorDefs::copyProfileViewBasic(src.value("author").toObject(), dest.author);
-        LexiconsTypeUnknown::copyUnknown(src.value("record").toObject(), QStringLiteral("record"),
-                                         dest.record);
+        LexiconsTypeUnknown::copyUnknown(src.value("record").toObject(), dest.record);
         QString embed_type = src.value("embed").toObject().value("$type").toString();
         if (embed_type == QStringLiteral("app.bsky.embed.images#view")) {
             dest.embed_type = AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedImages_View;
@@ -390,8 +388,7 @@ void copyNotification(const QJsonObject &src,
         AppBskyActorDefs::copyProfileView(src.value("author").toObject(), dest.author);
         dest.reason = src.value("reason").toString();
         dest.reasonSubject = src.value("reasonSubject").toString();
-        LexiconsTypeUnknown::copyUnknown(src.value("record").toObject(), QStringLiteral("record"),
-                                         dest.record);
+        LexiconsTypeUnknown::copyUnknown(src.value("record").toObject(), dest.record);
         dest.indexedAt = src.value("indexedAt").toString();
         for (const auto &s : src.value("labels").toArray()) {
             ComAtprotoLabelDefs::Label child;
@@ -494,8 +491,7 @@ void copyRecordView(const QJsonObject &src, ComAtprotoAdminDefs::RecordView &des
     if (!src.isEmpty()) {
         dest.uri = src.value("uri").toString();
         dest.cid = src.value("cid").toString();
-        LexiconsTypeUnknown::copyUnknown(src.value("value").toObject(), QStringLiteral("value"),
-                                         dest.value);
+        LexiconsTypeUnknown::copyUnknown(src.value("value").toObject(), dest.value);
         dest.indexedAt = src.value("indexedAt").toString();
         copyModeration(src.value("moderation").toObject(), dest.moderation);
         copyRepoView(src.value("repo").toObject(), dest.repo);
@@ -655,8 +651,7 @@ void copyRecordViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::RecordVie
     if (!src.isEmpty()) {
         dest.uri = src.value("uri").toString();
         dest.cid = src.value("cid").toString();
-        LexiconsTypeUnknown::copyUnknown(src.value("value").toObject(), QStringLiteral("value"),
-                                         dest.value);
+        LexiconsTypeUnknown::copyUnknown(src.value("value").toObject(), dest.value);
         for (const auto &s : src.value("blobs").toArray()) {
             BlobView child;
             copyBlobView(s.toObject(), child);
@@ -729,8 +724,7 @@ void copyCreate(const QJsonObject &src, ComAtprotoRepoApplyWrites::Create &dest)
     if (!src.isEmpty()) {
         dest.collection = src.value("collection").toString();
         dest.rkey = src.value("rkey").toString();
-        LexiconsTypeUnknown::copyUnknown(src.value("value").toObject(), QStringLiteral("value"),
-                                         dest.value);
+        LexiconsTypeUnknown::copyUnknown(src.value("value").toObject(), dest.value);
     }
 }
 void copyUpdate(const QJsonObject &src, ComAtprotoRepoApplyWrites::Update &dest)
@@ -738,8 +732,7 @@ void copyUpdate(const QJsonObject &src, ComAtprotoRepoApplyWrites::Update &dest)
     if (!src.isEmpty()) {
         dest.collection = src.value("collection").toString();
         dest.rkey = src.value("rkey").toString();
-        LexiconsTypeUnknown::copyUnknown(src.value("value").toObject(), QStringLiteral("value"),
-                                         dest.value);
+        LexiconsTypeUnknown::copyUnknown(src.value("value").toObject(), dest.value);
     }
 }
 void copyDelete(const QJsonObject &src, ComAtprotoRepoApplyWrites::Delete &dest)
@@ -756,8 +749,7 @@ void copyRecord(const QJsonObject &src, ComAtprotoRepoListRecords::Record &dest)
     if (!src.isEmpty()) {
         dest.uri = src.value("uri").toString();
         dest.cid = src.value("cid").toString();
-        LexiconsTypeUnknown::copyUnknown(src.value("value").toObject(), QStringLiteral("value"),
-                                         dest.value);
+        LexiconsTypeUnknown::copyUnknown(src.value("value").toObject(), dest.value);
     }
 }
 }

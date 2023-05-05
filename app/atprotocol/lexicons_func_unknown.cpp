@@ -6,14 +6,13 @@
 
 namespace LexiconsTypeUnknown {
 
-void copyUnknown(const QJsonObject &src, const QString &property_name, QVariant &dest)
+void copyUnknown(const QJsonObject &src, QVariant &dest)
 {
     if (src.isEmpty())
         return;
 
-    if (src.value("$type").toString() == QStringLiteral("app.bsky.feed.post")
-        && property_name == QStringLiteral("record")) {
-
+    if (src.value("$type").toString() == QStringLiteral("app.bsky.feed.post")) {
+        // typeに#以降がないのでmainの定義で参照
         AppBskyFeedPost::Record record;
         record.text = src.value("text").toString();
         record.createdAt = src.value("createdAt").toString();

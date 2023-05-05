@@ -350,7 +350,7 @@ class Defs2Struct:
                             self.output_func_text[namespace].append('        }')
 
                 elif p_type == 'unknown':
-                    self.output_func_text[namespace].append('        LexiconsTypeUnknown::copyUnknown(src.value("%s").toObject(), QStringLiteral("%s"), dest.%s);' % (property_name, property_name, property_name))
+                    self.output_func_text[namespace].append('        LexiconsTypeUnknown::copyUnknown(src.value("%s").toObject(), dest.%s);' % (property_name, property_name, ))
 
                 elif p_type == 'integer':
                     self.output_func_text[namespace].append('        dest.%s = src.value("%s").toInt();' % (property_name, property_name, ))

@@ -10,7 +10,17 @@
 
 namespace LexiconsTypeUnknown {
 
-void copyUnknown(const QJsonObject &src, const QString &property_name, QVariant &dest);
+void copyUnknown(const QJsonObject &src, QVariant &dest);
+
+template<typename T>
+T fromQVariant(const QVariant &variant)
+{
+    if (variant.canConvert<T>()) {
+        return variant.value<T>();
+    } else {
+        return T();
+    }
+}
 
 }
 
