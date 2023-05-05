@@ -30,7 +30,8 @@ QML_FILES = \
     qml/TimelineView.qml \
     qml/IconButton.qml \
     qml/parts/ImagePreview.qml \
-    qml/parts/Author.qml
+    qml/parts/Author.qml \
+    qml/parts/ReactionAuthor.qml
 
 IMAGE_FILES += \
     qml/images/add_user.png \

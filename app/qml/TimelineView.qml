@@ -41,54 +41,21 @@ ScrollView {
             padding: 10
 
             ColumnLayout {
-                RowLayout {
+                ReactionAuthor {
                     visible: model.hasParent
-                    Image {
-                        Layout.preferredWidth: 12
-                        Layout.preferredHeight: 12
-                        source: "images/reply.png"
-                        layer.enabled: true
-                        layer.effect: ColorOverlay {
-                            color: Material.color(Material.Blue)
-                        }
-                    }
-                    Label {
-                        Layout.alignment: Qt.AlignCenter
-                        text: model.parentDisplayName
-                        font.pointSize: 8
-                        color: Material.color(Material.Blue)
-                    }
-                    Label {
-                        Layout.alignment: Qt.AlignCenter
-                        text: model.parentHandle
-                        font.pointSize: 8
-                        color: Material.color(Material.Blue)
-                    }
+                    source: "images/reply.png"
+                    displayName: model.parentDisplayName
+                    handle: model.parentHandle
+                    color: Material.color(Material.Blue)
                 }
-                RowLayout {
+                ReactionAuthor {
                     visible: model.isRepostedBy
-                    Image {
-                        Layout.preferredWidth: 12
-                        Layout.preferredHeight: 12
-                        source: "images/repost.png"
-                        layer.enabled: true
-                        layer.effect: ColorOverlay {
-                            color: Material.color(Material.Green)
-                        }
-                    }
-                    Label {
-                        Layout.alignment: Qt.AlignCenter
-                        text: model.repostedByDisplayName
-                        font.pointSize: 8
-                        color: Material.color(Material.Green)
-                    }
-                    Label {
-                        Layout.alignment: Qt.AlignCenter
-                        text: model.repostedByHandle
-                        font.pointSize: 8
-                        color: Material.color(Material.Green)
-                    }
+                    source: "images/repost.png"
+                    displayName: model.repostedByDisplayName
+                    handle: model.repostedByHandle
+                    color: Material.color(Material.Green)
                 }
+
                 RowLayout {
                     id: postLayout
                     spacing: 10
