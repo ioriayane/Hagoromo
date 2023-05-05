@@ -1,4 +1,5 @@
 #include "timelinelistmodel.h"
+#include "../atprotocol/lexicons_func_unknown.h"
 
 #include <QDebug>
 
@@ -45,15 +46,9 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return current.post.author.handle;
     else if (role == AvatarRole)
         return current.post.author.avatar;
-    else if (role == RecordTextRole) {
-        if (current.post.record.canConvert<AppBskyFeedPost::Record>()) {
-            const AppBskyFeedPost::Record record =
-                    current.post.record.value<AppBskyFeedPost::Record>();
-            return record.text;
-        } else {
-            return QString();
-        }
-    } else if (role == ReplyCountRole)
+    else if (role == RecordTextRole)
+        return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Record>(current.post.record).text;
+    else if (role == ReplyCountRole)
         return current.post.replyCount;
     else if (role == RepostCountRole)
         return current.post.repostCount;
@@ -74,15 +69,58 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         } else {
             return QString();
         }
-    } else if (role == HasParentRole)
+    }
+
+    else if (role == HasChildRecordRole)
+        return current.post.embed_type
+                == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecord_View
+                && current.post.embed_AppBskyEmbedRecord_View.record_type
+                == AppBskyEmbedRecord::ViewRecordType::record_ViewRecord;
+    else if (role == ChildRecordDisplayNameRole)
+        return current.post.embed_AppBskyEmbedRecord_View.record_ViewRecord.author.displayName;
+    else if (role == ChildRecordHandleRole)
+        return current.post.embed_AppBskyEmbedRecord_View.record_ViewRecord.author.handle;
+    else if (role == ChildRecordAvatarRole)
+        return current.post.embed_AppBskyEmbedRecord_View.record_ViewRecord.author.avatar;
+    else if (role == ChildRecordRecordTextRole)
+        return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Record>(
+                       current.post.embed_AppBskyEmbedRecord_View.record_ViewRecord.value)
+                .text;
+    else if (role == ChildRecordIndexedAtRole)
+        return current.post.embed_AppBskyEmbedRecord_View.record_ViewRecord.indexedAt;
+    else if (role == ChildRecordEmbedImagesRole) {
+        // unionの配列で読み込んでない
+        const AppBskyEmbedRecord::ViewRecord &temp_record =
+                current.post.embed_AppBskyEmbedRecord_View.record_ViewRecord;
+        if (temp_record.embeds_type
+            == AppBskyEmbedRecord::ViewRecordEmbedsType::embeds_AppBskyEmbedImages_View) {
+            QString images;
+            for (const auto &view : temp_record.embeds_AppBskyEmbedImages_View) {
+                for (const auto &image : view.images) {
+                    if (!images.isEmpty())
+                        images.append("\n");
+                    images.append(image.thumb);
+                }
+            }
+            return images;
+        } else {
+            return QString();
+        }
+    }
+
+    else if (role == HasParentRole)
         return current.reply.parent.cid.length() > 0;
     else if (role == ParentDisplayNameRole)
         return current.reply.parent.author.displayName;
+    else if (role == ParentHandleRole)
+        return current.reply.parent.author.handle;
     else if (role == IsRepostedByRole)
         return (current.reason_type
                 == AppBskyFeedDefs::FeedViewPostReasonType::reason_ReasonRepost);
     else if (role == RepostedByDisplayNameRole)
         return current.reason_ReasonRepost.by.displayName;
+    else if (role == RepostedByHandleRole)
+        return current.reason_ReasonRepost.by.handle;
 
     return QVariant();
 }
@@ -130,10 +168,21 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[LikeCountRole] = "likeCount";
     roles[IndexedAtRole] = "indexedAt";
     roles[EmbedImagesRole] = "embedImages";
+
+    roles[HasChildRecordRole] = "hasChildRecord";
+    roles[ChildRecordDisplayNameRole] = "childRecordDisplayName";
+    roles[ChildRecordHandleRole] = "childRecordHandle";
+    roles[ChildRecordAvatarRole] = "childRecordAvatar";
+    roles[ChildRecordRecordTextRole] = "childRecordRecordText";
+    roles[ChildRecordIndexedAtRole] = "childRecordIndexedAt";
+    roles[ChildRecordEmbedImagesRole] = "childRecordEmbedImages";
+
     roles[HasParentRole] = "hasParent";
     roles[ParentDisplayNameRole] = "parentDisplayName";
+    roles[ParentHandleRole] = "parentHandle";
     roles[IsRepostedByRole] = "isRepostedBy";
     roles[RepostedByDisplayNameRole] = "repostedByDisplayName";
+    roles[RepostedByHandleRole] = "repostedByHandle";
 
     return roles;
 }

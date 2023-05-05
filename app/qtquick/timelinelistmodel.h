@@ -28,10 +28,20 @@ public:
         IndexedAtRole,
         EmbedImagesRole,
 
+        HasChildRecordRole,
+        ChildRecordDisplayNameRole,
+        ChildRecordHandleRole,
+        ChildRecordAvatarRole,
+        ChildRecordRecordTextRole,
+        ChildRecordIndexedAtRole,
+        ChildRecordEmbedImagesRole,
+
         HasParentRole,
         ParentDisplayNameRole,
+        ParentHandleRole,
         IsRepostedByRole,
         RepostedByDisplayNameRole,
+        RepostedByHandleRole,
     };
     Q_ENUM(TimelineListModelRoles)
 

@@ -28,7 +28,9 @@ QML_FILES = \
     qml/main.qml \
     qml/LoginDialog.qml \
     qml/TimelineView.qml \
-    qml/IconButton.qml
+    qml/IconButton.qml \
+    qml/parts/ImagePreview.qml \
+    qml/parts/Author.qml
 
 IMAGE_FILES += \
     qml/images/add_user.png \

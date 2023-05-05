@@ -6,6 +6,8 @@ import QtGraphicalEffects 1.15
 
 import tech.relog.hagoromo.timelinelistmodel 1.0
 
+import "parts"
+
 ScrollView {
     ScrollBar.vertical.policy: ScrollBar.AlwaysOn
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
@@ -41,8 +43,8 @@ ScrollView {
                 RowLayout {
                     visible: model.hasParent
                     Image {
-                        Layout.preferredWidth: 16
-                        Layout.preferredHeight: 16
+                        Layout.preferredWidth: 12
+                        Layout.preferredHeight: 12
                         source: "images/reply.png"
                         layer.enabled: true
                         layer.effect: ColorOverlay {
@@ -52,15 +54,21 @@ ScrollView {
                     Label {
                         Layout.alignment: Qt.AlignCenter
                         text: model.parentDisplayName
-                        font.pointSize: 10
+                        font.pointSize: 8
+                        color: Material.color(Material.Blue)
+                    }
+                    Label {
+                        Layout.alignment: Qt.AlignCenter
+                        text: model.parentHandle
+                        font.pointSize: 8
                         color: Material.color(Material.Blue)
                     }
                 }
                 RowLayout {
                     visible: model.isRepostedBy
                     Image {
-                        Layout.preferredWidth: 16
-                        Layout.preferredHeight: 16
+                        Layout.preferredWidth: 12
+                        Layout.preferredHeight: 12
                         source: "images/repost.png"
                         layer.enabled: true
                         layer.effect: ColorOverlay {
@@ -70,7 +78,13 @@ ScrollView {
                     Label {
                         Layout.alignment: Qt.AlignCenter
                         text: model.repostedByDisplayName
-                        font.pointSize: 10
+                        font.pointSize: 8
+                        color: Material.color(Material.Green)
+                    }
+                    Label {
+                        Layout.alignment: Qt.AlignCenter
+                        text: model.repostedByHandle
+                        font.pointSize: 8
                         color: Material.color(Material.Green)
                     }
                 }
@@ -88,61 +102,63 @@ ScrollView {
                         Layout.fillWidth: true
                         spacing: 5
 
-                        RowLayout {
-                            id: headerLayout
-                            Layout.maximumWidth: parent.width
-                            Label {
-                                Layout.maximumWidth: headerLayout.width - handleText.width - indexAtText.width - headerLayout.spacing * 3
-                                font.pointSize: 10
-                                elide: Text.ElideRight
-                                text: model.displayName
-                            }
-                            Label {
-                                id: handleText
-                                opacity: 0.8
-                                font.pointSize: 8
-                                text: model.handle
-                            }
-                            Item {
-                                id: spacerLine1Item
-                                Layout.fillWidth: true
-                            }
-                            Label {
-                                id: indexAtText
-                                Layout.minimumWidth: contentWidth
-                                opacity: 0.8
-                                font.pointSize: 8
-                                text: model.indexedAt
-                            }
+                        property int basisWidth: timelineListView.width - 30 - 48
+
+                        Author {
+                            Layout.maximumWidth: parent.basisWidth
+                            displayName: model.displayName
+                            handle: model.handle
+                            indexedAt: model.indexedAt
                         }
+
                         Label {
                             id: recordText
-                            Layout.preferredWidth: timelineListView.width - 30 - 48
+                            Layout.preferredWidth: parent.basisWidth
+                            Layout.maximumWidth: parent.basisWidth
                             // wrapMode: Text.Wrap
                             wrapMode: Text.WrapAnywhere
                             font.pointSize: 11
                             text: model.recordText
                         }
-                        GridLayout {
-                            id: imagePreviewLayout
-                            visible: model.embedImages.length > 0
-                            columnSpacing: 5
-                            rowSpacing: 5
-                            columns: 2
-                            property string embedImages: model.embedImages
-                            Repeater {
-                                model: imagePreviewLayout.embedImages.split("\n")
-                                delegate: Image {
-                                    Layout.preferredWidth: recordText.width * 0.5 - 5
-                                    Layout.preferredHeight: Layout.preferredWidth
-                                    fillMode: Image.PreserveAspectCrop
-                                    source: modelData
+                        ImagePreview {
+                            layoutWidth: recordText.width
+                            embedImages: model.embedImages
+                        }
+
+                        Frame {
+                            id: childFrame
+                            visible: model.hasChildRecord
+                            Layout.fillWidth: true
+                            RowLayout {
+                                spacing: 10
+                                Image {
+                                    Layout.preferredWidth: 16
+                                    Layout.preferredHeight: 16
+                                    Layout.alignment: Qt.AlignTop
+                                    source: model.childRecordAvatar
+                                }
+                                ColumnLayout {
+                                    Layout.fillWidth: true
+                                    property int basisWidth: recordText.width - childFrame.padding * 2 - 10 - 16
+                                    Author {
+                                        Layout.maximumWidth: parent.basisWidth
+                                        displayName: model.childRecordDisplayName
+                                        handle: model.childRecordHandle
+                                        indexedAt: model.childRecordIndexedAt
+                                    }
+                                    Label {
+                                        id: childRecordText
+                                        Layout.preferredWidth: parent.basisWidth
+                                        Layout.maximumWidth: parent.basisWidth
+                                        wrapMode: Text.WrapAnywhere
+                                        font.pointSize: 10
+                                        text: model.childRecordRecordText
+                                    }
                                 }
                             }
                         }
 
                         RowLayout {
-                            //                    Layout.topMargin: 10
                             IconButton {
                                 iconSource: "images/reply.png"
                                 iconText: model.replyCount
