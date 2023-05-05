@@ -4,6 +4,12 @@
 #include <QAbstractListModel>
 #include <QObject>
 
+enum class AccountStatus : int {
+    Unknown,
+    Unauthorized,
+    Authorized,
+};
+
 struct AccountItem
 {
     QString service;
@@ -15,6 +21,8 @@ struct AccountItem
     QString email;
     QString accessJwt;
     QString refreshJwt;
+
+    AccountStatus status = AccountStatus::Unknown;
 };
 Q_DECLARE_METATYPE(AccountItem)
 
@@ -34,7 +42,8 @@ public:
         HandleRole,
         EmailRole,
         AccessJwtRole,
-        RefreshJwtRole
+        RefreshJwtRole,
+        StatusRole,
     };
     Q_ENUM(AccountListModelRoles)
 
@@ -48,7 +57,8 @@ public:
     Q_INVOKABLE void updateAccount(const QString &service, const QString &identifier,
                                    const QString &password, const QString &did,
                                    const QString &handle, const QString &email,
-                                   const QString &accessJwt, const QString &refreshJwt);
+                                   const QString &accessJwt, const QString &refreshJwt,
+                                   const bool authorized);
 
     Q_INVOKABLE void save() const;
     Q_INVOKABLE void load();
@@ -57,6 +67,7 @@ public:
 
 signals:
     void accountAppended(int row);
+    void allFinished();
 
 protected:
     QHash<int, QByteArray> roleNames() const;

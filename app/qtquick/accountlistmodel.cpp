@@ -63,6 +63,8 @@ QVariant AccountListModel::item(int row, AccountListModelRoles role) const
         return m_accountList.at(row).accessJwt;
     else if (role == RefreshJwtRole)
         return m_accountList.at(row).refreshJwt;
+    else if (role == StatusRole)
+        return static_cast<int>(m_accountList.at(row).status);
 
     return QVariant();
 }
@@ -95,7 +97,8 @@ void AccountListModel::update(int row, AccountListModelRoles role, const QVarian
 void AccountListModel::updateAccount(const QString &service, const QString &identifier,
                                      const QString &password, const QString &did,
                                      const QString &handle, const QString &email,
-                                     const QString &accessJwt, const QString &refreshJwt)
+                                     const QString &accessJwt, const QString &refreshJwt,
+                                     const bool authorized)
 {
     bool updated = false;
     for (int i = 0; i < m_accountList.count(); i++) {
@@ -108,6 +111,8 @@ void AccountListModel::updateAccount(const QString &service, const QString &iden
             m_accountList[i].email = email;
             m_accountList[i].accessJwt = accessJwt;
             m_accountList[i].refreshJwt = refreshJwt;
+            m_accountList[i].status =
+                    authorized ? AccountStatus::Authorized : AccountStatus::Unauthorized;
             updated = true;
             emit dataChanged(index(i), index(i));
         }
@@ -123,6 +128,7 @@ void AccountListModel::updateAccount(const QString &service, const QString &iden
         item.email = email;
         item.accessJwt = accessJwt;
         item.refreshJwt = refreshJwt;
+        item.status = authorized ? AccountStatus::Authorized : AccountStatus::Unauthorized;
 
         beginInsertRows(QModelIndex(), rowCount(), rowCount());
         m_accountList.append(item);
@@ -178,20 +184,6 @@ void AccountListModel::load()
 
                     updateSession(m_accountList.count() - 1, item.service, item.identifier,
                                   item.password);
-                    //                    ComAtprotoServerCreateSession *session = new
-                    //                    ComAtprotoServerCreateSession();
-                    //                    session->setService(item.service);
-                    //                    connect(session, &ComAtprotoServerCreateSession::finished,
-                    //                    [=](bool success) {
-                    //                        qDebug() << session << session->service() <<
-                    //                        session->did()
-                    //                                 << session->handle() << session->email() <<
-                    //                                 session->accessJwt()
-                    //                                 << session->refreshJwt();
-                    //                        qDebug() << item.service << item.identifier <<
-                    //                        item.password; session->deleteLater();
-                    //                    });
-                    //                    session->create(item.identifier, item.password);
                 }
             }
         }
@@ -217,6 +209,7 @@ QHash<int, QByteArray> AccountListModel::roleNames() const
     roles[EmailRole] = "email";
     roles[AccessJwtRole] = "accessJwt";
     roles[RefreshJwtRole] = "refreshJwt";
+    roles[StatusRole] = "status";
 
     return roles;
 }
@@ -297,10 +290,20 @@ void AccountListModel::updateSession(int row, const QString &service, const QStr
         //        qDebug() << session << session->service() << session->did() << session->handle()
         //                 << session->email() << session->accessJwt() << session->refreshJwt();
         //        qDebug() << service << identifier << password;
+        updateAccount(service, identifier, password, session->did(), session->handle(),
+                      session->email(), session->accessJwt(), session->refreshJwt(), success);
         if (success) {
-            updateAccount(service, identifier, password, session->did(), session->handle(),
-                          session->email(), session->accessJwt(), session->refreshJwt());
             emit accountAppended(row);
+        }
+        bool all_finished = true;
+        for (const AccountItem &item : qAsConst(m_accountList)) {
+            if (item.status == AccountStatus::Unknown) {
+                all_finished = false;
+                break;
+            }
+        }
+        if (all_finished) {
+            emit allFinished();
         }
         session->deleteLater();
     });

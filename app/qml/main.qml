@@ -24,6 +24,29 @@ ApplicationWindow {
 
     AccountListModel {
         id: accountListModel
+        onAccountAppended: (row) => {
+                               console.log("accountAppended:" + row)
+                               // カラムを更新しにいく
+                           }
+        onAllFinished: {
+            // すべてのアカウント情報の認証が終わったのでタブを復元（成功しているとは限らない）
+            console.log("allFinished()" + accountListModel.rowCount())
+            for(var i=0; i<account2tabModel.count; i++){
+                repeater.append(account2tabModel.get(i).account_index, account2tabModel.get(i).component_type)
+            }
+        }
+    }
+
+    ListModel {
+        id: account2tabModel
+        ListElement {
+            account_index: 1
+            component_type: "following"
+        }
+        ListElement {
+            account_index: 0
+            component_type: "reply"
+        }
     }
 
     Component {
@@ -54,18 +77,6 @@ ApplicationWindow {
                 Item {
                     Layout.preferredWidth: 1
                     Layout.fillHeight: true
-                }
-
-                Button {
-                    Layout.fillWidth: true
-                    display: AbstractButton.IconOnly
-                    // display: AbstractButton.TextBesideIcon
-                    icon.source: "images/add_user.png"
-                    text: qsTr("Add user")
-
-                    onClicked: {
-                        repeater.append(0)
-                    }
                 }
 
                 Button {
@@ -109,14 +120,16 @@ ApplicationWindow {
                     id: repeater
                     model: ListModel {}
 
-                    function append(account_index){
+                    function append(account_index, component_type){
                         // accountListModelで管理するアカウントのindexと表示に使うコンポを指定
+                        // ①ここでLoaderを追加する
                         repeater.model.append({
                                                   "account_index": account_index,
                                                   "component": timelineComponent
                                               })
                     }
                     onItemAdded: (index, item) => {
+                                     // ②Repeaterに追加されたLoaderにTLを表示するComponentを追加する
                                      //console.log("" + index + ":" + item + ":" + repeater.model.get(index).account_index)
                                      item.account_index = repeater.model.get(index).account_index
                                      item.sourceComponent = repeater.model.get(index).component
@@ -131,6 +144,7 @@ ApplicationWindow {
 
                         property int account_index: -1
                         onLoaded: {
+                            // ③Loaderで読み込んだComponentにアカウント情報など設定する
                             //console.log("loader:" + loader.account_index)
                             if(loader.account_index < 0)
                                 return
@@ -202,6 +216,12 @@ ApplicationWindow {
                         }
                         Label {
                             text: model.refreshJwt
+                        }
+                        Label {
+                            text: "status:"
+                        }
+                        Label {
+                            text: model.status
                         }
                         Label {
                             text: "-"
