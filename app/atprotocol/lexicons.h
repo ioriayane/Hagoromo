@@ -141,7 +141,8 @@ struct View
     AppBskyEmbedExternal::View media_AppBskyEmbedExternal_View;
     // union end : media
 };
-// A representation of a record embedded in another form of content, alongside other compatible embeds
+// A representation of a record embedded in another form of content, alongside other compatible
+// embeds
 struct Main
 {
     // ref=app.bsky.embed.record
