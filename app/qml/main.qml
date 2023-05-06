@@ -156,12 +156,12 @@ ApplicationWindow {
                             if(loader.account_index < 0)
                                 return
                             var i = loader.account_index
-                            item.model.updateAccount(accountListModel.item(i, AccountListModel.ServiceRole),
-                                                     accountListModel.item(i, AccountListModel.DidRole),
-                                                     accountListModel.item(i, AccountListModel.HandleRole),
-                                                     accountListModel.item(i, AccountListModel.EmailRole),
-                                                     accountListModel.item(i, AccountListModel.AccessJwtRole),
-                                                     accountListModel.item(i, AccountListModel.RefreshJwtRole))
+                            item.model.setAccount(accountListModel.item(i, AccountListModel.ServiceRole),
+                                                  accountListModel.item(i, AccountListModel.DidRole),
+                                                  accountListModel.item(i, AccountListModel.HandleRole),
+                                                  accountListModel.item(i, AccountListModel.EmailRole),
+                                                  accountListModel.item(i, AccountListModel.AccessJwtRole),
+                                                  accountListModel.item(i, AccountListModel.RefreshJwtRole))
                             item.model.getLatest()
                         }
                     }

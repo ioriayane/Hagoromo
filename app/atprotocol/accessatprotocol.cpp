@@ -21,21 +21,46 @@ AccessAtProtocol::AccessAtProtocol(QObject *parent) : QObject { parent }
 void AccessAtProtocol::setSession(const QString &did, const QString &handle, const QString &email,
                                   const QString &accessJwt, const QString &refresh_jwt)
 {
-    m_did = did;
-    m_handle = handle;
-    m_email = email;
-    m_accessJwt = accessJwt;
-    m_refreshJwt = refresh_jwt;
+    m_account.did = did;
+    m_account.handle = handle;
+    m_account.email = email;
+    m_account.accessJwt = accessJwt;
+    m_account.refreshJwt = refresh_jwt;
 }
 
 QString AccessAtProtocol::service() const
 {
-    return m_service;
+    return m_account.service;
 }
 
 void AccessAtProtocol::setService(const QString &newService)
 {
-    m_service = newService;
+    m_account.service = newService;
+}
+
+QString AccessAtProtocol::did() const
+{
+    return m_account.did;
+}
+
+QString AccessAtProtocol::handle() const
+{
+    return m_account.handle;
+}
+
+QString AccessAtProtocol::email() const
+{
+    return m_account.email;
+}
+
+QString AccessAtProtocol::accessJwt() const
+{
+    return m_account.accessJwt;
+}
+
+QString AccessAtProtocol::refreshJwt() const
+{
+    return m_account.refreshJwt;
 }
 
 void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query)
@@ -61,54 +86,4 @@ void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
     }
 
     m_manager.post(request, json);
-}
-
-void AccessAtProtocol::setRefreshJwt(const QString &newRefreshJwt)
-{
-    m_refreshJwt = newRefreshJwt;
-}
-
-void AccessAtProtocol::setAccessJwt(const QString &newAccessJwt)
-{
-    m_accessJwt = newAccessJwt;
-}
-
-void AccessAtProtocol::setEmail(const QString &newEmail)
-{
-    m_email = newEmail;
-}
-
-void AccessAtProtocol::setHandle(const QString &newHandle)
-{
-    m_handle = newHandle;
-}
-
-void AccessAtProtocol::setDid(const QString &newDid)
-{
-    m_did = newDid;
-}
-
-QString AccessAtProtocol::refreshJwt() const
-{
-    return m_refreshJwt;
-}
-
-QString AccessAtProtocol::accessJwt() const
-{
-    return m_accessJwt;
-}
-
-QString AccessAtProtocol::email() const
-{
-    return m_email;
-}
-
-QString AccessAtProtocol::handle() const
-{
-    return m_handle;
-}
-
-QString AccessAtProtocol::did() const
-{
-    return m_did;
 }

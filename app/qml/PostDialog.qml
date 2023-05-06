@@ -17,6 +17,7 @@ Dialog {
     CreateRecord {
         id: createRecord
         onFinished: (success) => {
+                        console.log("CreateRecord::onFinished " + success)
                         if(success){
                             postText.clear()
                             root.close()
@@ -55,12 +56,12 @@ Dialog {
             text: qsTr("Post")
             onClicked: {
                 var row = accountCombo.currentIndex;
-                createRecord.service = root.accountModel.item(row, AccountListModel.ServiceRole)
-                createRecord.did = root.accountModel.item(row, AccountListModel.DidRole)
-                createRecord.handle = root.accountModel.item(row, AccountListModel.HandleRole)
-                createRecord.email = root.accountModel.item(row, AccountListModel.EmailRole)
-                createRecord.accessJwt = root.accountModel.item(row, AccountListModel.AccessJwtRole)
-                createRecord.refreshJwt = root.accountModel.item(row, AccountListModel.RefreshJwtRole)
+                createRecord.setAccount(root.accountModel.item(row, AccountListModel.ServiceRole),
+                                        root.accountModel.item(row, AccountListModel.DidRole),
+                                        root.accountModel.item(row, AccountListModel.HandleRole),
+                                        root.accountModel.item(row, AccountListModel.EmailRole),
+                                        root.accountModel.item(row, AccountListModel.AccessJwtRole),
+                                        root.accountModel.item(row, AccountListModel.RefreshJwtRole))
 
                 createRecord.post(postText.text)
             }

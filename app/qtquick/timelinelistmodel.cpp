@@ -136,7 +136,7 @@ void TimelineListModel::update(int row, TimelineListModelRoles role, const QVari
     return;
 }
 
-void TimelineListModel::updateAccount(const QString &service, const QString &did,
+void TimelineListModel::setAccount(const QString &service, const QString &did,
                                       const QString &handle, const QString &email,
                                       const QString &accessJwt, const QString &refreshJwt)
 {

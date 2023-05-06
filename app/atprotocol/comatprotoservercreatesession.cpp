@@ -34,11 +34,11 @@ void ComAtprotoServerCreateSession::parseJson(const QString reply_json)
 
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
     if (!json_doc.isEmpty()) {
-        setDid(json_doc.object().value("did").toString());
-        setHandle(json_doc.object().value("handle").toString());
-        setEmail(json_doc.object().value("email").toString());
-        setAccessJwt(json_doc.object().value("accessJwt").toString());
-        setRefreshJwt(json_doc.object().value("refreshJwt").toString());
+        setSession(json_doc.object().value("did").toString(),
+                   json_doc.object().value("handle").toString(),
+                   json_doc.object().value("email").toString(),
+                   json_doc.object().value("accessJwt").toString(),
+                   json_doc.object().value("refreshJwt").toString());
 
         if (!did().isEmpty() && !handle().isEmpty() && !email().isEmpty() && !accessJwt().isEmpty()
             && !refreshJwt().isEmpty()) {

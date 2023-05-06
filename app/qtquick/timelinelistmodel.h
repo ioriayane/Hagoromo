@@ -51,9 +51,9 @@ public:
     Q_INVOKABLE QVariant item(int row, TimelineListModel::TimelineListModelRoles role) const;
     Q_INVOKABLE void update(int row, TimelineListModel::TimelineListModelRoles role,
                             const QVariant &value);
-    Q_INVOKABLE void updateAccount(const QString &service, const QString &did,
-                                   const QString &handle, const QString &email,
-                                   const QString &accessJwt, const QString &refreshJwt);
+    Q_INVOKABLE void setAccount(const QString &service, const QString &did, const QString &handle,
+                                const QString &email, const QString &accessJwt,
+                                const QString &refreshJwt);
 
     Q_INVOKABLE void getLatest();
 

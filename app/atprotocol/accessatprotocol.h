@@ -41,15 +41,15 @@ public:
     QString service() const;
     void setService(const QString &newService);
     QString did() const;
-    void setDid(const QString &newDid);
+    //    void setDid(const QString &newDid);
     QString handle() const;
-    void setHandle(const QString &newHandle);
+    //    void setHandle(const QString &newHandle);
     QString email() const;
-    void setEmail(const QString &newEmail);
+    //    void setEmail(const QString &newEmail);
     QString accessJwt() const;
-    void setAccessJwt(const QString &newAccessJwt);
+    //    void setAccessJwt(const QString &newAccessJwt);
     QString refreshJwt() const;
-    void setRefreshJwt(const QString &newRefreshJwt);
+    //    void setRefreshJwt(const QString &newRefreshJwt);
 
 signals:
     void finished(bool success);
@@ -65,12 +65,7 @@ protected:
 private:
     QNetworkAccessManager m_manager;
 
-    QString m_service;
-    QString m_did;
-    QString m_handle;
-    QString m_email;
-    QString m_accessJwt;
-    QString m_refreshJwt;
+    AccountData m_account;
 };
 
 #endif // ACCESSATPROTOCOL_H
