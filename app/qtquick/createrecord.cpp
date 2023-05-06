@@ -22,8 +22,6 @@ void CreateRecord::post(const QString &text)
         emit finished(success);
         create_record->deleteLater();
     });
-    create_record->setService(m_account.service);
-    create_record->setSession(m_account.did, m_account.handle, m_account.email, m_account.accessJwt,
-                              m_account.refreshJwt);
+    create_record->setAccount(m_account);
     create_record->createRecord(text);
 }

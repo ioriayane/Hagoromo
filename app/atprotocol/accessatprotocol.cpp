@@ -18,6 +18,20 @@ AccessAtProtocol::AccessAtProtocol(QObject *parent) : QObject { parent }
     });
 }
 
+void AccessAtProtocol::setAccount(const AccountData &account)
+{
+    m_account.service = account.service;
+    m_account.identifier.clear();
+    m_account.password.clear();
+
+    m_account.did = account.did;
+    m_account.handle = account.handle;
+    m_account.email = account.email;
+    m_account.accessJwt = account.accessJwt;
+    m_account.refreshJwt = account.refreshJwt;
+    m_account.status = account.status;
+}
+
 void AccessAtProtocol::setSession(const QString &did, const QString &handle, const QString &email,
                                   const QString &accessJwt, const QString &refresh_jwt)
 {

@@ -137,8 +137,8 @@ void TimelineListModel::update(int row, TimelineListModelRoles role, const QVari
 }
 
 void TimelineListModel::setAccount(const QString &service, const QString &did,
-                                      const QString &handle, const QString &email,
-                                      const QString &accessJwt, const QString &refreshJwt)
+                                   const QString &handle, const QString &email,
+                                   const QString &accessJwt, const QString &refreshJwt)
 {
     m_account.service = service;
     m_account.did = did;
@@ -150,9 +150,7 @@ void TimelineListModel::setAccount(const QString &service, const QString &did,
 
 void TimelineListModel::getLatest()
 {
-    m_timeline.setService(m_account.service);
-    m_timeline.setSession(m_account.did, m_account.handle, m_account.email, m_account.accessJwt,
-                          m_account.refreshJwt);
+    m_timeline.setAccount(m_account);
     m_timeline.getTimeline();
 }
 

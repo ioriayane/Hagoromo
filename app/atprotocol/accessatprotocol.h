@@ -36,20 +36,16 @@ class AccessAtProtocol : public QObject
 public:
     explicit AccessAtProtocol(QObject *parent = nullptr);
 
+    void setAccount(const AccountData &account);
     void setSession(const QString &did, const QString &handle, const QString &email,
                     const QString &access_jwt, const QString &refresh_jwt);
     QString service() const;
     void setService(const QString &newService);
     QString did() const;
-    //    void setDid(const QString &newDid);
     QString handle() const;
-    //    void setHandle(const QString &newHandle);
     QString email() const;
-    //    void setEmail(const QString &newEmail);
     QString accessJwt() const;
-    //    void setAccessJwt(const QString &newAccessJwt);
     QString refreshJwt() const;
-    //    void setRefreshJwt(const QString &newRefreshJwt);
 
 signals:
     void finished(bool success);
