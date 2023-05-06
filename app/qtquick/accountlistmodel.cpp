@@ -119,7 +119,7 @@ void AccountListModel::updateAccount(const QString &service, const QString &iden
     }
     if (!updated) {
         // append
-        AccountItem item;
+        AccountData item;
         item.service = service;
         item.identifier = identifier;
         item.password = password;
@@ -143,7 +143,7 @@ void AccountListModel::save() const
     QSettings settings;
 
     QJsonArray account_array;
-    for (const AccountItem &item : m_accountList) {
+    for (const AccountData &item : m_accountList) {
         QJsonObject account_item;
         account_item["service"] = item.service;
         account_item["identifier"] = item.identifier;
@@ -175,7 +175,7 @@ void AccountListModel::load()
         if (doc.isArray()) {
             for (int i = 0; i < doc.array().count(); i++) {
                 if (doc.array().at(i).isObject()) {
-                    AccountItem item;
+                    AccountData item;
                     item.service = doc.array().at(i)["service"].toString();
                     item.identifier = doc.array().at(i)["identifier"].toString();
                     item.password = decrypt(doc.array().at(i)["password"].toString());
@@ -194,7 +194,7 @@ QVariant AccountListModel::account(int row) const
 {
     if (row < 0 || row >= m_accountList.count())
         return QVariant();
-    return QVariant::fromValue<AccountItem>(m_accountList.at(row));
+    return QVariant::fromValue<AccountData>(m_accountList.at(row));
 }
 
 QHash<int, QByteArray> AccountListModel::roleNames() const
@@ -296,7 +296,7 @@ void AccountListModel::updateSession(int row, const QString &service, const QStr
             emit accountAppended(row);
         }
         bool all_finished = true;
-        for (const AccountItem &item : qAsConst(m_accountList)) {
+        for (const AccountData &item : qAsConst(m_accountList)) {
             if (item.status == AccountStatus::Unknown) {
                 all_finished = false;
                 break;

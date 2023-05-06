@@ -18,7 +18,8 @@ ApplicationWindow {
         onAccepted: {
             accountListModel.updateAccount(session.service, session.identifier, session.password,
                                            session.did, session.handle, session.email,
-                                           session.accessJwt, session.refreshJwt)
+                                           session.accessJwt, session.refreshJwt,
+                                           session.authorized)
         }
     }
 

@@ -17,6 +17,7 @@ class CreateSession : public QObject
     Q_PROPERTY(QString email READ email WRITE setEmail NOTIFY emailChanged)
     Q_PROPERTY(QString accessJwt READ accessJwt WRITE setAccessJwt NOTIFY accessJwtChanged)
     Q_PROPERTY(QString refreshJwt READ refreshJwt WRITE setRefreshJwt NOTIFY refreshJwtChanged)
+    Q_PROPERTY(bool authorized READ authorized WRITE setAuthorized NOTIFY authorizedChanged)
 
     Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
 
@@ -41,6 +42,8 @@ public:
     void setAccessJwt(const QString &newAccessJwt);
     QString refreshJwt() const;
     void setRefreshJwt(const QString &newRefreshJwt);
+    bool authorized() const;
+    void setAuthorized(bool newAuthorized);
 
     bool running() const;
     void setRunning(bool newRunning);
@@ -55,11 +58,12 @@ signals:
     void emailChanged();
     void accessJwtChanged();
     void refreshJwtChanged();
+    void authorizedChanged();
 
     void runningChanged();
 
 private:
-    ComAtprotoServerCreateSession m_session;
+    AccountData m_session;
 
     QString m_identifier;
     QString m_password;

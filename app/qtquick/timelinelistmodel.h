@@ -68,7 +68,7 @@ private:
     QHash<QString, AppBskyFeedDefs::FeedViewPost> m_viewPostHash;
     AppBskyFeedGetTimeline m_timeline;
 
-    AccountItem m_account;
+    AccountData m_account;
 
     QString formatDateTime(const QString &value) const;
 };

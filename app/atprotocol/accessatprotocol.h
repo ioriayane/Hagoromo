@@ -6,6 +6,30 @@
 #include <QObject>
 #include <QUrl>
 
+enum class AccountStatus : int {
+    Unknown,
+    Unauthorized,
+    Authorized,
+};
+
+struct AccountData
+{
+    QString service;
+    QString identifier;
+    QString password;
+
+    QString did;
+    QString handle;
+    QString email;
+    QString accessJwt;
+    QString refreshJwt;
+
+    AccountStatus status = AccountStatus::Unknown;
+};
+
+Q_DECLARE_METATYPE(AccountStatus)
+Q_DECLARE_METATYPE(AccountData)
+
 class AccessAtProtocol : public QObject
 {
     Q_OBJECT

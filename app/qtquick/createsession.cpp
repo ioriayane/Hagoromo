@@ -2,36 +2,41 @@
 
 #include <QDebug>
 
-CreateSession::CreateSession(QObject *parent) : QObject { parent }, m_running(false)
-{
-    connect(&m_session, &ComAtprotoServerCreateSession::finished, [=](bool success) {
-        emit didChanged();
-        emit handleChanged();
-        emit emailChanged();
-        emit accessJwtChanged();
-        emit refreshJwtChanged();
-        emit finished(success);
-        setRunning(false);
-    });
-}
+CreateSession::CreateSession(QObject *parent) : QObject { parent }, m_running(false) { }
 
 void CreateSession::create()
 {
+    if (running()) {
+        qDebug() << "Already running 'ComAtprotoServerCreateSession()'.";
+    }
+
     setRunning(true);
-    m_session.setService(service());
-    m_session.create(identifier(), password());
+    ComAtprotoServerCreateSession *session = new ComAtprotoServerCreateSession();
+    connect(session, &ComAtprotoServerCreateSession::finished, [=](bool success) {
+        setDid(session->did());
+        setHandle(session->handle());
+        setEmail(session->email());
+        setAccessJwt(session->accessJwt());
+        setRefreshJwt(session->refreshJwt());
+        setAuthorized(success);
+        emit finished(success);
+        setRunning(false);
+        session->deleteLater();
+    });
+    session->setService(service());
+    session->create(identifier(), password());
 }
 
 QString CreateSession::service() const
 {
-    return m_session.service();
+    return m_session.service;
 }
 
 void CreateSession::setService(const QString &newService)
 {
-    if (m_session.service() == newService)
+    if (m_session.service == newService)
         return;
-    m_session.setService(newService);
+    m_session.service = newService;
     emit serviceChanged();
 }
 
@@ -63,67 +68,80 @@ void CreateSession::setPassword(const QString &newPassword)
 
 QString CreateSession::did() const
 {
-    return m_session.did();
+    return m_session.did;
 }
 
 void CreateSession::setDid(const QString &newDid)
 {
-    if (m_session.did() == newDid)
+    if (m_session.did == newDid)
         return;
-    m_session.setDid(newDid);
+    m_session.did = newDid;
     emit didChanged();
 }
 
 QString CreateSession::handle() const
 {
-    return m_session.handle();
+    return m_session.handle;
 }
 
 void CreateSession::setHandle(const QString &newHandle)
 {
-    if (m_session.handle() == newHandle)
+    if (m_session.handle == newHandle)
         return;
-    m_session.setHandle(newHandle);
+    m_session.handle = newHandle;
     emit handleChanged();
 }
 
 QString CreateSession::email() const
 {
-    return m_session.email();
+    return m_session.email;
 }
 
 void CreateSession::setEmail(const QString &newEmail)
 {
-    if (m_session.email() == newEmail)
+    if (m_session.email == newEmail)
         return;
-    m_session.setEmail(newEmail);
+    m_session.email = newEmail;
     emit emailChanged();
 }
 
 QString CreateSession::accessJwt() const
 {
-    return m_session.accessJwt();
+    return m_session.accessJwt;
 }
 
 void CreateSession::setAccessJwt(const QString &newAccessJwt)
 {
-    if (m_session.accessJwt() == newAccessJwt)
+    if (m_session.accessJwt == newAccessJwt)
         return;
-    m_session.setAccessJwt(newAccessJwt);
+    m_session.accessJwt = newAccessJwt;
     emit accessJwtChanged();
 }
 
 QString CreateSession::refreshJwt() const
 {
-    return m_session.refreshJwt();
+    return m_session.refreshJwt;
 }
 
 void CreateSession::setRefreshJwt(const QString &newRefreshJwt)
 {
-    if (m_session.refreshJwt() == newRefreshJwt)
+    if (m_session.refreshJwt == newRefreshJwt)
         return;
-    m_session.setRefreshJwt(newRefreshJwt);
+    m_session.refreshJwt = newRefreshJwt;
     emit refreshJwtChanged();
+}
+
+bool CreateSession::authorized() const
+{
+    return (m_session.status == AccountStatus::Authorized);
+}
+
+void CreateSession::setAuthorized(bool newAuthorized)
+{
+    if ((m_session.status == AccountStatus::Authorized) == newAuthorized)
+        return;
+    m_session.status = newAuthorized ? AccountStatus::Authorized : AccountStatus::Unauthorized;
+    emit authorizedChanged();
 }
 
 bool CreateSession::running() const

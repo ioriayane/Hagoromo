@@ -1,30 +1,10 @@
 #ifndef ACCOUNTLISTMODEL_H
 #define ACCOUNTLISTMODEL_H
 
+#include "../atprotocol/accessatprotocol.h"
+
 #include <QAbstractListModel>
 #include <QObject>
-
-enum class AccountStatus : int {
-    Unknown,
-    Unauthorized,
-    Authorized,
-};
-
-struct AccountItem
-{
-    QString service;
-    QString identifier;
-    QString password;
-
-    QString did;
-    QString handle;
-    QString email;
-    QString accessJwt;
-    QString refreshJwt;
-
-    AccountStatus status = AccountStatus::Unknown;
-};
-Q_DECLARE_METATYPE(AccountItem)
 
 class AccountListModel : public QAbstractListModel
 {
@@ -73,7 +53,7 @@ protected:
     QHash<int, QByteArray> roleNames() const;
 
 private:
-    QList<AccountItem> m_accountList;
+    QList<AccountData> m_accountList;
     QVariant m_accountTemp;
 
     QByteArray m_encryptKey;
