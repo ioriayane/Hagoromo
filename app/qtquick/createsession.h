@@ -12,11 +12,11 @@ class CreateSession : public QObject
     Q_PROPERTY(QString identifier READ identifier WRITE setIdentifier NOTIFY identifierChanged)
     Q_PROPERTY(QString password READ password WRITE setPassword NOTIFY passwordChanged)
 
-    Q_PROPERTY(QString did READ did NOTIFY didChanged)
-    Q_PROPERTY(QString handle READ handle NOTIFY handleChanged)
-    Q_PROPERTY(QString email READ email NOTIFY emailChanged)
-    Q_PROPERTY(QString accessJwt READ accessJwt NOTIFY accessJwtChanged)
-    Q_PROPERTY(QString refreshJwt READ refreshJwt NOTIFY refreshJwtChanged)
+    Q_PROPERTY(QString did READ did WRITE setDid NOTIFY didChanged)
+    Q_PROPERTY(QString handle READ handle WRITE setHandle NOTIFY handleChanged)
+    Q_PROPERTY(QString email READ email WRITE setEmail NOTIFY emailChanged)
+    Q_PROPERTY(QString accessJwt READ accessJwt WRITE setAccessJwt NOTIFY accessJwtChanged)
+    Q_PROPERTY(QString refreshJwt READ refreshJwt WRITE setRefreshJwt NOTIFY refreshJwtChanged)
 
     Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
 
@@ -32,10 +32,15 @@ public:
     QString password() const;
     void setPassword(const QString &newPassword);
     QString did() const;
+    void setDid(const QString &newDid);
     QString handle() const;
+    void setHandle(const QString &newHandle);
     QString email() const;
+    void setEmail(const QString &newEmail);
     QString accessJwt() const;
+    void setAccessJwt(const QString &newAccessJwt);
     QString refreshJwt() const;
+    void setRefreshJwt(const QString &newRefreshJwt);
 
     bool running() const;
     void setRunning(bool newRunning);

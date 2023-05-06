@@ -17,10 +17,15 @@ public:
     QString service() const;
     void setService(const QString &newService);
     QString did() const;
+    void setDid(const QString &newDid);
     QString handle() const;
+    void setHandle(const QString &newHandle);
     QString email() const;
+    void setEmail(const QString &newEmail);
     QString accessJwt() const;
+    void setAccessJwt(const QString &newAccessJwt);
     QString refreshJwt() const;
+    void setRefreshJwt(const QString &newRefreshJwt);
 
 signals:
     void finished(bool success);
@@ -29,13 +34,7 @@ public slots:
 
 protected:
     void get(const QString &endpoint, const QUrlQuery &query);
-    void post(const QString &endpoint, const QByteArray &json);
-
-    void setDid(const QString &newDid);
-    void setHandle(const QString &newHandle);
-    void setEmail(const QString &newEmail);
-    void setAccessJwt(const QString &newAccessJwt);
-    void setRefreshJwt(const QString &newRefreshJwt);
+    void post(const QString &endpoint, const QByteArray &json, const bool with_auth_header = true);
 
     virtual void parseJson(const QString reply_json) = 0;
 

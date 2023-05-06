@@ -5,22 +5,26 @@ TARGET = Hagoromo
 SOURCES += \
         atprotocol/accessatprotocol.cpp \
         atprotocol/appbskyfeedgettimeline.cpp \
+        atprotocol/comatprotorepocreaterecord.cpp \
         atprotocol/comatprotoservercreatesession.cpp \
         atprotocol/lexicons_func.cpp \
         atprotocol/lexicons_func_unknown.cpp \
         main.cpp \
         qtquick/accountlistmodel.cpp \
+        qtquick/createrecord.cpp \
         qtquick/createsession.cpp \
         qtquick/timelinelistmodel.cpp
 
 HEADERS += \
     atprotocol/accessatprotocol.h \
     atprotocol/appbskyfeedgettimeline.h \
+    atprotocol/comatprotorepocreaterecord.h \
     atprotocol/comatprotoservercreatesession.h \
     atprotocol/lexicons.h \
     atprotocol/lexicons_func.h \
     atprotocol/lexicons_func_unknown.h \
     qtquick/accountlistmodel.h \
+    qtquick/createrecord.h \
     qtquick/createsession.h \
     qtquick/timelinelistmodel.h
 
@@ -29,6 +33,7 @@ QML_FILES = \
     qml/LoginDialog.qml \
     qml/TimelineView.qml \
     qml/IconButton.qml \
+    qml/PostDialog.qml \
     qml/parts/ImagePreview.qml \
     qml/parts/Author.qml \
     qml/parts/ReactionAuthor.qml

@@ -48,12 +48,17 @@ void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query)
     m_manager.get(request);
 }
 
-void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json)
+void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
+                            const bool with_auth_header)
 {
     qDebug() << "AccessAtProtocol::post()" << this << endpoint << json;
 
     QNetworkRequest request(QUrl(QString("%1/%2").arg(service(), endpoint)));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    if (with_auth_header) {
+        request.setRawHeader(QByteArray("Authorization"),
+                             QByteArray("Bearer ") + accessJwt().toUtf8());
+    }
 
     m_manager.post(request, json);
 }

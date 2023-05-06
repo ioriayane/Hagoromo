@@ -22,6 +22,11 @@ ApplicationWindow {
         }
     }
 
+    PostDialog {
+        id: postDialog
+        accountModel: accountListModel
+    }
+
     AccountListModel {
         id: accountListModel
         onAccountAppended: (row) => {
@@ -72,6 +77,7 @@ ApplicationWindow {
                     // display: AbstractButton.TextBesideIcon
                     icon.source: "images/edit.png"
                     text: qsTr("New Post")
+                    onClicked: postDialog.open()
                 }
 
                 Item {

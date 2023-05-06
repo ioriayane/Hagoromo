@@ -4,8 +4,6 @@
 
 CreateSession::CreateSession(QObject *parent) : QObject { parent }, m_running(false)
 {
-    //    connect(&m_session, &ComAtprotoServerCreateSession::finished, this,
-    //    &CreateSession::finished);
     connect(&m_session, &ComAtprotoServerCreateSession::finished, [=](bool success) {
         emit didChanged();
         emit handleChanged();
@@ -68,9 +66,25 @@ QString CreateSession::did() const
     return m_session.did();
 }
 
+void CreateSession::setDid(const QString &newDid)
+{
+    if (m_session.did() == newDid)
+        return;
+    m_session.setDid(newDid);
+    emit didChanged();
+}
+
 QString CreateSession::handle() const
 {
     return m_session.handle();
+}
+
+void CreateSession::setHandle(const QString &newHandle)
+{
+    if (m_session.handle() == newHandle)
+        return;
+    m_session.setHandle(newHandle);
+    emit handleChanged();
 }
 
 QString CreateSession::email() const
@@ -78,14 +92,38 @@ QString CreateSession::email() const
     return m_session.email();
 }
 
+void CreateSession::setEmail(const QString &newEmail)
+{
+    if (m_session.email() == newEmail)
+        return;
+    m_session.setEmail(newEmail);
+    emit emailChanged();
+}
+
 QString CreateSession::accessJwt() const
 {
     return m_session.accessJwt();
 }
 
+void CreateSession::setAccessJwt(const QString &newAccessJwt)
+{
+    if (m_session.accessJwt() == newAccessJwt)
+        return;
+    m_session.setAccessJwt(newAccessJwt);
+    emit accessJwtChanged();
+}
+
 QString CreateSession::refreshJwt() const
 {
     return m_session.refreshJwt();
+}
+
+void CreateSession::setRefreshJwt(const QString &newRefreshJwt)
+{
+    if (m_session.refreshJwt() == newRefreshJwt)
+        return;
+    m_session.setRefreshJwt(newRefreshJwt);
+    emit refreshJwtChanged();
 }
 
 bool CreateSession::running() const

@@ -2,9 +2,10 @@
 #include <QQmlApplicationEngine>
 #include <QtQuickControls2/QQuickStyle>
 
-#include <qtquick/createsession.h>
-#include <qtquick/accountlistmodel.h>
-#include <qtquick/timelinelistmodel.h>
+#include "qtquick/createsession.h"
+#include "qtquick/createrecord.h"
+#include "qtquick/accountlistmodel.h"
+#include "qtquick/timelinelistmodel.h"
 
 int main(int argc, char *argv[])
 {
@@ -21,6 +22,7 @@ int main(int argc, char *argv[])
     app.setApplicationName(QStringLiteral("Hagoromo"));
 
     qmlRegisterType<CreateSession>("tech.relog.hagoromo.createsession", 1, 0, "CreateSession");
+    qmlRegisterType<CreateRecord>("tech.relog.hagoromo.createrecord", 1, 0, "CreateRecord");
     qmlRegisterType<AccountListModel>("tech.relog.hagoromo.accountlistmodel", 1, 0,
                                       "AccountListModel");
     qmlRegisterType<TimelineListModel>("tech.relog.hagoromo.timelinelistmodel", 1, 0,

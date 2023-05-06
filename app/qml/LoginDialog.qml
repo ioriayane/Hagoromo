@@ -38,45 +38,30 @@ Dialog {
         Label {
             text: "Service"
         }
-        TextInput {
+        TextField {
             id: serviceTextInput
             Layout.minimumWidth: root.parentWidth * 0.5
             enabled: !session.running
-            Label {
-                anchors.fill: parent
-                visible: parent.text.length === 0
-                opacity: 0.5
-                text: "https://bsky.social etc..."
-            }
+            placeholderText: "https://bsky.social etc..."
         }
         Label {
             text: "Identifier"
         }
-        TextInput {
+        TextField {
             id: idTextInput
             Layout.fillWidth: true
             enabled: !session.running
-            Label {
-                anchors.fill: parent
-                visible: parent.text.length === 0
-                opacity: 0.5
-                text: "Handle or Email address or DID"
-            }
+            placeholderText: "Handle or Email address or DID"
         }
         Label {
             text: "Password"
         }
-        TextInput {
+        TextField {
             id: passwordTextInput
             Layout.fillWidth: true
             enabled: !session.running
             echoMode: TextInput.Password
-            Label {
-                anchors.fill: parent
-                visible: parent.text.length === 0
-                opacity: 0.5
-                text: "The use of App Password is recommended."
-            }
+            placeholderText: "The use of App Password is recommended."
         }
 
         Button {

@@ -25,7 +25,7 @@ void ComAtprotoServerCreateSession::create(const QString &id, const QString &pas
     QJsonDocument json_doc(json_obj);
 
     post(QStringLiteral("xrpc/com.atproto.server.createSession"),
-         json_doc.toJson(QJsonDocument::Compact));
+         json_doc.toJson(QJsonDocument::Compact), false);
 }
 
 void ComAtprotoServerCreateSession::parseJson(const QString reply_json)
