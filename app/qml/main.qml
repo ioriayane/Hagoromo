@@ -38,26 +38,36 @@ ApplicationWindow {
             // すべてのアカウント情報の認証が終わったのでタブを復元（成功しているとは限らない）
             console.log("allFinished()" + accountListModel.rowCount())
             for(var i=0; i<account2tabModel.count; i++){
-                repeater.append(account2tabModel.get(i).account_index, account2tabModel.get(i).component_type)
+                repeater.append(account2tabModel.get(i).key,
+                                account2tabModel.get(i).account_index,
+                                account2tabModel.get(i).component_type)
             }
         }
     }
 
+    //タブの情報管理
     ListModel {
         id: account2tabModel
         ListElement {
+            key: "abcdef"
             account_index: 1
-            component_type: "following"
+            component_type: "timeline"
         }
         ListElement {
+            key: "ghijkl"
             account_index: 0
-            component_type: "reply"
+            component_type: "listNotification"
         }
     }
 
     Component {
         id: timelineComponent
         TimelineView {
+        }
+    }
+    Component {
+        id: listNotificationComponent
+        ListNotificationView {
         }
     }
 
@@ -118,6 +128,7 @@ ApplicationWindow {
             ScrollBar.vertical.interactive: false
             ScrollBar.vertical.snapMode: ScrollBar.SnapAlways
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOn
+            clip: true
 
             property int childHeight: scrollView.height - scrollView.ScrollBar.horizontal.height
 
@@ -127,13 +138,21 @@ ApplicationWindow {
                     id: repeater
                     model: ListModel {}
 
-                    function append(account_index, component_type){
+                    function append(key, account_index, component_type){
                         // accountListModelで管理するアカウントのindexと表示に使うコンポを指定
                         // ①ここでLoaderを追加する
-                        repeater.model.append({
-                                                  "account_index": account_index,
-                                                  "component": timelineComponent
-                                              })
+                        if(component_type === "timeline"){
+                            repeater.model.append({
+                                                      "account_index": account_index,
+                                                      "component": timelineComponent
+                                                  })
+                        }else if(component_type === "listNotification"){
+                            repeater.model.append({
+                                                      "account_index": account_index,
+                                                      "component": listNotificationComponent
+                                                  })
+                        }
+
                     }
                     onItemAdded: (index, item) => {
                                      // ②Repeaterに追加されたLoaderにTLを表示するComponentを追加する

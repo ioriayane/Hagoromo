@@ -8,7 +8,7 @@ ListNotificationModel::ListNotificationModel(QObject *parent) : QAbstractListMod
 int ListNotificationModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
-    return 0;
+    return m_cidList.count();
 }
 
 QVariant ListNotificationModel::data(const QModelIndex &index, int role) const
@@ -18,6 +18,14 @@ QVariant ListNotificationModel::data(const QModelIndex &index, int role) const
 
 QVariant ListNotificationModel::item(int row, ListNotificationModelRoles role) const
 {
+    if (row < 0 || row >= m_cidList.count())
+        return QVariant();
+
+    const auto &current = m_notificationHash.value(m_cidList.at(row));
+
+    if (role == DisplayNameRole)
+        return current.author.displayName;
+
     return QVariant();
 }
 
@@ -38,6 +46,15 @@ void ListNotificationModel::getLatest()
     AppBskyNotificationListNotifications *notification = new AppBskyNotificationListNotifications();
     connect(notification, &AppBskyNotificationListNotifications::finished, [=](bool success) {
         //
+        if (success) {
+            beginInsertRows(QModelIndex(), 0, notification->notificationList()->count() - 1);
+            for (const auto &item : *notification->notificationList()) {
+                m_cidList.append(item.cid);
+                m_notificationHash[item.cid] = item;
+            }
+            endInsertRows();
+        }
+        notification->deleteLater();
     });
     notification->setAccount(m_account);
     notification->listNotifications();

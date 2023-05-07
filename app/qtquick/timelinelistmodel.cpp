@@ -17,12 +17,14 @@ TimelineListModel::TimelineListModel(QObject *parent) : QAbstractListModel { par
         //            i->post
         //            ++i;
         //        }
-        beginInsertRows(QModelIndex(), 0, m_timeline.feedList()->count() - 1);
-        for (const AppBskyFeedDefs::FeedViewPost &item : *m_timeline.feedList()) {
-            m_cidList.append(item.post.cid);
-            m_viewPostHash[item.post.cid] = item;
+        if (success) {
+            beginInsertRows(QModelIndex(), 0, m_timeline.feedList()->count() - 1);
+            for (const AppBskyFeedDefs::FeedViewPost &item : *m_timeline.feedList()) {
+                m_cidList.append(item.post.cid);
+                m_viewPostHash[item.post.cid] = item;
+            }
+            endInsertRows();
         }
-        endInsertRows();
     });
 }
 

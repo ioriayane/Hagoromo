@@ -36,6 +36,7 @@ QML_FILES = \
     qml/main.qml \
     qml/LoginDialog.qml \
     qml/TimelineView.qml \
+    qml/ListNotificationView.qml \
     qml/IconButton.qml \
     qml/PostDialog.qml \
     qml/parts/ImagePreview.qml \
@@ -89,3 +90,4 @@ win32:{
     QMAKE_POST_LINK += nmake -f $(MAKEFILE) install
 }
 unix: LIBS += -lssl -lcrypto
+

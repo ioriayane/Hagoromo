@@ -48,6 +48,8 @@ void AppBskyFeedGetTimeline::parseJson(const QString reply_json)
 
             m_feedList.append(feed_item);
         }
+
+        success = true;
     }
 
     emit finished(success);

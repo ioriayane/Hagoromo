@@ -1,7 +1,7 @@
 #ifndef LISTNOTIFICATIONMODEL_H
 #define LISTNOTIFICATIONMODEL_H
 
-//#include "../atprotocol/lexicons.h"
+#include "../atprotocol/lexicons.h"
 #include "../atprotocol/accessatprotocol.h"
 
 #include <QAbstractListModel>
@@ -34,6 +34,11 @@ public:
 
 protected:
     QHash<int, QByteArray> roleNames() const;
+
+private:
+    QList<QString> m_cidList; // これで取得したポストの順番を管理して実態はm_notificationHashで管理
+    QHash<QString, AtProtocolType::AppBskyNotificationListNotifications::Notification>
+            m_notificationHash;
 
     AtProtocolInterface::AccountData m_account;
 };

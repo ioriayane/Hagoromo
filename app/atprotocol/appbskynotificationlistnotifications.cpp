@@ -22,6 +22,12 @@ void AppBskyNotificationListNotifications::listNotifications()
     get(QStringLiteral("xrpc/app.bsky.notification.listNotifications"), query);
 }
 
+const QList<AtProtocolType::AppBskyNotificationListNotifications::Notification> *
+AppBskyNotificationListNotifications::notificationList() const
+{
+    return &m_notificationList;
+}
+
 void AppBskyNotificationListNotifications::parseJson(const QString reply_json)
 {
     bool success = false;
@@ -33,12 +39,14 @@ void AppBskyNotificationListNotifications::parseJson(const QString reply_json)
         qDebug() << "Not found 'notifications'.";
     } else {
         for (const auto &obj : json_doc.object().value("notifications").toArray()) {
-            //            AppBskyFeedDefs::FeedViewPost feed_item;
+            AtProtocolType::AppBskyNotificationListNotifications::Notification notification;
 
-            //            AppBskyFeedDefs::copyFeedViewPost(obj.toObject(), feed_item);
-
-            //            m_feedList.append(feed_item);
+            AtProtocolType::AppBskyNotificationListNotifications::copyNotification(obj.toObject(),
+                                                                                   notification);
+            m_notificationList.append(notification);
         }
+
+        success = true;
     }
 
     emit finished(success);
