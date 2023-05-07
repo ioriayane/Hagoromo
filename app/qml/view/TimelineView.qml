@@ -38,7 +38,10 @@ ScrollView {
 
         delegate: Frame {
             id: postFrame
-            padding: 10
+            topPadding: 10
+            leftPadding: 10
+            rightPadding: 10
+            bottomPadding: 0
 
             ColumnLayout {
                 ReactionAuthor {
@@ -130,15 +133,19 @@ ScrollView {
                         }
 
                         RowLayout {
+                            spacing: 10
                             IconButton {
+                                Layout.preferredHeight: 30
                                 iconSource: "../images/reply.png"
                                 iconText: model.replyCount
                             }
                             IconButton {
+                                Layout.preferredHeight: 30
                                 iconSource: "../images/repost.png"
                                 iconText: model.repostCount
                             }
                             IconButton {
+                                Layout.preferredHeight: 30
                                 iconSource: "../images/like.png"
                                 iconText: model.likeCount
                             }
@@ -147,6 +154,7 @@ ScrollView {
                                 height: 1
                             }
                             IconButton {
+                                Layout.preferredHeight: 30
                                 iconSource: "../images/more.png"
                             }
                         }

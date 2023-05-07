@@ -16,16 +16,6 @@ ApplicationWindow {
 
     Material.theme: Material.Dark
 
-    LoginDialog {
-        id: login
-        onAccepted: {
-            accountListModel.updateAccount(session.service, session.identifier, session.password,
-                                           session.did, session.handle, session.email,
-                                           session.accessJwt, session.refreshJwt,
-                                           session.authorized)
-        }
-    }
-
     PostDialog {
         id: postDialog
         accountModel: accountListModel
@@ -44,6 +34,11 @@ ApplicationWindow {
             columnManageModel.appendColumn(selectedAccountIndex, component_type)
             columnManageModel.reflect()
         }
+    }
+
+    AccountDialog {
+        id: accountDialog
+        accountModel: accountListModel
     }
 
     AccountListModel {
@@ -143,6 +138,16 @@ ApplicationWindow {
                     text: qsTr("Add column")
 
                     onClicked: addColumnDialog.open()
+                }
+
+                Button {
+                    Layout.fillWidth: true
+                    display: AbstractButton.IconOnly
+                    // display: AbstractButton.TextBesideIcon
+                    icon.source: "images/account.png"
+                    text: qsTr("Account")
+
+                    onClicked: accountDialog.open()
                 }
 
                 Button {

@@ -8,21 +8,20 @@ Button {
     id: button
 
     Layout.preferredWidth: buttonContextLayout.width
-    Layout.preferredHeight: buttonContextLayout.height
 
     property string iconSource: ""
     property string iconText: ""
 
     RowLayout {
         id: buttonContextLayout
+        anchors.centerIn: parent
+
         spacing: 0
         Image {
-            Layout.preferredWidth: 16
-            Layout.preferredHeight: 16
+            Layout.preferredWidth: button.height * 0.5
+            Layout.preferredHeight: button.height * 0.5
             Layout.leftMargin: 5
             Layout.rightMargin: 5
-            Layout.topMargin: 2
-            Layout.bottomMargin: 2
             source: button.iconSource
             layer.enabled: true
             layer.effect: ColorOverlay {
@@ -32,8 +31,6 @@ Button {
         Label {
             Layout.leftMargin: 0
             Layout.rightMargin: 5
-            Layout.topMargin: 2
-            Layout.bottomMargin: 2
             visible: button.iconText.length > 0
             text: button.iconText
         }

@@ -13,6 +13,9 @@ Dialog {
     property int parentWidth: parent.width
 
     property alias session: session
+    property alias serviceText: serviceTextInput.text
+    property alias idText: idTextInput.text
+    property alias passwordText: passwordTextInput.text
 
     CreateSession {
         id: session
@@ -40,7 +43,7 @@ Dialog {
         }
         TextField {
             id: serviceTextInput
-            Layout.minimumWidth: root.parentWidth * 0.5
+            Layout.minimumWidth: root.parentWidth
             enabled: !session.running
             placeholderText: "https://bsky.social etc..."
         }
@@ -65,7 +68,13 @@ Dialog {
         }
 
         Button {
-            enabled: !session.running
+            Layout.alignment: Qt.AlignLeft
+            text: qsTr("Cancel")
+            onClicked: root.close()
+        }
+        Button {
+            Layout.alignment: Qt.AlignRight
+            enabled: !(session.running || serviceTextInput.text.length == 0 || idTextInput.text.length == 0 || passwordTextInput.text.length == 0)
             text: qsTr("Login")
             onClicked: session.create()
         }

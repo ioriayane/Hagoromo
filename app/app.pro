@@ -35,6 +35,7 @@ HEADERS += \
 QML_FILES = \
     qml/main.qml \
     qml/controls/IconButton.qml \
+    qml/dialogs/AccountDialog.qml \
     qml/dialogs/AddColumnDialog.qml \
     qml/dialogs/LoginDialog.qml \
     qml/dialogs/PostDialog.qml \
@@ -45,10 +46,12 @@ QML_FILES = \
     qml/view/NotificationListView.qml
 
 IMAGE_FILES += \
+    qml/images/account.png \
     qml/images/add_user.png \
     qml/images/arrow_forward.png \
     qml/images/check.png \
     qml/images/column.png \
+    qml/images/delete.png \
     qml/images/edit.png \
     qml/images/expand_less.png \
     qml/images/expand_more.png \
