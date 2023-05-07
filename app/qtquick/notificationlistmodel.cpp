@@ -25,6 +25,17 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
 
     if (role == DisplayNameRole)
         return current.author.displayName;
+    else if (role == HandleRole)
+        return current.author.handle;
+    else if (role == AvatarRole)
+        return current.author.avatar;
+    else if (role == IndexedAtRole)
+        return QDateTime::fromString(current.indexedAt, Qt::ISODateWithMs)
+                .toLocalTime()
+                .toString("MM/dd hh:mm");
+
+    else if (role == ReasonRole)
+        return current.reason;
 
     return QVariant();
 }
@@ -53,6 +64,9 @@ void NotificationListModel::getLatest()
                 m_notificationHash[item.cid] = item;
             }
             endInsertRows();
+
+            // likeとかの対象ポストの情報は入っていないので、それぞれ取得する必要あり
+            // 対象ポスト情報は別途cidをキーにして保存する（2重取得と管理を避ける）
         }
         notification->deleteLater();
     });
@@ -65,6 +79,11 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     QHash<int, QByteArray> roles;
 
     roles[DisplayNameRole] = "displayName";
+    roles[HandleRole] = "handle";
+    roles[AvatarRole] = "avatar";
+    roles[IndexedAtRole] = "indexedAt";
+
+    roles[ReasonRole] = "reason";
 
     return roles;
 }

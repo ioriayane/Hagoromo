@@ -17,6 +17,11 @@ public:
     enum NotificationListModelRoles {
         ModelData = Qt::UserRole + 1,
         DisplayNameRole,
+        HandleRole,
+        AvatarRole,
+        IndexedAtRole,
+
+        ReasonRole,
     };
     Q_ENUM(NotificationListModelRoles)
 

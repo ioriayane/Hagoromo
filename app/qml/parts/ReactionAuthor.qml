@@ -10,7 +10,7 @@ RowLayout {
     property alias source: iconImage.source
     property alias displayName: displayNameLabel.text
     property alias handle: handleLabel.text
-    property color color: Material.color(Material.White)
+    property color color: Material.color(Material.Grey)
 
     Image {
         id: iconImage
