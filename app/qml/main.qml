@@ -5,6 +5,9 @@ import QtQuick.Controls.Material 2.15
 
 import tech.relog.hagoromo.accountlistmodel 1.0
 
+import "dialogs"
+import "view"
+
 ApplicationWindow {
     width: 800
     height: 480
@@ -141,18 +144,29 @@ ApplicationWindow {
                     function append(key, account_index, component_type){
                         // accountListModelで管理するアカウントのindexと表示に使うコンポを指定
                         // ①ここでLoaderを追加する
-                        if(component_type === "timeline"){
+                        var exist = false
+                        for(var i=0; i<repeater.model.count; i++){
+                            if(repeater.model.get(i).key === key){
+                                exit = true
+                                break
+                            }
+                        }
+
+                        if(exist){
+                            // 既にある
+                        }else if(component_type === "timeline"){
                             repeater.model.append({
+                                                      "key": key,
                                                       "account_index": account_index,
                                                       "component": timelineComponent
                                                   })
                         }else if(component_type === "listNotification"){
                             repeater.model.append({
+                                                      "key": key,
                                                       "account_index": account_index,
                                                       "component": listNotificationComponent
                                                   })
                         }
-
                     }
                     onItemAdded: (index, item) => {
                                      // ②Repeaterに追加されたLoaderにTLを表示するComponentを追加する

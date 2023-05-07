@@ -5,7 +5,8 @@ import QtQuick.Controls.Material 2.15
 
 import tech.relog.hagoromo.timelinelistmodel 1.0
 
-import "parts"
+import "../parts"
+import "../controls"
 
 ScrollView {
     ScrollBar.vertical.policy: ScrollBar.AlwaysOn
@@ -25,14 +26,14 @@ ScrollView {
             width: timelineListView.width
             height: 24
             display: AbstractButton.IconOnly
-            icon.source: "images/expand_less.png"
+            icon.source: "../images/expand_less.png"
             onClicked: timelineListModel.getLatest()
         }
         footer: Button {
             width: timelineListView.width
             height: 24
             display: AbstractButton.IconOnly
-            icon.source: "images/expand_more.png"
+            icon.source: "../images/expand_more.png"
         }
 
         delegate: Frame {
@@ -42,14 +43,14 @@ ScrollView {
             ColumnLayout {
                 ReactionAuthor {
                     visible: model.hasParent
-                    source: "images/reply.png"
+                    source: "../images/reply.png"
                     displayName: model.parentDisplayName
                     handle: model.parentHandle
                     color: Material.color(Material.Blue)
                 }
                 ReactionAuthor {
                     visible: model.isRepostedBy
-                    source: "images/repost.png"
+                    source: "../images/repost.png"
                     displayName: model.repostedByDisplayName
                     handle: model.repostedByHandle
                     color: Material.color(Material.Green)
@@ -130,15 +131,15 @@ ScrollView {
 
                         RowLayout {
                             IconButton {
-                                iconSource: "images/reply.png"
+                                iconSource: "../images/reply.png"
                                 iconText: model.replyCount
                             }
                             IconButton {
-                                iconSource: "images/repost.png"
+                                iconSource: "../images/repost.png"
                                 iconText: model.repostCount
                             }
                             IconButton {
-                                iconSource: "images/like.png"
+                                iconSource: "../images/like.png"
                                 iconText: model.likeCount
                             }
                             Item {
@@ -146,7 +147,7 @@ ScrollView {
                                 height: 1
                             }
                             IconButton {
-                                iconSource: "images/more.png"
+                                iconSource: "../images/more.png"
                             }
                         }
                     }

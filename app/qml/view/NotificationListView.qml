@@ -5,7 +5,7 @@ import QtQuick.Controls.Material 2.15
 
 import tech.relog.hagoromo.notificationlistmodel 1.0
 
-import "parts"
+import "../parts"
 
 ScrollView {
     ScrollBar.vertical.policy: ScrollBar.AlwaysOn
@@ -25,14 +25,14 @@ ScrollView {
             width: rootListView.width
             height: 24
             display: AbstractButton.IconOnly
-            icon.source: "images/expand_less.png"
+            icon.source: "../images/expand_less.png"
             onClicked: listNotificationListModel.getLatest()
         }
         footer: Button {
             width: rootListView.width
             height: 24
             display: AbstractButton.IconOnly
-            icon.source: "images/expand_more.png"
+            icon.source: "../images/expand_more.png"
         }
 
         delegate: Frame {

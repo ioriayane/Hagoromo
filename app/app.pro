@@ -34,14 +34,14 @@ HEADERS += \
 
 QML_FILES = \
     qml/main.qml \
-    qml/LoginDialog.qml \
-    qml/TimelineView.qml \
-    qml/NotificationListView.qml \
-    qml/IconButton.qml \
-    qml/PostDialog.qml \
+    qml/controls/IconButton.qml \
+    qml/dialogs/LoginDialog.qml \
+    qml/dialogs/PostDialog.qml \
     qml/parts/ImagePreview.qml \
     qml/parts/Author.qml \
-    qml/parts/ReactionAuthor.qml
+    qml/parts/ReactionAuthor.qml \
+    qml/view/TimelineView.qml \
+    qml/view/NotificationListView.qml
 
 IMAGE_FILES += \
     qml/images/add_user.png \
