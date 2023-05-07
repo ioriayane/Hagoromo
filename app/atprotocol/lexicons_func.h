@@ -14,7 +14,6 @@
 #include <QVariant>
 
 namespace AtProtocolType {
-
 namespace AppBskyActorDefs {
 void copyViewerState(const QJsonObject &src, AppBskyActorDefs::ViewerState &dest);
 void copyProfileViewBasic(const QJsonObject &src, AppBskyActorDefs::ProfileViewBasic &dest);

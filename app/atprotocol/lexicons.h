@@ -9,7 +9,6 @@
 #include <QVariant>
 
 namespace AtProtocolType {
-
 namespace AppBskyEmbedRecord {
 struct View;
 }
@@ -745,8 +744,8 @@ struct Info
     QString message; //
 };
 }
-}
 
+}
 Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedPost::Record)
 
 #endif // LEXICONS_H

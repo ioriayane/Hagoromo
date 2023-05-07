@@ -8,6 +8,7 @@
 #include <QString>
 #include <QVariant>
 
+namespace AtProtocolType {
 {% for pre_define in pre_defines -%}
 namespace {{ pre_define.namespace }} {
 {% for struct in pre_define.structs -%}
@@ -22,9 +23,9 @@ namespace {{ define.namespace }} {
 {% endfor -%}
 }
 {% endfor %}
-
+}
 {% for metatype in metatypes -%}
-Q_DECLARE_METATYPE({{ metatype.name }})
+Q_DECLARE_METATYPE(AtProtocolType::{{ metatype.name }})
 {%- endfor %}
 
 #endif // LEXICONS_H

@@ -13,6 +13,7 @@
 #include <QString>
 #include <QVariant>
 
+namespace AtProtocolType {
 {% for function in functions -%}
 namespace {{ function.namespace }} {
 {% for func_line in function.func_lines -%}
@@ -20,5 +21,6 @@ namespace {{ function.namespace }} {
 {% endfor -%}
 }
 {% endfor %}
+}
 
 #endif // LEXICONS_FUNC_H
