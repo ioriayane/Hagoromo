@@ -8,6 +8,7 @@
 #include <QString>
 #include <QVariant>
 
+namespace AtProtocolType {
 namespace LexiconsTypeUnknown {
 
 void copyUnknown(const QJsonObject &src, QVariant &dest);
@@ -22,6 +23,7 @@ T fromQVariant(const QVariant &variant)
     }
 }
 
+}
 }
 
 #endif // LEXICONS_FUNC_UNKNOWN_H

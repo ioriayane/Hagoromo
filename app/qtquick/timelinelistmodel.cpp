@@ -5,6 +5,7 @@
 
 using AtProtocolInterface::AccountData;
 using AtProtocolInterface::AppBskyFeedGetTimeline;
+using namespace AtProtocolType;
 
 TimelineListModel::TimelineListModel(QObject *parent) : QAbstractListModel { parent }
 {

@@ -6,6 +6,8 @@
 #include <QJsonArray>
 #include <QUrlQuery>
 
+using namespace AtProtocolType;
+
 namespace AtProtocolInterface {
 
 AppBskyFeedGetTimeline::AppBskyFeedGetTimeline(QObject *parent) : AccessAtProtocol { parent } { }

@@ -4,6 +4,7 @@
 #include "lexicons.h"
 #include "lexicons_func_unknown.h"
 
+namespace AtProtocolType {
 namespace LexiconsTypeUnknown {
 
 void copyUnknown(const QJsonObject &src, QVariant &dest)
@@ -20,6 +21,7 @@ void copyUnknown(const QJsonObject &src, QVariant &dest)
     }
 }
 
+}
 }
 
 #endif // LEXICONS_FUNC_UNKNOWN_CPP

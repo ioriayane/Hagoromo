@@ -64,7 +64,7 @@ protected:
 
 private:
     QList<QString> m_cidList; // これで取得したポストの順番を管理して実態はm_viewPostListで管理
-    QHash<QString, AppBskyFeedDefs::FeedViewPost> m_viewPostHash;
+    QHash<QString, AtProtocolType::AppBskyFeedDefs::FeedViewPost> m_viewPostHash;
     AtProtocolInterface::AppBskyFeedGetTimeline m_timeline;
 
     AtProtocolInterface::AccountData m_account;

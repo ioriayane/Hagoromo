@@ -7,6 +7,7 @@
 #include "lexicons_func.h"
 #include "lexicons_func_unknown.h"
 
+namespace AtProtocolType {
 namespace AppBskyActorDefs {
 void copyViewerState(const QJsonObject &src, AppBskyActorDefs::ViewerState &dest)
 {
@@ -861,6 +862,8 @@ void copyInfo(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Info &dest)
         dest.message = src.value("message").toString();
     }
 }
+}
+
 }
 
 #endif // LEXICONS_FUNC_CPP

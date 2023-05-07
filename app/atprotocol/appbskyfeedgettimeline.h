@@ -13,12 +13,12 @@ public:
 
     void getTimeline();
 
-    const QList<AppBskyFeedDefs::FeedViewPost> *feedList() const;
+    const QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> *feedList() const;
 
 private:
     virtual void parseJson(const QString reply_json);
 
-    QList<AppBskyFeedDefs::FeedViewPost> m_feedList;
+    QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> m_feedList;
 };
 
 }

@@ -13,6 +13,8 @@
 #include <QString>
 #include <QVariant>
 
+namespace AtProtocolType {
+
 namespace AppBskyActorDefs {
 void copyViewerState(const QJsonObject &src, AppBskyActorDefs::ViewerState &dest);
 void copyProfileViewBasic(const QJsonObject &src, AppBskyActorDefs::ProfileViewBasic &dest);
@@ -137,6 +139,8 @@ void copyHandle(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Handle &de
 void copyMigrate(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Migrate &dest);
 void copyTombstone(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Tombstone &dest);
 void copyInfo(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Info &dest);
+}
+
 }
 
 #endif // LEXICONS_FUNC_H
