@@ -16,6 +16,8 @@ enum class AccountStatus : int {
 
 struct AccountData
 {
+    QString uuid; //主にUIでカラムとの紐付け確認で使う
+
     QString service;
     QString identifier;
     QString password;

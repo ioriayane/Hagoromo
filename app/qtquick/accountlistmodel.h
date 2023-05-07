@@ -15,6 +15,7 @@ public:
     // モデルで提供する項目のルールID的な（QML側へ公開するために大文字で始めること）
     enum AccountListModelRoles {
         ModelData = Qt::UserRole + 1,
+        UuidRole,
         ServiceRole,
         IdentifierRole,
         PasswordRole,
@@ -39,6 +40,7 @@ public:
                                    const QString &handle, const QString &email,
                                    const QString &accessJwt, const QString &refreshJwt,
                                    const bool authorized);
+    Q_INVOKABLE void removeAccount(int row);
 
     Q_INVOKABLE void save() const;
     Q_INVOKABLE void load();

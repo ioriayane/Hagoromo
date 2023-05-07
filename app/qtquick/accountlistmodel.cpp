@@ -51,7 +51,9 @@ QVariant AccountListModel::item(int row, AccountListModelRoles role) const
     if (row < 0 || row >= m_accountList.count())
         return QVariant();
 
-    if (role == ServiceRole)
+    if (role == UuidRole)
+        return m_accountList.at(row).uuid;
+    else if (role == ServiceRole)
         return m_accountList.at(row).service;
     else if (role == IdentifierRole)
         return m_accountList.at(row).identifier;
@@ -78,7 +80,9 @@ void AccountListModel::update(int row, AccountListModelRoles role, const QVarian
     if (row < 0 || row >= m_accountList.count())
         return;
 
-    if (role == ServiceRole)
+    if (role == UuidRole)
+        m_accountList[row].uuid = value.toString();
+    else if (role == ServiceRole)
         m_accountList[row].service = value.toString();
     else if (role == IdentifierRole)
         m_accountList[row].identifier = value.toString();
@@ -124,6 +128,7 @@ void AccountListModel::updateAccount(const QString &service, const QString &iden
     if (!updated) {
         // append
         AtProtocolInterface::AccountData item;
+        item.uuid = QUuid::createUuid().toString();
         item.service = service;
         item.identifier = identifier;
         item.password = password;
@@ -142,6 +147,18 @@ void AccountListModel::updateAccount(const QString &service, const QString &iden
     save();
 }
 
+void AccountListModel::removeAccount(int row)
+{
+    if (row < 0 || row >= m_accountList.count())
+        return;
+
+    beginRemoveRows(QModelIndex(), row, row);
+    m_accountList.removeAt(row);
+    endRemoveRows();
+
+    save();
+}
+
 void AccountListModel::save() const
 {
     QSettings settings;
@@ -149,6 +166,7 @@ void AccountListModel::save() const
     QJsonArray account_array;
     for (const AccountData &item : m_accountList) {
         QJsonObject account_item;
+        account_item["uuid"] = item.uuid;
         account_item["service"] = item.service;
         account_item["identifier"] = item.identifier;
         account_item["password"] = encrypt(item.password);
@@ -180,9 +198,11 @@ void AccountListModel::load()
             for (int i = 0; i < doc.array().count(); i++) {
                 if (doc.array().at(i).isObject()) {
                     AccountData item;
-                    item.service = doc.array().at(i)["service"].toString();
-                    item.identifier = doc.array().at(i)["identifier"].toString();
-                    item.password = decrypt(doc.array().at(i)["password"].toString());
+                    item.uuid = doc.array().at(i).toObject().value("uuid").toString();
+                    item.service = doc.array().at(i).toObject().value("service").toString();
+                    item.identifier = doc.array().at(i).toObject().value("identifier").toString();
+                    item.password =
+                            decrypt(doc.array().at(i).toObject().value("password").toString());
 
                     m_accountList.append(item);
 
@@ -205,6 +225,7 @@ QHash<int, QByteArray> AccountListModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
 
+    roles[UuidRole] = "uuid";
     roles[ServiceRole] = "service";
     roles[IdentifierRole] = "identifier";
     roles[PasswordRole] = "password";

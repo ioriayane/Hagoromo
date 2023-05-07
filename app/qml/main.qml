@@ -32,15 +32,19 @@ ApplicationWindow {
                 component_type = "listNotification"
             }
             columnManageModel.appendColumn(selectedAccountIndex, component_type)
-            columnManageModel.reflect()
+            columnManageModel.sync()
         }
     }
 
     AccountDialog {
         id: accountDialog
         accountModel: accountListModel
+        onClosed: accountListModel.syncColumn()
     }
 
+    // アカウントの管理
+    // カラムとこのモデルとの紐付けはインデックスで実施する
+    // アカウント管理で内容が変更されたときにカラムとインデックスの関係が崩れるのでuuidで確認する
     AccountListModel {
         id: accountListModel
         onAccountAppended: (row) => {
@@ -48,22 +52,41 @@ ApplicationWindow {
                                // カラムを更新しにいく
                            }
         onAllFinished: {
-            // すべてのアカウント情報の認証が終わったのでタブを復元（成功しているとは限らない）
+            // すべてのアカウント情報の認証が終わったのでカラムを復元（成功しているとは限らない）
             console.log("allFinished()" + accountListModel.rowCount())
-            columnManageModel.reflect()
+            columnManageModel.sync()
+        }
+
+        function syncColumn(){
+            // アカウント一覧にないものを消す
+            var exist = false
+            for(var i=columnManageModel.count-1; i>=0; i--){
+                exist = false
+                for(var a=0; a<accountListModel.rowCount();a++){
+                    if(columnManageModel.get(i).account_uuid === accountListModel.item(a, AccountListModel.UuidRole)){
+                        exist = true
+                    }
+                }
+                if(exist === false){
+                    columnManageModel.remove(i)
+                }
+            }
+            columnManageModel.sync()
         }
     }
 
-    //タブの情報管理
+    //カラムの情報管理
     ListModel {
         id: columnManageModel
         ListElement {
             key: "abcdef"
+            account_uuid: "{56a9ca8d-c6e1-4a00-b2ba-15c569419883}"
             account_index: 1
             component_type: "timeline"
         }
         ListElement {
             key: "ghijkl"
+            account_uuid: "{56a9ca8d-c6e1-4a00-b2ba-15c569419882}"
             account_index: 0
             component_type: "listNotification"
         }
@@ -77,19 +100,41 @@ ApplicationWindow {
         }
 
         function appendColumn(account_index, component_type) {
-            var key = makeKey()
-            console.log("key=" + key)
             columnManageModel.append({
-                                         "key": key,
+                                         "key": makeKey(),
+                                         "account_uuid": accountListModel.item(account_index, AccountListModel.UuidRole),
                                          "account_index": account_index,
                                          "component_type": component_type
                                      })
         }
-        function reflect() {
+        function removeColumnFromLoader(key){
+            // カラム基準の操作で消すとき
+            for(var i=columnManageModel.count-1; i>=0; i--){
+                if(columnManageModel.get(i).key === key){
+                    columnManageModel.remove(i)
+                }
+            }
+        }
+        function sync() {
+            // 追加or更新
             for(var i=0; i<columnManageModel.count; i++){
                 repeater.append(columnManageModel.get(i).key,
+                                columnManageModel.get(i).account_uuid,
                                 columnManageModel.get(i).account_index,
                                 columnManageModel.get(i).component_type)
+            }
+            // カラムの管理情報から消えているLoaderを消す
+            var exist = false
+            for(var r=repeater.model.count-1; r>=0; r--){
+                exist = false
+                for(var c=0; c<columnManageModel.count; c++){
+                    if(repeater.model.get(r).key === columnManageModel.get(c).key){
+                        exist = true
+                    }
+                }
+                if(exist === false){
+                    repeater.model.remove(r)
+                }
             }
         }
     }
@@ -182,7 +227,7 @@ ApplicationWindow {
                     id: repeater
                     model: ListModel {}
 
-                    function append(key, account_index, component_type){
+                    function append(key, account_uuid, account_index, component_type){
                         // accountListModelで管理するアカウントのindexと表示に使うコンポを指定
                         // ①ここでLoaderを追加する
                         var exist = false
@@ -198,12 +243,14 @@ ApplicationWindow {
                         }else if(component_type === "timeline"){
                             repeater.model.append({
                                                       "key": key,
+                                                      "account_uuid": account_uuid,
                                                       "account_index": account_index,
                                                       "component": timelineComponent
                                                   })
                         }else if(component_type === "listNotification"){
                             repeater.model.append({
                                                       "key": key,
+                                                      "account_uuid": account_uuid,
                                                       "account_index": account_index,
                                                       "component": listNotificationComponent
                                                   })
@@ -212,6 +259,7 @@ ApplicationWindow {
                     onItemAdded: (index, item) => {
                                      // ②Repeaterに追加されたLoaderにTLを表示するComponentを追加する
                                      //console.log("" + index + ":" + item + ":" + repeater.model.get(index).account_index)
+                                     item.account_uuid = repeater.model.get(index).account_uuid
                                      item.account_index = repeater.model.get(index).account_index
                                      item.sourceComponent = repeater.model.get(index).component
                                  }
@@ -223,10 +271,11 @@ ApplicationWindow {
                         Layout.preferredWidth: 400
                         Layout.maximumWidth: 500
 
+                        property string account_uuid: ""
                         property int account_index: -1
                         onLoaded: {
                             // ③Loaderで読み込んだComponentにアカウント情報など設定する
-                            //console.log("loader:" + loader.account_index)
+                            console.log("loader:" + loader.account_index + ", " + loader.account_uuid)
                             if(loader.account_index < 0)
                                 return
                             var i = loader.account_index
@@ -247,6 +296,7 @@ ApplicationWindow {
                     Layout.minimumWidth: 100
                     Layout.preferredWidth: 400
                     Layout.maximumWidth: 500
+                    clip: true
                     model: accountListModel
                     delegate: GridLayout {
                         columns: 2
@@ -311,6 +361,47 @@ ApplicationWindow {
                             text: "-"
                         }
 
+                    }
+                }
+                ListView {
+                    Layout.preferredHeight: scrollView.childHeight
+                    Layout.minimumWidth: 100
+                    Layout.preferredWidth: 200
+                    Layout.maximumWidth: 300
+                    clip: true
+                    model: columnManageModel
+                    delegate: GridLayout {
+                        columns: 2
+                        Label {
+                            text: "key"
+                        }
+                        Label {
+                            text: model.key
+                        }
+                        Label {
+                            text: "account_uuid"
+                        }
+                        Label {
+                            text: model.account_uuid
+                        }
+                        Label {
+                            text: "account_index"
+                        }
+                        Label {
+                            text: model.account_index
+                        }
+                        Label {
+                            text: "component_type"
+                        }
+                        Label {
+                            text: model.component_type
+                        }
+                        Label {
+                            text: "-"
+                        }
+                        Label {
+                            text: "-"
+                        }
                     }
                 }
             }

@@ -88,6 +88,7 @@ Dialog {
                         Layout.rightMargin: 5
                         display: AbstractButton.IconOnly
                         iconSource: "../images/delete.png"
+                        onClicked: accountList.model.removeAccount(model.index)
                     }
                 }
             }
