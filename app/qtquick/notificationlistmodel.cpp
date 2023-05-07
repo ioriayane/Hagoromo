@@ -1,22 +1,22 @@
-#include "listnotificationmodel.h"
+#include "notificationlistmodel.h"
 #include "../atprotocol/appbskynotificationlistnotifications.h"
 
 using AtProtocolInterface::AppBskyNotificationListNotifications;
 
-ListNotificationModel::ListNotificationModel(QObject *parent) : QAbstractListModel { parent } { }
+NotificationListModel::NotificationListModel(QObject *parent) : QAbstractListModel { parent } { }
 
-int ListNotificationModel::rowCount(const QModelIndex &parent) const
+int NotificationListModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
     return m_cidList.count();
 }
 
-QVariant ListNotificationModel::data(const QModelIndex &index, int role) const
+QVariant NotificationListModel::data(const QModelIndex &index, int role) const
 {
-    return item(index.row(), static_cast<ListNotificationModelRoles>(role));
+    return item(index.row(), static_cast<NotificationListModelRoles>(role));
 }
 
-QVariant ListNotificationModel::item(int row, ListNotificationModelRoles role) const
+QVariant NotificationListModel::item(int row, NotificationListModelRoles role) const
 {
     if (row < 0 || row >= m_cidList.count())
         return QVariant();
@@ -29,7 +29,7 @@ QVariant ListNotificationModel::item(int row, ListNotificationModelRoles role) c
     return QVariant();
 }
 
-void ListNotificationModel::setAccount(const QString &service, const QString &did,
+void NotificationListModel::setAccount(const QString &service, const QString &did,
                                        const QString &handle, const QString &email,
                                        const QString &accessJwt, const QString &refreshJwt)
 {
@@ -41,7 +41,7 @@ void ListNotificationModel::setAccount(const QString &service, const QString &di
     m_account.refreshJwt = refreshJwt;
 }
 
-void ListNotificationModel::getLatest()
+void NotificationListModel::getLatest()
 {
     AppBskyNotificationListNotifications *notification = new AppBskyNotificationListNotifications();
     connect(notification, &AppBskyNotificationListNotifications::finished, [=](bool success) {
@@ -60,7 +60,7 @@ void ListNotificationModel::getLatest()
     notification->listNotifications();
 }
 
-QHash<int, QByteArray> ListNotificationModel::roleNames() const
+QHash<int, QByteArray> NotificationListModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
 

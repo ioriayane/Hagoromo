@@ -1,5 +1,5 @@
-#ifndef LISTNOTIFICATIONMODEL_H
-#define LISTNOTIFICATIONMODEL_H
+#ifndef NOTIFICATIONLISTMODEL_H
+#define NOTIFICATIONLISTMODEL_H
 
 #include "../atprotocol/lexicons.h"
 #include "../atprotocol/accessatprotocol.h"
@@ -7,24 +7,24 @@
 #include <QAbstractListModel>
 #include <QObject>
 
-class ListNotificationModel : public QAbstractListModel
+class NotificationListModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    explicit ListNotificationModel(QObject *parent = nullptr);
+    explicit NotificationListModel(QObject *parent = nullptr);
 
     // モデルで提供する項目のルールID的な（QML側へ公開するために大文字で始めること）
-    enum ListNotificationModelRoles {
+    enum NotificationListModelRoles {
         ModelData = Qt::UserRole + 1,
         DisplayNameRole,
     };
-    Q_ENUM(ListNotificationModelRoles)
+    Q_ENUM(NotificationListModelRoles)
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
     Q_INVOKABLE QVariant item(int row,
-                              ListNotificationModel::ListNotificationModelRoles role) const;
+                              NotificationListModel::NotificationListModelRoles role) const;
 
     Q_INVOKABLE void setAccount(const QString &service, const QString &did, const QString &handle,
                                 const QString &email, const QString &accessJwt,
@@ -43,4 +43,4 @@ private:
     AtProtocolInterface::AccountData m_account;
 };
 
-#endif // LISTNOTIFICATIONMODEL_H
+#endif // NOTIFICATIONLISTMODEL_H

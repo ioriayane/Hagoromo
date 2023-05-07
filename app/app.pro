@@ -14,7 +14,7 @@ SOURCES += \
         qtquick/accountlistmodel.cpp \
         qtquick/createrecord.cpp \
         qtquick/createsession.cpp \
-        qtquick/listnotificationmodel.cpp \
+        qtquick/notificationlistmodel.cpp \
         qtquick/timelinelistmodel.cpp
 
 HEADERS += \
@@ -29,14 +29,14 @@ HEADERS += \
     qtquick/accountlistmodel.h \
     qtquick/createrecord.h \
     qtquick/createsession.h \
-    qtquick/listnotificationmodel.h \
+    qtquick/notificationlistmodel.h \
     qtquick/timelinelistmodel.h
 
 QML_FILES = \
     qml/main.qml \
     qml/LoginDialog.qml \
     qml/TimelineView.qml \
-    qml/ListNotificationView.qml \
+    qml/NotificationListView.qml \
     qml/IconButton.qml \
     qml/PostDialog.qml \
     qml/parts/ImagePreview.qml \

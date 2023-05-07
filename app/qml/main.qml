@@ -67,7 +67,7 @@ ApplicationWindow {
     }
     Component {
         id: listNotificationComponent
-        ListNotificationView {
+        NotificationListView {
         }
     }
 

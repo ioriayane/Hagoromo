@@ -3,7 +3,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 
-import tech.relog.hagoromo.listnotificationmodel 1.0
+import tech.relog.hagoromo.notificationlistmodel 1.0
 
 import "parts"
 
@@ -17,7 +17,7 @@ ScrollView {
         anchors.fill: parent
         anchors.rightMargin: parent.ScrollBar.vertical.width
 
-        model: ListNotificationModel {
+        model: NotificationListModel {
             id: listNotificationListModel
         }
 
