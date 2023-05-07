@@ -1,6 +1,8 @@
 #include "createrecord.h"
 #include "../atprotocol/comatprotorepocreaterecord.h"
 
+using AtProtocolInterface::ComAtprotoRepoCreateRecord;
+
 CreateRecord::CreateRecord(QObject *parent) : QObject { parent } { }
 
 void CreateRecord::setAccount(const QString &service, const QString &did, const QString &handle,

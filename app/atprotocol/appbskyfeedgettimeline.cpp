@@ -6,6 +6,8 @@
 #include <QJsonArray>
 #include <QUrlQuery>
 
+namespace AtProtocolInterface {
+
 AppBskyFeedGetTimeline::AppBskyFeedGetTimeline(QObject *parent) : AccessAtProtocol { parent } { }
 
 void AppBskyFeedGetTimeline::getTimeline()
@@ -47,4 +49,6 @@ void AppBskyFeedGetTimeline::parseJson(const QString reply_json)
     }
 
     emit finished(success);
+}
+
 }

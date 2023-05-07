@@ -14,6 +14,10 @@
 #include <QNetworkInterface>
 #include <openssl/evp.h>
 
+using AtProtocolInterface::AccountData;
+using AtProtocolInterface::AccountStatus;
+using AtProtocolInterface::ComAtprotoServerCreateSession;
+
 AccountListModel::AccountListModel(QObject *parent) : QAbstractListModel { parent }
 {
 
@@ -119,7 +123,7 @@ void AccountListModel::updateAccount(const QString &service, const QString &iden
     }
     if (!updated) {
         // append
-        AccountData item;
+        AtProtocolInterface::AccountData item;
         item.service = service;
         item.identifier = identifier;
         item.password = password;

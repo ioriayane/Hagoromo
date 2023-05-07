@@ -4,6 +4,8 @@
 #include <QJsonObject>
 #include <qDebug>
 
+namespace AtProtocolInterface {
+
 ComAtprotoServerCreateSession::ComAtprotoServerCreateSession(QObject *parent)
     : AccessAtProtocol { parent }
 {
@@ -47,4 +49,6 @@ void ComAtprotoServerCreateSession::parseJson(const QString reply_json)
     }
 
     emit finished(success);
+}
+
 }

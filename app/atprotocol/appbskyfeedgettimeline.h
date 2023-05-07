@@ -4,6 +4,8 @@
 #include "accessatprotocol.h"
 #include "../atprotocol/lexicons.h"
 
+namespace AtProtocolInterface {
+
 class AppBskyFeedGetTimeline : public AccessAtProtocol
 {
 public:
@@ -18,5 +20,7 @@ private:
 
     QList<AppBskyFeedDefs::FeedViewPost> m_feedList;
 };
+
+}
 
 #endif // APPBSKYFEEDGETTIMELINE_H

@@ -3,6 +3,9 @@
 
 #include <QDebug>
 
+using AtProtocolInterface::AccountData;
+using AtProtocolInterface::AppBskyFeedGetTimeline;
+
 TimelineListModel::TimelineListModel(QObject *parent) : QAbstractListModel { parent }
 {
     connect(&m_timeline, &AppBskyFeedGetTimeline::finished, [=](bool success) {

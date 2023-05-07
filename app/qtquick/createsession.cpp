@@ -2,6 +2,10 @@
 
 #include <QDebug>
 
+using AtProtocolInterface::AccountData;
+using AtProtocolInterface::AccountStatus;
+using AtProtocolInterface::ComAtprotoServerCreateSession;
+
 CreateSession::CreateSession(QObject *parent) : QObject { parent }, m_running(false) { }
 
 void CreateSession::create()

@@ -3,7 +3,6 @@
 
 #include "../atprotocol/lexicons.h"
 #include "../atprotocol/appbskyfeedgettimeline.h"
-#include "accountlistmodel.h"
 
 #include <QAbstractListModel>
 #include <QObject>
@@ -66,9 +65,9 @@ protected:
 private:
     QList<QString> m_cidList; // これで取得したポストの順番を管理して実態はm_viewPostListで管理
     QHash<QString, AppBskyFeedDefs::FeedViewPost> m_viewPostHash;
-    AppBskyFeedGetTimeline m_timeline;
+    AtProtocolInterface::AppBskyFeedGetTimeline m_timeline;
 
-    AccountData m_account;
+    AtProtocolInterface::AccountData m_account;
 
     QString formatDateTime(const QString &value) const;
 };

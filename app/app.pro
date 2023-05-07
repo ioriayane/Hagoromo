@@ -5,6 +5,7 @@ TARGET = Hagoromo
 SOURCES += \
         atprotocol/accessatprotocol.cpp \
         atprotocol/appbskyfeedgettimeline.cpp \
+        atprotocol/appbskynotificationlistnotifications.cpp \
         atprotocol/comatprotorepocreaterecord.cpp \
         atprotocol/comatprotoservercreatesession.cpp \
         atprotocol/lexicons_func.cpp \
@@ -13,11 +14,13 @@ SOURCES += \
         qtquick/accountlistmodel.cpp \
         qtquick/createrecord.cpp \
         qtquick/createsession.cpp \
+        qtquick/listnotificationmodel.cpp \
         qtquick/timelinelistmodel.cpp
 
 HEADERS += \
     atprotocol/accessatprotocol.h \
     atprotocol/appbskyfeedgettimeline.h \
+    atprotocol/appbskynotificationlistnotifications.h \
     atprotocol/comatprotorepocreaterecord.h \
     atprotocol/comatprotoservercreatesession.h \
     atprotocol/lexicons.h \
@@ -26,6 +29,7 @@ HEADERS += \
     qtquick/accountlistmodel.h \
     qtquick/createrecord.h \
     qtquick/createsession.h \
+    qtquick/listnotificationmodel.h \
     qtquick/timelinelistmodel.h
 
 QML_FILES = \

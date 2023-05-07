@@ -63,7 +63,7 @@ signals:
     void runningChanged();
 
 private:
-    AccountData m_session;
+    AtProtocolInterface::AccountData m_session;
 
     QString m_identifier;
     QString m_password;

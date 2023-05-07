@@ -21,7 +21,7 @@ signals:
     void finished(bool success);
 
 private:
-    AccountData m_account;
+    AtProtocolInterface::AccountData m_account;
 };
 
 #endif // CREATERECORD_H

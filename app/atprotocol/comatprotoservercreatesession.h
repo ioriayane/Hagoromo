@@ -3,6 +3,8 @@
 
 #include "accessatprotocol.h"
 
+namespace AtProtocolInterface {
+
 class ComAtprotoServerCreateSession : public AccessAtProtocol
 {
 public:
@@ -14,5 +16,7 @@ public:
 private:
     virtual void parseJson(const QString reply_json);
 };
+
+}
 
 #endif // COMATPROTOSERVERCREATESESSION_H

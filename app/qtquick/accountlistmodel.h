@@ -53,7 +53,7 @@ protected:
     QHash<int, QByteArray> roleNames() const;
 
 private:
-    QList<AccountData> m_accountList;
+    QList<AtProtocolInterface::AccountData> m_accountList;
     QVariant m_accountTemp;
 
     QByteArray m_encryptKey;

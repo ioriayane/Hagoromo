@@ -5,6 +5,8 @@
 #include <QNetworkReply>
 #include <qDebug>
 
+namespace AtProtocolInterface {
+
 AccessAtProtocol::AccessAtProtocol(QObject *parent) : QObject { parent }
 {
     connect(&m_manager, &QNetworkAccessManager::finished, [=](QNetworkReply *reply) {
@@ -100,4 +102,6 @@ void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
     }
 
     m_manager.post(request, json);
+}
+
 }

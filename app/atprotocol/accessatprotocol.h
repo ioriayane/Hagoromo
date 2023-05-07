@@ -6,6 +6,8 @@
 #include <QObject>
 #include <QUrl>
 
+namespace AtProtocolInterface {
+
 enum class AccountStatus : int {
     Unknown,
     Unauthorized,
@@ -26,9 +28,6 @@ struct AccountData
 
     AccountStatus status = AccountStatus::Unknown;
 };
-
-Q_DECLARE_METATYPE(AccountStatus)
-Q_DECLARE_METATYPE(AccountData)
 
 class AccessAtProtocol : public QObject
 {
@@ -63,5 +62,9 @@ private:
 
     AccountData m_account;
 };
+}
+
+Q_DECLARE_METATYPE(AtProtocolInterface::AccountStatus)
+Q_DECLARE_METATYPE(AtProtocolInterface::AccountData)
 
 #endif // ACCESSATPROTOCOL_H

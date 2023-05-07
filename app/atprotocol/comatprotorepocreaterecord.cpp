@@ -4,6 +4,8 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
+namespace AtProtocolInterface {
+
 ComAtprotoRepoCreateRecord::ComAtprotoRepoCreateRecord(QObject *parent)
     : AccessAtProtocol { parent }
 {
@@ -43,4 +45,6 @@ void ComAtprotoRepoCreateRecord::parseJson(const QString reply_json)
     }
 
     emit finished(success);
+}
+
 }
