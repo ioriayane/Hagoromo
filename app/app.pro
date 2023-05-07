@@ -35,6 +35,7 @@ HEADERS += \
 QML_FILES = \
     qml/main.qml \
     qml/controls/IconButton.qml \
+    qml/dialogs/AddColumnDialog.qml \
     qml/dialogs/LoginDialog.qml \
     qml/dialogs/PostDialog.qml \
     qml/parts/ImagePreview.qml \
@@ -45,6 +46,9 @@ QML_FILES = \
 
 IMAGE_FILES += \
     qml/images/add_user.png \
+    qml/images/arrow_forward.png \
+    qml/images/check.png \
+    qml/images/column.png \
     qml/images/edit.png \
     qml/images/expand_less.png \
     qml/images/expand_more.png \
@@ -90,4 +94,3 @@ win32:{
     QMAKE_POST_LINK += nmake -f $(MAKEFILE) install
 }
 unix: LIBS += -lssl -lcrypto
-

@@ -31,6 +31,21 @@ ApplicationWindow {
         accountModel: accountListModel
     }
 
+    AddColumnDialog {
+        id: addColumnDialog
+        accountModel: accountListModel
+        onAccepted: {
+            var component_type = "timeline"
+            if(selectedTypeIndex == 0){
+                component_type = "timeline"
+            }else if(selectedTypeIndex == 1){
+                component_type = "listNotification"
+            }
+            columnManageModel.appendColumn(selectedAccountIndex, component_type)
+            columnManageModel.reflect()
+        }
+    }
+
     AccountListModel {
         id: accountListModel
         onAccountAppended: (row) => {
@@ -40,17 +55,13 @@ ApplicationWindow {
         onAllFinished: {
             // すべてのアカウント情報の認証が終わったのでタブを復元（成功しているとは限らない）
             console.log("allFinished()" + accountListModel.rowCount())
-            for(var i=0; i<account2tabModel.count; i++){
-                repeater.append(account2tabModel.get(i).key,
-                                account2tabModel.get(i).account_index,
-                                account2tabModel.get(i).component_type)
-            }
+            columnManageModel.reflect()
         }
     }
 
     //タブの情報管理
     ListModel {
-        id: account2tabModel
+        id: columnManageModel
         ListElement {
             key: "abcdef"
             account_index: 1
@@ -60,6 +71,31 @@ ApplicationWindow {
             key: "ghijkl"
             account_index: 0
             component_type: "listNotification"
+        }
+
+        function makeKey(){
+            var key = ""
+            for(var i=0; i<5; i++){
+                key += Math.floor(Math.random() * 16).toString(16)
+            }
+            return key
+        }
+
+        function appendColumn(account_index, component_type) {
+            var key = makeKey()
+            console.log("key=" + key)
+            columnManageModel.append({
+                                         "key": key,
+                                         "account_index": account_index,
+                                         "component_type": component_type
+                                     })
+        }
+        function reflect() {
+            for(var i=0; i<columnManageModel.count; i++){
+                repeater.append(columnManageModel.get(i).key,
+                                columnManageModel.get(i).account_index,
+                                columnManageModel.get(i).component_type)
+            }
         }
     }
 
@@ -103,10 +139,10 @@ ApplicationWindow {
                     Layout.fillWidth: true
                     display: AbstractButton.IconOnly
                     // display: AbstractButton.TextBesideIcon
-                    icon.source: "images/add_user.png"
-                    text: qsTr("Add user")
+                    icon.source: "images/column.png"
+                    text: qsTr("Add column")
 
-                    onClicked: login.open()
+                    onClicked: addColumnDialog.open()
                 }
 
                 Button {
@@ -147,7 +183,7 @@ ApplicationWindow {
                         var exist = false
                         for(var i=0; i<repeater.model.count; i++){
                             if(repeater.model.get(i).key === key){
-                                exit = true
+                                exist = true
                                 break
                             }
                         }
