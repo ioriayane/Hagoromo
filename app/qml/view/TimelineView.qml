@@ -12,9 +12,9 @@ ScrollView {
     ScrollBar.vertical.policy: ScrollBar.AlwaysOn
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
-    property alias model: timelineListView.model
+    property alias model: rootListView.model
     ListView {
-        id: timelineListView
+        id: rootListView
         anchors.fill: parent
         anchors.rightMargin: parent.ScrollBar.vertical.width
 
@@ -23,14 +23,14 @@ ScrollView {
         }
 
         header: Button {
-            width: timelineListView.width
+            width: rootListView.width
             height: 24
             display: AbstractButton.IconOnly
             icon.source: "../images/expand_less.png"
             onClicked: timelineListModel.getLatest()
         }
         footer: Button {
-            width: timelineListView.width
+            width: rootListView.width
             height: 24
             display: AbstractButton.IconOnly
             icon.source: "../images/expand_more.png"
@@ -74,7 +74,7 @@ ScrollView {
                         Layout.fillWidth: true
                         spacing: 5
 
-                        property int basisWidth: timelineListView.width - postFrame.padding * 2 - postLayout.spacing - postImage.Layout.preferredWidth
+                        property int basisWidth: rootListView.width - postFrame.padding * 2 - postLayout.spacing - postImage.Layout.preferredWidth
 
                         Author {
                             Layout.maximumWidth: parent.basisWidth
