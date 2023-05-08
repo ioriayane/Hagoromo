@@ -8,6 +8,7 @@
 #include "lexicons_func_unknown.h"
 
 namespace AtProtocolType {
+// app.bsky.actor.defs
 namespace AppBskyActorDefs {
 void copyViewerState(const QJsonObject &src, AppBskyActorDefs::ViewerState &dest)
 {
@@ -71,6 +72,7 @@ void copyProfileViewDetailed(const QJsonObject &src, AppBskyActorDefs::ProfileVi
     }
 }
 }
+// com.atproto.label.defs
 namespace ComAtprotoLabelDefs {
 void copyLabel(const QJsonObject &src, ComAtprotoLabelDefs::Label &dest)
 {
@@ -83,6 +85,7 @@ void copyLabel(const QJsonObject &src, ComAtprotoLabelDefs::Label &dest)
     }
 }
 }
+// app.bsky.embed.external
 namespace AppBskyEmbedExternal {
 void copyExternal(const QJsonObject &src, AppBskyEmbedExternal::External &dest)
 {
@@ -114,6 +117,7 @@ void copyView(const QJsonObject &src, AppBskyEmbedExternal::View &dest)
     }
 }
 }
+// app.bsky.embed.images
 namespace AppBskyEmbedImages {
 void copyImage(const QJsonObject &src, AppBskyEmbedImages::Image &dest)
 {
@@ -150,6 +154,7 @@ void copyView(const QJsonObject &src, AppBskyEmbedImages::View &dest)
     }
 }
 }
+// app.bsky.embed.record
 namespace AppBskyEmbedRecord {
 void copyMain(const QJsonObject &src, AppBskyEmbedRecord::Main &dest)
 {
@@ -207,6 +212,7 @@ void copyView(const QJsonObject &src, AppBskyEmbedRecord::View &dest)
     }
 }
 }
+// app.bsky.embed.recordWithMedia
 namespace AppBskyEmbedRecordWithMedia {
 void copyView(const QJsonObject &src, AppBskyEmbedRecordWithMedia::View &dest)
 {
@@ -237,6 +243,7 @@ void copyMain(const QJsonObject &src, AppBskyEmbedRecordWithMedia::Main &dest)
     }
 }
 }
+// app.bsky.feed.defs
 namespace AppBskyFeedDefs {
 void copyViewerState(const QJsonObject &src, AppBskyFeedDefs::ViewerState &dest)
 {
@@ -345,6 +352,7 @@ void copyThreadViewPost(const QJsonObject &src, AppBskyFeedDefs::ThreadViewPost 
     }
 }
 }
+// app.bsky.feed.getLikes
 namespace AppBskyFeedGetLikes {
 void copyLike(const QJsonObject &src, AppBskyFeedGetLikes::Like &dest)
 {
@@ -355,6 +363,7 @@ void copyLike(const QJsonObject &src, AppBskyFeedGetLikes::Like &dest)
     }
 }
 }
+// app.bsky.feed.post
 namespace AppBskyFeedPost {
 void copyTextSlice(const QJsonObject &src, AppBskyFeedPost::TextSlice &dest)
 {
@@ -379,6 +388,7 @@ void copyReplyRef(const QJsonObject &src, AppBskyFeedPost::ReplyRef &dest)
     }
 }
 }
+// app.bsky.notification.listNotifications
 namespace AppBskyNotificationListNotifications {
 void copyNotification(const QJsonObject &src,
                       AppBskyNotificationListNotifications::Notification &dest)
@@ -399,6 +409,7 @@ void copyNotification(const QJsonObject &src,
     }
 }
 }
+// app.bsky.richtext.facet
 namespace AppBskyRichtextFacet {
 void copyByteSlice(const QJsonObject &src, AppBskyRichtextFacet::ByteSlice &dest)
 {
@@ -427,6 +438,7 @@ void copyMain(const QJsonObject &src, AppBskyRichtextFacet::Main &dest)
     }
 }
 }
+// com.atproto.admin.defs
 namespace ComAtprotoAdminDefs {
 void copyActionType(const QJsonValue &src, ComAtprotoAdminDefs::ActionType &dest)
 {
@@ -669,6 +681,7 @@ void copyRecordViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::RecordVie
     }
 }
 }
+// com.atproto.server.defs
 namespace ComAtprotoServerDefs {
 void copyInviteCodeUse(const QJsonObject &src, ComAtprotoServerDefs::InviteCodeUse &dest)
 {
@@ -693,12 +706,14 @@ void copyInviteCode(const QJsonObject &src, ComAtprotoServerDefs::InviteCode &de
     }
 }
 }
+// com.atproto.moderation.defs
 namespace ComAtprotoModerationDefs {
 void copyReasonType(const QJsonValue &src, ComAtprotoModerationDefs::ReasonType &dest)
 {
     dest = src.toString();
 }
 }
+// com.atproto.label.subscribeLabels
 namespace ComAtprotoLabelSubscribeLabels {
 void copyLabels(const QJsonObject &src, ComAtprotoLabelSubscribeLabels::Labels &dest)
 {
@@ -719,6 +734,7 @@ void copyInfo(const QJsonObject &src, ComAtprotoLabelSubscribeLabels::Info &dest
     }
 }
 }
+// com.atproto.repo.applyWrites
 namespace ComAtprotoRepoApplyWrites {
 void copyCreate(const QJsonObject &src, ComAtprotoRepoApplyWrites::Create &dest)
 {
@@ -744,6 +760,7 @@ void copyDelete(const QJsonObject &src, ComAtprotoRepoApplyWrites::Delete &dest)
     }
 }
 }
+// com.atproto.repo.listRecords
 namespace ComAtprotoRepoListRecords {
 void copyRecord(const QJsonObject &src, ComAtprotoRepoListRecords::Record &dest)
 {
@@ -754,6 +771,7 @@ void copyRecord(const QJsonObject &src, ComAtprotoRepoListRecords::Record &dest)
     }
 }
 }
+// com.atproto.repo.strongRef
 namespace ComAtprotoRepoStrongRef {
 void copyMain(const QJsonObject &src, ComAtprotoRepoStrongRef::Main &dest)
 {
@@ -763,6 +781,7 @@ void copyMain(const QJsonObject &src, ComAtprotoRepoStrongRef::Main &dest)
     }
 }
 }
+// com.atproto.server.createAppPassword
 namespace ComAtprotoServerCreateAppPassword {
 void copyAppPassword(const QJsonObject &src, ComAtprotoServerCreateAppPassword::AppPassword &dest)
 {
@@ -773,6 +792,7 @@ void copyAppPassword(const QJsonObject &src, ComAtprotoServerCreateAppPassword::
     }
 }
 }
+// com.atproto.server.createInviteCodes
 namespace ComAtprotoServerCreateInviteCodes {
 void copyAccountCodes(const QJsonObject &src, ComAtprotoServerCreateInviteCodes::AccountCodes &dest)
 {
@@ -781,6 +801,7 @@ void copyAccountCodes(const QJsonObject &src, ComAtprotoServerCreateInviteCodes:
     }
 }
 }
+// com.atproto.server.describeServer
 namespace ComAtprotoServerDescribeServer {
 void copyLinks(const QJsonObject &src, ComAtprotoServerDescribeServer::Links &dest)
 {
@@ -790,6 +811,7 @@ void copyLinks(const QJsonObject &src, ComAtprotoServerDescribeServer::Links &de
     }
 }
 }
+// com.atproto.server.listAppPasswords
 namespace ComAtprotoServerListAppPasswords {
 void copyAppPassword(const QJsonObject &src, ComAtprotoServerListAppPasswords::AppPassword &dest)
 {
@@ -799,6 +821,7 @@ void copyAppPassword(const QJsonObject &src, ComAtprotoServerListAppPasswords::A
     }
 }
 }
+// com.atproto.sync.listRepos
 namespace ComAtprotoSyncListRepos {
 void copyRepo(const QJsonObject &src, ComAtprotoSyncListRepos::Repo &dest)
 {
@@ -808,6 +831,7 @@ void copyRepo(const QJsonObject &src, ComAtprotoSyncListRepos::Repo &dest)
     }
 }
 }
+// com.atproto.sync.subscribeRepos
 namespace ComAtprotoSyncSubscribeRepos {
 void copyRepoOp(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::RepoOp &dest)
 {

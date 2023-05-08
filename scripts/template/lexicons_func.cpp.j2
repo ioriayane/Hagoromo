@@ -9,6 +9,7 @@
 
 namespace AtProtocolType {
 {% for function in functions -%}
+// {{ function.namespace_org }}
 namespace {{ function.namespace }} {
 {% for func_line in function.func_lines -%}
 {{ func_line.line }}

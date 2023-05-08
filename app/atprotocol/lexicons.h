@@ -16,6 +16,7 @@ namespace AppBskyFeedDefs {
 struct ThreadViewPost;
 }
 
+// com.atproto.label.defs
 namespace ComAtprotoLabelDefs {
 struct Label
 {
@@ -27,6 +28,7 @@ struct Label
 };
 }
 
+// app.bsky.actor.defs
 namespace AppBskyActorDefs {
 // A reference to an actor in the network.
 struct ViewerState
@@ -72,6 +74,7 @@ struct ProfileViewDetailed
 };
 }
 
+// app.bsky.actor.profile
 namespace AppBskyActorProfile {
 struct Record
 {
@@ -80,6 +83,7 @@ struct Record
 };
 }
 
+// app.bsky.embed.external
 namespace AppBskyEmbedExternal {
 // A representation of some externally linked content, embedded in another form of content
 struct External
@@ -105,6 +109,7 @@ struct View
 };
 }
 
+// app.bsky.embed.images
 namespace AppBskyEmbedImages {
 // A set of images embedded in some other form of content
 struct Image
@@ -127,6 +132,7 @@ struct View
 };
 }
 
+// app.bsky.embed.recordWithMedia
 namespace AppBskyEmbedRecordWithMedia {
 enum class ViewMediaType : int {
     none,
@@ -154,6 +160,7 @@ struct Main
 };
 }
 
+// app.bsky.embed.record
 namespace AppBskyEmbedRecord {
 enum class ViewRecordType : int {
     none,
@@ -208,6 +215,7 @@ struct View
 };
 }
 
+// app.bsky.feed.defs
 namespace AppBskyFeedDefs {
 enum class ThreadViewPostRepliesType : int {
     none,
@@ -302,6 +310,7 @@ struct ThreadViewPost
 };
 }
 
+// app.bsky.feed.getLikes
 namespace AppBskyFeedGetLikes {
 struct Like
 {
@@ -311,6 +320,7 @@ struct Like
 };
 }
 
+// app.bsky.feed.like
 namespace AppBskyFeedLike {
 struct Record
 {
@@ -319,6 +329,7 @@ struct Record
 };
 }
 
+// app.bsky.feed.post
 namespace AppBskyFeedPost {
 struct TextSlice
 {
@@ -352,6 +363,7 @@ struct Record
 };
 }
 
+// app.bsky.feed.repost
 namespace AppBskyFeedRepost {
 struct Record
 {
@@ -360,6 +372,7 @@ struct Record
 };
 }
 
+// app.bsky.graph.block
 namespace AppBskyGraphBlock {
 struct Record
 {
@@ -368,6 +381,7 @@ struct Record
 };
 }
 
+// app.bsky.graph.follow
 namespace AppBskyGraphFollow {
 struct Record
 {
@@ -376,6 +390,7 @@ struct Record
 };
 }
 
+// app.bsky.notification.listNotifications
 namespace AppBskyNotificationListNotifications {
 struct Notification
 {
@@ -390,6 +405,7 @@ struct Notification
 };
 }
 
+// app.bsky.richtext.facet
 namespace AppBskyRichtextFacet {
 enum class MainFeaturesType : int {
     none,
@@ -420,6 +436,7 @@ struct Main
 };
 }
 
+// com.atproto.server.defs
 namespace ComAtprotoServerDefs {
 struct InviteCodeUse
 {
@@ -437,10 +454,12 @@ struct InviteCode
 };
 }
 
+// com.atproto.moderation.defs
 namespace ComAtprotoModerationDefs {
 typedef QString ReasonType;
 }
 
+// com.atproto.admin.defs
 namespace ComAtprotoAdminDefs {
 enum class ReportViewDetailSubjectType : int {
     none,
@@ -614,6 +633,7 @@ struct RecordViewDetail
 };
 }
 
+// com.atproto.label.subscribeLabels
 namespace ComAtprotoLabelSubscribeLabels {
 struct Labels
 {
@@ -627,6 +647,7 @@ struct Info
 };
 }
 
+// com.atproto.repo.applyWrites
 namespace ComAtprotoRepoApplyWrites {
 struct Create
 {
@@ -647,6 +668,7 @@ struct Delete
 };
 }
 
+// com.atproto.repo.listRecords
 namespace ComAtprotoRepoListRecords {
 struct Record
 {
@@ -656,6 +678,7 @@ struct Record
 };
 }
 
+// com.atproto.repo.strongRef
 namespace ComAtprotoRepoStrongRef {
 // A URI with a content-hash fingerprint.
 struct Main
@@ -665,6 +688,7 @@ struct Main
 };
 }
 
+// com.atproto.server.createAppPassword
 namespace ComAtprotoServerCreateAppPassword {
 struct AppPassword
 {
@@ -674,6 +698,7 @@ struct AppPassword
 };
 }
 
+// com.atproto.server.createInviteCodes
 namespace ComAtprotoServerCreateInviteCodes {
 struct AccountCodes
 {
@@ -681,6 +706,7 @@ struct AccountCodes
 };
 }
 
+// com.atproto.server.describeServer
 namespace ComAtprotoServerDescribeServer {
 struct Links
 {
@@ -689,6 +715,7 @@ struct Links
 };
 }
 
+// com.atproto.server.listAppPasswords
 namespace ComAtprotoServerListAppPasswords {
 struct AppPassword
 {
@@ -697,6 +724,7 @@ struct AppPassword
 };
 }
 
+// com.atproto.sync.listRepos
 namespace ComAtprotoSyncListRepos {
 struct Repo
 {
@@ -705,6 +733,7 @@ struct Repo
 };
 }
 
+// com.atproto.sync.subscribeRepos
 namespace ComAtprotoSyncSubscribeRepos {
 struct RepoOp
 {

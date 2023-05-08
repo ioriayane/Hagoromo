@@ -17,6 +17,7 @@ struct {{ struct.name }};
 }
 {% endfor %}
 {% for define in defines %}
+// {{ define.namespace_org }}
 namespace {{ define.namespace }} {
 {% for struct in define.structs -%}
 {{ struct.line }}

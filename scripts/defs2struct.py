@@ -430,7 +430,7 @@ class Defs2Struct:
             structs = []
             for text in self.output_text[namespace]:
                 structs.append({'line': text})
-            params['defines'].append({'namespace': self.to_namespace_style(namespace), 'structs': structs})
+            params['defines'].append({'namespace_org': namespace, 'namespace': self.to_namespace_style(namespace), 'structs': structs})
 
         params['metatypes'] = []
         for name in self.metatype:
@@ -449,7 +449,7 @@ class Defs2Struct:
             lines = []
             for line in func_lines:
                 lines.append({'line': line})
-            params['functions'].append({'namespace': self.to_namespace_style(namespace), 'func_lines': lines})
+            params['functions'].append({'namespace_org': namespace, 'namespace': self.to_namespace_style(namespace), 'func_lines': lines})
 
         with open(output_path + '/lexicons_func.cpp', 'w', encoding='utf-8') as fp:
             fp.write(template.render(params))
@@ -464,7 +464,7 @@ class Defs2Struct:
             lines = []
             for function_define in function_defines:
                 lines.append({'line': function_define})
-            params['functions'].append({'namespace': self.to_namespace_style(namespace), 'func_lines': lines})
+            params['functions'].append({'namespace_org': namespace, 'namespace': self.to_namespace_style(namespace), 'func_lines': lines})
 
         with open(output_path + '/lexicons_func.h', 'w', encoding='utf-8') as fp:
             fp.write(template.render(params))
