@@ -38,6 +38,7 @@ ScrollView {
 
         delegate: Frame {
             id: postFrame
+            width: rootListView.width
             topPadding: 10
             leftPadding: 10
             rightPadding: 10
@@ -45,18 +46,18 @@ ScrollView {
 
             ColumnLayout {
                 ReactionAuthor {
-                    visible: model.hasParent
-                    source: "../images/reply.png"
-                    displayName: model.parentDisplayName
-                    handle: model.parentHandle
-                    color: Material.color(Material.Blue)
-                }
-                ReactionAuthor {
                     visible: model.isRepostedBy
                     source: "../images/repost.png"
                     displayName: model.repostedByDisplayName
                     handle: model.repostedByHandle
                     color: Material.color(Material.Green)
+                }
+                ReactionAuthor {
+                    visible: model.hasParent
+                    source: "../images/reply.png"
+                    displayName: model.parentDisplayName
+                    handle: model.parentHandle
+                    color: Material.color(Material.Blue)
                 }
 
                 RowLayout {
@@ -74,7 +75,8 @@ ScrollView {
                         Layout.fillWidth: true
                         spacing: 5
 
-                        property int basisWidth: rootListView.width - postFrame.padding * 2 - postLayout.spacing - postImage.Layout.preferredWidth
+                        property int basisWidth: postFrame.width - postFrame.leftPadding - postFrame.rightPadding -
+                                                 postLayout.spacing - postImage.Layout.preferredWidth
 
                         Author {
                             Layout.maximumWidth: parent.basisWidth

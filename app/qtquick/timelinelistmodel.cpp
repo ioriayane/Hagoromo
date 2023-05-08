@@ -18,12 +18,46 @@ TimelineListModel::TimelineListModel(QObject *parent) : QAbstractListModel { par
         //            ++i;
         //        }
         if (success) {
-            beginInsertRows(QModelIndex(), 0, m_timeline.feedList()->count() - 1);
-            for (const AppBskyFeedDefs::FeedViewPost &item : *m_timeline.feedList()) {
-                m_cidList.append(item.post.cid);
-                m_viewPostHash[item.post.cid] = item;
+            QDateTime reference_time;
+            if (m_cidList.count() > 0) {
+                reference_time = QDateTime::fromString(
+                        m_viewPostHash[m_cidList.at(0)].post.indexedAt, Qt::ISODateWithMs);
+            } else if (m_timeline.feedList()->count() > 0) {
+                reference_time = QDateTime::fromString(m_timeline.feedList()->last().post.indexedAt,
+                                                       Qt::ISODateWithMs);
+            } else {
+                reference_time = QDateTime::currentDateTimeUtc();
             }
-            endInsertRows();
+            for (auto item = m_timeline.feedList()->crbegin();
+                 item != m_timeline.feedList()->crend(); item++) {
+
+                m_viewPostHash[item->post.cid] = *item;
+
+                if (m_cidList.contains(item->post.cid)) {
+                    if (item->reason_type
+                                == AppBskyFeedDefs::FeedViewPostReasonType::reason_ReasonRepost
+                        && (QDateTime::fromString(item->post.indexedAt, Qt::ISODateWithMs)
+                            > reference_time)) {
+                        // repostのときはいったん消す（上に持っていく）
+                        int r = m_cidList.indexOf(item->post.cid);
+                        beginMoveRows(QModelIndex(), r, r, QModelIndex(), 0);
+                        m_cidList.move(r, 0);
+                        endMoveRows();
+                    } else {
+                        // リストは更新しないでデータのみ入れ替える
+                        // リプライ数とかだけ更新をUIに通知
+                        // （取得できた範囲でしか更新できないのだけど・・・）
+                        int pos = m_cidList.indexOf(item->post.cid);
+                        emit dataChanged(index(pos), index(pos),
+                                         QVector<int>() << ReplyCountRole << RepostCountRole
+                                                        << LikeCountRole);
+                    }
+                } else {
+                    beginInsertRows(QModelIndex(), 0, 0);
+                    m_cidList.insert(0, item->post.cid);
+                    endInsertRows();
+                }
+            }
         }
     });
 }
