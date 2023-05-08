@@ -39,10 +39,26 @@ ScrollView {
         delegate: Frame {
             id: postFrame
             width: rootListView.width
-            padding: 10
+            topPadding: 10
+            leftPadding: 10
+            rightPadding: 10
+            bottomPadding: 10
 
             property int basisWidth: rootListView.width - postFrame.padding * 2 - postLayout.spacing - reasonImage.width
 
+            states: [
+                State {
+                    when: model.reason === NotificationListModel.ReasonReply
+                    PropertyChanges { target: postFrame; bottomPadding: 0 }
+                    PropertyChanges { target: postControls; visible: true }
+                },
+                State {
+                    when: model.reason === NotificationListModel.ReasonQuote
+                    PropertyChanges { target: postFrame; bottomPadding: 0 }
+                    PropertyChanges { target: postControls; visible: true }
+                }
+
+            ]
             RowLayout {
                 id: postLayout
                 Image {
@@ -51,17 +67,17 @@ ScrollView {
                     Layout.preferredHeight: 16
                     Layout.alignment: Qt.AlignTop
                     source: {
-                        if(model.reason === "like"){
+                        if(model.reason === NotificationListModel.ReasonLike){
                             return "../images/like.png"
-                        }else if(model.reason === "repost"){
+                        }else if(model.reason === NotificationListModel.ReasonRepost){
                             return "../images/repost.png"
-                        }else if(model.reason === "follow"){
+                        }else if(model.reason === NotificationListModel.ReasonFollow){
                             return "../images/add_user.png"
-                        }else if(model.reason === "mention"){
+                        }else if(model.reason === NotificationListModel.ReasonMention){
                             return "../images/reply.png"
-                        }else if(model.reason === "reply"){
+                        }else if(model.reason === NotificationListModel.ReasonReply){
                             return "../images/reply.png"
-                        }else if(model.reason === "quote"){
+                        }else if(model.reason === NotificationListModel.ReasonQuote){
                             return "../images/reply.png"
                         }else{
                             return "../images/like.png"
@@ -70,17 +86,17 @@ ScrollView {
                     layer.enabled: true
                     layer.effect: ColorOverlay {
                         color: {
-                            if(model.reason === "like"){
+                            if(model.reason === NotificationListModel.ReasonLike){
                                 return Material.color(Material.Pink)
-                            }else if(model.reason === "repost"){
+                            }else if(model.reason === NotificationListModel.ReasonRepost){
                                 return Material.color(Material.Green)
-                            }else if(model.reason === "follow"){
+                            }else if(model.reason === NotificationListModel.ReasonFollow){
                                 return Material.color(Material.LightBlue)
-                            }else if(model.reason === "mention"){
+                            }else if(model.reason === NotificationListModel.ReasonMention){
                                 return Material.color(Material.Blue)
-                            }else if(model.reason === "reply"){
+                            }else if(model.reason === NotificationListModel.ReasonReply){
                                 return Material.color(Material.BlueGrey)
-                            }else if(model.reason === "quote"){
+                            }else if(model.reason === NotificationListModel.ReasonQuote){
                                 return Material.color(Material.Lime)
                             }else{
                                 return Material.color(Material.Grey)
@@ -91,6 +107,8 @@ ScrollView {
 
                 ColumnLayout {
                     Layout.fillWidth: true
+                    spacing: 5
+
                     RowLayout {
                         Image {
                             Layout.preferredWidth: 16
@@ -108,6 +126,15 @@ ScrollView {
 //                    Label {
 //                        text: "test"
 //                    }
+
+                    PostControls {
+                        id: postControls
+                        visible: false
+                        replyButtonText: "0" //model.replyCount
+                        repostButtonText: "0" //model.repostCount
+                        likeButtonText: "0" //model.likeCount
+                    }
+
                 }
             }
         }

@@ -34,8 +34,23 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
                 .toLocalTime()
                 .toString("MM/dd hh:mm");
 
-    else if (role == ReasonRole)
-        return current.reason;
+    else if (role == ReasonRole) {
+        if (current.reason == "like") {
+            return NotificationListModelReason::ReasonLike;
+        } else if (current.reason == "repost") {
+            return NotificationListModelReason::ReasonRepost;
+        } else if (current.reason == "follow") {
+            return NotificationListModelReason::ReasonFollow;
+        } else if (current.reason == "mention") {
+            return NotificationListModelReason::ReasonMention;
+        } else if (current.reason == "reply") {
+            return NotificationListModelReason::ReasonReply;
+        } else if (current.reason == "quote") {
+            return NotificationListModelReason::ReasonQuote;
+        } else {
+            return NotificationListModelReason::ReasonUnknown;
+        }
+    }
 
     return QVariant();
 }

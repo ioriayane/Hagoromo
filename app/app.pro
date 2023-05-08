@@ -41,6 +41,7 @@ QML_FILES = \
     qml/dialogs/PostDialog.qml \
     qml/parts/ImagePreview.qml \
     qml/parts/Author.qml \
+    qml/parts/PostControls.qml \
     qml/parts/ReactionAuthor.qml \
     qml/view/TimelineView.qml \
     qml/view/NotificationListView.qml

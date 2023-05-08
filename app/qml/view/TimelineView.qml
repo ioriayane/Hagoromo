@@ -132,31 +132,10 @@ ScrollView {
                             }
                         }
 
-                        RowLayout {
-                            spacing: 10
-                            IconButton {
-                                Layout.preferredHeight: 30
-                                iconSource: "../images/reply.png"
-                                iconText: model.replyCount
-                            }
-                            IconButton {
-                                Layout.preferredHeight: 30
-                                iconSource: "../images/repost.png"
-                                iconText: model.repostCount
-                            }
-                            IconButton {
-                                Layout.preferredHeight: 30
-                                iconSource: "../images/like.png"
-                                iconText: model.likeCount
-                            }
-                            Item {
-                                Layout.fillWidth: true
-                                height: 1
-                            }
-                            IconButton {
-                                Layout.preferredHeight: 30
-                                iconSource: "../images/more.png"
-                            }
+                        PostControls {
+                            replyButtonText: model.replyCount
+                            repostButtonText: model.repostCount
+                            likeButtonText: model.likeCount
                         }
                     }
                 }

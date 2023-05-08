@@ -25,6 +25,17 @@ public:
     };
     Q_ENUM(NotificationListModelRoles)
 
+    enum NotificationListModelReason {
+        ReasonUnknown,
+        ReasonLike,
+        ReasonRepost,
+        ReasonFollow,
+        ReasonMention,
+        ReasonReply,
+        ReasonQuote,
+    };
+    Q_ENUM(NotificationListModelReason)
+
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
