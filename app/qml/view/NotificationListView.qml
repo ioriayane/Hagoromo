@@ -44,8 +44,6 @@ ScrollView {
             rightPadding: 10
             bottomPadding: 10
 
-            property int basisWidth: rootListView.width - postFrame.padding * 2 - postLayout.spacing - reasonImage.width
-
             states: [
                 State {
                     when: model.reason === NotificationListModel.ReasonReply
@@ -106,17 +104,24 @@ ScrollView {
                 }
 
                 ColumnLayout {
+                    id: bodyLayout
                     Layout.fillWidth: true
                     spacing: 5
 
+                    property int basisWidth: postFrame.width - postFrame.leftPadding - postFrame.rightPadding -
+                                             postLayout.spacing - reasonImage.width - avatorImage.width
+
                     RowLayout {
                         Image {
+                            id: avatorImage
                             Layout.preferredWidth: 16
                             Layout.preferredHeight: 16
                             source: model.avatar
                         }
                         Author {
-                            Layout.fillWidth: true
+                            Layout.preferredWidth: bodyLayout.basisWidth
+                            Layout.maximumWidth: bodyLayout.basisWidth
+//                            Layout.fillWidth: true
                             displayName: model.displayName
                             handle: model.handle
                             indexedAt: model.indexedAt
