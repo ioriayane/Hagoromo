@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
+import Qt.labs.settings 1.1
 
 import tech.relog.hagoromo.accountlistmodel 1.0
 
@@ -15,6 +16,10 @@ ApplicationWindow {
     title: qsTr("Hagromo")
 
     Material.theme: Material.Dark
+
+    SettingDialog {
+        id: settingDialog
+    }
 
     PostDialog {
         id: postDialog
@@ -75,12 +80,13 @@ ApplicationWindow {
         }
     }
 
+
     //カラムの情報管理
     ListModel {
         id: columnManageModel
         ListElement {
             key: "abcdef"
-            account_uuid: "{56a9ca8d-c6e1-4a00-b2ba-15c569419883}"
+            account_uuid: "{a51d2b54-2a28-40e2-b813-cf6a66f5027b}"
             account_index: 1
             component_type: "timeline"
         }
@@ -140,13 +146,8 @@ ApplicationWindow {
     }
 
     Component {
-        id: timelineComponent
-        TimelineView {
-        }
-    }
-    Component {
-        id: listNotificationComponent
-        NotificationListView {
+        id: columnView
+        ColumnView {
         }
     }
 
@@ -201,6 +202,8 @@ ApplicationWindow {
                     // display: AbstractButton.TextBesideIcon
                     icon.source: "images/settings.png"
                     text: qsTr("Settings")
+
+                    onClicked: settingDialog.open()
                 }
             }
         }
@@ -213,6 +216,7 @@ ApplicationWindow {
             id: scrollView
             Layout.fillWidth: true
             Layout.fillHeight: true
+            Layout.leftMargin: 2
             ScrollBar.vertical.policy: ScrollBar.AlwaysOff
             ScrollBar.vertical.interactive: false
             ScrollBar.vertical.snapMode: ScrollBar.SnapAlways
@@ -240,19 +244,12 @@ ApplicationWindow {
 
                         if(exist){
                             // 既にある
-                        }else if(component_type === "timeline"){
+                        }else{
                             repeater.model.append({
                                                       "key": key,
                                                       "account_uuid": account_uuid,
                                                       "account_index": account_index,
-                                                      "component": timelineComponent
-                                                  })
-                        }else if(component_type === "listNotification"){
-                            repeater.model.append({
-                                                      "key": key,
-                                                      "account_uuid": account_uuid,
-                                                      "account_index": account_index,
-                                                      "component": listNotificationComponent
+                                                      "component_type": component_type
                                                   })
                         }
                     }
@@ -261,7 +258,8 @@ ApplicationWindow {
                                      //console.log("" + index + ":" + item + ":" + repeater.model.get(index).account_index)
                                      item.account_uuid = repeater.model.get(index).account_uuid
                                      item.account_index = repeater.model.get(index).account_index
-                                     item.sourceComponent = repeater.model.get(index).component
+                                     item.component_type = repeater.model.get(index).component_type
+                                     item.sourceComponent = columnView
                                  }
 
                     Loader {
@@ -273,19 +271,22 @@ ApplicationWindow {
 
                         property string account_uuid: ""
                         property int account_index: -1
+                        property string component_type: ""
+
                         onLoaded: {
                             // ③Loaderで読み込んだComponentにアカウント情報など設定する
                             console.log("loader:" + loader.account_index + ", " + loader.account_uuid)
                             if(loader.account_index < 0)
                                 return
                             var i = loader.account_index
-                            item.model.setAccount(accountListModel.item(i, AccountListModel.ServiceRole),
-                                                  accountListModel.item(i, AccountListModel.DidRole),
-                                                  accountListModel.item(i, AccountListModel.HandleRole),
-                                                  accountListModel.item(i, AccountListModel.EmailRole),
-                                                  accountListModel.item(i, AccountListModel.AccessJwtRole),
-                                                  accountListModel.item(i, AccountListModel.RefreshJwtRole))
-                            item.model.getLatest()
+                            item.componentType = loader.component_type
+                            item.service = accountListModel.item(i, AccountListModel.ServiceRole)
+                            item.did = accountListModel.item(i, AccountListModel.DidRole)
+                            item.handle = accountListModel.item(i, AccountListModel.HandleRole)
+                            item.email = accountListModel.item(i, AccountListModel.EmailRole)
+                            item.accessJwt = accountListModel.item(i, AccountListModel.AccessJwtRole)
+                            item.refreshJwt = accountListModel.item(i, AccountListModel.RefreshJwtRole)
+                            item.load()
                         }
                     }
                 }

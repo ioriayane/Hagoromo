@@ -11,6 +11,7 @@ import "../controls"
 ScrollView {
     ScrollBar.vertical.policy: ScrollBar.AlwaysOn
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+    clip: true
 
     property alias model: rootListView.model
     ListView {

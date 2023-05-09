@@ -44,6 +44,7 @@ QML_FILES = \
     qml/parts/Author.qml \
     qml/parts/PostControls.qml \
     qml/parts/ReactionAuthor.qml \
+    qml/view/ColumnView.qml \
     qml/view/TimelineView.qml \
     qml/view/NotificationListView.qml
 

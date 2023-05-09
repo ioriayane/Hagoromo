@@ -19,7 +19,7 @@ TimelineListModel::TimelineListModel(QObject *parent) : QAbstractListModel { par
         //        }
         if (success) {
             QDateTime reference_time;
-            if (m_cidList.count() > 0) {
+            if (m_cidList.count() > 0 && m_viewPostHash.count() > 0) {
                 reference_time = QDateTime::fromString(
                         m_viewPostHash[m_cidList.at(0)].post.indexedAt, Qt::ISODateWithMs);
             } else if (m_timeline.feedList()->count() > 0) {
@@ -30,7 +30,6 @@ TimelineListModel::TimelineListModel(QObject *parent) : QAbstractListModel { par
             }
             for (auto item = m_timeline.feedList()->crbegin();
                  item != m_timeline.feedList()->crend(); item++) {
-
                 m_viewPostHash[item->post.cid] = *item;
 
                 if (m_cidList.contains(item->post.cid)) {
@@ -40,9 +39,11 @@ TimelineListModel::TimelineListModel(QObject *parent) : QAbstractListModel { par
                             > reference_time)) {
                         // repostのときはいったん消す（上に持っていく）
                         int r = m_cidList.indexOf(item->post.cid);
-                        beginMoveRows(QModelIndex(), r, r, QModelIndex(), 0);
-                        m_cidList.move(r, 0);
-                        endMoveRows();
+                        if (r > 0) {
+                            beginMoveRows(QModelIndex(), r, r, QModelIndex(), 0);
+                            m_cidList.move(r, 0);
+                            endMoveRows();
+                        }
                     } else {
                         // リストは更新しないでデータのみ入れ替える
                         // リプライ数とかだけ更新をUIに通知
