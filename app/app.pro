@@ -39,6 +39,7 @@ QML_FILES = \
     qml/dialogs/AddColumnDialog.qml \
     qml/dialogs/LoginDialog.qml \
     qml/dialogs/PostDialog.qml \
+    qml/dialogs/SettingDialog.qml \
     qml/parts/ImagePreview.qml \
     qml/parts/Author.qml \
     qml/parts/PostControls.qml \
