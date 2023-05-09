@@ -5,7 +5,7 @@ import QtQuick.Controls.Material 2.15
 import QtGraphicalEffects 1.15
 
 Dialog {
-    id: root
+    id: addColumnDialog
     modal: true
     x: (parent.width - width) * 0.5
     y: (parent.height - height) * 0.5
@@ -66,7 +66,7 @@ Dialog {
         RowLayout {
             Button {
                 text: qsTr("Cancel")
-                onClicked: root.reject()
+                onClicked: addColumnDialog.reject()
             }
             Item {
                 Layout.fillWidth: true
@@ -74,7 +74,7 @@ Dialog {
             Button {
                 enabled: accountList.currentIndex >= 0 && typeList.currentIndex >= 0
                 text: qsTr("Add")
-                onClicked: root.accept()
+                onClicked: addColumnDialog.accept()
             }
         }
     }

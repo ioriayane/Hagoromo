@@ -6,7 +6,7 @@ import tech.relog.hagoromo.createrecord 1.0
 import tech.relog.hagoromo.accountlistmodel 1.0
 
 Dialog {
-    id: root
+    id: postDialog
     modal: true
     x: (parent.width - width) * 0.5
     y: (parent.height - height) * 0.5
@@ -20,7 +20,7 @@ Dialog {
                         console.log("CreateRecord::onFinished " + success)
                         if(success){
                             postText.clear()
-                            root.close()
+                            postDialog.close()
                         }
                     }
     }
@@ -39,7 +39,7 @@ Dialog {
         }
         TextField {
             id: postText
-            Layout.preferredWidth: root.parentWidth * 0.5
+            Layout.preferredWidth: postDialog.parentWidth * 0.5
             Layout.preferredHeight: 100
             verticalAlignment: TextInput.AlignTop
             wrapMode: TextInput.WordWrap
@@ -56,12 +56,12 @@ Dialog {
             text: qsTr("Post")
             onClicked: {
                 var row = accountCombo.currentIndex;
-                createRecord.setAccount(root.accountModel.item(row, AccountListModel.ServiceRole),
-                                        root.accountModel.item(row, AccountListModel.DidRole),
-                                        root.accountModel.item(row, AccountListModel.HandleRole),
-                                        root.accountModel.item(row, AccountListModel.EmailRole),
-                                        root.accountModel.item(row, AccountListModel.AccessJwtRole),
-                                        root.accountModel.item(row, AccountListModel.RefreshJwtRole))
+                createRecord.setAccount(postDialog.accountModel.item(row, AccountListModel.ServiceRole),
+                                        postDialog.accountModel.item(row, AccountListModel.DidRole),
+                                        postDialog.accountModel.item(row, AccountListModel.HandleRole),
+                                        postDialog.accountModel.item(row, AccountListModel.EmailRole),
+                                        postDialog.accountModel.item(row, AccountListModel.AccessJwtRole),
+                                        postDialog.accountModel.item(row, AccountListModel.RefreshJwtRole))
 
                 createRecord.post(postText.text)
             }

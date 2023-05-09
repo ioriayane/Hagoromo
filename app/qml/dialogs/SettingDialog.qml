@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 
 Dialog {
-    id: root
+    id: settingDialog
     modal: true
     x: (parent.width - width) * 0.5
     y: (parent.height - height) * 0.5

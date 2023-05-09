@@ -8,7 +8,7 @@ import tech.relog.hagoromo.accountlistmodel 1.0
 import "../controls"
 
 Dialog {
-    id: root
+    id: accountDialog
     modal: true
     x: (parent.width - width) * 0.5
     y: (parent.height - height) * 0.5
@@ -96,7 +96,7 @@ Dialog {
         }
         Button {
             text: qsTr("Close")
-            onClicked: root.close()
+            onClicked: accountDialog.close()
         }
     }
 }

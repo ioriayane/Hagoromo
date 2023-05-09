@@ -9,8 +9,8 @@ Button {
 
     Layout.preferredWidth: buttonContextLayout.width
 
-    property string iconSource: ""
-    property string iconText: ""
+    property alias iconSource: iconImage.source
+    property alias iconText: iconLabel.text
 
     RowLayout {
         id: buttonContextLayout
@@ -18,21 +18,21 @@ Button {
 
         spacing: 0
         Image {
+            id: iconImage
             Layout.preferredWidth: button.height * 0.5
             Layout.preferredHeight: button.height * 0.5
             Layout.leftMargin: 5
             Layout.rightMargin: 5
-            source: button.iconSource
             layer.enabled: true
             layer.effect: ColorOverlay {
                 color: Material.foreground
             }
         }
         Label {
+            id: iconLabel
             Layout.leftMargin: 0
             Layout.rightMargin: 5
             visible: button.iconText.length > 0
-            text: button.iconText
         }
     }
 }

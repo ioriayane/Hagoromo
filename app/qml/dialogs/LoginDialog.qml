@@ -5,7 +5,7 @@ import QtQuick.Layouts 1.15
 import tech.relog.hagoromo.createsession 1.0
 
 Dialog {
-    id: root
+    id: loginDialog
     modal: true
     x: (parent.width - width) * 0.5
     y: (parent.height - height) * 0.5
@@ -26,7 +26,7 @@ Dialog {
         onFinished: (success) => {
                       console.log("created:" + success)
                       if(success){
-                          root.accept()
+                          loginDialog.accept()
                       }else{
                           // NG
                       }
@@ -43,7 +43,7 @@ Dialog {
         }
         TextField {
             id: serviceTextInput
-            Layout.minimumWidth: root.parentWidth
+            Layout.minimumWidth: loginDialog.parentWidth
             enabled: !session.running
             placeholderText: "https://bsky.social etc..."
         }
@@ -70,7 +70,7 @@ Dialog {
         Button {
             Layout.alignment: Qt.AlignLeft
             text: qsTr("Cancel")
-            onClicked: root.close()
+            onClicked: loginDialog.close()
         }
         Button {
             Layout.alignment: Qt.AlignRight

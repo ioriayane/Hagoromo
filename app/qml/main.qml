@@ -11,6 +11,7 @@ import "dialogs"
 import "view"
 
 ApplicationWindow {
+    id: appWindow
     width: 800
     height: 480
     visible: true
@@ -111,6 +112,7 @@ ApplicationWindow {
     }
 
     RowLayout {
+        id: rootLayout
         anchors.fill: parent
         spacing: 0
         Rectangle {
@@ -243,6 +245,7 @@ ApplicationWindow {
                             item.email = accountListModel.item(i, AccountListModel.EmailRole)
                             item.accessJwt = accountListModel.item(i, AccountListModel.AccessJwtRole)
                             item.refreshJwt = accountListModel.item(i, AccountListModel.RefreshJwtRole)
+                            item.rootItem = rootLayout
                             item.load()
                         }
                     }
