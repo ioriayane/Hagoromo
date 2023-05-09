@@ -5,6 +5,7 @@
 #include "qtquick/createsession.h"
 #include "qtquick/createrecord.h"
 #include "qtquick/accountlistmodel.h"
+#include "qtquick/columnlistmodel.h"
 #include "qtquick/notificationlistmodel.h"
 #include "qtquick/timelinelistmodel.h"
 
@@ -26,6 +27,8 @@ int main(int argc, char *argv[])
     qmlRegisterType<CreateRecord>("tech.relog.hagoromo.createrecord", 1, 0, "CreateRecord");
     qmlRegisterType<AccountListModel>("tech.relog.hagoromo.accountlistmodel", 1, 0,
                                       "AccountListModel");
+    qmlRegisterType<ColumnListModel>("tech.relog.hagoromo.columnlistmodel", 1, 0,
+                                     "ColumnListModel");
     qmlRegisterType<NotificationListModel>("tech.relog.hagoromo.notificationlistmodel", 1, 0,
                                            "NotificationListModel");
     qmlRegisterType<TimelineListModel>("tech.relog.hagoromo.timelinelistmodel", 1, 0,

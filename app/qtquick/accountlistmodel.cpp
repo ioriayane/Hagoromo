@@ -1,8 +1,7 @@
 #include "accountlistmodel.h"
+#include "common.h"
 #include "../atprotocol/comatprotoservercreatesession.h"
 
-#include <QStandardPaths>
-#include <QCoreApplication>
 #include <QCryptographicHash>
 #include <QByteArray>
 #include <QSettings>
@@ -173,42 +172,37 @@ void AccountListModel::save() const
         account_array.append(account_item);
     }
 
-    QString folder = appDataFolder();
-    QDir dir(folder);
-    dir.mkpath(folder);
-    QFile file(QString("%1/account.json").arg(folder));
-    if (file.open(QFile::WriteOnly)) {
-        QJsonDocument doc(account_array);
-        file.write(doc.toJson());
-        file.close();
-    }
+    //    QString folder = Common::appDataFolder();
+    //    QDir dir(folder);
+    //    dir.mkpath(folder);
+    //    QFile file(QString("%1/account.json").arg(folder));
+    //    if (file.open(QFile::WriteOnly)) {
+    //        QJsonDocument doc(account_array);
+    //        file.write(doc.toJson());
+    //        file.close();
+    //    }
+    Common::saveJsonDocument(QJsonDocument(account_array), QStringLiteral("account.json"));
 }
 
 void AccountListModel::load()
 {
     m_accountList.clear();
 
-    QString folder = appDataFolder();
-    QFile file(QString("%1/account.json").arg(folder));
-    if (file.open(QFile::ReadOnly)) {
-        QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
-        file.close();
+    QJsonDocument doc = Common::loadJsonDocument(QStringLiteral("account.json"));
 
-        if (doc.isArray()) {
-            for (int i = 0; i < doc.array().count(); i++) {
-                if (doc.array().at(i).isObject()) {
-                    AccountData item;
-                    item.uuid = doc.array().at(i).toObject().value("uuid").toString();
-                    item.service = doc.array().at(i).toObject().value("service").toString();
-                    item.identifier = doc.array().at(i).toObject().value("identifier").toString();
-                    item.password =
-                            decrypt(doc.array().at(i).toObject().value("password").toString());
+    if (doc.isArray()) {
+        for (int i = 0; i < doc.array().count(); i++) {
+            if (doc.array().at(i).isObject()) {
+                AccountData item;
+                item.uuid = doc.array().at(i).toObject().value("uuid").toString();
+                item.service = doc.array().at(i).toObject().value("service").toString();
+                item.identifier = doc.array().at(i).toObject().value("identifier").toString();
+                item.password = decrypt(doc.array().at(i).toObject().value("password").toString());
 
-                    m_accountList.append(item);
+                m_accountList.append(item);
 
-                    updateSession(m_accountList.count() - 1, item.service, item.identifier,
-                                  item.password);
-                }
+                updateSession(m_accountList.count() - 1, item.service, item.identifier,
+                              item.password);
             }
         }
     }
@@ -296,14 +290,6 @@ QString AccountListModel::decrypt(const QString &data) const
     EVP_CIPHER_CTX_free(ctx);
 
     return QString::fromUtf8(decrypted_data);
-}
-
-QString AccountListModel::appDataFolder() const
-{
-    return QString("%1/%2/%3")
-            .arg(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation))
-            .arg(QCoreApplication::organizationName())
-            .arg(QCoreApplication::applicationName());
 }
 
 void AccountListModel::updateSession(int row, const QString &service, const QString &identifier,

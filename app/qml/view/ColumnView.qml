@@ -2,6 +2,8 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
+import tech.relog.hagoromo.columnlistmodel 1.0
+
 ColumnLayout {
     id: columnView
     spacing: 0
@@ -27,9 +29,9 @@ ColumnLayout {
     }
 
     function load(){
-        if(componentType === "timeline"){
+        if(componentType === ColumnListModel.Timeline){
             loader.sourceComponent = timelineComponent
-        }else if(componentType === "listNotification"){
+        }else if(componentType === ColumnListModel.Notification){
             loader.sourceComponent = listNotificationComponent
         }else{
             loader.sourceComponent = timelineComponent

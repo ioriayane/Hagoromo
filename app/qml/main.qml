@@ -5,6 +5,7 @@ import QtQuick.Controls.Material 2.15
 import Qt.labs.settings 1.1
 
 import tech.relog.hagoromo.accountlistmodel 1.0
+import tech.relog.hagoromo.columnlistmodel 1.0
 
 import "dialogs"
 import "view"
@@ -30,13 +31,16 @@ ApplicationWindow {
         id: addColumnDialog
         accountModel: accountListModel
         onAccepted: {
-            var component_type = "timeline"
+            console.log("selectedAccountIndex=" + selectedAccountIndex + ", selectedTypeIndex=" + selectedTypeIndex)
+            var component_type = 0
             if(selectedTypeIndex == 0){
-                component_type = "timeline"
+                component_type = 1
             }else if(selectedTypeIndex == 1){
-                component_type = "listNotification"
+                component_type = 2
             }
-            columnManageModel.appendColumn(selectedAccountIndex, component_type)
+            columnManageModel.append(accountListModel.item(selectedAccountIndex, AccountListModel.UuidRole),
+                                     selectedAccountIndex,
+                                     component_type)
             columnManageModel.sync()
         }
     }
@@ -65,10 +69,10 @@ ApplicationWindow {
         function syncColumn(){
             // アカウント一覧にないものを消す
             var exist = false
-            for(var i=columnManageModel.count-1; i>=0; i--){
+            for(var i=columnManageModel.rowCount()-1; i>=0; i--){
                 exist = false
                 for(var a=0; a<accountListModel.rowCount();a++){
-                    if(columnManageModel.get(i).account_uuid === accountListModel.item(a, AccountListModel.UuidRole)){
+                    if(columnManageModel.item(i, ColumnListModel.AccountUuidRole) === accountListModel.item(a, AccountListModel.UuidRole)){
                         exist = true
                     }
                 }
@@ -82,63 +86,20 @@ ApplicationWindow {
 
 
     //カラムの情報管理
-    ListModel {
+    ColumnListModel {
         id: columnManageModel
-        ListElement {
-            key: "abcdef"
-            account_uuid: "{a51d2b54-2a28-40e2-b813-cf6a66f5027b}"
-            account_index: 1
-            component_type: "timeline"
-        }
-        ListElement {
-            key: "ghijkl"
-            account_uuid: "{56a9ca8d-c6e1-4a00-b2ba-15c569419882}"
-            account_index: 0
-            component_type: "listNotification"
-        }
 
-        function makeKey(){
-            var key = ""
-            for(var i=0; i<5; i++){
-                key += Math.floor(Math.random() * 16).toString(16)
-            }
-            return key
-        }
-
-        function appendColumn(account_index, component_type) {
-            columnManageModel.append({
-                                         "key": makeKey(),
-                                         "account_uuid": accountListModel.item(account_index, AccountListModel.UuidRole),
-                                         "account_index": account_index,
-                                         "component_type": component_type
-                                     })
-        }
-        function removeColumnFromLoader(key){
-            // カラム基準の操作で消すとき
-            for(var i=columnManageModel.count-1; i>=0; i--){
-                if(columnManageModel.get(i).key === key){
-                    columnManageModel.remove(i)
-                }
-            }
-        }
         function sync() {
             // 追加or更新
-            for(var i=0; i<columnManageModel.count; i++){
-                repeater.append(columnManageModel.get(i).key,
-                                columnManageModel.get(i).account_uuid,
-                                columnManageModel.get(i).account_index,
-                                columnManageModel.get(i).component_type)
+            for(var i=0; i<columnManageModel.rowCount(); i++){
+                repeater.append(columnManageModel.item(i, ColumnListModel.KeyRole),
+                                columnManageModel.item(i, ColumnListModel.AccountUuidRole),
+                                columnManageModel.item(i, ColumnListModel.AccountIndexRole),
+                                columnManageModel.item(i, ColumnListModel.ComponentTypeRole))
             }
             // カラムの管理情報から消えているLoaderを消す
-            var exist = false
             for(var r=repeater.model.count-1; r>=0; r--){
-                exist = false
-                for(var c=0; c<columnManageModel.count; c++){
-                    if(repeater.model.get(r).key === columnManageModel.get(c).key){
-                        exist = true
-                    }
-                }
-                if(exist === false){
+                if(columnManageModel.containsKey(repeater.model.get(r).key) === false){
                     repeater.model.remove(r)
                 }
             }
@@ -234,6 +195,7 @@ ApplicationWindow {
                     function append(key, account_uuid, account_index, component_type){
                         // accountListModelで管理するアカウントのindexと表示に使うコンポを指定
                         // ①ここでLoaderを追加する
+                        console.log("append:" + account_index + ", " + account_uuid + ", " + component_type)
                         var exist = false
                         for(var i=0; i<repeater.model.count; i++){
                             if(repeater.model.get(i).key === key){
@@ -255,7 +217,7 @@ ApplicationWindow {
                     }
                     onItemAdded: (index, item) => {
                                      // ②Repeaterに追加されたLoaderにTLを表示するComponentを追加する
-                                     //console.log("" + index + ":" + item + ":" + repeater.model.get(index).account_index)
+                                     console.log("onItemAdded:" + index + ":" + item + ":" + repeater.model.get(index).account_index)
                                      item.account_uuid = repeater.model.get(index).account_uuid
                                      item.account_index = repeater.model.get(index).account_index
                                      item.component_type = repeater.model.get(index).component_type
@@ -383,19 +345,19 @@ ApplicationWindow {
                             text: "account_uuid"
                         }
                         Label {
-                            text: model.account_uuid
+                            text: model.accountUuid
                         }
                         Label {
                             text: "account_index"
                         }
                         Label {
-                            text: model.account_index
+                            text: model.accountIndex
                         }
                         Label {
                             text: "component_type"
                         }
                         Label {
-                            text: model.component_type
+                            text: model.componentType
                         }
                         Label {
                             text: "-"
