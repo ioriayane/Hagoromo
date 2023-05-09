@@ -2,6 +2,8 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
+import "../controls"
+
 GridLayout {
     id: imagePreviewLayout
     visible: embedImages.length > 0
@@ -17,7 +19,7 @@ GridLayout {
     Repeater {
         id: repeater
         model: imagePreviewLayout.embedImages.split("\n")
-        delegate: Image {
+        delegate: ImageWithIndicator {
             property bool isWide: (repeater.count % 2 === 1 && model.index === (repeater.count - 1))
             Layout.preferredWidth: isWide ? imagePreviewLayout.layoutWidth : imagePreviewLayout.cellWidth
             Layout.preferredHeight: imagePreviewLayout.cellWidth

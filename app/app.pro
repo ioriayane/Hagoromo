@@ -33,11 +33,13 @@ HEADERS += \
     qtquick/createrecord.h \
     qtquick/createsession.h \
     qtquick/notificationlistmodel.h \
+    qtquick/thumbnailprovider.h \
     qtquick/timelinelistmodel.h
 
 QML_FILES = \
     qml/main.qml \
     qml/controls/IconButton.qml \
+    qml/controls/ImageWithIndicator.qml \
     qml/dialogs/AccountDialog.qml \
     qml/dialogs/AddColumnDialog.qml \
     qml/dialogs/LoginDialog.qml \

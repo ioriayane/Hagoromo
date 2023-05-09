@@ -8,6 +8,7 @@
 #include "qtquick/columnlistmodel.h"
 #include "qtquick/notificationlistmodel.h"
 #include "qtquick/timelinelistmodel.h"
+#include "qtquick/thumbnailprovider.h"
 
 int main(int argc, char *argv[])
 {
@@ -35,6 +36,9 @@ int main(int argc, char *argv[])
                                        "TimelineListModel");
 
     QQmlApplicationEngine engine;
+
+    engine.addImageProvider(QStringLiteral("thumbnail"), new ThumbnailProvider);
+
     const QUrl url("qrc:/Hagoromo/qml/main.qml");
     QObject::connect(
             &engine, &QQmlApplicationEngine::objectCreated, &app,
