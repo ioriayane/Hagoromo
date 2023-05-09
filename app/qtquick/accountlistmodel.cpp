@@ -158,6 +158,16 @@ void AccountListModel::removeAccount(int row)
     save();
 }
 
+int AccountListModel::indexAt(const QString &uuid)
+{
+    for (int i = 0; i < m_accountList.count(); i++) {
+        if (m_accountList.at(i).uuid == uuid) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 void AccountListModel::save() const
 {
     QSettings settings;

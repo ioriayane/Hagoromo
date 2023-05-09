@@ -14,6 +14,7 @@ ColumnListModel::ColumnListModel(QObject *parent) : QAbstractListModel { parent 
 
 int ColumnListModel::rowCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent)
     return m_columnList.count();
 }
 
@@ -31,8 +32,6 @@ QVariant ColumnListModel::item(int row, ColumnListModelRoles role) const
         return m_columnList.at(row).key;
     else if (role == AccountUuidRole)
         return m_columnList.at(row).account_uuid;
-    else if (role == AccountIndexRole)
-        return m_columnList.at(row).account_index;
     else if (role == ComponentTypeRole)
         return static_cast<int>(m_columnList.at(row).component_type);
 
@@ -48,21 +47,17 @@ void ColumnListModel::update(int row, ColumnListModelRoles role, const QVariant 
         m_columnList[row].key = value.toString();
     else if (role == AccountUuidRole)
         m_columnList[row].account_uuid = value.toString();
-    else if (role == AccountIndexRole)
-        m_columnList[row].account_index = value.toString();
     else if (role == ComponentTypeRole)
         m_columnList[row].component_type = static_cast<ColumnComponentType>(value.toInt());
 
     emit dataChanged(index(row), index(row));
 }
 
-void ColumnListModel::append(const QString &account_uuid, const QString &account_index,
-                             ColumnComponentType component_type)
+void ColumnListModel::append(const QString &account_uuid, ColumnComponentType component_type)
 {
     ColumnItem item;
     item.key = QUuid::createUuid().toString();
     item.account_uuid = account_uuid;
-    item.account_index = account_index;
     item.component_type = component_type;
 
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
@@ -118,7 +113,6 @@ void ColumnListModel::save() const
         QJsonObject column_item;
         column_item["key"] = item.key;
         column_item["account_uuid"] = item.account_uuid;
-        column_item["account_index"] = item.account_index;
         column_item["component_type"] = static_cast<int>(item.component_type);
         column_array.append(column_item);
     }
@@ -138,9 +132,8 @@ void ColumnListModel::load()
                 ColumnItem item;
                 item.key = doc.array().at(i).toObject().value("key").toString();
                 item.account_uuid = doc.array().at(i).toObject().value("account_uuid").toString();
-                item.account_index = doc.array().at(i).toObject().value("account_index").toString();
                 item.component_type = static_cast<ColumnComponentType>(
-                        doc.array().at(i).toObject().value("password").toInt());
+                        doc.array().at(i).toObject().value("component_type").toInt());
 
                 m_columnList.append(item);
             }
@@ -154,7 +147,6 @@ QHash<int, QByteArray> ColumnListModel::roleNames() const
 
     roles[KeyRole] = "key";
     roles[AccountUuidRole] = "accountUuid";
-    roles[AccountIndexRole] = "accountIndex";
     roles[ComponentTypeRole] = "componentType";
 
     return roles;

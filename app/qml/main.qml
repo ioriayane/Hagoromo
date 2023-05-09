@@ -34,12 +34,11 @@ ApplicationWindow {
             console.log("selectedAccountIndex=" + selectedAccountIndex + ", selectedTypeIndex=" + selectedTypeIndex)
             var component_type = 0
             if(selectedTypeIndex == 0){
-                component_type = 1
+                component_type = 0
             }else if(selectedTypeIndex == 1){
-                component_type = 2
+                component_type = 1
             }
             columnManageModel.append(accountListModel.item(selectedAccountIndex, AccountListModel.UuidRole),
-                                     selectedAccountIndex,
                                      component_type)
             columnManageModel.sync()
         }
@@ -94,7 +93,6 @@ ApplicationWindow {
             for(var i=0; i<columnManageModel.rowCount(); i++){
                 repeater.append(columnManageModel.item(i, ColumnListModel.KeyRole),
                                 columnManageModel.item(i, ColumnListModel.AccountUuidRole),
-                                columnManageModel.item(i, ColumnListModel.AccountIndexRole),
                                 columnManageModel.item(i, ColumnListModel.ComponentTypeRole))
             }
             // カラムの管理情報から消えているLoaderを消す
@@ -192,10 +190,10 @@ ApplicationWindow {
                     id: repeater
                     model: ListModel {}
 
-                    function append(key, account_uuid, account_index, component_type){
+                    function append(key, account_uuid, component_type){
                         // accountListModelで管理するアカウントのindexと表示に使うコンポを指定
                         // ①ここでLoaderを追加する
-                        console.log("append:" + account_index + ", " + account_uuid + ", " + component_type)
+                        console.log("(1) append:" + account_uuid + ", " + component_type)
                         var exist = false
                         for(var i=0; i<repeater.model.count; i++){
                             if(repeater.model.get(i).key === key){
@@ -210,16 +208,14 @@ ApplicationWindow {
                             repeater.model.append({
                                                       "key": key,
                                                       "account_uuid": account_uuid,
-                                                      "account_index": account_index,
                                                       "component_type": component_type
                                                   })
                         }
                     }
                     onItemAdded: (index, item) => {
                                      // ②Repeaterに追加されたLoaderにTLを表示するComponentを追加する
-                                     console.log("onItemAdded:" + index + ":" + item + ":" + repeater.model.get(index).account_index)
+                                     console.log("(2) onItemAdded:" + index + ":" + item)
                                      item.account_uuid = repeater.model.get(index).account_uuid
-                                     item.account_index = repeater.model.get(index).account_index
                                      item.component_type = repeater.model.get(index).component_type
                                      item.sourceComponent = columnView
                                  }
@@ -232,15 +228,14 @@ ApplicationWindow {
                         Layout.maximumWidth: 500
 
                         property string account_uuid: ""
-                        property int account_index: -1
-                        property string component_type: ""
+                        property int component_type: 0
 
                         onLoaded: {
                             // ③Loaderで読み込んだComponentにアカウント情報など設定する
-                            console.log("loader:" + loader.account_index + ", " + loader.account_uuid)
-                            if(loader.account_index < 0)
+                            var i = accountListModel.indexAt(loader.account_uuid)
+                            console.log("(3) loader:" + i + ", " + loader.account_uuid)
+                            if(i < 0)
                                 return
-                            var i = loader.account_index
                             item.componentType = loader.component_type
                             item.service = accountListModel.item(i, AccountListModel.ServiceRole)
                             item.did = accountListModel.item(i, AccountListModel.DidRole)
@@ -346,12 +341,6 @@ ApplicationWindow {
                         }
                         Label {
                             text: model.accountUuid
-                        }
-                        Label {
-                            text: "account_index"
-                        }
-                        Label {
-                            text: model.accountIndex
                         }
                         Label {
                             text: "component_type"

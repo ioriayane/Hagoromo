@@ -4,21 +4,16 @@
 #include <QAbstractListModel>
 #include <QObject>
 
-// key: "abcdef"
-//      account_uuid: "{a51d2b54-2a28-40e2-b813-cf6a66f5027b}"
-//                     account_index: 1
-//                     component_type: "timeline"
+// QMLではマジックナンバーになるので変更しないこと
 enum class ColumnComponentType : int {
-    Timeline,
-    Notification,
+    Timeline = 0,
+    Notification = 1,
 };
-Q_DECLARE_METATYPE(ColumnComponentType)
 
 struct ColumnItem
 {
     QString key;
     QString account_uuid;
-    QString account_index;
     ColumnComponentType component_type;
 };
 
@@ -33,7 +28,6 @@ public:
         ModelData = Qt::UserRole + 1,
         KeyRole,
         AccountUuidRole,
-        AccountIndexRole,
         ComponentTypeRole,
     };
     Q_ENUM(ColumnListModelRoles)
@@ -46,8 +40,7 @@ public:
     Q_INVOKABLE void update(int row, ColumnListModel::ColumnListModelRoles role,
                             const QVariant &value);
 
-    Q_INVOKABLE void append(const QString &account_uuid, const QString &account_index,
-                            ColumnComponentType component_type);
+    Q_INVOKABLE void append(const QString &account_uuid, ColumnComponentType component_type);
     Q_INVOKABLE void remove(int row);
     Q_INVOKABLE void removeByKey(const QString &key);
     Q_INVOKABLE bool containsKey(const QString &key) const;

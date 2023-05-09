@@ -8,7 +8,7 @@ ColumnLayout {
     id: columnView
     spacing: 0
 
-    property string componentType: "timeline"
+    property int componentType: 0
 
     property string service: ""
     property string did: ""
@@ -29,9 +29,10 @@ ColumnLayout {
     }
 
     function load(){
-        if(componentType === ColumnListModel.Timeline){
+        console.log("ColumnLayout:componentType=" + componentType)
+        if(componentType === 0){
             loader.sourceComponent = timelineComponent
-        }else if(componentType === ColumnListModel.Notification){
+        }else if(componentType === 1){
             loader.sourceComponent = listNotificationComponent
         }else{
             loader.sourceComponent = timelineComponent
