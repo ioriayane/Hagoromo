@@ -14,6 +14,7 @@ ScrollView {
     clip: true
 
     property alias model: rootListView.model
+
     ListView {
         id: rootListView
         anchors.fill: parent

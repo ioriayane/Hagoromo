@@ -9,13 +9,17 @@ import "../parts"
 import "../controls"
 
 ScrollView {
+    id: timelineView
     ScrollBar.vertical.policy: ScrollBar.AlwaysOn
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     clip: true
 
+    property alias model: rootListView.model
+
+    signal requestedRepost(string cid, string uri)
+    signal requestedQuote(string cid, string uri)
     signal requestedLike(string cid, string uri)
 
-    property alias model: rootListView.model
     ListView {
         id: rootListView
         anchors.fill: parent
@@ -143,6 +147,8 @@ ScrollView {
                             repostButton.iconText: model.repostCount
                             likeButton.iconText: model.likeCount
 
+                            repostMenuButton.onClicked: requestedRepost(model.cid, model.uri)
+                            quoteMenuButton.onClicked: requestedQuote(model.cid, model.uri)
                             likeButton.onClicked: requestedLike(model.cid, model.uri)
                         }
                     }

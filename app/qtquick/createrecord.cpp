@@ -28,6 +28,20 @@ void CreateRecord::post(const QString &text)
     create_record->post(text);
 }
 
+void CreateRecord::repost(const QString &cid, const QString &uri)
+{
+    ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord();
+    connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
+        emit finished(success);
+
+        // 成功なら、受け取ったデータでTLデータの更新をしないと値が大きくならない
+
+        create_record->deleteLater();
+    });
+    create_record->setAccount(m_account);
+    create_record->repost(cid, uri);
+}
+
 void CreateRecord::like(const QString &cid, const QString &uri)
 {
     ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord();

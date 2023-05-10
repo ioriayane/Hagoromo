@@ -11,6 +11,7 @@ public:
     explicit ComAtprotoRepoCreateRecord(QObject *parent = nullptr);
 
     void post(const QString &text);
+    void repost(const QString &cid, const QString &uri);
     void like(const QString &cid, const QString &uri);
 
 private:

@@ -30,6 +30,13 @@ ColumnLayout {
     Component {
         id: timelineComponent
         TimelineView {
+            onRequestedRepost: (cid, uri) => {
+                                   console.log("Repost : " + cid + ", " + uri)
+                                   createRecord.repost(cid, uri)
+                               }
+            onRequestedQuote: (cid, uri) => {
+                                  console.log("Quote : " + cid + ", " + uri)
+                              }
             onRequestedLike: (cid, uri) => {
                                  console.log("Like : " + cid + ", " + uri)
                                  createRecord.like(cid, uri)
@@ -94,7 +101,6 @@ ColumnLayout {
                 }
                 Popup {
                     id: popup
-                    parent: Overlay.overlay
                     width: popupItemLayout.width
                     height: popupItemLayout.height
                     padding: 0
