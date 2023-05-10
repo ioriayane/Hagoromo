@@ -11,11 +11,13 @@ AccessAtProtocol::AccessAtProtocol(QObject *parent) : QObject { parent }
 {
     connect(&m_manager, &QNetworkAccessManager::finished, [=](QNetworkReply *reply) {
         qDebug() << "reply" << reply->error() << reply->url();
+        QString json = QString::fromUtf8(reply->readAll());
 
         if (reply->error() != QNetworkReply::NoError) {
+            qDebug() << json;
             parseJson(QStringLiteral("{}"));
         } else {
-            parseJson(QString::fromUtf8(reply->readAll()));
+            parseJson(json);
         }
     });
 }

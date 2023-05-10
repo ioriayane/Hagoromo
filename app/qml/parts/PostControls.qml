@@ -7,14 +7,15 @@ import "../controls"
 RowLayout {
     spacing: 10
 
-    property alias replyButtonText: replyButton.iconText
-    property alias repostButtonText: repostButton.iconText
-    property alias likeButtonText: likeButton.iconText
+    property alias replyButton: replyButton
+    property alias repostButton: repostButton
+    property alias likeButton: likeButton
 
     IconButton {
         id: replyButton
         Layout.preferredHeight: 30
         iconSource: "../images/reply.png"
+        onClicked: clickedReply()
     }
     IconButton {
         id: repostButton

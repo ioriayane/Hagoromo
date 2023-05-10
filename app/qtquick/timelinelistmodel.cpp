@@ -81,7 +81,11 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
 
     const AppBskyFeedDefs::FeedViewPost &current = m_viewPostHash.value(m_cidList.at(row));
 
-    if (role == DisplayNameRole)
+    if (role == CidRole)
+        return current.post.cid;
+    else if (role == UriRole)
+        return current.post.uri;
+    else if (role == DisplayNameRole)
         return current.post.author.displayName;
     else if (role == HandleRole)
         return current.post.author.handle;
@@ -199,6 +203,8 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
 
+    roles[CidRole] = "cid";
+    roles[UriRole] = "uri";
     roles[DisplayNameRole] = "displayName";
     roles[HandleRole] = "handle";
     roles[AvatarRole] = "avatar";

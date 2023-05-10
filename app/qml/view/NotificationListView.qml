@@ -136,9 +136,9 @@ ScrollView {
                     PostControls {
                         id: postControls
                         visible: false
-                        replyButtonText: "0" //model.replyCount
-                        repostButtonText: "0" //model.repostCount
-                        likeButtonText: "0" //model.likeCount
+                        replyButton.iconText: "0" //model.replyCount
+                        repostButton.iconText: "0" //model.repostCount
+                        likeButton.iconText: "0" //model.likeCount
                     }
 
                 }

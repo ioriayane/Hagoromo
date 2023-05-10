@@ -13,6 +13,8 @@ ScrollView {
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     clip: true
 
+    signal requestedLike(string cid, string uri)
+
     property alias model: rootListView.model
     ListView {
         id: rootListView
@@ -136,9 +138,12 @@ ScrollView {
                         }
 
                         PostControls {
-                            replyButtonText: model.replyCount
-                            repostButtonText: model.repostCount
-                            likeButtonText: model.likeCount
+                            id: postControls
+                            replyButton.iconText: model.replyCount
+                            repostButton.iconText: model.repostCount
+                            likeButton.iconText: model.likeCount
+
+                            likeButton.onClicked: requestedLike(model.cid, model.uri)
                         }
                     }
                 }

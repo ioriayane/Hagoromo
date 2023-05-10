@@ -16,6 +16,7 @@ public:
                                 const QString &refreshJwt);
 
     Q_INVOKABLE void post(const QString &text);
+    Q_INVOKABLE void like(const QString &cid, const QString &uri);
 
 signals:
     void finished(bool success);

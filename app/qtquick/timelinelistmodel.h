@@ -17,6 +17,8 @@ public:
     // モデルで提供する項目のルールID的な（QML側へ公開するために大文字で始めること）
     enum TimelineListModelRoles {
         ModelData = Qt::UserRole + 1,
+        CidRole,
+        UriRole,
         DisplayNameRole,
         HandleRole,
         AvatarRole,

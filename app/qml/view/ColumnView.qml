@@ -3,6 +3,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 import tech.relog.hagoromo.columnlistmodel 1.0
+import tech.relog.hagoromo.createrecord 1.0
 
 import "../controls"
 
@@ -21,9 +22,18 @@ ColumnLayout {
 
     property var rootItem: undefined
 
+    CreateRecord {
+        id: createRecord
+        onFinished: (success) => console.log("ColumnView::CreateRecord::onFinished:" + success)
+    }
+
     Component {
         id: timelineComponent
         TimelineView {
+            onRequestedLike: (cid, uri) => {
+                                 console.log("Like : " + cid + ", " + uri)
+                                 createRecord.like(cid, uri)
+                             }
         }
     }
     Component {
@@ -43,6 +53,7 @@ ColumnLayout {
         }else{
             loader.sourceComponent = timelineComponent
         }
+        createRecord.setAccount(service, did, handle, email, accessJwt, refreshJwt)
     }
 
     Frame {

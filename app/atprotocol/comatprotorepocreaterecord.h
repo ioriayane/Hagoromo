@@ -10,7 +10,8 @@ class ComAtprotoRepoCreateRecord : public AccessAtProtocol
 public:
     explicit ComAtprotoRepoCreateRecord(QObject *parent = nullptr);
 
-    void createRecord(const QString &text);
+    void post(const QString &text);
+    void like(const QString &cid, const QString &uri);
 
 private:
     virtual void parseJson(const QString reply_json);

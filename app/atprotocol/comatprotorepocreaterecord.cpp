@@ -11,7 +11,7 @@ ComAtprotoRepoCreateRecord::ComAtprotoRepoCreateRecord(QObject *parent)
 {
 }
 
-void ComAtprotoRepoCreateRecord::createRecord(const QString &text)
+void ComAtprotoRepoCreateRecord::post(const QString &text)
 {
     QJsonObject json_record;
     json_record.insert("text", text);
@@ -22,8 +22,27 @@ void ComAtprotoRepoCreateRecord::createRecord(const QString &text)
     json_obj.insert("record", json_record);
     QJsonDocument json_doc(json_obj);
 
-    post(QStringLiteral("xrpc/com.atproto.repo.createRecord"),
-         json_doc.toJson(QJsonDocument::Compact));
+    AccessAtProtocol::post(QStringLiteral("xrpc/com.atproto.repo.createRecord"),
+                           json_doc.toJson(QJsonDocument::Compact));
+}
+
+void ComAtprotoRepoCreateRecord::like(const QString &cid, const QString &uri)
+{
+
+    QJsonObject json_subject;
+    json_subject.insert("cid", cid);
+    json_subject.insert("uri", uri);
+    QJsonObject json_record;
+    json_record.insert("subject", json_subject);
+    json_record.insert("createdAt", QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
+    QJsonObject json_obj;
+    json_obj.insert("repo", did());
+    json_obj.insert("collection", "app.bsky.feed.like");
+    json_obj.insert("record", json_record);
+    QJsonDocument json_doc(json_obj);
+
+    AccessAtProtocol::post(QStringLiteral("xrpc/com.atproto.repo.createRecord"),
+                           json_doc.toJson(QJsonDocument::Compact));
 }
 
 void ComAtprotoRepoCreateRecord::parseJson(const QString reply_json)
