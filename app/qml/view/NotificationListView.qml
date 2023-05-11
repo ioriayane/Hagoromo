@@ -114,7 +114,7 @@ ScrollView {
                                              postLayout.spacing - reasonImage.width - avatorImage.width
 
                     RowLayout {
-                        Image {
+                        AvatarImage {
                             id: avatorImage
                             Layout.preferredWidth: 16
                             Layout.preferredHeight: 16

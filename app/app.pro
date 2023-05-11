@@ -45,8 +45,9 @@ QML_FILES = \
     qml/dialogs/LoginDialog.qml \
     qml/dialogs/PostDialog.qml \
     qml/dialogs/SettingDialog.qml \
-    qml/parts/ImagePreview.qml \
     qml/parts/Author.qml \
+    qml/parts/AvatarImage.qml \
+    qml/parts/ImagePreview.qml \
     qml/parts/PostControls.qml \
     qml/parts/ReactionAuthor.qml \
     qml/view/ColumnView.qml \
@@ -55,6 +56,7 @@ QML_FILES = \
 
 IMAGE_FILES += \
     qml/images/account.png \
+    qml/images/account_icon.png \
     qml/images/add_user.png \
     qml/images/arrow_forward.png \
     qml/images/check.png \

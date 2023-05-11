@@ -71,7 +71,7 @@ ScrollView {
                 RowLayout {
                     id: postLayout
                     spacing: 10
-                    ImageWithIndicator {
+                    AvatarImage {
                         id: postImage
                         Layout.preferredWidth: 36
                         Layout.preferredHeight: 36
@@ -114,7 +114,7 @@ ScrollView {
                             RowLayout {
                                 id: childLayout
                                 spacing: 10
-                                ImageWithIndicator {
+                                AvatarImage {
                                     id: childImage
                                     Layout.preferredWidth: 16
                                     Layout.preferredHeight: 16
