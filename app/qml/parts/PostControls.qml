@@ -17,7 +17,6 @@ RowLayout {
         id: replyButton
         Layout.preferredHeight: 30
         iconSource: "../images/reply.png"
-        onClicked: clickedReply()
     }
     IconButton {
         id: repostButton

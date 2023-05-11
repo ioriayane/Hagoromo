@@ -18,6 +18,16 @@ void ComAtprotoRepoCreateRecord::post(const QString &text)
     json_record.insert("text", text);
     json_record.insert("createdAt", QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
 
+    if (!m_reply.cid.isEmpty() && !m_reply.uri.isEmpty()) {
+        QJsonObject json_parent;
+        json_parent.insert("cid", m_reply.cid);
+        json_parent.insert("uri", m_reply.uri);
+        QJsonObject json_reply;
+        json_reply.insert("root", json_parent);
+        json_reply.insert("parent", json_parent);
+        json_record.insert("reply", json_reply);
+    }
+
     QJsonObject json_embed;
 
     if (!m_embedQuote.cid.isEmpty() && !m_embedQuote.uri.isEmpty()) {
@@ -77,6 +87,12 @@ void ComAtprotoRepoCreateRecord::like(const QString &cid, const QString &uri)
 
     AccessAtProtocol::post(QStringLiteral("xrpc/com.atproto.repo.createRecord"),
                            json_doc.toJson(QJsonDocument::Compact));
+}
+
+void ComAtprotoRepoCreateRecord::setReply(const QString &cid, const QString &uri)
+{
+    m_reply.cid = cid;
+    m_reply.uri = uri;
 }
 
 void ComAtprotoRepoCreateRecord::setQuote(const QString &cid, const QString &uri)

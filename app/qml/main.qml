@@ -108,6 +108,19 @@ ApplicationWindow {
     Component {
         id: columnView
         ColumnView {
+            onRequestedReply: (account_uuid, cid, uri, avatar, display_name, handle, indexed_at, text) => {
+                                  console.log(account_uuid + ", "+ cid + ", "+ uri + ", "+ avatar + ", "+ display_name + ", "+ handle + ", "+ indexed_at + ", "+ text)
+                                  postDialog.postType = "reply"
+                                  postDialog.defaultAccountUuid = account_uuid
+                                  postDialog.replyCid = cid
+                                  postDialog.replyUri = uri
+                                  postDialog.replyAvatar = avatar
+                                  postDialog.replyDisplayName = display_name
+                                  postDialog.replyHandle = handle
+                                  postDialog.replyIndexedAt = indexed_at
+                                  postDialog.replyText = text
+                                  postDialog.open()
+                              }
             onRequestedQuote: (account_uuid, cid, uri, avatar, display_name, handle, indexed_at, text) => {
                                   postDialog.postType = "quote"
                                   postDialog.defaultAccountUuid = account_uuid

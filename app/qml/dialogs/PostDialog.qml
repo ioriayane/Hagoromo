@@ -57,6 +57,35 @@ Dialog {
     }
 
     ColumnLayout {
+
+        Frame {
+            id: replyFrame
+            Layout.preferredWidth: postText.width
+            visible: postType === "reply"
+            ColumnLayout {
+                anchors.fill: parent
+                RowLayout {
+                    Image {
+                        id: avatorImage
+                        Layout.preferredWidth: 16
+                        Layout.preferredHeight: 16
+                        source: replyAvatar
+                    }
+                    Author {
+                        displayName: replyDisplayName
+                        handle: replyHandle
+                        indexedAt: replyIndexedAt
+                    }
+                }
+                Label {
+                    Layout.fillWidth: true
+                    wrapMode: Text.WrapAnywhere
+                    font.pointSize: 8
+                    text: replyText
+                }
+            }
+        }
+
         ComboBox {
             id: accountCombo
             Layout.preferredWidth: 150
@@ -89,7 +118,6 @@ Dialog {
                 anchors.fill: parent
                 RowLayout {
                     Image {
-                        id: avatorImage
                         Layout.preferredWidth: 16
                         Layout.preferredHeight: 16
                         source: replyAvatar
@@ -103,7 +131,7 @@ Dialog {
                 Label {
                     Layout.fillWidth: true
                     wrapMode: Text.WrapAnywhere
-                    font.pointSize: 10
+                    font.pointSize: 8
                     text: replyText
                 }
             }
@@ -121,9 +149,14 @@ Dialog {
                                         postDialog.accountModel.item(row, AccountListModel.EmailRole),
                                         postDialog.accountModel.item(row, AccountListModel.AccessJwtRole),
                                         postDialog.accountModel.item(row, AccountListModel.RefreshJwtRole))
-                if(postType === "quote"){
+                createRecord.setReply("", "")
+                createRecord.setQuote("", "")
+                if(postType === "reply"){
+                    createRecord.setReply(replyCid, replyUri)
+                }else if(postType === "quote"){
                     createRecord.setQuote(replyCid, replyUri)
                 }
+
                 createRecord.post(postText.text)
             }
         }
