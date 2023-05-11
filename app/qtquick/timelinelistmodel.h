@@ -11,6 +11,7 @@ class TimelineListModel : public QAbstractListModel
 {
     Q_OBJECT
 
+    Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
 public:
     explicit TimelineListModel(QObject *parent = nullptr);
 
@@ -58,8 +59,13 @@ public:
 
     Q_INVOKABLE void getLatest();
 
+    bool running() const;
+    void setRunning(bool newRunning);
+
 signals:
     void serviceChanged();
+
+    void runningChanged();
 
 protected:
     QHash<int, QByteArray> roleNames() const;
@@ -72,6 +78,7 @@ private:
     AtProtocolInterface::AccountData m_account;
 
     QString formatDateTime(const QString &value) const;
+    bool m_running;
 };
 
 #endif // TIMELINELISTMODEL_H

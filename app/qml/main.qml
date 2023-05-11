@@ -17,7 +17,7 @@ ApplicationWindow {
     visible: true
     title: qsTr("Hagromo")
 
-    Material.theme: Material.Dark
+    Material.theme: Material.Light
 
     SettingDialog {
         id: settingDialog

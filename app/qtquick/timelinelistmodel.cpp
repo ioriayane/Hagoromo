@@ -7,7 +7,8 @@ using AtProtocolInterface::AccountData;
 using AtProtocolInterface::AppBskyFeedGetTimeline;
 using namespace AtProtocolType;
 
-TimelineListModel::TimelineListModel(QObject *parent) : QAbstractListModel { parent }
+TimelineListModel::TimelineListModel(QObject *parent)
+    : QAbstractListModel { parent }, m_running(false)
 {
     connect(&m_timeline, &AppBskyFeedGetTimeline::finished, [=](bool success) {
         // data copy
@@ -60,6 +61,7 @@ TimelineListModel::TimelineListModel(QObject *parent) : QAbstractListModel { par
                 }
             }
         }
+        setRunning(false);
     });
 }
 
@@ -195,6 +197,10 @@ void TimelineListModel::setAccount(const QString &service, const QString &did,
 
 void TimelineListModel::getLatest()
 {
+    if (running())
+        return;
+    setRunning(true);
+
     m_timeline.setAccount(m_account);
     m_timeline.getTimeline();
 }
@@ -236,4 +242,17 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
 QString TimelineListModel::formatDateTime(const QString &value) const
 {
     return QDateTime::fromString(value, Qt::ISODateWithMs).toLocalTime().toString("MM/dd hh:mm");
+}
+
+bool TimelineListModel::running() const
+{
+    return m_running;
+}
+
+void TimelineListModel::setRunning(bool newRunning)
+{
+    if (m_running == newRunning)
+        return;
+    m_running = newRunning;
+    emit runningChanged();
 }

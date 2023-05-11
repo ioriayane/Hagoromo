@@ -30,18 +30,24 @@ ScrollView {
             id: timelineListModel
         }
 
-        header: Button {
+        header: ItemDelegate {
             width: rootListView.width
             height: 24
             display: AbstractButton.IconOnly
-            icon.source: "../images/expand_less.png"
+            icon.source: timelineListModel.running ? "" : "../images/expand_less.png"
             onClicked: timelineListModel.getLatest()
+
+            BusyIndicator {
+                anchors.centerIn: parent
+                width: 24
+                height: 24
+                visible: timelineListModel.running
+            }
         }
-        footer: Button {
+        footer: BusyIndicator {
             width: rootListView.width
             height: 24
-            display: AbstractButton.IconOnly
-            icon.source: "../images/expand_more.png"
+            visible: timelineListModel.running
         }
 
         delegate: Frame {
@@ -150,8 +156,8 @@ ScrollView {
 
                             replyButton.onClicked: requestedReply(model.cid, model.uri,
                                                                   model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
-                            repostMenuButton.onClicked: requestedRepost(model.cid, model.uri)
-                            quoteMenuButton.onClicked: requestedQuote(model.cid, model.uri,
+                            repostMenuItem.onTriggered: requestedRepost(model.cid, model.uri)
+                            quoteMenuItem.onTriggered: requestedQuote(model.cid, model.uri,
                                                                       model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
                             likeButton.onClicked: requestedLike(model.cid, model.uri)
                         }
