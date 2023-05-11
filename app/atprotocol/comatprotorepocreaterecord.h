@@ -2,6 +2,7 @@
 #define COMATPROTOREPOCREATERECORD_H
 
 #include "accessatprotocol.h"
+#include "../atprotocol/lexicons.h"
 
 namespace AtProtocolInterface {
 
@@ -14,8 +15,12 @@ public:
     void repost(const QString &cid, const QString &uri);
     void like(const QString &cid, const QString &uri);
 
+    void setQuote(const QString &cid, const QString &uri);
+
 private:
     virtual void parseJson(const QString reply_json);
+
+    AtProtocolType::ComAtprotoRepoStrongRef::Main m_embedQuote;
 };
 
 }

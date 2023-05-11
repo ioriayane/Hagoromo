@@ -108,6 +108,18 @@ ApplicationWindow {
     Component {
         id: columnView
         ColumnView {
+            onRequestedQuote: (account_uuid, cid, uri, avatar, display_name, handle, indexed_at, text) => {
+                                  postDialog.postType = "quote"
+                                  postDialog.defaultAccountUuid = account_uuid
+                                  postDialog.replyCid = cid
+                                  postDialog.replyUri = uri
+                                  postDialog.replyAvatar = avatar
+                                  postDialog.replyDisplayName = display_name
+                                  postDialog.replyHandle = handle
+                                  postDialog.replyIndexedAt = indexed_at
+                                  postDialog.replyText = text
+                                  postDialog.open()
+                              }
         }
     }
 
@@ -239,6 +251,7 @@ ApplicationWindow {
                             if(i < 0)
                                 return
                             item.componentType = loader.component_type
+                            item.accountUuid = loader.account_uuid
                             item.service = accountListModel.item(i, AccountListModel.ServiceRole)
                             item.did = accountListModel.item(i, AccountListModel.DidRole)
                             item.handle = accountListModel.item(i, AccountListModel.HandleRole)

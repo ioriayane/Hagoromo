@@ -17,7 +17,7 @@ ScrollView {
     property alias model: rootListView.model
 
     signal requestedRepost(string cid, string uri)
-    signal requestedQuote(string cid, string uri)
+    signal requestedQuote(string cid, string uri, string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestedLike(string cid, string uri)
 
     ListView {
@@ -148,7 +148,8 @@ ScrollView {
                             likeButton.iconText: model.likeCount
 
                             repostMenuButton.onClicked: requestedRepost(model.cid, model.uri)
-                            quoteMenuButton.onClicked: requestedQuote(model.cid, model.uri)
+                            quoteMenuButton.onClicked: requestedQuote(model.cid, model.uri,
+                                                                      model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
                             likeButton.onClicked: requestedLike(model.cid, model.uri)
                         }
                     }

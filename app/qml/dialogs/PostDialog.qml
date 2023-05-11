@@ -5,6 +5,8 @@ import QtQuick.Layouts 1.15
 import tech.relog.hagoromo.createrecord 1.0
 import tech.relog.hagoromo.accountlistmodel 1.0
 
+import "../parts"
+
 Dialog {
     id: postDialog
     modal: true
@@ -13,6 +15,35 @@ Dialog {
 
     property int parentWidth: parent.width
     property alias accountModel: accountCombo.model
+
+    property string defaultAccountUuid: ""
+    property string postType: "normal"  // normal, reply, quote
+
+    property string replyCid: ""
+    property string replyUri: ""
+    property string replyAvatar: ""
+    property string replyDisplayName: ""
+    property string replyHandle: ""
+    property string replyIndexedAt: ""
+    property string replyText: ""
+
+    onOpened: {
+        var i = accountModel.indexAt(defaultAccountUuid)
+        if(i >= 0){
+            accountCombo.currentIndex = i
+        }
+    }
+    onClosed: {
+        defaultAccountUuid = ""
+        postType = "normal"
+        replyCid = ""
+        replyUri = ""
+        replyAvatar = ""
+        replyDisplayName = ""
+        replyHandle = ""
+        replyIndexedAt = ""
+        replyText = ""
+    }
 
     CreateRecord {
         id: createRecord
@@ -50,6 +81,34 @@ Dialog {
             text: 300 - postText.text.length
         }
 
+        Frame {
+            id: quoteFrame
+            Layout.preferredWidth: postText.width
+            visible: postType === "quote"
+            ColumnLayout {
+                anchors.fill: parent
+                RowLayout {
+                    Image {
+                        id: avatorImage
+                        Layout.preferredWidth: 16
+                        Layout.preferredHeight: 16
+                        source: replyAvatar
+                    }
+                    Author {
+                        displayName: replyDisplayName
+                        handle: replyHandle
+                        indexedAt: replyIndexedAt
+                    }
+                }
+                Label {
+                    Layout.fillWidth: true
+                    wrapMode: Text.WrapAnywhere
+                    font.pointSize: 10
+                    text: replyText
+                }
+            }
+        }
+
         Button {
             Layout.alignment: Qt.AlignRight
             enabled: postText.text.length > 0
@@ -62,7 +121,9 @@ Dialog {
                                         postDialog.accountModel.item(row, AccountListModel.EmailRole),
                                         postDialog.accountModel.item(row, AccountListModel.AccessJwtRole),
                                         postDialog.accountModel.item(row, AccountListModel.RefreshJwtRole))
-
+                if(postType === "quote"){
+                    createRecord.setQuote(replyCid, replyUri)
+                }
                 createRecord.post(postText.text)
             }
         }

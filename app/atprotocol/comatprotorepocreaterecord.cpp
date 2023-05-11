@@ -1,6 +1,7 @@
 #include "comatprotorepocreaterecord.h"
 
 #include <QDateTime>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 
@@ -16,6 +17,22 @@ void ComAtprotoRepoCreateRecord::post(const QString &text)
     QJsonObject json_record;
     json_record.insert("text", text);
     json_record.insert("createdAt", QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
+
+    QJsonObject json_embed;
+
+    if (!m_embedQuote.cid.isEmpty() && !m_embedQuote.uri.isEmpty()) {
+        QJsonObject json_quote;
+        json_quote.insert("cid", m_embedQuote.cid);
+        json_quote.insert("uri", m_embedQuote.uri);
+
+        json_embed.insert("$type", "app.bsky.embed.record");
+        json_embed.insert("record", json_quote);
+    }
+
+    if (!json_embed.isEmpty()) {
+        json_record.insert("embed", json_embed);
+    }
+
     QJsonObject json_obj;
     json_obj.insert("repo", did());
     json_obj.insert("collection", "app.bsky.feed.post");
@@ -60,6 +77,12 @@ void ComAtprotoRepoCreateRecord::like(const QString &cid, const QString &uri)
 
     AccessAtProtocol::post(QStringLiteral("xrpc/com.atproto.repo.createRecord"),
                            json_doc.toJson(QJsonDocument::Compact));
+}
+
+void ComAtprotoRepoCreateRecord::setQuote(const QString &cid, const QString &uri)
+{
+    m_embedQuote.cid = cid;
+    m_embedQuote.uri = uri;
 }
 
 void ComAtprotoRepoCreateRecord::parseJson(const QString reply_json)

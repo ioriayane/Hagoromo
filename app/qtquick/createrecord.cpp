@@ -25,6 +25,7 @@ void CreateRecord::post(const QString &text)
         create_record->deleteLater();
     });
     create_record->setAccount(m_account);
+    create_record->setQuote(m_embedQuote.cid, m_embedQuote.uri);
     create_record->post(text);
 }
 
@@ -54,4 +55,10 @@ void CreateRecord::like(const QString &cid, const QString &uri)
     });
     create_record->setAccount(m_account);
     create_record->like(cid, uri);
+}
+
+void CreateRecord::setQuote(const QString &cid, const QString &uri)
+{
+    m_embedQuote.cid = cid;
+    m_embedQuote.uri = uri;
 }

@@ -1,6 +1,7 @@
 #ifndef CREATERECORD_H
 #define CREATERECORD_H
 
+#include "../atprotocol/lexicons.h"
 #include "../atprotocol/accessatprotocol.h"
 #include <QObject>
 
@@ -19,11 +20,13 @@ public:
     Q_INVOKABLE void repost(const QString &cid, const QString &uri);
     Q_INVOKABLE void like(const QString &cid, const QString &uri);
 
+    Q_INVOKABLE void setQuote(const QString &cid, const QString &uri);
 signals:
     void finished(bool success);
 
 private:
     AtProtocolInterface::AccountData m_account;
+    AtProtocolType::ComAtprotoRepoStrongRef::Main m_embedQuote;
 };
 
 #endif // CREATERECORD_H

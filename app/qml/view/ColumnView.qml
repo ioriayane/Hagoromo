@@ -13,6 +13,7 @@ ColumnLayout {
 
     property int componentType: 0
 
+    property string accountUuid: ""
     property string service: ""
     property string did: ""
     property string handle: ""
@@ -22,6 +23,9 @@ ColumnLayout {
 
     property var rootItem: undefined
 
+    signal requestedQuote(string account_uuid, string cid, string uri,
+                          string avatar, string display_name, string handle, string indexed_at, string text)
+
     CreateRecord {
         id: createRecord
         onFinished: (success) => console.log("ColumnView::CreateRecord::onFinished:" + success)
@@ -30,17 +34,10 @@ ColumnLayout {
     Component {
         id: timelineComponent
         TimelineView {
-            onRequestedRepost: (cid, uri) => {
-                                   console.log("Repost : " + cid + ", " + uri)
-                                   createRecord.repost(cid, uri)
-                               }
-            onRequestedQuote: (cid, uri) => {
-                                  console.log("Quote : " + cid + ", " + uri)
-                              }
-            onRequestedLike: (cid, uri) => {
-                                 console.log("Like : " + cid + ", " + uri)
-                                 createRecord.like(cid, uri)
-                             }
+            onRequestedRepost: (cid, uri) => createRecord.repost(cid, uri)
+            onRequestedQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
+                              columnView.requestedQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+            onRequestedLike: (cid, uri) => createRecord.like(cid, uri)
         }
     }
     Component {

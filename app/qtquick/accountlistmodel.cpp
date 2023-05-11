@@ -160,6 +160,9 @@ void AccountListModel::removeAccount(int row)
 
 int AccountListModel::indexAt(const QString &uuid)
 {
+    if (uuid.isEmpty())
+        return -1;
+
     for (int i = 0; i < m_accountList.count(); i++) {
         if (m_accountList.at(i).uuid == uuid) {
             return i;
