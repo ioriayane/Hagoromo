@@ -3,17 +3,17 @@
 
 #include "../atprotocol/lexicons.h"
 #include "../atprotocol/appbskyfeedgettimeline.h"
+#include "atpabstractlistmodel.h"
 
 #include <QAbstractListModel>
 #include <QObject>
 
-class TimelineListModel : public QAbstractListModel
+class TimelineListModel : public AtpAbstractListModel
 {
     Q_OBJECT
 
-    Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
 public:
-    explicit TimelineListModel(QObject *parent = nullptr);
+    explicit TimelineListModel(AtpAbstractListModel *parent = nullptr);
 
     // モデルで提供する項目のルールID的な（QML側へ公開するために大文字で始めること）
     enum TimelineListModelRoles {
@@ -53,19 +53,11 @@ public:
     Q_INVOKABLE QVariant item(int row, TimelineListModel::TimelineListModelRoles role) const;
     Q_INVOKABLE void update(int row, TimelineListModel::TimelineListModelRoles role,
                             const QVariant &value);
-    Q_INVOKABLE void setAccount(const QString &service, const QString &did, const QString &handle,
-                                const QString &email, const QString &accessJwt,
-                                const QString &refreshJwt);
 
     Q_INVOKABLE void getLatest();
 
-    bool running() const;
-    void setRunning(bool newRunning);
-
 signals:
     void serviceChanged();
-
-    void runningChanged();
 
 protected:
     QHash<int, QByteArray> roleNames() const;
@@ -74,11 +66,6 @@ private:
     QList<QString> m_cidList; // これで取得したポストの順番を管理して実態はm_viewPostHashで管理
     QHash<QString, AtProtocolType::AppBskyFeedDefs::FeedViewPost> m_viewPostHash;
     AtProtocolInterface::AppBskyFeedGetTimeline m_timeline;
-
-    AtProtocolInterface::AccountData m_account;
-
-    QString formatDateTime(const QString &value) const;
-    bool m_running;
 };
 
 #endif // TIMELINELISTMODEL_H

@@ -7,8 +7,7 @@ using AtProtocolInterface::AccountData;
 using AtProtocolInterface::AppBskyFeedGetTimeline;
 using namespace AtProtocolType;
 
-TimelineListModel::TimelineListModel(QObject *parent)
-    : QAbstractListModel { parent }, m_running(false)
+TimelineListModel::TimelineListModel(AtpAbstractListModel *parent) : AtpAbstractListModel { parent }
 {
     connect(&m_timeline, &AppBskyFeedGetTimeline::finished, [=](bool success) {
         // data copy
@@ -175,6 +174,9 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
 
 void TimelineListModel::update(int row, TimelineListModelRoles role, const QVariant &value)
 {
+    Q_UNUSED(role)
+    Q_UNUSED(value)
+
     if (row < 0 || row >= m_cidList.count())
         return;
 
@@ -183,25 +185,13 @@ void TimelineListModel::update(int row, TimelineListModelRoles role, const QVari
     return;
 }
 
-void TimelineListModel::setAccount(const QString &service, const QString &did,
-                                   const QString &handle, const QString &email,
-                                   const QString &accessJwt, const QString &refreshJwt)
-{
-    m_account.service = service;
-    m_account.did = did;
-    m_account.handle = handle;
-    m_account.email = email;
-    m_account.accessJwt = accessJwt;
-    m_account.refreshJwt = refreshJwt;
-}
-
 void TimelineListModel::getLatest()
 {
     if (running())
         return;
     setRunning(true);
 
-    m_timeline.setAccount(m_account);
+    m_timeline.setAccount(account());
     m_timeline.getTimeline();
 }
 
@@ -237,22 +227,4 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[RepostedByHandleRole] = "repostedByHandle";
 
     return roles;
-}
-
-QString TimelineListModel::formatDateTime(const QString &value) const
-{
-    return QDateTime::fromString(value, Qt::ISODateWithMs).toLocalTime().toString("MM/dd hh:mm");
-}
-
-bool TimelineListModel::running() const
-{
-    return m_running;
-}
-
-void TimelineListModel::setRunning(bool newRunning)
-{
-    if (m_running == newRunning)
-        return;
-    m_running = newRunning;
-    emit runningChanged();
 }

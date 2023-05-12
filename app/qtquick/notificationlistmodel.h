@@ -2,18 +2,18 @@
 #define NOTIFICATIONLISTMODEL_H
 
 #include "../atprotocol/lexicons.h"
-#include "../atprotocol/accessatprotocol.h"
+#include "atpabstractlistmodel.h"
 
 #include <QAbstractListModel>
 #include <QObject>
 
-class NotificationListModel : public QAbstractListModel
+class NotificationListModel : public AtpAbstractListModel
 {
     Q_OBJECT
 
     Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
 public:
-    explicit NotificationListModel(QObject *parent = nullptr);
+    explicit NotificationListModel(AtpAbstractListModel *parent = nullptr);
 
     // モデルで提供する項目のルールID的な（QML側へ公開するために大文字で始めること）
     enum NotificationListModelRoles {
@@ -44,17 +44,9 @@ public:
     Q_INVOKABLE QVariant item(int row,
                               NotificationListModel::NotificationListModelRoles role) const;
 
-    Q_INVOKABLE void setAccount(const QString &service, const QString &did, const QString &handle,
-                                const QString &email, const QString &accessJwt,
-                                const QString &refreshJwt);
-
     Q_INVOKABLE void getLatest();
 
-    bool running() const;
-    void setRunning(bool newRunning);
-
 signals:
-    void runningChanged();
 
 protected:
     QHash<int, QByteArray> roleNames() const;
@@ -63,9 +55,6 @@ private:
     QList<QString> m_cidList; // これで取得したポストの順番を管理して実態はm_notificationHashで管理
     QHash<QString, AtProtocolType::AppBskyNotificationListNotifications::Notification>
             m_notificationHash;
-
-    AtProtocolInterface::AccountData m_account;
-    bool m_running;
 };
 
 #endif // NOTIFICATIONLISTMODEL_H

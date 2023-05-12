@@ -3,7 +3,10 @@
 
 using AtProtocolInterface::AppBskyNotificationListNotifications;
 
-NotificationListModel::NotificationListModel(QObject *parent) : QAbstractListModel { parent } { }
+NotificationListModel::NotificationListModel(AtpAbstractListModel *parent)
+    : AtpAbstractListModel { parent }
+{
+}
 
 int NotificationListModel::rowCount(const QModelIndex &parent) const
 {
@@ -30,9 +33,7 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
     else if (role == AvatarRole)
         return current.author.avatar;
     else if (role == IndexedAtRole)
-        return QDateTime::fromString(current.indexedAt, Qt::ISODateWithMs)
-                .toLocalTime()
-                .toString("MM/dd hh:mm");
+        return formatDateTime(current.indexedAt);
 
     else if (role == ReasonRole) {
         if (current.reason == "like") {
@@ -55,20 +56,12 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
     return QVariant();
 }
 
-void NotificationListModel::setAccount(const QString &service, const QString &did,
-                                       const QString &handle, const QString &email,
-                                       const QString &accessJwt, const QString &refreshJwt)
-{
-    m_account.service = service;
-    m_account.did = did;
-    m_account.handle = handle;
-    m_account.email = email;
-    m_account.accessJwt = accessJwt;
-    m_account.refreshJwt = refreshJwt;
-}
-
 void NotificationListModel::getLatest()
 {
+    if (running())
+        return;
+    setRunning(true);
+
     AppBskyNotificationListNotifications *notification = new AppBskyNotificationListNotifications();
     connect(notification, &AppBskyNotificationListNotifications::finished, [=](bool success) {
         //
@@ -84,8 +77,9 @@ void NotificationListModel::getLatest()
             // 対象ポスト情報は別途cidをキーにして保存する（2重取得と管理を避ける）
         }
         notification->deleteLater();
+        setRunning(false);
     });
-    notification->setAccount(m_account);
+    notification->setAccount(account());
     notification->listNotifications();
 }
 
@@ -101,17 +95,4 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[ReasonRole] = "reason";
 
     return roles;
-}
-
-bool NotificationListModel::running() const
-{
-    return m_running;
-}
-
-void NotificationListModel::setRunning(bool newRunning)
-{
-    if (m_running == newRunning)
-        return;
-    m_running = newRunning;
-    emit runningChanged();
 }

@@ -12,6 +12,7 @@ SOURCES += \
         atprotocol/lexicons_func_unknown.cpp \
         main.cpp \
         qtquick/accountlistmodel.cpp \
+        qtquick/atpabstractlistmodel.cpp \
         qtquick/columnlistmodel.cpp \
         qtquick/createrecord.cpp \
         qtquick/createsession.cpp \
@@ -28,6 +29,7 @@ HEADERS += \
     atprotocol/lexicons_func.h \
     atprotocol/lexicons_func_unknown.h \
     qtquick/accountlistmodel.h \
+    qtquick/atpabstractlistmodel.h \
     qtquick/columnlistmodel.h \
     qtquick/common.h \
     qtquick/createrecord.h \
