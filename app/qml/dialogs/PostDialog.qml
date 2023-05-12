@@ -71,12 +71,13 @@ Dialog {
                 anchors.fill: parent
                 RowLayout {
                     Image {
-                        id: avatorImage
+                        id: replyAvatarImage
                         Layout.preferredWidth: 16
                         Layout.preferredHeight: 16
                         source: replyAvatar
                     }
                     Author {
+                        Layout.preferredWidth: replyFrame.width - replyFrame.padding * 2 - replyAvatarImage.width - parent.spacing
                         displayName: replyDisplayName
                         handle: replyHandle
                         indexedAt: replyIndexedAt
@@ -93,7 +94,7 @@ Dialog {
 
         ComboBox {
             id: accountCombo
-            Layout.preferredWidth: 150
+            Layout.preferredWidth: 200
             textRole: "handle"
             valueRole: "did"
             delegate: ItemDelegate {
@@ -104,7 +105,7 @@ Dialog {
         }
         TextField {
             id: postText
-            Layout.preferredWidth: postDialog.parentWidth * 0.5
+            Layout.preferredWidth: 400
             Layout.preferredHeight: 100
             verticalAlignment: TextInput.AlignTop
             wrapMode: TextInput.WordWrap
@@ -118,11 +119,14 @@ Dialog {
                 anchors.fill: parent
                 RowLayout {
                     Image {
+                        id: quoteAvatarImage
                         Layout.preferredWidth: 16
                         Layout.preferredHeight: 16
                         source: replyAvatar
                     }
                     Author {
+                        Layout.preferredWidth: quoteFrame.width - quoteFrame.padding * 2 - quoteAvatarImage.width - parent.spacing
+                        Layout.fillWidth: true
                         displayName: replyDisplayName
                         handle: replyHandle
                         indexedAt: replyIndexedAt

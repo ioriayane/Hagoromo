@@ -85,7 +85,7 @@ ColumnLayout {
                     id: componentTypeLabel
                 }
                 Label {
-                    text: "@" + columnView.handle + " on " + columnView.service
+                    text: "@" + columnView.handle + " - " + columnView.service
                     font.pointSize: 8
                     color: Material.color(Material.Grey)
                 }
