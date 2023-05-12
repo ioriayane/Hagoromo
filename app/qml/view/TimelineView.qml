@@ -47,7 +47,7 @@ ScrollView {
         footer: BusyIndicator {
             width: rootListView.width
             height: 24
-            visible: timelineListModel.running
+            visible: timelineListModel.running && timelineListModel.rowCount() > 0
         }
 
         delegate: Frame {

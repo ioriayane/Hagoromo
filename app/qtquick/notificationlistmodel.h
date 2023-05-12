@@ -10,6 +10,8 @@
 class NotificationListModel : public QAbstractListModel
 {
     Q_OBJECT
+
+    Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
 public:
     explicit NotificationListModel(QObject *parent = nullptr);
 
@@ -48,6 +50,12 @@ public:
 
     Q_INVOKABLE void getLatest();
 
+    bool running() const;
+    void setRunning(bool newRunning);
+
+signals:
+    void runningChanged();
+
 protected:
     QHash<int, QByteArray> roleNames() const;
 
@@ -57,6 +65,7 @@ private:
             m_notificationHash;
 
     AtProtocolInterface::AccountData m_account;
+    bool m_running;
 };
 
 #endif // NOTIFICATIONLISTMODEL_H

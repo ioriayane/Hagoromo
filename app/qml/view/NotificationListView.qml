@@ -24,18 +24,24 @@ ScrollView {
             id: listNotificationListModel
         }
 
-        header: Button {
+        header: ItemDelegate {
             width: rootListView.width
             height: 24
             display: AbstractButton.IconOnly
-            icon.source: "../images/expand_less.png"
+            icon.source: listNotificationListModel.running ? "" : "../images/expand_less.png"
             onClicked: listNotificationListModel.getLatest()
+
+            BusyIndicator {
+                anchors.centerIn: parent
+                width: 24
+                height: 24
+                visible: listNotificationListModel.running
+            }
         }
-        footer: Button {
+        footer: BusyIndicator {
             width: rootListView.width
             height: 24
-            display: AbstractButton.IconOnly
-            icon.source: "../images/expand_more.png"
+            visible: listNotificationListModel.running && listNotificationListModel.rowCount() > 0
         }
 
         delegate: Frame {

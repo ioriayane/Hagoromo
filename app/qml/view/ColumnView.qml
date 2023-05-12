@@ -94,34 +94,18 @@ ColumnLayout {
                 Layout.preferredWidth: 30
                 Layout.preferredHeight: 30
                 iconSource: "../images/settings.png"
-                onClicked: {
-                    var point = settingButton.mapToItem(rootItem, settingButton.pressX, settingButton.pressY)
-                    popup.x = point.x - popup.width
-                    popup.y = point.y
-                    popup.open()
-                }
-                Popup {
+                onClicked: popup.open()
+                Menu {
                     id: popup
-                    width: popupItemLayout.width
-                    height: popupItemLayout.height
-                    padding: 0
-
-                    ColumnLayout {
-                        id: popupItemLayout
-                        spacing: 0
-                        ItemDelegate {
-                            Layout.fillWidth: true
-                            text: qsTr("Move left")
-                        }
-                        ItemDelegate {
-                            Layout.fillWidth: true
-                            text: qsTr("Move right")
-                        }
-                        ItemDelegate {
-                            Layout.fillWidth: true
-                            icon.source: "../images/delete.png"
-                            text: qsTr("Delete column")
-                        }
+                    MenuItem {
+                        text: qsTr("Move left")
+                    }
+                    MenuItem {
+                        text: qsTr("Move right")
+                    }
+                    MenuItem {
+                        icon.source: "../images/delete.png"
+                        text: qsTr("Delete column")
                     }
                 }
             }

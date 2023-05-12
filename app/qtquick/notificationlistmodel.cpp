@@ -102,3 +102,16 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
 
     return roles;
 }
+
+bool NotificationListModel::running() const
+{
+    return m_running;
+}
+
+void NotificationListModel::setRunning(bool newRunning)
+{
+    if (m_running == newRunning)
+        return;
+    m_running = newRunning;
+    emit runningChanged();
+}
