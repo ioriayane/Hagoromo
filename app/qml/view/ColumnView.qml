@@ -24,9 +24,12 @@ ColumnLayout {
 
     property var rootItem: undefined
 
-    signal requestedReply(string account_uuid, string cid, string uri,
+    signal requestedReply(string account_uuid,
+                          string cid, string uri,
+                          string reply_root_cid, string reply_root_uri,
                           string avatar, string display_name, string handle, string indexed_at, string text)
-    signal requestedQuote(string account_uuid, string cid, string uri,
+    signal requestedQuote(string account_uuid,
+                          string cid, string uri,
                           string avatar, string display_name, string handle, string indexed_at, string text)
 
     CreateRecord {
@@ -37,8 +40,8 @@ ColumnLayout {
     Component {
         id: timelineComponent
         TimelineView {
-            onRequestedReply: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
-                              columnView.requestedReply(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+            onRequestedReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
+                              columnView.requestedReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestedRepost: (cid, uri) => createRecord.repost(cid, uri)
             onRequestedQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
                               columnView.requestedQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)

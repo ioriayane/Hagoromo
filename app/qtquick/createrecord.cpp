@@ -17,10 +17,13 @@ void CreateRecord::setAccount(const QString &service, const QString &did, const 
     m_account.refreshJwt = refreshJwt;
 }
 
-void CreateRecord::setReply(const QString &cid, const QString &uri)
+void CreateRecord::setReply(const QString &parent_cid, const QString &parent_uri,
+                            const QString &root_cid, const QString &root_uri)
 {
-    m_reply.cid = cid;
-    m_reply.uri = uri;
+    m_replyParent.cid = parent_cid;
+    m_replyParent.uri = parent_uri;
+    m_replyRoot.cid = root_cid;
+    m_replyRoot.uri = root_uri;
 }
 
 void CreateRecord::setQuote(const QString &cid, const QString &uri)
@@ -37,7 +40,7 @@ void CreateRecord::post(const QString &text)
         create_record->deleteLater();
     });
     create_record->setAccount(m_account);
-    create_record->setReply(m_reply.cid, m_reply.uri);
+    create_record->setReply(m_replyParent.cid, m_replyParent.uri, m_replyRoot.cid, m_replyRoot.uri);
     create_record->setQuote(m_embedQuote.cid, m_embedQuote.uri);
     create_record->post(text);
 }

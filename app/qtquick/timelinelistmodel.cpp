@@ -155,11 +155,15 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         }
     }
 
-    else if (role == HasParentRole)
+    else if (role == HasReplyRole)
         return current.reply.parent.cid.length() > 0;
-    else if (role == ParentDisplayNameRole)
+    else if (role == ReplyRootCidRole)
+        return current.reply.root.cid;
+    else if (role == ReplyRootUriRole)
+        return current.reply.root.uri;
+    else if (role == ReplyParentDisplayNameRole)
         return current.reply.parent.author.displayName;
-    else if (role == ParentHandleRole)
+    else if (role == ReplyParentHandleRole)
         return current.reply.parent.author.handle;
     else if (role == IsRepostedByRole)
         return (current.reason_type
@@ -219,9 +223,11 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[ChildRecordIndexedAtRole] = "childRecordIndexedAt";
     roles[ChildRecordEmbedImagesRole] = "childRecordEmbedImages";
 
-    roles[HasParentRole] = "hasParent";
-    roles[ParentDisplayNameRole] = "parentDisplayName";
-    roles[ParentHandleRole] = "parentHandle";
+    roles[HasReplyRole] = "hasReply";
+    roles[ReplyRootCidRole] = "replyRootCid";
+    roles[ReplyRootUriRole] = "replyRootUri";
+    roles[ReplyParentDisplayNameRole] = "replyParentDisplayName";
+    roles[ReplyParentHandleRole] = "replyParentHandle";
     roles[IsRepostedByRole] = "isRepostedBy";
     roles[RepostedByDisplayNameRole] = "repostedByDisplayName";
     roles[RepostedByHandleRole] = "repostedByHandle";

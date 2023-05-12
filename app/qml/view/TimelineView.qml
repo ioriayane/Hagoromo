@@ -16,7 +16,9 @@ ScrollView {
 
     property alias model: rootListView.model
 
-    signal requestedReply(string cid, string uri, string avatar, string display_name, string handle, string indexed_at, string text)
+    signal requestedReply(string cid, string uri,
+                          string reply_root_cid, string reply_root_uri,
+                          string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestedRepost(string cid, string uri)
     signal requestedQuote(string cid, string uri, string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestedLike(string cid, string uri)
@@ -68,10 +70,10 @@ ScrollView {
                     color: Material.color(Material.Green)
                 }
                 ReactionAuthor {
-                    visible: model.hasParent
+                    visible: model.hasReply
                     source: "../images/reply.png"
-                    displayName: model.parentDisplayName
-                    handle: model.parentHandle
+                    displayName: model.replyParentDisplayName
+                    handle: model.replyParentHandle
                     color: Material.color(Material.Blue)
                 }
 
@@ -157,6 +159,7 @@ ScrollView {
                             likeButton.iconText: model.likeCount
 
                             replyButton.onClicked: requestedReply(model.cid, model.uri,
+                                                                  model.replyRootCid, model.replyRootUri,
                                                                   model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
                             repostMenuItem.onTriggered: requestedRepost(model.cid, model.uri)
                             quoteMenuItem.onTriggered: requestedQuote(model.cid, model.uri,

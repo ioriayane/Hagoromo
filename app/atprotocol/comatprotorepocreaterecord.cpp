@@ -18,12 +18,20 @@ void ComAtprotoRepoCreateRecord::post(const QString &text)
     json_record.insert("text", text);
     json_record.insert("createdAt", QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
 
-    if (!m_reply.cid.isEmpty() && !m_reply.uri.isEmpty()) {
+    if (!m_replyParent.cid.isEmpty() && !m_replyParent.uri.isEmpty()) {
+        QJsonObject json_root;
+        if (!m_replyRoot.cid.isEmpty() && !m_replyRoot.uri.isEmpty()) {
+            json_root.insert("cid", m_replyRoot.cid);
+            json_root.insert("uri", m_replyRoot.uri);
+        } else {
+            json_root.insert("cid", m_replyParent.cid);
+            json_root.insert("uri", m_replyParent.uri);
+        }
         QJsonObject json_parent;
-        json_parent.insert("cid", m_reply.cid);
-        json_parent.insert("uri", m_reply.uri);
+        json_parent.insert("cid", m_replyParent.cid);
+        json_parent.insert("uri", m_replyParent.uri);
         QJsonObject json_reply;
-        json_reply.insert("root", json_parent);
+        json_reply.insert("root", json_root);
         json_reply.insert("parent", json_parent);
         json_record.insert("reply", json_reply);
     }
@@ -89,10 +97,13 @@ void ComAtprotoRepoCreateRecord::like(const QString &cid, const QString &uri)
                            json_doc.toJson(QJsonDocument::Compact));
 }
 
-void ComAtprotoRepoCreateRecord::setReply(const QString &cid, const QString &uri)
+void ComAtprotoRepoCreateRecord::setReply(const QString &parent_cid, const QString &parent_uri,
+                                          const QString &root_cid, const QString &root_uri)
 {
-    m_reply.cid = cid;
-    m_reply.uri = uri;
+    m_replyParent.cid = parent_cid;
+    m_replyParent.uri = parent_uri;
+    m_replyRoot.cid = root_cid;
+    m_replyRoot.uri = root_uri;
 }
 
 void ComAtprotoRepoCreateRecord::setQuote(const QString &cid, const QString &uri)

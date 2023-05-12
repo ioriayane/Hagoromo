@@ -109,12 +109,18 @@ ApplicationWindow {
     Component {
         id: columnView
         ColumnView {
-            onRequestedReply: (account_uuid, cid, uri, avatar, display_name, handle, indexed_at, text) => {
-                                  console.log(account_uuid + ", "+ cid + ", "+ uri + ", "+ avatar + ", "+ display_name + ", "+ handle + ", "+ indexed_at + ", "+ text)
+            onRequestedReply: (account_uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) => {
+                                  console.log(account_uuid + ",\n" +
+                                              cid + ", "+ uri + ",\n" +
+                                              reply_root_cid + ", "+ reply_root_uri + ",\n" +
+                                              avatar + ",\n" +
+                                              display_name + ", "+ handle + ", "+ indexed_at + ",\n"+ text)
                                   postDialog.postType = "reply"
                                   postDialog.defaultAccountUuid = account_uuid
                                   postDialog.replyCid = cid
                                   postDialog.replyUri = uri
+                                  postDialog.replyRootCid = reply_root_cid
+                                  postDialog.replyRootUri = reply_root_uri
                                   postDialog.replyAvatar = avatar
                                   postDialog.replyDisplayName = display_name
                                   postDialog.replyHandle = handle
@@ -127,6 +133,8 @@ ApplicationWindow {
                                   postDialog.defaultAccountUuid = account_uuid
                                   postDialog.replyCid = cid
                                   postDialog.replyUri = uri
+                                  postDialog.replyRootCid = ""
+                                  postDialog.replyRootUri = ""
                                   postDialog.replyAvatar = avatar
                                   postDialog.replyDisplayName = display_name
                                   postDialog.replyHandle = handle

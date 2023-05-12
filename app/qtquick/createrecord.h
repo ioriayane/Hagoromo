@@ -15,7 +15,8 @@ public:
     Q_INVOKABLE void setAccount(const QString &service, const QString &did, const QString &handle,
                                 const QString &email, const QString &accessJwt,
                                 const QString &refreshJwt);
-    Q_INVOKABLE void setReply(const QString &cid, const QString &uri);
+    Q_INVOKABLE void setReply(const QString &parent_cid, const QString &parent_uri,
+                              const QString &root_cid, const QString &root_uri);
     Q_INVOKABLE void setQuote(const QString &cid, const QString &uri);
 
     Q_INVOKABLE void post(const QString &text);
@@ -28,7 +29,8 @@ signals:
 private:
     AtProtocolInterface::AccountData m_account;
 
-    AtProtocolType::ComAtprotoRepoStrongRef::Main m_reply;
+    AtProtocolType::ComAtprotoRepoStrongRef::Main m_replyParent;
+    AtProtocolType::ComAtprotoRepoStrongRef::Main m_replyRoot;
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_embedQuote;
 };
 

@@ -22,6 +22,8 @@ Dialog {
 
     property string replyCid: ""
     property string replyUri: ""
+    property string replyRootCid: ""
+    property string replyRootUri: ""
     property string replyAvatar: ""
     property string replyDisplayName: ""
     property string replyHandle: ""
@@ -45,7 +47,7 @@ Dialog {
         replyIndexedAt = ""
         replyText = ""
 
-        postText.text = ""
+        postText.clear()
     }
 
     CreateRecord {
@@ -162,10 +164,10 @@ Dialog {
                                             postDialog.accountModel.item(row, AccountListModel.EmailRole),
                                             postDialog.accountModel.item(row, AccountListModel.AccessJwtRole),
                                             postDialog.accountModel.item(row, AccountListModel.RefreshJwtRole))
-                    createRecord.setReply("", "")
+                    createRecord.setReply("", "", "", "")
                     createRecord.setQuote("", "")
                     if(postType === "reply"){
-                        createRecord.setReply(replyCid, replyUri)
+                        createRecord.setReply(replyCid, replyUri, replyRootCid, replyRootUri)
                     }else if(postType === "quote"){
                         createRecord.setQuote(replyCid, replyUri)
                     }
