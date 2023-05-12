@@ -3,6 +3,7 @@
 AtpAbstractListModel::AtpAbstractListModel(QObject *parent)
     : QAbstractListModel { parent }, m_running(false)
 {
+    connect(&m_timer, &QTimer::timeout, this, &AtpAbstractListModel::getLatest);
 }
 
 AtProtocolInterface::AccountData AtpAbstractListModel::account() const
@@ -38,4 +39,23 @@ void AtpAbstractListModel::setRunning(bool newRunning)
 QString AtpAbstractListModel::formatDateTime(const QString &value) const
 {
     return QDateTime::fromString(value, Qt::ISODateWithMs).toLocalTime().toString("MM/dd hh:mm");
+}
+
+bool AtpAbstractListModel::autoLoading() const
+{
+    return m_timer.isActive();
+}
+
+void AtpAbstractListModel::setAutoLoading(bool newAutoLoading)
+{
+    if (newAutoLoading) {
+        // Off -> On
+        if (m_timer.isActive())
+            return;
+        m_timer.start(60 * 1000);
+    } else {
+        // * -> Off
+        m_timer.stop();
+    }
+    emit autoLoadingChanged();
 }

@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import QtQuick.Controls.Material 2.15
 
 import tech.relog.hagoromo.columnlistmodel 1.0
 import tech.relog.hagoromo.createrecord 1.0
@@ -81,8 +82,9 @@ ColumnLayout {
                     id: componentTypeLabel
                 }
                 Label {
-                    text: "@" + columnView.handle
+                    text: "@" + columnView.handle + " on " + columnView.service
                     font.pointSize: 8
+                    color: Material.color(Material.Grey)
                 }
             }
             Item {

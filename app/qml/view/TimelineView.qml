@@ -28,6 +28,7 @@ ScrollView {
 
         model: TimelineListModel {
             id: timelineListModel
+            autoLoading: true
         }
 
         header: ItemDelegate {
@@ -106,6 +107,7 @@ ScrollView {
                             // wrapMode: Text.Wrap
                             wrapMode: Text.WrapAnywhere
                             font.pointSize: 11
+//                            font.family: "遊ゴシック"  // "メイリオ"  "BIZ UDPゴシック"
                             text: model.recordText
                         }
                         ImagePreview {

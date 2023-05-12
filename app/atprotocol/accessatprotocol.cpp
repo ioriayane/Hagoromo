@@ -83,6 +83,12 @@ QString AccessAtProtocol::refreshJwt() const
 
 void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query)
 {
+    if (accessJwt().isEmpty()) {
+        qDebug() << "AccessAtProtocol::get()"
+                 << "Emty accessJwt!";
+        return;
+    }
+
     QUrl url = QString("%1/%2").arg(service(), endpoint);
     url.setQuery(query);
     QNetworkRequest request(url);
@@ -99,6 +105,12 @@ void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
     QNetworkRequest request(QUrl(QString("%1/%2").arg(service(), endpoint)));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     if (with_auth_header) {
+        if (accessJwt().isEmpty()) {
+            qDebug() << "AccessAtProtocol::get()"
+                     << "Emty accessJwt!";
+            return;
+        }
+
         request.setRawHeader(QByteArray("Authorization"),
                              QByteArray("Bearer ") + accessJwt().toUtf8());
     }
