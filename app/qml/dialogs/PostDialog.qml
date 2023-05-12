@@ -5,6 +5,7 @@ import QtQuick.Layouts 1.15
 import tech.relog.hagoromo.createrecord 1.0
 import tech.relog.hagoromo.accountlistmodel 1.0
 
+import "../controls"
 import "../parts"
 
 Dialog {
@@ -104,11 +105,22 @@ Dialog {
             verticalAlignment: TextInput.AlignTop
             wrapMode: TextInput.WordWrap
         }
-        Label {
+        RowLayout {
             Layout.alignment: Qt.AlignRight
-            font.pointSize: 8
-            text: 300 - postText.text.length
+            Label {
+                Layout.alignment: Qt.AlignVCenter
+                font.pointSize: 8
+                text: 300 - postText.text.length
+            }
+            ProgressCircle {
+                Layout.preferredWidth: 24
+                Layout.preferredHeight: 24
+                from: 0
+                to: 300
+                value: postText.text.length
+            }
         }
+
 
         Frame {
             id: quoteFrame
