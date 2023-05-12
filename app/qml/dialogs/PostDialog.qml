@@ -44,6 +44,8 @@ Dialog {
         replyHandle = ""
         replyIndexedAt = ""
         replyText = ""
+
+        postText.text = ""
     }
 
     CreateRecord {
@@ -105,22 +107,6 @@ Dialog {
             verticalAlignment: TextInput.AlignTop
             wrapMode: TextInput.WordWrap
         }
-        RowLayout {
-            Layout.alignment: Qt.AlignRight
-            Label {
-                Layout.alignment: Qt.AlignVCenter
-                font.pointSize: 8
-                text: 300 - postText.text.length
-            }
-            ProgressCircle {
-                Layout.preferredWidth: 24
-                Layout.preferredHeight: 24
-                from: 0
-                to: 300
-                value: postText.text.length
-            }
-        }
-
 
         Frame {
             id: quoteFrame
@@ -149,27 +135,43 @@ Dialog {
             }
         }
 
-        Button {
+        RowLayout {
             Layout.alignment: Qt.AlignRight
-            enabled: postText.text.length > 0
-            text: qsTr("Post")
-            onClicked: {
-                var row = accountCombo.currentIndex;
-                createRecord.setAccount(postDialog.accountModel.item(row, AccountListModel.ServiceRole),
-                                        postDialog.accountModel.item(row, AccountListModel.DidRole),
-                                        postDialog.accountModel.item(row, AccountListModel.HandleRole),
-                                        postDialog.accountModel.item(row, AccountListModel.EmailRole),
-                                        postDialog.accountModel.item(row, AccountListModel.AccessJwtRole),
-                                        postDialog.accountModel.item(row, AccountListModel.RefreshJwtRole))
-                createRecord.setReply("", "")
-                createRecord.setQuote("", "")
-                if(postType === "reply"){
-                    createRecord.setReply(replyCid, replyUri)
-                }else if(postType === "quote"){
-                    createRecord.setQuote(replyCid, replyUri)
-                }
+            Label {
+                Layout.alignment: Qt.AlignVCenter
+                font.pointSize: 8
+                text: 300 - postText.text.length
+            }
+            ProgressCircle {
+                Layout.preferredWidth: 24
+                Layout.preferredHeight: 24
+                Layout.alignment: Qt.AlignVCenter
+                from: 0
+                to: 300
+                value: postText.text.length
+            }
+            Button {
+                Layout.alignment: Qt.AlignRight
+                enabled: postText.text.length > 0
+                text: qsTr("Post")
+                onClicked: {
+                    var row = accountCombo.currentIndex;
+                    createRecord.setAccount(postDialog.accountModel.item(row, AccountListModel.ServiceRole),
+                                            postDialog.accountModel.item(row, AccountListModel.DidRole),
+                                            postDialog.accountModel.item(row, AccountListModel.HandleRole),
+                                            postDialog.accountModel.item(row, AccountListModel.EmailRole),
+                                            postDialog.accountModel.item(row, AccountListModel.AccessJwtRole),
+                                            postDialog.accountModel.item(row, AccountListModel.RefreshJwtRole))
+                    createRecord.setReply("", "")
+                    createRecord.setQuote("", "")
+                    if(postType === "reply"){
+                        createRecord.setReply(replyCid, replyUri)
+                    }else if(postType === "quote"){
+                        createRecord.setQuote(replyCid, replyUri)
+                    }
 
-                createRecord.post(postText.text)
+                    createRecord.post(postText.text)
+                }
             }
         }
     }

@@ -7,6 +7,7 @@ import Qt.labs.settings 1.1
 import tech.relog.hagoromo.accountlistmodel 1.0
 import tech.relog.hagoromo.columnlistmodel 1.0
 
+import "controls"
 import "dialogs"
 import "view"
 
@@ -140,20 +141,20 @@ ApplicationWindow {
         id: rootLayout
         anchors.fill: parent
         spacing: 0
-        Rectangle {
+        Item {
             Layout.fillHeight: true
-            Layout.minimumWidth: 64
-            Layout.maximumWidth: 128
-            color: "#00000000"
+            Layout.minimumWidth: 48
+            Layout.preferredWidth: 48
+            Layout.maximumWidth: 96
             ColumnLayout {
                 anchors.fill: parent
                 anchors.margins: 1
-                Button {
+                IconButton {
                     Layout.fillWidth: true
+                    Layout.preferredHeight: 36
                     display: AbstractButton.IconOnly
-                    // display: AbstractButton.TextBesideIcon
-                    icon.source: "images/edit.png"
-                    text: qsTr("New Post")
+                    iconSource: "images/edit.png"
+                    //                    iconText: qsTr("New Post")
                     onClicked: postDialog.open()
                 }
 
@@ -162,32 +163,32 @@ ApplicationWindow {
                     Layout.fillHeight: true
                 }
 
-                Button {
+                IconButton {
                     Layout.fillWidth: true
+                    Layout.preferredHeight: 36
                     display: AbstractButton.IconOnly
-                    // display: AbstractButton.TextBesideIcon
-                    icon.source: "images/column.png"
-                    text: qsTr("Add column")
+                    iconSource: "images/column.png"
+                    //                    iconText: qsTr("Add column")
 
                     onClicked: addColumnDialog.open()
                 }
 
-                Button {
+                IconButton {
                     Layout.fillWidth: true
+                    Layout.preferredHeight: 36
                     display: AbstractButton.IconOnly
-                    // display: AbstractButton.TextBesideIcon
-                    icon.source: "images/account.png"
-                    text: qsTr("Account")
+                    iconSource: "images/account.png"
+                    //                    iconText: qsTr("Account")
 
                     onClicked: accountDialog.open()
                 }
 
-                Button {
+                IconButton {
                     Layout.fillWidth: true
+                    Layout.preferredHeight: 36
                     display: AbstractButton.IconOnly
-                    // display: AbstractButton.TextBesideIcon
-                    icon.source: "images/settings.png"
-                    text: qsTr("Settings")
+                    iconSource: "images/settings.png"
+                    //                    iconText: qsTr("Settings")
 
                     onClicked: settingDialog.open()
                 }
