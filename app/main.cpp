@@ -7,6 +7,7 @@
 #include "qtquick/accountlistmodel.h"
 #include "qtquick/columnlistmodel.h"
 #include "qtquick/notificationlistmodel.h"
+#include "qtquick/postthreadlistmodel.h"
 #include "qtquick/timelinelistmodel.h"
 #include "qtquick/thumbnailprovider.h"
 
@@ -32,6 +33,8 @@ int main(int argc, char *argv[])
                                      "ColumnListModel");
     qmlRegisterType<NotificationListModel>("tech.relog.hagoromo.notificationlistmodel", 1, 0,
                                            "NotificationListModel");
+    qmlRegisterType<PostThreadListModel>("tech.relog.hagoromo.postthreadlistmodel", 1, 0,
+                                         "PostThreadListModel");
     qmlRegisterType<TimelineListModel>("tech.relog.hagoromo.timelinelistmodel", 1, 0,
                                        "TimelineListModel");
 

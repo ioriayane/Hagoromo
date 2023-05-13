@@ -4,6 +4,7 @@ TARGET = Hagoromo
 
 SOURCES += \
         atprotocol/accessatprotocol.cpp \
+        atprotocol/appbskyfeedgetpostthread.cpp \
         atprotocol/appbskyfeedgettimeline.cpp \
         atprotocol/appbskynotificationlistnotifications.cpp \
         atprotocol/comatprotorepocreaterecord.cpp \
@@ -17,10 +18,12 @@ SOURCES += \
         qtquick/createrecord.cpp \
         qtquick/createsession.cpp \
         qtquick/notificationlistmodel.cpp \
+        qtquick/postthreadlistmodel.cpp \
         qtquick/timelinelistmodel.cpp
 
 HEADERS += \
     atprotocol/accessatprotocol.h \
+    atprotocol/appbskyfeedgetpostthread.h \
     atprotocol/appbskyfeedgettimeline.h \
     atprotocol/appbskynotificationlistnotifications.h \
     atprotocol/comatprotorepocreaterecord.h \
@@ -35,6 +38,7 @@ HEADERS += \
     qtquick/createrecord.h \
     qtquick/createsession.h \
     qtquick/notificationlistmodel.h \
+    qtquick/postthreadlistmodel.h \
     qtquick/thumbnailprovider.h \
     qtquick/timelinelistmodel.h
 
@@ -52,15 +56,18 @@ QML_FILES = \
     qml/parts/AvatarImage.qml \
     qml/parts/ImagePreview.qml \
     qml/parts/PostControls.qml \
+    qml/parts/PostDelegate.qml \
     qml/parts/ReactionAuthor.qml \
     qml/view/ColumnView.qml \
-    qml/view/TimelineView.qml \
-    qml/view/NotificationListView.qml
+    qml/view/NotificationListView.qml \
+    qml/view/PostThreadView.qml \
+    qml/view/TimelineView.qml
 
 IMAGE_FILES += \
     qml/images/account.png \
     qml/images/account_icon.png \
     qml/images/add_user.png \
+    qml/images/arrow_back.png \
     qml/images/arrow_forward.png \
     qml/images/check.png \
     qml/images/column.png \

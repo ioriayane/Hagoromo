@@ -8,6 +8,8 @@
 enum class ColumnComponentType : int {
     Timeline = 0,
     Notification = 1,
+
+    PostThread = 100,
 };
 
 struct ColumnItem

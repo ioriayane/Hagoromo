@@ -46,24 +46,43 @@ ColumnLayout {
             onRequestedQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
                               columnView.requestedQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
             onRequestedLike: (cid, uri) => createRecord.like(cid, uri)
+
+            onRequestedViewThread: (uri) => {
+                                       console.log("View Thread : " + uri)
+                                       // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
+                                       // これはPostThreadViewのプロパティにダイレクトに設定する
+                                       loader.push(postThreadComponent, { "postThreadUri": uri })
+                                   }
         }
     }
+
     Component {
         id: listNotificationComponent
         NotificationListView {
+        }
+    }
+    Component {
+        id: postThreadComponent
+        PostThreadView {
+            onBack: {
+                if(!loader.empty){
+                    loader.pop()
+                }
+            }
         }
     }
 
     function load(){
         console.log("ColumnLayout:componentType=" + componentType)
         if(componentType === 0){
-            loader.sourceComponent = timelineComponent
+            loader.push(timelineComponent)
             componentTypeLabel.text = qsTr("Home")
         }else if(componentType === 1){
-            loader.sourceComponent = listNotificationComponent
+            loader.push(listNotificationComponent)
             componentTypeLabel.text = qsTr("Notifications")
         }else{
-            loader.sourceComponent = timelineComponent
+            loader.push(timelineComponent)
+            componentTypeLabel.text = qsTr("Unknown")
         }
         createRecord.setAccount(service, did, handle, email, accessJwt, refreshJwt)
     }
@@ -117,19 +136,21 @@ ColumnLayout {
         }
     }
 
-    Loader {
+    StackView {
         id: loader
         Layout.fillWidth: true
         Layout.fillHeight: true
 
-        onLoaded: {
-            item.model.setAccount(columnView.service,
-                                  columnView.did,
-                                  columnView.handle,
-                                  columnView.email,
-                                  columnView.accessJwt,
-                                  columnView.refreshJwt)
-            item.model.getLatest()
+        onCurrentItemChanged: {
+            if(currentItem.model === undefined)
+                return
+            currentItem.model.setAccount(columnView.service,
+                                         columnView.did,
+                                         columnView.handle,
+                                         columnView.email,
+                                         columnView.accessJwt,
+                                         columnView.refreshJwt)
+            currentItem.model.getLatest()
         }
     }
 
