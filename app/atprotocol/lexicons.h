@@ -294,16 +294,25 @@ struct BlockedPost
 };
 struct ThreadViewPost
 {
+    ThreadViewPost() { }
+    ThreadViewPost(const ThreadViewPost &) = delete;
+    ~ThreadViewPost()
+    {
+        if (parent_ThreadViewPost != nullptr)
+            delete parent_ThreadViewPost;
+    }
+    ThreadViewPost &operator=(const ThreadViewPost &) = delete;
+
     PostView post;
     // union start : parent
     ThreadViewPostParentType parent_type = ThreadViewPostParentType::none;
-    ThreadViewPost *parent_ThreadViewPost;
+    ThreadViewPost *parent_ThreadViewPost = nullptr;
     NotFoundPost parent_NotFoundPost;
     BlockedPost parent_BlockedPost;
     // union end : parent
     // union start : replies
     ThreadViewPostRepliesType replies_type = ThreadViewPostRepliesType::none;
-    QList<ThreadViewPost *> replies_ThreadViewPost;
+    QList<ThreadViewPost> replies_ThreadViewPost;
     QList<NotFoundPost> replies_NotFoundPost;
     QList<BlockedPost> replies_BlockedPost;
     // union end : replies

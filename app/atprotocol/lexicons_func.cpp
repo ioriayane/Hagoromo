@@ -338,6 +338,13 @@ void copyThreadViewPost(const QJsonObject &src, AppBskyFeedDefs::ThreadViewPost 
         copyPostView(src.value("post").toObject(), dest.post);
         QString parent_type = src.value("parent").toObject().value("$type").toString();
         // union *parent #threadViewPost
+        if (parent_type == QStringLiteral("app.bsky.feed.defs#threadViewPost")) {
+            if (dest.parent_ThreadViewPost == nullptr)
+                dest.parent_ThreadViewPost = new ThreadViewPost;
+            dest.parent_type = AppBskyFeedDefs::ThreadViewPostParentType::parent_ThreadViewPost;
+            AppBskyFeedDefs::copyThreadViewPost(src.value("parent").toObject(),
+                                                *dest.parent_ThreadViewPost);
+        }
         if (parent_type == QStringLiteral("app.bsky.feed.defs#notFoundPost")) {
             dest.parent_type = AppBskyFeedDefs::ThreadViewPostParentType::parent_NotFoundPost;
             AppBskyFeedDefs::copyNotFoundPost(src.value("parent").toObject(),
