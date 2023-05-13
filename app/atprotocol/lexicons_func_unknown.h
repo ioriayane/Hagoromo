@@ -8,10 +8,15 @@
 #include <QString>
 #include <QVariant>
 
+#include "lexicons.h"
+
 namespace AtProtocolType {
 namespace LexiconsTypeUnknown {
 
 void copyUnknown(const QJsonObject &src, QVariant &dest);
+
+QString copyImagesFromPostView(const AppBskyFeedDefs::PostView &post, const bool thumb);
+QString copyImagesFromRecord(const AppBskyEmbedRecord::ViewRecord &record, const bool thumb);
 
 template<typename T>
 T fromQVariant(const QVariant &variant)

@@ -31,6 +31,7 @@ ColumnLayout {
     signal requestedQuote(string account_uuid,
                           string cid, string uri,
                           string avatar, string display_name, string handle, string indexed_at, string text)
+    signal requestedViewImages(int index, string paths)
 
     CreateRecord {
         id: createRecord
@@ -53,6 +54,8 @@ ColumnLayout {
                                        // これはPostThreadViewのプロパティにダイレクトに設定する
                                        loader.push(postThreadComponent, { "postThreadUri": uri })
                                    }
+
+            onRequestedViewImages: (index, paths) => columnView.requestedViewImages(index, paths)
         }
     }
 

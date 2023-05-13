@@ -10,13 +10,6 @@ using namespace AtProtocolType;
 TimelineListModel::TimelineListModel(AtpAbstractListModel *parent) : AtpAbstractListModel { parent }
 {
     connect(&m_timeline, &AppBskyFeedGetTimeline::finished, [=](bool success) {
-        // data copy
-        //        QList<AppBskyFeedDefs::FeedViewPost>::const_iterator i =
-        //                m_timeline.feedList()->constBegin();
-        //        while (i != m_timeline.feedList()->constEnd()) {
-        //            i->post
-        //            ++i;
-        //        }
         if (success) {
             QDateTime reference_time;
             if (m_cidList.count() > 0 && m_viewPostHash.count() > 0) {
@@ -102,20 +95,10 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return current.post.likeCount;
     else if (role == IndexedAtRole)
         return formatDateTime(current.post.indexedAt);
-    else if (role == EmbedImagesRole) {
-        if (current.post.embed_type
-            == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedImages_View) {
-            QString images;
-            for (const auto &image : current.post.embed_AppBskyEmbedImages_View.images) {
-                if (!images.isEmpty())
-                    images.append("\n");
-                images.append(image.thumb);
-            }
-            return images;
-        } else {
-            return QString();
-        }
-    }
+    else if (role == EmbedImagesRole)
+        return LexiconsTypeUnknown::copyImagesFromPostView(current.post, true);
+    else if (role == EmbedImagesFullRole)
+        return LexiconsTypeUnknown::copyImagesFromPostView(current.post, false);
 
     else if (role == HasChildRecordRole)
         return current.post.embed_type
@@ -135,25 +118,14 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     else if (role == ChildRecordIndexedAtRole)
         return formatDateTime(
                 current.post.embed_AppBskyEmbedRecord_View.record_ViewRecord.indexedAt);
-    else if (role == ChildRecordEmbedImagesRole) {
+    else if (role == ChildRecordEmbedImagesRole)
         // unionの配列で読み込んでない
-        const AppBskyEmbedRecord::ViewRecord &temp_record =
-                current.post.embed_AppBskyEmbedRecord_View.record_ViewRecord;
-        if (temp_record.embeds_type
-            == AppBskyEmbedRecord::ViewRecordEmbedsType::embeds_AppBskyEmbedImages_View) {
-            QString images;
-            for (const auto &view : temp_record.embeds_AppBskyEmbedImages_View) {
-                for (const auto &image : view.images) {
-                    if (!images.isEmpty())
-                        images.append("\n");
-                    images.append(image.thumb);
-                }
-            }
-            return images;
-        } else {
-            return QString();
-        }
-    }
+        return LexiconsTypeUnknown::copyImagesFromRecord(
+                current.post.embed_AppBskyEmbedRecord_View.record_ViewRecord, true);
+    else if (role == ChildRecordEmbedImagesFullRole)
+        // unionの配列で読み込んでない
+        return LexiconsTypeUnknown::copyImagesFromRecord(
+                current.post.embed_AppBskyEmbedRecord_View.record_ViewRecord, false);
 
     else if (role == HasReplyRole)
         return current.reply.parent.cid.length() > 0;
@@ -214,6 +186,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[LikeCountRole] = "likeCount";
     roles[IndexedAtRole] = "indexedAt";
     roles[EmbedImagesRole] = "embedImages";
+    roles[EmbedImagesFullRole] = "embedImagesFull";
 
     roles[HasChildRecordRole] = "hasChildRecord";
     roles[ChildRecordDisplayNameRole] = "childRecordDisplayName";
@@ -222,6 +195,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[ChildRecordRecordTextRole] = "childRecordRecordText";
     roles[ChildRecordIndexedAtRole] = "childRecordIndexedAt";
     roles[ChildRecordEmbedImagesRole] = "childRecordEmbedImages";
+    roles[ChildRecordEmbedImagesFullRole] = "childRecordEmbedImagesFull";
 
     roles[HasReplyRole] = "hasReply";
     roles[ReplyRootCidRole] = "replyRootCid";

@@ -16,6 +16,8 @@ GridLayout {
 
     property int cellWidth: imagePreviewLayout.layoutWidth * 0.5 - 3
 
+    signal requestedViewImages(int index)
+
     Repeater {
         id: repeater
         model: imagePreviewLayout.embedImages.split("\n")
@@ -26,6 +28,10 @@ GridLayout {
             Layout.columnSpan: isWide ? 2 : 1
             fillMode: Image.PreserveAspectCrop
             source: modelData
+            MouseArea {
+                anchors.fill: parent
+                onClicked: imagePreviewLayout.requestedViewImages(model.index)
+            }
         }
     }
 }

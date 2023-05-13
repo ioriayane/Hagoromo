@@ -59,6 +59,7 @@ QML_FILES = \
     qml/parts/PostDelegate.qml \
     qml/parts/ReactionAuthor.qml \
     qml/view/ColumnView.qml \
+    qml/view/ImageFullView.qml \
     qml/view/NotificationListView.qml \
     qml/view/PostThreadView.qml \
     qml/view/TimelineView.qml
@@ -70,6 +71,7 @@ IMAGE_FILES += \
     qml/images/arrow_back.png \
     qml/images/arrow_forward.png \
     qml/images/check.png \
+    qml/images/close.png \
     qml/images/column.png \
     qml/images/delete.png \
     qml/images/edit.png \

@@ -142,6 +142,8 @@ ApplicationWindow {
                                   postDialog.replyText = text
                                   postDialog.open()
                               }
+
+            onRequestedViewImages: (index, paths) => imageFullView.open(index, paths)
         }
     }
 
@@ -396,5 +398,11 @@ ApplicationWindow {
                 }
             }
         }
+    }
+
+    ImageFullView {
+        id: imageFullView
+        anchors.fill: parent
+        visible: false
     }
 }
