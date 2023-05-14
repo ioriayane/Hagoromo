@@ -80,38 +80,44 @@ class Defs2Struct:
         else:
             extend_symbol = ''
             if len(ref_namespace) == 0:
-                if (namespace + '#' + ref_struct_name) in self.namespace_stack:
-                    extend_symbol = ' *'
-                    self.append_pre_define(namespace, ref_struct_name)
-                    self.history_pointer.append(namespace + '#' + type_name + '#' + property_name + '#' + namespace + '#' + ref_struct_name)
                 if not is_array:
-                    if len(extend_symbol) == 0:
+                    if (namespace + '#' + ref_struct_name) in self.namespace_stack:
+                        extend_symbol = ' *'
+                        init_value = ' = nullptr'
+                        self.append_pre_define(namespace, ref_struct_name)
+                        self.history_pointer.append(namespace + '#' + type_name + '#' + property_name + '#' + namespace + '#' + ref_struct_name)
+                    else:
                         extend_symbol = ' '
-                    self.output_text[namespace].append('    %s%s%s;' % (
-                        self.to_struct_style(ref_struct_name), extend_symbol, property_name
+                        init_value = ''
+                    self.output_text[namespace].append('    %s%s%s%s;' % (
+                        self.to_struct_style(ref_struct_name), extend_symbol, property_name, init_value
                         ))
                 else:
-                    self.output_text[namespace].append('    QList<%s%s> %s;' % (
-                        self.to_struct_style(ref_struct_name), extend_symbol, property_name
+                    self.output_text[namespace].append('    QList<%s> %s;' % (
+                        self.to_struct_style(ref_struct_name), property_name
                         ))
             else:
-                if (ref_namespace + '#' + ref_struct_name) in self.namespace_stack:
-                    extend_symbol = ' *'
-                    self.append_pre_define(ref_namespace, ref_struct_name)
-                    self.history_pointer.append(namespace + '#' + type_name + '#' + property_name + '#' + ref_namespace + '#' + ref_struct_name)
                 if not is_array:
-                    if len(extend_symbol) == 0:
+                    if (ref_namespace + '#' + ref_struct_name) in self.namespace_stack:
+                        extend_symbol = ' *'
+                        init_value = ' = nullptr'
+                        self.append_pre_define(ref_namespace, ref_struct_name)
+                        self.history_pointer.append(namespace + '#' + type_name + '#' + property_name + '#' + ref_namespace + '#' + ref_struct_name)
+                    else:
                         extend_symbol = ' '
-                    self.output_text[namespace].append('    %s::%s%s%s;' % (
-                        self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), extend_symbol, property_name
+                        init_value = ''
+                    self.output_text[namespace].append('    %s::%s%s%s%s;' % (
+                        self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), extend_symbol, property_name, init_value
                         ))
                 else:
-                    self.output_text[namespace].append('    QList<%s::%s%s> %s;' % (
-                        self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), extend_symbol, property_name
+                    self.output_text[namespace].append('    QList<%s::%s> %s;' % (
+                        self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), property_name
                         ))
 
 
     def output_union(self, namespace: str, type_name: str, property_name: str, refs_obj: dict, is_array: bool = False):
+        pointer_list = []
+        enum_text = []
         union_name_list = []
         self.output_text[namespace].append('    // union start : %s' % (property_name, ))
         pos = len(self.output_text[namespace])
@@ -122,38 +128,44 @@ class Defs2Struct:
             else:
                 extend_symbol = ''
                 if len(ref_namespace) == 0:
-                    if (namespace + '#' + ref_struct_name) in self.namespace_stack:
-                        extend_symbol = ' *'
-                        self.append_pre_define(namespace, ref_struct_name)
-                        self.history_pointer.append(namespace + '#' + type_name + '#' + property_name + '#' + namespace + '#' + ref_struct_name)
                     union_name = '%s_%s' % (property_name, self.to_struct_style(ref_struct_name))
                     union_name_list.append(union_name)
                     if not is_array:
-                        if len(extend_symbol) == 0:
+                        if (namespace + '#' + ref_struct_name) in self.namespace_stack:
+                            extend_symbol = ' *'
+                            init_value = ' = nullptr'
+                            pointer_list.append(union_name)
+                            self.append_pre_define(namespace, ref_struct_name)
+                            self.history_pointer.append(namespace + '#' + type_name + '#' + property_name + '#' + namespace + '#' + ref_struct_name)
+                        else:
                             extend_symbol = ' '
-                        self.output_text[namespace].append('    %s%s%s;' % (
-                            self.to_struct_style(ref_struct_name), extend_symbol, union_name
+                            init_value = ''
+                        self.output_text[namespace].append('    %s%s%s%s;' % (
+                            self.to_struct_style(ref_struct_name), extend_symbol, union_name, init_value
                             ))
                     else:
-                        self.output_text[namespace].append('    QList<%s%s> %s;' % (
-                            self.to_struct_style(ref_struct_name), extend_symbol, union_name
+                        self.output_text[namespace].append('    QList<%s> %s;' % (
+                            self.to_struct_style(ref_struct_name), union_name
                             ))
                 else:
-                    if (ref_namespace + '#' + ref_struct_name) in self.namespace_stack:
-                        extend_symbol = ' *'
-                        self.append_pre_define(ref_namespace, ref_struct_name)
-                        self.history_pointer.append(namespace + '#' + type_name + '#' + property_name + '#' + ref_namespace + '#' + ref_struct_name)
                     union_name = '%s_%s_%s' % (property_name, self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name))
                     union_name_list.append(union_name)
                     if not is_array:
-                        if len(extend_symbol) == 0:
+                        if (ref_namespace + '#' + ref_struct_name) in self.namespace_stack:
+                            extend_symbol = ' *'
+                            init_value = ' = nullptr'
+                            pointer_list.append(union_name)
+                            self.append_pre_define(ref_namespace, ref_struct_name)
+                            self.history_pointer.append(namespace + '#' + type_name + '#' + property_name + '#' + ref_namespace + '#' + ref_struct_name)
+                        else:
                             extend_symbol = ' '
-                        self.output_text[namespace].append('    %s::%s%s%s;' % (
-                            self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), extend_symbol, union_name
+                            init_value = ''
+                        self.output_text[namespace].append('    %s::%s%s%s%s;' % (
+                            self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), extend_symbol, union_name, init_value
                             ))
                     else:
-                        self.output_text[namespace].append('    QList<%s::%s%s> %s;' % (
-                            self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), extend_symbol, union_name
+                        self.output_text[namespace].append('    QList<%s::%s> %s;' % (
+                            self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), union_name
                             ))
         self.output_text[namespace].append('    // union end : %s' % (property_name, ))
 
@@ -161,15 +173,13 @@ class Defs2Struct:
         if len(union_name_list) > 0:
             union_type_name = '%s%sType' % (self.to_struct_style(type_name), self.to_struct_style(property_name), )
             self.output_text[namespace].insert(pos, '    %s %s_type = %s::none;' % (union_type_name, property_name, union_type_name, ))
-            ins_pos = 0
-            self.output_text[namespace].insert(ins_pos, 'enum class %s : int {' % (union_type_name, ))
-            ins_pos += 1
-            self.output_text[namespace].insert(ins_pos, '    none,')
-            ins_pos += 1
+            enum_text.append('enum class %s : int {' % (union_type_name, ))
+            enum_text.append('    none,')
             for union_name in union_name_list:
-                self.output_text[namespace].insert(ins_pos, '    %s,' % (union_name, ))
-                ins_pos += 1
-            self.output_text[namespace].insert(ins_pos, '};')
+                enum_text.append('    %s,' % (union_name, ))
+            enum_text.append('};')
+
+        return (pointer_list, enum_text)
 
     def output_ref_recursive(self, namespace: str, type_name: str, ref: str):
         (ref_namespace, ref_struct_name) = self.split_ref(ref)
@@ -231,14 +241,20 @@ class Defs2Struct:
                             self.output_ref_recursive(namespace, type_name, ref)
 
             # 実際に出力する
-            self.output_text[namespace].append('struct %s' % (self.to_struct_style(type_name), ))
+            pointer_list = []
+            enum_text = []
+            styled_type_name = self.to_struct_style(type_name)
+            self.output_text[namespace].append('struct %s' % (styled_type_name, ))
             self.output_text[namespace].append('{')
+            pos = len(self.output_text[namespace])
             for property_name in properties.keys():
                 p_type = properties[property_name].get('type')
                 if p_type == 'ref':
                     self.output_ref(namespace, type_name, property_name, properties[property_name].get('ref', {}))
                 elif p_type == 'union':
-                    self.output_union(namespace, type_name, property_name, properties[property_name].get('refs', []))
+                    (temp_pointer, temp_enum) = self.output_union(namespace, type_name, property_name, properties[property_name].get('refs', []))
+                    pointer_list.extend(temp_pointer)
+                    enum_text.extend(temp_enum)
                 elif p_type == 'unknown':
                     self.output_text[namespace].append('    QVariant %s;' % (property_name, ))
                 elif p_type == 'integer':
@@ -254,9 +270,38 @@ class Defs2Struct:
                     if items_type == 'ref':
                         self.output_ref(namespace, type_name, property_name, properties[property_name].get('items', {}).get('ref', {}), True)
                     elif items_type == 'union':
-                        self.output_union(namespace, type_name, property_name, properties[property_name].get('items', {}).get('refs', []), True)
+                        (temp_pointer, temp_enum) = self.output_union(namespace, type_name, property_name, properties[property_name].get('items', {}).get('refs', []), True)
+                        pointer_list.extend(temp_pointer)
+                        enum_text.extend(temp_enum)
+
+            # ポインタを含む構造体はconstructorなどを追加する
+            if len(pointer_list) > 0:
+                self.output_text[namespace].insert(pos, '    %s() { }' % (styled_type_name, ))
+                pos += 1
+                self.output_text[namespace].insert(pos, '    %s(const %s &) = delete;' % (styled_type_name, styled_type_name, ))
+                pos += 1
+                self.output_text[namespace].insert(pos, '    ~%s()' % styled_type_name)
+                pos += 1
+                self.output_text[namespace].insert(pos, '    {')
+                pos += 1
+                for pointer_name in pointer_list:
+                    self.output_text[namespace].insert(pos, '        if (%s != nullptr)' % (pointer_name, ))
+                    pos += 1
+                    self.output_text[namespace].insert(pos, '            delete %s;' % (pointer_name, ))
+                    pos += 1
+                self.output_text[namespace].insert(pos, '    }')
+                pos += 1
+                self.output_text[namespace].insert(pos, '    %s &operator=(const %s &) = delete;' % (styled_type_name, styled_type_name, ))
 
             self.output_text[namespace].append('};')
+
+            # enumの定義を名前空間の先頭に挿入
+            if len(enum_text) > 0:
+                ins_pos = 0
+                for enum_line in enum_text:
+                    self.output_text[namespace].insert(ins_pos, enum_line)
+                    ins_pos += 1
+
 
             self.append_history(namespace, type_name)
 
@@ -334,8 +379,6 @@ class Defs2Struct:
                         (ref_namespace, ref_type_name) = self.split_ref(ref_path)
                         if len(ref_type_name) == 0:
                             self.output_func_text[namespace].append('        // union %s %s' % (property_name, ref_path, ))
-                        elif self.check_pointer(namespace, type_name, property_name, ref_namespace, ref_type_name):
-                            self.output_func_text[namespace].append('        // union *%s %s' % (property_name, ref_path, ))
                         else:
                             if len(ref_namespace) == 0:
                                 extend_ns = '%s::' % (self.to_namespace_style(namespace), )
@@ -346,10 +389,20 @@ class Defs2Struct:
                                 union_name = '%s_%s_%s' % (property_name, self.to_namespace_style(ref_namespace), self.to_struct_style(ref_type_name))
                                 ref_path_full = ref_path
                             union_type_name = '%s%sType' % (self.to_struct_style(type_name), self.to_struct_style(property_name), )
-                            self.output_func_text[namespace].append('        if (%s_type == QStringLiteral("%s")) {' % (property_name, ref_path_full, ))
-                            self.output_func_text[namespace].append('            dest.%s_type = %s::%s::%s;' % (property_name, self.to_namespace_style(namespace), union_type_name, union_name, ))
-                            self.output_func_text[namespace].append('            %scopy%s(src.value("%s").toObject(), dest.%s);' % (extend_ns, self.to_struct_style(ref_type_name), property_name, union_name, ))
-                            self.output_func_text[namespace].append('        }')
+
+                            if self.check_pointer(namespace, type_name, property_name, ref_namespace, ref_type_name):
+                                self.output_func_text[namespace].append('        // union *%s %s' % (property_name, ref_path, ))
+                                self.output_func_text[namespace].append('        if (%s_type == QStringLiteral("%s")) {' % (property_name, ref_path_full, ))
+                                self.output_func_text[namespace].append('            if (dest.%s == nullptr)' % (union_name, ))
+                                self.output_func_text[namespace].append('                dest.%s = new %s;' % (union_name, self.to_struct_style(ref_type_name), ))
+                                self.output_func_text[namespace].append('            dest.%s_type = %s::%s::%s;' % (property_name, self.to_namespace_style(namespace), union_type_name, union_name, ))
+                                self.output_func_text[namespace].append('            %scopy%s(src.value("%s").toObject(), *dest.%s);' % (extend_ns, self.to_struct_style(ref_type_name), property_name, union_name, ))
+                                self.output_func_text[namespace].append('        }')
+                            else:
+                                self.output_func_text[namespace].append('        if (%s_type == QStringLiteral("%s")) {' % (property_name, ref_path_full, ))
+                                self.output_func_text[namespace].append('            dest.%s_type = %s::%s::%s;' % (property_name, self.to_namespace_style(namespace), union_type_name, union_name, ))
+                                self.output_func_text[namespace].append('            %scopy%s(src.value("%s").toObject(), dest.%s);' % (extend_ns, self.to_struct_style(ref_type_name), property_name, union_name, ))
+                                self.output_func_text[namespace].append('        }')
 
                 elif p_type == 'unknown':
                     self.output_func_text[namespace].append('        LexiconsTypeUnknown::copyUnknown(src.value("%s").toObject(), dest.%s);' % (property_name, property_name, ))

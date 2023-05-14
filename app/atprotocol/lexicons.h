@@ -141,7 +141,7 @@ enum class ViewMediaType : int {
 };
 struct View
 {
-    AppBskyEmbedRecord::View *record;
+    AppBskyEmbedRecord::View *record = nullptr;
     // union start : media
     ViewMediaType media_type = ViewMediaType::none;
     AppBskyEmbedImages::View media_AppBskyEmbedImages_View;
@@ -191,7 +191,7 @@ struct ViewRecord
     ViewRecordEmbedsType embeds_type = ViewRecordEmbedsType::none;
     QList<AppBskyEmbedImages::View> embeds_AppBskyEmbedImages_View;
     QList<AppBskyEmbedExternal::View> embeds_AppBskyEmbedExternal_View;
-    QList<AppBskyEmbedRecord::View *> embeds_AppBskyEmbedRecord_View;
+    QList<AppBskyEmbedRecord::View> embeds_AppBskyEmbedRecord_View;
     QList<AppBskyEmbedRecordWithMedia::View> embeds_AppBskyEmbedRecordWithMedia_View;
     // union end : embeds
     QString indexedAt; // datetime
@@ -217,17 +217,17 @@ struct View
 
 // app.bsky.feed.defs
 namespace AppBskyFeedDefs {
-enum class ThreadViewPostRepliesType : int {
-    none,
-    replies_ThreadViewPost,
-    replies_NotFoundPost,
-    replies_BlockedPost,
-};
 enum class ThreadViewPostParentType : int {
     none,
     parent_ThreadViewPost,
     parent_NotFoundPost,
     parent_BlockedPost,
+};
+enum class ThreadViewPostRepliesType : int {
+    none,
+    replies_ThreadViewPost,
+    replies_NotFoundPost,
+    replies_BlockedPost,
 };
 enum class FeedViewPostReasonType : int {
     none,
@@ -302,7 +302,6 @@ struct ThreadViewPost
             delete parent_ThreadViewPost;
     }
     ThreadViewPost &operator=(const ThreadViewPost &) = delete;
-
     PostView post;
     // union start : parent
     ThreadViewPostParentType parent_type = ThreadViewPostParentType::none;
