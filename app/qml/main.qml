@@ -57,10 +57,15 @@ ApplicationWindow {
     // アカウント管理で内容が変更されたときにカラムとインデックスの関係が崩れるのでuuidで確認する
     AccountListModel {
         id: accountListModel
-        onAccountAppended: (row) => {
-                               console.log("accountAppended:" + row)
-                               // カラムを更新しにいく
+        onAppendedAccount: (row) => {
+                               console.log("onAppendedAccount:" + row)
                            }
+        onUpdatedAccount: (row, uuid) => {
+                              console.log("onUpdatedAccount:" + row + ", " + uuid)
+                              // カラムを更新しにいく
+                              repeater.updateAccount(uuid)
+                          }
+
         onAllFinished: {
             // すべてのアカウント情報の認証が終わったのでカラムを復元（成功しているとは限らない）
             console.log("allFinished()" + accountListModel.rowCount())
@@ -228,6 +233,20 @@ ApplicationWindow {
                     id: repeater
                     model: ListModel {}
 
+                    function updateAccount(account_uuid){
+                        for(var i=0; i<repeater.count; i++){
+                            var item = repeater.itemAt(i)   //ここのitemはloader自身
+                            if(item.account_uuid === account_uuid){
+                                var row = accountListModel.indexAt(item.account_uuid)
+                                if(row >= 0){
+                                    console.log("Update column : col=" + i + ", a_row=" + row)
+                                    item.setAccount(row)
+                                    item.item.reflect()
+                                }
+                            }
+                        }
+                    }
+
                     function append(key, account_uuid, component_type){
                         // accountListModelで管理するアカウントのindexと表示に使うコンポを指定
                         // ①ここでLoaderを追加する
@@ -270,20 +289,24 @@ ApplicationWindow {
 
                         onLoaded: {
                             // ③Loaderで読み込んだComponentにアカウント情報など設定する
-                            var i = accountListModel.indexAt(loader.account_uuid)
-                            console.log("(3) loader:" + i + ", " + loader.account_uuid)
-                            if(i < 0)
+                            var row = accountListModel.indexAt(loader.account_uuid)
+                            console.log("(3) loader:" + row + ", " + loader.account_uuid)
+                            if(row < 0)
                                 return
                             item.componentType = loader.component_type
                             item.accountUuid = loader.account_uuid
-                            item.service = accountListModel.item(i, AccountListModel.ServiceRole)
-                            item.did = accountListModel.item(i, AccountListModel.DidRole)
-                            item.handle = accountListModel.item(i, AccountListModel.HandleRole)
-                            item.email = accountListModel.item(i, AccountListModel.EmailRole)
-                            item.accessJwt = accountListModel.item(i, AccountListModel.AccessJwtRole)
-                            item.refreshJwt = accountListModel.item(i, AccountListModel.RefreshJwtRole)
+                            setAccount(row)
                             item.rootItem = rootLayout
                             item.load()
+                        }
+
+                        function setAccount(row) {
+                            item.service = accountListModel.item(row, AccountListModel.ServiceRole)
+                            item.did = accountListModel.item(row, AccountListModel.DidRole)
+                            item.handle = accountListModel.item(row, AccountListModel.HandleRole)
+                            item.email = accountListModel.item(row, AccountListModel.EmailRole)
+                            item.accessJwt = accountListModel.item(row, AccountListModel.AccessJwtRole)
+                            item.refreshJwt = accountListModel.item(row, AccountListModel.RefreshJwtRole)
                         }
                     }
                 }

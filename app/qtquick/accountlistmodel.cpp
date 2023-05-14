@@ -1,6 +1,7 @@
 #include "accountlistmodel.h"
 #include "common.h"
 #include "../atprotocol/comatprotoservercreatesession.h"
+#include "../atprotocol/comatprotoserverrefreshsession.h"
 
 #include <QCryptographicHash>
 #include <QByteArray>
@@ -16,9 +17,16 @@
 using AtProtocolInterface::AccountData;
 using AtProtocolInterface::AccountStatus;
 using AtProtocolInterface::ComAtprotoServerCreateSession;
+using AtProtocolInterface::ComAtprotoServerRefreshSession;
 
 AccountListModel::AccountListModel(QObject *parent) : QAbstractListModel { parent }
 {
+    connect(&m_timer, &QTimer::timeout, [=]() {
+        for (int row = 0; row < m_accountList.count(); row++) {
+            refreshSession(row);
+        }
+    });
+    m_timer.start(15 * 60 * 1000);
 
     QString seed = QStringLiteral("tech.relog.hagoromo.");
     const QList<QNetworkInterface> ni_list = QNetworkInterface::allInterfaces();
@@ -317,7 +325,7 @@ void AccountListModel::updateSession(int row, const QString &service, const QStr
         updateAccount(service, identifier, password, session->did(), session->handle(),
                       session->email(), session->accessJwt(), session->refreshJwt(), success);
         if (success) {
-            emit accountAppended(row);
+            emit appendedAccount(row);
         }
         bool all_finished = true;
         for (const AccountData &item : qAsConst(m_accountList)) {
@@ -332,4 +340,30 @@ void AccountListModel::updateSession(int row, const QString &service, const QStr
         session->deleteLater();
     });
     session->create(identifier, password);
+}
+
+void AccountListModel::refreshSession(int row)
+{
+    if (row < 0 || row >= m_accountList.count())
+        return;
+
+    ComAtprotoServerRefreshSession *session = new ComAtprotoServerRefreshSession();
+    session->setAccount(m_accountList.at(row));
+    connect(session, &ComAtprotoServerRefreshSession::finished, [=](bool success) {
+        if (success) {
+            qDebug() << "Refresh session" << session->did() << session->handle();
+            m_accountList[row].did = session->did();
+            m_accountList[row].handle = session->handle();
+            m_accountList[row].accessJwt = session->accessJwt();
+            m_accountList[row].refreshJwt = session->refreshJwt();
+            m_accountList[row].status = AccountStatus::Authorized;
+
+            emit updatedAccount(row, m_accountList[row].uuid);
+        } else {
+            m_accountList[row].status = AccountStatus::Unauthorized;
+        }
+        emit dataChanged(index(row), index(row));
+        session->deleteLater();
+    });
+    session->refreshSession();
 }

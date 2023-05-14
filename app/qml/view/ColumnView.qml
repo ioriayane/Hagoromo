@@ -90,6 +90,20 @@ ColumnLayout {
         createRecord.setAccount(service, did, handle, email, accessJwt, refreshJwt)
     }
 
+    function reflect(){
+        // StackViewに積まれているViewに反映
+        for(var i=0; i<loader.depth; i++){
+            console.log("Reflect : " + i + ", " + columnView.handle)
+            var item = loader.get(i)
+            item.model.setAccount(columnView.service,
+                                  columnView.did,
+                                  columnView.handle,
+                                  columnView.email,
+                                  columnView.accessJwt,
+                                  columnView.refreshJwt)
+        }
+    }
+
     Frame {
         id: profileFrame
         Layout.fillWidth: true

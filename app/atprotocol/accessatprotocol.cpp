@@ -89,6 +89,8 @@ void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query)
         return;
     }
 
+    qDebug() << "AccessAtProtocol::get()" << this << endpoint;
+
     QUrl url = QString("%1/%2").arg(service(), endpoint);
     url.setQuery(query);
     QNetworkRequest request(url);

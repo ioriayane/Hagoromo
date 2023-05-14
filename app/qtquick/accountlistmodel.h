@@ -5,6 +5,7 @@
 
 #include <QAbstractListModel>
 #include <QObject>
+#include <QTimer>
 
 class AccountListModel : public QAbstractListModel
 {
@@ -49,7 +50,8 @@ public:
     Q_INVOKABLE QVariant account(int row) const;
 
 signals:
-    void accountAppended(int row);
+    void appendedAccount(int row);
+    void updatedAccount(int row, const QString &uuid);
     void allFinished();
 
 protected:
@@ -58,6 +60,7 @@ protected:
 private:
     QList<AtProtocolInterface::AccountData> m_accountList;
     QVariant m_accountTemp;
+    QTimer m_timer;
 
     QByteArray m_encryptKey;
     QByteArray m_encryptIv;
@@ -68,6 +71,7 @@ private:
 
     void updateSession(int row, const QString &service, const QString &identifier,
                        const QString &password);
+    void refreshSession(int row);
 };
 
 #endif // ACCOUNTLISTMODEL_H

@@ -9,6 +9,7 @@ SOURCES += \
         atprotocol/appbskynotificationlistnotifications.cpp \
         atprotocol/comatprotorepocreaterecord.cpp \
         atprotocol/comatprotoservercreatesession.cpp \
+        atprotocol/comatprotoserverrefreshsession.cpp \
         atprotocol/lexicons_func.cpp \
         atprotocol/lexicons_func_unknown.cpp \
         main.cpp \
@@ -28,6 +29,7 @@ HEADERS += \
     atprotocol/appbskynotificationlistnotifications.h \
     atprotocol/comatprotorepocreaterecord.h \
     atprotocol/comatprotoservercreatesession.h \
+    atprotocol/comatprotoserverrefreshsession.h \
     atprotocol/lexicons.h \
     atprotocol/lexicons_func.h \
     atprotocol/lexicons_func_unknown.h \
