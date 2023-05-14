@@ -64,7 +64,9 @@ Frame {
                     Layout.maximumWidth: parent.basisWidth
                     // wrapMode: Text.Wrap
                     wrapMode: Text.WrapAnywhere
-                    font.pointSize: 11
+                    font.pointSize: 10
+//                    font.letterSpacing: 0
+                    lineHeight: 1.3
                     //                            font.family: "遊ゴシック"  // "メイリオ"  "BIZ UDPゴシック"
 
                     MouseArea {

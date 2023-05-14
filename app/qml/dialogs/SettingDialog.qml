@@ -11,6 +11,8 @@ Dialog {
 
     property int parentWidth: parent.width
 
+    // 行間と文字間も調整できると良いかも
+
     ColumnLayout {
         Label {
             text: qsTr("Theme")
