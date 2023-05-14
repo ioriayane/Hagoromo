@@ -45,20 +45,10 @@ QVariant PostThreadListModel::item(int row, PostThreadListModelRoles role) const
         return current.likeCount;
     else if (role == IndexedAtRole)
         return formatDateTime(current.indexedAt);
-    else if (role == EmbedImagesRole) {
-        if (current.embed_type
-            == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedImages_View) {
-            QString images;
-            for (const auto &image : current.embed_AppBskyEmbedImages_View.images) {
-                if (!images.isEmpty())
-                    images.append("\n");
-                images.append(image.thumb);
-            }
-            return images;
-        } else {
-            return QString();
-        }
-    }
+    else if (role == EmbedImagesRole)
+        return LexiconsTypeUnknown::copyImagesFromPostView(current, true);
+    else if (role == EmbedImagesFullRole)
+        return LexiconsTypeUnknown::copyImagesFromPostView(current, false);
 
     else if (role == HasChildRecordRole)
         return current.embed_type
@@ -77,25 +67,14 @@ QVariant PostThreadListModel::item(int row, PostThreadListModelRoles role) const
                 .text;
     else if (role == ChildRecordIndexedAtRole)
         return formatDateTime(current.embed_AppBskyEmbedRecord_View.record_ViewRecord.indexedAt);
-    else if (role == ChildRecordEmbedImagesRole) {
+    else if (role == ChildRecordEmbedImagesRole)
         // unionの配列で読み込んでない
-        const AppBskyEmbedRecord::ViewRecord &temp_record =
-                current.embed_AppBskyEmbedRecord_View.record_ViewRecord;
-        if (temp_record.embeds_type
-            == AppBskyEmbedRecord::ViewRecordEmbedsType::embeds_AppBskyEmbedImages_View) {
-            QString images;
-            for (const auto &view : temp_record.embeds_AppBskyEmbedImages_View) {
-                for (const auto &image : view.images) {
-                    if (!images.isEmpty())
-                        images.append("\n");
-                    images.append(image.thumb);
-                }
-            }
-            return images;
-        } else {
-            return QString();
-        }
-    }
+        return LexiconsTypeUnknown::copyImagesFromRecord(
+                current.embed_AppBskyEmbedRecord_View.record_ViewRecord, true);
+    else if (role == ChildRecordEmbedImagesFullRole)
+        // unionの配列で読み込んでない
+        return LexiconsTypeUnknown::copyImagesFromRecord(
+                current.embed_AppBskyEmbedRecord_View.record_ViewRecord, false);
 
     else if (role == HasReplyRole)
         return false;
@@ -151,6 +130,7 @@ QHash<int, QByteArray> PostThreadListModel::roleNames() const
     roles[LikeCountRole] = "likeCount";
     roles[IndexedAtRole] = "indexedAt";
     roles[EmbedImagesRole] = "embedImages";
+    roles[EmbedImagesFullRole] = "embedImagesFull";
 
     roles[HasChildRecordRole] = "hasChildRecord";
     roles[ChildRecordDisplayNameRole] = "childRecordDisplayName";
@@ -159,6 +139,7 @@ QHash<int, QByteArray> PostThreadListModel::roleNames() const
     roles[ChildRecordRecordTextRole] = "childRecordRecordText";
     roles[ChildRecordIndexedAtRole] = "childRecordIndexedAt";
     roles[ChildRecordEmbedImagesRole] = "childRecordEmbedImages";
+    roles[ChildRecordEmbedImagesFullRole] = "childRecordEmbedImagesFull";
 
     roles[HasReplyRole] = "hasReply";
     roles[ReplyRootCidRole] = "replyRootCid";

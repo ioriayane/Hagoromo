@@ -67,6 +67,15 @@ ColumnLayout {
     Component {
         id: postThreadComponent
         PostThreadView {
+            onRequestedReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
+                              columnView.requestedReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+            onRequestedRepost: (cid, uri) => createRecord.repost(cid, uri)
+            onRequestedQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
+                              columnView.requestedQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+            onRequestedLike: (cid, uri) => createRecord.like(cid, uri)
+
+            onRequestedViewImages: (index, paths) => columnView.requestedViewImages(index, paths)
+
             onBack: {
                 if(!loader.empty){
                     loader.pop()
@@ -157,6 +166,7 @@ ColumnLayout {
         id: loader
         Layout.fillWidth: true
         Layout.fillHeight: true
+        clip: true
 
         onCurrentItemChanged: {
             if(currentItem.model === undefined)

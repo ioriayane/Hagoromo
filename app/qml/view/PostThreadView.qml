@@ -24,6 +24,7 @@ ScrollView {
     signal requestedQuote(string cid, string uri, string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestedLike(string cid, string uri)
     signal requestedViewThread(string uri)
+    signal requestedViewImages(int index, string paths)
 
     signal back()
 
@@ -70,6 +71,7 @@ ScrollView {
             recordText.text: model.recordText
             recordTextMouseArea.onClicked: requestedViewThread(model.uri)
             postImagePreview.embedImages: model.embedImages
+            postImagePreview.onRequestedViewImages: (index) => requestedViewImages(index, model.embedImagesFull)
 
             childFrame.visible: model.hasChildRecord
             childAvatarImage.source: model.childRecordAvatar

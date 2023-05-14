@@ -28,6 +28,7 @@ public:
         LikeCountRole,
         IndexedAtRole,
         EmbedImagesRole,
+        EmbedImagesFullRole,
 
         HasChildRecordRole,
         ChildRecordDisplayNameRole,
@@ -36,6 +37,7 @@ public:
         ChildRecordRecordTextRole,
         ChildRecordIndexedAtRole,
         ChildRecordEmbedImagesRole,
+        ChildRecordEmbedImagesFullRole,
 
         HasReplyRole,
         ReplyRootCidRole,
