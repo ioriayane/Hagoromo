@@ -2,7 +2,7 @@
 
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <qDebug>
+#include <QDebug>
 
 namespace AtProtocolInterface {
 

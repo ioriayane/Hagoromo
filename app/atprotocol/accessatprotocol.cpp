@@ -3,7 +3,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QNetworkReply>
-#include <qDebug>
+#include <QDebug>
 
 namespace AtProtocolInterface {
 
