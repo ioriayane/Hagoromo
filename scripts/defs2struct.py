@@ -75,46 +75,53 @@ class Defs2Struct:
         else:
             self.pre_define[key] = [value]
 
+    def index_of(self, target_list: list, v: str) -> int:
+        return target_list.index(v) if v in target_list else len(target_list)
+
     def output_ref(self, namespace: str, type_name: str, property_name: str, ref_obj: dict, is_array: bool = False):
         (ref_namespace, ref_struct_name) = self.split_ref(ref_obj)
         if len(ref_struct_name) == 0:
-            self.output_text[namespace].append('    // ref=%s' % (ref_namespace, ))
-        else:
-            extend_symbol = ''
-            if len(ref_namespace) == 0:
-                if not is_array:
-                    if (namespace + '#' + ref_struct_name) in self.namespace_stack:
-                        extend_symbol = ' *'
-                        init_value = ' = nullptr'
-                        self.append_pre_define(namespace, ref_struct_name)
-                        self.history_pointer.append(namespace + '#' + type_name + '#' + property_name + '#' + namespace + '#' + ref_struct_name)
-                    else:
-                        extend_symbol = ' '
-                        init_value = ''
-                    self.output_text[namespace].append('    %s%s%s%s;' % (
-                        self.to_struct_style(ref_struct_name), extend_symbol, property_name, init_value
-                        ))
+            ref_struct_name = 'main'
+
+        extend_symbol = ''
+        if len(ref_namespace) == 0:
+            if not is_array:
+                if (namespace + '#' + ref_struct_name) in self.namespace_stack:
+                    extend_symbol = ' *'
+                    init_value = ' = nullptr'
+                    self.append_pre_define(namespace, ref_struct_name)
+                    self.history_pointer.append(namespace + '#' + type_name + '#' + property_name + '#' + namespace + '#' + ref_struct_name)
                 else:
-                    self.output_text[namespace].append('    QList<%s> %s;' % (
-                        self.to_struct_style(ref_struct_name), property_name
-                        ))
+                    extend_symbol = ' '
+                    init_value = ''
+                self.output_text[namespace].append('    %s%s%s%s;' % (
+                    self.to_struct_style(ref_struct_name), extend_symbol, property_name, init_value
+                    ))
             else:
-                if not is_array:
-                    if (ref_namespace + '#' + ref_struct_name) in self.namespace_stack:
-                        extend_symbol = ' *'
-                        init_value = ' = nullptr'
-                        self.append_pre_define(ref_namespace, ref_struct_name)
-                        self.history_pointer.append(namespace + '#' + type_name + '#' + property_name + '#' + ref_namespace + '#' + ref_struct_name)
-                    else:
-                        extend_symbol = ' '
-                        init_value = ''
-                    self.output_text[namespace].append('    %s::%s%s%s%s;' % (
-                        self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), extend_symbol, property_name, init_value
-                        ))
+                self.output_text[namespace].append('    QList<%s> %s;' % (
+                    self.to_struct_style(ref_struct_name), property_name
+                    ))
+        else:
+            # 履歴で自分の方が前にいるということは宣言が後ろなのでポインタにする
+            # 自分が履歴にいないときは宣言が前
+            my_history_pos = self.index_of(self.history_namespace, namespace)
+            ref_history_pos = self.index_of(self.history_namespace, ref_namespace)
+            if not is_array:
+                if (ref_namespace + '#' + ref_struct_name) in self.namespace_stack or (my_history_pos < ref_history_pos):
+                    extend_symbol = ' *'
+                    init_value = ' = nullptr'
+                    self.append_pre_define(ref_namespace, ref_struct_name)
+                    self.history_pointer.append(namespace + '#' + type_name + '#' + property_name + '#' + ref_namespace + '#' + ref_struct_name)
                 else:
-                    self.output_text[namespace].append('    QList<%s::%s> %s;' % (
-                        self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), property_name
-                        ))
+                    extend_symbol = ' '
+                    init_value = ''
+                self.output_text[namespace].append('    %s::%s%s%s%s;' % (
+                    self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), extend_symbol, property_name, init_value
+                    ))
+            else:
+                self.output_text[namespace].append('    QList<%s::%s> %s;' % (
+                    self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), property_name
+                    ))
 
 
     def output_union(self, namespace: str, type_name: str, property_name: str, refs_obj: dict, is_array: bool = False):
@@ -186,8 +193,9 @@ class Defs2Struct:
     def output_ref_recursive(self, namespace: str, type_name: str, ref: str):
         (ref_namespace, ref_struct_name) = self.split_ref(ref)
         if len(ref_struct_name) == 0:
-            pass
-        elif len(ref_namespace) == 0:
+            ref_struct_name = 'main'
+
+        if len(ref_namespace) == 0:
             # if ref_struct_name == type_name:
             if (namespace + '#' + ref_struct_name) in self.namespace_stack:
                 # infinite loop
@@ -469,13 +477,6 @@ class Defs2Struct:
             self.append_func_history(namespace, function_define)
 
     def output_api_class(self, namespace: str, type_name: str):
-        # file_name_lower
-        # file_name_upper
-        # method_name
-        # method_args
-        # api_id
-
-        # 
         obj = self.get_defs_obj(namespace, type_name)
         if obj.get('type') == 'query' or obj.get('type') == 'procedure':
             data = {}

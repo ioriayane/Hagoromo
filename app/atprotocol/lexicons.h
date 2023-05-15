@@ -10,6 +10,7 @@
 
 namespace AtProtocolType {
 namespace AppBskyEmbedRecord {
+struct Main;
 struct View;
 }
 namespace AppBskyFeedDefs {
@@ -132,6 +133,16 @@ struct View
 };
 }
 
+// com.atproto.repo.strongRef
+namespace ComAtprotoRepoStrongRef {
+struct Main
+{
+    QString uri; // at-uri
+    QString cid; // cid
+};
+// A URI with a content-hash fingerprint.
+}
+
 // app.bsky.embed.recordWithMedia
 namespace AppBskyEmbedRecordWithMedia {
 enum class ViewMediaType : int {
@@ -152,7 +163,7 @@ struct View
 // embeds
 struct Main
 {
-    // ref=app.bsky.embed.record
+    AppBskyEmbedRecord::Main *record = nullptr;
     // union start : media
     //     union=app.bsky.embed.images
     //     union=app.bsky.embed.external
@@ -178,7 +189,7 @@ enum class ViewRecordEmbedsType : int {
 // A representation of a record embedded in another form of content
 struct Main
 {
-    // ref=com.atproto.repo.strongRef
+    ComAtprotoRepoStrongRef::Main record;
 };
 struct ViewRecord
 {
@@ -332,8 +343,39 @@ struct Like
 namespace AppBskyFeedLike {
 struct Record
 {
-    // ref=com.atproto.repo.strongRef
+    ComAtprotoRepoStrongRef::Main subject;
     QString createdAt; // datetime
+};
+}
+
+// app.bsky.richtext.facet
+namespace AppBskyRichtextFacet {
+enum class MainFeaturesType : int {
+    none,
+    features_Mention,
+    features_Link,
+};
+struct ByteSlice
+{
+    int byteStart = 0;
+    int byteEnd = 0;
+};
+struct Mention
+{
+    QString did; // did
+};
+struct Link
+{
+    QString uri; // uri
+};
+struct Main
+{
+    ByteSlice index;
+    // union start : features
+    MainFeaturesType features_type = MainFeaturesType::none;
+    QList<Mention> features_Mention;
+    QList<Link> features_Link;
+    // union end : features
 };
 }
 
@@ -352,14 +394,14 @@ struct Entity
 };
 struct ReplyRef
 {
-    // ref=com.atproto.repo.strongRef
-    // ref=com.atproto.repo.strongRef
+    ComAtprotoRepoStrongRef::Main root;
+    ComAtprotoRepoStrongRef::Main parent;
 };
 struct Record
 {
     QString text; //
     QList<Entity> entities;
-    // ref=app.bsky.richtext.facet
+    QList<AppBskyRichtextFacet::Main> facets;
     ReplyRef reply;
     // union start : embed
     //     union=app.bsky.embed.images
@@ -375,7 +417,7 @@ struct Record
 namespace AppBskyFeedRepost {
 struct Record
 {
-    // ref=com.atproto.repo.strongRef
+    ComAtprotoRepoStrongRef::Main subject;
     QString createdAt; // datetime
 };
 }
@@ -410,37 +452,6 @@ struct Notification
     QVariant record;
     QString indexedAt; // datetime
     QList<ComAtprotoLabelDefs::Label> labels;
-};
-}
-
-// app.bsky.richtext.facet
-namespace AppBskyRichtextFacet {
-enum class MainFeaturesType : int {
-    none,
-    features_Mention,
-    features_Link,
-};
-struct ByteSlice
-{
-    int byteStart = 0;
-    int byteEnd = 0;
-};
-struct Mention
-{
-    QString did; // did
-};
-struct Link
-{
-    QString uri; // uri
-};
-struct Main
-{
-    ByteSlice index;
-    // union start : features
-    MainFeaturesType features_type = MainFeaturesType::none;
-    QList<Mention> features_Mention;
-    QList<Link> features_Link;
-    // union end : features
 };
 }
 
@@ -683,16 +694,6 @@ struct Record
     QString uri; // at-uri
     QString cid; // cid
     QVariant value;
-};
-}
-
-// com.atproto.repo.strongRef
-namespace ComAtprotoRepoStrongRef {
-// A URI with a content-hash fingerprint.
-struct Main
-{
-    QString uri; // at-uri
-    QString cid; // cid
 };
 }
 

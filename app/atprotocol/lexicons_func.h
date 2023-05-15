@@ -39,6 +39,10 @@ void copyMain(const QJsonObject &src, AppBskyEmbedImages::Main &dest);
 void copyViewImage(const QJsonObject &src, AppBskyEmbedImages::ViewImage &dest);
 void copyView(const QJsonObject &src, AppBskyEmbedImages::View &dest);
 }
+// com.atproto.repo.strongRef
+namespace ComAtprotoRepoStrongRef {
+void copyMain(const QJsonObject &src, ComAtprotoRepoStrongRef::Main &dest);
+}
 // app.bsky.embed.record
 namespace AppBskyEmbedRecord {
 void copyMain(const QJsonObject &src, AppBskyEmbedRecord::Main &dest);
@@ -73,17 +77,17 @@ void copyTextSlice(const QJsonObject &src, AppBskyFeedPost::TextSlice &dest);
 void copyEntity(const QJsonObject &src, AppBskyFeedPost::Entity &dest);
 void copyReplyRef(const QJsonObject &src, AppBskyFeedPost::ReplyRef &dest);
 }
-// app.bsky.notification.listNotifications
-namespace AppBskyNotificationListNotifications {
-void copyNotification(const QJsonObject &src,
-                      AppBskyNotificationListNotifications::Notification &dest);
-}
 // app.bsky.richtext.facet
 namespace AppBskyRichtextFacet {
 void copyByteSlice(const QJsonObject &src, AppBskyRichtextFacet::ByteSlice &dest);
 void copyMention(const QJsonObject &src, AppBskyRichtextFacet::Mention &dest);
 void copyLink(const QJsonObject &src, AppBskyRichtextFacet::Link &dest);
 void copyMain(const QJsonObject &src, AppBskyRichtextFacet::Main &dest);
+}
+// app.bsky.notification.listNotifications
+namespace AppBskyNotificationListNotifications {
+void copyNotification(const QJsonObject &src,
+                      AppBskyNotificationListNotifications::Notification &dest);
 }
 // com.atproto.admin.defs
 namespace ComAtprotoAdminDefs {
@@ -128,10 +132,6 @@ void copyDelete(const QJsonObject &src, ComAtprotoRepoApplyWrites::Delete &dest)
 // com.atproto.repo.listRecords
 namespace ComAtprotoRepoListRecords {
 void copyRecord(const QJsonObject &src, ComAtprotoRepoListRecords::Record &dest);
-}
-// com.atproto.repo.strongRef
-namespace ComAtprotoRepoStrongRef {
-void copyMain(const QJsonObject &src, ComAtprotoRepoStrongRef::Main &dest);
 }
 // com.atproto.server.createAppPassword
 namespace ComAtprotoServerCreateAppPassword {

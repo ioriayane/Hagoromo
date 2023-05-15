@@ -154,6 +154,16 @@ void copyView(const QJsonObject &src, AppBskyEmbedImages::View &dest)
     }
 }
 }
+// com.atproto.repo.strongRef
+namespace ComAtprotoRepoStrongRef {
+void copyMain(const QJsonObject &src, ComAtprotoRepoStrongRef::Main &dest)
+{
+    if (!src.isEmpty()) {
+        dest.uri = src.value("uri").toString();
+        dest.cid = src.value("cid").toString();
+    }
+}
+}
 // app.bsky.embed.record
 namespace AppBskyEmbedRecord {
 void copyMain(const QJsonObject &src, AppBskyEmbedRecord::Main &dest)
@@ -395,27 +405,6 @@ void copyReplyRef(const QJsonObject &src, AppBskyFeedPost::ReplyRef &dest)
     }
 }
 }
-// app.bsky.notification.listNotifications
-namespace AppBskyNotificationListNotifications {
-void copyNotification(const QJsonObject &src,
-                      AppBskyNotificationListNotifications::Notification &dest)
-{
-    if (!src.isEmpty()) {
-        dest.uri = src.value("uri").toString();
-        dest.cid = src.value("cid").toString();
-        AppBskyActorDefs::copyProfileView(src.value("author").toObject(), dest.author);
-        dest.reason = src.value("reason").toString();
-        dest.reasonSubject = src.value("reasonSubject").toString();
-        LexiconsTypeUnknown::copyUnknown(src.value("record").toObject(), dest.record);
-        dest.indexedAt = src.value("indexedAt").toString();
-        for (const auto &s : src.value("labels").toArray()) {
-            ComAtprotoLabelDefs::Label child;
-            ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
-            dest.labels.append(child);
-        }
-    }
-}
-}
 // app.bsky.richtext.facet
 namespace AppBskyRichtextFacet {
 void copyByteSlice(const QJsonObject &src, AppBskyRichtextFacet::ByteSlice &dest)
@@ -442,6 +431,27 @@ void copyMain(const QJsonObject &src, AppBskyRichtextFacet::Main &dest)
     if (!src.isEmpty()) {
         copyByteSlice(src.value("index").toObject(), dest.index);
         // array<union> features
+    }
+}
+}
+// app.bsky.notification.listNotifications
+namespace AppBskyNotificationListNotifications {
+void copyNotification(const QJsonObject &src,
+                      AppBskyNotificationListNotifications::Notification &dest)
+{
+    if (!src.isEmpty()) {
+        dest.uri = src.value("uri").toString();
+        dest.cid = src.value("cid").toString();
+        AppBskyActorDefs::copyProfileView(src.value("author").toObject(), dest.author);
+        dest.reason = src.value("reason").toString();
+        dest.reasonSubject = src.value("reasonSubject").toString();
+        LexiconsTypeUnknown::copyUnknown(src.value("record").toObject(), dest.record);
+        dest.indexedAt = src.value("indexedAt").toString();
+        for (const auto &s : src.value("labels").toArray()) {
+            ComAtprotoLabelDefs::Label child;
+            ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
+            dest.labels.append(child);
+        }
     }
 }
 }
@@ -775,16 +785,6 @@ void copyRecord(const QJsonObject &src, ComAtprotoRepoListRecords::Record &dest)
         dest.uri = src.value("uri").toString();
         dest.cid = src.value("cid").toString();
         LexiconsTypeUnknown::copyUnknown(src.value("value").toObject(), dest.value);
-    }
-}
-}
-// com.atproto.repo.strongRef
-namespace ComAtprotoRepoStrongRef {
-void copyMain(const QJsonObject &src, ComAtprotoRepoStrongRef::Main &dest)
-{
-    if (!src.isEmpty()) {
-        dest.uri = src.value("uri").toString();
-        dest.cid = src.value("cid").toString();
     }
 }
 }
