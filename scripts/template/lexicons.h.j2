@@ -27,6 +27,5 @@ namespace {{ define.namespace }} {
 }
 {% for metatype in metatypes -%}
 Q_DECLARE_METATYPE(AtProtocolType::{{ metatype.name }})
-{%- endfor %}
-
+{% endfor %}
 #endif // LEXICONS_H

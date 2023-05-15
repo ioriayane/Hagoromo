@@ -129,16 +129,47 @@ ScrollView {
                         Author {
                             Layout.preferredWidth: bodyLayout.basisWidth
                             Layout.maximumWidth: bodyLayout.basisWidth
-//                            Layout.fillWidth: true
+                            //                            Layout.fillWidth: true
                             displayName: model.displayName
                             handle: model.handle
                             indexedAt: model.indexedAt
                         }
                     }
 
-//                    Label {
-//                        text: "test"
-//                    }
+                    Frame {
+                        id: recordFrame
+                        property int basisWidth: bodyLayout.width - padding * 2 -
+                                                 recordAvatarImage.width - recordAuthorLayout.spacing
+                        ColumnLayout {
+                            RowLayout {
+                                id: recordAuthorLayout
+                                AvatarImage {
+                                    id: recordAvatarImage
+                                    Layout.preferredWidth: 16
+                                    Layout.preferredHeight: 16
+                                    source: model.recordAvatar
+                                }
+                                Author {
+                                    Layout.preferredWidth: recordFrame.basisWidth
+                                    Layout.maximumWidth: recordFrame.basisWidth
+                                    //                            Layout.fillWidth: true
+                                    displayName: model.recordDisplayName
+                                    handle: model.recordHandle
+                                    indexedAt: model.recordIndexedAt
+                                }
+                            }
+                            Label {
+                                id: recordText
+                                Layout.preferredWidth: recordFrame.basisWidth
+                                Layout.maximumWidth: recordFrame.basisWidth
+                                wrapMode: Text.WrapAnywhere
+                                font.pointSize: 10
+                                lineHeight: 1.3
+                                text: model.recordRecordText
+                            }
+                        }
+
+                    }
 
                     PostControls {
                         id: postControls

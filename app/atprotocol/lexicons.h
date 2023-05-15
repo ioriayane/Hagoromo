@@ -785,5 +785,6 @@ struct Info
 
 }
 Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedPost::Record)
+Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedLike::Record)
 
 #endif // LEXICONS_H

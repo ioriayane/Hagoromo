@@ -24,6 +24,12 @@ public:
         IndexedAtRole,
 
         ReasonRole,
+
+        RecordDisplayNameRole,
+        RecordHandleRole,
+        RecordAvatarRole,
+        RecordIndexedAtRole,
+        RecordRecordTextRole,
     };
     Q_ENUM(NotificationListModelRoles)
 
@@ -55,6 +61,11 @@ private:
     QList<QString> m_cidList; // これで取得したポストの順番を管理して実態はm_notificationHashで管理
     QHash<QString, AtProtocolType::AppBskyNotificationListNotifications::Notification>
             m_notificationHash;
+
+    QHash<QString, AtProtocolType::AppBskyFeedDefs::PostView> m_postHash;
+    QStringList m_cueGetPost;
+
+    void getPosts();
 };
 
 #endif // NOTIFICATIONLISTMODEL_H

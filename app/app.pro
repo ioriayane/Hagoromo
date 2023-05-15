@@ -4,6 +4,7 @@ TARGET = Hagoromo
 
 SOURCES += \
         atprotocol/accessatprotocol.cpp \
+        atprotocol/appbskyfeedgetposts.cpp \
         atprotocol/appbskyfeedgetpostthread.cpp \
         atprotocol/appbskyfeedgettimeline.cpp \
         atprotocol/appbskynotificationlistnotifications.cpp \
@@ -24,6 +25,7 @@ SOURCES += \
 
 HEADERS += \
     atprotocol/accessatprotocol.h \
+    atprotocol/appbskyfeedgetposts.h \
     atprotocol/appbskyfeedgetpostthread.h \
     atprotocol/appbskyfeedgettimeline.h \
     atprotocol/appbskynotificationlistnotifications.h \

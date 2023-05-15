@@ -32,7 +32,8 @@ class Defs2Struct:
 
         # QVariantに入れる構造体をQ_DECLARE_METATYPE()で定義する構造体
         # （単純にすべてではない）
-        self.metatype = ('AppBskyFeedPost::Record', )
+        self.metatype = ('AppBskyFeedPost::Record', 
+                         'AppBskyFeedLike::Record', )
 
     def to_struct_style(self, name: str) -> str:
         return name[0].upper() + name[1:]

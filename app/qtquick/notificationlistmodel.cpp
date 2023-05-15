@@ -1,6 +1,11 @@
 #include "notificationlistmodel.h"
 #include "../atprotocol/appbskynotificationlistnotifications.h"
+#include "../atprotocol/lexicons_func_unknown.h"
+#include "../atprotocol/appbskyfeedgetposts.h"
 
+#include <QTimer>
+
+using AtProtocolInterface::AppBskyFeedGetPosts;
 using AtProtocolInterface::AppBskyNotificationListNotifications;
 
 NotificationListModel::NotificationListModel(AtpAbstractListModel *parent)
@@ -51,6 +56,58 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
         } else {
             return NotificationListModelReason::ReasonUnknown;
         }
+    } else {
+        QString record_cid;
+        if (current.reason == "like") {
+            AtProtocolType::AppBskyFeedLike::Record like =
+                    AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                            AtProtocolType::AppBskyFeedLike::Record>(current.record);
+            record_cid = like.subject.cid;
+        } else if (current.reason == "repost") {
+        } else if (current.reason == "follow") {
+        } else if (current.reason == "mention") {
+        } else if (current.reason == "reply") {
+        } else if (current.reason == "quote") {
+        }
+        if (!record_cid.isEmpty()) {
+            if (m_postHash.contains(record_cid)) {
+                if (role == RecordDisplayNameRole)
+                    return m_postHash[record_cid].author.displayName;
+                else if (role == RecordHandleRole)
+                    return m_postHash[record_cid].author.handle;
+                else if (role == RecordAvatarRole)
+                    return m_postHash[record_cid].author.avatar;
+                else if (role == RecordIndexedAtRole)
+                    return formatDateTime(m_postHash[record_cid].indexedAt);
+                else if (role == RecordRecordTextRole)
+                    return AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                                   AtProtocolType::AppBskyFeedPost::Record>(
+                                   m_postHash[record_cid].record)
+                            .text;
+            } else {
+                if (role == RecordDisplayNameRole)
+                    return QString();
+                else if (role == RecordHandleRole)
+                    return QString();
+                else if (role == RecordAvatarRole)
+                    return QString();
+                else if (role == RecordIndexedAtRole)
+                    return QString();
+                else if (role == RecordRecordTextRole)
+                    return QString();
+            }
+        } else {
+            if (role == RecordDisplayNameRole)
+                return QString();
+            else if (role == RecordHandleRole)
+                return QString();
+            else if (role == RecordAvatarRole)
+                return QString();
+            else if (role == RecordIndexedAtRole)
+                return QString();
+            else if (role == RecordRecordTextRole)
+                return QString();
+        }
     }
 
     return QVariant();
@@ -91,6 +148,19 @@ void NotificationListModel::getLatest()
                     m_cidList.insert(0, item->cid);
                     endInsertRows();
                 }
+
+                if (item->reason == "like") {
+                    AtProtocolType::AppBskyFeedLike::Record like =
+                            AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                                    AtProtocolType::AppBskyFeedLike::Record>(item->record);
+                    if (!like.subject.cid.isEmpty() && !m_cueGetPost.contains(like.subject.uri)) {
+                        m_cueGetPost.append(like.subject.uri);
+                    }
+                }
+            }
+
+            if (!m_cueGetPost.isEmpty()) {
+                QTimer::singleShot(100, this, &NotificationListModel::getPosts);
             }
 
             //
@@ -102,6 +172,10 @@ void NotificationListModel::getLatest()
             //   apiで取得できるcidをキーにそのまま保存
             // m_postHash<cid, Post> :
             //   Notificationの先にあるPostの実体
+
+            // m_post2notificationHash<cid, cid>
+            //   Post側(m_postHash)からNotification側(m_notificationHash)の参照
+            //
             // m_cueGetPost[cid] :
             //   Notificationの先にあるPostを取りに行く待ち行列（たぶんいくつも並列でいけるけど）
             //
@@ -126,5 +200,65 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
 
     roles[ReasonRole] = "reason";
 
+    roles[RecordDisplayNameRole] = "recordDisplayName";
+    roles[RecordHandleRole] = "recordHandle";
+    roles[RecordAvatarRole] = "recordAvatar";
+    roles[RecordIndexedAtRole] = "recordIndexedAt";
+    roles[RecordRecordTextRole] = "recordRecordText";
+
     return roles;
+}
+
+void NotificationListModel::getPosts()
+{
+    if (m_cueGetPost.isEmpty())
+        return;
+
+    // getPostsは最大25個までいっきに取得できる
+    QStringList uris;
+    for (int i = 0; i < 25; i++) {
+        if (m_cueGetPost.isEmpty())
+            break;
+        uris.append(m_cueGetPost.first());
+        m_cueGetPost.removeFirst();
+    }
+
+    AppBskyFeedGetPosts *posts = new AppBskyFeedGetPosts();
+    connect(posts, &AppBskyFeedGetPosts::finished, [=](bool success) {
+        if (success) {
+            QStringList new_cid;
+            for (const auto &post : *posts->postList()) {
+                qDebug() << post.cid << post.author.displayName;
+                //                AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                //                        AtProtocolType::AppBskyFeedPost::Record>(post.record)
+                //                        .text;
+                m_postHash[post.cid] = post;
+                new_cid.append(post.cid);
+            }
+
+            for (int i = 0; i < m_cidList.count(); i++) {
+                if (!m_notificationHash.contains(m_cidList.at(i)))
+                    continue;
+
+                if (m_notificationHash[m_cidList.at(i)].reason == "like") {
+                    AtProtocolType::AppBskyFeedLike::Record like =
+                            AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                                    AtProtocolType::AppBskyFeedLike::Record>(
+                                    m_notificationHash[m_cidList.at(i)].record);
+                    if (new_cid.contains(like.subject.cid)) {
+                        // データを取得できた
+                        emit dataChanged(index(i), index(i));
+                    }
+                }
+            }
+
+            // 残ってたらもう1回
+            if (!m_cueGetPost.isEmpty()) {
+                QTimer::singleShot(100, this, &NotificationListModel::getPosts);
+            }
+        }
+        posts->deleteLater();
+    });
+    posts->setAccount(account());
+    posts->getPosts(uris);
 }

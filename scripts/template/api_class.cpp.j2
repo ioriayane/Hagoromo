@@ -1,4 +1,5 @@
 #include "{{ file_name_lower }}.h"
+#include "../atprotocol/lexicons_func.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -30,7 +31,7 @@ void {{ class_name }}::parseJson(const QString reply_json)
     bool success = false;
 
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
-    if (!json_doc.isEmpty()) {
+    if (json_doc.isEmpty()) {
     }
 
     emit finished(success);

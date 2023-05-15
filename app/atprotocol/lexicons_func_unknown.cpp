@@ -11,12 +11,19 @@ void copyUnknown(const QJsonObject &src, QVariant &dest)
     if (src.isEmpty())
         return;
 
-    if (src.value("$type").toString() == QStringLiteral("app.bsky.feed.post")) {
+    QString type = src.value("$type").toString();
+    if (type == QStringLiteral("app.bsky.feed.post")) {
         // typeに#以降がないのでmainの定義で参照
         AppBskyFeedPost::Record record;
         record.text = src.value("text").toString();
         record.createdAt = src.value("createdAt").toString();
         dest.setValue<AppBskyFeedPost::Record>(record);
+    } else if (type == QStringLiteral("app.bsky.feed.like")) {
+        AppBskyFeedLike::Record record;
+        record.subject.cid = src.value("subject").toObject().value("cid").toString();
+        record.subject.uri = src.value("subject").toObject().value("uri").toString();
+        record.createdAt = src.value("createdAt").toString();
+        dest.setValue<AppBskyFeedLike::Record>(record);
     }
 }
 
