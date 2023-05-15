@@ -104,6 +104,7 @@ Frame {
                                 Layout.maximumWidth: parent.basisWidth
                                 wrapMode: Text.WrapAnywhere
                                 font.pointSize: 10
+                                lineHeight: 1.3
                             }
                         }
                     }
