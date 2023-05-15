@@ -28,6 +28,8 @@ class Defs2Struct:
         self.pre_define = {} # [namespace] = <struct_name>
         self.history_type = {}  #[namespace#struct_name] = type
 
+        self.api_class = {}
+
         # QVariantに入れる構造体をQ_DECLARE_METATYPE()で定義する構造体
         # （単純にすべてではない）
         self.metatype = ('AppBskyFeedPost::Record', )
@@ -466,6 +468,67 @@ class Defs2Struct:
 
             self.append_func_history(namespace, function_define)
 
+    def output_api_class(self, namespace: str, type_name: str):
+        # file_name_lower
+        # file_name_upper
+        # method_name
+        # method_args
+        # api_id
+
+        # 
+        obj = self.get_defs_obj(namespace, type_name)
+        if obj.get('type') == 'query' or obj.get('type') == 'procedure':
+            data = {}
+            data['file_name_lower'] = namespace.replace('.', '').lower()
+            data['file_name_upper'] = namespace.replace('.', '').upper()
+            data['method_name'] = namespace.split('.')[-1]
+            data['class_name'] = self.to_namespace_style(namespace)
+            args = ''
+            # query
+            properties = obj.get('parameters', {}).get('properties')
+            if properties is not None:
+                data['access_type'] = 'get'
+                for pro_name, pro_value in properties.items():
+                    pro_type = pro_value.get('type', '')
+                    if pro_type == 'string':
+                        if len(args) > 0:
+                            args += ", "
+                        args += "const QString &%s" % (pro_name, )
+                    elif pro_type == 'integer':
+                        if len(args) > 0:
+                            args += ", "
+                        args += "const int %s" % (pro_name, )
+                    elif pro_type == 'array':
+                        pro_type = pro_value.get('items', {}).get('type', '')
+                        if pro_type == 'string':
+                            if len(args) > 0:
+                                args += ", "
+                            args += "const QList<QString> &%s" % (pro_name, )
+                        elif pro_type == 'integer':
+                            if len(args) > 0:
+                                args += ", "
+                            args += "const QList<int> %s" % (pro_name, )
+            # post
+            properties = obj.get('input', {}).get('schema', {}).get('properties')
+            if properties is not None:
+                data['access_type'] = 'post'
+                for pro_name, pro_value in properties.items():
+                    pro_type = pro_value.get('type', '')
+                    if pro_type == 'string':
+                        if len(args) > 0:
+                            args += ", "
+                        args += "const QString &%s" % (pro_name, )
+                    elif pro_type == 'integer':
+                        if len(args) > 0:
+                            args += ", "
+                        args += "const int %s" % (pro_name, )
+            data['method_args'] = args
+            data['api_id'] = namespace
+            self.api_class[namespace] = data
+        
+
+
+
     def output_file_lexicons_h(self, environment, output_path: str):
         """ lexicons.h """
         template = environment.get_template('template/lexicons.h.j2')
@@ -522,7 +585,21 @@ class Defs2Struct:
         with open(output_path + '/lexicons_func.h', 'w', encoding='utf-8') as fp:
             fp.write(template.render(params))
 
+    def output_api_class_cpp_h(self, environment, output_path: str):
 
+        template = environment.get_template('template/api_class.h.j2')
+        for namespace, value in self.api_class.items():
+            output_folder = os.path.join(output_path, '/'.join(namespace.split('.')[:-1]))
+            os.makedirs(output_folder, exist_ok=True)
+
+            with open(os.path.join(output_folder, value['file_name_lower'] + '.h'), 'w', encoding='utf-8') as fp:
+                fp.write(template.render(value))
+
+        template = environment.get_template('template/api_class.cpp.j2')
+        for namespace, value in self.api_class.items():
+            output_folder = os.path.join(output_path, '/'.join(namespace.split('.')[:-1]))
+            with open(os.path.join(output_folder, value['file_name_lower'] + '.cpp'), 'w', encoding='utf-8') as fp:
+                fp.write(template.render(value))
 
     def output(self, output_path: str) -> None:
         # 各ファイル（名前空間）ごとに解析する
@@ -538,6 +615,9 @@ class Defs2Struct:
             for type_name in defs.keys():
                 self.output_type(namespace, type_name, self.get_defs_obj(namespace, type_name))
 
+                self.output_api_class(namespace, type_name)
+
+
         # コピー関数のための解析
         for ref_path in self.history:
             (ref_namespace, ref_type_name) = self.split_ref(ref_path)
@@ -549,7 +629,7 @@ class Defs2Struct:
         self.output_file_lexicons_h(environment, output_path)
         self.output_lexicons_func_cpp(environment, output_path)
         self.output_lexicons_func_h(environment, output_path)
-
+        self.output_api_class_cpp_h(environment, os.path.join(os.path.dirname(__file__), 'out'))
 
 
     def open(self, lexicons_path: str, base_path: str) -> None:
