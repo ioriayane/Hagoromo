@@ -1,6 +1,7 @@
 #ifndef LEXICONS_FUNC_UNKNOWN_CPP
 #define LEXICONS_FUNC_UNKNOWN_CPP
 
+#include "lexicons_func.h"
 #include "lexicons_func_unknown.h"
 
 namespace AtProtocolType {
@@ -18,12 +19,19 @@ void copyUnknown(const QJsonObject &src, QVariant &dest)
         record.text = src.value("text").toString();
         record.createdAt = src.value("createdAt").toString();
         dest.setValue<AppBskyFeedPost::Record>(record);
+
     } else if (type == QStringLiteral("app.bsky.feed.like")) {
         AppBskyFeedLike::Record record;
         record.subject.cid = src.value("subject").toObject().value("cid").toString();
         record.subject.uri = src.value("subject").toObject().value("uri").toString();
         record.createdAt = src.value("createdAt").toString();
         dest.setValue<AppBskyFeedLike::Record>(record);
+
+    } else if (type == QStringLiteral("app.bsky.feed.repost")) {
+        AppBskyFeedRepost::Record record;
+        ComAtprotoRepoStrongRef::copyMain(src.value("subject").toObject(), record.subject);
+        record.createdAt = src.value("createdAt").toString();
+        dest.setValue<AppBskyFeedRepost::Record>(record);
     }
 }
 

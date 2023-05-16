@@ -21,7 +21,13 @@ public:
         DisplayNameRole,
         HandleRole,
         AvatarRole,
+        RecordTextRole,
+        // ReplyCountRole,
+        // RepostCountRole,
+        // LikeCountRole,
         IndexedAtRole,
+        // EmbedImagesRole,
+        // EmbedImagesFullRole,
 
         ReasonRole,
 

@@ -54,12 +54,37 @@ ScrollView {
 
             states: [
                 State {
+                    when: model.reason === NotificationListModel.ReasonLike
+                    PropertyChanges { target: reasonImage; source: "../images/like.png" }
+                    PropertyChanges { target: recordText; visible: true }
+                    PropertyChanges { target: recordText; color: Material.color(Material.Grey) }
+                    PropertyChanges { target: recordText; text: model.recordRecordText }
+                },
+                State {
+                    when: model.reason === NotificationListModel.ReasonRepost
+                    PropertyChanges { target: reasonImage; source: "../images/repost.png" }
+                    PropertyChanges { target: recordText; visible: true }
+                    PropertyChanges { target: recordText; color: Material.color(Material.Grey) }
+                    PropertyChanges { target: recordText; text: model.recordRecordText }
+                },
+                State {
+                    when: model.reason === NotificationListModel.ReasonFollow
+                    PropertyChanges { target: reasonImage; source: "../images/add_user.png" }
+                },
+                State {
+                    when: model.reason === NotificationListModel.ReasonMention
+                    PropertyChanges { target: reasonImage; source: "../images/reply.png" }
+                },
+                State {
                     when: model.reason === NotificationListModel.ReasonReply
-                    PropertyChanges { target: postFrame; bottomPadding: 0 }
+                    PropertyChanges { target: reasonImage; source: "../images/reply.png" }
+                    PropertyChanges { target: recordText; visible: true }
+                    PropertyChanges { target: recordText; text: model.recordText }
                     PropertyChanges { target: postControls; visible: true }
                 },
                 State {
                     when: model.reason === NotificationListModel.ReasonQuote
+                    PropertyChanges { target: reasonImage; source: "../images/reply.png" }
                     PropertyChanges { target: postFrame; bottomPadding: 0 }
                     PropertyChanges { target: postControls; visible: true }
                 }
@@ -72,42 +97,37 @@ ScrollView {
                     Layout.preferredWidth: 16
                     Layout.preferredHeight: 16
                     Layout.alignment: Qt.AlignTop
-                    source: {
-                        if(model.reason === NotificationListModel.ReasonLike){
-                            return "../images/like.png"
-                        }else if(model.reason === NotificationListModel.ReasonRepost){
-                            return "../images/repost.png"
-                        }else if(model.reason === NotificationListModel.ReasonFollow){
-                            return "../images/add_user.png"
-                        }else if(model.reason === NotificationListModel.ReasonMention){
-                            return "../images/reply.png"
-                        }else if(model.reason === NotificationListModel.ReasonReply){
-                            return "../images/reply.png"
-                        }else if(model.reason === NotificationListModel.ReasonQuote){
-                            return "../images/reply.png"
-                        }else{
-                            return "../images/like.png"
-                        }
-                    }
+                    source: "../images/like.png"
                     layer.enabled: true
                     layer.effect: ColorOverlay {
-                        color: {
-                            if(model.reason === NotificationListModel.ReasonLike){
-                                return Material.color(Material.Pink)
-                            }else if(model.reason === NotificationListModel.ReasonRepost){
-                                return Material.color(Material.Green)
-                            }else if(model.reason === NotificationListModel.ReasonFollow){
-                                return Material.color(Material.LightBlue)
-                            }else if(model.reason === NotificationListModel.ReasonMention){
-                                return Material.color(Material.Blue)
-                            }else if(model.reason === NotificationListModel.ReasonReply){
-                                return Material.color(Material.BlueGrey)
-                            }else if(model.reason === NotificationListModel.ReasonQuote){
-                                return Material.color(Material.Lime)
-                            }else{
-                                return Material.color(Material.Grey)
+                        id: reasonImageEffect
+                        color: Material.color(Material.Grey)
+                        states: [
+                            State {
+                                when: model.reason === NotificationListModel.ReasonLike
+                                PropertyChanges { target: reasonImageEffect; color: Material.color(Material.Pink) }
+                            },
+                            State {
+                                when: model.reason === NotificationListModel.ReasonRepost
+                                PropertyChanges { target: reasonImageEffect; color: Material.color(Material.Green) }
+                            },
+                            State {
+                                when: model.reason === NotificationListModel.ReasonFollow
+                                PropertyChanges { target: reasonImageEffect; color: Material.color(Material.LightBlue) }
+                            },
+                            State {
+                                when: model.reason === NotificationListModel.ReasonMention
+                                PropertyChanges { target: reasonImageEffect; color: Material.color(Material.BlueGrey) }
+                            },
+                            State {
+                                when: model.reason === NotificationListModel.ReasonReply
+                                PropertyChanges { target: reasonImageEffect; color: Material.color(Material.Blue) }
+                            },
+                            State {
+                                when: model.reason === NotificationListModel.ReasonQuote
+                                PropertyChanges { target: reasonImageEffect; color: Material.color(Material.Lime) }
                             }
-                        }
+                        ]
                     }
                 }
 
@@ -136,39 +156,49 @@ ScrollView {
                         }
                     }
 
-                    Frame {
-                        id: recordFrame
-                        property int basisWidth: bodyLayout.width - padding * 2 -
-                                                 recordAvatarImage.width - recordAuthorLayout.spacing
-                        ColumnLayout {
-                            RowLayout {
-                                id: recordAuthorLayout
-                                AvatarImage {
-                                    id: recordAvatarImage
-                                    Layout.preferredWidth: 16
-                                    Layout.preferredHeight: 16
-                                    source: model.recordAvatar
-                                }
-                                Author {
-                                    Layout.preferredWidth: recordFrame.basisWidth
-                                    Layout.maximumWidth: recordFrame.basisWidth
-                                    //                            Layout.fillWidth: true
-                                    displayName: model.recordDisplayName
-                                    handle: model.recordHandle
-                                    indexedAt: model.recordIndexedAt
-                                }
-                            }
-                            Label {
-                                id: recordText
-                                Layout.preferredWidth: recordFrame.basisWidth
-                                Layout.maximumWidth: recordFrame.basisWidth
-                                wrapMode: Text.WrapAnywhere
-                                font.pointSize: 10
-                                lineHeight: 1.3
-                                text: model.recordRecordText
-                            }
-                        }
+//                    Frame {
+//                        id: recordFrame
+//                        property int basisWidth: bodyLayout.width - padding * 2 -
+//                                                 recordAvatarImage.width - recordAuthorLayout.spacing
+//                        ColumnLayout {
+//                            RowLayout {
+//                                id: recordAuthorLayout
+//                                AvatarImage {
+//                                    id: recordAvatarImage
+//                                    Layout.preferredWidth: 16
+//                                    Layout.preferredHeight: 16
+//                                    source: model.recordAvatar
+//                                }
+//                                Author {
+//                                    Layout.preferredWidth: recordFrame.basisWidth
+//                                    Layout.maximumWidth: recordFrame.basisWidth
+//                                    //                            Layout.fillWidth: true
+//                                    displayName: model.recordDisplayName
+//                                    handle: model.recordHandle
+//                                    indexedAt: model.recordIndexedAt
+//                                }
+//                            }
+//                            Label {
+//                                id: recordText
+//                                Layout.preferredWidth: recordFrame.basisWidth
+//                                Layout.maximumWidth: recordFrame.basisWidth
+//                                wrapMode: Text.WrapAnywhere
+//                                font.pointSize: 10
+//                                lineHeight: 1.3
+//                                text: model.recordRecordText
+//                            }
+//                        }
 
+//                    }
+                    Label {
+                        id: recordText
+                        visible: false
+                        Layout.preferredWidth: bodyLayout.basisWidth
+                        Layout.maximumWidth: bodyLayout.basisWidth
+                        wrapMode: Text.WrapAnywhere
+                        font.pointSize: 10
+                        lineHeight: 1.3
+                        text: model.recordRecordText
                     }
 
                     PostControls {

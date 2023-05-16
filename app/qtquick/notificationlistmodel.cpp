@@ -37,6 +37,10 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
         return current.author.handle;
     else if (role == AvatarRole)
         return current.author.avatar;
+    else if (role == RecordTextRole)
+        return AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                       AtProtocolType::AppBskyFeedPost::Record>(current.record)
+                .text;
     else if (role == IndexedAtRole)
         return formatDateTime(current.indexedAt);
 
@@ -64,10 +68,18 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
                             AtProtocolType::AppBskyFeedLike::Record>(current.record);
             record_cid = like.subject.cid;
         } else if (current.reason == "repost") {
+            AtProtocolType::AppBskyFeedRepost::Record repost =
+                    AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                            AtProtocolType::AppBskyFeedRepost::Record>(current.record);
+            record_cid = repost.subject.cid;
         } else if (current.reason == "follow") {
         } else if (current.reason == "mention") {
         } else if (current.reason == "reply") {
         } else if (current.reason == "quote") {
+            //            AtProtocolType::AppBskyFeedPost::Record post =
+            //                    AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+            //                            AtProtocolType::AppBskyFeedPost::Record>(current.record);
+            //            record_cid = post.createdAt
         }
         if (!record_cid.isEmpty()) {
             if (m_postHash.contains(record_cid)) {
@@ -196,6 +208,7 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[DisplayNameRole] = "displayName";
     roles[HandleRole] = "handle";
     roles[AvatarRole] = "avatar";
+    roles[RecordTextRole] = "recordText";
     roles[IndexedAtRole] = "indexedAt";
 
     roles[ReasonRole] = "reason";
