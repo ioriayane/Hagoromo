@@ -59,6 +59,7 @@ ScrollView {
                     PropertyChanges { target: recordText; visible: true }
                     PropertyChanges { target: recordText; color: Material.color(Material.Grey) }
                     PropertyChanges { target: recordText; text: model.recordRecordText }
+                    PropertyChanges { target: postFrame; bottomPadding: 5 }
                 },
                 State {
                     when: model.reason === NotificationListModel.ReasonRepost
@@ -66,6 +67,7 @@ ScrollView {
                     PropertyChanges { target: recordText; visible: true }
                     PropertyChanges { target: recordText; color: Material.color(Material.Grey) }
                     PropertyChanges { target: recordText; text: model.recordRecordText }
+                    PropertyChanges { target: postFrame; bottomPadding: 5 }
                 },
                 State {
                     when: model.reason === NotificationListModel.ReasonFollow
@@ -81,12 +83,13 @@ ScrollView {
                     PropertyChanges { target: recordText; visible: true }
                     PropertyChanges { target: recordText; text: model.recordText }
                     PropertyChanges { target: postControls; visible: true }
+                    PropertyChanges { target: postFrame; bottomPadding: 2 }
                 },
                 State {
                     when: model.reason === NotificationListModel.ReasonQuote
                     PropertyChanges { target: reasonImage; source: "../images/reply.png" }
-                    PropertyChanges { target: postFrame; bottomPadding: 0 }
                     PropertyChanges { target: postControls; visible: true }
+                    PropertyChanges { target: postFrame; bottomPadding: 2 }
                 }
 
             ]
@@ -134,7 +137,7 @@ ScrollView {
                 ColumnLayout {
                     id: bodyLayout
                     Layout.fillWidth: true
-                    spacing: 5
+                    spacing: 0
 
                     property int basisWidth: postFrame.width - postFrame.leftPadding - postFrame.rightPadding -
                                              postLayout.spacing - reasonImage.width - avatorImage.width
@@ -156,45 +159,46 @@ ScrollView {
                         }
                     }
 
-//                    Frame {
-//                        id: recordFrame
-//                        property int basisWidth: bodyLayout.width - padding * 2 -
-//                                                 recordAvatarImage.width - recordAuthorLayout.spacing
-//                        ColumnLayout {
-//                            RowLayout {
-//                                id: recordAuthorLayout
-//                                AvatarImage {
-//                                    id: recordAvatarImage
-//                                    Layout.preferredWidth: 16
-//                                    Layout.preferredHeight: 16
-//                                    source: model.recordAvatar
-//                                }
-//                                Author {
-//                                    Layout.preferredWidth: recordFrame.basisWidth
-//                                    Layout.maximumWidth: recordFrame.basisWidth
-//                                    //                            Layout.fillWidth: true
-//                                    displayName: model.recordDisplayName
-//                                    handle: model.recordHandle
-//                                    indexedAt: model.recordIndexedAt
-//                                }
-//                            }
-//                            Label {
-//                                id: recordText
-//                                Layout.preferredWidth: recordFrame.basisWidth
-//                                Layout.maximumWidth: recordFrame.basisWidth
-//                                wrapMode: Text.WrapAnywhere
-//                                font.pointSize: 10
-//                                lineHeight: 1.3
-//                                text: model.recordRecordText
-//                            }
-//                        }
+                    //                    Frame {
+                    //                        id: recordFrame
+                    //                        property int basisWidth: bodyLayout.width - padding * 2 -
+                    //                                                 recordAvatarImage.width - recordAuthorLayout.spacing
+                    //                        ColumnLayout {
+                    //                            RowLayout {
+                    //                                id: recordAuthorLayout
+                    //                                AvatarImage {
+                    //                                    id: recordAvatarImage
+                    //                                    Layout.preferredWidth: 16
+                    //                                    Layout.preferredHeight: 16
+                    //                                    source: model.recordAvatar
+                    //                                }
+                    //                                Author {
+                    //                                    Layout.preferredWidth: recordFrame.basisWidth
+                    //                                    Layout.maximumWidth: recordFrame.basisWidth
+                    //                                    //                            Layout.fillWidth: true
+                    //                                    displayName: model.recordDisplayName
+                    //                                    handle: model.recordHandle
+                    //                                    indexedAt: model.recordIndexedAt
+                    //                                }
+                    //                            }
+                    //                            Label {
+                    //                                id: recordText
+                    //                                Layout.preferredWidth: recordFrame.basisWidth
+                    //                                Layout.maximumWidth: recordFrame.basisWidth
+                    //                                wrapMode: Text.WrapAnywhere
+                    //                                font.pointSize: 10
+                    //                                lineHeight: 1.3
+                    //                                text: model.recordRecordText
+                    //                            }
+                    //                        }
 
-//                    }
+                    //                    }
                     Label {
                         id: recordText
                         visible: false
                         Layout.preferredWidth: bodyLayout.basisWidth
                         Layout.maximumWidth: bodyLayout.basisWidth
+                        Layout.topMargin: 8
                         wrapMode: Text.WrapAnywhere
                         font.pointSize: 10
                         lineHeight: 1.3
@@ -208,7 +212,6 @@ ScrollView {
                         repostButton.iconText: "0" //model.repostCount
                         likeButton.iconText: "0" //model.likeCount
                     }
-
                 }
             }
         }

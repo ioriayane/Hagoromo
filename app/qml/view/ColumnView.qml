@@ -142,8 +142,9 @@ ColumnLayout {
             IconButton {
                 id: settingButton
                 Layout.preferredWidth: 30
-                Layout.preferredHeight: 30
+                Layout.preferredHeight: 24
                 iconSource: "../images/settings.png"
+                iconSize: 16
                 onClicked: popup.open()
                 Menu {
                     id: popup

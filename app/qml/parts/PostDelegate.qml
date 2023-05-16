@@ -5,11 +5,11 @@ import QtQuick.Controls.Material 2.15
 
 Frame {
     id: postFrame
-//    width: rootListView.width
+    //    width: rootListView.width
     topPadding: 10
     leftPadding: 10
     rightPadding: 10
-    bottomPadding: 0
+    bottomPadding: 2
 
     property alias repostReactionAuthor: repostReactionAuthor
     property alias replyReactionAuthor: replyReactionAuthor
@@ -48,7 +48,7 @@ Frame {
             ColumnLayout {
                 id: bodyLayout
                 Layout.fillWidth: true
-                spacing: 5
+                spacing: 0
 
                 property int basisWidth: postFrame.width - postFrame.leftPadding - postFrame.rightPadding -
                                          postLayout.spacing - postAvatarImage.Layout.preferredWidth
@@ -62,10 +62,11 @@ Frame {
                     id: recordText
                     Layout.preferredWidth: parent.basisWidth
                     Layout.maximumWidth: parent.basisWidth
+                    Layout.topMargin: 5
                     // wrapMode: Text.Wrap
                     wrapMode: Text.WrapAnywhere
                     font.pointSize: 10
-//                    font.letterSpacing: 0
+                    //                    font.letterSpacing: 0
                     lineHeight: 1.3
                     //                            font.family: "遊ゴシック"  // "メイリオ"  "BIZ UDPゴシック"
 
@@ -77,11 +78,13 @@ Frame {
                 ImagePreview {
                     id: postImagePreview
                     layoutWidth: recordText.width
+                    Layout.topMargin: 5
                 }
 
                 Frame {
                     id: childFrame
                     Layout.fillWidth: true
+                    Layout.topMargin: 5
                     RowLayout {
                         id: childLayout
                         spacing: 10

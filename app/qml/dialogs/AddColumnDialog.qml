@@ -66,6 +66,7 @@ Dialog {
         RowLayout {
             Button {
                 text: qsTr("Cancel")
+                flat: true
                 onClicked: addColumnDialog.reject()
             }
             Item {

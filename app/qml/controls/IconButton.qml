@@ -11,21 +11,30 @@ Button {
 
     property alias iconSource: iconImage.source
     property alias iconText: iconLabel.text
+    property int iconSize: button.height * 0.5
+    property color foreground: Material.foreground
+
+
+    topInset: 2
+    leftInset: 2
+    rightInset: 2
+    bottomInset: 2
 
     RowLayout {
         id: buttonContextLayout
         anchors.centerIn: parent
-
         spacing: 0
+
         Image {
             id: iconImage
-            Layout.preferredWidth: button.height * 0.5
-            Layout.preferredHeight: button.height * 0.5
+            Layout.preferredWidth: iconSize
+            Layout.preferredHeight: iconSize
+            Layout.alignment: Qt.AlignVCenter
             Layout.leftMargin: 5
             Layout.rightMargin: 5
             layer.enabled: true
             layer.effect: ColorOverlay {
-                color: Material.foreground
+                color: button.foreground
             }
         }
         Label {
@@ -33,6 +42,7 @@ Button {
             Layout.leftMargin: 0
             Layout.rightMargin: 5
             visible: button.iconText.length > 0
+            color: button.foreground
         }
     }
 }

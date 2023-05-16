@@ -69,6 +69,7 @@ Dialog {
 
         Button {
             Layout.alignment: Qt.AlignLeft
+            flat: true
             text: qsTr("Cancel")
             onClicked: loginDialog.close()
         }

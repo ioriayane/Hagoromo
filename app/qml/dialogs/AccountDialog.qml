@@ -71,9 +71,10 @@ Dialog {
                     }
                     IconButton {
                         Layout.preferredWidth: 36
-                        Layout.preferredHeight: 36
+                        Layout.preferredHeight: 26
                         display: AbstractButton.IconOnly
                         iconSource: "../images/edit.png"
+                        iconSize: 18
                         onClicked: {
                             var i = model.index
                             login.serviceText = accountList.model.item(i, AccountListModel.ServiceRole)
@@ -84,10 +85,11 @@ Dialog {
                     }
                     IconButton {
                         Layout.preferredWidth: 36
-                        Layout.preferredHeight: 36
+                        Layout.preferredHeight: 26
                         Layout.rightMargin: 5
                         display: AbstractButton.IconOnly
                         iconSource: "../images/delete.png"
+                        iconSize: 18
                         onClicked: accountList.model.removeAccount(model.index)
                     }
                 }
@@ -96,6 +98,7 @@ Dialog {
         }
         Button {
             text: qsTr("Close")
+            flat: true
             onClicked: accountDialog.close()
         }
     }

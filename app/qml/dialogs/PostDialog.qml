@@ -142,7 +142,16 @@ Dialog {
         }
 
         RowLayout {
-            Layout.alignment: Qt.AlignRight
+//            Layout.alignment: Qt.AlignRight
+            Button {
+                flat: true
+                text: qsTr("Cancel")
+                onClicked: postDialog.close()
+            }
+            Item {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 1
+            }
             Label {
                 Layout.alignment: Qt.AlignVCenter
                 font.pointSize: 8
