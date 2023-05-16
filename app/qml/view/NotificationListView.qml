@@ -87,7 +87,9 @@ ScrollView {
                 },
                 State {
                     when: model.reason === NotificationListModel.ReasonQuote
-                    PropertyChanges { target: reasonImage; source: "../images/reply.png" }
+                    PropertyChanges { target: reasonImage; source: "../images/quote.png" }
+                    PropertyChanges { target: recordText; visible: true }
+                    PropertyChanges { target: recordText; text: model.recordText }
                     PropertyChanges { target: postControls; visible: true }
                     PropertyChanges { target: postFrame; bottomPadding: 2 }
                 }

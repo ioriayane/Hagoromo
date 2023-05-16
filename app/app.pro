@@ -3,25 +3,25 @@ QT += quick network quickcontrols2
 TARGET = Hagoromo
 
 SOURCES += \
-        atprotocol/accessatprotocol.cpp \
-        atprotocol/appbskyfeedgetposts.cpp \
-        atprotocol/appbskyfeedgetpostthread.cpp \
-        atprotocol/appbskyfeedgettimeline.cpp \
-        atprotocol/appbskynotificationlistnotifications.cpp \
-        atprotocol/comatprotorepocreaterecord.cpp \
-        atprotocol/comatprotoservercreatesession.cpp \
-        atprotocol/comatprotoserverrefreshsession.cpp \
-        atprotocol/lexicons_func.cpp \
-        atprotocol/lexicons_func_unknown.cpp \
-        main.cpp \
-        qtquick/accountlistmodel.cpp \
-        qtquick/atpabstractlistmodel.cpp \
-        qtquick/columnlistmodel.cpp \
-        qtquick/createrecord.cpp \
-        qtquick/createsession.cpp \
-        qtquick/notificationlistmodel.cpp \
-        qtquick/postthreadlistmodel.cpp \
-        qtquick/timelinelistmodel.cpp
+    atprotocol/accessatprotocol.cpp \
+    atprotocol/appbskyfeedgetposts.cpp \
+    atprotocol/appbskyfeedgetpostthread.cpp \
+    atprotocol/appbskyfeedgettimeline.cpp \
+    atprotocol/appbskynotificationlistnotifications.cpp \
+    atprotocol/comatprotorepocreaterecord.cpp \
+    atprotocol/comatprotoservercreatesession.cpp \
+    atprotocol/comatprotoserverrefreshsession.cpp \
+    atprotocol/lexicons_func.cpp \
+    atprotocol/lexicons_func_unknown.cpp \
+    main.cpp \
+    qtquick/accountlistmodel.cpp \
+    qtquick/atpabstractlistmodel.cpp \
+    qtquick/columnlistmodel.cpp \
+    qtquick/createrecord.cpp \
+    qtquick/createsession.cpp \
+    qtquick/notificationlistmodel.cpp \
+    qtquick/postthreadlistmodel.cpp \
+    qtquick/timelinelistmodel.cpp
 
 HEADERS += \
     atprotocol/accessatprotocol.h \
@@ -83,6 +83,7 @@ IMAGE_FILES += \
     qml/images/expand_more.png \
     qml/images/like.png \
     qml/images/more.png \
+    qml/images/quote.png \
     qml/images/reply.png \
     qml/images/repost.png \
     qml/images/settings.png
