@@ -16,6 +16,7 @@ ClickableFrame {
     leftPadding: 10
     rightPadding: 10
     bottomPadding: 10
+    style: "Post"
 
     property int reason: NotificationListModel.ReasonLike
     property string recordText: ""

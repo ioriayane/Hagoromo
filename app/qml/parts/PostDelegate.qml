@@ -12,6 +12,7 @@ ClickableFrame {
     leftPadding: 10
     rightPadding: 10
     bottomPadding: 2
+    style: "Post"
 
     property alias repostReactionAuthor: repostReactionAuthor
     property alias replyReactionAuthor: replyReactionAuthor
