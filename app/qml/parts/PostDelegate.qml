@@ -3,7 +3,9 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 
-Frame {
+import "../controls"
+
+ClickableFrame {
     id: postFrame
     //    width: rootListView.width
     topPadding: 10
@@ -11,25 +13,11 @@ Frame {
     rightPadding: 10
     bottomPadding: 2
 
-    background: MouseArea {
-        id: postFrameMouseArea
-        Rectangle {
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.leftMargin: 5
-            anchors.right: parent.right
-            anchors.rightMargin: 5
-            height: 1
-            color: Material.color(Material.Grey, Material.Shade600)
-        }
-    }
-
     property alias repostReactionAuthor: repostReactionAuthor
     property alias replyReactionAuthor: replyReactionAuthor
     property alias postAvatarImage: postAvatarImage
     property alias postAuthor: postAuthor
     property alias recordText: recordText
-    property alias postFrameMouseArea: postFrameMouseArea
     property alias postImagePreview: postImagePreview
     property alias childFrame: childFrame
     property alias childAvatarImage: childAvatarImage

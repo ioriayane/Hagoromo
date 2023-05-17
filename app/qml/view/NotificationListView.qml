@@ -63,13 +63,16 @@ ScrollView {
             recordText: model.recordText
             recordRecordText: model.recordRecordText
 
-            postFrameMouseArea.onClicked: {
-                if(model.reason === NotificationListModel.ReasonLike){
-                }else if(model.reason === NotificationListModel.ReasonRepost){
+            onClicked: {
+                if(model.reason === NotificationListModel.ReasonLike ||
+                        model.reason === NotificationListModel.ReasonRepost){
+                    if(model.recordUri.length > 0)
+                        requestedViewThread(model.recordUri)
                 }else if(model.reason === NotificationListModel.ReasonFollow){
                 }else if(model.reason === NotificationListModel.ReasonMention){
-                }else if(model.reason === NotificationListModel.ReasonReply){
-                }else if(model.reason === NotificationListModel.ReasonQuote){
+                }else if(model.reason === NotificationListModel.ReasonReply ||
+                         model.reason === NotificationListModel.ReasonQuote){
+                    requestedViewThread(model.uri)
                 }
             }
         }

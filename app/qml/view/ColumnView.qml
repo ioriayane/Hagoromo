@@ -62,6 +62,12 @@ ColumnLayout {
     Component {
         id: listNotificationComponent
         NotificationListView {
+            onRequestedViewThread: (uri) => {
+                                       console.log("View Thread : " + uri)
+                                       // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
+                                       // これはPostThreadViewのプロパティにダイレクトに設定する
+                                       columnStackView.push(postThreadComponent, { "postThreadUri": uri })
+                                   }
         }
     }
     Component {
@@ -113,7 +119,7 @@ ColumnLayout {
         }
     }
 
-    Frame {
+    ClickableFrame {
         id: profileFrame
         Layout.fillWidth: true
         Layout.topMargin: 1
@@ -122,17 +128,7 @@ ColumnLayout {
         rightPadding: 10
         bottomPadding: 3
 
-        background: MouseArea {
-            id: profileFrameMouseArea
-            Rectangle {
-                anchors.fill: parent
-                border.width: 1
-                border.color: Material.color(Material.Grey, Material.Shade600)
-                color: "transparent"
-                radius: 2
-            }
-            onClicked: columnStackView.currentItem.listView.positionViewAtBeginning()
-        }
+        onClicked: (mouse) => columnStackView.currentItem.listView.positionViewAtBeginning()
 
         RowLayout {
             anchors.fill: parent

@@ -48,6 +48,7 @@ HEADERS += \
 
 QML_FILES = \
     qml/main.qml \
+    qml/controls/ClickableFrame.qml \
     qml/controls/ProgressCircle.qml \
     qml/controls/IconButton.qml \
     qml/controls/ImageWithIndicator.qml \

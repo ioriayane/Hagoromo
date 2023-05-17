@@ -57,6 +57,7 @@ ScrollView {
         delegate: PostDelegate {
             width: rootListView.width
 
+            onClicked: requestedViewThread(model.uri)
 
             repostReactionAuthor.visible: model.isRepostedBy
             repostReactionAuthor.displayName: model.repostedByDisplayName
@@ -70,7 +71,6 @@ ScrollView {
             postAuthor.handle: model.handle
             postAuthor.indexedAt: model.indexedAt
             recordText.text: model.recordText
-            postFrameMouseArea.onClicked: requestedViewThread(model.uri)
             postImagePreview.embedImages: model.embedImages
             postImagePreview.onRequestedViewImages: (index) => requestedViewImages(index, model.embedImagesFull)
 

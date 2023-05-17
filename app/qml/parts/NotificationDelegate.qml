@@ -6,9 +6,10 @@ import QtGraphicalEffects 1.15
 
 import tech.relog.hagoromo.notificationlistmodel 1.0
 
+import "../controls"
 import "../parts"
 
-Frame {
+ClickableFrame {
     id: notificationFrame
     width: rootListView.width
     topPadding: 10
@@ -24,26 +25,12 @@ Frame {
 //    property alias replyReactionAuthor: replyReactionAuthor
     property alias postAvatarImage: postAvatarImage
     property alias postAuthor: postAuthor
-    property alias postFrameMouseArea: postFrameMouseArea
 //    property alias postImagePreview: postImagePreview
 //    property alias childFrame: childFrame
 //    property alias childAvatarImage: childAvatarImage
 //    property alias childAuthor: childAuthor
 //    property alias childRecordText: childRecordText
     property alias postControls: postControls
-
-    background: MouseArea {
-        id: postFrameMouseArea
-        Rectangle {
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.leftMargin: 5
-            anchors.right: parent.right
-            anchors.rightMargin: 5
-            height: 1
-            color: Material.color(Material.Grey, Material.Shade600)
-        }
-    }
 
     states: [
         State {

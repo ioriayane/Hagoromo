@@ -31,7 +31,11 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
 
     const auto &current = m_notificationHash.value(m_cidList.at(row));
 
-    if (role == DisplayNameRole)
+    if (role == CidRole)
+        return current.cid;
+    else if (role == UriRole)
+        return current.uri;
+    else if (role == DisplayNameRole)
         return current.author.displayName;
     else if (role == HandleRole)
         return current.author.handle;
@@ -83,7 +87,11 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
         }
         if (!record_cid.isEmpty()) {
             if (m_postHash.contains(record_cid)) {
-                if (role == RecordDisplayNameRole)
+                if (role == RecordCidRole)
+                    return m_postHash[record_cid].cid;
+                else if (role == RecordUriRole)
+                    return m_postHash[record_cid].uri;
+                else if (role == RecordDisplayNameRole)
                     return m_postHash[record_cid].author.displayName;
                 else if (role == RecordHandleRole)
                     return m_postHash[record_cid].author.handle;
@@ -97,7 +105,11 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
                                    m_postHash[record_cid].record)
                             .text;
             } else {
-                if (role == RecordDisplayNameRole)
+                if (role == RecordCidRole)
+                    return QString();
+                else if (role == RecordUriRole)
+                    return QString();
+                else if (role == RecordDisplayNameRole)
                     return QString();
                 else if (role == RecordHandleRole)
                     return QString();
@@ -109,7 +121,11 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
                     return QString();
             }
         } else {
-            if (role == RecordDisplayNameRole)
+            if (role == RecordCidRole)
+                return QString();
+            else if (role == RecordUriRole)
+                return QString();
+            else if (role == RecordDisplayNameRole)
                 return QString();
             else if (role == RecordHandleRole)
                 return QString();
@@ -205,6 +221,8 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
 
+    roles[CidRole] = "cid";
+    roles[UriRole] = "uri";
     roles[DisplayNameRole] = "displayName";
     roles[HandleRole] = "handle";
     roles[AvatarRole] = "avatar";
@@ -213,6 +231,8 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
 
     roles[ReasonRole] = "reason";
 
+    roles[RecordCidRole] = "recordCid";
+    roles[RecordUriRole] = "recordUri";
     roles[RecordDisplayNameRole] = "recordDisplayName";
     roles[RecordHandleRole] = "recordHandle";
     roles[RecordAvatarRole] = "recordAvatar";
