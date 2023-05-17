@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.15
 
 RowLayout {
     id: headerLayout
+    clip: true
 
     property string displayName: ""
     property string handle: ""

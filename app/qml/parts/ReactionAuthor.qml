@@ -6,6 +6,7 @@ import QtGraphicalEffects 1.15
 
 RowLayout {
     id: reactionAuthor
+    clip: true
 
     property alias source: iconImage.source
     property alias displayName: displayNameLabel.text
@@ -24,12 +25,15 @@ RowLayout {
     Label {
         id: displayNameLabel
         Layout.alignment: Qt.AlignCenter
+//        Layout.maximumWidth: reactionAuthor.width - iconImage.width - handleLabel.width - reactionAuthor.spacing * 2
         font.pointSize: 8
         color: reactionAuthor.color
+        elide: Text.ElideRight
     }
     Label {
         id: handleLabel
         Layout.alignment: Qt.AlignCenter
+        Layout.fillWidth: true
         font.pointSize: 8
         opacity: 0.8
         color: reactionAuthor.color

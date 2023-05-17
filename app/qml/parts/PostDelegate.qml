@@ -26,14 +26,17 @@ ClickableFrame {
     property alias childRecordText: childRecordText
     property alias postControls: postControls
 
+
     ColumnLayout {
         ReactionAuthor {
             id: repostReactionAuthor
+            Layout.maximumWidth: postFrame.contentWidth
             source: "../images/repost.png"
             color: Material.color(Material.Green)
         }
         ReactionAuthor {
             id: replyReactionAuthor
+            Layout.maximumWidth: postFrame.contentWidth
             source: "../images/reply.png"
             color: Material.color(Material.Blue)
         }
