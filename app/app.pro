@@ -59,6 +59,7 @@ QML_FILES = \
     qml/parts/Author.qml \
     qml/parts/AvatarImage.qml \
     qml/parts/ImagePreview.qml \
+    qml/parts/NotificationDelegate.qml \
     qml/parts/PostControls.qml \
     qml/parts/PostDelegate.qml \
     qml/parts/ReactionAuthor.qml \
