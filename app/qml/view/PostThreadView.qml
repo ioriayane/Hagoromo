@@ -74,12 +74,12 @@ ScrollView {
             postImagePreview.embedImages: model.embedImages
             postImagePreview.onRequestedViewImages: (index) => requestedViewImages(index, model.embedImagesFull)
 
-            childFrame.visible: model.hasChildRecord
-            childAvatarImage.source: model.childRecordAvatar
-            childAuthor.displayName: model.childRecordDisplayName
-            childAuthor.handle: model.childRecordHandle
-            childAuthor.indexedAt: model.childRecordIndexedAt
-            childRecordText.text: model.childRecordRecordText
+            childFrame.visible: model.hasQuoteRecord
+            childAvatarImage.source: model.quoteRecordAvatar
+            childAuthor.displayName: model.quoteRecordDisplayName
+            childAuthor.handle: model.quoteRecordHandle
+            childAuthor.indexedAt: model.quoteRecordIndexedAt
+            childRecordText.text: model.quoteRecordRecordText
 
             postControls.replyButton.iconText: model.replyCount
             postControls.repostButton.iconText: model.repostCount

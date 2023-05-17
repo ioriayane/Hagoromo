@@ -50,28 +50,28 @@ QVariant PostThreadListModel::item(int row, PostThreadListModelRoles role) const
     else if (role == EmbedImagesFullRole)
         return LexiconsTypeUnknown::copyImagesFromPostView(current, false);
 
-    else if (role == HasChildRecordRole)
+    else if (role == HasQuoteRecordRole)
         return current.embed_type
                 == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecord_View
                 && current.embed_AppBskyEmbedRecord_View.record_type
                 == AppBskyEmbedRecord::ViewRecordType::record_ViewRecord;
-    else if (role == ChildRecordDisplayNameRole)
+    else if (role == QuoteRecordDisplayNameRole)
         return current.embed_AppBskyEmbedRecord_View.record_ViewRecord.author.displayName;
-    else if (role == ChildRecordHandleRole)
+    else if (role == QuoteRecordHandleRole)
         return current.embed_AppBskyEmbedRecord_View.record_ViewRecord.author.handle;
-    else if (role == ChildRecordAvatarRole)
+    else if (role == QuoteRecordAvatarRole)
         return current.embed_AppBskyEmbedRecord_View.record_ViewRecord.author.avatar;
-    else if (role == ChildRecordRecordTextRole)
+    else if (role == QuoteRecordRecordTextRole)
         return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Record>(
                        current.embed_AppBskyEmbedRecord_View.record_ViewRecord.value)
                 .text;
-    else if (role == ChildRecordIndexedAtRole)
+    else if (role == QuoteRecordIndexedAtRole)
         return formatDateTime(current.embed_AppBskyEmbedRecord_View.record_ViewRecord.indexedAt);
-    else if (role == ChildRecordEmbedImagesRole)
+    else if (role == QuoteRecordEmbedImagesRole)
         // unionの配列で読み込んでない
         return LexiconsTypeUnknown::copyImagesFromRecord(
                 current.embed_AppBskyEmbedRecord_View.record_ViewRecord, true);
-    else if (role == ChildRecordEmbedImagesFullRole)
+    else if (role == QuoteRecordEmbedImagesFullRole)
         // unionの配列で読み込んでない
         return LexiconsTypeUnknown::copyImagesFromRecord(
                 current.embed_AppBskyEmbedRecord_View.record_ViewRecord, false);
@@ -132,14 +132,14 @@ QHash<int, QByteArray> PostThreadListModel::roleNames() const
     roles[EmbedImagesRole] = "embedImages";
     roles[EmbedImagesFullRole] = "embedImagesFull";
 
-    roles[HasChildRecordRole] = "hasChildRecord";
-    roles[ChildRecordDisplayNameRole] = "childRecordDisplayName";
-    roles[ChildRecordHandleRole] = "childRecordHandle";
-    roles[ChildRecordAvatarRole] = "childRecordAvatar";
-    roles[ChildRecordRecordTextRole] = "childRecordRecordText";
-    roles[ChildRecordIndexedAtRole] = "childRecordIndexedAt";
-    roles[ChildRecordEmbedImagesRole] = "childRecordEmbedImages";
-    roles[ChildRecordEmbedImagesFullRole] = "childRecordEmbedImagesFull";
+    roles[HasQuoteRecordRole] = "hasQuoteRecord";
+    roles[QuoteRecordDisplayNameRole] = "quoteRecordDisplayName";
+    roles[QuoteRecordHandleRole] = "quoteRecordHandle";
+    roles[QuoteRecordAvatarRole] = "quoteRecordAvatar";
+    roles[QuoteRecordRecordTextRole] = "quoteRecordRecordText";
+    roles[QuoteRecordIndexedAtRole] = "quoteRecordIndexedAt";
+    roles[QuoteRecordEmbedImagesRole] = "quoteRecordEmbedImages";
+    roles[QuoteRecordEmbedImagesFullRole] = "quoteRecordEmbedImagesFull";
 
     roles[HasReplyRole] = "hasReply";
     roles[ReplyRootCidRole] = "replyRootCid";
