@@ -18,7 +18,8 @@ ApplicationWindow {
     visible: true
     title: qsTr("Hagoromo")
 
-    Material.theme: Material.Dark
+    Material.theme: settingDialog.settings.theme
+    Material.accent: settingDialog.settings.accent
 
     SettingDialog {
         id: settingDialog

@@ -15,6 +15,7 @@ ScrollView {
     clip: true
 
     property alias postThreadUri: postThreadListModel.postThreadUri
+    property alias listView: rootListView
     property alias model: postThreadListModel
 
     signal requestedReply(string cid, string uri,
@@ -69,7 +70,7 @@ ScrollView {
             postAuthor.handle: model.handle
             postAuthor.indexedAt: model.indexedAt
             recordText.text: model.recordText
-            recordTextMouseArea.onClicked: requestedViewThread(model.uri)
+            postFrameMouseArea.onClicked: requestedViewThread(model.uri)
             postImagePreview.embedImages: model.embedImages
             postImagePreview.onRequestedViewImages: (index) => requestedViewImages(index, model.embedImagesFull)
 

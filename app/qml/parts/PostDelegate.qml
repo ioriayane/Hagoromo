@@ -11,12 +11,25 @@ Frame {
     rightPadding: 10
     bottomPadding: 2
 
+    background: MouseArea {
+        id: postFrameMouseArea
+        Rectangle {
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.leftMargin: 5
+            anchors.right: parent.right
+            anchors.rightMargin: 5
+            height: 1
+            color: Material.color(Material.Grey, Material.Shade600)
+        }
+    }
+
     property alias repostReactionAuthor: repostReactionAuthor
     property alias replyReactionAuthor: replyReactionAuthor
     property alias postAvatarImage: postAvatarImage
     property alias postAuthor: postAuthor
     property alias recordText: recordText
-    property alias recordTextMouseArea: recordTextMouseArea
+    property alias postFrameMouseArea: postFrameMouseArea
     property alias postImagePreview: postImagePreview
     property alias childFrame: childFrame
     property alias childAvatarImage: childAvatarImage
@@ -70,10 +83,6 @@ Frame {
                     lineHeight: 1.3
                     //                            font.family: "遊ゴシック"  // "メイリオ"  "BIZ UDPゴシック"
 
-                    MouseArea {
-                        id: recordTextMouseArea
-                        anchors.fill: parent
-                    }
                 }
                 ImagePreview {
                     id: postImagePreview

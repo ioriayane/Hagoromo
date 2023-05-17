@@ -14,6 +14,7 @@ ScrollView {
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     clip: true
 
+    property alias listView: rootListView
     property alias model: rootListView.model
 
     signal requestedReply(string cid, string uri,
@@ -29,6 +30,7 @@ ScrollView {
         id: rootListView
         anchors.fill: parent
         anchors.rightMargin: parent.ScrollBar.vertical.width
+        spacing: 5
 
         model: TimelineListModel {
             id: timelineListModel
@@ -71,7 +73,7 @@ ScrollView {
             postAuthor.handle: model.handle
             postAuthor.indexedAt: model.indexedAt
             recordText.text: model.recordText
-            recordTextMouseArea.onClicked: requestedViewThread(model.uri)
+            postFrameMouseArea.onClicked: requestedViewThread(model.uri)
             postImagePreview.embedImages: model.embedImages
             postImagePreview.onRequestedViewImages: (index) => requestedViewImages(index, model.embedImagesFull)
 

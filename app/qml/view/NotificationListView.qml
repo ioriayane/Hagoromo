@@ -13,6 +13,7 @@ ScrollView {
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     clip: true
 
+    property alias listView: rootListView
     property alias model: rootListView.model
 
     ListView {
@@ -51,6 +52,19 @@ ScrollView {
             leftPadding: 10
             rightPadding: 10
             bottomPadding: 10
+
+            background: MouseArea {
+                id: postFrameMouseArea
+                Rectangle {
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.leftMargin: 5
+                    anchors.right: parent.right
+                    anchors.rightMargin: 5
+                    height: 1
+                    color: Material.color(Material.Grey, Material.Shade600)
+                }
+            }
 
             states: [
                 State {

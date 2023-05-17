@@ -52,7 +52,7 @@ ColumnLayout {
                                        console.log("View Thread : " + uri)
                                        // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
                                        // これはPostThreadViewのプロパティにダイレクトに設定する
-                                       loader.push(postThreadComponent, { "postThreadUri": uri })
+                                       columnStackView.push(postThreadComponent, { "postThreadUri": uri })
                                    }
 
             onRequestedViewImages: (index, paths) => columnView.requestedViewImages(index, paths)
@@ -77,8 +77,8 @@ ColumnLayout {
             onRequestedViewImages: (index, paths) => columnView.requestedViewImages(index, paths)
 
             onBack: {
-                if(!loader.empty){
-                    loader.pop()
+                if(!columnStackView.empty){
+                    columnStackView.pop()
                 }
             }
         }
@@ -87,13 +87,13 @@ ColumnLayout {
     function load(){
         console.log("ColumnLayout:componentType=" + componentType)
         if(componentType === 0){
-            loader.push(timelineComponent)
+            columnStackView.push(timelineComponent)
             componentTypeLabel.text = qsTr("Home")
         }else if(componentType === 1){
-            loader.push(listNotificationComponent)
+            columnStackView.push(listNotificationComponent)
             componentTypeLabel.text = qsTr("Notifications")
         }else{
-            loader.push(timelineComponent)
+            columnStackView.push(timelineComponent)
             componentTypeLabel.text = qsTr("Unknown")
         }
         createRecord.setAccount(service, did, handle, email, accessJwt, refreshJwt)
@@ -101,9 +101,9 @@ ColumnLayout {
 
     function reflect(){
         // StackViewに積まれているViewに反映
-        for(var i=0; i<loader.depth; i++){
+        for(var i=0; i<columnStackView.depth; i++){
             console.log("Reflect : " + i + ", " + columnView.handle)
-            var item = loader.get(i)
+            var item = columnStackView.get(i)
             item.model.setAccount(columnView.service,
                                   columnView.did,
                                   columnView.handle,
@@ -121,6 +121,18 @@ ColumnLayout {
         topPadding: 3
         rightPadding: 10
         bottomPadding: 3
+
+        background: MouseArea {
+            id: profileFrameMouseArea
+            Rectangle {
+                anchors.fill: parent
+                border.width: 1
+                border.color: Material.color(Material.Grey, Material.Shade600)
+                color: "transparent"
+                radius: 2
+            }
+            onClicked: columnStackView.currentItem.listView.positionViewAtBeginning()
+        }
 
         RowLayout {
             anchors.fill: parent
@@ -164,7 +176,7 @@ ColumnLayout {
     }
 
     StackView {
-        id: loader
+        id: columnStackView
         Layout.fillWidth: true
         Layout.fillHeight: true
         clip: true
