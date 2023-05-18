@@ -32,9 +32,9 @@ class Defs2Struct:
 
         # QVariantに入れる構造体をQ_DECLARE_METATYPE()で定義する構造体
         # （単純にすべてではない）
-        self.metatype = ('AppBskyFeedPost::Record', 
-                         'AppBskyFeedLike::Record',
-                         'AppBskyFeedRepost::Record', )
+        self.metatype = ('AppBskyFeedPost::Main', 
+                         'AppBskyFeedLike::Main',
+                         'AppBskyFeedRepost::Main', )
 
     def to_struct_style(self, name: str) -> str:
         return name[0].upper() + name[1:]
@@ -331,7 +331,7 @@ class Defs2Struct:
             variant_key = obj.get('type', '')
             variant_obj = obj.get(variant_key)
             if variant_obj is not None:
-                self.output_type(namespace, variant_key, variant_obj)
+                self.output_type(namespace, type_name, variant_obj)
 
             # assert obj.get('type') == 'object', 'A type that is not a candidate for structure.'
 
@@ -391,7 +391,7 @@ class Defs2Struct:
                         (ref_namespace, ref_type_name) = self.split_ref(ref_path)
                         if len(ref_type_name) == 0:
                             ref_type_name = 'main'
-                            
+
                         if len(ref_type_name) == 0:
                             self.output_func_text[namespace].append('        // union %s %s' % (property_name, ref_path, ))
                         else:

@@ -43,7 +43,7 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
         return current.author.avatar;
     else if (role == RecordTextRole)
         return AtProtocolType::LexiconsTypeUnknown::fromQVariant<
-                       AtProtocolType::AppBskyFeedPost::Record>(current.record)
+                       AtProtocolType::AppBskyFeedPost::Main>(current.record)
                 .text;
     else if (role == IndexedAtRole)
         return formatDateTime(current.indexedAt);
@@ -67,22 +67,23 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
     } else {
         QString record_cid;
         if (current.reason == "like") {
-            AtProtocolType::AppBskyFeedLike::Record like =
+            AtProtocolType::AppBskyFeedLike::Main like =
                     AtProtocolType::LexiconsTypeUnknown::fromQVariant<
-                            AtProtocolType::AppBskyFeedLike::Record>(current.record);
+                            AtProtocolType::AppBskyFeedLike::Main>(current.record);
             record_cid = like.subject.cid;
         } else if (current.reason == "repost") {
-            AtProtocolType::AppBskyFeedRepost::Record repost =
+            AtProtocolType::AppBskyFeedRepost::Main repost =
                     AtProtocolType::LexiconsTypeUnknown::fromQVariant<
-                            AtProtocolType::AppBskyFeedRepost::Record>(current.record);
+                            AtProtocolType::AppBskyFeedRepost::Main>(current.record);
             record_cid = repost.subject.cid;
         } else if (current.reason == "follow") {
         } else if (current.reason == "mention") {
         } else if (current.reason == "reply") {
         } else if (current.reason == "quote") {
-            //            AtProtocolType::AppBskyFeedPost::Record post =
-            //                    AtProtocolType::LexiconsTypeUnknown::fromQVariant<
-            //                            AtProtocolType::AppBskyFeedPost::Record>(current.record);
+            AtProtocolType::AppBskyFeedPost::Main post =
+                    AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                            AtProtocolType::AppBskyFeedPost::Main>(current.record);
+
             //            record_cid = post.createdAt
         }
         if (!record_cid.isEmpty()) {
@@ -101,7 +102,7 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
                     return formatDateTime(m_postHash[record_cid].indexedAt);
                 else if (role == RecordRecordTextRole)
                     return AtProtocolType::LexiconsTypeUnknown::fromQVariant<
-                                   AtProtocolType::AppBskyFeedPost::Record>(
+                                   AtProtocolType::AppBskyFeedPost::Main>(
                                    m_postHash[record_cid].record)
                             .text;
             } else {
@@ -178,9 +179,9 @@ void NotificationListModel::getLatest()
                 }
 
                 if (item->reason == "like") {
-                    AtProtocolType::AppBskyFeedLike::Record like =
+                    AtProtocolType::AppBskyFeedLike::Main like =
                             AtProtocolType::LexiconsTypeUnknown::fromQVariant<
-                                    AtProtocolType::AppBskyFeedLike::Record>(item->record);
+                                    AtProtocolType::AppBskyFeedLike::Main>(item->record);
                     if (!like.subject.cid.isEmpty() && !m_cueGetPost.contains(like.subject.uri)) {
                         m_cueGetPost.append(like.subject.uri);
                     }
@@ -274,9 +275,9 @@ void NotificationListModel::getPosts()
                     continue;
 
                 if (m_notificationHash[m_cidList.at(i)].reason == "like") {
-                    AtProtocolType::AppBskyFeedLike::Record like =
+                    AtProtocolType::AppBskyFeedLike::Main like =
                             AtProtocolType::LexiconsTypeUnknown::fromQVariant<
-                                    AtProtocolType::AppBskyFeedLike::Record>(
+                                    AtProtocolType::AppBskyFeedLike::Main>(
                                     m_notificationHash[m_cidList.at(i)].record);
                     if (new_cid.contains(like.subject.cid)) {
                         // データを取得できた

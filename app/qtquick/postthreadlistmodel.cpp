@@ -36,7 +36,7 @@ QVariant PostThreadListModel::item(int row, PostThreadListModelRoles role) const
     else if (role == AvatarRole)
         return current.author.avatar;
     else if (role == RecordTextRole)
-        return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Record>(current.record).text;
+        return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(current.record).text;
     else if (role == ReplyCountRole)
         return current.replyCount;
     else if (role == RepostCountRole)
@@ -66,7 +66,7 @@ QVariant PostThreadListModel::item(int row, PostThreadListModelRoles role) const
     else if (role == QuoteRecordAvatarRole)
         return current.embed_AppBskyEmbedRecord_View.record_ViewRecord.author.avatar;
     else if (role == QuoteRecordRecordTextRole)
-        return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Record>(
+        return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(
                        current.embed_AppBskyEmbedRecord_View.record_ViewRecord.value)
                 .text;
     else if (role == QuoteRecordIndexedAtRole)

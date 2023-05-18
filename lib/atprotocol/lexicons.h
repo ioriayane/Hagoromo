@@ -77,7 +77,7 @@ struct ProfileViewDetailed
 
 // app.bsky.actor.profile
 namespace AppBskyActorProfile {
-struct Record
+struct Main
 {
     QString displayName; //
     QString description; //
@@ -347,7 +347,7 @@ struct Like
 
 // app.bsky.feed.like
 namespace AppBskyFeedLike {
-struct Record
+struct Main
 {
     ComAtprotoRepoStrongRef::Main subject;
     QString createdAt; // datetime
@@ -387,7 +387,7 @@ struct Main
 
 // app.bsky.feed.post
 namespace AppBskyFeedPost {
-enum class RecordEmbedType : int {
+enum class MainEmbedType : int {
     none,
     embed_AppBskyEmbedImages_Main,
     embed_AppBskyEmbedExternal_Main,
@@ -410,14 +410,14 @@ struct ReplyRef
     ComAtprotoRepoStrongRef::Main root;
     ComAtprotoRepoStrongRef::Main parent;
 };
-struct Record
+struct Main
 {
     QString text; //
     QList<Entity> entities;
     QList<AppBskyRichtextFacet::Main> facets;
     ReplyRef reply;
     // union start : embed
-    RecordEmbedType embed_type = RecordEmbedType::none;
+    MainEmbedType embed_type = MainEmbedType::none;
     AppBskyEmbedImages::Main embed_AppBskyEmbedImages_Main;
     AppBskyEmbedExternal::Main embed_AppBskyEmbedExternal_Main;
     AppBskyEmbedRecord::Main embed_AppBskyEmbedRecord_Main;
@@ -429,7 +429,7 @@ struct Record
 
 // app.bsky.feed.repost
 namespace AppBskyFeedRepost {
-struct Record
+struct Main
 {
     ComAtprotoRepoStrongRef::Main subject;
     QString createdAt; // datetime
@@ -438,7 +438,7 @@ struct Record
 
 // app.bsky.graph.block
 namespace AppBskyGraphBlock {
-struct Record
+struct Main
 {
     QString subject; // did
     QString createdAt; // datetime
@@ -447,7 +447,7 @@ struct Record
 
 // app.bsky.graph.follow
 namespace AppBskyGraphFollow {
-struct Record
+struct Main
 {
     QString subject; // did
     QString createdAt; // datetime
@@ -800,8 +800,8 @@ struct Info
 }
 
 }
-Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedPost::Record)
-Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedLike::Record)
-Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedRepost::Record)
+Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedPost::Main)
+Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedLike::Main)
+Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedRepost::Main)
 
 #endif // LEXICONS_H

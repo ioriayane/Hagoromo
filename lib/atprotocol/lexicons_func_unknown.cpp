@@ -15,23 +15,23 @@ void copyUnknown(const QJsonObject &src, QVariant &dest)
     QString type = src.value("$type").toString();
     if (type == QStringLiteral("app.bsky.feed.post")) {
         // typeに#以降がないのでmainの定義で参照
-        AppBskyFeedPost::Record record;
+        AppBskyFeedPost::Main record;
         record.text = src.value("text").toString();
         record.createdAt = src.value("createdAt").toString();
-        dest.setValue<AppBskyFeedPost::Record>(record);
+        dest.setValue<AppBskyFeedPost::Main>(record);
 
     } else if (type == QStringLiteral("app.bsky.feed.like")) {
-        AppBskyFeedLike::Record record;
+        AppBskyFeedLike::Main record;
         record.subject.cid = src.value("subject").toObject().value("cid").toString();
         record.subject.uri = src.value("subject").toObject().value("uri").toString();
         record.createdAt = src.value("createdAt").toString();
-        dest.setValue<AppBskyFeedLike::Record>(record);
+        dest.setValue<AppBskyFeedLike::Main>(record);
 
     } else if (type == QStringLiteral("app.bsky.feed.repost")) {
-        AppBskyFeedRepost::Record record;
+        AppBskyFeedRepost::Main record;
         ComAtprotoRepoStrongRef::copyMain(src.value("subject").toObject(), record.subject);
         record.createdAt = src.value("createdAt").toString();
-        dest.setValue<AppBskyFeedRepost::Record>(record);
+        dest.setValue<AppBskyFeedRepost::Main>(record);
     }
 }
 

@@ -86,7 +86,7 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     else if (role == AvatarRole)
         return current.post.author.avatar;
     else if (role == RecordTextRole)
-        return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Record>(current.post.record).text;
+        return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(current.post.record).text;
     else if (role == ReplyCountRole)
         return current.post.replyCount;
     else if (role == RepostCountRole)
@@ -116,7 +116,7 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     else if (role == QuoteRecordAvatarRole)
         return current.post.embed_AppBskyEmbedRecord_View.record_ViewRecord.author.avatar;
     else if (role == QuoteRecordRecordTextRole)
-        return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Record>(
+        return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(
                        current.post.embed_AppBskyEmbedRecord_View.record_ViewRecord.value)
                 .text;
     else if (role == QuoteRecordIndexedAtRole)
