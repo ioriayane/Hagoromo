@@ -55,6 +55,8 @@ IMAGE_FILES += \
     qml/images/add_user.png \
     qml/images/arrow_back.png \
     qml/images/arrow_forward.png \
+    qml/images/arrow_left_double.png \
+    qml/images/arrow_left_single.png \
     qml/images/check.png \
     qml/images/close.png \
     qml/images/column.png \

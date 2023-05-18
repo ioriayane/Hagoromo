@@ -80,6 +80,12 @@ ColumnLayout {
                               columnView.requestedQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
             onRequestedLike: (cid, uri) => createRecord.like(cid, uri)
 
+            onRequestedViewThread: (uri) => {
+                                       console.log("View Thread : " + uri)
+                                       // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
+                                       // これはPostThreadViewのプロパティにダイレクトに設定する
+                                       columnStackView.push(postThreadComponent, { "postThreadUri": uri })
+                                   }
             onRequestedViewImages: (index, paths) => columnView.requestedViewImages(index, paths)
 
             onBack: {
@@ -123,17 +129,39 @@ ColumnLayout {
         id: profileFrame
         Layout.fillWidth: true
         Layout.topMargin: 1
-        leftPadding: 10
-        topPadding: 3
+        leftPadding: 0
+        topPadding: 0
         rightPadding: 10
-        bottomPadding: 3
+        bottomPadding: 0
 
         onClicked: (mouse) => columnStackView.currentItem.listView.positionViewAtBeginning()
 
+
         RowLayout {
             anchors.fill: parent
+            spacing: 0
+            IconButton {
+                Layout.preferredWidth: 30
+                Layout.fillHeight: true
+                visible: columnStackView.depth > 2
+                flat: true
+                iconSource: "../images/arrow_left_double.png"
+                onClicked: columnStackView.pop(null)
+            }
+            IconButton {
+                Layout.preferredWidth: 30
+                Layout.fillHeight: true
+                visible: columnStackView.depth > 1
+                flat: true
+                iconSource: "../images/arrow_left_single.png"
+                onClicked: columnStackView.pop()
+            }
+
             ColumnLayout {
                 spacing: 0
+                Layout.leftMargin: 10
+                Layout.topMargin: 5
+                Layout.bottomMargin: 5
                 Label {
                     id: componentTypeLabel
                 }
@@ -179,6 +207,8 @@ ColumnLayout {
 
         onCurrentItemChanged: {
             if(currentItem.model === undefined)
+                return
+            if(currentItem.model.rowCount() > 0)
                 return
             currentItem.model.setAccount(columnView.service,
                                          columnView.did,

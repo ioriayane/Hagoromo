@@ -55,6 +55,10 @@ QVariant PostThreadListModel::item(int row, PostThreadListModelRoles role) const
                 == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecord_View
                 && current.embed_AppBskyEmbedRecord_View.record_type
                 == AppBskyEmbedRecord::ViewRecordType::record_ViewRecord;
+    else if (role == QuoteRecordCidRole)
+        return current.embed_AppBskyEmbedRecord_View.record_ViewRecord.cid;
+    else if (role == QuoteRecordUriRole)
+        return current.embed_AppBskyEmbedRecord_View.record_ViewRecord.uri;
     else if (role == QuoteRecordDisplayNameRole)
         return current.embed_AppBskyEmbedRecord_View.record_ViewRecord.author.displayName;
     else if (role == QuoteRecordHandleRole)
@@ -133,6 +137,8 @@ QHash<int, QByteArray> PostThreadListModel::roleNames() const
     roles[EmbedImagesFullRole] = "embedImagesFull";
 
     roles[HasQuoteRecordRole] = "hasQuoteRecord";
+    roles[QuoteRecordCidRole] = "quoteRecordCid";
+    roles[QuoteRecordUriRole] = "quoteRecordUri";
     roles[QuoteRecordDisplayNameRole] = "quoteRecordDisplayName";
     roles[QuoteRecordHandleRole] = "quoteRecordHandle";
     roles[QuoteRecordAvatarRole] = "quoteRecordAvatar";

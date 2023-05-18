@@ -39,12 +39,9 @@ ScrollView {
             autoLoading: false
         }
 
-        header: ItemDelegate {
+        header: Item {
             width: rootListView.width
             height: 24
-            display: AbstractButton.IconOnly
-            icon.source: postThreadListModel.running ? "" : "../images/arrow_back.png"
-            onClicked: postThreadView.back()
 
             BusyIndicator {
                 anchors.centerIn: parent
@@ -57,7 +54,8 @@ ScrollView {
         delegate: PostDelegate {
             width: rootListView.width
 
-            onClicked: requestedViewThread(model.uri)
+            //自分から自分へは移動しない
+            //onClicked: (mouse) => requestedViewThread(model.uri)
 
             repostReactionAuthor.visible: model.isRepostedBy
             repostReactionAuthor.displayName: model.repostedByDisplayName
@@ -75,6 +73,11 @@ ScrollView {
             postImagePreview.onRequestedViewImages: (index) => requestedViewImages(index, model.embedImagesFull)
 
             childFrame.visible: model.hasQuoteRecord
+            childFrame.onClicked: (mouse) => {
+                                      if(model.quoteRecordUri.length > 0){
+                                          requestedViewThread(model.quoteRecordUri)
+                                      }
+                                  }
             childAvatarImage.source: model.quoteRecordAvatar
             childAuthor.displayName: model.quoteRecordDisplayName
             childAuthor.handle: model.quoteRecordHandle

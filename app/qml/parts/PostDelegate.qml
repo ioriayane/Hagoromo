@@ -82,7 +82,7 @@ ClickableFrame {
                     Layout.topMargin: 5
                 }
 
-                Frame {
+                ClickableFrame {
                     id: childFrame
                     Layout.fillWidth: true
                     Layout.topMargin: 5

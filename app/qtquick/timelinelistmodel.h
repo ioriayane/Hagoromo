@@ -32,6 +32,8 @@ public:
         EmbedImagesFullRole,
 
         HasQuoteRecordRole,
+        QuoteRecordCidRole,
+        QuoteRecordUriRole,
         QuoteRecordDisplayNameRole,
         QuoteRecordHandleRole,
         QuoteRecordAvatarRole,

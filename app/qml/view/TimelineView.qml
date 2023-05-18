@@ -60,7 +60,7 @@ ScrollView {
         delegate: PostDelegate {
             width: rootListView.width
 
-            onClicked: requestedViewThread(model.uri)
+            onClicked: (mouse) => requestedViewThread(model.uri)
 
             repostReactionAuthor.visible: model.isRepostedBy
             repostReactionAuthor.displayName: model.repostedByDisplayName
@@ -78,6 +78,11 @@ ScrollView {
             postImagePreview.onRequestedViewImages: (index) => requestedViewImages(index, model.embedImagesFull)
 
             childFrame.visible: model.hasQuoteRecord
+            childFrame.onClicked: (mouse) => {
+                                      if(model.quoteRecordUri.length > 0){
+                                          requestedViewThread(model.quoteRecordUri)
+                                      }
+                                  }
             childAvatarImage.source: model.quoteRecordAvatar
             childAuthor.displayName: model.quoteRecordDisplayName
             childAuthor.handle: model.quoteRecordHandle
