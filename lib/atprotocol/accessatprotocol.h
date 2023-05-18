@@ -28,6 +28,10 @@ struct AccountData
     QString accessJwt;
     QString refreshJwt;
 
+    QString displayName;
+    QString description;
+    QString avatar;
+
     AccountStatus status = AccountStatus::Unknown;
 };
 

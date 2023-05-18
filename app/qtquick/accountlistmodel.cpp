@@ -2,6 +2,7 @@
 #include "common.h"
 #include "atprotocol/com/atproto/server/comatprotoservercreatesession.h"
 #include "atprotocol/com/atproto/server/comatprotoserverrefreshsession.h"
+#include "atprotocol/app/bsky/actor/appbskyactorgetprofile.h"
 
 #include <QCryptographicHash>
 #include <QByteArray>
@@ -16,6 +17,7 @@
 
 using AtProtocolInterface::AccountData;
 using AtProtocolInterface::AccountStatus;
+using AtProtocolInterface::AppBskyActorGetProfile;
 using AtProtocolInterface::ComAtprotoServerCreateSession;
 using AtProtocolInterface::ComAtprotoServerRefreshSession;
 
@@ -76,6 +78,12 @@ QVariant AccountListModel::item(int row, AccountListModelRoles role) const
         return m_accountList.at(row).accessJwt;
     else if (role == RefreshJwtRole)
         return m_accountList.at(row).refreshJwt;
+    else if (role == DisplayNameRole)
+        return m_accountList.at(row).displayName;
+    else if (role == DescriptionRole)
+        return m_accountList.at(row).description;
+    else if (role == AvatarRole)
+        return m_accountList.at(row).avatar;
     else if (role == StatusRole)
         return static_cast<int>(m_accountList.at(row).status);
 
@@ -105,6 +113,13 @@ void AccountListModel::update(int row, AccountListModelRoles role, const QVarian
         m_accountList[row].accessJwt = value.toString();
     else if (role == RefreshJwtRole)
         m_accountList[row].refreshJwt = value.toString();
+
+    else if (role == DisplayNameRole)
+        m_accountList[row].displayName = value.toString();
+    else if (role == DescriptionRole)
+        m_accountList[row].description = value.toString();
+    else if (role == AvatarRole)
+        m_accountList[row].avatar = value.toString();
 
     emit dataChanged(index(row), index(row));
 }
@@ -249,6 +264,9 @@ QHash<int, QByteArray> AccountListModel::roleNames() const
     roles[EmailRole] = "email";
     roles[AccessJwtRole] = "accessJwt";
     roles[RefreshJwtRole] = "refreshJwt";
+    roles[DisplayNameRole] = "displayName";
+    roles[DescriptionRole] = "description";
+    roles[AvatarRole] = "avatar";
     roles[StatusRole] = "status";
 
     return roles;
@@ -326,6 +344,9 @@ void AccountListModel::updateSession(int row, const QString &service, const QStr
                       session->email(), session->accessJwt(), session->refreshJwt(), success);
         if (success) {
             emit appendedAccount(row);
+
+            // 詳細を取得
+            getProfile(row);
         }
         bool all_finished = true;
         for (const AccountData &item : qAsConst(m_accountList)) {
@@ -366,4 +387,26 @@ void AccountListModel::refreshSession(int row)
         session->deleteLater();
     });
     session->refreshSession();
+}
+
+void AccountListModel::getProfile(int row)
+{
+    if (row < 0 || row >= m_accountList.count())
+        return;
+
+    AppBskyActorGetProfile *profile = new AppBskyActorGetProfile();
+    profile->setAccount(m_accountList.at(row));
+    connect(profile, &AppBskyActorGetProfile::finished, [=](bool success) {
+        if (success) {
+            AtProtocolType::AppBskyActorDefs::ProfileViewDetailed detail =
+                    profile->profileViewDetailed();
+            qDebug() << "Update profile detailed" << detail.displayName << detail.description;
+            m_accountList[row].displayName = detail.displayName;
+            m_accountList[row].description = detail.description;
+            m_accountList[row].avatar = detail.avatar;
+            emit dataChanged(index(row), index(row));
+        }
+        profile->deleteLater();
+    });
+    profile->getProfile(m_accountList.at(row).did);
 }

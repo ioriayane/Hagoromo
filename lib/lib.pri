@@ -3,6 +3,7 @@ INCLUDEPATH += $$PWD
 
 SOURCES += \
     $$PWD/atprotocol/accessatprotocol.cpp \
+    $$PWD/atprotocol/app/bsky/actor/appbskyactorgetprofile.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetposts.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetpostthread.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgettimeline.cpp \
@@ -15,6 +16,7 @@ SOURCES += \
 
 HEADERS += \
     $$PWD/atprotocol/accessatprotocol.h \
+    $$PWD/atprotocol/app/bsky/actor/appbskyactorgetprofile.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetposts.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetpostthread.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgettimeline.h \

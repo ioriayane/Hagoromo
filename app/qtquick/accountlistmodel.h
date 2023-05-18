@@ -25,6 +25,9 @@ public:
         EmailRole,
         AccessJwtRole,
         RefreshJwtRole,
+        DisplayNameRole,
+        DescriptionRole,
+        AvatarRole,
         StatusRole,
     };
     Q_ENUM(AccountListModelRoles)
@@ -72,6 +75,7 @@ private:
     void updateSession(int row, const QString &service, const QString &identifier,
                        const QString &password);
     void refreshSession(int row);
+    void getProfile(int row);
 };
 
 #endif // ACCOUNTLISTMODEL_H

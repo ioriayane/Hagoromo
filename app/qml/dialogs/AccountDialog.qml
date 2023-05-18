@@ -6,6 +6,7 @@ import QtGraphicalEffects 1.15
 
 import tech.relog.hagoromo.accountlistmodel 1.0
 import "../controls"
+import "../parts"
 
 Dialog {
     id: accountDialog
@@ -57,11 +58,24 @@ Dialog {
 
             delegate: ItemDelegate {
                 width: accountList.width
-                padding: 5
+                onClicked: {
+                    var i = model.index
+                    login.serviceText = accountList.model.item(i, AccountListModel.ServiceRole)
+                    login.idText = accountList.model.item(i, AccountListModel.IdentifierRole)
+                    login.passwordText = accountList.model.item(i, AccountListModel.PasswordRole)
+                    login.open()
+                }
+
                 RowLayout {
                     anchors.fill: parent
+                    anchors.margins: 5
+                    spacing: 5
+                    AvatarImage {
+                        Layout.preferredWidth: 24
+                        Layout.preferredHeight: 24
+                        source: model.avatar
+                    }
                     Label {
-                        Layout.leftMargin: 5
                         text: model.handle
                         elide: Text.ElideRight
                     }
@@ -70,23 +84,16 @@ Dialog {
                         Layout.preferredHeight: 1
                     }
                     IconButton {
+                        // プロフィールの編集
                         Layout.preferredWidth: 36
                         Layout.preferredHeight: 26
                         display: AbstractButton.IconOnly
                         iconSource: "../images/edit.png"
                         iconSize: 18
-                        onClicked: {
-                            var i = model.index
-                            login.serviceText = accountList.model.item(i, AccountListModel.ServiceRole)
-                            login.idText = accountList.model.item(i, AccountListModel.IdentifierRole)
-                            login.passwordText = accountList.model.item(i, AccountListModel.PasswordRole)
-                            login.open()
-                        }
                     }
                     IconButton {
                         Layout.preferredWidth: 36
                         Layout.preferredHeight: 26
-                        Layout.rightMargin: 5
                         display: AbstractButton.IconOnly
                         iconSource: "../images/delete.png"
                         iconSize: 18
