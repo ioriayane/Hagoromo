@@ -1,5 +1,5 @@
 #include "timelinelistmodel.h"
-#include "../atprotocol/lexicons_func_unknown.h"
+#include "atprotocol/lexicons_func_unknown.h"
 
 #include <QDebug>
 

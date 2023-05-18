@@ -1,7 +1,7 @@
 #ifndef POSTTHREADLISTMODEL_H
 #define POSTTHREADLISTMODEL_H
 
-#include "../atprotocol/lexicons.h"
+#include "atprotocol/lexicons.h"
 #include "atpabstractlistmodel.h"
 #include <QObject>
 

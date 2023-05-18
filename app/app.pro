@@ -3,16 +3,6 @@ QT += quick network quickcontrols2
 TARGET = Hagoromo
 
 SOURCES += \
-    atprotocol/accessatprotocol.cpp \
-    atprotocol/appbskyfeedgetposts.cpp \
-    atprotocol/appbskyfeedgetpostthread.cpp \
-    atprotocol/appbskyfeedgettimeline.cpp \
-    atprotocol/appbskynotificationlistnotifications.cpp \
-    atprotocol/comatprotorepocreaterecord.cpp \
-    atprotocol/comatprotoservercreatesession.cpp \
-    atprotocol/comatprotoserverrefreshsession.cpp \
-    atprotocol/lexicons_func.cpp \
-    atprotocol/lexicons_func_unknown.cpp \
     main.cpp \
     qtquick/accountlistmodel.cpp \
     qtquick/atpabstractlistmodel.cpp \
@@ -24,17 +14,6 @@ SOURCES += \
     qtquick/timelinelistmodel.cpp
 
 HEADERS += \
-    atprotocol/accessatprotocol.h \
-    atprotocol/appbskyfeedgetposts.h \
-    atprotocol/appbskyfeedgetpostthread.h \
-    atprotocol/appbskyfeedgettimeline.h \
-    atprotocol/appbskynotificationlistnotifications.h \
-    atprotocol/comatprotorepocreaterecord.h \
-    atprotocol/comatprotoservercreatesession.h \
-    atprotocol/comatprotoserverrefreshsession.h \
-    atprotocol/lexicons.h \
-    atprotocol/lexicons_func.h \
-    atprotocol/lexicons_func_unknown.h \
     qtquick/accountlistmodel.h \
     qtquick/atpabstractlistmodel.h \
     qtquick/columnlistmodel.h \
@@ -91,8 +70,6 @@ IMAGE_FILES += \
     qml/images/settings.png
 
 
-#INCLUDEPATH += \
-#    atprotocol/
 
 resources.files = $$QML_FILES $$IMAGE_FILES
 resources.prefix = /$${TARGET}
@@ -104,6 +81,7 @@ QML_IMPORT_PATH =
 # Additional import path used to resolve QML modules just for Qt Quick Designer
 QML_DESIGNER_IMPORT_PATH =
 
+include(../lib/lib.pri)
 
 win32:{
     bin_dir=$$dirname(QMAKE_QMAKE)

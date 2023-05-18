@@ -1,8 +1,8 @@
 #ifndef CREATERECORD_H
 #define CREATERECORD_H
 
-#include "../atprotocol/lexicons.h"
-#include "../atprotocol/accessatprotocol.h"
+#include "atprotocol/lexicons.h"
+#include "atprotocol/accessatprotocol.h"
 #include <QObject>
 
 class CreateRecord : public QObject

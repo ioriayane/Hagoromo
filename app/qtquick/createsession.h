@@ -1,7 +1,7 @@
 #ifndef CREATESESSION_H
 #define CREATESESSION_H
 
-#include "../atprotocol/comatprotoservercreatesession.h"
+#include "atprotocol/comatprotoservercreatesession.h"
 #include <QObject>
 
 class CreateSession : public QObject

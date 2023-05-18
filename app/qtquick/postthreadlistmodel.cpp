@@ -1,6 +1,6 @@
 #include "postthreadlistmodel.h"
-#include "../atprotocol/lexicons_func_unknown.h"
-#include "../atprotocol/appbskyfeedgetpostthread.h"
+#include "atprotocol/lexicons_func_unknown.h"
+#include "atprotocol/appbskyfeedgetpostthread.h"
 
 using AtProtocolInterface::AppBskyFeedGetPostThread;
 using namespace AtProtocolType;

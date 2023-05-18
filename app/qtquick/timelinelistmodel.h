@@ -1,8 +1,8 @@
 #ifndef TIMELINELISTMODEL_H
 #define TIMELINELISTMODEL_H
 
-#include "../atprotocol/lexicons.h"
-#include "../atprotocol/appbskyfeedgettimeline.h"
+#include "atprotocol/lexicons.h"
+#include "atprotocol/appbskyfeedgettimeline.h"
 #include "atpabstractlistmodel.h"
 
 #include <QAbstractListModel>

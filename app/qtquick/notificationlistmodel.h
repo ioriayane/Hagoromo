@@ -1,7 +1,7 @@
 #ifndef NOTIFICATIONLISTMODEL_H
 #define NOTIFICATIONLISTMODEL_H
 
-#include "../atprotocol/lexicons.h"
+#include "atprotocol/lexicons.h"
 #include "atpabstractlistmodel.h"
 
 #include <QAbstractListModel>

@@ -1,7 +1,7 @@
 #ifndef ACCOUNTLISTMODEL_H
 #define ACCOUNTLISTMODEL_H
 
-#include "../atprotocol/accessatprotocol.h"
+#include "atprotocol/accessatprotocol.h"
 
 #include <QAbstractListModel>
 #include <QObject>
