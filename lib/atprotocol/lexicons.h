@@ -145,6 +145,11 @@ struct Main
 
 // app.bsky.embed.recordWithMedia
 namespace AppBskyEmbedRecordWithMedia {
+enum class MainMediaType : int {
+    none,
+    media_AppBskyEmbedImages_Main,
+    media_AppBskyEmbedExternal_Main,
+};
 enum class ViewMediaType : int {
     none,
     media_AppBskyEmbedImages_View,
@@ -165,8 +170,9 @@ struct Main
 {
     AppBskyEmbedRecord::Main *record = nullptr;
     // union start : media
-    //     union=app.bsky.embed.images
-    //     union=app.bsky.embed.external
+    MainMediaType media_type = MainMediaType::none;
+    AppBskyEmbedImages::Main media_AppBskyEmbedImages_Main;
+    AppBskyEmbedExternal::Main media_AppBskyEmbedExternal_Main;
     // union end : media
 };
 }
@@ -381,6 +387,13 @@ struct Main
 
 // app.bsky.feed.post
 namespace AppBskyFeedPost {
+enum class RecordEmbedType : int {
+    none,
+    embed_AppBskyEmbedImages_Main,
+    embed_AppBskyEmbedExternal_Main,
+    embed_AppBskyEmbedRecord_Main,
+    embed_AppBskyEmbedRecordWithMedia_Main,
+};
 struct TextSlice
 {
     int start = 0;
@@ -404,10 +417,11 @@ struct Record
     QList<AppBskyRichtextFacet::Main> facets;
     ReplyRef reply;
     // union start : embed
-    //     union=app.bsky.embed.images
-    //     union=app.bsky.embed.external
-    //     union=app.bsky.embed.record
-    //     union=app.bsky.embed.recordWithMedia
+    RecordEmbedType embed_type = RecordEmbedType::none;
+    AppBskyEmbedImages::Main embed_AppBskyEmbedImages_Main;
+    AppBskyEmbedExternal::Main embed_AppBskyEmbedExternal_Main;
+    AppBskyEmbedRecord::Main embed_AppBskyEmbedRecord_Main;
+    AppBskyEmbedRecordWithMedia::Main embed_AppBskyEmbedRecordWithMedia_Main;
     // union end : embed
     QString createdAt; // datetime
 };
@@ -493,6 +507,7 @@ enum class ActionViewDetailSubjectType : int {
 enum class ReportViewSubjectType : int {
     none,
     subject_RepoRef,
+    subject_ComAtprotoRepoStrongRef_Main,
 };
 enum class BlobViewDetailsType : int {
     none,
@@ -502,6 +517,7 @@ enum class BlobViewDetailsType : int {
 enum class ActionViewSubjectType : int {
     none,
     subject_RepoRef,
+    subject_ComAtprotoRepoStrongRef_Main,
 };
 typedef QString ActionType;
 struct RepoRef
@@ -521,7 +537,7 @@ struct ActionView
     // union start : subject
     ActionViewSubjectType subject_type = ActionViewSubjectType::none;
     RepoRef subject_RepoRef;
-    //     union=com.atproto.repo.strongRef
+    ComAtprotoRepoStrongRef::Main subject_ComAtprotoRepoStrongRef_Main;
     // union end : subject
     QString reason; //
     QString createdBy; // did
@@ -587,7 +603,7 @@ struct ReportView
     // union start : subject
     ReportViewSubjectType subject_type = ReportViewSubjectType::none;
     RepoRef subject_RepoRef;
-    //     union=com.atproto.repo.strongRef
+    ComAtprotoRepoStrongRef::Main subject_ComAtprotoRepoStrongRef_Main;
     // union end : subject
     QString reportedBy; // did
     QString createdAt; // datetime

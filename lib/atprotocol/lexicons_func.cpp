@@ -248,8 +248,18 @@ void copyMain(const QJsonObject &src, AppBskyEmbedRecordWithMedia::Main &dest)
     if (!src.isEmpty()) {
         // ref record app.bsky.embed.record
         QString media_type = src.value("media").toObject().value("$type").toString();
-        // union media app.bsky.embed.images
-        // union media app.bsky.embed.external
+        if (media_type == QStringLiteral("app.bsky.embed.images")) {
+            dest.media_type =
+                    AppBskyEmbedRecordWithMedia::MainMediaType::media_AppBskyEmbedImages_Main;
+            AppBskyEmbedImages::copyMain(src.value("media").toObject(),
+                                         dest.media_AppBskyEmbedImages_Main);
+        }
+        if (media_type == QStringLiteral("app.bsky.embed.external")) {
+            dest.media_type =
+                    AppBskyEmbedRecordWithMedia::MainMediaType::media_AppBskyEmbedExternal_Main;
+            AppBskyEmbedExternal::copyMain(src.value("media").toObject(),
+                                           dest.media_AppBskyEmbedExternal_Main);
+        }
     }
 }
 }
@@ -485,7 +495,12 @@ void copyActionView(const QJsonObject &src, ComAtprotoAdminDefs::ActionView &des
             dest.subject_type = ComAtprotoAdminDefs::ActionViewSubjectType::subject_RepoRef;
             ComAtprotoAdminDefs::copyRepoRef(src.value("subject").toObject(), dest.subject_RepoRef);
         }
-        // union subject com.atproto.repo.strongRef
+        if (subject_type == QStringLiteral("com.atproto.repo.strongRef")) {
+            dest.subject_type = ComAtprotoAdminDefs::ActionViewSubjectType::
+                    subject_ComAtprotoRepoStrongRef_Main;
+            ComAtprotoRepoStrongRef::copyMain(src.value("subject").toObject(),
+                                              dest.subject_ComAtprotoRepoStrongRef_Main);
+        }
         dest.reason = src.value("reason").toString();
         dest.createdBy = src.value("createdBy").toString();
         dest.createdAt = src.value("createdAt").toString();
@@ -574,7 +589,12 @@ void copyReportView(const QJsonObject &src, ComAtprotoAdminDefs::ReportView &des
             dest.subject_type = ComAtprotoAdminDefs::ReportViewSubjectType::subject_RepoRef;
             ComAtprotoAdminDefs::copyRepoRef(src.value("subject").toObject(), dest.subject_RepoRef);
         }
-        // union subject com.atproto.repo.strongRef
+        if (subject_type == QStringLiteral("com.atproto.repo.strongRef")) {
+            dest.subject_type = ComAtprotoAdminDefs::ReportViewSubjectType::
+                    subject_ComAtprotoRepoStrongRef_Main;
+            ComAtprotoRepoStrongRef::copyMain(src.value("subject").toObject(),
+                                              dest.subject_ComAtprotoRepoStrongRef_Main);
+        }
         dest.reportedBy = src.value("reportedBy").toString();
         dest.createdAt = src.value("createdAt").toString();
     }

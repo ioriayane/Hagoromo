@@ -13,7 +13,7 @@
             "justMyCode": true,
             "args": [
                 "../atproto/lexicons",
-                "./app/atprotocol"
+                "./lib/atprotocol"
             ]
         }
     ]
