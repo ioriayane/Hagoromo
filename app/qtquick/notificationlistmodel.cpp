@@ -137,6 +137,18 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
                         .text;
             else
                 return QString();
+        } else if (role == RecordImagesRole) {
+            if (m_postHash.contains(record_cid))
+                return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
+                        m_postHash[record_cid], true);
+            else
+                return QString();
+        } else if (role == RecordImagesFullRole) {
+            if (m_postHash.contains(record_cid))
+                return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
+                        m_postHash[record_cid], false);
+            else
+                return QString();
         }
     }
 
@@ -262,6 +274,8 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[RecordAvatarRole] = "recordAvatar";
     roles[RecordIndexedAtRole] = "recordIndexedAt";
     roles[RecordRecordTextRole] = "recordRecordText";
+    roles[RecordImagesRole] = "recordImages";
+    roles[RecordImagesFullRole] = "recordImagesFull";
 
     return roles;
 }

@@ -30,6 +30,7 @@ ClickableFrame {
     property alias postAvatarImage: postAvatarImage
     property alias postAuthor: postAuthor
     property alias recordFrame: recordFrame
+    property alias recordImagePreview: recordImagePreview
     property alias postControls: postControls
 
     states: [
@@ -183,6 +184,11 @@ ClickableFrame {
                         wrapMode: Text.WrapAnywhere
                         font.pointSize: 10
                         lineHeight: 1.3
+                    }
+                    ImagePreview {
+                        id: recordImagePreview
+                        layoutWidth: recordText.width
+                        Layout.topMargin: 5
                     }
                 }
             }

@@ -68,6 +68,7 @@ ColumnLayout {
                                        // これはPostThreadViewのプロパティにダイレクトに設定する
                                        columnStackView.push(postThreadComponent, { "postThreadUri": uri })
                                    }
+            onRequestedViewImages: (index, paths) => columnView.requestedViewImages(index, paths)
         }
     }
     Component {

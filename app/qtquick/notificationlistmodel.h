@@ -40,6 +40,8 @@ public:
         RecordAvatarRole,
         RecordIndexedAtRole,
         RecordRecordTextRole,
+        RecordImagesRole,
+        RecordImagesFullRole,
     };
     Q_ENUM(NotificationListModelRoles)
 

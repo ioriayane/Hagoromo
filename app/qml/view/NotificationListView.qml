@@ -67,6 +67,8 @@ ScrollView {
             recordAvatar: model.recordAvatar
             recordIndexedAt: model.recordIndexedAt
             recordRecordText: model.recordRecordText
+            recordImagePreview.embedImages: model.recordImages
+            recordImagePreview.onRequestedViewImages: (index) => requestedViewImages(index, model.recordImagesFull)
 
             onClicked: {
                 if(model.reason === NotificationListModel.ReasonLike ||
