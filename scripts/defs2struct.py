@@ -367,8 +367,8 @@ class Defs2Struct:
                     ref_path = properties[property_name].get('ref', {})
                     (ref_namespace, ref_type_name) = self.split_ref(ref_path)
                     if len(ref_type_name) == 0:
-                        self.output_func_text[namespace].append('        // ref %s %s' % (property_name, ref_path, ))
-                    elif self.check_pointer(namespace, type_name, property_name, ref_namespace, ref_type_name):
+                        ref_type_name = 'main'
+                    if self.check_pointer(namespace, type_name, property_name, ref_namespace, ref_type_name):
                         self.output_func_text[namespace].append('        // ref *%s %s' % (property_name, ref_path, ))
                     else:
                         if len(ref_namespace) == 0:

@@ -179,7 +179,7 @@ namespace AppBskyEmbedRecord {
 void copyMain(const QJsonObject &src, AppBskyEmbedRecord::Main &dest)
 {
     if (!src.isEmpty()) {
-        // ref record com.atproto.repo.strongRef
+        ComAtprotoRepoStrongRef::copyMain(src.value("record").toObject(), dest.record);
     }
 }
 void copyViewRecord(const QJsonObject &src, AppBskyEmbedRecord::ViewRecord &dest)
@@ -256,7 +256,7 @@ void copyView(const QJsonObject &src, AppBskyEmbedRecordWithMedia::View &dest)
 void copyMain(const QJsonObject &src, AppBskyEmbedRecordWithMedia::Main &dest)
 {
     if (!src.isEmpty()) {
-        // ref record app.bsky.embed.record
+        // ref *record app.bsky.embed.record
         QString media_type = src.value("media").toObject().value("$type").toString();
         if (media_type == QStringLiteral("app.bsky.embed.images")) {
             dest.media_type =
@@ -405,7 +405,7 @@ namespace AppBskyFeedLike {
 void copyMain(const QJsonObject &src, AppBskyFeedLike::Main &dest)
 {
     if (!src.isEmpty()) {
-        // ref subject com.atproto.repo.strongRef
+        ComAtprotoRepoStrongRef::copyMain(src.value("subject").toObject(), dest.subject);
         dest.createdAt = src.value("createdAt").toString();
     }
 }
@@ -430,8 +430,8 @@ void copyEntity(const QJsonObject &src, AppBskyFeedPost::Entity &dest)
 void copyReplyRef(const QJsonObject &src, AppBskyFeedPost::ReplyRef &dest)
 {
     if (!src.isEmpty()) {
-        // ref root com.atproto.repo.strongRef
-        // ref parent com.atproto.repo.strongRef
+        ComAtprotoRepoStrongRef::copyMain(src.value("root").toObject(), dest.root);
+        ComAtprotoRepoStrongRef::copyMain(src.value("parent").toObject(), dest.parent);
     }
 }
 void copyMain(const QJsonObject &src, AppBskyFeedPost::Main &dest)
@@ -509,7 +509,7 @@ namespace AppBskyFeedRepost {
 void copyMain(const QJsonObject &src, AppBskyFeedRepost::Main &dest)
 {
     if (!src.isEmpty()) {
-        // ref subject com.atproto.repo.strongRef
+        ComAtprotoRepoStrongRef::copyMain(src.value("subject").toObject(), dest.subject);
         dest.createdAt = src.value("createdAt").toString();
     }
 }

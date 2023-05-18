@@ -83,8 +83,22 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             AtProtocolType::AppBskyFeedPost::Main post =
                     AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                             AtProtocolType::AppBskyFeedPost::Main>(current.record);
-
-            //            record_cid = post.createdAt
+            switch (post.embed_type) {
+            case AtProtocolType::AppBskyFeedPost::MainEmbedType::embed_AppBskyEmbedImages_Main:
+                //                post.embed_AppBskyEmbedImages_Main.images;
+                // LexiconsTypeUnknown::copyImagesFromPostView(current.post, true)
+                break;
+            case AtProtocolType::AppBskyFeedPost::MainEmbedType::embed_AppBskyEmbedExternal_Main:
+                break;
+            case AtProtocolType::AppBskyFeedPost::MainEmbedType::embed_AppBskyEmbedRecord_Main:
+                record_cid = post.embed_AppBskyEmbedRecord_Main.record.cid;
+                break;
+            case AtProtocolType::AppBskyFeedPost::MainEmbedType::
+                    embed_AppBskyEmbedRecordWithMedia_Main:
+                break;
+            default:
+                break;
+            }
         }
         if (!record_cid.isEmpty()) {
             if (m_postHash.contains(record_cid)) {
@@ -179,11 +193,33 @@ void NotificationListModel::getLatest()
                 }
 
                 if (item->reason == "like") {
-                    AtProtocolType::AppBskyFeedLike::Main like =
+                    appendGetPostCue<AtProtocolType::AppBskyFeedLike::Main>(item->record);
+                } else if (item->reason == "repost") {
+                    appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(item->record);
+                } else if (item->reason == "quote") {
+                    AtProtocolType::AppBskyFeedPost::Main post =
                             AtProtocolType::LexiconsTypeUnknown::fromQVariant<
-                                    AtProtocolType::AppBskyFeedLike::Main>(item->record);
-                    if (!like.subject.cid.isEmpty() && !m_cueGetPost.contains(like.subject.uri)) {
-                        m_cueGetPost.append(like.subject.uri);
+                                    AtProtocolType::AppBskyFeedPost::Main>(item->record);
+                    switch (post.embed_type) {
+                    case AtProtocolType::AppBskyFeedPost::MainEmbedType::
+                            embed_AppBskyEmbedImages_Main:
+                        break;
+                    case AtProtocolType::AppBskyFeedPost::MainEmbedType::
+                            embed_AppBskyEmbedExternal_Main:
+                        break;
+                    case AtProtocolType::AppBskyFeedPost::MainEmbedType::
+                            embed_AppBskyEmbedRecord_Main:
+                        if (!post.embed_AppBskyEmbedRecord_Main.record.cid.isEmpty()
+                            && !m_cueGetPost.contains(
+                                    post.embed_AppBskyEmbedRecord_Main.record.uri)) {
+                            m_cueGetPost.append(post.embed_AppBskyEmbedRecord_Main.record.uri);
+                        }
+                        break;
+                    case AtProtocolType::AppBskyFeedPost::MainEmbedType::
+                            embed_AppBskyEmbedRecordWithMedia_Main:
+                        break;
+                    default:
+                        break;
                     }
                 }
             }
@@ -275,14 +311,20 @@ void NotificationListModel::getPosts()
                     continue;
 
                 if (m_notificationHash[m_cidList.at(i)].reason == "like") {
-                    AtProtocolType::AppBskyFeedLike::Main like =
-                            AtProtocolType::LexiconsTypeUnknown::fromQVariant<
-                                    AtProtocolType::AppBskyFeedLike::Main>(
-                                    m_notificationHash[m_cidList.at(i)].record);
-                    if (new_cid.contains(like.subject.cid)) {
-                        // データを取得できた
-                        emit dataChanged(index(i), index(i));
-                    }
+                    //                    AtProtocolType::AppBskyFeedLike::Main like =
+                    //                            AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                    //                                    AtProtocolType::AppBskyFeedLike::Main>(
+                    //                                    m_notificationHash[m_cidList.at(i)].record);
+                    //                    if (new_cid.contains(like.subject.cid)) {
+                    //                        // データを取得できた
+                    //                        emit dataChanged(index(i), index(i));
+                    //                    }
+                    emitRecordDataChanged<AtProtocolType::AppBskyFeedLike::Main>(
+                            i, new_cid, m_notificationHash[m_cidList.at(i)].record);
+                } else if (m_notificationHash[m_cidList.at(i)].reason == "repost") {
+                    emitRecordDataChanged<AtProtocolType::AppBskyFeedRepost::Main>(
+                            i, new_cid, m_notificationHash[m_cidList.at(i)].record);
+                } else if (m_notificationHash[m_cidList.at(i)].reason == "quote") {
                 }
             }
 
@@ -295,4 +337,24 @@ void NotificationListModel::getPosts()
     });
     posts->setAccount(account());
     posts->getPosts(uris);
+}
+
+template<typename T>
+void NotificationListModel::appendGetPostCue(const QVariant &record)
+{
+    T data = AtProtocolType::LexiconsTypeUnknown::fromQVariant<T>(record);
+    if (!data.subject.cid.isEmpty() && !m_cueGetPost.contains(data.subject.uri)) {
+        m_cueGetPost.append(data.subject.uri);
+    }
+}
+
+template<typename T>
+void NotificationListModel::emitRecordDataChanged(const int i, const QStringList &new_cid,
+                                                  const QVariant &record)
+{
+    T data = AtProtocolType::LexiconsTypeUnknown::fromQVariant<T>(record);
+    if (new_cid.contains(data.subject.cid)) {
+        // データを取得できた
+        emit dataChanged(index(i), index(i));
+    }
 }

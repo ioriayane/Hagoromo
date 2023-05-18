@@ -21,13 +21,11 @@ void copyUnknown(const QJsonObject &src, QVariant &dest)
     } else if (type == QStringLiteral("app.bsky.feed.like")) {
         AppBskyFeedLike::Main record;
         AppBskyFeedLike::copyMain(src, record);
-        ComAtprotoRepoStrongRef::copyMain(src.value("subject").toObject(), record.subject);
         dest.setValue<AppBskyFeedLike::Main>(record);
 
     } else if (type == QStringLiteral("app.bsky.feed.repost")) {
         AppBskyFeedRepost::Main record;
         AppBskyFeedRepost::copyMain(src, record);
-        ComAtprotoRepoStrongRef::copyMain(src.value("subject").toObject(), record.subject);
         dest.setValue<AppBskyFeedRepost::Main>(record);
     }
 }

@@ -76,6 +76,11 @@ private:
     QStringList m_cueGetPost;
 
     void getPosts();
+
+    template<typename T>
+    void appendGetPostCue(const QVariant &record);
+    template<typename T>
+    void emitRecordDataChanged(const int i, const QStringList &new_cid, const QVariant &record);
 };
 
 #endif // NOTIFICATIONLISTMODEL_H
