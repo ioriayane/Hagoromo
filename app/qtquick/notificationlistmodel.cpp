@@ -100,55 +100,42 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
                 break;
             }
         }
-        if (!record_cid.isEmpty()) {
-            if (m_postHash.contains(record_cid)) {
-                if (role == RecordCidRole)
-                    return m_postHash[record_cid].cid;
-                else if (role == RecordUriRole)
-                    return m_postHash[record_cid].uri;
-                else if (role == RecordDisplayNameRole)
-                    return m_postHash[record_cid].author.displayName;
-                else if (role == RecordHandleRole)
-                    return m_postHash[record_cid].author.handle;
-                else if (role == RecordAvatarRole)
-                    return m_postHash[record_cid].author.avatar;
-                else if (role == RecordIndexedAtRole)
-                    return formatDateTime(m_postHash[record_cid].indexedAt);
-                else if (role == RecordRecordTextRole)
-                    return AtProtocolType::LexiconsTypeUnknown::fromQVariant<
-                                   AtProtocolType::AppBskyFeedPost::Main>(
-                                   m_postHash[record_cid].record)
-                            .text;
-            } else {
-                if (role == RecordCidRole)
-                    return QString();
-                else if (role == RecordUriRole)
-                    return QString();
-                else if (role == RecordDisplayNameRole)
-                    return QString();
-                else if (role == RecordHandleRole)
-                    return QString();
-                else if (role == RecordAvatarRole)
-                    return QString();
-                else if (role == RecordIndexedAtRole)
-                    return QString();
-                else if (role == RecordRecordTextRole)
-                    return QString();
-            }
-        } else {
-            if (role == RecordCidRole)
+        if (role == RecordCidRole) {
+            if (m_postHash.contains(record_cid))
+                return m_postHash[record_cid].cid;
+            else
                 return QString();
-            else if (role == RecordUriRole)
+        } else if (role == RecordUriRole) {
+            if (m_postHash.contains(record_cid))
+                return m_postHash[record_cid].uri;
+            else
                 return QString();
-            else if (role == RecordDisplayNameRole)
+        } else if (role == RecordDisplayNameRole) {
+            if (m_postHash.contains(record_cid))
+                return m_postHash[record_cid].author.displayName;
+            else
                 return QString();
-            else if (role == RecordHandleRole)
+        } else if (role == RecordHandleRole) {
+            if (m_postHash.contains(record_cid))
+                return m_postHash[record_cid].author.handle;
+            else
                 return QString();
-            else if (role == RecordAvatarRole)
+        } else if (role == RecordAvatarRole) {
+            if (m_postHash.contains(record_cid))
+                return m_postHash[record_cid].author.avatar;
+            else
                 return QString();
-            else if (role == RecordIndexedAtRole)
+        } else if (role == RecordIndexedAtRole) {
+            if (m_postHash.contains(record_cid))
+                return formatDateTime(m_postHash[record_cid].indexedAt);
+            else
                 return QString();
-            else if (role == RecordRecordTextRole)
+        } else if (role == RecordRecordTextRole) {
+            if (m_postHash.contains(record_cid))
+                return AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                               AtProtocolType::AppBskyFeedPost::Main>(m_postHash[record_cid].record)
+                        .text;
+            else
                 return QString();
         }
     }
@@ -325,6 +312,29 @@ void NotificationListModel::getPosts()
                     emitRecordDataChanged<AtProtocolType::AppBskyFeedRepost::Main>(
                             i, new_cid, m_notificationHash[m_cidList.at(i)].record);
                 } else if (m_notificationHash[m_cidList.at(i)].reason == "quote") {
+                    AtProtocolType::AppBskyFeedPost::Main post =
+                            AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                                    AtProtocolType::AppBskyFeedPost::Main>(
+                                    m_notificationHash[m_cidList.at(i)].record);
+                    switch (post.embed_type) {
+                    case AtProtocolType::AppBskyFeedPost::MainEmbedType::
+                            embed_AppBskyEmbedImages_Main:
+                        break;
+                    case AtProtocolType::AppBskyFeedPost::MainEmbedType::
+                            embed_AppBskyEmbedExternal_Main:
+                        break;
+                    case AtProtocolType::AppBskyFeedPost::MainEmbedType::
+                            embed_AppBskyEmbedRecord_Main:
+                        if (new_cid.contains(post.embed_AppBskyEmbedRecord_Main.record.cid)) {
+                            emit dataChanged(index(i), index(i));
+                        }
+                        break;
+                    case AtProtocolType::AppBskyFeedPost::MainEmbedType::
+                            embed_AppBskyEmbedRecordWithMedia_Main:
+                        break;
+                    default:
+                        break;
+                    }
                 }
             }
 

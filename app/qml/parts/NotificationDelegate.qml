@@ -20,17 +20,16 @@ ClickableFrame {
 
     property int reason: NotificationListModel.ReasonLike
     property string recordText: ""
+
+    property string recordDisplayName: ""
+    property string recordHandle: ""
+    property string recordAvatar: ""
+    property string recordIndexedAt: ""
     property string recordRecordText: ""
 
-//    property alias repostReactionAuthor: repostReactionAuthor
-//    property alias replyReactionAuthor: replyReactionAuthor
     property alias postAvatarImage: postAvatarImage
     property alias postAuthor: postAuthor
-//    property alias postImagePreview: postImagePreview
-//    property alias childFrame: childFrame
-//    property alias childAvatarImage: childAvatarImage
-//    property alias childAuthor: childAuthor
-//    property alias childRecordText: childRecordText
+    property alias recordFrame: recordFrame
     property alias postControls: postControls
 
     states: [
@@ -71,6 +70,14 @@ ClickableFrame {
             PropertyChanges { target: reasonImage; source: "../images/quote.png" }
             PropertyChanges { target: recordTextLabel; visible: true }
             PropertyChanges { target: recordTextLabel; text: notificationFrame.recordText }
+            PropertyChanges { target: recordFrame; visible: true }
+
+            PropertyChanges { target: recordAvatarImage; source: notificationFrame.recordAvatar }
+            PropertyChanges { target: recordAuthor; displayName: notificationFrame.recordDisplayName }
+            PropertyChanges { target: recordAuthor; handle: notificationFrame.recordHandle }
+            PropertyChanges { target: recordAuthor; indexedAt: notificationFrame.recordIndexedAt }
+            PropertyChanges { target: recordText; text: notificationFrame.recordRecordText }
+
             PropertyChanges { target: postControls; visible: true }
             PropertyChanges { target: notificationFrame; bottomPadding: 2 }
         }
@@ -138,40 +145,6 @@ ClickableFrame {
                 }
             }
 
-            //                    Frame {
-            //                        id: recordFrame
-            //                        property int basisWidth: bodyLayout.width - padding * 2 -
-            //                                                 recordAvatarImage.width - recordAuthorLayout.spacing
-            //                        ColumnLayout {
-            //                            RowLayout {
-            //                                id: recordAuthorLayout
-            //                                AvatarImage {
-            //                                    id: recordAvatarImage
-            //                                    Layout.preferredWidth: 16
-            //                                    Layout.preferredHeight: 16
-            //                                    source: model.recordAvatar
-            //                                }
-            //                                Author {
-            //                                    Layout.preferredWidth: recordFrame.basisWidth
-            //                                    Layout.maximumWidth: recordFrame.basisWidth
-            //                                    //                            Layout.fillWidth: true
-            //                                    displayName: model.recordDisplayName
-            //                                    handle: model.recordHandle
-            //                                    indexedAt: model.recordIndexedAt
-            //                                }
-            //                            }
-            //                            Label {
-            //                                id: recordText
-            //                                Layout.preferredWidth: recordFrame.basisWidth
-            //                                Layout.maximumWidth: recordFrame.basisWidth
-            //                                wrapMode: Text.WrapAnywhere
-            //                                font.pointSize: 10
-            //                                lineHeight: 1.3
-            //                                text: model.recordRecordText
-            //                            }
-            //                        }
-
-            //                    }
             Label {
                 id: recordTextLabel
                 visible: false
@@ -181,6 +154,37 @@ ClickableFrame {
                 wrapMode: Text.WrapAnywhere
                 font.pointSize: 10
                 lineHeight: 1.3
+            }
+
+            ClickableFrame {
+                id: recordFrame
+                visible: false
+                property int basisWidth: bodyLayout.width - padding * 2 -
+                                         recordAvatarImage.width - recordAuthorLayout.spacing
+                ColumnLayout {
+                    RowLayout {
+                        id: recordAuthorLayout
+                        AvatarImage {
+                            id: recordAvatarImage
+                            Layout.preferredWidth: 16
+                            Layout.preferredHeight: 16
+                        }
+                        Author {
+                            id: recordAuthor
+                            Layout.preferredWidth: recordFrame.basisWidth
+                            Layout.maximumWidth: recordFrame.basisWidth
+                            //                            Layout.fillWidth: true
+                        }
+                    }
+                    Label {
+                        id: recordText
+                        Layout.preferredWidth: recordFrame.basisWidth
+                        Layout.maximumWidth: recordFrame.basisWidth
+                        wrapMode: Text.WrapAnywhere
+                        font.pointSize: 10
+                        lineHeight: 1.3
+                    }
+                }
             }
 
             PostControls {

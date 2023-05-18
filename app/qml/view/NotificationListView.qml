@@ -61,6 +61,11 @@ ScrollView {
             postAuthor.handle: model.handle
             postAuthor.indexedAt: model.indexedAt
             recordText: model.recordText
+
+            recordDisplayName: model.recordDisplayName
+            recordHandle: model.recordHandle
+            recordAvatar: model.recordAvatar
+            recordIndexedAt: model.recordIndexedAt
             recordRecordText: model.recordRecordText
 
             onClicked: {
@@ -73,6 +78,12 @@ ScrollView {
                 }else if(model.reason === NotificationListModel.ReasonReply ||
                          model.reason === NotificationListModel.ReasonQuote){
                     requestedViewThread(model.uri)
+                }
+            }
+
+            recordFrame.onClicked: {
+                if(model.reason === NotificationListModel.ReasonQuote){
+                    requestedViewThread(model.recordUri)
                 }
             }
         }
