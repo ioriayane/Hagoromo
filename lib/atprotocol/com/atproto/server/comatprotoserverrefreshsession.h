@@ -1,7 +1,7 @@
 #ifndef COMATPROTOSERVERREFRESHSESSION_H
 #define COMATPROTOSERVERREFRESHSESSION_H
 
-#include "accessatprotocol.h"
+#include "atprotocol/accessatprotocol.h"
 
 namespace AtProtocolInterface {
 

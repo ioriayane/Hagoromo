@@ -1,7 +1,7 @@
 #ifndef COMATPROTOSERVERCREATESESSION_H
 #define COMATPROTOSERVERCREATESESSION_H
 
-#include "accessatprotocol.h"
+#include "atprotocol/accessatprotocol.h"
 
 namespace AtProtocolInterface {
 

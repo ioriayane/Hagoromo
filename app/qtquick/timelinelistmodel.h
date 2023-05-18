@@ -2,7 +2,7 @@
 #define TIMELINELISTMODEL_H
 
 #include "atprotocol/lexicons.h"
-#include "atprotocol/appbskyfeedgettimeline.h"
+#include "atprotocol/app/bsky/feed/appbskyfeedgettimeline.h"
 #include "atpabstractlistmodel.h"
 
 #include <QAbstractListModel>

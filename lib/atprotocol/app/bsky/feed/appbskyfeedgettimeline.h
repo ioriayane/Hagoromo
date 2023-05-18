@@ -1,8 +1,8 @@
 #ifndef APPBSKYFEEDGETTIMELINE_H
 #define APPBSKYFEEDGETTIMELINE_H
 
-#include "accessatprotocol.h"
-#include "../atprotocol/lexicons.h"
+#include "atprotocol/accessatprotocol.h"
+#include "atprotocol/lexicons.h"
 
 namespace AtProtocolInterface {
 

@@ -1,5 +1,5 @@
 #include "createrecord.h"
-#include "atprotocol/comatprotorepocreaterecord.h"
+#include "atprotocol/com/atproto/repo/comatprotorepocreaterecord.h"
 
 using AtProtocolInterface::ComAtprotoRepoCreateRecord;
 

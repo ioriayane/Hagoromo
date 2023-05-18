@@ -1,7 +1,7 @@
 #include "notificationlistmodel.h"
-#include "atprotocol/appbskynotificationlistnotifications.h"
+#include "atprotocol/app/bsky/notification/appbskynotificationlistnotifications.h"
 #include "atprotocol/lexicons_func_unknown.h"
-#include "atprotocol/appbskyfeedgetposts.h"
+#include "atprotocol/app/bsky/feed/appbskyfeedgetposts.h"
 
 #include <QTimer>
 

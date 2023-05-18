@@ -1,7 +1,7 @@
 #include "accountlistmodel.h"
 #include "common.h"
-#include "atprotocol/comatprotoservercreatesession.h"
-#include "atprotocol/comatprotoserverrefreshsession.h"
+#include "atprotocol/com/atproto/server/comatprotoservercreatesession.h"
+#include "atprotocol/com/atproto/server/comatprotoserverrefreshsession.h"
 
 #include <QCryptographicHash>
 #include <QByteArray>

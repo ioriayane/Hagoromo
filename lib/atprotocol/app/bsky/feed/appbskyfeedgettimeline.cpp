@@ -1,5 +1,5 @@
 #include "appbskyfeedgettimeline.h"
-#include "../atprotocol/lexicons_func.h"
+#include "atprotocol/lexicons_func.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
