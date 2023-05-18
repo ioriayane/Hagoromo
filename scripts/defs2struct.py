@@ -343,9 +343,8 @@ class Defs2Struct:
         else:
             return (namespace + '#' + type_name + '#' + property_name + '#' + ref_namespace + '#' + ref_type_name in self.history_pointer)
 
-    def output_function(self, namespace: str, type_name: str):
+    def output_function(self, namespace: str, type_name: str, obj: dict):
         
-        obj = self.get_defs_obj(namespace, type_name)
         if obj.get('type') == 'object':
             # 構造体
 
@@ -431,6 +430,8 @@ class Defs2Struct:
                 elif p_type == 'array':
                     items_type = properties[property_name].get('items', {}).get('type', '')
                     (ref_namespace, ref_type_name) = self.split_ref(properties[property_name].get('items', {}).get('ref', {}))
+                    if len(ref_type_name) == 0:
+                        ref_type_name = 'main'
                     if len(ref_namespace) == 0:
                         extend_ns = ''
                     else:
@@ -480,6 +481,13 @@ class Defs2Struct:
             self.output_func_text[namespace].append('}')
 
             self.append_func_history(namespace, function_define)
+
+        else:
+            variant_key = obj.get('type', '')
+            variant_obj = self.json_obj.get(namespace, {}).get('defs', {}).get('main', {}).get(variant_key, {})
+            if variant_obj is not None:
+                self.output_function(namespace, type_name, variant_obj)
+
 
     def output_api_class(self, namespace: str, type_name: str):
         obj = self.get_defs_obj(namespace, type_name)
@@ -627,7 +635,8 @@ class Defs2Struct:
         # コピー関数のための解析
         for ref_path in self.history:
             (ref_namespace, ref_type_name) = self.split_ref(ref_path)
-            self.output_function(ref_namespace, ref_type_name)
+            obj = self.get_defs_obj(ref_namespace, ref_type_name)
+            self.output_function(ref_namespace, ref_type_name, obj)
 
 
         # jinja2を使用してコードを出力

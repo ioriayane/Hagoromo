@@ -85,6 +85,16 @@ void copyLabel(const QJsonObject &src, ComAtprotoLabelDefs::Label &dest)
     }
 }
 }
+// app.bsky.actor.profile
+namespace AppBskyActorProfile {
+void copyMain(const QJsonObject &src, AppBskyActorProfile::Main &dest)
+{
+    if (!src.isEmpty()) {
+        dest.displayName = src.value("displayName").toString();
+        dest.description = src.value("description").toString();
+    }
+}
+}
 // app.bsky.embed.external
 namespace AppBskyEmbedExternal {
 void copyExternal(const QJsonObject &src, AppBskyEmbedExternal::External &dest)
@@ -390,6 +400,16 @@ void copyLike(const QJsonObject &src, AppBskyFeedGetLikes::Like &dest)
     }
 }
 }
+// app.bsky.feed.like
+namespace AppBskyFeedLike {
+void copyMain(const QJsonObject &src, AppBskyFeedLike::Main &dest)
+{
+    if (!src.isEmpty()) {
+        // ref subject com.atproto.repo.strongRef
+        dest.createdAt = src.value("createdAt").toString();
+    }
+}
+}
 // app.bsky.feed.post
 namespace AppBskyFeedPost {
 void copyTextSlice(const QJsonObject &src, AppBskyFeedPost::TextSlice &dest)
@@ -412,6 +432,46 @@ void copyReplyRef(const QJsonObject &src, AppBskyFeedPost::ReplyRef &dest)
     if (!src.isEmpty()) {
         // ref root com.atproto.repo.strongRef
         // ref parent com.atproto.repo.strongRef
+    }
+}
+void copyMain(const QJsonObject &src, AppBskyFeedPost::Main &dest)
+{
+    if (!src.isEmpty()) {
+        dest.text = src.value("text").toString();
+        for (const auto &s : src.value("entities").toArray()) {
+            Entity child;
+            copyEntity(s.toObject(), child);
+            dest.entities.append(child);
+        }
+        for (const auto &s : src.value("facets").toArray()) {
+            AppBskyRichtextFacet::Main child;
+            AppBskyRichtextFacet::copyMain(s.toObject(), child);
+            dest.facets.append(child);
+        }
+        copyReplyRef(src.value("reply").toObject(), dest.reply);
+        QString embed_type = src.value("embed").toObject().value("$type").toString();
+        if (embed_type == QStringLiteral("app.bsky.embed.images")) {
+            dest.embed_type = AppBskyFeedPost::MainEmbedType::embed_AppBskyEmbedImages_Main;
+            AppBskyEmbedImages::copyMain(src.value("embed").toObject(),
+                                         dest.embed_AppBskyEmbedImages_Main);
+        }
+        if (embed_type == QStringLiteral("app.bsky.embed.external")) {
+            dest.embed_type = AppBskyFeedPost::MainEmbedType::embed_AppBskyEmbedExternal_Main;
+            AppBskyEmbedExternal::copyMain(src.value("embed").toObject(),
+                                           dest.embed_AppBskyEmbedExternal_Main);
+        }
+        if (embed_type == QStringLiteral("app.bsky.embed.record")) {
+            dest.embed_type = AppBskyFeedPost::MainEmbedType::embed_AppBskyEmbedRecord_Main;
+            AppBskyEmbedRecord::copyMain(src.value("embed").toObject(),
+                                         dest.embed_AppBskyEmbedRecord_Main);
+        }
+        if (embed_type == QStringLiteral("app.bsky.embed.recordWithMedia")) {
+            dest.embed_type =
+                    AppBskyFeedPost::MainEmbedType::embed_AppBskyEmbedRecordWithMedia_Main;
+            AppBskyEmbedRecordWithMedia::copyMain(src.value("embed").toObject(),
+                                                  dest.embed_AppBskyEmbedRecordWithMedia_Main);
+        }
+        dest.createdAt = src.value("createdAt").toString();
     }
 }
 }
@@ -441,6 +501,36 @@ void copyMain(const QJsonObject &src, AppBskyRichtextFacet::Main &dest)
     if (!src.isEmpty()) {
         copyByteSlice(src.value("index").toObject(), dest.index);
         // array<union> features
+    }
+}
+}
+// app.bsky.feed.repost
+namespace AppBskyFeedRepost {
+void copyMain(const QJsonObject &src, AppBskyFeedRepost::Main &dest)
+{
+    if (!src.isEmpty()) {
+        // ref subject com.atproto.repo.strongRef
+        dest.createdAt = src.value("createdAt").toString();
+    }
+}
+}
+// app.bsky.graph.block
+namespace AppBskyGraphBlock {
+void copyMain(const QJsonObject &src, AppBskyGraphBlock::Main &dest)
+{
+    if (!src.isEmpty()) {
+        dest.subject = src.value("subject").toString();
+        dest.createdAt = src.value("createdAt").toString();
+    }
+}
+}
+// app.bsky.graph.follow
+namespace AppBskyGraphFollow {
+void copyMain(const QJsonObject &src, AppBskyGraphFollow::Main &dest)
+{
+    if (!src.isEmpty()) {
+        dest.subject = src.value("subject").toString();
+        dest.createdAt = src.value("createdAt").toString();
     }
 }
 }
