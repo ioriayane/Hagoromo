@@ -3,6 +3,7 @@
 
 #include "atprotocol/accessatprotocol.h"
 #include "atprotocol/lexicons.h"
+#include "atprotocol/lexicons_func_unknown.h"
 
 namespace AtProtocolInterface {
 
@@ -18,6 +19,7 @@ public:
     void setReply(const QString &parent_cid, const QString &parent_uri, const QString &root_cid,
                   const QString &root_uri);
     void setQuote(const QString &cid, const QString &uri);
+    void setImageBlobs(const QList<AtProtocolType::LexiconsTypeUnknown::Blob> &blobs);
 
 private:
     virtual void parseJson(const QString reply_json);
@@ -25,6 +27,7 @@ private:
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_replyParent;
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_replyRoot;
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_embedQuote;
+    QList<AtProtocolType::LexiconsTypeUnknown::Blob> m_embedImageBlobs;
 };
 
 }

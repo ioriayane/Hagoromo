@@ -4,6 +4,8 @@
 #include <QJsonObject>
 #include <QNetworkReply>
 #include <QDebug>
+#include <QFileInfo>
+#include <QHttpMultiPart>
 
 namespace AtProtocolInterface {
 
@@ -108,8 +110,8 @@ void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     if (with_auth_header) {
         if (accessJwt().isEmpty()) {
-            qDebug() << "AccessAtProtocol::get()"
-                     << "Emty accessJwt!";
+            qDebug() << "AccessAtProtocol::post()"
+                     << "Empty accessJwt!";
             return;
         }
 
@@ -118,6 +120,48 @@ void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
     }
 
     m_manager.post(request, json);
+}
+
+void AccessAtProtocol::postWithImage(const QString &endpoint, const QString &path)
+{
+    if (accessJwt().isEmpty()) {
+        qDebug() << "AccessAtProtocol::postWithImage()"
+                 << "Empty accessJwt!";
+        return;
+    }
+    if (!QFile::exists(path)) {
+        qDebug() << "AccessAtProtocol::postWithImage()"
+                 << "Not found" << path;
+        return;
+    }
+    qDebug() << "AccessAtProtocol::postWithImage()" << this << endpoint << path;
+
+    QFileInfo info(path);
+    QNetworkRequest request(QUrl(QString("%1/%2").arg(service(), endpoint)));
+    request.setRawHeader(QByteArray("Authorization"), QByteArray("Bearer ") + accessJwt().toUtf8());
+    request.setHeader(QNetworkRequest::ContentTypeHeader,
+                      QString("image/%1").arg(info.suffix().toLower()));
+
+    QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
+    QFile *file = new QFile(path, multiPart);
+    if (!file->open(QIODevice::ReadOnly)) {
+        qDebug() << "AccessAtProtocol::postWithImage()"
+                 << "Not open" << path;
+        delete multiPart;
+        return;
+    }
+
+    QHttpPart imagePart;
+    imagePart.setHeader(QNetworkRequest::ContentTypeHeader,
+                        QString("image/%1").arg(info.suffix().toLower()));
+    imagePart.setHeader(QNetworkRequest::ContentDispositionHeader,
+                        QVariant("form-data; name=\"image\""));
+    imagePart.setBodyDevice(file);
+
+    multiPart->append(imagePart);
+
+    QNetworkReply *reply = m_manager.post(request, multiPart);
+    multiPart->setParent(reply); // 後で消すため
 }
 
 }

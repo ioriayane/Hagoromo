@@ -60,6 +60,7 @@ public slots:
 protected:
     void get(const QString &endpoint, const QUrlQuery &query);
     void post(const QString &endpoint, const QByteArray &json, const bool with_auth_header = true);
+    void postWithImage(const QString &endpoint, const QString &path);
 
     virtual void parseJson(const QString reply_json) = 0;
 

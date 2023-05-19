@@ -52,6 +52,7 @@ QML_FILES = \
 IMAGE_FILES += \
     qml/images/account.png \
     qml/images/account_icon.png \
+    qml/images/add_image.png \
     qml/images/add_user.png \
     qml/images/arrow_back.png \
     qml/images/arrow_forward.png \

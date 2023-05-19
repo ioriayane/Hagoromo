@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import Qt.labs.platform 1.1 as P
 
 import tech.relog.hagoromo.createrecord 1.0
 import tech.relog.hagoromo.accountlistmodel 1.0
@@ -111,6 +112,44 @@ Dialog {
             wrapMode: TextInput.WordWrap
         }
 
+        RowLayout {
+            visible: embedImagePreview.embedImages.length > 0
+            spacing: 4
+            Repeater {
+                id: embedImagePreview
+                property string embedImages: ""
+                model: embedImagePreview.embedImages.split("\n")
+                delegate: ImageWithIndicator {
+                    Layout.preferredWidth: 97
+                    Layout.preferredHeight: 97
+                    fillMode: Image.PreserveAspectCrop
+                    source: modelData
+                    IconButton {
+                        width: 24
+                        height: 24
+                        anchors.top: parent.top
+                        anchors.right: parent.right
+                        anchors.margins: 5
+                        iconSource: "../images/delete.png"
+                        onClicked: {
+                            var images = embedImagePreview.embedImages.split("\n")
+                            var new_images = ""
+                            for(var i=0; i<images.length; i++){
+                                if(images[i] === modelData){
+                                    continue;
+                                }
+                                if(new_images.length > 0){
+                                    new_images += "\n"
+                                }
+                                new_images += images[i]
+                            }
+                            embedImagePreview.embedImages = new_images
+                        }
+                    }
+                }
+            }
+        }
+
         Frame {
             id: quoteFrame
             Layout.preferredWidth: postText.width
@@ -142,7 +181,7 @@ Dialog {
         }
 
         RowLayout {
-//            Layout.alignment: Qt.AlignRight
+            //            Layout.alignment: Qt.AlignRight
             Button {
                 flat: true
                 text: qsTr("Cancel")
@@ -152,6 +191,17 @@ Dialog {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 1
             }
+            IconButton {
+                iconSource: "../images/add_image.png"
+                flat: true
+                onClicked: {
+                    if(fileDialog.prevFolder.length > 0){
+                        fileDialog.folder = fileDialog.prevFolder
+                    }
+                    fileDialog.open()
+                }
+            }
+
             Label {
                 Layout.alignment: Qt.AlignVCenter
                 font.pointSize: 8
@@ -177,17 +227,52 @@ Dialog {
                                             postDialog.accountModel.item(row, AccountListModel.EmailRole),
                                             postDialog.accountModel.item(row, AccountListModel.AccessJwtRole),
                                             postDialog.accountModel.item(row, AccountListModel.RefreshJwtRole))
-                    createRecord.setReply("", "", "", "")
-                    createRecord.setQuote("", "")
+                    createRecord.clear()
+                    createRecord.setText(postText.text)
                     if(postType === "reply"){
                         createRecord.setReply(replyCid, replyUri, replyRootCid, replyRootUri)
                     }else if(postType === "quote"){
                         createRecord.setQuote(replyCid, replyUri)
                     }
-
-                    createRecord.post(postText.text)
+                    if(embedImagePreview.embedImages.length > 0){
+                        createRecord.setImages(embedImagePreview.embedImages.split("\n"))
+                        createRecord.postWithImages()
+                    }else{
+                        createRecord.post()
+                    }
                 }
             }
         }
     }
+
+    P.FileDialog {
+        id: fileDialog
+        title: qsTr("Select contents")
+        visible: false
+        fileMode : P.FileDialog.OpenFiles
+        nameFilters: ["Image files (*.jpg *.jpeg *.png)"
+            , "All files (*)"]
+        onAccepted: {
+            //選択されたファイルをすべて追加
+            prevFolder = folder
+
+            var images = embedImagePreview.embedImages.split("\n")
+            if(images.length >= 4){
+                return
+            }
+            var new_images = embedImagePreview.embedImages
+            for(var i=0; i<files.length; i++){
+                if(images.indexOf(files[i]) >= 0){
+                    continue;
+                }
+                if(new_images.length > 0){
+                    new_images += "\n"
+                }
+                new_images += files[i]
+            }
+            embedImagePreview.embedImages = new_images
+        }
+        property string prevFolder
+    }
+
 }

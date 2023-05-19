@@ -13,6 +13,13 @@
 namespace AtProtocolType {
 namespace LexiconsTypeUnknown {
 
+struct Blob
+{
+    QString cid;
+    QString mimeType;
+    int size = 0;
+};
+
 void copyUnknown(const QJsonObject &src, QVariant &dest);
 
 QString copyImagesFromPostView(const AppBskyFeedDefs::PostView &post, const bool thumb);

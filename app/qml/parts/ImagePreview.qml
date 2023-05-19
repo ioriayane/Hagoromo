@@ -12,7 +12,7 @@ GridLayout {
     columns: 2
 
     property int layoutWidth: 100
-    property string embedImages: model.embedImages
+    property string embedImages: ""
 
     property int cellWidth: imagePreviewLayout.layoutWidth * 0.5 - 3
 
