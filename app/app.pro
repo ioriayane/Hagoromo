@@ -64,6 +64,7 @@ IMAGE_FILES += \
     qml/images/edit.png \
     qml/images/expand_less.png \
     qml/images/expand_more.png \
+    qml/images/icon_mask.png \
     qml/images/like.png \
     qml/images/more.png \
     qml/images/quote.png \
