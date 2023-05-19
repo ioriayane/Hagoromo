@@ -8,6 +8,7 @@ Image {
         width: parent.width > 100 ? 100 : parent.width
         height: parent.height > 100 ? 100 : parent.height
 
-        visible: imageWithIndicator.status !== Image.Ready
+        visible: imageWithIndicator.status === Image.Loading ||
+                 imageWithIndicator.status === Image.Error
     }
 }

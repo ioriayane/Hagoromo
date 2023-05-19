@@ -404,6 +404,8 @@ void AccountListModel::getProfile(int row)
             m_accountList[row].displayName = detail.displayName;
             m_accountList[row].description = detail.description;
             m_accountList[row].avatar = detail.avatar;
+
+            emit updatedAccount(row, m_accountList[row].uuid);
             emit dataChanged(index(row), index(row));
         }
         profile->deleteLater();

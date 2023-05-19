@@ -7,6 +7,7 @@ import tech.relog.hagoromo.columnlistmodel 1.0
 import tech.relog.hagoromo.createrecord 1.0
 
 import "../controls"
+import "../parts"
 
 ColumnLayout {
     id: columnView
@@ -21,6 +22,7 @@ ColumnLayout {
     property string email: ""
     property string accessJwt: ""
     property string refreshJwt: ""
+    property string avatar: ""
 
     property var rootItem: undefined
 
@@ -158,9 +160,16 @@ ColumnLayout {
                 onClicked: columnStackView.pop()
             }
 
+            AvatarImage {
+                Layout.leftMargin: 10
+                Layout.preferredWidth: 24
+                Layout.preferredHeight: 24
+                source: columnView.avatar
+            }
+
             ColumnLayout {
                 spacing: 0
-                Layout.leftMargin: 10
+                Layout.leftMargin: 5
                 Layout.topMargin: 5
                 Layout.bottomMargin: 5
                 Label {

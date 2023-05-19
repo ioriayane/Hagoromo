@@ -6,17 +6,13 @@ import "../controls"
 
 ImageWithIndicator {
     id: avatorImage
-    layer.effect: ColorOverlay {
-        color: Material.color(Material.Grey)
-    }
-    states: [
-        State {
-            when: model.avatar.length === 0
-            PropertyChanges {
-                target: avatorImage
-                source: "../images/account_icon.png"
-                layer.enabled: true
-            }
+    Image {
+        visible: avatorImage.status === Image.Null
+        anchors.fill: parent
+        layer.enabled: true
+        layer.effect: ColorOverlay {
+            color: Material.color(Material.Grey)
         }
-    ]
+        source: "../images/account_icon.png"
+    }
 }

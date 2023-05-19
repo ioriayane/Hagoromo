@@ -310,6 +310,7 @@ ApplicationWindow {
                             item.email = accountListModel.item(row, AccountListModel.EmailRole)
                             item.accessJwt = accountListModel.item(row, AccountListModel.AccessJwtRole)
                             item.refreshJwt = accountListModel.item(row, AccountListModel.RefreshJwtRole)
+                            item.avatar = accountListModel.item(row, AccountListModel.AvatarRole)
                         }
                     }
                 }
