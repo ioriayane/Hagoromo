@@ -24,6 +24,7 @@ public:
         HandleRole,
         AvatarRole,
         RecordTextRole,
+        RecordTextTranslationRole,
         ReplyCountRole,
         RepostCountRole,
         LikeCountRole,
@@ -59,6 +60,8 @@ public:
     Q_INVOKABLE QVariant item(int row, TimelineListModel::TimelineListModelRoles role) const;
     Q_INVOKABLE void update(int row, TimelineListModel::TimelineListModelRoles role,
                             const QVariant &value);
+    Q_INVOKABLE int indexAt(const QString &cid) const;
+    Q_INVOKABLE void translate(const QString &cid);
 
     Q_INVOKABLE void getLatest();
 
@@ -68,6 +71,7 @@ protected:
 private:
     QList<QString> m_cidList; // これで取得したポストの順番を管理して実態はm_viewPostHashで管理
     QHash<QString, AtProtocolType::AppBskyFeedDefs::FeedViewPost> m_viewPostHash;
+    QHash<QString, QString> m_translations; // QHash<cid, translation>
     AtProtocolInterface::AppBskyFeedGetTimeline m_timeline;
 };
 

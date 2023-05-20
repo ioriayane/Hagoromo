@@ -23,9 +23,18 @@ Dialog {
         property int theme: Material.Light
         property color accent: Material.color(Material.Pink)
 
+        property string translateApiUrl: "https://api-free.deepl.com/v2/translate"
+        property string translateApiKey: ""
+        property string translateTargetLanguage: "JA"
+
+
+
         Component.onCompleted: {
             setRadioButton(themeButtonGroup.buttons, settings.theme)
             setRadioButton(accentButtonGroup.buttons, settings.accent)
+            translateApiUrlText.text = settings.translateApiUrl
+            translateApiKeyText.text = settings.translateApiKey
+            translateTargetLanguageCombo.currentIndex = translateTargetLanguageCombo.indexOfValue(settings.translateTargetLanguage)
         }
 
         function setRadioButton(buttons, value){
@@ -109,6 +118,40 @@ Dialog {
 //            }
 //        }
 
+        GroupBox {
+            title: qsTr("Translate(DeepL)")
+            GridLayout {
+                columns: 2
+                Label {
+                    text: qsTr("Api Url")
+                }
+                TextField {
+                    id: translateApiUrlText
+                    text: ""
+                    Layout.preferredWidth: 300
+                }
+                Label {
+                    text: qsTr("Api Key")
+                }
+                TextField {
+                    id: translateApiKeyText
+                    text: ""
+                }
+                Label {
+                    text: qsTr("Target language")
+                }
+                ComboBox {
+                    id: translateTargetLanguageCombo
+                    textRole: "text"
+                    valueRole: "value"
+                    model: ListModel {
+                        ListElement { value: "EN"; text: "English" }
+                        ListElement { value: "JA"; text: "Japanese" }
+                    }
+                }
+            }
+        }
+
         RowLayout {
             Button {
                 flat: true
@@ -124,6 +167,10 @@ Dialog {
                 onClicked: {
                     settings.theme = themeButtonGroup.checkedButton.value
                     settings.accent = accentButtonGroup.checkedButton.value
+                    settings.translateApiUrl = translateApiUrlText.text
+                    settings.translateApiKey = translateApiKeyText.text
+                    settings.translateTargetLanguage = translateTargetLanguageCombo.currentValue
+
                     settingDialog.accept()
                 }
             }

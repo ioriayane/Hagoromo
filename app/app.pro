@@ -11,7 +11,8 @@ SOURCES += \
     qtquick/createsession.cpp \
     qtquick/notificationlistmodel.cpp \
     qtquick/postthreadlistmodel.cpp \
-    qtquick/timelinelistmodel.cpp
+    qtquick/timelinelistmodel.cpp \
+    qtquick/translator.cpp
 
 HEADERS += \
     qtquick/accountlistmodel.h \
@@ -23,7 +24,8 @@ HEADERS += \
     qtquick/notificationlistmodel.h \
     qtquick/postthreadlistmodel.h \
     qtquick/thumbnailprovider.h \
-    qtquick/timelinelistmodel.h
+    qtquick/timelinelistmodel.h \
+    qtquick/translator.h
 
 QML_FILES = \
     qml/main.qml \

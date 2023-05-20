@@ -14,6 +14,8 @@ RowLayout {
     property alias quoteMenuItem: quoteMenuItem
     property alias likeButton: likeButton
 
+    property alias tranlateMenuItem: tranlateMenuItem
+
     IconButton {
         id: replyButton
         Layout.preferredHeight: 24
@@ -63,5 +65,13 @@ RowLayout {
         iconSize: 16
         foreground: Material.color(Material.Grey)
         flat: true
+        onClicked: morePopup.open()
+        Menu {
+            id: morePopup
+            MenuItem {
+                id: tranlateMenuItem
+                text: qsTr("Translate")
+            }
+        }
     }
 }
