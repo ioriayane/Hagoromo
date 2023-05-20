@@ -42,7 +42,7 @@ public:
     Q_INVOKABLE void update(int row, ColumnListModel::ColumnListModelRoles role,
                             const QVariant &value);
 
-    Q_INVOKABLE void append(const QString &account_uuid, ColumnComponentType component_type);
+    Q_INVOKABLE void append(const QString &account_uuid, int component_type);
     Q_INVOKABLE void remove(int row);
     Q_INVOKABLE void removeByKey(const QString &key);
     Q_INVOKABLE bool containsKey(const QString &key) const;

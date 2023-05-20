@@ -53,12 +53,12 @@ void ColumnListModel::update(int row, ColumnListModelRoles role, const QVariant 
     emit dataChanged(index(row), index(row));
 }
 
-void ColumnListModel::append(const QString &account_uuid, ColumnComponentType component_type)
+void ColumnListModel::append(const QString &account_uuid, int component_type)
 {
     ColumnItem item;
     item.key = QUuid::createUuid().toString();
     item.account_uuid = account_uuid;
-    item.component_type = component_type;
+    item.component_type = static_cast<ColumnComponentType>(component_type);
 
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     m_columnList.append(item);
