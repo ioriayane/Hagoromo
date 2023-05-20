@@ -1,4 +1,5 @@
 #include "translator.h"
+#include "encryption.h"
 
 #include <QSettings>
 #include <QDebug>
@@ -37,9 +38,10 @@ Translator::Translator(QObject *parent) : QObject { parent }
 
 void Translator::translate(const QString &text)
 {
+    Encryption encryption;
     QSettings settings;
     setApiUrl(settings.value("translateApiUrl").toString());
-    setApiKey(settings.value("translateApiKey").toString());
+    setApiKey(encryption.decrypt(settings.value("translateApiKey").toString()));
     setTargetLanguage(settings.value("translateTargetLanguage").toString());
 
     QNetworkRequest request((QUrl(apiUrl())));

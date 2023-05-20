@@ -4,6 +4,8 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 import Qt.labs.settings 1.0
 
+import tech.relog.hagoromo.encryption 1.0
+
 Dialog {
     id: settingDialog
     modal: true
@@ -17,6 +19,10 @@ Dialog {
 
     // 行間と文字間も調整できると良いかも
 
+
+    Encryption {
+        id: encryption
+    }
 
     Settings {
         id: settings
@@ -33,7 +39,7 @@ Dialog {
             setRadioButton(themeButtonGroup.buttons, settings.theme)
             setRadioButton(accentButtonGroup.buttons, settings.accent)
             translateApiUrlText.text = settings.translateApiUrl
-            translateApiKeyText.text = settings.translateApiKey
+            translateApiKeyText.text = encryption.decrypt(settings.translateApiKey)
             translateTargetLanguageCombo.currentIndex = translateTargetLanguageCombo.indexOfValue(settings.translateTargetLanguage)
         }
 
@@ -127,14 +133,15 @@ Dialog {
                 }
                 TextField {
                     id: translateApiUrlText
+                    Layout.preferredWidth: 350
                     text: ""
-                    Layout.preferredWidth: 300
                 }
                 Label {
                     text: qsTr("Api Key")
                 }
                 TextField {
                     id: translateApiKeyText
+                    Layout.preferredWidth: 350
                     text: ""
                 }
                 Label {
@@ -142,6 +149,7 @@ Dialog {
                 }
                 ComboBox {
                     id: translateTargetLanguageCombo
+                    Layout.preferredWidth: 200
                     textRole: "text"
                     valueRole: "value"
                     model: ListModel {
@@ -168,7 +176,7 @@ Dialog {
                     settings.theme = themeButtonGroup.checkedButton.value
                     settings.accent = accentButtonGroup.checkedButton.value
                     settings.translateApiUrl = translateApiUrlText.text
-                    settings.translateApiKey = translateApiKeyText.text
+                    settings.translateApiKey = encryption.encrypt(translateApiKeyText.text)
                     settings.translateTargetLanguage = translateTargetLanguageCombo.currentValue
 
                     settingDialog.accept()
