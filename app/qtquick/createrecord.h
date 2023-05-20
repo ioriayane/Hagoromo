@@ -10,6 +10,8 @@ class CreateRecord : public QObject
 {
     Q_OBJECT
 
+    Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
+
 public:
     explicit CreateRecord(QObject *parent = nullptr);
 
@@ -29,8 +31,12 @@ public:
     Q_INVOKABLE void repost(const QString &cid, const QString &uri);
     Q_INVOKABLE void like(const QString &cid, const QString &uri);
 
+    bool running() const;
+    void setRunning(bool newRunning);
+
 signals:
     void finished(bool success);
+    void runningChanged();
 
 private:
     AtProtocolInterface::AccountData m_account;
@@ -41,6 +47,7 @@ private:
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_embedQuote;
     QStringList m_embedImages;
     QList<AtProtocolType::LexiconsTypeUnknown::Blob> m_embedImageBlogs;
+    bool m_running;
 };
 
 #endif // CREATERECORD_H

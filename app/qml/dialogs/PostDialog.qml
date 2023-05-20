@@ -14,6 +14,7 @@ Dialog {
     modal: true
     x: (parent.width - width) * 0.5
     y: (parent.height - height) * 0.5
+    closePolicy: Popup.NoAutoClose
 
     property int parentWidth: parent.width
     property alias accountModel: accountCombo.model
@@ -33,8 +34,11 @@ Dialog {
 
     onOpened: {
         var i = accountModel.indexAt(defaultAccountUuid)
+        accountCombo.currentIndex = -1
         if(i >= 0){
             accountCombo.currentIndex = i
+        } else {
+            accountCombo.currentIndex = 0
         }
     }
     onClosed: {
@@ -49,6 +53,7 @@ Dialog {
         replyText = ""
 
         postText.clear()
+        embedImagePreview.embedImages = ""
     }
 
     CreateRecord {
@@ -93,22 +98,40 @@ Dialog {
             }
         }
 
-        ComboBox {
-            id: accountCombo
-            Layout.preferredWidth: 200
-            textRole: "handle"
-            valueRole: "did"
-            delegate: ItemDelegate {
-                text: model.handle
-                width: parent.width
-                onClicked: accountCombo.currentIndex = model.index
+        RowLayout {
+            AvatarImage {
+                id: accountAvatarImage
+                Layout.preferredWidth: 24
+                Layout.preferredHeight: 24
+//                source:
+            }
+
+            ComboBox {
+                id: accountCombo
+                Layout.preferredWidth: 200
+                enabled: !createRecord.running
+                textRole: "handle"
+                valueRole: "did"
+                delegate: ItemDelegate {
+                    text: model.handle
+                    width: parent.width
+                    onClicked: accountCombo.currentIndex = model.index
+                }
+                onCurrentIndexChanged: {
+                    if(accountCombo.currentIndex >= 0){
+                        accountAvatarImage.source =
+                                           postDialog.accountModel.item(accountCombo.currentIndex, AccountListModel.AvatarRole)
+                    }
+                }
             }
         }
+
         TextField {
             id: postText
             Layout.preferredWidth: 400
             Layout.preferredHeight: 100
             verticalAlignment: TextInput.AlignTop
+            enabled: !createRecord.running
             wrapMode: TextInput.WordWrap
         }
 
@@ -125,6 +148,7 @@ Dialog {
                     fillMode: Image.PreserveAspectCrop
                     source: modelData
                     IconButton {
+                        enabled: !createRecord.running
                         width: 24
                         height: 24
                         anchors.top: parent.top
@@ -183,6 +207,7 @@ Dialog {
         RowLayout {
             //            Layout.alignment: Qt.AlignRight
             Button {
+                enabled: !createRecord.running
                 flat: true
                 text: qsTr("Cancel")
                 onClicked: postDialog.close()
@@ -192,6 +217,7 @@ Dialog {
                 Layout.preferredHeight: 1
             }
             IconButton {
+                enabled: !createRecord.running
                 iconSource: "../images/add_image.png"
                 flat: true
                 onClicked: {
@@ -217,7 +243,7 @@ Dialog {
             }
             Button {
                 Layout.alignment: Qt.AlignRight
-                enabled: postText.text.length > 0
+                enabled: postText.text.length > 0 && !createRecord.running
                 text: qsTr("Post")
                 onClicked: {
                     var row = accountCombo.currentIndex;
@@ -240,6 +266,11 @@ Dialog {
                     }else{
                         createRecord.post()
                     }
+                }
+                BusyIndicator {
+                    anchors.fill: parent
+                    anchors.margins: 3
+                    visible: createRecord.running
                 }
             }
         }

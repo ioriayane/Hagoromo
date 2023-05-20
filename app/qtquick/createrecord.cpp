@@ -8,7 +8,7 @@ using AtProtocolInterface::ComAtprotoRepoCreateRecord;
 using AtProtocolInterface::ComAtprotoRepoUploadBlob;
 using namespace AtProtocolType;
 
-CreateRecord::CreateRecord(QObject *parent) : QObject { parent } { }
+CreateRecord::CreateRecord(QObject *parent) : QObject { parent }, m_running(false) { }
 
 void CreateRecord::setAccount(const QString &service, const QString &did, const QString &handle,
                               const QString &email, const QString &accessJwt,
@@ -62,9 +62,12 @@ void CreateRecord::post()
     if (m_text.isEmpty())
         return;
 
+    setRunning(true);
+
     ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord();
     connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
         emit finished(success);
+        setRunning(false);
         create_record->deleteLater();
     });
     create_record->setAccount(m_account);
@@ -78,6 +81,9 @@ void CreateRecord::postWithImages()
 {
     if (m_embedImages.isEmpty())
         return;
+
+    setRunning(true);
+
     QString path = QUrl(m_embedImages.first()).toLocalFile();
     m_embedImages.removeFirst();
 
@@ -98,8 +104,10 @@ void CreateRecord::postWithImages()
             } else {
                 postWithImages();
             }
+        } else {
+            emit finished(success);
+            setRunning(false);
         }
-        emit finished(success);
         upload_blob->deleteLater();
     });
     upload_blob->setAccount(m_account);
@@ -108,9 +116,14 @@ void CreateRecord::postWithImages()
 
 void CreateRecord::repost(const QString &cid, const QString &uri)
 {
+    if (running())
+        return;
+    setRunning(true);
+
     ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord();
     connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
         emit finished(success);
+        setRunning(false);
 
         // 成功なら、受け取ったデータでTLデータの更新をしないと値が大きくならない
 
@@ -122,9 +135,14 @@ void CreateRecord::repost(const QString &cid, const QString &uri)
 
 void CreateRecord::like(const QString &cid, const QString &uri)
 {
+    if (running())
+        return;
+    setRunning(true);
+
     ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord();
     connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
         emit finished(success);
+        setRunning(false);
 
         // 成功なら、受け取ったデータでTLデータの更新をしないと値が大きくならない
 
@@ -132,4 +150,17 @@ void CreateRecord::like(const QString &cid, const QString &uri)
     });
     create_record->setAccount(m_account);
     create_record->like(cid, uri);
+}
+
+bool CreateRecord::running() const
+{
+    return m_running;
+}
+
+void CreateRecord::setRunning(bool newRunning)
+{
+    if (m_running == newRunning)
+        return;
+    m_running = newRunning;
+    emit runningChanged();
 }
