@@ -155,6 +155,18 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
     return QVariant();
 }
 
+int NotificationListModel::indexOf(const QString &cid) const
+{
+    Q_UNUSED(cid)
+    return -1;
+}
+
+QString NotificationListModel::getRecordText(const QString &cid)
+{
+    Q_UNUSED(cid)
+    return QString();
+}
+
 void NotificationListModel::getLatest()
 {
     if (running())

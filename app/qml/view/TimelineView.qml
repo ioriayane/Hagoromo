@@ -105,9 +105,7 @@ ScrollView {
             postControls.quoteMenuItem.onTriggered: requestedQuote(model.cid, model.uri,
                                                                    model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
             postControls.likeButton.onClicked: requestedLike(model.cid, model.uri)
-
             postControls.tranlateMenuItem.onTriggered: timelineListModel.translate(model.cid)
-
         }
     }
 }

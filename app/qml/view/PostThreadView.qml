@@ -68,7 +68,13 @@ ScrollView {
             postAuthor.displayName: model.displayName
             postAuthor.handle: model.handle
             postAuthor.indexedAt: model.indexedAt
-            recordText.text: model.recordText
+            recordText.text: {
+                var text = model.recordText
+                if(model.recordTextTranslation.length > 0){
+                    text = text + "\n---\n" + model.recordTextTranslation
+                }
+                return text
+            }
             postImagePreview.embedImages: model.embedImages
             postImagePreview.onRequestedViewImages: (index) => requestedViewImages(index, model.embedImagesFull)
 
@@ -94,6 +100,7 @@ ScrollView {
             postControls.quoteMenuItem.onTriggered: requestedQuote(model.cid, model.uri,
                                                                    model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
             postControls.likeButton.onClicked: requestedLike(model.cid, model.uri)
+            postControls.tranlateMenuItem.onTriggered: postThreadListModel.translate(model.cid)
         }
     }
 }

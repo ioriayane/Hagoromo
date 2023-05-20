@@ -37,6 +37,8 @@ QVariant PostThreadListModel::item(int row, PostThreadListModelRoles role) const
         return current.author.avatar;
     else if (role == RecordTextRole)
         return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(current.record).text;
+    else if (role == RecordTextTranslationRole)
+        return m_translations.contains(current.cid) ? m_translations[current.cid] : QString();
     else if (role == ReplyCountRole)
         return current.replyCount;
     else if (role == RepostCountRole)
@@ -100,6 +102,20 @@ QVariant PostThreadListModel::item(int row, PostThreadListModelRoles role) const
     return QVariant();
 }
 
+int PostThreadListModel::indexOf(const QString &cid) const
+{
+    return m_cidList.indexOf(cid);
+}
+
+QString PostThreadListModel::getRecordText(const QString &cid)
+{
+    if (!m_cidList.contains(cid))
+        return QString();
+    if (!m_postHash.contains(cid))
+        return QString();
+    return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(m_postHash[cid].record).text;
+}
+
 void PostThreadListModel::getLatest()
 {
     if (running() || postThreadUri().isEmpty())
@@ -129,6 +145,7 @@ QHash<int, QByteArray> PostThreadListModel::roleNames() const
     roles[HandleRole] = "handle";
     roles[AvatarRole] = "avatar";
     roles[RecordTextRole] = "recordText";
+    roles[RecordTextTranslationRole] = "recordTextTranslation";
     roles[ReplyCountRole] = "replyCount";
     roles[RepostCountRole] = "repostCount";
     roles[LikeCountRole] = "likeCount";

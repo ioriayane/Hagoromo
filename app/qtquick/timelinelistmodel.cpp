@@ -1,6 +1,5 @@
 #include "timelinelistmodel.h"
 #include "atprotocol/lexicons_func_unknown.h"
-#include "translator.h"
 
 #include <QDebug>
 
@@ -169,38 +168,19 @@ void TimelineListModel::update(int row, TimelineListModelRoles role, const QVari
     return;
 }
 
-int TimelineListModel::indexAt(const QString &cid) const
+int TimelineListModel::indexOf(const QString &cid) const
 {
-    if (cid.isEmpty())
-        return -1;
-
-    for (int i = 0; i < m_cidList.length(); i++) {
-        if (m_cidList.at(i) == cid) {
-            return i;
-        }
-    }
-    return -1;
+    return m_cidList.indexOf(cid);
 }
 
-void TimelineListModel::translate(const QString &cid)
+QString TimelineListModel::getRecordText(const QString &cid)
 {
     if (!m_cidList.contains(cid))
-        return;
-
-    QString record_text = LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(
-                                  m_viewPostHash[cid].post.record)
-                                  .text;
-
-    Translator *translator = new Translator();
-    connect(translator, &Translator::finished, [=](const QString text) {
-        int row = indexAt(cid);
-        if (row >= 0 && !text.isEmpty()) {
-            m_translations[cid] = text;
-            emit dataChanged(index(row), index(row));
-        }
-        translator->deleteLater();
-    });
-    translator->translate(record_text);
+        return QString();
+    if (!m_viewPostHash.contains(cid))
+        return QString();
+    return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(m_viewPostHash[cid].post.record)
+            .text;
 }
 
 void TimelineListModel::getLatest()

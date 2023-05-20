@@ -62,6 +62,9 @@ public:
     Q_INVOKABLE QVariant item(int row,
                               NotificationListModel::NotificationListModelRoles role) const;
 
+    virtual Q_INVOKABLE int indexOf(const QString &cid) const;
+    virtual Q_INVOKABLE QString getRecordText(const QString &cid);
+
     Q_INVOKABLE void getLatest();
 
 signals:

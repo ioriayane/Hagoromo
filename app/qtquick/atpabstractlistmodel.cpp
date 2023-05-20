@@ -1,4 +1,8 @@
 #include "atpabstractlistmodel.h"
+#include "atprotocol/lexicons_func_unknown.h"
+#include "translator.h"
+
+using namespace AtProtocolType;
 
 AtpAbstractListModel::AtpAbstractListModel(QObject *parent)
     : QAbstractListModel { parent }, m_running(false)
@@ -21,6 +25,27 @@ void AtpAbstractListModel::setAccount(const QString &service, const QString &did
     m_account.email = email;
     m_account.accessJwt = accessJwt;
     m_account.refreshJwt = refreshJwt;
+}
+
+void AtpAbstractListModel::translate(const QString &cid)
+{
+    // indexで指定しないと同じcidが複数含まれる場合に正しく対応できない
+    // indexにすると処理を始めてから追加の読み込みがあるとズレる
+
+    QString record_text = getRecordText(cid);
+    if (record_text.isEmpty())
+        return;
+
+    Translator *translator = new Translator();
+    connect(translator, &Translator::finished, [=](const QString text) {
+        int row = indexOf(cid);
+        if (row >= 0 && !text.isEmpty()) {
+            m_translations[cid] = text;
+            emit dataChanged(index(row), index(row));
+        }
+        translator->deleteLater();
+    });
+    translator->translate(record_text);
 }
 
 bool AtpAbstractListModel::running() const

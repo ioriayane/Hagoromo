@@ -21,6 +21,10 @@ public:
     Q_INVOKABLE void setAccount(const QString &service, const QString &did, const QString &handle,
                                 const QString &email, const QString &accessJwt,
                                 const QString &refreshJwt);
+    virtual Q_INVOKABLE int indexOf(const QString &cid) const = 0;
+    virtual Q_INVOKABLE QString getRecordText(const QString &cid) = 0;
+    Q_INVOKABLE void translate(const QString &cid);
+
     bool running() const;
     void setRunning(bool newRunning);
     bool autoLoading() const;
@@ -35,6 +39,8 @@ public slots:
 
 protected:
     QString formatDateTime(const QString &value) const;
+
+    QHash<QString, QString> m_translations; // QHash<cid, translation>
 
 private:
     QTimer m_timer;

@@ -23,6 +23,7 @@ public:
         HandleRole,
         AvatarRole,
         RecordTextRole,
+        RecordTextTranslationRole,
         ReplyCountRole,
         RepostCountRole,
         LikeCountRole,
@@ -56,6 +57,9 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
     Q_INVOKABLE QVariant item(int row, PostThreadListModel::PostThreadListModelRoles role) const;
+
+    virtual Q_INVOKABLE int indexOf(const QString &cid) const;
+    virtual Q_INVOKABLE QString getRecordText(const QString &cid);
 
     Q_INVOKABLE void getLatest();
 
