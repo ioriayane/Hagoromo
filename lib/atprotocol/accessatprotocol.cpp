@@ -142,26 +142,16 @@ void AccessAtProtocol::postWithImage(const QString &endpoint, const QString &pat
     request.setHeader(QNetworkRequest::ContentTypeHeader,
                       QString("image/%1").arg(info.suffix().toLower()));
 
-    QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
-    QFile *file = new QFile(path, multiPart);
+    QFile *file = new QFile(path);
     if (!file->open(QIODevice::ReadOnly)) {
         qDebug() << "AccessAtProtocol::postWithImage()"
                  << "Not open" << path;
-        delete multiPart;
+        delete file;
         return;
     }
 
-    QHttpPart imagePart;
-    imagePart.setHeader(QNetworkRequest::ContentTypeHeader,
-                        QString("image/%1").arg(info.suffix().toLower()));
-    imagePart.setHeader(QNetworkRequest::ContentDispositionHeader,
-                        QVariant("form-data; name=\"image\""));
-    imagePart.setBodyDevice(file);
-
-    multiPart->append(imagePart);
-
-    QNetworkReply *reply = m_manager.post(request, multiPart);
-    multiPart->setParent(reply); // 後で消すため
+    QNetworkReply *reply = m_manager.post(request, file);
+    file->setParent(reply);
 }
 
 }

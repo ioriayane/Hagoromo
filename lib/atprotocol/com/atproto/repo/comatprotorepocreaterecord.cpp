@@ -43,7 +43,10 @@ void ComAtprotoRepoCreateRecord::post(const QString &text)
         for (const auto &blob : qAsConst(m_embedImageBlobs)) {
             QJsonObject json_blob;
             QJsonObject json_image;
-            json_image.insert("cid", blob.cid);
+            json_image.insert("$type", "blob");
+            QJsonObject json_link;
+            json_link.insert("$link", blob.cid);
+            json_image.insert("ref", json_link);
             json_image.insert("mimeType", blob.mimeType);
             json_image.insert("size", blob.size);
             json_blob.insert("image", json_image);
