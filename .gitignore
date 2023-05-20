@@ -56,3 +56,4 @@ compile_commands.json
 
 scripts/out/*
 .vscode/settings.json
+encryption_seed.h

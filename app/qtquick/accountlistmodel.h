@@ -2,6 +2,7 @@
 #define ACCOUNTLISTMODEL_H
 
 #include "atprotocol/accessatprotocol.h"
+#include "encryption.h"
 
 #include <QAbstractListModel>
 #include <QObject>
@@ -64,11 +65,7 @@ private:
     QList<AtProtocolInterface::AccountData> m_accountList;
     QVariant m_accountTemp;
     QTimer m_timer;
-
-    QByteArray m_encryptKey;
-    QByteArray m_encryptIv;
-    QString encrypt(const QString &data) const;
-    QString decrypt(const QString &data) const;
+    Encryption m_encryption;
 
     QString appDataFolder() const;
 

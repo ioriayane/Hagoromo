@@ -9,6 +9,7 @@ SOURCES += \
     qtquick/columnlistmodel.cpp \
     qtquick/createrecord.cpp \
     qtquick/createsession.cpp \
+    qtquick/encryption.cpp \
     qtquick/notificationlistmodel.cpp \
     qtquick/postthreadlistmodel.cpp \
     qtquick/timelinelistmodel.cpp \
@@ -21,6 +22,8 @@ HEADERS += \
     qtquick/common.h \
     qtquick/createrecord.h \
     qtquick/createsession.h \
+    qtquick/encryption.h \
+    qtquick/encryption_seed.h \
     qtquick/notificationlistmodel.h \
     qtquick/postthreadlistmodel.h \
     qtquick/thumbnailprovider.h \
