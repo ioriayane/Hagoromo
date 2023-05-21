@@ -145,7 +145,7 @@ ColumnLayout {
             spacing: 0
             IconButton {
                 Layout.preferredWidth: 30
-                Layout.fillHeight: true
+                Layout.preferredHeight: 30
                 visible: columnStackView.depth > 2
                 flat: true
                 iconSource: "../images/arrow_left_double.png"
@@ -153,7 +153,7 @@ ColumnLayout {
             }
             IconButton {
                 Layout.preferredWidth: 30
-                Layout.fillHeight: true
+                Layout.preferredHeight: 30
                 visible: columnStackView.depth > 1
                 flat: true
                 iconSource: "../images/arrow_left_single.png"
