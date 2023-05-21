@@ -18,6 +18,7 @@ public:
 
 private:
     virtual void parseJson(const QString reply_json);
+    QString compress(const QString &path);
 
     QString m_cid;
     QString m_mimeType;

@@ -10,7 +10,6 @@
 #include <QJsonArray>
 #include <QFile>
 #include <QJsonDocument>
-#include <QDir>
 #include <QNetworkInterface>
 
 using AtProtocolInterface::AccountData;

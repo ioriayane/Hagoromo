@@ -1,7 +1,13 @@
 #include "comatprotorepouploadblob.h"
 
+#include <QFileInfo>
+#include <QStandardPaths>
+#include <QImage>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QUuid>
+#include <QCoreApplication>
+#include <QDir>
 
 namespace AtProtocolInterface {
 
@@ -10,7 +16,7 @@ ComAtprotoRepoUploadBlob::ComAtprotoRepoUploadBlob(QObject *parent)
 
 void ComAtprotoRepoUploadBlob::uploadBlob(const QString &path)
 {
-    postWithImage(QStringLiteral("xrpc/com.atproto.repo.uploadBlob"), path);
+    postWithImage(QStringLiteral("xrpc/com.atproto.repo.uploadBlob"), compress(path));
 }
 
 void ComAtprotoRepoUploadBlob::parseJson(const QString reply_json)
@@ -39,6 +45,43 @@ void ComAtprotoRepoUploadBlob::parseJson(const QString reply_json)
     }
 
     emit finished(success);
+}
+
+QString ComAtprotoRepoUploadBlob::compress(const QString &path)
+{
+    QFileInfo info(path);
+    if (info.size() < 1000000)
+        return path;
+
+    QString folder =
+            QString("%1/%2").arg(QStandardPaths::writableLocation(QStandardPaths::TempLocation),
+                                 QCoreApplication::applicationName());
+    QDir dir(folder);
+    dir.mkpath(folder);
+
+    QImage src(path);
+    QString new_path = QString("%1/%2.jpg").arg(folder, QUuid::createUuid().toString(QUuid::Id128));
+
+    QFileInfo new_info(path);
+    for (int quality = 90; quality >= 70; quality -= 5) {
+        // qDebug() << new_info.size() << "/" << info.size() << "," << quality;
+        if (new_info.size() < 1000000) {
+            break;
+        }
+        src.save(new_path, nullptr, quality);
+        new_info.setFile(new_path);
+    }
+    for (qreal ratio = 0.9; ratio >= 0.1; ratio -= 0.1) {
+        // qDebug() << new_info.size() << "/" << info.size() << "," << src.width() << "x"
+        //         << src.height();
+        if (new_info.size() < 1000000) {
+            break;
+        }
+        src.scaled(src.width() * ratio, src.height() * ratio, Qt::KeepAspectRatio)
+                .save(new_path, nullptr, 70);
+        new_info.setFile(new_path);
+    }
+    return new_path;
 }
 
 int ComAtprotoRepoUploadBlob::size() const
