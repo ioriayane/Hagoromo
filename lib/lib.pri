@@ -14,6 +14,7 @@ SOURCES += \
     $$PWD/atprotocol/com/atproto/server/comatprotoserverrefreshsession.cpp \
     $$PWD/atprotocol/lexicons_func.cpp \
     $$PWD/atprotocol/lexicons_func_unknown.cpp \
+    $$PWD/tools/imagecompressor.cpp
 
 HEADERS += \
     $$PWD/atprotocol/accessatprotocol.h \
@@ -29,3 +30,4 @@ HEADERS += \
     $$PWD/atprotocol/lexicons.h \
     $$PWD/atprotocol/lexicons_func.h \
     $$PWD/atprotocol/lexicons_func_unknown.h \
+    $$PWD/tools/imagecompressor.h
