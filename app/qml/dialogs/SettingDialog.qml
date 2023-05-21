@@ -142,6 +142,7 @@ Dialog {
                 TextField {
                     id: translateApiKeyText
                     Layout.preferredWidth: 350
+                    echoMode: TextInput.Password
                     text: ""
                 }
                 Label {
