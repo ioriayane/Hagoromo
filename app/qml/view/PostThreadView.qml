@@ -8,11 +8,8 @@ import tech.relog.hagoromo.postthreadlistmodel 1.0
 import "../parts"
 import "../controls"
 
-ScrollView {
+ColumnLayout {
     id: postThreadView
-    ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-    ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-    clip: true
 
     property alias postThreadUri: postThreadListModel.postThreadUri
     property alias listView: rootListView
@@ -29,78 +26,110 @@ ScrollView {
 
     signal back()
 
-    ListView {
-        id: rootListView
-        anchors.fill: parent
-        anchors.rightMargin: parent.ScrollBar.vertical.width
+    Frame {
+        Layout.fillWidth: true
+        leftPadding: 0
+        topPadding: 0
+        rightPadding: 10
+        bottomPadding: 0
 
-        model: PostThreadListModel {
-            id: postThreadListModel
-            autoLoading: false
+        RowLayout {
+            IconButton {
+                Layout.preferredWidth: 30
+                Layout.preferredHeight: 30
+                flat: true
+                iconSource: "../images/arrow_left_single.png"
+                onClicked: postThreadView.back()
+            }
+            Label {
+                Layout.fillWidth: true
+                Layout.leftMargin: 10
+                text: "Post thread"
+            }
         }
+    }
 
-        header: Item {
-            width: rootListView.width
-            height: 24
+    ScrollView {
+        Layout.fillWidth: true
+        Layout.fillHeight: true
 
-            BusyIndicator {
-                anchors.centerIn: parent
-                width: 24
+        ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        clip: true
+
+        ListView {
+            id: rootListView
+            anchors.fill: parent
+            anchors.rightMargin: parent.ScrollBar.vertical.width
+
+            model: PostThreadListModel {
+                id: postThreadListModel
+                autoLoading: false
+            }
+
+            header: Item {
+                width: rootListView.width
                 height: 24
-                visible: postThreadListModel.running
-            }
-        }
 
-        delegate: PostDelegate {
-            width: rootListView.width
-
-            //自分から自分へは移動しない
-            //onClicked: (mouse) => requestedViewThread(model.uri)
-
-            repostReactionAuthor.visible: model.isRepostedBy
-            repostReactionAuthor.displayName: model.repostedByDisplayName
-            repostReactionAuthor.handle: model.repostedByHandle
-            replyReactionAuthor.visible: model.hasReply
-            replyReactionAuthor.displayName: model.replyParentDisplayName
-            replyReactionAuthor.handle: model.replyParentHandle
-
-            postAvatarImage.source: model.avatar
-            postAuthor.displayName: model.displayName
-            postAuthor.handle: model.handle
-            postAuthor.indexedAt: model.indexedAt
-            recordText.text: {
-                var text = model.recordText
-                if(model.recordTextTranslation.length > 0){
-                    text = text + "\n---\n" + model.recordTextTranslation
+                BusyIndicator {
+                    anchors.centerIn: parent
+                    width: 24
+                    height: 24
+                    visible: postThreadListModel.running
                 }
-                return text
             }
-            postImagePreview.embedImages: model.embedImages
-            postImagePreview.onRequestedViewImages: (index) => requestedViewImages(index, model.embedImagesFull)
 
-            childFrame.visible: model.hasQuoteRecord
-            childFrame.onClicked: (mouse) => {
-                                      if(model.quoteRecordUri.length > 0){
-                                          requestedViewThread(model.quoteRecordUri)
+            delegate: PostDelegate {
+                width: rootListView.width
+
+                //自分から自分へは移動しない
+                //onClicked: (mouse) => requestedViewThread(model.uri)
+
+                repostReactionAuthor.visible: model.isRepostedBy
+                repostReactionAuthor.displayName: model.repostedByDisplayName
+                repostReactionAuthor.handle: model.repostedByHandle
+                replyReactionAuthor.visible: model.hasReply
+                replyReactionAuthor.displayName: model.replyParentDisplayName
+                replyReactionAuthor.handle: model.replyParentHandle
+
+                postAvatarImage.source: model.avatar
+                postAuthor.displayName: model.displayName
+                postAuthor.handle: model.handle
+                postAuthor.indexedAt: model.indexedAt
+                recordText.text: {
+                    var text = model.recordText
+                    if(model.recordTextTranslation.length > 0){
+                        text = text + "\n---\n" + model.recordTextTranslation
+                    }
+                    return text
+                }
+                postImagePreview.embedImages: model.embedImages
+                postImagePreview.onRequestedViewImages: (index) => requestedViewImages(index, model.embedImagesFull)
+
+                childFrame.visible: model.hasQuoteRecord
+                childFrame.onClicked: (mouse) => {
+                                          if(model.quoteRecordUri.length > 0){
+                                              requestedViewThread(model.quoteRecordUri)
+                                          }
                                       }
-                                  }
-            childAvatarImage.source: model.quoteRecordAvatar
-            childAuthor.displayName: model.quoteRecordDisplayName
-            childAuthor.handle: model.quoteRecordHandle
-            childAuthor.indexedAt: model.quoteRecordIndexedAt
-            childRecordText.text: model.quoteRecordRecordText
+                childAvatarImage.source: model.quoteRecordAvatar
+                childAuthor.displayName: model.quoteRecordDisplayName
+                childAuthor.handle: model.quoteRecordHandle
+                childAuthor.indexedAt: model.quoteRecordIndexedAt
+                childRecordText.text: model.quoteRecordRecordText
 
-            postControls.replyButton.iconText: model.replyCount
-            postControls.repostButton.iconText: model.repostCount
-            postControls.likeButton.iconText: model.likeCount
-            postControls.replyButton.onClicked: requestedReply(model.cid, model.uri,
-                                                               model.replyRootCid, model.replyRootUri,
-                                                               model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
-            postControls.repostMenuItem.onTriggered: requestedRepost(model.cid, model.uri)
-            postControls.quoteMenuItem.onTriggered: requestedQuote(model.cid, model.uri,
+                postControls.replyButton.iconText: model.replyCount
+                postControls.repostButton.iconText: model.repostCount
+                postControls.likeButton.iconText: model.likeCount
+                postControls.replyButton.onClicked: requestedReply(model.cid, model.uri,
+                                                                   model.replyRootCid, model.replyRootUri,
                                                                    model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
-            postControls.likeButton.onClicked: requestedLike(model.cid, model.uri)
-            postControls.tranlateMenuItem.onTriggered: postThreadListModel.translate(model.cid)
+                postControls.repostMenuItem.onTriggered: requestedRepost(model.cid, model.uri)
+                postControls.quoteMenuItem.onTriggered: requestedQuote(model.cid, model.uri,
+                                                                       model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
+                postControls.likeButton.onClicked: requestedLike(model.cid, model.uri)
+                postControls.tranlateMenuItem.onTriggered: postThreadListModel.translate(model.cid)
+            }
         }
     }
 }

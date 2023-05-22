@@ -146,18 +146,10 @@ ColumnLayout {
             IconButton {
                 Layout.preferredWidth: 30
                 Layout.preferredHeight: 30
-                visible: columnStackView.depth > 2
+                visible: columnStackView.depth > 1
                 flat: true
                 iconSource: "../images/arrow_left_double.png"
                 onClicked: columnStackView.pop(null)
-            }
-            IconButton {
-                Layout.preferredWidth: 30
-                Layout.preferredHeight: 30
-                visible: columnStackView.depth > 1
-                flat: true
-                iconSource: "../images/arrow_left_single.png"
-                onClicked: columnStackView.pop()
             }
 
             AvatarImage {
