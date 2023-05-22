@@ -27,6 +27,7 @@ ColumnLayout {
     signal requestedLike(string cid, string uri)
     signal requestedViewThread(string uri)
     signal requestedViewImages(int index, string paths)
+    signal requestedViewProfile(string did)
 
     signal back()
 
@@ -144,6 +145,18 @@ ColumnLayout {
                 autoLoading: true
                 authorDid: profileView.userDid
             }
+
+            onRequestedReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
+                              profileView.requestedReply(profileView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+            onRequestedRepost: (cid, uri) => profileView.repost(cid, uri)
+            onRequestedQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
+                              profileView.requestedQuote(profileView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+            onRequestedLike: (cid, uri) => profileView.like(cid, uri)
+
+            onRequestedViewThread: (uri) => profileView.requestedViewThread(uri)
+            onRequestedViewImages: (index, paths) => profileView.requestedViewImages(index, paths)
+            onRequestedViewProfile: (did) => profileView.requestedViewProfile(did)
+
         }
 
         Frame {

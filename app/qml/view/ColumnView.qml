@@ -111,6 +111,27 @@ ColumnLayout {
     Component {
         id: profileComponent
         ProfileView {
+            onRequestedReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
+                              columnView.requestedReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+            onRequestedRepost: (cid, uri) => createRecord.repost(cid, uri)
+            onRequestedQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
+                              columnView.requestedQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+            onRequestedLike: (cid, uri) => createRecord.like(cid, uri)
+
+            onRequestedViewThread: (uri) => {
+                                       console.log("View Thread : " + uri)
+                                       // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
+                                       // これはPostThreadViewのプロパティにダイレクトに設定する
+                                       columnStackView.push(postThreadComponent, { "postThreadUri": uri })
+                                   }
+
+            onRequestedViewImages: (index, paths) => columnView.requestedViewImages(index, paths)
+
+            onRequestedViewProfile: (did) => {
+                                        console.log("View profile : " + did)
+                                        columnStackView.push(profileComponent, { "userDid": did })
+                                    }
+
             onBack: {
                 if(!columnStackView.empty){
                     columnStackView.pop()
