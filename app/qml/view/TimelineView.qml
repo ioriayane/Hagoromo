@@ -33,29 +33,24 @@ ScrollView {
         anchors.rightMargin: parent.ScrollBar.vertical.width
         spacing: 5
 
-        model: TimelineListModel {
-            id: timelineListModel
-            autoLoading: true
-        }
-
         header: ItemDelegate {
             width: rootListView.width
             height: 24
             display: AbstractButton.IconOnly
-            icon.source: timelineListModel.running ? "" : "../images/expand_less.png"
-            onClicked: timelineListModel.getLatest()
+            icon.source: rootListView.model.running ? "" : "../images/expand_less.png"
+            onClicked: rootListView.model.getLatest()
 
             BusyIndicator {
                 anchors.centerIn: parent
                 width: 24
                 height: 24
-                visible: timelineListModel.running
+                visible: rootListView.model.running
             }
         }
         footer: BusyIndicator {
             width: rootListView.width
             height: 24
-            visible: timelineListModel.running && timelineListModel.rowCount() > 0
+            visible: rootListView.model.running && rootListView.model.rowCount() > 0
         }
 
         delegate: PostDelegate {
@@ -107,7 +102,7 @@ ScrollView {
             postControls.quoteMenuItem.onTriggered: requestedQuote(model.cid, model.uri,
                                                                    model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
             postControls.likeButton.onClicked: requestedLike(model.cid, model.uri)
-            postControls.tranlateMenuItem.onTriggered: timelineListModel.translate(model.cid)
+            postControls.tranlateMenuItem.onTriggered: rootListView.model.translate(model.cid)
         }
     }
 }

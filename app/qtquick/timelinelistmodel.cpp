@@ -7,54 +7,8 @@ using AtProtocolInterface::AccountData;
 using AtProtocolInterface::AppBskyFeedGetTimeline;
 using namespace AtProtocolType;
 
-TimelineListModel::TimelineListModel(AtpAbstractListModel *parent) : AtpAbstractListModel { parent }
+TimelineListModel::TimelineListModel(QObject *parent) : AtpAbstractListModel { parent }
 {
-    connect(&m_timeline, &AppBskyFeedGetTimeline::finished, [=](bool success) {
-        if (success) {
-            QDateTime reference_time;
-            if (m_cidList.count() > 0 && m_viewPostHash.count() > 0) {
-                reference_time = QDateTime::fromString(
-                        m_viewPostHash[m_cidList.at(0)].post.indexedAt, Qt::ISODateWithMs);
-            } else if (m_timeline.feedList()->count() > 0) {
-                reference_time = QDateTime::fromString(m_timeline.feedList()->last().post.indexedAt,
-                                                       Qt::ISODateWithMs);
-            } else {
-                reference_time = QDateTime::currentDateTimeUtc();
-            }
-            for (auto item = m_timeline.feedList()->crbegin();
-                 item != m_timeline.feedList()->crend(); item++) {
-                m_viewPostHash[item->post.cid] = *item;
-
-                if (m_cidList.contains(item->post.cid)) {
-                    if (item->reason_type
-                                == AppBskyFeedDefs::FeedViewPostReasonType::reason_ReasonRepost
-                        && (QDateTime::fromString(item->post.indexedAt, Qt::ISODateWithMs)
-                            > reference_time)) {
-                        // repostのときはいったん消す（上に持っていく）
-                        int r = m_cidList.indexOf(item->post.cid);
-                        if (r > 0) {
-                            beginMoveRows(QModelIndex(), r, r, QModelIndex(), 0);
-                            m_cidList.move(r, 0);
-                            endMoveRows();
-                        }
-                    } else {
-                        // リストは更新しないでデータのみ入れ替える
-                        // リプライ数とかだけ更新をUIに通知
-                        // （取得できた範囲でしか更新できないのだけど・・・）
-                        int pos = m_cidList.indexOf(item->post.cid);
-                        emit dataChanged(index(pos), index(pos),
-                                         QVector<int>() << ReplyCountRole << RepostCountRole
-                                                        << LikeCountRole);
-                    }
-                } else {
-                    beginInsertRows(QModelIndex(), 0, 0);
-                    m_cidList.insert(0, item->post.cid);
-                    endInsertRows();
-                }
-            }
-        }
-        setRunning(false);
-    });
 }
 
 int TimelineListModel::rowCount(const QModelIndex &parent) const
@@ -191,8 +145,16 @@ void TimelineListModel::getLatest()
         return;
     setRunning(true);
 
-    m_timeline.setAccount(account());
-    m_timeline.getTimeline();
+    AppBskyFeedGetTimeline *timeline = new AppBskyFeedGetTimeline();
+    connect(timeline, &AppBskyFeedGetTimeline::finished, [=](bool success) {
+        if (success) {
+            copyFrom(timeline);
+        }
+        setRunning(false);
+        timeline->deleteLater();
+    });
+    timeline->setAccount(account());
+    timeline->getTimeline();
 }
 
 QHash<int, QByteArray> TimelineListModel::roleNames() const
@@ -235,4 +197,48 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[RepostedByHandleRole] = "repostedByHandle";
 
     return roles;
+}
+
+void TimelineListModel::copyFrom(AppBskyFeedGetTimeline *timeline)
+{
+    QDateTime reference_time;
+    if (m_cidList.count() > 0 && m_viewPostHash.count() > 0) {
+        reference_time = QDateTime::fromString(m_viewPostHash[m_cidList.at(0)].post.indexedAt,
+                                               Qt::ISODateWithMs);
+    } else if (timeline->feedList()->count() > 0) {
+        reference_time = QDateTime::fromString(timeline->feedList()->last().post.indexedAt,
+                                               Qt::ISODateWithMs);
+    } else {
+        reference_time = QDateTime::currentDateTimeUtc();
+    }
+    for (auto item = timeline->feedList()->crbegin(); item != timeline->feedList()->crend();
+         item++) {
+        m_viewPostHash[item->post.cid] = *item;
+
+        if (m_cidList.contains(item->post.cid)) {
+            if (item->reason_type == AppBskyFeedDefs::FeedViewPostReasonType::reason_ReasonRepost
+                && (QDateTime::fromString(item->post.indexedAt, Qt::ISODateWithMs)
+                    > reference_time)) {
+                // repostのときはいったん消す（上に持っていく）
+                int r = m_cidList.indexOf(item->post.cid);
+                if (r > 0) {
+                    beginMoveRows(QModelIndex(), r, r, QModelIndex(), 0);
+                    m_cidList.move(r, 0);
+                    endMoveRows();
+                }
+            } else {
+                // リストは更新しないでデータのみ入れ替える
+                // リプライ数とかだけ更新をUIに通知
+                // （取得できた範囲でしか更新できないのだけど・・・）
+                int pos = m_cidList.indexOf(item->post.cid);
+                emit dataChanged(index(pos), index(pos),
+                                 QVector<int>()
+                                         << ReplyCountRole << RepostCountRole << LikeCountRole);
+            }
+        } else {
+            beginInsertRows(QModelIndex(), 0, 0);
+            m_cidList.insert(0, item->post.cid);
+            endInsertRows();
+        }
+    }
 }

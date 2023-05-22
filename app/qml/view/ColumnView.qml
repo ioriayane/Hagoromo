@@ -3,6 +3,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 
+import tech.relog.hagoromo.timelinelistmodel 1.0
 import tech.relog.hagoromo.columnlistmodel 1.0
 import tech.relog.hagoromo.createrecord 1.0
 
@@ -43,6 +44,10 @@ ColumnLayout {
     Component {
         id: timelineComponent
         TimelineView {
+            model: TimelineListModel {
+                autoLoading: true
+            }
+
             onRequestedReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                               columnView.requestedReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestedRepost: (cid, uri) => createRecord.repost(cid, uri)

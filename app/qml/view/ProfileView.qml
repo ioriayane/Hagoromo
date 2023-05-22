@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 
 import tech.relog.hagoromo.userprofile 1.0
+import tech.relog.hagoromo.authorfeedlistmodel 1.0
 
 import "../parts"
 import "../controls"
@@ -13,10 +14,7 @@ ColumnLayout {
     Layout.fillWidth: true
     Layout.fillHeight: true
     spacing: 0
-    //    width: 300
-    //    height: 500
-    //    property alias postThreadUri: postThreadListModel.postThreadUri
-    //    property alias listView: rootListView
+
     property alias model: relayObject
 
     property string userDid: ""
@@ -39,9 +37,11 @@ ColumnLayout {
         }
         function setAccount(service, did, handle, email, accessJwt, refreshJwt) {
             userProfile.setAccount(service, did, handle, email, accessJwt, refreshJwt)
+            authorFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
         }
         function getLatest() {
             userProfile.getProfile(userDid)
+            authorFeedListModel.getLatest()
         }
     }
 
@@ -136,10 +136,13 @@ ColumnLayout {
         Layout.fillHeight: true
         currentIndex: tabBar.currentIndex
         interactive: false
-        Frame {
+
+        TimelineView {
             Layout.fillWidth: true
-            Label {
-                text: "Posts"
+            model: AuthorFeedListModel {
+                id: authorFeedListModel
+                autoLoading: true
+                authorDid: profileView.userDid
             }
         }
 

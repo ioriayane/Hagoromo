@@ -8,7 +8,7 @@
 using AtProtocolInterface::AppBskyFeedGetPosts;
 using AtProtocolInterface::AppBskyNotificationListNotifications;
 
-NotificationListModel::NotificationListModel(AtpAbstractListModel *parent)
+NotificationListModel::NotificationListModel(QObject *parent)
     : AtpAbstractListModel { parent }
 {
 }

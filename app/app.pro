@@ -6,6 +6,7 @@ SOURCES += \
     main.cpp \
     qtquick/accountlistmodel.cpp \
     qtquick/atpabstractlistmodel.cpp \
+    qtquick/authorfeedlistmodel.cpp \
     qtquick/columnlistmodel.cpp \
     qtquick/createrecord.cpp \
     qtquick/createsession.cpp \
@@ -19,6 +20,7 @@ SOURCES += \
 HEADERS += \
     qtquick/accountlistmodel.h \
     qtquick/atpabstractlistmodel.h \
+    qtquick/authorfeedlistmodel.h \
     qtquick/columnlistmodel.h \
     qtquick/common.h \
     qtquick/createrecord.h \
