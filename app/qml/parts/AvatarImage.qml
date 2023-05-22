@@ -5,7 +5,7 @@ import QtGraphicalEffects 1.15
 
 import "../controls"
 
-Item {
+MouseArea {
     clip: true
     property alias source: avatorImage.source
     Image {

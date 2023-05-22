@@ -58,6 +58,11 @@ ColumnLayout {
                                    }
 
             onRequestedViewImages: (index, paths) => columnView.requestedViewImages(index, paths)
+
+            onRequestedViewProfile: (did) => {
+                                        console.log("View profile : " + did)
+                                        columnStackView.push(profileComponent, { "userDid": did })
+                                    }
         }
     }
 
@@ -91,6 +96,16 @@ ColumnLayout {
                                    }
             onRequestedViewImages: (index, paths) => columnView.requestedViewImages(index, paths)
 
+            onBack: {
+                if(!columnStackView.empty){
+                    columnStackView.pop()
+                }
+            }
+        }
+    }
+    Component {
+        id: profileComponent
+        ProfileView {
             onBack: {
                 if(!columnStackView.empty){
                     columnStackView.pop()

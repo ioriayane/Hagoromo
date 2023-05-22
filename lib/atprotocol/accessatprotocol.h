@@ -31,6 +31,7 @@ struct AccountData
     QString displayName;
     QString description;
     QString avatar;
+    QString banner;
 
     AccountStatus status = AccountStatus::Unknown;
 };

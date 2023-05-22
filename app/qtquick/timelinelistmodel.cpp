@@ -79,6 +79,8 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return current.post.cid;
     else if (role == UriRole)
         return current.post.uri;
+    else if (role == DidRole)
+        return current.post.author.did;
     else if (role == DisplayNameRole)
         return current.post.author.displayName;
     else if (role == HandleRole)
@@ -199,6 +201,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
 
     roles[CidRole] = "cid";
     roles[UriRole] = "uri";
+    roles[DidRole] = "did";
     roles[DisplayNameRole] = "displayName";
     roles[HandleRole] = "handle";
     roles[AvatarRole] = "avatar";

@@ -13,7 +13,8 @@ SOURCES += \
     qtquick/notificationlistmodel.cpp \
     qtquick/postthreadlistmodel.cpp \
     qtquick/timelinelistmodel.cpp \
-    qtquick/translator.cpp
+    qtquick/translator.cpp \
+    qtquick/userprofile.cpp
 
 HEADERS += \
     qtquick/accountlistmodel.h \
@@ -28,7 +29,8 @@ HEADERS += \
     qtquick/postthreadlistmodel.h \
     qtquick/thumbnailprovider.h \
     qtquick/timelinelistmodel.h \
-    qtquick/translator.h
+    qtquick/translator.h \
+    qtquick/userprofile.h
 
 QML_FILES = \
     qml/main.qml \
@@ -52,6 +54,7 @@ QML_FILES = \
     qml/view/ImageFullView.qml \
     qml/view/NotificationListView.qml \
     qml/view/PostThreadView.qml \
+    qml/view/ProfileView.qml \
     qml/view/TimelineView.qml
 
 IMAGE_FILES += \
