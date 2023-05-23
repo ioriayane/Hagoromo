@@ -17,6 +17,7 @@ ColumnLayout {
 
     property alias model: relayObject
 
+
     property string userDid: ""
 
     signal requestedReply(string cid, string uri,
@@ -34,7 +35,7 @@ ColumnLayout {
     QtObject {
         id: relayObject
         function rowCount() {
-            return 0;
+            return userProfile.handle.length;
         }
         function setAccount(service, did, handle, email, accessJwt, refreshJwt) {
             userProfile.setAccount(service, did, handle, email, accessJwt, refreshJwt)

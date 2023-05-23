@@ -1,6 +1,7 @@
 #include "createsession.h"
 #include "atprotocol/com/atproto/server/comatprotoservercreatesession.h"
 #include <QDebug>
+#include <QPointer>
 
 using AtProtocolInterface::AccountData;
 using AtProtocolInterface::AccountStatus;
@@ -13,18 +14,22 @@ void CreateSession::create()
     if (running()) {
         qDebug() << "Already running 'ComAtprotoServerCreateSession()'.";
     }
-
     setRunning(true);
+
+    QPointer<CreateSession> aliving(this);
+
     ComAtprotoServerCreateSession *session = new ComAtprotoServerCreateSession();
     connect(session, &ComAtprotoServerCreateSession::finished, [=](bool success) {
-        setDid(session->did());
-        setHandle(session->handle());
-        setEmail(session->email());
-        setAccessJwt(session->accessJwt());
-        setRefreshJwt(session->refreshJwt());
-        setAuthorized(success);
-        emit finished(success);
-        setRunning(false);
+        if (aliving) {
+            setDid(session->did());
+            setHandle(session->handle());
+            setEmail(session->email());
+            setAccessJwt(session->accessJwt());
+            setRefreshJwt(session->refreshJwt());
+            setAuthorized(success);
+            emit finished(success);
+            setRunning(false);
+        }
         session->deleteLater();
     });
     session->setService(service());

@@ -2,14 +2,13 @@
 #include "atprotocol/lexicons_func_unknown.h"
 
 #include <QDebug>
+#include <QPointer>
 
 using AtProtocolInterface::AccountData;
 using AtProtocolInterface::AppBskyFeedGetTimeline;
 using namespace AtProtocolType;
 
-TimelineListModel::TimelineListModel(QObject *parent) : AtpAbstractListModel { parent }
-{
-}
+TimelineListModel::TimelineListModel(QObject *parent) : AtpAbstractListModel { parent } { }
 
 int TimelineListModel::rowCount(const QModelIndex &parent) const
 {
@@ -145,12 +144,16 @@ void TimelineListModel::getLatest()
         return;
     setRunning(true);
 
+    QPointer<TimelineListModel> aliving(this);
+
     AppBskyFeedGetTimeline *timeline = new AppBskyFeedGetTimeline();
     connect(timeline, &AppBskyFeedGetTimeline::finished, [=](bool success) {
-        if (success) {
-            copyFrom(timeline);
+        if (aliving) {
+            if (success) {
+                copyFrom(timeline);
+            }
+            setRunning(false);
         }
-        setRunning(false);
         timeline->deleteLater();
     });
     timeline->setAccount(account());

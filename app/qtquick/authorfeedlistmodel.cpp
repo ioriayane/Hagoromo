@@ -2,6 +2,8 @@
 
 #include "atprotocol/app/bsky/feed/appbskyfeedgetauthorfeed.h"
 
+#include <QPointer>
+
 using AtProtocolInterface::AppBskyFeedGetAuthorFeed;
 
 AuthorFeedListModel::AuthorFeedListModel(QObject *parent) : TimelineListModel { parent } { }
@@ -12,12 +14,16 @@ void AuthorFeedListModel::getLatest()
         return;
     setRunning(true);
 
+    QPointer<AuthorFeedListModel> aliving(this);
+
     AppBskyFeedGetAuthorFeed *timeline = new AppBskyFeedGetAuthorFeed();
     connect(timeline, &AppBskyFeedGetAuthorFeed::finished, [=](bool success) {
-        if (success) {
-            copyFrom(timeline);
+        if (aliving) {
+            if (success) {
+                copyFrom(timeline);
+            }
+            setRunning(false);
         }
-        setRunning(false);
         timeline->deleteLater();
     });
     timeline->setAccount(account());

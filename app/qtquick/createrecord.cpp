@@ -2,6 +2,7 @@
 #include "atprotocol/com/atproto/repo/comatprotorepocreaterecord.h"
 #include "atprotocol/com/atproto/repo/comatprotorepouploadblob.h"
 
+#include <QPointer>
 #include <QTimer>
 
 using AtProtocolInterface::ComAtprotoRepoCreateRecord;
@@ -64,10 +65,14 @@ void CreateRecord::post()
 
     setRunning(true);
 
+    QPointer<CreateRecord> aliving(this);
+
     ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord();
     connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
-        emit finished(success);
-        setRunning(false);
+        if (aliving) {
+            emit finished(success);
+            setRunning(false);
+        }
         create_record->deleteLater();
     });
     create_record->setAccount(m_account);
@@ -87,26 +92,30 @@ void CreateRecord::postWithImages()
     QString path = QUrl(m_embedImages.first()).toLocalFile();
     m_embedImages.removeFirst();
 
+    QPointer<CreateRecord> aliving(this);
+
     ComAtprotoRepoUploadBlob *upload_blob = new ComAtprotoRepoUploadBlob();
     connect(upload_blob, &ComAtprotoRepoUploadBlob::finished, [=](bool success) {
-        if (success) {
-            qDebug() << "Uploaded blob" << upload_blob->cid() << upload_blob->mimeType()
-                     << upload_blob->size();
+        if (aliving) {
+            if (success) {
+                qDebug() << "Uploaded blob" << upload_blob->cid() << upload_blob->mimeType()
+                         << upload_blob->size();
 
-            LexiconsTypeUnknown::Blob blob;
-            blob.cid = upload_blob->cid();
-            blob.mimeType = upload_blob->mimeType();
-            blob.size = upload_blob->size();
-            m_embedImageBlogs.append(blob);
+                LexiconsTypeUnknown::Blob blob;
+                blob.cid = upload_blob->cid();
+                blob.mimeType = upload_blob->mimeType();
+                blob.size = upload_blob->size();
+                m_embedImageBlogs.append(blob);
 
-            if (m_embedImages.isEmpty()) {
-                post();
+                if (m_embedImages.isEmpty()) {
+                    post();
+                } else {
+                    postWithImages();
+                }
             } else {
-                postWithImages();
+                emit finished(success);
+                setRunning(false);
             }
-        } else {
-            emit finished(success);
-            setRunning(false);
         }
         upload_blob->deleteLater();
     });
@@ -120,13 +129,16 @@ void CreateRecord::repost(const QString &cid, const QString &uri)
         return;
     setRunning(true);
 
+    QPointer<CreateRecord> aliving(this);
+
     ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord();
     connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
-        emit finished(success);
-        setRunning(false);
+        if (aliving) {
+            emit finished(success);
+            setRunning(false);
 
-        // 成功なら、受け取ったデータでTLデータの更新をしないと値が大きくならない
-
+            // 成功なら、受け取ったデータでTLデータの更新をしないと値が大きくならない
+        }
         create_record->deleteLater();
     });
     create_record->setAccount(m_account);
@@ -139,13 +151,16 @@ void CreateRecord::like(const QString &cid, const QString &uri)
         return;
     setRunning(true);
 
+    QPointer<CreateRecord> aliving(this);
+
     ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord();
     connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
-        emit finished(success);
-        setRunning(false);
+        if (aliving) {
+            emit finished(success);
+            setRunning(false);
 
-        // 成功なら、受け取ったデータでTLデータの更新をしないと値が大きくならない
-
+            // 成功なら、受け取ったデータでTLデータの更新をしないと値が大きくならない
+        }
         create_record->deleteLater();
     });
     create_record->setAccount(m_account);

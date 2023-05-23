@@ -11,6 +11,7 @@
 #include <QFile>
 #include <QJsonDocument>
 #include <QNetworkInterface>
+#include <QPointer>
 
 using AtProtocolInterface::AccountData;
 using AtProtocolInterface::AccountStatus;
@@ -253,29 +254,33 @@ QHash<int, QByteArray> AccountListModel::roleNames() const
 void AccountListModel::updateSession(int row, const QString &service, const QString &identifier,
                                      const QString &password)
 {
+    QPointer<AccountListModel> aliving(this);
+
     ComAtprotoServerCreateSession *session = new ComAtprotoServerCreateSession();
     session->setService(service);
     connect(session, &ComAtprotoServerCreateSession::finished, [=](bool success) {
         //        qDebug() << session << session->service() << session->did() << session->handle()
         //                 << session->email() << session->accessJwt() << session->refreshJwt();
         //        qDebug() << service << identifier << password;
-        updateAccount(service, identifier, password, session->did(), session->handle(),
-                      session->email(), session->accessJwt(), session->refreshJwt(), success);
-        if (success) {
-            emit appendedAccount(row);
+        if (aliving) {
+            updateAccount(service, identifier, password, session->did(), session->handle(),
+                          session->email(), session->accessJwt(), session->refreshJwt(), success);
+            if (success) {
+                emit appendedAccount(row);
 
-            // 詳細を取得
-            getProfile(row);
-        }
-        bool all_finished = true;
-        for (const AccountData &item : qAsConst(m_accountList)) {
-            if (item.status == AccountStatus::Unknown) {
-                all_finished = false;
-                break;
+                // 詳細を取得
+                getProfile(row);
             }
-        }
-        if (all_finished) {
-            emit allFinished();
+            bool all_finished = true;
+            for (const AccountData &item : qAsConst(m_accountList)) {
+                if (item.status == AccountStatus::Unknown) {
+                    all_finished = false;
+                    break;
+                }
+            }
+            if (all_finished) {
+                emit allFinished();
+            }
         }
         session->deleteLater();
     });
@@ -287,22 +292,26 @@ void AccountListModel::refreshSession(int row)
     if (row < 0 || row >= m_accountList.count())
         return;
 
+    QPointer<AccountListModel> aliving(this);
+
     ComAtprotoServerRefreshSession *session = new ComAtprotoServerRefreshSession();
     session->setAccount(m_accountList.at(row));
     connect(session, &ComAtprotoServerRefreshSession::finished, [=](bool success) {
-        if (success) {
-            qDebug() << "Refresh session" << session->did() << session->handle();
-            m_accountList[row].did = session->did();
-            m_accountList[row].handle = session->handle();
-            m_accountList[row].accessJwt = session->accessJwt();
-            m_accountList[row].refreshJwt = session->refreshJwt();
-            m_accountList[row].status = AccountStatus::Authorized;
+        if (aliving) {
+            if (success) {
+                qDebug() << "Refresh session" << session->did() << session->handle();
+                m_accountList[row].did = session->did();
+                m_accountList[row].handle = session->handle();
+                m_accountList[row].accessJwt = session->accessJwt();
+                m_accountList[row].refreshJwt = session->refreshJwt();
+                m_accountList[row].status = AccountStatus::Authorized;
 
-            emit updatedAccount(row, m_accountList[row].uuid);
-        } else {
-            m_accountList[row].status = AccountStatus::Unauthorized;
+                emit updatedAccount(row, m_accountList[row].uuid);
+            } else {
+                m_accountList[row].status = AccountStatus::Unauthorized;
+            }
+            emit dataChanged(index(row), index(row));
         }
-        emit dataChanged(index(row), index(row));
         session->deleteLater();
     });
     session->refreshSession();
@@ -313,20 +322,24 @@ void AccountListModel::getProfile(int row)
     if (row < 0 || row >= m_accountList.count())
         return;
 
+    QPointer<AccountListModel> aliving(this);
+
     AppBskyActorGetProfile *profile = new AppBskyActorGetProfile();
     profile->setAccount(m_accountList.at(row));
     connect(profile, &AppBskyActorGetProfile::finished, [=](bool success) {
-        if (success) {
-            AtProtocolType::AppBskyActorDefs::ProfileViewDetailed detail =
-                    profile->profileViewDetailed();
-            qDebug() << "Update profile detailed" << detail.displayName << detail.description;
-            m_accountList[row].displayName = detail.displayName;
-            m_accountList[row].description = detail.description;
-            m_accountList[row].avatar = detail.avatar;
-            m_accountList[row].banner = detail.banner;
+        if (aliving) {
+            if (success) {
+                AtProtocolType::AppBskyActorDefs::ProfileViewDetailed detail =
+                        profile->profileViewDetailed();
+                qDebug() << "Update profile detailed" << detail.displayName << detail.description;
+                m_accountList[row].displayName = detail.displayName;
+                m_accountList[row].description = detail.description;
+                m_accountList[row].avatar = detail.avatar;
+                m_accountList[row].banner = detail.banner;
 
-            emit updatedAccount(row, m_accountList[row].uuid);
-            emit dataChanged(index(row), index(row));
+                emit updatedAccount(row, m_accountList[row].uuid);
+                emit dataChanged(index(row), index(row));
+            }
         }
         profile->deleteLater();
     });

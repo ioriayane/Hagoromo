@@ -2,6 +2,8 @@
 #include "atprotocol/lexicons_func_unknown.h"
 #include "translator.h"
 
+#include <QPointer>
+
 using namespace AtProtocolType;
 
 AtpAbstractListModel::AtpAbstractListModel(QObject *parent)
@@ -36,12 +38,16 @@ void AtpAbstractListModel::translate(const QString &cid)
     if (record_text.isEmpty())
         return;
 
+    QPointer<AtpAbstractListModel> aliving(this);
+
     Translator *translator = new Translator();
     connect(translator, &Translator::finished, [=](const QString text) {
-        int row = indexOf(cid);
-        if (row >= 0 && !text.isEmpty()) {
-            m_translations[cid] = text;
-            emit dataChanged(index(row), index(row));
+        if (aliving) {
+            int row = indexOf(cid);
+            if (row >= 0 && !text.isEmpty()) {
+                m_translations[cid] = text;
+                emit dataChanged(index(row), index(row));
+            }
         }
         translator->deleteLater();
     });

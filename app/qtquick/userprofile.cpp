@@ -1,6 +1,8 @@
 #include "userprofile.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofile.h"
 
+#include <QPointer>
+
 using AtProtocolInterface::AppBskyActorGetProfile;
 
 UserProfile::UserProfile(QObject *parent)
@@ -22,26 +24,30 @@ void UserProfile::setAccount(const QString &service, const QString &did, const Q
 
 void UserProfile::getProfile(const QString &did)
 {
+    QPointer<UserProfile> aliving(this);
+
     AppBskyActorGetProfile *profile = new AppBskyActorGetProfile();
-    profile->setAccount(m_account);
     connect(profile, &AppBskyActorGetProfile::finished, [=](bool success) {
-        if (success) {
-            AtProtocolType::AppBskyActorDefs::ProfileViewDetailed detail =
-                    profile->profileViewDetailed();
-            qDebug() << "Get user profile detailed" << detail.displayName << detail.description;
-            setDid(detail.did);
-            setHandle(detail.handle);
-            setDisplayName(detail.displayName);
-            setDescription(detail.description);
-            setAvatar(detail.avatar);
-            setBanner(detail.banner);
-            setFollowersCount(detail.followersCount);
-            setFollowsCount(detail.followsCount);
-            setPostsCount(detail.postsCount);
-            setIndexedAt(detail.indexedAt);
+        if (aliving) {
+            if (success) {
+                AtProtocolType::AppBskyActorDefs::ProfileViewDetailed detail =
+                        profile->profileViewDetailed();
+                qDebug() << "Get user profile detailed" << detail.displayName << detail.description;
+                setDid(detail.did);
+                setHandle(detail.handle);
+                setDisplayName(detail.displayName);
+                setDescription(detail.description);
+                setAvatar(detail.avatar);
+                setBanner(detail.banner);
+                setFollowersCount(detail.followersCount);
+                setFollowsCount(detail.followsCount);
+                setPostsCount(detail.postsCount);
+                setIndexedAt(detail.indexedAt);
+            }
         }
         profile->deleteLater();
     });
+    profile->setAccount(m_account);
     profile->getProfile(did);
 }
 
