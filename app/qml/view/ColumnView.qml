@@ -178,8 +178,11 @@ ColumnLayout {
         rightPadding: 10
         bottomPadding: 0
 
-        onClicked: (mouse) => columnStackView.currentItem.listView.positionViewAtBeginning()
-
+        onClicked: (mouse) => {
+                       if(columnStackView.currentItem.listView){
+                           columnStackView.currentItem.listView.positionViewAtBeginning()
+                       }
+                   }
 
         RowLayout {
             anchors.fill: parent

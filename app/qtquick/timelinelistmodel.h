@@ -71,7 +71,6 @@ protected:
 
     void copyFrom(AtProtocolInterface::AppBskyFeedGetTimeline *timeline);
 
-private:
     QList<QString> m_cidList; // これで取得したポストの順番を管理して実態はm_viewPostHashで管理
     QHash<QString, AtProtocolType::AppBskyFeedDefs::FeedViewPost> m_viewPostHash;
 };

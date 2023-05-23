@@ -10,6 +10,7 @@ SOURCES += \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgettimeline.cpp \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationlistnotifications.cpp \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepocreaterecord.cpp \
+    $$PWD/atprotocol/com/atproto/repo/comatprotorepolistrecords.cpp \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepouploadblob.cpp \
     $$PWD/atprotocol/com/atproto/server/comatprotoservercreatesession.cpp \
     $$PWD/atprotocol/com/atproto/server/comatprotoserverrefreshsession.cpp \
@@ -26,6 +27,7 @@ HEADERS += \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgettimeline.h \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationlistnotifications.h \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepocreaterecord.h \
+    $$PWD/atprotocol/com/atproto/repo/comatprotorepolistrecords.h \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepouploadblob.h \
     $$PWD/atprotocol/com/atproto/server/comatprotoservercreatesession.h \
     $$PWD/atprotocol/com/atproto/server/comatprotoserverrefreshsession.h \

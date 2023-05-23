@@ -1,8 +1,6 @@
 #ifndef APPBSKYFEEDGETAUTHORFEED_H
 #define APPBSKYFEEDGETAUTHORFEED_H
 
-#include "atprotocol/accessatprotocol.h"
-#include "atprotocol/lexicons.h"
 #include "appbskyfeedgettimeline.h"
 
 namespace AtProtocolInterface {
@@ -15,6 +13,7 @@ class AppBskyFeedGetAuthorFeed : public AppBskyFeedGetTimeline
 public:
     explicit AppBskyFeedGetAuthorFeed(QObject *parent = nullptr);
 
+    void getTimeline() = delete;
     void getAuthorFeed(const QString &actor, const int limit, const QString &cursor);
 
 private:

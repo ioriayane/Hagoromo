@@ -5,6 +5,7 @@ import QtQuick.Controls.Material 2.15
 
 import tech.relog.hagoromo.userprofile 1.0
 import tech.relog.hagoromo.authorfeedlistmodel 1.0
+import tech.relog.hagoromo.anyfeedlistmodel 1.0
 
 import "../parts"
 import "../controls"
@@ -40,10 +41,14 @@ ColumnLayout {
         function setAccount(service, did, handle, email, accessJwt, refreshJwt) {
             userProfile.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             authorFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
+            repostFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
+            likesFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
         }
         function getLatest() {
             userProfile.getProfile(userDid)
             authorFeedListModel.getLatest()
+            repostFeedListModel.getLatest()
+            likesFeedListModel.getLatest()
         }
     }
 
@@ -124,7 +129,7 @@ ColumnLayout {
         }
         TabButton {
             font.capitalization: Font.MixedCase
-            text: qsTr("Posts&&repiles")
+            text: qsTr("Reposts")
         }
         TabButton {
             font.capitalization: Font.MixedCase
@@ -143,7 +148,7 @@ ColumnLayout {
             Layout.fillWidth: true
             model: AuthorFeedListModel {
                 id: authorFeedListModel
-                autoLoading: true
+                autoLoading: false
                 authorDid: profileView.userDid
             }
 
@@ -157,105 +162,48 @@ ColumnLayout {
             onRequestedViewThread: (uri) => profileView.requestedViewThread(uri)
             onRequestedViewImages: (index, paths) => profileView.requestedViewImages(index, paths)
             onRequestedViewProfile: (did) => profileView.requestedViewProfile(did)
-
         }
 
-        Frame {
+        TimelineView {
             Layout.fillWidth: true
-            Label {
-                text: "Posts&repiles"
+            model: AnyFeedListModel {
+                id: repostFeedListModel
+                autoLoading: false
+                targetDid: profileView.userDid
+                feedType: AnyFeedListModel.RepostFeedType
             }
+
+            onRequestedReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
+                              profileView.requestedReply(profileView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+            onRequestedRepost: (cid, uri) => profileView.repost(cid, uri)
+            onRequestedQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
+                              profileView.requestedQuote(profileView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+            onRequestedLike: (cid, uri) => profileView.like(cid, uri)
+
+            onRequestedViewThread: (uri) => profileView.requestedViewThread(uri)
+            onRequestedViewImages: (index, paths) => profileView.requestedViewImages(index, paths)
+            onRequestedViewProfile: (did) => profileView.requestedViewProfile(did)
         }
 
-        Frame {
+        TimelineView {
             Layout.fillWidth: true
-            Label {
-                text: "Likes"
+            model: AnyFeedListModel {
+                id: likesFeedListModel
+                autoLoading: false
+                targetDid: profileView.userDid
+                feedType: AnyFeedListModel.LikeFeedType
             }
+
+            onRequestedReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
+                              profileView.requestedReply(profileView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+            onRequestedRepost: (cid, uri) => profileView.repost(cid, uri)
+            onRequestedQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
+                              profileView.requestedQuote(profileView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+            onRequestedLike: (cid, uri) => profileView.like(cid, uri)
+
+            onRequestedViewThread: (uri) => profileView.requestedViewThread(uri)
+            onRequestedViewImages: (index, paths) => profileView.requestedViewImages(index, paths)
+            onRequestedViewProfile: (did) => profileView.requestedViewProfile(did)
         }
     }
-
-    //    ScrollView {
-    //        Layout.fillWidth: true
-    //        Layout.fillHeight: true
-
-    //        ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-    //        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-    //        clip: true
-
-    //        ListView {
-    //            id: rootListView
-    //            anchors.fill: parent
-    //            anchors.rightMargin: parent.ScrollBar.vertical.width
-
-    //            model: PostThreadListModel {
-    //                id: postThreadListModel
-    //                autoLoading: false
-    //            }
-
-    //            header: Item {
-    //                width: rootListView.width
-    //                height: 24
-
-    //                BusyIndicator {
-    //                    anchors.centerIn: parent
-    //                    width: 24
-    //                    height: 24
-    //                    visible: postThreadListModel.running
-    //                }
-    //            }
-
-    //            delegate: PostDelegate {
-    //                width: rootListView.width
-
-    //                //自分から自分へは移動しない
-    //                //onClicked: (mouse) => requestedViewThread(model.uri)
-
-    //                repostReactionAuthor.visible: model.isRepostedBy
-    //                repostReactionAuthor.displayName: model.repostedByDisplayName
-    //                repostReactionAuthor.handle: model.repostedByHandle
-    //                replyReactionAuthor.visible: model.hasReply
-    //                replyReactionAuthor.displayName: model.replyParentDisplayName
-    //                replyReactionAuthor.handle: model.replyParentHandle
-
-    //                postAvatarImage.source: model.avatar
-    //                postAuthor.displayName: model.displayName
-    //                postAuthor.handle: model.handle
-    //                postAuthor.indexedAt: model.indexedAt
-    //                recordText.text: {
-    //                    var text = model.recordText
-    //                    if(model.recordTextTranslation.length > 0){
-    //                        text = text + "\n---\n" + model.recordTextTranslation
-    //                    }
-    //                    return text
-    //                }
-    //                postImagePreview.embedImages: model.embedImages
-    //                postImagePreview.onRequestedViewImages: (index) => requestedViewImages(index, model.embedImagesFull)
-
-    //                childFrame.visible: model.hasQuoteRecord
-    //                childFrame.onClicked: (mouse) => {
-    //                                          if(model.quoteRecordUri.length > 0){
-    //                                              requestedViewThread(model.quoteRecordUri)
-    //                                          }
-    //                                      }
-    //                childAvatarImage.source: model.quoteRecordAvatar
-    //                childAuthor.displayName: model.quoteRecordDisplayName
-    //                childAuthor.handle: model.quoteRecordHandle
-    //                childAuthor.indexedAt: model.quoteRecordIndexedAt
-    //                childRecordText.text: model.quoteRecordRecordText
-
-    //                postControls.replyButton.iconText: model.replyCount
-    //                postControls.repostButton.iconText: model.repostCount
-    //                postControls.likeButton.iconText: model.likeCount
-    //                postControls.replyButton.onClicked: requestedReply(model.cid, model.uri,
-    //                                                                   model.replyRootCid, model.replyRootUri,
-    //                                                                   model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
-    //                postControls.repostMenuItem.onTriggered: requestedRepost(model.cid, model.uri)
-    //                postControls.quoteMenuItem.onTriggered: requestedQuote(model.cid, model.uri,
-    //                                                                       model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
-    //                postControls.likeButton.onClicked: requestedLike(model.cid, model.uri)
-    //                postControls.tranlateMenuItem.onTriggered: postThreadListModel.translate(model.cid)
-    //            }
-    //        }
-    //    }
 }

@@ -5,6 +5,7 @@ TARGET = Hagoromo
 SOURCES += \
     main.cpp \
     qtquick/accountlistmodel.cpp \
+    qtquick/anyfeedlistmodel.cpp \
     qtquick/atpabstractlistmodel.cpp \
     qtquick/authorfeedlistmodel.cpp \
     qtquick/columnlistmodel.cpp \
@@ -19,6 +20,7 @@ SOURCES += \
 
 HEADERS += \
     qtquick/accountlistmodel.h \
+    qtquick/anyfeedlistmodel.h \
     qtquick/atpabstractlistmodel.h \
     qtquick/authorfeedlistmodel.h \
     qtquick/columnlistmodel.h \
