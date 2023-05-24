@@ -27,6 +27,7 @@ Button {
 
         Image {
             id: iconImage
+            visible: status !== Image.Null
             Layout.preferredWidth: iconSize
             Layout.preferredHeight: iconSize
             Layout.alignment: Qt.AlignVCenter
@@ -39,8 +40,8 @@ Button {
         }
         Label {
             id: iconLabel
-            Layout.leftMargin: 0
-            Layout.rightMargin: 5
+            Layout.leftMargin: iconImage.visible ? 0 : 20
+            Layout.rightMargin: iconImage.visible ? 5 : 20
             visible: button.iconText.length > 0
             color: button.foreground
         }

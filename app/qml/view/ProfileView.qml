@@ -19,7 +19,8 @@ ColumnLayout {
     property alias model: relayObject
 
 
-    property string userDid: ""
+    property string userDid: ""     // 表示するアカウント
+    property string accountDid: ""  // 認証しているアカウント
 
     signal requestedReply(string cid, string uri,
                           string reply_root_cid, string reply_root_uri,
@@ -30,8 +31,26 @@ ColumnLayout {
     signal requestedViewThread(string uri)
     signal requestedViewImages(int index, string paths)
     signal requestedViewProfile(string did)
+    signal requestedFollow(string did)
 
     signal back()
+
+    states: [
+        State {
+            // 認証しているアカウントを表示しているとき
+            when: userDid === accountDid
+            PropertyChanges { target: editButton; visible: false }  // 仮
+            PropertyChanges { target: editButton; iconText: qsTr("Edit Profile") }
+        },
+        State {
+            // フォローしている
+            when: userProfile.following
+            PropertyChanges { target: editButton; iconText: qsTr("Following") }
+            PropertyChanges { target: editButton; highlighted: true }
+            PropertyChanges { target: editButton; onClicked: { console.log("Unfollow") } }
+        }
+
+    ]
 
     QtObject {
         id: relayObject
@@ -39,6 +58,7 @@ ColumnLayout {
             return userProfile.handle.length;
         }
         function setAccount(service, did, handle, email, accessJwt, refreshJwt) {
+            accountDid = did
             userProfile.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             authorFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             repostFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
@@ -77,18 +97,51 @@ ColumnLayout {
         }
     }
 
-
     ColumnLayout {
         Layout.fillWidth: true
-        Layout.margins: 0
+        Layout.topMargin: 0
+        Layout.leftMargin: 0
+        Layout.rightMargin: 0
+        Layout.bottomMargin: 5
+
         ImageWithIndicator {
-            Layout.fillWidth: true
+            id: bannerImage
+            Layout.preferredWidth: profileView.width
             Layout.preferredHeight: 80
             fillMode: Image.PreserveAspectCrop
             source: userProfile.banner
+
+            RowLayout {
+                anchors.top: bannerImage.bottom
+                anchors.right: bannerImage.right
+
+                IconButton {
+                    id: editButton
+                    Layout.preferredHeight: 24
+                    iconText: qsTr("Follow")
+                    onClicked: profileView.requestedFollow(profileView.userDid)
+                }
+//                IconButton {
+//                    id: moreButton
+//                    Layout.preferredHeight: 24
+//                    iconSource: "../images/more.png"
+//                    iconSize: 16
+//                    foreground: Material.color(Material.Grey)
+//                    //flat: true
+//                    onClicked: morePopup.open()
+//                    Menu {
+//                        id: morePopup
+//                        MenuItem {
+//                            id: tranlateMenuItem
+//                            text: qsTr("Post reply")
+//                        }
+//                    }
+//                }
+            }
         }
-        GridLayout {
-            columns: 2
+        RowLayout {
+            Layout.leftMargin: 5
+            Layout.rightMargin: 5
             AvatarImage {
                 id: avatarImage
                 Layout.preferredWidth: 48
@@ -96,23 +149,83 @@ ColumnLayout {
                 Layout.rowSpan: 2
                 source: userProfile.avatar
             }
-            Label {
-                Layout.preferredWidth: profileView.width - avatarImage.width - parent.columnSpacing
-                font.pointSize: 12
-                elide: Text.ElideRight
-                text: userProfile.displayName
-            }
-            Label {
-                Layout.preferredWidth: profileView.width - avatarImage.width - parent.columnSpacing
-                elide: Text.ElideRight
-                font.pointSize: 8
-                color: Material.color(Material.Grey)
-                text: "@" + userProfile.handle
+            ColumnLayout {
+                Label {
+                    Layout.preferredWidth: profileView.width - avatarImage.width - parent.columnSpacing
+                    font.pointSize: 12
+                    elide: Text.ElideRight
+                    text: userProfile.displayName
+                }
+                RowLayout {
+                    Label {
+                        Layout.preferredWidth: profileView.width - avatarImage.width - parent.columnSpacing
+                        elide: Text.ElideRight
+                        font.pointSize: 8
+                        color: Material.color(Material.Grey)
+                        text: "@" + userProfile.handle
+                    }
+                    Label {
+                        visible: userProfile.followedBy
+                        font.pointSize: 8
+                        color: Material.accentColor
+                        text: qsTr("Follows you")
+                    }
+                }
+                RowLayout {
+                    spacing: 3
+                    Label {
+                        font.pointSize: 8
+                        font.bold: true
+                        text: userProfile.followsCount
+                    }
+                    Label {
+                        font.pointSize: 8
+                        color: Material.color(Material.Grey)
+                        text: qsTr("follows")
+                    }
+                    Label {
+                        Layout.leftMargin: 5
+                        font.pointSize: 8
+                        font.bold: true
+                        text: userProfile.followersCount
+                    }
+                    Label {
+                        font.pointSize: 8
+                        color: Material.color(Material.Grey)
+                        text: qsTr("followers")
+                    }
+                    Label {
+                        Layout.leftMargin: 5
+                        font.pointSize: 8
+                        font.bold: true
+                        text: userProfile.postsCount
+                    }
+                    Label {
+                        font.pointSize: 8
+                        color: Material.color(Material.Grey)
+                        text: qsTr("posts")
+                    }
+                }
+                RowLayout{
+                    Label {
+                        Layout.leftMargin: 5
+                        font.pointSize: 8
+                        color: Material.color(Material.Grey)
+                        text: qsTr("Dived into the blue sky on")
+                    }
+                    Label {
+                        font.pointSize: 8
+                        font.bold: true
+                        text: userProfile.indexedAt
+                    }
+                }
             }
         }
         Label {
             Layout.preferredWidth: profileView.width
             wrapMode: Text.Wrap
+            lineHeight: 1.1
+            font.pointSize: 10
             text: userProfile.description
         }
     }
@@ -120,6 +233,7 @@ ColumnLayout {
     TabBar {
         id: tabBar
         Layout.fillWidth: true
+        Layout.topMargin: 3
 
         TabButton {
             font.capitalization: Font.MixedCase
@@ -167,7 +281,11 @@ ColumnLayout {
 
             onRequestedViewThread: (uri) => profileView.requestedViewThread(uri)
             onRequestedViewImages: (index, paths) => profileView.requestedViewImages(index, paths)
-            onRequestedViewProfile: (did) => profileView.requestedViewProfile(did)
+            onRequestedViewProfile: (did) => {
+                                        if(did !== profileView.userDid){
+                                            profileView.requestedViewProfile(did)
+                                        }
+                                    }
         }
 
         TimelineView {
@@ -188,7 +306,11 @@ ColumnLayout {
 
             onRequestedViewThread: (uri) => profileView.requestedViewThread(uri)
             onRequestedViewImages: (index, paths) => profileView.requestedViewImages(index, paths)
-            onRequestedViewProfile: (did) => profileView.requestedViewProfile(did)
+            onRequestedViewProfile: (did) => {
+                                        if(did !== profileView.userDid){
+                                            profileView.requestedViewProfile(did)
+                                        }
+                                    }
         }
 
         TimelineView {
@@ -209,7 +331,11 @@ ColumnLayout {
 
             onRequestedViewThread: (uri) => profileView.requestedViewThread(uri)
             onRequestedViewImages: (index, paths) => profileView.requestedViewImages(index, paths)
-            onRequestedViewProfile: (did) => profileView.requestedViewProfile(did)
+            onRequestedViewProfile: (did) => {
+                                        if(did !== profileView.userDid){
+                                            profileView.requestedViewProfile(did)
+                                        }
+                                    }
         }
     }
 }

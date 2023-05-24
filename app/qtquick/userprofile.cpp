@@ -6,7 +6,12 @@
 using AtProtocolInterface::AppBskyActorGetProfile;
 
 UserProfile::UserProfile(QObject *parent)
-    : QObject { parent }, m_followersCount(0), m_followsCount(0), m_postsCount(0)
+    : QObject { parent },
+      m_followersCount(0),
+      m_followsCount(0),
+      m_postsCount(0),
+      m_following(false),
+      m_followedBy(false)
 {
 }
 
@@ -42,7 +47,12 @@ void UserProfile::getProfile(const QString &did)
                 setFollowersCount(detail.followersCount);
                 setFollowsCount(detail.followsCount);
                 setPostsCount(detail.postsCount);
-                setIndexedAt(detail.indexedAt);
+                setIndexedAt(QDateTime::fromString(detail.indexedAt, Qt::ISODateWithMs)
+                                     .toLocalTime()
+                                     .toString("yyyy/MM/dd"));
+
+                setFollowing(detail.viewer.following.contains(m_account.did));
+                setFollowedBy(detail.viewer.followedBy.contains(did));
             }
         }
         profile->deleteLater();
@@ -179,4 +189,30 @@ void UserProfile::setIndexedAt(const QString &newIndexedAt)
         return;
     m_indexedAt = newIndexedAt;
     emit indexedAtChanged();
+}
+
+bool UserProfile::following() const
+{
+    return m_following;
+}
+
+void UserProfile::setFollowing(bool newFollowing)
+{
+    if (m_following == newFollowing)
+        return;
+    m_following = newFollowing;
+    emit followingChanged();
+}
+
+bool UserProfile::followedBy() const
+{
+    return m_followedBy;
+}
+
+void UserProfile::setFollowedBy(bool newFollowedBy)
+{
+    if (m_followedBy == newFollowedBy)
+        return;
+    m_followedBy = newFollowedBy;
+    emit followedByChanged();
 }

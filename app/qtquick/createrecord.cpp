@@ -167,6 +167,26 @@ void CreateRecord::like(const QString &cid, const QString &uri)
     create_record->like(cid, uri);
 }
 
+void CreateRecord::follow(const QString &did)
+{
+    if (running())
+        return;
+    setRunning(true);
+
+    QPointer<CreateRecord> aliving(this);
+
+    ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord();
+    connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
+        if (aliving) {
+            emit finished(success);
+            setRunning(false);
+        }
+        create_record->deleteLater();
+    });
+    create_record->setAccount(m_account);
+    create_record->follow(did);
+}
+
 bool CreateRecord::running() const
 {
     return m_running;

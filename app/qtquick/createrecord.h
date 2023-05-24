@@ -30,6 +30,7 @@ public:
     Q_INVOKABLE void postWithImages();
     Q_INVOKABLE void repost(const QString &cid, const QString &uri);
     Q_INVOKABLE void like(const QString &cid, const QString &uri);
+    Q_INVOKABLE void follow(const QString &did);
 
     bool running() const;
     void setRunning(bool newRunning);

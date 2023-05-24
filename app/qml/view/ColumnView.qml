@@ -145,7 +145,7 @@ ColumnLayout {
                                         console.log("View profile : " + did)
                                         columnStackView.push(profileComponent, { "userDid": did })
                                     }
-
+            onRequestedFollow: (did) => createRecord.follow(did)
             onBack: {
                 if(!columnStackView.empty){
                     columnStackView.pop()
