@@ -31,6 +31,8 @@ QVariant PostThreadListModel::item(int row, PostThreadListModelRoles role) const
         return current.cid;
     else if (role == UriRole)
         return current.uri;
+    else if (role == DidRole)
+        return current.author.did;
     else if (role == DisplayNameRole)
         return current.author.displayName;
     else if (role == HandleRole)
@@ -146,6 +148,7 @@ QHash<int, QByteArray> PostThreadListModel::roleNames() const
 
     roles[CidRole] = "cid";
     roles[UriRole] = "uri";
+    roles[DidRole] = "did";
     roles[DisplayNameRole] = "displayName";
     roles[HandleRole] = "handle";
     roles[AvatarRole] = "avatar";

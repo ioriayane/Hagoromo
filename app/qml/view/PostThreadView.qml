@@ -23,6 +23,7 @@ ColumnLayout {
     signal requestedLike(string cid, string uri)
     signal requestedViewThread(string uri)
     signal requestedViewImages(int index, string paths)
+    signal requestedViewProfile(string did)
 
     signal back()
 
@@ -93,6 +94,7 @@ ColumnLayout {
                 replyReactionAuthor.handle: model.replyParentHandle
 
                 postAvatarImage.source: model.avatar
+                postAvatarImage.onClicked: requestedViewProfile(model.did)
                 postAuthor.displayName: model.displayName
                 postAuthor.handle: model.handle
                 postAuthor.indexedAt: model.indexedAt

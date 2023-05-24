@@ -47,8 +47,6 @@ ColumnLayout {
         function getLatest() {
             userProfile.getProfile(userDid)
             authorFeedListModel.getLatest()
-            repostFeedListModel.getLatest()
-            likesFeedListModel.getLatest()
         }
     }
 
@@ -144,6 +142,14 @@ ColumnLayout {
         currentIndex: tabBar.currentIndex
         interactive: false
 
+        onCurrentItemChanged: {
+            if(currentItem.model === undefined)
+                return
+            if(currentItem.model.rowCount() > 0)
+                return
+            currentItem.model.getLatest()
+        }
+
         TimelineView {
             Layout.fillWidth: true
             model: AuthorFeedListModel {
@@ -153,10 +159,10 @@ ColumnLayout {
             }
 
             onRequestedReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
-                              profileView.requestedReply(profileView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+                              profileView.requestedReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestedRepost: (cid, uri) => profileView.repost(cid, uri)
             onRequestedQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
-                              profileView.requestedQuote(profileView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+                              profileView.requestedQuote(cid, uri, avatar, display_name, handle, indexed_at, text)
             onRequestedLike: (cid, uri) => profileView.like(cid, uri)
 
             onRequestedViewThread: (uri) => profileView.requestedViewThread(uri)
@@ -174,10 +180,10 @@ ColumnLayout {
             }
 
             onRequestedReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
-                              profileView.requestedReply(profileView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+                              profileView.requestedReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestedRepost: (cid, uri) => profileView.repost(cid, uri)
             onRequestedQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
-                              profileView.requestedQuote(profileView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+                              profileView.requestedQuote(cid, uri, avatar, display_name, handle, indexed_at, text)
             onRequestedLike: (cid, uri) => profileView.like(cid, uri)
 
             onRequestedViewThread: (uri) => profileView.requestedViewThread(uri)
@@ -195,10 +201,10 @@ ColumnLayout {
             }
 
             onRequestedReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
-                              profileView.requestedReply(profileView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+                              profileView.requestedReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestedRepost: (cid, uri) => profileView.repost(cid, uri)
             onRequestedQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
-                              profileView.requestedQuote(profileView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+                              profileView.requestedQuote(cid, uri, avatar, display_name, handle, indexed_at, text)
             onRequestedLike: (cid, uri) => profileView.like(cid, uri)
 
             onRequestedViewThread: (uri) => profileView.requestedViewThread(uri)

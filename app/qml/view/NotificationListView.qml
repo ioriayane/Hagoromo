@@ -24,6 +24,7 @@ ScrollView {
     signal requestedLike(string cid, string uri)
     signal requestedViewThread(string uri)
     signal requestedViewImages(int index, string paths)
+    signal requestedViewProfile(string did)
 
     ListView {
         id: rootListView
@@ -57,6 +58,7 @@ ScrollView {
         delegate: NotificationDelegate {
             reason: model.reason
             postAvatarImage.source: model.avatar
+            postAvatarImage.onClicked: requestedViewProfile(model.did)
             postAuthor.displayName: model.displayName
             postAuthor.handle: model.handle
             postAuthor.indexedAt: model.indexedAt
@@ -69,6 +71,18 @@ ScrollView {
             recordRecordText: model.recordRecordText
             recordImagePreview.embedImages: model.recordImages
             recordImagePreview.onRequestedViewImages: (index) => requestedViewImages(index, model.recordImagesFull)
+
+            //            postControls.replyButton.iconText: model.replyCount
+            //            postControls.repostButton.iconText: model.repostCount
+            //            postControls.likeButton.iconText: model.likeCount
+            postControls.replyButton.onClicked: requestedReply(model.cid, model.uri,
+                                                               model.replyRootCid, model.replyRootUri,
+                                                               model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
+            postControls.repostMenuItem.onTriggered: requestedRepost(model.cid, model.uri)
+            postControls.quoteMenuItem.onTriggered: requestedQuote(model.cid, model.uri,
+                                                                   model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
+            postControls.likeButton.onClicked: requestedLike(model.cid, model.uri)
+            postControls.tranlateMenuItem.onTriggered: rootListView.model.translate(model.cid)
 
             onClicked: {
                 if(model.reason === NotificationListModel.ReasonLike ||
