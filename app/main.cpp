@@ -11,6 +11,7 @@
 #include "qtquick/timelinelistmodel.h"
 #include "qtquick/authorfeedlistmodel.h"
 #include "qtquick/anyfeedlistmodel.h"
+#include "qtquick/followslistmodel.h"
 #include "qtquick/thumbnailprovider.h"
 #include "qtquick/encryption.h"
 #include "qtquick/userprofile.h"
@@ -45,6 +46,8 @@ int main(int argc, char *argv[])
                                          "AuthorFeedListModel");
     qmlRegisterType<AnyFeedListModel>("tech.relog.hagoromo.anyfeedlistmodel", 1, 0,
                                       "AnyFeedListModel");
+    qmlRegisterType<FollowsListModel>("tech.relog.hagoromo.followslistmodel", 1, 0,
+                                      "FollowsListModel");
     qmlRegisterType<Encryption>("tech.relog.hagoromo.encryption", 1, 0, "Encryption");
     qmlRegisterType<UserProfile>("tech.relog.hagoromo.userprofile", 1, 0, "UserProfile");
 

@@ -7,6 +7,7 @@ import tech.relog.hagoromo.userprofile 1.0
 import tech.relog.hagoromo.authorfeedlistmodel 1.0
 import tech.relog.hagoromo.anyfeedlistmodel 1.0
 import tech.relog.hagoromo.recordoperator 1.0
+import tech.relog.hagoromo.followslistmodel 1.0
 
 import "../parts"
 import "../controls"
@@ -84,6 +85,7 @@ ColumnLayout {
             authorFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             repostFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             likesFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
+            followsListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
         }
         function getLatest() {
             userProfile.getProfile(userDid)
@@ -144,6 +146,12 @@ ColumnLayout {
                 anchors.top: bannerImage.bottom
                 anchors.right: bannerImage.right
 
+                Label {
+                    visible: userProfile.followedBy
+                    font.pointSize: 8
+                    color: Material.accentColor
+                    text: qsTr("Follows you")
+                }
                 IconButton {
                     id: editButton
                     Layout.preferredHeight: 24
@@ -188,20 +196,12 @@ ColumnLayout {
                     elide: Text.ElideRight
                     text: userProfile.displayName
                 }
-                RowLayout {
-                    Label {
-                        Layout.preferredWidth: profileView.width - avatarImage.width - parent.columnSpacing
-                        elide: Text.ElideRight
-                        font.pointSize: 8
-                        color: Material.color(Material.Grey)
-                        text: "@" + userProfile.handle
-                    }
-                    Label {
-                        visible: userProfile.followedBy
-                        font.pointSize: 8
-                        color: Material.accentColor
-                        text: qsTr("Follows you")
-                    }
+                Label {
+                    Layout.preferredWidth: profileView.width - avatarImage.width - parent.columnSpacing
+                    elide: Text.ElideRight
+                    font.pointSize: 8
+                    color: Material.color(Material.Grey)
+                    text: "@" + userProfile.handle
                 }
                 RowLayout {
                     spacing: 3
@@ -238,19 +238,19 @@ ColumnLayout {
                         text: qsTr("posts")
                     }
                 }
-                RowLayout{
-                    Label {
-                        Layout.leftMargin: 5
-                        font.pointSize: 8
-                        color: Material.color(Material.Grey)
-                        text: qsTr("Took off into the Bluesky on")
-                    }
-                    Label {
-                        font.pointSize: 8
-                        font.bold: true
-                        text: userProfile.indexedAt
-                    }
-                }
+                //                RowLayout{    // 開始日じゃなかった;;
+                //                    Label {
+                //                        Layout.leftMargin: 5
+                //                        font.pointSize: 8
+                //                        color: Material.color(Material.Grey)
+                //                        text: qsTr("Took off into the Bluesky on")
+                //                    }
+                //                    Label {
+                //                        font.pointSize: 8
+                //                        font.bold: true
+                //                        text: userProfile.indexedAt
+                //                    }
+                //                }
             }
         }
         Label {
@@ -278,6 +278,14 @@ ColumnLayout {
         TabButton {
             font.capitalization: Font.MixedCase
             text: qsTr("Likes")
+        }
+        TabButton {
+            font.capitalization: Font.MixedCase
+            text: qsTr("Follows")
+        }
+        TabButton {
+            font.capitalization: Font.MixedCase
+            text: qsTr("Followers")
         }
     }
 
@@ -368,6 +376,24 @@ ColumnLayout {
                                             profileView.requestedViewProfile(did)
                                         }
                                     }
+        }
+
+        ProfileListView {
+            Layout.fillWidth: true
+            accountDid: profileView.accountDid
+            model: FollowsListModel {
+                id: followsListModel
+                autoLoading: false
+                targetDid: profileView.userDid
+            }
+        }
+
+        Frame {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Label {
+                text: "Followers"
+            }
         }
     }
 }

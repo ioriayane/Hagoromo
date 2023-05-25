@@ -11,6 +11,7 @@ SOURCES += \
     qtquick/columnlistmodel.cpp \
     qtquick/createsession.cpp \
     qtquick/encryption.cpp \
+    qtquick/followslistmodel.cpp \
     qtquick/notificationlistmodel.cpp \
     qtquick/postthreadlistmodel.cpp \
     qtquick/recordoperator.cpp \
@@ -28,6 +29,7 @@ HEADERS += \
     qtquick/createsession.h \
     qtquick/encryption.h \
     qtquick/encryption_seed.h \
+    qtquick/followslistmodel.h \
     qtquick/notificationlistmodel.h \
     qtquick/postthreadlistmodel.h \
     qtquick/recordoperator.h \
@@ -58,6 +60,7 @@ QML_FILES = \
     qml/view/ImageFullView.qml \
     qml/view/NotificationListView.qml \
     qml/view/PostThreadView.qml \
+    qml/view/ProfileListView.qml \
     qml/view/ProfileView.qml \
     qml/view/TimelineView.qml
 
