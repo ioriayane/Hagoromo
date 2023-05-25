@@ -3,7 +3,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import Qt.labs.platform 1.1 as P
 
-import tech.relog.hagoromo.createrecord 1.0
+import tech.relog.hagoromo.recordoperator 1.0
 import tech.relog.hagoromo.accountlistmodel 1.0
 
 import "../controls"
@@ -56,10 +56,10 @@ Dialog {
         embedImagePreview.embedImages = ""
     }
 
-    CreateRecord {
+    RecordOperator {
         id: createRecord
         onFinished: (success) => {
-                        console.log("CreateRecord::onFinished " + success)
+                        console.log("RecordOperator::onFinished " + success)
                         if(success){
                             postText.clear()
                             postDialog.close()

@@ -3,7 +3,7 @@
 #include <QtQuickControls2/QQuickStyle>
 
 #include "qtquick/createsession.h"
-#include "qtquick/createrecord.h"
+#include "qtquick/recordoperator.h"
 #include "qtquick/accountlistmodel.h"
 #include "qtquick/columnlistmodel.h"
 #include "qtquick/notificationlistmodel.h"
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     app.setApplicationName(QStringLiteral("Hagoromo"));
 
     qmlRegisterType<CreateSession>("tech.relog.hagoromo.createsession", 1, 0, "CreateSession");
-    qmlRegisterType<CreateRecord>("tech.relog.hagoromo.createrecord", 1, 0, "CreateRecord");
+    qmlRegisterType<RecordOperator>("tech.relog.hagoromo.recordoperator", 1, 0, "RecordOperator");
     qmlRegisterType<AccountListModel>("tech.relog.hagoromo.accountlistmodel", 1, 0,
                                       "AccountListModel");
     qmlRegisterType<ColumnListModel>("tech.relog.hagoromo.columnlistmodel", 1, 0,

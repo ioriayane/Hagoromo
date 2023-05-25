@@ -5,7 +5,7 @@ import QtQuick.Controls.Material 2.15
 
 import tech.relog.hagoromo.timelinelistmodel 1.0
 import tech.relog.hagoromo.columnlistmodel 1.0
-import tech.relog.hagoromo.createrecord 1.0
+import tech.relog.hagoromo.recordoperator 1.0
 
 import "../controls"
 import "../parts"
@@ -36,9 +36,9 @@ ColumnLayout {
                           string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestedViewImages(int index, string paths)
 
-    CreateRecord {
+    RecordOperator {
         id: createRecord
-        onFinished: (success) => console.log("ColumnView::CreateRecord::onFinished:" + success)
+        onFinished: (success) => console.log("ColumnView::RecordOperator::onFinished:" + success)
     }
 
     Component {

@@ -1,19 +1,19 @@
-#ifndef CREATERECORD_H
-#define CREATERECORD_H
+#ifndef RECORDOPERATOR_H
+#define RECORDOPERATOR_H
 
 #include "atprotocol/lexicons.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "atprotocol/accessatprotocol.h"
 #include <QObject>
 
-class CreateRecord : public QObject
+class RecordOperator : public QObject
 {
     Q_OBJECT
 
     Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
 
 public:
-    explicit CreateRecord(QObject *parent = nullptr);
+    explicit RecordOperator(QObject *parent = nullptr);
 
     Q_INVOKABLE void setAccount(const QString &service, const QString &did, const QString &handle,
                                 const QString &email, const QString &accessJwt,
@@ -51,4 +51,4 @@ private:
     bool m_running;
 };
 
-#endif // CREATERECORD_H
+#endif // RECORDOPERATOR_H

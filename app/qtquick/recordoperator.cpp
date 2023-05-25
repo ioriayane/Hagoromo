@@ -1,4 +1,4 @@
-#include "createrecord.h"
+#include "recordoperator.h"
 #include "atprotocol/com/atproto/repo/comatprotorepocreaterecord.h"
 #include "atprotocol/com/atproto/repo/comatprotorepouploadblob.h"
 
@@ -9,9 +9,9 @@ using AtProtocolInterface::ComAtprotoRepoCreateRecord;
 using AtProtocolInterface::ComAtprotoRepoUploadBlob;
 using namespace AtProtocolType;
 
-CreateRecord::CreateRecord(QObject *parent) : QObject { parent }, m_running(false) { }
+RecordOperator::RecordOperator(QObject *parent) : QObject { parent }, m_running(false) { }
 
-void CreateRecord::setAccount(const QString &service, const QString &did, const QString &handle,
+void RecordOperator::setAccount(const QString &service, const QString &did, const QString &handle,
                               const QString &email, const QString &accessJwt,
                               const QString &refreshJwt)
 {
@@ -23,12 +23,12 @@ void CreateRecord::setAccount(const QString &service, const QString &did, const 
     m_account.refreshJwt = refreshJwt;
 }
 
-void CreateRecord::setText(const QString &text)
+void RecordOperator::setText(const QString &text)
 {
     m_text = text;
 }
 
-void CreateRecord::setReply(const QString &parent_cid, const QString &parent_uri,
+void RecordOperator::setReply(const QString &parent_cid, const QString &parent_uri,
                             const QString &root_cid, const QString &root_uri)
 {
     m_replyParent.cid = parent_cid;
@@ -37,18 +37,18 @@ void CreateRecord::setReply(const QString &parent_cid, const QString &parent_uri
     m_replyRoot.uri = root_uri;
 }
 
-void CreateRecord::setQuote(const QString &cid, const QString &uri)
+void RecordOperator::setQuote(const QString &cid, const QString &uri)
 {
     m_embedQuote.cid = cid;
     m_embedQuote.uri = uri;
 }
 
-void CreateRecord::setImages(const QStringList &images)
+void RecordOperator::setImages(const QStringList &images)
 {
     m_embedImages = images;
 }
 
-void CreateRecord::clear()
+void RecordOperator::clear()
 {
     m_text.clear();
     m_replyParent = AtProtocolType::ComAtprotoRepoStrongRef::Main();
@@ -58,14 +58,14 @@ void CreateRecord::clear()
     m_embedImageBlogs.clear();
 }
 
-void CreateRecord::post()
+void RecordOperator::post()
 {
     if (m_text.isEmpty())
         return;
 
     setRunning(true);
 
-    QPointer<CreateRecord> aliving(this);
+    QPointer<RecordOperator> aliving(this);
 
     ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord();
     connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
@@ -82,7 +82,7 @@ void CreateRecord::post()
     create_record->post(m_text);
 }
 
-void CreateRecord::postWithImages()
+void RecordOperator::postWithImages()
 {
     if (m_embedImages.isEmpty())
         return;
@@ -92,7 +92,7 @@ void CreateRecord::postWithImages()
     QString path = QUrl(m_embedImages.first()).toLocalFile();
     m_embedImages.removeFirst();
 
-    QPointer<CreateRecord> aliving(this);
+    QPointer<RecordOperator> aliving(this);
 
     ComAtprotoRepoUploadBlob *upload_blob = new ComAtprotoRepoUploadBlob();
     connect(upload_blob, &ComAtprotoRepoUploadBlob::finished, [=](bool success) {
@@ -123,13 +123,13 @@ void CreateRecord::postWithImages()
     upload_blob->uploadBlob(path);
 }
 
-void CreateRecord::repost(const QString &cid, const QString &uri)
+void RecordOperator::repost(const QString &cid, const QString &uri)
 {
     if (running())
         return;
     setRunning(true);
 
-    QPointer<CreateRecord> aliving(this);
+    QPointer<RecordOperator> aliving(this);
 
     ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord();
     connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
@@ -145,13 +145,13 @@ void CreateRecord::repost(const QString &cid, const QString &uri)
     create_record->repost(cid, uri);
 }
 
-void CreateRecord::like(const QString &cid, const QString &uri)
+void RecordOperator::like(const QString &cid, const QString &uri)
 {
     if (running())
         return;
     setRunning(true);
 
-    QPointer<CreateRecord> aliving(this);
+    QPointer<RecordOperator> aliving(this);
 
     ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord();
     connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
@@ -167,13 +167,13 @@ void CreateRecord::like(const QString &cid, const QString &uri)
     create_record->like(cid, uri);
 }
 
-void CreateRecord::follow(const QString &did)
+void RecordOperator::follow(const QString &did)
 {
     if (running())
         return;
     setRunning(true);
 
-    QPointer<CreateRecord> aliving(this);
+    QPointer<RecordOperator> aliving(this);
 
     ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord();
     connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
@@ -187,12 +187,12 @@ void CreateRecord::follow(const QString &did)
     create_record->follow(did);
 }
 
-bool CreateRecord::running() const
+bool RecordOperator::running() const
 {
     return m_running;
 }
 
-void CreateRecord::setRunning(bool newRunning)
+void RecordOperator::setRunning(bool newRunning)
 {
     if (m_running == newRunning)
         return;

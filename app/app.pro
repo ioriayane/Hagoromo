@@ -9,11 +9,11 @@ SOURCES += \
     qtquick/atpabstractlistmodel.cpp \
     qtquick/authorfeedlistmodel.cpp \
     qtquick/columnlistmodel.cpp \
-    qtquick/createrecord.cpp \
     qtquick/createsession.cpp \
     qtquick/encryption.cpp \
     qtquick/notificationlistmodel.cpp \
     qtquick/postthreadlistmodel.cpp \
+    qtquick/recordoperator.cpp \
     qtquick/timelinelistmodel.cpp \
     qtquick/translator.cpp \
     qtquick/userprofile.cpp
@@ -25,12 +25,12 @@ HEADERS += \
     qtquick/authorfeedlistmodel.h \
     qtquick/columnlistmodel.h \
     qtquick/common.h \
-    qtquick/createrecord.h \
     qtquick/createsession.h \
     qtquick/encryption.h \
     qtquick/encryption_seed.h \
     qtquick/notificationlistmodel.h \
     qtquick/postthreadlistmodel.h \
+    qtquick/recordoperator.h \
     qtquick/thumbnailprovider.h \
     qtquick/timelinelistmodel.h \
     qtquick/translator.h \

@@ -211,7 +211,7 @@ ColumnLayout {
                         Layout.leftMargin: 5
                         font.pointSize: 8
                         color: Material.color(Material.Grey)
-                        text: qsTr("Dived into the blue sky on")
+                        text: qsTr("Took off into the Bluesky on")
                     }
                     Label {
                         font.pointSize: 8
