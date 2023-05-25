@@ -6,6 +6,7 @@ import QtQuick.Controls.Material 2.15
 import tech.relog.hagoromo.userprofile 1.0
 import tech.relog.hagoromo.authorfeedlistmodel 1.0
 import tech.relog.hagoromo.anyfeedlistmodel 1.0
+import tech.relog.hagoromo.recordoperator 1.0
 
 import "../parts"
 import "../controls"
@@ -31,12 +32,16 @@ ColumnLayout {
     signal requestedViewThread(string uri)
     signal requestedViewImages(int index, string paths)
     signal requestedViewProfile(string did)
-    signal requestedFollow(string did)
-    signal requestedDeleteFollow(string uri)
 
     signal back()
 
     states: [
+        State {
+            // 通信中
+            when: recordOperator.running
+            PropertyChanges { target: editButton; iconText: "-" }
+            PropertyChanges { target: editButton; enabled: false }
+        },
         State {
             // 認証しているアカウントを表示しているとき
             when: userDid === accountDid
@@ -49,10 +54,10 @@ ColumnLayout {
             PropertyChanges { target: editButton; iconText: qsTr("Following") }
             PropertyChanges { target: editButton; highlighted: true }
             PropertyChanges { target: editButton; onClicked: {
-                    requestedDeleteFollow(userProfile.followingUri)
+                    userProfile.following = false
+                    recordOperator.deleteFollow(userProfile.followingUri)
                 } }
         }
-
     ]
 
     QtObject {
@@ -62,6 +67,7 @@ ColumnLayout {
         }
         function setAccount(service, did, handle, email, accessJwt, refreshJwt) {
             accountDid = did
+            recordOperator.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             userProfile.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             authorFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             repostFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
@@ -71,6 +77,14 @@ ColumnLayout {
             userProfile.getProfile(userDid)
             authorFeedListModel.getLatest()
         }
+    }
+
+    RecordOperator {
+        id: recordOperator
+        onFinished: (success) => {
+                        console.log("ProfileView::RecordOperator::onFinished:" + success)
+                        userProfile.getProfile(userDid)
+                    }
     }
 
     UserProfile {
@@ -118,11 +132,19 @@ ColumnLayout {
                 anchors.top: bannerImage.bottom
                 anchors.right: bannerImage.right
 
+                BusyIndicator {
+                    Layout.preferredWidth: editButton.height
+                    Layout.preferredHeight: editButton.height
+                    visible: recordOperator.running
+                }
                 IconButton {
                     id: editButton
                     Layout.preferredHeight: 24
                     iconText: qsTr("Follow")
-                    onClicked: profileView.requestedFollow(profileView.userDid)
+                    onClicked: {
+                        userProfile.following = true
+                        recordOperator.follow(profileView.userDid)
+                    }
                 }
                 //                IconButton {
                 //                    id: moreButton

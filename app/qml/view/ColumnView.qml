@@ -145,8 +145,6 @@ ColumnLayout {
                                         console.log("View profile : " + did)
                                         columnStackView.push(profileComponent, { "userDid": did })
                                     }
-            onRequestedFollow: (did) => recordOperator.follow(did)
-            onRequestedDeleteFollow: (uri) => recordOperator.deleteFollow(uri)
 
             onBack: {
                 if(!columnStackView.empty){
