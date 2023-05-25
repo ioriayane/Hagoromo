@@ -38,8 +38,8 @@ ColumnLayout {
     states: [
         State {
             // 通信中
-            when: recordOperator.running
-            PropertyChanges { target: editButton; iconText: "-" }
+            when: recordOperator.running || userProfile.running
+            PropertyChanges { target: editButton; iconText: "   " }
             PropertyChanges { target: editButton; enabled: false }
         },
         State {
@@ -47,6 +47,9 @@ ColumnLayout {
             when: userDid === accountDid
             PropertyChanges { target: editButton; visible: false }  // 仮
             PropertyChanges { target: editButton; iconText: qsTr("Edit Profile") }
+            PropertyChanges { target: editButton; onClicked: {
+                    // edit profile
+                } }
         },
         State {
             // フォローしている
@@ -56,6 +59,15 @@ ColumnLayout {
             PropertyChanges { target: editButton; onClicked: {
                     userProfile.following = false
                     recordOperator.deleteFollow(userProfile.followingUri)
+                } }
+        },
+        State {
+            // フォローしていない
+            when: !userProfile.following
+            PropertyChanges { target: editButton; iconText: qsTr("Follow") }
+            PropertyChanges { target: editButton; onClicked: {
+                    userProfile.following = true
+                    recordOperator.follow(profileView.userDid)
                 } }
         }
     ]
@@ -132,18 +144,13 @@ ColumnLayout {
                 anchors.top: bannerImage.bottom
                 anchors.right: bannerImage.right
 
-                BusyIndicator {
-                    Layout.preferredWidth: editButton.height
-                    Layout.preferredHeight: editButton.height
-                    visible: recordOperator.running
-                }
                 IconButton {
                     id: editButton
                     Layout.preferredHeight: 24
-                    iconText: qsTr("Follow")
-                    onClicked: {
-                        userProfile.following = true
-                        recordOperator.follow(profileView.userDid)
+                    iconText: "   "
+                    BusyIndicator {
+                        anchors.fill: parent
+                        visible: recordOperator.running || userProfile.running
                     }
                 }
                 //                IconButton {

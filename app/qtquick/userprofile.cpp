@@ -7,6 +7,7 @@ using AtProtocolInterface::AppBskyActorGetProfile;
 
 UserProfile::UserProfile(QObject *parent)
     : QObject { parent },
+      m_running(false),
       m_followersCount(0),
       m_followsCount(0),
       m_postsCount(0),
@@ -29,6 +30,10 @@ void UserProfile::setAccount(const QString &service, const QString &did, const Q
 
 void UserProfile::getProfile(const QString &did)
 {
+    if (running())
+        return;
+    setRunning(true);
+
     QPointer<UserProfile> aliving(this);
 
     AppBskyActorGetProfile *profile = new AppBskyActorGetProfile();
@@ -56,6 +61,7 @@ void UserProfile::getProfile(const QString &did)
 
                 setFollowingUri(detail.viewer.following);
             }
+            setRunning(false);
         }
         profile->deleteLater();
     });
@@ -230,4 +236,17 @@ void UserProfile::setFollowingUri(const QString &newFollowingUri)
         return;
     m_followingUri = newFollowingUri;
     emit followingUriChanged();
+}
+
+bool UserProfile::running() const
+{
+    return m_running;
+}
+
+void UserProfile::setRunning(bool newRunning)
+{
+    if (m_running == newRunning)
+        return;
+    m_running = newRunning;
+    emit runningChanged();
 }

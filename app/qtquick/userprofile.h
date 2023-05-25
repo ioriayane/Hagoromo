@@ -10,6 +10,8 @@ class UserProfile : public QObject
 {
     Q_OBJECT
 
+    Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
+
     Q_PROPERTY(QString did READ did WRITE setDid NOTIFY didChanged)
     Q_PROPERTY(QString handle READ handle WRITE setHandle NOTIFY handleChanged)
     Q_PROPERTY(QString displayName READ displayName WRITE setDisplayName NOTIFY displayNameChanged)
@@ -36,6 +38,8 @@ public:
                                 const QString &refreshJwt);
     Q_INVOKABLE void getProfile(const QString &did);
 
+    bool running() const;
+    void setRunning(bool newRunning);
     QString did() const;
     void setDid(const QString &newDid);
     QString handle() const;
@@ -64,6 +68,7 @@ public:
     void setFollowingUri(const QString &newFollowingUri);
 
 signals:
+    void runningChanged();
     void didChanged();
     void handleChanged();
     void displayNameChanged();
@@ -81,6 +86,7 @@ signals:
 private:
     AtProtocolInterface::AccountData m_account;
     //    AtProtocolType::AppBskyActorDefs::ProfileViewDetailed m_profile;
+    bool m_running;
     QString m_did;
     QString m_handle;
     QString m_displayName;
