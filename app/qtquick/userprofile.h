@@ -25,6 +25,9 @@ class UserProfile : public QObject
     Q_PROPERTY(bool following READ following WRITE setFollowing NOTIFY followingChanged)
     Q_PROPERTY(bool followedBy READ followedBy WRITE setFollowedBy NOTIFY followedByChanged)
 
+    Q_PROPERTY(
+            QString followingUri READ followingUri WRITE setFollowingUri NOTIFY followingUriChanged)
+
 public:
     explicit UserProfile(QObject *parent = nullptr);
 
@@ -53,12 +56,12 @@ public:
     void setPostsCount(int newPostsCount);
     QString indexedAt() const;
     void setIndexedAt(const QString &newIndexedAt);
-
     bool following() const;
     void setFollowing(bool newFollowing);
-
     bool followedBy() const;
     void setFollowedBy(bool newFollowedBy);
+    QString followingUri() const;
+    void setFollowingUri(const QString &newFollowingUri);
 
 signals:
     void didChanged();
@@ -71,10 +74,9 @@ signals:
     void followsCountChanged();
     void postsCountChanged();
     void indexedAtChanged();
-
     void followingChanged();
-
     void followedByChanged();
+    void followingUriChanged();
 
 private:
     AtProtocolInterface::AccountData m_account;
@@ -91,6 +93,7 @@ private:
     QString m_indexedAt;
     bool m_following;
     bool m_followedBy;
+    QString m_followingUri;
 };
 
 #endif // USERPROFILE_H

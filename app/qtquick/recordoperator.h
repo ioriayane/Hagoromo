@@ -32,6 +32,8 @@ public:
     Q_INVOKABLE void like(const QString &cid, const QString &uri);
     Q_INVOKABLE void follow(const QString &did);
 
+    Q_INVOKABLE void deleteFollow(const QString &uri);
+
     bool running() const;
     void setRunning(bool newRunning);
 

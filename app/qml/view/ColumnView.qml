@@ -37,7 +37,7 @@ ColumnLayout {
     signal requestedViewImages(int index, string paths)
 
     RecordOperator {
-        id: createRecord
+        id: recordOperator
         onFinished: (success) => console.log("ColumnView::RecordOperator::onFinished:" + success)
     }
 
@@ -50,10 +50,10 @@ ColumnLayout {
 
             onRequestedReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                               columnView.requestedReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
-            onRequestedRepost: (cid, uri) => createRecord.repost(cid, uri)
+            onRequestedRepost: (cid, uri) => recordOperator.repost(cid, uri)
             onRequestedQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
                               columnView.requestedQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
-            onRequestedLike: (cid, uri) => createRecord.like(cid, uri)
+            onRequestedLike: (cid, uri) => recordOperator.like(cid, uri)
 
             onRequestedViewThread: (uri) => {
                                        console.log("View Thread : " + uri)
@@ -76,10 +76,10 @@ ColumnLayout {
         NotificationListView {
             onRequestedReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                               columnView.requestedReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
-            onRequestedRepost: (cid, uri) => createRecord.repost(cid, uri)
+            onRequestedRepost: (cid, uri) => recordOperator.repost(cid, uri)
             onRequestedQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
                               columnView.requestedQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
-            onRequestedLike: (cid, uri) => createRecord.like(cid, uri)
+            onRequestedLike: (cid, uri) => recordOperator.like(cid, uri)
             onRequestedViewThread: (uri) => {
                                        console.log("View Thread : " + uri)
                                        // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
@@ -98,10 +98,10 @@ ColumnLayout {
         PostThreadView {
             onRequestedReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                               columnView.requestedReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
-            onRequestedRepost: (cid, uri) => createRecord.repost(cid, uri)
+            onRequestedRepost: (cid, uri) => recordOperator.repost(cid, uri)
             onRequestedQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
                               columnView.requestedQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
-            onRequestedLike: (cid, uri) => createRecord.like(cid, uri)
+            onRequestedLike: (cid, uri) => recordOperator.like(cid, uri)
 
             onRequestedViewThread: (uri) => {
                                        console.log("View Thread : " + uri)
@@ -127,10 +127,10 @@ ColumnLayout {
         ProfileView {
             onRequestedReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                               columnView.requestedReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
-            onRequestedRepost: (cid, uri) => createRecord.repost(cid, uri)
+            onRequestedRepost: (cid, uri) => recordOperator.repost(cid, uri)
             onRequestedQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
                               columnView.requestedQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
-            onRequestedLike: (cid, uri) => createRecord.like(cid, uri)
+            onRequestedLike: (cid, uri) => recordOperator.like(cid, uri)
 
             onRequestedViewThread: (uri) => {
                                        console.log("View Thread : " + uri)
@@ -145,7 +145,9 @@ ColumnLayout {
                                         console.log("View profile : " + did)
                                         columnStackView.push(profileComponent, { "userDid": did })
                                     }
-            onRequestedFollow: (did) => createRecord.follow(did)
+            onRequestedFollow: (did) => recordOperator.follow(did)
+            onRequestedDeleteFollow: (uri) => recordOperator.deleteFollow(uri)
+
             onBack: {
                 if(!columnStackView.empty){
                     columnStackView.pop()
@@ -166,7 +168,7 @@ ColumnLayout {
             columnStackView.push(timelineComponent)
             componentTypeLabel.text = qsTr("Unknown")
         }
-        createRecord.setAccount(service, did, handle, email, accessJwt, refreshJwt)
+        recordOperator.setAccount(service, did, handle, email, accessJwt, refreshJwt)
     }
 
     function reflect(){

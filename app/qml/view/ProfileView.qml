@@ -32,6 +32,7 @@ ColumnLayout {
     signal requestedViewImages(int index, string paths)
     signal requestedViewProfile(string did)
     signal requestedFollow(string did)
+    signal requestedDeleteFollow(string uri)
 
     signal back()
 
@@ -47,7 +48,9 @@ ColumnLayout {
             when: userProfile.following
             PropertyChanges { target: editButton; iconText: qsTr("Following") }
             PropertyChanges { target: editButton; highlighted: true }
-            PropertyChanges { target: editButton; onClicked: { console.log("Unfollow") } }
+            PropertyChanges { target: editButton; onClicked: {
+                    requestedDeleteFollow(userProfile.followingUri)
+                } }
         }
 
     ]
@@ -121,22 +124,22 @@ ColumnLayout {
                     iconText: qsTr("Follow")
                     onClicked: profileView.requestedFollow(profileView.userDid)
                 }
-//                IconButton {
-//                    id: moreButton
-//                    Layout.preferredHeight: 24
-//                    iconSource: "../images/more.png"
-//                    iconSize: 16
-//                    foreground: Material.color(Material.Grey)
-//                    //flat: true
-//                    onClicked: morePopup.open()
-//                    Menu {
-//                        id: morePopup
-//                        MenuItem {
-//                            id: tranlateMenuItem
-//                            text: qsTr("Post reply")
-//                        }
-//                    }
-//                }
+                //                IconButton {
+                //                    id: moreButton
+                //                    Layout.preferredHeight: 24
+                //                    iconSource: "../images/more.png"
+                //                    iconSize: 16
+                //                    foreground: Material.color(Material.Grey)
+                //                    //flat: true
+                //                    onClicked: morePopup.open()
+                //                    Menu {
+                //                        id: morePopup
+                //                        MenuItem {
+                //                            id: tranlateMenuItem
+                //                            text: qsTr("Post reply")
+                //                        }
+                //                    }
+                //                }
             }
         }
         RowLayout {

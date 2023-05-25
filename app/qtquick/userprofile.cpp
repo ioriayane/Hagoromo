@@ -53,6 +53,8 @@ void UserProfile::getProfile(const QString &did)
 
                 setFollowing(detail.viewer.following.contains(m_account.did));
                 setFollowedBy(detail.viewer.followedBy.contains(did));
+
+                setFollowingUri(detail.viewer.following);
             }
         }
         profile->deleteLater();
@@ -215,4 +217,17 @@ void UserProfile::setFollowedBy(bool newFollowedBy)
         return;
     m_followedBy = newFollowedBy;
     emit followedByChanged();
+}
+
+QString UserProfile::followingUri() const
+{
+    return m_followingUri;
+}
+
+void UserProfile::setFollowingUri(const QString &newFollowingUri)
+{
+    if (m_followingUri == newFollowingUri)
+        return;
+    m_followingUri = newFollowingUri;
+    emit followingUriChanged();
 }

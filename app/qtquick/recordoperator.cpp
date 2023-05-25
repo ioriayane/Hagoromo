@@ -1,19 +1,21 @@
 #include "recordoperator.h"
 #include "atprotocol/com/atproto/repo/comatprotorepocreaterecord.h"
 #include "atprotocol/com/atproto/repo/comatprotorepouploadblob.h"
+#include "atprotocol/com/atproto/repo/comatprotorepodeleterecord.h"
 
 #include <QPointer>
 #include <QTimer>
 
 using AtProtocolInterface::ComAtprotoRepoCreateRecord;
+using AtProtocolInterface::ComAtprotoRepoDeleteRecord;
 using AtProtocolInterface::ComAtprotoRepoUploadBlob;
 using namespace AtProtocolType;
 
 RecordOperator::RecordOperator(QObject *parent) : QObject { parent }, m_running(false) { }
 
 void RecordOperator::setAccount(const QString &service, const QString &did, const QString &handle,
-                              const QString &email, const QString &accessJwt,
-                              const QString &refreshJwt)
+                                const QString &email, const QString &accessJwt,
+                                const QString &refreshJwt)
 {
     m_account.service = service;
     m_account.did = did;
@@ -29,7 +31,7 @@ void RecordOperator::setText(const QString &text)
 }
 
 void RecordOperator::setReply(const QString &parent_cid, const QString &parent_uri,
-                            const QString &root_cid, const QString &root_uri)
+                              const QString &root_cid, const QString &root_uri)
 {
     m_replyParent.cid = parent_cid;
     m_replyParent.uri = parent_uri;
@@ -185,6 +187,28 @@ void RecordOperator::follow(const QString &did)
     });
     create_record->setAccount(m_account);
     create_record->follow(did);
+}
+
+void RecordOperator::deleteFollow(const QString &uri)
+{
+    if (running() || !uri.startsWith("at://"))
+        return;
+    setRunning(true);
+
+    QString r_key = uri.split("/").last();
+
+    QPointer<RecordOperator> aliving(this);
+
+    ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord();
+    connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
+        if (aliving) {
+            emit finished(success);
+            setRunning(false);
+        }
+        delete_record->deleteLater();
+    });
+    delete_record->setAccount(m_account);
+    delete_record->unfollow(r_key);
 }
 
 bool RecordOperator::running() const

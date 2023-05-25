@@ -32,15 +32,15 @@ void ComAtprotoRepoDeleteRecord::unfollow(const QString &rkey)
 
 void ComAtprotoRepoDeleteRecord::parseJson(const QString reply_json)
 {
-    bool success = false;
+    //    bool success = false;
 
-    QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
-    if (json_doc.isEmpty()) {
-    } else {
-        success = true;
-    }
+    //    QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
+    //    if (json_doc.isEmpty()) {
+    //    } else {
+    //        success = true;
+    //    }
 
-    emit finished(success);
+    emit finished(true);
 }
 
 }
