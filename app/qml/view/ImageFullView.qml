@@ -11,9 +11,9 @@ Rectangle {
     property string sources: ""
 
     function open(index, sources){
-        imageFullListView.currentIndex = index
         imageFullView.sources = sources
         imageFullView.visible = true
+        imageFullListView.currentIndex = index
     }
 
     MouseArea {
