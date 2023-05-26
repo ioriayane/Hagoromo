@@ -87,7 +87,9 @@ ColumnLayout {
             repostFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             likesFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             followsListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
+            followsListView.recordOperator.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             followersListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
+            followersListView.recordOperator.setAccount(service, did, handle, email, accessJwt, refreshJwt)
         }
         function getLatest() {
             userProfile.getProfile(userDid)
@@ -381,23 +383,37 @@ ColumnLayout {
         }
 
         ProfileListView {
+            id: followsListView
             Layout.fillWidth: true
+            userDid: profileView.userDid
             accountDid: profileView.accountDid
             model: FollowsListModel {
                 id: followsListModel
                 autoLoading: false
                 targetDid: profileView.userDid
             }
+            onRequestedViewProfile: (did) => {
+                                        if(did !== profileView.userDid){
+                                            profileView.requestedViewProfile(did)
+                                        }
+                                    }
         }
 
         ProfileListView {
+            id: followersListView
             Layout.fillWidth: true
+            userDid: profileView.userDid
             accountDid: profileView.accountDid
             model: FollowersListModel {
                 id: followersListModel
                 autoLoading: false
                 targetDid: profileView.userDid
             }
+            onRequestedViewProfile: (did) => {
+                                        if(did !== profileView.userDid){
+                                            profileView.requestedViewProfile(did)
+                                        }
+                                    }
         }
     }
 }

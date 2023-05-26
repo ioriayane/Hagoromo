@@ -3,6 +3,8 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 
+import tech.relog.hagoromo.recordoperator 1.0
+
 import "../parts"
 import "../controls"
 
@@ -12,16 +14,28 @@ ScrollView {
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     clip: true
 
+    property string userDid: ""     // 表示するアカウント
     property string accountDid: ""  // 認証しているアカウント
 
     property alias listView: rootListView
     property alias model: rootListView.model
+    property alias recordOperator: recordOperator
+
+    signal requestedViewProfile(string did)
 
     ListView {
         id: rootListView
         anchors.fill: parent
         anchors.rightMargin: parent.ScrollBar.vertical.width
         spacing: 5
+
+        RecordOperator {
+            id: recordOperator
+            onFinished: (success) => {
+                            console.log("ProfileListView::RecordOperator::onFinished:" + success)
+                            model.getLatest()
+                        }
+        }
 
         header: ItemDelegate {
             width: rootListView.width
@@ -55,6 +69,12 @@ ScrollView {
 
             states: [
                 State {
+                    // 通信中
+                    when: recordOperator.running || rootListView.model.running
+                    PropertyChanges { target: editButton; iconText: "   " }
+                    PropertyChanges { target: editButton; enabled: false }
+                },
+                State {
                     // 自分
                     when: model.did === profileListView.accountDid
                     PropertyChanges { target: editButton; visible: false }
@@ -64,11 +84,19 @@ ScrollView {
                     when: model.following
                     PropertyChanges { target: editButton; iconText: qsTr("Following") }
                     PropertyChanges { target: editButton; highlighted: true }
+                    PropertyChanges { target: editButton; onClicked: {
+                            recordOperator.deleteFollow(model.followingUri)
+                            // 表示しているプロフィールが取得したアカウントと同じ場合はモデルからも消す
+                            rootListView.model.remove(model.did)
+                        } }
                 },
                 State {
                     // フォローしていない
                     when: !model.following
                     PropertyChanges { target: editButton; iconText: qsTr("Follow") }
+                    PropertyChanges { target: editButton; onClicked: {
+                            recordOperator.follow(model.did)
+                        } }
                 }
             ]
 
@@ -79,6 +107,7 @@ ScrollView {
                     Layout.preferredHeight: 36
                     Layout.alignment: Qt.AlignTop
                     source: model.avatar
+                    onClicked: requestedViewProfile(model.did)
                 }
 
                 ColumnLayout {
@@ -104,7 +133,7 @@ ScrollView {
                                 iconText: "   "
                                 BusyIndicator {
                                     anchors.fill: parent
-                                    visible: false //recordOperator.running || userProfile.running
+                                    visible: recordOperator.running
                                 }
                             }
                         }

@@ -26,12 +26,14 @@ public:
         BlockedByRole,
         FollowingRole,
         FollowedByRole,
+        FollowingUriRole,
     };
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
     Q_INVOKABLE QVariant item(int row, FollowsListModel::FollowsListModelRoles role) const;
+    Q_INVOKABLE void remove(const QString &did);
 
     virtual Q_INVOKABLE int indexOf(const QString &cid) const;
     virtual Q_INVOKABLE QString getRecordText(const QString &cid);

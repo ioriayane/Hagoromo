@@ -46,8 +46,21 @@ QVariant FollowsListModel::item(int row, FollowsListModelRoles role) const
         return profile.viewer.following.contains(account().did);
     else if (role == FollowedByRole)
         return profile.viewer.followedBy.contains(profile.did);
+    else if (role == FollowingUriRole)
+        return profile.viewer.following;
 
     return QVariant();
+}
+
+void FollowsListModel::remove(const QString &did)
+{
+    int row = m_didList.indexOf(did);
+    if (row == -1)
+        return;
+    beginRemoveRows(QModelIndex(), row, row);
+    m_didList.removeAt(row);
+    m_profileHash.remove(did);
+    endRemoveRows();
 }
 
 int FollowsListModel::indexOf(const QString &cid) const
@@ -108,6 +121,7 @@ QHash<int, QByteArray> FollowsListModel::roleNames() const
     roles[BlockedByRole] = "blockedBy";
     roles[FollowingRole] = "following";
     roles[FollowedByRole] = "followedBy";
+    roles[FollowingUriRole] = "followingUri";
 
     return roles;
 }
