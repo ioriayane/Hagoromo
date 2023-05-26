@@ -14,6 +14,7 @@ ColumnLayout {
     id: columnView
     spacing: 0
 
+    property string columnKey: ""
     property int componentType: 0
 
     property string accountUuid: ""
@@ -35,6 +36,10 @@ ColumnLayout {
                           string cid, string uri,
                           string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestedViewImages(int index, string paths)
+
+    signal requestedMoveToLeft(string key)
+    signal requestedMoveToRight(string key)
+    signal requestedRemove(string key)
 
     RecordOperator {
         id: recordOperator
@@ -70,7 +75,6 @@ ColumnLayout {
                                     }
         }
     }
-
     Component {
         id: listNotificationComponent
         NotificationListView {
@@ -245,14 +249,19 @@ ColumnLayout {
                 Menu {
                     id: popup
                     MenuItem {
-                        text: qsTr("Move left")
+                        icon.source: "../images/arrow_back.png"
+                        text: qsTr("Move to left")
+                        onClicked: requestedMoveToLeft(columnKey)
                     }
                     MenuItem {
-                        text: qsTr("Move right")
+                        icon.source: "../images/arrow_forward.png"
+                        text: qsTr("Move to right")
+                        onClicked: requestedMoveToRight(columnKey)
                     }
                     MenuItem {
                         icon.source: "../images/delete.png"
                         text: qsTr("Delete column")
+                        onClicked: requestedRemove(columnKey)
                     }
                 }
             }

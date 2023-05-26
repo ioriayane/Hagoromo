@@ -56,12 +56,29 @@ void ColumnListModel::update(int row, ColumnListModelRoles role, const QVariant 
 void ColumnListModel::append(const QString &account_uuid, int component_type)
 {
     ColumnItem item;
-    item.key = QUuid::createUuid().toString();
+    item.key = QUuid::createUuid().toString(QUuid::WithoutBraces);
     item.account_uuid = account_uuid;
     item.component_type = static_cast<ColumnComponentType>(component_type);
 
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     m_columnList.append(item);
+    endInsertRows();
+
+    save();
+}
+
+void ColumnListModel::insert(int row, const QString &account_uuid, int component_type)
+{
+    if (row < 0 || row > m_columnList.count())
+        return;
+
+    ColumnItem item;
+    item.key = QUuid::createUuid().toString(QUuid::WithoutBraces);
+    item.account_uuid = account_uuid;
+    item.component_type = static_cast<ColumnComponentType>(component_type);
+
+    beginInsertRows(QModelIndex(), row, row);
+    m_columnList.insert(row, item);
     endInsertRows();
 
     save();
@@ -102,6 +119,16 @@ bool ColumnListModel::containsKey(const QString &key) const
         }
     }
     return false;
+}
+
+int ColumnListModel::indexOf(const QString &key) const
+{
+    for (int i = 0; i < m_columnList.count() - 1; i++) {
+        if (m_columnList.at(i).key == key) {
+            return i;
+        }
+    }
+    return -1;
 }
 
 void ColumnListModel::save() const

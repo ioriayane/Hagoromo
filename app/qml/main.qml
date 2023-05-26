@@ -99,7 +99,8 @@ ApplicationWindow {
         function sync() {
             // 追加or更新
             for(var i=0; i<columnManageModel.rowCount(); i++){
-                repeater.append(columnManageModel.item(i, ColumnListModel.KeyRole),
+                repeater.insert(i,
+                                columnManageModel.item(i, ColumnListModel.KeyRole),
                                 columnManageModel.item(i, ColumnListModel.AccountUuidRole),
                                 columnManageModel.item(i, ColumnListModel.ComponentTypeRole))
             }
@@ -109,6 +110,19 @@ ApplicationWindow {
                     repeater.model.remove(r)
                 }
             }
+        }
+        function exchange(key, move_diff) {
+            // move_diff : -1=left, 1=right
+            var i = columnManageModel.indexOf(key)
+            console.log("exchange:" + key + ", " + i + ", " + move_diff)
+            var account_uuid = columnManageModel.item(i, ColumnListModel.AccountUuidRole)
+            var component_type = columnManageModel.item(i, ColumnListModel.ComponentTypeRole)
+            // 1度消す
+            columnManageModel.remove(i)
+            columnManageModel.sync()
+            // 追加し直し
+            columnManageModel.insert(i+move_diff, account_uuid, component_type)
+            columnManageModel.sync()
         }
     }
 
@@ -150,6 +164,20 @@ ApplicationWindow {
                               }
 
             onRequestedViewImages: (index, paths) => imageFullView.open(index, paths)
+
+            onRequestedMoveToLeft: (key) => {
+                                       console.log("move to left:" + key)
+                                       columnManageModel.exchange(key, -1)
+                                   }
+            onRequestedMoveToRight: (key) => {
+                                        console.log("move to right:" + key)
+                                        columnManageModel.exchange(key, 1)
+                                    }
+            onRequestedRemove: (key) => {
+                                   console.log("remove column:" + key)
+                                   columnManageModel.removeByKey(key)
+                                   columnManageModel.sync()
+                               }
         }
     }
 
@@ -250,10 +278,7 @@ ApplicationWindow {
                         }
                     }
 
-                    function append(key, account_uuid, component_type){
-                        // accountListModelで管理するアカウントのindexと表示に使うコンポを指定
-                        // ①ここでLoaderを追加する
-                        console.log("(1) append:" + account_uuid + ", " + component_type)
+                    function contains(key){
                         var exist = false
                         for(var i=0; i<repeater.model.count; i++){
                             if(repeater.model.get(i).key === key){
@@ -261,11 +286,17 @@ ApplicationWindow {
                                 break
                             }
                         }
+                        return exist
+                    }
 
-                        if(exist){
+                    function insert(index, key, account_uuid, component_type){
+                        // accountListModelで管理するアカウントのindexと表示に使うコンポを指定
+                        // ①ここでLoaderを追加する
+                        console.log("(1) insert:" + index + ", " + account_uuid + ", " + component_type)
+                        if(contains(key)){
                             // 既にある
                         }else{
-                            repeater.model.append({
+                            repeater.model.insert(index, {
                                                       "key": key,
                                                       "account_uuid": account_uuid,
                                                       "component_type": component_type
@@ -275,6 +306,7 @@ ApplicationWindow {
                     onItemAdded: (index, item) => {
                                      // ②Repeaterに追加されたLoaderにTLを表示するComponentを追加する
                                      console.log("(2) onItemAdded:" + index + ":" + item)
+                                     item.key = repeater.model.get(index).key
                                      item.account_uuid = repeater.model.get(index).account_uuid
                                      item.component_type = repeater.model.get(index).component_type
                                      item.sourceComponent = columnView
@@ -287,6 +319,7 @@ ApplicationWindow {
                         Layout.preferredWidth: 400
                         Layout.maximumWidth: 500
 
+                        property string key: ""
                         property string account_uuid: ""
                         property int component_type: 0
 
@@ -296,6 +329,7 @@ ApplicationWindow {
                             console.log("(3) loader:" + row + ", " + loader.account_uuid)
                             if(row < 0)
                                 return
+                            item.columnKey = loader.key
                             item.componentType = loader.component_type
                             item.accountUuid = loader.account_uuid
                             setAccount(row)

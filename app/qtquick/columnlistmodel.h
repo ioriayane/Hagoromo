@@ -43,9 +43,11 @@ public:
                             const QVariant &value);
 
     Q_INVOKABLE void append(const QString &account_uuid, int component_type);
+    Q_INVOKABLE void insert(int row, const QString &account_uuid, int component_type);
     Q_INVOKABLE void remove(int row);
     Q_INVOKABLE void removeByKey(const QString &key);
     Q_INVOKABLE bool containsKey(const QString &key) const;
+    Q_INVOKABLE int indexOf(const QString &key) const;
 
     Q_INVOKABLE void save() const;
     Q_INVOKABLE void load();

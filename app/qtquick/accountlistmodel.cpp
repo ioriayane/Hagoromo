@@ -137,7 +137,7 @@ void AccountListModel::updateAccount(const QString &service, const QString &iden
     if (!updated) {
         // append
         AtProtocolInterface::AccountData item;
-        item.uuid = QUuid::createUuid().toString();
+        item.uuid = QUuid::createUuid().toString(QUuid::WithoutBraces);
         item.service = service;
         item.identifier = identifier;
         item.password = password;
