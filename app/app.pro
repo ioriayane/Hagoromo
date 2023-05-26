@@ -11,6 +11,7 @@ SOURCES += \
     qtquick/columnlistmodel.cpp \
     qtquick/createsession.cpp \
     qtquick/encryption.cpp \
+    qtquick/followerslistmodel.cpp \
     qtquick/followslistmodel.cpp \
     qtquick/notificationlistmodel.cpp \
     qtquick/postthreadlistmodel.cpp \
@@ -29,6 +30,7 @@ HEADERS += \
     qtquick/createsession.h \
     qtquick/encryption.h \
     qtquick/encryption_seed.h \
+    qtquick/followerslistmodel.h \
     qtquick/followslistmodel.h \
     qtquick/notificationlistmodel.h \
     qtquick/postthreadlistmodel.h \

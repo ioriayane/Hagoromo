@@ -8,6 +8,7 @@ import tech.relog.hagoromo.authorfeedlistmodel 1.0
 import tech.relog.hagoromo.anyfeedlistmodel 1.0
 import tech.relog.hagoromo.recordoperator 1.0
 import tech.relog.hagoromo.followslistmodel 1.0
+import tech.relog.hagoromo.followerslistmodel 1.0
 
 import "../parts"
 import "../controls"
@@ -86,6 +87,7 @@ ColumnLayout {
             repostFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             likesFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             followsListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
+            followersListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
         }
         function getLatest() {
             userProfile.getProfile(userDid)
@@ -388,11 +390,13 @@ ColumnLayout {
             }
         }
 
-        Frame {
+        ProfileListView {
             Layout.fillWidth: true
-            Layout.fillHeight: true
-            Label {
-                text: "Followers"
+            accountDid: profileView.accountDid
+            model: FollowersListModel {
+                id: followersListModel
+                autoLoading: false
+                targetDid: profileView.userDid
             }
         }
     }

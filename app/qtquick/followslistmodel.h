@@ -44,7 +44,6 @@ public slots:
 
 signals:
     void profileTypeChanged();
-
     void targetDidChanged();
 
 protected:

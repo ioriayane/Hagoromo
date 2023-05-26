@@ -75,10 +75,15 @@ void FollowsListModel::getLatest()
         if (aliving) {
             if (success) {
                 for (const auto &profile : *follows->profileList()) {
-                    beginInsertRows(QModelIndex(), m_didList.count(), m_didList.count());
                     m_profileHash[profile.did] = profile;
-                    m_didList.append(profile.did);
-                    endInsertRows();
+                    if (m_didList.contains(profile.did)) {
+                        int row = m_didList.indexOf(profile.did);
+                        emit dataChanged(index(row), index(row));
+                    } else {
+                        beginInsertRows(QModelIndex(), m_didList.count(), m_didList.count());
+                        m_didList.append(profile.did);
+                        endInsertRows();
+                    }
                 }
             }
             setRunning(false);
