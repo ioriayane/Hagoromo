@@ -63,69 +63,76 @@ Dialog {
     }
 
     ColumnLayout {
-        RowLayout {
-            id: themeRowlayout
-            Label {
-                text: qsTr("Theme") + " : "
+        TabBar {
+            id: tabBar
+            Layout.fillWidth: true
+            TabButton {
+                font.capitalization: Font.MixedCase
+                text: qsTr("General")
             }
-            RadioButton {
-                property int value: Material.Light
-                text: qsTr("Light")
-            }
-            RadioButton {
-                property int value: Material.Dark
-                text: qsTr("Dark")
+            TabButton {
+                font.capitalization: Font.MixedCase
+                text: qsTr("Translate")
             }
         }
-        Label {
-            text: qsTr("Accent color") + " : "
-        }
-        GridLayout {
-            id: accentGridLayout
-            columns: 9
-            columnSpacing: 1
-            rowSpacing: 1
-            Repeater {
-                model: [Material.Red, Material.Pink, Material.Purple, Material.DeepPurple,
-                    Material.Indigo, Material.Blue, Material.LightBlue, Material.Cyan,
-                    Material.Teal, Material.Green, Material.LightGreen, Material.lime,
-                    Material.Yellow, Material.Amber, Material.Orange, Material.DeepOrange,
-                    Material.Brown, Material.BlueGrey ]
-                Button {
-                    id: colorSelectButton
-                    Layout.preferredWidth: 30
-                    Layout.preferredHeight: 30
-                    topInset: 1
-                    leftInset: 1
-                    rightInset: 1
-                    bottomInset: 1
-                    background: Rectangle {
-                        color: Material.color(modelData)
-                        border.color: colorSelectButton.checked ? Material.foreground : Material.background
-                        border.width: 2
-                        radius: 5
+
+        SwipeView {
+            currentIndex: tabBar.currentIndex
+            interactive: false
+            clip: true
+
+            // General Page
+            ColumnLayout {
+                RowLayout {
+                    id: themeRowlayout
+                    Label {
+                        text: qsTr("Theme") + " : "
                     }
-                    checkable: true
-                    property color value: Material.color(modelData)
+                    RadioButton {
+                        property int value: Material.Light
+                        text: qsTr("Light")
+                    }
+                    RadioButton {
+                        property int value: Material.Dark
+                        text: qsTr("Dark")
+                    }
+                }
+                Label {
+                    text: qsTr("Accent color") + " : "
+                }
+                GridLayout {
+                    id: accentGridLayout
+                    columns: 9
+                    columnSpacing: 1
+                    rowSpacing: 1
+                    Repeater {
+                        model: [Material.Red, Material.Pink, Material.Purple, Material.DeepPurple,
+                            Material.Indigo, Material.Blue, Material.LightBlue, Material.Cyan,
+                            Material.Teal, Material.Green, Material.LightGreen, Material.lime,
+                            Material.Yellow, Material.Amber, Material.Orange, Material.DeepOrange,
+                            Material.Brown, Material.BlueGrey ]
+                        Button {
+                            id: colorSelectButton
+                            Layout.preferredWidth: 30
+                            Layout.preferredHeight: 30
+                            topInset: 1
+                            leftInset: 1
+                            rightInset: 1
+                            bottomInset: 1
+                            background: Rectangle {
+                                color: Material.color(modelData)
+                                border.color: colorSelectButton.checked ? Material.foreground : Material.background
+                                border.width: 2
+                                radius: 5
+                            }
+                            checkable: true
+                            property color value: Material.color(modelData)
+                        }
+                    }
                 }
             }
-        }
 
-//        Label {
-//            text: qsTr("Font")
-//        }
-//        ComboBox {
-//            id: fontCombo
-//            Layout.preferredWidth: 300
-//            model: Qt.fontFamilies()
-//            delegate: ItemDelegate {
-//                text: modelData
-//                width: fontCombo.width
-//            }
-//        }
-
-        GroupBox {
-            title: qsTr("Translate(DeepL)")
+            // Translate Page
             GridLayout {
                 columns: 2
                 Label {
@@ -150,16 +157,62 @@ Dialog {
                 }
                 ComboBox {
                     id: translateTargetLanguageCombo
-                    Layout.preferredWidth: 200
+                    Layout.fillWidth: true
                     textRole: "text"
                     valueRole: "value"
                     model: ListModel {
-                        ListElement { value: "EN"; text: "English" }
-                        ListElement { value: "JA"; text: "Japanese" }
+                        ListElement { value: "BG"; text: qsTr("Bulgarian") }
+                        ListElement { value: "ZH"; text: qsTr("Chinese (simplified)") }
+                        ListElement { value: "CS"; text: qsTr("Czech") }
+                        ListElement { value: "DA"; text: qsTr("Danish") }
+                        ListElement { value: "NL"; text: qsTr("Dutch") }
+                        ListElement { value: "EN-US"; text: qsTr("English (American)") }
+                        ListElement { value: "EN-GB"; text: qsTr("English (British)") }
+                        ListElement { value: "ET"; text: qsTr("Estonian") }
+                        ListElement { value: "FI"; text: qsTr("Finnish") }
+                        ListElement { value: "FR"; text: qsTr("French") }
+                        ListElement { value: "DE"; text: qsTr("German") }
+                        ListElement { value: "EL"; text: qsTr("Greek") }
+                        ListElement { value: "HU"; text: qsTr("Hungarian") }
+                        ListElement { value: "ID"; text: qsTr("Indonesian") }
+                        ListElement { value: "IT"; text: qsTr("Italian") }
+                        ListElement { value: "JA"; text: qsTr("Japanese") }
+                        ListElement { value: "KO"; text: qsTr("Korean") }
+                        ListElement { value: "LV"; text: qsTr("Latvian") }
+                        ListElement { value: "LT"; text: qsTr("Lithuanian") }
+                        ListElement { value: "NB"; text: qsTr("Norwegian (Bokmål)") }
+                        ListElement { value: "PL"; text: qsTr("Polish") }
+                        ListElement { value: "PT-BR"; text: qsTr("Portuguese (Brazilian)") }
+                        ListElement { value: "PT-PT"; text: qsTr("Portuguese (excluding Brazilian)") }
+                        ListElement { value: "RO"; text: qsTr("Romanian") }
+                        ListElement { value: "RU"; text: qsTr("Russian") }
+                        ListElement { value: "SK"; text: qsTr("Slovak") }
+                        ListElement { value: "SL"; text: qsTr("Slovenian") }
+                        ListElement { value: "ES"; text: qsTr("Spanish") }
+                        ListElement { value: "SV"; text: qsTr("Swedish") }
+                        ListElement { value: "TR"; text: qsTr("Turkish") }
+                        ListElement { value: "UK"; text: qsTr("Ukrainian") }
                     }
                 }
             }
+
+
         }
+
+
+//        Label {
+//            text: qsTr("Font")
+//        }
+//        ComboBox {
+//            id: fontCombo
+//            Layout.preferredWidth: 300
+//            model: Qt.fontFamilies()
+//            delegate: ItemDelegate {
+//                text: modelData
+//                width: fontCombo.width
+//            }
+//        }
+
 
         RowLayout {
             Button {
