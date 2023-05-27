@@ -83,14 +83,14 @@ Dialog {
                         Layout.fillWidth: true
                         Layout.preferredHeight: 1
                     }
-                    IconButton {
-                        // プロフィールの編集
-                        Layout.preferredWidth: 36
-                        Layout.preferredHeight: 26
-                        display: AbstractButton.IconOnly
-                        iconSource: "../images/edit.png"
-                        iconSize: 18
-                    }
+//                    IconButton {
+//                        // プロフィールの編集
+//                        Layout.preferredWidth: 36
+//                        Layout.preferredHeight: 26
+//                        display: AbstractButton.IconOnly
+//                        iconSource: "../images/edit.png"
+//                        iconSize: 18
+//                    }
                     IconButton {
                         Layout.preferredWidth: 36
                         Layout.preferredHeight: 26

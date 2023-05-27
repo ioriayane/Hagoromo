@@ -4,6 +4,8 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 import QtGraphicalEffects 1.15
 
+import "../parts"
+
 Dialog {
     id: addColumnDialog
     modal: true
@@ -30,10 +32,27 @@ Dialog {
                     Layout.preferredHeight: 300
                     delegate: ItemDelegate {
                         width: accountList.width
-                        icon.source: model.avatar
-                        text: model.handle
                         highlighted: ListView.isCurrentItem
                         onClicked: accountList.currentIndex = model.index
+
+                        RowLayout {
+                            anchors.fill: parent
+                            anchors.margins: 10
+                            spacing: 5
+                            AvatarImage {
+                                Layout.preferredWidth: 24
+                                Layout.preferredHeight: 24
+                                source: model.avatar
+                            }
+                            Label {
+                                text: model.handle
+                                elide: Text.ElideRight
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: 1
+                            }
+                        }
                     }
                 }
             }
