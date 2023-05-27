@@ -41,7 +41,7 @@ RowLayout {
             }
             MenuItem {
                 id: quoteMenuItem
-                icon.source: "../images/reply.png"
+                icon.source: "../images/quote.png"
                 text: qsTr("Quote")
             }
         }
