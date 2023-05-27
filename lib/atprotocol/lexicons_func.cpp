@@ -386,6 +386,14 @@ void copyThreadViewPost(const QJsonObject &src, AppBskyFeedDefs::ThreadViewPost 
                                              dest.parent_BlockedPost);
         }
         // array<union> replies
+        for (const auto &value : src.value("replies").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type == QStringLiteral("app.bsky.feed.defs#threadViewPost")) {
+                ThreadViewPost *dest_value = new ThreadViewPost();
+                AppBskyFeedDefs::copyThreadViewPost(value.toObject(), *dest_value);
+                dest.replies_ThreadViewPost.append(dest_value);
+            }
+        }
     }
 }
 }

@@ -317,6 +317,11 @@ struct ThreadViewPost
     {
         if (parent_ThreadViewPost != nullptr)
             delete parent_ThreadViewPost;
+        while (!replies_ThreadViewPost.isEmpty()) {
+            ThreadViewPost *thread_view_post = replies_ThreadViewPost.back();
+            replies_ThreadViewPost.pop_back();
+            delete thread_view_post;
+        }
     }
     ThreadViewPost &operator=(const ThreadViewPost &) = delete;
     PostView post;
@@ -328,7 +333,7 @@ struct ThreadViewPost
     // union end : parent
     // union start : replies
     ThreadViewPostRepliesType replies_type = ThreadViewPostRepliesType::none;
-    QList<ThreadViewPost> replies_ThreadViewPost;
+    QList<ThreadViewPost *> replies_ThreadViewPost;
     QList<NotFoundPost> replies_NotFoundPost;
     QList<BlockedPost> replies_BlockedPost;
     // union end : replies

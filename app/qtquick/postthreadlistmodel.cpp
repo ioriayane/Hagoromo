@@ -203,6 +203,12 @@ void PostThreadListModel::copyFrom(const AppBskyFeedDefs::ThreadViewPost *thread
     // replies側の表示
     // こっちは枝分かれする場合があるので表示方法を検討すること
     // そもそも時系列が逆順になるので基準になっているpostを強調するなど工夫が必要
+    for (const auto view_post : thread_view_post->replies_ThreadViewPost) {
+        beginInsertRows(QModelIndex(), rowCount(), rowCount());
+        m_cidList.append(view_post->post.cid);
+        m_postHash[view_post->post.cid] = view_post->post;
+        endInsertRows();
+    }
 }
 
 QString PostThreadListModel::postThreadUri() const
