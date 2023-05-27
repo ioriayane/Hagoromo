@@ -31,28 +31,24 @@ ScrollView {
         anchors.fill: parent
         anchors.rightMargin: parent.ScrollBar.vertical.width
 
-        model: NotificationListModel {
-            id: listNotificationListModel
-        }
-
         header: ItemDelegate {
             width: rootListView.width
             height: 24
             display: AbstractButton.IconOnly
-            icon.source: listNotificationListModel.running ? "" : "../images/expand_less.png"
-            onClicked: listNotificationListModel.getLatest()
+            icon.source: rootListView.model.running ? "" : "../images/expand_less.png"
+            onClicked: rootListView.model.getLatest()
 
             BusyIndicator {
                 anchors.centerIn: parent
                 width: 24
                 height: 24
-                visible: listNotificationListModel.running
+                visible: rootListView.model.running
             }
         }
         footer: BusyIndicator {
             width: rootListView.width
             height: 24
-            visible: listNotificationListModel.running && listNotificationListModel.rowCount() > 0
+            visible: rootListView.model.running && rootListView.model.rowCount() > 0
         }
 
         delegate: NotificationDelegate {

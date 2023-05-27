@@ -55,13 +55,17 @@ ApplicationWindow {
 
     ColumnSettingDialog {
         id: columnsettingDialog
-        onOpened: {
+
+        function openWithKey(key) {
+            columnKey = key
             var i = columnManageModel.indexOf(columnKey)
             console.log("open column setting dialog:" + i + ", " + columnKey)
             if(i >= 0){
                 autoLoadingCheckbox.checked = columnManageModel.item(i, ColumnListModel.AutoLoadingRole)
                 autoLoadingIntervalCombo.setByValue(columnManageModel.item(i, ColumnListModel.LoadingIntervalRole))
                 columnWidthSlider.value = columnManageModel.item(i, ColumnListModel.WidthRole)
+
+                open()
             }
         }
 
@@ -210,10 +214,7 @@ ApplicationWindow {
                                    columnManageModel.removeByKey(key)
                                    columnManageModel.sync()
                                }
-            onRequestedDisplayOfColumnSetting: (key) => {
-                                                   columnsettingDialog.columnKey = key
-                                                   columnsettingDialog.open()
-                                                }
+            onRequestedDisplayOfColumnSetting: (key) => columnsettingDialog.openWithKey(key)
         }
     }
 

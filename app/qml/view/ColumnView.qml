@@ -5,6 +5,7 @@ import QtQuick.Controls.Material 2.15
 import QtGraphicalEffects 1.15
 
 import tech.relog.hagoromo.timelinelistmodel 1.0
+import tech.relog.hagoromo.notificationlistmodel 1.0
 import tech.relog.hagoromo.columnlistmodel 1.0
 import tech.relog.hagoromo.recordoperator 1.0
 
@@ -19,8 +20,6 @@ ColumnLayout {
     property int componentType: 0
     property bool autoLoading: false
     property int loadingInterval: 300000
-
-    onAutoLoadingChanged: console.log(columnKey + ": autoLoading=" + autoLoading)
 
     property string accountUuid: ""
     property string service: ""
@@ -85,6 +84,10 @@ ColumnLayout {
     Component {
         id: listNotificationComponent
         NotificationListView {
+            model: NotificationListModel {
+                autoLoading: columnView.autoLoading
+                loadingInterval: columnView.loadingInterval
+            }
 
             onRequestedReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                               columnView.requestedReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -250,6 +253,7 @@ ColumnLayout {
             Image {
                 Layout.preferredWidth: 16
                 Layout.preferredHeight: 16
+                Layout.rightMargin: 3
                 Layout.alignment: Qt.AlignVCenter
                 source: "../images/auto.png"
                 layer.enabled: true
