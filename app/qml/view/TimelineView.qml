@@ -17,15 +17,15 @@ ScrollView {
     property alias listView: rootListView
     property alias model: rootListView.model
 
-    signal requestedReply(string cid, string uri,
+    signal requestReply(string cid, string uri,
                           string reply_root_cid, string reply_root_uri,
                           string avatar, string display_name, string handle, string indexed_at, string text)
-    signal requestedRepost(string cid, string uri)
-    signal requestedQuote(string cid, string uri, string avatar, string display_name, string handle, string indexed_at, string text)
-    signal requestedLike(string cid, string uri)
-    signal requestedViewThread(string uri)
-    signal requestedViewImages(int index, string paths)
-    signal requestedViewProfile(string did)
+    signal requestRepost(string cid, string uri)
+    signal requestQuote(string cid, string uri, string avatar, string display_name, string handle, string indexed_at, string text)
+    signal requestLike(string cid, string uri)
+    signal requestViewThread(string uri)
+    signal requestViewImages(int index, string paths)
+    signal requestViewProfile(string did)
 
     ListView {
         id: rootListView
@@ -56,7 +56,7 @@ ScrollView {
         delegate: PostDelegate {
             width: rootListView.width
 
-            onClicked: (mouse) => requestedViewThread(model.uri)
+            onClicked: (mouse) => requestViewThread(model.uri)
 
             repostReactionAuthor.visible: model.isRepostedBy
             repostReactionAuthor.displayName: model.repostedByDisplayName
@@ -66,7 +66,7 @@ ScrollView {
             replyReactionAuthor.handle: model.replyParentHandle
 
             postAvatarImage.source: model.avatar
-            postAvatarImage.onClicked: requestedViewProfile(model.did)
+            postAvatarImage.onClicked: requestViewProfile(model.did)
             postAuthor.displayName: model.displayName
             postAuthor.handle: model.handle
             postAuthor.indexedAt: model.indexedAt
@@ -78,12 +78,12 @@ ScrollView {
                 return text
             }
             postImagePreview.embedImages: model.embedImages
-            postImagePreview.onRequestedViewImages: (index) => requestedViewImages(index, model.embedImagesFull)
+            postImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.embedImagesFull)
 
             childFrame.visible: model.hasQuoteRecord
             childFrame.onClicked: (mouse) => {
                                       if(model.quoteRecordUri.length > 0){
-                                          requestedViewThread(model.quoteRecordUri)
+                                          requestViewThread(model.quoteRecordUri)
                                       }
                                   }
             childAvatarImage.source: model.quoteRecordAvatar
@@ -95,13 +95,13 @@ ScrollView {
             postControls.replyButton.iconText: model.replyCount
             postControls.repostButton.iconText: model.repostCount
             postControls.likeButton.iconText: model.likeCount
-            postControls.replyButton.onClicked: requestedReply(model.cid, model.uri,
+            postControls.replyButton.onClicked: requestReply(model.cid, model.uri,
                                                                model.replyRootCid, model.replyRootUri,
                                                                model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
-            postControls.repostMenuItem.onTriggered: requestedRepost(model.cid, model.uri)
-            postControls.quoteMenuItem.onTriggered: requestedQuote(model.cid, model.uri,
+            postControls.repostMenuItem.onTriggered: requestRepost(model.cid, model.uri)
+            postControls.quoteMenuItem.onTriggered: requestQuote(model.cid, model.uri,
                                                                    model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
-            postControls.likeButton.onClicked: requestedLike(model.cid, model.uri)
+            postControls.likeButton.onClicked: requestLike(model.cid, model.uri)
             postControls.tranlateMenuItem.onTriggered: rootListView.model.translate(model.cid)
         }
     }

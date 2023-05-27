@@ -25,15 +25,15 @@ ColumnLayout {
     property string userDid: ""     // 表示するアカウント
     property string accountDid: ""  // 認証しているアカウント
 
-    signal requestedReply(string cid, string uri,
+    signal requestReply(string cid, string uri,
                           string reply_root_cid, string reply_root_uri,
                           string avatar, string display_name, string handle, string indexed_at, string text)
-    signal requestedRepost(string cid, string uri)
-    signal requestedQuote(string cid, string uri, string avatar, string display_name, string handle, string indexed_at, string text)
-    signal requestedLike(string cid, string uri)
-    signal requestedViewThread(string uri)
-    signal requestedViewImages(int index, string paths)
-    signal requestedViewProfile(string did)
+    signal requestRepost(string cid, string uri)
+    signal requestQuote(string cid, string uri, string avatar, string display_name, string handle, string indexed_at, string text)
+    signal requestLike(string cid, string uri)
+    signal requestViewThread(string uri)
+    signal requestViewImages(int index, string paths)
+    signal requestViewProfile(string did)
 
     signal back()
 
@@ -316,18 +316,18 @@ ColumnLayout {
                 authorDid: profileView.userDid
             }
 
-            onRequestedReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
-                              profileView.requestedReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
-            onRequestedRepost: (cid, uri) => profileView.repost(cid, uri)
-            onRequestedQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
-                              profileView.requestedQuote(cid, uri, avatar, display_name, handle, indexed_at, text)
-            onRequestedLike: (cid, uri) => profileView.like(cid, uri)
+            onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
+                              profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+            onRequestRepost: (cid, uri) => profileView.repost(cid, uri)
+            onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
+                              profileView.requestQuote(cid, uri, avatar, display_name, handle, indexed_at, text)
+            onRequestLike: (cid, uri) => profileView.like(cid, uri)
 
-            onRequestedViewThread: (uri) => profileView.requestedViewThread(uri)
-            onRequestedViewImages: (index, paths) => profileView.requestedViewImages(index, paths)
-            onRequestedViewProfile: (did) => {
+            onRequestViewThread: (uri) => profileView.requestViewThread(uri)
+            onRequestViewImages: (index, paths) => profileView.requestViewImages(index, paths)
+            onRequestViewProfile: (did) => {
                                         if(did !== profileView.userDid){
-                                            profileView.requestedViewProfile(did)
+                                            profileView.requestViewProfile(did)
                                         }
                                     }
         }
@@ -341,18 +341,18 @@ ColumnLayout {
                 feedType: AnyFeedListModel.RepostFeedType
             }
 
-            onRequestedReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
-                              profileView.requestedReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
-            onRequestedRepost: (cid, uri) => profileView.repost(cid, uri)
-            onRequestedQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
-                              profileView.requestedQuote(cid, uri, avatar, display_name, handle, indexed_at, text)
-            onRequestedLike: (cid, uri) => profileView.like(cid, uri)
+            onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
+                              profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+            onRequestRepost: (cid, uri) => profileView.repost(cid, uri)
+            onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
+                              profileView.requestQuote(cid, uri, avatar, display_name, handle, indexed_at, text)
+            onRequestLike: (cid, uri) => profileView.like(cid, uri)
 
-            onRequestedViewThread: (uri) => profileView.requestedViewThread(uri)
-            onRequestedViewImages: (index, paths) => profileView.requestedViewImages(index, paths)
-            onRequestedViewProfile: (did) => {
+            onRequestViewThread: (uri) => profileView.requestViewThread(uri)
+            onRequestViewImages: (index, paths) => profileView.requestViewImages(index, paths)
+            onRequestViewProfile: (did) => {
                                         if(did !== profileView.userDid){
-                                            profileView.requestedViewProfile(did)
+                                            profileView.requestViewProfile(did)
                                         }
                                     }
         }
@@ -366,18 +366,18 @@ ColumnLayout {
                 feedType: AnyFeedListModel.LikeFeedType
             }
 
-            onRequestedReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
-                              profileView.requestedReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
-            onRequestedRepost: (cid, uri) => profileView.repost(cid, uri)
-            onRequestedQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
-                              profileView.requestedQuote(cid, uri, avatar, display_name, handle, indexed_at, text)
-            onRequestedLike: (cid, uri) => profileView.like(cid, uri)
+            onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
+                              profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+            onRequestRepost: (cid, uri) => profileView.repost(cid, uri)
+            onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
+                              profileView.requestQuote(cid, uri, avatar, display_name, handle, indexed_at, text)
+            onRequestLike: (cid, uri) => profileView.like(cid, uri)
 
-            onRequestedViewThread: (uri) => profileView.requestedViewThread(uri)
-            onRequestedViewImages: (index, paths) => profileView.requestedViewImages(index, paths)
-            onRequestedViewProfile: (did) => {
+            onRequestViewThread: (uri) => profileView.requestViewThread(uri)
+            onRequestViewImages: (index, paths) => profileView.requestViewImages(index, paths)
+            onRequestViewProfile: (did) => {
                                         if(did !== profileView.userDid){
-                                            profileView.requestedViewProfile(did)
+                                            profileView.requestViewProfile(did)
                                         }
                                     }
         }
@@ -392,9 +392,9 @@ ColumnLayout {
                 autoLoading: false
                 targetDid: profileView.userDid
             }
-            onRequestedViewProfile: (did) => {
+            onRequestViewProfile: (did) => {
                                         if(did !== profileView.userDid){
-                                            profileView.requestedViewProfile(did)
+                                            profileView.requestViewProfile(did)
                                         }
                                     }
         }
@@ -409,9 +409,9 @@ ColumnLayout {
                 autoLoading: false
                 targetDid: profileView.userDid
             }
-            onRequestedViewProfile: (did) => {
+            onRequestViewProfile: (did) => {
                                         if(did !== profileView.userDid){
-                                            profileView.requestedViewProfile(did)
+                                            profileView.requestViewProfile(did)
                                         }
                                     }
         }

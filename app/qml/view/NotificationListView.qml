@@ -16,15 +16,15 @@ ScrollView {
     property alias listView: rootListView
     property alias model: rootListView.model
 
-    signal requestedReply(string cid, string uri,
+    signal requestReply(string cid, string uri,
                           string reply_root_cid, string reply_root_uri,
                           string avatar, string display_name, string handle, string indexed_at, string text)
-    signal requestedRepost(string cid, string uri)
-    signal requestedQuote(string cid, string uri, string avatar, string display_name, string handle, string indexed_at, string text)
-    signal requestedLike(string cid, string uri)
-    signal requestedViewThread(string uri)
-    signal requestedViewImages(int index, string paths)
-    signal requestedViewProfile(string did)
+    signal requestRepost(string cid, string uri)
+    signal requestQuote(string cid, string uri, string avatar, string display_name, string handle, string indexed_at, string text)
+    signal requestLike(string cid, string uri)
+    signal requestViewThread(string uri)
+    signal requestViewImages(int index, string paths)
+    signal requestViewProfile(string did)
 
     ListView {
         id: rootListView
@@ -54,7 +54,7 @@ ScrollView {
         delegate: NotificationDelegate {
             reason: model.reason
             postAvatarImage.source: model.avatar
-            postAvatarImage.onClicked: requestedViewProfile(model.did)
+            postAvatarImage.onClicked: requestViewProfile(model.did)
             postAuthor.displayName: model.displayName
             postAuthor.handle: model.handle
             postAuthor.indexedAt: model.indexedAt
@@ -66,36 +66,36 @@ ScrollView {
             recordIndexedAt: model.recordIndexedAt
             recordRecordText: model.recordRecordText
             recordImagePreview.embedImages: model.recordImages
-            recordImagePreview.onRequestedViewImages: (index) => requestedViewImages(index, model.recordImagesFull)
+            recordImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.recordImagesFull)
 
             //            postControls.replyButton.iconText: model.replyCount
             //            postControls.repostButton.iconText: model.repostCount
             //            postControls.likeButton.iconText: model.likeCount
-            postControls.replyButton.onClicked: requestedReply(model.cid, model.uri,
+            postControls.replyButton.onClicked: requestReply(model.cid, model.uri,
                                                                model.replyRootCid, model.replyRootUri,
                                                                model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
-            postControls.repostMenuItem.onTriggered: requestedRepost(model.cid, model.uri)
-            postControls.quoteMenuItem.onTriggered: requestedQuote(model.cid, model.uri,
+            postControls.repostMenuItem.onTriggered: requestRepost(model.cid, model.uri)
+            postControls.quoteMenuItem.onTriggered: requestQuote(model.cid, model.uri,
                                                                    model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
-            postControls.likeButton.onClicked: requestedLike(model.cid, model.uri)
+            postControls.likeButton.onClicked: requestLike(model.cid, model.uri)
             postControls.tranlateMenuItem.onTriggered: rootListView.model.translate(model.cid)
 
             onClicked: {
                 if(model.reason === NotificationListModel.ReasonLike ||
                         model.reason === NotificationListModel.ReasonRepost){
                     if(model.recordUri.length > 0)
-                        requestedViewThread(model.recordUri)
+                        requestViewThread(model.recordUri)
                 }else if(model.reason === NotificationListModel.ReasonFollow){
                 }else if(model.reason === NotificationListModel.ReasonMention){
                 }else if(model.reason === NotificationListModel.ReasonReply ||
                          model.reason === NotificationListModel.ReasonQuote){
-                    requestedViewThread(model.uri)
+                    requestViewThread(model.uri)
                 }
             }
 
             recordFrame.onClicked: {
                 if(model.reason === NotificationListModel.ReasonQuote){
-                    requestedViewThread(model.recordUri)
+                    requestViewThread(model.recordUri)
                 }
             }
         }

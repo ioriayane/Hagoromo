@@ -16,7 +16,7 @@ GridLayout {
 
     property int cellWidth: imagePreviewLayout.layoutWidth * 0.5 - 3
 
-    signal requestedViewImages(int index)
+    signal requestViewImages(int index)
 
     Repeater {
         id: repeater
@@ -30,7 +30,7 @@ GridLayout {
             source: modelData
             MouseArea {
                 anchors.fill: parent
-                onClicked: imagePreviewLayout.requestedViewImages(model.index)
+                onClicked: imagePreviewLayout.requestViewImages(model.index)
             }
         }
     }

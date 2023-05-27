@@ -21,7 +21,7 @@ ScrollView {
     property alias model: rootListView.model
     property alias recordOperator: recordOperator
 
-    signal requestedViewProfile(string did)
+    signal requestViewProfile(string did)
 
     ListView {
         id: rootListView
@@ -107,7 +107,7 @@ ScrollView {
                     Layout.preferredHeight: 36
                     Layout.alignment: Qt.AlignTop
                     source: model.avatar
-                    onClicked: requestedViewProfile(model.did)
+                    onClicked: requestViewProfile(model.did)
                 }
 
                 ColumnLayout {

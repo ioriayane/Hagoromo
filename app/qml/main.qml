@@ -165,7 +165,7 @@ ApplicationWindow {
     Component {
         id: columnView
         ColumnView {
-            onRequestedReply: (account_uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) => {
+            onRequestReply: (account_uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) => {
                                   console.log(account_uuid + ",\n" +
                                               cid + ", "+ uri + ",\n" +
                                               reply_root_cid + ", "+ reply_root_uri + ",\n" +
@@ -184,7 +184,7 @@ ApplicationWindow {
                                   postDialog.replyText = text
                                   postDialog.open()
                               }
-            onRequestedQuote: (account_uuid, cid, uri, avatar, display_name, handle, indexed_at, text) => {
+            onRequestQuote: (account_uuid, cid, uri, avatar, display_name, handle, indexed_at, text) => {
                                   postDialog.postType = "quote"
                                   postDialog.defaultAccountUuid = account_uuid
                                   postDialog.replyCid = cid
@@ -199,22 +199,22 @@ ApplicationWindow {
                                   postDialog.open()
                               }
 
-            onRequestedViewImages: (index, paths) => imageFullView.open(index, paths)
+            onRequestViewImages: (index, paths) => imageFullView.open(index, paths)
 
-            onRequestedMoveToLeft: (key) => {
+            onRequestMoveToLeft: (key) => {
                                        console.log("move to left:" + key)
                                        columnManageModel.exchange(key, -1)
                                    }
-            onRequestedMoveToRight: (key) => {
+            onRequestMoveToRight: (key) => {
                                         console.log("move to right:" + key)
                                         columnManageModel.exchange(key, 1)
                                     }
-            onRequestedRemove: (key) => {
+            onRequestRemove: (key) => {
                                    console.log("remove column:" + key)
                                    columnManageModel.removeByKey(key)
                                    columnManageModel.sync()
                                }
-            onRequestedDisplayOfColumnSetting: (key) => columnsettingDialog.openWithKey(key)
+            onRequestDisplayOfColumnSetting: (key) => columnsettingDialog.openWithKey(key)
         }
     }
 

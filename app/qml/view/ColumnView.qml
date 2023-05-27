@@ -32,19 +32,19 @@ ColumnLayout {
 
     property var rootItem: undefined
 
-    signal requestedReply(string account_uuid,
+    signal requestReply(string account_uuid,
                           string cid, string uri,
                           string reply_root_cid, string reply_root_uri,
                           string avatar, string display_name, string handle, string indexed_at, string text)
-    signal requestedQuote(string account_uuid,
+    signal requestQuote(string account_uuid,
                           string cid, string uri,
                           string avatar, string display_name, string handle, string indexed_at, string text)
-    signal requestedViewImages(int index, string paths)
+    signal requestViewImages(int index, string paths)
 
-    signal requestedMoveToLeft(string key)
-    signal requestedMoveToRight(string key)
-    signal requestedRemove(string key)
-    signal requestedDisplayOfColumnSetting(string key)
+    signal requestMoveToLeft(string key)
+    signal requestMoveToRight(string key)
+    signal requestRemove(string key)
+    signal requestDisplayOfColumnSetting(string key)
 
     RecordOperator {
         id: recordOperator
@@ -59,23 +59,23 @@ ColumnLayout {
                 loadingInterval: columnView.loadingInterval
             }
 
-            onRequestedReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
-                              columnView.requestedReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
-            onRequestedRepost: (cid, uri) => recordOperator.repost(cid, uri)
-            onRequestedQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
-                              columnView.requestedQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
-            onRequestedLike: (cid, uri) => recordOperator.like(cid, uri)
+            onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
+                              columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+            onRequestRepost: (cid, uri) => recordOperator.repost(cid, uri)
+            onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
+                              columnView.requestQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+            onRequestLike: (cid, uri) => recordOperator.like(cid, uri)
 
-            onRequestedViewThread: (uri) => {
+            onRequestViewThread: (uri) => {
                                        console.log("View Thread : " + uri)
                                        // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
                                        // これはPostThreadViewのプロパティにダイレクトに設定する
                                        columnStackView.push(postThreadComponent, { "postThreadUri": uri })
                                    }
 
-            onRequestedViewImages: (index, paths) => columnView.requestedViewImages(index, paths)
+            onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
 
-            onRequestedViewProfile: (did) => {
+            onRequestViewProfile: (did) => {
                                         console.log("View profile : " + did)
                                         columnStackView.push(profileComponent, { "userDid": did })
                                     }
@@ -89,20 +89,20 @@ ColumnLayout {
                 loadingInterval: columnView.loadingInterval
             }
 
-            onRequestedReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
-                              columnView.requestedReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
-            onRequestedRepost: (cid, uri) => recordOperator.repost(cid, uri)
-            onRequestedQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
-                              columnView.requestedQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
-            onRequestedLike: (cid, uri) => recordOperator.like(cid, uri)
-            onRequestedViewThread: (uri) => {
+            onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
+                              columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+            onRequestRepost: (cid, uri) => recordOperator.repost(cid, uri)
+            onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
+                              columnView.requestQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+            onRequestLike: (cid, uri) => recordOperator.like(cid, uri)
+            onRequestViewThread: (uri) => {
                                        console.log("View Thread : " + uri)
                                        // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
                                        // これはPostThreadViewのプロパティにダイレクトに設定する
                                        columnStackView.push(postThreadComponent, { "postThreadUri": uri })
                                    }
-            onRequestedViewImages: (index, paths) => columnView.requestedViewImages(index, paths)
-            onRequestedViewProfile: (did) => {
+            onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
+            onRequestViewProfile: (did) => {
                                         console.log("View profile : " + did)
                                         columnStackView.push(profileComponent, { "userDid": did })
                                     }
@@ -111,21 +111,21 @@ ColumnLayout {
     Component {
         id: postThreadComponent
         PostThreadView {
-            onRequestedReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
-                              columnView.requestedReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
-            onRequestedRepost: (cid, uri) => recordOperator.repost(cid, uri)
-            onRequestedQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
-                              columnView.requestedQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
-            onRequestedLike: (cid, uri) => recordOperator.like(cid, uri)
+            onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
+                              columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+            onRequestRepost: (cid, uri) => recordOperator.repost(cid, uri)
+            onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
+                              columnView.requestQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+            onRequestLike: (cid, uri) => recordOperator.like(cid, uri)
 
-            onRequestedViewThread: (uri) => {
+            onRequestViewThread: (uri) => {
                                        console.log("View Thread : " + uri)
                                        // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
                                        // これはPostThreadViewのプロパティにダイレクトに設定する
                                        columnStackView.push(postThreadComponent, { "postThreadUri": uri })
                                    }
-            onRequestedViewImages: (index, paths) => columnView.requestedViewImages(index, paths)
-            onRequestedViewProfile: (did) => {
+            onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
+            onRequestViewProfile: (did) => {
                                         console.log("View profile : " + did)
                                         columnStackView.push(profileComponent, { "userDid": did })
                                     }
@@ -140,23 +140,23 @@ ColumnLayout {
     Component {
         id: profileComponent
         ProfileView {
-            onRequestedReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
-                              columnView.requestedReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
-            onRequestedRepost: (cid, uri) => recordOperator.repost(cid, uri)
-            onRequestedQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
-                              columnView.requestedQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
-            onRequestedLike: (cid, uri) => recordOperator.like(cid, uri)
+            onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
+                              columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+            onRequestRepost: (cid, uri) => recordOperator.repost(cid, uri)
+            onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
+                              columnView.requestQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+            onRequestLike: (cid, uri) => recordOperator.like(cid, uri)
 
-            onRequestedViewThread: (uri) => {
+            onRequestViewThread: (uri) => {
                                        console.log("View Thread : " + uri)
                                        // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
                                        // これはPostThreadViewのプロパティにダイレクトに設定する
                                        columnStackView.push(postThreadComponent, { "postThreadUri": uri })
                                    }
 
-            onRequestedViewImages: (index, paths) => columnView.requestedViewImages(index, paths)
+            onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
 
-            onRequestedViewProfile: (did) => {
+            onRequestViewProfile: (did) => {
                                         console.log("View profile : " + did)
                                         columnStackView.push(profileComponent, { "userDid": did })
                                     }
@@ -273,23 +273,23 @@ ColumnLayout {
                     MenuItem {
                         icon.source: "../images/arrow_back.png"
                         text: qsTr("Move to left")
-                        onClicked: requestedMoveToLeft(columnKey)
+                        onClicked: requestMoveToLeft(columnKey)
                     }
                     MenuItem {
                         icon.source: "../images/arrow_forward.png"
                         text: qsTr("Move to right")
-                        onClicked: requestedMoveToRight(columnKey)
+                        onClicked: requestMoveToRight(columnKey)
                     }
                     MenuItem {
                         icon.source: "../images/delete.png"
                         text: qsTr("Delete column")
-                        onClicked: requestedRemove(columnKey)
+                        onClicked: requestRemove(columnKey)
                     }
                     MenuSeparator {}
                     MenuItem {
                         icon.source: "../images/settings.png"
                         text: qsTr("Settings")
-                        onClicked: requestedDisplayOfColumnSetting(columnKey)
+                        onClicked: requestDisplayOfColumnSetting(columnKey)
                     }
                 }
             }
