@@ -58,6 +58,16 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     else if (role == EmbedImagesFullRole)
         return LexiconsTypeUnknown::copyImagesFromPostView(current.post, false);
 
+    else if (role == IsRepostedRole) {
+        if (current.reason_type == AppBskyFeedDefs::FeedViewPostReasonType::reason_ReasonRepost) {
+            return (current.reason_ReasonRepost.by.did == account().did);
+        } else {
+            return false;
+        }
+    } else if (role == IsLikedRole) {
+        return false;
+    }
+
     else if (role == HasQuoteRecordRole)
         return current.post.embed_type
                 == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecord_View
@@ -178,6 +188,9 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[IndexedAtRole] = "indexedAt";
     roles[EmbedImagesRole] = "embedImages";
     roles[EmbedImagesFullRole] = "embedImagesFull";
+
+    roles[IsRepostedRole] = "isReposted";
+    roles[IsLikedRole] = "isLiked";
 
     roles[HasQuoteRecordRole] = "hasQuoteRecord";
     roles[QuoteRecordCidRole] = "quoteRecordCid";

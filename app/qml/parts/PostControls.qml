@@ -8,6 +8,9 @@ import "../controls"
 RowLayout {
     spacing: 10
 
+    property bool isReposted: false
+    property bool isLiked: false
+
     property alias replyButton: replyButton
     property alias repostButton: repostButton
     property alias repostMenuItem: repostMenuItem
@@ -29,7 +32,7 @@ RowLayout {
         Layout.preferredHeight: 24
         iconSource: "../images/repost.png"
         iconSize: 16
-        foreground: Material.color(Material.Grey)
+        foreground: isReposted ? Material.color(Material.Green) : Material.color(Material.Grey)
         flat: true
         onClicked: popup.open()
         Menu {
@@ -51,7 +54,7 @@ RowLayout {
         Layout.preferredHeight: 24
         iconSource: "../images/like.png"
         iconSize: 16
-        foreground: Material.color(Material.Grey)
+        foreground: isLiked ? Material.color(Material.Pink) : Material.color(Material.Grey)
         flat: true
     }
     Item {

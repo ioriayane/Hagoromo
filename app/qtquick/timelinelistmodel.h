@@ -33,6 +33,9 @@ public:
         EmbedImagesRole,
         EmbedImagesFullRole,
 
+        IsRepostedRole,
+        IsLikedRole,
+
         HasQuoteRecordRole,
         QuoteRecordCidRole,
         QuoteRecordUriRole,
