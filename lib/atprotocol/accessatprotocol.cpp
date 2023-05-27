@@ -6,13 +6,16 @@
 #include <QDebug>
 #include <QFileInfo>
 #include <QHttpMultiPart>
+#include <QDateTime>
+
+#define LOG_DATETIME QDateTime::currentDateTime().toString("yyyy/MM/dd hh:mm:ss")
 
 namespace AtProtocolInterface {
 
 AccessAtProtocol::AccessAtProtocol(QObject *parent) : QObject { parent }
 {
     connect(&m_manager, &QNetworkAccessManager::finished, [=](QNetworkReply *reply) {
-        qDebug() << "reply" << reply->error() << reply->url();
+        qDebug() << LOG_DATETIME << "reply" << reply->error() << reply->url();
         QString json = QString::fromUtf8(reply->readAll());
 
         if (reply->error() != QNetworkReply::NoError) {
@@ -86,12 +89,12 @@ QString AccessAtProtocol::refreshJwt() const
 void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query)
 {
     if (accessJwt().isEmpty()) {
-        qDebug() << "AccessAtProtocol::get()"
+        qDebug() << LOG_DATETIME << "AccessAtProtocol::get()"
                  << "Emty accessJwt!";
         return;
     }
 
-    qDebug() << "AccessAtProtocol::get()" << this << endpoint;
+    qDebug() << LOG_DATETIME << "AccessAtProtocol::get()" << this << endpoint;
 
     QUrl url = QString("%1/%2").arg(service(), endpoint);
     url.setQuery(query);
@@ -104,13 +107,13 @@ void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query)
 void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
                             const bool with_auth_header)
 {
-    qDebug() << "AccessAtProtocol::post()" << this << endpoint << json;
+    qDebug() << LOG_DATETIME << "AccessAtProtocol::post()" << this << endpoint << json;
 
     QNetworkRequest request(QUrl(QString("%1/%2").arg(service(), endpoint)));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     if (with_auth_header) {
         if (accessJwt().isEmpty()) {
-            qDebug() << "AccessAtProtocol::post()"
+            qDebug() << LOG_DATETIME << "AccessAtProtocol::post()"
                      << "Empty accessJwt!";
             return;
         }
@@ -125,16 +128,16 @@ void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
 void AccessAtProtocol::postWithImage(const QString &endpoint, const QString &path)
 {
     if (accessJwt().isEmpty()) {
-        qDebug() << "AccessAtProtocol::postWithImage()"
+        qDebug() << LOG_DATETIME << "AccessAtProtocol::postWithImage()"
                  << "Empty accessJwt!";
         return;
     }
     if (!QFile::exists(path)) {
-        qDebug() << "AccessAtProtocol::postWithImage()"
+        qDebug() << LOG_DATETIME << "AccessAtProtocol::postWithImage()"
                  << "Not found" << path;
         return;
     }
-    qDebug() << "AccessAtProtocol::postWithImage()" << this << endpoint << path;
+    qDebug() << LOG_DATETIME << "AccessAtProtocol::postWithImage()" << this << endpoint << path;
 
     QFileInfo info(path);
     QNetworkRequest request(QUrl(QString("%1/%2").arg(service(), endpoint)));
@@ -144,7 +147,7 @@ void AccessAtProtocol::postWithImage(const QString &endpoint, const QString &pat
 
     QFile *file = new QFile(path);
     if (!file->open(QIODevice::ReadOnly)) {
-        qDebug() << "AccessAtProtocol::postWithImage()"
+        qDebug() << LOG_DATETIME << "AccessAtProtocol::postWithImage()"
                  << "Not open" << path;
         delete file;
         return;

@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
+import QtGraphicalEffects 1.15
 
 import tech.relog.hagoromo.timelinelistmodel 1.0
 import tech.relog.hagoromo.columnlistmodel 1.0
@@ -16,6 +17,10 @@ ColumnLayout {
 
     property string columnKey: ""
     property int componentType: 0
+    property bool autoLoading: false
+    property int loadingInterval: 300000
+
+    onAutoLoadingChanged: console.log(columnKey + ": autoLoading=" + autoLoading)
 
     property string accountUuid: ""
     property string service: ""
@@ -40,6 +45,7 @@ ColumnLayout {
     signal requestedMoveToLeft(string key)
     signal requestedMoveToRight(string key)
     signal requestedRemove(string key)
+    signal requestedDisplayOfColumnSetting(string key)
 
     RecordOperator {
         id: recordOperator
@@ -50,7 +56,8 @@ ColumnLayout {
         id: timelineComponent
         TimelineView {
             model: TimelineListModel {
-                autoLoading: true
+                autoLoading: columnView.autoLoading
+                loadingInterval: columnView.loadingInterval
             }
 
             onRequestedReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
@@ -78,6 +85,7 @@ ColumnLayout {
     Component {
         id: listNotificationComponent
         NotificationListView {
+
             onRequestedReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                               columnView.requestedReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestedRepost: (cid, uri) => recordOperator.repost(cid, uri)
@@ -239,6 +247,16 @@ ColumnLayout {
                 Layout.fillWidth: true
                 height: 1
             }
+            Image {
+                Layout.preferredWidth: 16
+                Layout.preferredHeight: 16
+                Layout.alignment: Qt.AlignVCenter
+                source: "../images/auto.png"
+                layer.enabled: true
+                layer.effect: ColorOverlay {
+                    color: columnView.autoLoading ? Material.accentColor : Material.color(Material.Grey)
+                }
+            }
             IconButton {
                 id: settingButton
                 Layout.preferredWidth: 30
@@ -262,6 +280,12 @@ ColumnLayout {
                         icon.source: "../images/delete.png"
                         text: qsTr("Delete column")
                         onClicked: requestedRemove(columnKey)
+                    }
+                    MenuSeparator {}
+                    MenuItem {
+                        icon.source: "../images/settings.png"
+                        text: qsTr("Settings")
+                        onClicked: requestedDisplayOfColumnSetting(columnKey)
                     }
                 }
             }

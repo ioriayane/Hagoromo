@@ -13,6 +13,8 @@ class AtpAbstractListModel : public QAbstractListModel
 
     Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
     Q_PROPERTY(bool autoLoading READ autoLoading WRITE setAutoLoading NOTIFY autoLoadingChanged)
+    Q_PROPERTY(int loadingInterval READ loadingInterval WRITE setLoadingInterval NOTIFY
+                       loadingIntervalChanged)
 
 public:
     explicit AtpAbstractListModel(QObject *parent = nullptr);
@@ -29,10 +31,13 @@ public:
     void setRunning(bool newRunning);
     bool autoLoading() const;
     void setAutoLoading(bool newAutoLoading);
+    int loadingInterval() const;
+    void setLoadingInterval(int newLoadingInterval);
 
 signals:
     void runningChanged();
     void autoLoadingChanged();
+    void loadingIntervalChanged();
 
 public slots:
     virtual Q_INVOKABLE void getLatest() = 0;
@@ -47,6 +52,7 @@ private:
     AtProtocolInterface::AccountData m_account;
 
     bool m_running;
+    int m_loadingInterval;
 };
 
 #endif // ATPABSTRACTLISTMODEL_H

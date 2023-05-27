@@ -17,6 +17,9 @@ struct ColumnItem
     QString key;
     QString account_uuid;
     ColumnComponentType component_type;
+    bool auto_loading = false;
+    int loading_interval = 300000; // msec
+    int width = 400;
 };
 
 class ColumnListModel : public QAbstractListModel
@@ -31,6 +34,9 @@ public:
         KeyRole,
         AccountUuidRole,
         ComponentTypeRole,
+        AutoLoadingRole,
+        LoadingIntervalRole,
+        WidthRole,
     };
     Q_ENUM(ColumnListModelRoles)
     Q_ENUM(ColumnComponentType)
@@ -42,8 +48,10 @@ public:
     Q_INVOKABLE void update(int row, ColumnListModel::ColumnListModelRoles role,
                             const QVariant &value);
 
-    Q_INVOKABLE void append(const QString &account_uuid, int component_type);
-    Q_INVOKABLE void insert(int row, const QString &account_uuid, int component_type);
+    Q_INVOKABLE void append(const QString &account_uuid, int component_type, bool auto_loading,
+                            int interval, int width);
+    Q_INVOKABLE void insert(int row, const QString &account_uuid, int component_type,
+                            bool auto_loading, int interval, int width);
     Q_INVOKABLE void remove(int row);
     Q_INVOKABLE void removeByKey(const QString &key);
     Q_INVOKABLE bool containsKey(const QString &key) const;

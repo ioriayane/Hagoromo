@@ -42,7 +42,7 @@ ApplicationWindow {
                 component_type = 1
             }
             columnManageModel.append(accountListModel.item(selectedAccountIndex, AccountListModel.UuidRole),
-                                     component_type)
+                                     component_type, false, 300000, 400)
             columnManageModel.sync()
         }
     }
@@ -51,6 +51,30 @@ ApplicationWindow {
         id: accountDialog
         accountModel: accountListModel
         onClosed: accountListModel.syncColumn()
+    }
+
+    ColumnSettingDialog {
+        id: columnsettingDialog
+        onOpened: {
+            var i = columnManageModel.indexOf(columnKey)
+            console.log("open column setting dialog:" + i + ", " + columnKey)
+            if(i >= 0){
+                autoLoadingCheckbox.checked = columnManageModel.item(i, ColumnListModel.AutoLoadingRole)
+                autoLoadingIntervalCombo.setByValue(columnManageModel.item(i, ColumnListModel.LoadingIntervalRole))
+                columnWidthSlider.value = columnManageModel.item(i, ColumnListModel.WidthRole)
+            }
+        }
+
+        onAccepted: {
+            var i = columnManageModel.indexOf(columnKey)
+            if(i >= 0){
+                columnManageModel.update(i, ColumnListModel.AutoLoadingRole, autoLoadingCheckbox.checked)
+                columnManageModel.update(i, ColumnListModel.LoadingIntervalRole, autoLoadingIntervalCombo.currentValue)
+                columnManageModel.update(i, ColumnListModel.WidthRole, columnWidthSlider.value)
+
+                columnManageModel.sync()
+            }
+        }
     }
 
     // アカウントの管理
@@ -102,7 +126,11 @@ ApplicationWindow {
                 repeater.insert(i,
                                 columnManageModel.item(i, ColumnListModel.KeyRole),
                                 columnManageModel.item(i, ColumnListModel.AccountUuidRole),
-                                columnManageModel.item(i, ColumnListModel.ComponentTypeRole))
+                                columnManageModel.item(i, ColumnListModel.ComponentTypeRole),
+                                columnManageModel.item(i, ColumnListModel.AutoLoadingRole),
+                                columnManageModel.item(i, ColumnListModel.LoadingIntervalRole),
+                                columnManageModel.item(i, ColumnListModel.WidthRole)
+                                )
             }
             // カラムの管理情報から消えているLoaderを消す
             for(var r=repeater.model.count-1; r>=0; r--){
@@ -117,11 +145,15 @@ ApplicationWindow {
             console.log("exchange:" + key + ", " + i + ", " + move_diff)
             var account_uuid = columnManageModel.item(i, ColumnListModel.AccountUuidRole)
             var component_type = columnManageModel.item(i, ColumnListModel.ComponentTypeRole)
+            var auto_loading = columnManageModel.item(i, ColumnListModel.AutoLoadingRole)
+            var loading_interval = columnManageModel.item(i, ColumnListModel.LoadingIntervalRole)
+            var column_width = columnManageModel.item(i, ColumnListModel.WidthRole)
             // 1度消す
             columnManageModel.remove(i)
             columnManageModel.sync()
             // 追加し直し
-            columnManageModel.insert(i+move_diff, account_uuid, component_type)
+            columnManageModel.insert(i+move_diff, account_uuid, component_type,
+                                     auto_loading, loading_interval, column_width)
             columnManageModel.sync()
         }
     }
@@ -178,6 +210,10 @@ ApplicationWindow {
                                    columnManageModel.removeByKey(key)
                                    columnManageModel.sync()
                                }
+            onRequestedDisplayOfColumnSetting: (key) => {
+                                                   columnsettingDialog.columnKey = key
+                                                   columnsettingDialog.open()
+                                                }
         }
     }
 
@@ -279,27 +315,36 @@ ApplicationWindow {
                     }
 
                     function contains(key){
-                        var exist = false
                         for(var i=0; i<repeater.model.count; i++){
                             if(repeater.model.get(i).key === key){
-                                exist = true
-                                break
+                                return true
                             }
                         }
-                        return exist
+                        return false
                     }
 
-                    function insert(index, key, account_uuid, component_type){
+                    function insert(index, key, account_uuid, component_type, auto_loading, loading_interval, column_width){
                         // accountListModelで管理するアカウントのindexと表示に使うコンポを指定
                         // ①ここでLoaderを追加する
                         console.log("(1) insert:" + index + ", " + account_uuid + ", " + component_type)
                         if(contains(key)){
                             // 既にある
+                            var item = repeater.itemAt(index)   //ここのitemはloader自身
+                            if(item.key === key){
+                                console.log("  update only:" + auto_loading + ", " + loading_interval + ", " + column_width)
+                                item.auto_loading = auto_loading
+                                item.loading_interval = loading_interval
+                                item.Layout.preferredWidth = column_width
+                                item.setSettings()
+                            }
                         }else{
                             repeater.model.insert(index, {
                                                       "key": key,
                                                       "account_uuid": account_uuid,
-                                                      "component_type": component_type
+                                                      "component_type": component_type,
+                                                      "auto_loading": auto_loading,
+                                                      "loading_interval": loading_interval,
+                                                      "column_width": column_width
                                                   })
                         }
                     }
@@ -309,6 +354,9 @@ ApplicationWindow {
                                      item.key = repeater.model.get(index).key
                                      item.account_uuid = repeater.model.get(index).account_uuid
                                      item.component_type = repeater.model.get(index).component_type
+                                     item.auto_loading = repeater.model.get(index).auto_loading
+                                     item.loading_interval = repeater.model.get(index).loading_interval
+                                     item.column_width = repeater.model.get(index).column_width
                                      item.sourceComponent = columnView
                                  }
 
@@ -316,12 +364,15 @@ ApplicationWindow {
                         id: loader
                         Layout.preferredHeight: scrollView.childHeight
                         Layout.minimumWidth: 100
-                        Layout.preferredWidth: 400
+                        Layout.preferredWidth: column_width
                         Layout.maximumWidth: 500
 
                         property string key: ""
                         property string account_uuid: ""
                         property int component_type: 0
+                        property bool auto_loading: false
+                        property int loading_interval: 300000
+                        property int column_width: 400
 
                         onLoaded: {
                             // ③Loaderで読み込んだComponentにアカウント情報など設定する
@@ -332,9 +383,15 @@ ApplicationWindow {
                             item.columnKey = loader.key
                             item.componentType = loader.component_type
                             item.accountUuid = loader.account_uuid
+                            setSettings()
                             setAccount(row)
                             item.rootItem = rootLayout
                             item.load()
+                        }
+
+                        function setSettings() {
+                            item.autoLoading = loader.auto_loading
+                            item.loadingInterval = loader.loading_interval
                         }
 
                         function setAccount(row) {
@@ -448,6 +505,24 @@ ApplicationWindow {
                         }
                         Label {
                             text: model.componentType
+                        }
+                        Label {
+                            text: "autoLoading"
+                        }
+                        Label {
+                            text: model.autoLoading
+                        }
+                        Label {
+                            text: "interval"
+                        }
+                        Label {
+                            text: model.loadingInterval
+                        }
+                        Label {
+                            text: "width"
+                        }
+                        Label {
+                            text: model.width
                         }
                         Label {
                             text: "-"

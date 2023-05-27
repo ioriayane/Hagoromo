@@ -48,6 +48,7 @@ QML_FILES = \
     qml/controls/ImageWithIndicator.qml \
     qml/dialogs/AccountDialog.qml \
     qml/dialogs/AddColumnDialog.qml \
+    qml/dialogs/ColumnSettingDialog.qml \
     qml/dialogs/LoginDialog.qml \
     qml/dialogs/PostDialog.qml \
     qml/dialogs/SettingDialog.qml \
@@ -75,6 +76,7 @@ IMAGE_FILES += \
     qml/images/arrow_forward.png \
     qml/images/arrow_left_double.png \
     qml/images/arrow_left_single.png \
+    qml/images/auto.png \
     qml/images/check.png \
     qml/images/close.png \
     qml/images/column.png \

@@ -30,6 +30,7 @@ Dialog {
                     Layout.preferredHeight: 300
                     delegate: ItemDelegate {
                         width: accountList.width
+                        icon.source: model.avatar
                         text: model.handle
                         highlighted: ListView.isCurrentItem
                         onClicked: accountList.currentIndex = model.index

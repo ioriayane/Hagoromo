@@ -34,6 +34,12 @@ QVariant ColumnListModel::item(int row, ColumnListModelRoles role) const
         return m_columnList.at(row).account_uuid;
     else if (role == ComponentTypeRole)
         return static_cast<int>(m_columnList.at(row).component_type);
+    else if (role == AutoLoadingRole)
+        return m_columnList.at(row).auto_loading;
+    else if (role == LoadingIntervalRole)
+        return m_columnList.at(row).loading_interval;
+    else if (role == WidthRole)
+        return m_columnList.at(row).width;
 
     return QVariant();
 }
@@ -49,25 +55,26 @@ void ColumnListModel::update(int row, ColumnListModelRoles role, const QVariant 
         m_columnList[row].account_uuid = value.toString();
     else if (role == ComponentTypeRole)
         m_columnList[row].component_type = static_cast<ColumnComponentType>(value.toInt());
+    else if (role == AutoLoadingRole)
+        m_columnList[row].auto_loading = value.toBool();
+    else if (role == LoadingIntervalRole)
+        m_columnList[row].loading_interval = value.toInt();
+    else if (role == WidthRole)
+        m_columnList[row].width = value.toInt();
 
     emit dataChanged(index(row), index(row));
-}
-
-void ColumnListModel::append(const QString &account_uuid, int component_type)
-{
-    ColumnItem item;
-    item.key = QUuid::createUuid().toString(QUuid::WithoutBraces);
-    item.account_uuid = account_uuid;
-    item.component_type = static_cast<ColumnComponentType>(component_type);
-
-    beginInsertRows(QModelIndex(), rowCount(), rowCount());
-    m_columnList.append(item);
-    endInsertRows();
 
     save();
 }
 
-void ColumnListModel::insert(int row, const QString &account_uuid, int component_type)
+void ColumnListModel::append(const QString &account_uuid, int component_type, bool auto_loading,
+                             int interval, int width)
+{
+    insert(rowCount(), account_uuid, component_type, auto_loading, interval, width);
+}
+
+void ColumnListModel::insert(int row, const QString &account_uuid, int component_type,
+                             bool auto_loading, int interval, int width)
 {
     if (row < 0 || row > m_columnList.count())
         return;
@@ -76,6 +83,9 @@ void ColumnListModel::insert(int row, const QString &account_uuid, int component
     item.key = QUuid::createUuid().toString(QUuid::WithoutBraces);
     item.account_uuid = account_uuid;
     item.component_type = static_cast<ColumnComponentType>(component_type);
+    item.auto_loading = auto_loading;
+    item.loading_interval = interval;
+    item.width = width;
 
     beginInsertRows(QModelIndex(), row, row);
     m_columnList.insert(row, item);
@@ -123,7 +133,7 @@ bool ColumnListModel::containsKey(const QString &key) const
 
 int ColumnListModel::indexOf(const QString &key) const
 {
-    for (int i = 0; i < m_columnList.count() - 1; i++) {
+    for (int i = 0; i < m_columnList.count(); i++) {
         if (m_columnList.at(i).key == key) {
             return i;
         }
@@ -141,6 +151,9 @@ void ColumnListModel::save() const
         column_item["key"] = item.key;
         column_item["account_uuid"] = item.account_uuid;
         column_item["component_type"] = static_cast<int>(item.component_type);
+        column_item["auto_loading"] = item.auto_loading;
+        column_item["interval"] = item.loading_interval;
+        column_item["width"] = item.width;
         column_array.append(column_item);
     }
 
@@ -161,6 +174,11 @@ void ColumnListModel::load()
                 item.account_uuid = doc.array().at(i).toObject().value("account_uuid").toString();
                 item.component_type = static_cast<ColumnComponentType>(
                         doc.array().at(i).toObject().value("component_type").toInt());
+                item.auto_loading =
+                        doc.array().at(i).toObject().value("auto_loading").toBool(false);
+                item.loading_interval =
+                        doc.array().at(i).toObject().value("interval").toInt(300000);
+                item.width = doc.array().at(i).toObject().value("width").toInt(400);
 
                 m_columnList.append(item);
             }
@@ -175,6 +193,9 @@ QHash<int, QByteArray> ColumnListModel::roleNames() const
     roles[KeyRole] = "key";
     roles[AccountUuidRole] = "accountUuid";
     roles[ComponentTypeRole] = "componentType";
+    roles[AutoLoadingRole] = "autoLoading";
+    roles[LoadingIntervalRole] = "loadingInterval";
+    roles[WidthRole] = "width";
 
     return roles;
 }

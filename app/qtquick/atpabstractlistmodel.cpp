@@ -7,7 +7,7 @@
 using namespace AtProtocolType;
 
 AtpAbstractListModel::AtpAbstractListModel(QObject *parent)
-    : QAbstractListModel { parent }, m_running(false)
+    : QAbstractListModel { parent }, m_running(false), m_loadingInterval(5 * 60 * 1000)
 {
     connect(&m_timer, &QTimer::timeout, this, &AtpAbstractListModel::getLatest);
 }
@@ -83,10 +83,24 @@ void AtpAbstractListModel::setAutoLoading(bool newAutoLoading)
         // Off -> On
         if (m_timer.isActive())
             return;
-        m_timer.start(60 * 1000);
+        m_timer.start(m_loadingInterval);
     } else {
         // * -> Off
         m_timer.stop();
     }
     emit autoLoadingChanged();
+}
+
+int AtpAbstractListModel::loadingInterval() const
+{
+    return m_loadingInterval;
+}
+
+void AtpAbstractListModel::setLoadingInterval(int newLoadingInterval)
+{
+    if (m_loadingInterval == newLoadingInterval)
+        return;
+    m_loadingInterval = newLoadingInterval;
+    m_timer.setInterval(m_loadingInterval);
+    emit loadingIntervalChanged();
 }
