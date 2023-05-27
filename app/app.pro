@@ -98,6 +98,8 @@ resources.files = $$QML_FILES $$IMAGE_FILES
 resources.prefix = /$${TARGET}
 RESOURCES += resources
 
+CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
+
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
 

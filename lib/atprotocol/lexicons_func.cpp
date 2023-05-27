@@ -195,6 +195,38 @@ void copyViewRecord(const QJsonObject &src, AppBskyEmbedRecord::ViewRecord &dest
             dest.labels.append(child);
         }
         // array<union> embeds
+        for (const auto &value : src.value("embeds").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type == QStringLiteral("app.bsky.embed.images#view")) {
+                AppBskyEmbedImages::View child;
+                AppBskyEmbedImages::copyView(value.toObject(), child);
+                dest.embeds_AppBskyEmbedImages_View.append(child);
+            }
+        }
+        for (const auto &value : src.value("embeds").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type == QStringLiteral("app.bsky.embed.external#view")) {
+                AppBskyEmbedExternal::View child;
+                AppBskyEmbedExternal::copyView(value.toObject(), child);
+                dest.embeds_AppBskyEmbedExternal_View.append(child);
+            }
+        }
+        for (const auto &value : src.value("embeds").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type == QStringLiteral("app.bsky.embed.record#view")) {
+                AppBskyEmbedRecord::View child;
+                AppBskyEmbedRecord::copyView(value.toObject(), child);
+                dest.embeds_AppBskyEmbedRecord_View.append(child);
+            }
+        }
+        for (const auto &value : src.value("embeds").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type == QStringLiteral("app.bsky.embed.recordWithMedia#view")) {
+                AppBskyEmbedRecordWithMedia::View child;
+                AppBskyEmbedRecordWithMedia::copyView(value.toObject(), child);
+                dest.embeds_AppBskyEmbedRecordWithMedia_View.append(child);
+            }
+        }
         dest.indexedAt = src.value("indexedAt").toString();
     }
 }
@@ -389,9 +421,25 @@ void copyThreadViewPost(const QJsonObject &src, AppBskyFeedDefs::ThreadViewPost 
         for (const auto &value : src.value("replies").toArray()) {
             QString value_type = value.toObject().value("$type").toString();
             if (value_type == QStringLiteral("app.bsky.feed.defs#threadViewPost")) {
-                ThreadViewPost *dest_value = new ThreadViewPost();
-                AppBskyFeedDefs::copyThreadViewPost(value.toObject(), *dest_value);
-                dest.replies_ThreadViewPost.append(dest_value);
+                AppBskyFeedDefs::ThreadViewPost *child = new ThreadViewPost();
+                AppBskyFeedDefs::copyThreadViewPost(value.toObject(), *child);
+                dest.replies_ThreadViewPost.append(child);
+            }
+        }
+        for (const auto &value : src.value("replies").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type == QStringLiteral("app.bsky.feed.defs#notFoundPost")) {
+                AppBskyFeedDefs::NotFoundPost child;
+                AppBskyFeedDefs::copyNotFoundPost(value.toObject(), child);
+                dest.replies_NotFoundPost.append(child);
+            }
+        }
+        for (const auto &value : src.value("replies").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type == QStringLiteral("app.bsky.feed.defs#blockedPost")) {
+                AppBskyFeedDefs::BlockedPost child;
+                AppBskyFeedDefs::copyBlockedPost(value.toObject(), child);
+                dest.replies_BlockedPost.append(child);
             }
         }
     }
@@ -509,6 +557,22 @@ void copyMain(const QJsonObject &src, AppBskyRichtextFacet::Main &dest)
     if (!src.isEmpty()) {
         copyByteSlice(src.value("index").toObject(), dest.index);
         // array<union> features
+        for (const auto &value : src.value("features").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type == QStringLiteral("app.bsky.richtext.facet#mention")) {
+                AppBskyRichtextFacet::Mention child;
+                AppBskyRichtextFacet::copyMention(value.toObject(), child);
+                dest.features_Mention.append(child);
+            }
+        }
+        for (const auto &value : src.value("features").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type == QStringLiteral("app.bsky.richtext.facet#link")) {
+                AppBskyRichtextFacet::Link child;
+                AppBskyRichtextFacet::copyLink(value.toObject(), child);
+                dest.features_Link.append(child);
+            }
+        }
     }
 }
 }

@@ -318,9 +318,8 @@ struct ThreadViewPost
         if (parent_ThreadViewPost != nullptr)
             delete parent_ThreadViewPost;
         while (!replies_ThreadViewPost.isEmpty()) {
-            ThreadViewPost *thread_view_post = replies_ThreadViewPost.back();
+            delete replies_ThreadViewPost.back();
             replies_ThreadViewPost.pop_back();
-            delete thread_view_post;
         }
     }
     ThreadViewPost &operator=(const ThreadViewPost &) = delete;
