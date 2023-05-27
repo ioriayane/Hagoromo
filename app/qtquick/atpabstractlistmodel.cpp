@@ -37,20 +37,24 @@ void AtpAbstractListModel::translate(const QString &cid)
     QString record_text = getRecordText(cid);
     if (record_text.isEmpty())
         return;
+    int row = indexOf(cid);
+    if (row == -1)
+        return;
 
     QPointer<AtpAbstractListModel> aliving(this);
 
     Translator *translator = new Translator();
     connect(translator, &Translator::finished, [=](const QString text) {
         if (aliving) {
-            int row = indexOf(cid);
-            if (row >= 0 && !text.isEmpty()) {
+            if (!text.isEmpty()) {
                 m_translations[cid] = text;
                 emit dataChanged(index(row), index(row));
             }
         }
         translator->deleteLater();
     });
+    m_translations[cid] = "Now translating ...";
+    emit dataChanged(index(row), index(row));
     translator->translate(record_text);
 }
 
