@@ -44,6 +44,7 @@ public slots:
 
 protected:
     QString formatDateTime(const QString &value) const;
+    QString copyRecordText(const QVariant &value) const;
 
     QHash<QString, QString> m_translations; // QHash<cid, translation>
 

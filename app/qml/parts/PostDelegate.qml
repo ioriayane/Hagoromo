@@ -68,13 +68,11 @@ ClickableFrame {
                     Layout.preferredWidth: parent.basisWidth
                     Layout.maximumWidth: parent.basisWidth
                     Layout.topMargin: 5
-                    // wrapMode: Text.Wrap
+                    textFormat: Text.StyledText
                     wrapMode: Text.WrapAnywhere
                     font.pointSize: 10
-                    //                    font.letterSpacing: 0
                     lineHeight: 1.3
-                    //                            font.family: "遊ゴシック"  // "メイリオ"  "BIZ UDPゴシック"
-
+                    onLinkActivated: (url) => Qt.openUrlExternally(url)
                 }
                 ImagePreview {
                     id: postImagePreview
@@ -106,9 +104,11 @@ ClickableFrame {
                                 id: childRecordText
                                 Layout.preferredWidth: parent.basisWidth
                                 Layout.maximumWidth: parent.basisWidth
+                                textFormat: Text.StyledText
                                 wrapMode: Text.WrapAnywhere
                                 font.pointSize: 10
                                 lineHeight: 1.3
+                                onLinkActivated: (url) => Qt.openUrlExternally(url)
                             }
                         }
                     }

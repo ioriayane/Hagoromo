@@ -41,7 +41,7 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     else if (role == AvatarRole)
         return current.post.author.avatar;
     else if (role == RecordTextRole)
-        return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(current.post.record).text;
+        return copyRecordText(current.post.record);
     else if (role == RecordTextTranslationRole)
         return m_translations.contains(current.post.cid) ? m_translations[current.post.cid]
                                                          : QString();
@@ -59,6 +59,7 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return LexiconsTypeUnknown::copyImagesFromPostView(current.post, false);
 
     else if (role == IsRepostedRole) {
+        // 別の人がRTして上にくると消えるので仮
         if (current.reason_type == AppBskyFeedDefs::FeedViewPostReasonType::reason_ReasonRepost) {
             return (current.reason_ReasonRepost.by.did == account().did);
         } else {
@@ -105,9 +106,8 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         if (current.post.embed_AppBskyEmbedRecord_View.isNull())
             return QString();
         else
-            return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(
-                           current.post.embed_AppBskyEmbedRecord_View->record_ViewRecord.value)
-                    .text;
+            return copyRecordText(
+                    current.post.embed_AppBskyEmbedRecord_View->record_ViewRecord.value);
     } else if (role == QuoteRecordIndexedAtRole) {
         if (current.post.embed_AppBskyEmbedRecord_View.isNull())
             return QString();

@@ -76,6 +76,41 @@ QString AtpAbstractListModel::formatDateTime(const QString &value) const
     return QDateTime::fromString(value, Qt::ISODateWithMs).toLocalTime().toString("MM/dd hh:mm");
 }
 
+QString AtpAbstractListModel::copyRecordText(const QVariant &value) const
+{
+    const AppBskyFeedPost::Main record =
+            LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(value);
+    if (record.facets.isEmpty()) {
+        return QString(record.text).replace("\n", "<br/>");
+    } else {
+        QByteArray text_ba = record.text.toUtf8();
+        QString text;
+        int pos_start = 0;
+        int pos_end = 0;
+        int pos_prev_end = 0;
+        for (const auto &part : record.facets) {
+            pos_start = part.index.byteStart;
+            pos_end = part.index.byteEnd;
+            if (pos_start > pos_prev_end) {
+                text += QString(text_ba.mid(pos_prev_end, pos_start - pos_prev_end))
+                                .replace("\n", "<br/>");
+            }
+            if (!part.features_Link.isEmpty()) {
+                text += QString("<a href=\"%1\">%1</a>")
+                                .arg(QString::fromUtf8(
+                                        text_ba.mid(pos_start, pos_end - pos_start)));
+            } else {
+                text += QString(text_ba.mid(pos_start, pos_end - pos_start)).replace("\n", "<br/>");
+            }
+            pos_prev_end = pos_end;
+        }
+        if (pos_prev_end < (text_ba.length() - 1)) {
+            text += QString(text_ba.mid(pos_prev_end)).replace("\n", "<br/>");
+        }
+        return text;
+    }
+}
+
 bool AtpAbstractListModel::autoLoading() const
 {
     return m_timer.isActive();

@@ -225,7 +225,7 @@ Dialog {
                         Layout.preferredWidth: 50
                         Layout.preferredHeight: 50
                         Layout.alignment: Qt.AlignTop
-                        Layout.rowSpan: 4
+                        Layout.rowSpan: 3
                         source: "../images/logo.png"
                     }
                     Label {

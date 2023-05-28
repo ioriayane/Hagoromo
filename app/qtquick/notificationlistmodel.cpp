@@ -42,9 +42,7 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
     else if (role == AvatarRole)
         return current.author.avatar;
     else if (role == RecordTextRole)
-        return AtProtocolType::LexiconsTypeUnknown::fromQVariant<
-                       AtProtocolType::AppBskyFeedPost::Main>(current.record)
-                .text;
+        return copyRecordText(current.record);
     else if (role == IndexedAtRole)
         return formatDateTime(current.indexedAt);
 
@@ -132,9 +130,7 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
                 return QString();
         } else if (role == RecordRecordTextRole) {
             if (m_postHash.contains(record_cid))
-                return AtProtocolType::LexiconsTypeUnknown::fromQVariant<
-                               AtProtocolType::AppBskyFeedPost::Main>(m_postHash[record_cid].record)
-                        .text;
+                return copyRecordText(m_postHash[record_cid].record);
             else
                 return QString();
         } else if (role == RecordImagesRole) {

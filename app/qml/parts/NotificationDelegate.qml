@@ -152,9 +152,11 @@ ClickableFrame {
                 Layout.preferredWidth: bodyLayout.basisWidth
                 Layout.maximumWidth: bodyLayout.basisWidth
                 Layout.topMargin: 8
+                textFormat: Text.StyledText
                 wrapMode: Text.WrapAnywhere
                 font.pointSize: 10
                 lineHeight: 1.3
+                onLinkActivated: (url) => Qt.openUrlExternally(url)
             }
 
             ClickableFrame {
@@ -181,9 +183,11 @@ ClickableFrame {
                         id: recordText
                         Layout.preferredWidth: recordFrame.basisWidth
                         Layout.maximumWidth: recordFrame.basisWidth
+                        textFormat: Text.StyledText
                         wrapMode: Text.WrapAnywhere
                         font.pointSize: 10
                         lineHeight: 1.3
+                        onLinkActivated: (url) => Qt.openUrlExternally(url)
                     }
                     ImagePreview {
                         id: recordImagePreview

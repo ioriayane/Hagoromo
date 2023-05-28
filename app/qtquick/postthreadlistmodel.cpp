@@ -40,7 +40,7 @@ QVariant PostThreadListModel::item(int row, PostThreadListModelRoles role) const
     else if (role == AvatarRole)
         return current.author.avatar;
     else if (role == RecordTextRole)
-        return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(current.record).text;
+        return copyRecordText(current.record);
     else if (role == RecordTextTranslationRole)
         return m_translations.contains(current.cid) ? m_translations[current.cid] : QString();
     else if (role == ReplyCountRole)
@@ -94,9 +94,7 @@ QVariant PostThreadListModel::item(int row, PostThreadListModelRoles role) const
         if (current.embed_AppBskyEmbedRecord_View.isNull())
             return QString();
         else
-            return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(
-                           current.embed_AppBskyEmbedRecord_View->record_ViewRecord.value)
-                    .text;
+            return copyRecordText(current.embed_AppBskyEmbedRecord_View->record_ViewRecord.value);
     } else if (role == QuoteRecordIndexedAtRole) {
         if (current.embed_AppBskyEmbedRecord_View.isNull())
             return QString();
