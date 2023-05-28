@@ -86,6 +86,7 @@ IMAGE_FILES += \
     qml/images/expand_more.png \
     qml/images/icon_mask.png \
     qml/images/like.png \
+    qml/images/logo.png \
     qml/images/more.png \
     qml/images/quote.png \
     qml/images/reply.png \

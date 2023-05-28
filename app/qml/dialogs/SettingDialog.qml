@@ -12,8 +12,6 @@ Dialog {
     x: (parent.width - width) * 0.5
     y: (parent.height - height) * 0.5
 
-    property int parentWidth: parent.width
-
     property alias settings: settings
 
 
@@ -74,144 +72,194 @@ Dialog {
                 font.capitalization: Font.MixedCase
                 text: qsTr("Translate")
             }
+            TabButton {
+                font.capitalization: Font.MixedCase
+                text: qsTr("About")
+            }
         }
 
         SwipeView {
+            Layout.preferredWidth: 450
+            Layout.preferredHeight: 250
             currentIndex: tabBar.currentIndex
             interactive: false
             clip: true
 
             // General Page
-            ColumnLayout {
-                RowLayout {
-                    id: themeRowlayout
-                    Label {
-                        text: qsTr("Theme") + " : "
-                    }
-                    RadioButton {
-                        property int value: Material.Light
-                        text: qsTr("Light")
-                    }
-                    RadioButton {
-                        property int value: Material.Dark
-                        text: qsTr("Dark")
-                    }
-                }
-                Label {
-                    text: qsTr("Accent color") + " : "
-                }
-                GridLayout {
-                    id: accentGridLayout
-                    columns: 9
-                    columnSpacing: 1
-                    rowSpacing: 1
-                    Repeater {
-                        model: [Material.Red, Material.Pink, Material.Purple, Material.DeepPurple,
-                            Material.Indigo, Material.Blue, Material.LightBlue, Material.Cyan,
-                            Material.Teal, Material.Green, Material.LightGreen, Material.lime,
-                            Material.Yellow, Material.Amber, Material.Orange, Material.DeepOrange,
-                            Material.Brown, Material.BlueGrey ]
-                        Button {
-                            id: colorSelectButton
-                            Layout.preferredWidth: 30
-                            Layout.preferredHeight: 30
-                            topInset: 1
-                            leftInset: 1
-                            rightInset: 1
-                            bottomInset: 1
-                            background: Rectangle {
-                                color: Material.color(modelData)
-                                border.color: colorSelectButton.checked ? Material.foreground : Material.background
-                                border.width: 2
-                                radius: 5
-                            }
-                            checkable: true
-                            property color value: Material.color(modelData)
+            Frame {
+                ColumnLayout {
+                    RowLayout {
+                        id: themeRowlayout
+                        Label {
+                            text: qsTr("Theme") + " : "
                         }
+                        RadioButton {
+                            property int value: Material.Light
+                            text: qsTr("Light")
+                        }
+                        RadioButton {
+                            property int value: Material.Dark
+                            text: qsTr("Dark")
+                        }
+                    }
+                    Label {
+                        text: qsTr("Accent color") + " : "
+                    }
+                    GridLayout {
+                        id: accentGridLayout
+                        columns: 9
+                        columnSpacing: 1
+                        rowSpacing: 1
+                        Repeater {
+                            model: [Material.Red, Material.Pink, Material.Purple, Material.DeepPurple,
+                                Material.Indigo, Material.Blue, Material.LightBlue, Material.Cyan,
+                                Material.Teal, Material.Green, Material.LightGreen, Material.lime,
+                                Material.Yellow, Material.Amber, Material.Orange, Material.DeepOrange,
+                                Material.Brown, Material.BlueGrey ]
+                            Button {
+                                id: colorSelectButton
+                                Layout.preferredWidth: 30
+                                Layout.preferredHeight: 30
+                                topInset: 1
+                                leftInset: 1
+                                rightInset: 1
+                                bottomInset: 1
+                                background: Rectangle {
+                                    color: Material.color(modelData)
+                                    border.color: colorSelectButton.checked ? Material.foreground : Material.background
+                                    border.width: 2
+                                    radius: 5
+                                }
+                                checkable: true
+                                property color value: Material.color(modelData)
+                            }
+                        }
+                    }
+                    Item {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
                     }
                 }
             }
 
             // Translate Page
-            GridLayout {
-                columns: 2
-                Label {
-                    text: qsTr("Api Url")
-                }
-                TextField {
-                    id: translateApiUrlText
-                    Layout.preferredWidth: 350
-                    text: ""
-                }
-                Label {
-                    text: qsTr("Api Key")
-                }
-                TextField {
-                    id: translateApiKeyText
-                    Layout.preferredWidth: 350
-                    echoMode: TextInput.Password
-                    text: ""
-                }
-                Label {
-                    text: qsTr("Target language")
-                }
-                ComboBox {
-                    id: translateTargetLanguageCombo
-                    Layout.fillWidth: true
-                    textRole: "text"
-                    valueRole: "value"
-                    model: ListModel {
-                        ListElement { value: "BG"; text: qsTr("Bulgarian") }
-                        ListElement { value: "ZH"; text: qsTr("Chinese (simplified)") }
-                        ListElement { value: "CS"; text: qsTr("Czech") }
-                        ListElement { value: "DA"; text: qsTr("Danish") }
-                        ListElement { value: "NL"; text: qsTr("Dutch") }
-                        ListElement { value: "EN-US"; text: qsTr("English (American)") }
-                        ListElement { value: "EN-GB"; text: qsTr("English (British)") }
-                        ListElement { value: "ET"; text: qsTr("Estonian") }
-                        ListElement { value: "FI"; text: qsTr("Finnish") }
-                        ListElement { value: "FR"; text: qsTr("French") }
-                        ListElement { value: "DE"; text: qsTr("German") }
-                        ListElement { value: "EL"; text: qsTr("Greek") }
-                        ListElement { value: "HU"; text: qsTr("Hungarian") }
-                        ListElement { value: "ID"; text: qsTr("Indonesian") }
-                        ListElement { value: "IT"; text: qsTr("Italian") }
-                        ListElement { value: "JA"; text: qsTr("Japanese") }
-                        ListElement { value: "KO"; text: qsTr("Korean") }
-                        ListElement { value: "LV"; text: qsTr("Latvian") }
-                        ListElement { value: "LT"; text: qsTr("Lithuanian") }
-                        ListElement { value: "NB"; text: qsTr("Norwegian (Bokmål)") }
-                        ListElement { value: "PL"; text: qsTr("Polish") }
-                        ListElement { value: "PT-BR"; text: qsTr("Portuguese (Brazilian)") }
-                        ListElement { value: "PT-PT"; text: qsTr("Portuguese (excluding Brazilian)") }
-                        ListElement { value: "RO"; text: qsTr("Romanian") }
-                        ListElement { value: "RU"; text: qsTr("Russian") }
-                        ListElement { value: "SK"; text: qsTr("Slovak") }
-                        ListElement { value: "SL"; text: qsTr("Slovenian") }
-                        ListElement { value: "ES"; text: qsTr("Spanish") }
-                        ListElement { value: "SV"; text: qsTr("Swedish") }
-                        ListElement { value: "TR"; text: qsTr("Turkish") }
-                        ListElement { value: "UK"; text: qsTr("Ukrainian") }
+            Frame {
+                GridLayout {
+                    anchors.fill: parent
+                    columns: 2
+                    Label {
+                        text: qsTr("Api Url")
+                    }
+                    TextField {
+                        id: translateApiUrlText
+                        Layout.fillWidth: true
+                        text: ""
+                    }
+                    Label {
+                        text: qsTr("Api Key")
+                    }
+                    TextField {
+                        id: translateApiKeyText
+                        Layout.fillWidth: true
+                        echoMode: TextInput.Password
+                        text: ""
+                    }
+                    Label {
+                        text: qsTr("Target language")
+                    }
+                    ComboBox {
+                        id: translateTargetLanguageCombo
+                        Layout.fillWidth: true
+                        textRole: "text"
+                        valueRole: "value"
+                        model: ListModel {
+                            ListElement { value: "BG"; text: qsTr("Bulgarian") }
+                            ListElement { value: "ZH"; text: qsTr("Chinese (simplified)") }
+                            ListElement { value: "CS"; text: qsTr("Czech") }
+                            ListElement { value: "DA"; text: qsTr("Danish") }
+                            ListElement { value: "NL"; text: qsTr("Dutch") }
+                            ListElement { value: "EN-US"; text: qsTr("English (American)") }
+                            ListElement { value: "EN-GB"; text: qsTr("English (British)") }
+                            ListElement { value: "ET"; text: qsTr("Estonian") }
+                            ListElement { value: "FI"; text: qsTr("Finnish") }
+                            ListElement { value: "FR"; text: qsTr("French") }
+                            ListElement { value: "DE"; text: qsTr("German") }
+                            ListElement { value: "EL"; text: qsTr("Greek") }
+                            ListElement { value: "HU"; text: qsTr("Hungarian") }
+                            ListElement { value: "ID"; text: qsTr("Indonesian") }
+                            ListElement { value: "IT"; text: qsTr("Italian") }
+                            ListElement { value: "JA"; text: qsTr("Japanese") }
+                            ListElement { value: "KO"; text: qsTr("Korean") }
+                            ListElement { value: "LV"; text: qsTr("Latvian") }
+                            ListElement { value: "LT"; text: qsTr("Lithuanian") }
+                            ListElement { value: "NB"; text: qsTr("Norwegian (Bokmål)") }
+                            ListElement { value: "PL"; text: qsTr("Polish") }
+                            ListElement { value: "PT-BR"; text: qsTr("Portuguese (Brazilian)") }
+                            ListElement { value: "PT-PT"; text: qsTr("Portuguese (excluding Brazilian)") }
+                            ListElement { value: "RO"; text: qsTr("Romanian") }
+                            ListElement { value: "RU"; text: qsTr("Russian") }
+                            ListElement { value: "SK"; text: qsTr("Slovak") }
+                            ListElement { value: "SL"; text: qsTr("Slovenian") }
+                            ListElement { value: "ES"; text: qsTr("Spanish") }
+                            ListElement { value: "SV"; text: qsTr("Swedish") }
+                            ListElement { value: "TR"; text: qsTr("Turkish") }
+                            ListElement { value: "UK"; text: qsTr("Ukrainian") }
+                        }
+                    }
+                    Item {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        Layout.columnSpan: 2
                     }
                 }
             }
 
-
+            // About page
+            Frame {
+                GridLayout {
+                    Layout.alignment: Qt.AlignCenter
+                    columns: 2
+                    columnSpacing: 10
+                    rowSpacing: 5
+                    Image {
+                        Layout.preferredWidth: 50
+                        Layout.preferredHeight: 50
+                        Layout.alignment: Qt.AlignTop
+                        Layout.rowSpan: 4
+                        source: "../images/logo.png"
+                    }
+                    Label {
+                        font.pointSize: 14
+                        text: "羽衣 -Hagoromo-"
+                    }
+                    Label {
+                        text: "Version:0.1.0"
+                    }
+                    Label {
+                        text: "(c) 2023 IoriAyane"
+                    }
+//                    Item {
+//                        Layout.fillWidth: true
+//                        Layout.fillHeight: true
+//                        Layout.rightMargin: 5
+//                    }
+                }
+            }
         }
 
 
-//        Label {
-//            text: qsTr("Font")
-//        }
-//        ComboBox {
-//            id: fontCombo
-//            Layout.preferredWidth: 300
-//            model: Qt.fontFamilies()
-//            delegate: ItemDelegate {
-//                text: modelData
-//                width: fontCombo.width
-//            }
-//        }
+        //        Label {
+        //            text: qsTr("Font")
+        //        }
+        //        ComboBox {
+        //            id: fontCombo
+        //            Layout.preferredWidth: 300
+        //            model: Qt.fontFamilies()
+        //            delegate: ItemDelegate {
+        //                text: modelData
+        //                width: fontCombo.width
+        //            }
+        //        }
 
 
         RowLayout {
