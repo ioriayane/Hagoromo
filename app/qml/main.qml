@@ -21,6 +21,13 @@ ApplicationWindow {
     Material.theme: settingDialog.settings.theme
     Material.accent: settingDialog.settings.accent
 
+    Shortcut {  // Post
+        enabled: !postDialog.visible
+        context: Qt.ApplicationShortcut
+        sequence: "n"
+        onActivated: postDialog.open()
+    }
+
     SettingDialog {
         id: settingDialog
     }

@@ -40,6 +40,7 @@ Dialog {
         } else {
             accountCombo.currentIndex = 0
         }
+        postText.forceActiveFocus()
     }
     onClosed: {
         defaultAccountUuid = ""
@@ -55,6 +56,20 @@ Dialog {
         postText.clear()
         embedImagePreview.embedImages = ""
     }
+
+    Shortcut {  // Post
+        enabled: postButton.enabled && postText.focus
+        sequence: "Ctrl+Return"
+        onActivated: postButton.clicked()
+    }
+    Shortcut {  // Close
+        // DialogのclosePolicyでEscで閉じられるけど、そのうち編集中の確認ダイアログを
+        // 入れたいので別でイベント処理をする。onClosedで閉じるをキャンセルできなさそうなので。
+        enabled: postDialog.visible
+        sequence: "Esc"
+        onActivated: postDialog.close()
+    }
+
 
     RecordOperator {
         id: createRecord
@@ -103,7 +118,7 @@ Dialog {
                 id: accountAvatarImage
                 Layout.preferredWidth: 24
                 Layout.preferredHeight: 24
-//                source:
+                //                source:
             }
 
             ComboBox {
@@ -120,7 +135,7 @@ Dialog {
                 onCurrentIndexChanged: {
                     if(accountCombo.currentIndex >= 0){
                         accountAvatarImage.source =
-                                           postDialog.accountModel.item(accountCombo.currentIndex, AccountListModel.AvatarRole)
+                                postDialog.accountModel.item(accountCombo.currentIndex, AccountListModel.AvatarRole)
                     }
                 }
             }
@@ -133,6 +148,14 @@ Dialog {
             verticalAlignment: TextInput.AlignTop
             enabled: !createRecord.running
             wrapMode: TextInput.WordWrap
+
+//            Keys.onPressed: (event) => {
+//                                if(event.key === Qt.Key_Enter &&
+//                                   event.modifiers & Qt.ControlModifier &&
+//                                   postButton.enabled){
+//                                    postButton.clicked()
+//                                }
+//                            }
         }
 
         RowLayout {
@@ -242,6 +265,7 @@ Dialog {
                 value: postText.text.length
             }
             Button {
+                id: postButton
                 Layout.alignment: Qt.AlignRight
                 enabled: postText.text.length > 0 && !createRecord.running
                 text: qsTr("Post")
