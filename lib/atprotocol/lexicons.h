@@ -20,9 +20,6 @@ struct View;
 namespace AppBskyFeedDefs {
 struct ThreadViewPost;
 }
-namespace AppBskyRichtextFacet {
-struct Main;
-}
 
 // app.bsky.graph.defs
 namespace AppBskyGraphDefs {
@@ -383,7 +380,6 @@ struct FeedViewPost
 };
 struct ThreadViewPost
 {
-    ThreadViewPost &operator=(const ThreadViewPost &) = delete;
     PostView post;
     // union start : parent
     ThreadViewPostParentType parent_type = ThreadViewPostParentType::none;
