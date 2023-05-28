@@ -68,47 +68,93 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return false;
     }
 
-    else if (role == HasQuoteRecordRole)
-        return current.post.embed_type
-                == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecord_View
-                && current.post.embed_AppBskyEmbedRecord_View.record_type
-                == AppBskyEmbedRecord::ViewRecordType::record_ViewRecord;
-    else if (role == QuoteRecordCidRole)
-        return current.post.embed_AppBskyEmbedRecord_View.record_ViewRecord.cid;
-    else if (role == QuoteRecordUriRole)
-        return current.post.embed_AppBskyEmbedRecord_View.record_ViewRecord.uri;
-    else if (role == QuoteRecordDisplayNameRole)
-        return current.post.embed_AppBskyEmbedRecord_View.record_ViewRecord.author.displayName;
-    else if (role == QuoteRecordHandleRole)
-        return current.post.embed_AppBskyEmbedRecord_View.record_ViewRecord.author.handle;
-    else if (role == QuoteRecordAvatarRole)
-        return current.post.embed_AppBskyEmbedRecord_View.record_ViewRecord.author.avatar;
-    else if (role == QuoteRecordRecordTextRole)
-        return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(
-                       current.post.embed_AppBskyEmbedRecord_View.record_ViewRecord.value)
-                .text;
-    else if (role == QuoteRecordIndexedAtRole)
-        return formatDateTime(
-                current.post.embed_AppBskyEmbedRecord_View.record_ViewRecord.indexedAt);
-    else if (role == QuoteRecordEmbedImagesRole)
+    else if (role == HasQuoteRecordRole) {
+        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
+            return false;
+        else
+            return current.post.embed_type
+                    == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecord_View
+                    && current.post.embed_AppBskyEmbedRecord_View->record_type
+                    == AppBskyEmbedRecord::ViewRecordType::record_ViewRecord;
+    } else if (role == QuoteRecordCidRole) {
+        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
+            return QString();
+        else
+            return current.post.embed_AppBskyEmbedRecord_View->record_ViewRecord.cid;
+    } else if (role == QuoteRecordUriRole) {
+        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
+            return QString();
+        else
+            return current.post.embed_AppBskyEmbedRecord_View->record_ViewRecord.uri;
+    } else if (role == QuoteRecordDisplayNameRole) {
+        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
+            return QString();
+        else
+            return current.post.embed_AppBskyEmbedRecord_View->record_ViewRecord.author.displayName;
+    } else if (role == QuoteRecordHandleRole) {
+        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
+            return QString();
+        else
+            return current.post.embed_AppBskyEmbedRecord_View->record_ViewRecord.author.handle;
+    } else if (role == QuoteRecordAvatarRole) {
+        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
+            return QString();
+        else
+            return current.post.embed_AppBskyEmbedRecord_View->record_ViewRecord.author.avatar;
+    } else if (role == QuoteRecordRecordTextRole) {
+        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
+            return QString();
+        else
+            return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(
+                           current.post.embed_AppBskyEmbedRecord_View->record_ViewRecord.value)
+                    .text;
+    } else if (role == QuoteRecordIndexedAtRole) {
+        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
+            return QString();
+        else
+            return formatDateTime(
+                    current.post.embed_AppBskyEmbedRecord_View->record_ViewRecord.indexedAt);
+    } else if (role == QuoteRecordEmbedImagesRole) {
         // unionの配列で読み込んでない
-        return LexiconsTypeUnknown::copyImagesFromRecord(
-                current.post.embed_AppBskyEmbedRecord_View.record_ViewRecord, true);
-    else if (role == QuoteRecordEmbedImagesFullRole)
+        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
+            return QString();
+        else
+            return LexiconsTypeUnknown::copyImagesFromRecord(
+                    current.post.embed_AppBskyEmbedRecord_View->record_ViewRecord, true);
+    } else if (role == QuoteRecordEmbedImagesFullRole) {
         // unionの配列で読み込んでない
-        return LexiconsTypeUnknown::copyImagesFromRecord(
-                current.post.embed_AppBskyEmbedRecord_View.record_ViewRecord, false);
+        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
+            return QString();
+        else
+            return LexiconsTypeUnknown::copyImagesFromRecord(
+                    current.post.embed_AppBskyEmbedRecord_View->record_ViewRecord, false);
+    }
 
-    else if (role == HasReplyRole)
-        return current.reply.parent.cid.length() > 0;
-    else if (role == ReplyRootCidRole)
-        return current.reply.root.cid;
-    else if (role == ReplyRootUriRole)
-        return current.reply.root.uri;
-    else if (role == ReplyParentDisplayNameRole)
-        return current.reply.parent.author.displayName;
-    else if (role == ReplyParentHandleRole)
-        return current.reply.parent.author.handle;
+    else if (role == HasReplyRole) {
+        if (current.reply.parent_type == AppBskyFeedDefs::ReplyRefParentType::parent_PostView)
+            return current.reply.parent_PostView.cid.length() > 0;
+        else
+            return QString();
+    } else if (role == ReplyRootCidRole) {
+        if (current.reply.root_type == AppBskyFeedDefs::ReplyRefRootType::root_PostView)
+            return current.reply.root_PostView.cid;
+        else
+            return QString();
+    } else if (role == ReplyRootUriRole) {
+        if (current.reply.root_type == AppBskyFeedDefs::ReplyRefRootType::root_PostView)
+            return current.reply.root_PostView.uri;
+        else
+            return QString();
+    } else if (role == ReplyParentDisplayNameRole) {
+        if (current.reply.parent_type == AppBskyFeedDefs::ReplyRefParentType::parent_PostView)
+            return current.reply.parent_PostView.author.displayName;
+        else
+            return QString();
+    } else if (role == ReplyParentHandleRole)
+        if (current.reply.parent_type == AppBskyFeedDefs::ReplyRefParentType::parent_PostView)
+            return current.reply.parent_PostView.author.handle;
+        else
+            return QString();
     else if (role == IsRepostedByRole)
         return (current.reason_type
                 == AppBskyFeedDefs::FeedViewPostReasonType::reason_ReasonRepost);

@@ -14,12 +14,23 @@
 #include <QVariant>
 
 namespace AtProtocolType {
+// app.bsky.graph.defs
+namespace AppBskyGraphDefs {
+void copyListPurpose(const QJsonValue &src, AppBskyGraphDefs::ListPurpose &dest);
+void copyListViewerState(const QJsonObject &src, AppBskyGraphDefs::ListViewerState &dest);
+void copyListViewBasic(const QJsonObject &src, AppBskyGraphDefs::ListViewBasic &dest);
+void copyListView(const QJsonObject &src, AppBskyGraphDefs::ListView &dest);
+void copyListItemView(const QJsonObject &src, AppBskyGraphDefs::ListItemView &dest);
+}
 // app.bsky.actor.defs
 namespace AppBskyActorDefs {
 void copyViewerState(const QJsonObject &src, AppBskyActorDefs::ViewerState &dest);
 void copyProfileViewBasic(const QJsonObject &src, AppBskyActorDefs::ProfileViewBasic &dest);
 void copyProfileView(const QJsonObject &src, AppBskyActorDefs::ProfileView &dest);
 void copyProfileViewDetailed(const QJsonObject &src, AppBskyActorDefs::ProfileViewDetailed &dest);
+void copyAdultContentPref(const QJsonObject &src, AppBskyActorDefs::AdultContentPref &dest);
+void copyContentLabelPref(const QJsonObject &src, AppBskyActorDefs::ContentLabelPref &dest);
+void copySavedFeedsPref(const QJsonObject &src, AppBskyActorDefs::SavedFeedsPref &dest);
 }
 // com.atproto.label.defs
 namespace ComAtprotoLabelDefs {
@@ -60,16 +71,36 @@ namespace AppBskyEmbedRecordWithMedia {
 void copyView(const QJsonObject &src, AppBskyEmbedRecordWithMedia::View &dest);
 void copyMain(const QJsonObject &src, AppBskyEmbedRecordWithMedia::Main &dest);
 }
+// app.bsky.richtext.facet
+namespace AppBskyRichtextFacet {
+void copyByteSlice(const QJsonObject &src, AppBskyRichtextFacet::ByteSlice &dest);
+void copyMention(const QJsonObject &src, AppBskyRichtextFacet::Mention &dest);
+void copyLink(const QJsonObject &src, AppBskyRichtextFacet::Link &dest);
+void copyMain(const QJsonObject &src, AppBskyRichtextFacet::Main &dest);
+}
 // app.bsky.feed.defs
 namespace AppBskyFeedDefs {
+void copyGeneratorViewerState(const QJsonObject &src, AppBskyFeedDefs::GeneratorViewerState &dest);
+void copyGeneratorView(const QJsonObject &src, AppBskyFeedDefs::GeneratorView &dest);
 void copyViewerState(const QJsonObject &src, AppBskyFeedDefs::ViewerState &dest);
 void copyPostView(const QJsonObject &src, AppBskyFeedDefs::PostView &dest);
+void copyNotFoundPost(const QJsonObject &src, AppBskyFeedDefs::NotFoundPost &dest);
+void copyBlockedPost(const QJsonObject &src, AppBskyFeedDefs::BlockedPost &dest);
 void copyReplyRef(const QJsonObject &src, AppBskyFeedDefs::ReplyRef &dest);
 void copyReasonRepost(const QJsonObject &src, AppBskyFeedDefs::ReasonRepost &dest);
 void copyFeedViewPost(const QJsonObject &src, AppBskyFeedDefs::FeedViewPost &dest);
-void copyNotFoundPost(const QJsonObject &src, AppBskyFeedDefs::NotFoundPost &dest);
-void copyBlockedPost(const QJsonObject &src, AppBskyFeedDefs::BlockedPost &dest);
 void copyThreadViewPost(const QJsonObject &src, AppBskyFeedDefs::ThreadViewPost &dest);
+void copySkeletonReasonRepost(const QJsonObject &src, AppBskyFeedDefs::SkeletonReasonRepost &dest);
+void copySkeletonFeedPost(const QJsonObject &src, AppBskyFeedDefs::SkeletonFeedPost &dest);
+}
+// app.bsky.feed.describeFeedGenerator
+namespace AppBskyFeedDescribeFeedGenerator {
+void copyFeed(const QJsonObject &src, AppBskyFeedDescribeFeedGenerator::Feed &dest);
+void copyLinks(const QJsonObject &src, AppBskyFeedDescribeFeedGenerator::Links &dest);
+}
+// app.bsky.feed.generator
+namespace AppBskyFeedGenerator {
+void copyMain(const QJsonObject &src, AppBskyFeedGenerator::Main &dest);
 }
 // app.bsky.feed.getLikes
 namespace AppBskyFeedGetLikes {
@@ -86,13 +117,6 @@ void copyEntity(const QJsonObject &src, AppBskyFeedPost::Entity &dest);
 void copyReplyRef(const QJsonObject &src, AppBskyFeedPost::ReplyRef &dest);
 void copyMain(const QJsonObject &src, AppBskyFeedPost::Main &dest);
 }
-// app.bsky.richtext.facet
-namespace AppBskyRichtextFacet {
-void copyByteSlice(const QJsonObject &src, AppBskyRichtextFacet::ByteSlice &dest);
-void copyMention(const QJsonObject &src, AppBskyRichtextFacet::Mention &dest);
-void copyLink(const QJsonObject &src, AppBskyRichtextFacet::Link &dest);
-void copyMain(const QJsonObject &src, AppBskyRichtextFacet::Main &dest);
-}
 // app.bsky.feed.repost
 namespace AppBskyFeedRepost {
 void copyMain(const QJsonObject &src, AppBskyFeedRepost::Main &dest);
@@ -104,6 +128,14 @@ void copyMain(const QJsonObject &src, AppBskyGraphBlock::Main &dest);
 // app.bsky.graph.follow
 namespace AppBskyGraphFollow {
 void copyMain(const QJsonObject &src, AppBskyGraphFollow::Main &dest);
+}
+// app.bsky.graph.list
+namespace AppBskyGraphList {
+void copyMain(const QJsonObject &src, AppBskyGraphList::Main &dest);
+}
+// app.bsky.graph.listitem
+namespace AppBskyGraphListitem {
+void copyMain(const QJsonObject &src, AppBskyGraphListitem::Main &dest);
 }
 // app.bsky.notification.listNotifications
 namespace AppBskyNotificationListNotifications {
@@ -119,7 +151,9 @@ void copyActionView(const QJsonObject &src, ComAtprotoAdminDefs::ActionView &des
 void copyActionViewCurrent(const QJsonObject &src, ComAtprotoAdminDefs::ActionViewCurrent &dest);
 void copyModeration(const QJsonObject &src, ComAtprotoAdminDefs::Moderation &dest);
 void copyRepoView(const QJsonObject &src, ComAtprotoAdminDefs::RepoView &dest);
+void copyRepoViewNotFound(const QJsonObject &src, ComAtprotoAdminDefs::RepoViewNotFound &dest);
 void copyRecordView(const QJsonObject &src, ComAtprotoAdminDefs::RecordView &dest);
+void copyRecordViewNotFound(const QJsonObject &src, ComAtprotoAdminDefs::RecordViewNotFound &dest);
 void copyImageDetails(const QJsonObject &src, ComAtprotoAdminDefs::ImageDetails &dest);
 void copyVideoDetails(const QJsonObject &src, ComAtprotoAdminDefs::VideoDetails &dest);
 void copyBlobView(const QJsonObject &src, ComAtprotoAdminDefs::BlobView &dest);
