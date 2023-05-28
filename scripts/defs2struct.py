@@ -136,9 +136,16 @@ class Defs2Struct:
                         self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), property_name,
                         ))
             else:
-                self.output_text[namespace].append('    QList<%s::%s> %s;' % (
-                    self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), property_name
-                    ))
+                if (ref_namespace + '#' + ref_struct_name) in self.namespace_stack or (my_history_pos < ref_history_pos):
+                    self.append_pre_define(ref_namespace, ref_struct_name)
+                    self.history_pointer.append(namespace + '#' + type_name + '#' + property_name + '#' + ref_namespace + '#' + ref_struct_name)
+                    self.output_text[namespace].append('    QList<QSharedPointer<%s::%s>> %s;' % (
+                        self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), property_name
+                        ))
+                else:
+                    self.output_text[namespace].append('    QList<%s::%s> %s;' % (
+                        self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), property_name
+                        ))
 
 
     def output_union(self, namespace: str, type_name: str, property_name: str, refs_obj: dict, is_array: bool = False):
@@ -415,9 +422,9 @@ class Defs2Struct:
                             if self.check_pointer(namespace, type_name, property_name, ref_namespace, ref_type_name):
                                 self.output_func_text[namespace].append('        // union *%s %s' % (property_name, ref_path, ))
                                 self.output_func_text[namespace].append('        if (%s_type == QStringLiteral("%s")) {' % (property_name, ref_path_full, ))
-                                self.output_func_text[namespace].append('            if (dest.%s == nullptr)' % (union_name, ))
-                                self.output_func_text[namespace].append('                dest.%s = new %s;' % (union_name, self.to_struct_style(ref_type_name), ))
                                 self.output_func_text[namespace].append('            dest.%s_type = %s::%s::%s;' % (property_name, self.to_namespace_style(namespace), union_type_name, union_name, ))
+                                self.output_func_text[namespace].append('            if (dest.%s.isNull())' % (union_name, ))
+                                self.output_func_text[namespace].append('                dest.%s = QSharedPointer<%s%s>(new %s%s());' % (union_name, extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), ))
                                 self.output_func_text[namespace].append('            %scopy%s(src.value("%s").toObject(), *dest.%s);' % (extend_ns, self.to_struct_style(ref_type_name), property_name, union_name, ))
                                 self.output_func_text[namespace].append('        }')
                             else:
@@ -446,9 +453,14 @@ class Defs2Struct:
                         extend_ns = '%s::' % (self.to_namespace_style(ref_namespace), )
                     if items_type == 'ref':
                         self.output_func_text[namespace].append('        for (const auto &s : src.value("%s").toArray()) {' % (property_name, ))
-                        self.output_func_text[namespace].append('            %s%s child;' % (extend_ns, self.to_struct_style(ref_type_name), ))
-                        self.output_func_text[namespace].append('            %scopy%s(s.toObject(), child);' % (extend_ns, self.to_struct_style(ref_type_name), ))
-                        self.output_func_text[namespace].append('            dest.%s.append(child);' % (property_name, )) 
+                        if self.check_pointer(namespace, type_name, property_name, ref_namespace, ref_type_name):
+                            self.output_func_text[namespace].append('            QSharedPointer<%s%s> child = QSharedPointer<%s%s>(new %s%s());' % (extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), ))
+                            self.output_func_text[namespace].append('            %scopy%s(s.toObject(), *child);' % (extend_ns, self.to_struct_style(ref_type_name), ))
+                            self.output_func_text[namespace].append('            dest.%s.append(child);' % (property_name, )) 
+                        else:
+                            self.output_func_text[namespace].append('            %s%s child;' % (extend_ns, self.to_struct_style(ref_type_name), ))
+                            self.output_func_text[namespace].append('            %scopy%s(s.toObject(), child);' % (extend_ns, self.to_struct_style(ref_type_name), ))
+                            self.output_func_text[namespace].append('            dest.%s.append(child);' % (property_name, )) 
                         self.output_func_text[namespace].append('        }')
 
                     elif items_type == 'union':
@@ -476,7 +488,7 @@ class Defs2Struct:
                                 self.output_func_text[namespace].append('            QString value_type = value.toObject().value("$type").toString();')
                                 self.output_func_text[namespace].append('            if (value_type == QStringLiteral("%s")) {' % (ref_path_full, ))
                                 if self.check_pointer(namespace, type_name, property_name, ref_namespace, ref_type_name):
-                                    self.output_func_text[namespace].append('                %s%s *child = new %s();' % (extend_ns, self.to_struct_style(ref_type_name), self.to_struct_style(ref_type_name), ))
+                                    self.output_func_text[namespace].append('                QSharedPointer<%s%s> child = QSharedPointer<%s%s>(new %s%s());' % (extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), ))
                                     self.output_func_text[namespace].append('                %scopy%s(value.toObject(), *child);' % (extend_ns, self.to_struct_style(ref_type_name), ))
                                     self.output_func_text[namespace].append('                dest.%s.append(child);' % (union_name, ))
                                 else:

@@ -38,8 +38,9 @@ void copyListView(const QJsonObject &src, AppBskyGraphDefs::ListView &dest)
         copyListPurpose(src.value("purpose"), dest.purpose);
         dest.description = src.value("description").toString();
         for (const auto &s : src.value("descriptionFacets").toArray()) {
-            AppBskyRichtextFacet::Main child;
-            AppBskyRichtextFacet::copyMain(s.toObject(), child);
+            QSharedPointer<AppBskyRichtextFacet::Main> child =
+                    QSharedPointer<AppBskyRichtextFacet::Main>(new AppBskyRichtextFacet::Main());
+            AppBskyRichtextFacet::copyMain(s.toObject(), *child);
             dest.descriptionFacets.append(child);
         }
         dest.avatar = src.value("avatar").toString();
@@ -472,6 +473,7 @@ void copyPostView(const QJsonObject &src, AppBskyFeedDefs::PostView &dest)
             AppBskyEmbedExternal::copyView(src.value("embed").toObject(),
                                            dest.embed_AppBskyEmbedExternal_View);
         }
+        // union *embed app.bsky.embed.record#view
         if (embed_type == QStringLiteral("app.bsky.embed.record#view")) {
             dest.embed_type = AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecord_View;
             if (dest.embed_AppBskyEmbedRecord_View.isNull())
@@ -570,9 +572,10 @@ void copyThreadViewPost(const QJsonObject &src, AppBskyFeedDefs::ThreadViewPost 
         QString parent_type = src.value("parent").toObject().value("$type").toString();
         // union *parent #threadViewPost
         if (parent_type == QStringLiteral("app.bsky.feed.defs#threadViewPost")) {
-            if (dest.parent_ThreadViewPost.isNull())
-                dest.parent_ThreadViewPost = QSharedPointer<ThreadViewPost>(new ThreadViewPost);
             dest.parent_type = AppBskyFeedDefs::ThreadViewPostParentType::parent_ThreadViewPost;
+            if (dest.parent_ThreadViewPost.isNull())
+                dest.parent_ThreadViewPost = QSharedPointer<AppBskyFeedDefs::ThreadViewPost>(
+                        new AppBskyFeedDefs::ThreadViewPost());
             AppBskyFeedDefs::copyThreadViewPost(src.value("parent").toObject(),
                                                 *dest.parent_ThreadViewPost);
         }
@@ -591,7 +594,8 @@ void copyThreadViewPost(const QJsonObject &src, AppBskyFeedDefs::ThreadViewPost 
             QString value_type = value.toObject().value("$type").toString();
             if (value_type == QStringLiteral("app.bsky.feed.defs#threadViewPost")) {
                 QSharedPointer<AppBskyFeedDefs::ThreadViewPost> child =
-                        QSharedPointer<ThreadViewPost>(new ThreadViewPost());
+                        QSharedPointer<AppBskyFeedDefs::ThreadViewPost>(
+                                new AppBskyFeedDefs::ThreadViewPost());
                 AppBskyFeedDefs::copyThreadViewPost(value.toObject(), *child);
                 dest.replies_ThreadViewPost.append(child);
             }

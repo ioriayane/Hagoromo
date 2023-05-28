@@ -20,6 +20,10 @@ struct View;
 namespace AppBskyFeedDefs {
 struct ThreadViewPost;
 }
+namespace AppBskyRichtextFacet {
+struct Main;
+}
+
 
 // app.bsky.graph.defs
 namespace AppBskyGraphDefs {
@@ -43,7 +47,7 @@ struct ListView
     QString name; //
     ListPurpose purpose;
     QString description; //
-    QList<AppBskyRichtextFacet::Main> descriptionFacets;
+    QList<QSharedPointer<AppBskyRichtextFacet::Main>> descriptionFacets;
     QString avatar; //
     ListViewerState viewer;
     QString indexedAt; // datetime
@@ -213,8 +217,7 @@ struct View
     AppBskyEmbedExternal::View media_AppBskyEmbedExternal_View;
     // union end : media
 };
-// A representation of a record embedded in another form of content, alongside other compatible
-// embeds
+// A representation of a record embedded in another form of content, alongside other compatible embeds
 struct Main
 {
     QSharedPointer<AppBskyEmbedRecord::Main> record;
