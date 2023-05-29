@@ -80,6 +80,10 @@ ColumnLayout {
                 }
             }
 
+            add: Transition {
+                NumberAnimation { properties: "x"; from: rootListView.width; duration: 300 }
+            }
+
             delegate: PostDelegate {
                 width: rootListView.width
 

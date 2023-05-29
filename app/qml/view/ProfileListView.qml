@@ -57,6 +57,10 @@ ScrollView {
             visible: rootListView.model.running && rootListView.model.rowCount() > 0
         }
 
+        add: Transition {
+            NumberAnimation { properties: "x"; from: rootListView.width; duration: 300 }
+        }
+
         delegate: ClickableFrame {
             id: profileLayout
             width: rootListView.width

@@ -11,7 +11,6 @@ import "../parts"
 
 ClickableFrame {
     id: notificationFrame
-    width: rootListView.width
     topPadding: 10
     leftPadding: 10
     rightPadding: 10
