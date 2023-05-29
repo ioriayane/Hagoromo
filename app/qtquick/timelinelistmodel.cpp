@@ -130,6 +130,18 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
                     current.post.embed_AppBskyEmbedRecord_View->record_ViewRecord, false);
     }
 
+    else if (role == HasExternalLinkRole)
+        return current.post.embed_type
+                == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedExternal_View;
+    else if (role == ExternalLinkUriRole)
+        return current.post.embed_AppBskyEmbedExternal_View.external.uri;
+    else if (role == ExternalLinkTitleRole)
+        return current.post.embed_AppBskyEmbedExternal_View.external.title;
+    else if (role == ExternalLinkDescriptionRole)
+        return current.post.embed_AppBskyEmbedExternal_View.external.description;
+    else if (role == ExternalLinkThumbRole)
+        return current.post.embed_AppBskyEmbedExternal_View.external.thumb;
+
     else if (role == HasReplyRole) {
         if (current.reply.parent_type == AppBskyFeedDefs::ReplyRefParentType::parent_PostView)
             return current.reply.parent_PostView.cid.length() > 0;
@@ -248,6 +260,12 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[QuoteRecordIndexedAtRole] = "quoteRecordIndexedAt";
     roles[QuoteRecordEmbedImagesRole] = "quoteRecordEmbedImages";
     roles[QuoteRecordEmbedImagesFullRole] = "quoteRecordEmbedImagesFull";
+
+    roles[HasExternalLinkRole] = "hasExternalLink";
+    roles[ExternalLinkUriRole] = "externalLinkUri";
+    roles[ExternalLinkTitleRole] = "externalLinkTitle";
+    roles[ExternalLinkDescriptionRole] = "externalLinkDescription";
+    roles[ExternalLinkThumbRole] = "externalLinkThumb";
 
     roles[HasReplyRole] = "hasReply";
     roles[ReplyRootCidRole] = "replyRootCid";

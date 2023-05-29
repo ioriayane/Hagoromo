@@ -117,6 +117,18 @@ QVariant PostThreadListModel::item(int row, PostThreadListModelRoles role) const
                     current.embed_AppBskyEmbedRecord_View->record_ViewRecord, false);
     }
 
+    else if (role == HasExternalLinkRole)
+        return current.embed_type
+                == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedExternal_View;
+    else if (role == ExternalLinkUriRole)
+        return current.embed_AppBskyEmbedExternal_View.external.uri;
+    else if (role == ExternalLinkTitleRole)
+        return current.embed_AppBskyEmbedExternal_View.external.title;
+    else if (role == ExternalLinkDescriptionRole)
+        return current.embed_AppBskyEmbedExternal_View.external.description;
+    else if (role == ExternalLinkThumbRole)
+        return current.embed_AppBskyEmbedExternal_View.external.thumb;
+
     else if (role == HasReplyRole)
         return false;
     else if (role == ReplyRootCidRole)
@@ -202,6 +214,12 @@ QHash<int, QByteArray> PostThreadListModel::roleNames() const
     roles[QuoteRecordIndexedAtRole] = "quoteRecordIndexedAt";
     roles[QuoteRecordEmbedImagesRole] = "quoteRecordEmbedImages";
     roles[QuoteRecordEmbedImagesFullRole] = "quoteRecordEmbedImagesFull";
+
+    roles[HasExternalLinkRole] = "hasExternalLink";
+    roles[ExternalLinkUriRole] = "externalLinkUri";
+    roles[ExternalLinkTitleRole] = "externalLinkTitle";
+    roles[ExternalLinkDescriptionRole] = "externalLinkDescription";
+    roles[ExternalLinkThumbRole] = "externalLinkThumb";
 
     roles[HasReplyRole] = "hasReply";
     roles[ReplyRootCidRole] = "replyRootCid";

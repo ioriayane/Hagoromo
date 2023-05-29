@@ -43,6 +43,12 @@ public:
         QuoteRecordEmbedImagesRole,
         QuoteRecordEmbedImagesFullRole,
 
+        HasExternalLinkRole,
+        ExternalLinkUriRole,
+        ExternalLinkTitleRole,
+        ExternalLinkDescriptionRole,
+        ExternalLinkThumbRole,
+
         HasReplyRole,
         ReplyRootCidRole,
         ReplyRootUriRole,

@@ -120,6 +120,13 @@ ColumnLayout {
                 childAuthor.indexedAt: model.quoteRecordIndexedAt
                 childRecordText.text: model.quoteRecordRecordText
 
+                externalLinkFrame.visible: model.hasExternalLink
+                externalLinkFrame.onClicked: Qt.openUrlExternally(model.externalLinkUri)
+                externalLinkThumbImage.source: model.externalLinkThumb
+                externalLinkTitleLabel.text: model.externalLinkTitle
+                externalLinkUriLabel.text: model.externalLinkUri
+                externalLinkDescriptionLabel.text: model.externalLinkDescription
+
                 postControls.replyButton.iconText: model.replyCount
                 postControls.repostButton.iconText: model.repostCount
                 postControls.likeButton.iconText: model.likeCount
