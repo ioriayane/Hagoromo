@@ -77,7 +77,7 @@ ScrollView {
             recordText.text: {
                 var text = model.recordText
                 if(model.recordTextTranslation.length > 0){
-                    text = text + "\n---\n" + model.recordTextTranslation
+                    text = text + "<br/>---<br/>" + model.recordTextTranslation
                 }
                 return text
             }
