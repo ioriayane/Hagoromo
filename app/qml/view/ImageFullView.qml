@@ -16,6 +16,12 @@ Rectangle {
         imageFullListView.currentIndex = index
     }
 
+    Shortcut {  // Close
+        enabled: imageFullView.visible
+        sequence: "Esc"
+        onActivated: imageFullView.visible = false
+    }
+
     MouseArea {
         anchors.fill: parent
         onClicked: (mouse) => imageFullView.visible = false

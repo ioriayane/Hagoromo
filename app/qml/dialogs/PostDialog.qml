@@ -65,7 +65,7 @@ Dialog {
     Shortcut {  // Close
         // DialogのclosePolicyでEscで閉じられるけど、そのうち編集中の確認ダイアログを
         // 入れたいので別でイベント処理をする。onClosedで閉じるをキャンセルできなさそうなので。
-        enabled: postDialog.visible
+        enabled: postDialog.visible && ! postButton.enabled
         sequence: "Esc"
         onActivated: postDialog.close()
     }
@@ -141,13 +141,14 @@ Dialog {
             }
         }
 
-        TextField {
+        TextArea {
             id: postText
             Layout.preferredWidth: 400
             Layout.preferredHeight: 100
             verticalAlignment: TextInput.AlignTop
             enabled: !createRecord.running
             wrapMode: TextInput.WordWrap
+            selectByMouse: true
 
 //            Keys.onPressed: (event) => {
 //                                if(event.key === Qt.Key_Enter &&
