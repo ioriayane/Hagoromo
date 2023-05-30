@@ -7,7 +7,10 @@
 using namespace AtProtocolType;
 
 AtpAbstractListModel::AtpAbstractListModel(QObject *parent)
-    : QAbstractListModel { parent }, m_running(false), m_loadingInterval(5 * 60 * 1000)
+    : QAbstractListModel { parent },
+      m_displayInterval(400),
+      m_running(false),
+      m_loadingInterval(5 * 60 * 1000)
 {
     connect(&m_timer, &QTimer::timeout, this, &AtpAbstractListModel::getLatest);
 }
@@ -144,7 +147,7 @@ void AtpAbstractListModel::displayQueuedPosts()
     m_cuePost.pop_front();
 
     if (!m_cuePost.isEmpty()) {
-        QTimer::singleShot(400, this, &AtpAbstractListModel::displayQueuedPosts);
+        QTimer::singleShot(m_displayInterval, this, &AtpAbstractListModel::displayQueuedPosts);
     } else {
         finishedDisplayingQueuedPosts();
     }

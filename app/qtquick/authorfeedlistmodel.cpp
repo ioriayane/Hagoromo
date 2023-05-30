@@ -6,7 +6,10 @@
 
 using AtProtocolInterface::AppBskyFeedGetAuthorFeed;
 
-AuthorFeedListModel::AuthorFeedListModel(QObject *parent) : TimelineListModel { parent } { }
+AuthorFeedListModel::AuthorFeedListModel(QObject *parent) : TimelineListModel { parent }
+{
+    m_displayInterval = 0;
+}
 
 void AuthorFeedListModel::getLatest()
 {
@@ -21,6 +24,9 @@ void AuthorFeedListModel::getLatest()
         if (aliving) {
             if (success) {
                 copyFrom(timeline);
+
+                if (!m_cuePost.isEmpty())
+                    QTimer::singleShot(100, this, &AuthorFeedListModel::displayQueuedPosts);
             }
             setRunning(false);
         }

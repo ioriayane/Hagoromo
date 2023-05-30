@@ -9,7 +9,10 @@
 using AtProtocolInterface::AppBskyFeedGetPosts;
 using AtProtocolInterface::ComAtprotoRepoListRecords;
 
-AnyFeedListModel::AnyFeedListModel(QObject *parent) : TimelineListModel { parent } { }
+AnyFeedListModel::AnyFeedListModel(QObject *parent) : TimelineListModel { parent }
+{
+    m_displayInterval = 0;
+}
 
 void AnyFeedListModel::getLatest()
 {
@@ -27,30 +30,39 @@ void AnyFeedListModel::getLatest()
     connect(records, &ComAtprotoRepoListRecords::finished, [=](bool success) {
         if (aliving) {
             if (success) {
+                QDateTime reference_time = QDateTime::currentDateTimeUtc();
+
                 for (const auto &record : *records->recordList()) {
                     m_recordHash[record.cid] = record;
 
                     QString cid;
+                    QString indexed_at;
                     switch (feedType()) {
                     case AnyFeedListModelFeedType::LikeFeedType:
                         cid = appendGetPostCue<AtProtocolType::AppBskyFeedLike::Main>(record.value);
+                        indexed_at =
+                                getIndexedAt<AtProtocolType::AppBskyFeedLike::Main>(record.value);
                         break;
                     case AnyFeedListModelFeedType::RepostFeedType:
                         cid = appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(
                                 record.value);
+                        indexed_at =
+                                getIndexedAt<AtProtocolType::AppBskyFeedRepost::Main>(record.value);
                         break;
                     default:
                         break;
                     }
                     if (!cid.isEmpty() && !m_cidList.contains(cid)) {
-                        beginInsertRows(QModelIndex(), m_cidList.count(), m_cidList.count());
-                        m_cidList.append(cid);
-                        endInsertRows();
+                        PostCueItem post;
+                        post.cid = cid;
+                        post.indexed_at = indexed_at;
+                        post.reference_time = reference_time;
+                        m_cuePost.append(post);
                     }
                 }
 
-                if (!m_cueGetPost.isEmpty()) {
-                    QTimer::singleShot(100, this, &AnyFeedListModel::getPosts);
+                if (!m_cuePost.isEmpty()) {
+                    QTimer::singleShot(100, this, &AnyFeedListModel::displayQueuedPosts);
                 }
             }
             setRunning(false);
@@ -96,6 +108,13 @@ void AnyFeedListModel::setFeedType(AnyFeedListModelFeedType newFeedType)
         return;
     m_feedType = newFeedType;
     emit feedTypeChanged();
+}
+
+void AnyFeedListModel::finishedDisplayingQueuedPosts()
+{
+    if (!m_cueGetPost.isEmpty()) {
+        QTimer::singleShot(0, this, &AnyFeedListModel::getPosts);
+    }
 }
 
 void AnyFeedListModel::getPosts()
@@ -155,4 +174,11 @@ QString AnyFeedListModel::appendGetPostCue(const QVariant &record)
         cid = data.subject.cid;
     }
     return cid;
+}
+
+template<typename T>
+QString AnyFeedListModel::getIndexedAt(const QVariant &record)
+{
+    T data = AtProtocolType::LexiconsTypeUnknown::fromQVariant<T>(record);
+    return data.createdAt;
 }

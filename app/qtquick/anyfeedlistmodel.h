@@ -28,6 +28,9 @@ signals:
     void targetDidChanged();
     void feedTypeChanged();
 
+protected:
+    virtual void finishedDisplayingQueuedPosts();
+
 private:
     QStringList m_cueGetPost; // uri
     QHash<QString, AtProtocolType::ComAtprotoRepoListRecords::Record> m_recordHash;
@@ -39,6 +42,8 @@ private:
 
     template<typename T>
     QString appendGetPostCue(const QVariant &record);
+    template<typename T>
+    QString getIndexedAt(const QVariant &record);
 };
 
 #endif // ANYFEEDLISTMODEL_H
