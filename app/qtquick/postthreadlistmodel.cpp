@@ -56,6 +56,11 @@ QVariant PostThreadListModel::item(int row, PostThreadListModelRoles role) const
     else if (role == EmbedImagesFullRole)
         return LexiconsTypeUnknown::copyImagesFromPostView(current, false);
 
+    else if (role == IsRepostedRole)
+        return current.viewer.repost.contains(account().did);
+    else if (role == IsLikedRole)
+        return current.viewer.like.contains(account().did);
+
     else if (role == HasQuoteRecordRole) {
         if (current.embed_AppBskyEmbedRecord_View.isNull()) {
             return false;
@@ -206,6 +211,9 @@ QHash<int, QByteArray> PostThreadListModel::roleNames() const
     roles[IndexedAtRole] = "indexedAt";
     roles[EmbedImagesRole] = "embedImages";
     roles[EmbedImagesFullRole] = "embedImagesFull";
+
+    roles[IsRepostedRole] = "isReposted";
+    roles[IsLikedRole] = "isLiked";
 
     roles[HasQuoteRecordRole] = "hasQuoteRecord";
     roles[QuoteRecordCidRole] = "quoteRecordCid";

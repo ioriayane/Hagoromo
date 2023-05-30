@@ -145,6 +145,16 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
                         m_postHash[record_cid], false);
             else
                 return QString();
+        } else if (role == RecordIsRepostedRole) {
+            if (m_postHash.contains(record_cid))
+                return m_postHash[record_cid].viewer.repost.contains(account().did);
+            else
+                return false;
+        } else if (role == RecordIsLikedRole) {
+            if (m_postHash.contains(record_cid))
+                return m_postHash[record_cid].viewer.like.contains(account().did);
+            else
+                return false;
         }
     }
 
@@ -274,6 +284,8 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[RecordRecordTextRole] = "recordRecordText";
     roles[RecordImagesRole] = "recordImages";
     roles[RecordImagesFullRole] = "recordImagesFull";
+    roles[RecordIsRepostedRole] = "recordIsReposted";
+    roles[RecordIsLikedRole] = "recordIsLiked";
 
     return roles;
 }

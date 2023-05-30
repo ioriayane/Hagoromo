@@ -58,16 +58,10 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     else if (role == EmbedImagesFullRole)
         return LexiconsTypeUnknown::copyImagesFromPostView(current.post, false);
 
-    else if (role == IsRepostedRole) {
-        // 別の人がRTして上にくると消えるので仮
-        if (current.reason_type == AppBskyFeedDefs::FeedViewPostReasonType::reason_ReasonRepost) {
-            return (current.reason_ReasonRepost.by.did == account().did);
-        } else {
-            return false;
-        }
-    } else if (role == IsLikedRole) {
-        return false;
-    }
+    else if (role == IsRepostedRole)
+        return current.post.viewer.repost.contains(account().did);
+    else if (role == IsLikedRole)
+        return current.post.viewer.like.contains(account().did);
 
     else if (role == HasQuoteRecordRole) {
         if (current.post.embed_AppBskyEmbedRecord_View.isNull())

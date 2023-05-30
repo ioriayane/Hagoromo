@@ -43,6 +43,9 @@ public:
         RecordRecordTextRole,
         RecordImagesRole,
         RecordImagesFullRole,
+        RecordIsRepostedRole,
+        RecordIsLikedRole,
+
     };
     Q_ENUM(NotificationListModelRoles)
 

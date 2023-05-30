@@ -74,9 +74,9 @@ ScrollView {
             recordImagePreview.embedImages: model.recordImages
             recordImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.recordImagesFull)
 
-            //            postControls.replyButton.iconText: model.replyCount
-            //            postControls.repostButton.iconText: model.repostCount
-            //            postControls.likeButton.iconText: model.likeCount
+            postControls.replyButton.iconText: "" // model.replyCount
+            postControls.repostButton.iconText: "" // model.repostCount
+            postControls.likeButton.iconText: "" // model.likeCount
             postControls.replyButton.onClicked: requestReply(model.cid, model.uri,
                                                                model.replyRootCid, model.replyRootUri,
                                                                model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
@@ -85,6 +85,8 @@ ScrollView {
                                                                    model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
             postControls.likeButton.onClicked: requestLike(model.cid, model.uri)
             postControls.tranlateMenuItem.onTriggered: rootListView.model.translate(model.cid)
+            postControls.isReposted: model.recordIsReposted
+            postControls.isLiked: model.recordIsLiked
 
             onClicked: {
                 if(model.reason === NotificationListModel.ReasonLike ||

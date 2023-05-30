@@ -199,9 +199,6 @@ ClickableFrame {
             PostControls {
                 id: postControls
                 visible: false
-                replyButton.iconText: "" //model.replyCount
-                repostButton.iconText: "" //model.repostCount
-                likeButton.iconText: "" //model.likeCount
             }
         }
     }

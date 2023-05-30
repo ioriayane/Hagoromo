@@ -142,6 +142,8 @@ ColumnLayout {
                                                                        model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
                 postControls.likeButton.onClicked: requestLike(model.cid, model.uri)
                 postControls.tranlateMenuItem.onTriggered: postThreadListModel.translate(model.cid)
+                postControls.isReposted: model.isReposted
+                postControls.isLiked: model.isLiked
             }
         }
     }
