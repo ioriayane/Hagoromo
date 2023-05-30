@@ -2,10 +2,20 @@
 #define ATPABSTRACTLISTMODEL_H
 
 #include "atprotocol/accessatprotocol.h"
+#include "atprotocol/lexicons.h"
 
 #include <QAbstractListModel>
 #include <QObject>
 #include <QTimer>
+
+struct PostCueItem
+{
+    QString cid;
+    QString indexed_at;
+    QDateTime reference_time;
+    AtProtocolType::AppBskyFeedDefs::FeedViewPostReasonType reason_type =
+            AtProtocolType::AppBskyFeedDefs::FeedViewPostReasonType::none;
+};
 
 class AtpAbstractListModel : public QAbstractListModel
 {
@@ -45,6 +55,11 @@ public slots:
 protected:
     QString formatDateTime(const QString &value) const;
     QString copyRecordText(const QVariant &value) const;
+    void displayQueuedPosts();
+    virtual void finishedDisplayingQueuedPosts() = 0;
+
+    QList<QString> m_cidList; // これで取得したポストの順番を管理して実態はm_viewPostHashで管理
+    QList<PostCueItem> m_cuePost;
 
     QHash<QString, QString> m_translations; // QHash<cid, translation>
 

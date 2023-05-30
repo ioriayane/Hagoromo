@@ -173,34 +173,19 @@ void NotificationListModel::getLatest()
 
     AppBskyNotificationListNotifications *notification = new AppBskyNotificationListNotifications();
     connect(notification, &AppBskyNotificationListNotifications::finished, [=](bool success) {
-        //
         if (aliving) {
             if (success) {
-                QDateTime reference_time;
-                if (m_cidList.count() > 0 && m_notificationHash.count() > 0) {
-                    reference_time = QDateTime::fromString(
-                            m_notificationHash[m_cidList.at(0)].indexedAt, Qt::ISODateWithMs);
-                } else if (notification->notificationList()->count() > 0) {
-                    reference_time = QDateTime::fromString(
-                            notification->notificationList()->last().indexedAt, Qt::ISODateWithMs);
-                } else {
-                    reference_time = QDateTime::currentDateTimeUtc();
-                }
+                QDateTime reference_time = QDateTime::currentDateTimeUtc();
+
                 for (auto item = notification->notificationList()->crbegin();
                      item != notification->notificationList()->crend(); item++) {
                     m_notificationHash[item->cid] = *item;
 
-                    if (m_cidList.contains(item->cid)) {
-                        // リストは更新しないでデータのみ入れ替える
-                        // リプライ数とかだけ更新をUIに通知
-                        // （取得できた範囲でしか更新できないのだけど・・・）
-                        int pos = m_cidList.indexOf(item->cid);
-                        emit dataChanged(index(pos), index(pos));
-                    } else {
-                        beginInsertRows(QModelIndex(), 0, 0);
-                        m_cidList.insert(0, item->cid);
-                        endInsertRows();
-                    }
+                    PostCueItem post;
+                    post.cid = item->cid;
+                    post.indexed_at = item->indexedAt;
+                    post.reference_time = reference_time;
+                    m_cuePost.append(post);
 
                     if (item->reason == "like") {
                         appendGetPostCue<AtProtocolType::AppBskyFeedLike::Main>(item->record);
@@ -234,8 +219,8 @@ void NotificationListModel::getLatest()
                     }
                 }
 
-                if (!m_cueGetPost.isEmpty()) {
-                    QTimer::singleShot(100, this, &NotificationListModel::getPosts);
+                if (!m_cuePost.isEmpty()) {
+                    QTimer::singleShot(100, this, &NotificationListModel::displayQueuedPosts);
                 }
 
                 //
@@ -291,6 +276,13 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[RecordImagesFullRole] = "recordImagesFull";
 
     return roles;
+}
+
+void NotificationListModel::finishedDisplayingQueuedPosts()
+{
+    if (!m_cueGetPost.isEmpty()) {
+        QTimer::singleShot(100, this, &NotificationListModel::getPosts);
+    }
 }
 
 void NotificationListModel::getPosts()

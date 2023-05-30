@@ -53,9 +53,9 @@ ScrollView {
             visible: rootListView.model.running && rootListView.model.rowCount() > 0
         }
 
-        add: Transition {
-            NumberAnimation { properties: "x"; from: rootListView.width; duration: 300 }
-        }
+//        add: Transition {
+//            NumberAnimation { properties: "x"; from: rootListView.width; duration: 300 }
+//        }
 
         delegate: PostDelegate {
             width: rootListView.width

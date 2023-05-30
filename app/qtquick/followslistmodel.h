@@ -50,6 +50,7 @@ signals:
 
 protected:
     QHash<int, QByteArray> roleNames() const;
+    virtual void finishedDisplayingQueuedPosts() {};
 
     QStringList m_didList;
     QHash<QString, AtProtocolType::AppBskyActorDefs::ProfileView> m_profileHash;

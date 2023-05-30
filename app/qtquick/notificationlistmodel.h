@@ -72,9 +72,11 @@ signals:
 
 protected:
     QHash<int, QByteArray> roleNames() const;
+    virtual void finishedDisplayingQueuedPosts();
 
 private:
-    QList<QString> m_cidList; // これで取得したポストの順番を管理して実態はm_notificationHashで管理
+    //    QList<QString> m_cidList; //
+    //    これで取得したポストの順番を管理して実態はm_notificationHashで管理
     QHash<QString, AtProtocolType::AppBskyNotificationListNotifications::Notification>
             m_notificationHash;
 

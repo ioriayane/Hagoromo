@@ -176,6 +176,9 @@ void PostThreadListModel::getLatest()
         if (aliving) {
             if (success) {
                 copyFrom(thread->threadViewPost());
+
+                if (!m_cuePost.isEmpty())
+                    QTimer::singleShot(100, this, &PostThreadListModel::displayQueuedPosts);
             }
             setRunning(false);
         }
@@ -238,25 +241,34 @@ void PostThreadListModel::copyFrom(const AppBskyFeedDefs::ThreadViewPost *thread
     if (thread_view_post == nullptr)
         return;
 
+    QDateTime reference_time = QDateTime::currentDateTimeUtc();
+
     if (thread_view_post->parent_type
         == AppBskyFeedDefs::ThreadViewPostParentType::parent_ThreadViewPost) {
         copyFrom(thread_view_post->parent_ThreadViewPost.get());
     }
 
-    beginInsertRows(QModelIndex(), rowCount(), rowCount());
-    m_cidList.append(thread_view_post->post.cid);
+    PostCueItem post;
+    post.cid = thread_view_post->post.cid;
+    post.indexed_at = thread_view_post->post.indexedAt;
+    post.reference_time = reference_time;
+    m_cuePost.insert(0, post);
+
     m_postHash[thread_view_post->post.cid] = thread_view_post->post;
-    endInsertRows();
 
     // TODO
     // replies側の表示
     // こっちは枝分かれする場合があるので表示方法を検討すること
     // そもそも時系列が逆順になるので基準になっているpostを強調するなど工夫が必要
-    for (const auto view_post : thread_view_post->replies_ThreadViewPost) {
-        beginInsertRows(QModelIndex(), rowCount(), rowCount());
-        m_cidList.append(view_post->post.cid);
+    // あと、repliesの1階層目しか表示できていない！
+    for (const auto &view_post : thread_view_post->replies_ThreadViewPost) {
         m_postHash[view_post->post.cid] = view_post->post;
-        endInsertRows();
+
+        PostCueItem post;
+        post.cid = view_post->post.cid;
+        post.indexed_at = view_post->post.indexedAt;
+        post.reference_time = reference_time;
+        m_cuePost.insert(0, post);
     }
 }
 
