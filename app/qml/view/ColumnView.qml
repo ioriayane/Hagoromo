@@ -217,6 +217,7 @@ ColumnLayout {
             anchors.fill: parent
             spacing: 0
             IconButton {
+                id: leftIconButton
                 Layout.preferredWidth: 30
                 Layout.preferredHeight: 30
                 visible: columnStackView.depth > 1
@@ -226,6 +227,7 @@ ColumnLayout {
             }
 
             AvatarImage {
+                id: avatarImage
                 Layout.leftMargin: 10
                 Layout.preferredWidth: 24
                 Layout.preferredHeight: 24
@@ -237,12 +239,17 @@ ColumnLayout {
                 Layout.leftMargin: 5
                 Layout.topMargin: 5
                 Layout.bottomMargin: 5
+                Layout.maximumWidth: columnView.width - leftIconButton.Layout.preferredWidth -
+                                     avatarImage.Layout.preferredWidth - autoIconImage.Layout.preferredWidth -
+                                     settingButton.Layout.preferredWidth
                 Label {
                     id: componentTypeLabel
+                    elide: Text.ElideRight
                 }
                 Label {
                     text: "@" + columnView.handle + " - " + columnView.service
                     font.pointSize: 8
+                    elide: Text.ElideRight
                     color: Material.color(Material.Grey)
                 }
             }
@@ -251,6 +258,7 @@ ColumnLayout {
                 height: 1
             }
             Image {
+                id: autoIconImage
                 Layout.preferredWidth: 16
                 Layout.preferredHeight: 16
                 Layout.rightMargin: 3

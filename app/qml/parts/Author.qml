@@ -23,10 +23,10 @@ RowLayout {
         font.pointSize: 8
         text: headerLayout.handle
     }
-//    Item {
-//        id: spacerLine1Item
-//        Layout.fillWidth: true
-//    }
+    Item {
+        id: spacerLine1Item
+        Layout.fillWidth: true
+    }
     Label {
         id: indexAtText
         Layout.minimumWidth: contentWidth

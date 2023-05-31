@@ -5,6 +5,7 @@ import QtQuick.Controls.Material 2.15
 
 Frame {
     id: clickableFrame
+    clip: true
 
     signal clicked(var mouse)
 

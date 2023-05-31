@@ -105,7 +105,7 @@ Dialog {
                     }
                 }
                 Label {
-                    Layout.fillWidth: true
+                    Layout.preferredWidth: postText.width - replyFrame.padding * 2
                     wrapMode: Text.WrapAnywhere
                     font.pointSize: 8
                     text: replyText
@@ -198,7 +198,7 @@ Dialog {
             Layout.preferredWidth: postText.width
             visible: postType === "quote"
             ColumnLayout {
-                anchors.fill: parent
+                Layout.preferredWidth: postText.width
                 RowLayout {
                     Image {
                         id: quoteAvatarImage
@@ -207,14 +207,14 @@ Dialog {
                         source: replyAvatar
                     }
                     Author {
-                        layoutWidth: quoteFrame.width - quoteFrame.padding * 2 - quoteAvatarImage.width - parent.spacing
+                        layoutWidth: postText.width - quoteFrame.padding * 2 - quoteAvatarImage.width - parent.spacing
                         displayName: replyDisplayName
                         handle: replyHandle
                         indexedAt: replyIndexedAt
                     }
                 }
                 Label {
-                    Layout.fillWidth: true
+                    Layout.preferredWidth: postText.width - quoteFrame.padding * 2
                     wrapMode: Text.WrapAnywhere
                     font.pointSize: 8
                     text: replyText
