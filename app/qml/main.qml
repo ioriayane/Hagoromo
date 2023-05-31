@@ -21,6 +21,13 @@ ApplicationWindow {
     Material.theme: settingDialog.settings.theme
     Material.accent: settingDialog.settings.accent
 
+    Settings {
+        property alias x: appWindow.x
+        property alias y: appWindow.y
+        property alias width: appWindow.width
+        property alias height: appWindow.height
+    }
+
     Shortcut {  // Post
         enabled: !postDialog.visible
         context: Qt.ApplicationShortcut
@@ -173,54 +180,54 @@ ApplicationWindow {
         id: columnView
         ColumnView {
             onRequestReply: (account_uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) => {
-                                  console.log(account_uuid + ",\n" +
-                                              cid + ", "+ uri + ",\n" +
-                                              reply_root_cid + ", "+ reply_root_uri + ",\n" +
-                                              avatar + ",\n" +
-                                              display_name + ", "+ handle + ", "+ indexed_at + ",\n"+ text)
-                                  postDialog.postType = "reply"
-                                  postDialog.defaultAccountUuid = account_uuid
-                                  postDialog.replyCid = cid
-                                  postDialog.replyUri = uri
-                                  postDialog.replyRootCid = reply_root_cid
-                                  postDialog.replyRootUri = reply_root_uri
-                                  postDialog.replyAvatar = avatar
-                                  postDialog.replyDisplayName = display_name
-                                  postDialog.replyHandle = handle
-                                  postDialog.replyIndexedAt = indexed_at
-                                  postDialog.replyText = text
-                                  postDialog.open()
-                              }
+                                console.log(account_uuid + ",\n" +
+                                            cid + ", "+ uri + ",\n" +
+                                            reply_root_cid + ", "+ reply_root_uri + ",\n" +
+                                            avatar + ",\n" +
+                                            display_name + ", "+ handle + ", "+ indexed_at + ",\n"+ text)
+                                postDialog.postType = "reply"
+                                postDialog.defaultAccountUuid = account_uuid
+                                postDialog.replyCid = cid
+                                postDialog.replyUri = uri
+                                postDialog.replyRootCid = reply_root_cid
+                                postDialog.replyRootUri = reply_root_uri
+                                postDialog.replyAvatar = avatar
+                                postDialog.replyDisplayName = display_name
+                                postDialog.replyHandle = handle
+                                postDialog.replyIndexedAt = indexed_at
+                                postDialog.replyText = text
+                                postDialog.open()
+                            }
             onRequestQuote: (account_uuid, cid, uri, avatar, display_name, handle, indexed_at, text) => {
-                                  postDialog.postType = "quote"
-                                  postDialog.defaultAccountUuid = account_uuid
-                                  postDialog.replyCid = cid
-                                  postDialog.replyUri = uri
-                                  postDialog.replyRootCid = ""
-                                  postDialog.replyRootUri = ""
-                                  postDialog.replyAvatar = avatar
-                                  postDialog.replyDisplayName = display_name
-                                  postDialog.replyHandle = handle
-                                  postDialog.replyIndexedAt = indexed_at
-                                  postDialog.replyText = text
-                                  postDialog.open()
-                              }
+                                postDialog.postType = "quote"
+                                postDialog.defaultAccountUuid = account_uuid
+                                postDialog.replyCid = cid
+                                postDialog.replyUri = uri
+                                postDialog.replyRootCid = ""
+                                postDialog.replyRootUri = ""
+                                postDialog.replyAvatar = avatar
+                                postDialog.replyDisplayName = display_name
+                                postDialog.replyHandle = handle
+                                postDialog.replyIndexedAt = indexed_at
+                                postDialog.replyText = text
+                                postDialog.open()
+                            }
 
             onRequestViewImages: (index, paths) => imageFullView.open(index, paths)
 
             onRequestMoveToLeft: (key) => {
-                                       console.log("move to left:" + key)
-                                       columnManageModel.exchange(key, -1)
-                                   }
+                                     console.log("move to left:" + key)
+                                     columnManageModel.exchange(key, -1)
+                                 }
             onRequestMoveToRight: (key) => {
-                                        console.log("move to right:" + key)
-                                        columnManageModel.exchange(key, 1)
-                                    }
+                                      console.log("move to right:" + key)
+                                      columnManageModel.exchange(key, 1)
+                                  }
             onRequestRemove: (key) => {
-                                   console.log("remove column:" + key)
-                                   columnManageModel.removeByKey(key)
-                                   columnManageModel.sync()
-                               }
+                                 console.log("remove column:" + key)
+                                 columnManageModel.removeByKey(key)
+                                 columnManageModel.sync()
+                             }
             onRequestDisplayOfColumnSetting: (key) => columnsettingDialog.openWithKey(key)
         }
     }
@@ -415,131 +422,131 @@ ApplicationWindow {
                 }
 
                 // debug
-                ListView {
-                    Layout.preferredHeight: scrollView.childHeight
-                    Layout.minimumWidth: 100
-                    Layout.preferredWidth: 400
-                    Layout.maximumWidth: 500
-                    clip: true
-                    model: accountListModel
-                    delegate: GridLayout {
-                        columns: 2
-                        Label {
-                            text: "service:"
-                        }
-                        Label {
-                            text: model.service
-                        }
-                        Label {
-                            text: "identifier:"
-                        }
-                        Label {
-                            text: model.identifier
-                        }
-                        Label {
-                            text: "password:"
-                        }
-                        Label {
-                            text: model.password
-                        }
-                        Label {
-                            text: "did:"
-                        }
-                        Label {
-                            text: model.did
-                        }
-                        Label {
-                            text: "handle:"
-                        }
-                        Label {
-                            text: model.handle
-                        }
-                        Label {
-                            text: "email:"
-                        }
-                        Label {
-                            text: model.email
-                        }
-                        Label {
-                            text: "accessJwt:"
-                        }
-                        Label {
-                            text: model.accessJwt
-                        }
-                        Label {
-                            text: "refreshJwt:"
-                        }
-                        Label {
-                            text: model.refreshJwt
-                        }
-                        Label {
-                            text: "status:"
-                        }
-                        Label {
-                            text: model.status
-                        }
-                        Label {
-                            text: "-"
-                        }
-                        Label {
-                            text: "-"
-                        }
+//                ListView {
+//                    Layout.preferredHeight: scrollView.childHeight
+//                    Layout.minimumWidth: 100
+//                    Layout.preferredWidth: 400
+//                    Layout.maximumWidth: 500
+//                    clip: true
+//                    model: accountListModel
+//                    delegate: GridLayout {
+//                        columns: 2
+//                        Label {
+//                            text: "service:"
+//                        }
+//                        Label {
+//                            text: model.service
+//                        }
+//                        Label {
+//                            text: "identifier:"
+//                        }
+//                        Label {
+//                            text: model.identifier
+//                        }
+//                        Label {
+//                            text: "password:"
+//                        }
+//                        Label {
+//                            text: model.password
+//                        }
+//                        Label {
+//                            text: "did:"
+//                        }
+//                        Label {
+//                            text: model.did
+//                        }
+//                        Label {
+//                            text: "handle:"
+//                        }
+//                        Label {
+//                            text: model.handle
+//                        }
+//                        Label {
+//                            text: "email:"
+//                        }
+//                        Label {
+//                            text: model.email
+//                        }
+//                        Label {
+//                            text: "accessJwt:"
+//                        }
+//                        Label {
+//                            text: model.accessJwt
+//                        }
+//                        Label {
+//                            text: "refreshJwt:"
+//                        }
+//                        Label {
+//                            text: model.refreshJwt
+//                        }
+//                        Label {
+//                            text: "status:"
+//                        }
+//                        Label {
+//                            text: model.status
+//                        }
+//                        Label {
+//                            text: "-"
+//                        }
+//                        Label {
+//                            text: "-"
+//                        }
 
-                    }
-                }
-                ListView {
-                    Layout.preferredHeight: scrollView.childHeight
-                    Layout.minimumWidth: 100
-                    Layout.preferredWidth: 200
-                    Layout.maximumWidth: 300
-                    clip: true
-                    model: columnManageModel
-                    delegate: GridLayout {
-                        columns: 2
-                        Label {
-                            text: "key"
-                        }
-                        Label {
-                            text: model.key
-                        }
-                        Label {
-                            text: "account_uuid"
-                        }
-                        Label {
-                            text: model.accountUuid
-                        }
-                        Label {
-                            text: "component_type"
-                        }
-                        Label {
-                            text: model.componentType
-                        }
-                        Label {
-                            text: "autoLoading"
-                        }
-                        Label {
-                            text: model.autoLoading
-                        }
-                        Label {
-                            text: "interval"
-                        }
-                        Label {
-                            text: model.loadingInterval
-                        }
-                        Label {
-                            text: "width"
-                        }
-                        Label {
-                            text: model.width
-                        }
-                        Label {
-                            text: "-"
-                        }
-                        Label {
-                            text: "-"
-                        }
-                    }
-                }
+//                    }
+//                }
+//                ListView {
+//                    Layout.preferredHeight: scrollView.childHeight
+//                    Layout.minimumWidth: 100
+//                    Layout.preferredWidth: 200
+//                    Layout.maximumWidth: 300
+//                    clip: true
+//                    model: columnManageModel
+//                    delegate: GridLayout {
+//                        columns: 2
+//                        Label {
+//                            text: "key"
+//                        }
+//                        Label {
+//                            text: model.key
+//                        }
+//                        Label {
+//                            text: "account_uuid"
+//                        }
+//                        Label {
+//                            text: model.accountUuid
+//                        }
+//                        Label {
+//                            text: "component_type"
+//                        }
+//                        Label {
+//                            text: model.componentType
+//                        }
+//                        Label {
+//                            text: "autoLoading"
+//                        }
+//                        Label {
+//                            text: model.autoLoading
+//                        }
+//                        Label {
+//                            text: "interval"
+//                        }
+//                        Label {
+//                            text: model.loadingInterval
+//                        }
+//                        Label {
+//                            text: "width"
+//                        }
+//                        Label {
+//                            text: model.width
+//                        }
+//                        Label {
+//                            text: "-"
+//                        }
+//                        Label {
+//                            text: "-"
+//                        }
+//                    }
+//                }
             }
         }
     }
