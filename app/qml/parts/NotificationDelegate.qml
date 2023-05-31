@@ -128,7 +128,7 @@ ClickableFrame {
 
         ColumnLayout {
             id: bodyLayout
-            Layout.fillWidth: true
+            Layout.preferredWidth: basisWidth
             spacing: 0
 
             property int basisWidth: notificationFrame.layoutWidth - notificationFrame.leftPadding - notificationFrame.rightPadding -
@@ -150,7 +150,6 @@ ClickableFrame {
                 id: recordTextLabel
                 visible: false
                 Layout.preferredWidth: bodyLayout.basisWidth
-                Layout.maximumWidth: bodyLayout.basisWidth
                 Layout.topMargin: 8
                 textFormat: Text.StyledText
                 wrapMode: Text.WrapAnywhere
@@ -176,7 +175,7 @@ ClickableFrame {
                         }
                         Author {
                             id: recordAuthor
-                            layoutWidth: 200// recordFrame.basisWidth - recordAvatarImage.Layout.preferredWidth - recordAuthorLayout.spacing
+                            layoutWidth: recordFrame.basisWidth - recordAvatarImage.Layout.preferredWidth - recordAuthorLayout.spacing
                         }
                     }
                     Label {

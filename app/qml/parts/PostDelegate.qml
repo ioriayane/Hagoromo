@@ -58,7 +58,6 @@ ClickableFrame {
             }
             ColumnLayout {
                 id: bodyLayout
-//                Layout.fillWidth: true
                 Layout.preferredWidth: basisWidth
                 spacing: 0
 
