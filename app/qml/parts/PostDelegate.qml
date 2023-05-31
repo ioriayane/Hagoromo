@@ -7,12 +7,13 @@ import "../controls"
 
 ClickableFrame {
     id: postFrame
-    //    width: rootListView.width
     topPadding: 10
     leftPadding: 10
     rightPadding: 10
     bottomPadding: 2
     style: "Post"
+
+    property int layoutWidth: postFrame.Layout.preferredWidth
 
     property alias repostReactionAuthor: repostReactionAuthor
     property alias replyReactionAuthor: replyReactionAuthor
@@ -35,13 +36,13 @@ ClickableFrame {
     ColumnLayout {
         ReactionAuthor {
             id: repostReactionAuthor
-            Layout.maximumWidth: postFrame.contentWidth
+            Layout.maximumWidth: postFrame.layoutWidth
             source: "../images/repost.png"
             color: Material.color(Material.Green)
         }
         ReactionAuthor {
             id: replyReactionAuthor
-            Layout.maximumWidth: postFrame.contentWidth
+            Layout.maximumWidth: postFrame.layoutWidth
             source: "../images/reply.png"
             color: Material.color(Material.Blue)
         }
@@ -57,21 +58,21 @@ ClickableFrame {
             }
             ColumnLayout {
                 id: bodyLayout
-                Layout.fillWidth: true
+//                Layout.fillWidth: true
+                Layout.preferredWidth: basisWidth
                 spacing: 0
 
-                property int basisWidth: postFrame.width - postFrame.leftPadding - postFrame.rightPadding -
+                property int basisWidth: postFrame.layoutWidth - postFrame.leftPadding - postFrame.rightPadding -
                                          postLayout.spacing - postAvatarImage.Layout.preferredWidth
 
                 Author {
                     id: postAuthor
-                    Layout.maximumWidth: parent.basisWidth
+                    layoutWidth: parent.basisWidth
                 }
 
                 Label {
                     id: recordText
                     Layout.preferredWidth: parent.basisWidth
-                    Layout.maximumWidth: parent.basisWidth
                     Layout.topMargin: 5
                     textFormat: Text.StyledText
                     wrapMode: Text.WrapAnywhere
@@ -81,13 +82,13 @@ ClickableFrame {
                 }
                 ImagePreview {
                     id: postImagePreview
-                    layoutWidth: recordText.width
+                    layoutWidth: parent.basisWidth
                     Layout.topMargin: 5
                 }
 
                 ClickableFrame {
                     id: childFrame
-                    Layout.fillWidth: true
+                    Layout.preferredWidth: parent.basisWidth
                     Layout.topMargin: 5
                     RowLayout {
                         id: childLayout
@@ -100,10 +101,11 @@ ClickableFrame {
                         }
                         ColumnLayout {
                             Layout.fillWidth: true
-                            property int basisWidth: recordText.width - childFrame.padding * 2 - childLayout.spacing - childAvatarImage.Layout.preferredWidth
+                            property int basisWidth: bodyLayout.basisWidth - childFrame.padding * 2 -
+                                                     childLayout.spacing - childAvatarImage.Layout.preferredWidth
                             Author {
                                 id: childAuthor
-                                Layout.maximumWidth: parent.basisWidth
+                                layoutWidth: parent.basisWidth
                             }
                             Label {
                                 id: childRecordText
@@ -121,7 +123,7 @@ ClickableFrame {
 
                 ClickableFrame {
                     id: externalLinkFrame
-                    Layout.preferredWidth: recordText.width
+                    Layout.preferredWidth: parent.basisWidth
                     Layout.topMargin: 5
                     visible: false
                     topInset: 0

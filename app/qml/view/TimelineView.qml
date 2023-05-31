@@ -58,7 +58,7 @@ ScrollView {
 //        }
 
         delegate: PostDelegate {
-            width: rootListView.width
+            Layout.preferredWidth: rootListView.width
 
             onClicked: (mouse) => requestViewThread(model.uri)
 

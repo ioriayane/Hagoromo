@@ -63,13 +63,14 @@ ScrollView {
 
         delegate: ClickableFrame {
             id: profileLayout
-            width: rootListView.width
             clip: true
             style: "Post"
             topPadding: 10
             leftPadding: 10
             rightPadding: 10
             bottomPadding: 0
+
+            property int layoutWidth: rootListView.width
 
             states: [
                 State {
@@ -115,7 +116,7 @@ ScrollView {
                 }
 
                 ColumnLayout {
-                    property int basisWidth: profileLayout.width - profileLayout.leftPadding - profileLayout.rightPadding -
+                    property int basisWidth: profileLayout.layoutWidth - profileLayout.leftPadding - profileLayout.rightPadding -
                                              postAvatarImage.width - parent.spacing
                     Label {
                         Layout.fillWidth: true

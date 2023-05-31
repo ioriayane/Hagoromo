@@ -98,7 +98,7 @@ Dialog {
                         source: replyAvatar
                     }
                     Author {
-                        Layout.preferredWidth: replyFrame.width - replyFrame.padding * 2 - replyAvatarImage.width - parent.spacing
+                        layoutWidth: replyFrame.width - replyFrame.padding * 2 - replyAvatarImage.width - parent.spacing
                         displayName: replyDisplayName
                         handle: replyHandle
                         indexedAt: replyIndexedAt
@@ -141,23 +141,18 @@ Dialog {
             }
         }
 
-        TextArea {
-            id: postText
+        ScrollView {
             Layout.preferredWidth: 400
             Layout.preferredHeight: 100
-            verticalAlignment: TextInput.AlignTop
-            enabled: !createRecord.running
-            wrapMode: TextInput.WordWrap
-            selectByMouse: true
-
-//            Keys.onPressed: (event) => {
-//                                if(event.key === Qt.Key_Enter &&
-//                                   event.modifiers & Qt.ControlModifier &&
-//                                   postButton.enabled){
-//                                    postButton.clicked()
-//                                }
-//                            }
+            TextArea {
+                id: postText
+                verticalAlignment: TextInput.AlignTop
+                enabled: !createRecord.running
+                wrapMode: TextInput.WordWrap
+                selectByMouse: true
+            }
         }
+
 
         RowLayout {
             visible: embedImagePreview.embedImages.length > 0
@@ -212,8 +207,7 @@ Dialog {
                         source: replyAvatar
                     }
                     Author {
-                        Layout.preferredWidth: quoteFrame.width - quoteFrame.padding * 2 - quoteAvatarImage.width - parent.spacing
-                        Layout.fillWidth: true
+                        layoutWidth: quoteFrame.width - quoteFrame.padding * 2 - quoteAvatarImage.width - parent.spacing
                         displayName: replyDisplayName
                         handle: replyHandle
                         indexedAt: replyIndexedAt

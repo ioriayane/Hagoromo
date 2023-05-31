@@ -17,6 +17,8 @@ ClickableFrame {
     bottomPadding: 10
     style: "Post"
 
+    property int layoutWidth: notificationFrame.Layout.preferredWidth
+
     property int reason: NotificationListModel.ReasonLike
     property string recordText: ""
 
@@ -129,8 +131,8 @@ ClickableFrame {
             Layout.fillWidth: true
             spacing: 0
 
-            property int basisWidth: notificationFrame.width - notificationFrame.leftPadding - notificationFrame.rightPadding -
-                                     postLayout.spacing - reasonImage.width - postAvatarImage.width
+            property int basisWidth: notificationFrame.layoutWidth - notificationFrame.leftPadding - notificationFrame.rightPadding -
+                                     postLayout.spacing - reasonImage.width
 
             RowLayout {
                 AvatarImage {
@@ -140,8 +142,7 @@ ClickableFrame {
                 }
                 Author {
                     id: postAuthor
-                    Layout.preferredWidth: bodyLayout.basisWidth
-                    Layout.maximumWidth: bodyLayout.basisWidth
+                    layoutWidth: bodyLayout.basisWidth - postAvatarImage.width
                 }
             }
 
@@ -160,9 +161,11 @@ ClickableFrame {
 
             ClickableFrame {
                 id: recordFrame
+                Layout.preferredWidth: parent.basisWidth
                 visible: false
-                property int basisWidth: bodyLayout.width - padding * 2 -
-                                         recordAvatarImage.width - recordAuthorLayout.spacing
+
+                property int basisWidth: parent.basisWidth - padding * 2
+
                 ColumnLayout {
                     RowLayout {
                         id: recordAuthorLayout
@@ -173,15 +176,12 @@ ClickableFrame {
                         }
                         Author {
                             id: recordAuthor
-                            Layout.preferredWidth: recordFrame.basisWidth
-                            Layout.maximumWidth: recordFrame.basisWidth
-                            //                            Layout.fillWidth: true
+                            layoutWidth: 200// recordFrame.basisWidth - recordAvatarImage.Layout.preferredWidth - recordAuthorLayout.spacing
                         }
                     }
                     Label {
                         id: recordText
                         Layout.preferredWidth: recordFrame.basisWidth
-                        Layout.maximumWidth: recordFrame.basisWidth
                         textFormat: Text.StyledText
                         wrapMode: Text.WrapAnywhere
                         font.pointSize: 10
@@ -190,7 +190,7 @@ ClickableFrame {
                     }
                     ImagePreview {
                         id: recordImagePreview
-                        layoutWidth: recordText.width
+                        layoutWidth: recordFrame.basisWidth
                         Layout.topMargin: 5
                     }
                 }

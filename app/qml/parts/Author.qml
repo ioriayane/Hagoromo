@@ -6,12 +6,13 @@ RowLayout {
     id: headerLayout
     clip: true
 
+    property int layoutWidth: 300
     property string displayName: ""
     property string handle: ""
     property string indexedAt: ""
 
     Label {
-        Layout.maximumWidth: headerLayout.width - handleText.width - indexAtText.width - headerLayout.spacing * 3
+        Layout.maximumWidth: layoutWidth - handleText.width - indexAtText.width - headerLayout.spacing * 3
         font.pointSize: 10
         elide: Text.ElideRight
         text: headerLayout.displayName

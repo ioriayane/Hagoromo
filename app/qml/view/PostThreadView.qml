@@ -85,7 +85,7 @@ ColumnLayout {
 //            }
 
             delegate: PostDelegate {
-                width: rootListView.width
+                Layout.preferredWidth: rootListView.width
 
                 //自分から自分へは移動しない
                 //onClicked: (mouse) => requestViewThread(model.uri)

@@ -56,7 +56,7 @@ ScrollView {
 //        }
 
         delegate: NotificationDelegate {
-            width: rootListView.width
+            Layout.preferredWidth: rootListView.width
 
             reason: model.reason
             postAvatarImage.source: model.avatar
