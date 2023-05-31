@@ -16,17 +16,28 @@ void copyUnknown(const QJsonObject &src, QVariant &dest)
     if (type == QStringLiteral("app.bsky.feed.post")) {
         AppBskyFeedPost::Main record;
         AppBskyFeedPost::copyMain(src, record);
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
         dest.setValue<AppBskyFeedPost::Main>(record);
-
+#else
+        dest.setValue(record);
+#endif
     } else if (type == QStringLiteral("app.bsky.feed.like")) {
         AppBskyFeedLike::Main record;
         AppBskyFeedLike::copyMain(src, record);
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
         dest.setValue<AppBskyFeedLike::Main>(record);
+#else
+        dest.setValue(record);
+#endif
 
     } else if (type == QStringLiteral("app.bsky.feed.repost")) {
         AppBskyFeedRepost::Main record;
         AppBskyFeedRepost::copyMain(src, record);
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
         dest.setValue<AppBskyFeedRepost::Main>(record);
+#else
+        dest.setValue(record);
+#endif
     }
 }
 
