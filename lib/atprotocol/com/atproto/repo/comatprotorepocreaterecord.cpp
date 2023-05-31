@@ -165,13 +165,17 @@ void ComAtprotoRepoCreateRecord::parseJson(const QString reply_json)
 {
 
     bool success = false;
+    m_replyUri.clear();
+    m_replyCid.clear();
 
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
     if (!json_doc.isEmpty()) {
-        qDebug() << "uri" << json_doc.object().value("uri").toString();
-        qDebug() << "cid" << json_doc.object().value("cid").toString();
-
         if (json_doc.object().contains("uri")) {
+            m_replyUri = json_doc.object().value("uri").toString();
+            m_replyCid = json_doc.object().value("cid").toString();
+            qDebug() << "uri" << m_replyUri;
+            qDebug() << "cid" << m_replyCid;
+
             success = true;
         } else {
             qDebug() << "Fail : ComAtprotoRepoCreateRecord";
@@ -180,6 +184,16 @@ void ComAtprotoRepoCreateRecord::parseJson(const QString reply_json)
     }
 
     emit finished(success);
+}
+
+QString ComAtprotoRepoCreateRecord::replyUri() const
+{
+    return m_replyUri;
+}
+
+QString ComAtprotoRepoCreateRecord::replyCid() const
+{
+    return m_replyCid;
 }
 
 }

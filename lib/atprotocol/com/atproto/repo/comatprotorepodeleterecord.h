@@ -13,6 +13,8 @@ public:
     void deleteRecord(const QString &repo, const QString &collection, const QString &rkey,
                       const QString &swapRecord, const QString &swapCommit);
 
+    void deleteLike(const QString &rkey);
+    void deleteRepost(const QString &rkey);
     void unfollow(const QString &rkey);
 
 private:

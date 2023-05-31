@@ -72,7 +72,7 @@ void RecordOperator::post()
     ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord();
     connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
         if (aliving) {
-            emit finished(success);
+            emit finished(success, QString(), QString());
             setRunning(false);
         }
         create_record->deleteLater();
@@ -115,7 +115,7 @@ void RecordOperator::postWithImages()
                     postWithImages();
                 }
             } else {
-                emit finished(success);
+                emit finished(success, QString(), QString());
                 setRunning(false);
             }
         }
@@ -136,7 +136,7 @@ void RecordOperator::repost(const QString &cid, const QString &uri)
     ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord();
     connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
         if (aliving) {
-            emit finished(success);
+            emit finished(success, create_record->replyUri(), create_record->replyCid());
             setRunning(false);
 
             // 成功なら、受け取ったデータでTLデータの更新をしないと値が大きくならない
@@ -158,7 +158,7 @@ void RecordOperator::like(const QString &cid, const QString &uri)
     ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord();
     connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
         if (aliving) {
-            emit finished(success);
+            emit finished(success, create_record->replyUri(), create_record->replyCid());
             setRunning(false);
 
             // 成功なら、受け取ったデータでTLデータの更新をしないと値が大きくならない
@@ -180,13 +180,57 @@ void RecordOperator::follow(const QString &did)
     ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord();
     connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
         if (aliving) {
-            emit finished(success);
+            emit finished(success, QString(), QString());
             setRunning(false);
         }
         create_record->deleteLater();
     });
     create_record->setAccount(m_account);
     create_record->follow(did);
+}
+
+void RecordOperator::deleteLike(const QString &uri)
+{
+    if (running() || !uri.startsWith("at://"))
+        return;
+    setRunning(true);
+
+    QString r_key = uri.split("/").last();
+
+    QPointer<RecordOperator> aliving(this);
+
+    ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord();
+    connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
+        if (aliving) {
+            emit finished(success, QString(), QString());
+            setRunning(false);
+        }
+        delete_record->deleteLater();
+    });
+    delete_record->setAccount(m_account);
+    delete_record->deleteLike(r_key);
+}
+
+void RecordOperator::deleteRepost(const QString &uri)
+{
+    if (running() || !uri.startsWith("at://"))
+        return;
+    setRunning(true);
+
+    QString r_key = uri.split("/").last();
+
+    QPointer<RecordOperator> aliving(this);
+
+    ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord();
+    connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
+        if (aliving) {
+            emit finished(success, QString(), QString());
+            setRunning(false);
+        }
+        delete_record->deleteLater();
+    });
+    delete_record->setAccount(m_account);
+    delete_record->deleteRepost(r_key);
 }
 
 void RecordOperator::deleteFollow(const QString &uri)
@@ -202,7 +246,7 @@ void RecordOperator::deleteFollow(const QString &uri)
     ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord();
     connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
         if (aliving) {
-            emit finished(success);
+            emit finished(success, QString(), QString());
             setRunning(false);
         }
         delete_record->deleteLater();

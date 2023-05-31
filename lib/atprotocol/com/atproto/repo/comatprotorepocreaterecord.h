@@ -22,6 +22,10 @@ public:
     void setQuote(const QString &cid, const QString &uri);
     void setImageBlobs(const QList<AtProtocolType::LexiconsTypeUnknown::Blob> &blobs);
 
+    QString replyCid() const;
+
+    QString replyUri() const;
+
 private:
     virtual void parseJson(const QString reply_json);
 
@@ -29,6 +33,9 @@ private:
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_replyRoot;
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_embedQuote;
     QList<AtProtocolType::LexiconsTypeUnknown::Blob> m_embedImageBlobs;
+
+    QString m_replyCid;
+    QString m_replyUri;
 };
 
 }
