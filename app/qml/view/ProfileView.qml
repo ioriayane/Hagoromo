@@ -318,10 +318,8 @@ ColumnLayout {
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                               profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
-            onRequestRepost: (cid, uri) => profileView.repost(cid, uri)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
                               profileView.requestQuote(cid, uri, avatar, display_name, handle, indexed_at, text)
-            onRequestLike: (cid, uri) => profileView.like(cid, uri)
 
             onRequestViewThread: (uri) => profileView.requestViewThread(uri)
             onRequestViewImages: (index, paths) => profileView.requestViewImages(index, paths)
@@ -343,10 +341,8 @@ ColumnLayout {
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                               profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
-            onRequestRepost: (cid, uri) => profileView.repost(cid, uri)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
                               profileView.requestQuote(cid, uri, avatar, display_name, handle, indexed_at, text)
-            onRequestLike: (cid, uri) => profileView.like(cid, uri)
 
             onRequestViewThread: (uri) => profileView.requestViewThread(uri)
             onRequestViewImages: (index, paths) => profileView.requestViewImages(index, paths)
@@ -368,10 +364,8 @@ ColumnLayout {
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                               profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
-            onRequestRepost: (cid, uri) => profileView.repost(cid, uri)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
                               profileView.requestQuote(cid, uri, avatar, display_name, handle, indexed_at, text)
-            onRequestLike: (cid, uri) => profileView.like(cid, uri)
 
             onRequestViewThread: (uri) => profileView.requestViewThread(uri)
             onRequestViewImages: (index, paths) => profileView.requestViewImages(index, paths)

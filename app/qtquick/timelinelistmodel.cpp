@@ -1,5 +1,6 @@
 #include "timelinelistmodel.h"
 #include "atprotocol/lexicons_func_unknown.h"
+#include "recordoperator.h"
 
 #include <QDebug>
 #include <QPointer>
@@ -62,6 +63,10 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return current.post.viewer.repost.contains(account().did);
     else if (role == IsLikedRole)
         return current.post.viewer.like.contains(account().did);
+    else if (role == RepostedUriRole)
+        return current.post.viewer.repost;
+    else if (role == LikedUriRole)
+        return current.post.viewer.like;
 
     else if (role == HasQuoteRecordRole) {
         if (current.post.embed_AppBskyEmbedRecord_View.isNull())
@@ -174,13 +179,31 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
 
 void TimelineListModel::update(int row, TimelineListModelRoles role, const QVariant &value)
 {
-    Q_UNUSED(role)
-    Q_UNUSED(value)
-
     if (row < 0 || row >= m_cidList.count())
         return;
 
     // 外から更新しない
+    // like/repostはユーザー操作を即時反映するため例外
+
+    AppBskyFeedDefs::FeedViewPost &current = m_viewPostHash[m_cidList.at(row)];
+
+    if (role == RepostedUriRole) {
+        qDebug() << "update REPOST" << value.toString();
+        current.post.viewer.repost = value.toString();
+        if (current.post.viewer.repost.isEmpty())
+            current.post.repostCount--;
+        else
+            current.post.repostCount++;
+        emit dataChanged(index(row), index(row));
+    } else if (role == LikedUriRole) {
+        qDebug() << "update LIKE" << value.toString();
+        current.post.viewer.like = value.toString();
+        if (current.post.viewer.like.isEmpty())
+            current.post.likeCount--;
+        else
+            current.post.likeCount++;
+        emit dataChanged(index(row), index(row));
+    }
 
     return;
 }
@@ -225,6 +248,72 @@ void TimelineListModel::getLatest()
     timeline->getTimeline();
 }
 
+void TimelineListModel::repost(int row)
+{
+    if (row < 0 || row >= m_cidList.count())
+        return;
+
+    bool current = item(row, IsRepostedRole).toBool();
+
+    if (running())
+        return;
+    setRunning(true);
+
+    QPointer<TimelineListModel> aliving(this);
+
+    RecordOperator *ope = new RecordOperator();
+    connect(ope, &RecordOperator::finished,
+            [=](bool success, const QString &uri, const QString &cid) {
+                Q_UNUSED(cid)
+                if (aliving) {
+                    if (success) {
+                        update(row, RepostedUriRole, uri);
+                    }
+                    setRunning(false);
+                }
+                ope->deleteLater();
+            });
+    ope->setAccount(account().service, account().did, account().handle, account().email,
+                    account().accessJwt, account().refreshJwt);
+    if (!current)
+        ope->repost(item(row, CidRole).toString(), item(row, UriRole).toString());
+    else
+        ope->deleteRepost(item(row, RepostedUriRole).toString());
+}
+
+void TimelineListModel::like(int row)
+{
+    if (row < 0 || row >= m_cidList.count())
+        return;
+
+    bool current = item(row, IsLikedRole).toBool();
+
+    if (running())
+        return;
+    setRunning(true);
+
+    QPointer<TimelineListModel> aliving(this);
+
+    RecordOperator *ope = new RecordOperator();
+    connect(ope, &RecordOperator::finished,
+            [=](bool success, const QString &uri, const QString &cid) {
+                Q_UNUSED(cid)
+                if (aliving) {
+                    if (success) {
+                        update(row, LikedUriRole, uri);
+                    }
+                    setRunning(false);
+                }
+                ope->deleteLater();
+            });
+    ope->setAccount(account().service, account().did, account().handle, account().email,
+                    account().accessJwt, account().refreshJwt);
+    if (!current)
+        ope->like(item(row, CidRole).toString(), item(row, UriRole).toString());
+    else
+        ope->deleteLike(item(row, LikedUriRole).toString());
+}
+
 QHash<int, QByteArray> TimelineListModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
@@ -246,6 +335,8 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
 
     roles[IsRepostedRole] = "isReposted";
     roles[IsLikedRole] = "isLiked";
+    roles[RepostedUriRole] = "repostedUri";
+    roles[LikedUriRole] = "likedUri";
 
     roles[HasQuoteRecordRole] = "hasQuoteRecord";
     roles[QuoteRecordCidRole] = "quoteRecordCid";
