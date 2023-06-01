@@ -7,7 +7,6 @@ import QtGraphicalEffects 1.15
 import tech.relog.hagoromo.timelinelistmodel 1.0
 import tech.relog.hagoromo.notificationlistmodel 1.0
 import tech.relog.hagoromo.columnlistmodel 1.0
-import tech.relog.hagoromo.recordoperator 1.0
 
 import "../controls"
 import "../parts"
@@ -45,15 +44,6 @@ ColumnLayout {
     signal requestMoveToRight(string key)
     signal requestRemove(string key)
     signal requestDisplayOfColumnSetting(string key)
-
-    RecordOperator {
-        id: recordOperator
-        onFinished: (success, uri, cid) => {
-                        console.log("ColumnView::RecordOperator::onFinished:" + success)
-                        console.log("  " + uri)
-                        console.log("  " + cid)
-                    }
-    }
 
     Component {
         id: timelineComponent
@@ -93,10 +83,8 @@ ColumnLayout {
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
-            onRequestRepost: (cid, uri) => recordOperator.repost(cid, uri)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
-            onRequestLike: (cid, uri) => recordOperator.like(cid, uri)
             onRequestViewThread: (uri) => {
                                      console.log("View Thread : " + uri)
                                      // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
@@ -115,10 +103,8 @@ ColumnLayout {
         PostThreadView {
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
-            onRequestRepost: (cid, uri) => recordOperator.repost(cid, uri)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
-            onRequestLike: (cid, uri) => recordOperator.like(cid, uri)
 
             onRequestViewThread: (uri) => {
                                      console.log("View Thread : " + uri)
@@ -144,10 +130,8 @@ ColumnLayout {
         ProfileView {
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
-            onRequestRepost: (cid, uri) => recordOperator.repost(cid, uri)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
-            onRequestLike: (cid, uri) => recordOperator.like(cid, uri)
 
             onRequestViewThread: (uri) => {
                                      console.log("View Thread : " + uri)
@@ -183,7 +167,6 @@ ColumnLayout {
             columnStackView.push(timelineComponent)
             componentTypeLabel.text = qsTr("Unknown")
         }
-        recordOperator.setAccount(service, did, handle, email, accessJwt, refreshJwt)
     }
 
     function reflect(){

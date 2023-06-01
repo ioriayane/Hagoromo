@@ -28,9 +28,7 @@ ColumnLayout {
     signal requestReply(string cid, string uri,
                           string reply_root_cid, string reply_root_uri,
                           string avatar, string display_name, string handle, string indexed_at, string text)
-    signal requestRepost(string cid, string uri)
     signal requestQuote(string cid, string uri, string avatar, string display_name, string handle, string indexed_at, string text)
-    signal requestLike(string cid, string uri)
     signal requestViewThread(string uri)
     signal requestViewImages(int index, string paths)
     signal requestViewProfile(string did)

@@ -69,11 +69,15 @@ public:
 
     Q_INVOKABLE QVariant item(int row,
                               NotificationListModel::NotificationListModelRoles role) const;
+    Q_INVOKABLE void update(int row, NotificationListModel::NotificationListModelRoles role,
+                            const QVariant &value);
 
     virtual Q_INVOKABLE int indexOf(const QString &cid) const;
     virtual Q_INVOKABLE QString getRecordText(const QString &cid);
 
     Q_INVOKABLE void getLatest();
+    Q_INVOKABLE void repost(int row);
+    Q_INVOKABLE void like(int row);
 
 signals:
 

@@ -2,6 +2,7 @@
 #include "atprotocol/app/bsky/notification/appbskynotificationlistnotifications.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "atprotocol/app/bsky/feed/appbskyfeedgetposts.h"
+#include "recordoperator.h"
 
 #include <QPointer>
 #include <QTimer>
@@ -201,6 +202,41 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
     return QVariant();
 }
 
+void NotificationListModel::update(int row, NotificationListModelRoles role, const QVariant &value)
+{
+    if (row < 0 || row >= m_cidList.count())
+        return;
+
+    // 外から更新しない
+    // like/repostはユーザー操作を即時反映するため例外
+
+    const auto &current = m_notificationHash.value(m_cidList.at(row));
+
+    if (role == RepostedUriRole) {
+        if (m_postHash.contains(current.cid)) {
+            qDebug() << "update REPOST" << value.toString();
+            m_postHash[current.cid].viewer.repost = value.toString();
+            if (m_postHash[current.cid].viewer.repost.isEmpty())
+                m_postHash[current.cid].repostCount--;
+            else
+                m_postHash[current.cid].repostCount++;
+            emit dataChanged(index(row), index(row));
+        }
+    } else if (role == LikedUriRole) {
+        if (m_postHash.contains(current.cid)) {
+            qDebug() << "update LIKE" << value.toString();
+            m_postHash[current.cid].viewer.like = value.toString();
+            if (m_postHash[current.cid].viewer.like.isEmpty())
+                m_postHash[current.cid].likeCount--;
+            else
+                m_postHash[current.cid].likeCount++;
+            emit dataChanged(index(row), index(row));
+        }
+    }
+
+    return;
+}
+
 int NotificationListModel::indexOf(const QString &cid) const
 {
     Q_UNUSED(cid)
@@ -303,6 +339,72 @@ void NotificationListModel::getLatest()
     });
     notification->setAccount(account());
     notification->listNotifications();
+}
+
+void NotificationListModel::repost(int row)
+{
+    if (row < 0 || row >= m_cidList.count())
+        return;
+
+    bool current = item(row, IsRepostedRole).toBool();
+
+    if (running())
+        return;
+    setRunning(true);
+
+    QPointer<NotificationListModel> aliving(this);
+
+    RecordOperator *ope = new RecordOperator();
+    connect(ope, &RecordOperator::finished,
+            [=](bool success, const QString &uri, const QString &cid) {
+                Q_UNUSED(cid)
+                if (aliving) {
+                    if (success) {
+                        update(row, RepostedUriRole, uri);
+                    }
+                    setRunning(false);
+                }
+                ope->deleteLater();
+            });
+    ope->setAccount(account().service, account().did, account().handle, account().email,
+                    account().accessJwt, account().refreshJwt);
+    if (!current)
+        ope->repost(item(row, CidRole).toString(), item(row, UriRole).toString());
+    else
+        ope->deleteRepost(item(row, RepostedUriRole).toString());
+}
+
+void NotificationListModel::like(int row)
+{
+    if (row < 0 || row >= m_cidList.count())
+        return;
+
+    bool current = item(row, IsLikedRole).toBool();
+
+    if (running())
+        return;
+    setRunning(true);
+
+    QPointer<NotificationListModel> aliving(this);
+
+    RecordOperator *ope = new RecordOperator();
+    connect(ope, &RecordOperator::finished,
+            [=](bool success, const QString &uri, const QString &cid) {
+                Q_UNUSED(cid)
+                if (aliving) {
+                    if (success) {
+                        update(row, LikedUriRole, uri);
+                    }
+                    setRunning(false);
+                }
+                ope->deleteLater();
+            });
+    ope->setAccount(account().service, account().did, account().handle, account().email,
+                    account().accessJwt, account().refreshJwt);
+    if (!current)
+        ope->like(item(row, CidRole).toString(), item(row, UriRole).toString());
+    else
+        ope->deleteLike(item(row, LikedUriRole).toString());
 }
 
 QHash<int, QByteArray> NotificationListModel::roleNames() const
