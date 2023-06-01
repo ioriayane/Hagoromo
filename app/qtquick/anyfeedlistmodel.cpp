@@ -57,7 +57,7 @@ void AnyFeedListModel::getLatest()
                         post.cid = cid;
                         post.indexed_at = indexed_at;
                         post.reference_time = reference_time;
-                        m_cuePost.append(post);
+                        m_cuePost.insert(0, post);
                     }
                 }
             }
