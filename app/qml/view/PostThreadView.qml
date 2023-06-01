@@ -137,10 +137,10 @@ ColumnLayout {
                 postControls.replyButton.onClicked: requestReply(model.cid, model.uri,
                                                                    model.replyRootCid, model.replyRootUri,
                                                                    model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
-                postControls.repostMenuItem.onTriggered: requestRepost(model.cid, model.uri)
+                postControls.repostMenuItem.onTriggered: rootListView.model.repost(model.index)
                 postControls.quoteMenuItem.onTriggered: requestQuote(model.cid, model.uri,
                                                                        model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
-                postControls.likeButton.onClicked: requestLike(model.cid, model.uri)
+                postControls.likeButton.onClicked: rootListView.model.like(model.index)
                 postControls.tranlateMenuItem.onTriggered: postThreadListModel.translate(model.cid)
                 postControls.isReposted: model.isReposted
                 postControls.isLiked: model.isLiked
