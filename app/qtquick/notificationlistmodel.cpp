@@ -46,7 +46,45 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
     else if (role == IndexedAtRole)
         return formatDateTime(current.indexedAt);
 
-    else if (role == ReasonRole) {
+    //----------------------------------------
+    else if (role == ReplyCountRole) {
+        if (m_postHash.contains(current.cid))
+            return m_postHash[current.cid].replyCount;
+        else
+            return 0;
+    } else if (role == RepostCountRole) {
+        if (m_postHash.contains(current.cid))
+            return m_postHash[current.cid].repostCount;
+        else
+            return 0;
+    } else if (role == LikeCountRole) {
+        if (m_postHash.contains(current.cid))
+            return m_postHash[current.cid].likeCount;
+        else
+            return 0;
+    } else if (role == IsRepostedRole) {
+        if (m_postHash.contains(current.cid))
+            return m_postHash[current.cid].viewer.repost.contains(account().did);
+        else
+            return QString();
+    } else if (role == IsLikedRole) {
+        if (m_postHash.contains(current.cid))
+            return m_postHash[current.cid].viewer.like.contains(account().did);
+        else
+            return QString();
+    } else if (role == RepostedUriRole) {
+        if (m_postHash.contains(current.cid))
+            return m_postHash[current.cid].viewer.repost;
+        else
+            return QString();
+    } else if (role == LikedUriRole) {
+        if (m_postHash.contains(current.cid))
+            return m_postHash[current.cid].viewer.like;
+        else
+            return QString();
+
+        //----------------------------------------
+    } else if (role == ReasonRole) {
         if (current.reason == "like") {
             return NotificationListModelReason::ReasonLike;
         } else if (current.reason == "repost") {
@@ -98,6 +136,8 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
                 break;
             }
         }
+
+        //----------------------------------------
         if (role == RecordCidRole) {
             if (m_postHash.contains(record_cid))
                 return m_postHash[record_cid].cid;
@@ -219,12 +259,21 @@ void NotificationListModel::getLatest()
                                         post.embed_AppBskyEmbedRecord_Main.record.uri)) {
                                 m_cueGetPost.append(post.embed_AppBskyEmbedRecord_Main.record.uri);
                             }
+                            // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
+                            if (!m_cueGetPost.contains(item->uri)) {
+                                m_cueGetPost.append(item->uri);
+                            }
                             break;
                         case AtProtocolType::AppBskyFeedPost::MainEmbedType::
                                 embed_AppBskyEmbedRecordWithMedia_Main:
                             break;
                         default:
                             break;
+                        }
+                    } else if (item->reason == "reply") {
+                        // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
+                        if (!m_cueGetPost.contains(item->uri)) {
+                            m_cueGetPost.append(item->uri);
                         }
                     }
                 }
@@ -267,7 +316,15 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[HandleRole] = "handle";
     roles[AvatarRole] = "avatar";
     roles[RecordTextRole] = "recordText";
+    roles[ReplyCountRole] = "replyCount";
+    roles[RepostCountRole] = "repostCount";
+    roles[LikeCountRole] = "likeCount";
     roles[IndexedAtRole] = "indexedAt";
+
+    roles[IsRepostedRole] = "isReposted";
+    roles[IsLikedRole] = "isLiked";
+    roles[RepostedUriRole] = "repostedUri";
+    roles[LikedUriRole] = "likedUri";
 
     roles[ReasonRole] = "reason";
 
@@ -323,6 +380,7 @@ void NotificationListModel::getPosts()
                     new_cid.append(post.cid);
                 }
 
+                //取得した個別のポストデータを表示用のcidリストのどの分か探して紐付ける
                 for (int i = 0; i < m_cidList.count(); i++) {
                     if (!m_notificationHash.contains(m_cidList.at(i)))
                         continue;
@@ -342,11 +400,11 @@ void NotificationListModel::getPosts()
                         emitRecordDataChanged<AtProtocolType::AppBskyFeedRepost::Main>(
                                 i, new_cid, m_notificationHash[m_cidList.at(i)].record);
                     } else if (m_notificationHash[m_cidList.at(i)].reason == "quote") {
-                        AtProtocolType::AppBskyFeedPost::Main post =
+                        AtProtocolType::AppBskyFeedPost::Main post_quote =
                                 AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                                         AtProtocolType::AppBskyFeedPost::Main>(
                                         m_notificationHash[m_cidList.at(i)].record);
-                        switch (post.embed_type) {
+                        switch (post_quote.embed_type) {
                         case AtProtocolType::AppBskyFeedPost::MainEmbedType::
                                 embed_AppBskyEmbedImages_Main:
                             break;
@@ -355,7 +413,9 @@ void NotificationListModel::getPosts()
                             break;
                         case AtProtocolType::AppBskyFeedPost::MainEmbedType::
                                 embed_AppBskyEmbedRecord_Main:
-                            if (new_cid.contains(post.embed_AppBskyEmbedRecord_Main.record.cid)) {
+                            if (new_cid.contains(
+                                        post_quote.embed_AppBskyEmbedRecord_Main.record.cid)
+                                || new_cid.contains(m_cidList.at(i))) {
                                 emit dataChanged(index(i), index(i));
                             }
                             break;
@@ -364,6 +424,10 @@ void NotificationListModel::getPosts()
                             break;
                         default:
                             break;
+                        }
+                    } else if (m_notificationHash[m_cidList.at(i)].reason == "reply") {
+                        if (new_cid.contains(m_cidList.at(i))) {
+                            emit dataChanged(index(i), index(i));
                         }
                     }
                 }
