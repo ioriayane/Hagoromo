@@ -373,10 +373,10 @@ void TimelineListModel::copyFrom(AppBskyFeedGetTimeline *timeline)
 {
     QDateTime reference_time;
     if (m_cidList.count() > 0 && m_viewPostHash.count() > 0) {
-        reference_time = QDateTime::fromString(m_viewPostHash[m_cidList.at(0)].post.indexedAt,
+        reference_time = QDateTime::fromString(getReferenceTime(m_viewPostHash[m_cidList.at(0)]),
                                                Qt::ISODateWithMs);
     } else if (timeline->feedList()->count() > 0) {
-        reference_time = QDateTime::fromString(timeline->feedList()->last().post.indexedAt,
+        reference_time = QDateTime::fromString(getReferenceTime(timeline->feedList()->last()),
                                                Qt::ISODateWithMs);
     } else {
         reference_time = QDateTime::currentDateTimeUtc();
@@ -387,9 +387,19 @@ void TimelineListModel::copyFrom(AppBskyFeedGetTimeline *timeline)
 
         PostCueItem post;
         post.cid = item->post.cid;
-        post.indexed_at = item->post.indexedAt;
+        post.indexed_at = getReferenceTime(*item);
         post.reference_time = reference_time;
         post.reason_type = item->reason_type;
         m_cuePost.append(post);
+    }
+}
+
+QString
+TimelineListModel::getReferenceTime(const AtProtocolType::AppBskyFeedDefs::FeedViewPost &view_post)
+{
+    if (view_post.reason_type == AppBskyFeedDefs::FeedViewPostReasonType::reason_ReasonRepost) {
+        return view_post.reason_ReasonRepost.indexedAt;
+    } else {
+        return view_post.post.indexedAt;
     }
 }

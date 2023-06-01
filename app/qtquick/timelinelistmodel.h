@@ -83,6 +83,7 @@ protected:
     QHash<int, QByteArray> roleNames() const;
     virtual void finishedDisplayingQueuedPosts();
     void copyFrom(AtProtocolInterface::AppBskyFeedGetTimeline *timeline);
+    QString getReferenceTime(const AtProtocolType::AppBskyFeedDefs::FeedViewPost &view_post);
 
     QHash<QString, AtProtocolType::AppBskyFeedDefs::FeedViewPost> m_viewPostHash;
 };
