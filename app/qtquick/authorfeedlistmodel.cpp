@@ -24,11 +24,8 @@ void AuthorFeedListModel::getLatest()
         if (aliving) {
             if (success) {
                 copyFrom(timeline);
-
-                if (!m_cuePost.isEmpty())
-                    QTimer::singleShot(100, this, &AuthorFeedListModel::displayQueuedPosts);
             }
-            setRunning(false);
+            QTimer::singleShot(100, this, &AuthorFeedListModel::displayQueuedPosts);
         }
         timeline->deleteLater();
     });

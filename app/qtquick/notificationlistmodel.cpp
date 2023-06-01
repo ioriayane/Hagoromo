@@ -229,10 +229,6 @@ void NotificationListModel::getLatest()
                     }
                 }
 
-                if (!m_cuePost.isEmpty()) {
-                    QTimer::singleShot(100, this, &NotificationListModel::displayQueuedPosts);
-                }
-
                 //
                 // m_cidList[cid] :
                 //   表示リスト（replyとquoteはそのPostのcidを入れる。それ以外は元Postのcidを表示リストに入れて集計表示する（予定））
@@ -252,7 +248,7 @@ void NotificationListModel::getLatest()
                 // likeとかの対象ポストの情報は入っていないので、それぞれ取得する必要あり
                 // 対象ポスト情報は別途cidをキーにして保存する（2重取得と管理を避ける）
             }
-            setRunning(false);
+            QTimer::singleShot(100, this, &NotificationListModel::displayQueuedPosts);
         }
         notification->deleteLater();
     });
@@ -292,15 +288,15 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
 
 void NotificationListModel::finishedDisplayingQueuedPosts()
 {
-    if (!m_cueGetPost.isEmpty()) {
-        QTimer::singleShot(100, this, &NotificationListModel::getPosts);
-    }
+    QTimer::singleShot(100, this, &NotificationListModel::getPosts);
 }
 
 void NotificationListModel::getPosts()
 {
-    if (m_cueGetPost.isEmpty())
+    if (m_cueGetPost.isEmpty()) {
+        setRunning(false);
         return;
+    }
 
     // getPostsは最大25個までいっきに取得できる
     QStringList uris;
@@ -371,12 +367,9 @@ void NotificationListModel::getPosts()
                         }
                     }
                 }
-
-                // 残ってたらもう1回
-                if (!m_cueGetPost.isEmpty()) {
-                    QTimer::singleShot(100, this, &NotificationListModel::getPosts);
-                }
             }
+            // 残ってたらもう1回
+            QTimer::singleShot(100, this, &NotificationListModel::getPosts);
         }
         posts->deleteLater();
     });

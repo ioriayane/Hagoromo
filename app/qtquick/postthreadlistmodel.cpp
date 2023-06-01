@@ -181,11 +181,8 @@ void PostThreadListModel::getLatest()
         if (aliving) {
             if (success) {
                 copyFrom(thread->threadViewPost());
-
-                if (!m_cuePost.isEmpty())
-                    QTimer::singleShot(100, this, &PostThreadListModel::displayQueuedPosts);
             }
-            setRunning(false);
+            QTimer::singleShot(100, this, &PostThreadListModel::displayQueuedPosts);
         }
         thread->deleteLater();
     });
@@ -242,6 +239,11 @@ QHash<int, QByteArray> PostThreadListModel::roleNames() const
     roles[RepostedByHandleRole] = "repostedByHandle";
 
     return roles;
+}
+
+void PostThreadListModel::finishedDisplayingQueuedPosts()
+{
+    setRunning(false);
 }
 
 void PostThreadListModel::copyFrom(const AppBskyFeedDefs::ThreadViewPost *thread_view_post)

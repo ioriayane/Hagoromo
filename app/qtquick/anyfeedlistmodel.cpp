@@ -60,12 +60,8 @@ void AnyFeedListModel::getLatest()
                         m_cuePost.append(post);
                     }
                 }
-
-                if (!m_cuePost.isEmpty()) {
-                    QTimer::singleShot(100, this, &AnyFeedListModel::displayQueuedPosts);
-                }
             }
-            setRunning(false);
+            QTimer::singleShot(100, this, &AnyFeedListModel::displayQueuedPosts);
         }
         records->deleteLater();
     });
@@ -112,15 +108,15 @@ void AnyFeedListModel::setFeedType(AnyFeedListModelFeedType newFeedType)
 
 void AnyFeedListModel::finishedDisplayingQueuedPosts()
 {
-    if (!m_cueGetPost.isEmpty()) {
-        QTimer::singleShot(0, this, &AnyFeedListModel::getPosts);
-    }
+    QTimer::singleShot(0, this, &AnyFeedListModel::getPosts);
 }
 
 void AnyFeedListModel::getPosts()
 {
-    if (m_cueGetPost.isEmpty())
+    if (m_cueGetPost.isEmpty()) {
+        setRunning(false);
         return;
+    }
 
     // getPostsは最大25個までいっきに取得できる
     QStringList uris;
@@ -152,11 +148,9 @@ void AnyFeedListModel::getPosts()
                         }
                     }
                 }
-                // 残ってたらもう1回
-                if (!m_cueGetPost.isEmpty()) {
-                    QTimer::singleShot(100, this, &AnyFeedListModel::getPosts);
-                }
             }
+            // 残ってたらもう1回
+            QTimer::singleShot(100, this, &AnyFeedListModel::getPosts);
         }
         posts->deleteLater();
     });

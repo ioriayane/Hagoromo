@@ -82,7 +82,7 @@ signals:
 
 protected:
     QHash<int, QByteArray> roleNames() const;
-    virtual void finishedDisplayingQueuedPosts() {};
+    virtual void finishedDisplayingQueuedPosts();
 
 private:
     //    QList<QString> m_cidList; //

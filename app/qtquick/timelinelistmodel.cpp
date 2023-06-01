@@ -236,11 +236,8 @@ void TimelineListModel::getLatest()
         if (aliving) {
             if (success) {
                 copyFrom(timeline);
-
-                if (!m_cuePost.isEmpty())
-                    QTimer::singleShot(100, this, &TimelineListModel::displayQueuedPosts);
             }
-            setRunning(false);
+            QTimer::singleShot(100, this, &TimelineListModel::displayQueuedPosts);
         }
         timeline->deleteLater();
     });
@@ -365,6 +362,11 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[RepostedByHandleRole] = "repostedByHandle";
 
     return roles;
+}
+
+void TimelineListModel::finishedDisplayingQueuedPosts()
+{
+    setRunning(false);
 }
 
 void TimelineListModel::copyFrom(AppBskyFeedGetTimeline *timeline)
