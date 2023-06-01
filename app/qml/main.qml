@@ -22,8 +22,8 @@ ApplicationWindow {
     Material.accent: settingDialog.settings.accent
 
     Settings {
-        property alias x: appWindow.x
-        property alias y: appWindow.y
+//        property alias x: appWindow.x
+//        property alias y: appWindow.y
         property alias width: appWindow.width
         property alias height: appWindow.height
     }
