@@ -1,0 +1,45 @@
+#ifndef COMMON_H
+#define COMMON_H
+
+#include <QString>
+#include <QStandardPaths>
+#include <QCoreApplication>
+#include <QDir>
+#include <QJsonDocument>
+
+namespace Common {
+
+inline QString appDataFolder()
+{
+    return QString("%1/%2/%3")
+            .arg(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation))
+            .arg(QCoreApplication::organizationName())
+            .arg(QCoreApplication::applicationName());
+}
+
+inline void saveJsonDocument(const QJsonDocument &doc, const QString &file_name)
+{
+    QString folder = Common::appDataFolder();
+    QDir dir(folder);
+    dir.mkpath(folder);
+    QFile file(QString("%1/%2").arg(folder, file_name));
+    if (file.open(QFile::WriteOnly)) {
+        file.write(doc.toJson());
+        file.close();
+    }
+}
+
+inline QJsonDocument loadJsonDocument(const QString &file_name)
+{
+    QByteArray byte_array;
+    QString folder = Common::appDataFolder();
+    QFile file(QString("%1/%2").arg(folder, file_name));
+    if (file.open(QFile::ReadOnly)) {
+        byte_array = file.readAll();
+        file.close();
+    }
+    return QJsonDocument::fromJson(byte_array);
+}
+
+}
+#endif // COMMON_H

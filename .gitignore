@@ -52,3 +52,8 @@ compile_commands.json
 *creator.user*
 
 *_qmlcache.qrc
+
+
+scripts/out/*
+.vscode/settings.json
+encryption_seed.h
