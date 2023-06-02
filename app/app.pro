@@ -133,5 +133,6 @@ win32:{
 }
 unix: {
     open_ssl_dir=$${open_ssl_dir}/src
+    INCLUDEPATH += $${open_ssl_dir}/include
     LIBS += -L$${open_ssl_dir} -lssl -lcrypto
 }
