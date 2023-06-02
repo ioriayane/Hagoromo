@@ -74,7 +74,6 @@ Dialog {
     RecordOperator {
         id: createRecord
         onFinished: (success) => {
-                        console.log("RecordOperator::onFinished " + success)
                         if(success){
                             postText.clear()
                             postDialog.close()

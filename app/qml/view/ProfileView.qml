@@ -97,10 +97,7 @@ ColumnLayout {
 
     RecordOperator {
         id: recordOperator
-        onFinished: (success) => {
-                        console.log("ProfileView::RecordOperator::onFinished:" + success)
-                        userProfile.getProfile(userDid)
-                    }
+        onFinished: (success) => userProfile.getProfile(userDid)
     }
 
     UserProfile {

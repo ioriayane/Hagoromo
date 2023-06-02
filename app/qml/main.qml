@@ -18,6 +18,12 @@ ApplicationWindow {
     visible: true
     title: qsTr("Hagoromo")
 
+    LoggingCategory {
+        id: logMain
+        name: "tech.relog.hagoromo.Main"
+        defaultLogLevel: LoggingCategory.Warning
+    }
+
     Material.theme: settingDialog.settings.theme
     Material.accent: settingDialog.settings.accent
 
@@ -48,7 +54,7 @@ ApplicationWindow {
         id: addColumnDialog
         accountModel: accountListModel
         onAccepted: {
-            console.log("selectedAccountIndex=" + selectedAccountIndex + ", selectedTypeIndex=" + selectedTypeIndex)
+            console.log(logMain, "selectedAccountIndex=" + selectedAccountIndex + ", selectedTypeIndex=" + selectedTypeIndex)
             var component_type = 0
             if(selectedTypeIndex == 0){
                 component_type = 0
@@ -73,7 +79,7 @@ ApplicationWindow {
         function openWithKey(key) {
             columnKey = key
             var i = columnManageModel.indexOf(columnKey)
-            console.log("open column setting dialog:" + i + ", " + columnKey)
+            console.log(logMain, "open column setting dialog:" + i + ", " + columnKey)
             if(i >= 0){
                 autoLoadingCheckbox.checked = columnManageModel.item(i, ColumnListModel.AutoLoadingRole)
                 autoLoadingIntervalCombo.setByValue(columnManageModel.item(i, ColumnListModel.LoadingIntervalRole))
@@ -101,17 +107,17 @@ ApplicationWindow {
     AccountListModel {
         id: accountListModel
         onAppendedAccount: (row) => {
-                               console.log("onAppendedAccount:" + row)
+                               console.log(logMain, "onAppendedAccount:" + row)
                            }
         onUpdatedAccount: (row, uuid) => {
-                              console.log("onUpdatedAccount:" + row + ", " + uuid)
+                              console.log(logMain, "onUpdatedAccount:" + row + ", " + uuid)
                               // カラムを更新しにいく
                               repeater.updateAccount(uuid)
                           }
 
         onAllFinished: {
             // すべてのアカウント情報の認証が終わったのでカラムを復元（成功しているとは限らない）
-            console.log("allFinished()" + accountListModel.rowCount())
+            console.log(logMain, "allFinished()" + accountListModel.rowCount())
             columnManageModel.sync()
         }
 
@@ -160,7 +166,7 @@ ApplicationWindow {
         function exchange(key, move_diff) {
             // move_diff : -1=left, 1=right
             var i = columnManageModel.indexOf(key)
-            console.log("exchange:" + key + ", " + i + ", " + move_diff)
+            console.log(logMain, "exchange:" + key + ", " + i + ", " + move_diff)
             var account_uuid = columnManageModel.item(i, ColumnListModel.AccountUuidRole)
             var component_type = columnManageModel.item(i, ColumnListModel.ComponentTypeRole)
             var auto_loading = columnManageModel.item(i, ColumnListModel.AutoLoadingRole)
@@ -180,7 +186,8 @@ ApplicationWindow {
         id: columnView
         ColumnView {
             onRequestReply: (account_uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) => {
-                                console.log(account_uuid + ",\n" +
+                                console.log(logMain,
+                                            account_uuid + ",\n" +
                                             cid + ", "+ uri + ",\n" +
                                             reply_root_cid + ", "+ reply_root_uri + ",\n" +
                                             avatar + ",\n" +
@@ -216,15 +223,15 @@ ApplicationWindow {
             onRequestViewImages: (index, paths) => imageFullView.open(index, paths)
 
             onRequestMoveToLeft: (key) => {
-                                     console.log("move to left:" + key)
+                                     console.log(logMain, "move to left:" + key)
                                      columnManageModel.exchange(key, -1)
                                  }
             onRequestMoveToRight: (key) => {
-                                      console.log("move to right:" + key)
+                                      console.log(logMain, "move to right:" + key)
                                       columnManageModel.exchange(key, 1)
                                   }
             onRequestRemove: (key) => {
-                                 console.log("remove column:" + key)
+                                 console.log(logMain, "remove column:" + key)
                                  columnManageModel.removeByKey(key)
                                  columnManageModel.sync()
                              }
@@ -321,7 +328,7 @@ ApplicationWindow {
                             if(item.account_uuid === account_uuid){
                                 var row = accountListModel.indexAt(item.account_uuid)
                                 if(row >= 0){
-                                    console.log("Update column : col=" + i + ", a_row=" + row)
+                                    console.log(logMain, "Update column : col=" + i + ", a_row=" + row)
                                     item.setAccount(row)
                                     item.item.reflect()
                                 }
@@ -341,12 +348,12 @@ ApplicationWindow {
                     function insert(index, key, account_uuid, component_type, auto_loading, loading_interval, column_width){
                         // accountListModelで管理するアカウントのindexと表示に使うコンポを指定
                         // ①ここでLoaderを追加する
-                        console.log("(1) insert:" + index + ", " + account_uuid + ", " + component_type)
+                        console.log(logMain, "(1) insert:" + index + ", " + account_uuid + ", " + component_type)
                         if(contains(key)){
                             // 既にある
                             var item = repeater.itemAt(index)   //ここのitemはloader自身
                             if(item.key === key){
-                                console.log("  update only:" + auto_loading + ", " + loading_interval + ", " + column_width)
+                                console.log(logMain, "  update only:" + auto_loading + ", " + loading_interval + ", " + column_width)
                                 item.auto_loading = auto_loading
                                 item.loading_interval = loading_interval
                                 item.Layout.preferredWidth = column_width
@@ -365,7 +372,7 @@ ApplicationWindow {
                     }
                     onItemAdded: (index, item) => {
                                      // ②Repeaterに追加されたLoaderにTLを表示するComponentを追加する
-                                     console.log("(2) onItemAdded:" + index + ":" + item)
+                                     console.log(logMain, "(2) onItemAdded:" + index + ":" + item)
                                      item.key = repeater.model.get(index).key
                                      item.account_uuid = repeater.model.get(index).account_uuid
                                      item.component_type = repeater.model.get(index).component_type
@@ -392,7 +399,7 @@ ApplicationWindow {
                         onLoaded: {
                             // ③Loaderで読み込んだComponentにアカウント情報など設定する
                             var row = accountListModel.indexAt(loader.account_uuid)
-                            console.log("(3) loader:" + row + ", " + loader.account_uuid)
+                            console.log(logMain, "(3) loader:" + row + ", " + loader.account_uuid)
                             if(row < 0)
                                 return
                             item.columnKey = loader.key

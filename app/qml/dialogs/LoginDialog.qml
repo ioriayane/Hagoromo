@@ -24,7 +24,6 @@ Dialog {
         password: passwordTextInput.text
 
         onFinished: (success) => {
-                      console.log("created:" + success)
                       if(success){
                           loginDialog.accept()
                       }else{

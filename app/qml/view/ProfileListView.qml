@@ -31,10 +31,7 @@ ScrollView {
 
         RecordOperator {
             id: recordOperator
-            onFinished: (success) => {
-                            console.log("ProfileListView::RecordOperator::onFinished:" + success)
-                            model.getLatest()
-                        }
+            onFinished: (success) => model.getLatest()
         }
 
         header: ItemDelegate {
