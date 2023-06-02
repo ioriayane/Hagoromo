@@ -109,10 +109,12 @@ QML_DESIGNER_IMPORT_PATH =
 
 include(../lib/lib.pri)
 
+bin_dir=$$dirname(QMAKE_QMAKE)
+open_ssl_dir=$${bin_dir}/../../../Tools/OpenSSL
+open_ssl_dir=$$clean_path($$open_ssl_dir)
+
 win32:{
-    bin_dir=$$dirname(QMAKE_QMAKE)
-    open_ssl_dir=$${bin_dir}/../../../Tools/OpenSSL/Win_x64
-    open_ssl_dir=$$clean_path($$open_ssl_dir)
+    open_ssl_dir=$${open_ssl_dir}/Win_x64
 
     LIBS += $${open_ssl_dir}/lib/libssl.lib \
             $${open_ssl_dir}/lib/libcrypto.lib
@@ -129,4 +131,7 @@ win32:{
     INSTALLS += depend_files
     QMAKE_POST_LINK += nmake -f $(MAKEFILE) install
 }
-unix: LIBS += -lssl -lcrypto
+unix: {
+    open_ssl_dir=$${open_ssl_dir}/src
+    LIBS += -L$${open_ssl_dir} -lssl -lcrypto
+}
