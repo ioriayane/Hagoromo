@@ -168,6 +168,16 @@ void AccountListModel::removeAccount(int row)
     save();
 }
 
+void AccountListModel::updateAccountProfile(const QString &service, const QString &identifier)
+{
+    for (int i = 0; i < m_accountList.count(); i++) {
+        if (m_accountList.at(i).service == service && m_accountList.at(i).identifier == identifier
+            && m_accountList.at(i).status == AccountStatus::Authorized) {
+            getProfile(i);
+        }
+    }
+}
+
 int AccountListModel::indexAt(const QString &uuid)
 {
     if (uuid.isEmpty())

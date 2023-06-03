@@ -24,6 +24,7 @@ Dialog {
                                        session.did, session.handle, session.email,
                                        session.accessJwt, session.refreshJwt,
                                        session.authorized)
+            accountModel.updateAccountProfile(session.service, session.identifier)
         }
     }
 
