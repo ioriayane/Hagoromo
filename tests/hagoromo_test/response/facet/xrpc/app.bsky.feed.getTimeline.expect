@@ -1,0 +1,14 @@
+[
+    {
+        "recordText": "link<br/><a href=\"https://leme.style/\">https://leme.style/</a>"
+    },
+    {
+        "recordText": "リンクありの引用"
+    },
+    {
+        "recordText": "リンクテスト<br/><a href=\"https://leme.style/\">https://leme.style/</a><br/>2つめ<br/><a href=\"https://blueskyweb.xyz/\">https://blueskyweb.xyz/</a><br/>終わり"
+    },
+    {
+        "recordText": "リンクテスト<br/><a href=\"https://leme.style/\">https://leme.style/</a><br/>もうひとつ<br/><a href=\"https://blueskyweb.xyz/\">https://blueskyweb.xyz/</a>"
+    }
+]

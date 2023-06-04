@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>response/facet/xrpc/app.bsky.feed.getTimeline</file>
+        <file>response/facet/xrpc/app.bsky.feed.getTimeline.expect</file>
+    </qresource>
+</RCC>

@@ -25,6 +25,8 @@ class AtpAbstractListModel : public QAbstractListModel
     Q_PROPERTY(bool autoLoading READ autoLoading WRITE setAutoLoading NOTIFY autoLoadingChanged)
     Q_PROPERTY(int loadingInterval READ loadingInterval WRITE setLoadingInterval NOTIFY
                        loadingIntervalChanged)
+    Q_PROPERTY(int displayInterval READ displayInterval WRITE setDisplayInterval NOTIFY
+                       displayIntervalChanged)
 
 public:
     explicit AtpAbstractListModel(QObject *parent = nullptr);
@@ -43,11 +45,14 @@ public:
     void setAutoLoading(bool newAutoLoading);
     int loadingInterval() const;
     void setLoadingInterval(int newLoadingInterval);
+    int displayInterval() const;
+    void setDisplayInterval(int newDisplayInterval);
 
 signals:
     void runningChanged();
     void autoLoadingChanged();
     void loadingIntervalChanged();
+    void displayIntervalChanged();
 
 public slots:
     virtual Q_INVOKABLE void getLatest() = 0;

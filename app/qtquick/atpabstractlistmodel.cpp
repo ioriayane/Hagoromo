@@ -156,6 +156,19 @@ void AtpAbstractListModel::displayQueuedPosts()
     }
 }
 
+int AtpAbstractListModel::displayInterval() const
+{
+    return m_displayInterval;
+}
+
+void AtpAbstractListModel::setDisplayInterval(int newDisplayInterval)
+{
+    if (m_displayInterval == newDisplayInterval)
+        return;
+    m_displayInterval = newDisplayInterval;
+    emit displayIntervalChanged();
+}
+
 bool AtpAbstractListModel::autoLoading() const
 {
     return m_timer.isActive();
