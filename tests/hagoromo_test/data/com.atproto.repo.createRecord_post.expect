@@ -38,9 +38,60 @@
             "collection": "app.bsky.feed.post",
             "record": {
                 "createdAt": "2023-06-05T15:15:45.457Z",
-                "text": "https://leme.style/"
+                "text": "https://leme.style/",
+                "facets": [
+                    {
+                        "index": {
+                            "byteEnd": 19,
+                            "byteStart": 0
+                        },
+                        "features": [
+                            {
+                                "uri": "https://leme.style/",
+                                "$type": "app.bsky.richtext.facet#link"
+                            }
+                        ]
+                    }
+                ]
             },
             "repo": "post_0010"
+        }
+    },
+    "post_0011": {
+        "text": "リンクテスト\nhttps://leme.style/\n2つめ\nhttps://blueskyweb.xyz/\n終わり",
+        "expect": {
+            "collection": "app.bsky.feed.post",
+            "record": {
+                "createdAt": "2023-06-05T15:15:45.457Z",
+                "text": "リンクテスト\nhttps://leme.style/\n2つめ\nhttps://blueskyweb.xyz/\n終わり",
+                "facets": [
+                    {
+                        "index": {
+                            "byteEnd": 38,
+                            "byteStart": 19
+                        },
+                        "features": [
+                            {
+                                "uri": "https://leme.style/",
+                                "$type": "app.bsky.richtext.facet#link"
+                            }
+                        ]
+                    },
+                    {
+                        "index": {
+                            "byteEnd": 70,
+                            "byteStart": 47
+                        },
+                        "features": [
+                            {
+                                "uri": "https://blueskyweb.xyz/",
+                                "$type": "app.bsky.richtext.facet#link"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "repo": "post_0011"
         }
     }
 }

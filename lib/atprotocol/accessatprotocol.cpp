@@ -107,7 +107,9 @@ void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query)
 void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
                             const bool with_auth_header)
 {
-    qDebug() << LOG_DATETIME << "AccessAtProtocol::post()" << this << endpoint << json;
+    qDebug() << LOG_DATETIME << "AccessAtProtocol::post()" << this;
+    qDebug().noquote() << "   " << endpoint;
+    qDebug().noquote() << "   " << json;
 
     QNetworkRequest request(QUrl(QString("%1/%2").arg(service(), endpoint)));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");

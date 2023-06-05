@@ -123,6 +123,11 @@ void hagoromo_test::test_RecordOperatorCreateRecord(const QByteArray &body)
 
         QVERIFY2(hash.contains(did), QString("Unknown test pattern: %1").arg(did).toLocal8Bit());
         verifyStr(hash[did].value("record").toObject().value("text").toString(), record);
+        if (!hash[did].value("record").toObject().value("facets").isNull()) {
+            QVERIFY2(json_doc.object().value("record").toObject().value("facets")
+                             == hash[did].value("record").toObject().value("facets"),
+                     did.toLocal8Bit());
+        }
     }
 }
 

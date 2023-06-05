@@ -29,6 +29,11 @@ public:
 private:
     virtual void parseJson(const QString reply_json);
 
+    template<typename F>
+    void makeFacets(const QString &text, F callback);
+
+    QRegularExpression m_rxUri;
+
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_replyParent;
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_replyRoot;
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_embedQuote;
