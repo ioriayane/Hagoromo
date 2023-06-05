@@ -1,0 +1,46 @@
+{
+    "post_0001": {
+        "text": "テスト\nデータ",
+        "expect": {
+            "collection": "app.bsky.feed.post",
+            "record": {
+                "createdAt": "2023-06-05T15:15:45.457Z",
+                "text": "テスト\nデータ"
+            },
+            "repo": "post_0001"
+        }
+    },
+    "post_0002": {
+        "text": "テスト\nデータ\n",
+        "expect": {
+            "collection": "app.bsky.feed.post",
+            "record": {
+                "createdAt": "2023-06-05T15:15:45.457Z",
+                "text": "テスト\nデータ\n"
+            },
+            "repo": "post_0002"
+        }
+    },
+    "post_0003": {
+        "text": "\nテスト\nデータ\n",
+        "expect": {
+            "collection": "app.bsky.feed.post",
+            "record": {
+                "createdAt": "2023-06-05T15:15:45.457Z",
+                "text": "\nテスト\nデータ\n"
+            },
+            "repo": "post_0003"
+        }
+    },
+    "post_0010": {
+        "text": "https://leme.style/",
+        "expect": {
+            "collection": "app.bsky.feed.post",
+            "record": {
+                "createdAt": "2023-06-05T15:15:45.457Z",
+                "text": "https://leme.style/"
+            },
+            "repo": "post_0010"
+        }
+    }
+}

@@ -27,6 +27,17 @@ atprotocol_test::atprotocol_test()
 {
     m_listenPort = m_mockServer.listen(QHostAddress::LocalHost, 52224);
     m_service = QString("http://localhost:%1/response").arg(m_listenPort);
+
+    connect(&m_mockServer, &WebServer::receivedPost,
+            [=](const QHttpServerRequest &request, bool &result, QString &json) {
+                QFile *file = new QFile(":" + request.url().path());
+                if (file->open(QFile::ReadOnly)) {
+                    json = file->readAll();
+                } else {
+                    json = "{}";
+                }
+                result = true;
+            });
 }
 
 atprotocol_test::~atprotocol_test() { }

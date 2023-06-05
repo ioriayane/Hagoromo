@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>response/facet/xrpc/app.bsky.feed.getTimeline</file>
         <file>response/facet/xrpc/app.bsky.feed.getTimeline.expect</file>
+        <file>data/com.atproto.repo.createRecord_post.expect</file>
     </qresource>
 </RCC>
