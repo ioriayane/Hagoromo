@@ -93,5 +93,30 @@
             },
             "repo": "post_0011"
         }
-    }
+    },
+    "post_0012": {
+        "text": "リンクhttps://translate.google.co.jp/?ui=tob&sl=ja&tl=en&text=%E3%81%AF%E3%82%8D%E3%83%BC%E3%82%8F%E3%83%BC%E3%82%8B%E3%81%A9&op=translateリンク",
+        "expect": {
+            "collection": "app.bsky.feed.post",
+            "record": {
+                "createdAt": "2023-06-04T15:15:45.457Z",
+                "text": "リンクhttps://translate.google.co.jp/?ui=tob&sl=ja&tl=en&text=%E3%81%AF%E3%82%8D%E3%83%BC%E3%82%8F%E3%83%BC%E3%82%8B%E3%81%A9&op=translateリンク",
+                "facets": [
+                    {
+                        "index": {
+                            "byteEnd": 141,
+                            "byteStart": 9
+                        },
+                        "features": [
+                            {
+                                "uri": "https://translate.google.co.jp/?ui=tob&sl=ja&tl=en&text=%E3%81%AF%E3%82%8D%E3%83%BC%E3%82%8F%E3%83%BC%E3%82%8B%E3%81%A9&op=translate",
+                                "$type": "app.bsky.richtext.facet#link"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "repo": "post_0012"
+        }
+   }
 }
