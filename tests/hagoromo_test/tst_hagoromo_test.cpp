@@ -39,7 +39,7 @@ hagoromo_test::hagoromo_test()
 
     connect(&m_mockServer, &WebServer::receivedPost,
             [=](const QHttpServerRequest &request, bool &result, QString &json) {
-                if (request.url().path() == "/response/post/xrpc/com.atproto.repo.createRecord") {
+                if (request.url().path() == "/response/facet/xrpc/com.atproto.repo.createRecord") {
                     test_RecordOperatorCreateRecord(request.body());
                     json = "{\"cid\":\"CID\",\"uri\":\"URI\"}";
                     result = true;
@@ -95,7 +95,7 @@ void hagoromo_test::test_RecordOperator()
     while (i.hasNext()) {
         i.next();
 
-        ope.setAccount(m_service + "/post", i.key(), "handle", "email", "accessJwt", "refreshJwt");
+        ope.setAccount(m_service + "/facet", i.key(), "handle", "email", "accessJwt", "refreshJwt");
         ope.setText(i.value());
 
         QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));

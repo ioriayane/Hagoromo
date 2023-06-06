@@ -118,5 +118,96 @@
             },
             "repo": "post_0012"
         }
-   }
+    },
+    "post_0020": {
+        "text": "@ioriayane.relog.tech mention! @ioriayane.bsky.social mention2!",
+        "expect": {
+            "collection": "app.bsky.feed.post",
+            "record": {
+                "createdAt": "2023-06-03T15:15:45.457Z",
+                "text": "@ioriayane.relog.tech mention! @ioriayane.bsky.social mention2!",
+                "facets": [
+                    {
+                        "$type": "app.bsky.richtext.facet",
+                        "index": {
+                            "byteEnd": 21,
+                            "byteStart": 0
+                        },
+                        "features": [
+                            {
+                                "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+                                "$type": "app.bsky.richtext.facet#mention"
+                            }
+                        ]
+                    },
+                    {
+                        "$type": "app.bsky.richtext.facet",
+                        "index": {
+                            "byteEnd": 53,
+                            "byteStart": 31
+                        },
+                        "features": [
+                            {
+                                "did": "did:plc:l4fsx4ujos7uw7n4ijq2ulgs",
+                                "$type": "app.bsky.richtext.facet#mention"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "repo": "post_0020"
+        }
+    },
+    "post_0021": {
+        "text": "@ioriayane.relog.tech @ioriayane.bsky.social @ioriayane.relog.tech test",
+        "expect": {
+            "collection": "app.bsky.feed.post",
+            "record": {
+                "createdAt": "2023-06-02T15:15:45.457Z",
+                "text": "@ioriayane.relog.tech @ioriayane.bsky.social @ioriayane.relog.tech test",
+                "facets": [
+                    {
+                        "$type": "app.bsky.richtext.facet",
+                        "index": {
+                            "byteEnd": 66,
+                            "byteStart": 45
+                        },
+                        "features": [
+                            {
+                                "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+                                "$type": "app.bsky.richtext.facet#mention"
+                            }
+                        ]
+                    },
+                    {
+                        "$type": "app.bsky.richtext.facet",
+                        "index": {
+                            "byteEnd": 21,
+                            "byteStart": 0
+                        },
+                        "features": [
+                            {
+                                "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+                                "$type": "app.bsky.richtext.facet#mention"
+                            }
+                        ]
+                    },
+                    {
+                        "$type": "app.bsky.richtext.facet",
+                        "index": {
+                            "byteEnd": 44,
+                            "byteStart": 22
+                        },
+                        "features": [
+                            {
+                                "did": "did:plc:l4fsx4ujos7uw7n4ijq2ulgs",
+                                "$type": "app.bsky.richtext.facet#mention"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "repo": "post_0021"
+        }
+    }
 }

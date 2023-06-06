@@ -27,6 +27,11 @@ AccessAtProtocol::AccessAtProtocol(QObject *parent) : QObject { parent }
     });
 }
 
+const AccountData &AccessAtProtocol::account() const
+{
+    return m_account;
+}
+
 void AccessAtProtocol::setAccount(const AccountData &account)
 {
     m_account.service = account.service;

@@ -1,17 +1,31 @@
 #include "comatprotorepocreaterecord.h"
+#include "atprotocol/app/bsky/actor/appbskyactorgetprofiles.h"
 
 #include <QDateTime>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QPointer>
+
+using AtProtocolInterface::AppBskyActorGetProfiles;
 
 namespace AtProtocolInterface {
+
+struct MentionPosition
+{
+    int start = -1;
+    int end = -1;
+};
 
 ComAtprotoRepoCreateRecord::ComAtprotoRepoCreateRecord(QObject *parent)
     : AccessAtProtocol { parent }
 {
     m_rxUri = QRegularExpression(
-            "http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+");
+            QString("(?:%1)|(?:%2)")
+                    .arg("http[s]?://"
+                         "(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+",
+                         "@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+(?:[a-zA-Z0-9](?:["
+                         "a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)"));
 }
 
 void ComAtprotoRepoCreateRecord::post(const QString &text)
@@ -198,7 +212,7 @@ void ComAtprotoRepoCreateRecord::parseJson(const QString reply_json)
 template<typename F>
 void ComAtprotoRepoCreateRecord::makeFacets(const QString &text, F callback)
 {
-
+    QMultiMap<QString, MentionPosition> mention;
     QJsonArray json_facets;
 
     QRegularExpressionMatch match = m_rxUri.match(text);
@@ -217,22 +231,77 @@ void ComAtprotoRepoCreateRecord::makeFacets(const QString &text, F callback)
             temp = match.captured();
             byte_end = byte_start + temp.toUtf8().length();
 
-            json_index.insert("byteStart", byte_start);
-            json_index.insert("byteEnd", byte_end);
-            json_facet.insert("index", json_index);
-            json_feature.insert("uri", temp);
-            json_feature.insert("$type", "app.bsky.richtext.facet#link");
-            json_features.append(json_feature);
-            json_facet.insert("features", json_features);
-            json_facets.append(json_facet);
+            if (temp.startsWith("@")) {
+                temp.remove("@");
+                MentionPosition position;
+                position.start = byte_start;
+                position.end = byte_end;
+                mention.insert(temp, position);
+            } else {
+                json_index.insert("byteStart", byte_start);
+                json_index.insert("byteEnd", byte_end);
+                json_facet.insert("index", json_index);
+                json_feature.insert("uri", temp);
+                json_feature.insert("$type", "app.bsky.richtext.facet#link");
+                json_features.append(json_feature);
+                json_facet.insert("features", json_features);
+                json_facets.append(json_facet);
+            }
 
             match = m_rxUri.match(text, pos + match.capturedLength());
         }
-    }
 
-    // mentionのときはハンドルからdidの問い合わせをしないといけないので、ラムダ式でコールバックする
-    // そのための仕組みだけ入れておく
-    callback(json_facets);
+        if (!mention.isEmpty()) {
+            QStringList ids;
+            QMapIterator<QString, MentionPosition> i(mention);
+            while (i.hasNext()) {
+                i.next();
+                if (!ids.contains(i.key())) {
+                    ids.append(i.key());
+                }
+            }
+
+            QPointer<ComAtprotoRepoCreateRecord> aliving(this);
+            AppBskyActorGetProfiles *profiles = new AppBskyActorGetProfiles();
+            connect(profiles, &AppBskyActorGetProfiles::finished, [=](bool success) {
+                if (success && aliving) {
+                    QJsonArray json_facets_temp = json_facets;
+                    for (const auto &item : qAsConst(*profiles->profileViewDetaileds())) {
+                        QString handle = item.handle;
+                        handle.remove("@");
+                        if (mention.contains(handle)) {
+                            const QList<MentionPosition> positions = mention.values(handle);
+                            for (const auto &position : positions) {
+                                QJsonObject json_facet;
+                                QJsonObject json_index;
+                                QJsonArray json_features;
+                                QJsonObject json_feature;
+                                json_index.insert("byteStart", position.start);
+                                json_index.insert("byteEnd", position.end);
+                                json_facet.insert("$type", "app.bsky.richtext.facet");
+                                json_facet.insert("index", json_index);
+                                json_feature.insert("did", item.did);
+                                json_feature.insert("$type", "app.bsky.richtext.facet#mention");
+                                json_features.append(json_feature);
+                                json_facet.insert("features", json_features);
+                                json_facets_temp.append(json_facet);
+                            }
+                        }
+                    }
+                    callback(json_facets_temp);
+                }
+                profiles->deleteLater();
+            });
+            profiles->setAccount(account());
+            profiles->getProfiles(ids);
+        } else {
+            // mentionがないときは直接戻る
+            callback(json_facets);
+        }
+    } else {
+        // uriもmentionがないときは直接戻る
+        callback(json_facets);
+    }
 }
 
 QString ComAtprotoRepoCreateRecord::replyUri() const

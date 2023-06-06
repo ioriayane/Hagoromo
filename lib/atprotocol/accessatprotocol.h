@@ -42,6 +42,7 @@ class AccessAtProtocol : public QObject
 public:
     explicit AccessAtProtocol(QObject *parent = nullptr);
 
+    const AccountData &account() const;
     void setAccount(const AccountData &account);
     void setSession(const QString &did, const QString &handle, const QString &email,
                     const QString &access_jwt, const QString &refresh_jwt);
