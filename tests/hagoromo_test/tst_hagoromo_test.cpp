@@ -95,6 +95,7 @@ void hagoromo_test::test_RecordOperator()
     while (i.hasNext()) {
         i.next();
 
+        ope.clear();
         ope.setAccount(m_service + "/facet", i.key(), "handle", "email", "accessJwt", "refreshJwt");
         ope.setText(i.value());
 

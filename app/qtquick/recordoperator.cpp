@@ -2,16 +2,32 @@
 #include "atprotocol/com/atproto/repo/comatprotorepocreaterecord.h"
 #include "atprotocol/com/atproto/repo/comatprotorepouploadblob.h"
 #include "atprotocol/com/atproto/repo/comatprotorepodeleterecord.h"
+#include "atprotocol/app/bsky/actor/appbskyactorgetprofiles.h"
 
 #include <QPointer>
 #include <QTimer>
 
+using AtProtocolInterface::AppBskyActorGetProfiles;
 using AtProtocolInterface::ComAtprotoRepoCreateRecord;
 using AtProtocolInterface::ComAtprotoRepoDeleteRecord;
 using AtProtocolInterface::ComAtprotoRepoUploadBlob;
 using namespace AtProtocolType;
 
-RecordOperator::RecordOperator(QObject *parent) : QObject { parent }, m_running(false) { }
+struct MentionData
+{
+    int start = -1;
+    int end = -1;
+};
+
+RecordOperator::RecordOperator(QObject *parent) : QObject { parent }, m_running(false)
+{
+    m_rxFacet = QRegularExpression(
+            QString("(?:%1)|(?:%2)")
+                    .arg("http[s]?://"
+                         "(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+",
+                         "@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+(?:[a-zA-Z0-9](?:["
+                         "a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)"));
+}
 
 void RecordOperator::setAccount(const QString &service, const QString &did, const QString &handle,
                                 const QString &email, const QString &accessJwt,
@@ -58,6 +74,7 @@ void RecordOperator::clear()
     m_embedQuote = AtProtocolType::ComAtprotoRepoStrongRef::Main();
     m_embedImages.clear();
     m_embedImageBlogs.clear();
+    m_facets.clear();
 }
 
 void RecordOperator::post()
@@ -67,21 +84,25 @@ void RecordOperator::post()
 
     setRunning(true);
 
-    QPointer<RecordOperator> aliving(this);
+    makeFacets(m_text, [=]() {
+        QPointer<RecordOperator> aliving(this);
 
-    ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord();
-    connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
-        if (aliving) {
-            emit finished(success, QString(), QString());
-            setRunning(false);
-        }
-        create_record->deleteLater();
+        ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord();
+        connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
+            if (aliving) {
+                emit finished(success, QString(), QString());
+                setRunning(false);
+            }
+            create_record->deleteLater();
+        });
+        create_record->setAccount(m_account);
+        create_record->setReply(m_replyParent.cid, m_replyParent.uri, m_replyRoot.cid,
+                                m_replyRoot.uri);
+        create_record->setQuote(m_embedQuote.cid, m_embedQuote.uri);
+        create_record->setImageBlobs(m_embedImageBlogs);
+        create_record->setFacets(m_facets);
+        create_record->post(m_text);
     });
-    create_record->setAccount(m_account);
-    create_record->setReply(m_replyParent.cid, m_replyParent.uri, m_replyRoot.cid, m_replyRoot.uri);
-    create_record->setQuote(m_embedQuote.cid, m_embedQuote.uri);
-    create_record->setImageBlobs(m_embedImageBlogs);
-    create_record->post(m_text);
 }
 
 void RecordOperator::postWithImages()
@@ -266,4 +287,88 @@ void RecordOperator::setRunning(bool newRunning)
         return;
     m_running = newRunning;
     emit runningChanged();
+}
+
+template<typename F>
+void RecordOperator::makeFacets(const QString &text, F callback)
+{
+    QMultiMap<QString, MentionData> mention;
+
+    QRegularExpressionMatch match = m_rxFacet.match(text);
+    if (!match.capturedTexts().isEmpty()) {
+        QString temp;
+        int pos;
+        int byte_start = 0;
+        int byte_end = 0;
+        while ((pos = match.capturedStart()) != -1) {
+            byte_start = text.left(pos).toUtf8().length();
+            temp = match.captured();
+            byte_end = byte_start + temp.toUtf8().length();
+
+            if (temp.startsWith("@")) {
+                temp.remove("@");
+                MentionData position;
+                position.start = byte_start;
+                position.end = byte_end;
+                mention.insert(temp, position);
+            } else {
+                AppBskyRichtextFacet::Main facet;
+                facet.index.byteStart = byte_start;
+                facet.index.byteEnd = byte_end;
+                AppBskyRichtextFacet::Link link;
+                link.uri = temp;
+                facet.features_type = AppBskyRichtextFacet::MainFeaturesType::features_Link;
+                facet.features_Link.append(link);
+                m_facets.append(facet);
+            }
+
+            match = m_rxFacet.match(text, pos + match.capturedLength());
+        }
+
+        if (!mention.isEmpty()) {
+            QStringList ids;
+            QMapIterator<QString, MentionData> i(mention);
+            while (i.hasNext()) {
+                i.next();
+                if (!ids.contains(i.key())) {
+                    ids.append(i.key());
+                }
+            }
+
+            QPointer<RecordOperator> aliving(this);
+            AppBskyActorGetProfiles *profiles = new AppBskyActorGetProfiles();
+            connect(profiles, &AppBskyActorGetProfiles::finished, [=](bool success) {
+                if (success && aliving) {
+                    for (const auto &item : qAsConst(*profiles->profileViewDetaileds())) {
+                        QString handle = item.handle;
+                        handle.remove("@");
+                        if (mention.contains(handle)) {
+                            const QList<MentionData> positions = mention.values(handle);
+                            for (const auto &position : positions) {
+                                AppBskyRichtextFacet::Main facet;
+                                facet.index.byteStart = position.start;
+                                facet.index.byteEnd = position.end;
+                                AppBskyRichtextFacet::Mention mention;
+                                mention.did = item.did;
+                                facet.features_type =
+                                        AppBskyRichtextFacet::MainFeaturesType::features_Mention;
+                                facet.features_Mention.append(mention);
+                                m_facets.append(facet);
+                            }
+                        }
+                    }
+                    callback();
+                }
+                profiles->deleteLater();
+            });
+            profiles->setAccount(m_account);
+            profiles->getProfiles(ids);
+        } else {
+            // mentionがないときは直接戻る
+            callback();
+        }
+    } else {
+        // uriもmentionがないときは直接戻る
+        callback();
+    }
 }

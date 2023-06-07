@@ -21,23 +21,19 @@ public:
                   const QString &root_uri);
     void setQuote(const QString &cid, const QString &uri);
     void setImageBlobs(const QList<AtProtocolType::LexiconsTypeUnknown::Blob> &blobs);
+    void setFacets(const QList<AtProtocolType::AppBskyRichtextFacet::Main> &newFacets);
 
     QString replyCid() const;
-
     QString replyUri() const;
 
 private:
     virtual void parseJson(const QString reply_json);
 
-    template<typename F>
-    void makeFacets(const QString &text, F callback);
-
-    QRegularExpression m_rxUri;
-
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_replyParent;
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_replyRoot;
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_embedQuote;
     QList<AtProtocolType::LexiconsTypeUnknown::Blob> m_embedImageBlobs;
+    QList<AtProtocolType::AppBskyRichtextFacet::Main> m_facets;
 
     QString m_replyCid;
     QString m_replyUri;

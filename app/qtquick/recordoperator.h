@@ -44,6 +44,10 @@ signals:
     void runningChanged();
 
 private:
+    template<typename F>
+    void makeFacets(const QString &text, F callback);
+
+    QRegularExpression m_rxFacet;
     AtProtocolInterface::AccountData m_account;
 
     QString m_text;
@@ -52,6 +56,8 @@ private:
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_embedQuote;
     QStringList m_embedImages;
     QList<AtProtocolType::LexiconsTypeUnknown::Blob> m_embedImageBlogs;
+    QList<AtProtocolType::AppBskyRichtextFacet::Main> m_facets;
+
     bool m_running;
 };
 
