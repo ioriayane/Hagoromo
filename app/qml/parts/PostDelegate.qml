@@ -32,6 +32,15 @@ ClickableFrame {
     property alias externalLinkDescriptionLabel: externalLinkDescriptionLabel
     property alias postControls: postControls
 
+    signal requestViewProfile(string did)
+
+    function openLink(url){
+        if(url.indexOf("did:") === 0){
+            requestViewProfile(url)
+        }else{
+            Qt.openUrlExternally(url)
+        }
+    }
 
     ColumnLayout {
         ReactionAuthor {
@@ -77,7 +86,7 @@ ClickableFrame {
                     wrapMode: Text.WrapAnywhere
                     font.pointSize: 10
                     lineHeight: 1.3
-                    onLinkActivated: (url) => Qt.openUrlExternally(url)
+                    onLinkActivated: (url) => openLink(url)
                 }
                 ImagePreview {
                     id: postImagePreview
@@ -114,7 +123,7 @@ ClickableFrame {
                                 wrapMode: Text.WrapAnywhere
                                 font.pointSize: 10
                                 lineHeight: 1.3
-                                onLinkActivated: (url) => Qt.openUrlExternally(url)
+                                onLinkActivated: (url) => openLink(url)
                             }
                         }
                     }

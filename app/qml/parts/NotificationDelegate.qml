@@ -34,6 +34,16 @@ ClickableFrame {
     property alias recordImagePreview: recordImagePreview
     property alias postControls: postControls
 
+    signal requestViewProfile(string did)
+
+    function openLink(url){
+        if(url.indexOf("did:") === 0){
+            requestViewProfile(url)
+        }else{
+            Qt.openUrlExternally(url)
+        }
+    }
+
     states: [
         State {
             when: notificationFrame.reason === NotificationListModel.ReasonLike

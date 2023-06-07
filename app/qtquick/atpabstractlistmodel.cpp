@@ -91,17 +91,32 @@ QString AtpAbstractListModel::copyRecordText(const QVariant &value) const
         int pos_start = 0;
         int pos_end = 0;
         int pos_prev_end = 0;
-        for (const auto &part : record.facets) {
+        QList<AppBskyRichtextFacet::Main> facets = record.facets;
+        for (int i = 0; i < facets.length() - 1; i++) {
+            for (int j = i + 1; j < facets.length(); j++) {
+                if (facets.at(i).index.byteStart > facets.at(j).index.byteStart) {
+                    facets.swapItemsAt(i, j);
+                }
+            }
+        }
+        for (const auto &part : facets) {
             pos_start = part.index.byteStart;
             pos_end = part.index.byteEnd;
+
             if (pos_start > pos_prev_end) {
                 text += QString(text_ba.mid(pos_prev_end, pos_start - pos_prev_end))
                                 .replace("\n", "<br/>");
             }
             if (!part.features_Link.isEmpty()) {
-                text += QString("<a href=\"%1\">%1</a>")
-                                .arg(QString::fromUtf8(
-                                        text_ba.mid(pos_start, pos_end - pos_start)));
+                text += QString("<a href=\"%1\">%2</a>")
+                                .arg(part.features_Link.first().uri,
+                                     QString::fromUtf8(
+                                             text_ba.mid(pos_start, pos_end - pos_start)));
+            } else if (!part.features_Mention.isEmpty()) {
+                text += QString("<a href=\"%1\">%2</a>")
+                                .arg(part.features_Mention.first().did,
+                                     QString::fromUtf8(
+                                             text_ba.mid(pos_start, pos_end - pos_start)));
             } else {
                 text += QString(text_ba.mid(pos_start, pos_end - pos_start)).replace("\n", "<br/>");
             }
@@ -110,6 +125,7 @@ QString AtpAbstractListModel::copyRecordText(const QVariant &value) const
         if (pos_prev_end < (text_ba.length() - 1)) {
             text += QString(text_ba.mid(pos_prev_end)).replace("\n", "<br/>");
         }
+
         return text;
     }
 }

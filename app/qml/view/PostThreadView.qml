@@ -87,6 +87,7 @@ ColumnLayout {
 
                 //自分から自分へは移動しない
                 //onClicked: (mouse) => requestViewThread(model.uri)
+                onRequestViewProfile: (did) => postThreadView.requestViewProfile(did)
 
                 repostReactionAuthor.visible: model.isRepostedBy
                 repostReactionAuthor.displayName: model.repostedByDisplayName

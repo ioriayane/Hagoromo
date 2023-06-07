@@ -9,6 +9,8 @@ import tech.relog.hagoromo.notificationlistmodel 1.0
 import "../parts"
 
 ScrollView {
+    id: notificationListView
+
     ScrollBar.vertical.policy: ScrollBar.AlwaysOn
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     clip: true
@@ -55,6 +57,8 @@ ScrollView {
 
         delegate: NotificationDelegate {
             Layout.preferredWidth: rootListView.width
+
+            onRequestViewProfile: (did) => notificationListView.requestViewProfile(did)
 
             reason: model.reason
             postAvatarImage.source: model.avatar

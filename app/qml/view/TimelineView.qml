@@ -59,6 +59,7 @@ ScrollView {
             Layout.preferredWidth: rootListView.width
 
             onClicked: (mouse) => requestViewThread(model.uri)
+            onRequestViewProfile: (did) => timelineView.requestViewProfile(did)
 
             repostReactionAuthor.visible: model.isRepostedBy
             repostReactionAuthor.displayName: model.repostedByDisplayName

@@ -73,6 +73,8 @@ private:
     QTimer m_timer;
     AtProtocolInterface::AccountData m_account;
 
+    QHash<QString, QString> m_recordTextCache;
+
     bool m_running;
     int m_loadingInterval;
 };
