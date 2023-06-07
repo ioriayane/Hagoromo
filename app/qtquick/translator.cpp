@@ -12,6 +12,11 @@
 
 Translator::Translator(QObject *parent) : QObject { parent }
 {
+    Encryption encryption;
+    QSettings settings;
+    setApiUrl(settings.value("translateApiUrl").toString());
+    setApiKey(encryption.decrypt(settings.value("translateApiKey").toString()));
+    setTargetLanguage(settings.value("translateTargetLanguage").toString());
 
     connect(&m_manager, &QNetworkAccessManager::finished, [=](QNetworkReply *reply) {
         qDebug() << "Translator reply" << reply->error() << reply->url();
@@ -38,12 +43,6 @@ Translator::Translator(QObject *parent) : QObject { parent }
 
 void Translator::translate(const QString &text)
 {
-    Encryption encryption;
-    QSettings settings;
-    setApiUrl(settings.value("translateApiUrl").toString());
-    setApiKey(encryption.decrypt(settings.value("translateApiKey").toString()));
-    setTargetLanguage(settings.value("translateTargetLanguage").toString());
-
     QNetworkRequest request((QUrl(apiUrl())));
     request.setRawHeader(QByteArray("Authorization"),
                          QByteArray("DeepL-Auth-Key ") + apiKey().toUtf8());
@@ -54,6 +53,11 @@ void Translator::translate(const QString &text)
     params.addQueryItem("target_lang", targetLanguage());
 
     m_manager.post(request, params.toString(QUrl::FullyEncoded).toUtf8());
+}
+
+bool Translator::validSettings()
+{
+    return !(apiKey().isEmpty() || apiUrl().isEmpty() || targetLanguage().isEmpty());
 }
 
 const QString Translator::apiUrl() const

@@ -2,7 +2,9 @@
 #include "atprotocol/lexicons_func_unknown.h"
 #include "translator.h"
 
+#include <QDesktopServices>
 #include <QPointer>
+#include <QUrlQuery>
 
 using namespace AtProtocolType;
 
@@ -47,18 +49,31 @@ void AtpAbstractListModel::translate(const QString &cid)
     QPointer<AtpAbstractListModel> aliving(this);
 
     Translator *translator = new Translator();
-    connect(translator, &Translator::finished, [=](const QString text) {
-        if (aliving) {
-            if (!text.isEmpty()) {
-                m_translations[cid] = text;
-                emit dataChanged(index(row), index(row));
-            }
+    if (!translator->validSettings()) {
+        // 設定画無いときはGoogle翻訳へ飛ばす
+        QUrl url("https://translate.google.com/");
+        QUrlQuery query;
+        query.addQueryItem("sl", "auto");
+        if (!translator->targetLanguage().isEmpty()) {
+            query.addQueryItem("tl", translator->targetLanguage().toLower());
         }
-        translator->deleteLater();
-    });
-    m_translations[cid] = "Now translating ...";
-    emit dataChanged(index(row), index(row));
-    translator->translate(record_text);
+        query.addQueryItem("text", record_text);
+        url.setQuery(query);
+        QDesktopServices::openUrl(url);
+    } else {
+        connect(translator, &Translator::finished, [=](const QString text) {
+            if (aliving) {
+                if (!text.isEmpty()) {
+                    m_translations[cid] = text;
+                    emit dataChanged(index(row), index(row));
+                }
+            }
+            translator->deleteLater();
+        });
+        m_translations[cid] = "Now translating ...";
+        emit dataChanged(index(row), index(row));
+        translator->translate(record_text);
+    }
 }
 
 bool AtpAbstractListModel::running() const
