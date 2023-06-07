@@ -68,6 +68,10 @@ ClickableFrame {
         State {
             when: notificationFrame.reason === NotificationListModel.ReasonMention
             PropertyChanges { target: reasonImage; source: "../images/reply.png" }
+            PropertyChanges { target: recordTextLabel; visible: true }
+            PropertyChanges { target: recordTextLabel; text: notificationFrame.recordText }
+            PropertyChanges { target: postControls; visible: true }
+            PropertyChanges { target: notificationFrame; bottomPadding: 2 }
         },
         State {
             when: notificationFrame.reason === NotificationListModel.ReasonReply
@@ -122,7 +126,7 @@ ClickableFrame {
                     },
                     State {
                         when: notificationFrame.reason === NotificationListModel.ReasonMention
-                        PropertyChanges { target: reasonImageEffect; color: Material.color(Material.BlueGrey) }
+                        PropertyChanges { target: reasonImageEffect; color: Material.color(Material.Blue) }
                     },
                     State {
                         when: notificationFrame.reason === NotificationListModel.ReasonReply
@@ -165,7 +169,7 @@ ClickableFrame {
                 wrapMode: Text.WrapAnywhere
                 font.pointSize: 10
                 lineHeight: 1.3
-                onLinkActivated: (url) => Qt.openUrlExternally(url)
+                onLinkActivated: (url) => openLink(url)
             }
 
             ClickableFrame {
@@ -195,7 +199,7 @@ ClickableFrame {
                         wrapMode: Text.WrapAnywhere
                         font.pointSize: 10
                         lineHeight: 1.3
-                        onLinkActivated: (url) => Qt.openUrlExternally(url)
+                        onLinkActivated: (url) => openLink(url)
                     }
                     ImagePreview {
                         id: recordImagePreview
