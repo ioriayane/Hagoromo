@@ -18,7 +18,7 @@ void SearchPosts::search(const QString &text)
     get(QStringLiteral("search/posts"), query, false);
 }
 
-QList<SearchType::ViewPost> *SearchPosts::viewPostList()
+const QList<SearchType::ViewPost> *SearchPosts::viewPostList() const
 {
     return &m_viewPostList;
 }

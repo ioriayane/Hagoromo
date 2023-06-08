@@ -19,8 +19,8 @@ void AppBskyActorGetProfiles::getProfiles(const QList<QString> &actors)
     get(QStringLiteral("xrpc/app.bsky.actor.getProfiles"), query);
 }
 
-QList<AtProtocolType::AppBskyActorDefs::ProfileViewDetailed> *
-AppBskyActorGetProfiles::profileViewDetaileds()
+const QList<AtProtocolType::AppBskyActorDefs::ProfileViewDetailed> *
+AppBskyActorGetProfiles::profileViewDetaileds() const
 {
     return &m_profileViewDetaileds;
 }

@@ -13,7 +13,8 @@ public:
 
     void getProfiles(const QList<QString> &actors);
 
-    QList<AtProtocolType::AppBskyActorDefs::ProfileViewDetailed> *profileViewDetaileds();
+    const QList<AtProtocolType::AppBskyActorDefs::ProfileViewDetailed> *
+    profileViewDetaileds() const;
 
 private:
     virtual void parseJson(const QString reply_json);

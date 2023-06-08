@@ -17,7 +17,8 @@ void AppBskyFeedGetPostThread::getPostThread(const QString &uri)
     get(QStringLiteral("xrpc/app.bsky.feed.getPostThread"), query);
 }
 
-AtProtocolType::AppBskyFeedDefs::ThreadViewPost *AppBskyFeedGetPostThread::threadViewPost()
+const AtProtocolType::AppBskyFeedDefs::ThreadViewPost *
+AppBskyFeedGetPostThread::threadViewPost() const
 {
     return &m_threadViewPost;
 }

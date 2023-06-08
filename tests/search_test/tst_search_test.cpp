@@ -21,6 +21,7 @@ private slots:
     void cleanupTestCase();
     void test_copyTest();
     void test_SearchPosts();
+    void test_SearchProfiles();
 
 private:
     WebServer m_mockServer;
@@ -88,6 +89,11 @@ void search_test::test_SearchPosts()
     for (const auto &view_post : *search.viewPostList()) {
         qDebug() << view_post.cid;
     }
+}
+
+void search_test::test_SearchProfiles()
+{
+    // https://search.bsky.social/search/profiles?q=epub
 }
 
 QTEST_MAIN(search_test)

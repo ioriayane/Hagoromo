@@ -14,7 +14,7 @@ public:
 
     void search(const QString &text);
 
-    QList<SearchType::ViewPost> *viewPostList();
+    const QList<SearchType::ViewPost> *viewPostList() const;
 
 private:
     virtual void parseJson(const QString reply_json);
