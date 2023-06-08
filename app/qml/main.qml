@@ -236,6 +236,7 @@ ApplicationWindow {
                                  columnManageModel.sync()
                              }
             onRequestDisplayOfColumnSetting: (key) => columnsettingDialog.openWithKey(key)
+            onHoveredLinkChanged: hoveredLinkFrame.text = hoveredLink
         }
     }
 
@@ -555,6 +556,29 @@ ApplicationWindow {
 //                    }
 //                }
             }
+        }
+    }
+
+    Frame {
+        // ハイパーリンクの内容を表示する
+        id: hoveredLinkFrame
+        x: scrollView.x
+        y: scrollView.height - scrollView.ScrollBar.horizontal.height - height
+        visible: hoveredLinkFrame.text.length > 0
+        leftInset: 5
+        rightInset: 5
+        topInset: 2
+        bottomInset: 2
+        background: Rectangle {
+            radius: 3
+            color: Material.color(Material.BlueGrey)
+        }
+        property string text: ""
+
+        Label {
+            color: "white"
+            font.pointSize: 10
+            text: hoveredLinkFrame.text
         }
     }
 

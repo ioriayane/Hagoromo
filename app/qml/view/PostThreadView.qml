@@ -11,6 +11,8 @@ import "../controls"
 ColumnLayout {
     id: postThreadView
 
+    property string hoveredLink: ""
+
     property alias postThreadUri: postThreadListModel.postThreadUri
     property alias listView: rootListView
     property alias model: postThreadListModel
@@ -125,6 +127,13 @@ ColumnLayout {
 
                 externalLinkFrame.visible: model.hasExternalLink
                 externalLinkFrame.onClicked: Qt.openUrlExternally(model.externalLinkUri)
+                externalLinkFrame.onHoveredChanged: {
+                    if(externalLinkFrame.hovered){
+                        timelineView.hoveredLink = model.externalLinkUri
+                    }else{
+                        timelineView.hoveredLink = ""
+                    }
+                }
                 externalLinkThumbImage.source: model.externalLinkThumb
                 externalLinkTitleLabel.text: model.externalLinkTitle
                 externalLinkUriLabel.text: model.externalLinkUri
@@ -143,6 +152,8 @@ ColumnLayout {
                 postControls.tranlateMenuItem.onTriggered: postThreadListModel.translate(model.cid)
                 postControls.isReposted: model.isReposted
                 postControls.isLiked: model.isLiked
+
+                onHoveredLinkChanged: postThreadView.hoveredLink = hoveredLink
             }
         }
     }

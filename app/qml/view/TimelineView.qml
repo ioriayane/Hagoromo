@@ -14,6 +14,8 @@ ScrollView {
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     clip: true
 
+    property string hoveredLink: ""
+
     property alias listView: rootListView
     property alias model: rootListView.model
 
@@ -97,6 +99,13 @@ ScrollView {
 
             externalLinkFrame.visible: model.hasExternalLink
             externalLinkFrame.onClicked: Qt.openUrlExternally(model.externalLinkUri)
+            externalLinkFrame.onHoveredChanged: {
+                if(externalLinkFrame.hovered){
+                    timelineView.hoveredLink = model.externalLinkUri
+                }else{
+                    timelineView.hoveredLink = ""
+                }
+            }
             externalLinkThumbImage.source: model.externalLinkThumb
             externalLinkTitleLabel.text: model.externalLinkTitle
             externalLinkUriLabel.text: model.externalLinkUri
@@ -115,6 +124,8 @@ ScrollView {
             postControls.tranlateMenuItem.onTriggered: rootListView.model.translate(model.cid)
             postControls.isReposted: model.isReposted
             postControls.isLiked: model.isLiked
+
+            onHoveredLinkChanged: timelineView.hoveredLink = hoveredLink
         }
     }
 }

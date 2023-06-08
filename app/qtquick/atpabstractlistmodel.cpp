@@ -122,16 +122,13 @@ QString AtpAbstractListModel::copyRecordText(const QVariant &value) const
                 text += QString(text_ba.mid(pos_prev_end, pos_start - pos_prev_end))
                                 .replace("\n", "<br/>");
             }
+            QString display_url = QString::fromUtf8(text_ba.mid(pos_start, pos_end - pos_start));
             if (!part.features_Link.isEmpty()) {
                 text += QString("<a href=\"%1\">%2</a>")
-                                .arg(part.features_Link.first().uri,
-                                     QString::fromUtf8(
-                                             text_ba.mid(pos_start, pos_end - pos_start)));
+                                .arg(part.features_Link.first().uri, display_url);
             } else if (!part.features_Mention.isEmpty()) {
                 text += QString("<a href=\"%1\">%2</a>")
-                                .arg(part.features_Mention.first().did,
-                                     QString::fromUtf8(
-                                             text_ba.mid(pos_start, pos_end - pos_start)));
+                                .arg(part.features_Mention.first().did, display_url);
             } else {
                 text += QString(text_ba.mid(pos_start, pos_end - pos_start)).replace("\n", "<br/>");
             }

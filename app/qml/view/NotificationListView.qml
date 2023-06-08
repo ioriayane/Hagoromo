@@ -15,6 +15,8 @@ ScrollView {
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     clip: true
 
+    property string hoveredLink: ""
+
     property alias listView: rootListView
     property alias model: rootListView.model
 
@@ -108,6 +110,7 @@ ScrollView {
                     requestViewThread(model.recordUri)
                 }
             }
+            onHoveredLinkChanged: notificationListView.hoveredLink = hoveredLink
         }
     }
 }

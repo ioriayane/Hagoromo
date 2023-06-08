@@ -28,6 +28,8 @@ ClickableFrame {
     property string recordIndexedAt: ""
     property string recordRecordText: ""
 
+    property string hoveredLink: ""
+
     property alias postAvatarImage: postAvatarImage
     property alias postAuthor: postAuthor
     property alias recordFrame: recordFrame
@@ -44,6 +46,13 @@ ClickableFrame {
         }
     }
 
+    function displayLink(url){
+        if(url === undefined || url.indexOf("did:") === 0){
+            hoveredLink = ""
+        }else{
+            hoveredLink = url
+        }
+    }
     states: [
         State {
             when: notificationFrame.reason === NotificationListModel.ReasonLike
@@ -170,6 +179,7 @@ ClickableFrame {
                 font.pointSize: 10
                 lineHeight: 1.3
                 onLinkActivated: (url) => openLink(url)
+                onHoveredLinkChanged: displayLink(hoveredLink)
             }
 
             ClickableFrame {
@@ -200,6 +210,7 @@ ClickableFrame {
                         font.pointSize: 10
                         lineHeight: 1.3
                         onLinkActivated: (url) => openLink(url)
+                        onHoveredLinkChanged: displayLink(hoveredLink)
                     }
                     ImagePreview {
                         id: recordImagePreview

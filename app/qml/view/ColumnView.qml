@@ -37,6 +37,8 @@ ColumnLayout {
 
     property var rootItem: undefined
 
+    property string hoveredLink: ""
+
     signal requestReply(string account_uuid,
                         string cid, string uri,
                         string reply_root_cid, string reply_root_uri,
@@ -75,6 +77,8 @@ ColumnLayout {
             onRequestViewProfile: (did) => {
                                       columnStackView.push(profileComponent, { "userDid": did })
                                   }
+
+            onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
         }
     }
     Component {
@@ -96,6 +100,8 @@ ColumnLayout {
                                  }
             onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+
+            onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
         }
     }
     Component {
@@ -113,6 +119,8 @@ ColumnLayout {
                                  }
             onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+
+            onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
 
             onBack: {
                 if(!columnStackView.empty){
@@ -136,8 +144,8 @@ ColumnLayout {
                                  }
 
             onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
-
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+            onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
 
             onBack: {
                 if(!columnStackView.empty){

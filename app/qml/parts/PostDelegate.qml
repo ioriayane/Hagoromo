@@ -14,6 +14,7 @@ ClickableFrame {
     style: "Post"
 
     property int layoutWidth: postFrame.Layout.preferredWidth
+    property string hoveredLink: ""
 
     property alias repostReactionAuthor: repostReactionAuthor
     property alias replyReactionAuthor: replyReactionAuthor
@@ -39,6 +40,14 @@ ClickableFrame {
             requestViewProfile(url)
         }else{
             Qt.openUrlExternally(url)
+        }
+    }
+
+    function displayLink(url){
+        if(url === undefined || url.indexOf("did:") === 0){
+            hoveredLink = ""
+        }else{
+            hoveredLink = url
         }
     }
 
@@ -87,7 +96,9 @@ ClickableFrame {
                     font.pointSize: 10
                     lineHeight: 1.3
                     onLinkActivated: (url) => openLink(url)
+                    onHoveredLinkChanged: displayLink(hoveredLink)
                 }
+
                 ImagePreview {
                     id: postImagePreview
                     layoutWidth: parent.basisWidth
@@ -124,6 +135,7 @@ ClickableFrame {
                                 font.pointSize: 10
                                 lineHeight: 1.3
                                 onLinkActivated: (url) => openLink(url)
+                                onHoveredLinkChanged: displayLink(hoveredLink)
                             }
                         }
                     }
@@ -142,6 +154,7 @@ ClickableFrame {
                     leftPadding: 0
                     rightPadding: 0
                     bottomPadding: 5
+                    hoverEnabled: true
                     ColumnLayout {
                         spacing: 3
                         ImageWithIndicator {

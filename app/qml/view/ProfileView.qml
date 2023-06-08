@@ -19,8 +19,9 @@ ColumnLayout {
     Layout.fillHeight: true
     spacing: 0
 
-    property alias model: relayObject
+    property string hoveredLink: ""
 
+    property alias model: relayObject
 
     property string userDid: ""     // 表示するアカウント
     property string accountDid: ""  // 認証しているアカウント
@@ -323,6 +324,7 @@ ColumnLayout {
                                             profileView.requestViewProfile(did)
                                         }
                                     }
+            onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
         }
 
         TimelineView {
@@ -346,6 +348,7 @@ ColumnLayout {
                                             profileView.requestViewProfile(did)
                                         }
                                     }
+            onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
         }
 
         TimelineView {
@@ -369,6 +372,7 @@ ColumnLayout {
                                             profileView.requestViewProfile(did)
                                         }
                                     }
+            onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
         }
 
         ProfileListView {
