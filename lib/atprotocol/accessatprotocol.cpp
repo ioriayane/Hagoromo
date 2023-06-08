@@ -91,9 +91,10 @@ QString AccessAtProtocol::refreshJwt() const
     return m_account.refreshJwt;
 }
 
-void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query)
+void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
+                           const bool with_auth_header)
 {
-    if (accessJwt().isEmpty()) {
+    if (accessJwt().isEmpty() && with_auth_header) {
         qDebug() << LOG_DATETIME << "AccessAtProtocol::get()"
                  << "Emty accessJwt!";
         return;
@@ -104,7 +105,10 @@ void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query)
     QUrl url = QString("%1/%2").arg(service(), endpoint);
     url.setQuery(query);
     QNetworkRequest request(url);
-    request.setRawHeader(QByteArray("Authorization"), QByteArray("Bearer ") + accessJwt().toUtf8());
+    if (with_auth_header) {
+        request.setRawHeader(QByteArray("Authorization"),
+                             QByteArray("Bearer ") + accessJwt().toUtf8());
+    }
 
     m_manager.get(request);
 }
