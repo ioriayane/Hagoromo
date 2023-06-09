@@ -7,6 +7,7 @@
 #include "search/search.h"
 #include "search/search_func.h"
 #include "search/searchposts.h"
+#include "searchpostlistmodel.h"
 
 class search_test : public QObject
 {
@@ -31,13 +32,16 @@ private:
 
 search_test::search_test()
 {
-    m_listenPort = m_mockServer.listen(QHostAddress::LocalHost, 52224);
+    m_listenPort = m_mockServer.listen(QHostAddress::LocalHost, 0);
     m_service = QString("http://localhost:%1/response").arg(m_listenPort);
 }
 
 search_test::~search_test() { }
 
-void search_test::initTestCase() { }
+void search_test::initTestCase()
+{
+    QVERIFY(m_listenPort != 0);
+}
 
 void search_test::cleanupTestCase() { }
 
@@ -94,6 +98,16 @@ void search_test::test_SearchPosts()
 void search_test::test_SearchProfiles()
 {
     // https://search.bsky.social/search/profiles?q=epub
+    SearchPostListModel model;
+    model.setAccount(m_service, QString(), QString(), QString(), "dummy", QString());
+    model.setText("epub");
+
+    QSignalSpy spy(&model, SIGNAL(runningChanged()));
+    model.getLatest();
+    spy.wait();
+    QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+    QVERIFY(model.rowCount() == 2);
 }
 
 QTEST_MAIN(search_test)

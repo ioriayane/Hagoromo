@@ -16,6 +16,7 @@ QML_FILES = \
     qml/dialogs/ColumnSettingDialog.qml \
     qml/dialogs/LoginDialog.qml \
     qml/dialogs/PostDialog.qml \
+    qml/dialogs/SearchDialog.qml \
     qml/dialogs/SettingDialog.qml \
     qml/parts/Author.qml \
     qml/parts/AvatarImage.qml \
@@ -56,6 +57,7 @@ IMAGE_FILES += \
     qml/images/quote.png \
     qml/images/reply.png \
     qml/images/repost.png \
+    qml/images/search.png \
     qml/images/settings.png
 
 

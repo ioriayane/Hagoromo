@@ -50,6 +50,21 @@ ApplicationWindow {
         accountModel: accountListModel
     }
 
+    SearchDialog {
+        id: searchDialog
+        accountModel: accountListModel
+        onAccepted: {
+            console.log(logMain, "selectedAccountIndex=" + selectedAccountIndex + ", searchType=" + searchType)
+            var component_type = 2
+            if(searchType == "profiles"){
+                component_type = 3
+            }
+            columnManageModel.append(accountListModel.item(selectedAccountIndex, AccountListModel.UuidRole),
+                                     component_type, false, 300000, 350, searchDialog.searchText)
+            columnManageModel.sync()
+        }
+    }
+
     AddColumnDialog {
         id: addColumnDialog
         accountModel: accountListModel
@@ -62,7 +77,7 @@ ApplicationWindow {
                 component_type = 1
             }
             columnManageModel.append(accountListModel.item(selectedAccountIndex, AccountListModel.UuidRole),
-                                     component_type, false, 300000, 400)
+                                     component_type, false, 300000, 400, "")
             columnManageModel.sync()
         }
     }
@@ -153,7 +168,8 @@ ApplicationWindow {
                                 columnManageModel.item(i, ColumnListModel.ComponentTypeRole),
                                 columnManageModel.item(i, ColumnListModel.AutoLoadingRole),
                                 columnManageModel.item(i, ColumnListModel.LoadingIntervalRole),
-                                columnManageModel.item(i, ColumnListModel.WidthRole)
+                                columnManageModel.item(i, ColumnListModel.WidthRole),
+                                columnManageModel.item(i, ColumnListModel.ValueRole)
                                 )
             }
             // カラムの管理情報から消えているLoaderを消す
@@ -172,12 +188,14 @@ ApplicationWindow {
             var auto_loading = columnManageModel.item(i, ColumnListModel.AutoLoadingRole)
             var loading_interval = columnManageModel.item(i, ColumnListModel.LoadingIntervalRole)
             var column_width = columnManageModel.item(i, ColumnListModel.WidthRole)
+            var column_value = columnManageModel.item(i, ColumnListModel.ValueRole)
             // 1度消す
             columnManageModel.remove(i)
             columnManageModel.sync()
             // 追加し直し
             columnManageModel.insert(i+move_diff, account_uuid, component_type,
-                                     auto_loading, loading_interval, column_width)
+                                     auto_loading, loading_interval, column_width,
+                                     column_value)
             columnManageModel.sync()
         }
     }
@@ -263,6 +281,14 @@ ApplicationWindow {
                     onClicked: postDialog.open()
                 }
 
+                IconButton {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 36
+                    display: AbstractButton.IconOnly
+                    iconSource: "images/search.png"
+                    onClicked: searchDialog.open()
+                }
+
                 Item {
                     Layout.preferredWidth: 1
                     Layout.fillHeight: true
@@ -346,7 +372,9 @@ ApplicationWindow {
                         return false
                     }
 
-                    function insert(index, key, account_uuid, component_type, auto_loading, loading_interval, column_width){
+                    function insert(index, key, account_uuid, component_type,
+                                    auto_loading, loading_interval, column_width,
+                                    column_value){
                         // accountListModelで管理するアカウントのindexと表示に使うコンポを指定
                         // ①ここでLoaderを追加する
                         console.log(logMain, "(1) insert:" + index + ", " + account_uuid + ", " + component_type)
@@ -358,6 +386,7 @@ ApplicationWindow {
                                 item.auto_loading = auto_loading
                                 item.loading_interval = loading_interval
                                 item.Layout.preferredWidth = column_width
+                                item.column_value = column_value
                                 item.setSettings()
                             }
                         }else{
@@ -367,7 +396,8 @@ ApplicationWindow {
                                                       "component_type": component_type,
                                                       "auto_loading": auto_loading,
                                                       "loading_interval": loading_interval,
-                                                      "column_width": column_width
+                                                      "column_width": column_width,
+                                                      "column_value": column_value
                                                   })
                         }
                     }
@@ -380,6 +410,7 @@ ApplicationWindow {
                                      item.auto_loading = repeater.model.get(index).auto_loading
                                      item.loading_interval = repeater.model.get(index).loading_interval
                                      item.column_width = repeater.model.get(index).column_width
+                                     item.column_value = repeater.model.get(index).column_value
                                      item.sourceComponent = columnView
                                  }
 
@@ -396,6 +427,7 @@ ApplicationWindow {
                         property bool auto_loading: false
                         property int loading_interval: 300000
                         property int column_width: 400
+                        property string column_value: ""
 
                         onLoaded: {
                             // ③Loaderで読み込んだComponentにアカウント情報など設定する
@@ -415,6 +447,7 @@ ApplicationWindow {
                         function setSettings() {
                             item.autoLoading = loader.auto_loading
                             item.loadingInterval = loader.loading_interval
+                            item.columnValue = loader.column_value
                         }
 
                         function setAccount(row) {
@@ -428,133 +461,6 @@ ApplicationWindow {
                         }
                     }
                 }
-
-                // debug
-//                ListView {
-//                    Layout.preferredHeight: scrollView.childHeight
-//                    Layout.minimumWidth: 100
-//                    Layout.preferredWidth: 400
-//                    Layout.maximumWidth: 500
-//                    clip: true
-//                    model: accountListModel
-//                    delegate: GridLayout {
-//                        columns: 2
-//                        Label {
-//                            text: "service:"
-//                        }
-//                        Label {
-//                            text: model.service
-//                        }
-//                        Label {
-//                            text: "identifier:"
-//                        }
-//                        Label {
-//                            text: model.identifier
-//                        }
-//                        Label {
-//                            text: "password:"
-//                        }
-//                        Label {
-//                            text: model.password
-//                        }
-//                        Label {
-//                            text: "did:"
-//                        }
-//                        Label {
-//                            text: model.did
-//                        }
-//                        Label {
-//                            text: "handle:"
-//                        }
-//                        Label {
-//                            text: model.handle
-//                        }
-//                        Label {
-//                            text: "email:"
-//                        }
-//                        Label {
-//                            text: model.email
-//                        }
-//                        Label {
-//                            text: "accessJwt:"
-//                        }
-//                        Label {
-//                            text: model.accessJwt
-//                        }
-//                        Label {
-//                            text: "refreshJwt:"
-//                        }
-//                        Label {
-//                            text: model.refreshJwt
-//                        }
-//                        Label {
-//                            text: "status:"
-//                        }
-//                        Label {
-//                            text: model.status
-//                        }
-//                        Label {
-//                            text: "-"
-//                        }
-//                        Label {
-//                            text: "-"
-//                        }
-
-//                    }
-//                }
-//                ListView {
-//                    Layout.preferredHeight: scrollView.childHeight
-//                    Layout.minimumWidth: 100
-//                    Layout.preferredWidth: 200
-//                    Layout.maximumWidth: 300
-//                    clip: true
-//                    model: columnManageModel
-//                    delegate: GridLayout {
-//                        columns: 2
-//                        Label {
-//                            text: "key"
-//                        }
-//                        Label {
-//                            text: model.key
-//                        }
-//                        Label {
-//                            text: "account_uuid"
-//                        }
-//                        Label {
-//                            text: model.accountUuid
-//                        }
-//                        Label {
-//                            text: "component_type"
-//                        }
-//                        Label {
-//                            text: model.componentType
-//                        }
-//                        Label {
-//                            text: "autoLoading"
-//                        }
-//                        Label {
-//                            text: model.autoLoading
-//                        }
-//                        Label {
-//                            text: "interval"
-//                        }
-//                        Label {
-//                            text: model.loadingInterval
-//                        }
-//                        Label {
-//                            text: "width"
-//                        }
-//                        Label {
-//                            text: model.width
-//                        }
-//                        Label {
-//                            text: "-"
-//                        }
-//                        Label {
-//                            text: "-"
-//                        }
-//                    }
-//                }
             }
         }
     }

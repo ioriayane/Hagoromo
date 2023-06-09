@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>response/search/posts</file>
+        <file>response/xrpc/app.bsky.feed.getPosts</file>
     </qresource>
 </RCC>

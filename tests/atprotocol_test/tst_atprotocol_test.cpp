@@ -25,7 +25,7 @@ private:
 
 atprotocol_test::atprotocol_test()
 {
-    m_listenPort = m_mockServer.listen(QHostAddress::LocalHost, 52224);
+    m_listenPort = m_mockServer.listen(QHostAddress::LocalHost, 0);
     m_service = QString("http://localhost:%1/response").arg(m_listenPort);
 
     connect(&m_mockServer, &WebServer::receivedPost,

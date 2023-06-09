@@ -14,6 +14,7 @@ SOURCES += \
     $$PWD/notificationlistmodel.cpp \
     $$PWD/postthreadlistmodel.cpp \
     $$PWD/recordoperator.cpp \
+    $$PWD/searchpostlistmodel.cpp \
     $$PWD/timelinelistmodel.cpp \
     $$PWD/translator.cpp \
     $$PWD/userprofile.cpp
@@ -33,6 +34,7 @@ HEADERS += \
     $$PWD/notificationlistmodel.h \
     $$PWD/postthreadlistmodel.h \
     $$PWD/recordoperator.h \
+    $$PWD/searchpostlistmodel.h \
     $$PWD/thumbnailprovider.h \
     $$PWD/timelinelistmodel.h \
     $$PWD/translator.h \

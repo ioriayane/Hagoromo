@@ -7,6 +7,7 @@ import QtGraphicalEffects 1.15
 import tech.relog.hagoromo.timelinelistmodel 1.0
 import tech.relog.hagoromo.notificationlistmodel 1.0
 import tech.relog.hagoromo.columnlistmodel 1.0
+import tech.relog.hagoromo.searchpostlistmodel 1.0
 
 import "../controls"
 import "../parts"
@@ -25,6 +26,7 @@ ColumnLayout {
     property int componentType: 0
     property bool autoLoading: false
     property int loadingInterval: 300000
+    property string columnValue: ""
 
     property string accountUuid: ""
     property string service: ""
@@ -154,6 +156,35 @@ ColumnLayout {
             }
         }
     }
+    Component {
+        id: searchPostsComponent
+        TimelineView {
+            model: SearchPostListModel {
+                autoLoading: columnView.autoLoading
+                //loadingInterval: columnView.loadingInterval
+                text: columnView.columnValue
+            }
+
+            onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
+                            columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+            onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
+                            columnView.requestQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+
+            onRequestViewThread: (uri) => {
+                                     // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
+                                     // これはPostThreadViewのプロパティにダイレクトに設定する
+                                     columnStackView.push(postThreadComponent, { "postThreadUri": uri })
+                                 }
+
+            onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
+
+            onRequestViewProfile: (did) => {
+                                      columnStackView.push(profileComponent, { "userDid": did })
+                                  }
+
+            onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
+        }
+    }
 
     function load(){
         console.log(logColumn, "ColumnLayout:componentType=" + componentType)
@@ -163,6 +194,9 @@ ColumnLayout {
         }else if(componentType === 1){
             columnStackView.push(listNotificationComponent)
             componentTypeLabel.text = qsTr("Notifications")
+        }else if(componentType === 2){
+            columnStackView.push(searchPostsComponent)
+            componentTypeLabel.text = qsTr("Search:") + columnValue
         }else{
             columnStackView.push(timelineComponent)
             componentTypeLabel.text = qsTr("Unknown")
