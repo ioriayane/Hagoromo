@@ -22,7 +22,7 @@ win32:{
     QMAKE_POST_LINK += nmake -f $(MAKEFILE) install
 }
 unix: {
-    open_ssl_dir=$${open_ssl_dir}/src
+    open_ssl_dir=$${PWD}
     INCLUDEPATH += $${open_ssl_dir}/include
-    LIBS += -L$${open_ssl_dir} -lssl -lcrypto
+    LIBS += -L$${open_ssl_dir}/lib -lssl -lcrypto
 }
