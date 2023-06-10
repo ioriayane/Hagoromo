@@ -26,9 +26,6 @@ signals:
     void searchServiceChanged();
 
 private:
-    QStringList m_cueGetProfile; // did
-    void getProfiles();
-
     QString m_text;
     QString m_searchService;
 };

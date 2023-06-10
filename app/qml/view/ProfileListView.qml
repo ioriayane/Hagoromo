@@ -32,7 +32,14 @@ ScrollView {
 
         RecordOperator {
             id: recordOperator
-            onFinished: (success) => model.getLatest()
+            property string opeDid: ""
+            onFinished: (success) => {
+                            if(opeDid.length > 0){
+                                model.getProfile(opeDid)
+                            }else{
+                                model.getLatest()
+                            }
+                        }
             function reflectAccount() {
                 recordOperator.setAccount(rootListView.model.service, rootListView.model.did,
                                           rootListView.model.handle, rootListView.model.email,
@@ -93,6 +100,11 @@ ScrollView {
                     PropertyChanges { target: editButton; iconText: qsTr("Following") }
                     PropertyChanges { target: editButton; highlighted: true }
                     PropertyChanges { target: editButton; onClicked: {
+                            if(unfollowAndRemove){
+                                recordOperator.opeDid = ""
+                            }else{
+                                recordOperator.opeDid = model.did
+                            }
                             recordOperator.reflectAccount()
                             recordOperator.deleteFollow(model.followingUri)
                             // 表示しているプロフィールが取得したアカウントと同じ場合はモデルからも消す
@@ -106,6 +118,7 @@ ScrollView {
                     when: !model.following
                     PropertyChanges { target: editButton; iconText: qsTr("Follow") }
                     PropertyChanges { target: editButton; onClicked: {
+                            recordOperator.opeDid = model.did
                             recordOperator.reflectAccount()
                             recordOperator.follow(model.did)
                         } }

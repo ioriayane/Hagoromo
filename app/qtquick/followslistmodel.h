@@ -37,6 +37,7 @@ public:
 
     virtual Q_INVOKABLE int indexOf(const QString &cid) const;
     virtual Q_INVOKABLE QString getRecordText(const QString &cid);
+    Q_INVOKABLE void getProfile(const QString &did);
 
     QString targetDid() const;
     void setTargetDid(const QString &newTargetDid);
@@ -51,9 +52,12 @@ signals:
 protected:
     QHash<int, QByteArray> roleNames() const;
     virtual void finishedDisplayingQueuedPosts() {};
+    void getProfiles();
 
     QStringList m_didList;
     QHash<QString, AtProtocolType::AppBskyActorDefs::ProfileView> m_profileHash;
+
+    QStringList m_cueGetProfile; // did
 
 private:
     QString m_targetDid;

@@ -395,6 +395,7 @@ ColumnLayout {
             Layout.fillWidth: true
             userDid: profileView.userDid
             accountDid: profileView.accountDid
+            unfollowAndRemove: false
             model: FollowersListModel {
                 id: followersListModel
                 autoLoading: false
