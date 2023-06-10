@@ -21,8 +21,8 @@ Dialog {
     property alias selectedAccountIndex: accountCombo.currentIndex
 
     property string defaultAccountUuid: ""
-    property string searchType: "posts"  // posts, profiles
-    property alias searchText: searchText.text
+    property string searchType: "posts"
+    property string searchText: searchText.text
 
     onOpened: {
         var i = accountModel.indexAt(defaultAccountUuid)
@@ -37,7 +37,6 @@ Dialog {
     onClosed: {
         defaultAccountUuid = ""
         searchType = "posts"
-
         searchText.clear()
     }
 
@@ -54,15 +53,10 @@ Dialog {
         onActivated: searchDialog.close()
     }
 
-
-    RecordOperator {
-        id: createRecord
-        onFinished: (success) => {
-                        if(success){
-                            searchText.clear()
-                            searchDialog.close()
-                        }
-                    }
+    ButtonGroup {
+        id: searchTypeButtonGroup
+        buttons: searchTypeRowlayout.children
+        onCheckedButtonChanged: searchDialog.searchType = checkedButton.value
     }
 
     ColumnLayout {
@@ -91,6 +85,19 @@ Dialog {
                                 searchDialog.accountModel.item(accountCombo.currentIndex, AccountListModel.AvatarRole)
                     }
                 }
+            }
+        }
+
+        RowLayout {
+            id: searchTypeRowlayout
+            RadioButton {
+                property string value: "posts"
+                text: qsTr("Posts")
+                checked: true
+            }
+            RadioButton {
+                property string value: "users"
+                text: qsTr("Users")
             }
         }
 

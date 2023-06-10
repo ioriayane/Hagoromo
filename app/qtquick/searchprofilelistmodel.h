@@ -1,39 +1,36 @@
-#ifndef SEARCHPOSTLISTMODEL_H
-#define SEARCHPOSTLISTMODEL_H
+#ifndef SEARCHPROFILELISTMODEL_H
+#define SEARCHPROFILELISTMODEL_H
 
-#include "timelinelistmodel.h"
+#include "followslistmodel.h"
 
-class SearchPostListModel : public TimelineListModel
+class SearchProfileListModel : public FollowsListModel
 {
     Q_OBJECT
 
     Q_PROPERTY(QString text READ text WRITE setText NOTIFY textChanged)
     Q_PROPERTY(QString searchService READ searchService WRITE setSearchService NOTIFY
                        searchServiceChanged)
-
 public:
-    explicit SearchPostListModel(QObject *parent = nullptr);
-
-    Q_INVOKABLE void getLatest();
+    explicit SearchProfileListModel(QObject *parent = nullptr);
 
     QString text() const;
     void setText(const QString &newText);
     QString searchService() const;
     void setSearchService(const QString &newSearchService);
 
+public slots:
+    Q_INVOKABLE void getLatest();
+
 signals:
     void textChanged();
     void searchServiceChanged();
 
-protected:
-    virtual void finishedDisplayingQueuedPosts();
-
 private:
-    QStringList m_cueGetPost; // uri
+    QStringList m_cueGetProfile; // did
+    void getProfiles();
 
-    void getPosts();
     QString m_text;
     QString m_searchService;
 };
 
-#endif // SEARCHPOSTLISTMODEL_H
+#endif // SEARCHPROFILELISTMODEL_H

@@ -8,6 +8,7 @@ import tech.relog.hagoromo.timelinelistmodel 1.0
 import tech.relog.hagoromo.notificationlistmodel 1.0
 import tech.relog.hagoromo.columnlistmodel 1.0
 import tech.relog.hagoromo.searchpostlistmodel 1.0
+import tech.relog.hagoromo.searchprofilelistmodel 1.0
 
 import "../controls"
 import "../parts"
@@ -163,6 +164,7 @@ ColumnLayout {
                 autoLoading: columnView.autoLoading
                 //loadingInterval: columnView.loadingInterval
                 text: columnView.columnValue
+                searchService: "https://search.bsky.social"
             }
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
@@ -185,6 +187,19 @@ ColumnLayout {
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
         }
     }
+    Component {
+        id: searchProfilesComponent
+        ProfileListView {
+            accountDid: columnView.did
+            unfollowAndRemove: false
+            model: SearchProfileListModel {
+                autoLoading: columnView.autoLoading
+                text: columnView.columnValue
+                searchService: "https://search.bsky.social"
+            }
+            onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+        }
+    }
 
     function load(){
         console.log(logColumn, "ColumnLayout:componentType=" + componentType)
@@ -196,7 +211,10 @@ ColumnLayout {
             componentTypeLabel.text = qsTr("Notifications")
         }else if(componentType === 2){
             columnStackView.push(searchPostsComponent)
-            componentTypeLabel.text = qsTr("Search") + " : " + columnValue
+            componentTypeLabel.text = qsTr("Search posts") + " : " + columnValue
+        }else if(componentType === 3){
+            columnStackView.push(searchProfilesComponent)
+            componentTypeLabel.text = qsTr("Search users") + " : " + columnValue
         }else{
             columnStackView.push(timelineComponent)
             componentTypeLabel.text = qsTr("Unknown")

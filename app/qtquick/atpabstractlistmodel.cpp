@@ -229,3 +229,33 @@ void AtpAbstractListModel::setLoadingInterval(int newLoadingInterval)
     m_timer.setInterval(m_loadingInterval);
     emit loadingIntervalChanged();
 }
+
+QString AtpAbstractListModel::service() const
+{
+    return account().service;
+}
+
+QString AtpAbstractListModel::did() const
+{
+    return account().did;
+}
+
+QString AtpAbstractListModel::handle() const
+{
+    return account().handle;
+}
+
+QString AtpAbstractListModel::email() const
+{
+    return account().email;
+}
+
+QString AtpAbstractListModel::accessJwt() const
+{
+    return account().accessJwt;
+}
+
+QString AtpAbstractListModel::refreshJwt() const
+{
+    return account().refreshJwt;
+}

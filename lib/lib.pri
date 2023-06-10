@@ -22,6 +22,7 @@ SOURCES += \
     $$PWD/atprotocol/lexicons_func_unknown.cpp \
     $$PWD/search/search_func.cpp \
     $$PWD/search/searchposts.cpp \
+    $$PWD/search/searchprofiles.cpp \
     $$PWD/tools/imagecompressor.cpp
 
 HEADERS += \
@@ -47,4 +48,5 @@ HEADERS += \
     $$PWD/search/search.h \
     $$PWD/search/search_func.h \
     $$PWD/search/searchposts.h \
+    $$PWD/search/searchprofiles.h \
     $$PWD/tools/imagecompressor.h

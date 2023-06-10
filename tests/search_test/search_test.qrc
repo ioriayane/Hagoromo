@@ -2,5 +2,7 @@
     <qresource prefix="/">
         <file>response/search/posts</file>
         <file>response/xrpc/app.bsky.feed.getPosts</file>
+        <file>response/search/profiles</file>
+        <file>response/xrpc/app.bsky.actor.getProfiles</file>
     </qresource>
 </RCC>

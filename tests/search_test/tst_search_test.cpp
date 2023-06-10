@@ -7,7 +7,9 @@
 #include "search/search.h"
 #include "search/search_func.h"
 #include "search/searchposts.h"
+#include "search/searchprofiles.h"
 #include "searchpostlistmodel.h"
+#include "searchprofilelistmodel.h"
 
 class search_test : public QObject
 {
@@ -22,7 +24,9 @@ private slots:
     void cleanupTestCase();
     void test_copyTest();
     void test_SearchPosts();
+    void test_SearchPostListModel();
     void test_SearchProfiles();
+    void test_SearchProfileListModel();
 
 private:
     WebServer m_mockServer;
@@ -90,16 +94,45 @@ void search_test::test_SearchPosts()
     QList<QVariant> arguments = spy.takeFirst();
     QVERIFY(arguments.at(0).toBool());
 
-    for (const auto &view_post : *search.viewPostList()) {
-        qDebug() << view_post.cid;
-    }
+    QVERIFY(search.viewPostList()->length() == 2);
+}
+
+void search_test::test_SearchPostListModel()
+{
+    SearchPostListModel model;
+    model.setAccount(m_service, QString(), QString(), QString(), "dummy", QString());
+    model.setSearchService(m_service);
+    model.setText("epub");
+
+    QSignalSpy spy(&model, SIGNAL(runningChanged()));
+    model.getLatest();
+    spy.wait();
+    QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+    QVERIFY(model.rowCount() == 2);
 }
 
 void search_test::test_SearchProfiles()
 {
-    // https://search.bsky.social/search/profiles?q=epub
-    SearchPostListModel model;
+    SearchInterface::SearchProfiles profiles;
+    profiles.setService(m_service);
+
+    QSignalSpy spy(&profiles, SIGNAL(finished(bool)));
+    profiles.search("text");
+    spy.wait();
+    QVERIFY(spy.count() == 1);
+
+    QList<QVariant> arguments = spy.takeFirst();
+    QVERIFY(arguments.at(0).toBool());
+
+    QVERIFY(profiles.didList()->count() == 2);
+}
+
+void search_test::test_SearchProfileListModel()
+{
+    SearchProfileListModel model;
     model.setAccount(m_service, QString(), QString(), QString(), "dummy", QString());
+    model.setSearchService(m_service);
     model.setText("epub");
 
     QSignalSpy spy(&model, SIGNAL(runningChanged()));

@@ -28,6 +28,13 @@ class AtpAbstractListModel : public QAbstractListModel
     Q_PROPERTY(int displayInterval READ displayInterval WRITE setDisplayInterval NOTIFY
                        displayIntervalChanged)
 
+    Q_PROPERTY(QString service READ service CONSTANT)
+    Q_PROPERTY(QString did READ did CONSTANT)
+    Q_PROPERTY(QString handle READ handle CONSTANT)
+    Q_PROPERTY(QString email READ email CONSTANT)
+    Q_PROPERTY(QString accessJwt READ accessJwt CONSTANT)
+    Q_PROPERTY(QString refreshJwt READ refreshJwt CONSTANT)
+
 public:
     explicit AtpAbstractListModel(QObject *parent = nullptr);
 
@@ -47,6 +54,12 @@ public:
     void setLoadingInterval(int newLoadingInterval);
     int displayInterval() const;
     void setDisplayInterval(int newDisplayInterval);
+    QString service() const;
+    QString did() const;
+    QString handle() const;
+    QString email() const;
+    QString accessJwt() const;
+    QString refreshJwt() const;
 
 signals:
     void runningChanged();

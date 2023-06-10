@@ -62,7 +62,7 @@ ApplicationWindow {
         onAccepted: {
             console.log(logMain, "selectedAccountIndex=" + selectedAccountIndex + ", searchType=" + searchType)
             var component_type = 2
-            if(searchType == "profiles"){
+            if(searchType === "users"){
                 component_type = 3
             }
             columnManageModel.append(accountListModel.item(selectedAccountIndex, AccountListModel.UuidRole),

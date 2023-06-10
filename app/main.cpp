@@ -14,6 +14,7 @@
 #include "qtquick/followslistmodel.h"
 #include "qtquick/followerslistmodel.h"
 #include "qtquick/searchpostlistmodel.h"
+#include "qtquick/searchprofilelistmodel.h"
 #include "qtquick/thumbnailprovider.h"
 #include "qtquick/encryption.h"
 #include "qtquick/userprofile.h"
@@ -54,6 +55,8 @@ int main(int argc, char *argv[])
                                         "FollowersListModel");
     qmlRegisterType<SearchPostListModel>("tech.relog.hagoromo.searchpostlistmodel", 1, 0,
                                          "SearchPostListModel");
+    qmlRegisterType<SearchProfileListModel>("tech.relog.hagoromo.searchprofilelistmodel", 1, 0,
+                                            "SearchProfileListModel");
     qmlRegisterType<Encryption>("tech.relog.hagoromo.encryption", 1, 0, "Encryption");
     qmlRegisterType<UserProfile>("tech.relog.hagoromo.userprofile", 1, 0, "UserProfile");
 

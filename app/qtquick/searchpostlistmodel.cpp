@@ -43,7 +43,7 @@ void SearchPostListModel::getLatest()
         posts->deleteLater();
     });
     posts->setAccount(account());
-    posts->setService(QStringLiteral("https://search.bsky.social"));
+    posts->setService(searchService());
     posts->search(text());
 }
 
@@ -110,4 +110,17 @@ void SearchPostListModel::setText(const QString &newText)
         return;
     m_text = newText;
     emit textChanged();
+}
+
+QString SearchPostListModel::searchService() const
+{
+    return m_searchService;
+}
+
+void SearchPostListModel::setSearchService(const QString &newSearchService)
+{
+    if (m_searchService == newSearchService)
+        return;
+    m_searchService = newSearchService;
+    emit searchServiceChanged();
 }
