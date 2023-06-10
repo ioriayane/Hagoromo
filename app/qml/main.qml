@@ -40,6 +40,12 @@ ApplicationWindow {
         sequence: "n"
         onActivated: postDialog.open()
     }
+    Shortcut {  // Search
+        enabled: !searchDialog.visible
+        context: Qt.ApplicationShortcut
+        sequence: "s"
+        onActivated: searchDialog.open()
+    }
 
     SettingDialog {
         id: settingDialog

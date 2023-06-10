@@ -196,7 +196,7 @@ ColumnLayout {
             componentTypeLabel.text = qsTr("Notifications")
         }else if(componentType === 2){
             columnStackView.push(searchPostsComponent)
-            componentTypeLabel.text = qsTr("Search:") + columnValue
+            componentTypeLabel.text = qsTr("Search") + " : " + columnValue
         }else{
             columnStackView.push(timelineComponent)
             componentTypeLabel.text = qsTr("Unknown")
