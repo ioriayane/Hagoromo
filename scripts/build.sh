@@ -68,7 +68,7 @@ deploy_hagoromo(){
     fi
 
     cd ${work_root_dir}
-    zip -r hagoromo_x.x.x_${PLATFORM_TYPE}.zip hagoromo/
+    zip -r hagoromo_${VERSION_NO}_${PLATFORM_TYPE}.zip hagoromo/
 
     popd
 }
@@ -87,6 +87,8 @@ if [ -z "${QT_BIN_FOLDER}" ] || [ -z "${PLATFORM_TYPE}" ]; then
     echo " QT_BIN_FOLDER   ex: ~/Qt/5.15.2/gcc_64/bin/"
     exit 1
 fi
+
+VERSION_NO=$(cat app/main.cpp | grep "app.setApplicationVersion" | grep -oE "[0-9]+.[0-9]+.[0-9]+")
 
 build_openssl
 build_hagoromo
