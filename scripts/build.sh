@@ -46,13 +46,26 @@ deploy_hagoromo(){
     mkdir -p ${work_dir}/lib
 
     cp ${build_dir}/Hagoromo ${work_dir}/bin
-    cp "openssl/lib/libcrypto.so.1.1" ${work_dir}/lib
-    cp "openssl/lib/libssl.so.1.1" ${work_dir}/lib
     cp "LICENSE" ${work_dir}
     cp "README.md" ${work_dir}
-    
+
+    if [ "${PLATFORM_TYPE}" == "linux" ]; then
+        cp ${SCRIPT_FOLDER}/deploy/Hagoromo.sh ${work_dir}
+        cp "openssl/lib/libcrypto.so.1.1" ${work_dir}/lib
+        cp "openssl/lib/libssl.so.1.1" ${work_dir}/lib
+
+        cat ${SCRIPT_FOLDER}/deploy/linux_lib.txt | xargs -i{} cp -P ${QT_BIN_FOLDER}/../lib/{} ${work_dir}/lib
+        cat ${SCRIPT_FOLDER}/deploy/linux_plugin.txt | xargs -i{} dirname {} | uniq | xargs -i{} mkdir -p ${work_dir}/bin/{}
+        cat ${SCRIPT_FOLDER}/deploy/linux_plugin.txt | xargs -i{} cp -P ${QT_BIN_FOLDER}/../plugins/{} ${work_dir}/bin/{}
+        cat ${SCRIPT_FOLDER}/deploy/linux_qml.txt | xargs -i{} dirname {} | uniq | xargs -i{} mkdir -p ${work_dir}/bin/{}
+        cat ${SCRIPT_FOLDER}/deploy/linux_qml.txt | xargs -i{} cp -P ${QT_BIN_FOLDER}/../qml/{} ${work_dir}/bin/{}
+
+    elif [ "${PLATFORM_TYPE}" == "mac" ]; then
+        echo "skip..."
+    fi
+
     cd ${work_root_dir}
-    zip -r hagoromo.zip hagoromo/
+    zip -r hagoromo_x.x.x_${PLATFORM_TYPE}.zip hagoromo/
 
     popd
 }
@@ -62,10 +75,12 @@ SCRIPT_FOLDER=$(cd $(dirname $0); pwd)
 cd $SCRIPT_FOLDER/..
 ROOT_FOLDER=$(pwd)
 
-QT_BIN_FOLDER=$1
+PLATFORM_TYPE=$1
+QT_BIN_FOLDER=$2
 
-if [ -z "${QT_BIN_FOLDER}" ]; then
-    echo "usage $(basename $0) QT_BIN_FOLDER"
+if [ -z "${QT_BIN_FOLDER}" ] || [ -z "${PLATFORM_TYPE}" ]; then
+    echo "usage $(basename $0) PLATFORM_TYPE QT_BIN_FOLDER"
+    echo " PLATFORM_TYPE   linux or mac"
     echo " QT_BIN_FOLDER   ex: ~/Qt/5.15.2/gcc_64/bin/"
     exit 1
 fi
