@@ -8,6 +8,8 @@
 enum class ColumnComponentType : int {
     Timeline = 0,
     Notification = 1,
+    SearchPosts = 2,
+    SearchProfiles = 3,
 
     PostThread = 100,
 };
@@ -20,6 +22,7 @@ struct ColumnItem
     bool auto_loading = false;
     int loading_interval = 300000; // msec
     int width = 400;
+    QString value;
 };
 
 class ColumnListModel : public QAbstractListModel
@@ -37,6 +40,7 @@ public:
         AutoLoadingRole,
         LoadingIntervalRole,
         WidthRole,
+        ValueRole,
     };
     Q_ENUM(ColumnListModelRoles)
     Q_ENUM(ColumnComponentType)
@@ -49,9 +53,9 @@ public:
                             const QVariant &value);
 
     Q_INVOKABLE void append(const QString &account_uuid, int component_type, bool auto_loading,
-                            int interval, int width);
+                            int interval, int width, const QString &value);
     Q_INVOKABLE void insert(int row, const QString &account_uuid, int component_type,
-                            bool auto_loading, int interval, int width);
+                            bool auto_loading, int interval, int width, const QString &value);
     Q_INVOKABLE void remove(int row);
     Q_INVOKABLE void removeByKey(const QString &key);
     Q_INVOKABLE bool containsKey(const QString &key) const;

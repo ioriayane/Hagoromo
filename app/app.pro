@@ -3,42 +3,7 @@ QT += quick network quickcontrols2
 TARGET = Hagoromo
 
 SOURCES += \
-    main.cpp \
-    qtquick/accountlistmodel.cpp \
-    qtquick/anyfeedlistmodel.cpp \
-    qtquick/atpabstractlistmodel.cpp \
-    qtquick/authorfeedlistmodel.cpp \
-    qtquick/columnlistmodel.cpp \
-    qtquick/createsession.cpp \
-    qtquick/encryption.cpp \
-    qtquick/followerslistmodel.cpp \
-    qtquick/followslistmodel.cpp \
-    qtquick/notificationlistmodel.cpp \
-    qtquick/postthreadlistmodel.cpp \
-    qtquick/recordoperator.cpp \
-    qtquick/timelinelistmodel.cpp \
-    qtquick/translator.cpp \
-    qtquick/userprofile.cpp
-
-HEADERS += \
-    qtquick/accountlistmodel.h \
-    qtquick/anyfeedlistmodel.h \
-    qtquick/atpabstractlistmodel.h \
-    qtquick/authorfeedlistmodel.h \
-    qtquick/columnlistmodel.h \
-    qtquick/common.h \
-    qtquick/createsession.h \
-    qtquick/encryption.h \
-    qtquick/encryption_seed.h \
-    qtquick/followerslistmodel.h \
-    qtquick/followslistmodel.h \
-    qtquick/notificationlistmodel.h \
-    qtquick/postthreadlistmodel.h \
-    qtquick/recordoperator.h \
-    qtquick/thumbnailprovider.h \
-    qtquick/timelinelistmodel.h \
-    qtquick/translator.h \
-    qtquick/userprofile.h
+    main.cpp
 
 QML_FILES = \
     qml/main.qml \
@@ -51,6 +16,7 @@ QML_FILES = \
     qml/dialogs/ColumnSettingDialog.qml \
     qml/dialogs/LoginDialog.qml \
     qml/dialogs/PostDialog.qml \
+    qml/dialogs/SearchDialog.qml \
     qml/dialogs/SettingDialog.qml \
     qml/parts/Author.qml \
     qml/parts/AvatarImage.qml \
@@ -91,6 +57,7 @@ IMAGE_FILES += \
     qml/images/quote.png \
     qml/images/reply.png \
     qml/images/repost.png \
+    qml/images/search.png \
     qml/images/settings.png
 
 
@@ -108,31 +75,5 @@ QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =
 
 include(../lib/lib.pri)
-
-bin_dir=$$dirname(QMAKE_QMAKE)
-open_ssl_dir=$${bin_dir}/../../../Tools/OpenSSL
-open_ssl_dir=$$clean_path($$open_ssl_dir)
-
-win32:{
-    open_ssl_dir=$${open_ssl_dir}/Win_x64
-
-    LIBS += $${open_ssl_dir}/lib/libssl.lib \
-            $${open_ssl_dir}/lib/libcrypto.lib
-    INCLUDEPATH += $${open_ssl_dir}/include
-
-    CONFIG(debug,debug|release):install_dir = $$OUT_PWD/debug
-    else: install_dir = $$OUT_PWD/release
-
-    depend_files.path = $$install_dir
-    depend_files.files = \
-        $${open_ssl_dir}/bin/libcrypto-1_1-x64.dll \
-        $${open_ssl_dir}/bin/libssl-1_1-x64.dll
-
-    INSTALLS += depend_files
-    QMAKE_POST_LINK += nmake -f $(MAKEFILE) install
-}
-unix: {
-    open_ssl_dir=$${open_ssl_dir}/src
-    INCLUDEPATH += $${open_ssl_dir}/include
-    LIBS += -L$${open_ssl_dir} -lssl -lcrypto
-}
+include(qtquick/qtquick.pri)
+include(../openssl/openssl.pri)

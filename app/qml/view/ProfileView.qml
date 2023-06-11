@@ -19,8 +19,9 @@ ColumnLayout {
     Layout.fillHeight: true
     spacing: 0
 
-    property alias model: relayObject
+    property string hoveredLink: ""
 
+    property alias model: relayObject
 
     property string userDid: ""     // 表示するアカウント
     property string accountDid: ""  // 認証しているアカウント
@@ -85,9 +86,7 @@ ColumnLayout {
             repostFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             likesFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             followsListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
-            followsListView.recordOperator.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             followersListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
-            followersListView.recordOperator.setAccount(service, did, handle, email, accessJwt, refreshJwt)
         }
         function getLatest() {
             userProfile.getProfile(userDid)
@@ -323,6 +322,7 @@ ColumnLayout {
                                             profileView.requestViewProfile(did)
                                         }
                                     }
+            onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
         }
 
         TimelineView {
@@ -346,6 +346,7 @@ ColumnLayout {
                                             profileView.requestViewProfile(did)
                                         }
                                     }
+            onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
         }
 
         TimelineView {
@@ -369,6 +370,7 @@ ColumnLayout {
                                             profileView.requestViewProfile(did)
                                         }
                                     }
+            onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
         }
 
         ProfileListView {
@@ -393,6 +395,7 @@ ColumnLayout {
             Layout.fillWidth: true
             userDid: profileView.userDid
             accountDid: profileView.accountDid
+            unfollowAndRemove: false
             model: FollowersListModel {
                 id: followersListModel
                 autoLoading: false

@@ -42,6 +42,7 @@ class AccessAtProtocol : public QObject
 public:
     explicit AccessAtProtocol(QObject *parent = nullptr);
 
+    const AccountData &account() const;
     void setAccount(const AccountData &account);
     void setSession(const QString &did, const QString &handle, const QString &email,
                     const QString &access_jwt, const QString &refresh_jwt);
@@ -59,7 +60,7 @@ signals:
 public slots:
 
 protected:
-    void get(const QString &endpoint, const QUrlQuery &query);
+    void get(const QString &endpoint, const QUrlQuery &query, const bool with_auth_header = true);
     void post(const QString &endpoint, const QByteArray &json, const bool with_auth_header = true);
     void postWithImage(const QString &endpoint, const QString &path);
 

@@ -306,7 +306,7 @@ void NotificationListModel::getLatest()
                         default:
                             break;
                         }
-                    } else if (item->reason == "reply") {
+                    } else if (item->reason == "reply" || item->reason == "mention") {
                         // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
                         if (!m_cueGetPost.contains(item->uri)) {
                             m_cueGetPost.append(item->uri);
@@ -527,7 +527,8 @@ void NotificationListModel::getPosts()
                         default:
                             break;
                         }
-                    } else if (m_notificationHash[m_cidList.at(i)].reason == "reply") {
+                    } else if (m_notificationHash[m_cidList.at(i)].reason == "reply"
+                               || m_notificationHash[m_cidList.at(i)].reason == "mention") {
                         if (new_cid.contains(m_cidList.at(i))) {
                             emit dataChanged(index(i), index(i));
                         }

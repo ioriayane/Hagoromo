@@ -16,6 +16,7 @@ ScrollView {
 
     property string userDid: ""     // 表示するアカウント
     property string accountDid: ""  // 認証しているアカウント
+    property bool unfollowAndRemove: true   // アンフォローと同時にリストから消すか（検索結果は消さない）
 
     property alias listView: rootListView
     property alias model: rootListView.model
@@ -31,7 +32,19 @@ ScrollView {
 
         RecordOperator {
             id: recordOperator
-            onFinished: (success) => model.getLatest()
+            property string opeDid: ""
+            onFinished: (success) => {
+                            if(opeDid.length > 0){
+                                model.getProfile(opeDid)
+                            }else{
+                                model.getLatest()
+                            }
+                        }
+            function reflectAccount() {
+                recordOperator.setAccount(rootListView.model.service, rootListView.model.did,
+                                          rootListView.model.handle, rootListView.model.email,
+                                          rootListView.model.accessJwt, rootListView.model.refreshJwt)
+            }
         }
 
         header: ItemDelegate {
@@ -54,9 +67,9 @@ ScrollView {
             visible: rootListView.model.running && rootListView.model.rowCount() > 0
         }
 
-//        add: Transition {
-//            NumberAnimation { properties: "x"; from: rootListView.width; duration: 300 }
-//        }
+        //        add: Transition {
+        //            NumberAnimation { properties: "x"; from: rootListView.width; duration: 300 }
+        //        }
 
         delegate: ClickableFrame {
             id: profileLayout
@@ -87,9 +100,17 @@ ScrollView {
                     PropertyChanges { target: editButton; iconText: qsTr("Following") }
                     PropertyChanges { target: editButton; highlighted: true }
                     PropertyChanges { target: editButton; onClicked: {
+                            if(unfollowAndRemove){
+                                recordOperator.opeDid = ""
+                            }else{
+                                recordOperator.opeDid = model.did
+                            }
+                            recordOperator.reflectAccount()
                             recordOperator.deleteFollow(model.followingUri)
                             // 表示しているプロフィールが取得したアカウントと同じ場合はモデルからも消す
-                            rootListView.model.remove(model.did)
+                            if(unfollowAndRemove){
+                                rootListView.model.remove(model.did)
+                            }
                         } }
                 },
                 State {
@@ -97,6 +118,8 @@ ScrollView {
                     when: !model.following
                     PropertyChanges { target: editButton; iconText: qsTr("Follow") }
                     PropertyChanges { target: editButton; onClicked: {
+                            recordOperator.opeDid = model.did
+                            recordOperator.reflectAccount()
                             recordOperator.follow(model.did)
                         } }
                 }

@@ -11,13 +11,15 @@ import "../controls"
 ColumnLayout {
     id: postThreadView
 
+    property string hoveredLink: ""
+
     property alias postThreadUri: postThreadListModel.postThreadUri
     property alias listView: rootListView
     property alias model: postThreadListModel
 
     signal requestReply(string cid, string uri,
-                          string reply_root_cid, string reply_root_uri,
-                          string avatar, string display_name, string handle, string indexed_at, string text)
+                        string reply_root_cid, string reply_root_uri,
+                        string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestQuote(string cid, string uri, string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestViewThread(string uri)
     signal requestViewImages(int index, string paths)
@@ -78,15 +80,20 @@ ColumnLayout {
                 }
             }
 
-//            add: Transition {
-//                NumberAnimation { properties: "x"; from: rootListView.width; duration: 300 }
-//            }
+            //            add: Transition {
+            //                NumberAnimation { properties: "x"; from: rootListView.width; duration: 300 }
+            //            }
 
             delegate: PostDelegate {
                 Layout.preferredWidth: rootListView.width
 
                 //自分から自分へは移動しない
-                //onClicked: (mouse) => requestViewThread(model.uri)
+                onClicked: (mouse) => {
+                               if(postThreadUri !== model.uri){
+                                   requestViewThread(model.uri)
+                               }
+                           }
+                onRequestViewProfile: (did) => postThreadView.requestViewProfile(did)
 
                 repostReactionAuthor.visible: model.isRepostedBy
                 repostReactionAuthor.displayName: model.repostedByDisplayName
@@ -124,6 +131,13 @@ ColumnLayout {
 
                 externalLinkFrame.visible: model.hasExternalLink
                 externalLinkFrame.onClicked: Qt.openUrlExternally(model.externalLinkUri)
+                externalLinkFrame.onHoveredChanged: {
+                    if(externalLinkFrame.hovered){
+                        timelineView.hoveredLink = model.externalLinkUri
+                    }else{
+                        timelineView.hoveredLink = ""
+                    }
+                }
                 externalLinkThumbImage.source: model.externalLinkThumb
                 externalLinkTitleLabel.text: model.externalLinkTitle
                 externalLinkUriLabel.text: model.externalLinkUri
@@ -133,15 +147,17 @@ ColumnLayout {
                 postControls.repostButton.iconText: model.repostCount
                 postControls.likeButton.iconText: model.likeCount
                 postControls.replyButton.onClicked: requestReply(model.cid, model.uri,
-                                                                   model.replyRootCid, model.replyRootUri,
-                                                                   model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
+                                                                 model.replyRootCid, model.replyRootUri,
+                                                                 model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
                 postControls.repostMenuItem.onTriggered: rootListView.model.repost(model.index)
                 postControls.quoteMenuItem.onTriggered: requestQuote(model.cid, model.uri,
-                                                                       model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
+                                                                     model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
                 postControls.likeButton.onClicked: rootListView.model.like(model.index)
                 postControls.tranlateMenuItem.onTriggered: postThreadListModel.translate(model.cid)
                 postControls.isReposted: model.isReposted
                 postControls.isLiked: model.isLiked
+
+                onHoveredLinkChanged: postThreadView.hoveredLink = hoveredLink
             }
         }
     }

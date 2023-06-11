@@ -6,6 +6,7 @@ import Qt.labs.settings 1.1
 
 import tech.relog.hagoromo.accountlistmodel 1.0
 import tech.relog.hagoromo.columnlistmodel 1.0
+import tech.relog.hagoromo.systemtool 1.0
 
 import "controls"
 import "dialogs"
@@ -28,10 +29,14 @@ ApplicationWindow {
     Material.accent: settingDialog.settings.accent
 
     Settings {
-//        property alias x: appWindow.x
-//        property alias y: appWindow.y
+        //        property alias x: appWindow.x
+        //        property alias y: appWindow.y
         property alias width: appWindow.width
         property alias height: appWindow.height
+    }
+
+    SystemTool {
+        id: systemTool
     }
 
     Shortcut {  // Post
@@ -39,6 +44,12 @@ ApplicationWindow {
         context: Qt.ApplicationShortcut
         sequence: "n"
         onActivated: postDialog.open()
+    }
+    Shortcut {  // Search
+        enabled: !searchDialog.visible
+        context: Qt.ApplicationShortcut
+        sequence: "s"
+        onActivated: searchDialog.open()
     }
 
     SettingDialog {
@@ -48,6 +59,21 @@ ApplicationWindow {
     PostDialog {
         id: postDialog
         accountModel: accountListModel
+    }
+
+    SearchDialog {
+        id: searchDialog
+        accountModel: accountListModel
+        onAccepted: {
+            console.log(logMain, "selectedAccountIndex=" + selectedAccountIndex + ", searchType=" + searchType)
+            var component_type = 2
+            if(searchType === "users"){
+                component_type = 3
+            }
+            columnManageModel.append(accountListModel.item(selectedAccountIndex, AccountListModel.UuidRole),
+                                     component_type, false, 300000, 350, searchDialog.searchText)
+            columnManageModel.sync()
+        }
     }
 
     AddColumnDialog {
@@ -62,7 +88,7 @@ ApplicationWindow {
                 component_type = 1
             }
             columnManageModel.append(accountListModel.item(selectedAccountIndex, AccountListModel.UuidRole),
-                                     component_type, false, 300000, 400)
+                                     component_type, false, 300000, 400, "")
             columnManageModel.sync()
         }
     }
@@ -153,7 +179,8 @@ ApplicationWindow {
                                 columnManageModel.item(i, ColumnListModel.ComponentTypeRole),
                                 columnManageModel.item(i, ColumnListModel.AutoLoadingRole),
                                 columnManageModel.item(i, ColumnListModel.LoadingIntervalRole),
-                                columnManageModel.item(i, ColumnListModel.WidthRole)
+                                columnManageModel.item(i, ColumnListModel.WidthRole),
+                                columnManageModel.item(i, ColumnListModel.ValueRole)
                                 )
             }
             // カラムの管理情報から消えているLoaderを消す
@@ -172,12 +199,14 @@ ApplicationWindow {
             var auto_loading = columnManageModel.item(i, ColumnListModel.AutoLoadingRole)
             var loading_interval = columnManageModel.item(i, ColumnListModel.LoadingIntervalRole)
             var column_width = columnManageModel.item(i, ColumnListModel.WidthRole)
+            var column_value = columnManageModel.item(i, ColumnListModel.ValueRole)
             // 1度消す
             columnManageModel.remove(i)
             columnManageModel.sync()
             // 追加し直し
             columnManageModel.insert(i+move_diff, account_uuid, component_type,
-                                     auto_loading, loading_interval, column_width)
+                                     auto_loading, loading_interval, column_width,
+                                     column_value)
             columnManageModel.sync()
         }
     }
@@ -236,6 +265,41 @@ ApplicationWindow {
                                  columnManageModel.sync()
                              }
             onRequestDisplayOfColumnSetting: (key) => columnsettingDialog.openWithKey(key)
+            onHoveredLinkChanged: hoveredLinkFrame.text = hoveredLink
+        }
+    }
+
+    ColumnLayout {
+        anchors.right: rootLayout.right
+        anchors.bottom: rootLayout.bottom
+        anchors.rightMargin: 5
+        anchors.bottomMargin: scrollView.ScrollBar.horizontal.height + 5
+        Label {
+            Layout.alignment: Qt.AlignRight
+            font.pointSize: 10
+            color: Material.color(Material.Grey)
+            text: "羽衣 -Hagoromo-"
+        }
+        Label {
+            Layout.alignment: Qt.AlignRight
+            Layout.rightMargin: 5
+            font.pointSize: 8
+            color: Material.color(Material.Grey)
+            text: "Version : " + systemTool.applicationVersion
+        }
+        Label {
+            Layout.alignment: Qt.AlignRight
+            Layout.rightMargin: 5
+            font.pointSize: 8
+            color: Material.color(Material.Grey)
+            text: "build on Qt " + systemTool.qtVersion
+        }
+        Label {
+            Layout.alignment: Qt.AlignRight
+            Layout.rightMargin: 5
+            font.pointSize: 8
+            color: Material.color(Material.Grey)
+            text: "© 2023 Iori Ayane"
         }
     }
 
@@ -260,6 +324,14 @@ ApplicationWindow {
                     iconSource: "images/edit.png"
                     //                    iconText: qsTr("New Post")
                     onClicked: postDialog.open()
+                }
+
+                IconButton {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 36
+                    display: AbstractButton.IconOnly
+                    iconSource: "images/search.png"
+                    onClicked: searchDialog.open()
                 }
 
                 Item {
@@ -345,7 +417,9 @@ ApplicationWindow {
                         return false
                     }
 
-                    function insert(index, key, account_uuid, component_type, auto_loading, loading_interval, column_width){
+                    function insert(index, key, account_uuid, component_type,
+                                    auto_loading, loading_interval, column_width,
+                                    column_value){
                         // accountListModelで管理するアカウントのindexと表示に使うコンポを指定
                         // ①ここでLoaderを追加する
                         console.log(logMain, "(1) insert:" + index + ", " + account_uuid + ", " + component_type)
@@ -357,6 +431,7 @@ ApplicationWindow {
                                 item.auto_loading = auto_loading
                                 item.loading_interval = loading_interval
                                 item.Layout.preferredWidth = column_width
+                                item.column_value = column_value
                                 item.setSettings()
                             }
                         }else{
@@ -366,7 +441,8 @@ ApplicationWindow {
                                                       "component_type": component_type,
                                                       "auto_loading": auto_loading,
                                                       "loading_interval": loading_interval,
-                                                      "column_width": column_width
+                                                      "column_width": column_width,
+                                                      "column_value": column_value
                                                   })
                         }
                     }
@@ -379,6 +455,7 @@ ApplicationWindow {
                                      item.auto_loading = repeater.model.get(index).auto_loading
                                      item.loading_interval = repeater.model.get(index).loading_interval
                                      item.column_width = repeater.model.get(index).column_width
+                                     item.column_value = repeater.model.get(index).column_value
                                      item.sourceComponent = columnView
                                  }
 
@@ -395,6 +472,7 @@ ApplicationWindow {
                         property bool auto_loading: false
                         property int loading_interval: 300000
                         property int column_width: 400
+                        property string column_value: ""
 
                         onLoaded: {
                             // ③Loaderで読み込んだComponentにアカウント情報など設定する
@@ -414,6 +492,7 @@ ApplicationWindow {
                         function setSettings() {
                             item.autoLoading = loader.auto_loading
                             item.loadingInterval = loader.loading_interval
+                            item.columnValue = loader.column_value
                         }
 
                         function setAccount(row) {
@@ -427,134 +506,30 @@ ApplicationWindow {
                         }
                     }
                 }
-
-                // debug
-//                ListView {
-//                    Layout.preferredHeight: scrollView.childHeight
-//                    Layout.minimumWidth: 100
-//                    Layout.preferredWidth: 400
-//                    Layout.maximumWidth: 500
-//                    clip: true
-//                    model: accountListModel
-//                    delegate: GridLayout {
-//                        columns: 2
-//                        Label {
-//                            text: "service:"
-//                        }
-//                        Label {
-//                            text: model.service
-//                        }
-//                        Label {
-//                            text: "identifier:"
-//                        }
-//                        Label {
-//                            text: model.identifier
-//                        }
-//                        Label {
-//                            text: "password:"
-//                        }
-//                        Label {
-//                            text: model.password
-//                        }
-//                        Label {
-//                            text: "did:"
-//                        }
-//                        Label {
-//                            text: model.did
-//                        }
-//                        Label {
-//                            text: "handle:"
-//                        }
-//                        Label {
-//                            text: model.handle
-//                        }
-//                        Label {
-//                            text: "email:"
-//                        }
-//                        Label {
-//                            text: model.email
-//                        }
-//                        Label {
-//                            text: "accessJwt:"
-//                        }
-//                        Label {
-//                            text: model.accessJwt
-//                        }
-//                        Label {
-//                            text: "refreshJwt:"
-//                        }
-//                        Label {
-//                            text: model.refreshJwt
-//                        }
-//                        Label {
-//                            text: "status:"
-//                        }
-//                        Label {
-//                            text: model.status
-//                        }
-//                        Label {
-//                            text: "-"
-//                        }
-//                        Label {
-//                            text: "-"
-//                        }
-
-//                    }
-//                }
-//                ListView {
-//                    Layout.preferredHeight: scrollView.childHeight
-//                    Layout.minimumWidth: 100
-//                    Layout.preferredWidth: 200
-//                    Layout.maximumWidth: 300
-//                    clip: true
-//                    model: columnManageModel
-//                    delegate: GridLayout {
-//                        columns: 2
-//                        Label {
-//                            text: "key"
-//                        }
-//                        Label {
-//                            text: model.key
-//                        }
-//                        Label {
-//                            text: "account_uuid"
-//                        }
-//                        Label {
-//                            text: model.accountUuid
-//                        }
-//                        Label {
-//                            text: "component_type"
-//                        }
-//                        Label {
-//                            text: model.componentType
-//                        }
-//                        Label {
-//                            text: "autoLoading"
-//                        }
-//                        Label {
-//                            text: model.autoLoading
-//                        }
-//                        Label {
-//                            text: "interval"
-//                        }
-//                        Label {
-//                            text: model.loadingInterval
-//                        }
-//                        Label {
-//                            text: "width"
-//                        }
-//                        Label {
-//                            text: model.width
-//                        }
-//                        Label {
-//                            text: "-"
-//                        }
-//                        Label {
-//                            text: "-"
-//                        }
-//                    }
-//                }
             }
+        }
+    }
+
+    Frame {
+        // ハイパーリンクの内容を表示する
+        id: hoveredLinkFrame
+        x: scrollView.x
+        y: scrollView.height - scrollView.ScrollBar.horizontal.height - height
+        visible: hoveredLinkFrame.text.length > 0
+        leftInset: 5
+        rightInset: 5
+        topInset: 2
+        bottomInset: 2
+        background: Rectangle {
+            radius: 3
+            color: Material.color(Material.BlueGrey)
+        }
+        property string text: ""
+
+        Label {
+            color: "white"
+            font.pointSize: 10
+            text: hoveredLinkFrame.text
         }
     }
 

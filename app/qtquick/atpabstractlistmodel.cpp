@@ -2,7 +2,9 @@
 #include "atprotocol/lexicons_func_unknown.h"
 #include "translator.h"
 
+#include <QDesktopServices>
 #include <QPointer>
+#include <QUrlQuery>
 
 using namespace AtProtocolType;
 
@@ -47,18 +49,31 @@ void AtpAbstractListModel::translate(const QString &cid)
     QPointer<AtpAbstractListModel> aliving(this);
 
     Translator *translator = new Translator();
-    connect(translator, &Translator::finished, [=](const QString text) {
-        if (aliving) {
-            if (!text.isEmpty()) {
-                m_translations[cid] = text;
-                emit dataChanged(index(row), index(row));
-            }
+    if (!translator->validSettings()) {
+        // 設定画無いときはGoogle翻訳へ飛ばす
+        QUrl url("https://translate.google.com/");
+        QUrlQuery query;
+        query.addQueryItem("sl", "auto");
+        if (!translator->targetLanguage().isEmpty()) {
+            query.addQueryItem("tl", translator->targetLanguage().toLower());
         }
-        translator->deleteLater();
-    });
-    m_translations[cid] = "Now translating ...";
-    emit dataChanged(index(row), index(row));
-    translator->translate(record_text);
+        query.addQueryItem("text", record_text);
+        url.setQuery(query);
+        QDesktopServices::openUrl(url);
+    } else {
+        connect(translator, &Translator::finished, [=](const QString text) {
+            if (aliving) {
+                if (!text.isEmpty()) {
+                    m_translations[cid] = text;
+                    emit dataChanged(index(row), index(row));
+                }
+            }
+            translator->deleteLater();
+        });
+        m_translations[cid] = "Now translating ...";
+        emit dataChanged(index(row), index(row));
+        translator->translate(record_text);
+    }
 }
 
 bool AtpAbstractListModel::running() const
@@ -91,17 +106,29 @@ QString AtpAbstractListModel::copyRecordText(const QVariant &value) const
         int pos_start = 0;
         int pos_end = 0;
         int pos_prev_end = 0;
-        for (const auto &part : record.facets) {
+        QList<AppBskyRichtextFacet::Main> facets = record.facets;
+        for (int i = 0; i < facets.length() - 1; i++) {
+            for (int j = i + 1; j < facets.length(); j++) {
+                if (facets.at(i).index.byteStart > facets.at(j).index.byteStart) {
+                    facets.swapItemsAt(i, j);
+                }
+            }
+        }
+        for (const auto &part : facets) {
             pos_start = part.index.byteStart;
             pos_end = part.index.byteEnd;
+
             if (pos_start > pos_prev_end) {
                 text += QString(text_ba.mid(pos_prev_end, pos_start - pos_prev_end))
                                 .replace("\n", "<br/>");
             }
+            QString display_url = QString::fromUtf8(text_ba.mid(pos_start, pos_end - pos_start));
             if (!part.features_Link.isEmpty()) {
-                text += QString("<a href=\"%1\">%1</a>")
-                                .arg(QString::fromUtf8(
-                                        text_ba.mid(pos_start, pos_end - pos_start)));
+                text += QString("<a href=\"%1\">%2</a>")
+                                .arg(part.features_Link.first().uri, display_url);
+            } else if (!part.features_Mention.isEmpty()) {
+                text += QString("<a href=\"%1\">%2</a>")
+                                .arg(part.features_Mention.first().did, display_url);
             } else {
                 text += QString(text_ba.mid(pos_start, pos_end - pos_start)).replace("\n", "<br/>");
             }
@@ -110,6 +137,7 @@ QString AtpAbstractListModel::copyRecordText(const QVariant &value) const
         if (pos_prev_end < (text_ba.length() - 1)) {
             text += QString(text_ba.mid(pos_prev_end)).replace("\n", "<br/>");
         }
+
         return text;
     }
 }
@@ -156,6 +184,19 @@ void AtpAbstractListModel::displayQueuedPosts()
     }
 }
 
+int AtpAbstractListModel::displayInterval() const
+{
+    return m_displayInterval;
+}
+
+void AtpAbstractListModel::setDisplayInterval(int newDisplayInterval)
+{
+    if (m_displayInterval == newDisplayInterval)
+        return;
+    m_displayInterval = newDisplayInterval;
+    emit displayIntervalChanged();
+}
+
 bool AtpAbstractListModel::autoLoading() const
 {
     return m_timer.isActive();
@@ -187,4 +228,34 @@ void AtpAbstractListModel::setLoadingInterval(int newLoadingInterval)
     m_loadingInterval = newLoadingInterval;
     m_timer.setInterval(m_loadingInterval);
     emit loadingIntervalChanged();
+}
+
+QString AtpAbstractListModel::service() const
+{
+    return account().service;
+}
+
+QString AtpAbstractListModel::did() const
+{
+    return account().did;
+}
+
+QString AtpAbstractListModel::handle() const
+{
+    return account().handle;
+}
+
+QString AtpAbstractListModel::email() const
+{
+    return account().email;
+}
+
+QString AtpAbstractListModel::accessJwt() const
+{
+    return account().accessJwt;
+}
+
+QString AtpAbstractListModel::refreshJwt() const
+{
+    return account().refreshJwt;
 }

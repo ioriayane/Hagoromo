@@ -10,6 +10,7 @@
 
 - Windows 11 Profesional
 - Ubuntu 22.04
+- Mac 10.13
 
 ## 使用ソフトウェア
 
@@ -38,47 +39,48 @@ Official sise : [Qt](https://www.qt.io/)
 
 
 ```cmd
-REM setup env
->"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
 REM checkout repo
 >git clone git@github.com:ioriayane/Hagoromo.git
 REM copy and edit encryption seed
 >copy Hagoromo\app\qtquick\encryption_seed_template.h Hagoromo\app\qtquick\encryption_seed.h
 REM build Hagoromo
->mkdir build-hagoromo
->cd build-hagoromo
->path\to\Qt\5.15.2\msvc2019_64\bin\qmake.exe ..\Hagoromo\Hagoromo.pro
->cd qpp\release
->path\to\Qt\5.15.2\msvc2019_64\bin\windeployqt.exe --qmldir ..\..\..\Hagoromo\app\qml Hagoromo.exe
+>.\scripts\build.bat path\to\Qt\5.15.2\msvc2019_64\bin
+REM Execute
+>deploy-hagoromo\hagoromo\Hagoromo.exe
 ```
 
-
-## Ubuntu
+### Ubuntu
 
 OpenSSL 1.1.1q 以上が必要です。
 
-Qtのオンラインインストーラでインストールできるものが使用できます。
-
 ```bash
-# build openssl
-$ cd path/to/Qt/Tools/OpenSSL/src
-$ ./config
-$ make
 # checkout repo
 $ git clone git@github.com:ioriayane/Hagoromo.git
 # copy and edit encryption seed
 $ cp Hagoromo/app/qtquick/encryption_seed_template.h Hagoromo/app/qtquick/encryption_seed.h
 $ vi Hagoromo/app/qtquick/encryption_seed.h
 # build Hagoromo
-$ mkdir build-hagoromo
-$ cd build-hagoromo
-$ path/to/Qt/5.15.2/gcc_64/bin/qmake ../Hagoromo/Hagoromo.pro
-$ make
+$ ./scripts/build.sh linux path/to/Qt/5.15.2/gcc_64/bin
 # exec hagoromo
-$ export LD_LIBRARY_PATH=/path/to/Qt/Tools/OpenSSL/src
-$ cd app
-$ ./Hagoromo
+$ ./deploy-hagoromo/hagoromo/Hagoromo.sh
 ```
+
+### Mac
+
+OpenSSL 1.1.1q 以上が必要です。
+
+```bash
+# checkout repo
+$ git clone git@github.com:ioriayane/Hagoromo.git
+# copy and edit encryption seed
+$ cp Hagoromo/app/qtquick/encryption_seed_template.h Hagoromo/app/qtquick/encryption_seed.h
+$ vi Hagoromo/app/qtquick/encryption_seed.h
+# build Hagoromo
+$ ./scripts/build.sh mac path/to/Qt/5.15.2/gcc_64/bin
+# exec hagoromo
+$ open -a ./deploy-hagoromo/hagoromo/Hagoromo.app
+```
+
 
 ## Overview
 
@@ -116,42 +118,44 @@ Official sise : [Qt](https://www.qt.io/)
 Install [Micrsoft Visual Studio 2019](https://visualstudio.microsoft.com/) (Community Edition  is also available).
 
 ```cmd
-REM setup env
->"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
 REM checkout repo
 >git clone git@github.com:ioriayane/Hagoromo.git
 REM copy and edit encryption seed
 >copy Hagoromo\app\qtquick\encryption_seed_template.h Hagoromo\app\qtquick\encryption_seed.h
 REM build Hagoromo
->mkdir build-hagoromo
->cd build-hagoromo
->path\to\Qt\5.15.2\msvc2019_64\bin\qmake.exe ..\Hagoromo\Hagoromo.pro
->cd qpp\release
->path\to\Qt\5.15.2\msvc2019_64\bin\windeployqt.exe --qmldir ..\..\..\Hagoromo\app\qml Hagoromo.exe
+>.\scripts\build.bat path\to\Qt\5.15.2\msvc2019_64\bin
+REM Execute
+>deploy-hagoromo\hagoromo\Hagoromo.exe
 ```
 
 ### Ubuntu
 
 OpenSSL 1.1.1q or higher is required.
-You can use the source code installed by Qt's online installer.
 
 ```bash
-# build openssl
-$ cd path/to/Qt/Tools/OpenSSL/src
-$ ./config
-$ make
 # checkout repo
 $ git clone git@github.com:ioriayane/Hagoromo.git
 # copy and edit encryption seed
 $ cp Hagoromo/app/qtquick/encryption_seed_template.h Hagoromo/app/qtquick/encryption_seed.h
 $ vi Hagoromo/app/qtquick/encryption_seed.h
 # build Hagoromo
-$ mkdir build-hagoromo
-$ cd build-hagoromo
-$ path/to/Qt/5.15.2/gcc_64/bin/qmake ../Hagoromo/Hagoromo.pro
-$ make
+$ ./scripts/build.sh linux path/to/Qt/5.15.2/gcc_64/bin
 # exec hagoromo
-$ export LD_LIBRARY_PATH=/path/to/Qt/Tools/OpenSSL/src
-$ cd app
-$ ./Hagoromo
+$ ./deploy-hagoromo/hagoromo/Hagoromo.sh
+```
+
+### Mac
+
+OpenSSL 1.1.1q or higher is required.
+
+```bash
+# checkout repo
+$ git clone git@github.com:ioriayane/Hagoromo.git
+# copy and edit encryption seed
+$ cp Hagoromo/app/qtquick/encryption_seed_template.h Hagoromo/app/qtquick/encryption_seed.h
+$ vi Hagoromo/app/qtquick/encryption_seed.h
+# build Hagoromo
+$ ./scripts/build.sh mac path/to/Qt/5.15.2/gcc_64/bin
+# exec hagoromo
+$ open -a ./deploy-hagoromo/hagoromo/Hagoromo.app
 ```

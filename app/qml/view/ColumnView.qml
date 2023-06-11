@@ -7,6 +7,8 @@ import QtGraphicalEffects 1.15
 import tech.relog.hagoromo.timelinelistmodel 1.0
 import tech.relog.hagoromo.notificationlistmodel 1.0
 import tech.relog.hagoromo.columnlistmodel 1.0
+import tech.relog.hagoromo.searchpostlistmodel 1.0
+import tech.relog.hagoromo.searchprofilelistmodel 1.0
 
 import "../controls"
 import "../parts"
@@ -25,6 +27,7 @@ ColumnLayout {
     property int componentType: 0
     property bool autoLoading: false
     property int loadingInterval: 300000
+    property string columnValue: ""
 
     property string accountUuid: ""
     property string service: ""
@@ -36,6 +39,8 @@ ColumnLayout {
     property string avatar: ""
 
     property var rootItem: undefined
+
+    property string hoveredLink: ""
 
     signal requestReply(string account_uuid,
                         string cid, string uri,
@@ -75,6 +80,8 @@ ColumnLayout {
             onRequestViewProfile: (did) => {
                                       columnStackView.push(profileComponent, { "userDid": did })
                                   }
+
+            onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
         }
     }
     Component {
@@ -96,6 +103,8 @@ ColumnLayout {
                                  }
             onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+
+            onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
         }
     }
     Component {
@@ -113,6 +122,8 @@ ColumnLayout {
                                  }
             onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+
+            onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
 
             onBack: {
                 if(!columnStackView.empty){
@@ -136,14 +147,57 @@ ColumnLayout {
                                  }
 
             onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
-
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+            onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
 
             onBack: {
                 if(!columnStackView.empty){
                     columnStackView.pop()
                 }
             }
+        }
+    }
+    Component {
+        id: searchPostsComponent
+        TimelineView {
+            model: SearchPostListModel {
+                autoLoading: columnView.autoLoading
+                //loadingInterval: columnView.loadingInterval
+                text: columnView.columnValue
+                searchService: "https://search.bsky.social"
+            }
+
+            onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
+                            columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+            onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
+                            columnView.requestQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+
+            onRequestViewThread: (uri) => {
+                                     // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
+                                     // これはPostThreadViewのプロパティにダイレクトに設定する
+                                     columnStackView.push(postThreadComponent, { "postThreadUri": uri })
+                                 }
+
+            onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
+
+            onRequestViewProfile: (did) => {
+                                      columnStackView.push(profileComponent, { "userDid": did })
+                                  }
+
+            onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
+        }
+    }
+    Component {
+        id: searchProfilesComponent
+        ProfileListView {
+            accountDid: columnView.did
+            unfollowAndRemove: false
+            model: SearchProfileListModel {
+                autoLoading: columnView.autoLoading
+                text: columnView.columnValue
+                searchService: "https://search.bsky.social"
+            }
+            onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
         }
     }
 
@@ -155,6 +209,12 @@ ColumnLayout {
         }else if(componentType === 1){
             columnStackView.push(listNotificationComponent)
             componentTypeLabel.text = qsTr("Notifications")
+        }else if(componentType === 2){
+            columnStackView.push(searchPostsComponent)
+            componentTypeLabel.text = qsTr("Search posts") + " : " + columnValue
+        }else if(componentType === 3){
+            columnStackView.push(searchProfilesComponent)
+            componentTypeLabel.text = qsTr("Search users") + " : " + columnValue
         }else{
             columnStackView.push(timelineComponent)
             componentTypeLabel.text = qsTr("Unknown")

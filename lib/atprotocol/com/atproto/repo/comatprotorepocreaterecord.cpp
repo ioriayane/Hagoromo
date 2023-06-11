@@ -1,11 +1,22 @@
 #include "comatprotorepocreaterecord.h"
+#include "atprotocol/app/bsky/actor/appbskyactorgetprofiles.h"
 
 #include <QDateTime>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QPointer>
+
+using AtProtocolInterface::AppBskyActorGetProfiles;
+using namespace AtProtocolType;
 
 namespace AtProtocolInterface {
+
+struct MentionPosition
+{
+    int start = -1;
+    int end = -1;
+};
 
 ComAtprotoRepoCreateRecord::ComAtprotoRepoCreateRecord(QObject *parent)
     : AccessAtProtocol { parent }
@@ -77,6 +88,35 @@ void ComAtprotoRepoCreateRecord::post(const QString &text)
 
     } else if (!json_embed_images.isEmpty()) {
         json_record.insert("embed", json_embed_images);
+    }
+
+    if (!m_facets.isEmpty()) {
+        QJsonArray json_facets;
+        for (const auto &facet : qAsConst(m_facets)) {
+            QJsonObject json_facet;
+            QJsonObject json_index;
+            QJsonArray json_features;
+            QJsonObject json_feature;
+
+            json_index.insert("byteStart", facet.index.byteStart);
+            json_index.insert("byteEnd", facet.index.byteEnd);
+            if (facet.features_type == AppBskyRichtextFacet::MainFeaturesType::features_Link
+                && !facet.features_Link.isEmpty()) {
+                json_feature.insert("uri", facet.features_Link.first().uri);
+                json_feature.insert("$type", "app.bsky.richtext.facet#link");
+            } else if (facet.features_type
+                               == AppBskyRichtextFacet::MainFeaturesType::features_Mention
+                       && !facet.features_Mention.isEmpty()) {
+                json_facet.insert("$type", "app.bsky.richtext.facet");
+                json_feature.insert("did", facet.features_Mention.first().did);
+                json_feature.insert("$type", "app.bsky.richtext.facet#mention");
+            }
+            json_facet.insert("index", json_index);
+            json_features.append(json_feature);
+            json_facet.insert("features", json_features);
+            json_facets.append(json_facet);
+        }
+        json_record.insert("facets", json_facets);
     }
 
     QJsonObject json_obj;
@@ -184,6 +224,12 @@ void ComAtprotoRepoCreateRecord::parseJson(const QString reply_json)
     }
 
     emit finished(success);
+}
+
+void ComAtprotoRepoCreateRecord::setFacets(
+        const QList<AtProtocolType::AppBskyRichtextFacet::Main> &newFacets)
+{
+    m_facets = newFacets;
 }
 
 QString ComAtprotoRepoCreateRecord::replyUri() const

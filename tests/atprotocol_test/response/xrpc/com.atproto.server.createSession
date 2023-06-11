@@ -1,0 +1,7 @@
+{
+    "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+    "handle": "ioriayane.relog.tech",
+    "email": "iori.ayane@gmail.com",
+    "accessJwt": "hoge hoge accessJwt",
+    "refreshJwt": "hoge hoge refreshJwt"
+}

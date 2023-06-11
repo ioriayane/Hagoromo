@@ -1,0 +1,20 @@
+[
+    {
+        "recordText": "link<br/><a href=\"https://leme.style/\">https://leme.style/</a>"
+    },
+    {
+        "recordText": "リンクありの引用"
+    },
+    {
+        "recordText": "リンクテスト<br/><a href=\"https://leme.style/\">https://leme.style/</a><br/>2つめ<br/><a href=\"https://blueskyweb.xyz/\">https://blueskyweb.xyz/</a><br/>終わり"
+    },
+    {
+        "recordText": "リンクテスト<br/><a href=\"https://leme.style/\">https://leme.style/</a><br/>もうひとつ<br/><a href=\"https://blueskyweb.xyz/\">https://blueskyweb.xyz/</a>"
+    },
+    {
+        "recordText": "<a href=\"https://leme.style/\">https://leme.style/</a><br/>2つめ<br/><a href=\"https://blueskyweb.xyz/\">https://blueskyweb.xyz/</a><br/>終わり"
+    },
+    {
+        "recordText": "<a href=\"did:plc:ipj5qejfoqu6eukvt72uhyit\">@ioriayane.relog.tech</a> <a href=\"did:plc:l4fsx4ujos7uw7n4ijq2ulgs\">@ioriayane.bsky.social</a> <a href=\"did:plc:ipj5qejfoqu6eukvt72uhyit\">@ioriayane.relog.tech</a> てすてす"
+    }
+]

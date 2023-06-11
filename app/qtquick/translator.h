@@ -17,12 +17,12 @@ public:
     explicit Translator(QObject *parent = nullptr);
 
     Q_INVOKABLE void translate(const QString &text);
+    bool validSettings();
+
     const QString apiUrl() const;
     void setApiUrl(const QString &newApiUrl);
-
     const QString apiKey() const;
     void setApiKey(const QString &newApiKey);
-
     const QString targetLanguage() const;
     void setTargetLanguage(const QString &newTargetLanguage);
 

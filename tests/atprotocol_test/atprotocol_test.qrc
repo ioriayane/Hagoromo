@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>response/xrpc/com.atproto.server.createSession</file>
+    </qresource>
+</RCC>

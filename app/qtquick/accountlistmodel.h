@@ -46,6 +46,7 @@ public:
                                    const QString &accessJwt, const QString &refreshJwt,
                                    const bool authorized);
     Q_INVOKABLE void removeAccount(int row);
+    Q_INVOKABLE void updateAccountProfile(const QString &service, const QString &identifier);
     Q_INVOKABLE int indexAt(const QString &uuid);
 
     Q_INVOKABLE void save() const;

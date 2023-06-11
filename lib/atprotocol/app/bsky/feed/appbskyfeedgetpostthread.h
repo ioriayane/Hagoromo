@@ -13,7 +13,7 @@ public:
 
     void getPostThread(const QString &uri);
 
-    AtProtocolType::AppBskyFeedDefs::ThreadViewPost *threadViewPost();
+    const AtProtocolType::AppBskyFeedDefs::ThreadViewPost *threadViewPost() const;
 
 private:
     virtual void parseJson(const QString reply_json);

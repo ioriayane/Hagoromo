@@ -14,6 +14,7 @@ ClickableFrame {
     style: "Post"
 
     property int layoutWidth: postFrame.Layout.preferredWidth
+    property string hoveredLink: ""
 
     property alias repostReactionAuthor: repostReactionAuthor
     property alias replyReactionAuthor: replyReactionAuthor
@@ -32,6 +33,23 @@ ClickableFrame {
     property alias externalLinkDescriptionLabel: externalLinkDescriptionLabel
     property alias postControls: postControls
 
+    signal requestViewProfile(string did)
+
+    function openLink(url){
+        if(url.indexOf("did:") === 0){
+            requestViewProfile(url)
+        }else{
+            Qt.openUrlExternally(url)
+        }
+    }
+
+    function displayLink(url){
+        if(url === undefined || url.indexOf("did:") === 0){
+            hoveredLink = ""
+        }else{
+            hoveredLink = url
+        }
+    }
 
     ColumnLayout {
         ReactionAuthor {
@@ -77,8 +95,10 @@ ClickableFrame {
                     wrapMode: Text.WrapAnywhere
                     font.pointSize: 10
                     lineHeight: 1.3
-                    onLinkActivated: (url) => Qt.openUrlExternally(url)
+                    onLinkActivated: (url) => openLink(url)
+                    onHoveredLinkChanged: displayLink(hoveredLink)
                 }
+
                 ImagePreview {
                     id: postImagePreview
                     layoutWidth: parent.basisWidth
@@ -114,7 +134,8 @@ ClickableFrame {
                                 wrapMode: Text.WrapAnywhere
                                 font.pointSize: 10
                                 lineHeight: 1.3
-                                onLinkActivated: (url) => Qt.openUrlExternally(url)
+                                onLinkActivated: (url) => openLink(url)
+                                onHoveredLinkChanged: displayLink(hoveredLink)
                             }
                         }
                     }
@@ -133,6 +154,7 @@ ClickableFrame {
                     leftPadding: 0
                     rightPadding: 0
                     bottomPadding: 5
+                    hoverEnabled: true
                     ColumnLayout {
                         spacing: 3
                         ImageWithIndicator {

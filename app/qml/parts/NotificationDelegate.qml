@@ -28,12 +28,31 @@ ClickableFrame {
     property string recordIndexedAt: ""
     property string recordRecordText: ""
 
+    property string hoveredLink: ""
+
     property alias postAvatarImage: postAvatarImage
     property alias postAuthor: postAuthor
     property alias recordFrame: recordFrame
     property alias recordImagePreview: recordImagePreview
     property alias postControls: postControls
 
+    signal requestViewProfile(string did)
+
+    function openLink(url){
+        if(url.indexOf("did:") === 0){
+            requestViewProfile(url)
+        }else{
+            Qt.openUrlExternally(url)
+        }
+    }
+
+    function displayLink(url){
+        if(url === undefined || url.indexOf("did:") === 0){
+            hoveredLink = ""
+        }else{
+            hoveredLink = url
+        }
+    }
     states: [
         State {
             when: notificationFrame.reason === NotificationListModel.ReasonLike
@@ -58,6 +77,10 @@ ClickableFrame {
         State {
             when: notificationFrame.reason === NotificationListModel.ReasonMention
             PropertyChanges { target: reasonImage; source: "../images/reply.png" }
+            PropertyChanges { target: recordTextLabel; visible: true }
+            PropertyChanges { target: recordTextLabel; text: notificationFrame.recordText }
+            PropertyChanges { target: postControls; visible: true }
+            PropertyChanges { target: notificationFrame; bottomPadding: 2 }
         },
         State {
             when: notificationFrame.reason === NotificationListModel.ReasonReply
@@ -112,7 +135,7 @@ ClickableFrame {
                     },
                     State {
                         when: notificationFrame.reason === NotificationListModel.ReasonMention
-                        PropertyChanges { target: reasonImageEffect; color: Material.color(Material.BlueGrey) }
+                        PropertyChanges { target: reasonImageEffect; color: Material.color(Material.Blue) }
                     },
                     State {
                         when: notificationFrame.reason === NotificationListModel.ReasonReply
@@ -155,7 +178,8 @@ ClickableFrame {
                 wrapMode: Text.WrapAnywhere
                 font.pointSize: 10
                 lineHeight: 1.3
-                onLinkActivated: (url) => Qt.openUrlExternally(url)
+                onLinkActivated: (url) => openLink(url)
+                onHoveredLinkChanged: displayLink(hoveredLink)
             }
 
             ClickableFrame {
@@ -185,7 +209,8 @@ ClickableFrame {
                         wrapMode: Text.WrapAnywhere
                         font.pointSize: 10
                         lineHeight: 1.3
-                        onLinkActivated: (url) => Qt.openUrlExternally(url)
+                        onLinkActivated: (url) => openLink(url)
+                        onHoveredLinkChanged: displayLink(hoveredLink)
                     }
                     ImagePreview {
                         id: recordImagePreview

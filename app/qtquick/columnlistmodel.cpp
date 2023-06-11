@@ -40,6 +40,8 @@ QVariant ColumnListModel::item(int row, ColumnListModelRoles role) const
         return m_columnList.at(row).loading_interval;
     else if (role == WidthRole)
         return m_columnList.at(row).width;
+    else if (role == ValueRole)
+        return m_columnList.at(row).value;
 
     return QVariant();
 }
@@ -61,6 +63,8 @@ void ColumnListModel::update(int row, ColumnListModelRoles role, const QVariant 
         m_columnList[row].loading_interval = value.toInt();
     else if (role == WidthRole)
         m_columnList[row].width = value.toInt();
+    else if (role == ValueRole)
+        m_columnList[row].value = value.toInt();
 
     emit dataChanged(index(row), index(row));
 
@@ -68,13 +72,13 @@ void ColumnListModel::update(int row, ColumnListModelRoles role, const QVariant 
 }
 
 void ColumnListModel::append(const QString &account_uuid, int component_type, bool auto_loading,
-                             int interval, int width)
+                             int interval, int width, const QString &value)
 {
-    insert(rowCount(), account_uuid, component_type, auto_loading, interval, width);
+    insert(rowCount(), account_uuid, component_type, auto_loading, interval, width, value);
 }
 
 void ColumnListModel::insert(int row, const QString &account_uuid, int component_type,
-                             bool auto_loading, int interval, int width)
+                             bool auto_loading, int interval, int width, const QString &value)
 {
     if (row < 0 || row > m_columnList.count())
         return;
@@ -86,6 +90,7 @@ void ColumnListModel::insert(int row, const QString &account_uuid, int component
     item.auto_loading = auto_loading;
     item.loading_interval = interval;
     item.width = width;
+    item.value = value;
 
     beginInsertRows(QModelIndex(), row, row);
     m_columnList.insert(row, item);
@@ -154,6 +159,7 @@ void ColumnListModel::save() const
         column_item["auto_loading"] = item.auto_loading;
         column_item["interval"] = item.loading_interval;
         column_item["width"] = item.width;
+        column_item["value"] = item.value;
         column_array.append(column_item);
     }
 
@@ -179,6 +185,7 @@ void ColumnListModel::load()
                 item.loading_interval =
                         doc.array().at(i).toObject().value("interval").toInt(300000);
                 item.width = doc.array().at(i).toObject().value("width").toInt(400);
+                item.value = doc.array().at(i).toObject().value("value").toString();
 
                 m_columnList.append(item);
             }
@@ -196,6 +203,7 @@ QHash<int, QByteArray> ColumnListModel::roleNames() const
     roles[AutoLoadingRole] = "autoLoading";
     roles[LoadingIntervalRole] = "loadingInterval";
     roles[WidthRole] = "width";
+    roles[ValueRole] = "value";
 
     return roles;
 }
