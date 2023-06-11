@@ -41,15 +41,17 @@ deploy_hagoromo(){
     build_dir="build-hagoromo"
     work_root_dir="deploy-hagoromo"
     work_dir=${work_root_dir}/hagoromo
-    make_dir $work_root_dir
-    mkdir -p ${work_dir}/bin
-    mkdir -p ${work_dir}/lib
+    make_dir ${work_root_dir}
+    mkdir -p ${work_dir}
 
-    cp ${build_dir}/Hagoromo ${work_dir}/bin
     cp "LICENSE" ${work_dir}
     cp "README.md" ${work_dir}
 
     if [ "${PLATFORM_TYPE}" == "linux" ]; then
+        mkdir -p ${work_dir}/bin
+        mkdir -p ${work_dir}/lib
+
+        cp ${build_dir}/Hagoromo ${work_dir}/bin
         cp ${SCRIPT_FOLDER}/deploy/Hagoromo.sh ${work_dir}
         cp "openssl/lib/libcrypto.so.1.1" ${work_dir}/lib
         cp "openssl/lib/libssl.so.1.1" ${work_dir}/lib
@@ -61,7 +63,8 @@ deploy_hagoromo(){
         cat ${SCRIPT_FOLDER}/deploy/linux_qml.txt | xargs -i{} cp -P ${QT_BIN_FOLDER}/../qml/{} ${work_dir}/bin/{}
 
     elif [ "${PLATFORM_TYPE}" == "mac" ]; then
-        echo "skip..."
+        cp -r build-hagoromo/Hagoromo.app deploy-hagoromo/hagoromo/
+        ${QT_BIN_FOLDER}/macdeployqt deploy-hagoromo/hagoromo/Hagoromo.app -qmldir=app/qml
     fi
 
     cd ${work_root_dir}
