@@ -16,6 +16,7 @@ SOURCES += \
     $$PWD/recordoperator.cpp \
     $$PWD/searchpostlistmodel.cpp \
     $$PWD/searchprofilelistmodel.cpp \
+    $$PWD/systemtool.cpp \
     $$PWD/timelinelistmodel.cpp \
     $$PWD/translator.cpp \
     $$PWD/userprofile.cpp
@@ -37,6 +38,7 @@ HEADERS += \
     $$PWD/recordoperator.h \
     $$PWD/searchpostlistmodel.h \
     $$PWD/searchprofilelistmodel.h \
+    $$PWD/systemtool.h \
     $$PWD/thumbnailprovider.h \
     $$PWD/timelinelistmodel.h \
     $$PWD/translator.h \

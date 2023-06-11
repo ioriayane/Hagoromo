@@ -6,6 +6,7 @@ import Qt.labs.settings 1.1
 
 import tech.relog.hagoromo.accountlistmodel 1.0
 import tech.relog.hagoromo.columnlistmodel 1.0
+import tech.relog.hagoromo.systemtool 1.0
 
 import "controls"
 import "dialogs"
@@ -28,10 +29,14 @@ ApplicationWindow {
     Material.accent: settingDialog.settings.accent
 
     Settings {
-//        property alias x: appWindow.x
-//        property alias y: appWindow.y
+        //        property alias x: appWindow.x
+        //        property alias y: appWindow.y
         property alias width: appWindow.width
         property alias height: appWindow.height
+    }
+
+    SystemTool {
+        id: systemTool
     }
 
     Shortcut {  // Post
@@ -261,6 +266,40 @@ ApplicationWindow {
                              }
             onRequestDisplayOfColumnSetting: (key) => columnsettingDialog.openWithKey(key)
             onHoveredLinkChanged: hoveredLinkFrame.text = hoveredLink
+        }
+    }
+
+    ColumnLayout {
+        anchors.right: rootLayout.right
+        anchors.bottom: rootLayout.bottom
+        anchors.rightMargin: 5
+        anchors.bottomMargin: scrollView.ScrollBar.horizontal.height + 5
+        Label {
+            Layout.alignment: Qt.AlignRight
+            font.pointSize: 10
+            color: Material.color(Material.Grey)
+            text: "羽衣 -Hagoromo-"
+        }
+        Label {
+            Layout.alignment: Qt.AlignRight
+            Layout.rightMargin: 5
+            font.pointSize: 8
+            color: Material.color(Material.Grey)
+            text: "Version : " + systemTool.applicationVersion
+        }
+        Label {
+            Layout.alignment: Qt.AlignRight
+            Layout.rightMargin: 5
+            font.pointSize: 8
+            color: Material.color(Material.Grey)
+            text: "build on Qt " + systemTool.qtVersion
+        }
+        Label {
+            Layout.alignment: Qt.AlignRight
+            Layout.rightMargin: 5
+            font.pointSize: 8
+            color: Material.color(Material.Grey)
+            text: "© 2023 Iori Ayane"
         }
     }
 

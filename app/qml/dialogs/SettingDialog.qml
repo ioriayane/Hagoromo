@@ -5,6 +5,7 @@ import QtQuick.Controls.Material 2.15
 import Qt.labs.settings 1.0
 
 import tech.relog.hagoromo.encryption 1.0
+import tech.relog.hagoromo.systemtool 1.0
 
 Dialog {
     id: settingDialog
@@ -20,6 +21,9 @@ Dialog {
 
     Encryption {
         id: encryption
+    }
+    SystemTool {
+        id: systemTool
     }
 
     Settings {
@@ -225,7 +229,7 @@ Dialog {
                         Layout.preferredWidth: 50
                         Layout.preferredHeight: 50
                         Layout.alignment: Qt.AlignTop
-                        Layout.rowSpan: 3
+                        Layout.rowSpan: 4
                         source: "../images/logo.png"
                     }
                     Label {
@@ -233,10 +237,13 @@ Dialog {
                         text: "羽衣 -Hagoromo-"
                     }
                     Label {
-                        text: "Version:0.1.0"
+                        text: "Version:" + systemTool.applicationVersion
                     }
                     Label {
-                        text: "(c) 2023 IoriAyane"
+                        text: "build on Qt " + systemTool.qtVersion
+                    }
+                    Label {
+                        text: "© 2023 Iori Ayane"
                     }
 //                    Item {
 //                        Layout.fillWidth: true
