@@ -24,7 +24,6 @@ namespace AppBskyRichtextFacet {
 struct Main;
 }
 
-
 // app.bsky.graph.defs
 namespace AppBskyGraphDefs {
 typedef QString ListPurpose;
@@ -217,7 +216,8 @@ struct View
     AppBskyEmbedExternal::View media_AppBskyEmbedExternal_View;
     // union end : media
 };
-// A representation of a record embedded in another form of content, alongside other compatible embeds
+// A representation of a record embedded in another form of content, alongside other compatible
+// embeds
 struct Main
 {
     QSharedPointer<AppBskyEmbedRecord::Main> record;
@@ -761,6 +761,7 @@ struct ReportView
     int id = 0;
     ComAtprotoModerationDefs::ReasonType reasonType;
     QString reason; //
+    QString subjectRepoHandle; //
     // union start : subject
     ReportViewSubjectType subject_type = ReportViewSubjectType::none;
     RepoRef subject_RepoRef;

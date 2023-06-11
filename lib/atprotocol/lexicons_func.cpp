@@ -967,6 +967,7 @@ void copyReportView(const QJsonObject &src, ComAtprotoAdminDefs::ReportView &des
         dest.id = src.value("id").toInt();
         ComAtprotoModerationDefs::copyReasonType(src.value("reasonType"), dest.reasonType);
         dest.reason = src.value("reason").toString();
+        dest.subjectRepoHandle = src.value("subjectRepoHandle").toString();
         QString subject_type = src.value("subject").toObject().value("$type").toString();
         if (subject_type == QStringLiteral("com.atproto.admin.defs#repoRef")) {
             dest.subject_type = ComAtprotoAdminDefs::ReportViewSubjectType::subject_RepoRef;
