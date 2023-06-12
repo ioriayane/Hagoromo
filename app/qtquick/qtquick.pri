@@ -9,6 +9,7 @@ SOURCES += \
     $$PWD/columnlistmodel.cpp \
     $$PWD/createsession.cpp \
     $$PWD/encryption.cpp \
+    $$PWD/feedtypelistmodel.cpp \
     $$PWD/followerslistmodel.cpp \
     $$PWD/followslistmodel.cpp \
     $$PWD/notificationlistmodel.cpp \
@@ -31,6 +32,7 @@ HEADERS += \
     $$PWD/createsession.h \
     $$PWD/encryption.h \
     $$PWD/encryption_seed.h \
+    $$PWD/feedtypelistmodel.h \
     $$PWD/followerslistmodel.h \
     $$PWD/followslistmodel.h \
     $$PWD/notificationlistmodel.h \

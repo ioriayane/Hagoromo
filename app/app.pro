@@ -50,10 +50,12 @@ IMAGE_FILES += \
     qml/images/edit.png \
     qml/images/expand_less.png \
     qml/images/expand_more.png \
+    qml/images/home.png \
     qml/images/icon_mask.png \
     qml/images/like.png \
     qml/images/logo.png \
     qml/images/more.png \
+    qml/images/notification.png \
     qml/images/quote.png \
     qml/images/reply.png \
     qml/images/repost.png \
@@ -77,3 +79,4 @@ QML_DESIGNER_IMPORT_PATH =
 include(../lib/lib.pri)
 include(qtquick/qtquick.pri)
 include(../openssl/openssl.pri)
+

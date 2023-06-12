@@ -507,10 +507,14 @@ class Defs2Struct:
                                 self.output_func_text[namespace].append('        }')
 
                     elif items_type == 'integer':
-                        self.output_func_text[namespace].append('        dest.%s.append(src.value("%s").toInt());' % (property_name, property_name, ))
+                        self.output_func_text[namespace].append('        for (const auto &value : src.value("%s").toArray()) {' % (property_name, ))
+                        self.output_func_text[namespace].append('            dest.%s.append(value.toInt());' % (property_name, ))
+                        self.output_func_text[namespace].append('        }')
 
                     elif items_type == 'string':
-                        self.output_func_text[namespace].append('        dest.%s.append(src.value("%s").toString());' % (property_name, property_name, ))
+                        self.output_func_text[namespace].append('        for (const auto &value : src.value("%s").toArray()) {' % (property_name, ))
+                        self.output_func_text[namespace].append('            dest.%s.append(value.toString());' % (property_name, ))
+                        self.output_func_text[namespace].append('        }')
 
             self.output_func_text[namespace].append('    }')
             self.output_func_text[namespace].append('}')
