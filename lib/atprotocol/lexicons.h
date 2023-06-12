@@ -33,9 +33,9 @@ struct ListViewerState
 struct ListViewBasic
 {
     QString uri; // at-uri
-    QString name; //
+    QString name;
     ListPurpose purpose;
-    QString avatar; //
+    QString avatar;
     ListViewerState viewer;
     QString indexedAt; // datetime
 };
@@ -43,11 +43,11 @@ struct ListView
 {
     QString uri; // at-uri
     QSharedPointer<AppBskyActorDefs::ProfileView> creator;
-    QString name; //
+    QString name;
     ListPurpose purpose;
-    QString description; //
+    QString description;
     QList<QSharedPointer<AppBskyRichtextFacet::Main>> descriptionFacets;
-    QString avatar; //
+    QString avatar;
     ListViewerState viewer;
     QString indexedAt; // datetime
 };
@@ -64,7 +64,7 @@ struct Label
     QString src; // did
     QString uri; // uri
     QString cid; // cid
-    QString val; //
+    QString val;
     QString cts; // datetime
 };
 }
@@ -83,8 +83,8 @@ struct ProfileViewBasic
 {
     QString did; // did
     QString handle; // handle
-    QString displayName; //
-    QString avatar; //
+    QString displayName;
+    QString avatar;
     ViewerState viewer;
     QList<ComAtprotoLabelDefs::Label> labels;
 };
@@ -92,9 +92,9 @@ struct ProfileView
 {
     QString did; // did
     QString handle; // handle
-    QString displayName; //
-    QString description; //
-    QString avatar; //
+    QString displayName;
+    QString description;
+    QString avatar;
     QString indexedAt; // datetime
     ViewerState viewer;
     QList<ComAtprotoLabelDefs::Label> labels;
@@ -103,10 +103,10 @@ struct ProfileViewDetailed
 {
     QString did; // did
     QString handle; // handle
-    QString displayName; //
-    QString description; //
-    QString avatar; //
-    QString banner; //
+    QString displayName;
+    QString description;
+    QString avatar;
+    QString banner;
     int followersCount = 0;
     int followsCount = 0;
     int postsCount = 0;
@@ -119,11 +119,13 @@ struct AdultContentPref
 };
 struct ContentLabelPref
 {
-    QString label; //
-    QString visibility; //
+    QString label;
+    QString visibility;
 };
 struct SavedFeedsPref
 {
+    QList<QString> pinned;
+    QList<QString> saved;
 };
 }
 
@@ -131,8 +133,8 @@ struct SavedFeedsPref
 namespace AppBskyActorProfile {
 struct Main
 {
-    QString displayName; //
-    QString description; //
+    QString displayName;
+    QString description;
 };
 }
 
@@ -142,8 +144,8 @@ namespace AppBskyEmbedExternal {
 struct External
 {
     QString uri; // uri
-    QString title; //
-    QString description; //
+    QString title;
+    QString description;
 };
 struct Main
 {
@@ -152,9 +154,9 @@ struct Main
 struct ViewExternal
 {
     QString uri; // uri
-    QString title; //
-    QString description; //
-    QString thumb; //
+    QString title;
+    QString description;
+    QString thumb;
 };
 struct View
 {
@@ -167,7 +169,7 @@ namespace AppBskyEmbedImages {
 // A set of images embedded in some other form of content
 struct Image
 {
-    QString alt; //
+    QString alt;
 };
 struct Main
 {
@@ -175,9 +177,9 @@ struct Main
 };
 struct ViewImage
 {
-    QString thumb; //
-    QString fullsize; //
-    QString alt; //
+    QString thumb;
+    QString fullsize;
+    QString alt;
 };
 struct View
 {
@@ -311,10 +313,10 @@ struct GeneratorView
     QString cid; // cid
     QString did; // did
     AppBskyActorDefs::ProfileView creator;
-    QString displayName; //
-    QString description; //
+    QString displayName;
+    QString description;
     QList<AppBskyRichtextFacet::Main> descriptionFacets;
-    QString avatar; //
+    QString avatar;
     int likeCount = 0;
     GeneratorViewerState viewer;
     QString indexedAt; // datetime
@@ -476,8 +478,8 @@ struct Feed
 };
 struct Links
 {
-    QString privacyPolicy; //
-    QString termsOfService; //
+    QString privacyPolicy;
+    QString termsOfService;
 };
 }
 
@@ -486,8 +488,8 @@ namespace AppBskyFeedGenerator {
 struct Main
 {
     QString did; // did
-    QString displayName; //
-    QString description; //
+    QString displayName;
+    QString description;
     QList<AppBskyRichtextFacet::Main> descriptionFacets;
     QString createdAt; // datetime
 };
@@ -529,8 +531,8 @@ struct TextSlice
 struct Entity
 {
     TextSlice index;
-    QString type; //
-    QString value; //
+    QString type;
+    QString value;
 };
 struct ReplyRef
 {
@@ -539,7 +541,7 @@ struct ReplyRef
 };
 struct Main
 {
-    QString text; //
+    QString text;
     QList<Entity> entities;
     QList<AppBskyRichtextFacet::Main> facets;
     ReplyRef reply;
@@ -586,8 +588,8 @@ namespace AppBskyGraphList {
 struct Main
 {
     AppBskyGraphDefs::ListPurpose purpose;
-    QString name; //
-    QString description; //
+    QString name;
+    QString description;
     QList<AppBskyRichtextFacet::Main> descriptionFacets;
     QString createdAt; // datetime
 };
@@ -610,7 +612,7 @@ struct Notification
     QString uri; // at-uri
     QString cid; // cid
     AppBskyActorDefs::ProfileView author;
-    QString reason; //
+    QString reason;
     QString reasonSubject; // at-uri
     QVariant record;
     QString indexedAt; // datetime
@@ -627,10 +629,10 @@ struct InviteCodeUse
 };
 struct InviteCode
 {
-    QString code; //
+    QString code;
     int available = 0;
-    QString forAccount; //
-    QString createdBy; //
+    QString forAccount;
+    QString createdBy;
     QString createdAt; // datetime
     QList<InviteCodeUse> uses;
 };
@@ -679,7 +681,7 @@ struct RepoRef
 };
 struct ActionReversal
 {
-    QString reason; //
+    QString reason;
     QString createdBy; // did
     QString createdAt; // datetime
 };
@@ -692,10 +694,14 @@ struct ActionView
     RepoRef subject_RepoRef;
     ComAtprotoRepoStrongRef::Main subject_ComAtprotoRepoStrongRef_Main;
     // union end : subject
-    QString reason; //
+    QList<QString> subjectBlobCids;
+    QList<QString> createLabelVals;
+    QList<QString> negateLabelVals;
+    QString reason;
     QString createdBy; // did
     QString createdAt; // datetime
     ActionReversal reversal;
+    QList<int> resolvedReportIds;
 };
 struct ActionViewCurrent
 {
@@ -710,7 +716,7 @@ struct RepoView
 {
     QString did; // did
     QString handle; // handle
-    QString email; //
+    QString email;
     QString indexedAt; // datetime
     Moderation moderation;
     ComAtprotoServerDefs::InviteCode invitedBy;
@@ -724,6 +730,7 @@ struct RecordView
     QString uri; // at-uri
     QString cid; // cid
     QVariant value;
+    QList<QString> blobCids;
     QString indexedAt; // datetime
     Moderation moderation;
     RepoView repo;
@@ -746,7 +753,7 @@ struct VideoDetails
 struct BlobView
 {
     QString cid; // cid
-    QString mimeType; //
+    QString mimeType;
     int size = 0;
     QString createdAt; // datetime
     // union start : details
@@ -760,8 +767,8 @@ struct ReportView
 {
     int id = 0;
     ComAtprotoModerationDefs::ReasonType reasonType;
-    QString reason; //
-    QString subjectRepoHandle; //
+    QString reason;
+    QString subjectRepoHandle;
     // union start : subject
     ReportViewSubjectType subject_type = ReportViewSubjectType::none;
     RepoRef subject_RepoRef;
@@ -769,6 +776,7 @@ struct ReportView
     // union end : subject
     QString reportedBy; // did
     QString createdAt; // datetime
+    QList<int> resolvedByActionIds;
 };
 struct ActionViewDetail
 {
@@ -782,7 +790,9 @@ struct ActionViewDetail
     RecordViewNotFound subject_RecordViewNotFound;
     // union end : subject
     QList<BlobView> subjectBlobs;
-    QString reason; //
+    QList<QString> createLabelVals;
+    QList<QString> negateLabelVals;
+    QString reason;
     QString createdBy; // did
     QString createdAt; // datetime
     ActionReversal reversal;
@@ -792,7 +802,7 @@ struct ReportViewDetail
 {
     int id = 0;
     ComAtprotoModerationDefs::ReasonType reasonType;
-    QString reason; //
+    QString reason;
     // union start : subject
     ReportViewDetailSubjectType subject_type = ReportViewDetailSubjectType::none;
     RepoView subject_RepoView;
@@ -814,7 +824,7 @@ struct RepoViewDetail
 {
     QString did; // did
     QString handle; // handle
-    QString email; //
+    QString email;
     QString indexedAt; // datetime
     ModerationDetail moderation;
     QList<ComAtprotoLabelDefs::Label> labels;
@@ -843,8 +853,8 @@ struct Labels
 };
 struct Info
 {
-    QString name; //
-    QString message; //
+    QString name;
+    QString message;
 };
 }
 
@@ -853,19 +863,19 @@ namespace ComAtprotoRepoApplyWrites {
 struct Create
 {
     QString collection; // nsid
-    QString rkey; //
+    QString rkey;
     QVariant value;
 };
 struct Update
 {
     QString collection; // nsid
-    QString rkey; //
+    QString rkey;
     QVariant value;
 };
 struct Delete
 {
     QString collection; // nsid
-    QString rkey; //
+    QString rkey;
 };
 }
 
@@ -883,8 +893,8 @@ struct Record
 namespace ComAtprotoServerCreateAppPassword {
 struct AppPassword
 {
-    QString name; //
-    QString password; //
+    QString name;
+    QString password;
     QString createdAt; // datetime
 };
 }
@@ -893,7 +903,8 @@ struct AppPassword
 namespace ComAtprotoServerCreateInviteCodes {
 struct AccountCodes
 {
-    QString account; //
+    QString account;
+    QList<QString> codes;
 };
 }
 
@@ -901,8 +912,8 @@ struct AccountCodes
 namespace ComAtprotoServerDescribeServer {
 struct Links
 {
-    QString privacyPolicy; //
-    QString termsOfService; //
+    QString privacyPolicy;
+    QString termsOfService;
 };
 }
 
@@ -910,7 +921,7 @@ struct Links
 namespace ComAtprotoServerListAppPasswords {
 struct AppPassword
 {
-    QString name; //
+    QString name;
     QString createdAt; // datetime
 };
 }
@@ -928,8 +939,8 @@ struct Repo
 namespace ComAtprotoSyncSubscribeRepos {
 struct RepoOp
 {
-    QString action; //
-    QString path; //
+    QString action;
+    QString path;
 };
 struct Commit
 {
@@ -949,7 +960,7 @@ struct Migrate
 {
     int seq = 0;
     QString did; // did
-    QString migrateTo; //
+    QString migrateTo;
     QString time; // datetime
 };
 struct Tombstone
@@ -960,8 +971,8 @@ struct Tombstone
 };
 struct Info
 {
-    QString name; //
-    QString message; //
+    QString name;
+    QString message;
 };
 }
 

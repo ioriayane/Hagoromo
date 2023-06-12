@@ -132,7 +132,10 @@ void copyContentLabelPref(const QJsonObject &src, AppBskyActorDefs::ContentLabel
 }
 void copySavedFeedsPref(const QJsonObject &src, AppBskyActorDefs::SavedFeedsPref &dest)
 {
-    if (!src.isEmpty()) { }
+    if (!src.isEmpty()) {
+        dest.pinned.append(src.value("pinned").toString());
+        dest.saved.append(src.value("saved").toString());
+    }
 }
 }
 // com.atproto.label.defs
@@ -872,10 +875,14 @@ void copyActionView(const QJsonObject &src, ComAtprotoAdminDefs::ActionView &des
             ComAtprotoRepoStrongRef::copyMain(src.value("subject").toObject(),
                                               dest.subject_ComAtprotoRepoStrongRef_Main);
         }
+        dest.subjectBlobCids.append(src.value("subjectBlobCids").toString());
+        dest.createLabelVals.append(src.value("createLabelVals").toString());
+        dest.negateLabelVals.append(src.value("negateLabelVals").toString());
         dest.reason = src.value("reason").toString();
         dest.createdBy = src.value("createdBy").toString();
         dest.createdAt = src.value("createdAt").toString();
         copyActionReversal(src.value("reversal").toObject(), dest.reversal);
+        dest.resolvedReportIds.append(src.value("resolvedReportIds").toInt());
     }
 }
 void copyActionViewCurrent(const QJsonObject &src, ComAtprotoAdminDefs::ActionViewCurrent &dest)
@@ -914,6 +921,7 @@ void copyRecordView(const QJsonObject &src, ComAtprotoAdminDefs::RecordView &des
         dest.uri = src.value("uri").toString();
         dest.cid = src.value("cid").toString();
         LexiconsTypeUnknown::copyUnknown(src.value("value").toObject(), dest.value);
+        dest.blobCids.append(src.value("blobCids").toString());
         dest.indexedAt = src.value("indexedAt").toString();
         copyModeration(src.value("moderation").toObject(), dest.moderation);
         copyRepoView(src.value("repo").toObject(), dest.repo);
@@ -981,6 +989,7 @@ void copyReportView(const QJsonObject &src, ComAtprotoAdminDefs::ReportView &des
         }
         dest.reportedBy = src.value("reportedBy").toString();
         dest.createdAt = src.value("createdAt").toString();
+        dest.resolvedByActionIds.append(src.value("resolvedByActionIds").toInt());
     }
 }
 void copyActionViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::ActionViewDetail &dest)
@@ -1017,6 +1026,8 @@ void copyActionViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::ActionVie
             copyBlobView(s.toObject(), child);
             dest.subjectBlobs.append(child);
         }
+        dest.createLabelVals.append(src.value("createLabelVals").toString());
+        dest.negateLabelVals.append(src.value("negateLabelVals").toString());
         dest.reason = src.value("reason").toString();
         dest.createdBy = src.value("createdBy").toString();
         dest.createdAt = src.value("createdAt").toString();
@@ -1233,6 +1244,7 @@ void copyAccountCodes(const QJsonObject &src, ComAtprotoServerCreateInviteCodes:
 {
     if (!src.isEmpty()) {
         dest.account = src.value("account").toString();
+        dest.codes.append(src.value("codes").toString());
     }
 }
 }
