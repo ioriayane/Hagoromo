@@ -113,7 +113,7 @@ QHash<int, QByteArray> FeedTypeListModel::roleNames() const
     roles[FeedTypeRole] = "feedType";
     roles[DisplayNameRole] = "displayName";
     roles[AvatarRole] = "avatar";
-    roles[UriRole] = "Uri";
+    roles[UriRole] = "uri";
     roles[CreatorDisplayNameRole] = "creatorDisplayName";
 
     return roles;

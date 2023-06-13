@@ -80,15 +80,11 @@ ApplicationWindow {
         id: addColumnDialog
         accountModel: accountListModel
         onAccepted: {
-            console.log(logMain, "selectedAccountIndex=" + selectedAccountIndex + ", selectedTypeIndex=" + selectedTypeIndex)
-            var component_type = 0
-            if(selectedTypeIndex == 0){
-                component_type = 0
-            }else if(selectedTypeIndex == 1){
-                component_type = 1
-            }
+            console.log(/*logMain,*/ "Add column\n  selectedAccountIndex=" + selectedAccountIndex +
+                        "\n  selectedType=" + selectedType +
+                        "\n  selectedUri=" + selectedUri)
             columnManageModel.append(accountListModel.item(selectedAccountIndex, AccountListModel.UuidRole),
-                                     component_type, false, 300000, 400, "")
+                                     selectedType, false, 300000, 400, selectedUri)
             columnManageModel.sync()
         }
     }
