@@ -197,10 +197,21 @@ void ColumnListModel::load()
 
                 if (item.name.isEmpty()) {
                     // version 0.2.0以前との互換性のため
-                    if (item.component_type == FeedComponentType::Timeline) {
+                    switch (item.component_type) {
+                    case FeedComponentType::Timeline:
                         item.name = tr("Following");
-                    } else if (item.component_type == FeedComponentType::Notification) {
+                        break;
+                    case FeedComponentType::Notification:
                         item.name = tr("Notification");
+                        break;
+                    case FeedComponentType::SearchPosts:
+                        item.name = tr("Search posts");
+                        break;
+                    case FeedComponentType::SearchProfiles:
+                        item.name = tr("Search users");
+                        break;
+                    default:
+                        break;
                     }
                 }
 
