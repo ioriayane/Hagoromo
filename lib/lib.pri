@@ -7,6 +7,7 @@ SOURCES += \
     $$PWD/atprotocol/app/bsky/actor/appbskyactorgetprofile.cpp \
     $$PWD/atprotocol/app/bsky/actor/appbskyactorgetprofiles.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetauthorfeed.cpp \
+    $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetfeed.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerators.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetposts.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetpostthread.cpp \
@@ -33,6 +34,7 @@ HEADERS += \
     $$PWD/atprotocol/app/bsky/actor/appbskyactorgetprofile.h \
     $$PWD/atprotocol/app/bsky/actor/appbskyactorgetprofiles.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetauthorfeed.h \
+    $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetfeed.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerators.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetposts.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetpostthread.h \

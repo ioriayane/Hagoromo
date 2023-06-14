@@ -9,6 +9,7 @@ import tech.relog.hagoromo.notificationlistmodel 1.0
 import tech.relog.hagoromo.columnlistmodel 1.0
 import tech.relog.hagoromo.searchpostlistmodel 1.0
 import tech.relog.hagoromo.searchprofilelistmodel 1.0
+import tech.relog.hagoromo.customfeedlistmodel 1.0
 
 import "../controls"
 import "../parts"
@@ -27,6 +28,7 @@ ColumnLayout {
     property int componentType: 0
     property bool autoLoading: false
     property int loadingInterval: 300000
+    property string columnName: ""
     property string columnValue: ""
 
     property string accountUuid: ""
@@ -200,6 +202,35 @@ ColumnLayout {
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
         }
     }
+    Component {
+        id: customComponent
+        TimelineView {
+            model: CustomFeedListModel {
+                autoLoading: columnView.autoLoading
+                loadingInterval: columnView.loadingInterval
+                uri: columnView.columnValue
+            }
+
+            onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
+                            columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+            onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
+                            columnView.requestQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+
+            onRequestViewThread: (uri) => {
+                                     // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
+                                     // これはPostThreadViewのプロパティにダイレクトに設定する
+                                     columnStackView.push(postThreadComponent, { "postThreadUri": uri })
+                                 }
+
+            onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
+
+            onRequestViewProfile: (did) => {
+                                      columnStackView.push(profileComponent, { "userDid": did })
+                                  }
+
+            onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
+        }
+    }
 
     function load(){
         console.log(logColumn, "ColumnLayout:componentType=" + componentType)
@@ -215,6 +246,9 @@ ColumnLayout {
         }else if(componentType === 3){
             columnStackView.push(searchProfilesComponent)
             componentTypeLabel.text = qsTr("Search users") + " : " + columnValue
+        }else if(componentType === 4){
+            columnStackView.push(customComponent)
+            componentTypeLabel.text = qsTr("Feed") + " : " + columnName
         }else{
             columnStackView.push(timelineComponent)
             componentTypeLabel.text = qsTr("Unknown")

@@ -20,6 +20,7 @@ Dialog {
 
     property alias selectedAccountIndex: accountList.currentIndex
     property int selectedType: 0
+    property string selectedName: ""
     property string selectedUri: ""
 
     onOpened: {
@@ -52,6 +53,7 @@ Dialog {
                 }
                 var c_index = item.listView.currentIndex
                 addColumnDialog.selectedType = item.model.item(c_index, FeedTypeListModel.FeedTypeRole)
+                addColumnDialog.selectedName = item.model.item(c_index, FeedTypeListModel.DisplayNameRole)
                 addColumnDialog.selectedUri = item.model.item(c_index, FeedTypeListModel.UriRole)
             }
         }
@@ -150,6 +152,7 @@ Dialog {
                                         typeList.currentIndex = model.index
 
                                         addColumnDialog.selectedType = model.feedType
+                                        addColumnDialog.selectedName = model.displayName
                                         addColumnDialog.selectedUri = model.uri
                                     }
                                     RowLayout {
