@@ -17,6 +17,7 @@
 #include "qtquick/searchprofilelistmodel.h"
 #include "qtquick/feedtypelistmodel.h"
 #include "qtquick/customfeedlistmodel.h"
+#include "qtquick/feedgeneratorlistmodel.h"
 #include "qtquick/thumbnailprovider.h"
 #include "qtquick/encryption.h"
 #include "qtquick/userprofile.h"
@@ -65,6 +66,8 @@ int main(int argc, char *argv[])
                                        "FeedTypeListModel");
     qmlRegisterType<CustomFeedListModel>("tech.relog.hagoromo.customfeedlistmodel", 1, 0,
                                          "CustomFeedListModel");
+    qmlRegisterType<FeedGeneratorListModel>("tech.relog.hagoromo.feedgeneratorlistmodel", 1, 0,
+                                            "FeedGeneratorListModel");
     qmlRegisterType<Encryption>("tech.relog.hagoromo.encryption", 1, 0, "Encryption");
     qmlRegisterType<UserProfile>("tech.relog.hagoromo.userprofile", 1, 0, "UserProfile");
     qmlRegisterType<SystemTool>("tech.relog.hagoromo.systemtool", 1, 0, "SystemTool");

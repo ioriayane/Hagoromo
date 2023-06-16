@@ -11,10 +11,17 @@ namespace Common {
 
 inline QString appDataFolder()
 {
-    return QString("%1/%2/%3")
+    return QString("%1/%2/%3%4")
             .arg(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation))
             .arg(QCoreApplication::organizationName())
-            .arg(QCoreApplication::applicationName());
+            .arg(QCoreApplication::applicationName())
+            .arg(
+#ifdef QT_DEBUG
+                    QStringLiteral("_debug")
+#else
+                    QString()
+#endif
+            );
 }
 
 inline void saveJsonDocument(const QJsonDocument &doc, const QString &file_name)

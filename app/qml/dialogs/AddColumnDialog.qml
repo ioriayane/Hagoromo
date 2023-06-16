@@ -23,6 +23,8 @@ Dialog {
     property string selectedName: ""
     property string selectedUri: ""
 
+    signal openDiscoverFeeds(int account_index)
+
     onOpened: {
         if(accountList.currentIndex === -1){
             accountList.currentIndex = 0
@@ -139,10 +141,27 @@ Dialog {
                             ListView {
                                 id: typeList
                                 model: FeedTypeListModel { }
-                                footer: BusyIndicator {
+                                footer: ItemDelegate {
                                     width: typeList.width
-                                    height: 32
-                                    visible: typeList.model ? typeList.model.running : false
+                                    BusyIndicator {
+                                        id: busyIndicator
+                                        anchors.centerIn: parent
+                                        height: 32
+                                        visible: typeList.model ? typeList.model.running : false
+                                    }
+                                    Label {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        anchors.left: parent.left
+                                        anchors.leftMargin: 15
+                                        visible: !busyIndicator.visible
+                                        text: qsTr("Discover Feeds")
+                                    }
+                                    onClicked: {
+                                        if(busyIndicator.visible){
+                                            return
+                                        }
+                                        addColumnDialog.openDiscoverFeeds(accountList.currentIndex)
+                                    }
                                 }
 
                                 delegate: ItemDelegate {

@@ -90,12 +90,34 @@ ApplicationWindow {
                                      selectedType, false, 300000, 400, selectedName, selectedUri)
             columnManageModel.sync()
         }
+        onOpenDiscoverFeeds: (account_index) => {
+                                 discoverFeedsDialog.account.uuid = accountListModel.item(account_index, AccountListModel.UuidRole)
+                                 discoverFeedsDialog.account.service = accountListModel.item(account_index, AccountListModel.ServiceRole)
+                                 discoverFeedsDialog.account.did = accountListModel.item(account_index, AccountListModel.DidRole)
+                                 discoverFeedsDialog.account.handle = accountListModel.item(account_index, AccountListModel.HandleRole)
+                                 discoverFeedsDialog.account.email = accountListModel.item(account_index, AccountListModel.EmailRole)
+                                 discoverFeedsDialog.account.accessJwt = accountListModel.item(account_index, AccountListModel.AccessJwtRole)
+                                 discoverFeedsDialog.account.refreshJwt = accountListModel.item(account_index, AccountListModel.RefreshJwtRole)
+                                 discoverFeedsDialog.account.avatar = accountListModel.item(account_index, AccountListModel.AvatarRole)
+                                 discoverFeedsDialog.open()
+
+                                 addColumnDialog.reject()
+                             }
     }
 
     AccountDialog {
         id: accountDialog
         accountModel: accountListModel
         onClosed: accountListModel.syncColumn()
+    }
+
+    DiscoverFeedsDialog {
+        id: discoverFeedsDialog
+        onAccepted: {
+            columnManageModel.append(discoverFeedsDialog.account.uuid,
+                                     4, false, 300000, 400, selectedName, selectedUri)
+            columnManageModel.sync()
+        }
     }
 
     ColumnSettingDialog {

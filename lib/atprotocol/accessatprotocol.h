@@ -54,6 +54,8 @@ public:
     QString accessJwt() const;
     QString refreshJwt() const;
 
+    QString replyJson() const;
+
 signals:
     void finished(bool success);
 
@@ -70,6 +72,7 @@ private:
     QNetworkAccessManager m_manager;
 
     AccountData m_account;
+    QString m_replyJson;
 };
 }
 

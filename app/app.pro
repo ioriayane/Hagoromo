@@ -14,10 +14,12 @@ QML_FILES = \
     qml/dialogs/AccountDialog.qml \
     qml/dialogs/AddColumnDialog.qml \
     qml/dialogs/ColumnSettingDialog.qml \
+    qml/dialogs/DiscoverFeedsDialog.qml \
     qml/dialogs/LoginDialog.qml \
     qml/dialogs/PostDialog.qml \
     qml/dialogs/SearchDialog.qml \
     qml/dialogs/SettingDialog.qml \
+    qml/parts/Account.qml \
     qml/parts/Author.qml \
     qml/parts/AvatarImage.qml \
     qml/parts/ImagePreview.qml \
@@ -43,6 +45,7 @@ IMAGE_FILES += \
     qml/images/arrow_left_double.png \
     qml/images/arrow_left_single.png \
     qml/images/auto.png \
+    qml/images/bookmark_add.png \
     qml/images/check.png \
     qml/images/close.png \
     qml/images/column.png \
@@ -79,4 +82,3 @@ QML_DESIGNER_IMPORT_PATH =
 include(../lib/lib.pri)
 include(qtquick/qtquick.pri)
 include(../openssl/openssl.pri)
-

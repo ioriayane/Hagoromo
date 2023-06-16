@@ -15,6 +15,7 @@ SOURCES += \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollowers.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollows.cpp \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationlistnotifications.cpp \
+    $$PWD/atprotocol/app/bsky/unspecced/appbskyunspeccedgetpopularfeedgenerators.cpp \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepocreaterecord.cpp \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepodeleterecord.cpp \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepolistrecords.cpp \
@@ -42,6 +43,7 @@ HEADERS += \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollowers.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollows.h \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationlistnotifications.h \
+    $$PWD/atprotocol/app/bsky/unspecced/appbskyunspeccedgetpopularfeedgenerators.h \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepocreaterecord.h \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepodeleterecord.h \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepolistrecords.h \
