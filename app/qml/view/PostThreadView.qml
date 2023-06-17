@@ -45,7 +45,7 @@ ColumnLayout {
             Label {
                 Layout.fillWidth: true
                 Layout.leftMargin: 10
-                text: "Post thread"
+                text: qsTr("Post thread")
             }
         }
     }

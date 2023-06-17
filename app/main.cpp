@@ -1,5 +1,6 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QTranslator>
 #include <QtQuickControls2/QQuickStyle>
 
 #include "qtquick/createsession.h"
@@ -71,6 +72,18 @@ int main(int argc, char *argv[])
     qmlRegisterType<Encryption>("tech.relog.hagoromo.encryption", 1, 0, "Encryption");
     qmlRegisterType<UserProfile>("tech.relog.hagoromo.userprofile", 1, 0, "UserProfile");
     qmlRegisterType<SystemTool>("tech.relog.hagoromo.systemtool", 1, 0, "SystemTool");
+
+    QString dir = QString("%1/translations").arg(QCoreApplication::applicationDirPath());
+    // 翻訳データ登録
+    QTranslator translator;
+    if (translator.load(QString("qt_%1").arg(QLocale::system().name()), dir)) {
+        app.installTranslator(&translator);
+    }
+    // Qt標準機能の日本語化
+    QTranslator translator2;
+    if (translator2.load(QString("qt_ja"), dir)) {
+        app.installTranslator(&translator2);
+    }
 
     QQmlApplicationEngine engine;
 

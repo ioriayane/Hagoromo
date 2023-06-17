@@ -71,6 +71,8 @@ resources.files = $$QML_FILES $$IMAGE_FILES
 resources.prefix = /$${TARGET}
 RESOURCES += resources
 
+TRANSLATIONS += i18n/qt_ja_JP.ts
+
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
@@ -82,3 +84,19 @@ QML_DESIGNER_IMPORT_PATH =
 include(../lib/lib.pri)
 include(qtquick/qtquick.pri)
 include(../openssl/openssl.pri)
+
+
+win32:{
+    CONFIG(debug,debug|release):install_dir = $$OUT_PWD/debug
+    else: install_dir = $$OUT_PWD/release
+}else{
+    install_dir = $$OUT_PWD
+}
+
+translations.path = $$install_dir/translations
+mac:translations.path = \
+          $$install_dir/$${TARGET}.app/Contents/MacOS/translations
+translations.files = $$PWD/i18n/*.qm
+#qmファイルが存在しないとmakefileに追加されないので注意
+INSTALLS += translations
+

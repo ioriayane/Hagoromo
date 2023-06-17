@@ -17,7 +17,7 @@ ApplicationWindow {
     width: 800
     height: 480
     visible: true
-    title: qsTr("Hagoromo")
+    title: "羽衣 -Hagoromo-"
 
     LoggingCategory {
         id: logMain
