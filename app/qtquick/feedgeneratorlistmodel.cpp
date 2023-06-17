@@ -2,10 +2,16 @@
 
 #include "atprotocol/app/bsky/actor/appbskyactorgetpreferences.h"
 #include "atprotocol/app/bsky/unspecced/appbskyunspeccedgetpopularfeedgenerators.h"
+#include "atprotocol/app/bsky/actor/appbskyactorputpreferences.h"
 
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonValue>
 #include <QPointer>
 
 using AtProtocolInterface::AppBskyActorGetPreferences;
+using AtProtocolInterface::AppBskyActorPutPreferences;
 using AtProtocolInterface::AppBskyUnspeccedGetPopularFeedGenerators;
 using namespace AtProtocolType::AppBskyFeedDefs;
 
@@ -110,6 +116,52 @@ void FeedGeneratorListModel::getLatest()
     generators->getPopularFeedGenerators();
 }
 
+void FeedGeneratorListModel::saveGenerator(const QString &uri)
+{
+    if (running())
+        return;
+    setRunning(true);
+
+    QPointer<FeedGeneratorListModel> aliving(this);
+
+    AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences();
+    connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
+        if (aliving) {
+            if (success) {
+                putPreferences(appendGeneratorToPreference(pref->replyJson(), uri));
+            } else {
+                setRunning(false);
+            }
+        }
+        pref->deleteLater();
+    });
+    pref->setAccount(account());
+    pref->getPreferences();
+}
+
+void FeedGeneratorListModel::removeGenerator(const QString &uri)
+{
+    if (running())
+        return;
+    setRunning(true);
+
+    QPointer<FeedGeneratorListModel> aliving(this);
+
+    AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences();
+    connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
+        if (aliving) {
+            if (success) {
+                putPreferences(removeGeneratorToPreference(pref->replyJson(), uri));
+            } else {
+                setRunning(false);
+            }
+        }
+        pref->deleteLater();
+    });
+    pref->setAccount(account());
+    pref->getPreferences();
+}
+
 QHash<int, QByteArray> FeedGeneratorListModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
@@ -132,6 +184,8 @@ void FeedGeneratorListModel::getSavedGenerators()
 {
     QPointer<FeedGeneratorListModel> aliving(this);
 
+    m_savedUriList.clear();
+
     AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences();
     connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
         if (aliving) {
@@ -139,17 +193,38 @@ void FeedGeneratorListModel::getSavedGenerators()
                 for (const auto &feed : *pref->savedFeedsPrefList()) {
                     m_savedUriList.append(feed.saved);
 
-                    QHashIterator<QString, AtProtocolType::AppBskyFeedDefs::GeneratorView> i(
-                            m_generatorViewHash);
-                    while (i.hasNext()) {
-                        i.next();
-                        int pos = feed.saved.indexOf(i.value().uri);
-                        if (pos >= 0) {
-                            emit dataChanged(index(pos), index(pos),
-                                             QVector<int>() << static_cast<int>(SavingRole));
-                        }
-                    }
+                    //                    QHashIterator<QString,
+                    //                    AtProtocolType::AppBskyFeedDefs::GeneratorView> i(
+                    //                            m_generatorViewHash);
+                    //                    while (i.hasNext()) {
+                    //                        i.next();
+                    //                        int pos = feed.saved.indexOf(i.value().uri);
+                    //                        if (pos >= 0) {
+                    //                            emit dataChanged(index(pos), index(pos),
+                    //                                             QVector<int>() <<
+                    //                                             static_cast<int>(SavingRole));
+                    //                        }
+                    //                    }
                 }
+                for (int i = 0; i < m_cidList.count(); i++) {
+                    emit dataChanged(index(i), index(i),
+                                     QVector<int>() << static_cast<int>(SavingRole));
+                }
+                //                QHashIterator<QString,
+                //                AtProtocolType::AppBskyFeedDefs::GeneratorView> i(
+                //                        m_generatorViewHash);
+                //                while (i.hasNext()) {
+                //                    i.next();
+                //                    bool new_value = m_savedUriList.contains(i.value().uri);
+                //                    if (m_savedUriList.contains(i.value().uri)) {
+                //                        int pos = m_cidList.indexOf(i.value().cid);
+                //                        if (pos >= 0) {
+                //                            emit dataChanged(index(pos), index(pos),
+                //                                             QVector<int>() <<
+                //                                             static_cast<int>(SavingRole));
+                //                        }
+                //                    }
+                //                }
             }
             setRunning(false);
         }
@@ -157,4 +232,91 @@ void FeedGeneratorListModel::getSavedGenerators()
     });
     pref->setAccount(account());
     pref->getPreferences();
+}
+
+void FeedGeneratorListModel::putPreferences(const QString &json)
+{
+    QPointer<FeedGeneratorListModel> aliving(this);
+
+    AppBskyActorPutPreferences *pref = new AppBskyActorPutPreferences();
+    connect(pref, &AppBskyActorPutPreferences::finished, [=](bool success) {
+        if (aliving) {
+            if (success) {
+                qDebug() << "finish put preferences.";
+                getSavedGenerators();
+            } else {
+                setRunning(false);
+            }
+        }
+        pref->deleteLater();
+    });
+    pref->setAccount(account());
+    pref->putPreferences(json);
+}
+
+QString FeedGeneratorListModel::appendGeneratorToPreference(const QString &src_json,
+                                                            const QString &uri) const
+{
+    if (uri.isEmpty())
+        return src_json;
+    QJsonDocument json_doc = QJsonDocument::fromJson(src_json.toUtf8());
+    QJsonObject root_object = json_doc.object();
+    if (root_object.contains("preferences")) {
+        QJsonValue preferences = root_object.value("preferences");
+        QJsonArray dest_preferences;
+        if (preferences.isArray()) {
+            for (int i = 0; i < preferences.toArray().count(); i++) {
+                if (!preferences.toArray().at(i).isObject())
+                    continue;
+                QJsonObject value = preferences.toArray().takeAt(i).toObject();
+                if (value.value("$type") == QStringLiteral("app.bsky.actor.defs#savedFeedsPref")
+                    && value.value("saved").isArray()) {
+                    QJsonArray json_saved = value.value("saved").toArray();
+                    if (!json_saved.contains(QJsonValue(uri))) {
+                        // 含まれていなければ追加
+                        json_saved.append(QJsonValue(uri));
+                        value.insert("saved", json_saved);
+                    }
+                }
+                dest_preferences.append(value);
+            }
+            root_object.insert("preferences", dest_preferences);
+        }
+    }
+    json_doc.setObject(root_object);
+    return json_doc.toJson(QJsonDocument::Compact);
+}
+
+QString FeedGeneratorListModel::removeGeneratorToPreference(const QString &src_json,
+                                                            const QString &uri) const
+{
+    if (uri.isEmpty())
+        return src_json;
+    QJsonDocument json_doc = QJsonDocument::fromJson(src_json.toUtf8());
+    QJsonObject root_object = json_doc.object();
+    if (root_object.contains("preferences")) {
+        QJsonValue preferences = root_object.value("preferences");
+        QJsonArray dest_preferences;
+        if (preferences.isArray()) {
+            for (int i = 0; i < preferences.toArray().count(); i++) {
+                if (!preferences.toArray().at(i).isObject())
+                    continue;
+                QJsonObject value = preferences.toArray().takeAt(i).toObject();
+                if (value.value("$type") == QStringLiteral("app.bsky.actor.defs#savedFeedsPref")
+                    && value.value("saved").isArray()) {
+                    QJsonArray json_saved;
+                    for (const auto &value : value.value("saved").toArray()) {
+                        if (value.toString() != uri) {
+                            json_saved.append(value);
+                        }
+                    }
+                    value.insert("saved", json_saved);
+                }
+                dest_preferences.append(value);
+            }
+            root_object.insert("preferences", dest_preferences);
+        }
+    }
+    json_doc.setObject(root_object);
+    return json_doc.toJson(QJsonDocument::Compact);
 }

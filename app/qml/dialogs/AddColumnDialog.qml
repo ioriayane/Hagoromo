@@ -29,6 +29,9 @@ Dialog {
         if(accountList.currentIndex === -1){
             accountList.currentIndex = 0
         }
+        for(var i=0; i<repeater.count; i++){
+            repeater.itemAt(i).model.clear()
+        }
         changeColumnTypeView(accountList.currentIndex)
     }
 
@@ -50,9 +53,7 @@ Dialog {
                 }
 
                 // 切り替わったカラムリストの選択状態の更新と選択情報も切り替える
-                if(item.listView.currentIndex === -1){
-                    item.listView.currentIndex = 0
-                }
+                item.listView.currentIndex = 0
                 var c_index = item.listView.currentIndex
                 addColumnDialog.selectedType = item.model.item(c_index, FeedTypeListModel.FeedTypeRole)
                 addColumnDialog.selectedName = item.model.item(c_index, FeedTypeListModel.DisplayNameRole)

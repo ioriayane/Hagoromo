@@ -86,6 +86,7 @@ Dialog {
                             PropertyChanges {
                                 target: saveButton
                                 iconSource: ""
+                                enabled: false
                             }
                         },
                         State {
@@ -94,9 +95,7 @@ Dialog {
                                 target: saveButton
                                 iconSource: "../images/bookmark_add.png"
                                 foreground: Material.color(Material.Pink)
-                                onClicked: {
-                                    console.log("Delete!!")
-                                }
+                                onClicked: feedGeneratorListModel.removeGenerator(model.uri)
                             }
                         },
                         State {
@@ -105,9 +104,7 @@ Dialog {
                                 target: saveButton
                                 iconSource: "../images/bookmark_add.png"
                                 foreground: Material.color(Material.Grey)
-                                onClicked: {
-                                    console.log("Save!!")
-                                }
+                                onClicked: feedGeneratorListModel.saveGenerator(model.uri)
                             }
                         }
                     ]

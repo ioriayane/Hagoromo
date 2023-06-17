@@ -35,11 +35,17 @@ public:
 
     Q_INVOKABLE void clear();
     Q_INVOKABLE void getLatest();
+    Q_INVOKABLE void saveGenerator(const QString &uri);
+    Q_INVOKABLE void removeGenerator(const QString &uri);
 
 protected:
     QHash<int, QByteArray> roleNames() const;
     virtual void finishedDisplayingQueuedPosts() {};
     void getSavedGenerators();
+    void putPreferences(const QString &json);
+
+    QString appendGeneratorToPreference(const QString &src_json, const QString &uri) const;
+    QString removeGeneratorToPreference(const QString &src_json, const QString &uri) const;
 
     QHash<QString, AtProtocolType::AppBskyFeedDefs::GeneratorView> m_generatorViewHash;
     QList<QString> m_savedUriList;
