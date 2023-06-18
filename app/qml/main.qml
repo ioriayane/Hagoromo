@@ -17,7 +17,7 @@ ApplicationWindow {
     width: 800
     height: 480
     visible: true
-    title: qsTr("Hagoromo")
+    title: "羽衣 -Hagoromo-"
 
     LoggingCategory {
         id: logMain
@@ -67,11 +67,13 @@ ApplicationWindow {
         onAccepted: {
             console.log(logMain, "selectedAccountIndex=" + selectedAccountIndex + ", searchType=" + searchType)
             var component_type = 2
+            var column_name = qsTr("Search posts")
             if(searchType === "users"){
                 component_type = 3
+                column_name = qsTr("Search users")
             }
             columnManageModel.append(accountListModel.item(selectedAccountIndex, AccountListModel.UuidRole),
-                                     component_type, false, 300000, 350, searchDialog.searchText)
+                                     component_type, false, 300000, 350, column_name, searchDialog.searchText)
             columnManageModel.sync()
         }
     }
@@ -80,23 +82,42 @@ ApplicationWindow {
         id: addColumnDialog
         accountModel: accountListModel
         onAccepted: {
-            console.log(logMain, "selectedAccountIndex=" + selectedAccountIndex + ", selectedTypeIndex=" + selectedTypeIndex)
-            var component_type = 0
-            if(selectedTypeIndex == 0){
-                component_type = 0
-            }else if(selectedTypeIndex == 1){
-                component_type = 1
-            }
+            console.log(/*logMain,*/ "Add column\n  selectedAccountIndex=" + selectedAccountIndex +
+                        "\n  selectedType=" + selectedType +
+                        "\n  selectedName=" + selectedName +
+                        "\n  selectedUri=" + selectedUri)
             columnManageModel.append(accountListModel.item(selectedAccountIndex, AccountListModel.UuidRole),
-                                     component_type, false, 300000, 400, "")
+                                     selectedType, false, 300000, 400, selectedName, selectedUri)
             columnManageModel.sync()
         }
+        onOpenDiscoverFeeds: (account_index) => {
+                                 discoverFeedsDialog.account.uuid = accountListModel.item(account_index, AccountListModel.UuidRole)
+                                 discoverFeedsDialog.account.service = accountListModel.item(account_index, AccountListModel.ServiceRole)
+                                 discoverFeedsDialog.account.did = accountListModel.item(account_index, AccountListModel.DidRole)
+                                 discoverFeedsDialog.account.handle = accountListModel.item(account_index, AccountListModel.HandleRole)
+                                 discoverFeedsDialog.account.email = accountListModel.item(account_index, AccountListModel.EmailRole)
+                                 discoverFeedsDialog.account.accessJwt = accountListModel.item(account_index, AccountListModel.AccessJwtRole)
+                                 discoverFeedsDialog.account.refreshJwt = accountListModel.item(account_index, AccountListModel.RefreshJwtRole)
+                                 discoverFeedsDialog.account.avatar = accountListModel.item(account_index, AccountListModel.AvatarRole)
+                                 discoverFeedsDialog.open()
+
+                                 addColumnDialog.reject()
+                             }
     }
 
     AccountDialog {
         id: accountDialog
         accountModel: accountListModel
         onClosed: accountListModel.syncColumn()
+    }
+
+    DiscoverFeedsDialog {
+        id: discoverFeedsDialog
+        onAccepted: {
+            columnManageModel.append(discoverFeedsDialog.account.uuid,
+                                     4, false, 300000, 400, selectedName, selectedUri)
+            columnManageModel.sync()
+        }
     }
 
     ColumnSettingDialog {
@@ -180,6 +201,7 @@ ApplicationWindow {
                                 columnManageModel.item(i, ColumnListModel.AutoLoadingRole),
                                 columnManageModel.item(i, ColumnListModel.LoadingIntervalRole),
                                 columnManageModel.item(i, ColumnListModel.WidthRole),
+                                columnManageModel.item(i, ColumnListModel.NameRole),
                                 columnManageModel.item(i, ColumnListModel.ValueRole)
                                 )
             }
@@ -199,6 +221,7 @@ ApplicationWindow {
             var auto_loading = columnManageModel.item(i, ColumnListModel.AutoLoadingRole)
             var loading_interval = columnManageModel.item(i, ColumnListModel.LoadingIntervalRole)
             var column_width = columnManageModel.item(i, ColumnListModel.WidthRole)
+            var column_name = columnManageModel.item(i, ColumnListModel.NameRole)
             var column_value = columnManageModel.item(i, ColumnListModel.ValueRole)
             // 1度消す
             columnManageModel.remove(i)
@@ -206,7 +229,7 @@ ApplicationWindow {
             // 追加し直し
             columnManageModel.insert(i+move_diff, account_uuid, component_type,
                                      auto_loading, loading_interval, column_width,
-                                     column_value)
+                                     column_name, column_value)
             columnManageModel.sync()
         }
     }
@@ -419,7 +442,7 @@ ApplicationWindow {
 
                     function insert(index, key, account_uuid, component_type,
                                     auto_loading, loading_interval, column_width,
-                                    column_value){
+                                    column_name, column_value){
                         // accountListModelで管理するアカウントのindexと表示に使うコンポを指定
                         // ①ここでLoaderを追加する
                         console.log(logMain, "(1) insert:" + index + ", " + account_uuid + ", " + component_type)
@@ -431,6 +454,7 @@ ApplicationWindow {
                                 item.auto_loading = auto_loading
                                 item.loading_interval = loading_interval
                                 item.Layout.preferredWidth = column_width
+                                item.column_name = column_name
                                 item.column_value = column_value
                                 item.setSettings()
                             }
@@ -442,6 +466,7 @@ ApplicationWindow {
                                                       "auto_loading": auto_loading,
                                                       "loading_interval": loading_interval,
                                                       "column_width": column_width,
+                                                      "column_name": column_name,
                                                       "column_value": column_value
                                                   })
                         }
@@ -455,6 +480,7 @@ ApplicationWindow {
                                      item.auto_loading = repeater.model.get(index).auto_loading
                                      item.loading_interval = repeater.model.get(index).loading_interval
                                      item.column_width = repeater.model.get(index).column_width
+                                     item.column_name = repeater.model.get(index).column_name
                                      item.column_value = repeater.model.get(index).column_value
                                      item.sourceComponent = columnView
                                  }
@@ -472,6 +498,7 @@ ApplicationWindow {
                         property bool auto_loading: false
                         property int loading_interval: 300000
                         property int column_width: 400
+                        property string column_name: ""
                         property string column_value: ""
 
                         onLoaded: {
@@ -492,6 +519,7 @@ ApplicationWindow {
                         function setSettings() {
                             item.autoLoading = loader.auto_loading
                             item.loadingInterval = loader.loading_interval
+                            item.columnName = loader.column_name
                             item.columnValue = loader.column_value
                         }
 

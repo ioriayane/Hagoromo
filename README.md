@@ -37,6 +37,7 @@ Official sise : [Qt](https://www.qt.io/)
 
 [Micrsoft Visual Studio 2019](https://visualstudio.microsoft.com/)をインストールしてください（Community Edition可）。
 
+改行コードをCRLFでチェックアウトしてください。
 
 ```cmd
 REM checkout repo
@@ -78,7 +79,7 @@ $ vi Hagoromo/app/qtquick/encryption_seed.h
 # build Hagoromo
 $ ./scripts/build.sh mac path/to/Qt/5.15.2/gcc_64/bin
 # exec hagoromo
-$ open -a ./deploy-hagoromo/hagoromo/Hagoromo.app
+$ open ./deploy-hagoromo/hagoromo/Hagoromo.app
 ```
 
 
@@ -90,6 +91,7 @@ This is a multi-column [Bluesky](https://blueskyweb.xyz/) client.
 
 - Windows 11 Profesional
 - Ubuntu 22.04
+- Mac 10.13
 
 ## Software used
 
@@ -117,6 +119,8 @@ Official sise : [Qt](https://www.qt.io/)
 
 Install [Micrsoft Visual Studio 2019](https://visualstudio.microsoft.com/) (Community Edition  is also available).
 
+Check out the newline code in CRLF.
+
 ```cmd
 REM checkout repo
 >git clone git@github.com:ioriayane/Hagoromo.git
@@ -157,5 +161,5 @@ $ vi Hagoromo/app/qtquick/encryption_seed.h
 # build Hagoromo
 $ ./scripts/build.sh mac path/to/Qt/5.15.2/gcc_64/bin
 # exec hagoromo
-$ open -a ./deploy-hagoromo/hagoromo/Hagoromo.app
+$ open ./deploy-hagoromo/hagoromo/Hagoromo.app
 ```

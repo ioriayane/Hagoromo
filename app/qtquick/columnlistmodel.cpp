@@ -40,6 +40,8 @@ QVariant ColumnListModel::item(int row, ColumnListModelRoles role) const
         return m_columnList.at(row).loading_interval;
     else if (role == WidthRole)
         return m_columnList.at(row).width;
+    else if (role == NameRole)
+        return m_columnList.at(row).name;
     else if (role == ValueRole)
         return m_columnList.at(row).value;
 
@@ -56,13 +58,15 @@ void ColumnListModel::update(int row, ColumnListModelRoles role, const QVariant 
     else if (role == AccountUuidRole)
         m_columnList[row].account_uuid = value.toString();
     else if (role == ComponentTypeRole)
-        m_columnList[row].component_type = static_cast<ColumnComponentType>(value.toInt());
+        m_columnList[row].component_type = static_cast<FeedComponentType>(value.toInt());
     else if (role == AutoLoadingRole)
         m_columnList[row].auto_loading = value.toBool();
     else if (role == LoadingIntervalRole)
         m_columnList[row].loading_interval = value.toInt();
     else if (role == WidthRole)
         m_columnList[row].width = value.toInt();
+    else if (role == NameRole)
+        m_columnList[row].name = value.toString();
     else if (role == ValueRole)
         m_columnList[row].value = value.toInt();
 
@@ -72,13 +76,14 @@ void ColumnListModel::update(int row, ColumnListModelRoles role, const QVariant 
 }
 
 void ColumnListModel::append(const QString &account_uuid, int component_type, bool auto_loading,
-                             int interval, int width, const QString &value)
+                             int interval, int width, const QString &name, const QString &value)
 {
-    insert(rowCount(), account_uuid, component_type, auto_loading, interval, width, value);
+    insert(rowCount(), account_uuid, component_type, auto_loading, interval, width, name, value);
 }
 
 void ColumnListModel::insert(int row, const QString &account_uuid, int component_type,
-                             bool auto_loading, int interval, int width, const QString &value)
+                             bool auto_loading, int interval, int width, const QString &name,
+                             const QString &value)
 {
     if (row < 0 || row > m_columnList.count())
         return;
@@ -86,10 +91,11 @@ void ColumnListModel::insert(int row, const QString &account_uuid, int component
     ColumnItem item;
     item.key = QUuid::createUuid().toString(QUuid::WithoutBraces);
     item.account_uuid = account_uuid;
-    item.component_type = static_cast<ColumnComponentType>(component_type);
+    item.component_type = static_cast<FeedComponentType>(component_type);
     item.auto_loading = auto_loading;
     item.loading_interval = interval;
     item.width = width;
+    item.name = name;
     item.value = value;
 
     beginInsertRows(QModelIndex(), row, row);
@@ -159,6 +165,7 @@ void ColumnListModel::save() const
         column_item["auto_loading"] = item.auto_loading;
         column_item["interval"] = item.loading_interval;
         column_item["width"] = item.width;
+        column_item["name"] = item.name;
         column_item["value"] = item.value;
         column_array.append(column_item);
     }
@@ -178,14 +185,35 @@ void ColumnListModel::load()
                 ColumnItem item;
                 item.key = doc.array().at(i).toObject().value("key").toString();
                 item.account_uuid = doc.array().at(i).toObject().value("account_uuid").toString();
-                item.component_type = static_cast<ColumnComponentType>(
+                item.component_type = static_cast<FeedComponentType>(
                         doc.array().at(i).toObject().value("component_type").toInt());
                 item.auto_loading =
                         doc.array().at(i).toObject().value("auto_loading").toBool(false);
                 item.loading_interval =
                         doc.array().at(i).toObject().value("interval").toInt(300000);
                 item.width = doc.array().at(i).toObject().value("width").toInt(400);
+                item.name = doc.array().at(i).toObject().value("name").toString();
                 item.value = doc.array().at(i).toObject().value("value").toString();
+
+                if (item.name.isEmpty()) {
+                    // version 0.2.0以前との互換性のため
+                    switch (item.component_type) {
+                    case FeedComponentType::Timeline:
+                        item.name = tr("Following");
+                        break;
+                    case FeedComponentType::Notification:
+                        item.name = tr("Notification");
+                        break;
+                    case FeedComponentType::SearchPosts:
+                        item.name = tr("Search posts");
+                        break;
+                    case FeedComponentType::SearchProfiles:
+                        item.name = tr("Search users");
+                        break;
+                    default:
+                        break;
+                    }
+                }
 
                 m_columnList.append(item);
             }
@@ -203,6 +231,7 @@ QHash<int, QByteArray> ColumnListModel::roleNames() const
     roles[AutoLoadingRole] = "autoLoading";
     roles[LoadingIntervalRole] = "loadingInterval";
     roles[WidthRole] = "width";
+    roles[NameRole] = "name";
     roles[ValueRole] = "value";
 
     return roles;

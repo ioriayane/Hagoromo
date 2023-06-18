@@ -45,7 +45,7 @@ ColumnLayout {
             Label {
                 Layout.fillWidth: true
                 Layout.leftMargin: 10
-                text: "Post thread"
+                text: qsTr("Post thread")
             }
         }
     }
@@ -131,13 +131,6 @@ ColumnLayout {
 
                 externalLinkFrame.visible: model.hasExternalLink
                 externalLinkFrame.onClicked: Qt.openUrlExternally(model.externalLinkUri)
-                externalLinkFrame.onHoveredChanged: {
-                    if(externalLinkFrame.hovered){
-                        timelineView.hoveredLink = model.externalLinkUri
-                    }else{
-                        timelineView.hoveredLink = ""
-                    }
-                }
                 externalLinkThumbImage.source: model.externalLinkThumb
                 externalLinkTitleLabel.text: model.externalLinkTitle
                 externalLinkUriLabel.text: model.externalLinkUri

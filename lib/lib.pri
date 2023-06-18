@@ -3,15 +3,20 @@ INCLUDEPATH += $$PWD
 
 SOURCES += \
     $$PWD/atprotocol/accessatprotocol.cpp \
+    $$PWD/atprotocol/app/bsky/actor/appbskyactorgetpreferences.cpp \
     $$PWD/atprotocol/app/bsky/actor/appbskyactorgetprofile.cpp \
     $$PWD/atprotocol/app/bsky/actor/appbskyactorgetprofiles.cpp \
+    $$PWD/atprotocol/app/bsky/actor/appbskyactorputpreferences.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetauthorfeed.cpp \
+    $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetfeed.cpp \
+    $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerators.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetposts.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetpostthread.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgettimeline.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollowers.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollows.cpp \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationlistnotifications.cpp \
+    $$PWD/atprotocol/app/bsky/unspecced/appbskyunspeccedgetpopularfeedgenerators.cpp \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepocreaterecord.cpp \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepodeleterecord.cpp \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepolistrecords.cpp \
@@ -27,15 +32,20 @@ SOURCES += \
 
 HEADERS += \
     $$PWD/atprotocol/accessatprotocol.h \
+    $$PWD/atprotocol/app/bsky/actor/appbskyactorgetpreferences.h \
     $$PWD/atprotocol/app/bsky/actor/appbskyactorgetprofile.h \
     $$PWD/atprotocol/app/bsky/actor/appbskyactorgetprofiles.h \
+    $$PWD/atprotocol/app/bsky/actor/appbskyactorputpreferences.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetauthorfeed.h \
+    $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetfeed.h \
+    $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerators.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetposts.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetpostthread.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgettimeline.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollowers.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollows.h \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationlistnotifications.h \
+    $$PWD/atprotocol/app/bsky/unspecced/appbskyunspeccedgetpopularfeedgenerators.h \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepocreaterecord.h \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepodeleterecord.h \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepolistrecords.h \

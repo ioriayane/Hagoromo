@@ -5,11 +5,12 @@
 #include <QObject>
 
 // QMLではマジックナンバーになるので変更しないこと
-enum class ColumnComponentType : int {
+enum class FeedComponentType : int {
     Timeline = 0,
     Notification = 1,
     SearchPosts = 2,
     SearchProfiles = 3,
+    CustomFeed = 4,
 
     PostThread = 100,
 };
@@ -18,10 +19,14 @@ struct ColumnItem
 {
     QString key;
     QString account_uuid;
-    ColumnComponentType component_type;
+    FeedComponentType component_type;
     bool auto_loading = false;
     int loading_interval = 300000; // msec
     int width = 400;
+    QString name; // カラム名
+    // component_type
+    //  == SearchPosts or SearchProfiles : 検索文字列
+    //  == CustomFeed : カスタムフィードのat-uri
     QString value;
 };
 
@@ -40,10 +45,11 @@ public:
         AutoLoadingRole,
         LoadingIntervalRole,
         WidthRole,
+        NameRole,
         ValueRole,
     };
     Q_ENUM(ColumnListModelRoles)
-    Q_ENUM(ColumnComponentType)
+    Q_ENUM(FeedComponentType)
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
@@ -53,9 +59,10 @@ public:
                             const QVariant &value);
 
     Q_INVOKABLE void append(const QString &account_uuid, int component_type, bool auto_loading,
-                            int interval, int width, const QString &value);
+                            int interval, int width, const QString &name, const QString &value);
     Q_INVOKABLE void insert(int row, const QString &account_uuid, int component_type,
-                            bool auto_loading, int interval, int width, const QString &value);
+                            bool auto_loading, int interval, int width, const QString &name,
+                            const QString &value);
     Q_INVOKABLE void remove(int row);
     Q_INVOKABLE void removeByKey(const QString &key);
     Q_INVOKABLE bool containsKey(const QString &key) const;

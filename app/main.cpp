@@ -1,5 +1,6 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QTranslator>
 #include <QtQuickControls2/QQuickStyle>
 
 #include "qtquick/createsession.h"
@@ -15,6 +16,9 @@
 #include "qtquick/followerslistmodel.h"
 #include "qtquick/searchpostlistmodel.h"
 #include "qtquick/searchprofilelistmodel.h"
+#include "qtquick/feedtypelistmodel.h"
+#include "qtquick/customfeedlistmodel.h"
+#include "qtquick/feedgeneratorlistmodel.h"
 #include "qtquick/thumbnailprovider.h"
 #include "qtquick/encryption.h"
 #include "qtquick/userprofile.h"
@@ -33,7 +37,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName(QStringLiteral("relog"));
     app.setOrganizationDomain(QStringLiteral("hagoromo.relog.tech"));
     app.setApplicationName(QStringLiteral("Hagoromo"));
-    app.setApplicationVersion(QStringLiteral("0.2.0"));
+    app.setApplicationVersion(QStringLiteral("0.3.0"));
 
     qmlRegisterType<CreateSession>("tech.relog.hagoromo.createsession", 1, 0, "CreateSession");
     qmlRegisterType<RecordOperator>("tech.relog.hagoromo.recordoperator", 1, 0, "RecordOperator");
@@ -59,9 +63,27 @@ int main(int argc, char *argv[])
                                          "SearchPostListModel");
     qmlRegisterType<SearchProfileListModel>("tech.relog.hagoromo.searchprofilelistmodel", 1, 0,
                                             "SearchProfileListModel");
+    qmlRegisterType<FeedTypeListModel>("tech.relog.hagoromo.feedtypelistmodel", 1, 0,
+                                       "FeedTypeListModel");
+    qmlRegisterType<CustomFeedListModel>("tech.relog.hagoromo.customfeedlistmodel", 1, 0,
+                                         "CustomFeedListModel");
+    qmlRegisterType<FeedGeneratorListModel>("tech.relog.hagoromo.feedgeneratorlistmodel", 1, 0,
+                                            "FeedGeneratorListModel");
     qmlRegisterType<Encryption>("tech.relog.hagoromo.encryption", 1, 0, "Encryption");
     qmlRegisterType<UserProfile>("tech.relog.hagoromo.userprofile", 1, 0, "UserProfile");
     qmlRegisterType<SystemTool>("tech.relog.hagoromo.systemtool", 1, 0, "SystemTool");
+
+    QString dir = QString("%1/translations").arg(QCoreApplication::applicationDirPath());
+    // 翻訳データ登録
+    QTranslator translator;
+    if (translator.load(QString("qt_%1").arg(QLocale::system().name()), dir)) {
+        app.installTranslator(&translator);
+    }
+    // Qt標準機能の日本語化
+    QTranslator translator2;
+    if (translator2.load(QString("qt_ja"), dir)) {
+        app.installTranslator(&translator2);
+    }
 
     QQmlApplicationEngine engine;
 

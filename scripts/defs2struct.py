@@ -308,10 +308,10 @@ class Defs2Struct:
                     self.output_text[namespace].append('    int %s = 0;' % (property_name, ))
                 elif p_type == 'string':
                     comment = properties[property_name].get('format', '')
-                    if len(comment) > 0:
+                    if len(comment.strip()) > 0:
                         self.output_text[namespace].append('    QString %s; // %s' % (property_name, comment))
                     else:
-                        self.output_text[namespace].append('    QString %s; //' % (property_name, ))
+                        self.output_text[namespace].append('    QString %s;' % (property_name, ))
                 elif p_type == 'array':
                     items_type = properties[property_name].get('items', {}).get('type', '')
                     if items_type == 'ref':
@@ -319,6 +319,14 @@ class Defs2Struct:
                     elif items_type == 'union':
                         (temp_pointer, temp_list_pointer, temp_enum) = self.output_union(namespace, type_name, property_name, properties[property_name].get('items', {}).get('refs', []), True)
                         enum_text.extend(temp_enum)
+                    elif items_type == 'integer':
+                        self.output_text[namespace].append('    QList<int> %s;' % (property_name, ))
+                    elif items_type == 'string':
+                        comment = properties[property_name].get('format', '')
+                        if len(comment.strip()) > 0:
+                            self.output_text[namespace].append('    QList<QString> %s; // %s' % (property_name, comment))
+                        else:
+                            self.output_text[namespace].append('    QList<QString> %s;' % (property_name, ))
 
             self.output_text[namespace].append('};')
 
@@ -497,6 +505,16 @@ class Defs2Struct:
                                     self.output_func_text[namespace].append('                dest.%s.append(child);' % (union_name, ))
                                 self.output_func_text[namespace].append('            }')
                                 self.output_func_text[namespace].append('        }')
+
+                    elif items_type == 'integer':
+                        self.output_func_text[namespace].append('        for (const auto &value : src.value("%s").toArray()) {' % (property_name, ))
+                        self.output_func_text[namespace].append('            dest.%s.append(value.toInt());' % (property_name, ))
+                        self.output_func_text[namespace].append('        }')
+
+                    elif items_type == 'string':
+                        self.output_func_text[namespace].append('        for (const auto &value : src.value("%s").toArray()) {' % (property_name, ))
+                        self.output_func_text[namespace].append('            dest.%s.append(value.toString());' % (property_name, ))
+                        self.output_func_text[namespace].append('        }')
 
             self.output_func_text[namespace].append('    }')
             self.output_func_text[namespace].append('}')

@@ -132,7 +132,14 @@ void copyContentLabelPref(const QJsonObject &src, AppBskyActorDefs::ContentLabel
 }
 void copySavedFeedsPref(const QJsonObject &src, AppBskyActorDefs::SavedFeedsPref &dest)
 {
-    if (!src.isEmpty()) { }
+    if (!src.isEmpty()) {
+        for (const auto &value : src.value("pinned").toArray()) {
+            dest.pinned.append(value.toString());
+        }
+        for (const auto &value : src.value("saved").toArray()) {
+            dest.saved.append(value.toString());
+        }
+    }
 }
 }
 // com.atproto.label.defs
@@ -872,10 +879,22 @@ void copyActionView(const QJsonObject &src, ComAtprotoAdminDefs::ActionView &des
             ComAtprotoRepoStrongRef::copyMain(src.value("subject").toObject(),
                                               dest.subject_ComAtprotoRepoStrongRef_Main);
         }
+        for (const auto &value : src.value("subjectBlobCids").toArray()) {
+            dest.subjectBlobCids.append(value.toString());
+        }
+        for (const auto &value : src.value("createLabelVals").toArray()) {
+            dest.createLabelVals.append(value.toString());
+        }
+        for (const auto &value : src.value("negateLabelVals").toArray()) {
+            dest.negateLabelVals.append(value.toString());
+        }
         dest.reason = src.value("reason").toString();
         dest.createdBy = src.value("createdBy").toString();
         dest.createdAt = src.value("createdAt").toString();
         copyActionReversal(src.value("reversal").toObject(), dest.reversal);
+        for (const auto &value : src.value("resolvedReportIds").toArray()) {
+            dest.resolvedReportIds.append(value.toInt());
+        }
     }
 }
 void copyActionViewCurrent(const QJsonObject &src, ComAtprotoAdminDefs::ActionViewCurrent &dest)
@@ -914,6 +933,9 @@ void copyRecordView(const QJsonObject &src, ComAtprotoAdminDefs::RecordView &des
         dest.uri = src.value("uri").toString();
         dest.cid = src.value("cid").toString();
         LexiconsTypeUnknown::copyUnknown(src.value("value").toObject(), dest.value);
+        for (const auto &value : src.value("blobCids").toArray()) {
+            dest.blobCids.append(value.toString());
+        }
         dest.indexedAt = src.value("indexedAt").toString();
         copyModeration(src.value("moderation").toObject(), dest.moderation);
         copyRepoView(src.value("repo").toObject(), dest.repo);
@@ -967,6 +989,7 @@ void copyReportView(const QJsonObject &src, ComAtprotoAdminDefs::ReportView &des
         dest.id = src.value("id").toInt();
         ComAtprotoModerationDefs::copyReasonType(src.value("reasonType"), dest.reasonType);
         dest.reason = src.value("reason").toString();
+        dest.subjectRepoHandle = src.value("subjectRepoHandle").toString();
         QString subject_type = src.value("subject").toObject().value("$type").toString();
         if (subject_type == QStringLiteral("com.atproto.admin.defs#repoRef")) {
             dest.subject_type = ComAtprotoAdminDefs::ReportViewSubjectType::subject_RepoRef;
@@ -980,6 +1003,9 @@ void copyReportView(const QJsonObject &src, ComAtprotoAdminDefs::ReportView &des
         }
         dest.reportedBy = src.value("reportedBy").toString();
         dest.createdAt = src.value("createdAt").toString();
+        for (const auto &value : src.value("resolvedByActionIds").toArray()) {
+            dest.resolvedByActionIds.append(value.toInt());
+        }
     }
 }
 void copyActionViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::ActionViewDetail &dest)
@@ -1015,6 +1041,12 @@ void copyActionViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::ActionVie
             BlobView child;
             copyBlobView(s.toObject(), child);
             dest.subjectBlobs.append(child);
+        }
+        for (const auto &value : src.value("createLabelVals").toArray()) {
+            dest.createLabelVals.append(value.toString());
+        }
+        for (const auto &value : src.value("negateLabelVals").toArray()) {
+            dest.negateLabelVals.append(value.toString());
         }
         dest.reason = src.value("reason").toString();
         dest.createdBy = src.value("createdBy").toString();
@@ -1232,6 +1264,9 @@ void copyAccountCodes(const QJsonObject &src, ComAtprotoServerCreateInviteCodes:
 {
     if (!src.isEmpty()) {
         dest.account = src.value("account").toString();
+        for (const auto &value : src.value("codes").toArray()) {
+            dest.codes.append(value.toString());
+        }
     }
 }
 }

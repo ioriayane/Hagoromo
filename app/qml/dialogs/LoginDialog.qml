@@ -38,7 +38,7 @@ Dialog {
         rowSpacing: 10
 
         Label {
-            text: "Service"
+            text: qsTr("Service")
         }
         TextField {
             id: serviceTextInput
@@ -47,7 +47,7 @@ Dialog {
             placeholderText: "https://bsky.social etc..."
         }
         Label {
-            text: "Identifier"
+            text: qsTr("Identifier")
         }
         TextField {
             id: idTextInput
@@ -56,7 +56,7 @@ Dialog {
             placeholderText: "Handle or Email address or DID"
         }
         Label {
-            text: "Password"
+            text: qsTr("Password")
         }
         TextField {
             id: passwordTextInput

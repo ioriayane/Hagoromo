@@ -5,6 +5,7 @@
 #include "webserver.h"
 #include "timelinelistmodel.h"
 #include "recordoperator.h"
+#include "feedgeneratorlistmodel.h"
 
 class hagoromo_test : public QObject
 {
@@ -19,6 +20,7 @@ private slots:
     void cleanupTestCase();
     void test_TimelineListModelFacet();
     void test_RecordOperator();
+    void test_FeedGeneratorListModel();
 
 private:
     WebServer m_mockServer;
@@ -26,6 +28,7 @@ private:
     QString m_service;
 
     void test_RecordOperatorCreateRecord(const QByteArray &body);
+    void test_putPreferences(const QString &path, const QByteArray &body);
     void verifyStr(const QString &expect, const QString &actual);
     QJsonDocument loadJson(const QString &path);
     QHash<QString, QString> loadPostHash(const QString &path);
@@ -43,9 +46,18 @@ hagoromo_test::hagoromo_test()
                     test_RecordOperatorCreateRecord(request.body());
                     json = "{\"cid\":\"CID\",\"uri\":\"URI\"}";
                     result = true;
+                } else if (request.url().path()
+                                   == "/response/generator/save/xrpc/app.bsky.actor.putPreferences"
+                           || request.url().path()
+                                   == "/response/generator/remove/xrpc/"
+                                      "app.bsky.actor.putPreferences") {
+                    test_putPreferences(request.url().path(), request.body());
+                    json = "{}";
+                    result = true;
                 } else {
                     json = "{}";
                     result = false;
+                    QVERIFY(false);
                 }
             });
 }
@@ -110,6 +122,53 @@ void hagoromo_test::test_RecordOperator()
     }
 }
 
+void hagoromo_test::test_FeedGeneratorListModel()
+{
+    FeedGeneratorListModel model;
+    model.setAccount(m_service + "/generator", QString(), QString(), QString(), "dummy", QString());
+    model.setDisplayInterval(0);
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+        QVERIFY(model.rowCount() == 8);
+        QVERIFY(model.item(0, FeedGeneratorListModel::SavingRole) == true);
+        QVERIFY(model.item(1, FeedGeneratorListModel::DisplayNameRole)
+                == QStringLiteral("What's Hot"));
+        QVERIFY(model.item(1, FeedGeneratorListModel::SavingRole) == true);
+        QVERIFY(model.item(2, FeedGeneratorListModel::SavingRole) == false);
+        QVERIFY(model.item(3, FeedGeneratorListModel::SavingRole) == true);
+        QVERIFY(model.item(4, FeedGeneratorListModel::SavingRole) == false);
+        QVERIFY(model.item(5, FeedGeneratorListModel::SavingRole) == false);
+        QVERIFY(model.item(6, FeedGeneratorListModel::SavingRole) == false);
+        QVERIFY(model.item(7, FeedGeneratorListModel::DisplayNameRole)
+                == QStringLiteral("mostpop"));
+        QVERIFY(model.item(7, FeedGeneratorListModel::SavingRole) == false);
+    }
+    {
+        // save
+        model.setAccount(m_service + "/generator/save", QString(), QString(), QString(), "dummy",
+                         QString());
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.saveGenerator(
+                "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/hot-classic");
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+    {
+        // remove
+        model.setAccount(m_service + "/generator/remove", QString(), QString(), QString(), "dummy",
+                         QString());
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.removeGenerator(
+                "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/with-friends");
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+}
+
 void hagoromo_test::test_RecordOperatorCreateRecord(const QByteArray &body)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(body);
@@ -130,6 +189,24 @@ void hagoromo_test::test_RecordOperatorCreateRecord(const QByteArray &body)
                      did.toLocal8Bit());
         }
     }
+}
+
+void hagoromo_test::test_putPreferences(const QString &path, const QByteArray &body)
+{
+    QJsonDocument json_doc_expect;
+    if (path.contains("/save/")) {
+        json_doc_expect = loadJson(":/data/generator/save/app.bsky.actor.putPreferences");
+    } else {
+        json_doc_expect = loadJson(":/data/generator/remove/app.bsky.actor.putPreferences");
+    }
+
+    QJsonDocument json_doc = QJsonDocument::fromJson(body);
+
+    if (json_doc_expect.object() != json_doc.object()) {
+        qDebug().noquote().nospace() << QString("\nexpect:%1\nactual:%2\n")
+                                                .arg(json_doc_expect.toJson(), json_doc.toJson());
+    }
+    QVERIFY(json_doc_expect.object() == json_doc.object());
 }
 
 void hagoromo_test::verifyStr(const QString &expect, const QString &actual)

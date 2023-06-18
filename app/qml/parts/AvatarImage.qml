@@ -8,6 +8,7 @@ import "../controls"
 MouseArea {
     clip: true
     property alias source: avatorImage.source
+    property alias altSource: altImage.source
     Image {
         id: avatorImage
         anchors.fill: parent

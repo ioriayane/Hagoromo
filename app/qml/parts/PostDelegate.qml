@@ -155,6 +155,14 @@ ClickableFrame {
                     rightPadding: 0
                     bottomPadding: 5
                     hoverEnabled: true
+                    onHoveredChanged:{
+                        if(hovered){
+                            displayLink(externalLinkUriLabel.text)
+                        }else{
+                            displayLink("")
+                        }
+                    }
+
                     ColumnLayout {
                         spacing: 3
                         ImageWithIndicator {

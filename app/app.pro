@@ -14,10 +14,12 @@ QML_FILES = \
     qml/dialogs/AccountDialog.qml \
     qml/dialogs/AddColumnDialog.qml \
     qml/dialogs/ColumnSettingDialog.qml \
+    qml/dialogs/DiscoverFeedsDialog.qml \
     qml/dialogs/LoginDialog.qml \
     qml/dialogs/PostDialog.qml \
     qml/dialogs/SearchDialog.qml \
     qml/dialogs/SettingDialog.qml \
+    qml/parts/Account.qml \
     qml/parts/Author.qml \
     qml/parts/AvatarImage.qml \
     qml/parts/ImagePreview.qml \
@@ -43,6 +45,7 @@ IMAGE_FILES += \
     qml/images/arrow_left_double.png \
     qml/images/arrow_left_single.png \
     qml/images/auto.png \
+    qml/images/bookmark_add.png \
     qml/images/check.png \
     qml/images/close.png \
     qml/images/column.png \
@@ -50,10 +53,12 @@ IMAGE_FILES += \
     qml/images/edit.png \
     qml/images/expand_less.png \
     qml/images/expand_more.png \
+    qml/images/home.png \
     qml/images/icon_mask.png \
     qml/images/like.png \
     qml/images/logo.png \
     qml/images/more.png \
+    qml/images/notification.png \
     qml/images/quote.png \
     qml/images/reply.png \
     qml/images/repost.png \
@@ -66,6 +71,8 @@ resources.files = $$QML_FILES $$IMAGE_FILES
 resources.prefix = /$${TARGET}
 RESOURCES += resources
 
+TRANSLATIONS += i18n/qt_ja_JP.ts
+
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
@@ -77,3 +84,19 @@ QML_DESIGNER_IMPORT_PATH =
 include(../lib/lib.pri)
 include(qtquick/qtquick.pri)
 include(../openssl/openssl.pri)
+
+
+win32:{
+    CONFIG(debug,debug|release):install_dir = $$OUT_PWD/debug
+    else: install_dir = $$OUT_PWD/release
+}else{
+    install_dir = $$OUT_PWD
+}
+
+translations.path = $$install_dir/translations
+mac:translations.path = \
+          $$install_dir/$${TARGET}.app/Contents/MacOS/translations
+translations.files = $$PWD/i18n/*.qm
+#qmファイルが存在しないとmakefileに追加されないので注意
+INSTALLS += translations
+

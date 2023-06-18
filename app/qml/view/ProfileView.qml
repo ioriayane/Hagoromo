@@ -121,7 +121,7 @@ ColumnLayout {
             Label {
                 Layout.fillWidth: true
                 Layout.leftMargin: 10
-                text: "Profile"
+                text: qsTr("Profile")
             }
         }
     }
