@@ -82,7 +82,7 @@ ApplicationWindow {
         id: addColumnDialog
         accountModel: accountListModel
         onAccepted: {
-            console.log(/*logMain,*/ "Add column\n  selectedAccountIndex=" + selectedAccountIndex +
+            console.log(logMain, "Add column\n  selectedAccountIndex=" + selectedAccountIndex +
                         "\n  selectedType=" + selectedType +
                         "\n  selectedName=" + selectedName +
                         "\n  selectedUri=" + selectedUri)
