@@ -162,7 +162,9 @@ ApplicationWindow {
         onAllFinished: {
             // すべてのアカウント情報の認証が終わったのでカラムを復元（成功しているとは限らない）
             console.log(logMain, "allFinished()" + accountListModel.rowCount())
-            columnManageModel.load()
+            if(columnManageModel.rowCount() === 0){
+                columnManageModel.load()
+            }
         }
 
         function syncColumn(){
@@ -224,11 +226,13 @@ ApplicationWindow {
 
             onRequestMoveToLeft: (key) => {
                                      console.log(logMain, "move to left:" + key)
-                                     columnManageModel.exchange(key, -1)
+                                     columnManageModel.move(key, ColumnListModel.MoveLeft)
+                                     repeater.updatePosition()
                                  }
             onRequestMoveToRight: (key) => {
                                       console.log(logMain, "move to right:" + key)
-                                      columnManageModel.exchange(key, 1)
+                                      columnManageModel.move(key, ColumnListModel.MoveRight)
+                                      repeater.updatePosition()
                                   }
             onRequestRemove: (key) => {
                                  console.log(logMain, "remove column:" + key)
@@ -363,16 +367,30 @@ ApplicationWindow {
                 model: ColumnListModel {
                     //カラムの情報管理
                     id: columnManageModel
-
-                    function exchange(key, move_diff) {
-                        // move_diff : -1=left, 1=right
-                    }
                 }
 
                 function updateSetting() {
                     for(var i=0; i<repeater.count; i++){
                         var item = repeater.itemAt(i)   //ここのitemはloader自身
                         item.setSettings()
+                    }
+                }
+
+                function updatePosition() {
+                    var i;
+                    for(i=0; i<repeater.count; i++){
+                        repeater.itemAt(i).item.anchors.left = undefined
+                        //ここのitemはloader自身
+                    }
+                    for(i=0; i<repeater.count; i++){
+                        var item = repeater.itemAt(i)   //ここのitemはloader自身
+                        var left_pos = columnManageModel.getLeftPosition(i)
+                        console.log("updatePosition : i=" + i + ", leftPost=" + left_pos)
+                        if(left_pos < 0){
+                            item.anchors.left = item.parent.left
+                        }else{
+                            item.anchors.left = repeater.itemAt(left_pos).right
+                        }
                     }
                 }
 
@@ -390,21 +408,13 @@ ApplicationWindow {
                     }
                 }
 
-                function contains(key){
-                    for(var i=0; i<repeater.model.count; i++){
-                        if(repeater.model.get(i).key === key){
-                            return true
-                        }
-                    }
-                    return false
-                }
-
                 onItemAdded: (index, item) => {
-                                 // ②Repeaterに追加されたLoaderにTLを表示するComponentを追加する
-                                 if(index === 0){
+                                 // ②Repeaterに追加されたLoaderのレイアウト設定
+                                 var left_pos = columnManageModel.getLeftPosition(index)
+                                 if(left_pos < 0){
                                      item.anchors.left = parent.left
                                  }else{
-                                     item.anchors.left = repeater.itemAt(index-1).right
+                                     item.anchors.left = repeater.itemAt(left_pos).right
                                  }
                              }
 

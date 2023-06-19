@@ -86,7 +86,7 @@ void ColumnListModel::insert(int row, const QString &account_uuid, int component
         return;
 
     ColumnItem item;
-    item.index = row;
+    item.position = row;
     item.key = QUuid::createUuid().toString(QUuid::WithoutBraces);
     item.account_uuid = account_uuid;
     item.component_type = static_cast<FeedComponentType>(component_type);
@@ -101,6 +101,39 @@ void ColumnListModel::insert(int row, const QString &account_uuid, int component
     endInsertRows();
 
     save();
+}
+
+void ColumnListModel::move(const QString &key, const MoveDirection direction)
+{
+    // モデルのリストの位置は変更しないで管理indexを移動させる
+
+    int to_position = -1;
+    int from_index = -1;
+    int to_index = -1;
+    for (int i = 0; i < m_columnList.length(); i++) {
+        if (m_columnList.at(i).key == key) {
+            if (direction == MoveLeft) {
+                to_position = m_columnList.at(i).position - 1;
+            } else {
+                to_position = m_columnList.at(i).position + 1;
+            }
+            from_index = i;
+        }
+    }
+    for (int i = 0; i < m_columnList.length(); i++) {
+        if (m_columnList.at(i).position == to_position) {
+            to_index = i;
+        }
+    }
+    if (from_index == -1 || to_index == -1)
+        return;
+
+    int temp = m_columnList.at(from_index).position;
+    m_columnList[from_index].position = m_columnList.at(to_index).position;
+    m_columnList[to_index].position = temp;
+
+    emit dataChanged(index(from_index), index(from_index));
+    emit dataChanged(index(to_index), index(to_index));
 }
 
 void ColumnListModel::remove(int row)
@@ -150,6 +183,14 @@ int ColumnListModel::indexOf(const QString &key) const
     return -1;
 }
 
+int ColumnListModel::getLeftPosition(const int row)
+{
+    if (row < 0 || row >= m_columnList.count())
+        return -1;
+
+    return m_columnList.at(row).position - 1;
+}
+
 void ColumnListModel::save() const
 {
     QSettings settings;
@@ -157,7 +198,7 @@ void ColumnListModel::save() const
     QJsonArray column_array;
     for (const ColumnItem &item : m_columnList) {
         QJsonObject column_item;
-        column_item["index"] = item.index;
+        column_item["position"] = item.position;
         column_item["key"] = item.key;
         column_item["account_uuid"] = item.account_uuid;
         column_item["component_type"] = static_cast<int>(item.component_type);
@@ -187,7 +228,7 @@ void ColumnListModel::load()
         for (int i = 0; i < doc.array().count(); i++) {
             if (doc.array().at(i).isObject()) {
                 ColumnItem item;
-                item.index = doc.array().at(i).toObject().value("index").toInt(-1);
+                item.position = doc.array().at(i).toObject().value("position").toInt(-1);
                 item.key = doc.array().at(i).toObject().value("key").toString();
                 item.account_uuid = doc.array().at(i).toObject().value("account_uuid").toString();
                 item.component_type = static_cast<FeedComponentType>(
@@ -247,8 +288,8 @@ void ColumnListModel::validateIndex()
 {
     QList<int> values;
     for (const auto &item : qAsConst(m_columnList)) {
-        if (!values.contains(item.index)) {
-            values.append(item.index);
+        if (!values.contains(item.position)) {
+            values.append(item.position);
         }
     }
     bool valid = true;
@@ -271,7 +312,7 @@ void ColumnListModel::validateIndex()
     }
     if (!valid) {
         for (int i = 0; i < m_columnList.length(); i++) {
-            m_columnList[i].index = i;
+            m_columnList[i].position = i;
         }
     }
 }
