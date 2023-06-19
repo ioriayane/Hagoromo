@@ -7,10 +7,7 @@
 #include <QSettings>
 #include <QUuid>
 
-ColumnListModel::ColumnListModel(QObject *parent) : QAbstractListModel { parent }
-{
-    load();
-}
+ColumnListModel::ColumnListModel(QObject *parent) : QAbstractListModel { parent } { }
 
 int ColumnListModel::rowCount(const QModelIndex &parent) const
 {
@@ -89,6 +86,7 @@ void ColumnListModel::insert(int row, const QString &account_uuid, int component
         return;
 
     ColumnItem item;
+    item.index = row;
     item.key = QUuid::createUuid().toString(QUuid::WithoutBraces);
     item.account_uuid = account_uuid;
     item.component_type = static_cast<FeedComponentType>(component_type);
@@ -159,6 +157,7 @@ void ColumnListModel::save() const
     QJsonArray column_array;
     for (const ColumnItem &item : m_columnList) {
         QJsonObject column_item;
+        column_item["index"] = item.index;
         column_item["key"] = item.key;
         column_item["account_uuid"] = item.account_uuid;
         column_item["component_type"] = static_cast<int>(item.component_type);
@@ -175,14 +174,20 @@ void ColumnListModel::save() const
 
 void ColumnListModel::load()
 {
-    m_columnList.clear();
+    if (!m_columnList.isEmpty()) {
+        beginRemoveRows(QModelIndex(), 0, rowCount() - 1);
+        m_columnList.clear();
+        endRemoveRows();
+    }
 
     QJsonDocument doc = Common::loadJsonDocument(QStringLiteral("column.json"));
 
     if (doc.isArray()) {
+        beginInsertRows(QModelIndex(), 0, doc.array().count() - 1);
         for (int i = 0; i < doc.array().count(); i++) {
             if (doc.array().at(i).isObject()) {
                 ColumnItem item;
+                item.index = doc.array().at(i).toObject().value("index").toInt(-1);
                 item.key = doc.array().at(i).toObject().value("key").toString();
                 item.account_uuid = doc.array().at(i).toObject().value("account_uuid").toString();
                 item.component_type = static_cast<FeedComponentType>(
@@ -214,10 +219,11 @@ void ColumnListModel::load()
                         break;
                     }
                 }
-
                 m_columnList.append(item);
             }
         }
+        validateIndex();
+        endInsertRows();
     }
 }
 
@@ -235,4 +241,37 @@ QHash<int, QByteArray> ColumnListModel::roleNames() const
     roles[ValueRole] = "value";
 
     return roles;
+}
+
+void ColumnListModel::validateIndex()
+{
+    QList<int> values;
+    for (const auto &item : qAsConst(m_columnList)) {
+        if (!values.contains(item.index)) {
+            values.append(item.index);
+        }
+    }
+    bool valid = true;
+    if (values.length() != m_columnList.length()) {
+        valid = false;
+    } else {
+        for (int i = 0; i < values.length() - 1; i++) {
+            for (int j = i + 1; j < values.length(); j++) {
+                if (values[i] > values[j]) {
+                    values.move(i, j);
+                }
+            }
+        }
+        for (int i = 0; i < values.length() - 1; i++) {
+            if (values[i] + 1 != values[i + 1]) {
+                valid = false;
+                break;
+            }
+        }
+    }
+    if (!valid) {
+        for (int i = 0; i < m_columnList.length(); i++) {
+            m_columnList[i].index = i;
+        }
+    }
 }

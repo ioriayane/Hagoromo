@@ -17,6 +17,7 @@ enum class FeedComponentType : int {
 
 struct ColumnItem
 {
+    int index = -1;
     QString key;
     QString account_uuid;
     FeedComponentType component_type;
@@ -73,6 +74,7 @@ public:
 
 protected:
     QHash<int, QByteArray> roleNames() const;
+    void validateIndex();
 
     QList<ColumnItem> m_columnList;
 };
