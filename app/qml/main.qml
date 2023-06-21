@@ -377,20 +377,13 @@ ApplicationWindow {
                 }
 
                 function updatePosition() {
-                    var i;
-                    for(i=0; i<repeater.count; i++){
-                        repeater.itemAt(i).item.anchors.left = undefined
-                        //ここのitemはloader自身
-                    }
-                    for(i=0; i<repeater.count; i++){
-                        var item = repeater.itemAt(i)   //ここのitemはloader自身
-                        var left_pos = columnManageModel.getLeftPosition(i)
-                        console.log("updatePosition : i=" + i + ", leftPost=" + left_pos)
-                        if(left_pos < 0){
-                            item.anchors.left = item.parent.left
-                        }else{
-                            item.anchors.left = repeater.itemAt(left_pos).right
-                        }
+                    // モデルの順番を入れ替えるとLoader側が対応できないのと
+                    // 最左にくるものから処理しないとレイアウトが循環して矛盾するため
+                    // カラムの管理順ではなくポジションの順番で処理する
+                    var row_list = columnManageModel.getRowListInOrderOfPosition()
+                    for(var i=0; i<row_list.length; i++){
+                        var item = repeater.itemAt(row_list[i])   //ここのitemはloader自身
+                        item.setLayout()
                     }
                 }
 
@@ -408,16 +401,6 @@ ApplicationWindow {
                     }
                 }
 
-                onItemAdded: (index, item) => {
-                                 // ②Repeaterに追加されたLoaderのレイアウト設定
-                                 var left_pos = columnManageModel.getLeftPosition(index)
-                                 if(left_pos < 0){
-                                     item.anchors.left = parent.left
-                                 }else{
-                                     item.anchors.left = repeater.itemAt(left_pos).right
-                                 }
-                             }
-
                 Loader {
                     id: loader
                     height: scrollView.childHeight
@@ -425,9 +408,9 @@ ApplicationWindow {
                     sourceComponent: columnView
 
                     onLoaded: {
-                        // ③Loaderで読み込んだComponentにアカウント情報など設定する
+                        // Loaderで読み込んだComponentにアカウント情報など設定する
                         var row = accountListModel.indexAt(model.accountUuid)
-                        console.log(/*logMain,*/ "(3) loader:" + row + ", " + model.accountUuid)
+                        console.log(logMain, "(1) loader:" + row + ", " + model.accountUuid)
                         if(row < 0){
                             return
                         }
@@ -439,6 +422,25 @@ ApplicationWindow {
                         setAccount(row)
                         item.rootItem = rootLayout
                         item.load()
+
+                        if(model.index == columnManageModel.rowCount() - 1){
+                            // 最後の時にレイアウトを設定する
+                            // 読み込んでいる過程では左がいない場合がある
+                            repeater.updatePosition()
+                        }
+                    }
+
+                    function setLayout() {
+                        var left_pos = columnManageModel.getPreviousRow(model.index)
+                        if(left_pos < 0){
+                            console.log(logMain, "setLayout() :" + model.index + ": left_pos=" + left_pos + ", left is " + loader.parent)
+                            loader.anchors.left = loader.parent.left
+                            loader.anchors.leftMargin = 0
+                        }else{
+                            console.log(logMain, "setLayout() :" + model.index + ": left_pos=" + left_pos + ", left name=" + repeater.itemAt(left_pos).item.columnName)
+                            loader.anchors.left = repeater.itemAt(left_pos).right
+                            loader.anchors.leftMargin = 3
+                        }
                     }
 
                     function setSettings() {

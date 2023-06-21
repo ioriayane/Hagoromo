@@ -134,6 +134,8 @@ void ColumnListModel::move(const QString &key, const MoveDirection direction)
 
     emit dataChanged(index(from_index), index(from_index));
     emit dataChanged(index(to_index), index(to_index));
+
+    save();
 }
 
 void ColumnListModel::remove(int row)
@@ -183,12 +185,36 @@ int ColumnListModel::indexOf(const QString &key) const
     return -1;
 }
 
-int ColumnListModel::getLeftPosition(const int row)
+// 自分のposition-1が入っているアイテムのインデックスを返す
+int ColumnListModel::getPreviousRow(const int row)
 {
     if (row < 0 || row >= m_columnList.count())
         return -1;
 
-    return m_columnList.at(row).position - 1;
+    int pos = m_columnList.at(row).position - 1;
+    for (int i = 0; i < m_columnList.count(); i++) {
+        if (m_columnList.at(i).position == pos) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+QList<int> ColumnListModel::getRowListInOrderOfPosition() const
+{
+    QList<int> row_list;
+    for (int i = 0; i < m_columnList.count(); i++) {
+        row_list.append(i);
+    }
+    for (int i = 0; i < row_list.count() - 1; i++) {
+        for (int j = i + 1; j < row_list.count(); j++) {
+            if (m_columnList.at(row_list.at(i)).position
+                > m_columnList.at(row_list.at(j)).position) {
+                row_list.swapItemsAt(i, j);
+            }
+        }
+    }
+    return row_list;
 }
 
 void ColumnListModel::save() const
@@ -299,7 +325,7 @@ void ColumnListModel::validateIndex()
         for (int i = 0; i < values.length() - 1; i++) {
             for (int j = i + 1; j < values.length(); j++) {
                 if (values[i] > values[j]) {
-                    values.move(i, j);
+                    values.swapItemsAt(i, j);
                 }
             }
         }
