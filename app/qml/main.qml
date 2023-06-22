@@ -237,6 +237,7 @@ ApplicationWindow {
             onRequestRemove: (key) => {
                                  console.log(logMain, "remove column:" + key)
                                  columnManageModel.removeByKey(key)
+                                 repeater.updatePosition()
                              }
             onRequestDisplayOfColumnSetting: (key) => columnsettingDialog.openWithKey(key)
             onHoveredLinkChanged: hoveredLinkFrame.text = hoveredLink

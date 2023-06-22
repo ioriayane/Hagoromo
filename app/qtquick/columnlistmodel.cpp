@@ -144,7 +144,14 @@ void ColumnListModel::remove(int row)
         return;
 
     beginRemoveRows(QModelIndex(), row, row);
+    int remove_pos = m_columnList.at(row).position;
     m_columnList.removeAt(row);
+    // 消したカラムよりも位置が大きいものをひとつ詰める
+    for (int i = 0; i < m_columnList.length(); i++) {
+        if (m_columnList.at(i).position > remove_pos) {
+            m_columnList[i].position--;
+        }
+    }
     endRemoveRows();
 
     save();
@@ -155,11 +162,7 @@ void ColumnListModel::removeByKey(const QString &key)
 {
     for (int i = 0; i < m_columnList.count(); i++) {
         if (m_columnList.at(i).key == key) {
-            beginRemoveRows(QModelIndex(), i, i);
-            m_columnList.removeAt(i);
-            endRemoveRows();
-
-            save();
+            remove(i);
             break;
         }
     }
