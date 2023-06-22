@@ -1,4 +1,5 @@
 #include <QGuiApplication>
+#include <QLoggingCategory>
 #include <QQmlApplicationEngine>
 #include <QTranslator>
 #include <QtQuickControls2/QQuickStyle>
@@ -84,6 +85,13 @@ int main(int argc, char *argv[])
     if (translator2.load(QString("qt_ja"), dir)) {
         app.installTranslator(&translator2);
     }
+
+#ifdef QT_NO_DEBUG
+    QLoggingCategory::setFilterRules("*.debug=false\n"
+                                     "*.info=false\n"
+                                     "*.warning=true\n"
+                                     "*.critical=true");
+#endif
 
     QQmlApplicationEngine engine;
 

@@ -18,12 +18,6 @@ ColumnLayout {
     id: columnView
     spacing: 0
 
-    LoggingCategory {
-        id: logColumn
-        name: "tech.relog.hagoromo.ColumnView"
-        defaultLogLevel: LoggingCategory.Warning
-    }
-
     property string columnKey: ""
     property int componentType: 0
     property bool autoLoading: false
@@ -233,7 +227,7 @@ ColumnLayout {
     }
 
     function load(){
-        console.log(logColumn, "ColumnLayout:componentType=" + componentType)
+        console.log("ColumnLayout:componentType=" + componentType)
         if(componentType === 0){
             columnStackView.push(timelineComponent)
             componentTypeLabel.text = qsTr("Home")
@@ -258,7 +252,7 @@ ColumnLayout {
     function reflect(){
         // StackViewに積まれているViewに反映
         for(var i=0; i<columnStackView.depth; i++){
-            console.log(logColumn, "Reflect : " + i + ", " + columnView.handle)
+            console.log("Reflect : " + i + ", " + columnView.handle)
             var item = columnStackView.get(i)
             item.model.setAccount(columnView.service,
                                   columnView.did,
