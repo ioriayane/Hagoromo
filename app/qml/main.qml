@@ -161,7 +161,7 @@ ApplicationWindow {
 
         onAllFinished: {
             // すべてのアカウント情報の認証が終わったのでカラムを復元（成功しているとは限らない）
-            console.log(logMain, "allFinished()" + accountListModel.rowCount())
+            console.log(logMain, "allFinished()" + accountListModel.count)
             if(columnManageModel.rowCount() === 0){
                 columnManageModel.load()
             }

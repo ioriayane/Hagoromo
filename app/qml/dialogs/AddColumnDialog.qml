@@ -41,7 +41,7 @@ Dialog {
             var item = repeater.itemAt(i)
             item.visible = (i === index)
             if(i === index){
-                if(item.model.rowCount() === 2){
+                if(item.model.count === 2){
                     var service = accountModel.item(index, AccountListModel.ServiceRole)
                     var did = accountModel.item(index, AccountListModel.DidRole)
                     item.model.setAccount(service, did,
@@ -127,7 +127,7 @@ Dialog {
                     Layout.preferredHeight: 300
                     Repeater {
                         id: repeater
-                        model: accountModel.rowCount()
+                        model: accountModel.count
                         ScrollView {
                             id: typeScroll
                             anchors.fill: parent

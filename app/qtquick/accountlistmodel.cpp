@@ -148,7 +148,7 @@ void AccountListModel::updateAccount(const QString &service, const QString &iden
         item.refreshJwt = refreshJwt;
         item.status = authorized ? AccountStatus::Authorized : AccountStatus::Unauthorized;
 
-        beginInsertRows(QModelIndex(), rowCount(), rowCount());
+        beginInsertRows(QModelIndex(), count(), count());
         m_accountList.append(item);
         endInsertRows();
 
