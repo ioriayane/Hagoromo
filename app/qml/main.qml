@@ -294,6 +294,7 @@ ApplicationWindow {
                 IconButton {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 36
+                    enabled: accountListModel.count > 0
                     display: AbstractButton.IconOnly
                     iconSource: "images/edit.png"
                     //                    iconText: qsTr("New Post")
@@ -303,6 +304,7 @@ ApplicationWindow {
                 IconButton {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 36
+                    enabled: accountListModel.count > 0
                     display: AbstractButton.IconOnly
                     iconSource: "images/search.png"
                     onClicked: searchDialog.open()
@@ -316,6 +318,7 @@ ApplicationWindow {
                 IconButton {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 36
+                    enabled: accountListModel.count > 0
                     display: AbstractButton.IconOnly
                     iconSource: "images/column.png"
                     //                    iconText: qsTr("Add column")
