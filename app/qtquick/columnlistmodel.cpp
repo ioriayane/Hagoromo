@@ -249,7 +249,7 @@ void ColumnListModel::load()
 
     QJsonDocument doc = Common::loadJsonDocument(QStringLiteral("column.json"));
 
-    if (doc.isArray()) {
+    if (doc.isArray() && !doc.array().isEmpty()) {
         beginInsertRows(QModelIndex(), 0, doc.array().count() - 1);
         for (int i = 0; i < doc.array().count(); i++) {
             if (doc.array().at(i).isObject()) {
