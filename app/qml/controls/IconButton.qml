@@ -20,6 +20,16 @@ Button {
     rightInset: 2
     bottomInset: 2
 
+    states: [
+        State {
+            when: !button.enabled
+            PropertyChanges {
+                target: button
+                foreground: Material.color(Material.Grey)
+            }
+        }
+    ]
+
     RowLayout {
         id: buttonContextLayout
         anchors.centerIn: parent
