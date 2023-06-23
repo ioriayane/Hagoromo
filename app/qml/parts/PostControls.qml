@@ -10,6 +10,8 @@ RowLayout {
 
     property bool isReposted: false
     property bool isLiked: false
+    property string postUri: ""
+    property string handle: ""
 
     property alias replyButton: replyButton
     property alias repostButton: repostButton
@@ -18,6 +20,17 @@ RowLayout {
     property alias likeButton: likeButton
 
     property alias tranlateMenuItem: tranlateMenuItem
+    property alias copyToClipboardMenuItem: copyToClipboardMenuItem
+
+    function openInOhters(uri, handle){
+        if(uri.length === 0 || uri.startsWith("at://") === false){
+            return
+        }
+        var items = uri.split("/")
+        var url = "https://bsky.app/profile/" + handle + "/post/" + items[items.length-1]
+
+        Qt.openUrlExternally(url)
+    }
 
     IconButton {
         id: replyButton
@@ -73,7 +86,19 @@ RowLayout {
             id: morePopup
             MenuItem {
                 id: tranlateMenuItem
+                icon.source: "../images/language.png"
                 text: qsTr("Translate")
+            }
+            MenuItem {
+                id: copyToClipboardMenuItem
+                icon.source: "../images/copy.png"
+                text: qsTr("Copy post text")
+            }
+            MenuItem {
+                text: qsTr("Open in Official")
+                enabled: postUri.length > 0 && handle.length > 0
+                icon.source: "../images/open_in_other.png"
+                onTriggered: openInOhters(postUri, handle)
             }
         }
     }

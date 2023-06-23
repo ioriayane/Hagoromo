@@ -43,6 +43,8 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return current.post.author.avatar;
     else if (role == RecordTextRole)
         return copyRecordText(current.post.record);
+    else if (role == RecordTextPlainRole)
+        return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(current.post.record).text;
     else if (role == RecordTextTranslationRole)
         return m_translations.contains(current.post.cid) ? m_translations[current.post.cid]
                                                          : QString();
@@ -322,6 +324,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[HandleRole] = "handle";
     roles[AvatarRole] = "avatar";
     roles[RecordTextRole] = "recordText";
+    roles[RecordTextPlainRole] = "recordTextPlain";
     roles[RecordTextTranslationRole] = "recordTextTranslation";
     roles[ReplyCountRole] = "replyCount";
     roles[RepostCountRole] = "repostCount";

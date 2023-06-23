@@ -41,7 +41,7 @@ Dialog {
             var item = repeater.itemAt(i)
             item.visible = (i === index)
             if(i === index){
-                if(item.model.count === 2){
+                if(item.model.rowCount() === 2){
                     var service = accountModel.item(index, AccountListModel.ServiceRole)
                     var did = accountModel.item(index, AccountListModel.DidRole)
                     item.model.setAccount(service, did,
@@ -150,13 +150,21 @@ Dialog {
                                         height: 32
                                         visible: typeList.model ? typeList.model.running : false
                                     }
-                                    Label {
+                                    RowLayout {
                                         anchors.verticalCenter: parent.verticalCenter
                                         anchors.left: parent.left
-                                        anchors.leftMargin: 15
+                                        anchors.margins: 10
                                         visible: !busyIndicator.visible
-                                        text: qsTr("Discover Feeds")
+                                        AvatarImage {
+                                            Layout.preferredWidth: 24
+                                            Layout.preferredHeight: 24
+                                            altSource: "../images/feed.png"
+                                        }
+                                        Label {
+                                            text: qsTr("Discover Feeds")
+                                        }
                                     }
+
                                     onClicked: {
                                         if(busyIndicator.visible){
                                             return

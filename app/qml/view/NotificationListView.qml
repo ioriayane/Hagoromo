@@ -69,6 +69,7 @@ ScrollView {
             postAuthor.handle: model.handle
             postAuthor.indexedAt: model.indexedAt
             recordText: model.recordText
+            recordTextPlain: model.recordTextPlain
 
             recordDisplayName: model.recordDisplayName
             recordHandle: model.recordHandle
@@ -91,6 +92,8 @@ ScrollView {
             postControls.tranlateMenuItem.onTriggered: rootListView.model.translate(model.cid)
             postControls.isReposted: model.isReposted
             postControls.isLiked: model.isLiked
+            postControls.postUri: model.uri
+            postControls.handle: model.handle
 
             onClicked: {
                 if(model.reason === NotificationListModel.ReasonLike ||

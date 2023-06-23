@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 
 import tech.relog.hagoromo.timelinelistmodel 1.0
+import tech.relog.hagoromo.systemtool 1.0
 
 import "../parts"
 import "../controls"
@@ -26,6 +27,11 @@ ScrollView {
     signal requestViewThread(string uri)
     signal requestViewImages(int index, string paths)
     signal requestViewProfile(string did)
+
+
+    SystemTool {
+        id: systemTool
+    }
 
     ListView {
         id: rootListView
@@ -117,6 +123,9 @@ ScrollView {
             postControls.tranlateMenuItem.onTriggered: rootListView.model.translate(model.cid)
             postControls.isReposted: model.isReposted
             postControls.isLiked: model.isLiked
+            postControls.postUri: model.uri
+            postControls.handle: model.handle
+            postControls.copyToClipboardMenuItem.onTriggered: systemTool.copyToClipboard(model.recordTextPlain)
 
             onHoveredLinkChanged: timelineView.hoveredLink = hoveredLink
         }

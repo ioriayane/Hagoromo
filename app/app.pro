@@ -49,22 +49,25 @@ IMAGE_FILES += \
     qml/images/check.png \
     qml/images/close.png \
     qml/images/column.png \
+    qml/images/copy.png \
     qml/images/delete.png \
     qml/images/edit.png \
     qml/images/expand_less.png \
     qml/images/expand_more.png \
+    qml/images/feed.png \
     qml/images/home.png \
     qml/images/icon_mask.png \
+    qml/images/language.png \
     qml/images/like.png \
     qml/images/logo.png \
     qml/images/more.png \
     qml/images/notification.png \
+    qml/images/open_in_other.png \
     qml/images/quote.png \
     qml/images/reply.png \
     qml/images/repost.png \
     qml/images/search.png \
     qml/images/settings.png
-
 
 
 resources.files = $$QML_FILES $$IMAGE_FILES
@@ -99,4 +102,3 @@ mac:translations.path = \
 translations.files = $$PWD/i18n/*.qm
 #qmファイルが存在しないとmakefileに追加されないので注意
 INSTALLS += translations
-

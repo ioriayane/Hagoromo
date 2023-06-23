@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 
 import tech.relog.hagoromo.postthreadlistmodel 1.0
+import tech.relog.hagoromo.systemtool 1.0
 
 import "../parts"
 import "../controls"
@@ -26,6 +27,11 @@ ColumnLayout {
     signal requestViewProfile(string did)
 
     signal back()
+
+
+    SystemTool {
+        id: systemTool
+    }
 
     Frame {
         Layout.fillWidth: true
@@ -149,6 +155,9 @@ ColumnLayout {
                 postControls.tranlateMenuItem.onTriggered: postThreadListModel.translate(model.cid)
                 postControls.isReposted: model.isReposted
                 postControls.isLiked: model.isLiked
+                postControls.postUri: model.uri
+                postControls.handle: model.handle
+                postControls.copyToClipboardMenuItem.onTriggered: systemTool.copyToClipboard(model.recordTextPlain)
 
                 onHoveredLinkChanged: postThreadView.hoveredLink = hoveredLink
             }
