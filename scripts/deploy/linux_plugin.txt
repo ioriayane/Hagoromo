@@ -9,7 +9,6 @@ imageformats/libqwbmp.so
 imageformats/libqwebp.so
 platforminputcontexts/libcomposeplatforminputcontextplugin.so
 platforminputcontexts/libibusplatforminputcontextplugin.so
-platforminputcontexts/libqtvirtualkeyboardplugin.so
 platforms/libqeglfs.so
 platforms/libqlinuxfb.so
 platforms/libqminimal.so

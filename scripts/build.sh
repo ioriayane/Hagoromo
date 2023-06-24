@@ -48,13 +48,15 @@ deploy_hagoromo(){
     cp "README.md" ${work_dir}
 
     if [ "${PLATFORM_TYPE}" == "linux" ]; then
-        mkdir -p ${work_dir}/bin
+        mkdir -p ${work_dir}/bin/translations
         mkdir -p ${work_dir}/lib
 
         cp ${build_dir}/Hagoromo ${work_dir}/bin
         cp ${SCRIPT_FOLDER}/deploy/Hagoromo.sh ${work_dir}
         cp "openssl/lib/libcrypto.so.1.1" ${work_dir}/lib
         cp "openssl/lib/libssl.so.1.1" ${work_dir}/lib
+        cp "app/i18n/qt_ja_JP.qm" ${work_dir}/bin/translations
+        cp ${QT_BIN_FOLDER}/../translations/qt_ja.qm ${work_dir}/bin/translations
 
         cat ${SCRIPT_FOLDER}/deploy/linux_lib.txt | xargs -i{} cp -P ${QT_BIN_FOLDER}/../lib/{} ${work_dir}/lib
         cat ${SCRIPT_FOLDER}/deploy/linux_plugin.txt | xargs -i{} dirname {} | uniq | xargs -i{} mkdir -p ${work_dir}/bin/{}
