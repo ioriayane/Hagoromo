@@ -15,6 +15,8 @@ Dialog {
 
     property alias settings: settings
 
+    onRejected: settings.load()
+
     Encryption {
         id: encryption
     }
@@ -31,14 +33,18 @@ Dialog {
         property string translateApiKey: ""
         property string translateTargetLanguage: "JA"
 
+        property real fontSizeRatio: 1.0
 
 
-        Component.onCompleted: {
+        Component.onCompleted: load()
+
+        function load() {
             setRadioButton(themeButtonGroup.buttons, settings.theme)
             setRadioButton(accentButtonGroup.buttons, settings.accent)
             translateApiUrlText.text = settings.translateApiUrl
             translateApiKeyText.text = encryption.decrypt(settings.translateApiKey)
             translateTargetLanguageCombo.currentIndex = translateTargetLanguageCombo.indexOfValue(settings.translateTargetLanguage)
+            fontSizeRatioSlider.value = fontSizeRatio
         }
 
         function setRadioButton(buttons, value){
@@ -49,7 +55,6 @@ Dialog {
             }
         }
     }
-
 
     ButtonGroup {
         id: themeButtonGroup
@@ -135,6 +140,36 @@ Dialog {
                             }
                         }
                     }
+                    Label {
+                        text: qsTr("Font size") + " : "
+                    }
+                    Slider {
+                        id: fontSizeRatioSlider
+                        Layout.fillWidth: true
+                        from: 0.6
+                        to: 2.0
+                        stepSize: 0.2
+                        snapMode: Slider.SnapOnRelease
+                        Label {
+                            x: parent.background.x + parent.handle.width / 2 - contentWidth / 2
+                            y: parent.topPadding + parent.availableHeight / 2 - parent.handle.height / 2 - contentHeight
+                            text: qsTr("A")
+                            font.pointSize: 10 * parent.from
+                        }
+                        Label {
+                            x: parent.background.x + 2 * parent.width / ((parent.to - parent.from) / parent.stepSize) - contentWidth / 2
+                            y: parent.topPadding + parent.availableHeight / 2 - parent.handle.height / 2 - contentHeight
+                            text: qsTr("A")
+                            font.pointSize: 10
+                        }
+                        Label {
+                            x: parent.background.x + parent.background.width - parent.handle.width / 2 - contentWidth / 2
+                            y: parent.topPadding + parent.availableHeight / 2 - parent.handle.height / 2 - contentHeight
+                            text: qsTr("A")
+                            font.pointSize: 10 * parent.to
+                        }
+                    }
+
                     Item {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
@@ -283,6 +318,7 @@ Dialog {
                     settings.translateApiUrl = translateApiUrlText.text
                     settings.translateApiKey = encryption.encrypt(translateApiKeyText.text)
                     settings.translateTargetLanguage = translateTargetLanguageCombo.currentValue
+                    settings.fontSizeRatio = fontSizeRatioSlider.value
 
                     settingDialog.accept()
                 }

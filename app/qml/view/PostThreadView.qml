@@ -13,6 +13,7 @@ ColumnLayout {
     id: postThreadView
 
     property string hoveredLink: ""
+    property real fontSizeRatio: 1.0
 
     property alias postThreadUri: postThreadListModel.postThreadUri
     property alias listView: rootListView
@@ -92,6 +93,8 @@ ColumnLayout {
 
             delegate: PostDelegate {
                 Layout.preferredWidth: rootListView.width
+
+                fontSizeRatio: postThreadView.fontSizeRatio
 
                 //自分から自分へは移動しない
                 onClicked: (mouse) => {

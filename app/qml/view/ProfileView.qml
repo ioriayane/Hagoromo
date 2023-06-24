@@ -20,6 +20,7 @@ ColumnLayout {
     spacing: 0
 
     property string hoveredLink: ""
+    property real fontSizeRatio: 1.0
 
     property alias model: relayObject
 
@@ -308,6 +309,7 @@ ColumnLayout {
                 autoLoading: false
                 authorDid: profileView.userDid
             }
+            fontSizeRatio: profileView.fontSizeRatio
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                               profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -332,6 +334,7 @@ ColumnLayout {
                 targetDid: profileView.userDid
                 feedType: AnyFeedListModel.RepostFeedType
             }
+            fontSizeRatio: profileView.fontSizeRatio
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                               profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -356,6 +359,7 @@ ColumnLayout {
                 targetDid: profileView.userDid
                 feedType: AnyFeedListModel.LikeFeedType
             }
+            fontSizeRatio: profileView.fontSizeRatio
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                               profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)

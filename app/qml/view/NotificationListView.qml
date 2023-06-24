@@ -17,6 +17,7 @@ ScrollView {
     clip: true
 
     property string hoveredLink: ""
+    property real fontSizeRatio: 1.0
 
     property alias listView: rootListView
     property alias model: rootListView.model
@@ -66,6 +67,8 @@ ScrollView {
             Layout.preferredWidth: rootListView.width
 
             onRequestViewProfile: (did) => notificationListView.requestViewProfile(did)
+
+            fontSizeRatio: notificationListView.fontSizeRatio
 
             reason: model.reason
             postAvatarImage.source: model.avatar

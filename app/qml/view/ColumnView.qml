@@ -24,6 +24,7 @@ ColumnLayout {
     property int loadingInterval: 300000
     property string columnName: ""
     property string columnValue: ""
+    property real fontSizeRatio: 1.0
 
     property string accountUuid: ""
     property string service: ""
@@ -59,6 +60,7 @@ ColumnLayout {
                 autoLoading: columnView.autoLoading
                 loadingInterval: columnView.loadingInterval
             }
+            fontSizeRatio: columnView.fontSizeRatio
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -87,6 +89,7 @@ ColumnLayout {
                 autoLoading: columnView.autoLoading
                 loadingInterval: columnView.loadingInterval
             }
+            fontSizeRatio: columnView.fontSizeRatio
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -106,6 +109,8 @@ ColumnLayout {
     Component {
         id: postThreadComponent
         PostThreadView {
+            fontSizeRatio: columnView.fontSizeRatio
+
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
@@ -131,6 +136,8 @@ ColumnLayout {
     Component {
         id: profileComponent
         ProfileView {
+            fontSizeRatio: columnView.fontSizeRatio
+
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
@@ -162,6 +169,7 @@ ColumnLayout {
                 text: columnView.columnValue
                 searchService: "https://search.bsky.social"
             }
+            fontSizeRatio: columnView.fontSizeRatio
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -204,6 +212,7 @@ ColumnLayout {
                 loadingInterval: columnView.loadingInterval
                 uri: columnView.columnValue
             }
+            fontSizeRatio: columnView.fontSizeRatio
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)

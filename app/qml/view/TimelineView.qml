@@ -16,6 +16,7 @@ ScrollView {
     clip: true
 
     property string hoveredLink: ""
+    property real fontSizeRatio: 1.0
 
     property alias listView: rootListView
     property alias model: rootListView.model
@@ -65,6 +66,8 @@ ScrollView {
 
         delegate: PostDelegate {
             Layout.preferredWidth: rootListView.width
+
+            fontSizeRatio: timelineView.fontSizeRatio
 
             onClicked: (mouse) => requestViewThread(model.uri)
             onRequestViewProfile: (did) => timelineView.requestViewProfile(did)
