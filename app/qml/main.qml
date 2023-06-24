@@ -359,6 +359,7 @@ ApplicationWindow {
             clip: true
 
             property int childHeight: scrollView.height - scrollView.ScrollBar.horizontal.height
+            contentHeight: childHeight
 
             Repeater {
                 id: repeater
@@ -368,21 +369,27 @@ ApplicationWindow {
                 }
 
                 function updateSetting() {
+                    var w = 0
                     for(var i=0; i<repeater.count; i++){
                         var item = repeater.itemAt(i)   //ここのitemはloader自身
                         item.setSettings()
+                        w += item.width + item.anchors.leftMargin
                     }
+                    scrollView.contentWidth = w
                 }
 
                 function updatePosition() {
                     // モデルの順番を入れ替えるとLoader側が対応できないのと
                     // 最左にくるものから処理しないとレイアウトが循環して矛盾するため
                     // カラムの管理順ではなくポジションの順番で処理する
+                    var w = 0
                     var row_list = columnManageModel.getRowListInOrderOfPosition()
                     for(var i=0; i<row_list.length; i++){
                         var item = repeater.itemAt(row_list[i])   //ここのitemはloader自身
                         item.setLayout()
+                        w += item.width + item.anchors.leftMargin
                     }
+                    scrollView.contentWidth = w
                 }
 
                 function updateAccount(account_uuid){
