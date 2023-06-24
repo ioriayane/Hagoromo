@@ -5,6 +5,7 @@ import QtQuick.Controls.Material 2.15
 import QtGraphicalEffects 1.15
 
 import tech.relog.hagoromo.notificationlistmodel 1.0
+import tech.relog.hagoromo.systemtool 1.0
 
 import "../parts"
 
@@ -32,6 +33,10 @@ ScrollView {
         id: rootListView
         anchors.fill: parent
         anchors.rightMargin: parent.ScrollBar.vertical.width
+
+        SystemTool {
+            id: systemTool
+        }
 
         header: ItemDelegate {
             width: rootListView.width
@@ -69,7 +74,6 @@ ScrollView {
             postAuthor.handle: model.handle
             postAuthor.indexedAt: model.indexedAt
             recordText: model.recordText
-            recordTextPlain: model.recordTextPlain
 
             recordDisplayName: model.recordDisplayName
             recordHandle: model.recordHandle
@@ -94,6 +98,7 @@ ScrollView {
             postControls.isLiked: model.isLiked
             postControls.postUri: model.uri
             postControls.handle: model.handle
+            postControls.copyToClipboardMenuItem.onTriggered: systemTool.copyToClipboard(model.recordTextPlain)
 
             onClicked: {
                 if(model.reason === NotificationListModel.ReasonLike ||

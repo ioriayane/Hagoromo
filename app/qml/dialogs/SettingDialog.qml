@@ -15,10 +15,6 @@ Dialog {
 
     property alias settings: settings
 
-
-    // 行間と文字間も調整できると良いかも
-
-
     Encryption {
         id: encryption
     }

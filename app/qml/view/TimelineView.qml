@@ -29,15 +29,15 @@ ScrollView {
     signal requestViewProfile(string did)
 
 
-    SystemTool {
-        id: systemTool
-    }
-
     ListView {
         id: rootListView
         anchors.fill: parent
         anchors.rightMargin: parent.ScrollBar.vertical.width
         spacing: 5
+
+        SystemTool {
+            id: systemTool
+        }
 
         header: ItemDelegate {
             width: rootListView.width

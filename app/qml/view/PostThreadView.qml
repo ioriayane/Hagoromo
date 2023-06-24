@@ -29,10 +29,6 @@ ColumnLayout {
     signal back()
 
 
-    SystemTool {
-        id: systemTool
-    }
-
     Frame {
         Layout.fillWidth: true
         leftPadding: 0
@@ -68,6 +64,10 @@ ColumnLayout {
             id: rootListView
             anchors.fill: parent
             anchors.rightMargin: parent.ScrollBar.vertical.width
+
+            SystemTool {
+                id: systemTool
+            }
 
             model: PostThreadListModel {
                 id: postThreadListModel

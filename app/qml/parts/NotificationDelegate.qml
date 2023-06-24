@@ -5,7 +5,6 @@ import QtQuick.Controls.Material 2.15
 import QtGraphicalEffects 1.15
 
 import tech.relog.hagoromo.notificationlistmodel 1.0
-import tech.relog.hagoromo.systemtool 1.0
 
 import "../controls"
 import "../parts"
@@ -22,7 +21,6 @@ ClickableFrame {
 
     property int reason: NotificationListModel.ReasonLike
     property string recordText: ""
-    property string recordTextPlain: ""
 
     property string recordDisplayName: ""
     property string recordHandle: ""
@@ -110,10 +108,6 @@ ClickableFrame {
         }
 
     ]
-
-    SystemTool {
-        id: systemTool
-    }
 
     RowLayout {
         id: postLayout
@@ -230,7 +224,6 @@ ClickableFrame {
             PostControls {
                 id: postControls
                 visible: false
-                copyToClipboardMenuItem.onTriggered: systemTool.copyToClipboard(recordTextPlain)
             }
         }
     }
