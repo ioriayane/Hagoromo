@@ -7,6 +7,7 @@ import QtGraphicalEffects 1.15
 Button {
     id: button
 
+    width: buttonContextLayout.width
     Layout.preferredWidth: buttonContextLayout.width
 
     property alias iconSource: iconImage.source

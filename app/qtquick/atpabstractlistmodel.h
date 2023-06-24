@@ -78,7 +78,6 @@ protected:
 
     QList<QString> m_cidList; // これで取得したポストの順番を管理して実態はm_viewPostHashで管理
     QList<PostCueItem> m_cuePost;
-    int m_displayInterval;
 
     QHash<QString, QString> m_translations; // QHash<cid, translation>
 
@@ -90,6 +89,7 @@ private:
 
     bool m_running;
     int m_loadingInterval;
+    int m_displayInterval;
 };
 
 #endif // ATPABSTRACTLISTMODEL_H

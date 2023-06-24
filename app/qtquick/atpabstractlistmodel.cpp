@@ -10,9 +10,9 @@ using namespace AtProtocolType;
 
 AtpAbstractListModel::AtpAbstractListModel(QObject *parent)
     : QAbstractListModel { parent },
-      m_displayInterval(400),
       m_running(false),
-      m_loadingInterval(5 * 60 * 1000)
+      m_loadingInterval(5 * 60 * 1000),
+      m_displayInterval(400)
 {
     connect(&m_timer, &QTimer::timeout, this, &AtpAbstractListModel::getLatest);
 }

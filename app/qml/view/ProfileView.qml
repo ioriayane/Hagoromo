@@ -73,6 +73,13 @@ ColumnLayout {
         }
     ]
 
+    function openInOhters(handle) {
+        if(handle.length === 0){
+            return
+        }
+        Qt.openUrlExternally("https://bsky.app/profile/" + handle)
+    }
+
     QtObject {
         id: relayObject
         function rowCount() {
@@ -159,22 +166,6 @@ ColumnLayout {
                         visible: recordOperator.running || userProfile.running
                     }
                 }
-                //                IconButton {
-                //                    id: moreButton
-                //                    Layout.preferredHeight: 24
-                //                    iconSource: "../images/more.png"
-                //                    iconSize: 16
-                //                    foreground: Material.color(Material.Grey)
-                //                    //flat: true
-                //                    onClicked: morePopup.open()
-                //                    Menu {
-                //                        id: morePopup
-                //                        MenuItem {
-                //                            id: tranlateMenuItem
-                //                            text: qsTr("Post reply")
-                //                        }
-                //                    }
-                //                }
             }
         }
         RowLayout {
@@ -236,19 +227,6 @@ ColumnLayout {
                         text: qsTr("posts")
                     }
                 }
-                //                RowLayout{    // 開始日じゃなかった;;
-                //                    Label {
-                //                        Layout.leftMargin: 5
-                //                        font.pointSize: 8
-                //                        color: Material.color(Material.Grey)
-                //                        text: qsTr("Took off into the Bluesky on")
-                //                    }
-                //                    Label {
-                //                        font.pointSize: 8
-                //                        font.bold: true
-                //                        text: userProfile.indexedAt
-                //                    }
-                //                }
             }
         }
         Label {
@@ -257,6 +235,27 @@ ColumnLayout {
             lineHeight: 1.1
             font.pointSize: 10
             text: userProfile.description
+
+            IconButton {
+                id: moreButton
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                height: 24
+                iconSource: "../images/more.png"
+                iconSize: 16
+                foreground: Material.color(Material.Grey)
+                flat: true
+                onClicked: morePopup.open()
+                Menu {
+                    id: morePopup
+                    MenuItem {
+                        text: qsTr("Open in Official")
+                        icon.source: "../images/open_in_other.png"
+                        enabled: userProfile.handle.length > 0
+                        onTriggered: openInOhters(userProfile.handle)
+                    }
+                }
+            }
         }
     }
 
