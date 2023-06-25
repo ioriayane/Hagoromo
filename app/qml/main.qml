@@ -184,8 +184,7 @@ ApplicationWindow {
             fontSizeRatio: settingDialog.settings.fontSizeRatio
 
             onRequestReply: (account_uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) => {
-                                console.log(logMain,
-                                            account_uuid + ",\n" +
+                                console.log(account_uuid + ",\n" +
                                             cid + ", "+ uri + ",\n" +
                                             reply_root_cid + ", "+ reply_root_uri + ",\n" +
                                             avatar + ",\n" +
