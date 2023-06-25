@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 
 import tech.relog.hagoromo.postthreadlistmodel 1.0
+import tech.relog.hagoromo.systemtool 1.0
 
 import "../parts"
 import "../controls"
@@ -12,6 +13,7 @@ ColumnLayout {
     id: postThreadView
 
     property string hoveredLink: ""
+    property real fontSizeRatio: 1.0
 
     property alias postThreadUri: postThreadListModel.postThreadUri
     property alias listView: rootListView
@@ -26,6 +28,7 @@ ColumnLayout {
     signal requestViewProfile(string did)
 
     signal back()
+
 
     Frame {
         Layout.fillWidth: true
@@ -63,6 +66,10 @@ ColumnLayout {
             anchors.fill: parent
             anchors.rightMargin: parent.ScrollBar.vertical.width
 
+            SystemTool {
+                id: systemTool
+            }
+
             model: PostThreadListModel {
                 id: postThreadListModel
                 autoLoading: false
@@ -86,6 +93,8 @@ ColumnLayout {
 
             delegate: PostDelegate {
                 Layout.preferredWidth: rootListView.width
+
+                fontSizeRatio: postThreadView.fontSizeRatio
 
                 //自分から自分へは移動しない
                 onClicked: (mouse) => {
@@ -149,6 +158,9 @@ ColumnLayout {
                 postControls.tranlateMenuItem.onTriggered: postThreadListModel.translate(model.cid)
                 postControls.isReposted: model.isReposted
                 postControls.isLiked: model.isLiked
+                postControls.postUri: model.uri
+                postControls.handle: model.handle
+                postControls.copyToClipboardMenuItem.onTriggered: systemTool.copyToClipboard(model.recordTextPlain)
 
                 onHoveredLinkChanged: postThreadView.hoveredLink = hoveredLink
             }

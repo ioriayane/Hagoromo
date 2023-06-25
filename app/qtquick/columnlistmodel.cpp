@@ -7,10 +7,7 @@
 #include <QSettings>
 #include <QUuid>
 
-ColumnListModel::ColumnListModel(QObject *parent) : QAbstractListModel { parent }
-{
-    load();
-}
+ColumnListModel::ColumnListModel(QObject *parent) : QAbstractListModel { parent } { }
 
 int ColumnListModel::rowCount(const QModelIndex &parent) const
 {
@@ -89,6 +86,7 @@ void ColumnListModel::insert(int row, const QString &account_uuid, int component
         return;
 
     ColumnItem item;
+    item.position = row;
     item.key = QUuid::createUuid().toString(QUuid::WithoutBraces);
     item.account_uuid = account_uuid;
     item.component_type = static_cast<FeedComponentType>(component_type);
@@ -105,13 +103,55 @@ void ColumnListModel::insert(int row, const QString &account_uuid, int component
     save();
 }
 
+void ColumnListModel::move(const QString &key, const MoveDirection direction)
+{
+    // モデルのリストの位置は変更しないで管理indexを移動させる
+
+    int to_position = -1;
+    int from_index = -1;
+    int to_index = -1;
+    for (int i = 0; i < m_columnList.length(); i++) {
+        if (m_columnList.at(i).key == key) {
+            if (direction == MoveLeft) {
+                to_position = m_columnList.at(i).position - 1;
+            } else {
+                to_position = m_columnList.at(i).position + 1;
+            }
+            from_index = i;
+        }
+    }
+    for (int i = 0; i < m_columnList.length(); i++) {
+        if (m_columnList.at(i).position == to_position) {
+            to_index = i;
+        }
+    }
+    if (from_index == -1 || to_index == -1)
+        return;
+
+    int temp = m_columnList.at(from_index).position;
+    m_columnList[from_index].position = m_columnList.at(to_index).position;
+    m_columnList[to_index].position = temp;
+
+    emit dataChanged(index(from_index), index(from_index));
+    emit dataChanged(index(to_index), index(to_index));
+
+    save();
+}
+
 void ColumnListModel::remove(int row)
 {
     if (row < 0 || row >= m_columnList.count())
         return;
 
     beginRemoveRows(QModelIndex(), row, row);
+    int remove_pos = m_columnList.at(row).position;
     m_columnList.removeAt(row);
+    // 消したカラムよりも位置が大きいものをひとつ詰める
+    for (int i = 0; i < m_columnList.length(); i++) {
+        if (m_columnList.at(i).position > remove_pos) {
+            m_columnList[i].position--;
+        }
+    }
     endRemoveRows();
 
     save();
@@ -122,11 +162,7 @@ void ColumnListModel::removeByKey(const QString &key)
 {
     for (int i = 0; i < m_columnList.count(); i++) {
         if (m_columnList.at(i).key == key) {
-            beginRemoveRows(QModelIndex(), i, i);
-            m_columnList.removeAt(i);
-            endRemoveRows();
-
-            save();
+            remove(i);
             break;
         }
     }
@@ -152,6 +188,38 @@ int ColumnListModel::indexOf(const QString &key) const
     return -1;
 }
 
+// 自分のposition-1が入っているアイテムのインデックスを返す
+int ColumnListModel::getPreviousRow(const int row)
+{
+    if (row < 0 || row >= m_columnList.count())
+        return -1;
+
+    int pos = m_columnList.at(row).position - 1;
+    for (int i = 0; i < m_columnList.count(); i++) {
+        if (m_columnList.at(i).position == pos) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+QList<int> ColumnListModel::getRowListInOrderOfPosition() const
+{
+    QList<int> row_list;
+    for (int i = 0; i < m_columnList.count(); i++) {
+        row_list.append(i);
+    }
+    for (int i = 0; i < row_list.count() - 1; i++) {
+        for (int j = i + 1; j < row_list.count(); j++) {
+            if (m_columnList.at(row_list.at(i)).position
+                > m_columnList.at(row_list.at(j)).position) {
+                row_list.swapItemsAt(i, j);
+            }
+        }
+    }
+    return row_list;
+}
+
 void ColumnListModel::save() const
 {
     QSettings settings;
@@ -159,6 +227,7 @@ void ColumnListModel::save() const
     QJsonArray column_array;
     for (const ColumnItem &item : m_columnList) {
         QJsonObject column_item;
+        column_item["position"] = item.position;
         column_item["key"] = item.key;
         column_item["account_uuid"] = item.account_uuid;
         column_item["component_type"] = static_cast<int>(item.component_type);
@@ -175,14 +244,20 @@ void ColumnListModel::save() const
 
 void ColumnListModel::load()
 {
-    m_columnList.clear();
+    if (!m_columnList.isEmpty()) {
+        beginRemoveRows(QModelIndex(), 0, rowCount() - 1);
+        m_columnList.clear();
+        endRemoveRows();
+    }
 
     QJsonDocument doc = Common::loadJsonDocument(QStringLiteral("column.json"));
 
-    if (doc.isArray()) {
+    if (doc.isArray() && !doc.array().isEmpty()) {
+        beginInsertRows(QModelIndex(), 0, doc.array().count() - 1);
         for (int i = 0; i < doc.array().count(); i++) {
             if (doc.array().at(i).isObject()) {
                 ColumnItem item;
+                item.position = doc.array().at(i).toObject().value("position").toInt(-1);
                 item.key = doc.array().at(i).toObject().value("key").toString();
                 item.account_uuid = doc.array().at(i).toObject().value("account_uuid").toString();
                 item.component_type = static_cast<FeedComponentType>(
@@ -214,10 +289,11 @@ void ColumnListModel::load()
                         break;
                     }
                 }
-
                 m_columnList.append(item);
             }
         }
+        validateIndex();
+        endInsertRows();
     }
 }
 
@@ -235,4 +311,37 @@ QHash<int, QByteArray> ColumnListModel::roleNames() const
     roles[ValueRole] = "value";
 
     return roles;
+}
+
+void ColumnListModel::validateIndex()
+{
+    QList<int> values;
+    for (const auto &item : qAsConst(m_columnList)) {
+        if (!values.contains(item.position)) {
+            values.append(item.position);
+        }
+    }
+    bool valid = true;
+    if (values.length() != m_columnList.length()) {
+        valid = false;
+    } else {
+        for (int i = 0; i < values.length() - 1; i++) {
+            for (int j = i + 1; j < values.length(); j++) {
+                if (values[i] > values[j]) {
+                    values.swapItemsAt(i, j);
+                }
+            }
+        }
+        for (int i = 0; i < values.length() - 1; i++) {
+            if (values[i] + 1 != values[i + 1]) {
+                valid = false;
+                break;
+            }
+        }
+    }
+    if (!valid) {
+        for (int i = 0; i < m_columnList.length(); i++) {
+            m_columnList[i].position = i;
+        }
+    }
 }

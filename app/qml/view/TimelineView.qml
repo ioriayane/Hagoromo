@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 
 import tech.relog.hagoromo.timelinelistmodel 1.0
+import tech.relog.hagoromo.systemtool 1.0
 
 import "../parts"
 import "../controls"
@@ -15,6 +16,7 @@ ScrollView {
     clip: true
 
     property string hoveredLink: ""
+    property real fontSizeRatio: 1.0
 
     property alias listView: rootListView
     property alias model: rootListView.model
@@ -27,11 +29,16 @@ ScrollView {
     signal requestViewImages(int index, string paths)
     signal requestViewProfile(string did)
 
+
     ListView {
         id: rootListView
         anchors.fill: parent
         anchors.rightMargin: parent.ScrollBar.vertical.width
         spacing: 5
+
+        SystemTool {
+            id: systemTool
+        }
 
         header: ItemDelegate {
             width: rootListView.width
@@ -59,6 +66,8 @@ ScrollView {
 
         delegate: PostDelegate {
             Layout.preferredWidth: rootListView.width
+
+            fontSizeRatio: timelineView.fontSizeRatio
 
             onClicked: (mouse) => requestViewThread(model.uri)
             onRequestViewProfile: (did) => timelineView.requestViewProfile(did)
@@ -117,6 +126,9 @@ ScrollView {
             postControls.tranlateMenuItem.onTriggered: rootListView.model.translate(model.cid)
             postControls.isReposted: model.isReposted
             postControls.isLiked: model.isLiked
+            postControls.postUri: model.uri
+            postControls.handle: model.handle
+            postControls.copyToClipboardMenuItem.onTriggered: systemTool.copyToClipboard(model.recordTextPlain)
 
             onHoveredLinkChanged: timelineView.hoveredLink = hoveredLink
         }

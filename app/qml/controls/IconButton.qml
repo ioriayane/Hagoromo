@@ -7,6 +7,7 @@ import QtGraphicalEffects 1.15
 Button {
     id: button
 
+    width: buttonContextLayout.width
     Layout.preferredWidth: buttonContextLayout.width
 
     property alias iconSource: iconImage.source
@@ -19,6 +20,16 @@ Button {
     leftInset: 2
     rightInset: 2
     bottomInset: 2
+
+    states: [
+        State {
+            when: !button.enabled
+            PropertyChanges {
+                target: button
+                foreground: Material.color(Material.Grey)
+            }
+        }
+    ]
 
     RowLayout {
         id: buttonContextLayout

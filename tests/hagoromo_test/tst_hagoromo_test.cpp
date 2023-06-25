@@ -6,6 +6,7 @@
 #include "timelinelistmodel.h"
 #include "recordoperator.h"
 #include "feedgeneratorlistmodel.h"
+#include "columnlistmodel.h"
 
 class hagoromo_test : public QObject
 {
@@ -21,6 +22,8 @@ private slots:
     void test_TimelineListModelFacet();
     void test_RecordOperator();
     void test_FeedGeneratorListModel();
+    void test_ColumnListModelMove();
+    void test_ColumnListModelRemove();
 
 private:
     WebServer m_mockServer;
@@ -167,6 +170,135 @@ void hagoromo_test::test_FeedGeneratorListModel()
         spy.wait();
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
+}
+
+void hagoromo_test::test_ColumnListModelMove()
+{
+    ColumnListModel model;
+
+    model.append("uuid_1", 0, false, 10000, 400, "column 1", "value 1");
+    model.append("uuid_2", 1, false, 20000, 500, "column 2", "value 2");
+    model.append("uuid_3", 2, false, 30000, 600, "column 3", "value 3");
+    model.append("uuid_4", 3, false, 40000, 700, "column 4", "value 4");
+
+    QVERIFY2(model.getPreviousRow(0) == -1,
+             QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(1) == 0,
+             QString("left pos=%1").arg(model.getPreviousRow(1)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(2) == 1,
+             QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(3) == 2,
+             QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
+    QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 0 << 1 << 2 << 3);
+
+    model.move(model.item(1, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveLeft);
+    QVERIFY2(model.getPreviousRow(0) == 1,
+             QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(1) == -1,
+             QString("left pos=%1").arg(model.getPreviousRow(1)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(2) == 0,
+             QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(3) == 2,
+             QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
+    QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 1 << 0 << 2 << 3);
+
+    model.move(model.item(2, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveLeft);
+    QVERIFY2(model.getPreviousRow(0) == 2,
+             QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(1) == -1,
+             QString("left pos=%1").arg(model.getPreviousRow(1)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(2) == 1,
+             QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(3) == 0,
+             QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
+    QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 1 << 2 << 0 << 3);
+
+    model.move(model.item(3, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveLeft);
+    QVERIFY2(model.getPreviousRow(0) == 3,
+             QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(1) == -1,
+             QString("left pos=%1").arg(model.getPreviousRow(1)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(2) == 1,
+             QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(3) == 2,
+             QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
+    QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 1 << 2 << 3 << 0);
+
+    model.move(model.item(1, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveLeft);
+    QVERIFY2(model.getPreviousRow(0) == 3,
+             QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(1) == -1,
+             QString("left pos=%1").arg(model.getPreviousRow(1)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(2) == 1,
+             QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(3) == 2,
+             QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
+    QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 1 << 2 << 3 << 0);
+
+    model.move(model.item(3, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveRight);
+    QVERIFY2(model.getPreviousRow(0) == 2,
+             QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(1) == -1,
+             QString("left pos=%1").arg(model.getPreviousRow(1)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(2) == 1,
+             QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(3) == 0,
+             QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
+    QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 1 << 2 << 0 << 3);
+
+    model.move(model.item(2, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveRight);
+    QVERIFY2(model.getPreviousRow(0) == 1,
+             QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(1) == -1,
+             QString("left pos=%1").arg(model.getPreviousRow(1)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(2) == 0,
+             QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(3) == 2,
+             QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
+    QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 1 << 0 << 2 << 3);
+
+    model.move(model.item(1, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveRight);
+    QVERIFY2(model.getPreviousRow(0) == -1,
+             QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(1) == 0,
+             QString("left pos=%1").arg(model.getPreviousRow(1)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(2) == 1,
+             QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(3) == 2,
+             QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
+    QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 0 << 1 << 2 << 3);
+}
+
+void hagoromo_test::test_ColumnListModelRemove()
+{
+    ColumnListModel model;
+
+    model.append("uuid_1", 0, false, 10000, 400, "column 1", "value 1");
+    model.append("uuid_2", 1, false, 20000, 500, "column 2", "value 2");
+    model.append("uuid_3", 2, false, 30000, 600, "column 3", "value 3");
+    model.append("uuid_4", 3, false, 40000, 700, "column 4", "value 4");
+
+    model.move(model.item(1, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveLeft);
+    model.move(model.item(2, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveLeft);
+    model.move(model.item(3, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveLeft);
+    QVERIFY2(model.getPreviousRow(0) == 3,
+             QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(1) == -1,
+             QString("left pos=%1").arg(model.getPreviousRow(1)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(2) == 1,
+             QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(3) == 2,
+             QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
+    QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 1 << 2 << 3 << 0);
+
+    model.removeByKey(model.item(2, ColumnListModel::KeyRole).toString());
+    QVERIFY2(model.getPreviousRow(0) == 2,
+             QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(1) == -1,
+             QString("left pos=%1").arg(model.getPreviousRow(1)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(2) == 1,
+             QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
+    QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 1 << 2 << 0);
 }
 
 void hagoromo_test::test_RecordOperatorCreateRecord(const QByteArray &body)

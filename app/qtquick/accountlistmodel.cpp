@@ -148,9 +148,11 @@ void AccountListModel::updateAccount(const QString &service, const QString &iden
         item.refreshJwt = refreshJwt;
         item.status = authorized ? AccountStatus::Authorized : AccountStatus::Unauthorized;
 
-        beginInsertRows(QModelIndex(), rowCount(), rowCount());
+        beginInsertRows(QModelIndex(), count(), count());
         m_accountList.append(item);
         endInsertRows();
+
+        emit countChanged();
     }
 
     save();
@@ -164,6 +166,7 @@ void AccountListModel::removeAccount(int row)
     beginRemoveRows(QModelIndex(), row, row);
     m_accountList.removeAt(row);
     endRemoveRows();
+    emit countChanged();
 
     save();
 }
@@ -210,7 +213,12 @@ void AccountListModel::save() const
 
 void AccountListModel::load()
 {
-    m_accountList.clear();
+    if (!m_accountList.isEmpty()) {
+        beginRemoveRows(QModelIndex(), 0, count() - 1);
+        m_accountList.clear();
+        endRemoveRows();
+        emit countChanged();
+    }
 
     QJsonDocument doc = Common::loadJsonDocument(QStringLiteral("account.json"));
 
@@ -224,7 +232,10 @@ void AccountListModel::load()
                 item.password = m_encryption.decrypt(
                         doc.array().at(i).toObject().value("password").toString());
 
+                beginInsertRows(QModelIndex(), count(), count());
                 m_accountList.append(item);
+                endInsertRows();
+                emit countChanged();
 
                 updateSession(m_accountList.count() - 1, item.service, item.identifier,
                               item.password);
@@ -354,4 +365,9 @@ void AccountListModel::getProfile(int row)
         profile->deleteLater();
     });
     profile->getProfile(m_accountList.at(row).did);
+}
+
+int AccountListModel::count() const
+{
+    return m_accountList.count();
 }

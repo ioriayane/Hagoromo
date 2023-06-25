@@ -50,7 +50,7 @@ Dialog {
                     }
                 }
                 onClicked: {
-                    login.serviceText = ""
+                    login.serviceText = "https://bsky.social"
                     login.idText = ""
                     login.passwordText = ""
                     login.open()

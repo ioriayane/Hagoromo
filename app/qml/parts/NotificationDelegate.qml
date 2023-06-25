@@ -29,6 +29,7 @@ ClickableFrame {
     property string recordRecordText: ""
 
     property string hoveredLink: ""
+    property real fontSizeRatio: 1.0
 
     property alias postAvatarImage: postAvatarImage
     property alias postAuthor: postAuthor
@@ -108,6 +109,7 @@ ClickableFrame {
         }
 
     ]
+
     RowLayout {
         id: postLayout
         Image {
@@ -176,7 +178,7 @@ ClickableFrame {
                 Layout.topMargin: 8
                 textFormat: Text.StyledText
                 wrapMode: Text.WrapAnywhere
-                font.pointSize: 10
+                font.pointSize: 10 * fontSizeRatio
                 lineHeight: 1.3
                 onLinkActivated: (url) => openLink(url)
                 onHoveredLinkChanged: displayLink(hoveredLink)
@@ -207,7 +209,7 @@ ClickableFrame {
                         Layout.preferredWidth: recordFrame.basisWidth
                         textFormat: Text.StyledText
                         wrapMode: Text.WrapAnywhere
-                        font.pointSize: 10
+                        font.pointSize: 10 * fontSizeRatio
                         lineHeight: 1.3
                         onLinkActivated: (url) => openLink(url)
                         onHoveredLinkChanged: displayLink(hoveredLink)

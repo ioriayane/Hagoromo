@@ -11,6 +11,8 @@
 class AccountListModel : public QAbstractListModel
 {
     Q_OBJECT
+
+    Q_PROPERTY(int count READ count NOTIFY countChanged CONSTANT)
 public:
     explicit AccountListModel(QObject *parent = nullptr);
 
@@ -54,10 +56,13 @@ public:
 
     Q_INVOKABLE QVariant account(int row) const;
 
+    int count() const;
+
 signals:
     void appendedAccount(int row);
     void updatedAccount(int row, const QString &uuid);
     void allFinished();
+    void countChanged();
 
 protected:
     QHash<int, QByteArray> roleNames() const;

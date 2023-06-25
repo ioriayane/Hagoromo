@@ -11,7 +11,7 @@ using AtProtocolInterface::ComAtprotoRepoListRecords;
 
 AnyFeedListModel::AnyFeedListModel(QObject *parent) : TimelineListModel { parent }
 {
-    m_displayInterval = 0;
+    setDisplayInterval(0);
 }
 
 void AnyFeedListModel::getLatest()

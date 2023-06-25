@@ -10,7 +10,7 @@ using SearchInterface::SearchPosts;
 
 SearchPostListModel::SearchPostListModel(QObject *parent) : TimelineListModel { parent }
 {
-    m_displayInterval = 0;
+    setDisplayInterval(0);
 }
 
 void SearchPostListModel::getLatest()

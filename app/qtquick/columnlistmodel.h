@@ -17,6 +17,7 @@ enum class FeedComponentType : int {
 
 struct ColumnItem
 {
+    int position = -1; // カラムの表示位置
     QString key;
     QString account_uuid;
     FeedComponentType component_type;
@@ -50,6 +51,11 @@ public:
     };
     Q_ENUM(ColumnListModelRoles)
     Q_ENUM(FeedComponentType)
+    enum MoveDirection {
+        MoveLeft,
+        MoveRight,
+    };
+    Q_ENUM(MoveDirection)
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
@@ -63,16 +69,21 @@ public:
     Q_INVOKABLE void insert(int row, const QString &account_uuid, int component_type,
                             bool auto_loading, int interval, int width, const QString &name,
                             const QString &value);
+    Q_INVOKABLE void move(const QString &key, const ColumnListModel::MoveDirection direction);
     Q_INVOKABLE void remove(int row);
     Q_INVOKABLE void removeByKey(const QString &key);
     Q_INVOKABLE bool containsKey(const QString &key) const;
     Q_INVOKABLE int indexOf(const QString &key) const;
+
+    Q_INVOKABLE int getPreviousRow(const int row);
+    Q_INVOKABLE QList<int> getRowListInOrderOfPosition() const;
 
     Q_INVOKABLE void save() const;
     Q_INVOKABLE void load();
 
 protected:
     QHash<int, QByteArray> roleNames() const;
+    void validateIndex();
 
     QList<ColumnItem> m_columnList;
 };

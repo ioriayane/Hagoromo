@@ -15,6 +15,7 @@ ClickableFrame {
 
     property int layoutWidth: postFrame.Layout.preferredWidth
     property string hoveredLink: ""
+    property real fontSizeRatio: 1.0
 
     property alias repostReactionAuthor: repostReactionAuthor
     property alias replyReactionAuthor: replyReactionAuthor
@@ -93,7 +94,7 @@ ClickableFrame {
                     Layout.topMargin: 5
                     textFormat: Text.StyledText
                     wrapMode: Text.WrapAnywhere
-                    font.pointSize: 10
+                    font.pointSize: 10 * fontSizeRatio
                     lineHeight: 1.3
                     onLinkActivated: (url) => openLink(url)
                     onHoveredLinkChanged: displayLink(hoveredLink)
@@ -132,7 +133,7 @@ ClickableFrame {
                                 Layout.maximumWidth: parent.basisWidth
                                 textFormat: Text.StyledText
                                 wrapMode: Text.WrapAnywhere
-                                font.pointSize: 10
+                                font.pointSize: 10 * fontSizeRatio
                                 lineHeight: 1.3
                                 onLinkActivated: (url) => openLink(url)
                                 onHoveredLinkChanged: displayLink(hoveredLink)

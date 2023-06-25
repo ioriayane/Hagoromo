@@ -25,6 +25,7 @@ public:
         HandleRole,
         AvatarRole,
         RecordTextRole,
+        RecordTextPlainRole,
         ReplyCountRole,
         RepostCountRole,
         LikeCountRole,

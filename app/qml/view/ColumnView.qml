@@ -18,18 +18,13 @@ ColumnLayout {
     id: columnView
     spacing: 0
 
-    LoggingCategory {
-        id: logColumn
-        name: "tech.relog.hagoromo.ColumnView"
-        defaultLogLevel: LoggingCategory.Warning
-    }
-
     property string columnKey: ""
     property int componentType: 0
     property bool autoLoading: false
     property int loadingInterval: 300000
     property string columnName: ""
     property string columnValue: ""
+    property real fontSizeRatio: 1.0
 
     property string accountUuid: ""
     property string service: ""
@@ -65,6 +60,7 @@ ColumnLayout {
                 autoLoading: columnView.autoLoading
                 loadingInterval: columnView.loadingInterval
             }
+            fontSizeRatio: columnView.fontSizeRatio
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -93,6 +89,7 @@ ColumnLayout {
                 autoLoading: columnView.autoLoading
                 loadingInterval: columnView.loadingInterval
             }
+            fontSizeRatio: columnView.fontSizeRatio
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -112,6 +109,8 @@ ColumnLayout {
     Component {
         id: postThreadComponent
         PostThreadView {
+            fontSizeRatio: columnView.fontSizeRatio
+
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
@@ -137,6 +136,8 @@ ColumnLayout {
     Component {
         id: profileComponent
         ProfileView {
+            fontSizeRatio: columnView.fontSizeRatio
+
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
@@ -168,6 +169,7 @@ ColumnLayout {
                 text: columnView.columnValue
                 searchService: "https://search.bsky.social"
             }
+            fontSizeRatio: columnView.fontSizeRatio
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -210,6 +212,7 @@ ColumnLayout {
                 loadingInterval: columnView.loadingInterval
                 uri: columnView.columnValue
             }
+            fontSizeRatio: columnView.fontSizeRatio
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -233,7 +236,7 @@ ColumnLayout {
     }
 
     function load(){
-        console.log(logColumn, "ColumnLayout:componentType=" + componentType)
+        console.log("ColumnLayout:componentType=" + componentType)
         if(componentType === 0){
             columnStackView.push(timelineComponent)
             componentTypeLabel.text = qsTr("Home")
@@ -258,7 +261,7 @@ ColumnLayout {
     function reflect(){
         // StackViewに積まれているViewに反映
         for(var i=0; i<columnStackView.depth; i++){
-            console.log(logColumn, "Reflect : " + i + ", " + columnView.handle)
+            console.log("Reflect : " + i + ", " + columnView.handle)
             var item = columnStackView.get(i)
             item.model.setAccount(columnView.service,
                                   columnView.did,

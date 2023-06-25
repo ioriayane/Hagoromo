@@ -13,6 +13,8 @@ class SystemTool : public QObject
 public:
     explicit SystemTool(QObject *parent = nullptr);
 
+    Q_INVOKABLE void copyToClipboard(const QString &text) const;
+
     QString applicationVersion() const;
     QString qtVersion() const;
 };

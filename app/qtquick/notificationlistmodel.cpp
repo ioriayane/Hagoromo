@@ -44,6 +44,11 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
         return current.author.avatar;
     else if (role == RecordTextRole)
         return copyRecordText(current.record);
+    else if (role == RecordTextPlainRole)
+        return AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                       AtProtocolType::AppBskyFeedPost::Main>(current.record)
+                .text;
+
     else if (role == IndexedAtRole)
         return formatDateTime(current.indexedAt);
 
@@ -418,6 +423,7 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[HandleRole] = "handle";
     roles[AvatarRole] = "avatar";
     roles[RecordTextRole] = "recordText";
+    roles[RecordTextPlainRole] = "recordTextPlain";
     roles[ReplyCountRole] = "replyCount";
     roles[RepostCountRole] = "repostCount";
     roles[LikeCountRole] = "likeCount";

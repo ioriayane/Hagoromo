@@ -127,7 +127,7 @@ Dialog {
                     Layout.preferredHeight: 300
                     Repeater {
                         id: repeater
-                        model: accountModel.rowCount()
+                        model: accountModel.count
                         ScrollView {
                             id: typeScroll
                             anchors.fill: parent
@@ -150,13 +150,21 @@ Dialog {
                                         height: 32
                                         visible: typeList.model ? typeList.model.running : false
                                     }
-                                    Label {
+                                    RowLayout {
                                         anchors.verticalCenter: parent.verticalCenter
                                         anchors.left: parent.left
-                                        anchors.leftMargin: 15
+                                        anchors.margins: 10
                                         visible: !busyIndicator.visible
-                                        text: qsTr("Discover Feeds")
+                                        AvatarImage {
+                                            Layout.preferredWidth: 24
+                                            Layout.preferredHeight: 24
+                                            altSource: "../images/feed.png"
+                                        }
+                                        Label {
+                                            text: qsTr("Discover Feeds")
+                                        }
                                     }
+
                                     onClicked: {
                                         if(busyIndicator.visible){
                                             return

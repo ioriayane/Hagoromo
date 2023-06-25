@@ -19,12 +19,6 @@ ApplicationWindow {
     visible: true
     title: "羽衣 -Hagoromo-"
 
-    LoggingCategory {
-        id: logMain
-        name: "tech.relog.hagoromo.Main"
-        defaultLogLevel: LoggingCategory.Warning
-    }
-
     Material.theme: settingDialog.settings.theme
     Material.accent: settingDialog.settings.accent
 
@@ -65,7 +59,7 @@ ApplicationWindow {
         id: searchDialog
         accountModel: accountListModel
         onAccepted: {
-            console.log(logMain, "selectedAccountIndex=" + selectedAccountIndex + ", searchType=" + searchType)
+            console.log("selectedAccountIndex=" + selectedAccountIndex + ", searchType=" + searchType)
             var component_type = 2
             var column_name = qsTr("Search posts")
             if(searchType === "users"){
@@ -74,7 +68,6 @@ ApplicationWindow {
             }
             columnManageModel.append(accountListModel.item(selectedAccountIndex, AccountListModel.UuidRole),
                                      component_type, false, 300000, 350, column_name, searchDialog.searchText)
-            columnManageModel.sync()
         }
     }
 
@@ -82,13 +75,12 @@ ApplicationWindow {
         id: addColumnDialog
         accountModel: accountListModel
         onAccepted: {
-            console.log(/*logMain,*/ "Add column\n  selectedAccountIndex=" + selectedAccountIndex +
+            console.log("Add column\n  selectedAccountIndex=" + selectedAccountIndex +
                         "\n  selectedType=" + selectedType +
                         "\n  selectedName=" + selectedName +
                         "\n  selectedUri=" + selectedUri)
             columnManageModel.append(accountListModel.item(selectedAccountIndex, AccountListModel.UuidRole),
                                      selectedType, false, 300000, 400, selectedName, selectedUri)
-            columnManageModel.sync()
         }
         onOpenDiscoverFeeds: (account_index) => {
                                  discoverFeedsDialog.account.uuid = accountListModel.item(account_index, AccountListModel.UuidRole)
@@ -116,7 +108,6 @@ ApplicationWindow {
         onAccepted: {
             columnManageModel.append(discoverFeedsDialog.account.uuid,
                                      4, false, 300000, 400, selectedName, selectedUri)
-            columnManageModel.sync()
         }
     }
 
@@ -126,7 +117,7 @@ ApplicationWindow {
         function openWithKey(key) {
             columnKey = key
             var i = columnManageModel.indexOf(columnKey)
-            console.log(logMain, "open column setting dialog:" + i + ", " + columnKey)
+            console.log("open column setting dialog:" + i + ", " + columnKey)
             if(i >= 0){
                 autoLoadingCheckbox.checked = columnManageModel.item(i, ColumnListModel.AutoLoadingRole)
                 autoLoadingIntervalCombo.setByValue(columnManageModel.item(i, ColumnListModel.LoadingIntervalRole))
@@ -143,7 +134,7 @@ ApplicationWindow {
                 columnManageModel.update(i, ColumnListModel.LoadingIntervalRole, autoLoadingIntervalCombo.currentValue)
                 columnManageModel.update(i, ColumnListModel.WidthRole, columnWidthSlider.value)
 
-                columnManageModel.sync()
+                repeater.updateSetting()
             }
         }
     }
@@ -154,18 +145,20 @@ ApplicationWindow {
     AccountListModel {
         id: accountListModel
         onAppendedAccount: (row) => {
-                               console.log(logMain, "onAppendedAccount:" + row)
+                               console.log("onAppendedAccount:" + row)
                            }
         onUpdatedAccount: (row, uuid) => {
-                              console.log(logMain, "onUpdatedAccount:" + row + ", " + uuid)
+                              console.log("onUpdatedAccount:" + row + ", " + uuid)
                               // カラムを更新しにいく
                               repeater.updateAccount(uuid)
                           }
 
         onAllFinished: {
             // すべてのアカウント情報の認証が終わったのでカラムを復元（成功しているとは限らない）
-            console.log(logMain, "allFinished()" + accountListModel.rowCount())
-            columnManageModel.sync()
+            console.log("allFinished()" + accountListModel.count)
+            if(columnManageModel.rowCount() === 0){
+                columnManageModel.load()
+            }
         }
 
         function syncColumn(){
@@ -182,61 +175,14 @@ ApplicationWindow {
                     columnManageModel.remove(i)
                 }
             }
-            columnManageModel.sync()
-        }
-    }
-
-
-    //カラムの情報管理
-    ColumnListModel {
-        id: columnManageModel
-
-        function sync() {
-            // 追加or更新
-            for(var i=0; i<columnManageModel.rowCount(); i++){
-                repeater.insert(i,
-                                columnManageModel.item(i, ColumnListModel.KeyRole),
-                                columnManageModel.item(i, ColumnListModel.AccountUuidRole),
-                                columnManageModel.item(i, ColumnListModel.ComponentTypeRole),
-                                columnManageModel.item(i, ColumnListModel.AutoLoadingRole),
-                                columnManageModel.item(i, ColumnListModel.LoadingIntervalRole),
-                                columnManageModel.item(i, ColumnListModel.WidthRole),
-                                columnManageModel.item(i, ColumnListModel.NameRole),
-                                columnManageModel.item(i, ColumnListModel.ValueRole)
-                                )
-            }
-            // カラムの管理情報から消えているLoaderを消す
-            for(var r=repeater.model.count-1; r>=0; r--){
-                if(columnManageModel.containsKey(repeater.model.get(r).key) === false){
-                    repeater.model.remove(r)
-                }
-            }
-        }
-        function exchange(key, move_diff) {
-            // move_diff : -1=left, 1=right
-            var i = columnManageModel.indexOf(key)
-            console.log(logMain, "exchange:" + key + ", " + i + ", " + move_diff)
-            var account_uuid = columnManageModel.item(i, ColumnListModel.AccountUuidRole)
-            var component_type = columnManageModel.item(i, ColumnListModel.ComponentTypeRole)
-            var auto_loading = columnManageModel.item(i, ColumnListModel.AutoLoadingRole)
-            var loading_interval = columnManageModel.item(i, ColumnListModel.LoadingIntervalRole)
-            var column_width = columnManageModel.item(i, ColumnListModel.WidthRole)
-            var column_name = columnManageModel.item(i, ColumnListModel.NameRole)
-            var column_value = columnManageModel.item(i, ColumnListModel.ValueRole)
-            // 1度消す
-            columnManageModel.remove(i)
-            columnManageModel.sync()
-            // 追加し直し
-            columnManageModel.insert(i+move_diff, account_uuid, component_type,
-                                     auto_loading, loading_interval, column_width,
-                                     column_name, column_value)
-            columnManageModel.sync()
         }
     }
 
     Component {
         id: columnView
         ColumnView {
+            fontSizeRatio: settingDialog.settings.fontSizeRatio
+
             onRequestReply: (account_uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) => {
                                 console.log(logMain,
                                             account_uuid + ",\n" +
@@ -275,17 +221,19 @@ ApplicationWindow {
             onRequestViewImages: (index, paths) => imageFullView.open(index, paths)
 
             onRequestMoveToLeft: (key) => {
-                                     console.log(logMain, "move to left:" + key)
-                                     columnManageModel.exchange(key, -1)
+                                     console.log("move to left:" + key)
+                                     columnManageModel.move(key, ColumnListModel.MoveLeft)
+                                     repeater.updatePosition()
                                  }
             onRequestMoveToRight: (key) => {
-                                      console.log(logMain, "move to right:" + key)
-                                      columnManageModel.exchange(key, 1)
+                                      console.log("move to right:" + key)
+                                      columnManageModel.move(key, ColumnListModel.MoveRight)
+                                      repeater.updatePosition()
                                   }
             onRequestRemove: (key) => {
-                                 console.log(logMain, "remove column:" + key)
+                                 console.log("remove column:" + key)
                                  columnManageModel.removeByKey(key)
-                                 columnManageModel.sync()
+                                 repeater.updatePosition()
                              }
             onRequestDisplayOfColumnSetting: (key) => columnsettingDialog.openWithKey(key)
             onHoveredLinkChanged: hoveredLinkFrame.text = hoveredLink
@@ -343,6 +291,7 @@ ApplicationWindow {
                 IconButton {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 36
+                    enabled: accountListModel.count > 0
                     display: AbstractButton.IconOnly
                     iconSource: "images/edit.png"
                     //                    iconText: qsTr("New Post")
@@ -352,6 +301,7 @@ ApplicationWindow {
                 IconButton {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 36
+                    enabled: accountListModel.count > 0
                     display: AbstractButton.IconOnly
                     iconSource: "images/search.png"
                     onClicked: searchDialog.open()
@@ -365,6 +315,7 @@ ApplicationWindow {
                 IconButton {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 36
+                    enabled: accountListModel.count > 0
                     display: AbstractButton.IconOnly
                     iconSource: "images/column.png"
                     //                    iconText: qsTr("Add column")
@@ -410,128 +361,110 @@ ApplicationWindow {
             clip: true
 
             property int childHeight: scrollView.height - scrollView.ScrollBar.horizontal.height
+            contentHeight: childHeight
 
-            RowLayout {
-                spacing: 3
-                Repeater {
-                    id: repeater
-                    model: ListModel {}
+            Repeater {
+                id: repeater
+                model: ColumnListModel {
+                    //カラムの情報管理
+                    id: columnManageModel
+                }
 
-                    function updateAccount(account_uuid){
-                        for(var i=0; i<repeater.count; i++){
-                            var item = repeater.itemAt(i)   //ここのitemはloader自身
-                            if(item.account_uuid === account_uuid){
-                                var row = accountListModel.indexAt(item.account_uuid)
-                                if(row >= 0){
-                                    console.log(logMain, "Update column : col=" + i + ", a_row=" + row)
-                                    item.setAccount(row)
-                                    item.item.reflect()
-                                }
+                function updateSetting() {
+                    var w = 0
+                    for(var i=0; i<repeater.count; i++){
+                        var item = repeater.itemAt(i)   //ここのitemはloader自身
+                        item.setSettings()
+                        w += item.width + item.anchors.leftMargin
+                    }
+                    scrollView.contentWidth = w
+                }
+
+                function updatePosition() {
+                    // モデルの順番を入れ替えるとLoader側が対応できないのと
+                    // 最左にくるものから処理しないとレイアウトが循環して矛盾するため
+                    // カラムの管理順ではなくポジションの順番で処理する
+                    var w = 0
+                    var row_list = columnManageModel.getRowListInOrderOfPosition()
+                    for(var i=0; i<row_list.length; i++){
+                        var item = repeater.itemAt(row_list[i])   //ここのitemはloader自身
+                        item.setLayout()
+                        w += item.width + item.anchors.leftMargin
+                    }
+                    scrollView.contentWidth = w
+                }
+
+                function updateAccount(account_uuid){
+                    for(var i=0; i<repeater.count; i++){
+                        var item = repeater.itemAt(i)   //ここのitemはloader自身
+                        if(item.item.accountUuid === account_uuid){
+                            var row = accountListModel.indexAt(item.item.accountUuid)
+                            if(row >= 0){
+                                console.log("Update column : col=" + i + ", a_row=" + row)
+                                item.setAccount(row)
+                                item.item.reflect()
                             }
                         }
                     }
+                }
 
-                    function contains(key){
-                        for(var i=0; i<repeater.model.count; i++){
-                            if(repeater.model.get(i).key === key){
-                                return true
-                            }
+                Loader {
+                    id: loader
+                    height: scrollView.childHeight
+                    width: model.width
+                    sourceComponent: columnView
+
+                    onLoaded: {
+                        // Loaderで読み込んだComponentにアカウント情報など設定する
+                        var row = accountListModel.indexAt(model.accountUuid)
+                        console.log("(1) loader:" + row + ", " + model.accountUuid)
+                        if(row < 0){
+                            return
                         }
-                        return false
+
+                        item.columnKey = model.key
+                        item.componentType = model.componentType
+                        item.accountUuid = model.accountUuid
+                        setSettings()
+                        setAccount(row)
+                        item.rootItem = rootLayout
+                        item.load()
+
+                        if(model.index == columnManageModel.rowCount() - 1){
+                            // 最後の時にレイアウトを設定する
+                            // 読み込んでいる過程では左がいない場合がある
+                            repeater.updatePosition()
+                        }
                     }
 
-                    function insert(index, key, account_uuid, component_type,
-                                    auto_loading, loading_interval, column_width,
-                                    column_name, column_value){
-                        // accountListModelで管理するアカウントのindexと表示に使うコンポを指定
-                        // ①ここでLoaderを追加する
-                        console.log(logMain, "(1) insert:" + index + ", " + account_uuid + ", " + component_type)
-                        if(contains(key)){
-                            // 既にある
-                            var item = repeater.itemAt(index)   //ここのitemはloader自身
-                            if(item.key === key){
-                                console.log(logMain, "  update only:" + auto_loading + ", " + loading_interval + ", " + column_width)
-                                item.auto_loading = auto_loading
-                                item.loading_interval = loading_interval
-                                item.Layout.preferredWidth = column_width
-                                item.column_name = column_name
-                                item.column_value = column_value
-                                item.setSettings()
-                            }
+                    function setLayout() {
+                        var left_pos = columnManageModel.getPreviousRow(model.index)
+                        if(left_pos < 0){
+                            console.log("setLayout() :" + model.index + ": left_pos=" + left_pos + ", left is " + loader.parent)
+                            loader.anchors.left = loader.parent.left
+                            loader.anchors.leftMargin = 0
                         }else{
-                            repeater.model.insert(index, {
-                                                      "key": key,
-                                                      "account_uuid": account_uuid,
-                                                      "component_type": component_type,
-                                                      "auto_loading": auto_loading,
-                                                      "loading_interval": loading_interval,
-                                                      "column_width": column_width,
-                                                      "column_name": column_name,
-                                                      "column_value": column_value
-                                                  })
+                            console.log("setLayout() :" + model.index + ": left_pos=" + left_pos + ", left name=" + repeater.itemAt(left_pos).item.columnName)
+                            loader.anchors.left = repeater.itemAt(left_pos).right
+                            loader.anchors.leftMargin = 3
                         }
                     }
-                    onItemAdded: (index, item) => {
-                                     // ②Repeaterに追加されたLoaderにTLを表示するComponentを追加する
-                                     console.log(logMain, "(2) onItemAdded:" + index + ":" + item)
-                                     item.key = repeater.model.get(index).key
-                                     item.account_uuid = repeater.model.get(index).account_uuid
-                                     item.component_type = repeater.model.get(index).component_type
-                                     item.auto_loading = repeater.model.get(index).auto_loading
-                                     item.loading_interval = repeater.model.get(index).loading_interval
-                                     item.column_width = repeater.model.get(index).column_width
-                                     item.column_name = repeater.model.get(index).column_name
-                                     item.column_value = repeater.model.get(index).column_value
-                                     item.sourceComponent = columnView
-                                 }
 
-                    Loader {
-                        id: loader
-                        Layout.preferredHeight: scrollView.childHeight
-                        Layout.minimumWidth: 100
-                        Layout.preferredWidth: column_width
-                        Layout.maximumWidth: 500
+                    function setSettings() {
+                        item.autoLoading = model.autoLoading
+                        item.loadingInterval = model.loadingInterval
+                        item.columnName = model.name
+                        item.columnValue = model.value
+                    }
 
-                        property string key: ""
-                        property string account_uuid: ""
-                        property int component_type: 0
-                        property bool auto_loading: false
-                        property int loading_interval: 300000
-                        property int column_width: 400
-                        property string column_name: ""
-                        property string column_value: ""
-
-                        onLoaded: {
-                            // ③Loaderで読み込んだComponentにアカウント情報など設定する
-                            var row = accountListModel.indexAt(loader.account_uuid)
-                            console.log(logMain, "(3) loader:" + row + ", " + loader.account_uuid)
-                            if(row < 0)
-                                return
-                            item.columnKey = loader.key
-                            item.componentType = loader.component_type
-                            item.accountUuid = loader.account_uuid
-                            setSettings()
-                            setAccount(row)
-                            item.rootItem = rootLayout
-                            item.load()
-                        }
-
-                        function setSettings() {
-                            item.autoLoading = loader.auto_loading
-                            item.loadingInterval = loader.loading_interval
-                            item.columnName = loader.column_name
-                            item.columnValue = loader.column_value
-                        }
-
-                        function setAccount(row) {
-                            item.service = accountListModel.item(row, AccountListModel.ServiceRole)
-                            item.did = accountListModel.item(row, AccountListModel.DidRole)
-                            item.handle = accountListModel.item(row, AccountListModel.HandleRole)
-                            item.email = accountListModel.item(row, AccountListModel.EmailRole)
-                            item.accessJwt = accountListModel.item(row, AccountListModel.AccessJwtRole)
-                            item.refreshJwt = accountListModel.item(row, AccountListModel.RefreshJwtRole)
-                            item.avatar = accountListModel.item(row, AccountListModel.AvatarRole)
-                        }
+                    function setAccount(row) {
+                        item.service = accountListModel.item(row, AccountListModel.ServiceRole)
+                        item.did = accountListModel.item(row, AccountListModel.DidRole)
+                        item.handle = accountListModel.item(row, AccountListModel.HandleRole)
+                        item.email = accountListModel.item(row, AccountListModel.EmailRole)
+                        item.accessJwt = accountListModel.item(row, AccountListModel.AccessJwtRole)
+                        item.refreshJwt = accountListModel.item(row, AccountListModel.RefreshJwtRole)
+                        item.avatar = accountListModel.item(row, AccountListModel.AvatarRole)
                     }
                 }
             }

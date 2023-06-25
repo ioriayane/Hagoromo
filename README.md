@@ -42,6 +42,7 @@ Official sise : [Qt](https://www.qt.io/)
 ```cmd
 REM checkout repo
 >git clone git@github.com:ioriayane/Hagoromo.git
+>git submodule update -i
 REM copy and edit encryption seed
 >copy Hagoromo\app\qtquick\encryption_seed_template.h Hagoromo\app\qtquick\encryption_seed.h
 REM build Hagoromo
@@ -57,6 +58,7 @@ OpenSSL 1.1.1q 以上が必要です。
 ```bash
 # checkout repo
 $ git clone git@github.com:ioriayane/Hagoromo.git
+$ git submodule update -i
 # copy and edit encryption seed
 $ cp Hagoromo/app/qtquick/encryption_seed_template.h Hagoromo/app/qtquick/encryption_seed.h
 $ vi Hagoromo/app/qtquick/encryption_seed.h
@@ -73,6 +75,7 @@ OpenSSL 1.1.1q 以上が必要です。
 ```bash
 # checkout repo
 $ git clone git@github.com:ioriayane/Hagoromo.git
+$ git submodule update -i
 # copy and edit encryption seed
 $ cp Hagoromo/app/qtquick/encryption_seed_template.h Hagoromo/app/qtquick/encryption_seed.h
 $ vi Hagoromo/app/qtquick/encryption_seed.h
@@ -124,6 +127,7 @@ Check out the newline code in CRLF.
 ```cmd
 REM checkout repo
 >git clone git@github.com:ioriayane/Hagoromo.git
+>git submodule update -i
 REM copy and edit encryption seed
 >copy Hagoromo\app\qtquick\encryption_seed_template.h Hagoromo\app\qtquick\encryption_seed.h
 REM build Hagoromo
@@ -139,6 +143,7 @@ OpenSSL 1.1.1q or higher is required.
 ```bash
 # checkout repo
 $ git clone git@github.com:ioriayane/Hagoromo.git
+$ git submodule update -i
 # copy and edit encryption seed
 $ cp Hagoromo/app/qtquick/encryption_seed_template.h Hagoromo/app/qtquick/encryption_seed.h
 $ vi Hagoromo/app/qtquick/encryption_seed.h
@@ -155,6 +160,7 @@ OpenSSL 1.1.1q or higher is required.
 ```bash
 # checkout repo
 $ git clone git@github.com:ioriayane/Hagoromo.git
+$ git submodule update -i
 # copy and edit encryption seed
 $ cp Hagoromo/app/qtquick/encryption_seed_template.h Hagoromo/app/qtquick/encryption_seed.h
 $ vi Hagoromo/app/qtquick/encryption_seed.h

@@ -1,8 +1,14 @@
 #include "systemtool.h"
 
-#include <QCoreApplication>
+#include <QClipboard>
+#include <QGuiApplication>
 
 SystemTool::SystemTool(QObject *parent) : QObject { parent } { }
+
+void SystemTool::copyToClipboard(const QString &text) const
+{
+    QGuiApplication::clipboard()->setText(text);
+}
 
 QString SystemTool::applicationVersion() const
 {
