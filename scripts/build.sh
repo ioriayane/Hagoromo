@@ -65,8 +65,13 @@ deploy_hagoromo(){
         cat ${SCRIPT_FOLDER}/deploy/linux_qml.txt | xargs -i{} cp -P ${QT_BIN_FOLDER}/../qml/{} ${work_dir}/bin/{}
 
     elif [ "${PLATFORM_TYPE}" == "mac" ]; then
-        cp -r build-hagoromo/Hagoromo.app deploy-hagoromo/hagoromo/
-        ${QT_BIN_FOLDER}/macdeployqt deploy-hagoromo/hagoromo/Hagoromo.app -qmldir=app/qml
+        cp -r build-hagoromo/Hagoromo.app ${work_dir}/
+        ${QT_BIN_FOLDER}/macdeployqt ${work_dir}/Hagoromo.app -qmldir=app/qml
+
+        mkdir -p ${work_dir}/Hagoromo.app/Contents/MacOS/translations
+        cp "app/i18n/qt_ja_JP.qm" ${work_dir}/Hagoromo.app/Contents/MacOS/translations
+        cp ${QT_BIN_FOLDER}/../translations/qt_ja.qm ${work_dir}/Hagoromo.app/Contents/MacOS/translations
+
     fi
 
     cd ${work_root_dir}
