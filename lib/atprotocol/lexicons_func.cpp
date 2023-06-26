@@ -22,6 +22,7 @@ void copyListViewBasic(const QJsonObject &src, AppBskyGraphDefs::ListViewBasic &
 {
     if (!src.isEmpty()) {
         dest.uri = src.value("uri").toString();
+        dest.cid = src.value("cid").toString();
         dest.name = src.value("name").toString();
         copyListPurpose(src.value("purpose"), dest.purpose);
         dest.avatar = src.value("avatar").toString();
@@ -33,6 +34,7 @@ void copyListView(const QJsonObject &src, AppBskyGraphDefs::ListView &dest)
 {
     if (!src.isEmpty()) {
         dest.uri = src.value("uri").toString();
+        dest.cid = src.value("cid").toString();
         // ref *creator app.bsky.actor.defs#profileView
         dest.name = src.value("name").toString();
         copyListPurpose(src.value("purpose"), dest.purpose);
@@ -337,6 +339,11 @@ void copyView(const QJsonObject &src, AppBskyEmbedRecord::View &dest)
                     AppBskyEmbedRecord::ViewRecordType::record_AppBskyFeedDefs_GeneratorView;
             AppBskyFeedDefs::copyGeneratorView(src.value("record").toObject(),
                                                dest.record_AppBskyFeedDefs_GeneratorView);
+        }
+        if (record_type == QStringLiteral("app.bsky.graph.defs#listView")) {
+            dest.record_type = AppBskyEmbedRecord::ViewRecordType::record_AppBskyGraphDefs_ListView;
+            AppBskyGraphDefs::copyListView(src.value("record").toObject(),
+                                           dest.record_AppBskyGraphDefs_ListView);
         }
     }
 }
@@ -759,6 +766,9 @@ void copyMain(const QJsonObject &src, AppBskyFeedPost::Main &dest)
                     AppBskyFeedPost::MainEmbedType::embed_AppBskyEmbedRecordWithMedia_Main;
             AppBskyEmbedRecordWithMedia::copyMain(src.value("embed").toObject(),
                                                   dest.embed_AppBskyEmbedRecordWithMedia_Main);
+        }
+        for (const auto &value : src.value("langs").toArray()) {
+            dest.langs.append(value.toString());
         }
         dest.createdAt = src.value("createdAt").toString();
     }

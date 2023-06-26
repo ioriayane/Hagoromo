@@ -33,6 +33,7 @@ struct ListViewerState
 struct ListViewBasic
 {
     QString uri; // at-uri
+    QString cid; // cid
     QString name;
     ListPurpose purpose;
     QString avatar;
@@ -42,6 +43,7 @@ struct ListViewBasic
 struct ListView
 {
     QString uri; // at-uri
+    QString cid; // cid
     QSharedPointer<AppBskyActorDefs::ProfileView> creator;
     QString name;
     ListPurpose purpose;
@@ -421,6 +423,7 @@ enum class ViewRecordType : int {
     record_ViewNotFound,
     record_ViewBlocked,
     record_AppBskyFeedDefs_GeneratorView,
+    record_AppBskyGraphDefs_ListView,
 };
 enum class ViewRecordEmbedsType : int {
     none,
@@ -466,6 +469,7 @@ struct View
     ViewNotFound record_ViewNotFound;
     ViewBlocked record_ViewBlocked;
     AppBskyFeedDefs::GeneratorView record_AppBskyFeedDefs_GeneratorView;
+    AppBskyGraphDefs::ListView record_AppBskyGraphDefs_ListView;
     // union end : record
 };
 }
@@ -552,6 +556,7 @@ struct Main
     AppBskyEmbedRecord::Main embed_AppBskyEmbedRecord_Main;
     AppBskyEmbedRecordWithMedia::Main embed_AppBskyEmbedRecordWithMedia_Main;
     // union end : embed
+    QList<QString> langs;
     QString createdAt; // datetime
 };
 }
