@@ -423,13 +423,13 @@ ApplicationWindow {
 
                         item.columnKey = model.key
                         item.componentType = model.componentType
-                        item.accountUuid = model.accountUuid
+                        item.account.uuid = model.accountUuid
                         setSettings()
                         setAccount(row)
                         item.rootItem = rootLayout
                         item.load()
 
-                        if(model.index == columnManageModel.rowCount() - 1){
+                        if(model.index === columnManageModel.rowCount() - 1){
                             // 最後の時にレイアウトを設定する
                             // 読み込んでいる過程では左がいない場合がある
                             repeater.updatePosition()
@@ -457,13 +457,13 @@ ApplicationWindow {
                     }
 
                     function setAccount(row) {
-                        item.service = accountListModel.item(row, AccountListModel.ServiceRole)
-                        item.did = accountListModel.item(row, AccountListModel.DidRole)
-                        item.handle = accountListModel.item(row, AccountListModel.HandleRole)
-                        item.email = accountListModel.item(row, AccountListModel.EmailRole)
-                        item.accessJwt = accountListModel.item(row, AccountListModel.AccessJwtRole)
-                        item.refreshJwt = accountListModel.item(row, AccountListModel.RefreshJwtRole)
-                        item.avatar = accountListModel.item(row, AccountListModel.AvatarRole)
+                        item.account.service = accountListModel.item(row, AccountListModel.ServiceRole)
+                        item.account.did = accountListModel.item(row, AccountListModel.DidRole)
+                        item.account.handle = accountListModel.item(row, AccountListModel.HandleRole)
+                        item.account.email = accountListModel.item(row, AccountListModel.EmailRole)
+                        item.account.accessJwt = accountListModel.item(row, AccountListModel.AccessJwtRole)
+                        item.account.refreshJwt = accountListModel.item(row, AccountListModel.RefreshJwtRole)
+                        item.account.avatar = accountListModel.item(row, AccountListModel.AvatarRole)
                     }
                 }
             }

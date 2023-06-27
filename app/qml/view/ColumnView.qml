@@ -26,17 +26,8 @@ ColumnLayout {
     property string columnValue: ""
     property real fontSizeRatio: 1.0
 
-    property string accountUuid: ""
-    property string service: ""
-    property string did: ""
-    property string handle: ""
-    property string email: ""
-    property string accessJwt: ""
-    property string refreshJwt: ""
-    property string avatar: ""
-
+    property alias account: account
     property var rootItem: undefined
-
     property string hoveredLink: ""
 
     signal requestReply(string account_uuid,
@@ -53,6 +44,10 @@ ColumnLayout {
     signal requestRemove(string key)
     signal requestDisplayOfColumnSetting(string key)
 
+    Account {
+        id: account
+    }
+
     Component {
         id: timelineComponent
         TimelineView {
@@ -63,9 +58,9 @@ ColumnLayout {
             fontSizeRatio: columnView.fontSizeRatio
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
-                            columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+                            columnView.requestReply(columnView.account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
-                            columnView.requestQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+                            columnView.requestQuote(columnView.account.uuid, cid, uri, avatar, display_name, handle, indexed_at, text)
 
             onRequestViewThread: (uri) => {
                                      // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
@@ -92,9 +87,9 @@ ColumnLayout {
             fontSizeRatio: columnView.fontSizeRatio
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
-                            columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+                            columnView.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
-                            columnView.requestQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+                            columnView.requestQuote(account.uuid, cid, uri, avatar, display_name, handle, indexed_at, text)
             onRequestViewThread: (uri) => {
                                      // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
                                      // これはPostThreadViewのプロパティにダイレクトに設定する
@@ -112,9 +107,9 @@ ColumnLayout {
             fontSizeRatio: columnView.fontSizeRatio
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
-                            columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+                            columnView.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
-                            columnView.requestQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+                            columnView.requestQuote(account.uuid, cid, uri, avatar, display_name, handle, indexed_at, text)
 
             onRequestViewThread: (uri) => {
                                      // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
@@ -139,9 +134,9 @@ ColumnLayout {
             fontSizeRatio: columnView.fontSizeRatio
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
-                            columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+                            columnView.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
-                            columnView.requestQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+                            columnView.requestQuote(account.uuid, cid, uri, avatar, display_name, handle, indexed_at, text)
 
             onRequestViewThread: (uri) => {
                                      // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
@@ -172,9 +167,9 @@ ColumnLayout {
             fontSizeRatio: columnView.fontSizeRatio
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
-                            columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+                            columnView.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
-                            columnView.requestQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+                            columnView.requestQuote(account.uuid, cid, uri, avatar, display_name, handle, indexed_at, text)
 
             onRequestViewThread: (uri) => {
                                      // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
@@ -194,7 +189,7 @@ ColumnLayout {
     Component {
         id: searchProfilesComponent
         ProfileListView {
-            accountDid: columnView.did
+            accountDid: account.did
             unfollowAndRemove: false
             model: SearchProfileListModel {
                 autoLoading: columnView.autoLoading
@@ -215,9 +210,9 @@ ColumnLayout {
             fontSizeRatio: columnView.fontSizeRatio
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
-                            columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+                            columnView.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
-                            columnView.requestQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+                            columnView.requestQuote(account.uuid, cid, uri, avatar, display_name, handle, indexed_at, text)
 
             onRequestViewThread: (uri) => {
                                      // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
@@ -261,14 +256,14 @@ ColumnLayout {
     function reflect(){
         // StackViewに積まれているViewに反映
         for(var i=0; i<columnStackView.depth; i++){
-            console.log("Reflect : " + i + ", " + columnView.handle)
+            console.log("Reflect : " + i + ", " + account.handle)
             var item = columnStackView.get(i)
-            item.model.setAccount(columnView.service,
-                                  columnView.did,
-                                  columnView.handle,
-                                  columnView.email,
-                                  columnView.accessJwt,
-                                  columnView.refreshJwt)
+            item.model.setAccount(account.service,
+                                  account.did,
+                                  account.handle,
+                                  account.email,
+                                  account.accessJwt,
+                                  account.refreshJwt)
         }
     }
 
@@ -305,7 +300,7 @@ ColumnLayout {
                 Layout.leftMargin: 10
                 Layout.preferredWidth: 24
                 Layout.preferredHeight: 24
-                source: columnView.avatar
+                source: account.avatar
             }
 
             ColumnLayout {
@@ -321,7 +316,7 @@ ColumnLayout {
                     elide: Text.ElideRight
                 }
                 Label {
-                    text: "@" + columnView.handle + " - " + columnView.service
+                    text: "@" + account.handle + " - " + account.service
                     font.pointSize: 8
                     elide: Text.ElideRight
                     color: Material.color(Material.Grey)
@@ -389,12 +384,12 @@ ColumnLayout {
                 return
             if(currentItem.model.rowCount() > 0)
                 return
-            currentItem.model.setAccount(columnView.service,
-                                         columnView.did,
-                                         columnView.handle,
-                                         columnView.email,
-                                         columnView.accessJwt,
-                                         columnView.refreshJwt)
+            currentItem.model.setAccount(account.service,
+                                         account.did,
+                                         account.handle,
+                                         account.email,
+                                         account.accessJwt,
+                                         account.refreshJwt)
             currentItem.model.getLatest()
         }
     }
