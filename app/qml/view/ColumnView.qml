@@ -12,6 +12,7 @@ import tech.relog.hagoromo.searchprofilelistmodel 1.0
 import tech.relog.hagoromo.customfeedlistmodel 1.0
 
 import "../controls"
+import "../data"
 import "../parts"
 
 ColumnLayout {
@@ -20,14 +21,10 @@ ColumnLayout {
 
     property string columnKey: ""
     property int componentType: 0
-    property bool autoLoading: false
-    property int loadingInterval: 300000
-    property string columnName: ""
-    property string columnValue: ""
     property real fontSizeRatio: 1.0
 
+    property alias settings: settings
     property alias account: account
-    property var rootItem: undefined
     property string hoveredLink: ""
 
     signal requestReply(string account_uuid,
@@ -44,6 +41,9 @@ ColumnLayout {
     signal requestRemove(string key)
     signal requestDisplayOfColumnSetting(string key)
 
+    ColumnSettings {
+        id: settings
+    }
     Account {
         id: account
     }
@@ -52,8 +52,8 @@ ColumnLayout {
         id: timelineComponent
         TimelineView {
             model: TimelineListModel {
-                autoLoading: columnView.autoLoading
-                loadingInterval: columnView.loadingInterval
+                autoLoading: settings.autoLoading
+                loadingInterval: settings.loadingInterval
             }
             fontSizeRatio: columnView.fontSizeRatio
 
@@ -81,8 +81,14 @@ ColumnLayout {
         id: listNotificationComponent
         NotificationListView {
             model: NotificationListModel {
-                autoLoading: columnView.autoLoading
-                loadingInterval: columnView.loadingInterval
+                autoLoading: settings.autoLoading
+                loadingInterval: settings.loadingInterval
+                enabledLike: settings.enableLike
+                enabledRepost: settings.enableRepost
+                enabledFollow: settings.enableFollow
+                enabledMention: settings.enableMention
+                enabledReply: settings.enableReply
+                enabledQuote: settings.enableQuote
             }
             fontSizeRatio: columnView.fontSizeRatio
 
@@ -159,9 +165,9 @@ ColumnLayout {
         id: searchPostsComponent
         TimelineView {
             model: SearchPostListModel {
-                autoLoading: columnView.autoLoading
-                //loadingInterval: columnView.loadingInterval
-                text: columnView.columnValue
+                autoLoading: settings.autoLoading
+                //loadingInterval: settings.loadingInterval
+                text: settings.columnValue
                 searchService: "https://search.bsky.social"
             }
             fontSizeRatio: columnView.fontSizeRatio
@@ -192,8 +198,8 @@ ColumnLayout {
             accountDid: account.did
             unfollowAndRemove: false
             model: SearchProfileListModel {
-                autoLoading: columnView.autoLoading
-                text: columnView.columnValue
+                autoLoading: settings.autoLoading
+                text: settings.columnValue
                 searchService: "https://search.bsky.social"
             }
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
@@ -203,9 +209,9 @@ ColumnLayout {
         id: customComponent
         TimelineView {
             model: CustomFeedListModel {
-                autoLoading: columnView.autoLoading
-                loadingInterval: columnView.loadingInterval
-                uri: columnView.columnValue
+                autoLoading: settings.autoLoading
+                loadingInterval: settings.loadingInterval
+                uri: settings.columnValue
             }
             fontSizeRatio: columnView.fontSizeRatio
 
@@ -240,13 +246,13 @@ ColumnLayout {
             componentTypeLabel.text = qsTr("Notifications")
         }else if(componentType === 2){
             columnStackView.push(searchPostsComponent)
-            componentTypeLabel.text = qsTr("Search posts") + " : " + columnValue
+            componentTypeLabel.text = qsTr("Search posts") + " : " + settings.columnValue
         }else if(componentType === 3){
             columnStackView.push(searchProfilesComponent)
-            componentTypeLabel.text = qsTr("Search users") + " : " + columnValue
+            componentTypeLabel.text = qsTr("Search users") + " : " + settings.columnValue
         }else if(componentType === 4){
             columnStackView.push(customComponent)
-            componentTypeLabel.text = qsTr("Feed") + " : " + columnName
+            componentTypeLabel.text = qsTr("Feed") + " : " + settings.columnName
         }else{
             columnStackView.push(timelineComponent)
             componentTypeLabel.text = qsTr("Unknown")
@@ -335,7 +341,7 @@ ColumnLayout {
                 source: "../images/auto.png"
                 layer.enabled: true
                 layer.effect: ColorOverlay {
-                    color: columnView.autoLoading ? Material.accentColor : Material.color(Material.Grey)
+                    color: settings.autoLoading ? Material.accentColor : Material.color(Material.Grey)
                 }
             }
             IconButton {

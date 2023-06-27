@@ -15,6 +15,16 @@ enum class FeedComponentType : int {
     PostThread = 100,
 };
 
+struct EnableItemInNotification
+{
+    bool like = true;
+    bool repost = true;
+    bool follow = true;
+    bool mention = true;
+    bool reply = true;
+    bool quote = true;
+};
+
 struct ColumnItem
 {
     int position = -1; // カラムの表示位置
@@ -29,6 +39,8 @@ struct ColumnItem
     //  == SearchPosts or SearchProfiles : 検索文字列
     //  == CustomFeed : カスタムフィードのat-uri
     QString value;
+
+    EnableItemInNotification notification;
 };
 
 class ColumnListModel : public QAbstractListModel
@@ -48,6 +60,13 @@ public:
         WidthRole,
         NameRole,
         ValueRole,
+
+        EnableLikeRole,
+        EnableRepostRole,
+        EnableFollowRole,
+        EnableMentionRole,
+        EnableReplyRole,
+        EnableQuoteRole,
     };
     Q_ENUM(ColumnListModelRoles)
     Q_ENUM(FeedComponentType)

@@ -123,6 +123,13 @@ ApplicationWindow {
                 autoLoadingIntervalCombo.setByValue(columnManageModel.item(i, ColumnListModel.LoadingIntervalRole))
                 columnWidthSlider.value = columnManageModel.item(i, ColumnListModel.WidthRole)
 
+                enableLikeCheckBox.checked = columnManageModel.item(i, ColumnListModel.EnableLikeRole)
+                enableRepostCheckBox.checked = columnManageModel.item(i, ColumnListModel.EnableRepostRole)
+                enableFollowCheckBox.checked = columnManageModel.item(i, ColumnListModel.EnableFollowRole)
+                enableMentionCheckBox.checked = columnManageModel.item(i, ColumnListModel.EnableMentionRole)
+                enableReplyCheckBox.checked = columnManageModel.item(i, ColumnListModel.EnableReplyRole)
+                enableQuoteCheckBox.checked = columnManageModel.item(i, ColumnListModel.EnableQuoteRole)
+
                 open()
             }
         }
@@ -133,6 +140,13 @@ ApplicationWindow {
                 columnManageModel.update(i, ColumnListModel.AutoLoadingRole, autoLoadingCheckbox.checked)
                 columnManageModel.update(i, ColumnListModel.LoadingIntervalRole, autoLoadingIntervalCombo.currentValue)
                 columnManageModel.update(i, ColumnListModel.WidthRole, columnWidthSlider.value)
+
+                columnManageModel.update(i, ColumnListModel.EnableLikeRole, enableLikeCheckBox.checked)
+                columnManageModel.update(i, ColumnListModel.EnableRepostRole, enableRepostCheckBox.checked)
+                columnManageModel.update(i, ColumnListModel.EnableFollowRole, enableFollowCheckBox.checked)
+                columnManageModel.update(i, ColumnListModel.EnableMentionRole, enableMentionCheckBox.checked)
+                columnManageModel.update(i, ColumnListModel.EnableReplyRole, enableReplyCheckBox.checked)
+                columnManageModel.update(i, ColumnListModel.EnableQuoteRole, enableQuoteCheckBox.checked)
 
                 repeater.updateSetting()
             }
@@ -426,7 +440,6 @@ ApplicationWindow {
                         item.account.uuid = model.accountUuid
                         setSettings()
                         setAccount(row)
-                        item.rootItem = rootLayout
                         item.load()
 
                         if(model.index === columnManageModel.rowCount() - 1){
@@ -443,17 +456,24 @@ ApplicationWindow {
                             loader.anchors.left = loader.parent.left
                             loader.anchors.leftMargin = 0
                         }else{
-                            console.log("setLayout() :" + model.index + ": left_pos=" + left_pos + ", left name=" + repeater.itemAt(left_pos).item.columnName)
+                            console.log("setLayout() :" + model.index + ": left_pos=" + left_pos + ", left name=" + repeater.itemAt(left_pos).item.settings.columnName)
                             loader.anchors.left = repeater.itemAt(left_pos).right
                             loader.anchors.leftMargin = 3
                         }
                     }
 
                     function setSettings() {
-                        item.autoLoading = model.autoLoading
-                        item.loadingInterval = model.loadingInterval
-                        item.columnName = model.name
-                        item.columnValue = model.value
+                        item.settings.autoLoading = model.autoLoading
+                        item.settings.loadingInterval = model.loadingInterval
+                        item.settings.columnName = model.name
+                        item.settings.columnValue = model.value
+
+                        item.settings.enableLike = model.enableLike
+                        item.settings.enableRepost = model.enableRepost
+                        item.settings.enableFollow = model.enableFollow
+                        item.settings.enableMention = model.enableMention
+                        item.settings.enableReply = model.enableReply
+                        item.settings.enableQuote = model.enableQuote
                     }
 
                     function setAccount(row) {
