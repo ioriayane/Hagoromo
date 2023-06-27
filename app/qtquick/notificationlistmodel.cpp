@@ -10,7 +10,16 @@
 using AtProtocolInterface::AppBskyFeedGetPosts;
 using AtProtocolInterface::AppBskyNotificationListNotifications;
 
-NotificationListModel::NotificationListModel(QObject *parent) : AtpAbstractListModel { parent } { }
+NotificationListModel::NotificationListModel(QObject *parent)
+    : AtpAbstractListModel { parent },
+      m_enabledLike(true),
+      m_enabledRepost(true),
+      m_enabledFollow(true),
+      m_enabledMention(true),
+      m_enabledReply(true),
+      m_enabledQuote(true)
+{
+}
 
 int NotificationListModel::rowCount(const QModelIndex &parent) const
 {
@@ -30,7 +39,10 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
 
     const auto &current = m_notificationHash.value(m_cidList.at(row));
 
-    if (role == CidRole)
+    if (role == VisibleRole)
+        return enableReason(current.reason);
+
+    else if (role == CidRole)
         return current.cid;
     else if (role == UriRole)
         return current.uri;
@@ -416,6 +428,8 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
 
+    roles[VisibleRole] = "visible";
+
     roles[CidRole] = "cid";
     roles[UriRole] = "uri";
     roles[DidRole] = "did";
@@ -550,6 +564,24 @@ void NotificationListModel::getPosts()
     posts->getPosts(uris);
 }
 
+bool NotificationListModel::enableReason(const QString &reason) const
+{
+    if (reason == "like" && enabledLike())
+        return true;
+    else if (reason == "repost" && enabledRepost())
+        return true;
+    else if (reason == "follow" && enabledFollow())
+        return true;
+    else if (reason == "mention" && enabledMention())
+        return true;
+    else if (reason == "reply" && enabledReply())
+        return true;
+    else if (reason == "quote" && enabledQuote())
+        return true;
+
+    return false;
+}
+
 template<typename T>
 void NotificationListModel::appendGetPostCue(const QVariant &record)
 {
@@ -568,4 +600,82 @@ void NotificationListModel::emitRecordDataChanged(const int i, const QStringList
         // データを取得できた
         emit dataChanged(index(i), index(i));
     }
+}
+
+bool NotificationListModel::enabledLike() const
+{
+    return m_enabledLike;
+}
+
+void NotificationListModel::setEnabledLike(bool newEnabledLike)
+{
+    if (m_enabledLike == newEnabledLike)
+        return;
+    m_enabledLike = newEnabledLike;
+    emit enabledLikeChanged();
+}
+
+bool NotificationListModel::enabledRepost() const
+{
+    return m_enabledRepost;
+}
+
+void NotificationListModel::setEnabledRepost(bool newEnabledRepost)
+{
+    if (m_enabledRepost == newEnabledRepost)
+        return;
+    m_enabledRepost = newEnabledRepost;
+    emit enabledRepostChanged();
+}
+
+bool NotificationListModel::enabledFollow() const
+{
+    return m_enabledFollow;
+}
+
+void NotificationListModel::setEnabledFollow(bool newEnabledFollow)
+{
+    if (m_enabledFollow == newEnabledFollow)
+        return;
+    m_enabledFollow = newEnabledFollow;
+    emit enabledFollowChanged();
+}
+
+bool NotificationListModel::enabledMention() const
+{
+    return m_enabledMention;
+}
+
+void NotificationListModel::setEnabledMention(bool newEnabledMention)
+{
+    if (m_enabledMention == newEnabledMention)
+        return;
+    m_enabledMention = newEnabledMention;
+    emit enabledMentionChanged();
+}
+
+bool NotificationListModel::enabledReply() const
+{
+    return m_enabledReply;
+}
+
+void NotificationListModel::setEnabledReply(bool newEnabledReply)
+{
+    if (m_enabledReply == newEnabledReply)
+        return;
+    m_enabledReply = newEnabledReply;
+    emit enabledReplyChanged();
+}
+
+bool NotificationListModel::enabledQuote() const
+{
+    return m_enabledQuote;
+}
+
+void NotificationListModel::setEnabledQuote(bool newEnabledQuote)
+{
+    if (m_enabledQuote == newEnabledQuote)
+        return;
+    m_enabledQuote = newEnabledQuote;
+    emit enabledQuoteChanged();
 }
