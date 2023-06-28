@@ -372,6 +372,12 @@ void TimelineListModel::finishedDisplayingQueuedPosts()
     setRunning(false);
 }
 
+bool TimelineListModel::checkVisibility(const QString &cid)
+{
+    Q_UNUSED(cid)
+    return true;
+}
+
 void TimelineListModel::copyFrom(AppBskyFeedGetTimeline *timeline)
 {
     QDateTime reference_time;

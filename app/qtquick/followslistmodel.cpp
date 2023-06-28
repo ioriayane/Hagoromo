@@ -140,6 +140,12 @@ QHash<int, QByteArray> FollowsListModel::roleNames() const
     return roles;
 }
 
+bool FollowsListModel::checkVisibility(const QString &cid)
+{
+    Q_UNUSED(cid)
+    return true;
+}
+
 void FollowsListModel::getProfiles()
 {
     if (m_cueGetProfile.isEmpty()) {

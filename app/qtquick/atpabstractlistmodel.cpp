@@ -17,6 +17,17 @@ AtpAbstractListModel::AtpAbstractListModel(QObject *parent)
     connect(&m_timer, &QTimer::timeout, this, &AtpAbstractListModel::getLatest);
 }
 
+void AtpAbstractListModel::clear()
+{
+    if (!m_cidList.isEmpty()) {
+        beginRemoveRows(QModelIndex(), 0, m_cidList.count() - 1);
+        m_cidList.clear();
+        endRemoveRows();
+    }
+    m_originalCidList.clear();
+    m_translations.clear();
+}
+
 AtProtocolInterface::AccountData AtpAbstractListModel::account() const
 {
     return m_account;
@@ -73,6 +84,33 @@ void AtpAbstractListModel::translate(const QString &cid)
         m_translations[cid] = "Now translating ...";
         emit dataChanged(index(row), index(row));
         translator->translate(record_text);
+    }
+}
+
+void AtpAbstractListModel::reflectVisibility()
+{
+    int prev_row = -1;
+    for (const auto &cid : qAsConst(m_originalCidList)) {
+        if (checkVisibility(cid)) {
+            // 表示させる
+            if (m_cidList.contains(cid)) {
+                prev_row = m_cidList.indexOf(cid);
+            } else {
+                prev_row++;
+                beginInsertRows(QModelIndex(), prev_row, prev_row);
+                m_cidList.insert(prev_row, cid);
+                endInsertRows();
+            }
+        } else {
+            // 消す
+            if (m_cidList.contains(cid)) {
+                int r = m_cidList.indexOf(cid);
+                beginRemoveRows(QModelIndex(), r, r);
+                m_cidList.removeAt(r);
+                endRemoveRows();
+                prev_row = r - 1;
+            }
+        }
     }
 }
 
@@ -148,30 +186,45 @@ void AtpAbstractListModel::displayQueuedPosts()
 
     if (!m_cuePost.isEmpty()) {
         const PostCueItem &post = m_cuePost.front();
+        bool visible = checkVisibility(post.cid);
+        if (!visible)
+            interval = 0;
 
-        if (m_cidList.contains(post.cid)) {
+        if (m_originalCidList.contains(post.cid)) {
             if (post.reason_type == AppBskyFeedDefs::FeedViewPostReasonType::reason_ReasonRepost
                 && (QDateTime::fromString(post.indexed_at, Qt::ISODateWithMs)
                     > post.reference_time)) {
                 // repostのときはいったん消す（上に持っていく）
-                int r = m_cidList.indexOf(post.cid);
+                int r;
+                if (visible) {
+                    r = m_cidList.indexOf(post.cid);
+                    if (r > 0) {
+                        beginMoveRows(QModelIndex(), r, r, QModelIndex(), 0);
+                        m_cidList.move(r, 0);
+                        endMoveRows();
+                    }
+                }
+                r = m_originalCidList.indexOf(post.cid);
                 if (r > 0) {
-                    beginMoveRows(QModelIndex(), r, r, QModelIndex(), 0);
-                    m_cidList.move(r, 0);
-                    endMoveRows();
+                    m_originalCidList.move(r, 0);
                 }
             } else {
                 // リストは更新しないでデータのみ入れ替える
                 // 更新をUIに通知
                 // （取得できた範囲でしか更新できないのだけど・・・）
                 interval = 0;
-                int pos = m_cidList.indexOf(post.cid);
-                emit dataChanged(index(pos), index(pos));
+                int r = m_cidList.indexOf(post.cid);
+                if (r > 0) {
+                    emit dataChanged(index(r), index(r));
+                }
             }
         } else {
-            beginInsertRows(QModelIndex(), 0, 0);
-            m_cidList.insert(0, post.cid);
-            endInsertRows();
+            if (visible) {
+                beginInsertRows(QModelIndex(), 0, 0);
+                m_cidList.insert(0, post.cid);
+                endInsertRows();
+            }
+            m_originalCidList.insert(0, post.cid);
         }
 
         m_cuePost.pop_front();

@@ -180,6 +180,12 @@ QHash<int, QByteArray> FeedGeneratorListModel::roleNames() const
     return roles;
 }
 
+bool FeedGeneratorListModel::checkVisibility(const QString &cid)
+{
+    Q_UNUSED(cid)
+    return true;
+}
+
 void FeedGeneratorListModel::getSavedGenerators()
 {
     QPointer<FeedGeneratorListModel> aliving(this);

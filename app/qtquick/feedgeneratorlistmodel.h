@@ -40,7 +40,8 @@ public:
 
 protected:
     QHash<int, QByteArray> roleNames() const;
-    virtual void finishedDisplayingQueuedPosts() {};
+    virtual void finishedDisplayingQueuedPosts() { }
+    virtual bool checkVisibility(const QString &cid);
     void getSavedGenerators();
     void putPreferences(const QString &json);
 

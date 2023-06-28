@@ -28,7 +28,6 @@ public:
     // モデルで提供する項目のルールID的な（QML側へ公開するために大文字で始めること）
     enum NotificationListModelRoles {
         ModelData = Qt::UserRole + 1,
-        VisibleRole,
         CidRole,
         UriRole,
         DidRole,
@@ -83,6 +82,7 @@ public:
                               NotificationListModel::NotificationListModelRoles role) const;
     Q_INVOKABLE void update(int row, NotificationListModel::NotificationListModelRoles role,
                             const QVariant &value);
+    Q_INVOKABLE void clear();
 
     virtual Q_INVOKABLE int indexOf(const QString &cid) const;
     virtual Q_INVOKABLE QString getRecordText(const QString &cid);
@@ -115,6 +115,7 @@ signals:
 protected:
     QHash<int, QByteArray> roleNames() const;
     virtual void finishedDisplayingQueuedPosts();
+    virtual bool checkVisibility(const QString &cid);
 
 private:
     //    QList<QString> m_cidList; //

@@ -119,6 +119,12 @@ QHash<int, QByteArray> FeedTypeListModel::roleNames() const
     return roles;
 }
 
+bool FeedTypeListModel::checkVisibility(const QString &cid)
+{
+    Q_UNUSED(cid)
+    return true;
+}
+
 void FeedTypeListModel::getFeedDetails()
 {
     if (m_cueUri.isEmpty()) {

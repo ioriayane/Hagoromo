@@ -70,7 +70,7 @@ Dialog {
 
             Label {
                 Layout.topMargin: 15
-                text: "Column width"
+                text: qsTr("Column width")
             }
             RowLayout {
                 Slider {
@@ -105,7 +105,8 @@ Dialog {
                 spacing: 5
 
                 Label {
-                    text: qsTr("Display in notifications")
+                    Layout.bottomMargin: 5
+                    text: qsTr("Display")
                 }
 
                 CheckBox {

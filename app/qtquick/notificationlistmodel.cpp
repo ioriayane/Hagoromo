@@ -39,10 +39,7 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
 
     const auto &current = m_notificationHash.value(m_cidList.at(row));
 
-    if (role == VisibleRole)
-        return enableReason(current.reason);
-
-    else if (role == CidRole)
+    if (role == CidRole)
         return current.cid;
     else if (role == UriRole)
         return current.uri;
@@ -254,6 +251,12 @@ void NotificationListModel::update(int row, NotificationListModelRoles role, con
     return;
 }
 
+void NotificationListModel::clear()
+{
+    AtpAbstractListModel::clear();
+    m_notificationHash.clear();
+}
+
 int NotificationListModel::indexOf(const QString &cid) const
 {
     Q_UNUSED(cid)
@@ -428,8 +431,6 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
 
-    roles[VisibleRole] = "visible";
-
     roles[CidRole] = "cid";
     roles[UriRole] = "uri";
     roles[DidRole] = "did";
@@ -468,6 +469,11 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
 void NotificationListModel::finishedDisplayingQueuedPosts()
 {
     QTimer::singleShot(100, this, &NotificationListModel::getPosts);
+}
+
+bool NotificationListModel::checkVisibility(const QString &cid)
+{
+    return enableReason(m_notificationHash.value(cid).reason);
 }
 
 void NotificationListModel::getPosts()
@@ -613,6 +619,7 @@ void NotificationListModel::setEnabledLike(bool newEnabledLike)
         return;
     m_enabledLike = newEnabledLike;
     emit enabledLikeChanged();
+    reflectVisibility();
 }
 
 bool NotificationListModel::enabledRepost() const
@@ -626,6 +633,7 @@ void NotificationListModel::setEnabledRepost(bool newEnabledRepost)
         return;
     m_enabledRepost = newEnabledRepost;
     emit enabledRepostChanged();
+    reflectVisibility();
 }
 
 bool NotificationListModel::enabledFollow() const
@@ -639,6 +647,7 @@ void NotificationListModel::setEnabledFollow(bool newEnabledFollow)
         return;
     m_enabledFollow = newEnabledFollow;
     emit enabledFollowChanged();
+    reflectVisibility();
 }
 
 bool NotificationListModel::enabledMention() const
@@ -652,6 +661,7 @@ void NotificationListModel::setEnabledMention(bool newEnabledMention)
         return;
     m_enabledMention = newEnabledMention;
     emit enabledMentionChanged();
+    reflectVisibility();
 }
 
 bool NotificationListModel::enabledReply() const
@@ -665,6 +675,7 @@ void NotificationListModel::setEnabledReply(bool newEnabledReply)
         return;
     m_enabledReply = newEnabledReply;
     emit enabledReplyChanged();
+    reflectVisibility();
 }
 
 bool NotificationListModel::enabledQuote() const
@@ -678,4 +689,5 @@ void NotificationListModel::setEnabledQuote(bool newEnabledQuote)
         return;
     m_enabledQuote = newEnabledQuote;
     emit enabledQuoteChanged();
+    reflectVisibility();
 }
