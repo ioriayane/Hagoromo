@@ -28,6 +28,7 @@ void ComAtprotoRepoCreateRecord::post(const QString &text)
     QJsonObject json_record;
     json_record.insert("text", text);
     json_record.insert("createdAt", QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
+    json_record.insert("via", "Hagoromo");
 
     if (!m_replyParent.cid.isEmpty() && !m_replyParent.uri.isEmpty()) {
         QJsonObject json_root;
