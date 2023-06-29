@@ -6,10 +6,10 @@ QtObject {
     property string columnName: ""
     property string columnValue: ""
 
-    property bool enableLike: true
-    property bool enableRepost: true
-    property bool enableFollow: true
-    property bool enableMention: true
-    property bool enableReply: true
-    property bool enableQuote: true
+    property bool visibleLike: true
+    property bool visibleRepost: true
+    property bool visibleFollow: true
+    property bool visibleMention: true
+    property bool visibleReply: true
+    property bool visibleQuote: true
 }

@@ -15,7 +15,7 @@ enum class FeedComponentType : int {
     PostThread = 100,
 };
 
-struct EnableItemInNotification
+struct ColumnPostType
 {
     bool like = true;
     bool repost = true;
@@ -40,7 +40,7 @@ struct ColumnItem
     //  == CustomFeed : カスタムフィードのat-uri
     QString value;
 
-    EnableItemInNotification notification;
+    ColumnPostType type_visibility;
 };
 
 class ColumnListModel : public QAbstractListModel
@@ -61,12 +61,12 @@ public:
         NameRole,
         ValueRole,
 
-        EnableLikeRole,
-        EnableRepostRole,
-        EnableFollowRole,
-        EnableMentionRole,
-        EnableReplyRole,
-        EnableQuoteRole,
+        VisibleLikeRole,
+        VisibleRepostRole,
+        VisibleFollowRole,
+        VisibleMentionRole,
+        VisibleReplyRole,
+        VisibleQuoteRole,
     };
     Q_ENUM(ColumnListModelRoles)
     Q_ENUM(FeedComponentType)

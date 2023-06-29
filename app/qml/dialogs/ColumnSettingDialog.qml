@@ -18,12 +18,12 @@ Dialog {
     property alias autoLoadingCheckbox: autoLoadingCheckbox
     property alias autoLoadingIntervalCombo: autoLoadingIntervalCombo
     property alias columnWidthSlider: columnWidthSlider
-    property alias enableLikeCheckBox: enableLikeCheckBox
-    property alias enableRepostCheckBox: enableRepostCheckBox
-    property alias enableFollowCheckBox: enableFollowCheckBox
-    property alias enableMentionCheckBox: enableMentionCheckBox
-    property alias enableReplyCheckBox: enableReplyCheckBox
-    property alias enableQuoteCheckBox: enableQuoteCheckBox
+    property alias visibleLikeCheckBox: visibleLikeCheckBox
+    property alias visibleRepostCheckBox: visibleRepostCheckBox
+    property alias visibleFollowCheckBox: visibleFollowCheckBox
+    property alias visibleMentionCheckBox: visibleMentionCheckBox
+    property alias visibleReplyCheckBox: visibleReplyCheckBox
+    property alias visibleQuoteCheckBox: visibleQuoteCheckBox
 
     GridLayout {
         columns: 2
@@ -110,37 +110,37 @@ Dialog {
                 }
 
                 CheckBox {
-                    id: enableLikeCheckBox
+                    id: visibleLikeCheckBox
                     topPadding: 5
                     bottomPadding: 5
                     text: qsTr("Like")
                 }
                 CheckBox {
-                    id: enableRepostCheckBox
+                    id: visibleRepostCheckBox
                     topPadding: 5
                     bottomPadding: 5
                     text: qsTr("Repost")
                 }
                 CheckBox {
-                    id: enableFollowCheckBox
+                    id: visibleFollowCheckBox
                     topPadding: 5
                     bottomPadding: 5
                     text: qsTr("Follow")
                 }
                 CheckBox {
-                    id: enableMentionCheckBox
+                    id: visibleMentionCheckBox
                     topPadding: 5
                     bottomPadding: 5
                     text: qsTr("Mention")
                 }
                 CheckBox {
-                    id: enableReplyCheckBox
+                    id: visibleReplyCheckBox
                     topPadding: 5
                     bottomPadding: 5
                     text: qsTr("Reply")
                 }
                 CheckBox {
-                    id: enableQuoteCheckBox
+                    id: visibleQuoteCheckBox
                     topPadding: 5
                     bottomPadding: 5
                     text: qsTr("Quote")

@@ -123,12 +123,12 @@ ApplicationWindow {
                 autoLoadingIntervalCombo.setByValue(columnManageModel.item(i, ColumnListModel.LoadingIntervalRole))
                 columnWidthSlider.value = columnManageModel.item(i, ColumnListModel.WidthRole)
 
-                enableLikeCheckBox.checked = columnManageModel.item(i, ColumnListModel.EnableLikeRole)
-                enableRepostCheckBox.checked = columnManageModel.item(i, ColumnListModel.EnableRepostRole)
-                enableFollowCheckBox.checked = columnManageModel.item(i, ColumnListModel.EnableFollowRole)
-                enableMentionCheckBox.checked = columnManageModel.item(i, ColumnListModel.EnableMentionRole)
-                enableReplyCheckBox.checked = columnManageModel.item(i, ColumnListModel.EnableReplyRole)
-                enableQuoteCheckBox.checked = columnManageModel.item(i, ColumnListModel.EnableQuoteRole)
+                visibleLikeCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleLikeRole)
+                visibleRepostCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleRepostRole)
+                visibleFollowCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleFollowRole)
+                visibleMentionCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleMentionRole)
+                visibleReplyCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleReplyRole)
+                visibleQuoteCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleQuoteRole)
 
                 open()
             }
@@ -141,12 +141,12 @@ ApplicationWindow {
                 columnManageModel.update(i, ColumnListModel.LoadingIntervalRole, autoLoadingIntervalCombo.currentValue)
                 columnManageModel.update(i, ColumnListModel.WidthRole, columnWidthSlider.value)
 
-                columnManageModel.update(i, ColumnListModel.EnableLikeRole, enableLikeCheckBox.checked)
-                columnManageModel.update(i, ColumnListModel.EnableRepostRole, enableRepostCheckBox.checked)
-                columnManageModel.update(i, ColumnListModel.EnableFollowRole, enableFollowCheckBox.checked)
-                columnManageModel.update(i, ColumnListModel.EnableMentionRole, enableMentionCheckBox.checked)
-                columnManageModel.update(i, ColumnListModel.EnableReplyRole, enableReplyCheckBox.checked)
-                columnManageModel.update(i, ColumnListModel.EnableQuoteRole, enableQuoteCheckBox.checked)
+                columnManageModel.update(i, ColumnListModel.VisibleLikeRole, visibleLikeCheckBox.checked)
+                columnManageModel.update(i, ColumnListModel.VisibleRepostRole, visibleRepostCheckBox.checked)
+                columnManageModel.update(i, ColumnListModel.VisibleFollowRole, visibleFollowCheckBox.checked)
+                columnManageModel.update(i, ColumnListModel.VisibleMentionRole, visibleMentionCheckBox.checked)
+                columnManageModel.update(i, ColumnListModel.VisibleReplyRole, visibleReplyCheckBox.checked)
+                columnManageModel.update(i, ColumnListModel.VisibleQuoteRole, visibleQuoteCheckBox.checked)
 
                 repeater.updateSetting()
             }
@@ -468,12 +468,12 @@ ApplicationWindow {
                         item.settings.columnName = model.name
                         item.settings.columnValue = model.value
 
-                        item.settings.enableLike = model.enableLike
-                        item.settings.enableRepost = model.enableRepost
-                        item.settings.enableFollow = model.enableFollow
-                        item.settings.enableMention = model.enableMention
-                        item.settings.enableReply = model.enableReply
-                        item.settings.enableQuote = model.enableQuote
+                        item.settings.visibleLike = model.visibleLike
+                        item.settings.visibleRepost = model.visibleRepost
+                        item.settings.visibleFollow = model.visibleFollow
+                        item.settings.visibleMention = model.visibleMention
+                        item.settings.visibleReply = model.visibleReply
+                        item.settings.visibleQuote = model.visibleQuote
                     }
 
                     function setAccount(row) {

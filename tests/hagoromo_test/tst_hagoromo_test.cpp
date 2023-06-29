@@ -353,12 +353,12 @@ void hagoromo_test::test_NotificationListModel()
     {
         int i = 0;
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
-        model.setEnabledLike(false);
-        model.setEnabledRepost(true);
-        model.setEnabledFollow(true);
-        model.setEnabledMention(true);
-        model.setEnabledReply(true);
-        model.setEnabledQuote(true);
+        model.setVisibleLike(false);
+        model.setVisibleRepost(true);
+        model.setVisibleFollow(true);
+        model.setVisibleMention(true);
+        model.setVisibleReply(true);
+        model.setVisibleQuote(true);
         model.clear();
         model.getLatest();
         spy.wait();
@@ -395,12 +395,12 @@ void hagoromo_test::test_NotificationListModel()
     {
         int i = 0;
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
-        model.setEnabledLike(true);
-        model.setEnabledRepost(false);
-        model.setEnabledFollow(true);
-        model.setEnabledMention(true);
-        model.setEnabledReply(true);
-        model.setEnabledQuote(true);
+        model.setVisibleLike(true);
+        model.setVisibleRepost(false);
+        model.setVisibleFollow(true);
+        model.setVisibleMention(true);
+        model.setVisibleReply(true);
+        model.setVisibleQuote(true);
         model.clear();
         model.getLatest();
         spy.wait();
@@ -437,12 +437,12 @@ void hagoromo_test::test_NotificationListModel()
     {
         int i = 0;
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
-        model.setEnabledLike(true);
-        model.setEnabledRepost(true);
-        model.setEnabledFollow(false);
-        model.setEnabledMention(true);
-        model.setEnabledReply(true);
-        model.setEnabledQuote(true);
+        model.setVisibleLike(true);
+        model.setVisibleRepost(true);
+        model.setVisibleFollow(false);
+        model.setVisibleMention(true);
+        model.setVisibleReply(true);
+        model.setVisibleQuote(true);
         model.clear();
         model.getLatest();
         spy.wait();
@@ -479,12 +479,12 @@ void hagoromo_test::test_NotificationListModel()
     {
         int i = 0;
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
-        model.setEnabledLike(true);
-        model.setEnabledRepost(true);
-        model.setEnabledFollow(true);
-        model.setEnabledMention(false);
-        model.setEnabledReply(true);
-        model.setEnabledQuote(true);
+        model.setVisibleLike(true);
+        model.setVisibleRepost(true);
+        model.setVisibleFollow(true);
+        model.setVisibleMention(false);
+        model.setVisibleReply(true);
+        model.setVisibleQuote(true);
         model.clear();
         model.getLatest();
         spy.wait();
@@ -521,12 +521,12 @@ void hagoromo_test::test_NotificationListModel()
     {
         int i = 0;
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
-        model.setEnabledLike(true);
-        model.setEnabledRepost(true);
-        model.setEnabledFollow(true);
-        model.setEnabledMention(true);
-        model.setEnabledReply(false);
-        model.setEnabledQuote(true);
+        model.setVisibleLike(true);
+        model.setVisibleRepost(true);
+        model.setVisibleFollow(true);
+        model.setVisibleMention(true);
+        model.setVisibleReply(false);
+        model.setVisibleQuote(true);
         model.clear();
         model.getLatest();
         spy.wait();
@@ -563,12 +563,12 @@ void hagoromo_test::test_NotificationListModel()
     {
         int i = 0;
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
-        model.setEnabledLike(true);
-        model.setEnabledRepost(true);
-        model.setEnabledFollow(true);
-        model.setEnabledMention(true);
-        model.setEnabledReply(true);
-        model.setEnabledQuote(false);
+        model.setVisibleLike(true);
+        model.setVisibleRepost(true);
+        model.setVisibleFollow(true);
+        model.setVisibleMention(true);
+        model.setVisibleReply(true);
+        model.setVisibleQuote(false);
         model.clear();
         model.getLatest();
         spy.wait();
@@ -611,12 +611,12 @@ void hagoromo_test::test_NotificationListModel2()
 
     int i = 0;
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
-    model.setEnabledLike(false);
-    model.setEnabledRepost(false);
-    model.setEnabledFollow(false);
-    model.setEnabledMention(false);
-    model.setEnabledReply(false);
-    model.setEnabledQuote(false);
+    model.setVisibleLike(false);
+    model.setVisibleRepost(false);
+    model.setVisibleFollow(false);
+    model.setVisibleMention(false);
+    model.setVisibleReply(false);
+    model.setVisibleQuote(false);
     model.getLatest();
     spy.wait();
     QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
@@ -629,7 +629,7 @@ void hagoromo_test::test_NotificationListModel2()
     //   mention
     // * reply
     //   quote
-    model.setEnabledReply(true);
+    model.setVisibleReply(true);
     //    model.reflectVisibility();
     QVERIFY2(model.rowCount() == 1, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
     QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
@@ -645,7 +645,7 @@ void hagoromo_test::test_NotificationListModel2()
     // * reply
     //   quote
     i = 0;
-    model.setEnabledFollow(true);
+    model.setVisibleFollow(true);
     //    model.reflectVisibility();
     QVERIFY2(model.rowCount() == 2, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
     QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
@@ -666,7 +666,7 @@ void hagoromo_test::test_NotificationListModel2()
     // * reply
     //   quote
     i = 0;
-    model.setEnabledMention(true);
+    model.setVisibleMention(true);
     //    model.reflectVisibility();
     QVERIFY2(model.rowCount() == 3, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
     QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
@@ -692,8 +692,8 @@ void hagoromo_test::test_NotificationListModel2()
     // * reply
     //   quote
     i = 0;
-    model.setEnabledLike(true);
-    model.setEnabledRepost(true);
+    model.setVisibleLike(true);
+    model.setVisibleRepost(true);
     //    model.reflectVisibility();
     QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
     QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
@@ -729,7 +729,7 @@ void hagoromo_test::test_NotificationListModel2()
     // * reply
     // * quote
     i = 0;
-    model.setEnabledQuote(true);
+    model.setVisibleQuote(true);
     //    model.reflectVisibility();
     QVERIFY2(model.rowCount() == 6, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
     QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
@@ -770,8 +770,8 @@ void hagoromo_test::test_NotificationListModel2()
     // * reply
     // * quote
     i = 0;
-    model.setEnabledFollow(false);
-    model.setEnabledMention(false);
+    model.setVisibleFollow(false);
+    model.setVisibleMention(false);
     //    model.reflectVisibility();
     QVERIFY2(model.rowCount() == 4, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
     QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
@@ -802,8 +802,8 @@ void hagoromo_test::test_NotificationListModel2()
     // * reply
     // * quote
     i = 0;
-    model.setEnabledRepost(false);
-    model.setEnabledMention(true);
+    model.setVisibleRepost(false);
+    model.setVisibleMention(true);
     //    model.reflectVisibility();
     QVERIFY2(model.rowCount() == 4, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
     QVERIFY2(model.item(i, NotificationListModel::ReasonRole)

@@ -12,12 +12,12 @@ using AtProtocolInterface::AppBskyNotificationListNotifications;
 
 NotificationListModel::NotificationListModel(QObject *parent)
     : AtpAbstractListModel { parent },
-      m_enabledLike(true),
-      m_enabledRepost(true),
-      m_enabledFollow(true),
-      m_enabledMention(true),
-      m_enabledReply(true),
-      m_enabledQuote(true)
+      m_visibleLike(true),
+      m_visibleRepost(true),
+      m_visibleFollow(true),
+      m_visibleMention(true),
+      m_visibleReply(true),
+      m_visibleQuote(true)
 {
 }
 
@@ -572,17 +572,17 @@ void NotificationListModel::getPosts()
 
 bool NotificationListModel::enableReason(const QString &reason) const
 {
-    if (reason == "like" && enabledLike())
+    if (reason == "like" && visibleLike())
         return true;
-    else if (reason == "repost" && enabledRepost())
+    else if (reason == "repost" && visibleRepost())
         return true;
-    else if (reason == "follow" && enabledFollow())
+    else if (reason == "follow" && visibleFollow())
         return true;
-    else if (reason == "mention" && enabledMention())
+    else if (reason == "mention" && visibleMention())
         return true;
-    else if (reason == "reply" && enabledReply())
+    else if (reason == "reply" && visibleReply())
         return true;
-    else if (reason == "quote" && enabledQuote())
+    else if (reason == "quote" && visibleQuote())
         return true;
 
     return false;
@@ -608,86 +608,86 @@ void NotificationListModel::emitRecordDataChanged(const int i, const QStringList
     }
 }
 
-bool NotificationListModel::enabledLike() const
+bool NotificationListModel::visibleLike() const
 {
-    return m_enabledLike;
+    return m_visibleLike;
 }
 
-void NotificationListModel::setEnabledLike(bool newEnabledLike)
+void NotificationListModel::setVisibleLike(bool newVisibleLike)
 {
-    if (m_enabledLike == newEnabledLike)
+    if (m_visibleLike == newVisibleLike)
         return;
-    m_enabledLike = newEnabledLike;
-    emit enabledLikeChanged();
+    m_visibleLike = newVisibleLike;
+    emit visibleLikeChanged();
     reflectVisibility();
 }
 
-bool NotificationListModel::enabledRepost() const
+bool NotificationListModel::visibleRepost() const
 {
-    return m_enabledRepost;
+    return m_visibleRepost;
 }
 
-void NotificationListModel::setEnabledRepost(bool newEnabledRepost)
+void NotificationListModel::setVisibleRepost(bool newVisibleRepost)
 {
-    if (m_enabledRepost == newEnabledRepost)
+    if (m_visibleRepost == newVisibleRepost)
         return;
-    m_enabledRepost = newEnabledRepost;
-    emit enabledRepostChanged();
+    m_visibleRepost = newVisibleRepost;
+    emit visibleRepostChanged();
     reflectVisibility();
 }
 
-bool NotificationListModel::enabledFollow() const
+bool NotificationListModel::visibleFollow() const
 {
-    return m_enabledFollow;
+    return m_visibleFollow;
 }
 
-void NotificationListModel::setEnabledFollow(bool newEnabledFollow)
+void NotificationListModel::setVisibleFollow(bool newVisibleFollow)
 {
-    if (m_enabledFollow == newEnabledFollow)
+    if (m_visibleFollow == newVisibleFollow)
         return;
-    m_enabledFollow = newEnabledFollow;
-    emit enabledFollowChanged();
+    m_visibleFollow = newVisibleFollow;
+    emit visibleFollowChanged();
     reflectVisibility();
 }
 
-bool NotificationListModel::enabledMention() const
+bool NotificationListModel::visibleMention() const
 {
-    return m_enabledMention;
+    return m_visibleMention;
 }
 
-void NotificationListModel::setEnabledMention(bool newEnabledMention)
+void NotificationListModel::setVisibleMention(bool newVisibleMention)
 {
-    if (m_enabledMention == newEnabledMention)
+    if (m_visibleMention == newVisibleMention)
         return;
-    m_enabledMention = newEnabledMention;
-    emit enabledMentionChanged();
+    m_visibleMention = newVisibleMention;
+    emit visibleMentionChanged();
     reflectVisibility();
 }
 
-bool NotificationListModel::enabledReply() const
+bool NotificationListModel::visibleReply() const
 {
-    return m_enabledReply;
+    return m_visibleReply;
 }
 
-void NotificationListModel::setEnabledReply(bool newEnabledReply)
+void NotificationListModel::setVisibleReply(bool newVisibleReply)
 {
-    if (m_enabledReply == newEnabledReply)
+    if (m_visibleReply == newVisibleReply)
         return;
-    m_enabledReply = newEnabledReply;
-    emit enabledReplyChanged();
+    m_visibleReply = newVisibleReply;
+    emit visibleReplyChanged();
     reflectVisibility();
 }
 
-bool NotificationListModel::enabledQuote() const
+bool NotificationListModel::visibleQuote() const
 {
-    return m_enabledQuote;
+    return m_visibleQuote;
 }
 
-void NotificationListModel::setEnabledQuote(bool newEnabledQuote)
+void NotificationListModel::setVisibleQuote(bool newVisibleQuote)
 {
-    if (m_enabledQuote == newEnabledQuote)
+    if (m_visibleQuote == newVisibleQuote)
         return;
-    m_enabledQuote = newEnabledQuote;
-    emit enabledQuoteChanged();
+    m_visibleQuote = newVisibleQuote;
+    emit visibleQuoteChanged();
     reflectVisibility();
 }

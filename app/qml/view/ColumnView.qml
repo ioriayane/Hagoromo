@@ -83,12 +83,12 @@ ColumnLayout {
             model: NotificationListModel {
                 autoLoading: settings.autoLoading
                 loadingInterval: settings.loadingInterval
-                enabledLike: settings.enableLike
-                enabledRepost: settings.enableRepost
-                enabledFollow: settings.enableFollow
-                enabledMention: settings.enableMention
-                enabledReply: settings.enableReply
-                enabledQuote: settings.enableQuote
+                visibleLike: settings.visibleLike
+                visibleRepost: settings.visibleRepost
+                visibleFollow: settings.visibleFollow
+                visibleMention: settings.visibleMention
+                visibleReply: settings.visibleReply
+                visibleQuote: settings.visibleQuote
             }
             fontSizeRatio: columnView.fontSizeRatio
 

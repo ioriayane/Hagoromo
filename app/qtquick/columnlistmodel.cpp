@@ -42,18 +42,18 @@ QVariant ColumnListModel::item(int row, ColumnListModelRoles role) const
     else if (role == ValueRole)
         return m_columnList.at(row).value;
 
-    else if (role == EnableLikeRole)
-        return m_columnList.at(row).notification.like;
-    else if (role == EnableRepostRole)
-        return m_columnList.at(row).notification.repost;
-    else if (role == EnableFollowRole)
-        return m_columnList.at(row).notification.follow;
-    else if (role == EnableMentionRole)
-        return m_columnList.at(row).notification.mention;
-    else if (role == EnableReplyRole)
-        return m_columnList.at(row).notification.reply;
-    else if (role == EnableQuoteRole)
-        return m_columnList.at(row).notification.quote;
+    else if (role == VisibleLikeRole)
+        return m_columnList.at(row).type_visibility.like;
+    else if (role == VisibleRepostRole)
+        return m_columnList.at(row).type_visibility.repost;
+    else if (role == VisibleFollowRole)
+        return m_columnList.at(row).type_visibility.follow;
+    else if (role == VisibleMentionRole)
+        return m_columnList.at(row).type_visibility.mention;
+    else if (role == VisibleReplyRole)
+        return m_columnList.at(row).type_visibility.reply;
+    else if (role == VisibleQuoteRole)
+        return m_columnList.at(row).type_visibility.quote;
 
     return QVariant();
 }
@@ -80,18 +80,18 @@ void ColumnListModel::update(int row, ColumnListModelRoles role, const QVariant 
     else if (role == ValueRole)
         m_columnList[row].value = value.toInt();
 
-    else if (role == EnableLikeRole)
-        m_columnList[row].notification.like = value.toBool();
-    else if (role == EnableRepostRole)
-        m_columnList[row].notification.repost = value.toBool();
-    else if (role == EnableFollowRole)
-        m_columnList[row].notification.follow = value.toBool();
-    else if (role == EnableMentionRole)
-        m_columnList[row].notification.mention = value.toBool();
-    else if (role == EnableReplyRole)
-        m_columnList[row].notification.reply = value.toBool();
-    else if (role == EnableQuoteRole)
-        m_columnList[row].notification.quote = value.toBool();
+    else if (role == VisibleLikeRole)
+        m_columnList[row].type_visibility.like = value.toBool();
+    else if (role == VisibleRepostRole)
+        m_columnList[row].type_visibility.repost = value.toBool();
+    else if (role == VisibleFollowRole)
+        m_columnList[row].type_visibility.follow = value.toBool();
+    else if (role == VisibleMentionRole)
+        m_columnList[row].type_visibility.mention = value.toBool();
+    else if (role == VisibleReplyRole)
+        m_columnList[row].type_visibility.reply = value.toBool();
+    else if (role == VisibleQuoteRole)
+        m_columnList[row].type_visibility.quote = value.toBool();
 
     emit dataChanged(index(row), index(row));
 
@@ -264,13 +264,13 @@ void ColumnListModel::save() const
         column_item["value"] = item.value;
 
         QJsonObject notification;
-        notification["like"] = item.notification.like;
-        notification["repost"] = item.notification.repost;
-        notification["follow"] = item.notification.follow;
-        notification["mention"] = item.notification.mention;
-        notification["reply"] = item.notification.reply;
-        notification["quote"] = item.notification.quote;
-        column_item["notification"] = notification;
+        notification["like"] = item.type_visibility.like;
+        notification["repost"] = item.type_visibility.repost;
+        notification["follow"] = item.type_visibility.follow;
+        notification["mention"] = item.type_visibility.mention;
+        notification["reply"] = item.type_visibility.reply;
+        notification["quote"] = item.type_visibility.quote;
+        column_item["type_visibility"] = notification;
 
         column_array.append(column_item);
     }
@@ -305,18 +305,18 @@ void ColumnListModel::load()
                 item.name = obj.value("name").toString();
                 item.value = obj.value("value").toString();
 
-                item.notification.like =
-                        obj.value("notification").toObject().value("like").toBool(true);
-                item.notification.repost =
-                        obj.value("notification").toObject().value("repost").toBool(true);
-                item.notification.follow =
-                        obj.value("notification").toObject().value("follow").toBool(true);
-                item.notification.mention =
-                        obj.value("notification").toObject().value("mention").toBool(true);
-                item.notification.reply =
-                        obj.value("notification").toObject().value("reply").toBool(true);
-                item.notification.quote =
-                        obj.value("notification").toObject().value("quote").toBool(true);
+                item.type_visibility.like =
+                        obj.value("type_visibility").toObject().value("like").toBool(true);
+                item.type_visibility.repost =
+                        obj.value("type_visibility").toObject().value("repost").toBool(true);
+                item.type_visibility.follow =
+                        obj.value("type_visibility").toObject().value("follow").toBool(true);
+                item.type_visibility.mention =
+                        obj.value("type_visibility").toObject().value("mention").toBool(true);
+                item.type_visibility.reply =
+                        obj.value("type_visibility").toObject().value("reply").toBool(true);
+                item.type_visibility.quote =
+                        obj.value("type_visibility").toObject().value("quote").toBool(true);
 
                 if (item.name.isEmpty()) {
                     // version 0.2.0以前との互換性のため
@@ -358,12 +358,12 @@ QHash<int, QByteArray> ColumnListModel::roleNames() const
     roles[NameRole] = "name";
     roles[ValueRole] = "value";
 
-    roles[EnableLikeRole] = "enableLike";
-    roles[EnableRepostRole] = "enableRepost";
-    roles[EnableFollowRole] = "enableFollow";
-    roles[EnableMentionRole] = "enableMention";
-    roles[EnableReplyRole] = "enableReply";
-    roles[EnableQuoteRole] = "enableQuote";
+    roles[VisibleLikeRole] = "visibleLike";
+    roles[VisibleRepostRole] = "visibleRepost";
+    roles[VisibleFollowRole] = "visibleFollow";
+    roles[VisibleMentionRole] = "visibleMention";
+    roles[VisibleReplyRole] = "visibleReply";
+    roles[VisibleQuoteRole] = "visibleQuote";
 
     return roles;
 }
