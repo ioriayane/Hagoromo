@@ -23,19 +23,17 @@ const QList<SearchType::ViewPost> *SearchPosts::viewPostList() const
     return &m_viewPostList;
 }
 
-void SearchPosts::parseJson(const QString reply_json)
+void SearchPosts::parseJson(bool success, const QString reply_json)
 {
-    bool success = false;
-
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
     if (json_doc.isEmpty()) {
+        success = false;
     } else if (json_doc.isArray()) {
         for (const auto &value : json_doc.array()) {
             SearchType::ViewPost view_post;
             SearchType::copyViewPost(value.toObject(), view_post);
             m_viewPostList.append(view_post);
         }
-        success = true;
     }
 
     emit finished(success);

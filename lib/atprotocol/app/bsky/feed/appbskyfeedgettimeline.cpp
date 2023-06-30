@@ -26,20 +26,13 @@ const QList<AppBskyFeedDefs::FeedViewPost> *AppBskyFeedGetTimeline::feedList() c
     return &m_feedList;
 }
 
-void AppBskyFeedGetTimeline::parseJson(const QString reply_json)
+void AppBskyFeedGetTimeline::parseJson(bool success, const QString reply_json)
 {
-    bool success = false;
     m_feedList.clear();
 
-    //    qDebug() << reply_json;
-
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
-    if (json_doc.isEmpty()) {
-        qDebug() << "EMPTY";
-        //    } else if (!json_doc.isArray()) {
-        //        qDebug() << "NOT ARRAY";
-    } else if (!json_doc.object().contains("feed")) {
-        qDebug() << "Not found feed";
+    if (json_doc.isEmpty() || !json_doc.object().contains("feed")) {
+        success = false;
     } else {
         for (const auto &obj : json_doc.object().value("feed").toArray()) {
             AppBskyFeedDefs::FeedViewPost feed_item;
@@ -48,8 +41,6 @@ void AppBskyFeedGetTimeline::parseJson(const QString reply_json)
 
             m_feedList.append(feed_item);
         }
-
-        success = true;
     }
 
     emit finished(success);

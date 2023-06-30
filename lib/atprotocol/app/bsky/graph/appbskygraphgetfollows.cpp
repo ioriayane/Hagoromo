@@ -27,13 +27,11 @@ AppBskyGraphGetFollows::profileList() const
     return &m_profileList;
 }
 
-void AppBskyGraphGetFollows::parseJson(const QString reply_json)
+void AppBskyGraphGetFollows::parseJson(bool success, const QString reply_json)
 {
-    bool success = false;
-
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
-    if (json_doc.isEmpty()) {
-    } else if (!json_doc.object().contains(m_listKey)) {
+    if (json_doc.isEmpty() || !json_doc.object().contains(m_listKey)) {
+        success = false;
     } else {
         for (const auto &obj : json_doc.object().value(m_listKey).toArray()) {
             AtProtocolType::AppBskyActorDefs::ProfileView profile;
@@ -41,7 +39,6 @@ void AppBskyGraphGetFollows::parseJson(const QString reply_json)
 
             m_profileList.append(profile);
         }
-        success = true;
     }
 
     emit finished(success);

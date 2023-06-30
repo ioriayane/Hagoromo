@@ -41,12 +41,11 @@ ComAtprotoRepoListRecords::recordList() const
     return &m_recordList;
 }
 
-void ComAtprotoRepoListRecords::parseJson(const QString reply_json)
+void ComAtprotoRepoListRecords::parseJson(bool success, const QString reply_json)
 {
-    bool success = false;
-
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
     if (json_doc.isEmpty()) {
+        success = false;
     } else {
         for (const auto &obj : json_doc.object().value("records").toArray()) {
             AtProtocolType::ComAtprotoRepoListRecords::Record record;
@@ -55,8 +54,6 @@ void ComAtprotoRepoListRecords::parseJson(const QString reply_json)
 
             m_recordList.append(record);
         }
-
-        success = true;
     }
 
     emit finished(success);

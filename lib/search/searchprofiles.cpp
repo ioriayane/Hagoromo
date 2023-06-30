@@ -24,12 +24,11 @@ const QStringList *SearchProfiles::didList() const
     return &m_didList;
 }
 
-void SearchProfiles::parseJson(const QString reply_json)
+void SearchProfiles::parseJson(bool success, const QString reply_json)
 {
-    bool success = false;
-
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
     if (json_doc.isEmpty()) {
+        success = false;
     } else if (json_doc.isArray()) {
         for (const auto &value : json_doc.array()) {
             QString did = value.toObject().value("did").toString();
@@ -37,7 +36,6 @@ void SearchProfiles::parseJson(const QString reply_json)
                 m_didList.append(did);
             }
         }
-        success = true;
     }
 
     emit finished(success);

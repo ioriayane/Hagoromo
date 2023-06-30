@@ -15,15 +15,13 @@ namespace AtProtocolInterface {
 AccessAtProtocol::AccessAtProtocol(QObject *parent) : QObject { parent }
 {
     connect(&m_manager, &QNetworkAccessManager::finished, [=](QNetworkReply *reply) {
-        qDebug() << LOG_DATETIME << "reply" << reply->error() << reply->url();
+        qDebug() << LOG_DATETIME << reply->error() << reply->url();
         m_replyJson = QString::fromUtf8(reply->readAll());
 
         if (reply->error() != QNetworkReply::NoError) {
-            qDebug() << m_replyJson;
-            parseJson(QStringLiteral("{}"));
-        } else {
-            parseJson(m_replyJson);
+            qCritical() << m_replyJson;
         }
+        parseJson(reply->error() == QNetworkReply::NoError, m_replyJson);
     });
 }
 
@@ -95,8 +93,8 @@ void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
                            const bool with_auth_header)
 {
     if (accessJwt().isEmpty() && with_auth_header) {
-        qDebug() << LOG_DATETIME << "AccessAtProtocol::get()"
-                 << "Emty accessJwt!";
+        qCritical() << LOG_DATETIME << "AccessAtProtocol::get()"
+                    << "Emty accessJwt!";
         return;
     }
 
@@ -124,8 +122,8 @@ void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     if (with_auth_header) {
         if (accessJwt().isEmpty()) {
-            qDebug() << LOG_DATETIME << "AccessAtProtocol::post()"
-                     << "Empty accessJwt!";
+            qCritical() << LOG_DATETIME << "AccessAtProtocol::post()"
+                        << "Empty accessJwt!";
             return;
         }
 
@@ -139,13 +137,13 @@ void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
 void AccessAtProtocol::postWithImage(const QString &endpoint, const QString &path)
 {
     if (accessJwt().isEmpty()) {
-        qDebug() << LOG_DATETIME << "AccessAtProtocol::postWithImage()"
-                 << "Empty accessJwt!";
+        qCritical() << LOG_DATETIME << "AccessAtProtocol::postWithImage()"
+                    << "Empty accessJwt!";
         return;
     }
     if (!QFile::exists(path)) {
-        qDebug() << LOG_DATETIME << "AccessAtProtocol::postWithImage()"
-                 << "Not found" << path;
+        qCritical() << LOG_DATETIME << "AccessAtProtocol::postWithImage()"
+                    << "Not found" << path;
         return;
     }
     qDebug() << LOG_DATETIME << "AccessAtProtocol::postWithImage()" << this << endpoint << path;
@@ -158,8 +156,8 @@ void AccessAtProtocol::postWithImage(const QString &endpoint, const QString &pat
 
     QFile *file = new QFile(path);
     if (!file->open(QIODevice::ReadOnly)) {
-        qDebug() << LOG_DATETIME << "AccessAtProtocol::postWithImage()"
-                 << "Not open" << path;
+        qCritical() << LOG_DATETIME << "AccessAtProtocol::postWithImage()"
+                    << "Not open" << path;
         delete file;
         return;
     }

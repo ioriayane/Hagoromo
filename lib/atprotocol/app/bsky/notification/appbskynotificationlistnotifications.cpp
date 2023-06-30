@@ -28,15 +28,11 @@ AppBskyNotificationListNotifications::notificationList() const
     return &m_notificationList;
 }
 
-void AppBskyNotificationListNotifications::parseJson(const QString reply_json)
+void AppBskyNotificationListNotifications::parseJson(bool success, const QString reply_json)
 {
-    bool success = false;
-
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
-    if (json_doc.isEmpty()) {
-        qDebug() << "EMPTY";
-    } else if (!json_doc.object().contains("notifications")) {
-        qDebug() << "Not found 'notifications'.";
+    if (json_doc.isEmpty() || !json_doc.object().contains("notifications")) {
+        success = false;
     } else {
         for (const auto &obj : json_doc.object().value("notifications").toArray()) {
             AtProtocolType::AppBskyNotificationListNotifications::Notification notification;
@@ -45,8 +41,6 @@ void AppBskyNotificationListNotifications::parseJson(const QString reply_json)
                                                                                    notification);
             m_notificationList.append(notification);
         }
-
-        success = true;
     }
 
     emit finished(success);

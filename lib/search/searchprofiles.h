@@ -16,7 +16,7 @@ public:
     const QStringList *didList() const;
 
 private:
-    virtual void parseJson(const QString reply_json);
+    virtual void parseJson(bool success, const QString reply_json);
 
     QStringList m_didList;
 };

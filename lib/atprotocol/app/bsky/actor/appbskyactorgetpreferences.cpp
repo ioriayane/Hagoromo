@@ -26,13 +26,11 @@ AppBskyActorGetPreferences::savedFeedsPrefList() const
     return &m_savedFeedsPrefList;
 }
 
-void AppBskyActorGetPreferences::parseJson(const QString reply_json)
+void AppBskyActorGetPreferences::parseJson(bool success, const QString reply_json)
 {
-    bool success = false;
-
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
-    if (json_doc.isEmpty()) {
-    } else if (!json_doc.object().contains("preferences")) {
+    if (json_doc.isEmpty() || !json_doc.object().contains("preferences")) {
+        success = false;
     } else {
         for (const auto &value : json_doc.object().value("preferences").toArray()) {
             if (value.toObject().value("$type").toString()
@@ -42,7 +40,6 @@ void AppBskyActorGetPreferences::parseJson(const QString reply_json)
                 m_savedFeedsPrefList.append(saved_feeds);
             }
         }
-        success = true;
     }
 
     emit finished(success);
