@@ -22,6 +22,8 @@ void PostThreadListModel::getLatest()
         if (aliving) {
             if (success) {
                 copyFrom(thread->threadViewPost());
+            } else {
+                emit errorOccured(thread->errorMessage());
             }
             QTimer::singleShot(100, this, &PostThreadListModel::displayQueuedPosts);
         }

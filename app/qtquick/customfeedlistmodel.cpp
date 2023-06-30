@@ -21,6 +21,8 @@ void CustomFeedListModel::getLatest()
         if (aliving) {
             if (success) {
                 copyFrom(feed);
+            } else {
+                emit errorOccured(feed->errorMessage());
             }
             QTimer::singleShot(100, this, &CustomFeedListModel::displayQueuedPosts);
         }

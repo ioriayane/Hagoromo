@@ -112,6 +112,8 @@ void FollowsListModel::getLatest()
                         endInsertRows();
                     }
                 }
+            } else {
+                emit errorOccured(follows->errorMessage());
             }
             setRunning(false);
         }
@@ -193,6 +195,8 @@ void FollowsListModel::getProfiles()
                         endInsertRows();
                     }
                 }
+            } else {
+                emit errorOccured(posts->errorMessage());
             }
             // 残ってたらもう1回
             QTimer::singleShot(100, this, &FollowsListModel::getProfiles);

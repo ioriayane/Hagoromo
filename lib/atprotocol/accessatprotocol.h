@@ -55,6 +55,7 @@ public:
     QString refreshJwt() const;
 
     QString replyJson() const;
+    QString errorMessage() const;
 
 signals:
     void finished(bool success);
@@ -73,6 +74,7 @@ private:
 
     AccountData m_account;
     QString m_replyJson;
+    QString m_errorMessage;
 };
 }
 

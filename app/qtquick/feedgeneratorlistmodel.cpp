@@ -107,6 +107,7 @@ void FeedGeneratorListModel::getLatest()
 
                 getSavedGenerators();
             } else {
+                emit errorOccured(generators->errorMessage());
                 setRunning(false);
             }
         }
@@ -130,6 +131,7 @@ void FeedGeneratorListModel::saveGenerator(const QString &uri)
             if (success) {
                 putPreferences(appendGeneratorToPreference(pref->replyJson(), uri));
             } else {
+                emit errorOccured(pref->errorMessage());
                 setRunning(false);
             }
         }
@@ -153,6 +155,7 @@ void FeedGeneratorListModel::removeGenerator(const QString &uri)
             if (success) {
                 putPreferences(removeGeneratorToPreference(pref->replyJson(), uri));
             } else {
+                emit errorOccured(pref->errorMessage());
                 setRunning(false);
             }
         }
@@ -231,6 +234,8 @@ void FeedGeneratorListModel::getSavedGenerators()
                 //                        }
                 //                    }
                 //                }
+            } else {
+                emit errorOccured(pref->errorMessage());
             }
             setRunning(false);
         }
@@ -251,6 +256,7 @@ void FeedGeneratorListModel::putPreferences(const QString &json)
                 qDebug() << "finish put preferences.";
                 getSavedGenerators();
             } else {
+                emit errorOccured(pref->errorMessage());
                 setRunning(false);
             }
         }

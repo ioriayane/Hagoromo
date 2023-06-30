@@ -54,6 +54,8 @@ ColumnLayout {
             model: TimelineListModel {
                 autoLoading: settings.autoLoading
                 loadingInterval: settings.loadingInterval
+
+                onErrorOccured: (message) => {}
             }
             fontSizeRatio: columnView.fontSizeRatio
 

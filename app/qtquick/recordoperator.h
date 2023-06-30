@@ -40,6 +40,7 @@ public:
     void setRunning(bool newRunning);
 
 signals:
+    void errorOccured(const QString &message);
     void finished(bool success, const QString &uri, const QString &cid);
     void runningChanged();
 

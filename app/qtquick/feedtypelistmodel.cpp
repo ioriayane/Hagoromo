@@ -97,6 +97,8 @@ void FeedTypeListModel::getLatest()
                 for (const auto &feed : *pref->savedFeedsPrefList()) {
                     m_cueUri = feed.saved;
                 }
+            } else {
+                emit errorOccured(pref->errorMessage());
             }
             QTimer::singleShot(10, this, &FeedTypeListModel::getFeedDetails);
         }
@@ -154,6 +156,8 @@ void FeedTypeListModel::getFeedDetails()
                     m_feedTypeItemList.append(item);
                     endInsertRows();
                 }
+            } else {
+                emit errorOccured(generators->errorMessage());
             }
             QTimer::singleShot(10, this, &FeedTypeListModel::getFeedDetails);
         }

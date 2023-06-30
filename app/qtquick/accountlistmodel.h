@@ -59,6 +59,7 @@ public:
     int count() const;
 
 signals:
+    void errorOccured(const QString &message);
     void appendedAccount(int row);
     void updatedAccount(int row, const QString &uuid);
     void allFinished();

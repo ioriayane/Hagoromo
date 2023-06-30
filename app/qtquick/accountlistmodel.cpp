@@ -291,6 +291,8 @@ void AccountListModel::updateSession(int row, const QString &service, const QStr
 
                 // 詳細を取得
                 getProfile(row);
+            } else {
+                emit errorOccured(session->errorMessage());
             }
             bool all_finished = true;
             for (const AccountData &item : qAsConst(m_accountList)) {
@@ -330,6 +332,7 @@ void AccountListModel::refreshSession(int row)
                 emit updatedAccount(row, m_accountList[row].uuid);
             } else {
                 m_accountList[row].status = AccountStatus::Unauthorized;
+                emit errorOccured(session->errorMessage());
             }
             emit dataChanged(index(row), index(row));
         }
@@ -360,6 +363,8 @@ void AccountListModel::getProfile(int row)
 
                 emit updatedAccount(row, m_accountList[row].uuid);
                 emit dataChanged(index(row), index(row));
+            } else {
+                emit errorOccured(profile->errorMessage());
             }
         }
         profile->deleteLater();

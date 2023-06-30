@@ -68,6 +68,7 @@ public:
     void setFollowingUri(const QString &newFollowingUri);
 
 signals:
+    void errorOccured(const QString &message);
     void runningChanged();
     void didChanged();
     void handleChanged();

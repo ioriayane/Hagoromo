@@ -91,6 +91,9 @@ void RecordOperator::post()
         connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
             if (aliving) {
                 emit finished(success, QString(), QString());
+                if (!success) {
+                    emit errorOccured(create_record->errorMessage());
+                }
                 setRunning(false);
             }
             create_record->deleteLater();
@@ -136,6 +139,7 @@ void RecordOperator::postWithImages()
                     postWithImages();
                 }
             } else {
+                emit errorOccured(upload_blob->errorMessage());
                 emit finished(success, QString(), QString());
                 setRunning(false);
             }
@@ -157,6 +161,9 @@ void RecordOperator::repost(const QString &cid, const QString &uri)
     ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord();
     connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
         if (aliving) {
+            if (!success) {
+                emit errorOccured(create_record->errorMessage());
+            }
             emit finished(success, create_record->replyUri(), create_record->replyCid());
             setRunning(false);
 
@@ -179,6 +186,9 @@ void RecordOperator::like(const QString &cid, const QString &uri)
     ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord();
     connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
         if (aliving) {
+            if (!success) {
+                emit errorOccured(create_record->errorMessage());
+            }
             emit finished(success, create_record->replyUri(), create_record->replyCid());
             setRunning(false);
 
@@ -201,6 +211,9 @@ void RecordOperator::follow(const QString &did)
     ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord();
     connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
         if (aliving) {
+            if (!success) {
+                emit errorOccured(create_record->errorMessage());
+            }
             emit finished(success, QString(), QString());
             setRunning(false);
         }
@@ -223,6 +236,9 @@ void RecordOperator::deleteLike(const QString &uri)
     ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord();
     connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
         if (aliving) {
+            if (!success) {
+                emit errorOccured(delete_record->errorMessage());
+            }
             emit finished(success, QString(), QString());
             setRunning(false);
         }
@@ -245,6 +261,9 @@ void RecordOperator::deleteRepost(const QString &uri)
     ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord();
     connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
         if (aliving) {
+            if (!success) {
+                emit errorOccured(delete_record->errorMessage());
+            }
             emit finished(success, QString(), QString());
             setRunning(false);
         }
@@ -267,6 +286,9 @@ void RecordOperator::deleteFollow(const QString &uri)
     ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord();
     connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
         if (aliving) {
+            if (!success) {
+                emit errorOccured(delete_record->errorMessage());
+            }
             emit finished(success, QString(), QString());
             setRunning(false);
         }

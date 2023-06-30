@@ -37,6 +37,8 @@ void SearchPostListModel::getLatest()
                     post.reference_time = reference_time;
                     m_cuePost.insert(0, post);
                 }
+            } else {
+                emit errorOccured(posts->errorMessage());
             }
             QTimer::singleShot(100, this, &SearchPostListModel::displayQueuedPosts);
         }
@@ -89,6 +91,8 @@ void SearchPostListModel::getPosts()
                         }
                     }
                 }
+            } else {
+                emit errorOccured(posts->errorMessage());
             }
             // 残ってたらもう1回
             QTimer::singleShot(100, this, &SearchPostListModel::getPosts);

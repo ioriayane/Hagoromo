@@ -17,9 +17,11 @@ AccessAtProtocol::AccessAtProtocol(QObject *parent) : QObject { parent }
     connect(&m_manager, &QNetworkAccessManager::finished, [=](QNetworkReply *reply) {
         qDebug() << LOG_DATETIME << reply->error() << reply->url();
         m_replyJson = QString::fromUtf8(reply->readAll());
+        m_errorMessage.clear();
 
         if (reply->error() != QNetworkReply::NoError) {
             qCritical() << m_replyJson;
+            m_errorMessage = m_replyJson;
         }
         parseJson(reply->error() == QNetworkReply::NoError, m_replyJson);
     });
@@ -164,6 +166,11 @@ void AccessAtProtocol::postWithImage(const QString &endpoint, const QString &pat
 
     QNetworkReply *reply = m_manager.post(request, file);
     file->setParent(reply);
+}
+
+QString AccessAtProtocol::errorMessage() const
+{
+    return m_errorMessage;
 }
 
 QString AccessAtProtocol::replyJson() const

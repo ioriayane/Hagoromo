@@ -31,6 +31,8 @@ void FollowersListModel::getLatest()
                         endInsertRows();
                     }
                 }
+            } else {
+                emit errorOccured(followers->errorMessage());
             }
             setRunning(false);
         }

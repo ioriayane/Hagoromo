@@ -352,6 +352,8 @@ void NotificationListModel::getLatest()
                 //
                 // likeとかの対象ポストの情報は入っていないので、それぞれ取得する必要あり
                 // 対象ポスト情報は別途cidをキーにして保存する（2重取得と管理を避ける）
+            } else {
+                emit errorOccured(notification->errorMessage());
             }
             QTimer::singleShot(100, this, &NotificationListModel::displayQueuedPosts);
         }
@@ -375,6 +377,7 @@ void NotificationListModel::repost(int row)
     QPointer<NotificationListModel> aliving(this);
 
     RecordOperator *ope = new RecordOperator();
+    connect(ope, &RecordOperator::errorOccured, this, &NotificationListModel::errorOccured);
     connect(ope, &RecordOperator::finished,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(cid)
@@ -408,6 +411,7 @@ void NotificationListModel::like(int row)
     QPointer<NotificationListModel> aliving(this);
 
     RecordOperator *ope = new RecordOperator();
+    connect(ope, &RecordOperator::errorOccured, this, &NotificationListModel::errorOccured);
     connect(ope, &RecordOperator::finished,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(cid)
@@ -560,6 +564,8 @@ void NotificationListModel::getPosts()
                         }
                     }
                 }
+            } else {
+                emit errorOccured(posts->errorMessage());
             }
             // 残ってたらもう1回
             QTimer::singleShot(100, this, &NotificationListModel::getPosts);
