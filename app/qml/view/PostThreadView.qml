@@ -73,6 +73,8 @@ ColumnLayout {
             model: PostThreadListModel {
                 id: postThreadListModel
                 autoLoading: false
+
+                onErrorOccured: (message) => {console.log(message)}
             }
 
             header: Item {

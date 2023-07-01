@@ -175,6 +175,7 @@ ApplicationWindow {
                 columnManageModel.load()
             }
         }
+        onErrorOccured: (message) => {console.log(message)}
 
         function syncColumn(){
             // アカウント一覧にないものを消す
@@ -411,8 +412,8 @@ ApplicationWindow {
                 function updateAccount(account_uuid){
                     for(var i=0; i<repeater.count; i++){
                         var item = repeater.itemAt(i)   //ここのitemはloader自身
-                        if(item.item.accountUuid === account_uuid){
-                            var row = accountListModel.indexAt(item.item.accountUuid)
+                        if(item.item.account.uuid === account_uuid){
+                            var row = accountListModel.indexAt(item.item.account.uuid)
                             if(row >= 0){
                                 console.log("Update column : col=" + i + ", a_row=" + row)
                                 item.setAccount(row)

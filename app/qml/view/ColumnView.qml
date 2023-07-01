@@ -55,7 +55,7 @@ ColumnLayout {
                 autoLoading: settings.autoLoading
                 loadingInterval: settings.loadingInterval
 
-                onErrorOccured: (message) => {}
+                onErrorOccured: (message) => {console.log(message)}
             }
             fontSizeRatio: columnView.fontSizeRatio
 
@@ -91,6 +91,8 @@ ColumnLayout {
                 visibleMention: settings.visibleMention
                 visibleReply: settings.visibleReply
                 visibleQuote: settings.visibleQuote
+
+                onErrorOccured: (message) => {console.log(message)}
             }
             fontSizeRatio: columnView.fontSizeRatio
 
@@ -171,6 +173,8 @@ ColumnLayout {
                 //loadingInterval: settings.loadingInterval
                 text: settings.columnValue
                 searchService: "https://search.bsky.social"
+
+                onErrorOccured: (message) => {console.log(message)}
             }
             fontSizeRatio: columnView.fontSizeRatio
 
@@ -203,6 +207,8 @@ ColumnLayout {
                 autoLoading: settings.autoLoading
                 text: settings.columnValue
                 searchService: "https://search.bsky.social"
+
+                onErrorOccured: (message) => {console.log(message)}
             }
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
         }
@@ -214,6 +220,8 @@ ColumnLayout {
                 autoLoading: settings.autoLoading
                 loadingInterval: settings.loadingInterval
                 uri: settings.columnValue
+
+                onErrorOccured: (message) => {console.log(message)}
             }
             fontSizeRatio: columnView.fontSizeRatio
 

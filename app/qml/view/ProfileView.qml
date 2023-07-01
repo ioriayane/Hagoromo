@@ -308,6 +308,8 @@ ColumnLayout {
                 id: authorFeedListModel
                 autoLoading: false
                 authorDid: profileView.userDid
+
+                onErrorOccured: (message) => {console.log(message)}
             }
             fontSizeRatio: profileView.fontSizeRatio
 
@@ -333,6 +335,8 @@ ColumnLayout {
                 autoLoading: false
                 targetDid: profileView.userDid
                 feedType: AnyFeedListModel.RepostFeedType
+
+                onErrorOccured: (message) => {console.log(message)}
             }
             fontSizeRatio: profileView.fontSizeRatio
 
@@ -358,6 +362,8 @@ ColumnLayout {
                 autoLoading: false
                 targetDid: profileView.userDid
                 feedType: AnyFeedListModel.LikeFeedType
+
+                onErrorOccured: (message) => {console.log(message)}
             }
             fontSizeRatio: profileView.fontSizeRatio
 
@@ -385,6 +391,8 @@ ColumnLayout {
                 id: followsListModel
                 autoLoading: false
                 targetDid: profileView.userDid
+
+                onErrorOccured: (message) => {console.log(message)}
             }
             onRequestViewProfile: (did) => {
                                         if(did !== profileView.userDid){
@@ -403,6 +411,8 @@ ColumnLayout {
                 id: followersListModel
                 autoLoading: false
                 targetDid: profileView.userDid
+
+                onErrorOccured: (message) => {console.log(message)}
             }
             onRequestViewProfile: (did) => {
                                         if(did !== profileView.userDid){
