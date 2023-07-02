@@ -11,15 +11,17 @@ QML_FILES = \
     qml/controls/ProgressCircle.qml \
     qml/controls/IconButton.qml \
     qml/controls/ImageWithIndicator.qml \
+    qml/data/Account.qml \
+    qml/data/ColumnSettings.qml \
     qml/dialogs/AccountDialog.qml \
     qml/dialogs/AddColumnDialog.qml \
     qml/dialogs/ColumnSettingDialog.qml \
     qml/dialogs/DiscoverFeedsDialog.qml \
     qml/dialogs/LoginDialog.qml \
+    qml/dialogs/MessageDialog.qml \
     qml/dialogs/PostDialog.qml \
     qml/dialogs/SearchDialog.qml \
     qml/dialogs/SettingDialog.qml \
-    qml/parts/Account.qml \
     qml/parts/Author.qml \
     qml/parts/AvatarImage.qml \
     qml/parts/ImagePreview.qml \

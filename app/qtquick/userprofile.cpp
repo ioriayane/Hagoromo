@@ -60,6 +60,8 @@ void UserProfile::getProfile(const QString &did)
                 setFollowedBy(detail.viewer.followedBy.contains(did));
 
                 setFollowingUri(detail.viewer.following);
+            } else {
+                emit errorOccured(profile->errorMessage());
             }
             setRunning(false);
         }

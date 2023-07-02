@@ -60,6 +60,8 @@ void AnyFeedListModel::getLatest()
                         m_cuePost.insert(0, post);
                     }
                 }
+            } else {
+                emit errorOccured(records->errorMessage());
             }
             QTimer::singleShot(100, this, &AnyFeedListModel::displayQueuedPosts);
         }
@@ -148,6 +150,8 @@ void AnyFeedListModel::getPosts()
                         }
                     }
                 }
+            } else {
+                emit errorOccured(posts->errorMessage());
             }
             // 残ってたらもう1回
             QTimer::singleShot(100, this, &AnyFeedListModel::getPosts);

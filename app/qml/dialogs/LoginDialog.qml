@@ -30,6 +30,7 @@ Dialog {
                           // NG
                       }
                   }
+        onErrorOccured: (message) => {console.log(message)}
     }
 
     GridLayout {

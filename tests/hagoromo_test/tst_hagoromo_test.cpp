@@ -7,6 +7,7 @@
 #include "recordoperator.h"
 #include "feedgeneratorlistmodel.h"
 #include "columnlistmodel.h"
+#include "notificationlistmodel.h"
 
 class hagoromo_test : public QObject
 {
@@ -24,6 +25,8 @@ private slots:
     void test_FeedGeneratorListModel();
     void test_ColumnListModelMove();
     void test_ColumnListModelRemove();
+    void test_NotificationListModel();
+    void test_NotificationListModel2();
 
 private:
     WebServer m_mockServer;
@@ -299,6 +302,530 @@ void hagoromo_test::test_ColumnListModelRemove()
     QVERIFY2(model.getPreviousRow(2) == 1,
              QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
     QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 1 << 2 << 0);
+}
+
+void hagoromo_test::test_NotificationListModel()
+{
+    NotificationListModel model;
+    model.setAccount(m_service + "/notifications", QString(), QString(), QString(), "dummy",
+                     QString());
+
+    {
+        int i = 0;
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+        QVERIFY2(model.rowCount() == 6, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonLike,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonRepost,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonFollow,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonMention,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonReply,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonQuote,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+    }
+
+    {
+        int i = 0;
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.setVisibleLike(false);
+        model.setVisibleRepost(true);
+        model.setVisibleFollow(true);
+        model.setVisibleMention(true);
+        model.setVisibleReply(true);
+        model.setVisibleQuote(true);
+        model.clear();
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+        QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonRepost,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonFollow,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonMention,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonReply,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonQuote,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+    }
+
+    {
+        int i = 0;
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.setVisibleLike(true);
+        model.setVisibleRepost(false);
+        model.setVisibleFollow(true);
+        model.setVisibleMention(true);
+        model.setVisibleReply(true);
+        model.setVisibleQuote(true);
+        model.clear();
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+        QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonLike,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonFollow,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonMention,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonReply,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonQuote,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+    }
+
+    {
+        int i = 0;
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.setVisibleLike(true);
+        model.setVisibleRepost(true);
+        model.setVisibleFollow(false);
+        model.setVisibleMention(true);
+        model.setVisibleReply(true);
+        model.setVisibleQuote(true);
+        model.clear();
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+        QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonLike,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonRepost,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonMention,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonReply,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonQuote,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+    }
+
+    {
+        int i = 0;
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.setVisibleLike(true);
+        model.setVisibleRepost(true);
+        model.setVisibleFollow(true);
+        model.setVisibleMention(false);
+        model.setVisibleReply(true);
+        model.setVisibleQuote(true);
+        model.clear();
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+        QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonLike,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonRepost,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonFollow,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonReply,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonQuote,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+    }
+
+    {
+        int i = 0;
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.setVisibleLike(true);
+        model.setVisibleRepost(true);
+        model.setVisibleFollow(true);
+        model.setVisibleMention(true);
+        model.setVisibleReply(false);
+        model.setVisibleQuote(true);
+        model.clear();
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+        QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonLike,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonRepost,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonFollow,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonMention,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonQuote,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+    }
+
+    {
+        int i = 0;
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.setVisibleLike(true);
+        model.setVisibleRepost(true);
+        model.setVisibleFollow(true);
+        model.setVisibleMention(true);
+        model.setVisibleReply(true);
+        model.setVisibleQuote(false);
+        model.clear();
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+        QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonLike,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonRepost,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonFollow,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonMention,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+        QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                         == NotificationListModel::NotificationListModelReason::ReasonReply,
+                 QString("reason=%1")
+                         .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                         .toLocal8Bit());
+    }
+}
+
+void hagoromo_test::test_NotificationListModel2()
+{
+    NotificationListModel model;
+    model.setAccount(m_service + "/notifications", QString(), QString(), QString(), "dummy",
+                     QString());
+
+    int i = 0;
+    QSignalSpy spy(&model, SIGNAL(runningChanged()));
+    model.setVisibleLike(false);
+    model.setVisibleRepost(false);
+    model.setVisibleFollow(false);
+    model.setVisibleMention(false);
+    model.setVisibleReply(false);
+    model.setVisibleQuote(false);
+    model.getLatest();
+    spy.wait();
+    QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+    QVERIFY2(model.rowCount() == 0, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+
+    //   like
+    //   repost
+    //   follow
+    //   mention
+    // * reply
+    //   quote
+    model.setVisibleReply(true);
+    //    model.reflectVisibility();
+    QVERIFY2(model.rowCount() == 1, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                     == NotificationListModel::NotificationListModelReason::ReasonReply,
+             QString("reason=%1")
+                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                     .toLocal8Bit());
+
+    //   like
+    //   repost
+    // * follow
+    //   mention
+    // * reply
+    //   quote
+    i = 0;
+    model.setVisibleFollow(true);
+    //    model.reflectVisibility();
+    QVERIFY2(model.rowCount() == 2, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                     == NotificationListModel::NotificationListModelReason::ReasonFollow,
+             QString("reason=%1")
+                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                     .toLocal8Bit());
+    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                     == NotificationListModel::NotificationListModelReason::ReasonReply,
+             QString("reason=%1")
+                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                     .toLocal8Bit());
+
+    //   like
+    //   repost
+    // * follow
+    // * mention
+    // * reply
+    //   quote
+    i = 0;
+    model.setVisibleMention(true);
+    //    model.reflectVisibility();
+    QVERIFY2(model.rowCount() == 3, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                     == NotificationListModel::NotificationListModelReason::ReasonFollow,
+             QString("reason=%1")
+                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                     .toLocal8Bit());
+    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                     == NotificationListModel::NotificationListModelReason::ReasonMention,
+             QString("reason=%1")
+                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                     .toLocal8Bit());
+    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                     == NotificationListModel::NotificationListModelReason::ReasonReply,
+             QString("reason=%1")
+                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                     .toLocal8Bit());
+
+    // * like
+    // * repost
+    // * follow
+    // * mention
+    // * reply
+    //   quote
+    i = 0;
+    model.setVisibleLike(true);
+    model.setVisibleRepost(true);
+    //    model.reflectVisibility();
+    QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                     == NotificationListModel::NotificationListModelReason::ReasonLike,
+             QString("reason=%1")
+                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                     .toLocal8Bit());
+    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                     == NotificationListModel::NotificationListModelReason::ReasonRepost,
+             QString("reason=%1")
+                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                     .toLocal8Bit());
+    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                     == NotificationListModel::NotificationListModelReason::ReasonFollow,
+             QString("reason=%1")
+                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                     .toLocal8Bit());
+    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                     == NotificationListModel::NotificationListModelReason::ReasonMention,
+             QString("reason=%1")
+                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                     .toLocal8Bit());
+    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                     == NotificationListModel::NotificationListModelReason::ReasonReply,
+             QString("reason=%1")
+                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                     .toLocal8Bit());
+
+    // * like
+    // * repost
+    // * follow
+    // * mention
+    // * reply
+    // * quote
+    i = 0;
+    model.setVisibleQuote(true);
+    //    model.reflectVisibility();
+    QVERIFY2(model.rowCount() == 6, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                     == NotificationListModel::NotificationListModelReason::ReasonLike,
+             QString("reason=%1")
+                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                     .toLocal8Bit());
+    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                     == NotificationListModel::NotificationListModelReason::ReasonRepost,
+             QString("reason=%1")
+                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                     .toLocal8Bit());
+    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                     == NotificationListModel::NotificationListModelReason::ReasonFollow,
+             QString("reason=%1")
+                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                     .toLocal8Bit());
+    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                     == NotificationListModel::NotificationListModelReason::ReasonMention,
+             QString("reason=%1")
+                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                     .toLocal8Bit());
+    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                     == NotificationListModel::NotificationListModelReason::ReasonReply,
+             QString("reason=%1")
+                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                     .toLocal8Bit());
+    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                     == NotificationListModel::NotificationListModelReason::ReasonQuote,
+             QString("reason=%1")
+                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                     .toLocal8Bit());
+
+    // * like
+    // * repost
+    //   follow
+    //   mention
+    // * reply
+    // * quote
+    i = 0;
+    model.setVisibleFollow(false);
+    model.setVisibleMention(false);
+    //    model.reflectVisibility();
+    QVERIFY2(model.rowCount() == 4, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                     == NotificationListModel::NotificationListModelReason::ReasonLike,
+             QString("reason=%1")
+                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                     .toLocal8Bit());
+    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                     == NotificationListModel::NotificationListModelReason::ReasonRepost,
+             QString("reason=%1")
+                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                     .toLocal8Bit());
+    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                     == NotificationListModel::NotificationListModelReason::ReasonReply,
+             QString("reason=%1")
+                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                     .toLocal8Bit());
+    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                     == NotificationListModel::NotificationListModelReason::ReasonQuote,
+             QString("reason=%1")
+                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                     .toLocal8Bit());
+
+    // * like
+    //   repost
+    //   follow
+    // * mention
+    // * reply
+    // * quote
+    i = 0;
+    model.setVisibleRepost(false);
+    model.setVisibleMention(true);
+    //    model.reflectVisibility();
+    QVERIFY2(model.rowCount() == 4, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                     == NotificationListModel::NotificationListModelReason::ReasonLike,
+             QString("reason=%1")
+                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                     .toLocal8Bit());
+    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                     == NotificationListModel::NotificationListModelReason::ReasonMention,
+             QString("reason=%1")
+                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                     .toLocal8Bit());
+    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                     == NotificationListModel::NotificationListModelReason::ReasonReply,
+             QString("reason=%1")
+                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                     .toLocal8Bit());
+    QVERIFY2(model.item(i, NotificationListModel::ReasonRole)
+                     == NotificationListModel::NotificationListModelReason::ReasonQuote,
+             QString("reason=%1")
+                     .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
+                     .toLocal8Bit());
 }
 
 void hagoromo_test::test_RecordOperatorCreateRecord(const QByteArray &body)

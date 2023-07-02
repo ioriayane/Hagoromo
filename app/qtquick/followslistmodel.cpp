@@ -112,6 +112,8 @@ void FollowsListModel::getLatest()
                         endInsertRows();
                     }
                 }
+            } else {
+                emit errorOccured(follows->errorMessage());
             }
             setRunning(false);
         }
@@ -138,6 +140,12 @@ QHash<int, QByteArray> FollowsListModel::roleNames() const
     roles[FollowingUriRole] = "followingUri";
 
     return roles;
+}
+
+bool FollowsListModel::checkVisibility(const QString &cid)
+{
+    Q_UNUSED(cid)
+    return true;
 }
 
 void FollowsListModel::getProfiles()
@@ -187,6 +195,8 @@ void FollowsListModel::getProfiles()
                         endInsertRows();
                     }
                 }
+            } else {
+                emit errorOccured(posts->errorMessage());
             }
             // 残ってたらもう1回
             QTimer::singleShot(100, this, &FollowsListModel::getProfiles);

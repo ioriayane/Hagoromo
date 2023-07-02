@@ -40,17 +40,10 @@ void ComAtprotoRepoDeleteRecord::unfollow(const QString &rkey)
     deleteRecord(this->did(), QStringLiteral("app.bsky.graph.follow"), rkey, QString(), QString());
 }
 
-void ComAtprotoRepoDeleteRecord::parseJson(const QString reply_json)
+void ComAtprotoRepoDeleteRecord::parseJson(bool success, const QString reply_json)
 {
-    //    bool success = false;
-
-    //    QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
-    //    if (json_doc.isEmpty()) {
-    //    } else {
-    //        success = true;
-    //    }
-
-    emit finished(true);
+    Q_UNUSED(reply_json)
+    emit finished(success);
 }
 
 }

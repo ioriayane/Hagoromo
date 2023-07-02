@@ -38,6 +38,8 @@ class AtpAbstractListModel : public QAbstractListModel
 public:
     explicit AtpAbstractListModel(QObject *parent = nullptr);
 
+    Q_INVOKABLE void clear();
+
     AtProtocolInterface::AccountData account() const;
     Q_INVOKABLE void setAccount(const QString &service, const QString &did, const QString &handle,
                                 const QString &email, const QString &accessJwt,
@@ -45,6 +47,7 @@ public:
     virtual Q_INVOKABLE int indexOf(const QString &cid) const = 0;
     virtual Q_INVOKABLE QString getRecordText(const QString &cid) = 0;
     Q_INVOKABLE void translate(const QString &cid);
+    Q_INVOKABLE void reflectVisibility();
 
     bool running() const;
     void setRunning(bool newRunning);
@@ -62,6 +65,7 @@ public:
     QString refreshJwt() const;
 
 signals:
+    void errorOccured(const QString &message);
     void runningChanged();
     void autoLoadingChanged();
     void loadingIntervalChanged();
@@ -75,8 +79,14 @@ protected:
     QString copyRecordText(const QVariant &value) const;
     void displayQueuedPosts();
     virtual void finishedDisplayingQueuedPosts() = 0;
+    virtual bool checkVisibility(const QString &cid) = 0;
 
-    QList<QString> m_cidList; // これで取得したポストの順番を管理して実態はm_viewPostHashで管理
+    // これで取得したポストの順番を管理して実態はm_viewPostHashで管理
+    // checkVisibility(cid)の結果次第で間引かれる
+    QList<QString> m_cidList;
+    // こっちは取得したcidをすべて表示する予定の順番で記録する
+    // displayQueuedPosts()を使ってcidのリストを構成しないと使わない
+    QList<QString> m_originalCidList;
     QList<PostCueItem> m_cuePost;
 
     QHash<QString, QString> m_translations; // QHash<cid, translation>
@@ -84,8 +94,6 @@ protected:
 private:
     QTimer m_timer;
     AtProtocolInterface::AccountData m_account;
-
-    QHash<QString, QString> m_recordTextCache;
 
     bool m_running;
     int m_loadingInterval;

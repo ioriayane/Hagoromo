@@ -16,7 +16,7 @@ public:
     const AtProtocolType::AppBskyFeedDefs::ThreadViewPost *threadViewPost() const;
 
 private:
-    virtual void parseJson(const QString reply_json);
+    virtual void parseJson(bool success, const QString reply_json);
 
     AtProtocolType::AppBskyFeedDefs::ThreadViewPost m_threadViewPost;
 };

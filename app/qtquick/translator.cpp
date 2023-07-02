@@ -24,7 +24,7 @@ Translator::Translator(QObject *parent) : QObject { parent }
         QString text;
 
         if (reply->error() != QNetworkReply::NoError) {
-            qDebug() << json;
+            qCritical() << json;
         } else {
             QJsonDocument json_doc = QJsonDocument::fromJson(json.toUtf8());
             auto json_translations = json_doc.object().value("translations");

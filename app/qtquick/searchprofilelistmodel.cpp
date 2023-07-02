@@ -21,6 +21,8 @@ void SearchProfileListModel::getLatest()
         if (aliving) {
             if (success) {
                 m_cueGetProfile.append(*profiles->didList());
+            } else {
+                emit errorOccured(profiles->errorMessage());
             }
             QTimer::singleShot(100, this, &SearchProfileListModel::getProfiles);
         }

@@ -16,7 +16,7 @@ public:
     const QList<AtProtocolType::AppBskyFeedDefs::GeneratorView> *generatorViewList() const;
 
 private:
-    virtual void parseJson(const QString reply_json);
+    virtual void parseJson(bool success, const QString reply_json);
 
     QList<AtProtocolType::AppBskyFeedDefs::GeneratorView> m_generatorViewList;
 };

@@ -10,5 +10,6 @@
         <file>data/generator/save/app.bsky.actor.putPreferences</file>
         <file>data/generator/remove/app.bsky.actor.putPreferences</file>
         <file>response/generator/remove/xrpc/app.bsky.actor.getPreferences</file>
+        <file>response/notifications/xrpc/app.bsky.notification.listNotifications</file>
     </qresource>
 </RCC>

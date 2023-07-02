@@ -42,6 +42,19 @@ QVariant ColumnListModel::item(int row, ColumnListModelRoles role) const
     else if (role == ValueRole)
         return m_columnList.at(row).value;
 
+    else if (role == VisibleLikeRole)
+        return m_columnList.at(row).type_visibility.like;
+    else if (role == VisibleRepostRole)
+        return m_columnList.at(row).type_visibility.repost;
+    else if (role == VisibleFollowRole)
+        return m_columnList.at(row).type_visibility.follow;
+    else if (role == VisibleMentionRole)
+        return m_columnList.at(row).type_visibility.mention;
+    else if (role == VisibleReplyRole)
+        return m_columnList.at(row).type_visibility.reply;
+    else if (role == VisibleQuoteRole)
+        return m_columnList.at(row).type_visibility.quote;
+
     return QVariant();
 }
 
@@ -66,6 +79,19 @@ void ColumnListModel::update(int row, ColumnListModelRoles role, const QVariant 
         m_columnList[row].name = value.toString();
     else if (role == ValueRole)
         m_columnList[row].value = value.toInt();
+
+    else if (role == VisibleLikeRole)
+        m_columnList[row].type_visibility.like = value.toBool();
+    else if (role == VisibleRepostRole)
+        m_columnList[row].type_visibility.repost = value.toBool();
+    else if (role == VisibleFollowRole)
+        m_columnList[row].type_visibility.follow = value.toBool();
+    else if (role == VisibleMentionRole)
+        m_columnList[row].type_visibility.mention = value.toBool();
+    else if (role == VisibleReplyRole)
+        m_columnList[row].type_visibility.reply = value.toBool();
+    else if (role == VisibleQuoteRole)
+        m_columnList[row].type_visibility.quote = value.toBool();
 
     emit dataChanged(index(row), index(row));
 
@@ -236,6 +262,16 @@ void ColumnListModel::save() const
         column_item["width"] = item.width;
         column_item["name"] = item.name;
         column_item["value"] = item.value;
+
+        QJsonObject notification;
+        notification["like"] = item.type_visibility.like;
+        notification["repost"] = item.type_visibility.repost;
+        notification["follow"] = item.type_visibility.follow;
+        notification["mention"] = item.type_visibility.mention;
+        notification["reply"] = item.type_visibility.reply;
+        notification["quote"] = item.type_visibility.quote;
+        column_item["type_visibility"] = notification;
+
         column_array.append(column_item);
     }
 
@@ -256,19 +292,31 @@ void ColumnListModel::load()
         beginInsertRows(QModelIndex(), 0, doc.array().count() - 1);
         for (int i = 0; i < doc.array().count(); i++) {
             if (doc.array().at(i).isObject()) {
+                QJsonObject obj = doc.array().at(i).toObject();
                 ColumnItem item;
-                item.position = doc.array().at(i).toObject().value("position").toInt(-1);
-                item.key = doc.array().at(i).toObject().value("key").toString();
-                item.account_uuid = doc.array().at(i).toObject().value("account_uuid").toString();
-                item.component_type = static_cast<FeedComponentType>(
-                        doc.array().at(i).toObject().value("component_type").toInt());
-                item.auto_loading =
-                        doc.array().at(i).toObject().value("auto_loading").toBool(false);
-                item.loading_interval =
-                        doc.array().at(i).toObject().value("interval").toInt(300000);
-                item.width = doc.array().at(i).toObject().value("width").toInt(400);
-                item.name = doc.array().at(i).toObject().value("name").toString();
-                item.value = doc.array().at(i).toObject().value("value").toString();
+                item.position = obj.value("position").toInt(-1);
+                item.key = obj.value("key").toString();
+                item.account_uuid = obj.value("account_uuid").toString();
+                item.component_type =
+                        static_cast<FeedComponentType>(obj.value("component_type").toInt());
+                item.auto_loading = obj.value("auto_loading").toBool(false);
+                item.loading_interval = obj.value("interval").toInt(300000);
+                item.width = obj.value("width").toInt(400);
+                item.name = obj.value("name").toString();
+                item.value = obj.value("value").toString();
+
+                item.type_visibility.like =
+                        obj.value("type_visibility").toObject().value("like").toBool(true);
+                item.type_visibility.repost =
+                        obj.value("type_visibility").toObject().value("repost").toBool(true);
+                item.type_visibility.follow =
+                        obj.value("type_visibility").toObject().value("follow").toBool(true);
+                item.type_visibility.mention =
+                        obj.value("type_visibility").toObject().value("mention").toBool(true);
+                item.type_visibility.reply =
+                        obj.value("type_visibility").toObject().value("reply").toBool(true);
+                item.type_visibility.quote =
+                        obj.value("type_visibility").toObject().value("quote").toBool(true);
 
                 if (item.name.isEmpty()) {
                     // version 0.2.0以前との互換性のため
@@ -309,6 +357,13 @@ QHash<int, QByteArray> ColumnListModel::roleNames() const
     roles[WidthRole] = "width";
     roles[NameRole] = "name";
     roles[ValueRole] = "value";
+
+    roles[VisibleLikeRole] = "visibleLike";
+    roles[VisibleRepostRole] = "visibleRepost";
+    roles[VisibleFollowRole] = "visibleFollow";
+    roles[VisibleMentionRole] = "visibleMention";
+    roles[VisibleReplyRole] = "visibleReply";
+    roles[VisibleQuoteRole] = "visibleQuote";
 
     return roles;
 }

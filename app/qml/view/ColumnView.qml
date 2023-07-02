@@ -12,6 +12,7 @@ import tech.relog.hagoromo.searchprofilelistmodel 1.0
 import tech.relog.hagoromo.customfeedlistmodel 1.0
 
 import "../controls"
+import "../data"
 import "../parts"
 
 ColumnLayout {
@@ -20,23 +21,10 @@ ColumnLayout {
 
     property string columnKey: ""
     property int componentType: 0
-    property bool autoLoading: false
-    property int loadingInterval: 300000
-    property string columnName: ""
-    property string columnValue: ""
     property real fontSizeRatio: 1.0
 
-    property string accountUuid: ""
-    property string service: ""
-    property string did: ""
-    property string handle: ""
-    property string email: ""
-    property string accessJwt: ""
-    property string refreshJwt: ""
-    property string avatar: ""
-
-    property var rootItem: undefined
-
+    property alias settings: settings
+    property alias account: account
     property string hoveredLink: ""
 
     signal requestReply(string account_uuid,
@@ -53,19 +41,28 @@ ColumnLayout {
     signal requestRemove(string key)
     signal requestDisplayOfColumnSetting(string key)
 
+    ColumnSettings {
+        id: settings
+    }
+    Account {
+        id: account
+    }
+
     Component {
         id: timelineComponent
         TimelineView {
             model: TimelineListModel {
-                autoLoading: columnView.autoLoading
-                loadingInterval: columnView.loadingInterval
+                autoLoading: settings.autoLoading
+                loadingInterval: settings.loadingInterval
+
+                onErrorOccured: (message) => {console.log(message)}
             }
             fontSizeRatio: columnView.fontSizeRatio
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
-                            columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+                            columnView.requestReply(columnView.account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
-                            columnView.requestQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+                            columnView.requestQuote(columnView.account.uuid, cid, uri, avatar, display_name, handle, indexed_at, text)
 
             onRequestViewThread: (uri) => {
                                      // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
@@ -86,15 +83,23 @@ ColumnLayout {
         id: listNotificationComponent
         NotificationListView {
             model: NotificationListModel {
-                autoLoading: columnView.autoLoading
-                loadingInterval: columnView.loadingInterval
+                autoLoading: settings.autoLoading
+                loadingInterval: settings.loadingInterval
+                visibleLike: settings.visibleLike
+                visibleRepost: settings.visibleRepost
+                visibleFollow: settings.visibleFollow
+                visibleMention: settings.visibleMention
+                visibleReply: settings.visibleReply
+                visibleQuote: settings.visibleQuote
+
+                onErrorOccured: (message) => {console.log(message)}
             }
             fontSizeRatio: columnView.fontSizeRatio
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
-                            columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+                            columnView.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
-                            columnView.requestQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+                            columnView.requestQuote(account.uuid, cid, uri, avatar, display_name, handle, indexed_at, text)
             onRequestViewThread: (uri) => {
                                      // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
                                      // これはPostThreadViewのプロパティにダイレクトに設定する
@@ -112,9 +117,9 @@ ColumnLayout {
             fontSizeRatio: columnView.fontSizeRatio
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
-                            columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+                            columnView.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
-                            columnView.requestQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+                            columnView.requestQuote(account.uuid, cid, uri, avatar, display_name, handle, indexed_at, text)
 
             onRequestViewThread: (uri) => {
                                      // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
@@ -139,9 +144,9 @@ ColumnLayout {
             fontSizeRatio: columnView.fontSizeRatio
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
-                            columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+                            columnView.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
-                            columnView.requestQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+                            columnView.requestQuote(account.uuid, cid, uri, avatar, display_name, handle, indexed_at, text)
 
             onRequestViewThread: (uri) => {
                                      // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
@@ -164,17 +169,19 @@ ColumnLayout {
         id: searchPostsComponent
         TimelineView {
             model: SearchPostListModel {
-                autoLoading: columnView.autoLoading
-                //loadingInterval: columnView.loadingInterval
-                text: columnView.columnValue
+                autoLoading: settings.autoLoading
+                //loadingInterval: settings.loadingInterval
+                text: settings.columnValue
                 searchService: "https://search.bsky.social"
+
+                onErrorOccured: (message) => {console.log(message)}
             }
             fontSizeRatio: columnView.fontSizeRatio
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
-                            columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+                            columnView.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
-                            columnView.requestQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+                            columnView.requestQuote(account.uuid, cid, uri, avatar, display_name, handle, indexed_at, text)
 
             onRequestViewThread: (uri) => {
                                      // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
@@ -194,12 +201,14 @@ ColumnLayout {
     Component {
         id: searchProfilesComponent
         ProfileListView {
-            accountDid: columnView.did
+            accountDid: account.did
             unfollowAndRemove: false
             model: SearchProfileListModel {
-                autoLoading: columnView.autoLoading
-                text: columnView.columnValue
+                autoLoading: settings.autoLoading
+                text: settings.columnValue
                 searchService: "https://search.bsky.social"
+
+                onErrorOccured: (message) => {console.log(message)}
             }
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
         }
@@ -208,16 +217,18 @@ ColumnLayout {
         id: customComponent
         TimelineView {
             model: CustomFeedListModel {
-                autoLoading: columnView.autoLoading
-                loadingInterval: columnView.loadingInterval
-                uri: columnView.columnValue
+                autoLoading: settings.autoLoading
+                loadingInterval: settings.loadingInterval
+                uri: settings.columnValue
+
+                onErrorOccured: (message) => {console.log(message)}
             }
             fontSizeRatio: columnView.fontSizeRatio
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
-                            columnView.requestReply(columnView.accountUuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+                            columnView.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
-                            columnView.requestQuote(columnView.accountUuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+                            columnView.requestQuote(account.uuid, cid, uri, avatar, display_name, handle, indexed_at, text)
 
             onRequestViewThread: (uri) => {
                                      // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
@@ -245,13 +256,13 @@ ColumnLayout {
             componentTypeLabel.text = qsTr("Notifications")
         }else if(componentType === 2){
             columnStackView.push(searchPostsComponent)
-            componentTypeLabel.text = qsTr("Search posts") + " : " + columnValue
+            componentTypeLabel.text = qsTr("Search posts") + " : " + settings.columnValue
         }else if(componentType === 3){
             columnStackView.push(searchProfilesComponent)
-            componentTypeLabel.text = qsTr("Search users") + " : " + columnValue
+            componentTypeLabel.text = qsTr("Search users") + " : " + settings.columnValue
         }else if(componentType === 4){
             columnStackView.push(customComponent)
-            componentTypeLabel.text = qsTr("Feed") + " : " + columnName
+            componentTypeLabel.text = qsTr("Feed") + " : " + settings.columnName
         }else{
             columnStackView.push(timelineComponent)
             componentTypeLabel.text = qsTr("Unknown")
@@ -261,14 +272,14 @@ ColumnLayout {
     function reflect(){
         // StackViewに積まれているViewに反映
         for(var i=0; i<columnStackView.depth; i++){
-            console.log("Reflect : " + i + ", " + columnView.handle)
+            console.log("Reflect : " + i + ", " + account.handle)
             var item = columnStackView.get(i)
-            item.model.setAccount(columnView.service,
-                                  columnView.did,
-                                  columnView.handle,
-                                  columnView.email,
-                                  columnView.accessJwt,
-                                  columnView.refreshJwt)
+            item.model.setAccount(account.service,
+                                  account.did,
+                                  account.handle,
+                                  account.email,
+                                  account.accessJwt,
+                                  account.refreshJwt)
         }
     }
 
@@ -305,7 +316,7 @@ ColumnLayout {
                 Layout.leftMargin: 10
                 Layout.preferredWidth: 24
                 Layout.preferredHeight: 24
-                source: columnView.avatar
+                source: account.avatar
             }
 
             ColumnLayout {
@@ -321,7 +332,7 @@ ColumnLayout {
                     elide: Text.ElideRight
                 }
                 Label {
-                    text: "@" + columnView.handle + " - " + columnView.service
+                    text: "@" + account.handle + " - " + account.service
                     font.pointSize: 8
                     elide: Text.ElideRight
                     color: Material.color(Material.Grey)
@@ -340,7 +351,7 @@ ColumnLayout {
                 source: "../images/auto.png"
                 layer.enabled: true
                 layer.effect: ColorOverlay {
-                    color: columnView.autoLoading ? Material.accentColor : Material.color(Material.Grey)
+                    color: settings.autoLoading ? Material.accentColor : Material.color(Material.Grey)
                 }
             }
             IconButton {
@@ -389,12 +400,12 @@ ColumnLayout {
                 return
             if(currentItem.model.rowCount() > 0)
                 return
-            currentItem.model.setAccount(columnView.service,
-                                         columnView.did,
-                                         columnView.handle,
-                                         columnView.email,
-                                         columnView.accessJwt,
-                                         columnView.refreshJwt)
+            currentItem.model.setAccount(account.service,
+                                         account.did,
+                                         account.handle,
+                                         account.email,
+                                         account.accessJwt,
+                                         account.refreshJwt)
             currentItem.model.getLatest()
         }
     }

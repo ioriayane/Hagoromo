@@ -25,20 +25,17 @@ AppBskyActorGetProfiles::profileViewDetaileds() const
     return &m_profileViewDetaileds;
 }
 
-void AppBskyActorGetProfiles::parseJson(const QString reply_json)
+void AppBskyActorGetProfiles::parseJson(bool success, const QString reply_json)
 {
-    bool success = false;
-
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
-    if (json_doc.isEmpty()) {
-    } else if (!json_doc.object().contains("profiles")) {
+    if (json_doc.isEmpty() || !json_doc.object().contains("profiles")) {
+        success = false;
     } else {
         for (const auto &value : json_doc.object().value("profiles").toArray()) {
             AtProtocolType::AppBskyActorDefs::ProfileViewDetailed profile;
             AtProtocolType::AppBskyActorDefs::copyProfileViewDetailed(value.toObject(), profile);
             m_profileViewDetaileds.append(profile);
         }
-        success = true;
     }
 
     emit finished(success);

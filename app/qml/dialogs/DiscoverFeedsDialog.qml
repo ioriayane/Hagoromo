@@ -7,6 +7,7 @@ import QtGraphicalEffects 1.15
 import tech.relog.hagoromo.feedgeneratorlistmodel 1.0
 
 import "../controls"
+import "../data"
 import "../parts"
 
 Dialog {

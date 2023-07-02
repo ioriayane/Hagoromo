@@ -238,6 +238,8 @@ void TimelineListModel::getLatest()
         if (aliving) {
             if (success) {
                 copyFrom(timeline);
+            } else {
+                emit errorOccured(timeline->errorMessage());
             }
             QTimer::singleShot(100, this, &TimelineListModel::displayQueuedPosts);
         }
@@ -261,6 +263,7 @@ void TimelineListModel::repost(int row)
     QPointer<TimelineListModel> aliving(this);
 
     RecordOperator *ope = new RecordOperator();
+    connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
     connect(ope, &RecordOperator::finished,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(cid)
@@ -294,6 +297,7 @@ void TimelineListModel::like(int row)
     QPointer<TimelineListModel> aliving(this);
 
     RecordOperator *ope = new RecordOperator();
+    connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
     connect(ope, &RecordOperator::finished,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(cid)
@@ -370,6 +374,12 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
 void TimelineListModel::finishedDisplayingQueuedPosts()
 {
     setRunning(false);
+}
+
+bool TimelineListModel::checkVisibility(const QString &cid)
+{
+    Q_UNUSED(cid)
+    return true;
 }
 
 void TimelineListModel::copyFrom(AppBskyFeedGetTimeline *timeline)

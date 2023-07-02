@@ -27,7 +27,7 @@ public:
     QString replyUri() const;
 
 private:
-    virtual void parseJson(const QString reply_json);
+    virtual void parseJson(bool success, const QString reply_json);
 
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_replyParent;
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_replyRoot;

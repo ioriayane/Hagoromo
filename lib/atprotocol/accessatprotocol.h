@@ -55,6 +55,7 @@ public:
     QString refreshJwt() const;
 
     QString replyJson() const;
+    QString errorMessage() const;
 
 signals:
     void finished(bool success);
@@ -66,13 +67,14 @@ protected:
     void post(const QString &endpoint, const QByteArray &json, const bool with_auth_header = true);
     void postWithImage(const QString &endpoint, const QString &path);
 
-    virtual void parseJson(const QString reply_json) = 0;
+    virtual void parseJson(bool success, const QString reply_json) = 0;
 
 private:
     QNetworkAccessManager m_manager;
 
     AccountData m_account;
     QString m_replyJson;
+    QString m_errorMessage;
 };
 }
 

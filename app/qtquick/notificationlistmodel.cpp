@@ -10,7 +10,16 @@
 using AtProtocolInterface::AppBskyFeedGetPosts;
 using AtProtocolInterface::AppBskyNotificationListNotifications;
 
-NotificationListModel::NotificationListModel(QObject *parent) : AtpAbstractListModel { parent } { }
+NotificationListModel::NotificationListModel(QObject *parent)
+    : AtpAbstractListModel { parent },
+      m_visibleLike(true),
+      m_visibleRepost(true),
+      m_visibleFollow(true),
+      m_visibleMention(true),
+      m_visibleReply(true),
+      m_visibleQuote(true)
+{
+}
 
 int NotificationListModel::rowCount(const QModelIndex &parent) const
 {
@@ -242,6 +251,12 @@ void NotificationListModel::update(int row, NotificationListModelRoles role, con
     return;
 }
 
+void NotificationListModel::clear()
+{
+    AtpAbstractListModel::clear();
+    m_notificationHash.clear();
+}
+
 int NotificationListModel::indexOf(const QString &cid) const
 {
     Q_UNUSED(cid)
@@ -337,6 +352,8 @@ void NotificationListModel::getLatest()
                 //
                 // likeとかの対象ポストの情報は入っていないので、それぞれ取得する必要あり
                 // 対象ポスト情報は別途cidをキーにして保存する（2重取得と管理を避ける）
+            } else {
+                emit errorOccured(notification->errorMessage());
             }
             QTimer::singleShot(100, this, &NotificationListModel::displayQueuedPosts);
         }
@@ -360,6 +377,7 @@ void NotificationListModel::repost(int row)
     QPointer<NotificationListModel> aliving(this);
 
     RecordOperator *ope = new RecordOperator();
+    connect(ope, &RecordOperator::errorOccured, this, &NotificationListModel::errorOccured);
     connect(ope, &RecordOperator::finished,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(cid)
@@ -393,6 +411,7 @@ void NotificationListModel::like(int row)
     QPointer<NotificationListModel> aliving(this);
 
     RecordOperator *ope = new RecordOperator();
+    connect(ope, &RecordOperator::errorOccured, this, &NotificationListModel::errorOccured);
     connect(ope, &RecordOperator::finished,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(cid)
@@ -454,6 +473,11 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
 void NotificationListModel::finishedDisplayingQueuedPosts()
 {
     QTimer::singleShot(100, this, &NotificationListModel::getPosts);
+}
+
+bool NotificationListModel::checkVisibility(const QString &cid)
+{
+    return enableReason(m_notificationHash.value(cid).reason);
 }
 
 void NotificationListModel::getPosts()
@@ -540,6 +564,8 @@ void NotificationListModel::getPosts()
                         }
                     }
                 }
+            } else {
+                emit errorOccured(posts->errorMessage());
             }
             // 残ってたらもう1回
             QTimer::singleShot(100, this, &NotificationListModel::getPosts);
@@ -548,6 +574,24 @@ void NotificationListModel::getPosts()
     });
     posts->setAccount(account());
     posts->getPosts(uris);
+}
+
+bool NotificationListModel::enableReason(const QString &reason) const
+{
+    if (reason == "like" && visibleLike())
+        return true;
+    else if (reason == "repost" && visibleRepost())
+        return true;
+    else if (reason == "follow" && visibleFollow())
+        return true;
+    else if (reason == "mention" && visibleMention())
+        return true;
+    else if (reason == "reply" && visibleReply())
+        return true;
+    else if (reason == "quote" && visibleQuote())
+        return true;
+
+    return false;
 }
 
 template<typename T>
@@ -568,4 +612,88 @@ void NotificationListModel::emitRecordDataChanged(const int i, const QStringList
         // データを取得できた
         emit dataChanged(index(i), index(i));
     }
+}
+
+bool NotificationListModel::visibleLike() const
+{
+    return m_visibleLike;
+}
+
+void NotificationListModel::setVisibleLike(bool newVisibleLike)
+{
+    if (m_visibleLike == newVisibleLike)
+        return;
+    m_visibleLike = newVisibleLike;
+    emit visibleLikeChanged();
+    reflectVisibility();
+}
+
+bool NotificationListModel::visibleRepost() const
+{
+    return m_visibleRepost;
+}
+
+void NotificationListModel::setVisibleRepost(bool newVisibleRepost)
+{
+    if (m_visibleRepost == newVisibleRepost)
+        return;
+    m_visibleRepost = newVisibleRepost;
+    emit visibleRepostChanged();
+    reflectVisibility();
+}
+
+bool NotificationListModel::visibleFollow() const
+{
+    return m_visibleFollow;
+}
+
+void NotificationListModel::setVisibleFollow(bool newVisibleFollow)
+{
+    if (m_visibleFollow == newVisibleFollow)
+        return;
+    m_visibleFollow = newVisibleFollow;
+    emit visibleFollowChanged();
+    reflectVisibility();
+}
+
+bool NotificationListModel::visibleMention() const
+{
+    return m_visibleMention;
+}
+
+void NotificationListModel::setVisibleMention(bool newVisibleMention)
+{
+    if (m_visibleMention == newVisibleMention)
+        return;
+    m_visibleMention = newVisibleMention;
+    emit visibleMentionChanged();
+    reflectVisibility();
+}
+
+bool NotificationListModel::visibleReply() const
+{
+    return m_visibleReply;
+}
+
+void NotificationListModel::setVisibleReply(bool newVisibleReply)
+{
+    if (m_visibleReply == newVisibleReply)
+        return;
+    m_visibleReply = newVisibleReply;
+    emit visibleReplyChanged();
+    reflectVisibility();
+}
+
+bool NotificationListModel::visibleQuote() const
+{
+    return m_visibleQuote;
+}
+
+void NotificationListModel::setVisibleQuote(bool newVisibleQuote)
+{
+    if (m_visibleQuote == newVisibleQuote)
+        return;
+    m_visibleQuote = newVisibleQuote;
+    emit visibleQuoteChanged();
+    reflectVisibility();
 }

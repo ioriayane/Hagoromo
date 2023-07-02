@@ -122,6 +122,14 @@ ApplicationWindow {
                 autoLoadingCheckbox.checked = columnManageModel.item(i, ColumnListModel.AutoLoadingRole)
                 autoLoadingIntervalCombo.setByValue(columnManageModel.item(i, ColumnListModel.LoadingIntervalRole))
                 columnWidthSlider.value = columnManageModel.item(i, ColumnListModel.WidthRole)
+                componentType = columnManageModel.item(i, ColumnListModel.ComponentTypeRole)
+
+                visibleLikeCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleLikeRole)
+                visibleRepostCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleRepostRole)
+                visibleFollowCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleFollowRole)
+                visibleMentionCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleMentionRole)
+                visibleReplyCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleReplyRole)
+                visibleQuoteCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleQuoteRole)
 
                 open()
             }
@@ -134,9 +142,20 @@ ApplicationWindow {
                 columnManageModel.update(i, ColumnListModel.LoadingIntervalRole, autoLoadingIntervalCombo.currentValue)
                 columnManageModel.update(i, ColumnListModel.WidthRole, columnWidthSlider.value)
 
+                columnManageModel.update(i, ColumnListModel.VisibleLikeRole, visibleLikeCheckBox.checked)
+                columnManageModel.update(i, ColumnListModel.VisibleRepostRole, visibleRepostCheckBox.checked)
+                columnManageModel.update(i, ColumnListModel.VisibleFollowRole, visibleFollowCheckBox.checked)
+                columnManageModel.update(i, ColumnListModel.VisibleMentionRole, visibleMentionCheckBox.checked)
+                columnManageModel.update(i, ColumnListModel.VisibleReplyRole, visibleReplyCheckBox.checked)
+                columnManageModel.update(i, ColumnListModel.VisibleQuoteRole, visibleQuoteCheckBox.checked)
+
                 repeater.updateSetting()
             }
         }
+    }
+
+    MessageDialog {
+        id: messageDialog
     }
 
     // アカウントの管理
@@ -160,6 +179,7 @@ ApplicationWindow {
                 columnManageModel.load()
             }
         }
+        onErrorOccured: (message) => {console.log(message)}
 
         function syncColumn(){
             // アカウント一覧にないものを消す
@@ -396,8 +416,8 @@ ApplicationWindow {
                 function updateAccount(account_uuid){
                     for(var i=0; i<repeater.count; i++){
                         var item = repeater.itemAt(i)   //ここのitemはloader自身
-                        if(item.item.accountUuid === account_uuid){
-                            var row = accountListModel.indexAt(item.item.accountUuid)
+                        if(item.item.account.uuid === account_uuid){
+                            var row = accountListModel.indexAt(item.item.account.uuid)
                             if(row >= 0){
                                 console.log("Update column : col=" + i + ", a_row=" + row)
                                 item.setAccount(row)
@@ -423,13 +443,12 @@ ApplicationWindow {
 
                         item.columnKey = model.key
                         item.componentType = model.componentType
-                        item.accountUuid = model.accountUuid
+                        item.account.uuid = model.accountUuid
                         setSettings()
                         setAccount(row)
-                        item.rootItem = rootLayout
                         item.load()
 
-                        if(model.index == columnManageModel.rowCount() - 1){
+                        if(model.index === columnManageModel.rowCount() - 1){
                             // 最後の時にレイアウトを設定する
                             // 読み込んでいる過程では左がいない場合がある
                             repeater.updatePosition()
@@ -443,27 +462,34 @@ ApplicationWindow {
                             loader.anchors.left = loader.parent.left
                             loader.anchors.leftMargin = 0
                         }else{
-                            console.log("setLayout() :" + model.index + ": left_pos=" + left_pos + ", left name=" + repeater.itemAt(left_pos).item.columnName)
+                            console.log("setLayout() :" + model.index + ": left_pos=" + left_pos + ", left name=" + repeater.itemAt(left_pos).item.settings.columnName)
                             loader.anchors.left = repeater.itemAt(left_pos).right
                             loader.anchors.leftMargin = 3
                         }
                     }
 
                     function setSettings() {
-                        item.autoLoading = model.autoLoading
-                        item.loadingInterval = model.loadingInterval
-                        item.columnName = model.name
-                        item.columnValue = model.value
+                        item.settings.autoLoading = model.autoLoading
+                        item.settings.loadingInterval = model.loadingInterval
+                        item.settings.columnName = model.name
+                        item.settings.columnValue = model.value
+
+                        item.settings.visibleLike = model.visibleLike
+                        item.settings.visibleRepost = model.visibleRepost
+                        item.settings.visibleFollow = model.visibleFollow
+                        item.settings.visibleMention = model.visibleMention
+                        item.settings.visibleReply = model.visibleReply
+                        item.settings.visibleQuote = model.visibleQuote
                     }
 
                     function setAccount(row) {
-                        item.service = accountListModel.item(row, AccountListModel.ServiceRole)
-                        item.did = accountListModel.item(row, AccountListModel.DidRole)
-                        item.handle = accountListModel.item(row, AccountListModel.HandleRole)
-                        item.email = accountListModel.item(row, AccountListModel.EmailRole)
-                        item.accessJwt = accountListModel.item(row, AccountListModel.AccessJwtRole)
-                        item.refreshJwt = accountListModel.item(row, AccountListModel.RefreshJwtRole)
-                        item.avatar = accountListModel.item(row, AccountListModel.AvatarRole)
+                        item.account.service = accountListModel.item(row, AccountListModel.ServiceRole)
+                        item.account.did = accountListModel.item(row, AccountListModel.DidRole)
+                        item.account.handle = accountListModel.item(row, AccountListModel.HandleRole)
+                        item.account.email = accountListModel.item(row, AccountListModel.EmailRole)
+                        item.account.accessJwt = accountListModel.item(row, AccountListModel.AccessJwtRole)
+                        item.account.refreshJwt = accountListModel.item(row, AccountListModel.RefreshJwtRole)
+                        item.account.avatar = accountListModel.item(row, AccountListModel.AvatarRole)
                     }
                 }
             }

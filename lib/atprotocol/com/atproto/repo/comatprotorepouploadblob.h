@@ -29,7 +29,7 @@ signals:
     void compress(const QString &path);
 
 private:
-    virtual void parseJson(const QString reply_json);
+    virtual void parseJson(bool success, const QString reply_json);
 
     ImageCompressor m_compressor;
     QThread m_thread;

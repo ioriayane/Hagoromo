@@ -49,6 +49,7 @@ public:
     void setRunning(bool newRunning);
 
 signals:
+    void errorOccured(const QString &message);
     void finished(bool success);
     void serviceChanged();
     void identifierChanged();

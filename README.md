@@ -53,7 +53,7 @@ REM Execute
 
 ### Ubuntu
 
-OpenSSL 1.1.1q 以上が必要です。
+OpenSSL 1.1.1q 以上を使用します。build.shでビルドします。
 
 ```bash
 # checkout repo
@@ -70,7 +70,7 @@ $ ./deploy-hagoromo/hagoromo/Hagoromo.sh
 
 ### Mac
 
-OpenSSL 1.1.1q 以上が必要です。
+OpenSSL 1.1.1q 以上を使用します。build.shでビルドします。
 
 ```bash
 # checkout repo
@@ -138,7 +138,7 @@ REM Execute
 
 ### Ubuntu
 
-OpenSSL 1.1.1q or higher is required.
+OpenSSL 1.1.1q or higher is required. It is built in build.sh.
 
 ```bash
 # checkout repo
@@ -155,7 +155,7 @@ $ ./deploy-hagoromo/hagoromo/Hagoromo.sh
 
 ### Mac
 
-OpenSSL 1.1.1q or higher is required.
+OpenSSL 1.1.1q or higher is required. It is built in build.sh.
 
 ```bash
 # checkout repo

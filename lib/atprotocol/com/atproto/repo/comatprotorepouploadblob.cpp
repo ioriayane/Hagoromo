@@ -28,12 +28,11 @@ void ComAtprotoRepoUploadBlob::uploadBlob(const QString &path)
     emit compress(path);
 }
 
-void ComAtprotoRepoUploadBlob::parseJson(const QString reply_json)
+void ComAtprotoRepoUploadBlob::parseJson(bool success, const QString reply_json)
 {
-    bool success = false;
-
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
     if (json_doc.isEmpty()) {
+        success = false;
     } else {
         qDebug() << reply_json;
         QString cid = json_doc.object()
@@ -49,7 +48,8 @@ void ComAtprotoRepoUploadBlob::parseJson(const QString reply_json)
             m_cid = cid;
             m_mimeType = mimetype;
             m_size = size;
-            success = true;
+        } else {
+            success = false;
         }
     }
 

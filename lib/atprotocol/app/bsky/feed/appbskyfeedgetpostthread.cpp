@@ -23,19 +23,14 @@ AppBskyFeedGetPostThread::threadViewPost() const
     return &m_threadViewPost;
 }
 
-void AppBskyFeedGetPostThread::parseJson(const QString reply_json)
+void AppBskyFeedGetPostThread::parseJson(bool success, const QString reply_json)
 {
-    bool success = false;
-
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
-    if (json_doc.isEmpty()) {
-        qDebug() << "EMPTY";
-    } else if (!json_doc.object().contains("thread")) {
-        qDebug() << "Not found thread";
+    if (json_doc.isEmpty() || !json_doc.object().contains("thread")) {
+        success = false;
     } else {
         AtProtocolType::AppBskyFeedDefs::copyThreadViewPost(
                 json_doc.object().value("thread").toObject(), m_threadViewPost);
-        success = true;
     }
 
     emit finished(success);

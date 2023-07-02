@@ -28,6 +28,7 @@ void ComAtprotoRepoCreateRecord::post(const QString &text)
     QJsonObject json_record;
     json_record.insert("text", text);
     json_record.insert("createdAt", QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
+    json_record.insert("via", "Hagoromo");
 
     if (!m_replyParent.cid.isEmpty() && !m_replyParent.uri.isEmpty()) {
         QJsonObject json_root;
@@ -201,25 +202,24 @@ void ComAtprotoRepoCreateRecord::setImageBlobs(
     m_embedImageBlobs = blobs;
 }
 
-void ComAtprotoRepoCreateRecord::parseJson(const QString reply_json)
+void ComAtprotoRepoCreateRecord::parseJson(bool success, const QString reply_json)
 {
-
-    bool success = false;
     m_replyUri.clear();
     m_replyCid.clear();
 
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
-    if (!json_doc.isEmpty()) {
+    if (json_doc.isEmpty()) {
+        success = false;
+    } else {
         if (json_doc.object().contains("uri")) {
             m_replyUri = json_doc.object().value("uri").toString();
             m_replyCid = json_doc.object().value("cid").toString();
             qDebug() << "uri" << m_replyUri;
             qDebug() << "cid" << m_replyCid;
-
-            success = true;
         } else {
             qDebug() << "Fail : ComAtprotoRepoCreateRecord";
             qDebug() << reply_json;
+            success = false;
         }
     }
 

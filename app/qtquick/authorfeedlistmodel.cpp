@@ -24,6 +24,8 @@ void AuthorFeedListModel::getLatest()
         if (aliving) {
             if (success) {
                 copyFrom(timeline);
+            } else {
+                emit errorOccured(timeline->errorMessage());
             }
             QTimer::singleShot(100, this, &AuthorFeedListModel::displayQueuedPosts);
         }

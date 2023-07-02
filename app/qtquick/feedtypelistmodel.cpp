@@ -97,6 +97,8 @@ void FeedTypeListModel::getLatest()
                 for (const auto &feed : *pref->savedFeedsPrefList()) {
                     m_cueUri = feed.saved;
                 }
+            } else {
+                emit errorOccured(pref->errorMessage());
             }
             QTimer::singleShot(10, this, &FeedTypeListModel::getFeedDetails);
         }
@@ -117,6 +119,12 @@ QHash<int, QByteArray> FeedTypeListModel::roleNames() const
     roles[CreatorDisplayNameRole] = "creatorDisplayName";
 
     return roles;
+}
+
+bool FeedTypeListModel::checkVisibility(const QString &cid)
+{
+    Q_UNUSED(cid)
+    return true;
 }
 
 void FeedTypeListModel::getFeedDetails()
@@ -140,14 +148,23 @@ void FeedTypeListModel::getFeedDetails()
     connect(generators, &AppBskyFeedGetFeedGenerators::finished, [=](bool success) {
         if (aliving) {
             if (success) {
-                for (const auto &generator : *generators->generatorViewList()) {
-                    FeedTypeItem item;
-                    item.type = FeedComponentType::CustomFeed;
-                    item.generator = generator;
-                    beginInsertRows(QModelIndex(), rowCount(), rowCount());
-                    m_feedTypeItemList.append(item);
-                    endInsertRows();
+                // apiで渡した順番と逆順で結果が来るので元の順番で追加する
+                // 結果の仕様がいつ変わるか分からないのでAPIに投げるuriの順番で制御しない
+                for (const auto &uri : qAsConst(uris)) {
+                    for (const auto &generator : *generators->generatorViewList()) {
+                        if (uri == generator.uri) {
+                            FeedTypeItem item;
+                            item.type = FeedComponentType::CustomFeed;
+                            item.generator = generator;
+                            beginInsertRows(QModelIndex(), rowCount(), rowCount());
+                            m_feedTypeItemList.append(item);
+                            endInsertRows();
+                            break;
+                        }
+                    }
                 }
+            } else {
+                emit errorOccured(generators->errorMessage());
             }
             QTimer::singleShot(10, this, &FeedTypeListModel::getFeedDetails);
         }
