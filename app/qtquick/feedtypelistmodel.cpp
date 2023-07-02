@@ -148,13 +148,20 @@ void FeedTypeListModel::getFeedDetails()
     connect(generators, &AppBskyFeedGetFeedGenerators::finished, [=](bool success) {
         if (aliving) {
             if (success) {
-                for (const auto &generator : *generators->generatorViewList()) {
-                    FeedTypeItem item;
-                    item.type = FeedComponentType::CustomFeed;
-                    item.generator = generator;
-                    beginInsertRows(QModelIndex(), rowCount(), rowCount());
-                    m_feedTypeItemList.append(item);
-                    endInsertRows();
+                // apiで渡した順番と逆順で結果が来るので元の順番で追加する
+                // 結果の仕様がいつ変わるか分からないのでAPIに投げるuriの順番で制御しない
+                for (const auto &uri : qAsConst(uris)) {
+                    for (const auto &generator : *generators->generatorViewList()) {
+                        if (uri == generator.uri) {
+                            FeedTypeItem item;
+                            item.type = FeedComponentType::CustomFeed;
+                            item.generator = generator;
+                            beginInsertRows(QModelIndex(), rowCount(), rowCount());
+                            m_feedTypeItemList.append(item);
+                            endInsertRows();
+                            break;
+                        }
+                    }
                 }
             } else {
                 emit errorOccured(generators->errorMessage());
