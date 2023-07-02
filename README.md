@@ -35,7 +35,7 @@ Official sise : [Qt](https://www.qt.io/)
 
 ### Windows
 
-[Micrsoft Visual Studio 2019](https://visualstudio.microsoft.com/)をインストールしてください（Community Edition可）。
+[Microsoft Visual Studio 2019](https://visualstudio.microsoft.com/)をインストールしてください（Community Edition可）。
 
 改行コードをCRLFでチェックアウトしてください。
 
@@ -120,7 +120,7 @@ Official sise : [Qt](https://www.qt.io/)
 
 ### Windows
 
-Install [Micrsoft Visual Studio 2019](https://visualstudio.microsoft.com/) (Community Edition  is also available).
+Install [Microsoft Visual Studio 2019](https://visualstudio.microsoft.com/) (Community Edition  is also available).
 
 Check out the newline code in CRLF.
 
