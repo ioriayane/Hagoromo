@@ -154,6 +154,10 @@ ApplicationWindow {
         }
     }
 
+    MessageDialog {
+        id: messageDialog
+    }
+
     // アカウントの管理
     // カラムとこのモデルとの紐付けはインデックスで実施する
     // アカウント管理で内容が変更されたときにカラムとインデックスの関係が崩れるのでuuidで確認する

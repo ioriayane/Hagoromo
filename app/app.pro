@@ -18,6 +18,7 @@ QML_FILES = \
     qml/dialogs/ColumnSettingDialog.qml \
     qml/dialogs/DiscoverFeedsDialog.qml \
     qml/dialogs/LoginDialog.qml \
+    qml/dialogs/MessageDialog.qml \
     qml/dialogs/PostDialog.qml \
     qml/dialogs/SearchDialog.qml \
     qml/dialogs/SettingDialog.qml \
