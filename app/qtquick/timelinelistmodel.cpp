@@ -249,6 +249,38 @@ void TimelineListModel::getLatest()
     timeline->getTimeline();
 }
 
+void TimelineListModel::deletePost(int row)
+{
+    if (row < 0 || row >= m_cidList.count())
+        return;
+
+    if (running())
+        return;
+    setRunning(true);
+
+    QPointer<TimelineListModel> aliving(this);
+
+    RecordOperator *ope = new RecordOperator();
+    connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
+    connect(ope, &RecordOperator::finished,
+            [=](bool success, const QString &uri, const QString &cid) {
+                Q_UNUSED(uri)
+                Q_UNUSED(cid)
+                if (aliving) {
+                    if (success) {
+                        beginRemoveRows(QModelIndex(), row, row);
+                        m_cidList.removeAt(row);
+                        endRemoveRows();
+                    }
+                    setRunning(false);
+                }
+                ope->deleteLater();
+            });
+    ope->setAccount(account().service, account().did, account().handle, account().email,
+                    account().accessJwt, account().refreshJwt);
+    ope->deletePost(item(row, UriRole).toString());
+}
+
 void TimelineListModel::repost(int row)
 {
     if (row < 0 || row >= m_cidList.count())

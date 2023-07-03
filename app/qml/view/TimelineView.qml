@@ -17,6 +17,7 @@ ScrollView {
 
     property string hoveredLink: ""
     property real fontSizeRatio: 1.0
+    property string accountDid: ""   // 取得するユーザー
 
     property alias listView: rootListView
     property alias model: rootListView.model
@@ -128,7 +129,9 @@ ScrollView {
             postControls.isLiked: model.isLiked
             postControls.postUri: model.uri
             postControls.handle: model.handle
+            postControls.mine: model.did === timelineView.accountDid
             postControls.copyToClipboardMenuItem.onTriggered: systemTool.copyToClipboard(model.recordTextPlain)
+            postControls.deletePostMenuItem.onTriggered: rootListView.model.deletePost(model.index)
 
             onHoveredLinkChanged: timelineView.hoveredLink = hoveredLink
         }

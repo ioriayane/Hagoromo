@@ -25,6 +25,11 @@ void ComAtprotoRepoDeleteRecord::deleteRecord(const QString &repo, const QString
          json_doc.toJson(QJsonDocument::Compact));
 }
 
+void ComAtprotoRepoDeleteRecord::deletePost(const QString &rkey)
+{
+    deleteRecord(this->did(), QStringLiteral("app.bsky.feed.post"), rkey, QString(), QString());
+}
+
 void ComAtprotoRepoDeleteRecord::deleteLike(const QString &rkey)
 {
     deleteRecord(this->did(), QStringLiteral("app.bsky.feed.like"), rkey, QString(), QString());

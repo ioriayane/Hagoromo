@@ -14,6 +14,7 @@ ColumnLayout {
 
     property string hoveredLink: ""
     property real fontSizeRatio: 1.0
+    property string accountDid: ""   // 取得するユーザー
 
     property alias postThreadUri: postThreadListModel.postThreadUri
     property alias listView: rootListView
@@ -162,7 +163,9 @@ ColumnLayout {
                 postControls.isLiked: model.isLiked
                 postControls.postUri: model.uri
                 postControls.handle: model.handle
+                postControls.mine: model.did === postThreadView.accountDid
                 postControls.copyToClipboardMenuItem.onTriggered: systemTool.copyToClipboard(model.recordTextPlain)
+                postControls.deletePostMenuItem.onTriggered: rootListView.model.deletePost(model.index)
 
                 onHoveredLinkChanged: postThreadView.hoveredLink = hoveredLink
             }

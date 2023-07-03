@@ -312,6 +312,7 @@ ColumnLayout {
                 onErrorOccured: (message) => {console.log(message)}
             }
             fontSizeRatio: profileView.fontSizeRatio
+            accountDid: profileView.accountDid
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                               profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -339,6 +340,7 @@ ColumnLayout {
                 onErrorOccured: (message) => {console.log(message)}
             }
             fontSizeRatio: profileView.fontSizeRatio
+            accountDid: profileView.accountDid
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                               profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -366,6 +368,7 @@ ColumnLayout {
                 onErrorOccured: (message) => {console.log(message)}
             }
             fontSizeRatio: profileView.fontSizeRatio
+            accountDid: profileView.accountDid
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                               profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)

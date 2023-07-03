@@ -223,6 +223,31 @@ void RecordOperator::follow(const QString &did)
     create_record->follow(did);
 }
 
+void RecordOperator::deletePost(const QString &uri)
+{
+    if (running() || !uri.startsWith("at://"))
+        return;
+    setRunning(true);
+
+    QString r_key = uri.split("/").last();
+
+    QPointer<RecordOperator> aliving(this);
+
+    ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord();
+    connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
+        if (aliving) {
+            if (!success) {
+                emit errorOccured(delete_record->errorMessage());
+            }
+            emit finished(success, QString(), QString());
+            setRunning(false);
+        }
+        delete_record->deleteLater();
+    });
+    delete_record->setAccount(m_account);
+    delete_record->deletePost(r_key);
+}
+
 void RecordOperator::deleteLike(const QString &uri)
 {
     if (running() || !uri.startsWith("at://"))
