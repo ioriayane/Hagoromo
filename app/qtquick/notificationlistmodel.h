@@ -36,6 +36,7 @@ public:
         AvatarRole,
         RecordTextRole,
         RecordTextPlainRole,
+        RecordTextTranslationRole,
         ReplyCountRole,
         RepostCountRole,
         LikeCountRole,

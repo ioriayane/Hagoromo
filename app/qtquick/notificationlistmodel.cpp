@@ -57,6 +57,8 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
         return AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                        AtProtocolType::AppBskyFeedPost::Main>(current.record)
                 .text;
+    else if (role == RecordTextTranslationRole)
+        return m_translations.contains(current.cid) ? m_translations[current.cid] : QString();
 
     else if (role == IndexedAtRole)
         return formatDateTime(current.indexedAt);
@@ -259,14 +261,17 @@ void NotificationListModel::clear()
 
 int NotificationListModel::indexOf(const QString &cid) const
 {
-    Q_UNUSED(cid)
-    return -1;
+    return m_cidList.indexOf(cid);
 }
 
 QString NotificationListModel::getRecordText(const QString &cid)
 {
-    Q_UNUSED(cid)
-    return QString();
+    if (!m_notificationHash.contains(cid))
+        return QString();
+
+    return AtProtocolType::LexiconsTypeUnknown::fromQVariant<AtProtocolType::AppBskyFeedPost::Main>(
+                   m_notificationHash.value(cid).record)
+            .text;
 }
 
 void NotificationListModel::getLatest()
@@ -443,6 +448,7 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[AvatarRole] = "avatar";
     roles[RecordTextRole] = "recordText";
     roles[RecordTextPlainRole] = "recordTextPlain";
+    roles[RecordTextTranslationRole] = "recordTextTranslation";
     roles[ReplyCountRole] = "replyCount";
     roles[RepostCountRole] = "repostCount";
     roles[LikeCountRole] = "likeCount";

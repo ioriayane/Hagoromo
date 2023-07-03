@@ -158,14 +158,14 @@ ColumnLayout {
                 postControls.quoteMenuItem.onTriggered: requestQuote(model.cid, model.uri,
                                                                      model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
                 postControls.likeButton.onClicked: rootListView.model.like(model.index)
-                postControls.tranlateMenuItem.onTriggered: postThreadListModel.translate(model.cid)
+                postControls.onTriggeredTranslate: postThreadListModel.translate(model.cid)
                 postControls.isReposted: model.isReposted
                 postControls.isLiked: model.isLiked
                 postControls.postUri: model.uri
                 postControls.handle: model.handle
                 postControls.mine: model.did === postThreadView.accountDid
-                postControls.copyToClipboardMenuItem.onTriggered: systemTool.copyToClipboard(model.recordTextPlain)
-                postControls.deletePostMenuItem.onTriggered: rootListView.model.deletePost(model.index)
+                postControls.onTriggeredCopyToClipboard: systemTool.copyToClipboard(model.recordTextPlain)
+                postControls.onTriggeredDeletePost: rootListView.model.deletePost(model.index)
 
                 onHoveredLinkChanged: postThreadView.hoveredLink = hoveredLink
             }

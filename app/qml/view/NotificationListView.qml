@@ -76,7 +76,13 @@ ScrollView {
             postAuthor.displayName: model.displayName
             postAuthor.handle: model.handle
             postAuthor.indexedAt: model.indexedAt
-            recordText: model.recordText
+            recordText: {
+                var text = model.recordText
+                if(model.recordTextTranslation.length > 0){
+                    text = text + "<br/>---<br/>" + model.recordTextTranslation
+                }
+                return text
+            }
 
             recordDisplayName: model.recordDisplayName
             recordHandle: model.recordHandle
@@ -96,12 +102,12 @@ ScrollView {
             postControls.quoteMenuItem.onTriggered: requestQuote(model.cid, model.uri,
                                                                    model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
             postControls.likeButton.onClicked: rootListView.model.like(model.index)
-            postControls.tranlateMenuItem.onTriggered: rootListView.model.translate(model.cid)
+            postControls.onTriggeredTranslate: rootListView.model.translate(model.cid)
             postControls.isReposted: model.isReposted
             postControls.isLiked: model.isLiked
             postControls.postUri: model.uri
             postControls.handle: model.handle
-            postControls.copyToClipboardMenuItem.onTriggered: systemTool.copyToClipboard(model.recordTextPlain)
+            postControls.onTriggeredCopyToClipboard: systemTool.copyToClipboard(model.recordTextPlain)
 
             onClicked: {
                 if(model.reason === NotificationListModel.ReasonLike ||
