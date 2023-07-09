@@ -20,7 +20,7 @@ AccessAtProtocol::AccessAtProtocol(QObject *parent) : QObject { parent }
         m_errorMessage.clear();
 
         if (reply->error() != QNetworkReply::NoError) {
-            qCritical() << m_replyJson;
+            qCritical() << LOG_DATETIME << m_replyJson;
             m_errorMessage = m_replyJson;
         }
         parseJson(reply->error() == QNetworkReply::NoError, m_replyJson);

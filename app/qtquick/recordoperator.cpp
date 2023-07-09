@@ -66,6 +66,11 @@ void RecordOperator::setImages(const QStringList &images)
     m_embedImages = images;
 }
 
+void RecordOperator::setPostLanguages(const QStringList &langs)
+{
+    m_postLanguages = langs;
+}
+
 void RecordOperator::clear()
 {
     m_text.clear();
@@ -104,6 +109,7 @@ void RecordOperator::post()
         create_record->setQuote(m_embedQuote.cid, m_embedQuote.uri);
         create_record->setImageBlobs(m_embedImageBlogs);
         create_record->setFacets(m_facets);
+        create_record->setPostLanguages(m_postLanguages);
         create_record->post(m_text);
     });
 }

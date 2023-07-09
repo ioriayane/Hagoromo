@@ -71,6 +71,10 @@ QVariant AccountListModel::item(int row, AccountListModelRoles role) const
         return m_accountList.at(row).description;
     else if (role == AvatarRole)
         return m_accountList.at(row).avatar;
+
+    else if (role == PostLanguagesRole)
+        return m_accountList[row].post_languages;
+
     else if (role == StatusRole)
         return static_cast<int>(m_accountList.at(row).status);
 
@@ -107,6 +111,11 @@ void AccountListModel::update(int row, AccountListModelRoles role, const QVarian
         m_accountList[row].description = value.toString();
     else if (role == AvatarRole)
         m_accountList[row].avatar = value.toString();
+
+    else if (role == PostLanguagesRole) {
+        m_accountList[row].post_languages = value.toStringList();
+        save();
+    }
 
     emit dataChanged(index(row), index(row));
 }
@@ -205,6 +214,14 @@ void AccountListModel::save() const
         account_item["service"] = item.service;
         account_item["identifier"] = item.identifier;
         account_item["password"] = m_encryption.encrypt(item.password);
+
+        if (!item.post_languages.isEmpty()) {
+            QJsonArray post_langs;
+            for (const auto &lang : item.post_languages) {
+                post_langs.append(lang);
+            }
+            account_item["post_languages"] = post_langs;
+        }
         account_array.append(account_item);
     }
 
@@ -231,6 +248,10 @@ void AccountListModel::load()
                 item.identifier = doc.array().at(i).toObject().value("identifier").toString();
                 item.password = m_encryption.decrypt(
                         doc.array().at(i).toObject().value("password").toString());
+                for (const auto &value :
+                     doc.array().at(i).toObject().value("post_languages").toArray()) {
+                    item.post_languages.append(value.toString());
+                }
 
                 beginInsertRows(QModelIndex(), count(), count());
                 m_accountList.append(item);
@@ -267,6 +288,7 @@ QHash<int, QByteArray> AccountListModel::roleNames() const
     roles[DisplayNameRole] = "displayName";
     roles[DescriptionRole] = "description";
     roles[AvatarRole] = "avatar";
+    roles[PostLanguagesRole] = "postLanguages";
     roles[StatusRole] = "status";
 
     return roles;

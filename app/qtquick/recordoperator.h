@@ -23,6 +23,7 @@ public:
                               const QString &root_cid, const QString &root_uri);
     Q_INVOKABLE void setQuote(const QString &cid, const QString &uri);
     Q_INVOKABLE void setImages(const QStringList &images);
+    Q_INVOKABLE void setPostLanguages(const QStringList &langs);
 
     Q_INVOKABLE void clear();
 
@@ -59,6 +60,7 @@ private:
     QStringList m_embedImages;
     QList<AtProtocolType::LexiconsTypeUnknown::Blob> m_embedImageBlogs;
     QList<AtProtocolType::AppBskyRichtextFacet::Main> m_facets;
+    QStringList m_postLanguages;
 
     bool m_running;
 };

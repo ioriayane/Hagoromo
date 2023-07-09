@@ -33,6 +33,8 @@ struct AccountData
     QString avatar;
     QString banner;
 
+    QStringList post_languages; // BCP47形式で3つまで
+
     AccountStatus status = AccountStatus::Unknown;
 };
 

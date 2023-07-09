@@ -17,6 +17,7 @@ QML_FILES = \
     qml/dialogs/AddColumnDialog.qml \
     qml/dialogs/ColumnSettingDialog.qml \
     qml/dialogs/DiscoverFeedsDialog.qml \
+    qml/dialogs/LanguageSelectionDialog.qml \
     qml/dialogs/LoginDialog.qml \
     qml/dialogs/MessageDialog.qml \
     qml/dialogs/PostDialog.qml \
@@ -69,7 +70,8 @@ IMAGE_FILES += \
     qml/images/reply.png \
     qml/images/repost.png \
     qml/images/search.png \
-    qml/images/settings.png
+    qml/images/settings.png \
+    qml/images/translate.png
 
 
 resources.files = $$QML_FILES $$IMAGE_FILES
@@ -104,3 +106,4 @@ mac:translations.path = \
 translations.files = $$PWD/i18n/*.qm
 #qmファイルが存在しないとmakefileに追加されないので注意
 INSTALLS += translations
+

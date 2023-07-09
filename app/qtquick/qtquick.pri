@@ -14,6 +14,7 @@ SOURCES += \
     $$PWD/feedtypelistmodel.cpp \
     $$PWD/followerslistmodel.cpp \
     $$PWD/followslistmodel.cpp \
+    $$PWD/languagelistmodel.cpp \
     $$PWD/notificationlistmodel.cpp \
     $$PWD/postthreadlistmodel.cpp \
     $$PWD/recordoperator.cpp \
@@ -39,6 +40,7 @@ HEADERS += \
     $$PWD/feedtypelistmodel.h \
     $$PWD/followerslistmodel.h \
     $$PWD/followslistmodel.h \
+    $$PWD/languagelistmodel.h \
     $$PWD/notificationlistmodel.h \
     $$PWD/postthreadlistmodel.h \
     $$PWD/recordoperator.h \

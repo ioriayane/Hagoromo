@@ -31,6 +31,7 @@ public:
         DisplayNameRole,
         DescriptionRole,
         AvatarRole,
+        PostLanguagesRole,
         StatusRole,
     };
     Q_ENUM(AccountListModelRoles)

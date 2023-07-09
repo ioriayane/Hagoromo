@@ -5,6 +5,7 @@ import Qt.labs.platform 1.1 as P
 
 import tech.relog.hagoromo.recordoperator 1.0
 import tech.relog.hagoromo.accountlistmodel 1.0
+import tech.relog.hagoromo.languagelistmodel 1.0
 
 import "../controls"
 import "../parts"
@@ -52,6 +53,7 @@ Dialog {
         replyHandle = ""
         replyIndexedAt = ""
         replyText = ""
+        postLanguagesButton.text = ""
 
         postText.clear()
         embedImagePreview.embedImages = ""
@@ -79,6 +81,9 @@ Dialog {
                             postDialog.close()
                         }
                     }
+    }
+    LanguageListModel {
+        id: languageListModel
     }
 
     ColumnLayout {
@@ -135,7 +140,40 @@ Dialog {
                     if(accountCombo.currentIndex >= 0){
                         accountAvatarImage.source =
                                 postDialog.accountModel.item(accountCombo.currentIndex, AccountListModel.AvatarRole)
+                        postLanguagesButton.setLanguageText(
+                                    postDialog.accountModel.item(accountCombo.currentIndex, AccountListModel.PostLanguagesRole)
+                                    )
                     }
+                }
+            }
+            Item {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 1
+            }
+            IconButton {
+                id: postLanguagesButton
+                iconSource: "../images/language.png"
+                flat: true
+                onClicked: {
+                    languageSelectionDialog.setSelectedLanguages(
+                                postDialog.accountModel.item(accountCombo.currentIndex, AccountListModel.PostLanguagesRole)
+                                )
+                    languageSelectionDialog.open()
+                }
+
+                function setLanguageText(post_langs){
+                    var langs = languageListModel.convertLanguageNames(post_langs)
+                    var lang_str = ""
+                    for(var i=0;i<langs.length;i++){
+                        if(lang_str.length > 0){
+                            lang_str += ", "
+                        }
+                        lang_str += langs[i]
+                    }
+                    if(lang_str.length > 13){
+                        lang_str = lang_str.substring(0, 10) + "..."
+                    }
+                    iconText = lang_str
                 }
             }
         }
@@ -273,6 +311,7 @@ Dialog {
                                             postDialog.accountModel.item(row, AccountListModel.RefreshJwtRole))
                     createRecord.clear()
                     createRecord.setText(postText.text)
+                    createRecord.setPostLanguages(postDialog.accountModel.item(row, AccountListModel.PostLanguagesRole))
                     if(postType === "reply"){
                         createRecord.setReply(replyCid, replyUri, replyRootCid, replyRootUri)
                     }else if(postType === "quote"){
@@ -327,4 +366,11 @@ Dialog {
         property string prevFolder
     }
 
+    LanguageSelectionDialog {
+        id: languageSelectionDialog
+        onAccepted: {
+            postDialog.accountModel.update(accountCombo.currentIndex, AccountListModel.PostLanguagesRole, selectedLanguages)
+            postLanguagesButton.setLanguageText(selectedLanguages)
+        }
+    }
 }

@@ -29,6 +29,13 @@ void ComAtprotoRepoCreateRecord::post(const QString &text)
     json_record.insert("text", text);
     json_record.insert("createdAt", QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
     json_record.insert("via", "Hagoromo");
+    if (!m_postLanguages.isEmpty()) {
+        QJsonArray json_langs;
+        for (const auto &lang : qAsConst(m_postLanguages)) {
+            json_langs.append(lang);
+        }
+        json_record.insert("langs", json_langs);
+    }
 
     if (!m_replyParent.cid.isEmpty() && !m_replyParent.uri.isEmpty()) {
         QJsonObject json_root;
@@ -224,6 +231,11 @@ void ComAtprotoRepoCreateRecord::parseJson(bool success, const QString reply_jso
     }
 
     emit finished(success);
+}
+
+void ComAtprotoRepoCreateRecord::setPostLanguages(const QStringList &newPostLanguages)
+{
+    m_postLanguages = newPostLanguages;
 }
 
 void ComAtprotoRepoCreateRecord::setFacets(

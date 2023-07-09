@@ -22,6 +22,7 @@ public:
     void setQuote(const QString &cid, const QString &uri);
     void setImageBlobs(const QList<AtProtocolType::LexiconsTypeUnknown::Blob> &blobs);
     void setFacets(const QList<AtProtocolType::AppBskyRichtextFacet::Main> &newFacets);
+    void setPostLanguages(const QStringList &newPostLanguages);
 
     QString replyCid() const;
     QString replyUri() const;
@@ -34,6 +35,7 @@ private:
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_embedQuote;
     QList<AtProtocolType::LexiconsTypeUnknown::Blob> m_embedImageBlobs;
     QList<AtProtocolType::AppBskyRichtextFacet::Main> m_facets;
+    QStringList m_postLanguages;
 
     QString m_replyCid;
     QString m_replyUri;

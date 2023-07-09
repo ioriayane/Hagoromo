@@ -93,7 +93,7 @@ RowLayout {
         Menu {
             id: myMorePopup
             MenuItem {
-                icon.source: "../images/language.png"
+                icon.source: "../images/translate.png"
                 text: qsTr("Translate")
                 onTriggered: triggeredTranslate()
             }
@@ -119,7 +119,7 @@ RowLayout {
         Menu {
             id: theirMorePopup
             MenuItem {
-                icon.source: "../images/language.png"
+                icon.source: "../images/translate.png"
                 text: qsTr("Translate")
                 onTriggered: triggeredTranslate()
             }
