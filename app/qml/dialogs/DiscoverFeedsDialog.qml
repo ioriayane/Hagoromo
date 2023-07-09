@@ -67,12 +67,12 @@ Dialog {
                     id: feedGeneratorListModel
                 }
                 footer: BusyIndicator {
-                    width: generatorListView.width
+                    width: generatorListView.width - generatorScrollView.ScrollBar.vertical.width
                     height: 32
                     visible: feedGeneratorListModel.running
                 }
                 delegate: ItemDelegate {
-                    width: generatorListView.width
+                    width: generatorListView.width - generatorScrollView.ScrollBar.vertical.width
                     height: contentLayout.height + 10
                     highlighted: ListView.isCurrentItem
                     onClicked: {
