@@ -14,7 +14,6 @@ Dialog {
     property variant selectedLanguages: []
 
     function setSelectedLanguages(langs){
-        console.log("setSelectedLanguages:" + langs)
         languageListModel.setSelectedLanguages(langs)
     }
 
