@@ -321,6 +321,7 @@ ColumnLayout {
                 Layout.preferredWidth: 24
                 Layout.preferredHeight: 24
                 source: account.avatar
+                onClicked: columnStackView.push(profileComponent, { "userDid": account.did })
             }
 
             ColumnLayout {
