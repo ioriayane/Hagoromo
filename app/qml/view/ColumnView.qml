@@ -34,6 +34,7 @@ ColumnLayout {
     signal requestQuote(string account_uuid,
                         string cid, string uri,
                         string avatar, string display_name, string handle, string indexed_at, string text)
+    signal requestMention(string account_uuid, string handle)
     signal requestViewImages(int index, string paths)
 
     signal requestMoveToLeft(string key)
@@ -149,7 +150,8 @@ ColumnLayout {
                             columnView.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestQuote(account.uuid, cid, uri, avatar, display_name, handle, indexed_at, text)
-
+            onRequestMention: (handle) =>
+                              columnView.requestMention(account.uuid, handle)
             onRequestViewThread: (uri) => {
                                      // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
                                      // これはPostThreadViewのプロパティにダイレクトに設定する

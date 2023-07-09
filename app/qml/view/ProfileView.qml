@@ -9,6 +9,7 @@ import tech.relog.hagoromo.anyfeedlistmodel 1.0
 import tech.relog.hagoromo.recordoperator 1.0
 import tech.relog.hagoromo.followslistmodel 1.0
 import tech.relog.hagoromo.followerslistmodel 1.0
+import tech.relog.hagoromo.systemtool 1.0
 
 import "../parts"
 import "../controls"
@@ -31,6 +32,7 @@ ColumnLayout {
                           string reply_root_cid, string reply_root_uri,
                           string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestQuote(string cid, string uri, string avatar, string display_name, string handle, string indexed_at, string text)
+    signal requestMention(string handle)
     signal requestViewThread(string uri)
     signal requestViewImages(int index, string paths)
     signal requestViewProfile(string did)
@@ -109,6 +111,10 @@ ColumnLayout {
 
     UserProfile {
         id: userProfile
+    }
+
+    SystemTool {
+        id: systemTool
     }
 
     Frame {
@@ -249,6 +255,26 @@ ColumnLayout {
                 onClicked: morePopup.open()
                 Menu {
                     id: morePopup
+                    MenuItem {
+                        text: qsTr("Send mention")
+                        icon.source: "../images/reply.png"
+                        enabled: userProfile.handle.length > 0
+                        onTriggered: requestMention("@" + userProfile.handle)
+                    }
+                    MenuSeparator {}
+                    MenuItem {
+                        text: qsTr("Copy handle")
+                        icon.source: "../images/copy.png"
+                        enabled: userProfile.handle.length > 0
+                        onTriggered: systemTool.copyToClipboard("@" + userProfile.handle)
+                    }
+                    MenuItem {
+                        text: qsTr("Copy DID")
+                        icon.source: "../images/copy.png"
+                        enabled: userProfile.did.length > 0
+                        onTriggered: systemTool.copyToClipboard(userProfile.did)
+                    }
+                    MenuSeparator {}
                     MenuItem {
                         text: qsTr("Open in Official")
                         icon.source: "../images/open_in_other.png"

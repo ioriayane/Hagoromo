@@ -236,6 +236,12 @@ ApplicationWindow {
                                 postDialog.replyText = text
                                 postDialog.open()
                             }
+            onRequestMention: (account_uuid, handle) => {
+                                  postDialog.postType = "normal"
+                                  postDialog.defaultAccountUuid = account_uuid
+                                  postDialog.postText.text = handle + " "
+                                  postDialog.open()
+                              }
 
             onRequestViewImages: (index, paths) => imageFullView.open(index, paths)
 

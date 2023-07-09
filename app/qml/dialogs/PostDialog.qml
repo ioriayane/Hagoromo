@@ -33,6 +33,8 @@ Dialog {
     property string replyIndexedAt: ""
     property string replyText: ""
 
+    property alias postText: postText
+
     onOpened: {
         var i = accountModel.indexAt(defaultAccountUuid)
         accountCombo.currentIndex = -1
