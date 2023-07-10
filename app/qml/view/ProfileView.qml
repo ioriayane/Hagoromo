@@ -241,7 +241,11 @@ ColumnLayout {
             wrapMode: Text.Wrap
             lineHeight: 1.1
             font.pointSize: 10
+            textFormat: Text.StyledText
             text: userProfile.description
+
+            onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
+            onLinkActivated: (url) => Qt.openUrlExternally(url)
 
             IconButton {
                 id: moreButton

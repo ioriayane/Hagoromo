@@ -5,6 +5,7 @@
 //#include "atprotocol/lexicons.h"
 
 #include <QObject>
+#include <QRegularExpression>
 
 class UserProfile : public QObject
 {
@@ -85,9 +86,14 @@ signals:
     void followingUriChanged();
 
 private:
+    QString markupText(const QString &text) const;
+
     AtProtocolInterface::AccountData m_account;
     //    AtProtocolType::AppBskyActorDefs::ProfileViewDetailed m_profile;
     bool m_running;
+    QRegularExpression m_rxUrl;
+    QString m_richDescription;
+
     QString m_did;
     QString m_handle;
     QString m_displayName;

@@ -8,6 +8,7 @@
 #include "feedgeneratorlistmodel.h"
 #include "columnlistmodel.h"
 #include "notificationlistmodel.h"
+#include "userprofile.h"
 
 class hagoromo_test : public QObject
 {
@@ -27,6 +28,7 @@ private slots:
     void test_ColumnListModelRemove();
     void test_NotificationListModel();
     void test_NotificationListModel2();
+    void test_UserProfile();
 
 private:
     WebServer m_mockServer;
@@ -826,6 +828,44 @@ void hagoromo_test::test_NotificationListModel2()
              QString("reason=%1")
                      .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
                      .toLocal8Bit());
+}
+
+void hagoromo_test::test_UserProfile()
+{
+    UserProfile profile;
+
+    profile.setDescription("test \r\ntest\ntest");
+    QVERIFY(profile.description() == "test <br/>test<br/>test");
+
+    profile.setDescription("https://github.com/ioriayane/Hagoromo");
+    QVERIFY(profile.description()
+            == "<a "
+               "href=\"https://github.com/ioriayane/Hagoromo\">https://github.com/ioriayane/"
+               "Hagoromo</a>");
+
+    profile.setDescription("hoge https://github.com/ioriayane/Hagoromo");
+    QVERIFY(profile.description()
+            == "hoge <a "
+               "href=\"https://github.com/ioriayane/Hagoromo\">https://github.com/ioriayane/"
+               "Hagoromo</a>");
+
+    profile.setDescription("https://github.com/ioriayane/Hagoromo hoge");
+    QVERIFY(profile.description()
+            == "<a "
+               "href=\"https://github.com/ioriayane/Hagoromo\">https://github.com/ioriayane/"
+               "Hagoromo</a> hoge");
+
+    profile.setDescription("hoge\nhttps://github.com/ioriayane/Hagoromo");
+    QVERIFY(profile.description()
+            == "hoge<br/><a "
+               "href=\"https://github.com/ioriayane/Hagoromo\">https://github.com/ioriayane/"
+               "Hagoromo</a>");
+
+    profile.setDescription("https://github.com/ioriayane/Hagoromo\nhoge");
+    QVERIFY(profile.description()
+            == "<a "
+               "href=\"https://github.com/ioriayane/Hagoromo\">https://github.com/ioriayane/"
+               "Hagoromo</a><br/>hoge");
 }
 
 void hagoromo_test::test_RecordOperatorCreateRecord(const QByteArray &body)
