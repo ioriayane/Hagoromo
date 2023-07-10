@@ -71,6 +71,11 @@ void RecordOperator::setPostLanguages(const QStringList &langs)
     m_postLanguages = langs;
 }
 
+void RecordOperator::setOpenGraphData(const QString &url)
+{
+    //
+}
+
 void RecordOperator::clear()
 {
     m_text.clear();

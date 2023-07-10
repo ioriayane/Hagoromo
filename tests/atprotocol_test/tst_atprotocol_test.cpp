@@ -3,6 +3,7 @@
 
 #include "webserver.h"
 #include "atprotocol/com/atproto/server/comatprotoservercreatesession.h"
+#include "tools/opengraphprotocol.h"
 
 class atprotocol_test : public QObject
 {
@@ -16,6 +17,7 @@ private slots:
     void initTestCase();
     void cleanupTestCase();
     void test_ComAtprotoServerCreateSession();
+    void test_OpenGraphProtocol();
 
 private:
     WebServer m_mockServer;
@@ -67,6 +69,70 @@ void atprotocol_test::test_ComAtprotoServerCreateSession()
     QVERIFY(session.email() == "iori.ayane@gmail.com");
     QVERIFY(session.accessJwt() == "hoge hoge accessJwt");
     QVERIFY(session.refreshJwt() == "hoge hoge refreshJwt");
+}
+
+void atprotocol_test::test_OpenGraphProtocol()
+{
+    OpenGraphProtocol ogp;
+
+    {
+        QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
+        ogp.getData(m_service + "/ogp/file1.html");
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+
+        QVERIFY(ogp.uri() == "http://localhost/response/ogp/file1.html");
+        QVERIFY(ogp.title() == "file1 title");
+        QVERIFY(ogp.description() == "file1 description");
+        QVERIFY(ogp.thumb() == "http://localhost:%1/response/ogp/images/file1.jpg");
+    }
+
+    {
+        QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
+        ogp.getData(m_service + "/ogp/file2.html");
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+
+        QVERIFY(ogp.uri() == "http://localhost/response/ogp/file2.html");
+        QVERIFY2(ogp.title()
+                         == QString("file2 ")
+                                    .append(QChar(0x30bf))
+                                    .append(QChar(0x30a4))
+                                    .append(QChar(0x30c8))
+                                    .append(QChar(0x30eb)),
+                 ogp.title().toLocal8Bit());
+        QVERIFY2(ogp.description() == QString("file2 ").append(QChar(0x8a73)).append(QChar(0x7d30)),
+                 ogp.description().toLocal8Bit());
+        QVERIFY(ogp.thumb() == "http://localhost:%1/response/ogp/images/file2.gif");
+    }
+
+    {
+        QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
+        ogp.getData(m_service + "/ogp/file3.html");
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+
+        QVERIFY(ogp.uri() == "http://localhost/response/ogp/file3.html");
+        QVERIFY2(ogp.title()
+                         == QString("file3 ")
+                                    .append(QChar(0x30bf))
+                                    .append(QChar(0x30a4))
+                                    .append(QChar(0x30c8))
+                                    .append(QChar(0x30eb)),
+                 ogp.title().toLocal8Bit());
+        QVERIFY2(ogp.description() == QString("file3 ").append(QChar(0x8a73)).append(QChar(0x7d30)),
+                 ogp.description().toLocal8Bit());
+        QVERIFY(ogp.thumb() == "http://localhost:%1/response/ogp/images/file3.png");
+    }
 }
 
 QTEST_MAIN(atprotocol_test)

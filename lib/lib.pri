@@ -1,3 +1,4 @@
+QT += xml
 
 INCLUDEPATH += $$PWD
 
@@ -28,7 +29,8 @@ SOURCES += \
     $$PWD/search/search_func.cpp \
     $$PWD/search/searchposts.cpp \
     $$PWD/search/searchprofiles.cpp \
-    $$PWD/tools/imagecompressor.cpp
+    $$PWD/tools/imagecompressor.cpp \
+    $$PWD/tools/opengraphprotocol.cpp
 
 HEADERS += \
     $$PWD/atprotocol/accessatprotocol.h \
@@ -59,4 +61,5 @@ HEADERS += \
     $$PWD/search/search_func.h \
     $$PWD/search/searchposts.h \
     $$PWD/search/searchprofiles.h \
-    $$PWD/tools/imagecompressor.h
+    $$PWD/tools/imagecompressor.h \
+    $$PWD/tools/opengraphprotocol.h

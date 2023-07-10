@@ -24,6 +24,7 @@ public:
     Q_INVOKABLE void setQuote(const QString &cid, const QString &uri);
     Q_INVOKABLE void setImages(const QStringList &images);
     Q_INVOKABLE void setPostLanguages(const QStringList &langs);
+    Q_INVOKABLE void setOpenGraphData(const QString &url);
 
     Q_INVOKABLE void clear();
 
