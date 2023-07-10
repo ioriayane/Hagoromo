@@ -58,7 +58,7 @@ Dialog {
         postLanguagesButton.text = ""
 
         postText.clear()
-        embedImagePreview.embedImages = ""
+        embedImagePreview.embedImages = []
     }
 
     Shortcut {  // Post
@@ -198,8 +198,8 @@ Dialog {
             spacing: 4
             Repeater {
                 id: embedImagePreview
-                property string embedImages: ""
-                model: embedImagePreview.embedImages.split("\n")
+                property var embedImages: []
+                model: embedImagePreview.embedImages
                 delegate: ImageWithIndicator {
                     Layout.preferredWidth: 97
                     Layout.preferredHeight: 97
@@ -214,16 +214,13 @@ Dialog {
                         anchors.margins: 5
                         iconSource: "../images/delete.png"
                         onClicked: {
-                            var images = embedImagePreview.embedImages.split("\n")
-                            var new_images = ""
+                            var images = embedImagePreview.embedImages
+                            var new_images = []
                             for(var i=0; i<images.length; i++){
                                 if(images[i] === modelData){
                                     continue;
                                 }
-                                if(new_images.length > 0){
-                                    new_images += "\n"
-                                }
-                                new_images += images[i]
+                                new_images.push(images[i])
                             }
                             embedImagePreview.embedImages = new_images
                         }
@@ -320,7 +317,7 @@ Dialog {
                         createRecord.setQuote(replyCid, replyUri)
                     }
                     if(embedImagePreview.embedImages.length > 0){
-                        createRecord.setImages(embedImagePreview.embedImages.split("\n"))
+                        createRecord.setImages(embedImagePreview.embedImages)
                         createRecord.postWithImages()
                     }else{
                         createRecord.post()
@@ -346,22 +343,19 @@ Dialog {
             //選択されたファイルをすべて追加
             prevFolder = folder
 
-            var images = embedImagePreview.embedImages.split("\n")
+            var images = embedImagePreview.embedImages
             if(images.length >= 4){
                 return
             }
             var new_images = embedImagePreview.embedImages
             for(var i=0; i<files.length; i++){
-                if(i >= 4){
+                if(new_images.length >= 4){
                     break
                 }
                 if(images.indexOf(files[i]) >= 0){
                     continue;
                 }
-                if(new_images.length > 0){
-                    new_images += "\n"
-                }
-                new_images += files[i]
+                new_images.push(files[i])
             }
             embedImagePreview.embedImages = new_images
         }

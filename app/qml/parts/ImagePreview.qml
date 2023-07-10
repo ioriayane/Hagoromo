@@ -12,7 +12,7 @@ GridLayout {
     columns: 2
 
     property int layoutWidth: 100
-    property string embedImages: ""
+    property var embedImages: []
 
     property int cellWidth: imagePreviewLayout.layoutWidth * 0.5 - 3
 
@@ -20,7 +20,7 @@ GridLayout {
 
     Repeater {
         id: repeater
-        model: imagePreviewLayout.embedImages.split("\n")
+        model: imagePreviewLayout.embedImages
         delegate: ImageWithIndicator {
             property bool isWide: (repeater.count % 2 === 1 && model.index === (repeater.count - 1))
             Layout.preferredWidth: isWide ? imagePreviewLayout.layoutWidth : imagePreviewLayout.cellWidth

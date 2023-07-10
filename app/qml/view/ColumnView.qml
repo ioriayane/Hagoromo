@@ -35,7 +35,7 @@ ColumnLayout {
                         string cid, string uri,
                         string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestMention(string account_uuid, string handle)
-    signal requestViewImages(int index, string paths)
+    signal requestViewImages(int index, var paths)
 
     signal requestMoveToLeft(string key)
     signal requestMoveToRight(string key)

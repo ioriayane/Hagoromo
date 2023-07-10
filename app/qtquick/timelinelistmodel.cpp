@@ -118,14 +118,14 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     } else if (role == QuoteRecordEmbedImagesRole) {
         // unionの配列で読み込んでない
         if (current.post.embed_AppBskyEmbedRecord_View.isNull())
-            return QString();
+            return QStringList();
         else
             return LexiconsTypeUnknown::copyImagesFromRecord(
                     current.post.embed_AppBskyEmbedRecord_View->record_ViewRecord, true);
     } else if (role == QuoteRecordEmbedImagesFullRole) {
         // unionの配列で読み込んでない
         if (current.post.embed_AppBskyEmbedRecord_View.isNull())
-            return QString();
+            return QStringList();
         else
             return LexiconsTypeUnknown::copyImagesFromRecord(
                     current.post.embed_AppBskyEmbedRecord_View->record_ViewRecord, false);

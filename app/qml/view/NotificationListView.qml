@@ -27,7 +27,7 @@ ScrollView {
                           string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestQuote(string cid, string uri, string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestViewThread(string uri)
-    signal requestViewImages(int index, string paths)
+    signal requestViewImages(int index, var paths)
     signal requestViewProfile(string did)
 
     ListView {
