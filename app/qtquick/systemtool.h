@@ -2,6 +2,7 @@
 #define SYSTEMTOOL_H
 
 #include <QObject>
+#include <QRegularExpression>
 
 class SystemTool : public QObject
 {
@@ -17,6 +18,11 @@ public:
 
     QString applicationVersion() const;
     QString qtVersion() const;
+
+    QString markupText(const QString &text);
+
+private:
+    QRegularExpression m_rxUrl;
 };
 
 #endif // SYSTEMTOOL_H

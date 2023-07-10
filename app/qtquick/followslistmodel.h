@@ -3,6 +3,7 @@
 
 #include "atprotocol/lexicons.h"
 #include "atpabstractlistmodel.h"
+#include "systemtool.h"
 
 class FollowsListModel : public AtpAbstractListModel
 {
@@ -55,8 +56,10 @@ protected:
     virtual bool checkVisibility(const QString &cid);
     void getProfiles();
 
+    SystemTool m_systemTool;
     QStringList m_didList;
     QHash<QString, AtProtocolType::AppBskyActorDefs::ProfileView> m_profileHash;
+    QHash<QString, QString> m_formattedDescriptionHash;
 
     QStringList m_cueGetProfile; // did
 

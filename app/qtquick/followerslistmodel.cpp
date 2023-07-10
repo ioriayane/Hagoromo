@@ -22,6 +22,8 @@ void FollowersListModel::getLatest()
             if (success) {
                 for (const auto &profile : *followers->profileList()) {
                     m_profileHash[profile.did] = profile;
+                    m_formattedDescriptionHash[profile.did] =
+                            m_systemTool.markupText(profile.description);
                     if (m_didList.contains(profile.did)) {
                         int row = m_didList.indexOf(profile.did);
                         emit dataChanged(index(row), index(row));

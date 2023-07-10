@@ -3,9 +3,9 @@
 
 #include "atprotocol/accessatprotocol.h"
 //#include "atprotocol/lexicons.h"
+#include "systemtool.h"
 
 #include <QObject>
-#include <QRegularExpression>
 
 class UserProfile : public QObject
 {
@@ -86,13 +86,11 @@ signals:
     void followingUriChanged();
 
 private:
-    QString markupText(const QString &text) const;
-
+    SystemTool m_systemTool;
     AtProtocolInterface::AccountData m_account;
     //    AtProtocolType::AppBskyActorDefs::ProfileViewDetailed m_profile;
     bool m_running;
-    QRegularExpression m_rxUrl;
-    QString m_richDescription;
+    QString m_formattedDescription;
 
     QString m_did;
     QString m_handle;

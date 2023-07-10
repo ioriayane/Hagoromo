@@ -14,9 +14,6 @@ UserProfile::UserProfile(QObject *parent)
       m_following(false),
       m_followedBy(false)
 {
-    m_rxUrl = QRegularExpression(QString("%1").arg(
-            "http[s]?://"
-            "(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"));
 }
 
 void UserProfile::setAccount(const QString &service, const QString &did, const QString &handle,
@@ -115,7 +112,7 @@ void UserProfile::setDisplayName(const QString &newDisplayName)
 
 QString UserProfile::description() const
 {
-    return m_richDescription; // m_description;
+    return m_formattedDescription; // m_description;
 }
 
 void UserProfile::setDescription(const QString &newDescription)
@@ -123,7 +120,7 @@ void UserProfile::setDescription(const QString &newDescription)
     if (m_description == newDescription)
         return;
     m_description = newDescription;
-    m_richDescription = markupText(m_description);
+    m_formattedDescription = m_systemTool.markupText(m_description);
     emit descriptionChanged();
 }
 
@@ -242,35 +239,6 @@ void UserProfile::setFollowingUri(const QString &newFollowingUri)
         return;
     m_followingUri = newFollowingUri;
     emit followingUriChanged();
-}
-
-QString UserProfile::markupText(const QString &text) const
-{
-    if (text.isEmpty())
-        return text;
-
-    QString temp;
-    QRegularExpressionMatch match = m_rxUrl.match(text);
-    if (match.capturedTexts().isEmpty()) {
-        temp = text;
-    } else {
-        int pos;
-        int start_pos = 0;
-        while ((pos = match.capturedStart()) != -1) {
-            temp += text.midRef(start_pos, pos - start_pos);
-            temp += QString("<a href=\"%1\">%1</a>").arg(match.captured());
-
-            start_pos = pos + match.capturedLength();
-            match = m_rxUrl.match(text, start_pos);
-        }
-        if (start_pos < text.length() - 1) {
-            temp += text.midRef(start_pos, text.length() - start_pos);
-        }
-    }
-    temp.replace("\r\n", "<br/>");
-    temp.replace("\n", "<br/>");
-
-    return temp;
 }
 
 bool UserProfile::running() const

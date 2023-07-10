@@ -14,6 +14,7 @@ ScrollView {
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     clip: true
 
+    property string hoveredLink: ""
     property string userDid: ""     // 表示するアカウント
     property string accountDid: ""  // 認証しているアカウント
     property bool unfollowAndRemove: true   // アンフォローと同時にリストから消すか（検索結果は消さない）
@@ -175,7 +176,11 @@ ScrollView {
                         wrapMode: Text.WrapAnywhere
                         font.pointSize: 8
                         lineHeight: 1.3
+                        textFormat: Text.StyledText
                         text: model.description
+
+                        onHoveredLinkChanged: profileListView.hoveredLink = hoveredLink
+                        onLinkActivated: (url) => Qt.openUrlExternally(url)
                     }
                 }
             }

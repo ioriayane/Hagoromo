@@ -216,6 +216,7 @@ ColumnLayout {
                 onErrorOccured: (message) => {console.log(message)}
             }
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+            onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
         }
     }
     Component {

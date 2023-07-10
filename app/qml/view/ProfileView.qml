@@ -432,6 +432,7 @@ ColumnLayout {
                                             profileView.requestViewProfile(did)
                                         }
                                     }
+            onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
         }
 
         ProfileListView {
@@ -452,6 +453,7 @@ ColumnLayout {
                                             profileView.requestViewProfile(did)
                                         }
                                     }
+            onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
         }
     }
 }

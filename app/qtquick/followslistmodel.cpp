@@ -34,9 +34,13 @@ QVariant FollowsListModel::item(int row, FollowsListModelRoles role) const
         return profile.handle;
     else if (role == DisplayNameRole)
         return profile.displayName;
-    else if (role == DescriptionRole)
-        return profile.description;
-    else if (role == AvatarRole)
+    else if (role == DescriptionRole) {
+        if (m_formattedDescriptionHash.contains(profile.did)) {
+            return m_formattedDescriptionHash[profile.did];
+        } else {
+            return profile.description;
+        }
+    } else if (role == AvatarRole)
         return profile.avatar;
     else if (role == IndexedAtRole)
         return formatDateTime(profile.indexedAt);
@@ -103,6 +107,8 @@ void FollowsListModel::getLatest()
             if (success) {
                 for (const auto &profile : *follows->profileList()) {
                     m_profileHash[profile.did] = profile;
+                    m_formattedDescriptionHash[profile.did] =
+                            m_systemTool.markupText(profile.description);
                     if (m_didList.contains(profile.did)) {
                         int row = m_didList.indexOf(profile.did);
                         emit dataChanged(index(row), index(row));
@@ -184,6 +190,8 @@ void FollowsListModel::getProfiles()
                     profile_view.labels = item->labels;
                     profile_view.viewer = item->viewer;
                     m_profileHash[item->did] = profile_view;
+                    m_formattedDescriptionHash[item->did] =
+                            m_systemTool.markupText(item->description);
                     if (m_didList.contains(item->did)) {
                         int r = m_didList.indexOf(item->did);
                         if (r >= 0) {
