@@ -3,29 +3,68 @@
 #include <QNetworkReply>
 #include <QDomDocument>
 #include <QDomElement>
+#include <QPointer>
+#include <QFile>
 
 // https://ogp.me/
 
-OpenGraphProtocol::OpenGraphProtocol(QObject *parent) : QObject { parent }
-{
-
-    connect(&m_manager, &QNetworkAccessManager::finished, [=](QNetworkReply *reply) {
-        qDebug() << "OpenGraphProtocol reply" << reply->error() << reply->url();
-
-        if (reply->error() != QNetworkReply::NoError) {
-            qCritical() << QString::fromUtf8(reply->readAll());
-        } else {
-            parse(reply->readAll());
-        }
-
-        emit finished(reply->error() == QNetworkReply::NoError);
-    });
-}
+OpenGraphProtocol::OpenGraphProtocol(QObject *parent) : QObject { parent } { }
 
 void OpenGraphProtocol::getData(const QString &url)
 {
+    QPointer<OpenGraphProtocol> aliving(this);
+
     QNetworkRequest request((QUrl(url)));
-    m_manager.get(request);
+
+    QNetworkAccessManager *manager = new QNetworkAccessManager();
+    connect(manager, &QNetworkAccessManager::finished, [=](QNetworkReply *reply) {
+        qDebug() << "OpenGraphProtocol reply" << reply->error() << reply->url();
+        if (aliving) {
+            bool ret = (reply->error() == QNetworkReply::NoError);
+            if (!ret) {
+                qCritical() << QString::fromUtf8(reply->readAll());
+            } else {
+                ret = parse(reply->readAll());
+            }
+            emit finished(ret);
+        }
+        reply->deleteLater();
+        manager->deleteLater();
+    });
+    manager->get(request);
+}
+
+void OpenGraphProtocol::downloadThumb()
+{
+    if (thumb().isEmpty()) {
+        emit finished(false);
+        return;
+    }
+
+    QPointer<OpenGraphProtocol> aliving(this);
+
+    qDebug() << thumb();
+    QNetworkRequest request((QUrl(thumb())));
+
+    QNetworkAccessManager *manager = new QNetworkAccessManager();
+    connect(manager, &QNetworkAccessManager::finished, [=](QNetworkReply *reply) {
+        qDebug() << "downloadThumb reply" << reply->error() << reply->url();
+        if (aliving) {
+            bool ret = (reply->error() == QNetworkReply::NoError);
+            if (ret) {
+                if (m_thumbPath.open()) {
+                    qDebug() << m_thumbPath.fileName();
+                    m_thumbPath.write(reply->readAll());
+                    m_thumbPath.close();
+                    ret = true;
+                }
+            }
+            emit finished(ret);
+        }
+        reply->deleteLater();
+        manager->deleteLater();
+    });
+    manager->get(request);
 }
 
 QString OpenGraphProtocol::uri() const
@@ -66,6 +105,11 @@ QString OpenGraphProtocol::thumb() const
 void OpenGraphProtocol::setThumb(const QString &newThumb)
 {
     m_thumb = newThumb;
+}
+
+QString OpenGraphProtocol::thumbLocal() const
+{
+    return m_thumbPath.fileName();
 }
 
 bool OpenGraphProtocol::parse(const QByteArray &data)

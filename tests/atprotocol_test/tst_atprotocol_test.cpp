@@ -89,6 +89,23 @@ void atprotocol_test::test_OpenGraphProtocol()
         QVERIFY(ogp.description() == "file1 description");
         QVERIFY(ogp.thumb() == "http://localhost:%1/response/ogp/images/file1.jpg");
     }
+    {
+        ogp.setThumb(ogp.thumb().replace("%1", QString::number(m_listenPort)));
+
+        QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
+        ogp.downloadThumb();
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+
+        QVERIFY(QFile::exists(ogp.thumbLocal()));
+        QImage img(ogp.thumbLocal());
+        QVERIFY(!img.isNull());
+        QVERIFY(img.width() == 664);
+        QVERIFY(img.height() == 257);
+    }
 
     {
         QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
@@ -111,6 +128,23 @@ void atprotocol_test::test_OpenGraphProtocol()
                  ogp.description().toLocal8Bit());
         QVERIFY(ogp.thumb() == "http://localhost:%1/response/ogp/images/file2.gif");
     }
+    {
+        ogp.setThumb(ogp.thumb().replace("%1", QString::number(m_listenPort)));
+
+        QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
+        ogp.downloadThumb();
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+
+        QVERIFY(QFile::exists(ogp.thumbLocal()));
+        QImage img(ogp.thumbLocal());
+        QVERIFY(!img.isNull());
+        QVERIFY(img.width() == 664);
+        QVERIFY(img.height() == 257);
+    }
 
     {
         QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
@@ -132,6 +166,23 @@ void atprotocol_test::test_OpenGraphProtocol()
         QVERIFY2(ogp.description() == QString("file3 ").append(QChar(0x8a73)).append(QChar(0x7d30)),
                  ogp.description().toLocal8Bit());
         QVERIFY(ogp.thumb() == "http://localhost:%1/response/ogp/images/file3.png");
+    }
+    {
+        ogp.setThumb(ogp.thumb().replace("%1", QString::number(m_listenPort)));
+
+        QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
+        ogp.downloadThumb();
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+
+        QVERIFY(QFile::exists(ogp.thumbLocal()));
+        QImage img(ogp.thumbLocal());
+        QVERIFY(!img.isNull());
+        QVERIFY(img.width() == 664);
+        QVERIFY(img.height() == 257);
     }
 }
 
