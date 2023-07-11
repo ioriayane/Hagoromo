@@ -1,11 +1,13 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import QtQuick.Controls.Material 2.15
 import Qt.labs.platform 1.1 as P
 
 import tech.relog.hagoromo.recordoperator 1.0
 import tech.relog.hagoromo.accountlistmodel 1.0
 import tech.relog.hagoromo.languagelistmodel 1.0
+import tech.relog.hagoromo.externallink 1.0
 
 import "../controls"
 import "../parts"
@@ -86,6 +88,9 @@ Dialog {
     }
     LanguageListModel {
         id: languageListModel
+    }
+    ExternalLink {
+        id: externalLink
     }
 
     ColumnLayout {
@@ -192,6 +197,89 @@ Dialog {
             }
         }
 
+        RowLayout {
+            Label {
+                text: qsTr("Link card")
+            }
+            TextArea {
+                id: addingExternalLinkUrlText
+                Layout.fillWidth: true
+            }
+            IconButton {
+                iconSource: "../images/add.png"
+                onClicked: {
+                    if(addingExternalLinkUrlText.text.length > 0){
+                        externalLink.getExternalLink(addingExternalLinkUrlText.text)
+                    }
+                }
+                BusyIndicator {
+                    anchors.fill: parent
+                    anchors.margins: 3
+                    visible: externalLink.running
+                }
+            }
+        }
+        ClickableFrame {
+            id: externalLinkFrame
+            Layout.preferredWidth: 400
+            Layout.topMargin: 5
+            visible: externalLink.valid
+            topInset: 0
+            leftInset: 0
+            rightInset: 0
+            bottomInset: 0
+            topPadding: 0
+            leftPadding: 0
+            rightPadding: 0
+            bottomPadding: 5
+            hoverEnabled: true
+            onHoveredChanged:{
+//                if(hovered){
+//                    displayLink(externalLinkUriLabel.text)
+//                }else{
+//                    displayLink("")
+//                }
+            }
+
+            ColumnLayout {
+                spacing: 3
+                ImageWithIndicator {
+                    id: externalLinkThumbImage
+                    Layout.preferredWidth: externalLinkFrame.width
+                    Layout.preferredHeight: status !== Image.Null ? externalLinkFrame.width * 0.5 : 30
+                    fillMode: Image.PreserveAspectCrop
+                    source: externalLink.thumbLocal
+                }
+                Label {
+                    id: externalLinkTitleLabel
+                    Layout.preferredWidth: externalLinkFrame.width
+                    leftPadding: 5
+                    rightPadding: 5
+                    elide: Label.ElideRight
+                    text: externalLink.title
+                }
+                Label {
+                    id: externalLinkUriLabel
+                    Layout.preferredWidth: externalLinkFrame.width
+                    leftPadding: 5
+                    rightPadding: 5
+                    elide: Label.ElideRight
+                    font.pointSize: 8
+                    color: Material.color(Material.Grey)
+                    text: externalLink.uri
+                }
+                Label {
+                    id: externalLinkDescriptionLabel
+                    visible: text.length > 0
+                    Layout.preferredWidth: externalLinkFrame.width
+                    leftPadding: 5
+                    rightPadding: 5
+                    elide: Label.ElideRight
+                    font.pointSize: 8
+                    text: externalLink.description
+                }
+            }
+        }
 
         RowLayout {
             visible: embedImagePreview.embedImages.length > 0
@@ -298,7 +386,7 @@ Dialog {
             Button {
                 id: postButton
                 Layout.alignment: Qt.AlignRight
-                enabled: postText.text.length > 0 && !createRecord.running
+                enabled: postText.text.length > 0 && !createRecord.running && !externalLink.running
                 text: qsTr("Post")
                 onClicked: {
                     var row = accountCombo.currentIndex;

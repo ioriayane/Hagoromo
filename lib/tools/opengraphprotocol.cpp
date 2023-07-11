@@ -8,7 +8,11 @@
 
 // https://ogp.me/
 
-OpenGraphProtocol::OpenGraphProtocol(QObject *parent) : QObject { parent } { }
+OpenGraphProtocol::OpenGraphProtocol(QObject *parent) : QObject { parent }
+{
+    m_rxMeta = QRegularExpression(
+            "<[ \\t]*meta (?:[ \\t]*?[a-zA-Z-_]+[ \\t]*?=[ \\t]*?\"[^\"]*?\")+[ \\t]*?/?>");
+}
 
 void OpenGraphProtocol::getData(const QString &url)
 {
@@ -34,10 +38,10 @@ void OpenGraphProtocol::getData(const QString &url)
     manager->get(request);
 }
 
-void OpenGraphProtocol::downloadThumb()
+void OpenGraphProtocol::downloadThumb(const QString &path)
 {
     if (thumb().isEmpty()) {
-        emit finished(false);
+        emit finishedDownload(false);
         return;
     }
 
@@ -52,14 +56,15 @@ void OpenGraphProtocol::downloadThumb()
         if (aliving) {
             bool ret = (reply->error() == QNetworkReply::NoError);
             if (ret) {
-                if (m_thumbPath.open()) {
-                    qDebug() << m_thumbPath.fileName();
-                    m_thumbPath.write(reply->readAll());
-                    m_thumbPath.close();
+                QFile file(path);
+                if (file.open(QFile::WriteOnly)) {
+                    qDebug() << "save download file:" << path;
+                    file.write(reply->readAll());
+                    file.close();
                     ret = true;
                 }
             }
-            emit finished(ret);
+            emit finishedDownload(ret);
         }
         reply->deleteLater();
         manager->deleteLater();
@@ -107,26 +112,23 @@ void OpenGraphProtocol::setThumb(const QString &newThumb)
     m_thumb = newThumb;
 }
 
-QString OpenGraphProtocol::thumbLocal() const
-{
-    return m_thumbPath.fileName();
-}
-
 bool OpenGraphProtocol::parse(const QByteArray &data)
 {
     bool ret = false;
-    QString charset = extractCharset(data);
+    QString charset = extractCharset(rebuildHtml(QString::fromUtf8(data)));
     qDebug() << "charset" << charset;
 
     QTextStream ts(data);
     ts.setCodec(charset.toLatin1());
+
+    QString rebuild_text = rebuildHtml(ts.readAll());
 
     QString errorMsg;
     int errorLine;
     int errorColumn;
 
     QDomDocument doc;
-    if (!doc.setContent(ts.readAll(), true, &errorMsg, &errorLine, &errorColumn)) {
+    if (!doc.setContent(rebuild_text, false, &errorMsg, &errorLine, &errorColumn)) {
         qDebug() << "parse" << errorMsg << ", Line=" << errorLine << ", Column=" << errorColumn;
     } else {
         QDomElement root = doc.documentElement();
@@ -154,7 +156,7 @@ bool OpenGraphProtocol::parse(const QByteArray &data)
     return ret;
 }
 
-QString OpenGraphProtocol::extractCharset(const QByteArray &data) const
+QString OpenGraphProtocol::extractCharset(const QString &data) const
 {
     QString charset = "utf-8";
 
@@ -163,9 +165,12 @@ QString OpenGraphProtocol::extractCharset(const QByteArray &data) const
     int errorColumn;
     QDomDocument doc;
 
-    if (!doc.setContent(data, true, &errorMsg, &errorLine, &errorColumn)) {
+    if (!doc.setContent(data, false, &errorMsg, &errorLine, &errorColumn)) {
         qDebug() << "extractCharset" << errorMsg << ", Line=" << errorLine
                  << ", Column=" << errorColumn;
+        qDebug().noquote().nospace() << "--------------------";
+        qDebug().noquote().nospace() << data;
+        qDebug().noquote().nospace() << "--------------------";
     } else {
         QDomElement root = doc.documentElement();
         QDomElement head = root.firstChildElement("head");
@@ -200,4 +205,26 @@ QString OpenGraphProtocol::extractCharset(const QByteArray &data) const
     }
 
     return charset;
+}
+
+QString OpenGraphProtocol::rebuildHtml(const QString &text) const
+{
+    QRegularExpressionMatch match = m_rxMeta.match(text);
+    if (match.capturedTexts().isEmpty())
+        return text;
+
+    QString result;
+    QString temp;
+    int pos;
+    while ((pos = match.capturedStart()) != -1) {
+        temp = match.captured();
+        if (!temp.endsWith("/>")) {
+            temp.replace(">", "/>");
+        }
+        result += temp + "\n";
+
+        match = m_rxMeta.match(text, pos + match.capturedLength());
+    }
+
+    return QString("<html><head>%1</head></html>").arg(result);
 }

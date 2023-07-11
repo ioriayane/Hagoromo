@@ -3,7 +3,7 @@
 
 #include <QNetworkAccessManager>
 #include <QObject>
-#include <QTemporaryFile>
+#include <QRegularExpression>
 
 class OpenGraphProtocol : public QObject
 {
@@ -12,7 +12,7 @@ public:
     explicit OpenGraphProtocol(QObject *parent = nullptr);
 
     void getData(const QString &url);
-    void downloadThumb();
+    void downloadThumb(const QString &path);
 
     QString uri() const;
     void setUri(const QString &newUri);
@@ -22,16 +22,17 @@ public:
     void setDescription(const QString &newDescription);
     QString thumb() const;
     void setThumb(const QString &newThumb);
-    QString thumbLocal() const;
 
 signals:
     void finished(bool success);
+    void finishedDownload(bool success);
 
 private:
     bool parse(const QByteArray &data);
-    QString extractCharset(const QByteArray &data) const;
+    QString extractCharset(const QString &data) const;
+    QString rebuildHtml(const QString &text) const;
 
-    QTemporaryFile m_thumbPath;
+    QRegularExpression m_rxMeta;
 
     QString m_uri;
     QString m_title;

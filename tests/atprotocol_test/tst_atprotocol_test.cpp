@@ -1,5 +1,6 @@
 #include <QtTest>
 #include <QCoreApplication>
+#include <QTemporaryFile>
 
 #include "webserver.h"
 #include "atprotocol/com/atproto/server/comatprotoservercreatesession.h"
@@ -74,7 +75,6 @@ void atprotocol_test::test_ComAtprotoServerCreateSession()
 void atprotocol_test::test_OpenGraphProtocol()
 {
     OpenGraphProtocol ogp;
-
     {
         QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
         ogp.getData(m_service + "/ogp/file1.html");
@@ -90,18 +90,20 @@ void atprotocol_test::test_OpenGraphProtocol()
         QVERIFY(ogp.thumb() == "http://localhost:%1/response/ogp/images/file1.jpg");
     }
     {
+        QTemporaryFile temp_file;
+        temp_file.open();
         ogp.setThumb(ogp.thumb().replace("%1", QString::number(m_listenPort)));
 
-        QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
-        ogp.downloadThumb();
+        QSignalSpy spy(&ogp, SIGNAL(finishedDownload(bool)));
+        ogp.downloadThumb(temp_file.fileName());
         spy.wait();
         QVERIFY(spy.count() == 1);
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QVERIFY(QFile::exists(ogp.thumbLocal()));
-        QImage img(ogp.thumbLocal());
+        QVERIFY(QFile::exists(temp_file.fileName()));
+        QImage img(temp_file.fileName());
         QVERIFY(!img.isNull());
         QVERIFY(img.width() == 664);
         QVERIFY(img.height() == 257);
@@ -129,18 +131,21 @@ void atprotocol_test::test_OpenGraphProtocol()
         QVERIFY(ogp.thumb() == "http://localhost:%1/response/ogp/images/file2.gif");
     }
     {
+        QTemporaryFile temp_file;
+        temp_file.open();
+
         ogp.setThumb(ogp.thumb().replace("%1", QString::number(m_listenPort)));
 
-        QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
-        ogp.downloadThumb();
+        QSignalSpy spy(&ogp, SIGNAL(finishedDownload(bool)));
+        ogp.downloadThumb(temp_file.fileName());
         spy.wait();
         QVERIFY(spy.count() == 1);
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QVERIFY(QFile::exists(ogp.thumbLocal()));
-        QImage img(ogp.thumbLocal());
+        QVERIFY(QFile::exists(temp_file.fileName()));
+        QImage img(temp_file.fileName());
         QVERIFY(!img.isNull());
         QVERIFY(img.width() == 664);
         QVERIFY(img.height() == 257);
@@ -168,18 +173,21 @@ void atprotocol_test::test_OpenGraphProtocol()
         QVERIFY(ogp.thumb() == "http://localhost:%1/response/ogp/images/file3.png");
     }
     {
+        QTemporaryFile temp_file;
+        temp_file.open();
+
         ogp.setThumb(ogp.thumb().replace("%1", QString::number(m_listenPort)));
 
-        QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
-        ogp.downloadThumb();
+        QSignalSpy spy(&ogp, SIGNAL(finishedDownload(bool)));
+        ogp.downloadThumb(temp_file.fileName());
         spy.wait();
         QVERIFY(spy.count() == 1);
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QVERIFY(QFile::exists(ogp.thumbLocal()));
-        QImage img(ogp.thumbLocal());
+        QVERIFY(QFile::exists(temp_file.fileName()));
+        QImage img(temp_file.fileName());
         QVERIFY(!img.isNull());
         QVERIFY(img.width() == 664);
         QVERIFY(img.height() == 257);

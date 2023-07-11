@@ -25,6 +25,7 @@
 #include "qtquick/encryption.h"
 #include "qtquick/userprofile.h"
 #include "qtquick/systemtool.h"
+#include "qtquick/externallink.h"
 
 int main(int argc, char *argv[])
 {
@@ -76,6 +77,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<Encryption>("tech.relog.hagoromo.encryption", 1, 0, "Encryption");
     qmlRegisterType<UserProfile>("tech.relog.hagoromo.userprofile", 1, 0, "UserProfile");
     qmlRegisterType<SystemTool>("tech.relog.hagoromo.systemtool", 1, 0, "SystemTool");
+    qmlRegisterType<ExternalLink>("tech.relog.hagoromo.externallink", 1, 0, "ExternalLink");
 
     QString dir = QString("%1/translations").arg(QCoreApplication::applicationDirPath());
     // 翻訳データ登録
