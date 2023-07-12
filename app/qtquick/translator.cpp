@@ -38,6 +38,7 @@ Translator::Translator(QObject *parent) : QObject { parent }
         }
 
         emit finished(text);
+        reply->deleteLater();
     });
 }
 

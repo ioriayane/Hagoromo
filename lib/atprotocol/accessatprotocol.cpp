@@ -24,6 +24,8 @@ AccessAtProtocol::AccessAtProtocol(QObject *parent) : QObject { parent }
             m_errorMessage = m_replyJson;
         }
         parseJson(reply->error() == QNetworkReply::NoError, m_replyJson);
+
+        reply->deleteLater();
     });
 }
 
