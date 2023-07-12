@@ -71,9 +71,14 @@ void RecordOperator::setPostLanguages(const QStringList &langs)
     m_postLanguages = langs;
 }
 
-void RecordOperator::setOpenGraphData(const QString &url)
+void RecordOperator::setExternalLink(const QString &uri, const QString &title,
+                                     const QString &description, const QString &image_path)
 {
-    //
+    m_externalLinkUri = uri;
+    m_externalLinkTitle = title;
+    m_externalLinkDescription = description;
+    m_embedImages.clear();
+    m_embedImages.append(image_path);
 }
 
 void RecordOperator::clear()
@@ -85,6 +90,9 @@ void RecordOperator::clear()
     m_embedImages.clear();
     m_embedImageBlogs.clear();
     m_facets.clear();
+    m_externalLinkUri.clear();
+    m_externalLinkTitle.clear();
+    m_externalLinkDescription.clear();
 }
 
 void RecordOperator::post()
@@ -115,6 +123,8 @@ void RecordOperator::post()
         create_record->setImageBlobs(m_embedImageBlogs);
         create_record->setFacets(m_facets);
         create_record->setPostLanguages(m_postLanguages);
+        create_record->setExternalLink(m_externalLinkUri, m_externalLinkTitle,
+                                       m_externalLinkDescription);
         create_record->post(m_text);
     });
 }

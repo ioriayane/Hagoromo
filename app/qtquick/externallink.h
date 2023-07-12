@@ -20,6 +20,7 @@ public:
     explicit ExternalLink(QObject *parent = nullptr);
 
     Q_INVOKABLE void getExternalLink(const QString &uri);
+    Q_INVOKABLE void clear();
 
     QString uri() const;
     void setUri(const QString &newUri);

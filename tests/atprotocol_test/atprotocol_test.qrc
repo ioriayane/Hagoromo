@@ -7,5 +7,6 @@
         <file>response/ogp/images/file2.gif</file>
         <file>response/ogp/file3.html</file>
         <file>response/ogp/images/file3.png</file>
+        <file>response/ogp/file4.html</file>
     </qresource>
 </RCC>

@@ -61,6 +61,8 @@ Dialog {
 
         postText.clear()
         embedImagePreview.embedImages = []
+        externalLink.clear()
+        addingExternalLinkUrlText.text = ""
     }
 
     Shortcut {  // Post
@@ -198,20 +200,21 @@ Dialog {
         }
 
         RowLayout {
+            Layout.maximumWidth: 400
             Label {
-                text: qsTr("Link card")
+                text: qsTr("Link card") + " : "
             }
-            TextArea {
-                id: addingExternalLinkUrlText
+            ScrollView {
                 Layout.fillWidth: true
+                clip: true
+                TextArea {
+                    id: addingExternalLinkUrlText
+                }
             }
             IconButton {
-                iconSource: "../images/add.png"
-                onClicked: {
-                    if(addingExternalLinkUrlText.text.length > 0){
-                        externalLink.getExternalLink(addingExternalLinkUrlText.text)
-                    }
-                }
+                iconSource: externalLink.running ? "" : "../images/add.png"
+                enabled: addingExternalLinkUrlText.text.length > 0
+                onClicked: externalLink.getExternalLink(addingExternalLinkUrlText.text)
                 BusyIndicator {
                     anchors.fill: parent
                     anchors.margins: 3
@@ -234,11 +237,11 @@ Dialog {
             bottomPadding: 5
             hoverEnabled: true
             onHoveredChanged:{
-//                if(hovered){
-//                    displayLink(externalLinkUriLabel.text)
-//                }else{
-//                    displayLink("")
-//                }
+                //                if(hovered){
+                //                    displayLink(externalLinkUriLabel.text)
+                //                }else{
+                //                    displayLink("")
+                //                }
             }
 
             ColumnLayout {
@@ -249,6 +252,7 @@ Dialog {
                     Layout.preferredHeight: status !== Image.Null ? externalLinkFrame.width * 0.5 : 30
                     fillMode: Image.PreserveAspectCrop
                     source: externalLink.thumbLocal
+                    onSourceChanged: console.log("source " + source)
                 }
                 Label {
                     id: externalLinkTitleLabel
@@ -404,7 +408,10 @@ Dialog {
                     }else if(postType === "quote"){
                         createRecord.setQuote(replyCid, replyUri)
                     }
-                    if(embedImagePreview.embedImages.length > 0){
+                    if(externalLink.valid){
+                        createRecord.setExternalLink(externalLink.uri, externalLink.title, externalLink.description, externalLink.thumbLocal)
+                        createRecord.postWithImages()
+                    }else if(embedImagePreview.embedImages.length > 0){
                         createRecord.setImages(embedImagePreview.embedImages)
                         createRecord.postWithImages()
                     }else{

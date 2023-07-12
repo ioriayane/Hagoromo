@@ -24,7 +24,8 @@ public:
     Q_INVOKABLE void setQuote(const QString &cid, const QString &uri);
     Q_INVOKABLE void setImages(const QStringList &images);
     Q_INVOKABLE void setPostLanguages(const QStringList &langs);
-    Q_INVOKABLE void setOpenGraphData(const QString &url);
+    Q_INVOKABLE void setExternalLink(const QString &uri, const QString &title,
+                                     const QString &description, const QString &image_path);
 
     Q_INVOKABLE void clear();
 
@@ -62,6 +63,9 @@ private:
     QList<AtProtocolType::LexiconsTypeUnknown::Blob> m_embedImageBlogs;
     QList<AtProtocolType::AppBskyRichtextFacet::Main> m_facets;
     QStringList m_postLanguages;
+    QString m_externalLinkUri;
+    QString m_externalLinkTitle;
+    QString m_externalLinkDescription;
 
     bool m_running;
 };

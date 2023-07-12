@@ -11,12 +11,20 @@
 OpenGraphProtocol::OpenGraphProtocol(QObject *parent) : QObject { parent }
 {
     m_rxMeta = QRegularExpression(
-            "<[ \\t]*meta (?:[ \\t]*?[a-zA-Z-_]+[ \\t]*?=[ \\t]*?\"[^\"]*?\")+[ \\t]*?/?>");
+            QString("(?:%1)|(?:%2)")
+                    .arg("<meta (?:[ \\t]*?[a-zA-Z-_]+[ \\t]*?=[ \\t]*?\"[^\"]*?\")+[ \\t]*?/?>",
+                         "<title.+?</title[ \\t]*>"),
+            QRegularExpression::CaseInsensitiveOption);
 }
 
 void OpenGraphProtocol::getData(const QString &url)
 {
     QPointer<OpenGraphProtocol> aliving(this);
+
+    m_uri.clear();
+    m_title.clear();
+    m_description.clear();
+    m_thumb.clear();
 
     QNetworkRequest request((QUrl(url)));
 
@@ -28,7 +36,7 @@ void OpenGraphProtocol::getData(const QString &url)
             if (!ret) {
                 qCritical() << QString::fromUtf8(reply->readAll());
             } else {
-                ret = parse(reply->readAll());
+                ret = parse(reply->readAll(), reply->url().toString());
             }
             emit finished(ret);
         }
@@ -112,7 +120,7 @@ void OpenGraphProtocol::setThumb(const QString &newThumb)
     m_thumb = newThumb;
 }
 
-bool OpenGraphProtocol::parse(const QByteArray &data)
+bool OpenGraphProtocol::parse(const QByteArray &data, const QString &src_uri)
 {
     bool ret = false;
     QString charset = extractCharset(rebuildHtml(QString::fromUtf8(data)));
@@ -134,24 +142,33 @@ bool OpenGraphProtocol::parse(const QByteArray &data)
         QDomElement root = doc.documentElement();
         QDomElement head = root.firstChildElement("head");
 
-        QDomElement element = head.firstChildElement("meta");
-        while (!element.isNull()) {
-            QString property = element.attribute("property");
-            QString content = element.attribute("content");
-            if (property == "og:url") {
-                setUri(content);
-            } else if (property == "og:title") {
-                setTitle(content);
-            } else if (property == "og:description") {
-                setDescription(content);
-            } else if (property == "og:image") {
-                // ダウンロードしてローカルパスに置換が必要
-                setThumb(content);
-            }
-            element = element.nextSiblingElement("meta");
-        }
+        setUri(src_uri);
 
-        ret = true;
+        QDomElement element = head.firstChildElement();
+        while (!element.isNull()) {
+            if (element.tagName().toLower() == "meta") {
+                QString property = element.attribute("property");
+                QString content = element.attribute("content");
+                if (property == "og:url") {
+                    setUri(content);
+                } else if (property == "og:title") {
+                    setTitle(content);
+                } else if (property == "og:description") {
+                    setDescription(content);
+                } else if (property == "og:image") {
+                    // ダウンロードしてローカルパスに置換が必要
+                    setThumb(content);
+                }
+            } else if (element.tagName().toLower() == "title") {
+                if (title().isEmpty()) {
+                    setTitle(element.text());
+                }
+            }
+            element = element.nextSiblingElement();
+        }
+        if (!uri().isEmpty() && !title().isEmpty()) {
+            ret = true;
+        }
     }
     return ret;
 }
@@ -218,7 +235,7 @@ QString OpenGraphProtocol::rebuildHtml(const QString &text) const
     int pos;
     while ((pos = match.capturedStart()) != -1) {
         temp = match.captured();
-        if (!temp.endsWith("/>")) {
+        if (!temp.endsWith("/>") && !temp.toLower().startsWith("<title")) {
             temp.replace(">", "/>");
         }
         result += temp + "\n";

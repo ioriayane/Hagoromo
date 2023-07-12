@@ -42,7 +42,6 @@ void ExternalLink::getExternalLink(const QString &uri)
                 setUri(open_graph->uri());
                 setTitle(open_graph->title());
                 setDescription(open_graph->description());
-                emit thumbLocalChanged();
                 setValid(true);
             }
             setRunning(false);
@@ -50,6 +49,15 @@ void ExternalLink::getExternalLink(const QString &uri)
         open_graph->deleteLater();
     });
     open_graph->getData(uri);
+}
+
+void ExternalLink::clear()
+{
+    setValid(false);
+    setUri(QString());
+    setTitle(QString());
+    setDescription(QString());
+    setThumb(QString());
 }
 
 QString ExternalLink::uri() const
@@ -106,7 +114,11 @@ void ExternalLink::setThumb(const QString &newThumb)
 
 QString ExternalLink::thumbLocal() const
 {
-    return QUrl(m_thumbLocal.fileName()).toString();
+    if (valid()) {
+        return QUrl::fromLocalFile(m_thumbLocal.fileName()).toString();
+    } else {
+        return QString();
+    }
 }
 
 void ExternalLink::setThumbLocal(const QString &newThumbLocal)
@@ -140,5 +152,7 @@ void ExternalLink::setValid(bool newValid)
     if (m_valid == newValid)
         return;
     m_valid = newValid;
+
+    emit thumbLocalChanged();
     emit validChanged();
 }

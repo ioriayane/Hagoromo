@@ -57,7 +57,26 @@ void ComAtprotoRepoCreateRecord::post(const QString &text)
 
     QJsonObject json_embed_images;
 
-    if (!m_embedImageBlobs.isEmpty()) {
+    if (!m_externalLinkUri.isEmpty()) {
+        // リンクカードと画像添付は排他
+        QJsonObject json_external;
+        json_external.insert("uri", m_externalLinkUri);
+        json_external.insert("title", m_externalLinkTitle);
+        json_external.insert("description", m_externalLinkDescription);
+        if (!m_embedImageBlobs.isEmpty()) {
+            QJsonObject json_external_thumb;
+            json_external_thumb.insert("$type", "blob");
+            json_external_thumb.insert("mimeType", m_embedImageBlobs.at(0).mimeType);
+            json_external_thumb.insert("size", m_embedImageBlobs.at(0).size);
+            QJsonObject json_external_thumb_link;
+            json_external_thumb_link.insert("$link", m_embedImageBlobs.at(0).cid);
+            json_external_thumb.insert("ref", json_external_thumb_link);
+            json_external.insert("thumb", json_external_thumb);
+        }
+        json_embed_images.insert("$type", "app.bsky.embed.external");
+        json_embed_images.insert("external", json_external);
+
+    } else if (!m_embedImageBlobs.isEmpty()) {
         QJsonArray json_blobs;
         for (const auto &blob : qAsConst(m_embedImageBlobs)) {
             QJsonObject json_blob;
@@ -236,6 +255,14 @@ void ComAtprotoRepoCreateRecord::parseJson(bool success, const QString reply_jso
 void ComAtprotoRepoCreateRecord::setPostLanguages(const QStringList &newPostLanguages)
 {
     m_postLanguages = newPostLanguages;
+}
+
+void ComAtprotoRepoCreateRecord::setExternalLink(const QString &uri, const QString &title,
+                                                 const QString &description)
+{
+    m_externalLinkUri = uri;
+    m_externalLinkTitle = title;
+    m_externalLinkDescription = description;
 }
 
 void ComAtprotoRepoCreateRecord::setFacets(

@@ -192,6 +192,51 @@ void atprotocol_test::test_OpenGraphProtocol()
         QVERIFY(img.width() == 664);
         QVERIFY(img.height() == 257);
     }
+
+    {
+        QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
+        ogp.getData(m_service + "/ogp/file4.html");
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+
+        QVERIFY2(
+                ogp.uri()
+                        == QString("http://localhost:%1/response/ogp/file4.html").arg(m_listenPort),
+                ogp.uri().toLocal8Bit());
+        QVERIFY2(ogp.title()
+                         == QString("file4 ")
+                                    .append(QChar(0x30bf))
+                                    .append(QChar(0x30a4))
+                                    .append(QChar(0x30c8))
+                                    .append(QChar(0x30eb)),
+                 ogp.title().toLocal8Bit());
+        QVERIFY2(ogp.description() == QString("file4 ").append(QChar(0x8a73)).append(QChar(0x7d30)),
+                 ogp.description().toLocal8Bit());
+        QVERIFY(ogp.thumb() == "http://localhost:%1/response/ogp/images/file3.png");
+    }
+    {
+        QTemporaryFile temp_file;
+        temp_file.open();
+
+        ogp.setThumb(ogp.thumb().replace("%1", QString::number(m_listenPort)));
+
+        QSignalSpy spy(&ogp, SIGNAL(finishedDownload(bool)));
+        ogp.downloadThumb(temp_file.fileName());
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+
+        QVERIFY(QFile::exists(temp_file.fileName()));
+        QImage img(temp_file.fileName());
+        QVERIFY(!img.isNull());
+        QVERIFY(img.width() == 664);
+        QVERIFY(img.height() == 257);
+    }
 }
 
 QTEST_MAIN(atprotocol_test)
