@@ -12,7 +12,7 @@ OpenGraphProtocol::OpenGraphProtocol(QObject *parent) : QObject { parent }
 {
     m_rxMeta = QRegularExpression(
             QString("(?:%1)|(?:%2)")
-                    .arg("<meta (?:[ \\t]*?[a-zA-Z-_]+[ \\t]*?=[ \\t]*?\"[^\"]*?\")+[ \\t]*?/?>",
+                    .arg("<meta (?:[ \\t]*?[a-zA-Z-_]+[ \\t]*?=[ \\t]*?\"?[^\"]*?\"?)+[ \\t]*?/?>",
                          "<title.+?</title[ \\t]*>"),
             QRegularExpression::CaseInsensitiveOption);
 }
@@ -233,12 +233,60 @@ QString OpenGraphProtocol::rebuildHtml(const QString &text) const
     QString result;
     QString temp;
     int pos;
+    QChar c;
+    int state = 0;
+    // 0:属性より前
+    // 1:属性名
+    // 2:スペース（=より後ろ）
+    // 3:属性値
+    bool in_quote = false;
     while ((pos = match.capturedStart()) != -1) {
         temp = match.captured();
         if (!temp.endsWith("/>") && !temp.toLower().startsWith("<title")) {
             temp.replace(">", "/>");
         }
-        result += temp + "\n";
+
+        for (int i = 0; i < temp.length(); i++) {
+            c = temp.at(i);
+            if (state == 0) {
+                if (c == ' ') {
+                    state = 1;
+                }
+                result += c;
+            } else if (state == 1) {
+                if (c == '=') {
+                    state = 2;
+                    in_quote = false;
+                }
+                result += c;
+            } else if (state == 2) {
+                if (c == '\"') {
+                    in_quote = true;
+                    state = 3;
+                } else if (c != ' ') {
+                    result += '\"';
+                    in_quote = false;
+                    state = 3;
+                }
+                result += c;
+            } else if (state == 3) {
+                if (in_quote) {
+                    if (c == '\"') {
+                        state = 1;
+                        in_quote = false;
+                    }
+                } else {
+                    if (c == ' ') {
+                        result += '\"';
+                        state = 1;
+                    }
+                }
+                result += c;
+            } else {
+            }
+        }
+
+        result += "\n";
 
         match = m_rxMeta.match(text, pos + match.capturedLength());
     }
