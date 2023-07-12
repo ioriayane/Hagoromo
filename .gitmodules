@@ -1,3 +1,6 @@
 [submodule "3rdparty/openssl"]
 	path = 3rdparty/openssl
 	url = https://github.com/openssl/openssl.git
+[submodule "3rdparty/qthttpserver"]
+	path = 3rdparty/qthttpserver
+	url = https://code.qt.io/qt-extensions/qthttpserver.git

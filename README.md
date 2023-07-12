@@ -16,6 +16,7 @@
 
 - [Qt 5.15.2](https://www.qt.io/)
 - [OpenSSL 1.1.1q](http://www.openssl.org/)
+- [Qt HTTP Server](https://code.qt.io/cgit/qt-extensions/qthttpserver.git/)(for unit test only)
 
 ## ダウンロード
 
@@ -85,6 +86,21 @@ $ ./scripts/build.sh mac path/to/Qt/5.15.2/gcc_64/bin
 $ open ./deploy-hagoromo/hagoromo/Hagoromo.app
 ```
 
+## Qt Creatorでのビルドについて
+
+単体テストで使用しているQt HTTP Serverのビルドとインストールが必要です。
+
+### Qt HTTP Serverのビルド方法
+
+```bash
+$ git submodule update -i --recursive 3rdparty/qthttpserver/
+$ mkdir 3rdparty/build-qthttpserver
+$ cd 3rdparty/build-qthttpserver
+$ qmake CONFIG+=debug_and_release ../qthttpserver/qthttpserver.pro
+$ make && make install
+```
+
+---
 
 ## Overview
 
@@ -100,6 +116,7 @@ This is a multi-column [Bluesky](https://blueskyweb.xyz/) client.
 
 - [Qt 5.15.2](https://www.qt.io/)
 - [OpenSSL 1.1.1q](http://www.openssl.org/)
+- [Qt HTTP Server](https://code.qt.io/cgit/qt-extensions/qthttpserver.git/)(for unit test only)
 
 ## Download
 
@@ -168,4 +185,18 @@ $ vi Hagoromo/app/qtquick/encryption_seed.h
 $ ./scripts/build.sh mac path/to/Qt/5.15.2/gcc_64/bin
 # exec hagoromo
 $ open ./deploy-hagoromo/hagoromo/Hagoromo.app
+```
+
+## About building with Qt Creator
+
+You need to build and install Qt HTTP Server, which is used for unit testing.
+
+### How to build Qt HTTP Server
+
+```bash
+$ git submodule update -i --recursive 3rdparty/qthttpserver/
+$ mkdir 3rdparty/build-qthttpserver
+$ cd 3rdparty/build-qthttpserver
+$ qmake CONFIG+=debug_and_release ../qthttpserver/qthttpserver.pro
+$ make && make install
 ```
