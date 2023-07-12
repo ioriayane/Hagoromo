@@ -28,10 +28,6 @@ ClickableFrame {
     property alias childAuthor: childAuthor
     property alias childRecordText: childRecordText
     property alias externalLinkFrame: externalLinkFrame
-    property alias externalLinkThumbImage: externalLinkThumbImage
-    property alias externalLinkTitleLabel: externalLinkTitleLabel
-    property alias externalLinkUriLabel: externalLinkUriLabel
-    property alias externalLinkDescriptionLabel: externalLinkDescriptionLabel
     property alias postControls: postControls
 
     signal requestViewProfile(string did)
@@ -142,60 +138,17 @@ ClickableFrame {
                     }
                 }
 
-                ClickableFrame {
+                ExternalLinkCard {
                     id: externalLinkFrame
                     Layout.preferredWidth: parent.basisWidth
                     Layout.topMargin: 5
-                    visible: false
-                    topInset: 0
-                    leftInset: 0
-                    rightInset: 0
-                    bottomInset: 0
-                    topPadding: 0
-                    leftPadding: 0
-                    rightPadding: 0
-                    bottomPadding: 5
+                    visible: externalLink.valid
                     hoverEnabled: true
                     onHoveredChanged:{
                         if(hovered){
-                            displayLink(externalLinkUriLabel.text)
+                            displayLink(uriLabel.text)
                         }else{
                             displayLink("")
-                        }
-                    }
-
-                    ColumnLayout {
-                        spacing: 3
-                        ImageWithIndicator {
-                            id: externalLinkThumbImage
-                            Layout.preferredWidth: externalLinkFrame.width
-                            Layout.preferredHeight: status !== Image.Null ? externalLinkFrame.width * 0.5 : 30
-                            fillMode: Image.PreserveAspectCrop
-                        }
-                        Label {
-                            id: externalLinkTitleLabel
-                            Layout.preferredWidth: externalLinkFrame.width
-                            leftPadding: 5
-                            rightPadding: 5
-                            elide: Label.ElideRight
-                        }
-                        Label {
-                            id: externalLinkUriLabel
-                            Layout.preferredWidth: externalLinkFrame.width
-                            leftPadding: 5
-                            rightPadding: 5
-                            elide: Label.ElideRight
-                            font.pointSize: 8
-                            color: Material.color(Material.Grey)
-                        }
-                        Label {
-                            id: externalLinkDescriptionLabel
-                            visible: text.length > 0
-                            Layout.preferredWidth: externalLinkFrame.width
-                            leftPadding: 5
-                            rightPadding: 5
-                            elide: Label.ElideRight
-                            font.pointSize: 8
                         }
                     }
                 }

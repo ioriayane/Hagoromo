@@ -201,6 +201,7 @@ Dialog {
 
         RowLayout {
             Layout.maximumWidth: 400
+            visible: postType !== "quote" && embedImagePreview.embedImages.length === 0
             Label {
                 text: qsTr("Link card") + " : "
             }
@@ -209,10 +210,12 @@ Dialog {
                 clip: true
                 TextArea {
                     id: addingExternalLinkUrlText
+                    selectByMouse: true
                 }
             }
             IconButton {
-                iconSource: externalLink.running ? "" : "../images/add.png"
+                id: externalLinkButton
+                iconSource: "../images/add.png"
                 enabled: addingExternalLinkUrlText.text.length > 0
                 onClicked: externalLink.getExternalLink(addingExternalLinkUrlText.text)
                 BusyIndicator {
@@ -220,69 +223,34 @@ Dialog {
                     anchors.margins: 3
                     visible: externalLink.running
                 }
+                states: [
+                    State {
+                        when: externalLink.running
+                        PropertyChanges {
+                            target: externalLinkButton
+                            enabled: false
+                            onClicked: {}
+                        }
+                    },
+                    State {
+                        when: externalLink.valid
+                        PropertyChanges {
+                            target: externalLinkButton
+                            iconSource: "../images/delete.png"
+                            onClicked: externalLink.clear()
+                        }
+                    }
+                ]
             }
         }
-        ClickableFrame {
-            id: externalLinkFrame
+        ExternalLinkCard {
             Layout.preferredWidth: 400
-            Layout.topMargin: 5
             visible: externalLink.valid
-            topInset: 0
-            leftInset: 0
-            rightInset: 0
-            bottomInset: 0
-            topPadding: 0
-            leftPadding: 0
-            rightPadding: 0
-            bottomPadding: 5
-            hoverEnabled: true
-            onHoveredChanged:{
-                //                if(hovered){
-                //                    displayLink(externalLinkUriLabel.text)
-                //                }else{
-                //                    displayLink("")
-                //                }
-            }
 
-            ColumnLayout {
-                spacing: 3
-                ImageWithIndicator {
-                    id: externalLinkThumbImage
-                    Layout.preferredWidth: externalLinkFrame.width
-                    Layout.preferredHeight: status !== Image.Null ? externalLinkFrame.width * 0.5 : 30
-                    fillMode: Image.PreserveAspectCrop
-                    source: externalLink.thumbLocal
-                    onSourceChanged: console.log("source " + source)
-                }
-                Label {
-                    id: externalLinkTitleLabel
-                    Layout.preferredWidth: externalLinkFrame.width
-                    leftPadding: 5
-                    rightPadding: 5
-                    elide: Label.ElideRight
-                    text: externalLink.title
-                }
-                Label {
-                    id: externalLinkUriLabel
-                    Layout.preferredWidth: externalLinkFrame.width
-                    leftPadding: 5
-                    rightPadding: 5
-                    elide: Label.ElideRight
-                    font.pointSize: 8
-                    color: Material.color(Material.Grey)
-                    text: externalLink.uri
-                }
-                Label {
-                    id: externalLinkDescriptionLabel
-                    visible: text.length > 0
-                    Layout.preferredWidth: externalLinkFrame.width
-                    leftPadding: 5
-                    rightPadding: 5
-                    elide: Label.ElideRight
-                    font.pointSize: 8
-                    text: externalLink.description
-                }
-            }
+            thumbImage.source: externalLink.thumbLocal
+            uriLabel.text: externalLink.uri
+            titleLabel.text: externalLink.title
+            descriptionLabel.text: externalLink.description
         }
 
         RowLayout {
@@ -363,7 +331,7 @@ Dialog {
                 Layout.preferredHeight: 1
             }
             IconButton {
-                enabled: !createRecord.running
+                enabled: !createRecord.running && !externalLink.valid
                 iconSource: "../images/add_image.png"
                 flat: true
                 onClicked: {
