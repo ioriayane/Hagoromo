@@ -237,6 +237,28 @@ void atprotocol_test::test_OpenGraphProtocol()
         QVERIFY(img.width() == 664);
         QVERIFY(img.height() == 257);
     }
+
+    {
+        QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
+        ogp.getData(m_service + "/ogp/file5.html");
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+
+        QVERIFY2(ogp.uri() == "http://localhost/response/ogp/file5.html", ogp.uri().toLocal8Bit());
+        QVERIFY2(ogp.title()
+                         == QString("file5 ")
+                                    .append(QChar(0x30bf))
+                                    .append(QChar(0x30a4))
+                                    .append(QChar(0x30c8))
+                                    .append(QChar(0x30eb)),
+                 ogp.title().toLocal8Bit());
+        QVERIFY2(ogp.description() == QString("file5 ").append(QChar(0x8a73)).append(QChar(0x7d30)),
+                 ogp.description().toLocal8Bit());
+        QVERIFY(ogp.thumb() == "");
+    }
 }
 
 QTEST_MAIN(atprotocol_test)
