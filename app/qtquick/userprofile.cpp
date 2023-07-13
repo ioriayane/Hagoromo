@@ -12,7 +12,10 @@ UserProfile::UserProfile(QObject *parent)
       m_followsCount(0),
       m_postsCount(0),
       m_following(false),
-      m_followedBy(false)
+      m_followedBy(false),
+      m_muted(false),
+      m_blockedBy(false),
+      m_blocking(false)
 {
 }
 
@@ -58,8 +61,11 @@ void UserProfile::getProfile(const QString &did)
 
                 setFollowing(detail.viewer.following.contains(m_account.did));
                 setFollowedBy(detail.viewer.followedBy.contains(did));
-
                 setFollowingUri(detail.viewer.following);
+                setMuted(detail.viewer.muted);
+                setBlockedBy(detail.viewer.blockedBy);
+                setBlocking(detail.viewer.blocking.contains(m_account.did));
+                setBlockingUri(detail.viewer.blocking);
             } else {
                 emit errorOccured(profile->errorMessage());
             }
@@ -252,4 +258,56 @@ void UserProfile::setRunning(bool newRunning)
         return;
     m_running = newRunning;
     emit runningChanged();
+}
+
+bool UserProfile::muted() const
+{
+    return m_muted;
+}
+
+void UserProfile::setMuted(bool newMuted)
+{
+    if (m_muted == newMuted)
+        return;
+    m_muted = newMuted;
+    emit mutedChanged();
+}
+
+bool UserProfile::blockedBy() const
+{
+    return m_blockedBy;
+}
+
+void UserProfile::setBlockedBy(bool newBlockedBy)
+{
+    if (m_blockedBy == newBlockedBy)
+        return;
+    m_blockedBy = newBlockedBy;
+    emit blockedByChanged();
+}
+
+bool UserProfile::blocking() const
+{
+    return m_blocking;
+}
+
+void UserProfile::setBlocking(bool newBlocking)
+{
+    if (m_blocking == newBlocking)
+        return;
+    m_blocking = newBlocking;
+    emit blockingChanged();
+}
+
+QString UserProfile::blockingUri() const
+{
+    return m_blockingUri;
+}
+
+void UserProfile::setBlockingUri(const QString &newBlockingUri)
+{
+    if (m_blockingUri == newBlockingUri)
+        return;
+    m_blockingUri = newBlockingUri;
+    emit blockingUriChanged();
 }

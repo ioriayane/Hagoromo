@@ -10,6 +10,7 @@ QML_FILES = \
     qml/controls/ClickableFrame.qml \
     qml/controls/ProgressCircle.qml \
     qml/controls/IconButton.qml \
+    qml/controls/IconLabelFrame.qml \
     qml/controls/ImageWithIndicator.qml \
     qml/data/Account.qml \
     qml/data/ColumnSettings.qml \
@@ -50,6 +51,7 @@ IMAGE_FILES += \
     qml/images/arrow_left_double.png \
     qml/images/arrow_left_single.png \
     qml/images/auto.png \
+    qml/images/block.png \
     qml/images/bookmark_add.png \
     qml/images/check.png \
     qml/images/close.png \
@@ -73,7 +75,9 @@ IMAGE_FILES += \
     qml/images/repost.png \
     qml/images/search.png \
     qml/images/settings.png \
-    qml/images/translate.png
+    qml/images/translate.png \
+    qml/images/visibility_off.png \
+    qml/images/visibility_on.png
 
 
 resources.files = $$QML_FILES $$IMAGE_FILES

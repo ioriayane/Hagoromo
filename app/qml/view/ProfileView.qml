@@ -29,8 +29,8 @@ ColumnLayout {
     property string accountDid: ""  // 認証しているアカウント
 
     signal requestReply(string cid, string uri,
-                          string reply_root_cid, string reply_root_uri,
-                          string avatar, string display_name, string handle, string indexed_at, string text)
+                        string reply_root_cid, string reply_root_uri,
+                        string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestQuote(string cid, string uri, string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestMention(string handle)
     signal requestViewThread(string uri)
@@ -288,6 +288,35 @@ ColumnLayout {
                 }
             }
         }
+        IconLabelFrame {
+            id: moderationFrame
+            Layout.preferredWidth: profileView.width
+            visible: false
+            states: [
+                State {
+                    when: userProfile.blocking
+                    PropertyChanges {
+                        target: moderationFrame
+                        visible: true
+                        backgroundColor: Material.color(Material.Red)
+                        borderWidth: 0
+                        iconSource: "../images/block.png"
+                        labelText: qsTr("Account blocked")
+                    }
+                },
+                State {
+                    when: userProfile.muted
+                    PropertyChanges {
+                        target: moderationFrame
+                        visible: true
+                        backgroundColor: Material.color(Material.Grey/*, Material.Shade600*/)
+                        borderWidth: 0
+                        iconSource: "../images/visibility_off.png"
+                        labelText: qsTr("Account muted")
+                    }
+                }
+            ]
+        }
     }
 
     TabBar {
@@ -345,17 +374,17 @@ ColumnLayout {
             accountDid: profileView.accountDid
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
-                              profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+                            profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
-                              profileView.requestQuote(cid, uri, avatar, display_name, handle, indexed_at, text)
+                            profileView.requestQuote(cid, uri, avatar, display_name, handle, indexed_at, text)
 
             onRequestViewThread: (uri) => profileView.requestViewThread(uri)
             onRequestViewImages: (index, paths) => profileView.requestViewImages(index, paths)
             onRequestViewProfile: (did) => {
-                                        if(did !== profileView.userDid){
-                                            profileView.requestViewProfile(did)
-                                        }
-                                    }
+                                      if(did !== profileView.userDid){
+                                          profileView.requestViewProfile(did)
+                                      }
+                                  }
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
         }
 
@@ -373,17 +402,17 @@ ColumnLayout {
             accountDid: profileView.accountDid
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
-                              profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+                            profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
-                              profileView.requestQuote(cid, uri, avatar, display_name, handle, indexed_at, text)
+                            profileView.requestQuote(cid, uri, avatar, display_name, handle, indexed_at, text)
 
             onRequestViewThread: (uri) => profileView.requestViewThread(uri)
             onRequestViewImages: (index, paths) => profileView.requestViewImages(index, paths)
             onRequestViewProfile: (did) => {
-                                        if(did !== profileView.userDid){
-                                            profileView.requestViewProfile(did)
-                                        }
-                                    }
+                                      if(did !== profileView.userDid){
+                                          profileView.requestViewProfile(did)
+                                      }
+                                  }
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
         }
 
@@ -401,17 +430,17 @@ ColumnLayout {
             accountDid: profileView.accountDid
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
-                              profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+                            profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
-                              profileView.requestQuote(cid, uri, avatar, display_name, handle, indexed_at, text)
+                            profileView.requestQuote(cid, uri, avatar, display_name, handle, indexed_at, text)
 
             onRequestViewThread: (uri) => profileView.requestViewThread(uri)
             onRequestViewImages: (index, paths) => profileView.requestViewImages(index, paths)
             onRequestViewProfile: (did) => {
-                                        if(did !== profileView.userDid){
-                                            profileView.requestViewProfile(did)
-                                        }
-                                    }
+                                      if(did !== profileView.userDid){
+                                          profileView.requestViewProfile(did)
+                                      }
+                                  }
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
         }
 
@@ -428,10 +457,10 @@ ColumnLayout {
                 onErrorOccured: (message) => {console.log(message)}
             }
             onRequestViewProfile: (did) => {
-                                        if(did !== profileView.userDid){
-                                            profileView.requestViewProfile(did)
-                                        }
-                                    }
+                                      if(did !== profileView.userDid){
+                                          profileView.requestViewProfile(did)
+                                      }
+                                  }
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
         }
 
@@ -449,10 +478,10 @@ ColumnLayout {
                 onErrorOccured: (message) => {console.log(message)}
             }
             onRequestViewProfile: (did) => {
-                                        if(did !== profileView.userDid){
-                                            profileView.requestViewProfile(did)
-                                        }
-                                    }
+                                      if(did !== profileView.userDid){
+                                          profileView.requestViewProfile(did)
+                                      }
+                                  }
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
         }
     }
