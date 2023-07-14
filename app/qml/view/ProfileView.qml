@@ -339,6 +339,15 @@ ColumnLayout {
                 }
             ]
         }
+        IconLabelFrame {
+            id: moderationFrame2
+            Layout.preferredWidth: profileView.width
+            visible: userProfile.blockedBy
+            backgroundColor: Material.color(Material.Red)
+            borderWidth: 0
+            iconSource: "../images/block.png"
+            labelText: qsTr("This account has blocked you")
+        }
     }
 
     TabBar {
