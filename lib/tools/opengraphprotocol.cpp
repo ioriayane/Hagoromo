@@ -43,6 +43,7 @@ void OpenGraphProtocol::getData(const QString &url)
         reply->deleteLater();
         manager->deleteLater();
     });
+    manager->setRedirectPolicy(QNetworkRequest::SameOriginRedirectPolicy);
     manager->get(request);
 }
 
