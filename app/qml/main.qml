@@ -242,6 +242,9 @@ ApplicationWindow {
                                   postDialog.postText.text = handle + " "
                                   postDialog.open()
                               }
+            onRequestViewAuthorFeed: (account_uuid, did, handle) => {
+                                         columnManageModel.append(account_uuid, 5, false, 300000, 350, handle, did)
+                                     }
 
             onRequestViewImages: (index, paths) => imageFullView.open(index, paths)
 

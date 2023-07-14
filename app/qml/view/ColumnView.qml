@@ -10,6 +10,7 @@ import tech.relog.hagoromo.columnlistmodel 1.0
 import tech.relog.hagoromo.searchpostlistmodel 1.0
 import tech.relog.hagoromo.searchprofilelistmodel 1.0
 import tech.relog.hagoromo.customfeedlistmodel 1.0
+import tech.relog.hagoromo.authorfeedlistmodel 1.0
 
 import "../controls"
 import "../data"
@@ -35,6 +36,7 @@ ColumnLayout {
                         string cid, string uri,
                         string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestMention(string account_uuid, string handle)
+    signal requestViewAuthorFeed(string account_uuid, string did, string handle)
     signal requestViewImages(int index, var paths)
 
     signal requestMoveToLeft(string key)
@@ -157,6 +159,8 @@ ColumnLayout {
                                      // これはPostThreadViewのプロパティにダイレクトに設定する
                                      columnStackView.push(postThreadComponent, { "postThreadUri": uri })
                                  }
+            onRequestViewAuthorFeed: (did, handle) =>
+                                     columnView.requestViewAuthorFeed(account.uuid, did, handle)
 
             onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
@@ -253,6 +257,40 @@ ColumnLayout {
         }
     }
 
+    Component {
+        id: authorFeedComponent
+        TimelineView {
+            model: AuthorFeedListModel {
+                autoLoading: settings.autoLoading
+                loadingInterval: settings.loadingInterval
+                authorDid: settings.columnValue
+
+                onErrorOccured: (message) => {console.log(message)}
+            }
+            fontSizeRatio: columnView.fontSizeRatio
+            accountDid: account.did
+
+            onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
+                            columnView.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+            onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
+                            columnView.requestQuote(account.uuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+
+            onRequestViewThread: (uri) => {
+                                     // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
+                                     // これはPostThreadViewのプロパティにダイレクトに設定する
+                                     columnStackView.push(postThreadComponent, { "postThreadUri": uri })
+                                 }
+
+            onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
+
+            onRequestViewProfile: (did) => {
+                                      columnStackView.push(profileComponent, { "userDid": did })
+                                  }
+
+            onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
+        }
+    }
+
     function load(){
         console.log("ColumnLayout:componentType=" + componentType)
         if(componentType === 0){
@@ -270,6 +308,9 @@ ColumnLayout {
         }else if(componentType === 4){
             columnStackView.push(customComponent)
             componentTypeLabel.text = qsTr("Feed") + " : " + settings.columnName
+        }else if(componentType === 5){
+            columnStackView.push(authorFeedComponent)
+            componentTypeLabel.text = qsTr("User") + " : " + settings.columnName
         }else{
             columnStackView.push(timelineComponent)
             componentTypeLabel.text = qsTr("Unknown")

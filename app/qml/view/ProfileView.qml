@@ -36,6 +36,7 @@ ColumnLayout {
     signal requestViewThread(string uri)
     signal requestViewImages(int index, var paths)
     signal requestViewProfile(string did)
+    signal requestViewAuthorFeed(string did, string handle)
 
     signal back()
 
@@ -280,6 +281,12 @@ ColumnLayout {
                     }
                     MenuSeparator {}
                     MenuItem {
+                        text: qsTr("Open in new column")
+                        icon.source: "../images/add.png"
+                        enabled: userProfile.handle.length > 0
+                        onTriggered: requestViewAuthorFeed(userProfile.did, "@" + userProfile.handle)
+                    }
+                    MenuItem {
                         text: qsTr("Open in Official")
                         icon.source: "../images/open_in_other.png"
                         enabled: userProfile.handle.length > 0
@@ -289,6 +296,7 @@ ColumnLayout {
                     MenuItem {
                         text: userProfile.muted ? qsTr("Unmute account") : qsTr("Mute account")
                         icon.source: userProfile.muted ? "../images/visibility_on.png" : "../images/visibility_off.png"
+                        enabled: userProfile.handle.length > 0
                         onTriggered: {
                             if(userProfile.muted){
                                 recordOperator.deleteMute(userProfile.did)
@@ -300,6 +308,7 @@ ColumnLayout {
                     MenuItem {
                         text: userProfile.blocking ? qsTr("Unblock account") : qsTr("Block account")
                         icon.source: userProfile.blocking ? "../images/block.png" : "../images/block.png"
+                        enabled: userProfile.handle.length > 0
                         onTriggered: {
                             if(userProfile.blocking){
                                 recordOperator.deleteBlock(userProfile.blockingUri)
