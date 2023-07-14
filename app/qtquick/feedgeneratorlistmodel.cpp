@@ -8,7 +8,6 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QJsonValue>
-#include <QPointer>
 
 using AtProtocolInterface::AppBskyActorGetPreferences;
 using AtProtocolInterface::AppBskyActorPutPreferences;
@@ -91,25 +90,21 @@ void FeedGeneratorListModel::getLatest()
 
     clear();
 
-    QPointer<FeedGeneratorListModel> aliving(this);
-
     AppBskyUnspeccedGetPopularFeedGenerators *generators =
-            new AppBskyUnspeccedGetPopularFeedGenerators();
+            new AppBskyUnspeccedGetPopularFeedGenerators(this);
     connect(generators, &AppBskyUnspeccedGetPopularFeedGenerators::finished, [=](bool success) {
-        if (aliving) {
-            if (success) {
-                beginInsertRows(QModelIndex(), 0, generators->generatorViewList()->count() - 1);
-                for (const auto &generator : *generators->generatorViewList()) {
-                    m_cidList.append(generator.cid);
-                    m_generatorViewHash[generator.cid] = generator;
-                }
-                endInsertRows();
-
-                getSavedGenerators();
-            } else {
-                emit errorOccured(generators->errorMessage());
-                setRunning(false);
+        if (success) {
+            beginInsertRows(QModelIndex(), 0, generators->generatorViewList()->count() - 1);
+            for (const auto &generator : *generators->generatorViewList()) {
+                m_cidList.append(generator.cid);
+                m_generatorViewHash[generator.cid] = generator;
             }
+            endInsertRows();
+
+            getSavedGenerators();
+        } else {
+            emit errorOccured(generators->errorMessage());
+            setRunning(false);
         }
         generators->deleteLater();
     });
@@ -123,17 +118,13 @@ void FeedGeneratorListModel::saveGenerator(const QString &uri)
         return;
     setRunning(true);
 
-    QPointer<FeedGeneratorListModel> aliving(this);
-
-    AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences();
+    AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
     connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
-        if (aliving) {
-            if (success) {
-                putPreferences(appendGeneratorToPreference(pref->replyJson(), uri));
-            } else {
-                emit errorOccured(pref->errorMessage());
-                setRunning(false);
-            }
+        if (success) {
+            putPreferences(appendGeneratorToPreference(pref->replyJson(), uri));
+        } else {
+            emit errorOccured(pref->errorMessage());
+            setRunning(false);
         }
         pref->deleteLater();
     });
@@ -147,17 +138,13 @@ void FeedGeneratorListModel::removeGenerator(const QString &uri)
         return;
     setRunning(true);
 
-    QPointer<FeedGeneratorListModel> aliving(this);
-
-    AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences();
+    AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
     connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
-        if (aliving) {
-            if (success) {
-                putPreferences(removeGeneratorToPreference(pref->replyJson(), uri));
-            } else {
-                emit errorOccured(pref->errorMessage());
-                setRunning(false);
-            }
+        if (success) {
+            putPreferences(removeGeneratorToPreference(pref->replyJson(), uri));
+        } else {
+            emit errorOccured(pref->errorMessage());
+            setRunning(false);
         }
         pref->deleteLater();
     });
@@ -191,54 +178,50 @@ bool FeedGeneratorListModel::checkVisibility(const QString &cid)
 
 void FeedGeneratorListModel::getSavedGenerators()
 {
-    QPointer<FeedGeneratorListModel> aliving(this);
-
     m_savedUriList.clear();
 
-    AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences();
+    AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
     connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
-        if (aliving) {
-            if (success) {
-                for (const auto &feed : *pref->savedFeedsPrefList()) {
-                    m_savedUriList.append(feed.saved);
+        if (success) {
+            for (const auto &feed : *pref->savedFeedsPrefList()) {
+                m_savedUriList.append(feed.saved);
 
-                    //                    QHashIterator<QString,
-                    //                    AtProtocolType::AppBskyFeedDefs::GeneratorView> i(
-                    //                            m_generatorViewHash);
-                    //                    while (i.hasNext()) {
-                    //                        i.next();
-                    //                        int pos = feed.saved.indexOf(i.value().uri);
-                    //                        if (pos >= 0) {
-                    //                            emit dataChanged(index(pos), index(pos),
-                    //                                             QVector<int>() <<
-                    //                                             static_cast<int>(SavingRole));
-                    //                        }
-                    //                    }
-                }
-                for (int i = 0; i < m_cidList.count(); i++) {
-                    emit dataChanged(index(i), index(i),
-                                     QVector<int>() << static_cast<int>(SavingRole));
-                }
-                //                QHashIterator<QString,
-                //                AtProtocolType::AppBskyFeedDefs::GeneratorView> i(
-                //                        m_generatorViewHash);
-                //                while (i.hasNext()) {
-                //                    i.next();
-                //                    bool new_value = m_savedUriList.contains(i.value().uri);
-                //                    if (m_savedUriList.contains(i.value().uri)) {
-                //                        int pos = m_cidList.indexOf(i.value().cid);
+                //                    QHashIterator<QString,
+                //                    AtProtocolType::AppBskyFeedDefs::GeneratorView> i(
+                //                            m_generatorViewHash);
+                //                    while (i.hasNext()) {
+                //                        i.next();
+                //                        int pos = feed.saved.indexOf(i.value().uri);
                 //                        if (pos >= 0) {
                 //                            emit dataChanged(index(pos), index(pos),
                 //                                             QVector<int>() <<
                 //                                             static_cast<int>(SavingRole));
                 //                        }
                 //                    }
-                //                }
-            } else {
-                emit errorOccured(pref->errorMessage());
             }
-            setRunning(false);
+            for (int i = 0; i < m_cidList.count(); i++) {
+                emit dataChanged(index(i), index(i),
+                                 QVector<int>() << static_cast<int>(SavingRole));
+            }
+            //                QHashIterator<QString,
+            //                AtProtocolType::AppBskyFeedDefs::GeneratorView> i(
+            //                        m_generatorViewHash);
+            //                while (i.hasNext()) {
+            //                    i.next();
+            //                    bool new_value = m_savedUriList.contains(i.value().uri);
+            //                    if (m_savedUriList.contains(i.value().uri)) {
+            //                        int pos = m_cidList.indexOf(i.value().cid);
+            //                        if (pos >= 0) {
+            //                            emit dataChanged(index(pos), index(pos),
+            //                                             QVector<int>() <<
+            //                                             static_cast<int>(SavingRole));
+            //                        }
+            //                    }
+            //                }
+        } else {
+            emit errorOccured(pref->errorMessage());
         }
+        setRunning(false);
         pref->deleteLater();
     });
     pref->setAccount(account());
@@ -247,18 +230,14 @@ void FeedGeneratorListModel::getSavedGenerators()
 
 void FeedGeneratorListModel::putPreferences(const QString &json)
 {
-    QPointer<FeedGeneratorListModel> aliving(this);
-
-    AppBskyActorPutPreferences *pref = new AppBskyActorPutPreferences();
+    AppBskyActorPutPreferences *pref = new AppBskyActorPutPreferences(this);
     connect(pref, &AppBskyActorPutPreferences::finished, [=](bool success) {
-        if (aliving) {
-            if (success) {
-                qDebug() << "finish put preferences.";
-                getSavedGenerators();
-            } else {
-                emit errorOccured(pref->errorMessage());
-                setRunning(false);
-            }
+        if (success) {
+            qDebug() << "finish put preferences.";
+            getSavedGenerators();
+        } else {
+            emit errorOccured(pref->errorMessage());
+            setRunning(false);
         }
         pref->deleteLater();
     });

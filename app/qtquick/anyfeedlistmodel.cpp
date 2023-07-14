@@ -4,8 +4,6 @@
 #include "atprotocol/com/atproto/repo/comatprotorepolistrecords.h"
 #include "atprotocol/lexicons_func_unknown.h"
 
-#include <QPointer>
-
 using AtProtocolInterface::AppBskyFeedGetPosts;
 using AtProtocolInterface::ComAtprotoRepoListRecords;
 
@@ -24,47 +22,41 @@ void AnyFeedListModel::getLatest()
         return;
     setRunning(true);
 
-    QPointer<AnyFeedListModel> aliving(this);
-
-    ComAtprotoRepoListRecords *records = new ComAtprotoRepoListRecords();
+    ComAtprotoRepoListRecords *records = new ComAtprotoRepoListRecords(this);
     connect(records, &ComAtprotoRepoListRecords::finished, [=](bool success) {
-        if (aliving) {
-            if (success) {
-                QDateTime reference_time = QDateTime::currentDateTimeUtc();
+        if (success) {
+            QDateTime reference_time = QDateTime::currentDateTimeUtc();
 
-                for (const auto &record : *records->recordList()) {
-                    m_recordHash[record.cid] = record;
+            for (const auto &record : *records->recordList()) {
+                m_recordHash[record.cid] = record;
 
-                    QString cid;
-                    QString indexed_at;
-                    switch (feedType()) {
-                    case AnyFeedListModelFeedType::LikeFeedType:
-                        cid = appendGetPostCue<AtProtocolType::AppBskyFeedLike::Main>(record.value);
-                        indexed_at =
-                                getIndexedAt<AtProtocolType::AppBskyFeedLike::Main>(record.value);
-                        break;
-                    case AnyFeedListModelFeedType::RepostFeedType:
-                        cid = appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(
-                                record.value);
-                        indexed_at =
-                                getIndexedAt<AtProtocolType::AppBskyFeedRepost::Main>(record.value);
-                        break;
-                    default:
-                        break;
-                    }
-                    if (!cid.isEmpty() && !m_cidList.contains(cid)) {
-                        PostCueItem post;
-                        post.cid = cid;
-                        post.indexed_at = indexed_at;
-                        post.reference_time = reference_time;
-                        m_cuePost.insert(0, post);
-                    }
+                QString cid;
+                QString indexed_at;
+                switch (feedType()) {
+                case AnyFeedListModelFeedType::LikeFeedType:
+                    cid = appendGetPostCue<AtProtocolType::AppBskyFeedLike::Main>(record.value);
+                    indexed_at = getIndexedAt<AtProtocolType::AppBskyFeedLike::Main>(record.value);
+                    break;
+                case AnyFeedListModelFeedType::RepostFeedType:
+                    cid = appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(record.value);
+                    indexed_at =
+                            getIndexedAt<AtProtocolType::AppBskyFeedRepost::Main>(record.value);
+                    break;
+                default:
+                    break;
                 }
-            } else {
-                emit errorOccured(records->errorMessage());
+                if (!cid.isEmpty() && !m_cidList.contains(cid)) {
+                    PostCueItem post;
+                    post.cid = cid;
+                    post.indexed_at = indexed_at;
+                    post.reference_time = reference_time;
+                    m_cuePost.insert(0, post);
+                }
             }
-            QTimer::singleShot(100, this, &AnyFeedListModel::displayQueuedPosts);
+        } else {
+            emit errorOccured(records->errorMessage());
         }
+        QTimer::singleShot(100, this, &AnyFeedListModel::displayQueuedPosts);
         records->deleteLater();
     });
     records->setAccount(account());
@@ -129,33 +121,29 @@ void AnyFeedListModel::getPosts()
         m_cueGetPost.removeFirst();
     }
 
-    QPointer<AnyFeedListModel> aliving(this);
-
-    AppBskyFeedGetPosts *posts = new AppBskyFeedGetPosts();
+    AppBskyFeedGetPosts *posts = new AppBskyFeedGetPosts(this);
     connect(posts, &AppBskyFeedGetPosts::finished, [=](bool success) {
-        if (aliving) {
-            if (success) {
-                QStringList new_cid;
+        if (success) {
+            QStringList new_cid;
 
-                for (auto item = posts->postList()->crbegin(); item != posts->postList()->crend();
-                     item++) {
-                    AtProtocolType::AppBskyFeedDefs::FeedViewPost view_post;
-                    view_post.post = *item;
-                    m_viewPostHash[item->cid] = view_post;
+            for (auto item = posts->postList()->crbegin(); item != posts->postList()->crend();
+                 item++) {
+                AtProtocolType::AppBskyFeedDefs::FeedViewPost view_post;
+                view_post.post = *item;
+                m_viewPostHash[item->cid] = view_post;
 
-                    if (m_cidList.contains(item->cid)) {
-                        int r = m_cidList.indexOf(item->cid);
-                        if (r >= 0) {
-                            emit dataChanged(index(r), index(r));
-                        }
+                if (m_cidList.contains(item->cid)) {
+                    int r = m_cidList.indexOf(item->cid);
+                    if (r >= 0) {
+                        emit dataChanged(index(r), index(r));
                     }
                 }
-            } else {
-                emit errorOccured(posts->errorMessage());
             }
-            // 残ってたらもう1回
-            QTimer::singleShot(100, this, &AnyFeedListModel::getPosts);
+        } else {
+            emit errorOccured(posts->errorMessage());
         }
+        // 残ってたらもう1回
+        QTimer::singleShot(100, this, &AnyFeedListModel::getPosts);
         posts->deleteLater();
     });
     posts->setAccount(account());

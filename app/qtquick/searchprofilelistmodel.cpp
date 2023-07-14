@@ -2,8 +2,6 @@
 
 #include "search/searchprofiles.h"
 
-#include <QPointer>
-
 using SearchInterface::SearchProfiles;
 
 SearchProfileListModel::SearchProfileListModel(QObject *parent) : FollowsListModel { parent } { }
@@ -14,18 +12,14 @@ void SearchProfileListModel::getLatest()
         return;
     setRunning(true);
 
-    QPointer<SearchProfileListModel> aliving(this);
-
-    SearchProfiles *profiles = new SearchProfiles();
+    SearchProfiles *profiles = new SearchProfiles(this);
     connect(profiles, &SearchProfiles::finished, [=](bool success) {
-        if (aliving) {
-            if (success) {
-                m_cueGetProfile.append(*profiles->didList());
-            } else {
-                emit errorOccured(profiles->errorMessage());
-            }
-            QTimer::singleShot(100, this, &SearchProfileListModel::getProfiles);
+        if (success) {
+            m_cueGetProfile.append(*profiles->didList());
+        } else {
+            emit errorOccured(profiles->errorMessage());
         }
+        QTimer::singleShot(100, this, &SearchProfileListModel::getProfiles);
         profiles->deleteLater();
     });
     profiles->setAccount(account());

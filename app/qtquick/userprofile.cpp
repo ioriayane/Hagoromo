@@ -1,8 +1,6 @@
 #include "userprofile.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofile.h"
 
-#include <QPointer>
-
 using AtProtocolInterface::AppBskyActorGetProfile;
 
 UserProfile::UserProfile(QObject *parent)
@@ -37,40 +35,36 @@ void UserProfile::getProfile(const QString &did)
         return;
     setRunning(true);
 
-    QPointer<UserProfile> aliving(this);
-
-    AppBskyActorGetProfile *profile = new AppBskyActorGetProfile();
+    AppBskyActorGetProfile *profile = new AppBskyActorGetProfile(this);
     connect(profile, &AppBskyActorGetProfile::finished, [=](bool success) {
-        if (aliving) {
-            if (success) {
-                AtProtocolType::AppBskyActorDefs::ProfileViewDetailed detail =
-                        profile->profileViewDetailed();
-                qDebug() << "Get user profile detailed" << detail.displayName << detail.description;
-                setDid(detail.did);
-                setHandle(detail.handle);
-                setDisplayName(detail.displayName);
-                setDescription(detail.description);
-                setAvatar(detail.avatar);
-                setBanner(detail.banner);
-                setFollowersCount(detail.followersCount);
-                setFollowsCount(detail.followsCount);
-                setPostsCount(detail.postsCount);
-                setIndexedAt(QDateTime::fromString(detail.indexedAt, Qt::ISODateWithMs)
-                                     .toLocalTime()
-                                     .toString("yyyy/MM/dd"));
+        if (success) {
+            AtProtocolType::AppBskyActorDefs::ProfileViewDetailed detail =
+                    profile->profileViewDetailed();
+            qDebug() << "Get user profile detailed" << detail.displayName << detail.description;
+            setDid(detail.did);
+            setHandle(detail.handle);
+            setDisplayName(detail.displayName);
+            setDescription(detail.description);
+            setAvatar(detail.avatar);
+            setBanner(detail.banner);
+            setFollowersCount(detail.followersCount);
+            setFollowsCount(detail.followsCount);
+            setPostsCount(detail.postsCount);
+            setIndexedAt(QDateTime::fromString(detail.indexedAt, Qt::ISODateWithMs)
+                                 .toLocalTime()
+                                 .toString("yyyy/MM/dd"));
 
-                setFollowing(detail.viewer.following.contains(m_account.did));
-                setFollowedBy(detail.viewer.followedBy.contains(did));
-                setFollowingUri(detail.viewer.following);
-                setMuted(detail.viewer.muted);
-                setBlockedBy(detail.viewer.blockedBy);
-                setBlocking(detail.viewer.blocking.contains(m_account.did));
-                setBlockingUri(detail.viewer.blocking);
-            } else {
-                emit errorOccured(profile->errorMessage());
-            }
-            setRunning(false);
+            setFollowing(detail.viewer.following.contains(m_account.did));
+            setFollowedBy(detail.viewer.followedBy.contains(did));
+            setFollowingUri(detail.viewer.following);
+            setMuted(detail.viewer.muted);
+            setBlockedBy(detail.viewer.blockedBy);
+            setBlocking(detail.viewer.blocking.contains(m_account.did));
+            setBlockingUri(detail.viewer.blocking);
+        } else {
+            emit errorOccured(profile->errorMessage());
         }
+        setRunning(false);
         profile->deleteLater();
     });
     profile->setAccount(m_account);

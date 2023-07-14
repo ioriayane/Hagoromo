@@ -3,7 +3,6 @@
 #include <QNetworkReply>
 #include <QDomDocument>
 #include <QDomElement>
-#include <QPointer>
 #include <QFile>
 
 // https://ogp.me/
@@ -19,8 +18,6 @@ OpenGraphProtocol::OpenGraphProtocol(QObject *parent) : QObject { parent }
 
 void OpenGraphProtocol::getData(const QString &url)
 {
-    QPointer<OpenGraphProtocol> aliving(this);
-
     m_uri.clear();
     m_title.clear();
     m_description.clear();
@@ -28,18 +25,16 @@ void OpenGraphProtocol::getData(const QString &url)
 
     QNetworkRequest request((QUrl(url)));
 
-    QNetworkAccessManager *manager = new QNetworkAccessManager();
+    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     connect(manager, &QNetworkAccessManager::finished, [=](QNetworkReply *reply) {
         qDebug() << "OpenGraphProtocol reply" << reply->error() << reply->url();
-        if (aliving) {
-            bool ret = (reply->error() == QNetworkReply::NoError);
-            if (!ret) {
-                qCritical() << QString::fromUtf8(reply->readAll());
-            } else {
-                ret = parse(reply->readAll(), reply->url().toString());
-            }
-            emit finished(ret);
+        bool ret = (reply->error() == QNetworkReply::NoError);
+        if (!ret) {
+            qCritical() << QString::fromUtf8(reply->readAll());
+        } else {
+            ret = parse(reply->readAll(), reply->url().toString());
         }
+        emit finished(ret);
         reply->deleteLater();
         manager->deleteLater();
     });
@@ -54,27 +49,23 @@ void OpenGraphProtocol::downloadThumb(const QString &path)
         return;
     }
 
-    QPointer<OpenGraphProtocol> aliving(this);
-
     qDebug() << thumb();
     QNetworkRequest request((QUrl(thumb())));
 
-    QNetworkAccessManager *manager = new QNetworkAccessManager();
+    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     connect(manager, &QNetworkAccessManager::finished, [=](QNetworkReply *reply) {
         qDebug() << "downloadThumb reply" << reply->error() << reply->url();
-        if (aliving) {
-            bool ret = (reply->error() == QNetworkReply::NoError);
-            if (ret) {
-                QFile file(path);
-                if (file.open(QFile::WriteOnly)) {
-                    qDebug() << "save download file:" << path;
-                    file.write(reply->readAll());
-                    file.close();
-                    ret = true;
-                }
+        bool ret = (reply->error() == QNetworkReply::NoError);
+        if (ret) {
+            QFile file(path);
+            if (file.open(QFile::WriteOnly)) {
+                qDebug() << "save download file:" << path;
+                file.write(reply->readAll());
+                file.close();
+                ret = true;
             }
-            emit finishedDownload(ret);
         }
+        emit finishedDownload(ret);
         reply->deleteLater();
         manager->deleteLater();
     });

@@ -4,8 +4,6 @@
 #include "atprotocol/app/bsky/actor/appbskyactorgetpreferences.h"
 #include "atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerators.h"
 
-#include <QPointer>
-
 using AtProtocolInterface::AppBskyActorGetPreferences;
 using AtProtocolInterface::AppBskyFeedGetFeedGenerators;
 using namespace AtProtocolType::AppBskyActorDefs;
@@ -88,20 +86,16 @@ void FeedTypeListModel::getLatest()
 
     clear();
 
-    QPointer<FeedTypeListModel> aliving(this);
-
-    AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences();
+    AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
     connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
-        if (aliving) {
-            if (success) {
-                for (const auto &feed : *pref->savedFeedsPrefList()) {
-                    m_cueUri = feed.saved;
-                }
-            } else {
-                emit errorOccured(pref->errorMessage());
+        if (success) {
+            for (const auto &feed : *pref->savedFeedsPrefList()) {
+                m_cueUri = feed.saved;
             }
-            QTimer::singleShot(10, this, &FeedTypeListModel::getFeedDetails);
+        } else {
+            emit errorOccured(pref->errorMessage());
         }
+        QTimer::singleShot(10, this, &FeedTypeListModel::getFeedDetails);
         pref->deleteLater();
     });
     pref->setAccount(account());
@@ -143,31 +137,28 @@ void FeedTypeListModel::getFeedDetails()
         m_cueUri.removeFirst();
     }
 
-    QPointer<FeedTypeListModel> aliving(this);
-    AppBskyFeedGetFeedGenerators *generators = new AppBskyFeedGetFeedGenerators();
+    AppBskyFeedGetFeedGenerators *generators = new AppBskyFeedGetFeedGenerators(this);
     connect(generators, &AppBskyFeedGetFeedGenerators::finished, [=](bool success) {
-        if (aliving) {
-            if (success) {
-                // apiで渡した順番と逆順で結果が来るので元の順番で追加する
-                // 結果の仕様がいつ変わるか分からないのでAPIに投げるuriの順番で制御しない
-                for (const auto &uri : qAsConst(uris)) {
-                    for (const auto &generator : *generators->generatorViewList()) {
-                        if (uri == generator.uri) {
-                            FeedTypeItem item;
-                            item.type = FeedComponentType::CustomFeed;
-                            item.generator = generator;
-                            beginInsertRows(QModelIndex(), rowCount(), rowCount());
-                            m_feedTypeItemList.append(item);
-                            endInsertRows();
-                            break;
-                        }
+        if (success) {
+            // apiで渡した順番と逆順で結果が来るので元の順番で追加する
+            // 結果の仕様がいつ変わるか分からないのでAPIに投げるuriの順番で制御しない
+            for (const auto &uri : qAsConst(uris)) {
+                for (const auto &generator : *generators->generatorViewList()) {
+                    if (uri == generator.uri) {
+                        FeedTypeItem item;
+                        item.type = FeedComponentType::CustomFeed;
+                        item.generator = generator;
+                        beginInsertRows(QModelIndex(), rowCount(), rowCount());
+                        m_feedTypeItemList.append(item);
+                        endInsertRows();
+                        break;
                     }
                 }
-            } else {
-                emit errorOccured(generators->errorMessage());
             }
-            QTimer::singleShot(10, this, &FeedTypeListModel::getFeedDetails);
+        } else {
+            emit errorOccured(generators->errorMessage());
         }
+        QTimer::singleShot(10, this, &FeedTypeListModel::getFeedDetails);
         generators->deleteLater();
     });
     generators->setAccount(account());

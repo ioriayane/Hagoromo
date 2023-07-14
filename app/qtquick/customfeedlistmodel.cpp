@@ -2,8 +2,6 @@
 
 #include "atprotocol/app/bsky/feed/appbskyfeedgetfeed.h"
 
-#include <QPointer>
-
 using AtProtocolInterface::AppBskyFeedGetFeed;
 
 CustomFeedListModel::CustomFeedListModel(QObject *parent) : TimelineListModel { parent } { }
@@ -14,18 +12,14 @@ void CustomFeedListModel::getLatest()
         return;
     setRunning(true);
 
-    QPointer<CustomFeedListModel> aliving(this);
-
-    AppBskyFeedGetFeed *feed = new AppBskyFeedGetFeed();
+    AppBskyFeedGetFeed *feed = new AppBskyFeedGetFeed(this);
     connect(feed, &AppBskyFeedGetFeed::finished, [=](bool success) {
-        if (aliving) {
-            if (success) {
-                copyFrom(feed);
-            } else {
-                emit errorOccured(feed->errorMessage());
-            }
-            QTimer::singleShot(100, this, &CustomFeedListModel::displayQueuedPosts);
+        if (success) {
+            copyFrom(feed);
+        } else {
+            emit errorOccured(feed->errorMessage());
         }
+        QTimer::singleShot(100, this, &CustomFeedListModel::displayQueuedPosts);
         feed->deleteLater();
     });
     feed->setAccount(account());

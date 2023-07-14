@@ -1,8 +1,6 @@
 #include "externallink.h"
 #include "tools/opengraphprotocol.h"
 
-#include <QPointer>
-
 ExternalLink::ExternalLink(QObject *parent) : QObject { parent }, m_running(false), m_valid(false)
 {
     m_thumbLocal.open();
@@ -19,17 +17,13 @@ void ExternalLink::getExternalLink(const QString &uri)
     setTitle(QString());
     setDescription(QString());
 
-    QPointer<ExternalLink> aliving(this);
-
-    OpenGraphProtocol *open_graph = new OpenGraphProtocol();
+    OpenGraphProtocol *open_graph = new OpenGraphProtocol(this);
     connect(open_graph, &OpenGraphProtocol::finished, [=](bool success) {
         bool do_download = false;
-        if (aliving) {
-            qDebug() << open_graph->uri() << open_graph->title() << open_graph->thumb();
-            if (success && !open_graph->thumb().isEmpty()) {
-                do_download = true;
-                open_graph->downloadThumb(m_thumbLocal.fileName());
-            }
+        qDebug() << open_graph->uri() << open_graph->title() << open_graph->thumb();
+        if (success && !open_graph->thumb().isEmpty()) {
+            do_download = true;
+            open_graph->downloadThumb(m_thumbLocal.fileName());
         }
         if (!do_download) {
             open_graph->deleteLater();
@@ -37,15 +31,13 @@ void ExternalLink::getExternalLink(const QString &uri)
         }
     });
     connect(open_graph, &OpenGraphProtocol::finishedDownload, [=](bool success) {
-        if (aliving) {
-            if (success) {
-                setUri(open_graph->uri());
-                setTitle(open_graph->title());
-                setDescription(open_graph->description());
-                setValid(true);
-            }
-            setRunning(false);
+        if (success) {
+            setUri(open_graph->uri());
+            setTitle(open_graph->title());
+            setDescription(open_graph->description());
+            setValid(true);
         }
+        setRunning(false);
         open_graph->deleteLater();
     });
     open_graph->getData(uri);

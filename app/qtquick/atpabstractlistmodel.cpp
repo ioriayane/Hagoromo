@@ -3,7 +3,6 @@
 #include "translator.h"
 
 #include <QDesktopServices>
-#include <QPointer>
 #include <QUrlQuery>
 
 using namespace AtProtocolType;
@@ -57,9 +56,7 @@ void AtpAbstractListModel::translate(const QString &cid)
     if (row == -1)
         return;
 
-    QPointer<AtpAbstractListModel> aliving(this);
-
-    Translator *translator = new Translator();
+    Translator *translator = new Translator(this);
     if (!translator->validSettings()) {
         // 設定画無いときはGoogle翻訳へ飛ばす
         QUrl url("https://translate.google.com/");
@@ -73,11 +70,9 @@ void AtpAbstractListModel::translate(const QString &cid)
         QDesktopServices::openUrl(url);
     } else {
         connect(translator, &Translator::finished, [=](const QString text) {
-            if (aliving) {
-                if (!text.isEmpty()) {
-                    m_translations[cid] = text;
-                    emit dataChanged(index(row), index(row));
-                }
+            if (!text.isEmpty()) {
+                m_translations[cid] = text;
+                emit dataChanged(index(row), index(row));
             }
             translator->deleteLater();
         });

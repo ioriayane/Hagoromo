@@ -6,7 +6,6 @@
 #include "atprotocol/app/bsky/graph/appbskygraphmuteactor.h"
 #include "atprotocol/app/bsky/graph/appbskygraphunmuteactor.h"
 
-#include <QPointer>
 #include <QTimer>
 
 using AtProtocolInterface::AppBskyActorGetProfiles;
@@ -107,17 +106,13 @@ void RecordOperator::post()
     setRunning(true);
 
     makeFacets(m_text, [=]() {
-        QPointer<RecordOperator> aliving(this);
-
-        ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord();
+        ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord(this);
         connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
-            if (aliving) {
-                emit finished(success, QString(), QString());
-                if (!success) {
-                    emit errorOccured(create_record->errorMessage());
-                }
-                setRunning(false);
+            emit finished(success, QString(), QString());
+            if (!success) {
+                emit errorOccured(create_record->errorMessage());
             }
+            setRunning(false);
             create_record->deleteLater();
         });
         create_record->setAccount(m_account);
@@ -143,31 +138,27 @@ void RecordOperator::postWithImages()
     QString path = QUrl(m_embedImages.first()).toLocalFile();
     m_embedImages.removeFirst();
 
-    QPointer<RecordOperator> aliving(this);
-
-    ComAtprotoRepoUploadBlob *upload_blob = new ComAtprotoRepoUploadBlob();
+    ComAtprotoRepoUploadBlob *upload_blob = new ComAtprotoRepoUploadBlob(this);
     connect(upload_blob, &ComAtprotoRepoUploadBlob::finished, [=](bool success) {
-        if (aliving) {
-            if (success) {
-                qDebug() << "Uploaded blob" << upload_blob->cid() << upload_blob->mimeType()
-                         << upload_blob->size();
+        if (success) {
+            qDebug() << "Uploaded blob" << upload_blob->cid() << upload_blob->mimeType()
+                     << upload_blob->size();
 
-                LexiconsTypeUnknown::Blob blob;
-                blob.cid = upload_blob->cid();
-                blob.mimeType = upload_blob->mimeType();
-                blob.size = upload_blob->size();
-                m_embedImageBlogs.append(blob);
+            LexiconsTypeUnknown::Blob blob;
+            blob.cid = upload_blob->cid();
+            blob.mimeType = upload_blob->mimeType();
+            blob.size = upload_blob->size();
+            m_embedImageBlogs.append(blob);
 
-                if (m_embedImages.isEmpty()) {
-                    post();
-                } else {
-                    postWithImages();
-                }
+            if (m_embedImages.isEmpty()) {
+                post();
             } else {
-                emit errorOccured(upload_blob->errorMessage());
-                emit finished(success, QString(), QString());
-                setRunning(false);
+                postWithImages();
             }
+        } else {
+            emit errorOccured(upload_blob->errorMessage());
+            emit finished(success, QString(), QString());
+            setRunning(false);
         }
         upload_blob->deleteLater();
     });
@@ -181,19 +172,15 @@ void RecordOperator::repost(const QString &cid, const QString &uri)
         return;
     setRunning(true);
 
-    QPointer<RecordOperator> aliving(this);
-
-    ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord();
+    ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord(this);
     connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
-        if (aliving) {
-            if (!success) {
-                emit errorOccured(create_record->errorMessage());
-            }
-            emit finished(success, create_record->replyUri(), create_record->replyCid());
-            setRunning(false);
-
-            // 成功なら、受け取ったデータでTLデータの更新をしないと値が大きくならない
+        if (!success) {
+            emit errorOccured(create_record->errorMessage());
         }
+        emit finished(success, create_record->replyUri(), create_record->replyCid());
+        setRunning(false);
+
+        // 成功なら、受け取ったデータでTLデータの更新をしないと値が大きくならない
         create_record->deleteLater();
     });
     create_record->setAccount(m_account);
@@ -206,19 +193,15 @@ void RecordOperator::like(const QString &cid, const QString &uri)
         return;
     setRunning(true);
 
-    QPointer<RecordOperator> aliving(this);
-
-    ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord();
+    ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord(this);
     connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
-        if (aliving) {
-            if (!success) {
-                emit errorOccured(create_record->errorMessage());
-            }
-            emit finished(success, create_record->replyUri(), create_record->replyCid());
-            setRunning(false);
-
-            // 成功なら、受け取ったデータでTLデータの更新をしないと値が大きくならない
+        if (!success) {
+            emit errorOccured(create_record->errorMessage());
         }
+        emit finished(success, create_record->replyUri(), create_record->replyCid());
+        setRunning(false);
+
+        // 成功なら、受け取ったデータでTLデータの更新をしないと値が大きくならない
         create_record->deleteLater();
     });
     create_record->setAccount(m_account);
@@ -231,17 +214,13 @@ void RecordOperator::follow(const QString &did)
         return;
     setRunning(true);
 
-    QPointer<RecordOperator> aliving(this);
-
-    ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord();
+    ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord(this);
     connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
-        if (aliving) {
-            if (!success) {
-                emit errorOccured(create_record->errorMessage());
-            }
-            emit finished(success, QString(), QString());
-            setRunning(false);
+        if (!success) {
+            emit errorOccured(create_record->errorMessage());
         }
+        emit finished(success, QString(), QString());
+        setRunning(false);
         create_record->deleteLater();
     });
     create_record->setAccount(m_account);
@@ -254,18 +233,14 @@ void RecordOperator::mute(const QString &did)
         return;
     setRunning(true);
 
-    QPointer<RecordOperator> aliving(this);
-
-    AppBskyGraphMuteActor *mute = new AppBskyGraphMuteActor();
+    AppBskyGraphMuteActor *mute = new AppBskyGraphMuteActor(this);
     connect(mute, &AppBskyGraphMuteActor::finished, [=](bool success) {
-        if (aliving) {
-            if (success) {
-            } else {
-                emit errorOccured(mute->errorMessage());
-            }
-            emit finished(success, QString(), QString());
-            setRunning(false);
+        if (success) {
+        } else {
+            emit errorOccured(mute->errorMessage());
         }
+        emit finished(success, QString(), QString());
+        setRunning(false);
         mute->deleteLater();
     });
     mute->setAccount(m_account);
@@ -278,17 +253,13 @@ void RecordOperator::block(const QString &did)
         return;
     setRunning(true);
 
-    QPointer<RecordOperator> aliving(this);
-
-    ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord();
+    ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord(this);
     connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
-        if (aliving) {
-            if (!success) {
-                emit errorOccured(create_record->errorMessage());
-            }
-            emit finished(success, QString(), QString());
-            setRunning(false);
+        if (!success) {
+            emit errorOccured(create_record->errorMessage());
         }
+        emit finished(success, QString(), QString());
+        setRunning(false);
         create_record->deleteLater();
     });
     create_record->setAccount(m_account);
@@ -303,17 +274,13 @@ void RecordOperator::deletePost(const QString &uri)
 
     QString r_key = uri.split("/").last();
 
-    QPointer<RecordOperator> aliving(this);
-
-    ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord();
+    ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord(this);
     connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
-        if (aliving) {
-            if (!success) {
-                emit errorOccured(delete_record->errorMessage());
-            }
-            emit finished(success, QString(), QString());
-            setRunning(false);
+        if (!success) {
+            emit errorOccured(delete_record->errorMessage());
         }
+        emit finished(success, QString(), QString());
+        setRunning(false);
         delete_record->deleteLater();
     });
     delete_record->setAccount(m_account);
@@ -328,17 +295,13 @@ void RecordOperator::deleteLike(const QString &uri)
 
     QString r_key = uri.split("/").last();
 
-    QPointer<RecordOperator> aliving(this);
-
-    ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord();
+    ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord(this);
     connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
-        if (aliving) {
-            if (!success) {
-                emit errorOccured(delete_record->errorMessage());
-            }
-            emit finished(success, QString(), QString());
-            setRunning(false);
+        if (!success) {
+            emit errorOccured(delete_record->errorMessage());
         }
+        emit finished(success, QString(), QString());
+        setRunning(false);
         delete_record->deleteLater();
     });
     delete_record->setAccount(m_account);
@@ -353,17 +316,13 @@ void RecordOperator::deleteRepost(const QString &uri)
 
     QString r_key = uri.split("/").last();
 
-    QPointer<RecordOperator> aliving(this);
-
-    ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord();
+    ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord(this);
     connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
-        if (aliving) {
-            if (!success) {
-                emit errorOccured(delete_record->errorMessage());
-            }
-            emit finished(success, QString(), QString());
-            setRunning(false);
+        if (!success) {
+            emit errorOccured(delete_record->errorMessage());
         }
+        emit finished(success, QString(), QString());
+        setRunning(false);
         delete_record->deleteLater();
     });
     delete_record->setAccount(m_account);
@@ -378,17 +337,13 @@ void RecordOperator::deleteFollow(const QString &uri)
 
     QString r_key = uri.split("/").last();
 
-    QPointer<RecordOperator> aliving(this);
-
-    ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord();
+    ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord(this);
     connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
-        if (aliving) {
-            if (!success) {
-                emit errorOccured(delete_record->errorMessage());
-            }
-            emit finished(success, QString(), QString());
-            setRunning(false);
+        if (!success) {
+            emit errorOccured(delete_record->errorMessage());
         }
+        emit finished(success, QString(), QString());
+        setRunning(false);
         delete_record->deleteLater();
     });
     delete_record->setAccount(m_account);
@@ -401,18 +356,14 @@ void RecordOperator::deleteMute(const QString &did)
         return;
     setRunning(true);
 
-    QPointer<RecordOperator> aliving(this);
-
-    AppBskyGraphUnmuteActor *unmute = new AppBskyGraphUnmuteActor();
+    AppBskyGraphUnmuteActor *unmute = new AppBskyGraphUnmuteActor(this);
     connect(unmute, &AppBskyGraphMuteActor::finished, [=](bool success) {
-        if (aliving) {
-            if (success) {
-            } else {
-                emit errorOccured(unmute->errorMessage());
-            }
-            emit finished(success, QString(), QString());
-            setRunning(false);
+        if (success) {
+        } else {
+            emit errorOccured(unmute->errorMessage());
         }
+        emit finished(success, QString(), QString());
+        setRunning(false);
         unmute->deleteLater();
     });
     unmute->setAccount(m_account);
@@ -427,17 +378,13 @@ void RecordOperator::deleteBlock(const QString &uri)
 
     QString r_key = uri.split("/").last();
 
-    QPointer<RecordOperator> aliving(this);
-
-    ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord();
+    ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord(this);
     connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
-        if (aliving) {
-            if (!success) {
-                emit errorOccured(delete_record->errorMessage());
-            }
-            emit finished(success, QString(), QString());
-            setRunning(false);
+        if (!success) {
+            emit errorOccured(delete_record->errorMessage());
         }
+        emit finished(success, QString(), QString());
+        setRunning(false);
         delete_record->deleteLater();
     });
     delete_record->setAccount(m_account);
@@ -503,10 +450,9 @@ void RecordOperator::makeFacets(const QString &text, F callback)
                 }
             }
 
-            QPointer<RecordOperator> aliving(this);
-            AppBskyActorGetProfiles *profiles = new AppBskyActorGetProfiles();
+            AppBskyActorGetProfiles *profiles = new AppBskyActorGetProfiles(this);
             connect(profiles, &AppBskyActorGetProfiles::finished, [=](bool success) {
-                if (success && aliving) {
+                if (success) {
                     for (const auto &item : qAsConst(*profiles->profileViewDetaileds())) {
                         QString handle = item.handle;
                         handle.remove("@");

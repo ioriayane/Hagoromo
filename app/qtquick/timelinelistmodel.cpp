@@ -3,7 +3,6 @@
 #include "recordoperator.h"
 
 #include <QDebug>
-#include <QPointer>
 
 using AtProtocolInterface::AccountData;
 using AtProtocolInterface::AppBskyFeedGetTimeline;
@@ -231,18 +230,14 @@ void TimelineListModel::getLatest()
         return;
     setRunning(true);
 
-    QPointer<TimelineListModel> aliving(this);
-
-    AppBskyFeedGetTimeline *timeline = new AppBskyFeedGetTimeline();
+    AppBskyFeedGetTimeline *timeline = new AppBskyFeedGetTimeline(this);
     connect(timeline, &AppBskyFeedGetTimeline::finished, [=](bool success) {
-        if (aliving) {
-            if (success) {
-                copyFrom(timeline);
-            } else {
-                emit errorOccured(timeline->errorMessage());
-            }
-            QTimer::singleShot(100, this, &TimelineListModel::displayQueuedPosts);
+        if (success) {
+            copyFrom(timeline);
+        } else {
+            emit errorOccured(timeline->errorMessage());
         }
+        QTimer::singleShot(100, this, &TimelineListModel::displayQueuedPosts);
         timeline->deleteLater();
     });
     timeline->setAccount(account());
@@ -258,22 +253,18 @@ void TimelineListModel::deletePost(int row)
         return;
     setRunning(true);
 
-    QPointer<TimelineListModel> aliving(this);
-
-    RecordOperator *ope = new RecordOperator();
+    RecordOperator *ope = new RecordOperator(this);
     connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
     connect(ope, &RecordOperator::finished,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(uri)
                 Q_UNUSED(cid)
-                if (aliving) {
-                    if (success) {
-                        beginRemoveRows(QModelIndex(), row, row);
-                        m_cidList.removeAt(row);
-                        endRemoveRows();
-                    }
-                    setRunning(false);
+                if (success) {
+                    beginRemoveRows(QModelIndex(), row, row);
+                    m_cidList.removeAt(row);
+                    endRemoveRows();
                 }
+                setRunning(false);
                 ope->deleteLater();
             });
     ope->setAccount(account().service, account().did, account().handle, account().email,
@@ -292,19 +283,15 @@ void TimelineListModel::repost(int row)
         return;
     setRunning(true);
 
-    QPointer<TimelineListModel> aliving(this);
-
-    RecordOperator *ope = new RecordOperator();
+    RecordOperator *ope = new RecordOperator(this);
     connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
     connect(ope, &RecordOperator::finished,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(cid)
-                if (aliving) {
-                    if (success) {
-                        update(row, RepostedUriRole, uri);
-                    }
-                    setRunning(false);
+                if (success) {
+                    update(row, RepostedUriRole, uri);
                 }
+                setRunning(false);
                 ope->deleteLater();
             });
     ope->setAccount(account().service, account().did, account().handle, account().email,
@@ -326,19 +313,16 @@ void TimelineListModel::like(int row)
         return;
     setRunning(true);
 
-    QPointer<TimelineListModel> aliving(this);
-
-    RecordOperator *ope = new RecordOperator();
+    RecordOperator *ope = new RecordOperator(this);
     connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
     connect(ope, &RecordOperator::finished,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(cid)
-                if (aliving) {
-                    if (success) {
-                        update(row, LikedUriRole, uri);
-                    }
-                    setRunning(false);
+
+                if (success) {
+                    update(row, LikedUriRole, uri);
                 }
+                setRunning(false);
                 ope->deleteLater();
             });
     ope->setAccount(account().service, account().did, account().handle, account().email,

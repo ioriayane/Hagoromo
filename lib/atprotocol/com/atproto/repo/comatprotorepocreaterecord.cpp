@@ -5,7 +5,6 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QPointer>
 
 using AtProtocolInterface::AppBskyActorGetProfiles;
 using namespace AtProtocolType;
