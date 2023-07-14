@@ -17,6 +17,7 @@ ClickableFrame {
     property string hoveredLink: ""
     property real fontSizeRatio: 1.0
 
+    property alias moderationFrame: moderationFrame
     property alias repostReactionAuthor: repostReactionAuthor
     property alias replyReactionAuthor: replyReactionAuthor
     property alias postAvatarImage: postAvatarImage
@@ -49,6 +50,28 @@ ClickableFrame {
     }
 
     ColumnLayout {
+        IconLabelFrame {
+            id: moderationFrame
+            Layout.preferredWidth: postFrame.layoutWidth - postFrame.leftPadding - postFrame.rightPadding
+            Layout.bottomMargin: 8
+            visible: false
+            backgroundColor: Material.color(Material.Grey)
+            borderWidth: 0
+            iconSource: "../images/visibility_off.png"
+            labelText: qsTr("Post from an account you muted.")
+            controlButton.visible: true
+            controlButton.iconText: showPost ? qsTr("Hide") : qsTr("Show")
+            controlButton.onClicked: showPost = !showPost
+            onVisibleChanged: {
+                if(visible){
+                    showPost = false
+                }else{
+                    showPost = true
+                }
+            }
+            property bool showPost: true
+        }
+
         ReactionAuthor {
             id: repostReactionAuthor
             Layout.maximumWidth: postFrame.layoutWidth
@@ -65,6 +88,7 @@ ClickableFrame {
         RowLayout {
             id: postLayout
             spacing: 10
+            visible: moderationFrame.showPost
             AvatarImage {
                 id: postAvatarImage
                 Layout.preferredWidth: 36

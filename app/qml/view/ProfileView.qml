@@ -340,7 +340,7 @@ ColumnLayout {
                     PropertyChanges {
                         target: moderationFrame
                         visible: true
-                        backgroundColor: Material.color(Material.Grey/*, Material.Shade600*/)
+                        backgroundColor: Material.color(Material.Grey)
                         borderWidth: 0
                         iconSource: "../images/visibility_off.png"
                         labelText: qsTr("Account muted")

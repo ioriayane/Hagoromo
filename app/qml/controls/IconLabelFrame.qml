@@ -9,6 +9,10 @@ Frame {
     property alias labelText: label.text
     property alias backgroundColor: backgroundRect.color
     property alias borderWidth: backgroundRect.border.width
+    property alias controlButton: controlButton
+
+    topPadding: 5
+    bottomPadding: 5
 
     background: Rectangle {
         id: backgroundRect
@@ -34,6 +38,21 @@ Frame {
         }
         Label {
             id: label
+        }
+        Item {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 1
+            height: 1
+        }
+
+        IconButton {
+            id: controlButton
+            Layout.preferredHeight: 24
+            topInset: 0
+            bottomInset: 0
+            visible: false
+            flat: true
+            foreground: Material.accentColor
         }
     }
 }

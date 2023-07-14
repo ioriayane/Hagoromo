@@ -107,6 +107,8 @@ ColumnLayout {
                            }
                 onRequestViewProfile: (did) => postThreadView.requestViewProfile(did)
 
+                moderationFrame.visible: model.muted
+
                 repostReactionAuthor.visible: model.isRepostedBy
                 repostReactionAuthor.displayName: model.repostedByDisplayName
                 repostReactionAuthor.handle: model.repostedByHandle
