@@ -34,11 +34,15 @@ public:
     Q_INVOKABLE void repost(const QString &cid, const QString &uri);
     Q_INVOKABLE void like(const QString &cid, const QString &uri);
     Q_INVOKABLE void follow(const QString &did);
+    Q_INVOKABLE void mute(const QString &did);
+    Q_INVOKABLE void block(const QString &did);
 
     Q_INVOKABLE void deletePost(const QString &uri);
     Q_INVOKABLE void deleteLike(const QString &uri);
     Q_INVOKABLE void deleteRepost(const QString &uri);
     Q_INVOKABLE void deleteFollow(const QString &uri);
+    Q_INVOKABLE void deleteMute(const QString &did);
+    Q_INVOKABLE void deleteBlock(const QString &uri);
 
     bool running() const;
     void setRunning(bool newRunning);

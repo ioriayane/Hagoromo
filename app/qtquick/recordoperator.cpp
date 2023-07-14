@@ -3,11 +3,15 @@
 #include "atprotocol/com/atproto/repo/comatprotorepouploadblob.h"
 #include "atprotocol/com/atproto/repo/comatprotorepodeleterecord.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofiles.h"
+#include "atprotocol/app/bsky/graph/appbskygraphmuteactor.h"
+#include "atprotocol/app/bsky/graph/appbskygraphunmuteactor.h"
 
 #include <QPointer>
 #include <QTimer>
 
 using AtProtocolInterface::AppBskyActorGetProfiles;
+using AtProtocolInterface::AppBskyGraphMuteActor;
+using AtProtocolInterface::AppBskyGraphUnmuteActor;
 using AtProtocolInterface::ComAtprotoRepoCreateRecord;
 using AtProtocolInterface::ComAtprotoRepoDeleteRecord;
 using AtProtocolInterface::ComAtprotoRepoUploadBlob;
@@ -244,6 +248,53 @@ void RecordOperator::follow(const QString &did)
     create_record->follow(did);
 }
 
+void RecordOperator::mute(const QString &did)
+{
+    if (running())
+        return;
+    setRunning(true);
+
+    QPointer<RecordOperator> aliving(this);
+
+    AppBskyGraphMuteActor *mute = new AppBskyGraphMuteActor();
+    connect(mute, &AppBskyGraphMuteActor::finished, [=](bool success) {
+        if (aliving) {
+            if (success) {
+            } else {
+                emit errorOccured(mute->errorMessage());
+            }
+            emit finished(success, QString(), QString());
+            setRunning(false);
+        }
+        mute->deleteLater();
+    });
+    mute->setAccount(m_account);
+    mute->muteActor(did);
+}
+
+void RecordOperator::block(const QString &did)
+{
+    if (running())
+        return;
+    setRunning(true);
+
+    QPointer<RecordOperator> aliving(this);
+
+    ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord();
+    connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
+        if (aliving) {
+            if (!success) {
+                emit errorOccured(create_record->errorMessage());
+            }
+            emit finished(success, QString(), QString());
+            setRunning(false);
+        }
+        create_record->deleteLater();
+    });
+    create_record->setAccount(m_account);
+    create_record->block(did);
+}
+
 void RecordOperator::deletePost(const QString &uri)
 {
     if (running() || !uri.startsWith("at://"))
@@ -342,6 +393,55 @@ void RecordOperator::deleteFollow(const QString &uri)
     });
     delete_record->setAccount(m_account);
     delete_record->unfollow(r_key);
+}
+
+void RecordOperator::deleteMute(const QString &did)
+{
+    if (running())
+        return;
+    setRunning(true);
+
+    QPointer<RecordOperator> aliving(this);
+
+    AppBskyGraphUnmuteActor *unmute = new AppBskyGraphUnmuteActor();
+    connect(unmute, &AppBskyGraphMuteActor::finished, [=](bool success) {
+        if (aliving) {
+            if (success) {
+            } else {
+                emit errorOccured(unmute->errorMessage());
+            }
+            emit finished(success, QString(), QString());
+            setRunning(false);
+        }
+        unmute->deleteLater();
+    });
+    unmute->setAccount(m_account);
+    unmute->unmuteActor(did);
+}
+
+void RecordOperator::deleteBlock(const QString &uri)
+{
+    if (running() || !uri.startsWith("at://"))
+        return;
+    setRunning(true);
+
+    QString r_key = uri.split("/").last();
+
+    QPointer<RecordOperator> aliving(this);
+
+    ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord();
+    connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
+        if (aliving) {
+            if (!success) {
+                emit errorOccured(delete_record->errorMessage());
+            }
+            emit finished(success, QString(), QString());
+            setRunning(false);
+        }
+        delete_record->deleteLater();
+    });
+    delete_record->setAccount(m_account);
+    delete_record->deleteBlock(r_key);
 }
 
 bool RecordOperator::running() const

@@ -17,6 +17,7 @@ public:
     void deleteLike(const QString &rkey);
     void deleteRepost(const QString &rkey);
     void unfollow(const QString &rkey);
+    void deleteBlock(const QString &rkey);
 
 private:
     virtual void parseJson(bool success, const QString reply_json);

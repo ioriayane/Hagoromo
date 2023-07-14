@@ -285,6 +285,28 @@ ColumnLayout {
                         enabled: userProfile.handle.length > 0
                         onTriggered: openInOhters(userProfile.handle)
                     }
+                    MenuSeparator {}
+                    MenuItem {
+                        text: userProfile.muted ? qsTr("Unmute account") : qsTr("Mute account")
+                        icon.source: userProfile.muted ? "../images/visibility_on.png" : "../images/visibility_off.png"
+                        onTriggered: {
+                            if(userProfile.muted){
+                                recordOperator.deleteMute(userProfile.did)
+                            }else{
+                                recordOperator.mute(userProfile.did)
+                            }
+                        }
+                    }
+                    MenuItem {
+                        text: userProfile.blocking ? qsTr("Unblock account") : qsTr("Block account")
+                        icon.source: userProfile.blocking ? "../images/block.png" : "../images/block.png"
+                        onTriggered: {
+                            if(userProfile.blocking){
+                                recordOperator.deleteBlock(userProfile.blockingUri)
+                            }else{
+                                recordOperator.block(userProfile.did)
+                            }
+                        }                    }
                 }
             }
         }

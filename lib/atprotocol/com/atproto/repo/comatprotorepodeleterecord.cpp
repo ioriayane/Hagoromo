@@ -45,6 +45,11 @@ void ComAtprotoRepoDeleteRecord::unfollow(const QString &rkey)
     deleteRecord(this->did(), QStringLiteral("app.bsky.graph.follow"), rkey, QString(), QString());
 }
 
+void ComAtprotoRepoDeleteRecord::deleteBlock(const QString &rkey)
+{
+    deleteRecord(this->did(), QStringLiteral("app.bsky.graph.block"), rkey, QString(), QString());
+}
+
 void ComAtprotoRepoDeleteRecord::parseJson(bool success, const QString reply_json)
 {
     Q_UNUSED(reply_json)

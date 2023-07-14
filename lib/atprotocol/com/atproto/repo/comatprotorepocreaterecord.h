@@ -16,6 +16,7 @@ public:
     void repost(const QString &cid, const QString &uri);
     void like(const QString &cid, const QString &uri);
     void follow(const QString &did);
+    void block(const QString &did);
 
     void setReply(const QString &parent_cid, const QString &parent_uri, const QString &root_cid,
                   const QString &root_uri);

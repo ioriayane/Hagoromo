@@ -207,6 +207,22 @@ void ComAtprotoRepoCreateRecord::follow(const QString &did)
                            json_doc.toJson(QJsonDocument::Compact));
 }
 
+void ComAtprotoRepoCreateRecord::block(const QString &did)
+{
+    QJsonObject json_record;
+    json_record.insert("subject", did);
+    json_record.insert("createdAt", QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
+    json_record.insert("$type", "app.bsky.graph.block");
+    QJsonObject json_obj;
+    json_obj.insert("repo", this->did());
+    json_obj.insert("collection", "app.bsky.graph.block");
+    json_obj.insert("record", json_record);
+    QJsonDocument json_doc(json_obj);
+
+    AccessAtProtocol::post(QStringLiteral("xrpc/com.atproto.repo.createRecord"),
+                           json_doc.toJson(QJsonDocument::Compact));
+}
+
 void ComAtprotoRepoCreateRecord::setReply(const QString &parent_cid, const QString &parent_uri,
                                           const QString &root_cid, const QString &root_uri)
 {
