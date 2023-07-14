@@ -2,7 +2,7 @@
 # https://github.com/bluesky-social/atproto/tree/main/lexicons
 # query系のoutputからの参照を起点に定義を作った方が良いかもしれない
 
-# python3 ./scripts/defs2struct.py ../atproto/lexicons/ ./app/atprotocol
+# python3 ./scripts/defs2struct.py ../atproto/lexicons/ ./lib/atprotocol
 
 import sys
 import os
