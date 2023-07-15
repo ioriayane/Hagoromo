@@ -283,7 +283,7 @@ ColumnLayout {
                     }
                     MenuSeparator {}
                     MenuItem {
-                        text: qsTr("Open in new column")
+                        text: qsTr("Open in new col")
                         icon.source: "../images/add.png"
                         enabled: userProfile.handle.length > 0
                         onTriggered: requestViewAuthorFeed(userProfile.did, "@" + userProfile.handle)
