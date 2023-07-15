@@ -12,6 +12,7 @@ QML_FILES = \
     qml/controls/IconButton.qml \
     qml/controls/IconLabelFrame.qml \
     qml/controls/ImageWithIndicator.qml \
+    qml/controls/RadioButtonEx.qml \
     qml/data/Account.qml \
     qml/data/ColumnSettings.qml \
     qml/dialogs/AccountDialog.qml \
@@ -22,6 +23,8 @@ QML_FILES = \
     qml/dialogs/LoginDialog.qml \
     qml/dialogs/MessageDialog.qml \
     qml/dialogs/PostDialog.qml \
+    qml/dialogs/ReportAccountDialog.qml \
+    qml/dialogs/ReportPostDialog.qml \
     qml/dialogs/SearchDialog.qml \
     qml/dialogs/SettingDialog.qml \
     qml/parts/Author.qml \
@@ -72,6 +75,7 @@ IMAGE_FILES += \
     qml/images/open_in_other.png \
     qml/images/quote.png \
     qml/images/reply.png \
+    qml/images/report.png \
     qml/images/repost.png \
     qml/images/search.png \
     qml/images/settings.png \

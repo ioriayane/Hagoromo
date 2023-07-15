@@ -27,6 +27,7 @@ ColumnLayout {
     signal requestViewThread(string uri)
     signal requestViewImages(int index, var paths)
     signal requestViewProfile(string did)
+    signal requestReportPost(string uri, string cid)
 
     signal back()
 
@@ -168,6 +169,7 @@ ColumnLayout {
                 postControls.mine: model.did === postThreadView.accountDid
                 postControls.onTriggeredCopyToClipboard: systemTool.copyToClipboard(model.recordTextPlain)
                 postControls.onTriggeredDeletePost: rootListView.model.deletePost(model.index)
+                postControls.onTriggeredRequestReport: postThreadView.requestReportPost(model.uri, model.cid)
 
                 onHoveredLinkChanged: postThreadView.hoveredLink = hoveredLink
             }

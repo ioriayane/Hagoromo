@@ -23,6 +23,7 @@ RowLayout {
     signal triggeredTranslate()
     signal triggeredCopyToClipboard()
     signal triggeredDeletePost()
+    signal triggeredRequestReport()
 
     function openInOhters(uri, handle){
         if(uri.length === 0 || uri.startsWith("at://") === false){
@@ -115,6 +116,12 @@ RowLayout {
                 icon.source: "../images/delete.png"
                 onTriggered: triggeredDeletePost()
             }
+            MenuSeparator {}
+            MenuItem {
+                text: qsTr("Report post")
+                icon.source: "../images/report.png"
+                onTriggered: triggeredRequestReport()
+            }
         }
         Menu {
             id: theirMorePopup
@@ -133,6 +140,12 @@ RowLayout {
                 enabled: postUri.length > 0 && handle.length > 0
                 icon.source: "../images/open_in_other.png"
                 onTriggered: openInOhters(postUri, handle)
+            }
+            MenuSeparator {}
+            MenuItem {
+                text: qsTr("Report post")
+                icon.source: "../images/report.png"
+                onTriggered: triggeredRequestReport()
             }
         }
     }

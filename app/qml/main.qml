@@ -154,6 +154,13 @@ ApplicationWindow {
         }
     }
 
+    ReportPostDialog {
+        id: reportDialog
+    }
+    ReportAccountDialog {
+        id: reportAccountDialog
+    }
+
     MessageDialog {
         id: messageDialog
     }
@@ -247,6 +254,36 @@ ApplicationWindow {
                                      }
 
             onRequestViewImages: (index, paths) => imageFullView.open(index, paths)
+
+            onRequestReportPost: (account_uuid, uri, cid) => {
+                                     var row = accountListModel.indexAt(account_uuid)
+                                     if(row >= 0){
+                                         reportDialog.targetUri = uri
+                                         reportDialog.targetCid = cid
+                                         reportDialog.account.service = accountListModel.item(row, AccountListModel.ServiceRole)
+                                         reportDialog.account.did = accountListModel.item(row, AccountListModel.DidRole)
+                                         reportDialog.account.handle = accountListModel.item(row, AccountListModel.HandleRole)
+                                         reportDialog.account.email = accountListModel.item(row, AccountListModel.EmailRole)
+                                         reportDialog.account.accessJwt = accountListModel.item(row, AccountListModel.AccessJwtRole)
+                                         reportDialog.account.refreshJwt = accountListModel.item(row, AccountListModel.RefreshJwtRole)
+                                         reportDialog.account.avatar = accountListModel.item(row, AccountListModel.AvatarRole)
+                                         reportDialog.open()
+                                     }
+                                 }
+            onRequestReportAccount: (account_uuid, did) => {
+                                        var row = accountListModel.indexAt(account_uuid)
+                                        if(row >= 0){
+                                            reportAccountDialog.targetDid = did
+                                            reportAccountDialog.account.service = accountListModel.item(row, AccountListModel.ServiceRole)
+                                            reportAccountDialog.account.did = accountListModel.item(row, AccountListModel.DidRole)
+                                            reportAccountDialog.account.handle = accountListModel.item(row, AccountListModel.HandleRole)
+                                            reportAccountDialog.account.email = accountListModel.item(row, AccountListModel.EmailRole)
+                                            reportAccountDialog.account.accessJwt = accountListModel.item(row, AccountListModel.AccessJwtRole)
+                                            reportAccountDialog.account.refreshJwt = accountListModel.item(row, AccountListModel.RefreshJwtRole)
+                                            reportAccountDialog.account.avatar = accountListModel.item(row, AccountListModel.AvatarRole)
+                                            reportAccountDialog.open()
+                                        }
+                                    }
 
             onRequestMoveToLeft: (key) => {
                                      console.log("move to left:" + key)

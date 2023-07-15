@@ -19,6 +19,7 @@ SOURCES += \
     $$PWD/notificationlistmodel.cpp \
     $$PWD/postthreadlistmodel.cpp \
     $$PWD/recordoperator.cpp \
+    $$PWD/reporter.cpp \
     $$PWD/searchpostlistmodel.cpp \
     $$PWD/searchprofilelistmodel.cpp \
     $$PWD/systemtool.cpp \
@@ -46,6 +47,7 @@ HEADERS += \
     $$PWD/notificationlistmodel.h \
     $$PWD/postthreadlistmodel.h \
     $$PWD/recordoperator.h \
+    $$PWD/reporter.h \
     $$PWD/searchpostlistmodel.h \
     $$PWD/searchprofilelistmodel.h \
     $$PWD/systemtool.h \

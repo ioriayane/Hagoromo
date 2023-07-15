@@ -37,6 +37,8 @@ ColumnLayout {
     signal requestViewImages(int index, var paths)
     signal requestViewProfile(string did)
     signal requestViewAuthorFeed(string did, string handle)
+    signal requestReportPost(string uri, string cid)
+    signal requestReportAccount(string did)
 
     signal back()
 
@@ -315,7 +317,14 @@ ColumnLayout {
                             }else{
                                 recordOperator.block(userProfile.did)
                             }
-                        }                    }
+                        }
+                    }
+                    MenuItem {
+                        text: qsTr("Report account")
+                        icon.source: "../images/report.png"
+                        enabled: userProfile.handle.length > 0
+                        onTriggered: requestReportAccount(userProfile.did)
+                    }
                 }
             }
         }
@@ -425,6 +434,7 @@ ColumnLayout {
                                           profileView.requestViewProfile(did)
                                       }
                                   }
+            onRequestReportPost: (uri, cid) => profileView.requestReportPost(uri, cid)
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
         }
 
@@ -453,6 +463,7 @@ ColumnLayout {
                                           profileView.requestViewProfile(did)
                                       }
                                   }
+            onRequestReportPost: (uri, cid) => profileView.requestReportPost(uri, cid)
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
         }
 
@@ -481,6 +492,7 @@ ColumnLayout {
                                           profileView.requestViewProfile(did)
                                       }
                                   }
+            onRequestReportPost: (uri, cid) => profileView.requestReportPost(uri, cid)
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
         }
 

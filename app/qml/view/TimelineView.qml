@@ -29,6 +29,7 @@ ScrollView {
     signal requestViewThread(string uri)
     signal requestViewImages(int index, var paths)
     signal requestViewProfile(string did)
+    signal requestReportPost(string uri, string cid)
 
 
     ListView {
@@ -134,6 +135,7 @@ ScrollView {
             postControls.mine: model.did === timelineView.accountDid
             postControls.onTriggeredCopyToClipboard: systemTool.copyToClipboard(model.recordTextPlain)
             postControls.onTriggeredDeletePost: rootListView.model.deletePost(model.index)
+            postControls.onTriggeredRequestReport: timelineView.requestReportPost(model.uri, model.cid)
 
             onHoveredLinkChanged: timelineView.hoveredLink = hoveredLink
         }

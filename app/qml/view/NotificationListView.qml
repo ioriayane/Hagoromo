@@ -29,6 +29,7 @@ ScrollView {
     signal requestViewThread(string uri)
     signal requestViewImages(int index, var paths)
     signal requestViewProfile(string did)
+    signal requestReportPost(string uri, string cid)
 
     ListView {
         id: rootListView
@@ -108,6 +109,7 @@ ScrollView {
             postControls.postUri: model.uri
             postControls.handle: model.handle
             postControls.onTriggeredCopyToClipboard: systemTool.copyToClipboard(model.recordTextPlain)
+            postControls.onTriggeredRequestReport: notificationListView.requestReportPost(model.uri, model.cid)
 
             onClicked: {
                 if(model.reason === NotificationListModel.ReasonLike ||
