@@ -27,7 +27,8 @@ RecordOperator::RecordOperator(QObject *parent) : QObject { parent }, m_running(
     m_rxFacet = QRegularExpression(
             QString("(?:%1)|(?:%2)")
                     .arg("http[s]?://"
-                         "(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+",
+                         "(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F])|#(?:["
+                         "a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))*)+",
                          "@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+(?:[a-zA-Z0-9](?:["
                          "a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)"));
 }
