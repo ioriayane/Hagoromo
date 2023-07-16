@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
+import QtGraphicalEffects 1.15
 
 import "../controls"
 
@@ -29,6 +30,11 @@ ClickableFrame {
     property alias childAuthor: childAuthor
     property alias childRecordText: childRecordText
     property alias externalLinkFrame: externalLinkFrame
+    property alias generatorViewFrame: generatorFeedFrame
+    property alias generatorAvatarImage: generatorFeedAvatarImage
+    property alias generatorDisplayNameLabel: generatorFeedDisplayNameLabel
+    property alias generatorCreatorHandleLabel: generatorFeedCreatorHandleLabel
+    property alias generatorLikeCountLabel: generatorFeedLikeCountLabel
     property alias postControls: postControls
 
     signal requestViewProfile(string did)
@@ -173,6 +179,55 @@ ClickableFrame {
                             displayLink(uriLabel.text)
                         }else{
                             displayLink("")
+                        }
+                    }
+                }
+
+                ClickableFrame {
+                    id: generatorFeedFrame
+                    Layout.preferredWidth: parent.basisWidth
+                    Layout.topMargin: 5
+
+                    ColumnLayout {
+                        GridLayout {
+                            columns: 2
+                            rowSpacing: 3
+                            AvatarImage {
+                                id: generatorFeedAvatarImage
+                                Layout.preferredWidth: 24
+                                Layout.preferredHeight: 24
+                                Layout.rowSpan: 2
+                                altSource: "../images/account_icon.png"
+                            }
+                            Label {
+                                id: generatorFeedDisplayNameLabel
+                                Layout.fillWidth: true
+                                font.pointSize: 10
+                            }
+                            Label {
+                                id: generatorFeedCreatorHandleLabel
+                                color: Material.color(Material.Grey)
+                                font.pointSize: 8
+                            }
+                        }
+                        RowLayout {
+                            Layout.leftMargin: 3
+                            spacing: 3
+                            Image {
+                                Layout.preferredWidth: 16
+                                Layout.preferredHeight: 16
+                                source: "../images/like.png"
+                                layer.enabled: true
+                                layer.effect: ColorOverlay {
+                                    color: Material.color(Material.Pink)
+                                }
+                            }
+                            Label {
+                                id: generatorFeedLikeCountLabel
+                                Layout.alignment: Qt.AlignVCenter
+                                Layout.fillWidth: true
+                                font.pointSize: 8
+                            }
                         }
                     }
                 }

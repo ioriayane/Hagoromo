@@ -144,6 +144,46 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     else if (role == ExternalLinkThumbRole)
         return current.post.embed_AppBskyEmbedExternal_View.external.thumb;
 
+    else if (role == HasGeneratorFeedRole) {
+        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
+            return false;
+        else
+            return current.post.embed_type
+                    == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecord_View
+                    && current.post.embed_AppBskyEmbedRecord_View->record_type
+                    == AppBskyEmbedRecord::ViewRecordType::record_AppBskyFeedDefs_GeneratorView;
+    } else if (role == GeneratorFeedUriRole) {
+        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
+            return QString();
+        else
+            return current.post.embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView
+                    .uri;
+    } else if (role == GeneratorFeedCreatorHandleRole) {
+        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
+            return QString();
+        else
+            return current.post.embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView
+                    .creator.handle;
+    } else if (role == GeneratorFeedDisplayNameRole) {
+        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
+            return QString();
+        else
+            return current.post.embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView
+                    .displayName;
+    } else if (role == GeneratorFeedLikeCountRole) {
+        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
+            return QString();
+        else
+            return current.post.embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView
+                    .likeCount;
+    } else if (role == GeneratorFeedAvatarRole) {
+        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
+            return QString();
+        else
+            return current.post.embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView
+                    .avatar;
+    }
+
     else if (role == HasReplyRole) {
         if (current.reply.parent_type == AppBskyFeedDefs::ReplyRefParentType::parent_PostView)
             return current.reply.parent_PostView.cid.length() > 0;
@@ -377,6 +417,13 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[ExternalLinkTitleRole] = "externalLinkTitle";
     roles[ExternalLinkDescriptionRole] = "externalLinkDescription";
     roles[ExternalLinkThumbRole] = "externalLinkThumb";
+
+    roles[HasGeneratorFeedRole] = "hasGeneratorFeed";
+    roles[GeneratorFeedUriRole] = "generatorFeedUri";
+    roles[GeneratorFeedCreatorHandleRole] = "generatorFeedCreatorHandle";
+    roles[GeneratorFeedDisplayNameRole] = "generatorFeedDisplayName";
+    roles[GeneratorFeedLikeCountRole] = "generatorFeedLikeCount";
+    roles[GeneratorFeedAvatarRole] = "generatorFeedAvatar";
 
     roles[HasReplyRole] = "hasReply";
     roles[ReplyRootCidRole] = "replyRootCid";

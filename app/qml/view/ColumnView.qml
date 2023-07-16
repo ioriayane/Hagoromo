@@ -38,6 +38,7 @@ ColumnLayout {
     signal requestMention(string account_uuid, string handle)
     signal requestViewAuthorFeed(string account_uuid, string did, string handle)
     signal requestViewImages(int index, var paths)
+    signal requestViewGeneratorFeed(string account_uuid, string name, string uri)
     signal requestReportPost(string account_uuid, string uri, string cid)
     signal requestReportAccount(string account_uuid, string did)
 
@@ -78,9 +79,8 @@ ColumnLayout {
 
             onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
 
-            onRequestViewProfile: (did) => {
-                                      columnStackView.push(profileComponent, { "userDid": did })
-                                  }
+            onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+            onRequestViewGeneratorFeed: (name, uri) => columnView.requestViewGeneratorFeed(account.uuid, name, uri)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
@@ -137,6 +137,7 @@ ColumnLayout {
                                  }
             onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+            onRequestViewGeneratorFeed: (name, uri) => columnView.requestViewGeneratorFeed(account.uuid, name, uri)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
@@ -169,6 +170,7 @@ ColumnLayout {
 
             onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+            onRequestViewGeneratorFeed: (name, uri) => columnView.requestViewGeneratorFeed(account.uuid, name, uri)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
             onRequestReportAccount: (did) => columnView.requestReportAccount(account.uuid, did)
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
@@ -207,6 +209,7 @@ ColumnLayout {
 
             onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+            onRequestViewGeneratorFeed: (name, uri) => columnView.requestViewGeneratorFeed(account.uuid, name, uri)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
@@ -254,6 +257,7 @@ ColumnLayout {
 
             onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+            onRequestViewGeneratorFeed: (name, uri) => columnView.requestViewGeneratorFeed(account.uuid, name, uri)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
@@ -286,6 +290,7 @@ ColumnLayout {
 
             onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+            onRequestViewGeneratorFeed: (name, uri) => columnView.requestViewGeneratorFeed(account.uuid, name, uri)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink

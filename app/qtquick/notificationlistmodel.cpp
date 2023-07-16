@@ -8,6 +8,7 @@
 
 using AtProtocolInterface::AppBskyFeedGetPosts;
 using AtProtocolInterface::AppBskyNotificationListNotifications;
+using namespace AtProtocolType::AppBskyFeedDefs;
 
 NotificationListModel::NotificationListModel(QObject *parent)
     : AtpAbstractListModel { parent },
@@ -211,6 +212,62 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
                 return m_postHash[record_cid].viewer.like.contains(account().did);
             else
                 return false;
+
+        } else if (role == HasGeneratorFeedRole) {
+            if (m_postHash.contains(record_cid)
+                && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
+                return m_postHash[record_cid].embed_type
+                        == AtProtocolType::AppBskyFeedDefs::PostViewEmbedType::
+                                embed_AppBskyEmbedRecord_View
+                        && m_postHash[record_cid].embed_AppBskyEmbedRecord_View->record_type
+                        == AtProtocolType::AppBskyEmbedRecord::ViewRecordType::
+                                record_AppBskyFeedDefs_GeneratorView;
+            } else {
+                return false;
+            }
+        } else if (role == GeneratorFeedUriRole) {
+            if (m_postHash.contains(record_cid)
+                && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
+                return m_postHash[record_cid]
+                        .embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView.uri;
+            } else {
+                return QString();
+            }
+        } else if (role == GeneratorFeedCreatorHandleRole) {
+            if (m_postHash.contains(record_cid)
+                && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
+                return m_postHash[record_cid]
+                        .embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView.creator
+                        .handle;
+            } else {
+                return QString();
+            }
+        } else if (role == GeneratorFeedDisplayNameRole) {
+            if (m_postHash.contains(record_cid)
+                && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
+                return m_postHash[record_cid]
+                        .embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView
+                        .displayName;
+            } else {
+                return QString();
+            }
+        } else if (role == GeneratorFeedLikeCountRole) {
+            if (m_postHash.contains(record_cid)
+                && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
+                return m_postHash[record_cid]
+                        .embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView
+                        .likeCount;
+            } else {
+                return QString();
+            }
+        } else if (role == GeneratorFeedAvatarRole) {
+            if (m_postHash.contains(record_cid)
+                && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
+                return m_postHash[record_cid]
+                        .embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView.avatar;
+            } else {
+                return QString();
+            }
         }
     }
 
@@ -461,6 +518,13 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[RecordImagesFullRole] = "recordImagesFull";
     roles[RecordIsRepostedRole] = "recordIsReposted";
     roles[RecordIsLikedRole] = "recordIsLiked";
+
+    roles[HasGeneratorFeedRole] = "hasGeneratorFeed";
+    roles[GeneratorFeedUriRole] = "generatorFeedUri";
+    roles[GeneratorFeedCreatorHandleRole] = "generatorFeedCreatorHandle";
+    roles[GeneratorFeedDisplayNameRole] = "generatorFeedDisplayName";
+    roles[GeneratorFeedLikeCountRole] = "generatorFeedLikeCount";
+    roles[GeneratorFeedAvatarRole] = "generatorFeedAvatar";
 
     return roles;
 }

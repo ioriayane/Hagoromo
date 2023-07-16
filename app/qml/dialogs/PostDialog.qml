@@ -202,15 +202,13 @@ Dialog {
         RowLayout {
             Layout.maximumWidth: 400
             visible: postType !== "quote" && embedImagePreview.embedImages.length === 0
-            Label {
-                text: qsTr("Link card") + " : "
-            }
             ScrollView {
                 Layout.fillWidth: true
                 clip: true
                 TextArea {
                     id: addingExternalLinkUrlText
                     selectByMouse: true
+                    placeholderText: qsTr("Link card URL")
                 }
             }
             IconButton {

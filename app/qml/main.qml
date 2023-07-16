@@ -252,8 +252,9 @@ ApplicationWindow {
             onRequestViewAuthorFeed: (account_uuid, did, handle) => {
                                          columnManageModel.append(account_uuid, 5, false, 300000, 350, handle, did)
                                      }
-
             onRequestViewImages: (index, paths) => imageFullView.open(index, paths)
+            onRequestViewGeneratorFeed: (account_uuid, name, uri) =>
+                                        columnManageModel.append(account.uuid, 4, false, 300000, 400, name, uri)
 
             onRequestReportPost: (account_uuid, uri, cid) => {
                                      var row = accountListModel.indexAt(account_uuid)

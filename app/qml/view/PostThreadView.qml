@@ -27,6 +27,7 @@ ColumnLayout {
     signal requestViewThread(string uri)
     signal requestViewImages(int index, var paths)
     signal requestViewProfile(string did)
+    signal requestViewGeneratorFeed(string name, string uri)
     signal requestReportPost(string uri, string cid)
 
     signal back()
@@ -150,6 +151,13 @@ ColumnLayout {
                 externalLinkFrame.titleLabel.text: model.externalLinkTitle
                 externalLinkFrame.uriLabel.text: model.externalLinkUri
                 externalLinkFrame.descriptionLabel.text: model.externalLinkDescription
+
+                generatorViewFrame.visible: model.hasGeneratorFeed
+                generatorViewFrame.onClicked: postThreadView.requestViewGeneratorFeed(model.generatorFeedDisplayName, model.generatorFeedUri)
+                generatorAvatarImage.source: model.generatorFeedAvatar
+                generatorDisplayNameLabel.text: model.generatorFeedDisplayName
+                generatorCreatorHandleLabel.text: model.generatorFeedCreatorHandle
+                generatorLikeCountLabel.text: model.generatorFeedLikeCount
 
                 postControls.replyButton.iconText: model.replyCount
                 postControls.repostButton.iconText: model.repostCount

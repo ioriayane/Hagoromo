@@ -57,6 +57,13 @@ public:
         ExternalLinkDescriptionRole,
         ExternalLinkThumbRole,
 
+        HasGeneratorFeedRole,
+        GeneratorFeedUriRole,
+        GeneratorFeedCreatorHandleRole,
+        GeneratorFeedDisplayNameRole,
+        GeneratorFeedLikeCountRole,
+        GeneratorFeedAvatarRole,
+
         HasReplyRole,
         ReplyRootCidRole,
         ReplyRootUriRole,
