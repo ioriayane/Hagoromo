@@ -3,6 +3,7 @@
 
 #include "atprotocol/accessatprotocol.h"
 //#include "atprotocol/lexicons.h"
+#include "systemtool.h"
 
 #include <QObject>
 
@@ -26,9 +27,12 @@ class UserProfile : public QObject
 
     Q_PROPERTY(bool following READ following WRITE setFollowing NOTIFY followingChanged)
     Q_PROPERTY(bool followedBy READ followedBy WRITE setFollowedBy NOTIFY followedByChanged)
-
     Q_PROPERTY(
             QString followingUri READ followingUri WRITE setFollowingUri NOTIFY followingUriChanged)
+    Q_PROPERTY(bool muted READ muted WRITE setMuted NOTIFY mutedChanged)
+    Q_PROPERTY(bool blockedBy READ blockedBy WRITE setBlockedBy NOTIFY blockedByChanged)
+    Q_PROPERTY(bool blocking READ blocking WRITE setBlocking NOTIFY blockingChanged)
+    Q_PROPERTY(QString blockingUri READ blockingUri WRITE setBlockingUri NOTIFY blockingUriChanged)
 
 public:
     explicit UserProfile(QObject *parent = nullptr);
@@ -66,6 +70,14 @@ public:
     void setFollowedBy(bool newFollowedBy);
     QString followingUri() const;
     void setFollowingUri(const QString &newFollowingUri);
+    bool muted() const;
+    void setMuted(bool newMuted);
+    bool blockedBy() const;
+    void setBlockedBy(bool newBlockedBy);
+    bool blocking() const;
+    void setBlocking(bool newBlocking);
+    QString blockingUri() const;
+    void setBlockingUri(const QString &newBlockingUri);
 
 signals:
     void errorOccured(const QString &message);
@@ -83,11 +95,18 @@ signals:
     void followingChanged();
     void followedByChanged();
     void followingUriChanged();
+    void mutedChanged();
+    void blockedByChanged();
+    void blockingChanged();
+    void blockingUriChanged();
 
 private:
+    SystemTool m_systemTool;
     AtProtocolInterface::AccountData m_account;
     //    AtProtocolType::AppBskyActorDefs::ProfileViewDetailed m_profile;
     bool m_running;
+    QString m_formattedDescription;
+
     QString m_did;
     QString m_handle;
     QString m_displayName;
@@ -101,6 +120,10 @@ private:
     bool m_following;
     bool m_followedBy;
     QString m_followingUri;
+    bool m_muted;
+    bool m_blockedBy;
+    bool m_blocking;
+    QString m_blockingUri;
 };
 
 #endif // USERPROFILE_H

@@ -9,6 +9,7 @@ import tech.relog.hagoromo.anyfeedlistmodel 1.0
 import tech.relog.hagoromo.recordoperator 1.0
 import tech.relog.hagoromo.followslistmodel 1.0
 import tech.relog.hagoromo.followerslistmodel 1.0
+import tech.relog.hagoromo.systemtool 1.0
 
 import "../parts"
 import "../controls"
@@ -28,12 +29,17 @@ ColumnLayout {
     property string accountDid: ""  // 認証しているアカウント
 
     signal requestReply(string cid, string uri,
-                          string reply_root_cid, string reply_root_uri,
-                          string avatar, string display_name, string handle, string indexed_at, string text)
+                        string reply_root_cid, string reply_root_uri,
+                        string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestQuote(string cid, string uri, string avatar, string display_name, string handle, string indexed_at, string text)
+    signal requestMention(string handle)
     signal requestViewThread(string uri)
-    signal requestViewImages(int index, string paths)
+    signal requestViewImages(int index, var paths)
     signal requestViewProfile(string did)
+    signal requestViewGeneratorFeed(string name, string uri)
+    signal requestViewAuthorFeed(string did, string handle)
+    signal requestReportPost(string uri, string cid)
+    signal requestReportAccount(string did)
 
     signal back()
 
@@ -109,6 +115,10 @@ ColumnLayout {
 
     UserProfile {
         id: userProfile
+    }
+
+    SystemTool {
+        id: systemTool
     }
 
     Frame {
@@ -235,7 +245,11 @@ ColumnLayout {
             wrapMode: Text.Wrap
             lineHeight: 1.1
             font.pointSize: 10
+            textFormat: Text.StyledText
             text: userProfile.description
+
+            onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
+            onLinkActivated: (url) => Qt.openUrlExternally(url)
 
             IconButton {
                 id: moreButton
@@ -250,13 +264,108 @@ ColumnLayout {
                 Menu {
                     id: morePopup
                     MenuItem {
+                        text: qsTr("Send mention")
+                        icon.source: "../images/reply.png"
+                        enabled: userProfile.handle.length > 0
+                        onTriggered: requestMention("@" + userProfile.handle)
+                    }
+                    MenuSeparator {}
+                    MenuItem {
+                        text: qsTr("Copy handle")
+                        icon.source: "../images/copy.png"
+                        enabled: userProfile.handle.length > 0
+                        onTriggered: systemTool.copyToClipboard("@" + userProfile.handle)
+                    }
+                    MenuItem {
+                        text: qsTr("Copy DID")
+                        icon.source: "../images/copy.png"
+                        enabled: userProfile.did.length > 0
+                        onTriggered: systemTool.copyToClipboard(userProfile.did)
+                    }
+                    MenuSeparator {}
+                    MenuItem {
+                        text: qsTr("Open in new col")
+                        icon.source: "../images/add.png"
+                        enabled: userProfile.handle.length > 0
+                        onTriggered: requestViewAuthorFeed(userProfile.did, "@" + userProfile.handle)
+                    }
+                    MenuItem {
                         text: qsTr("Open in Official")
                         icon.source: "../images/open_in_other.png"
                         enabled: userProfile.handle.length > 0
                         onTriggered: openInOhters(userProfile.handle)
                     }
+                    MenuSeparator {}
+                    MenuItem {
+                        text: userProfile.muted ? qsTr("Unmute account") : qsTr("Mute account")
+                        icon.source: userProfile.muted ? "../images/visibility_on.png" : "../images/visibility_off.png"
+                        enabled: userProfile.handle.length > 0
+                        onTriggered: {
+                            if(userProfile.muted){
+                                recordOperator.deleteMute(userProfile.did)
+                            }else{
+                                recordOperator.mute(userProfile.did)
+                            }
+                        }
+                    }
+                    MenuItem {
+                        text: userProfile.blocking ? qsTr("Unblock account") : qsTr("Block account")
+                        icon.source: userProfile.blocking ? "../images/block.png" : "../images/block.png"
+                        enabled: userProfile.handle.length > 0
+                        onTriggered: {
+                            if(userProfile.blocking){
+                                recordOperator.deleteBlock(userProfile.blockingUri)
+                            }else{
+                                recordOperator.block(userProfile.did)
+                            }
+                        }
+                    }
+                    MenuItem {
+                        text: qsTr("Report account")
+                        icon.source: "../images/report.png"
+                        enabled: userProfile.handle.length > 0
+                        onTriggered: requestReportAccount(userProfile.did)
+                    }
                 }
             }
+        }
+        IconLabelFrame {
+            id: moderationFrame
+            Layout.preferredWidth: profileView.width
+            visible: false
+            states: [
+                State {
+                    when: userProfile.blocking
+                    PropertyChanges {
+                        target: moderationFrame
+                        visible: true
+                        backgroundColor: Material.color(Material.Red)
+                        borderWidth: 0
+                        iconSource: "../images/block.png"
+                        labelText: qsTr("Account blocked")
+                    }
+                },
+                State {
+                    when: userProfile.muted
+                    PropertyChanges {
+                        target: moderationFrame
+                        visible: true
+                        backgroundColor: Material.color(Material.Grey)
+                        borderWidth: 0
+                        iconSource: "../images/visibility_off.png"
+                        labelText: qsTr("Account muted")
+                    }
+                }
+            ]
+        }
+        IconLabelFrame {
+            id: moderationFrame2
+            Layout.preferredWidth: profileView.width
+            visible: userProfile.blockedBy
+            backgroundColor: Material.color(Material.Red)
+            borderWidth: 0
+            iconSource: "../images/block.png"
+            labelText: qsTr("This account has blocked you")
         }
     }
 
@@ -312,19 +421,22 @@ ColumnLayout {
                 onErrorOccured: (message) => {console.log(message)}
             }
             fontSizeRatio: profileView.fontSizeRatio
+            accountDid: profileView.accountDid
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
-                              profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+                            profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
-                              profileView.requestQuote(cid, uri, avatar, display_name, handle, indexed_at, text)
+                            profileView.requestQuote(cid, uri, avatar, display_name, handle, indexed_at, text)
 
             onRequestViewThread: (uri) => profileView.requestViewThread(uri)
             onRequestViewImages: (index, paths) => profileView.requestViewImages(index, paths)
             onRequestViewProfile: (did) => {
-                                        if(did !== profileView.userDid){
-                                            profileView.requestViewProfile(did)
-                                        }
-                                    }
+                                      if(did !== profileView.userDid){
+                                          profileView.requestViewProfile(did)
+                                      }
+                                  }
+            onRequestViewGeneratorFeed: (name, uri) => profileView.requestViewGeneratorFeed(name, uri)
+            onRequestReportPost: (uri, cid) => profileView.requestReportPost(uri, cid)
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
         }
 
@@ -339,19 +451,22 @@ ColumnLayout {
                 onErrorOccured: (message) => {console.log(message)}
             }
             fontSizeRatio: profileView.fontSizeRatio
+            accountDid: profileView.accountDid
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
-                              profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+                            profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
-                              profileView.requestQuote(cid, uri, avatar, display_name, handle, indexed_at, text)
+                            profileView.requestQuote(cid, uri, avatar, display_name, handle, indexed_at, text)
 
             onRequestViewThread: (uri) => profileView.requestViewThread(uri)
             onRequestViewImages: (index, paths) => profileView.requestViewImages(index, paths)
             onRequestViewProfile: (did) => {
-                                        if(did !== profileView.userDid){
-                                            profileView.requestViewProfile(did)
-                                        }
-                                    }
+                                      if(did !== profileView.userDid){
+                                          profileView.requestViewProfile(did)
+                                      }
+                                  }
+            onRequestViewGeneratorFeed: (name, uri) => profileView.requestViewGeneratorFeed(name, uri)
+            onRequestReportPost: (uri, cid) => profileView.requestReportPost(uri, cid)
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
         }
 
@@ -366,19 +481,22 @@ ColumnLayout {
                 onErrorOccured: (message) => {console.log(message)}
             }
             fontSizeRatio: profileView.fontSizeRatio
+            accountDid: profileView.accountDid
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
-                              profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+                            profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
-                              profileView.requestQuote(cid, uri, avatar, display_name, handle, indexed_at, text)
+                            profileView.requestQuote(cid, uri, avatar, display_name, handle, indexed_at, text)
 
             onRequestViewThread: (uri) => profileView.requestViewThread(uri)
             onRequestViewImages: (index, paths) => profileView.requestViewImages(index, paths)
             onRequestViewProfile: (did) => {
-                                        if(did !== profileView.userDid){
-                                            profileView.requestViewProfile(did)
-                                        }
-                                    }
+                                      if(did !== profileView.userDid){
+                                          profileView.requestViewProfile(did)
+                                      }
+                                  }
+            onRequestViewGeneratorFeed: (name, uri) => profileView.requestViewGeneratorFeed(name, uri)
+            onRequestReportPost: (uri, cid) => profileView.requestReportPost(uri, cid)
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
         }
 
@@ -395,10 +513,11 @@ ColumnLayout {
                 onErrorOccured: (message) => {console.log(message)}
             }
             onRequestViewProfile: (did) => {
-                                        if(did !== profileView.userDid){
-                                            profileView.requestViewProfile(did)
-                                        }
-                                    }
+                                      if(did !== profileView.userDid){
+                                          profileView.requestViewProfile(did)
+                                      }
+                                  }
+            onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
         }
 
         ProfileListView {
@@ -415,10 +534,11 @@ ColumnLayout {
                 onErrorOccured: (message) => {console.log(message)}
             }
             onRequestViewProfile: (did) => {
-                                        if(did !== profileView.userDid){
-                                            profileView.requestViewProfile(did)
-                                        }
-                                    }
+                                      if(did !== profileView.userDid){
+                                          profileView.requestViewProfile(did)
+                                      }
+                                  }
+            onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
         }
     }
 }

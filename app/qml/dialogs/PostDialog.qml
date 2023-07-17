@@ -1,10 +1,13 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import QtQuick.Controls.Material 2.15
 import Qt.labs.platform 1.1 as P
 
 import tech.relog.hagoromo.recordoperator 1.0
 import tech.relog.hagoromo.accountlistmodel 1.0
+import tech.relog.hagoromo.languagelistmodel 1.0
+import tech.relog.hagoromo.externallink 1.0
 
 import "../controls"
 import "../parts"
@@ -32,6 +35,8 @@ Dialog {
     property string replyIndexedAt: ""
     property string replyText: ""
 
+    property alias postText: postText
+
     onOpened: {
         var i = accountModel.indexAt(defaultAccountUuid)
         accountCombo.currentIndex = -1
@@ -52,9 +57,12 @@ Dialog {
         replyHandle = ""
         replyIndexedAt = ""
         replyText = ""
+        postLanguagesButton.text = ""
 
         postText.clear()
-        embedImagePreview.embedImages = ""
+        embedImagePreview.embedImages = []
+        externalLink.clear()
+        addingExternalLinkUrlText.text = ""
     }
 
     Shortcut {  // Post
@@ -79,6 +87,12 @@ Dialog {
                             postDialog.close()
                         }
                     }
+    }
+    LanguageListModel {
+        id: languageListModel
+    }
+    ExternalLink {
+        id: externalLink
     }
 
     ColumnLayout {
@@ -135,7 +149,40 @@ Dialog {
                     if(accountCombo.currentIndex >= 0){
                         accountAvatarImage.source =
                                 postDialog.accountModel.item(accountCombo.currentIndex, AccountListModel.AvatarRole)
+                        postLanguagesButton.setLanguageText(
+                                    postDialog.accountModel.item(accountCombo.currentIndex, AccountListModel.PostLanguagesRole)
+                                    )
                     }
+                }
+            }
+            Item {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 1
+            }
+            IconButton {
+                id: postLanguagesButton
+                iconSource: "../images/language.png"
+                flat: true
+                onClicked: {
+                    languageSelectionDialog.setSelectedLanguages(
+                                postDialog.accountModel.item(accountCombo.currentIndex, AccountListModel.PostLanguagesRole)
+                                )
+                    languageSelectionDialog.open()
+                }
+
+                function setLanguageText(post_langs){
+                    var langs = languageListModel.convertLanguageNames(post_langs)
+                    var lang_str = ""
+                    for(var i=0;i<langs.length;i++){
+                        if(lang_str.length > 0){
+                            lang_str += ", "
+                        }
+                        lang_str += langs[i]
+                    }
+                    if(lang_str.length > 13){
+                        lang_str = lang_str.substring(0, 10) + "..."
+                    }
+                    iconText = lang_str
                 }
             }
         }
@@ -152,14 +199,65 @@ Dialog {
             }
         }
 
+        RowLayout {
+            Layout.maximumWidth: 400
+            visible: postType !== "quote" && embedImagePreview.embedImages.length === 0
+            ScrollView {
+                Layout.fillWidth: true
+                clip: true
+                TextArea {
+                    id: addingExternalLinkUrlText
+                    selectByMouse: true
+                    placeholderText: qsTr("Link card URL")
+                }
+            }
+            IconButton {
+                id: externalLinkButton
+                iconSource: "../images/add.png"
+                enabled: addingExternalLinkUrlText.text.length > 0
+                onClicked: externalLink.getExternalLink(addingExternalLinkUrlText.text)
+                BusyIndicator {
+                    anchors.fill: parent
+                    anchors.margins: 3
+                    visible: externalLink.running
+                }
+                states: [
+                    State {
+                        when: externalLink.running
+                        PropertyChanges {
+                            target: externalLinkButton
+                            enabled: false
+                            onClicked: {}
+                        }
+                    },
+                    State {
+                        when: externalLink.valid
+                        PropertyChanges {
+                            target: externalLinkButton
+                            iconSource: "../images/delete.png"
+                            onClicked: externalLink.clear()
+                        }
+                    }
+                ]
+            }
+        }
+        ExternalLinkCard {
+            Layout.preferredWidth: 400
+            visible: externalLink.valid
+
+            thumbImage.source: externalLink.thumbLocal
+            uriLabel.text: externalLink.uri
+            titleLabel.text: externalLink.title
+            descriptionLabel.text: externalLink.description
+        }
 
         RowLayout {
             visible: embedImagePreview.embedImages.length > 0
             spacing: 4
             Repeater {
                 id: embedImagePreview
-                property string embedImages: ""
-                model: embedImagePreview.embedImages.split("\n")
+                property var embedImages: []
+                model: embedImagePreview.embedImages
                 delegate: ImageWithIndicator {
                     Layout.preferredWidth: 97
                     Layout.preferredHeight: 97
@@ -174,16 +272,13 @@ Dialog {
                         anchors.margins: 5
                         iconSource: "../images/delete.png"
                         onClicked: {
-                            var images = embedImagePreview.embedImages.split("\n")
-                            var new_images = ""
+                            var images = embedImagePreview.embedImages
+                            var new_images = []
                             for(var i=0; i<images.length; i++){
                                 if(images[i] === modelData){
                                     continue;
                                 }
-                                if(new_images.length > 0){
-                                    new_images += "\n"
-                                }
-                                new_images += images[i]
+                                new_images.push(images[i])
                             }
                             embedImagePreview.embedImages = new_images
                         }
@@ -234,7 +329,7 @@ Dialog {
                 Layout.preferredHeight: 1
             }
             IconButton {
-                enabled: !createRecord.running
+                enabled: !createRecord.running && !externalLink.valid
                 iconSource: "../images/add_image.png"
                 flat: true
                 onClicked: {
@@ -261,7 +356,7 @@ Dialog {
             Button {
                 id: postButton
                 Layout.alignment: Qt.AlignRight
-                enabled: postText.text.length > 0 && !createRecord.running
+                enabled: postText.text.length > 0 && !createRecord.running && !externalLink.running
                 text: qsTr("Post")
                 onClicked: {
                     var row = accountCombo.currentIndex;
@@ -273,13 +368,17 @@ Dialog {
                                             postDialog.accountModel.item(row, AccountListModel.RefreshJwtRole))
                     createRecord.clear()
                     createRecord.setText(postText.text)
+                    createRecord.setPostLanguages(postDialog.accountModel.item(row, AccountListModel.PostLanguagesRole))
                     if(postType === "reply"){
                         createRecord.setReply(replyCid, replyUri, replyRootCid, replyRootUri)
                     }else if(postType === "quote"){
                         createRecord.setQuote(replyCid, replyUri)
                     }
-                    if(embedImagePreview.embedImages.length > 0){
-                        createRecord.setImages(embedImagePreview.embedImages.split("\n"))
+                    if(externalLink.valid){
+                        createRecord.setExternalLink(externalLink.uri, externalLink.title, externalLink.description, externalLink.thumbLocal)
+                        createRecord.postWithImages()
+                    }else if(embedImagePreview.embedImages.length > 0){
+                        createRecord.setImages(embedImagePreview.embedImages)
                         createRecord.postWithImages()
                     }else{
                         createRecord.post()
@@ -305,26 +404,30 @@ Dialog {
             //選択されたファイルをすべて追加
             prevFolder = folder
 
-            var images = embedImagePreview.embedImages.split("\n")
+            var images = embedImagePreview.embedImages
             if(images.length >= 4){
                 return
             }
             var new_images = embedImagePreview.embedImages
             for(var i=0; i<files.length; i++){
-                if(i >= 4){
+                if(new_images.length >= 4){
                     break
                 }
                 if(images.indexOf(files[i]) >= 0){
                     continue;
                 }
-                if(new_images.length > 0){
-                    new_images += "\n"
-                }
-                new_images += files[i]
+                new_images.push(files[i])
             }
             embedImagePreview.embedImages = new_images
         }
         property string prevFolder
     }
 
+    LanguageSelectionDialog {
+        id: languageSelectionDialog
+        onAccepted: {
+            postDialog.accountModel.update(accountCombo.currentIndex, AccountListModel.PostLanguagesRole, selectedLanguages)
+            postLanguagesButton.setLanguageText(selectedLanguages)
+        }
+    }
 }

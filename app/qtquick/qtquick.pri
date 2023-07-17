@@ -10,13 +10,16 @@ SOURCES += \
     $$PWD/createsession.cpp \
     $$PWD/customfeedlistmodel.cpp \
     $$PWD/encryption.cpp \
+    $$PWD/externallink.cpp \
     $$PWD/feedgeneratorlistmodel.cpp \
     $$PWD/feedtypelistmodel.cpp \
     $$PWD/followerslistmodel.cpp \
     $$PWD/followslistmodel.cpp \
+    $$PWD/languagelistmodel.cpp \
     $$PWD/notificationlistmodel.cpp \
     $$PWD/postthreadlistmodel.cpp \
     $$PWD/recordoperator.cpp \
+    $$PWD/reporter.cpp \
     $$PWD/searchpostlistmodel.cpp \
     $$PWD/searchprofilelistmodel.cpp \
     $$PWD/systemtool.cpp \
@@ -35,13 +38,16 @@ HEADERS += \
     $$PWD/customfeedlistmodel.h \
     $$PWD/encryption.h \
     $$PWD/encryption_seed.h \
+    $$PWD/externallink.h \
     $$PWD/feedgeneratorlistmodel.h \
     $$PWD/feedtypelistmodel.h \
     $$PWD/followerslistmodel.h \
     $$PWD/followslistmodel.h \
+    $$PWD/languagelistmodel.h \
     $$PWD/notificationlistmodel.h \
     $$PWD/postthreadlistmodel.h \
     $$PWD/recordoperator.h \
+    $$PWD/reporter.h \
     $$PWD/searchpostlistmodel.h \
     $$PWD/searchprofilelistmodel.h \
     $$PWD/systemtool.h \

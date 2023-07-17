@@ -3,7 +3,6 @@
 #include "recordoperator.h"
 
 #include <QDebug>
-#include <QPointer>
 
 using AtProtocolInterface::AccountData;
 using AtProtocolInterface::AppBskyFeedGetTimeline;
@@ -41,6 +40,8 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return current.post.author.handle;
     else if (role == AvatarRole)
         return current.post.author.avatar;
+    else if (role == MutedRole)
+        return current.post.author.viewer.muted;
     else if (role == RecordTextRole)
         return copyRecordText(current.post.record);
     else if (role == RecordTextPlainRole)
@@ -118,14 +119,14 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     } else if (role == QuoteRecordEmbedImagesRole) {
         // unionの配列で読み込んでない
         if (current.post.embed_AppBskyEmbedRecord_View.isNull())
-            return QString();
+            return QStringList();
         else
             return LexiconsTypeUnknown::copyImagesFromRecord(
                     current.post.embed_AppBskyEmbedRecord_View->record_ViewRecord, true);
     } else if (role == QuoteRecordEmbedImagesFullRole) {
         // unionの配列で読み込んでない
         if (current.post.embed_AppBskyEmbedRecord_View.isNull())
-            return QString();
+            return QStringList();
         else
             return LexiconsTypeUnknown::copyImagesFromRecord(
                     current.post.embed_AppBskyEmbedRecord_View->record_ViewRecord, false);
@@ -142,6 +143,46 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return current.post.embed_AppBskyEmbedExternal_View.external.description;
     else if (role == ExternalLinkThumbRole)
         return current.post.embed_AppBskyEmbedExternal_View.external.thumb;
+
+    else if (role == HasGeneratorFeedRole) {
+        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
+            return false;
+        else
+            return current.post.embed_type
+                    == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecord_View
+                    && current.post.embed_AppBskyEmbedRecord_View->record_type
+                    == AppBskyEmbedRecord::ViewRecordType::record_AppBskyFeedDefs_GeneratorView;
+    } else if (role == GeneratorFeedUriRole) {
+        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
+            return QString();
+        else
+            return current.post.embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView
+                    .uri;
+    } else if (role == GeneratorFeedCreatorHandleRole) {
+        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
+            return QString();
+        else
+            return current.post.embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView
+                    .creator.handle;
+    } else if (role == GeneratorFeedDisplayNameRole) {
+        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
+            return QString();
+        else
+            return current.post.embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView
+                    .displayName;
+    } else if (role == GeneratorFeedLikeCountRole) {
+        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
+            return QString();
+        else
+            return current.post.embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView
+                    .likeCount;
+    } else if (role == GeneratorFeedAvatarRole) {
+        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
+            return QString();
+        else
+            return current.post.embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView
+                    .avatar;
+    }
 
     else if (role == HasReplyRole) {
         if (current.reply.parent_type == AppBskyFeedDefs::ReplyRefParentType::parent_PostView)
@@ -231,22 +272,46 @@ void TimelineListModel::getLatest()
         return;
     setRunning(true);
 
-    QPointer<TimelineListModel> aliving(this);
-
-    AppBskyFeedGetTimeline *timeline = new AppBskyFeedGetTimeline();
+    AppBskyFeedGetTimeline *timeline = new AppBskyFeedGetTimeline(this);
     connect(timeline, &AppBskyFeedGetTimeline::finished, [=](bool success) {
-        if (aliving) {
-            if (success) {
-                copyFrom(timeline);
-            } else {
-                emit errorOccured(timeline->errorMessage());
-            }
-            QTimer::singleShot(100, this, &TimelineListModel::displayQueuedPosts);
+        if (success) {
+            copyFrom(timeline);
+        } else {
+            emit errorOccured(timeline->errorMessage());
         }
+        QTimer::singleShot(100, this, &TimelineListModel::displayQueuedPosts);
         timeline->deleteLater();
     });
     timeline->setAccount(account());
     timeline->getTimeline();
+}
+
+void TimelineListModel::deletePost(int row)
+{
+    if (row < 0 || row >= m_cidList.count())
+        return;
+
+    if (running())
+        return;
+    setRunning(true);
+
+    RecordOperator *ope = new RecordOperator(this);
+    connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
+    connect(ope, &RecordOperator::finished,
+            [=](bool success, const QString &uri, const QString &cid) {
+                Q_UNUSED(uri)
+                Q_UNUSED(cid)
+                if (success) {
+                    beginRemoveRows(QModelIndex(), row, row);
+                    m_cidList.removeAt(row);
+                    endRemoveRows();
+                }
+                setRunning(false);
+                ope->deleteLater();
+            });
+    ope->setAccount(account().service, account().did, account().handle, account().email,
+                    account().accessJwt, account().refreshJwt);
+    ope->deletePost(item(row, UriRole).toString());
 }
 
 void TimelineListModel::repost(int row)
@@ -260,19 +325,15 @@ void TimelineListModel::repost(int row)
         return;
     setRunning(true);
 
-    QPointer<TimelineListModel> aliving(this);
-
-    RecordOperator *ope = new RecordOperator();
+    RecordOperator *ope = new RecordOperator(this);
     connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
     connect(ope, &RecordOperator::finished,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(cid)
-                if (aliving) {
-                    if (success) {
-                        update(row, RepostedUriRole, uri);
-                    }
-                    setRunning(false);
+                if (success) {
+                    update(row, RepostedUriRole, uri);
                 }
+                setRunning(false);
                 ope->deleteLater();
             });
     ope->setAccount(account().service, account().did, account().handle, account().email,
@@ -294,19 +355,16 @@ void TimelineListModel::like(int row)
         return;
     setRunning(true);
 
-    QPointer<TimelineListModel> aliving(this);
-
-    RecordOperator *ope = new RecordOperator();
+    RecordOperator *ope = new RecordOperator(this);
     connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
     connect(ope, &RecordOperator::finished,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(cid)
-                if (aliving) {
-                    if (success) {
-                        update(row, LikedUriRole, uri);
-                    }
-                    setRunning(false);
+
+                if (success) {
+                    update(row, LikedUriRole, uri);
                 }
+                setRunning(false);
                 ope->deleteLater();
             });
     ope->setAccount(account().service, account().did, account().handle, account().email,
@@ -327,6 +385,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[DisplayNameRole] = "displayName";
     roles[HandleRole] = "handle";
     roles[AvatarRole] = "avatar";
+    roles[MutedRole] = "muted";
     roles[RecordTextRole] = "recordText";
     roles[RecordTextPlainRole] = "recordTextPlain";
     roles[RecordTextTranslationRole] = "recordTextTranslation";
@@ -358,6 +417,13 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[ExternalLinkTitleRole] = "externalLinkTitle";
     roles[ExternalLinkDescriptionRole] = "externalLinkDescription";
     roles[ExternalLinkThumbRole] = "externalLinkThumb";
+
+    roles[HasGeneratorFeedRole] = "hasGeneratorFeed";
+    roles[GeneratorFeedUriRole] = "generatorFeedUri";
+    roles[GeneratorFeedCreatorHandleRole] = "generatorFeedCreatorHandle";
+    roles[GeneratorFeedDisplayNameRole] = "generatorFeedDisplayName";
+    roles[GeneratorFeedLikeCountRole] = "generatorFeedLikeCount";
+    roles[GeneratorFeedAvatarRole] = "generatorFeedAvatar";
 
     roles[HasReplyRole] = "hasReply";
     roles[ReplyRootCidRole] = "replyRootCid";

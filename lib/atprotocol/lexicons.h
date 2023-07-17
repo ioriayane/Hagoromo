@@ -29,6 +29,7 @@ namespace AppBskyGraphDefs {
 typedef QString ListPurpose;
 struct ListViewerState
 {
+    bool muted = false;
 };
 struct ListViewBasic
 {
@@ -67,6 +68,7 @@ struct Label
     QString uri; // uri
     QString cid; // cid
     QString val;
+    bool neg = false;
     QString cts; // datetime
 };
 }
@@ -76,7 +78,9 @@ namespace AppBskyActorDefs {
 // A reference to an actor in the network.
 struct ViewerState
 {
+    bool muted = false;
     AppBskyGraphDefs::ListViewBasic mutedByList;
+    bool blockedBy = false;
     QString blocking; // at-uri
     QString following; // at-uri
     QString followedBy; // at-uri
@@ -118,6 +122,7 @@ struct ProfileViewDetailed
 };
 struct AdultContentPref
 {
+    bool enabled = false;
 };
 struct ContentLabelPref
 {
@@ -351,10 +356,12 @@ struct PostView
 struct NotFoundPost
 {
     QString uri; // at-uri
+    bool notFound = false;
 };
 struct BlockedPost
 {
     QString uri; // at-uri
+    bool blocked = false;
 };
 struct ReplyRef
 {
@@ -620,6 +627,7 @@ struct Notification
     QString reason;
     QString reasonSubject; // at-uri
     QVariant record;
+    bool isRead = false;
     QString indexedAt; // datetime
     QList<ComAtprotoLabelDefs::Label> labels;
 };
@@ -636,6 +644,7 @@ struct InviteCode
 {
     QString code;
     int available = 0;
+    bool disabled = false;
     QString forAccount;
     QString createdBy;
     QString createdAt; // datetime
@@ -725,6 +734,7 @@ struct RepoView
     QString indexedAt; // datetime
     Moderation moderation;
     ComAtprotoServerDefs::InviteCode invitedBy;
+    bool invitesDisabled = false;
 };
 struct RepoViewNotFound
 {
@@ -835,6 +845,7 @@ struct RepoViewDetail
     QList<ComAtprotoLabelDefs::Label> labels;
     ComAtprotoServerDefs::InviteCode invitedBy;
     QList<ComAtprotoServerDefs::InviteCode> invites;
+    bool invitesDisabled = false;
 };
 struct RecordViewDetail
 {
@@ -950,6 +961,8 @@ struct RepoOp
 struct Commit
 {
     int seq = 0;
+    bool rebase = false;
+    bool tooBig = false;
     QString repo; // did
     QList<RepoOp> ops;
     QString time; // datetime

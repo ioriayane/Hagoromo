@@ -11,7 +11,6 @@
 #include <QFile>
 #include <QJsonDocument>
 #include <QNetworkInterface>
-#include <QPointer>
 
 using AtProtocolInterface::AccountData;
 using AtProtocolInterface::AccountStatus;
@@ -71,6 +70,10 @@ QVariant AccountListModel::item(int row, AccountListModelRoles role) const
         return m_accountList.at(row).description;
     else if (role == AvatarRole)
         return m_accountList.at(row).avatar;
+
+    else if (role == PostLanguagesRole)
+        return m_accountList[row].post_languages;
+
     else if (role == StatusRole)
         return static_cast<int>(m_accountList.at(row).status);
 
@@ -107,6 +110,11 @@ void AccountListModel::update(int row, AccountListModelRoles role, const QVarian
         m_accountList[row].description = value.toString();
     else if (role == AvatarRole)
         m_accountList[row].avatar = value.toString();
+
+    else if (role == PostLanguagesRole) {
+        m_accountList[row].post_languages = value.toStringList();
+        save();
+    }
 
     emit dataChanged(index(row), index(row));
 }
@@ -205,6 +213,14 @@ void AccountListModel::save() const
         account_item["service"] = item.service;
         account_item["identifier"] = item.identifier;
         account_item["password"] = m_encryption.encrypt(item.password);
+
+        if (!item.post_languages.isEmpty()) {
+            QJsonArray post_langs;
+            for (const auto &lang : item.post_languages) {
+                post_langs.append(lang);
+            }
+            account_item["post_languages"] = post_langs;
+        }
         account_array.append(account_item);
     }
 
@@ -231,6 +247,10 @@ void AccountListModel::load()
                 item.identifier = doc.array().at(i).toObject().value("identifier").toString();
                 item.password = m_encryption.decrypt(
                         doc.array().at(i).toObject().value("password").toString());
+                for (const auto &value :
+                     doc.array().at(i).toObject().value("post_languages").toArray()) {
+                    item.post_languages.append(value.toString());
+                }
 
                 beginInsertRows(QModelIndex(), count(), count());
                 m_accountList.append(item);
@@ -267,6 +287,7 @@ QHash<int, QByteArray> AccountListModel::roleNames() const
     roles[DisplayNameRole] = "displayName";
     roles[DescriptionRole] = "description";
     roles[AvatarRole] = "avatar";
+    roles[PostLanguagesRole] = "postLanguages";
     roles[StatusRole] = "status";
 
     return roles;
@@ -275,35 +296,31 @@ QHash<int, QByteArray> AccountListModel::roleNames() const
 void AccountListModel::updateSession(int row, const QString &service, const QString &identifier,
                                      const QString &password)
 {
-    QPointer<AccountListModel> aliving(this);
-
-    ComAtprotoServerCreateSession *session = new ComAtprotoServerCreateSession();
+    ComAtprotoServerCreateSession *session = new ComAtprotoServerCreateSession(this);
     session->setService(service);
     connect(session, &ComAtprotoServerCreateSession::finished, [=](bool success) {
         //        qDebug() << session << session->service() << session->did() << session->handle()
         //                 << session->email() << session->accessJwt() << session->refreshJwt();
         //        qDebug() << service << identifier << password;
-        if (aliving) {
-            updateAccount(service, identifier, password, session->did(), session->handle(),
-                          session->email(), session->accessJwt(), session->refreshJwt(), success);
-            if (success) {
-                emit appendedAccount(row);
+        updateAccount(service, identifier, password, session->did(), session->handle(),
+                      session->email(), session->accessJwt(), session->refreshJwt(), success);
+        if (success) {
+            emit appendedAccount(row);
 
-                // 詳細を取得
-                getProfile(row);
-            } else {
-                emit errorOccured(session->errorMessage());
+            // 詳細を取得
+            getProfile(row);
+        } else {
+            emit errorOccured(session->errorMessage());
+        }
+        bool all_finished = true;
+        for (const AccountData &item : qAsConst(m_accountList)) {
+            if (item.status == AccountStatus::Unknown) {
+                all_finished = false;
+                break;
             }
-            bool all_finished = true;
-            for (const AccountData &item : qAsConst(m_accountList)) {
-                if (item.status == AccountStatus::Unknown) {
-                    all_finished = false;
-                    break;
-                }
-            }
-            if (all_finished) {
-                emit allFinished();
-            }
+        }
+        if (all_finished) {
+            emit allFinished();
         }
         session->deleteLater();
     });
@@ -315,27 +332,23 @@ void AccountListModel::refreshSession(int row)
     if (row < 0 || row >= m_accountList.count())
         return;
 
-    QPointer<AccountListModel> aliving(this);
-
-    ComAtprotoServerRefreshSession *session = new ComAtprotoServerRefreshSession();
+    ComAtprotoServerRefreshSession *session = new ComAtprotoServerRefreshSession(this);
     session->setAccount(m_accountList.at(row));
     connect(session, &ComAtprotoServerRefreshSession::finished, [=](bool success) {
-        if (aliving) {
-            if (success) {
-                qDebug() << "Refresh session" << session->did() << session->handle();
-                m_accountList[row].did = session->did();
-                m_accountList[row].handle = session->handle();
-                m_accountList[row].accessJwt = session->accessJwt();
-                m_accountList[row].refreshJwt = session->refreshJwt();
-                m_accountList[row].status = AccountStatus::Authorized;
+        if (success) {
+            qDebug() << "Refresh session" << session->did() << session->handle();
+            m_accountList[row].did = session->did();
+            m_accountList[row].handle = session->handle();
+            m_accountList[row].accessJwt = session->accessJwt();
+            m_accountList[row].refreshJwt = session->refreshJwt();
+            m_accountList[row].status = AccountStatus::Authorized;
 
-                emit updatedAccount(row, m_accountList[row].uuid);
-            } else {
-                m_accountList[row].status = AccountStatus::Unauthorized;
-                emit errorOccured(session->errorMessage());
-            }
-            emit dataChanged(index(row), index(row));
+            emit updatedAccount(row, m_accountList[row].uuid);
+        } else {
+            m_accountList[row].status = AccountStatus::Unauthorized;
+            emit errorOccured(session->errorMessage());
         }
+        emit dataChanged(index(row), index(row));
         session->deleteLater();
     });
     session->refreshSession();
@@ -346,26 +359,22 @@ void AccountListModel::getProfile(int row)
     if (row < 0 || row >= m_accountList.count())
         return;
 
-    QPointer<AccountListModel> aliving(this);
-
-    AppBskyActorGetProfile *profile = new AppBskyActorGetProfile();
+    AppBskyActorGetProfile *profile = new AppBskyActorGetProfile(this);
     profile->setAccount(m_accountList.at(row));
     connect(profile, &AppBskyActorGetProfile::finished, [=](bool success) {
-        if (aliving) {
-            if (success) {
-                AtProtocolType::AppBskyActorDefs::ProfileViewDetailed detail =
-                        profile->profileViewDetailed();
-                qDebug() << "Update profile detailed" << detail.displayName << detail.description;
-                m_accountList[row].displayName = detail.displayName;
-                m_accountList[row].description = detail.description;
-                m_accountList[row].avatar = detail.avatar;
-                m_accountList[row].banner = detail.banner;
+        if (success) {
+            AtProtocolType::AppBskyActorDefs::ProfileViewDetailed detail =
+                    profile->profileViewDetailed();
+            qDebug() << "Update profile detailed" << detail.displayName << detail.description;
+            m_accountList[row].displayName = detail.displayName;
+            m_accountList[row].description = detail.description;
+            m_accountList[row].avatar = detail.avatar;
+            m_accountList[row].banner = detail.banner;
 
-                emit updatedAccount(row, m_accountList[row].uuid);
-                emit dataChanged(index(row), index(row));
-            } else {
-                emit errorOccured(profile->errorMessage());
-            }
+            emit updatedAccount(row, m_accountList[row].uuid);
+            emit dataChanged(index(row), index(row));
+        } else {
+            emit errorOccured(profile->errorMessage());
         }
         profile->deleteLater();
     });

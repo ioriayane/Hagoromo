@@ -143,7 +143,7 @@ Dialog {
                                 id: typeList
                                 model: FeedTypeListModel { }
                                 footer: ItemDelegate {
-                                    width: typeList.width
+                                    width: typeList.width - typeScroll.ScrollBar.vertical.width
                                     BusyIndicator {
                                         id: busyIndicator
                                         anchors.centerIn: parent
@@ -174,7 +174,7 @@ Dialog {
                                 }
 
                                 delegate: ItemDelegate {
-                                    width: typeList.width
+                                    width: typeList.width - typeScroll.ScrollBar.vertical.width
                                     highlighted: ListView.isCurrentItem
                                     onClicked: {
                                         typeList.currentIndex = model.index

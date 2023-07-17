@@ -5,7 +5,6 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QPointer>
 
 using AtProtocolInterface::AppBskyActorGetProfiles;
 using namespace AtProtocolType;
@@ -29,6 +28,13 @@ void ComAtprotoRepoCreateRecord::post(const QString &text)
     json_record.insert("text", text);
     json_record.insert("createdAt", QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
     json_record.insert("via", "Hagoromo");
+    if (!m_postLanguages.isEmpty()) {
+        QJsonArray json_langs;
+        for (const auto &lang : qAsConst(m_postLanguages)) {
+            json_langs.append(lang);
+        }
+        json_record.insert("langs", json_langs);
+    }
 
     if (!m_replyParent.cid.isEmpty() && !m_replyParent.uri.isEmpty()) {
         QJsonObject json_root;
@@ -50,7 +56,26 @@ void ComAtprotoRepoCreateRecord::post(const QString &text)
 
     QJsonObject json_embed_images;
 
-    if (!m_embedImageBlobs.isEmpty()) {
+    if (!m_externalLinkUri.isEmpty()) {
+        // リンクカードと画像添付は排他
+        QJsonObject json_external;
+        json_external.insert("uri", m_externalLinkUri);
+        json_external.insert("title", m_externalLinkTitle);
+        json_external.insert("description", m_externalLinkDescription);
+        if (!m_embedImageBlobs.isEmpty()) {
+            QJsonObject json_external_thumb;
+            json_external_thumb.insert("$type", "blob");
+            json_external_thumb.insert("mimeType", m_embedImageBlobs.at(0).mimeType);
+            json_external_thumb.insert("size", m_embedImageBlobs.at(0).size);
+            QJsonObject json_external_thumb_link;
+            json_external_thumb_link.insert("$link", m_embedImageBlobs.at(0).cid);
+            json_external_thumb.insert("ref", json_external_thumb_link);
+            json_external.insert("thumb", json_external_thumb);
+        }
+        json_embed_images.insert("$type", "app.bsky.embed.external");
+        json_embed_images.insert("external", json_external);
+
+    } else if (!m_embedImageBlobs.isEmpty()) {
         QJsonArray json_blobs;
         for (const auto &blob : qAsConst(m_embedImageBlobs)) {
             QJsonObject json_blob;
@@ -181,6 +206,22 @@ void ComAtprotoRepoCreateRecord::follow(const QString &did)
                            json_doc.toJson(QJsonDocument::Compact));
 }
 
+void ComAtprotoRepoCreateRecord::block(const QString &did)
+{
+    QJsonObject json_record;
+    json_record.insert("subject", did);
+    json_record.insert("createdAt", QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
+    json_record.insert("$type", "app.bsky.graph.block");
+    QJsonObject json_obj;
+    json_obj.insert("repo", this->did());
+    json_obj.insert("collection", "app.bsky.graph.block");
+    json_obj.insert("record", json_record);
+    QJsonDocument json_doc(json_obj);
+
+    AccessAtProtocol::post(QStringLiteral("xrpc/com.atproto.repo.createRecord"),
+                           json_doc.toJson(QJsonDocument::Compact));
+}
+
 void ComAtprotoRepoCreateRecord::setReply(const QString &parent_cid, const QString &parent_uri,
                                           const QString &root_cid, const QString &root_uri)
 {
@@ -224,6 +265,19 @@ void ComAtprotoRepoCreateRecord::parseJson(bool success, const QString reply_jso
     }
 
     emit finished(success);
+}
+
+void ComAtprotoRepoCreateRecord::setPostLanguages(const QStringList &newPostLanguages)
+{
+    m_postLanguages = newPostLanguages;
+}
+
+void ComAtprotoRepoCreateRecord::setExternalLink(const QString &uri, const QString &title,
+                                                 const QString &description)
+{
+    m_externalLinkUri = uri;
+    m_externalLinkTitle = title;
+    m_externalLinkDescription = description;
 }
 
 void ComAtprotoRepoCreateRecord::setFacets(

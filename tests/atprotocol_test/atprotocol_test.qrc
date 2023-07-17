@@ -1,5 +1,13 @@
 <RCC>
     <qresource prefix="/">
         <file>response/xrpc/com.atproto.server.createSession</file>
+        <file>response/ogp/file1.html</file>
+        <file>response/ogp/images/file1.jpg</file>
+        <file>response/ogp/file2.html</file>
+        <file>response/ogp/images/file2.gif</file>
+        <file>response/ogp/file3.html</file>
+        <file>response/ogp/images/file3.png</file>
+        <file>response/ogp/file4.html</file>
+        <file>response/ogp/file5.html</file>
     </qresource>
 </RCC>

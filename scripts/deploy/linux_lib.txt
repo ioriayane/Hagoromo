@@ -26,6 +26,8 @@ libQt5Widgets.so.5
 libQt5Widgets.so.5.15.2
 libQt5XcbQpa.so.5
 libQt5XcbQpa.so.5.15.2
+libQt5Xml.so.5
+libQt5Xml.so.5.15.2
 libicudata.so.56
 libicudata.so.56.1
 libicui18n.so.56

@@ -1,8 +1,6 @@
 #include "userprofile.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofile.h"
 
-#include <QPointer>
-
 using AtProtocolInterface::AppBskyActorGetProfile;
 
 UserProfile::UserProfile(QObject *parent)
@@ -12,7 +10,10 @@ UserProfile::UserProfile(QObject *parent)
       m_followsCount(0),
       m_postsCount(0),
       m_following(false),
-      m_followedBy(false)
+      m_followedBy(false),
+      m_muted(false),
+      m_blockedBy(false),
+      m_blocking(false)
 {
 }
 
@@ -34,37 +35,36 @@ void UserProfile::getProfile(const QString &did)
         return;
     setRunning(true);
 
-    QPointer<UserProfile> aliving(this);
-
-    AppBskyActorGetProfile *profile = new AppBskyActorGetProfile();
+    AppBskyActorGetProfile *profile = new AppBskyActorGetProfile(this);
     connect(profile, &AppBskyActorGetProfile::finished, [=](bool success) {
-        if (aliving) {
-            if (success) {
-                AtProtocolType::AppBskyActorDefs::ProfileViewDetailed detail =
-                        profile->profileViewDetailed();
-                qDebug() << "Get user profile detailed" << detail.displayName << detail.description;
-                setDid(detail.did);
-                setHandle(detail.handle);
-                setDisplayName(detail.displayName);
-                setDescription(detail.description);
-                setAvatar(detail.avatar);
-                setBanner(detail.banner);
-                setFollowersCount(detail.followersCount);
-                setFollowsCount(detail.followsCount);
-                setPostsCount(detail.postsCount);
-                setIndexedAt(QDateTime::fromString(detail.indexedAt, Qt::ISODateWithMs)
-                                     .toLocalTime()
-                                     .toString("yyyy/MM/dd"));
+        if (success) {
+            AtProtocolType::AppBskyActorDefs::ProfileViewDetailed detail =
+                    profile->profileViewDetailed();
+            qDebug() << "Get user profile detailed" << detail.displayName << detail.description;
+            setDid(detail.did);
+            setHandle(detail.handle);
+            setDisplayName(detail.displayName);
+            setDescription(detail.description);
+            setAvatar(detail.avatar);
+            setBanner(detail.banner);
+            setFollowersCount(detail.followersCount);
+            setFollowsCount(detail.followsCount);
+            setPostsCount(detail.postsCount);
+            setIndexedAt(QDateTime::fromString(detail.indexedAt, Qt::ISODateWithMs)
+                                 .toLocalTime()
+                                 .toString("yyyy/MM/dd"));
 
-                setFollowing(detail.viewer.following.contains(m_account.did));
-                setFollowedBy(detail.viewer.followedBy.contains(did));
-
-                setFollowingUri(detail.viewer.following);
-            } else {
-                emit errorOccured(profile->errorMessage());
-            }
-            setRunning(false);
+            setFollowing(detail.viewer.following.contains(m_account.did));
+            setFollowedBy(detail.viewer.followedBy.contains(did));
+            setFollowingUri(detail.viewer.following);
+            setMuted(detail.viewer.muted);
+            setBlockedBy(detail.viewer.blockedBy);
+            setBlocking(detail.viewer.blocking.contains(m_account.did));
+            setBlockingUri(detail.viewer.blocking);
+        } else {
+            emit errorOccured(profile->errorMessage());
         }
+        setRunning(false);
         profile->deleteLater();
     });
     profile->setAccount(m_account);
@@ -112,7 +112,7 @@ void UserProfile::setDisplayName(const QString &newDisplayName)
 
 QString UserProfile::description() const
 {
-    return m_description;
+    return m_formattedDescription; // m_description;
 }
 
 void UserProfile::setDescription(const QString &newDescription)
@@ -120,6 +120,7 @@ void UserProfile::setDescription(const QString &newDescription)
     if (m_description == newDescription)
         return;
     m_description = newDescription;
+    m_formattedDescription = m_systemTool.markupText(m_description);
     emit descriptionChanged();
 }
 
@@ -251,4 +252,56 @@ void UserProfile::setRunning(bool newRunning)
         return;
     m_running = newRunning;
     emit runningChanged();
+}
+
+bool UserProfile::muted() const
+{
+    return m_muted;
+}
+
+void UserProfile::setMuted(bool newMuted)
+{
+    if (m_muted == newMuted)
+        return;
+    m_muted = newMuted;
+    emit mutedChanged();
+}
+
+bool UserProfile::blockedBy() const
+{
+    return m_blockedBy;
+}
+
+void UserProfile::setBlockedBy(bool newBlockedBy)
+{
+    if (m_blockedBy == newBlockedBy)
+        return;
+    m_blockedBy = newBlockedBy;
+    emit blockedByChanged();
+}
+
+bool UserProfile::blocking() const
+{
+    return m_blocking;
+}
+
+void UserProfile::setBlocking(bool newBlocking)
+{
+    if (m_blocking == newBlocking)
+        return;
+    m_blocking = newBlocking;
+    emit blockingChanged();
+}
+
+QString UserProfile::blockingUri() const
+{
+    return m_blockingUri;
+}
+
+void UserProfile::setBlockingUri(const QString &newBlockingUri)
+{
+    if (m_blockingUri == newBlockingUri)
+        return;
+    m_blockingUri = newBlockingUri;
+    emit blockingUriChanged();
 }

@@ -14,6 +14,7 @@ ColumnLayout {
 
     property string hoveredLink: ""
     property real fontSizeRatio: 1.0
+    property string accountDid: ""   // 取得するユーザー
 
     property alias postThreadUri: postThreadListModel.postThreadUri
     property alias listView: rootListView
@@ -24,8 +25,10 @@ ColumnLayout {
                         string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestQuote(string cid, string uri, string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestViewThread(string uri)
-    signal requestViewImages(int index, string paths)
+    signal requestViewImages(int index, var paths)
     signal requestViewProfile(string did)
+    signal requestViewGeneratorFeed(string name, string uri)
+    signal requestReportPost(string uri, string cid)
 
     signal back()
 
@@ -106,6 +109,8 @@ ColumnLayout {
                            }
                 onRequestViewProfile: (did) => postThreadView.requestViewProfile(did)
 
+                moderationFrame.visible: model.muted
+
                 repostReactionAuthor.visible: model.isRepostedBy
                 repostReactionAuthor.displayName: model.repostedByDisplayName
                 repostReactionAuthor.handle: model.repostedByHandle
@@ -142,10 +147,17 @@ ColumnLayout {
 
                 externalLinkFrame.visible: model.hasExternalLink
                 externalLinkFrame.onClicked: Qt.openUrlExternally(model.externalLinkUri)
-                externalLinkThumbImage.source: model.externalLinkThumb
-                externalLinkTitleLabel.text: model.externalLinkTitle
-                externalLinkUriLabel.text: model.externalLinkUri
-                externalLinkDescriptionLabel.text: model.externalLinkDescription
+                externalLinkFrame.thumbImage.source: model.externalLinkThumb
+                externalLinkFrame.titleLabel.text: model.externalLinkTitle
+                externalLinkFrame.uriLabel.text: model.externalLinkUri
+                externalLinkFrame.descriptionLabel.text: model.externalLinkDescription
+
+                generatorViewFrame.visible: model.hasGeneratorFeed
+                generatorViewFrame.onClicked: postThreadView.requestViewGeneratorFeed(model.generatorFeedDisplayName, model.generatorFeedUri)
+                generatorAvatarImage.source: model.generatorFeedAvatar
+                generatorDisplayNameLabel.text: model.generatorFeedDisplayName
+                generatorCreatorHandleLabel.text: model.generatorFeedCreatorHandle
+                generatorLikeCountLabel.text: model.generatorFeedLikeCount
 
                 postControls.replyButton.iconText: model.replyCount
                 postControls.repostButton.iconText: model.repostCount
@@ -157,12 +169,15 @@ ColumnLayout {
                 postControls.quoteMenuItem.onTriggered: requestQuote(model.cid, model.uri,
                                                                      model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
                 postControls.likeButton.onClicked: rootListView.model.like(model.index)
-                postControls.tranlateMenuItem.onTriggered: postThreadListModel.translate(model.cid)
+                postControls.onTriggeredTranslate: postThreadListModel.translate(model.cid)
                 postControls.isReposted: model.isReposted
                 postControls.isLiked: model.isLiked
                 postControls.postUri: model.uri
                 postControls.handle: model.handle
-                postControls.copyToClipboardMenuItem.onTriggered: systemTool.copyToClipboard(model.recordTextPlain)
+                postControls.mine: model.did === postThreadView.accountDid
+                postControls.onTriggeredCopyToClipboard: systemTool.copyToClipboard(model.recordTextPlain)
+                postControls.onTriggeredDeletePost: rootListView.model.deletePost(model.index)
+                postControls.onTriggeredRequestReport: postThreadView.requestReportPost(model.uri, model.cid)
 
                 onHoveredLinkChanged: postThreadView.hoveredLink = hoveredLink
             }

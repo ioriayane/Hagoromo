@@ -2,7 +2,7 @@
 # https://github.com/bluesky-social/atproto/tree/main/lexicons
 # query系のoutputからの参照を起点に定義を作った方が良いかもしれない
 
-# python3 ./scripts/defs2struct.py ../atproto/lexicons/ ./app/atprotocol
+# python3 ./scripts/defs2struct.py ../atproto/lexicons/ ./lib/atprotocol
 
 import sys
 import os
@@ -306,6 +306,8 @@ class Defs2Struct:
                     self.output_text[namespace].append('    QVariant %s;' % (property_name, ))
                 elif p_type == 'integer':
                     self.output_text[namespace].append('    int %s = 0;' % (property_name, ))
+                elif p_type == 'boolean':
+                    self.output_text[namespace].append('    bool %s = false;' % (property_name, ))
                 elif p_type == 'string':
                     comment = properties[property_name].get('format', '')
                     if len(comment.strip()) > 0:
@@ -321,6 +323,8 @@ class Defs2Struct:
                         enum_text.extend(temp_enum)
                     elif items_type == 'integer':
                         self.output_text[namespace].append('    QList<int> %s;' % (property_name, ))
+                    elif items_type == 'boolean':
+                        self.output_text[namespace].append('    QList<bool> %s;' % (property_name, ))
                     elif items_type == 'string':
                         comment = properties[property_name].get('format', '')
                         if len(comment.strip()) > 0:
@@ -348,6 +352,11 @@ class Defs2Struct:
         elif obj.get('type') == 'integer':
             # 数値は型定義にする
             self.output_text[namespace].append('typedef int %s;' % (self.to_struct_style(type_name), ))
+            self.append_history(namespace, type_name)
+
+        elif obj.get('type') == 'boolean':
+            # boolは型定義にする
+            self.output_text[namespace].append('typedef bool %s;' % (self.to_struct_style(type_name), ))
             self.append_history(namespace, type_name)
 
         else:
@@ -400,7 +409,7 @@ class Defs2Struct:
                         else:
                             extend_ns = '%s::' % (self.to_namespace_style(ref_namespace), )
                             forward_type = self.history_type[ref_namespace + '#' + ref_type_name]
-                        if forward_type in ['integer', 'string']:
+                        if forward_type in ['integer', 'string', 'boolean']:
                             convert_method = ''
                         else:
                             convert_method = '.toObject()'
@@ -446,6 +455,9 @@ class Defs2Struct:
 
                 elif p_type == 'integer':
                     self.output_func_text[namespace].append('        dest.%s = src.value("%s").toInt();' % (property_name, property_name, ))
+
+                elif p_type == 'boolean':
+                    self.output_func_text[namespace].append('        dest.%s = src.value("%s").toBool();' % (property_name, property_name, ))
 
                 elif p_type == 'string':
                     self.output_func_text[namespace].append('        dest.%s = src.value("%s").toString();' % (property_name, property_name, ))
@@ -511,6 +523,11 @@ class Defs2Struct:
                         self.output_func_text[namespace].append('            dest.%s.append(value.toInt());' % (property_name, ))
                         self.output_func_text[namespace].append('        }')
 
+                    elif items_type == 'boolean':
+                        self.output_func_text[namespace].append('        for (const auto &value : src.value("%s").toArray()) {' % (property_name, ))
+                        self.output_func_text[namespace].append('            dest.%s.append(value.toBool());' % (property_name, ))
+                        self.output_func_text[namespace].append('        }')
+
                     elif items_type == 'string':
                         self.output_func_text[namespace].append('        for (const auto &value : src.value("%s").toArray()) {' % (property_name, ))
                         self.output_func_text[namespace].append('            dest.%s.append(value.toString());' % (property_name, ))
@@ -551,6 +568,20 @@ class Defs2Struct:
 
             self.append_func_history(namespace, function_define)
 
+        elif obj.get('type') == 'boolean':
+            # bool値は型定義にする
+            if namespace not in self.output_func_text:
+                self.output_func_text[namespace] = []
+
+            function_define = 'void copy%s(const QJsonValue &src, %s::%s &dest)' % (
+                self.to_struct_style(type_name), self.to_namespace_style(namespace), self.to_struct_style(type_name), )
+            self.output_func_text[namespace].append(function_define)
+            self.output_func_text[namespace].append('{')
+            self.output_func_text[namespace].append('    dest = src.toBool();')
+            self.output_func_text[namespace].append('}')
+
+            self.append_func_history(namespace, function_define)
+
         else:
             variant_key = obj.get('type', '')
             variant_obj = self.json_obj.get(namespace, {}).get('defs', {}).get('main', {}).get(variant_key, {})
@@ -581,6 +612,10 @@ class Defs2Struct:
                         if len(args) > 0:
                             args += ", "
                         args += "const int %s" % (pro_name, )
+                    elif pro_type == 'boolean':
+                        if len(args) > 0:
+                            args += ", "
+                        args += "const bool %s" % (pro_name, )
                     elif pro_type == 'array':
                         pro_type = pro_value.get('items', {}).get('type', '')
                         if pro_type == 'string':
@@ -591,6 +626,10 @@ class Defs2Struct:
                             if len(args) > 0:
                                 args += ", "
                             args += "const QList<int> %s" % (pro_name, )
+                        elif pro_type == 'boolean':
+                            if len(args) > 0:
+                                args += ", "
+                            args += "const QList<bool> %s" % (pro_name, )
             # post
             properties = obj.get('input', {}).get('schema', {}).get('properties')
             if properties is not None:
@@ -605,6 +644,10 @@ class Defs2Struct:
                         if len(args) > 0:
                             args += ", "
                         args += "const int %s" % (pro_name, )
+                    elif pro_type == 'boolean':
+                        if len(args) > 0:
+                            args += ", "
+                        args += "const bool %s" % (pro_name, )
             data['method_args'] = args
             data['api_id'] = namespace
             self.api_class[namespace] = data

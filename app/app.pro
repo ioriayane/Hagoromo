@@ -10,21 +10,27 @@ QML_FILES = \
     qml/controls/ClickableFrame.qml \
     qml/controls/ProgressCircle.qml \
     qml/controls/IconButton.qml \
+    qml/controls/IconLabelFrame.qml \
     qml/controls/ImageWithIndicator.qml \
+    qml/controls/RadioButtonEx.qml \
     qml/data/Account.qml \
     qml/data/ColumnSettings.qml \
     qml/dialogs/AccountDialog.qml \
     qml/dialogs/AddColumnDialog.qml \
     qml/dialogs/ColumnSettingDialog.qml \
     qml/dialogs/DiscoverFeedsDialog.qml \
+    qml/dialogs/LanguageSelectionDialog.qml \
     qml/dialogs/LoginDialog.qml \
     qml/dialogs/MessageDialog.qml \
     qml/dialogs/PostDialog.qml \
+    qml/dialogs/ReportAccountDialog.qml \
+    qml/dialogs/ReportPostDialog.qml \
     qml/dialogs/SearchDialog.qml \
     qml/dialogs/SettingDialog.qml \
     qml/parts/Author.qml \
     qml/parts/AvatarImage.qml \
     qml/parts/ImagePreview.qml \
+    qml/parts/ExternalLinkCard.qml \
     qml/parts/NotificationDelegate.qml \
     qml/parts/PostControls.qml \
     qml/parts/PostDelegate.qml \
@@ -40,6 +46,7 @@ QML_FILES = \
 IMAGE_FILES += \
     qml/images/account.png \
     qml/images/account_icon.png \
+    qml/images/add.png \
     qml/images/add_image.png \
     qml/images/add_user.png \
     qml/images/arrow_back.png \
@@ -47,6 +54,7 @@ IMAGE_FILES += \
     qml/images/arrow_left_double.png \
     qml/images/arrow_left_single.png \
     qml/images/auto.png \
+    qml/images/block.png \
     qml/images/bookmark_add.png \
     qml/images/check.png \
     qml/images/close.png \
@@ -67,9 +75,13 @@ IMAGE_FILES += \
     qml/images/open_in_other.png \
     qml/images/quote.png \
     qml/images/reply.png \
+    qml/images/report.png \
     qml/images/repost.png \
     qml/images/search.png \
-    qml/images/settings.png
+    qml/images/settings.png \
+    qml/images/translate.png \
+    qml/images/visibility_off.png \
+    qml/images/visibility_on.png
 
 
 resources.files = $$QML_FILES $$IMAGE_FILES

@@ -2,8 +2,6 @@
 #include "atprotocol/lexicons_func_unknown.h"
 #include "atprotocol/app/bsky/feed/appbskyfeedgetpostthread.h"
 
-#include <QPointer>
-
 using AtProtocolInterface::AppBskyFeedGetPostThread;
 using namespace AtProtocolType;
 
@@ -15,18 +13,14 @@ void PostThreadListModel::getLatest()
         return;
     setRunning(true);
 
-    QPointer<PostThreadListModel> aliving(this);
-
-    AppBskyFeedGetPostThread *thread = new AppBskyFeedGetPostThread();
+    AppBskyFeedGetPostThread *thread = new AppBskyFeedGetPostThread(this);
     connect(thread, &AppBskyFeedGetPostThread::finished, [=](bool success) {
-        if (aliving) {
-            if (success) {
-                copyFrom(thread->threadViewPost());
-            } else {
-                emit errorOccured(thread->errorMessage());
-            }
-            QTimer::singleShot(100, this, &PostThreadListModel::displayQueuedPosts);
+        if (success) {
+            copyFrom(thread->threadViewPost());
+        } else {
+            emit errorOccured(thread->errorMessage());
         }
+        QTimer::singleShot(100, this, &PostThreadListModel::displayQueuedPosts);
         thread->deleteLater();
     });
     thread->setAccount(account());

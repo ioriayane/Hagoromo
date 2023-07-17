@@ -10,6 +10,7 @@ import tech.relog.hagoromo.columnlistmodel 1.0
 import tech.relog.hagoromo.searchpostlistmodel 1.0
 import tech.relog.hagoromo.searchprofilelistmodel 1.0
 import tech.relog.hagoromo.customfeedlistmodel 1.0
+import tech.relog.hagoromo.authorfeedlistmodel 1.0
 
 import "../controls"
 import "../data"
@@ -34,7 +35,12 @@ ColumnLayout {
     signal requestQuote(string account_uuid,
                         string cid, string uri,
                         string avatar, string display_name, string handle, string indexed_at, string text)
-    signal requestViewImages(int index, string paths)
+    signal requestMention(string account_uuid, string handle)
+    signal requestViewAuthorFeed(string account_uuid, string did, string handle)
+    signal requestViewImages(int index, var paths)
+    signal requestViewGeneratorFeed(string account_uuid, string name, string uri)
+    signal requestReportPost(string account_uuid, string uri, string cid)
+    signal requestReportAccount(string account_uuid, string did)
 
     signal requestMoveToLeft(string key)
     signal requestMoveToRight(string key)
@@ -58,6 +64,7 @@ ColumnLayout {
                 onErrorOccured: (message) => {console.log(message)}
             }
             fontSizeRatio: columnView.fontSizeRatio
+            accountDid: account.did
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(columnView.account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -72,9 +79,9 @@ ColumnLayout {
 
             onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
 
-            onRequestViewProfile: (did) => {
-                                      columnStackView.push(profileComponent, { "userDid": did })
-                                  }
+            onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+            onRequestViewGeneratorFeed: (name, uri) => columnView.requestViewGeneratorFeed(account.uuid, name, uri)
+            onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
         }
@@ -107,6 +114,7 @@ ColumnLayout {
                                  }
             onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+            onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
         }
@@ -115,6 +123,7 @@ ColumnLayout {
         id: postThreadComponent
         PostThreadView {
             fontSizeRatio: columnView.fontSizeRatio
+            accountDid: account.did
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -128,6 +137,8 @@ ColumnLayout {
                                  }
             onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+            onRequestViewGeneratorFeed: (name, uri) => columnView.requestViewGeneratorFeed(account.uuid, name, uri)
+            onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
 
@@ -147,15 +158,21 @@ ColumnLayout {
                             columnView.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestQuote(account.uuid, cid, uri, avatar, display_name, handle, indexed_at, text)
-
+            onRequestMention: (handle) =>
+                              columnView.requestMention(account.uuid, handle)
             onRequestViewThread: (uri) => {
                                      // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
                                      // これはPostThreadViewのプロパティにダイレクトに設定する
                                      columnStackView.push(postThreadComponent, { "postThreadUri": uri })
                                  }
+            onRequestViewAuthorFeed: (did, handle) =>
+                                     columnView.requestViewAuthorFeed(account.uuid, did, handle)
 
             onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+            onRequestViewGeneratorFeed: (name, uri) => columnView.requestViewGeneratorFeed(account.uuid, name, uri)
+            onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
+            onRequestReportAccount: (did) => columnView.requestReportAccount(account.uuid, did)
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
 
             onBack: {
@@ -177,6 +194,7 @@ ColumnLayout {
                 onErrorOccured: (message) => {console.log(message)}
             }
             fontSizeRatio: columnView.fontSizeRatio
+            accountDid: account.did
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -190,10 +208,9 @@ ColumnLayout {
                                  }
 
             onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
-
-            onRequestViewProfile: (did) => {
-                                      columnStackView.push(profileComponent, { "userDid": did })
-                                  }
+            onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+            onRequestViewGeneratorFeed: (name, uri) => columnView.requestViewGeneratorFeed(account.uuid, name, uri)
+            onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
         }
@@ -211,6 +228,7 @@ ColumnLayout {
                 onErrorOccured: (message) => {console.log(message)}
             }
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+            onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
         }
     }
     Component {
@@ -224,6 +242,7 @@ ColumnLayout {
                 onErrorOccured: (message) => {console.log(message)}
             }
             fontSizeRatio: columnView.fontSizeRatio
+            accountDid: account.did
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -237,10 +256,42 @@ ColumnLayout {
                                  }
 
             onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
+            onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+            onRequestViewGeneratorFeed: (name, uri) => columnView.requestViewGeneratorFeed(account.uuid, name, uri)
+            onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
 
-            onRequestViewProfile: (did) => {
-                                      columnStackView.push(profileComponent, { "userDid": did })
-                                  }
+            onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
+        }
+    }
+
+    Component {
+        id: authorFeedComponent
+        TimelineView {
+            model: AuthorFeedListModel {
+                autoLoading: settings.autoLoading
+                loadingInterval: settings.loadingInterval
+                authorDid: settings.columnValue
+
+                onErrorOccured: (message) => {console.log(message)}
+            }
+            fontSizeRatio: columnView.fontSizeRatio
+            accountDid: account.did
+
+            onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
+                            columnView.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+            onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
+                            columnView.requestQuote(account.uuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+
+            onRequestViewThread: (uri) => {
+                                     // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
+                                     // これはPostThreadViewのプロパティにダイレクトに設定する
+                                     columnStackView.push(postThreadComponent, { "postThreadUri": uri })
+                                 }
+
+            onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
+            onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+            onRequestViewGeneratorFeed: (name, uri) => columnView.requestViewGeneratorFeed(account.uuid, name, uri)
+            onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
         }
@@ -263,6 +314,9 @@ ColumnLayout {
         }else if(componentType === 4){
             columnStackView.push(customComponent)
             componentTypeLabel.text = qsTr("Feed") + " : " + settings.columnName
+        }else if(componentType === 5){
+            columnStackView.push(authorFeedComponent)
+            componentTypeLabel.text = qsTr("User") + " : " + settings.columnName
         }else{
             columnStackView.push(timelineComponent)
             componentTypeLabel.text = qsTr("Unknown")
@@ -317,6 +371,7 @@ ColumnLayout {
                 Layout.preferredWidth: 24
                 Layout.preferredHeight: 24
                 source: account.avatar
+                onClicked: columnStackView.push(profileComponent, { "userDid": account.did })
             }
 
             ColumnLayout {

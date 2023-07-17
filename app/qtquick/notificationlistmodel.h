@@ -36,6 +36,7 @@ public:
         AvatarRole,
         RecordTextRole,
         RecordTextPlainRole,
+        RecordTextTranslationRole,
         ReplyCountRole,
         RepostCountRole,
         LikeCountRole,
@@ -61,6 +62,12 @@ public:
         RecordIsRepostedRole,
         RecordIsLikedRole,
 
+        HasGeneratorFeedRole,
+        GeneratorFeedUriRole,
+        GeneratorFeedCreatorHandleRole,
+        GeneratorFeedDisplayNameRole,
+        GeneratorFeedLikeCountRole,
+        GeneratorFeedAvatarRole,
     };
     Q_ENUM(NotificationListModelRoles)
 

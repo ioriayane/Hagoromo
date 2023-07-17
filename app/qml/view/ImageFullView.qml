@@ -8,7 +8,7 @@ Rectangle {
     id: imageFullView
     color: "#aa000000"
 
-    property string sources: ""
+    property var sources: []
 
     function open(index, sources){
         imageFullView.sources = sources
@@ -34,7 +34,7 @@ Rectangle {
         highlightMoveDuration: 500
         interactive: false
 
-        model: imageFullView.sources.split("\n")
+        model: imageFullView.sources
         delegate: ImageWithIndicator {
             width: imageFullListView.width
             height: imageFullListView.height

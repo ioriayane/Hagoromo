@@ -1,3 +1,4 @@
+QT += xml
 
 INCLUDEPATH += $$PWD
 
@@ -15,8 +16,11 @@ SOURCES += \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgettimeline.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollowers.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollows.cpp \
+    $$PWD/atprotocol/app/bsky/graph/appbskygraphmuteactor.cpp \
+    $$PWD/atprotocol/app/bsky/graph/appbskygraphunmuteactor.cpp \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationlistnotifications.cpp \
     $$PWD/atprotocol/app/bsky/unspecced/appbskyunspeccedgetpopularfeedgenerators.cpp \
+    $$PWD/atprotocol/com/atproto/moderation/comatprotomoderationcreatereport.cpp \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepocreaterecord.cpp \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepodeleterecord.cpp \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepolistrecords.cpp \
@@ -28,7 +32,8 @@ SOURCES += \
     $$PWD/search/search_func.cpp \
     $$PWD/search/searchposts.cpp \
     $$PWD/search/searchprofiles.cpp \
-    $$PWD/tools/imagecompressor.cpp
+    $$PWD/tools/imagecompressor.cpp \
+    $$PWD/tools/opengraphprotocol.cpp
 
 HEADERS += \
     $$PWD/atprotocol/accessatprotocol.h \
@@ -44,8 +49,11 @@ HEADERS += \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgettimeline.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollowers.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollows.h \
+    $$PWD/atprotocol/app/bsky/graph/appbskygraphmuteactor.h \
+    $$PWD/atprotocol/app/bsky/graph/appbskygraphunmuteactor.h \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationlistnotifications.h \
     $$PWD/atprotocol/app/bsky/unspecced/appbskyunspeccedgetpopularfeedgenerators.h \
+    $$PWD/atprotocol/com/atproto/moderation/comatprotomoderationcreatereport.h \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepocreaterecord.h \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepodeleterecord.h \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepolistrecords.h \
@@ -59,4 +67,5 @@ HEADERS += \
     $$PWD/search/search_func.h \
     $$PWD/search/searchposts.h \
     $$PWD/search/searchprofiles.h \
-    $$PWD/tools/imagecompressor.h
+    $$PWD/tools/imagecompressor.h \
+    $$PWD/tools/opengraphprotocol.h

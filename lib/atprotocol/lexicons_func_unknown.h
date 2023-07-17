@@ -22,8 +22,8 @@ struct Blob
 
 void copyUnknown(const QJsonObject &src, QVariant &dest);
 
-QString copyImagesFromPostView(const AppBskyFeedDefs::PostView &post, const bool thumb);
-QString copyImagesFromRecord(const AppBskyEmbedRecord::ViewRecord &record, const bool thumb);
+QStringList copyImagesFromPostView(const AppBskyFeedDefs::PostView &post, const bool thumb);
+QStringList copyImagesFromRecord(const AppBskyEmbedRecord::ViewRecord &record, const bool thumb);
 
 template<typename T>
 T fromQVariant(const QVariant &variant)

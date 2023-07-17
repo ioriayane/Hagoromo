@@ -41,13 +41,11 @@ void copyUnknown(const QJsonObject &src, QVariant &dest)
     }
 }
 
-QString copyImagesFromPostView(const AppBskyFeedDefs::PostView &post, const bool thumb)
+QStringList copyImagesFromPostView(const AppBskyFeedDefs::PostView &post, const bool thumb)
 {
     if (post.embed_type == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedImages_View) {
-        QString images;
+        QStringList images;
         for (const auto &image : post.embed_AppBskyEmbedImages_View.images) {
-            if (!images.isEmpty())
-                images.append("\n");
             if (thumb)
                 images.append(image.thumb);
             else
@@ -55,19 +53,17 @@ QString copyImagesFromPostView(const AppBskyFeedDefs::PostView &post, const bool
         }
         return images;
     } else {
-        return QString();
+        return QStringList();
     }
 }
 
-QString copyImagesFromRecord(const AppBskyEmbedRecord::ViewRecord &record, const bool thumb)
+QStringList copyImagesFromRecord(const AppBskyEmbedRecord::ViewRecord &record, const bool thumb)
 {
     if (record.embeds_type
         == AppBskyEmbedRecord::ViewRecordEmbedsType::embeds_AppBskyEmbedImages_View) {
-        QString images;
+        QStringList images;
         for (const auto &view : record.embeds_AppBskyEmbedImages_View) {
             for (const auto &image : view.images) {
-                if (!images.isEmpty())
-                    images.append("\n");
                 if (thumb)
                     images.append(image.thumb);
                 else
@@ -76,7 +72,7 @@ QString copyImagesFromRecord(const AppBskyEmbedRecord::ViewRecord &record, const
         }
         return images;
     } else {
-        return QString();
+        return QStringList();
     }
 }
 

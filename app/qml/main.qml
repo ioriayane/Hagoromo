@@ -68,6 +68,7 @@ ApplicationWindow {
             }
             columnManageModel.append(accountListModel.item(selectedAccountIndex, AccountListModel.UuidRole),
                                      component_type, false, 300000, 350, column_name, searchDialog.searchText)
+            scrollView.moveMostRight()
         }
     }
 
@@ -81,6 +82,7 @@ ApplicationWindow {
                         "\n  selectedUri=" + selectedUri)
             columnManageModel.append(accountListModel.item(selectedAccountIndex, AccountListModel.UuidRole),
                                      selectedType, false, 300000, 400, selectedName, selectedUri)
+            scrollView.moveMostRight()
         }
         onOpenDiscoverFeeds: (account_index) => {
                                  discoverFeedsDialog.account.uuid = accountListModel.item(account_index, AccountListModel.UuidRole)
@@ -108,6 +110,7 @@ ApplicationWindow {
         onAccepted: {
             columnManageModel.append(discoverFeedsDialog.account.uuid,
                                      4, false, 300000, 400, selectedName, selectedUri)
+            scrollView.moveMostRight()
         }
     }
 
@@ -152,6 +155,13 @@ ApplicationWindow {
                 repeater.updateSetting()
             }
         }
+    }
+
+    ReportPostDialog {
+        id: reportDialog
+    }
+    ReportAccountDialog {
+        id: reportAccountDialog
     }
 
     MessageDialog {
@@ -236,8 +246,50 @@ ApplicationWindow {
                                 postDialog.replyText = text
                                 postDialog.open()
                             }
-
+            onRequestMention: (account_uuid, handle) => {
+                                  postDialog.postType = "normal"
+                                  postDialog.defaultAccountUuid = account_uuid
+                                  postDialog.postText.text = handle + " "
+                                  postDialog.open()
+                              }
+            onRequestViewAuthorFeed: (account_uuid, did, handle) => {
+                                         columnManageModel.append(account_uuid, 5, false, 300000, 350, handle, did)
+                                         scrollView.moveMostRight()
+                                     }
             onRequestViewImages: (index, paths) => imageFullView.open(index, paths)
+            onRequestViewGeneratorFeed: (account_uuid, name, uri) => {
+                                            columnManageModel.append(account.uuid, 4, false, 300000, 400, name, uri)
+                                            scrollView.moveMostRight()
+                                        }
+            onRequestReportPost: (account_uuid, uri, cid) => {
+                                     var row = accountListModel.indexAt(account_uuid)
+                                     if(row >= 0){
+                                         reportDialog.targetUri = uri
+                                         reportDialog.targetCid = cid
+                                         reportDialog.account.service = accountListModel.item(row, AccountListModel.ServiceRole)
+                                         reportDialog.account.did = accountListModel.item(row, AccountListModel.DidRole)
+                                         reportDialog.account.handle = accountListModel.item(row, AccountListModel.HandleRole)
+                                         reportDialog.account.email = accountListModel.item(row, AccountListModel.EmailRole)
+                                         reportDialog.account.accessJwt = accountListModel.item(row, AccountListModel.AccessJwtRole)
+                                         reportDialog.account.refreshJwt = accountListModel.item(row, AccountListModel.RefreshJwtRole)
+                                         reportDialog.account.avatar = accountListModel.item(row, AccountListModel.AvatarRole)
+                                         reportDialog.open()
+                                     }
+                                 }
+            onRequestReportAccount: (account_uuid, did) => {
+                                        var row = accountListModel.indexAt(account_uuid)
+                                        if(row >= 0){
+                                            reportAccountDialog.targetDid = did
+                                            reportAccountDialog.account.service = accountListModel.item(row, AccountListModel.ServiceRole)
+                                            reportAccountDialog.account.did = accountListModel.item(row, AccountListModel.DidRole)
+                                            reportAccountDialog.account.handle = accountListModel.item(row, AccountListModel.HandleRole)
+                                            reportAccountDialog.account.email = accountListModel.item(row, AccountListModel.EmailRole)
+                                            reportAccountDialog.account.accessJwt = accountListModel.item(row, AccountListModel.AccessJwtRole)
+                                            reportAccountDialog.account.refreshJwt = accountListModel.item(row, AccountListModel.RefreshJwtRole)
+                                            reportAccountDialog.account.avatar = accountListModel.item(row, AccountListModel.AvatarRole)
+                                            reportAccountDialog.open()
+                                        }
+                                    }
 
             onRequestMoveToLeft: (key) => {
                                      console.log("move to left:" + key)
@@ -381,6 +433,14 @@ ApplicationWindow {
 
             property int childHeight: scrollView.height - scrollView.ScrollBar.horizontal.height
             contentHeight: childHeight
+
+            function moveMostRight() {
+                // scrollView.contentItemはFlickable
+                // Flickableの幅が全カラムの幅より小さくなったら移動させる
+                if((scrollView.contentItem.width - scrollView.contentWidth) < 0){
+                    scrollView.contentItem.contentX = scrollView.contentWidth - scrollView.contentItem.width
+                }
+            }
 
             Repeater {
                 id: repeater

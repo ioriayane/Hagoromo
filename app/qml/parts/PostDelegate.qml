@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
+import QtGraphicalEffects 1.15
 
 import "../controls"
 
@@ -17,6 +18,7 @@ ClickableFrame {
     property string hoveredLink: ""
     property real fontSizeRatio: 1.0
 
+    property alias moderationFrame: moderationFrame
     property alias repostReactionAuthor: repostReactionAuthor
     property alias replyReactionAuthor: replyReactionAuthor
     property alias postAvatarImage: postAvatarImage
@@ -28,10 +30,11 @@ ClickableFrame {
     property alias childAuthor: childAuthor
     property alias childRecordText: childRecordText
     property alias externalLinkFrame: externalLinkFrame
-    property alias externalLinkThumbImage: externalLinkThumbImage
-    property alias externalLinkTitleLabel: externalLinkTitleLabel
-    property alias externalLinkUriLabel: externalLinkUriLabel
-    property alias externalLinkDescriptionLabel: externalLinkDescriptionLabel
+    property alias generatorViewFrame: generatorFeedFrame
+    property alias generatorAvatarImage: generatorFeedAvatarImage
+    property alias generatorDisplayNameLabel: generatorFeedDisplayNameLabel
+    property alias generatorCreatorHandleLabel: generatorFeedCreatorHandleLabel
+    property alias generatorLikeCountLabel: generatorFeedLikeCountLabel
     property alias postControls: postControls
 
     signal requestViewProfile(string did)
@@ -53,6 +56,28 @@ ClickableFrame {
     }
 
     ColumnLayout {
+        IconLabelFrame {
+            id: moderationFrame
+            Layout.preferredWidth: postFrame.layoutWidth - postFrame.leftPadding - postFrame.rightPadding
+            Layout.bottomMargin: 8
+            visible: false
+            backgroundColor: Material.color(Material.Grey)
+            borderWidth: 0
+            iconSource: "../images/visibility_off.png"
+            labelText: qsTr("Post from an account you muted.")
+            controlButton.visible: true
+            controlButton.iconText: showPost ? qsTr("Hide") : qsTr("Show")
+            controlButton.onClicked: showPost = !showPost
+            onVisibleChanged: {
+                if(visible){
+                    showPost = false
+                }else{
+                    showPost = true
+                }
+            }
+            property bool showPost: true
+        }
+
         ReactionAuthor {
             id: repostReactionAuthor
             Layout.maximumWidth: postFrame.layoutWidth
@@ -69,6 +94,7 @@ ClickableFrame {
         RowLayout {
             id: postLayout
             spacing: 10
+            visible: moderationFrame.showPost
             AvatarImage {
                 id: postAvatarImage
                 Layout.preferredWidth: 36
@@ -142,60 +168,66 @@ ClickableFrame {
                     }
                 }
 
-                ClickableFrame {
+                ExternalLinkCard {
                     id: externalLinkFrame
                     Layout.preferredWidth: parent.basisWidth
                     Layout.topMargin: 5
-                    visible: false
-                    topInset: 0
-                    leftInset: 0
-                    rightInset: 0
-                    bottomInset: 0
-                    topPadding: 0
-                    leftPadding: 0
-                    rightPadding: 0
-                    bottomPadding: 5
+                    visible: externalLink.valid
                     hoverEnabled: true
                     onHoveredChanged:{
                         if(hovered){
-                            displayLink(externalLinkUriLabel.text)
+                            displayLink(uriLabel.text)
                         }else{
                             displayLink("")
                         }
                     }
+                }
+
+                ClickableFrame {
+                    id: generatorFeedFrame
+                    Layout.preferredWidth: parent.basisWidth
+                    Layout.topMargin: 5
 
                     ColumnLayout {
-                        spacing: 3
-                        ImageWithIndicator {
-                            id: externalLinkThumbImage
-                            Layout.preferredWidth: externalLinkFrame.width
-                            Layout.preferredHeight: status !== Image.Null ? externalLinkFrame.width * 0.5 : 30
-                            fillMode: Image.PreserveAspectCrop
+                        GridLayout {
+                            columns: 2
+                            rowSpacing: 3
+                            AvatarImage {
+                                id: generatorFeedAvatarImage
+                                Layout.preferredWidth: 24
+                                Layout.preferredHeight: 24
+                                Layout.rowSpan: 2
+                                altSource: "../images/account_icon.png"
+                            }
+                            Label {
+                                id: generatorFeedDisplayNameLabel
+                                Layout.fillWidth: true
+                                font.pointSize: 10
+                            }
+                            Label {
+                                id: generatorFeedCreatorHandleLabel
+                                color: Material.color(Material.Grey)
+                                font.pointSize: 8
+                            }
                         }
-                        Label {
-                            id: externalLinkTitleLabel
-                            Layout.preferredWidth: externalLinkFrame.width
-                            leftPadding: 5
-                            rightPadding: 5
-                            elide: Label.ElideRight
-                        }
-                        Label {
-                            id: externalLinkUriLabel
-                            Layout.preferredWidth: externalLinkFrame.width
-                            leftPadding: 5
-                            rightPadding: 5
-                            elide: Label.ElideRight
-                            font.pointSize: 8
-                            color: Material.color(Material.Grey)
-                        }
-                        Label {
-                            id: externalLinkDescriptionLabel
-                            visible: text.length > 0
-                            Layout.preferredWidth: externalLinkFrame.width
-                            leftPadding: 5
-                            rightPadding: 5
-                            elide: Label.ElideRight
-                            font.pointSize: 8
+                        RowLayout {
+                            Layout.leftMargin: 3
+                            spacing: 3
+                            Image {
+                                Layout.preferredWidth: 16
+                                Layout.preferredHeight: 16
+                                source: "../images/like.png"
+                                layer.enabled: true
+                                layer.effect: ColorOverlay {
+                                    color: Material.color(Material.Pink)
+                                }
+                            }
+                            Label {
+                                id: generatorFeedLikeCountLabel
+                                Layout.alignment: Qt.AlignVCenter
+                                Layout.fillWidth: true
+                                font.pointSize: 8
+                            }
                         }
                     }
                 }

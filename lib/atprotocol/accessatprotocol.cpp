@@ -20,10 +20,12 @@ AccessAtProtocol::AccessAtProtocol(QObject *parent) : QObject { parent }
         m_errorMessage.clear();
 
         if (reply->error() != QNetworkReply::NoError) {
-            qCritical() << m_replyJson;
+            qCritical() << LOG_DATETIME << m_replyJson;
             m_errorMessage = m_replyJson;
         }
         parseJson(reply->error() == QNetworkReply::NoError, m_replyJson);
+
+        reply->deleteLater();
     });
 }
 
@@ -100,7 +102,9 @@ void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
         return;
     }
 
-    qDebug() << LOG_DATETIME << "AccessAtProtocol::get()" << this << endpoint;
+    qDebug() << LOG_DATETIME << "AccessAtProtocol::get()" << this;
+    qDebug().noquote() << "   " << handle();
+    qDebug().noquote() << "   " << endpoint;
 
     QUrl url = QString("%1/%2").arg(service(), endpoint);
     url.setQuery(query);
@@ -117,6 +121,7 @@ void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
                             const bool with_auth_header)
 {
     qDebug() << LOG_DATETIME << "AccessAtProtocol::post()" << this;
+    qDebug().noquote() << "   " << handle();
     qDebug().noquote() << "   " << endpoint;
     qDebug().noquote() << "   " << json;
 

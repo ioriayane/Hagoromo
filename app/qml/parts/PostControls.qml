@@ -12,6 +12,7 @@ RowLayout {
     property bool isLiked: false
     property string postUri: ""
     property string handle: ""
+    property bool mine: false
 
     property alias replyButton: replyButton
     property alias repostButton: repostButton
@@ -19,8 +20,10 @@ RowLayout {
     property alias quoteMenuItem: quoteMenuItem
     property alias likeButton: likeButton
 
-    property alias tranlateMenuItem: tranlateMenuItem
-    property alias copyToClipboardMenuItem: copyToClipboardMenuItem
+    signal triggeredTranslate()
+    signal triggeredCopyToClipboard()
+    signal triggeredDeletePost()
+    signal triggeredRequestReport()
 
     function openInOhters(uri, handle){
         if(uri.length === 0 || uri.startsWith("at://") === false){
@@ -81,24 +84,68 @@ RowLayout {
         iconSize: 16
         foreground: Material.color(Material.Grey)
         flat: true
-        onClicked: morePopup.open()
+        onClicked:{
+            if(mine){
+                myMorePopup.open()
+            }else{
+                theirMorePopup.open()
+            }
+        }
         Menu {
-            id: morePopup
+            id: myMorePopup
             MenuItem {
-                id: tranlateMenuItem
-                icon.source: "../images/language.png"
+                icon.source: "../images/translate.png"
                 text: qsTr("Translate")
+                onTriggered: triggeredTranslate()
             }
             MenuItem {
-                id: copyToClipboardMenuItem
                 icon.source: "../images/copy.png"
                 text: qsTr("Copy post text")
+                onTriggered: triggeredCopyToClipboard()
             }
             MenuItem {
                 text: qsTr("Open in Official")
                 enabled: postUri.length > 0 && handle.length > 0
                 icon.source: "../images/open_in_other.png"
                 onTriggered: openInOhters(postUri, handle)
+            }
+            MenuSeparator {}
+            MenuItem {
+                text: qsTr("Delete post")
+                enabled: mine
+                icon.source: "../images/delete.png"
+                onTriggered: triggeredDeletePost()
+            }
+            MenuSeparator {}
+            MenuItem {
+                text: qsTr("Report post")
+                icon.source: "../images/report.png"
+                onTriggered: triggeredRequestReport()
+            }
+        }
+        Menu {
+            id: theirMorePopup
+            MenuItem {
+                icon.source: "../images/translate.png"
+                text: qsTr("Translate")
+                onTriggered: triggeredTranslate()
+            }
+            MenuItem {
+                icon.source: "../images/copy.png"
+                text: qsTr("Copy post text")
+                onTriggered: triggeredCopyToClipboard()
+            }
+            MenuItem {
+                text: qsTr("Open in Official")
+                enabled: postUri.length > 0 && handle.length > 0
+                icon.source: "../images/open_in_other.png"
+                onTriggered: openInOhters(postUri, handle)
+            }
+            MenuSeparator {}
+            MenuItem {
+                text: qsTr("Report post")
+                icon.source: "../images/report.png"
+                onTriggered: triggeredRequestReport()
             }
         }
     }

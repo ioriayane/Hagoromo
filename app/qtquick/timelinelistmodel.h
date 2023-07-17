@@ -24,6 +24,7 @@ public:
         DisplayNameRole,
         HandleRole,
         AvatarRole,
+        MutedRole,
         RecordTextRole,
         RecordTextPlainRole,
         RecordTextTranslationRole,
@@ -56,6 +57,13 @@ public:
         ExternalLinkDescriptionRole,
         ExternalLinkThumbRole,
 
+        HasGeneratorFeedRole,
+        GeneratorFeedUriRole,
+        GeneratorFeedCreatorHandleRole,
+        GeneratorFeedDisplayNameRole,
+        GeneratorFeedLikeCountRole,
+        GeneratorFeedAvatarRole,
+
         HasReplyRole,
         ReplyRootCidRole,
         ReplyRootUriRole,
@@ -77,6 +85,7 @@ public:
     virtual Q_INVOKABLE QString getRecordText(const QString &cid);
 
     Q_INVOKABLE void getLatest();
+    Q_INVOKABLE void deletePost(int row);
     Q_INVOKABLE void repost(int row);
     Q_INVOKABLE void like(int row);
 

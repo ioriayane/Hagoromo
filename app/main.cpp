@@ -20,10 +20,13 @@
 #include "qtquick/feedtypelistmodel.h"
 #include "qtquick/customfeedlistmodel.h"
 #include "qtquick/feedgeneratorlistmodel.h"
+#include "qtquick/languagelistmodel.h"
 #include "qtquick/thumbnailprovider.h"
 #include "qtquick/encryption.h"
 #include "qtquick/userprofile.h"
 #include "qtquick/systemtool.h"
+#include "qtquick/externallink.h"
+#include "qtquick/reporter.h"
 
 int main(int argc, char *argv[])
 {
@@ -38,7 +41,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName(QStringLiteral("relog"));
     app.setOrganizationDomain(QStringLiteral("hagoromo.relog.tech"));
     app.setApplicationName(QStringLiteral("Hagoromo"));
-    app.setApplicationVersion(QStringLiteral("0.5.0"));
+    app.setApplicationVersion(QStringLiteral("0.6.0"));
 
     qmlRegisterType<CreateSession>("tech.relog.hagoromo.createsession", 1, 0, "CreateSession");
     qmlRegisterType<RecordOperator>("tech.relog.hagoromo.recordoperator", 1, 0, "RecordOperator");
@@ -70,9 +73,13 @@ int main(int argc, char *argv[])
                                          "CustomFeedListModel");
     qmlRegisterType<FeedGeneratorListModel>("tech.relog.hagoromo.feedgeneratorlistmodel", 1, 0,
                                             "FeedGeneratorListModel");
+    qmlRegisterType<LanguageListModel>("tech.relog.hagoromo.languagelistmodel", 1, 0,
+                                       "LanguageListModel");
     qmlRegisterType<Encryption>("tech.relog.hagoromo.encryption", 1, 0, "Encryption");
     qmlRegisterType<UserProfile>("tech.relog.hagoromo.userprofile", 1, 0, "UserProfile");
     qmlRegisterType<SystemTool>("tech.relog.hagoromo.systemtool", 1, 0, "SystemTool");
+    qmlRegisterType<ExternalLink>("tech.relog.hagoromo.externallink", 1, 0, "ExternalLink");
+    qmlRegisterType<Reporter>("tech.relog.hagoromo.reporter", 1, 0, "Reporter");
 
     QString dir = QString("%1/translations").arg(QCoreApplication::applicationDirPath());
     // 翻訳データ登録

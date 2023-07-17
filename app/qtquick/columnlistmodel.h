@@ -11,6 +11,7 @@ enum class FeedComponentType : int {
     SearchPosts = 2,
     SearchProfiles = 3,
     CustomFeed = 4,
+    AuthorFeed = 5,
 
     PostThread = 100,
 };
@@ -38,6 +39,7 @@ struct ColumnItem
     // component_type
     //  == SearchPosts or SearchProfiles : 検索文字列
     //  == CustomFeed : カスタムフィードのat-uri
+    //  == AuthorFeed : ユーザーのDID
     QString value;
 
     ColumnPostType type_visibility;

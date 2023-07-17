@@ -16,7 +16,9 @@ void copyListPurpose(const QJsonValue &src, AppBskyGraphDefs::ListPurpose &dest)
 }
 void copyListViewerState(const QJsonObject &src, AppBskyGraphDefs::ListViewerState &dest)
 {
-    if (!src.isEmpty()) { }
+    if (!src.isEmpty()) {
+        dest.muted = src.value("muted").toBool();
+    }
 }
 void copyListViewBasic(const QJsonObject &src, AppBskyGraphDefs::ListViewBasic &dest)
 {
@@ -62,7 +64,9 @@ namespace AppBskyActorDefs {
 void copyViewerState(const QJsonObject &src, AppBskyActorDefs::ViewerState &dest)
 {
     if (!src.isEmpty()) {
+        dest.muted = src.value("muted").toBool();
         AppBskyGraphDefs::copyListViewBasic(src.value("mutedByList").toObject(), dest.mutedByList);
+        dest.blockedBy = src.value("blockedBy").toBool();
         dest.blocking = src.value("blocking").toString();
         dest.following = src.value("following").toString();
         dest.followedBy = src.value("followedBy").toString();
@@ -123,7 +127,9 @@ void copyProfileViewDetailed(const QJsonObject &src, AppBskyActorDefs::ProfileVi
 }
 void copyAdultContentPref(const QJsonObject &src, AppBskyActorDefs::AdultContentPref &dest)
 {
-    if (!src.isEmpty()) { }
+    if (!src.isEmpty()) {
+        dest.enabled = src.value("enabled").toBool();
+    }
 }
 void copyContentLabelPref(const QJsonObject &src, AppBskyActorDefs::ContentLabelPref &dest)
 {
@@ -153,6 +159,7 @@ void copyLabel(const QJsonObject &src, ComAtprotoLabelDefs::Label &dest)
         dest.uri = src.value("uri").toString();
         dest.cid = src.value("cid").toString();
         dest.val = src.value("val").toString();
+        dest.neg = src.value("neg").toBool();
         dest.cts = src.value("cts").toString();
     }
 }
@@ -518,12 +525,14 @@ void copyNotFoundPost(const QJsonObject &src, AppBskyFeedDefs::NotFoundPost &des
 {
     if (!src.isEmpty()) {
         dest.uri = src.value("uri").toString();
+        dest.notFound = src.value("notFound").toBool();
     }
 }
 void copyBlockedPost(const QJsonObject &src, AppBskyFeedDefs::BlockedPost &dest)
 {
     if (!src.isEmpty()) {
         dest.uri = src.value("uri").toString();
+        dest.blocked = src.value("blocked").toBool();
     }
 }
 void copyReplyRef(const QJsonObject &src, AppBskyFeedDefs::ReplyRef &dest)
@@ -844,6 +853,7 @@ void copyNotification(const QJsonObject &src,
         dest.reason = src.value("reason").toString();
         dest.reasonSubject = src.value("reasonSubject").toString();
         LexiconsTypeUnknown::copyUnknown(src.value("record").toObject(), dest.record);
+        dest.isRead = src.value("isRead").toBool();
         dest.indexedAt = src.value("indexedAt").toString();
         for (const auto &s : src.value("labels").toArray()) {
             ComAtprotoLabelDefs::Label child;
@@ -929,6 +939,7 @@ void copyRepoView(const QJsonObject &src, ComAtprotoAdminDefs::RepoView &dest)
         dest.indexedAt = src.value("indexedAt").toString();
         copyModeration(src.value("moderation").toObject(), dest.moderation);
         ComAtprotoServerDefs::copyInviteCode(src.value("invitedBy").toObject(), dest.invitedBy);
+        dest.invitesDisabled = src.value("invitesDisabled").toBool();
     }
 }
 void copyRepoViewNotFound(const QJsonObject &src, ComAtprotoAdminDefs::RepoViewNotFound &dest)
@@ -1143,6 +1154,7 @@ void copyRepoViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::RepoViewDet
             ComAtprotoServerDefs::copyInviteCode(s.toObject(), child);
             dest.invites.append(child);
         }
+        dest.invitesDisabled = src.value("invitesDisabled").toBool();
     }
 }
 void copyRecordViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::RecordViewDetail &dest)
@@ -1181,6 +1193,7 @@ void copyInviteCode(const QJsonObject &src, ComAtprotoServerDefs::InviteCode &de
     if (!src.isEmpty()) {
         dest.code = src.value("code").toString();
         dest.available = src.value("available").toInt();
+        dest.disabled = src.value("disabled").toBool();
         dest.forAccount = src.value("forAccount").toString();
         dest.createdBy = src.value("createdBy").toString();
         dest.createdAt = src.value("createdAt").toString();
@@ -1323,6 +1336,8 @@ void copyCommit(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Commit &de
 {
     if (!src.isEmpty()) {
         dest.seq = src.value("seq").toInt();
+        dest.rebase = src.value("rebase").toBool();
+        dest.tooBig = src.value("tooBig").toBool();
         dest.repo = src.value("repo").toString();
         for (const auto &s : src.value("ops").toArray()) {
             RepoOp child;

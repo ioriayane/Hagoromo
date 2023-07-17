@@ -25,6 +25,11 @@ void ComAtprotoRepoDeleteRecord::deleteRecord(const QString &repo, const QString
          json_doc.toJson(QJsonDocument::Compact));
 }
 
+void ComAtprotoRepoDeleteRecord::deletePost(const QString &rkey)
+{
+    deleteRecord(this->did(), QStringLiteral("app.bsky.feed.post"), rkey, QString(), QString());
+}
+
 void ComAtprotoRepoDeleteRecord::deleteLike(const QString &rkey)
 {
     deleteRecord(this->did(), QStringLiteral("app.bsky.feed.like"), rkey, QString(), QString());
@@ -38,6 +43,11 @@ void ComAtprotoRepoDeleteRecord::deleteRepost(const QString &rkey)
 void ComAtprotoRepoDeleteRecord::unfollow(const QString &rkey)
 {
     deleteRecord(this->did(), QStringLiteral("app.bsky.graph.follow"), rkey, QString(), QString());
+}
+
+void ComAtprotoRepoDeleteRecord::deleteBlock(const QString &rkey)
+{
+    deleteRecord(this->did(), QStringLiteral("app.bsky.graph.block"), rkey, QString(), QString());
 }
 
 void ComAtprotoRepoDeleteRecord::parseJson(bool success, const QString reply_json)

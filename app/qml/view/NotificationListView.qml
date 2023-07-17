@@ -27,8 +27,10 @@ ScrollView {
                           string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestQuote(string cid, string uri, string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestViewThread(string uri)
-    signal requestViewImages(int index, string paths)
+    signal requestViewImages(int index, var paths)
     signal requestViewProfile(string did)
+    signal requestViewGeneratorFeed(string name, string uri)
+    signal requestReportPost(string uri, string cid)
 
     ListView {
         id: rootListView
@@ -76,7 +78,13 @@ ScrollView {
             postAuthor.displayName: model.displayName
             postAuthor.handle: model.handle
             postAuthor.indexedAt: model.indexedAt
-            recordText: model.recordText
+            recordText: {
+                var text = model.recordText
+                if(model.recordTextTranslation.length > 0){
+                    text = text + "<br/>---<br/>" + model.recordTextTranslation
+                }
+                return text
+            }
 
             recordDisplayName: model.recordDisplayName
             recordHandle: model.recordHandle
@@ -85,6 +93,13 @@ ScrollView {
             recordRecordText: model.recordRecordText
             recordImagePreview.embedImages: model.recordImages
             recordImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.recordImagesFull)
+
+//            generatorViewFrame.visible: model.hasGeneratorFeed
+//            generatorViewFrame.onClicked: notificationListView.requestViewGeneratorFeed(model.generatorFeedDisplayName, model.generatorFeedUri)
+//            generatorAvatarImage.source: model.generatorFeedAvatar
+//            generatorDisplayNameLabel.text: model.generatorFeedDisplayName
+//            generatorCreatorHandleLabel.text: model.generatorFeedCreatorHandle
+//            generatorLikeCountLabel.text: model.generatorFeedLikeCount
 
             postControls.replyButton.iconText: model.replyCount
             postControls.repostButton.iconText: model.repostCount
@@ -96,12 +111,13 @@ ScrollView {
             postControls.quoteMenuItem.onTriggered: requestQuote(model.cid, model.uri,
                                                                    model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
             postControls.likeButton.onClicked: rootListView.model.like(model.index)
-            postControls.tranlateMenuItem.onTriggered: rootListView.model.translate(model.cid)
+            postControls.onTriggeredTranslate: rootListView.model.translate(model.cid)
             postControls.isReposted: model.isReposted
             postControls.isLiked: model.isLiked
             postControls.postUri: model.uri
             postControls.handle: model.handle
-            postControls.copyToClipboardMenuItem.onTriggered: systemTool.copyToClipboard(model.recordTextPlain)
+            postControls.onTriggeredCopyToClipboard: systemTool.copyToClipboard(model.recordTextPlain)
+            postControls.onTriggeredRequestReport: notificationListView.requestReportPost(model.uri, model.cid)
 
             onClicked: {
                 if(model.reason === NotificationListModel.ReasonLike ||

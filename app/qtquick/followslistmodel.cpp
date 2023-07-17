@@ -3,8 +3,6 @@
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofiles.h"
 #include "atprotocol/app/bsky/graph/appbskygraphgetfollows.h"
 
-#include <QPointer>
-
 using AtProtocolInterface::AppBskyActorGetProfiles;
 using AtProtocolInterface::AppBskyGraphGetFollows;
 
@@ -34,9 +32,13 @@ QVariant FollowsListModel::item(int row, FollowsListModelRoles role) const
         return profile.handle;
     else if (role == DisplayNameRole)
         return profile.displayName;
-    else if (role == DescriptionRole)
-        return profile.description;
-    else if (role == AvatarRole)
+    else if (role == DescriptionRole) {
+        if (m_formattedDescriptionHash.contains(profile.did)) {
+            return m_formattedDescriptionHash[profile.did];
+        } else {
+            return profile.description;
+        }
+    } else if (role == AvatarRole)
         return profile.avatar;
     else if (role == IndexedAtRole)
         return formatDateTime(profile.indexedAt);
@@ -95,28 +97,26 @@ void FollowsListModel::getLatest()
         return;
     setRunning(true);
 
-    QPointer<FollowsListModel> aliving(this);
-
-    AppBskyGraphGetFollows *follows = new AppBskyGraphGetFollows();
+    AppBskyGraphGetFollows *follows = new AppBskyGraphGetFollows(this);
     connect(follows, &AppBskyGraphGetFollows::finished, [=](bool success) {
-        if (aliving) {
-            if (success) {
-                for (const auto &profile : *follows->profileList()) {
-                    m_profileHash[profile.did] = profile;
-                    if (m_didList.contains(profile.did)) {
-                        int row = m_didList.indexOf(profile.did);
-                        emit dataChanged(index(row), index(row));
-                    } else {
-                        beginInsertRows(QModelIndex(), m_didList.count(), m_didList.count());
-                        m_didList.append(profile.did);
-                        endInsertRows();
-                    }
+        if (success) {
+            for (const auto &profile : *follows->profileList()) {
+                m_profileHash[profile.did] = profile;
+                m_formattedDescriptionHash[profile.did] =
+                        m_systemTool.markupText(profile.description);
+                if (m_didList.contains(profile.did)) {
+                    int row = m_didList.indexOf(profile.did);
+                    emit dataChanged(index(row), index(row));
+                } else {
+                    beginInsertRows(QModelIndex(), m_didList.count(), m_didList.count());
+                    m_didList.append(profile.did);
+                    endInsertRows();
                 }
-            } else {
-                emit errorOccured(follows->errorMessage());
             }
-            setRunning(false);
+        } else {
+            emit errorOccured(follows->errorMessage());
         }
+        setRunning(false);
         follows->deleteLater();
     });
     follows->setAccount(account());
@@ -164,43 +164,40 @@ void FollowsListModel::getProfiles()
         m_cueGetProfile.removeFirst();
     }
 
-    QPointer<FollowsListModel> aliving(this);
-
-    AppBskyActorGetProfiles *posts = new AppBskyActorGetProfiles();
+    AppBskyActorGetProfiles *posts = new AppBskyActorGetProfiles(this);
     connect(posts, &AppBskyActorGetProfiles::finished, [=](bool success) {
-        if (aliving) {
-            if (success) {
-                QStringList new_cid;
+        if (success) {
+            QStringList new_cid;
 
-                for (auto item = posts->profileViewDetaileds()->crbegin();
-                     item != posts->profileViewDetaileds()->crend(); item++) {
-                    AtProtocolType::AppBskyActorDefs::ProfileView profile_view;
-                    profile_view.avatar = item->avatar;
-                    profile_view.did = item->did;
-                    profile_view.displayName = item->displayName;
-                    profile_view.handle = item->handle;
-                    profile_view.description = item->description;
-                    profile_view.indexedAt = item->indexedAt;
-                    profile_view.labels = item->labels;
-                    profile_view.viewer = item->viewer;
-                    m_profileHash[item->did] = profile_view;
-                    if (m_didList.contains(item->did)) {
-                        int r = m_didList.indexOf(item->did);
-                        if (r >= 0) {
-                            emit dataChanged(index(r), index(r));
-                        }
-                    } else {
-                        beginInsertRows(QModelIndex(), m_didList.count(), m_didList.count());
-                        m_didList.append(item->did);
-                        endInsertRows();
+            for (auto item = posts->profileViewDetaileds()->crbegin();
+                 item != posts->profileViewDetaileds()->crend(); item++) {
+                AtProtocolType::AppBskyActorDefs::ProfileView profile_view;
+                profile_view.avatar = item->avatar;
+                profile_view.did = item->did;
+                profile_view.displayName = item->displayName;
+                profile_view.handle = item->handle;
+                profile_view.description = item->description;
+                profile_view.indexedAt = item->indexedAt;
+                profile_view.labels = item->labels;
+                profile_view.viewer = item->viewer;
+                m_profileHash[item->did] = profile_view;
+                m_formattedDescriptionHash[item->did] = m_systemTool.markupText(item->description);
+                if (m_didList.contains(item->did)) {
+                    int r = m_didList.indexOf(item->did);
+                    if (r >= 0) {
+                        emit dataChanged(index(r), index(r));
                     }
+                } else {
+                    beginInsertRows(QModelIndex(), m_didList.count(), m_didList.count());
+                    m_didList.append(item->did);
+                    endInsertRows();
                 }
-            } else {
-                emit errorOccured(posts->errorMessage());
             }
-            // 残ってたらもう1回
-            QTimer::singleShot(100, this, &FollowsListModel::getProfiles);
+        } else {
+            emit errorOccured(posts->errorMessage());
         }
+        // 残ってたらもう1回
+        QTimer::singleShot(100, this, &FollowsListModel::getProfiles);
         posts->deleteLater();
     });
     posts->setAccount(account());
