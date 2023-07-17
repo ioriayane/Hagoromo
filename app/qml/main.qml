@@ -68,6 +68,7 @@ ApplicationWindow {
             }
             columnManageModel.append(accountListModel.item(selectedAccountIndex, AccountListModel.UuidRole),
                                      component_type, false, 300000, 350, column_name, searchDialog.searchText)
+            scrollView.moveMostRight()
         }
     }
 
@@ -81,6 +82,7 @@ ApplicationWindow {
                         "\n  selectedUri=" + selectedUri)
             columnManageModel.append(accountListModel.item(selectedAccountIndex, AccountListModel.UuidRole),
                                      selectedType, false, 300000, 400, selectedName, selectedUri)
+            scrollView.moveMostRight()
         }
         onOpenDiscoverFeeds: (account_index) => {
                                  discoverFeedsDialog.account.uuid = accountListModel.item(account_index, AccountListModel.UuidRole)
@@ -108,6 +110,7 @@ ApplicationWindow {
         onAccepted: {
             columnManageModel.append(discoverFeedsDialog.account.uuid,
                                      4, false, 300000, 400, selectedName, selectedUri)
+            scrollView.moveMostRight()
         }
     }
 
@@ -251,11 +254,13 @@ ApplicationWindow {
                               }
             onRequestViewAuthorFeed: (account_uuid, did, handle) => {
                                          columnManageModel.append(account_uuid, 5, false, 300000, 350, handle, did)
+                                         scrollView.moveMostRight()
                                      }
             onRequestViewImages: (index, paths) => imageFullView.open(index, paths)
-            onRequestViewGeneratorFeed: (account_uuid, name, uri) =>
-                                        columnManageModel.append(account.uuid, 4, false, 300000, 400, name, uri)
-
+            onRequestViewGeneratorFeed: (account_uuid, name, uri) => {
+                                            columnManageModel.append(account.uuid, 4, false, 300000, 400, name, uri)
+                                            scrollView.moveMostRight()
+                                        }
             onRequestReportPost: (account_uuid, uri, cid) => {
                                      var row = accountListModel.indexAt(account_uuid)
                                      if(row >= 0){
@@ -428,6 +433,14 @@ ApplicationWindow {
 
             property int childHeight: scrollView.height - scrollView.ScrollBar.horizontal.height
             contentHeight: childHeight
+
+            function moveMostRight() {
+                // scrollView.contentItemはFlickable
+                // Flickableの幅が全カラムの幅より小さくなったら移動させる
+                if((scrollView.contentItem.width - scrollView.contentWidth) < 0){
+                    scrollView.contentItem.contentX = scrollView.contentWidth - scrollView.contentItem.width
+                }
+            }
 
             Repeater {
                 id: repeater
