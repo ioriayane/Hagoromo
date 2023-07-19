@@ -27,6 +27,7 @@ QML_FILES = \
     qml/dialogs/ReportPostDialog.qml \
     qml/dialogs/SearchDialog.qml \
     qml/dialogs/SettingDialog.qml \
+    qml/parts/ApplicationShortcut.qml \
     qml/parts/Author.qml \
     qml/parts/AvatarImage.qml \
     qml/parts/ImagePreview.qml \
