@@ -29,7 +29,7 @@ build_hagoromo(){
     make_dir $work_dir
     cd $work_dir
 
-    ${QT_BIN_FOLDER}/qmake ../app/app.pro
+    ${QT_BIN_FOLDER}/qmake ../app/app.pro CONFIG+=HAGOROMO_RELEASE_BUILD
     make -j2
 
     popd

@@ -92,6 +92,7 @@ RESOURCES += resources
 TRANSLATIONS += i18n/qt_ja_JP.ts
 
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
+CONFIG(HAGOROMO_RELEASE_BUILD):DEFINES += HAGOROMO_RELEASE_BUILD
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
