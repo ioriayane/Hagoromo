@@ -17,7 +17,9 @@ import "parts"
 ApplicationWindow {
     id: appWindow
     width: 800
-    height: 480
+    height: 600
+    minimumWidth: 800
+    minimumHeight: 600
     visible: true
     title: "羽衣 -Hagoromo-"
 

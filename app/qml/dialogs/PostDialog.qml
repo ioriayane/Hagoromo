@@ -37,6 +37,8 @@ Dialog {
 
     property alias postText: postText
 
+    height: mainLayout.implicitHeight + postDialog.topPadding + postDialog.bottomPadding
+
     onOpened: {
         var i = accountModel.indexAt(defaultAccountUuid)
         accountCombo.currentIndex = -1
@@ -96,11 +98,13 @@ Dialog {
     }
 
     ColumnLayout {
-
+        id: mainLayout
         Frame {
             id: replyFrame
             Layout.preferredWidth: postText.width
+            Layout.maximumHeight: 200
             visible: postType === "reply"
+            clip: true
             ColumnLayout {
                 anchors.fill: parent
                 RowLayout {
@@ -243,6 +247,7 @@ Dialog {
         }
         ExternalLinkCard {
             Layout.preferredWidth: 400
+            Layout.maximumHeight: 280
             visible: externalLink.valid
 
             thumbImage.source: externalLink.thumbLocal
@@ -290,7 +295,9 @@ Dialog {
         Frame {
             id: quoteFrame
             Layout.preferredWidth: postText.width
+            Layout.maximumHeight: 200
             visible: postType === "quote"
+            clip: true
             ColumnLayout {
                 Layout.preferredWidth: postText.width
                 RowLayout {
