@@ -9,5 +9,6 @@
         <file>response/ogp/images/file3.png</file>
         <file>response/ogp/file4.html</file>
         <file>response/ogp/file5.html</file>
+        <file>response/xrpc/app.bsky.feed.getTimeline</file>
     </qresource>
 </RCC>

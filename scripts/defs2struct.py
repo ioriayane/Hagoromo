@@ -400,15 +400,17 @@ class Defs2Struct:
                     (ref_namespace, ref_type_name) = self.split_ref(ref_path)
                     if len(ref_type_name) == 0:
                         ref_type_name = 'main'
-                    if self.check_pointer(namespace, type_name, property_name, ref_namespace, ref_type_name):
-                        self.output_func_text[namespace].append('        // ref *%s %s' % (property_name, ref_path, ))
+                    if len(ref_namespace) == 0:
+                        extend_ns = ''
+                        forward_type = self.history_type[namespace + '#' + ref_type_name]
                     else:
-                        if len(ref_namespace) == 0:
-                            extend_ns = ''
-                            forward_type = self.history_type[namespace + '#' + ref_type_name]
-                        else:
-                            extend_ns = '%s::' % (self.to_namespace_style(ref_namespace), )
-                            forward_type = self.history_type[ref_namespace + '#' + ref_type_name]
+                        extend_ns = '%s::' % (self.to_namespace_style(ref_namespace), )
+                        forward_type = self.history_type[ref_namespace + '#' + ref_type_name]
+                    if self.check_pointer(namespace, type_name, property_name, ref_namespace, ref_type_name):
+                        self.output_func_text[namespace].append('        if (dest.%s.isNull())' % (property_name, ))
+                        self.output_func_text[namespace].append('            dest.%s = QSharedPointer<%s%s>(new %s%s());' % (property_name, extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), ))
+                        self.output_func_text[namespace].append('        %scopy%s(src.value("%s").toObject(), *dest.%s);' % (extend_ns, self.to_struct_style(ref_type_name), property_name, property_name, ))
+                    else:
                         if forward_type in ['integer', 'string', 'boolean']:
                             convert_method = ''
                         else:

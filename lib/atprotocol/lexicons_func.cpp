@@ -37,7 +37,10 @@ void copyListView(const QJsonObject &src, AppBskyGraphDefs::ListView &dest)
     if (!src.isEmpty()) {
         dest.uri = src.value("uri").toString();
         dest.cid = src.value("cid").toString();
-        // ref *creator app.bsky.actor.defs#profileView
+        if (dest.creator.isNull())
+            dest.creator = QSharedPointer<AppBskyActorDefs::ProfileView>(
+                    new AppBskyActorDefs::ProfileView());
+        AppBskyActorDefs::copyProfileView(src.value("creator").toObject(), *dest.creator);
         dest.name = src.value("name").toString();
         copyListPurpose(src.value("purpose"), dest.purpose);
         dest.description = src.value("description").toString();
@@ -55,7 +58,10 @@ void copyListView(const QJsonObject &src, AppBskyGraphDefs::ListView &dest)
 void copyListItemView(const QJsonObject &src, AppBskyGraphDefs::ListItemView &dest)
 {
     if (!src.isEmpty()) {
-        // ref *subject app.bsky.actor.defs#profileView
+        if (dest.subject.isNull())
+            dest.subject = QSharedPointer<AppBskyActorDefs::ProfileView>(
+                    new AppBskyActorDefs::ProfileView());
+        AppBskyActorDefs::copyProfileView(src.value("subject").toObject(), *dest.subject);
     }
 }
 }
@@ -360,7 +366,9 @@ namespace AppBskyEmbedRecordWithMedia {
 void copyView(const QJsonObject &src, AppBskyEmbedRecordWithMedia::View &dest)
 {
     if (!src.isEmpty()) {
-        // ref *record app.bsky.embed.record#view
+        if (dest.record.isNull())
+            dest.record = QSharedPointer<AppBskyEmbedRecord::View>(new AppBskyEmbedRecord::View());
+        AppBskyEmbedRecord::copyView(src.value("record").toObject(), *dest.record);
         QString media_type = src.value("media").toObject().value("$type").toString();
         if (media_type == QStringLiteral("app.bsky.embed.images#view")) {
             dest.media_type =
@@ -379,7 +387,9 @@ void copyView(const QJsonObject &src, AppBskyEmbedRecordWithMedia::View &dest)
 void copyMain(const QJsonObject &src, AppBskyEmbedRecordWithMedia::Main &dest)
 {
     if (!src.isEmpty()) {
-        // ref *record app.bsky.embed.record
+        if (dest.record.isNull())
+            dest.record = QSharedPointer<AppBskyEmbedRecord::Main>(new AppBskyEmbedRecord::Main());
+        AppBskyEmbedRecord::copyMain(src.value("record").toObject(), *dest.record);
         QString media_type = src.value("media").toObject().value("$type").toString();
         if (media_type == QStringLiteral("app.bsky.embed.images")) {
             dest.media_type =

@@ -4,7 +4,12 @@
 
 #include "webserver.h"
 #include "atprotocol/com/atproto/server/comatprotoservercreatesession.h"
+#include "atprotocol/app/bsky/feed/appbskyfeedgettimeline.h"
 #include "tools/opengraphprotocol.h"
+#include "atprotocol/lexicons_func_unknown.h"
+
+using namespace AtProtocolType;
+using namespace AtProtocolType::LexiconsTypeUnknown;
 
 class atprotocol_test : public QObject
 {
@@ -19,11 +24,13 @@ private slots:
     void cleanupTestCase();
     void test_ComAtprotoServerCreateSession();
     void test_OpenGraphProtocol();
+    void test_getTimeline();
 
 private:
     WebServer m_mockServer;
     quint16 m_listenPort;
     QString m_service;
+    AtProtocolInterface::AccountData m_account;
 };
 
 atprotocol_test::atprotocol_test()
@@ -70,6 +77,8 @@ void atprotocol_test::test_ComAtprotoServerCreateSession()
     QVERIFY(session.email() == "iori.ayane@gmail.com");
     QVERIFY(session.accessJwt() == "hoge hoge accessJwt");
     QVERIFY(session.refreshJwt() == "hoge hoge refreshJwt");
+
+    m_account = session.account();
 }
 
 void atprotocol_test::test_OpenGraphProtocol()
@@ -259,6 +268,96 @@ void atprotocol_test::test_OpenGraphProtocol()
                  ogp.description().toLocal8Bit());
         QVERIFY(ogp.thumb() == "");
     }
+}
+
+void atprotocol_test::test_getTimeline()
+{
+    AtProtocolInterface::AppBskyFeedGetTimeline timeline;
+    timeline.setAccount(m_account);
+
+    QSignalSpy spy(&timeline, SIGNAL(finished(bool)));
+    timeline.getTimeline();
+    spy.wait();
+    QVERIFY(spy.count() == 1);
+
+    QList<QVariant> arguments = spy.takeFirst();
+    QVERIFY(arguments.at(0).toBool());
+
+    QVERIFY(timeline.feedList()->count() == 6);
+
+    QVERIFY(timeline.feedList()->at(0).post.author.did == "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
+
+    QVERIFY2(timeline.feedList()->at(1).post.embed_type
+                     == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecordWithMedia_View,
+             QString("%1")
+                     .arg(static_cast<int>(timeline.feedList()->at(1).post.embed_type))
+                     .toLocal8Bit());
+
+    QVERIFY2(timeline.feedList()->at(1).post.embed_AppBskyEmbedRecordWithMedia_View.media_type
+                     == AppBskyEmbedRecordWithMedia::ViewMediaType::media_AppBskyEmbedImages_View,
+             QString("%1")
+                     .arg(static_cast<int>(
+                             timeline.feedList()
+                                     ->at(1)
+                                     .post.embed_AppBskyEmbedRecordWithMedia_View.media_type))
+                     .toLocal8Bit());
+    QVERIFY2(timeline.feedList()->at(1).post.embed_AppBskyEmbedRecordWithMedia_View.record.isNull()
+                     == false,
+             QString("%1")
+                     .arg(timeline.feedList()
+                                  ->at(1)
+                                  .post.embed_AppBskyEmbedRecordWithMedia_View.record.isNull())
+                     .toLocal8Bit());
+    QVERIFY2(timeline.feedList()
+                             ->at(1)
+                             .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_type
+                     == AppBskyEmbedRecord::ViewRecordType::record_ViewRecord,
+             QString("%1")
+                     .arg(static_cast<int>(timeline.feedList()
+                                                   ->at(1)
+                                                   .post.embed_AppBskyEmbedRecordWithMedia_View
+                                                   .record->record_type))
+                     .toLocal8Bit());
+    QVERIFY2(timeline.feedList()
+                             ->at(1)
+                             .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
+                             .cid
+                     == "bafyreig5ylsbfssvs45welz6o45gbs4rsvg3ek3oi6ygdrl76vchbahhpu",
+             timeline.feedList()
+                     ->at(1)
+                     .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.cid
+                     .toLocal8Bit());
+    QVERIFY2(timeline.feedList()
+                             ->at(1)
+                             .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
+                             .author.handle
+                     == "ioriayane2.bsky.social",
+             timeline.feedList()
+                     ->at(1)
+                     .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.author
+                     .handle.toLocal8Bit());
+
+    QVERIFY(LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(
+                    timeline.feedList()
+                            ->at(1)
+                            .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
+                            .value)
+                    .text
+            == "quoted post");
+
+    QVERIFY(timeline.feedList()
+                    ->at(1)
+                    .post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedImages_View
+                    .images.count()
+            == 1);
+    QVERIFY(timeline.feedList()
+                    ->at(1)
+                    .post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedImages_View
+                    .images.at(0)
+                    .thumb
+            == "https://cdn.bsky.social/imgproxy/TpkmBHqqdpgUngZqPPE5p-KcoBPORIPEkFfjnmDIufo/"
+               "rs:fit:1000:1000:1:0/plain/"
+               "bafkreihcwn65qcgr2kq6xpknyhcek4xtiq6c2zum453ov5dtp6bqdt3g24@jpeg");
 }
 
 QTEST_MAIN(atprotocol_test)
