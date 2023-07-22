@@ -148,6 +148,10 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
                 break;
             case AtProtocolType::AppBskyFeedPost::MainEmbedType::
                     embed_AppBskyEmbedRecordWithMedia_Main:
+                if (!post.embed_AppBskyEmbedRecordWithMedia_Main.record.isNull()) {
+                    record_cid = post.embed_AppBskyEmbedRecordWithMedia_Main.record->record.cid;
+                    //                    record_cid = current.reasonSubject;
+                }
                 break;
             default:
                 break;
@@ -381,6 +385,18 @@ void NotificationListModel::getLatest()
                         break;
                     case AtProtocolType::AppBskyFeedPost::MainEmbedType::
                             embed_AppBskyEmbedRecordWithMedia_Main:
+                        if (!post.embed_AppBskyEmbedRecordWithMedia_Main.record.isNull()
+                            && !post.embed_AppBskyEmbedRecordWithMedia_Main.record->record.uri
+                                        .isEmpty()
+                            && !m_cueGetPost.contains(post.embed_AppBskyEmbedRecordWithMedia_Main
+                                                              .record->record.uri)) {
+                            m_cueGetPost.append(
+                                    post.embed_AppBskyEmbedRecordWithMedia_Main.record->record.uri);
+                        }
+                        // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
+                        if (!m_cueGetPost.contains(item->uri)) {
+                            m_cueGetPost.append(item->uri);
+                        }
                         break;
                     default:
                         break;
@@ -608,6 +624,12 @@ void NotificationListModel::getPosts()
                         break;
                     case AtProtocolType::AppBskyFeedPost::MainEmbedType::
                             embed_AppBskyEmbedRecordWithMedia_Main:
+                        if ((!post_quote.embed_AppBskyEmbedRecordWithMedia_Main.record.isNull()
+                             && new_cid.contains(post_quote.embed_AppBskyEmbedRecordWithMedia_Main
+                                                         .record->record.cid))
+                            || new_cid.contains(m_cidList.at(i))) {
+                            emit dataChanged(index(i), index(i));
+                        }
                         break;
                     default:
                         break;
