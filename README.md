@@ -20,7 +20,7 @@
 
 ## ダウンロード
 
-[Releases](https://github.com/ioriayane/Hagoromo/releases)よりダウンロードしてください。
+ビルド済みの実行ファイルは[Releases](https://github.com/ioriayane/Hagoromo/releases)よりダウンロードしてください。
 
 ## インストール
 
@@ -120,7 +120,7 @@ This is a multi-column [Bluesky](https://blueskyweb.xyz/) client.
 
 ## Download
 
-Please download from [Releases](https://github.com/ioriayane/Hagoromo/releases).
+Please download the pre-built executable from [Releases](https://github.com/ioriayane/Hagoromo/releases).
 
 ## Installation
 
