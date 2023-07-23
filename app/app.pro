@@ -27,6 +27,7 @@ QML_FILES = \
     qml/dialogs/ReportPostDialog.qml \
     qml/dialogs/SearchDialog.qml \
     qml/dialogs/SettingDialog.qml \
+    qml/parts/ApplicationShortcut.qml \
     qml/parts/Author.qml \
     qml/parts/AvatarImage.qml \
     qml/parts/ImagePreview.qml \
@@ -91,6 +92,7 @@ RESOURCES += resources
 TRANSLATIONS += i18n/qt_ja_JP.ts
 
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
+CONFIG(HAGOROMO_RELEASE_BUILD):DEFINES += HAGOROMO_RELEASE_BUILD
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =

@@ -95,6 +95,8 @@ protected:
     virtual bool checkVisibility(const QString &cid);
     void copyFrom(AtProtocolInterface::AppBskyFeedGetTimeline *timeline);
     QString getReferenceTime(const AtProtocolType::AppBskyFeedDefs::FeedViewPost &view_post);
+    QVariant getQuoteItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
+                          const TimelineListModel::TimelineListModelRoles role) const;
 
     QHash<QString, AtProtocolType::AppBskyFeedDefs::FeedViewPost> m_viewPostHash;
 };

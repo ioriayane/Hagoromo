@@ -52,6 +52,20 @@ QStringList copyImagesFromPostView(const AppBskyFeedDefs::PostView &post, const 
                 images.append(image.fullsize);
         }
         return images;
+    } else if (post.embed_type
+                       == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecordWithMedia_View
+               && post.embed_AppBskyEmbedRecordWithMedia_View.media_type
+                       == AppBskyEmbedRecordWithMedia::ViewMediaType::
+                               media_AppBskyEmbedImages_View) {
+        QStringList images;
+        for (const auto &image :
+             post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedImages_View.images) {
+            if (thumb)
+                images.append(image.thumb);
+            else
+                images.append(image.fullsize);
+        }
+        return images;
     } else {
         return QStringList();
     }

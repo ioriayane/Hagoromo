@@ -47,7 +47,7 @@ if NOT ERRORLEVEL 0 goto QUIT
 REM --- build -------
 cd %BUILD_FOLDER%
 
-qmake ..\app\app.pro
+qmake ..\app\app.pro CONFIG+=HAGOROMO_RELEASE_BUILD
 if NOT ERRORLEVEL 0 goto QUIT
 
 jom

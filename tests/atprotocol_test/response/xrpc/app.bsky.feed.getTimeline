@@ -1,0 +1,488 @@
+{
+    "cursor": "1689949413843::bafyreibv2fzzrd5gojkj4gb65sfgn7pl63st45pceaxfrvqkj6ds4hcjxa",
+    "feed": [
+        {
+            "post": {
+                "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k32c2xekas2h",
+                "cid": "bafyreibw36l4ybvir6c4k2b7ggak36cwax3gxhgtypnfclxyrklilwj53q",
+                "author": {
+                    "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                    "handle": "ioriayane2.bsky.social",
+                    "avatar": "https://cdn.bsky.social/imgproxy/QdJdHqlX6_FaYBBrLNg6OTbw-MdCjwxRj73W41RqLOI/rs:fill:1000:1000:1:0/plain/bafkreiayv34bulrnm5gsnx73b46s2plh76k7fvwcewqrdur7eelf7u6c3u@jpeg",
+                    "viewer": {
+                        "muted": false,
+                        "blockedBy": false
+                    },
+                    "labels": []
+                },
+                "record": {
+                    "via": "Hagoromo",
+                    "text": "普通の引用",
+                    "$type": "app.bsky.feed.post",
+                    "embed": {
+                        "$type": "app.bsky.embed.record",
+                        "record": {
+                            "cid": "bafyreib5xox32jyxq3o5xeqebmc6buavhhkmiveynxtdxem76z76aafp4q",
+                            "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k32bmvcym22k"
+                        }
+                    },
+                    "langs": [
+                        "ja"
+                    ],
+                    "createdAt": "2023-07-21T16:46:31.778Z"
+                },
+                "embed": {
+                    "$type": "app.bsky.embed.record#view",
+                    "record": {
+                        "$type": "app.bsky.embed.record#viewRecord",
+                        "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k32bmvcym22k",
+                        "cid": "bafyreib5xox32jyxq3o5xeqebmc6buavhhkmiveynxtdxem76z76aafp4q",
+                        "author": {
+                            "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                            "handle": "ioriayane2.bsky.social",
+                            "avatar": "https://cdn.bsky.social/imgproxy/QdJdHqlX6_FaYBBrLNg6OTbw-MdCjwxRj73W41RqLOI/rs:fill:1000:1000:1:0/plain/bafkreiayv34bulrnm5gsnx73b46s2plh76k7fvwcewqrdur7eelf7u6c3u@jpeg",
+                            "viewer": {
+                                "muted": false,
+                                "blockedBy": false
+                            },
+                            "labels": []
+                        },
+                        "value": {
+                            "text": "画像付き引用test",
+                            "$type": "app.bsky.feed.post",
+                            "embed": {
+                                "$type": "app.bsky.embed.recordWithMedia",
+                                "media": {
+                                    "$type": "app.bsky.embed.images",
+                                    "images": [
+                                        {
+                                            "alt": "",
+                                            "image": {
+                                                "$type": "blob",
+                                                "ref": {
+                                                    "$link": "bafkreidtgdisxxg7tpvivcnxepnf3h2vev376dhtk6znbjb2r7glvfru7u"
+                                                },
+                                                "mimeType": "image/jpeg",
+                                                "size": 8466
+                                            }
+                                        }
+                                    ]
+                                },
+                                "record": {
+                                    "$type": "app.bsky.embed.record",
+                                    "record": {
+                                        "cid": "bafyreibktjc2er7kki6o3bjxhbmauxjjqzknl4l7ix3aqyjicddje2zpea",
+                                        "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k325jskmtr2r"
+                                    }
+                                }
+                            },
+                            "langs": [
+                                "ja"
+                            ],
+                            "createdAt": "2023-07-21T16:38:40.200Z"
+                        },
+                        "labels": [],
+                        "indexedAt": "2023-07-21T16:38:40.679Z",
+                        "embeds": [
+                            {
+                                "$type": "app.bsky.embed.recordWithMedia#view",
+                                "record": {
+                                    "record": {
+                                        "$type": "app.bsky.embed.record#viewRecord",
+                                        "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k325jskmtr2r",
+                                        "cid": "bafyreibktjc2er7kki6o3bjxhbmauxjjqzknl4l7ix3aqyjicddje2zpea",
+                                        "author": {
+                                            "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                                            "handle": "ioriayane2.bsky.social",
+                                            "avatar": "https://cdn.bsky.social/imgproxy/QdJdHqlX6_FaYBBrLNg6OTbw-MdCjwxRj73W41RqLOI/rs:fill:1000:1000:1:0/plain/bafkreiayv34bulrnm5gsnx73b46s2plh76k7fvwcewqrdur7eelf7u6c3u@jpeg",
+                                            "viewer": {
+                                                "muted": false,
+                                                "blockedBy": false
+                                            },
+                                            "labels": []
+                                        },
+                                        "value": {
+                                            "via": "Hagoromo",
+                                            "text": "test",
+                                            "$type": "app.bsky.feed.post",
+                                            "embed": {
+                                                "$type": "app.bsky.embed.external",
+                                                "external": {
+                                                    "uri": "https://fedi.software/notes/9hdnh5z5hiccne81",
+                                                    "thumb": {
+                                                        "$type": "blob",
+                                                        "ref": {
+                                                            "$link": "bafkreia742syrivuzwunw5pbxvzwjwacevni5o33xoqdn77y2z3vehxe7e"
+                                                        },
+                                                        "mimeType": "image/webp",
+                                                        "size": 5608
+                                                    },
+                                                    "title": "Firefish (@firefish)",
+                                                    "description": "$[x2 Firefish v1.0.0 release!]\n\nFULL RELEASE NOTES: https://codeberg.org/firefish/firefish/releases/tag/v1.0.0\n\nWelcome to the new era of FIREFISH!\n\n**Changelog**\n\n**Major changes from last release candidate**\n\n- Firefish branding!!\n- Far better Mastodon API support\n- Edits are now non-experimental\n- Support for secondary cache server\n- Link verification with `rel=me`\n- Store antennas in cache\n- Post imports with media\n- Sytle fixes\n- More translations\n- Performance upgrades\n- Bug fixes\n- Faster build\n- [FoundKey](https://genau.qwertqwefsday.eu/notes/9h0lqlg05m) -> Firefish migration fixes\n\n**Major changes from stable**\n\nAll of the above, plus:\n\n- Post editing\n- Post imports\n- New post design\n- New header design\n- Better accessibility\n- Server silences\n- Modmail\n- New MFM effects\n- Meilisearch search engine\n- Channel search\n- Improved system emails\n- cuid2 IDs\n- Emoji skin tones\n- New 2FA flow\n- Reduced visual clutter\n- Deck view improvements\n\n**Upgrading**\n\n**If upgrading from v13 (old stable)**\n\n**In addition to the rest of the steps after this**:\n\n- Install the Rust toolchain (v1.68.0 or higher): <https://www.rust-lang.org/tools/install>\n\n- (Optional) install Meilisearch to use as a search engine instead of Sonic: <https://www.meilisearch.com/>\n\n- Replace your config file (`.config/default.yml`) with a blank version of the example (`.config/example.yml`) and re-enter the information. This will make things easier.\n\n**Dependencies**\n\n- Upgrade to at least Node v20.3.1 (v20.4.0 recommended).\n\n- (Optional, recommended) install DragonflyDB and configure under `cacheServer`: <https://www.dragonflydb.io/>\n\n**Pull**\n\n```sh\ngit pull --ff\n```\n\n**Upgrade packages**\n\n```sh\ncorepack enable\npnpm i\n```\n\n**Build**\n\n```sh\nNODE_ENV=production pnpm run build\n```\n\n**Migrate**\n\nThere are 3 new envoriment variables for this upgrade only, because antennas have been moved from the database to the cache.\n\n- `ANTENNA_MIGRATION_SKIP`: skips copying antennas to cache if `true`. Default is `false` (will clear all antennas if skipped).\n- `ANTENNA_MIGRATION_COPY_LIMIT`: limits how many entries are copied to cache. Default is `0` (no limit).\n- `ANTENNA_MIGRATION_READ_LIMIT`: limits how many entires are read from the database\nin each iteration of migration. Large value may result in faster migration, but also may consume more memory. Default is `10000`.\n\nWith default options:\n\n```sh\nNODE_ENV=production pnpm run migrate\n```\n\nWith custom options (feel free to only use some):\n\n```sh\nNODE_ENV=production ANTENNA_MIGRATION_SKIP=false ANTENNA_MIGRATION_COPY_LIMIT=0 ANTENNA_MIGRATION_READ_LIMIT=1000 pnpm run migrate\n```\n\nAnd then restart Calckey...uh... Firefish!"
+                                                }
+                                            },
+                                            "langs": [
+                                                "ja"
+                                            ],
+                                            "createdAt": "2023-07-21T15:25:21.531Z"
+                                        },
+                                        "labels": [],
+                                        "indexedAt": "2023-07-21T15:25:22.152Z"
+                                    }
+                                },
+                                "media": {
+                                    "$type": "app.bsky.embed.images#view",
+                                    "images": [
+                                        {
+                                            "thumb": "https://cdn.bsky.social/imgproxy/W1n5L-Qh1LPVZ9Ve5WOhozex1TwV-glTlSSjLgwb_iE/rs:fit:1000:1000:1:0/plain/bafkreidtgdisxxg7tpvivcnxepnf3h2vev376dhtk6znbjb2r7glvfru7u@jpeg",
+                                            "fullsize": "https://cdn.bsky.social/imgproxy/9KClQ2l_27F2C-BV_j3fD6Frx7jOkW1PvLq5cdjscCU/rs:fit:2000:2000:1:0/plain/bafkreidtgdisxxg7tpvivcnxepnf3h2vev376dhtk6znbjb2r7glvfru7u@jpeg",
+                                            "alt": ""
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                },
+                "replyCount": 0,
+                "repostCount": 0,
+                "likeCount": 0,
+                "indexedAt": "2023-07-21T16:46:32.584Z",
+                "viewer": {},
+                "labels": []
+            }
+        },
+        {
+            "post": {
+                "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k32c27t4qg2j",
+                "cid": "bafyreid65w5rimrqtiez37adyzi6eipiggopprc7acyrxraj2ibe3r3esu",
+                "author": {
+                    "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                    "handle": "ioriayane2.bsky.social",
+                    "avatar": "https://cdn.bsky.social/imgproxy/QdJdHqlX6_FaYBBrLNg6OTbw-MdCjwxRj73W41RqLOI/rs:fill:1000:1000:1:0/plain/bafkreiayv34bulrnm5gsnx73b46s2plh76k7fvwcewqrdur7eelf7u6c3u@jpeg",
+                    "viewer": {
+                        "muted": false,
+                        "blockedBy": false
+                    },
+                    "labels": []
+                },
+                "record": {
+                    "via": "Hagoromo",
+                    "text": "画像付き引用test2",
+                    "$type": "app.bsky.feed.post",
+                    "embed": {
+                        "$type": "app.bsky.embed.recordWithMedia",
+                        "media": {
+                            "$type": "app.bsky.embed.images",
+                            "images": [
+                                {
+                                    "alt": "",
+                                    "image": {
+                                        "$type": "blob",
+                                        "ref": {
+                                            "$link": "bafkreihcwn65qcgr2kq6xpknyhcek4xtiq6c2zum453ov5dtp6bqdt3g24"
+                                        },
+                                        "mimeType": "image/png",
+                                        "size": 137153
+                                    }
+                                }
+                            ]
+                        },
+                        "record": {
+                            "$type": "app.bsky.embed.record",
+                            "record": {
+                                "cid": "bafyreig5ylsbfssvs45welz6o45gbs4rsvg3ek3oi6ygdrl76vchbahhpu",
+                                "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k3227nnpgn2h"
+                            }
+                        }
+                    },
+                    "langs": [
+                        "ja"
+                    ],
+                    "createdAt": "2023-07-21T16:46:07.104Z"
+                },
+                "embed": {
+                    "$type": "app.bsky.embed.recordWithMedia#view",
+                    "record": {
+                        "record": {
+                            "$type": "app.bsky.embed.record#viewRecord",
+                            "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k3227nnpgn2h",
+                            "cid": "bafyreig5ylsbfssvs45welz6o45gbs4rsvg3ek3oi6ygdrl76vchbahhpu",
+                            "author": {
+                                "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                                "handle": "ioriayane2.bsky.social",
+                                "avatar": "https://cdn.bsky.social/imgproxy/QdJdHqlX6_FaYBBrLNg6OTbw-MdCjwxRj73W41RqLOI/rs:fill:1000:1000:1:0/plain/bafkreiayv34bulrnm5gsnx73b46s2plh76k7fvwcewqrdur7eelf7u6c3u@jpeg",
+                                "viewer": {
+                                    "muted": false,
+                                    "blockedBy": false
+                                },
+                                "labels": []
+                            },
+                            "value": {
+                                "via": "Hagoromo",
+                                "text": "quoted post",
+                                "$type": "app.bsky.feed.post",
+                                "createdAt": "2023-07-21T14:25:59.496Z"
+                            },
+                            "labels": [],
+                            "indexedAt": "2023-07-21T14:26:00.247Z",
+                            "embeds": []
+                        }
+                    },
+                    "media": {
+                        "$type": "app.bsky.embed.images#view",
+                        "images": [
+                            {
+                                "thumb": "https://cdn.bsky.social/imgproxy/TpkmBHqqdpgUngZqPPE5p-KcoBPORIPEkFfjnmDIufo/rs:fit:1000:1000:1:0/plain/bafkreihcwn65qcgr2kq6xpknyhcek4xtiq6c2zum453ov5dtp6bqdt3g24@jpeg",
+                                "fullsize": "https://cdn.bsky.social/imgproxy/dGRyfkoEWtvfnf7wauoVH4aN5giiAnI4-bJ9v1dCKq8/rs:fit:2000:2000:1:0/plain/bafkreihcwn65qcgr2kq6xpknyhcek4xtiq6c2zum453ov5dtp6bqdt3g24@jpeg",
+                                "alt": ""
+                            }
+                        ]
+                    }
+                },
+                "replyCount": 0,
+                "repostCount": 0,
+                "likeCount": 0,
+                "indexedAt": "2023-07-21T16:46:07.899Z",
+                "viewer": {},
+                "labels": []
+            }
+        },
+        {
+            "post": {
+                "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k32bmvcym22k",
+                "cid": "bafyreib5xox32jyxq3o5xeqebmc6buavhhkmiveynxtdxem76z76aafp4q",
+                "author": {
+                    "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                    "handle": "ioriayane2.bsky.social",
+                    "avatar": "https://cdn.bsky.social/imgproxy/QdJdHqlX6_FaYBBrLNg6OTbw-MdCjwxRj73W41RqLOI/rs:fill:1000:1000:1:0/plain/bafkreiayv34bulrnm5gsnx73b46s2plh76k7fvwcewqrdur7eelf7u6c3u@jpeg",
+                    "viewer": {
+                        "muted": false,
+                        "blockedBy": false
+                    },
+                    "labels": []
+                },
+                "record": {
+                    "text": "画像付き引用test",
+                    "$type": "app.bsky.feed.post",
+                    "embed": {
+                        "$type": "app.bsky.embed.recordWithMedia",
+                        "media": {
+                            "$type": "app.bsky.embed.images",
+                            "images": [
+                                {
+                                    "alt": "",
+                                    "image": {
+                                        "$type": "blob",
+                                        "ref": {
+                                            "$link": "bafkreidtgdisxxg7tpvivcnxepnf3h2vev376dhtk6znbjb2r7glvfru7u"
+                                        },
+                                        "mimeType": "image/jpeg",
+                                        "size": 8466
+                                    }
+                                }
+                            ]
+                        },
+                        "record": {
+                            "$type": "app.bsky.embed.record",
+                            "record": {
+                                "cid": "bafyreibktjc2er7kki6o3bjxhbmauxjjqzknl4l7ix3aqyjicddje2zpea",
+                                "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k325jskmtr2r"
+                            }
+                        }
+                    },
+                    "langs": [
+                        "ja"
+                    ],
+                    "createdAt": "2023-07-21T16:38:40.200Z"
+                },
+                "embed": {
+                    "$type": "app.bsky.embed.recordWithMedia#view",
+                    "record": {
+                        "record": {
+                            "$type": "app.bsky.embed.record#viewRecord",
+                            "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k325jskmtr2r",
+                            "cid": "bafyreibktjc2er7kki6o3bjxhbmauxjjqzknl4l7ix3aqyjicddje2zpea",
+                            "author": {
+                                "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                                "handle": "ioriayane2.bsky.social",
+                                "avatar": "https://cdn.bsky.social/imgproxy/QdJdHqlX6_FaYBBrLNg6OTbw-MdCjwxRj73W41RqLOI/rs:fill:1000:1000:1:0/plain/bafkreiayv34bulrnm5gsnx73b46s2plh76k7fvwcewqrdur7eelf7u6c3u@jpeg",
+                                "viewer": {
+                                    "muted": false,
+                                    "blockedBy": false
+                                },
+                                "labels": []
+                            },
+                            "value": {
+                                "via": "Hagoromo",
+                                "text": "test",
+                                "$type": "app.bsky.feed.post",
+                                "embed": {
+                                    "$type": "app.bsky.embed.external",
+                                    "external": {
+                                        "uri": "https://fedi.software/notes/9hdnh5z5hiccne81",
+                                        "thumb": {
+                                            "$type": "blob",
+                                            "ref": {
+                                                "$link": "bafkreia742syrivuzwunw5pbxvzwjwacevni5o33xoqdn77y2z3vehxe7e"
+                                            },
+                                            "mimeType": "image/webp",
+                                            "size": 5608
+                                        },
+                                        "title": "Firefish (@firefish)",
+                                        "description": "$[x2 Firefish v1.0.0 release!]\n\nFULL RELEASE NOTES: https://codeberg.org/firefish/firefish/releases/tag/v1.0.0\n\nWelcome to the new era of FIREFISH!\n\n**Changelog**\n\n**Major changes from last release candidate**\n\n- Firefish branding!!\n- Far better Mastodon API support\n- Edits are now non-experimental\n- Support for secondary cache server\n- Link verification with `rel=me`\n- Store antennas in cache\n- Post imports with media\n- Sytle fixes\n- More translations\n- Performance upgrades\n- Bug fixes\n- Faster build\n- [FoundKey](https://genau.qwertqwefsday.eu/notes/9h0lqlg05m) -> Firefish migration fixes\n\n**Major changes from stable**\n\nAll of the above, plus:\n\n- Post editing\n- Post imports\n- New post design\n- New header design\n- Better accessibility\n- Server silences\n- Modmail\n- New MFM effects\n- Meilisearch search engine\n- Channel search\n- Improved system emails\n- cuid2 IDs\n- Emoji skin tones\n- New 2FA flow\n- Reduced visual clutter\n- Deck view improvements\n\n**Upgrading**\n\n**If upgrading from v13 (old stable)**\n\n**In addition to the rest of the steps after this**:\n\n- Install the Rust toolchain (v1.68.0 or higher): <https://www.rust-lang.org/tools/install>\n\n- (Optional) install Meilisearch to use as a search engine instead of Sonic: <https://www.meilisearch.com/>\n\n- Replace your config file (`.config/default.yml`) with a blank version of the example (`.config/example.yml`) and re-enter the information. This will make things easier.\n\n**Dependencies**\n\n- Upgrade to at least Node v20.3.1 (v20.4.0 recommended).\n\n- (Optional, recommended) install DragonflyDB and configure under `cacheServer`: <https://www.dragonflydb.io/>\n\n**Pull**\n\n```sh\ngit pull --ff\n```\n\n**Upgrade packages**\n\n```sh\ncorepack enable\npnpm i\n```\n\n**Build**\n\n```sh\nNODE_ENV=production pnpm run build\n```\n\n**Migrate**\n\nThere are 3 new envoriment variables for this upgrade only, because antennas have been moved from the database to the cache.\n\n- `ANTENNA_MIGRATION_SKIP`: skips copying antennas to cache if `true`. Default is `false` (will clear all antennas if skipped).\n- `ANTENNA_MIGRATION_COPY_LIMIT`: limits how many entries are copied to cache. Default is `0` (no limit).\n- `ANTENNA_MIGRATION_READ_LIMIT`: limits how many entires are read from the database\nin each iteration of migration. Large value may result in faster migration, but also may consume more memory. Default is `10000`.\n\nWith default options:\n\n```sh\nNODE_ENV=production pnpm run migrate\n```\n\nWith custom options (feel free to only use some):\n\n```sh\nNODE_ENV=production ANTENNA_MIGRATION_SKIP=false ANTENNA_MIGRATION_COPY_LIMIT=0 ANTENNA_MIGRATION_READ_LIMIT=1000 pnpm run migrate\n```\n\nAnd then restart Calckey...uh... Firefish!"
+                                    }
+                                },
+                                "langs": [
+                                    "ja"
+                                ],
+                                "createdAt": "2023-07-21T15:25:21.531Z"
+                            },
+                            "labels": [],
+                            "indexedAt": "2023-07-21T15:25:22.152Z",
+                            "embeds": [
+                                {
+                                    "$type": "app.bsky.embed.external#view",
+                                    "external": {
+                                        "uri": "https://fedi.software/notes/9hdnh5z5hiccne81",
+                                        "title": "Firefish (@firefish)",
+                                        "description": "$[x2 Firefish v1.0.0 release!]\n\nFULL RELEASE NOTES: https://codeberg.org/firefish/firefish/releases/tag/v1.0.0\n\nWelcome to the new era of FIREFISH!\n\n**Changelog**\n\n**Major changes from last release candidate**\n\n- Firefish branding!!\n- Far better Mastodon API support\n- Edits are now non-experimental\n- Support for secondary cache server\n- Link verification with `rel=me`\n- Store antennas in cache\n- Post imports with media\n- Sytle fixes\n- More translations\n- Performance upgrades\n- Bug fixes\n- Faster build\n- [FoundKey](https://genau.qwertqwefsday.eu/notes/9h0lqlg05m) -> Firefish migration fixes\n\n**Major changes from stable**\n\nAll of the above, plus:\n\n- Post editing\n- Post imports\n- New post design\n- New header design\n- Better accessibility\n- Server silences\n- Modmail\n- New MFM effects\n- Meilisearch search engine\n- Channel search\n- Improved system emails\n- cuid2 IDs\n- Emoji skin tones\n- New 2FA flow\n- Reduced visual clutter\n- Deck view improvements\n\n**Upgrading**\n\n**If upgrading from v13 (old stable)**\n\n**In addition to the rest of the steps after this**:\n\n- Install the Rust toolchain (v1.68.0 or higher): <https://www.rust-lang.org/tools/install>\n\n- (Optional) install Meilisearch to use as a search engine instead of Sonic: <https://www.meilisearch.com/>\n\n- Replace your config file (`.config/default.yml`) with a blank version of the example (`.config/example.yml`) and re-enter the information. This will make things easier.\n\n**Dependencies**\n\n- Upgrade to at least Node v20.3.1 (v20.4.0 recommended).\n\n- (Optional, recommended) install DragonflyDB and configure under `cacheServer`: <https://www.dragonflydb.io/>\n\n**Pull**\n\n```sh\ngit pull --ff\n```\n\n**Upgrade packages**\n\n```sh\ncorepack enable\npnpm i\n```\n\n**Build**\n\n```sh\nNODE_ENV=production pnpm run build\n```\n\n**Migrate**\n\nThere are 3 new envoriment variables for this upgrade only, because antennas have been moved from the database to the cache.\n\n- `ANTENNA_MIGRATION_SKIP`: skips copying antennas to cache if `true`. Default is `false` (will clear all antennas if skipped).\n- `ANTENNA_MIGRATION_COPY_LIMIT`: limits how many entries are copied to cache. Default is `0` (no limit).\n- `ANTENNA_MIGRATION_READ_LIMIT`: limits how many entires are read from the database\nin each iteration of migration. Large value may result in faster migration, but also may consume more memory. Default is `10000`.\n\nWith default options:\n\n```sh\nNODE_ENV=production pnpm run migrate\n```\n\nWith custom options (feel free to only use some):\n\n```sh\nNODE_ENV=production ANTENNA_MIGRATION_SKIP=false ANTENNA_MIGRATION_COPY_LIMIT=0 ANTENNA_MIGRATION_READ_LIMIT=1000 pnpm run migrate\n```\n\nAnd then restart Calckey...uh... Firefish!",
+                                        "thumb": "https://cdn.bsky.social/imgproxy/Z8z3m6aOyRB8OiZ-kY1dkLKFYrKg9Xp1N2DPGO-hdb8/rs:fit:1000:1000:1:0/plain/bafkreia742syrivuzwunw5pbxvzwjwacevni5o33xoqdn77y2z3vehxe7e@jpeg"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "media": {
+                        "$type": "app.bsky.embed.images#view",
+                        "images": [
+                            {
+                                "thumb": "https://cdn.bsky.social/imgproxy/W1n5L-Qh1LPVZ9Ve5WOhozex1TwV-glTlSSjLgwb_iE/rs:fit:1000:1000:1:0/plain/bafkreidtgdisxxg7tpvivcnxepnf3h2vev376dhtk6znbjb2r7glvfru7u@jpeg",
+                                "fullsize": "https://cdn.bsky.social/imgproxy/9KClQ2l_27F2C-BV_j3fD6Frx7jOkW1PvLq5cdjscCU/rs:fit:2000:2000:1:0/plain/bafkreidtgdisxxg7tpvivcnxepnf3h2vev376dhtk6znbjb2r7glvfru7u@jpeg",
+                                "alt": ""
+                            }
+                        ]
+                    }
+                },
+                "replyCount": 0,
+                "repostCount": 0,
+                "likeCount": 0,
+                "indexedAt": "2023-07-21T16:38:40.679Z",
+                "viewer": {},
+                "labels": []
+            }
+        },
+        {
+            "post": {
+                "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k325jskmtr2r",
+                "cid": "bafyreibktjc2er7kki6o3bjxhbmauxjjqzknl4l7ix3aqyjicddje2zpea",
+                "author": {
+                    "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                    "handle": "ioriayane2.bsky.social",
+                    "avatar": "https://cdn.bsky.social/imgproxy/QdJdHqlX6_FaYBBrLNg6OTbw-MdCjwxRj73W41RqLOI/rs:fill:1000:1000:1:0/plain/bafkreiayv34bulrnm5gsnx73b46s2plh76k7fvwcewqrdur7eelf7u6c3u@jpeg",
+                    "viewer": {
+                        "muted": false,
+                        "blockedBy": false
+                    },
+                    "labels": []
+                },
+                "record": {
+                    "via": "Hagoromo",
+                    "text": "test",
+                    "$type": "app.bsky.feed.post",
+                    "embed": {
+                        "$type": "app.bsky.embed.external",
+                        "external": {
+                            "uri": "https://fedi.software/notes/9hdnh5z5hiccne81",
+                            "thumb": {
+                                "$type": "blob",
+                                "ref": {
+                                    "$link": "bafkreia742syrivuzwunw5pbxvzwjwacevni5o33xoqdn77y2z3vehxe7e"
+                                },
+                                "mimeType": "image/webp",
+                                "size": 5608
+                            },
+                            "title": "Firefish (@firefish)",
+                            "description": "$[x2 Firefish v1.0.0 release!]\n\nFULL RELEASE NOTES: https://codeberg.org/firefish/firefish/releases/tag/v1.0.0\n\nWelcome to the new era of FIREFISH!\n\n**Changelog**\n\n**Major changes from last release candidate**\n\n- Firefish branding!!\n- Far better Mastodon API support\n- Edits are now non-experimental\n- Support for secondary cache server\n- Link verification with `rel=me`\n- Store antennas in cache\n- Post imports with media\n- Sytle fixes\n- More translations\n- Performance upgrades\n- Bug fixes\n- Faster build\n- [FoundKey](https://genau.qwertqwefsday.eu/notes/9h0lqlg05m) -> Firefish migration fixes\n\n**Major changes from stable**\n\nAll of the above, plus:\n\n- Post editing\n- Post imports\n- New post design\n- New header design\n- Better accessibility\n- Server silences\n- Modmail\n- New MFM effects\n- Meilisearch search engine\n- Channel search\n- Improved system emails\n- cuid2 IDs\n- Emoji skin tones\n- New 2FA flow\n- Reduced visual clutter\n- Deck view improvements\n\n**Upgrading**\n\n**If upgrading from v13 (old stable)**\n\n**In addition to the rest of the steps after this**:\n\n- Install the Rust toolchain (v1.68.0 or higher): <https://www.rust-lang.org/tools/install>\n\n- (Optional) install Meilisearch to use as a search engine instead of Sonic: <https://www.meilisearch.com/>\n\n- Replace your config file (`.config/default.yml`) with a blank version of the example (`.config/example.yml`) and re-enter the information. This will make things easier.\n\n**Dependencies**\n\n- Upgrade to at least Node v20.3.1 (v20.4.0 recommended).\n\n- (Optional, recommended) install DragonflyDB and configure under `cacheServer`: <https://www.dragonflydb.io/>\n\n**Pull**\n\n```sh\ngit pull --ff\n```\n\n**Upgrade packages**\n\n```sh\ncorepack enable\npnpm i\n```\n\n**Build**\n\n```sh\nNODE_ENV=production pnpm run build\n```\n\n**Migrate**\n\nThere are 3 new envoriment variables for this upgrade only, because antennas have been moved from the database to the cache.\n\n- `ANTENNA_MIGRATION_SKIP`: skips copying antennas to cache if `true`. Default is `false` (will clear all antennas if skipped).\n- `ANTENNA_MIGRATION_COPY_LIMIT`: limits how many entries are copied to cache. Default is `0` (no limit).\n- `ANTENNA_MIGRATION_READ_LIMIT`: limits how many entires are read from the database\nin each iteration of migration. Large value may result in faster migration, but also may consume more memory. Default is `10000`.\n\nWith default options:\n\n```sh\nNODE_ENV=production pnpm run migrate\n```\n\nWith custom options (feel free to only use some):\n\n```sh\nNODE_ENV=production ANTENNA_MIGRATION_SKIP=false ANTENNA_MIGRATION_COPY_LIMIT=0 ANTENNA_MIGRATION_READ_LIMIT=1000 pnpm run migrate\n```\n\nAnd then restart Calckey...uh... Firefish!"
+                        }
+                    },
+                    "langs": [
+                        "ja"
+                    ],
+                    "createdAt": "2023-07-21T15:25:21.531Z"
+                },
+                "embed": {
+                    "$type": "app.bsky.embed.external#view",
+                    "external": {
+                        "uri": "https://fedi.software/notes/9hdnh5z5hiccne81",
+                        "title": "Firefish (@firefish)",
+                        "description": "$[x2 Firefish v1.0.0 release!]\n\nFULL RELEASE NOTES: https://codeberg.org/firefish/firefish/releases/tag/v1.0.0\n\nWelcome to the new era of FIREFISH!\n\n**Changelog**\n\n**Major changes from last release candidate**\n\n- Firefish branding!!\n- Far better Mastodon API support\n- Edits are now non-experimental\n- Support for secondary cache server\n- Link verification with `rel=me`\n- Store antennas in cache\n- Post imports with media\n- Sytle fixes\n- More translations\n- Performance upgrades\n- Bug fixes\n- Faster build\n- [FoundKey](https://genau.qwertqwefsday.eu/notes/9h0lqlg05m) -> Firefish migration fixes\n\n**Major changes from stable**\n\nAll of the above, plus:\n\n- Post editing\n- Post imports\n- New post design\n- New header design\n- Better accessibility\n- Server silences\n- Modmail\n- New MFM effects\n- Meilisearch search engine\n- Channel search\n- Improved system emails\n- cuid2 IDs\n- Emoji skin tones\n- New 2FA flow\n- Reduced visual clutter\n- Deck view improvements\n\n**Upgrading**\n\n**If upgrading from v13 (old stable)**\n\n**In addition to the rest of the steps after this**:\n\n- Install the Rust toolchain (v1.68.0 or higher): <https://www.rust-lang.org/tools/install>\n\n- (Optional) install Meilisearch to use as a search engine instead of Sonic: <https://www.meilisearch.com/>\n\n- Replace your config file (`.config/default.yml`) with a blank version of the example (`.config/example.yml`) and re-enter the information. This will make things easier.\n\n**Dependencies**\n\n- Upgrade to at least Node v20.3.1 (v20.4.0 recommended).\n\n- (Optional, recommended) install DragonflyDB and configure under `cacheServer`: <https://www.dragonflydb.io/>\n\n**Pull**\n\n```sh\ngit pull --ff\n```\n\n**Upgrade packages**\n\n```sh\ncorepack enable\npnpm i\n```\n\n**Build**\n\n```sh\nNODE_ENV=production pnpm run build\n```\n\n**Migrate**\n\nThere are 3 new envoriment variables for this upgrade only, because antennas have been moved from the database to the cache.\n\n- `ANTENNA_MIGRATION_SKIP`: skips copying antennas to cache if `true`. Default is `false` (will clear all antennas if skipped).\n- `ANTENNA_MIGRATION_COPY_LIMIT`: limits how many entries are copied to cache. Default is `0` (no limit).\n- `ANTENNA_MIGRATION_READ_LIMIT`: limits how many entires are read from the database\nin each iteration of migration. Large value may result in faster migration, but also may consume more memory. Default is `10000`.\n\nWith default options:\n\n```sh\nNODE_ENV=production pnpm run migrate\n```\n\nWith custom options (feel free to only use some):\n\n```sh\nNODE_ENV=production ANTENNA_MIGRATION_SKIP=false ANTENNA_MIGRATION_COPY_LIMIT=0 ANTENNA_MIGRATION_READ_LIMIT=1000 pnpm run migrate\n```\n\nAnd then restart Calckey...uh... Firefish!",
+                        "thumb": "https://cdn.bsky.social/imgproxy/Z8z3m6aOyRB8OiZ-kY1dkLKFYrKg9Xp1N2DPGO-hdb8/rs:fit:1000:1000:1:0/plain/bafkreia742syrivuzwunw5pbxvzwjwacevni5o33xoqdn77y2z3vehxe7e@jpeg"
+                    }
+                },
+                "replyCount": 0,
+                "repostCount": 0,
+                "likeCount": 0,
+                "indexedAt": "2023-07-21T15:25:22.152Z",
+                "viewer": {},
+                "labels": []
+            }
+        },
+        {
+            "post": {
+                "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k3227nnpgn2h",
+                "cid": "bafyreig5ylsbfssvs45welz6o45gbs4rsvg3ek3oi6ygdrl76vchbahhpu",
+                "author": {
+                    "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                    "handle": "ioriayane2.bsky.social",
+                    "avatar": "https://cdn.bsky.social/imgproxy/QdJdHqlX6_FaYBBrLNg6OTbw-MdCjwxRj73W41RqLOI/rs:fill:1000:1000:1:0/plain/bafkreiayv34bulrnm5gsnx73b46s2plh76k7fvwcewqrdur7eelf7u6c3u@jpeg",
+                    "viewer": {
+                        "muted": false,
+                        "blockedBy": false
+                    },
+                    "labels": []
+                },
+                "record": {
+                    "via": "Hagoromo",
+                    "text": "line1\nline2\nline3\nline4\nline5\nline6\nline7\nline8\nline9\nline10\nline11\nline12\nline13\nline14\nline15\nline16\nline17\nline18\nline19\nline20\nline21\nline22\nline23\nline24\nline25\nline26\nline27\nline28\nline29\nline30",
+                    "$type": "app.bsky.feed.post",
+                    "createdAt": "2023-07-21T14:25:59.496Z"
+                },
+                "replyCount": 0,
+                "repostCount": 0,
+                "likeCount": 0,
+                "indexedAt": "2023-07-21T14:26:00.247Z",
+                "viewer": {},
+                "labels": []
+            }
+        },
+        {
+            "post": {
+                "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k3223cqzr62v",
+                "cid": "bafyreibv2fzzrd5gojkj4gb65sfgn7pl63st45pceaxfrvqkj6ds4hcjxa",
+                "author": {
+                    "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                    "handle": "ioriayane2.bsky.social",
+                    "avatar": "https://cdn.bsky.social/imgproxy/QdJdHqlX6_FaYBBrLNg6OTbw-MdCjwxRj73W41RqLOI/rs:fill:1000:1000:1:0/plain/bafkreiayv34bulrnm5gsnx73b46s2plh76k7fvwcewqrdur7eelf7u6c3u@jpeg",
+                    "viewer": {
+                        "muted": false,
+                        "blockedBy": false
+                    },
+                    "labels": []
+                },
+                "record": {
+                    "via": "Hagoromo",
+                    "text": "line1\nline2\nline3\nline4\nline5\nline6\nline7\nline8\nline9\nline10",
+                    "$type": "app.bsky.feed.post",
+                    "createdAt": "2023-07-21T14:23:33.843Z"
+                },
+                "replyCount": 0,
+                "repostCount": 0,
+                "likeCount": 0,
+                "indexedAt": "2023-07-21T14:23:34.603Z",
+                "viewer": {},
+                "labels": []
+            }
+        }
+    ]
+}

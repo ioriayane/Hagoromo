@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
+import QtGraphicalEffects 1.15
 import Qt.labs.settings 1.1
 
 import tech.relog.hagoromo.accountlistmodel 1.0
@@ -11,11 +12,14 @@ import tech.relog.hagoromo.systemtool 1.0
 import "controls"
 import "dialogs"
 import "view"
+import "parts"
 
 ApplicationWindow {
     id: appWindow
     width: 800
-    height: 480
+    height: 600
+    minimumWidth: 800
+    minimumHeight: 600
     visible: true
     title: "羽衣 -Hagoromo-"
 
@@ -33,18 +37,22 @@ ApplicationWindow {
         id: systemTool
     }
 
-    Shortcut {  // Post
-        enabled: !postDialog.visible
-        context: Qt.ApplicationShortcut
-        sequence: "n"
-        onActivated: postDialog.open()
+    ApplicationShortcut {
+        enabled: !postDialog.visible && !searchDialog.visible
+        postDialogShortcut.onActivated: postDialog.open()
+        searchDialogShortcut.onActivated: searchDialog.open()
+        onShowColumn: (index) => {
+                          if(index === -1){
+                              //一番右
+                              scrollView.showRightMost()
+                          }else if(index === 1){
+                              scrollView.showLeftMost()
+                          }else if(index > 1 && index <= 9){
+                              scrollView.showColumn(index-1)
+                          }
+                      }
     }
-    Shortcut {  // Search
-        enabled: !searchDialog.visible
-        context: Qt.ApplicationShortcut
-        sequence: "s"
-        onActivated: searchDialog.open()
-    }
+
 
     SettingDialog {
         id: settingDialog
@@ -68,7 +76,7 @@ ApplicationWindow {
             }
             columnManageModel.append(accountListModel.item(selectedAccountIndex, AccountListModel.UuidRole),
                                      component_type, false, 300000, 350, column_name, searchDialog.searchText)
-            scrollView.moveMostRight()
+            scrollView.showRightMost()
         }
     }
 
@@ -82,7 +90,7 @@ ApplicationWindow {
                         "\n  selectedUri=" + selectedUri)
             columnManageModel.append(accountListModel.item(selectedAccountIndex, AccountListModel.UuidRole),
                                      selectedType, false, 300000, 400, selectedName, selectedUri)
-            scrollView.moveMostRight()
+            scrollView.showRightMost()
         }
         onOpenDiscoverFeeds: (account_index) => {
                                  discoverFeedsDialog.account.uuid = accountListModel.item(account_index, AccountListModel.UuidRole)
@@ -110,7 +118,7 @@ ApplicationWindow {
         onAccepted: {
             columnManageModel.append(discoverFeedsDialog.account.uuid,
                                      4, false, 300000, 400, selectedName, selectedUri)
-            scrollView.moveMostRight()
+            scrollView.showRightMost()
         }
     }
 
@@ -254,12 +262,12 @@ ApplicationWindow {
                               }
             onRequestViewAuthorFeed: (account_uuid, did, handle) => {
                                          columnManageModel.append(account_uuid, 5, false, 300000, 350, handle, did)
-                                         scrollView.moveMostRight()
+                                         scrollView.showRightMost()
                                      }
             onRequestViewImages: (index, paths) => imageFullView.open(index, paths)
             onRequestViewGeneratorFeed: (account_uuid, name, uri) => {
                                             columnManageModel.append(account.uuid, 4, false, 300000, 400, name, uri)
-                                            scrollView.moveMostRight()
+                                            scrollView.showRightMost()
                                         }
             onRequestReportPost: (account_uuid, uri, cid) => {
                                      var row = accountListModel.indexAt(account_uuid)
@@ -434,12 +442,51 @@ ApplicationWindow {
             property int childHeight: scrollView.height - scrollView.ScrollBar.horizontal.height
             contentHeight: childHeight
 
-            function moveMostRight() {
+            function showLeftMost() {
+                // scrollView.contentItem.contentX = 0
+                showColumn(0)
+            }
+
+            function showRightMost() {
                 // scrollView.contentItemはFlickable
                 // Flickableの幅が全カラムの幅より小さくなったら移動させる
-                if((scrollView.contentItem.width - scrollView.contentWidth) < 0){
-                    scrollView.contentItem.contentX = scrollView.contentWidth - scrollView.contentItem.width
+                //if(scrollView.contentWidth > scrollView.contentItem.width){
+                //    scrollView.contentItem.contentX = scrollView.contentWidth - scrollView.contentItem.width
+                //}
+                showColumn(repeater.count - 1)
+            }
+
+            function showColumn(index){
+                var w = 0
+                var last_w = 0
+                var margin = 0
+                var row_list = columnManageModel.getRowListInOrderOfPosition()
+                var item = undefined
+                if(row_list.length <= index){
+                    return
                 }
+                for(var i=0; i<row_list.length; i++){
+                    if(row_list[i] < index){
+                        item = repeater.itemAt(row_list[i])   //ここのitemはloader自身
+                        w += item.width + item.anchors.leftMargin
+                    }else if(row_list[i] === index){
+                        item = repeater.itemAt(row_list[i])   //ここのitemはloader自身
+                        last_w = item.width + item.anchors.leftMargin
+                        margin = item.anchors.leftMargin
+                    }
+                }
+                if((w + last_w) > scrollView.contentItem.width){
+                    scrollView.contentItem.contentX = (w + last_w) - scrollView.contentItem.width
+                }else if(w < scrollView.contentItem.contentX){
+                    scrollView.contentItem.contentX = w
+                }
+
+                columnCursor.width = last_w - margin
+                columnCursor.height = scrollView.height - scrollView.ScrollBar.horizontal.height - 1
+                columnCursor.x = scrollView.x + w + margin - scrollView.contentItem.contentX
+                columnCursor.y = 1
+                columnCursorAnimation.stop()
+                columnCursorAnimation.start()
             }
 
             Repeater {
@@ -553,6 +600,31 @@ ApplicationWindow {
                     }
                 }
             }
+        }
+    }
+
+    Rectangle {
+        id: columnCursor
+        radius: 3
+        color: "transparent"
+        opacity: 0
+        border.width: 1
+        border.color: Material.color(Material.LightBlue)
+        layer.enabled: true
+        layer.effect: Glow {
+            radius: 8
+            samples: 17
+            color: Material.color(Material.LightBlue)
+        }
+
+        NumberAnimation {
+            id: columnCursorAnimation
+            target: columnCursor
+            property: "opacity"
+            duration: 500
+            from: 1.0
+            to: 0.0
+            easing.type: Easing.Linear
         }
     }
 

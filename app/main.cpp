@@ -41,7 +41,10 @@ int main(int argc, char *argv[])
     app.setOrganizationName(QStringLiteral("relog"));
     app.setOrganizationDomain(QStringLiteral("hagoromo.relog.tech"));
     app.setApplicationName(QStringLiteral("Hagoromo"));
-    app.setApplicationVersion(QStringLiteral("0.6.0"));
+    app.setApplicationVersion(QStringLiteral("0.7.0"));
+#ifndef HAGOROMO_RELEASE_BUILD
+    app.setApplicationVersion(app.applicationVersion() + "d");
+#endif
 
     qmlRegisterType<CreateSession>("tech.relog.hagoromo.createsession", 1, 0, "CreateSession");
     qmlRegisterType<RecordOperator>("tech.relog.hagoromo.recordoperator", 1, 0, "RecordOperator");

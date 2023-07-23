@@ -71,66 +71,12 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     else if (role == LikedUriRole)
         return current.post.viewer.like;
 
-    else if (role == HasQuoteRecordRole) {
-        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
-            return false;
-        else
-            return current.post.embed_type
-                    == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecord_View
-                    && current.post.embed_AppBskyEmbedRecord_View->record_type
-                    == AppBskyEmbedRecord::ViewRecordType::record_ViewRecord;
-    } else if (role == QuoteRecordCidRole) {
-        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
-            return QString();
-        else
-            return current.post.embed_AppBskyEmbedRecord_View->record_ViewRecord.cid;
-    } else if (role == QuoteRecordUriRole) {
-        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
-            return QString();
-        else
-            return current.post.embed_AppBskyEmbedRecord_View->record_ViewRecord.uri;
-    } else if (role == QuoteRecordDisplayNameRole) {
-        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
-            return QString();
-        else
-            return current.post.embed_AppBskyEmbedRecord_View->record_ViewRecord.author.displayName;
-    } else if (role == QuoteRecordHandleRole) {
-        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
-            return QString();
-        else
-            return current.post.embed_AppBskyEmbedRecord_View->record_ViewRecord.author.handle;
-    } else if (role == QuoteRecordAvatarRole) {
-        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
-            return QString();
-        else
-            return current.post.embed_AppBskyEmbedRecord_View->record_ViewRecord.author.avatar;
-    } else if (role == QuoteRecordRecordTextRole) {
-        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
-            return QString();
-        else
-            return copyRecordText(
-                    current.post.embed_AppBskyEmbedRecord_View->record_ViewRecord.value);
-    } else if (role == QuoteRecordIndexedAtRole) {
-        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
-            return QString();
-        else
-            return formatDateTime(
-                    current.post.embed_AppBskyEmbedRecord_View->record_ViewRecord.indexedAt);
-    } else if (role == QuoteRecordEmbedImagesRole) {
-        // unionの配列で読み込んでない
-        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
-            return QStringList();
-        else
-            return LexiconsTypeUnknown::copyImagesFromRecord(
-                    current.post.embed_AppBskyEmbedRecord_View->record_ViewRecord, true);
-    } else if (role == QuoteRecordEmbedImagesFullRole) {
-        // unionの配列で読み込んでない
-        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
-            return QStringList();
-        else
-            return LexiconsTypeUnknown::copyImagesFromRecord(
-                    current.post.embed_AppBskyEmbedRecord_View->record_ViewRecord, false);
-    }
+    else if (role == HasQuoteRecordRole || role == QuoteRecordCidRole || role == QuoteRecordUriRole
+             || role == QuoteRecordDisplayNameRole || role == QuoteRecordHandleRole
+             || role == QuoteRecordAvatarRole || role == QuoteRecordRecordTextRole
+             || role == QuoteRecordIndexedAtRole || role == QuoteRecordEmbedImagesRole
+             || role == QuoteRecordEmbedImagesFullRole)
+        return getQuoteItem(current.post, role);
 
     else if (role == HasExternalLinkRole)
         return current.post.embed_type
@@ -481,4 +427,102 @@ TimelineListModel::getReferenceTime(const AtProtocolType::AppBskyFeedDefs::FeedV
     } else {
         return view_post.post.indexedAt;
     }
+}
+
+QVariant TimelineListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
+                                         const TimelineListModelRoles role) const
+{
+    bool has_record = !post.embed_AppBskyEmbedRecord_View.isNull();
+    bool has_with_image = !post.embed_AppBskyEmbedRecordWithMedia_View.record.isNull();
+
+    if (role == HasQuoteRecordRole) {
+        if (has_record)
+            return post.embed_type
+                    == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecord_View
+                    && post.embed_AppBskyEmbedRecord_View->record_type
+                    == AppBskyEmbedRecord::ViewRecordType::record_ViewRecord;
+        else if (has_with_image)
+            return post.embed_type
+                    == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecordWithMedia_View
+                    && post.embed_AppBskyEmbedRecordWithMedia_View.record->record_type
+                    == AppBskyEmbedRecord::ViewRecordType::record_ViewRecord;
+        else
+            return false;
+    } else if (role == QuoteRecordCidRole) {
+        if (has_record)
+            return post.embed_AppBskyEmbedRecord_View->record_ViewRecord.cid;
+        else if (has_with_image)
+            return post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.cid;
+        else
+            return QString();
+    } else if (role == QuoteRecordUriRole) {
+        if (has_record)
+            return post.embed_AppBskyEmbedRecord_View->record_ViewRecord.uri;
+        else if (has_with_image)
+            return post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.uri;
+        else
+            return QString();
+    } else if (role == QuoteRecordDisplayNameRole) {
+        if (has_record)
+            return post.embed_AppBskyEmbedRecord_View->record_ViewRecord.author.displayName;
+        else if (has_with_image)
+            return post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.author
+                    .displayName;
+        else
+            return QString();
+    } else if (role == QuoteRecordHandleRole) {
+        if (has_record)
+            return post.embed_AppBskyEmbedRecord_View->record_ViewRecord.author.handle;
+        else if (has_with_image)
+            return post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.author
+                    .handle;
+        else
+            return QString();
+    } else if (role == QuoteRecordAvatarRole) {
+        if (has_record)
+            return post.embed_AppBskyEmbedRecord_View->record_ViewRecord.author.avatar;
+        else if (has_with_image)
+            return post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.author
+                    .avatar;
+        else
+            return QString();
+    } else if (role == QuoteRecordRecordTextRole) {
+        if (has_record)
+            return copyRecordText(post.embed_AppBskyEmbedRecord_View->record_ViewRecord.value);
+        else if (has_with_image)
+            return copyRecordText(
+                    post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.value);
+        else
+            return QString();
+    } else if (role == QuoteRecordIndexedAtRole) {
+        if (has_record)
+            return formatDateTime(post.embed_AppBskyEmbedRecord_View->record_ViewRecord.indexedAt);
+        else if (has_with_image)
+            return formatDateTime(post.embed_AppBskyEmbedRecordWithMedia_View.record
+                                          ->record_ViewRecord.indexedAt);
+        else
+            return QString();
+    } else if (role == QuoteRecordEmbedImagesRole) {
+        // unionの配列で読み込んでない
+        if (has_record)
+            return LexiconsTypeUnknown::copyImagesFromRecord(
+                    post.embed_AppBskyEmbedRecord_View->record_ViewRecord, true);
+        else if (has_with_image)
+            return LexiconsTypeUnknown::copyImagesFromRecord(
+                    post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord, true);
+        else
+            return QStringList();
+    } else if (role == QuoteRecordEmbedImagesFullRole) {
+        // unionの配列で読み込んでない
+        if (has_record)
+            return LexiconsTypeUnknown::copyImagesFromRecord(
+                    post.embed_AppBskyEmbedRecord_View->record_ViewRecord, false);
+        else if (has_with_image)
+            return LexiconsTypeUnknown::copyImagesFromRecord(
+                    post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord, false);
+        else
+            return QStringList();
+    }
+
+    return QVariant();
 }

@@ -104,11 +104,15 @@ void ComAtprotoRepoCreateRecord::post(const QString &text)
         QJsonObject json_embed;
         if (json_embed_images.isEmpty()) {
             json_embed.insert("$type", "app.bsky.embed.record");
+            json_embed.insert("record", json_quote);
         } else {
             json_embed.insert("$type", "app.bsky.embed.recordWithMedia");
             json_embed.insert("media", json_embed_images);
+            QJsonObject json_record2;
+            json_record2.insert("$type", "app.bsky.embed.record");
+            json_record2.insert("record", json_quote);
+            json_embed.insert("record", json_record2);
         }
-        json_embed.insert("record", json_quote);
 
         json_record.insert("embed", json_embed);
 
