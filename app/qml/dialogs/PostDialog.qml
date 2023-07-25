@@ -363,7 +363,7 @@ Dialog {
             Button {
                 id: postButton
                 Layout.alignment: Qt.AlignRight
-                enabled: postText.text.length > 0 && !createRecord.running && !externalLink.running
+                enabled: postText.text.length > 0 && postText.text.length <= 300 && !createRecord.running && !externalLink.running
                 text: qsTr("Post")
                 onClicked: {
                     var row = accountCombo.currentIndex;
