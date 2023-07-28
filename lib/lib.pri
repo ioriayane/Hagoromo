@@ -68,4 +68,5 @@ HEADERS += \
     $$PWD/search/searchposts.h \
     $$PWD/search/searchprofiles.h \
     $$PWD/tools/imagecompressor.h \
-    $$PWD/tools/opengraphprotocol.h
+    $$PWD/tools/opengraphprotocol.h \
+    $$PWD/tools/qstringex.h

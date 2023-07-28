@@ -12,5 +12,6 @@
         <file>response/generator/remove/xrpc/app.bsky.actor.getPreferences</file>
         <file>response/notifications/xrpc/app.bsky.notification.listNotifications</file>
         <file>response/notifications/xrpc/app.bsky.feed.getPosts</file>
+        <file>string/length.txt</file>
     </qresource>
 </RCC>

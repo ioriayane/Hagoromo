@@ -1,5 +1,6 @@
 #include "systemtool.h"
 #include "qregularexpression.h"
+#include "tools/qstringex.h"
 
 #include <QClipboard>
 #include <QGuiApplication>
@@ -15,6 +16,11 @@ SystemTool::SystemTool(QObject *parent) : QObject { parent }
 void SystemTool::copyToClipboard(const QString &text) const
 {
     QGuiApplication::clipboard()->setText(text);
+}
+
+int SystemTool::countText(const QString &text) const
+{
+    return QStringEx(text).length();
 }
 
 QString SystemTool::applicationVersion() const
