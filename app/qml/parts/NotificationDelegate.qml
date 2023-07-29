@@ -19,6 +19,9 @@ ClickableFrame {
 
     property int layoutWidth: notificationFrame.Layout.preferredWidth
 
+    property bool userFilterMatched: false
+    property string userFilterMessage: ""
+
     property int reason: NotificationListModel.ReasonLike
     property string recordText: ""
 
@@ -31,16 +34,17 @@ ClickableFrame {
     property string hoveredLink: ""
     property real fontSizeRatio: 1.0
 
+    property alias moderationFrame: moderationFrame
     property alias postAvatarImage: postAvatarImage
     property alias postAuthor: postAuthor
     property alias recordFrame: recordFrame
     property alias contentFilterFrame: contentFilterFrame
     property alias recordImagePreview: recordImagePreview
-//    property alias generatorViewFrame: generatorFeedFrame
-//    property alias generatorAvatarImage: generatorFeedAvatarImage
-//    property alias generatorDisplayNameLabel: generatorFeedDisplayNameLabel
-//    property alias generatorCreatorHandleLabel: generatorFeedCreatorHandleLabel
-//    property alias generatorLikeCountLabel: generatorFeedLikeCountLabel
+    //    property alias generatorViewFrame: generatorFeedFrame
+    //    property alias generatorAvatarImage: generatorFeedAvatarImage
+    //    property alias generatorDisplayNameLabel: generatorFeedDisplayNameLabel
+    //    property alias generatorCreatorHandleLabel: generatorFeedCreatorHandleLabel
+    //    property alias generatorLikeCountLabel: generatorFeedLikeCountLabel
     property alias postControls: postControls
 
     signal requestViewProfile(string did)
@@ -116,178 +120,201 @@ ClickableFrame {
 
     ]
 
-    RowLayout {
-        id: postLayout
-        Image {
-            id: reasonImage
-            Layout.preferredWidth: 16
-            Layout.preferredHeight: 16
-            Layout.alignment: Qt.AlignTop
-            source: "../images/like.png"
-            layer.enabled: true
-            layer.effect: ColorOverlay {
-                id: reasonImageEffect
-                color: Material.color(Material.Grey)
-                states: [
-                    State {
-                        when: notificationFrame.reason === NotificationListModel.ReasonLike
-                        PropertyChanges { target: reasonImageEffect; color: Material.color(Material.Pink) }
-                    },
-                    State {
-                        when: notificationFrame.reason === NotificationListModel.ReasonRepost
-                        PropertyChanges { target: reasonImageEffect; color: Material.color(Material.Green) }
-                    },
-                    State {
-                        when: notificationFrame.reason === NotificationListModel.ReasonFollow
-                        PropertyChanges { target: reasonImageEffect; color: Material.color(Material.LightBlue) }
-                    },
-                    State {
-                        when: notificationFrame.reason === NotificationListModel.ReasonMention
-                        PropertyChanges { target: reasonImageEffect; color: Material.color(Material.Blue) }
-                    },
-                    State {
-                        when: notificationFrame.reason === NotificationListModel.ReasonReply
-                        PropertyChanges { target: reasonImageEffect; color: Material.color(Material.Blue) }
-                    },
-                    State {
-                        when: notificationFrame.reason === NotificationListModel.ReasonQuote
-                        PropertyChanges { target: reasonImageEffect; color: Material.color(Material.Lime) }
+    ColumnLayout {
+        spacing: 0
+
+        CoverFrame {
+            id: moderationFrame
+            Layout.preferredWidth: notificationFrame.layoutWidth - notificationFrame.leftPadding - notificationFrame.rightPadding
+            Layout.bottomMargin: showContent ? 8 : 4
+            visible: false
+            labelText: qsTr("Post from an account you muted.")
+            states: [
+                State {
+                    when: notificationFrame.userFilterMatched
+                    PropertyChanges {
+                        target: moderationFrame
+                        visible: true
+                        labelText: notificationFrame.userFilterMessage
                     }
-                ]
-            }
+                }
+            ]
         }
 
-        ColumnLayout {
-            id: bodyLayout
-            Layout.preferredWidth: basisWidth
-            spacing: 0
-
-            property int basisWidth: notificationFrame.layoutWidth - notificationFrame.leftPadding - notificationFrame.rightPadding -
-                                     postLayout.spacing - reasonImage.width
-
-            RowLayout {
-                AvatarImage {
-                    id: postAvatarImage
-                    Layout.preferredWidth: 16
-                    Layout.preferredHeight: 16
-                }
-                Author {
-                    id: postAuthor
-                    layoutWidth: bodyLayout.basisWidth - postAvatarImage.width
-                }
-            }
-
-            Label {
-                id: recordTextLabel
-                visible: false
-                Layout.preferredWidth: bodyLayout.basisWidth
-                Layout.topMargin: 8
-                textFormat: Text.StyledText
-                wrapMode: Text.WrapAnywhere
-                font.pointSize: 10 * fontSizeRatio
-                lineHeight: 1.3
-                onLinkActivated: (url) => openLink(url)
-                onHoveredLinkChanged: displayLink(hoveredLink)
-            }
-
-            CoverFrame {
-                id: contentFilterFrame
-                Layout.preferredWidth: parent.basisWidth
-                Layout.topMargin: 5
-                visible: false
-            }
-//            visible: contentFilterFrame.showContent
-
-            ClickableFrame {
-                id: recordFrame
-                Layout.preferredWidth: parent.basisWidth
-                visible: false
-
-                property int basisWidth: parent.basisWidth - padding * 2
-
-                ColumnLayout {
-                    RowLayout {
-                        id: recordAuthorLayout
-                        AvatarImage {
-                            id: recordAvatarImage
-                            Layout.preferredWidth: 16
-                            Layout.preferredHeight: 16
+        RowLayout {
+            id: postLayout
+            visible: moderationFrame.showContent
+            Image {
+                id: reasonImage
+                Layout.preferredWidth: 16
+                Layout.preferredHeight: 16
+                Layout.alignment: Qt.AlignTop
+                source: "../images/like.png"
+                layer.enabled: true
+                layer.effect: ColorOverlay {
+                    id: reasonImageEffect
+                    color: Material.color(Material.Grey)
+                    states: [
+                        State {
+                            when: notificationFrame.reason === NotificationListModel.ReasonLike
+                            PropertyChanges { target: reasonImageEffect; color: Material.color(Material.Pink) }
+                        },
+                        State {
+                            when: notificationFrame.reason === NotificationListModel.ReasonRepost
+                            PropertyChanges { target: reasonImageEffect; color: Material.color(Material.Green) }
+                        },
+                        State {
+                            when: notificationFrame.reason === NotificationListModel.ReasonFollow
+                            PropertyChanges { target: reasonImageEffect; color: Material.color(Material.LightBlue) }
+                        },
+                        State {
+                            when: notificationFrame.reason === NotificationListModel.ReasonMention
+                            PropertyChanges { target: reasonImageEffect; color: Material.color(Material.Blue) }
+                        },
+                        State {
+                            when: notificationFrame.reason === NotificationListModel.ReasonReply
+                            PropertyChanges { target: reasonImageEffect; color: Material.color(Material.Blue) }
+                        },
+                        State {
+                            when: notificationFrame.reason === NotificationListModel.ReasonQuote
+                            PropertyChanges { target: reasonImageEffect; color: Material.color(Material.Lime) }
                         }
-                        Author {
-                            id: recordAuthor
-                            layoutWidth: recordFrame.basisWidth - recordAvatarImage.Layout.preferredWidth - recordAuthorLayout.spacing
-                        }
-                    }
-                    Label {
-                        id: recordText
-                        Layout.preferredWidth: recordFrame.basisWidth
-                        textFormat: Text.StyledText
-                        wrapMode: Text.WrapAnywhere
-                        font.pointSize: 10 * fontSizeRatio
-                        lineHeight: 1.3
-                        onLinkActivated: (url) => openLink(url)
-                        onHoveredLinkChanged: displayLink(hoveredLink)
-                    }
-                    ImagePreview {
-                        id: recordImagePreview
-                        layoutWidth: recordFrame.basisWidth
-                        Layout.topMargin: 5
-                    }
+                    ]
                 }
             }
 
-//            ClickableFrame {
-//                id: generatorFeedFrame
-//                Layout.preferredWidth: parent.basisWidth
-//                Layout.topMargin: 5
+            ColumnLayout {
+                id: bodyLayout
+                Layout.preferredWidth: basisWidth
+                spacing: 0
 
-//                ColumnLayout {
-//                    GridLayout {
-//                        columns: 2
-//                        rowSpacing: 3
-//                        AvatarImage {
-//                            id: generatorFeedAvatarImage
-//                            Layout.preferredWidth: 24
-//                            Layout.preferredHeight: 24
-//                            Layout.rowSpan: 2
-//                            altSource: "../images/account_icon.png"
-//                        }
-//                        Label {
-//                            id: generatorFeedDisplayNameLabel
-//                            Layout.fillWidth: true
-//                            font.pointSize: 10
-//                        }
-//                        Label {
-//                            id: generatorFeedCreatorHandleLabel
-//                            color: Material.color(Material.Grey)
-//                            font.pointSize: 8
-//                        }
-//                    }
-//                    RowLayout {
-//                        Layout.leftMargin: 3
-//                        spacing: 3
-//                        Image {
-//                            Layout.preferredWidth: 16
-//                            Layout.preferredHeight: 16
-//                            source: "../images/like.png"
-//                            layer.enabled: true
-//                            layer.effect: ColorOverlay {
-//                                color: Material.color(Material.Pink)
-//                            }
-//                        }
-//                        Label {
-//                            id: generatorFeedLikeCountLabel
-//                            Layout.alignment: Qt.AlignVCenter
-//                            Layout.fillWidth: true
-//                            font.pointSize: 8
-//                        }
-//                    }
-//                }
-//            }
+                property int basisWidth: notificationFrame.layoutWidth - notificationFrame.leftPadding - notificationFrame.rightPadding -
+                                         postLayout.spacing - reasonImage.width
 
-            PostControls {
-                id: postControls
-                visible: false
+                RowLayout {
+                    AvatarImage {
+                        id: postAvatarImage
+                        Layout.preferredWidth: 16
+                        Layout.preferredHeight: 16
+                    }
+                    Author {
+                        id: postAuthor
+                        layoutWidth: bodyLayout.basisWidth - postAvatarImage.width
+                    }
+                }
+
+                Label {
+                    id: recordTextLabel
+                    visible: false
+                    Layout.preferredWidth: bodyLayout.basisWidth
+                    Layout.topMargin: 8
+                    textFormat: Text.StyledText
+                    wrapMode: Text.WrapAnywhere
+                    font.pointSize: 10 * fontSizeRatio
+                    lineHeight: 1.3
+                    onLinkActivated: (url) => openLink(url)
+                    onHoveredLinkChanged: displayLink(hoveredLink)
+                }
+
+                CoverFrame {
+                    id: contentFilterFrame
+                    Layout.preferredWidth: parent.basisWidth
+                    Layout.topMargin: 5
+                    visible: false
+                }
+                //            visible: contentFilterFrame.showContent
+
+                ClickableFrame {
+                    id: recordFrame
+                    Layout.preferredWidth: parent.basisWidth
+                    visible: false
+
+                    property int basisWidth: parent.basisWidth - padding * 2
+
+                    ColumnLayout {
+                        RowLayout {
+                            id: recordAuthorLayout
+                            AvatarImage {
+                                id: recordAvatarImage
+                                Layout.preferredWidth: 16
+                                Layout.preferredHeight: 16
+                            }
+                            Author {
+                                id: recordAuthor
+                                layoutWidth: recordFrame.basisWidth - recordAvatarImage.Layout.preferredWidth - recordAuthorLayout.spacing
+                            }
+                        }
+                        Label {
+                            id: recordText
+                            Layout.preferredWidth: recordFrame.basisWidth
+                            textFormat: Text.StyledText
+                            wrapMode: Text.WrapAnywhere
+                            font.pointSize: 10 * fontSizeRatio
+                            lineHeight: 1.3
+                            onLinkActivated: (url) => openLink(url)
+                            onHoveredLinkChanged: displayLink(hoveredLink)
+                        }
+                        ImagePreview {
+                            id: recordImagePreview
+                            layoutWidth: recordFrame.basisWidth
+                            Layout.topMargin: 5
+                        }
+                    }
+                }
+
+                //            ClickableFrame {
+                //                id: generatorFeedFrame
+                //                Layout.preferredWidth: parent.basisWidth
+                //                Layout.topMargin: 5
+
+                //                ColumnLayout {
+                //                    GridLayout {
+                //                        columns: 2
+                //                        rowSpacing: 3
+                //                        AvatarImage {
+                //                            id: generatorFeedAvatarImage
+                //                            Layout.preferredWidth: 24
+                //                            Layout.preferredHeight: 24
+                //                            Layout.rowSpan: 2
+                //                            altSource: "../images/account_icon.png"
+                //                        }
+                //                        Label {
+                //                            id: generatorFeedDisplayNameLabel
+                //                            Layout.fillWidth: true
+                //                            font.pointSize: 10
+                //                        }
+                //                        Label {
+                //                            id: generatorFeedCreatorHandleLabel
+                //                            color: Material.color(Material.Grey)
+                //                            font.pointSize: 8
+                //                        }
+                //                    }
+                //                    RowLayout {
+                //                        Layout.leftMargin: 3
+                //                        spacing: 3
+                //                        Image {
+                //                            Layout.preferredWidth: 16
+                //                            Layout.preferredHeight: 16
+                //                            source: "../images/like.png"
+                //                            layer.enabled: true
+                //                            layer.effect: ColorOverlay {
+                //                                color: Material.color(Material.Pink)
+                //                            }
+                //                        }
+                //                        Label {
+                //                            id: generatorFeedLikeCountLabel
+                //                            Layout.alignment: Qt.AlignVCenter
+                //                            Layout.fillWidth: true
+                //                            font.pointSize: 8
+                //                        }
+                //                    }
+                //                }
+                //            }
+
+                PostControls {
+                    id: postControls
+                    visible: false
+                }
             }
         }
     }

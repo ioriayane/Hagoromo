@@ -72,6 +72,10 @@ ScrollView {
 
             fontSizeRatio: notificationListView.fontSizeRatio
 
+            moderationFrame.visible: model.muted
+            userFilterMatched: model.userFilterMatched
+            userFilterMessage: model.userFilterMessage
+
             reason: model.reason
             postAvatarImage.source: model.avatar
             postAvatarImage.onClicked: requestViewProfile(model.did)

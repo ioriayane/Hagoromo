@@ -17,6 +17,8 @@ ClickableFrame {
     property int layoutWidth: postFrame.Layout.preferredWidth
     property string hoveredLink: ""
     property real fontSizeRatio: 1.0
+    property bool userFilterMatched: false
+    property string userFilterMessage: ""
 
     property alias moderationFrame: moderationFrame
     property alias repostReactionAuthor: repostReactionAuthor
@@ -57,12 +59,32 @@ ClickableFrame {
     }
 
     ColumnLayout {
+        states: [
+            State {
+                when: moderationFrame.showContent === false
+                PropertyChanges { target: repostReactionAuthor; visible: false }
+                PropertyChanges { target: replyReactionAuthor; visible: false }
+                PropertyChanges { target: postLayout; visible: false }
+            }
+
+        ]
+
         CoverFrame {
             id: moderationFrame
             Layout.preferredWidth: postFrame.layoutWidth - postFrame.leftPadding - postFrame.rightPadding
             Layout.bottomMargin: 8
             visible: false
             labelText: qsTr("Post from an account you muted.")
+            states: [
+                State {
+                    when: postFrame.userFilterMatched
+                    PropertyChanges {
+                        target: moderationFrame
+                        visible: true
+                        labelText: postFrame.userFilterMessage
+                    }
+                }
+            ]
         }
 
         ReactionAuthor {
@@ -81,7 +103,6 @@ ClickableFrame {
         RowLayout {
             id: postLayout
             spacing: 10
-            visible: moderationFrame.showContent
             AvatarImage {
                 id: postAvatarImage
                 Layout.preferredWidth: 36

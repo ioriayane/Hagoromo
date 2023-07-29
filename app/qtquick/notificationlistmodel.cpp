@@ -51,6 +51,8 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
         return current.author.handle;
     else if (role == AvatarRole)
         return current.author.avatar;
+    else if (role == MutedRole)
+        return current.author.viewer.muted;
     else if (role == RecordTextRole)
         return copyRecordText(current.record);
     else if (role == RecordTextPlainRole)
@@ -543,6 +545,7 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[DisplayNameRole] = "displayName";
     roles[HandleRole] = "handle";
     roles[AvatarRole] = "avatar";
+    roles[MutedRole] = "muted";
     roles[RecordTextRole] = "recordText";
     roles[RecordTextPlainRole] = "recordTextPlain";
     roles[RecordTextTranslationRole] = "recordTextTranslation";
