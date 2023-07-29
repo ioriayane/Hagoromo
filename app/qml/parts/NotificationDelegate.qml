@@ -190,6 +190,14 @@ ClickableFrame {
                 onHoveredLinkChanged: displayLink(hoveredLink)
             }
 
+            CoverFrame {
+                id: contentFilterFrame
+                Layout.preferredWidth: parent.basisWidth
+                Layout.topMargin: 5
+                visible: false
+            }
+//            visible: contentFilterFrame.showContent
+
             ClickableFrame {
                 id: recordFrame
                 Layout.preferredWidth: parent.basisWidth
@@ -220,17 +228,10 @@ ClickableFrame {
                         onLinkActivated: (url) => openLink(url)
                         onHoveredLinkChanged: displayLink(hoveredLink)
                     }
-                    CoverFrame {
-                        id: contentFilterFrame
-                        Layout.preferredWidth: parent.basisWidth
-                        Layout.topMargin: 5
-                        visible: false
-                    }
                     ImagePreview {
                         id: recordImagePreview
                         layoutWidth: recordFrame.basisWidth
                         Layout.topMargin: 5
-                        visible: contentFilterFrame.showContent
                     }
                 }
             }

@@ -91,8 +91,8 @@ ScrollView {
             recordAvatar: model.recordAvatar
             recordIndexedAt: model.recordIndexedAt
             recordRecordText: model.recordRecordText
-            contentFilterFrame.visible: model.contentFilterMatched
-            contentFilterFrame.labelText: model.contentFilterMessage
+//            contentFilterFrame.visible: model.contentFilterMatched
+//            contentFilterFrame.labelText: model.contentFilterMessage
             recordImagePreview.embedImages: model.recordImages
             recordImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.recordImagesFull)
 
