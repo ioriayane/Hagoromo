@@ -3,6 +3,7 @@
 
 #include "atprotocol/accessatprotocol.h"
 #include "atprotocol/lexicons.h"
+#include "tools/configurablelabels.h"
 
 #include <QAbstractListModel>
 #include <QObject>
@@ -90,6 +91,8 @@ protected:
     QList<PostCueItem> m_cuePost;
 
     QHash<QString, QString> m_translations; // QHash<cid, translation>
+
+    ConfigurableLabels m_contentFilterLabels;
 
 private:
     QTimer m_timer;

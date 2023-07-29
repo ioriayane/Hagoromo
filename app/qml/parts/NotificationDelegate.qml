@@ -34,6 +34,7 @@ ClickableFrame {
     property alias postAvatarImage: postAvatarImage
     property alias postAuthor: postAuthor
     property alias recordFrame: recordFrame
+    property alias contentFilterFrame: contentFilterFrame
     property alias recordImagePreview: recordImagePreview
 //    property alias generatorViewFrame: generatorFeedFrame
 //    property alias generatorAvatarImage: generatorFeedAvatarImage
@@ -219,10 +220,17 @@ ClickableFrame {
                         onLinkActivated: (url) => openLink(url)
                         onHoveredLinkChanged: displayLink(hoveredLink)
                     }
+                    CoverFrame {
+                        id: contentFilterFrame
+                        Layout.preferredWidth: parent.basisWidth
+                        Layout.topMargin: 5
+                        visible: false
+                    }
                     ImagePreview {
                         id: recordImagePreview
                         layoutWidth: recordFrame.basisWidth
                         Layout.topMargin: 5
+                        visible: contentFilterFrame.showContent
                     }
                 }
             }

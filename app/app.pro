@@ -30,6 +30,7 @@ QML_FILES = \
     qml/parts/ApplicationShortcut.qml \
     qml/parts/Author.qml \
     qml/parts/AvatarImage.qml \
+    qml/parts/CoverFrame.qml \
     qml/parts/ImagePreview.qml \
     qml/parts/ExternalLinkCard.qml \
     qml/parts/NotificationDelegate.qml \

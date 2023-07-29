@@ -72,6 +72,11 @@ public:
         IsRepostedByRole,
         RepostedByDisplayNameRole,
         RepostedByHandleRole,
+
+        UserFilterMatchedRole,
+        UserFilterMessageRole,
+        ContentFilterMatchedRole,
+        ContentFilterMessageRole,
     };
     Q_ENUM(TimelineListModelRoles)
 

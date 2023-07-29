@@ -130,6 +130,8 @@ ColumnLayout {
                     }
                     return text
                 }
+                contentFilterFrame.visible: model.contentFilterMatched
+                contentFilterFrame.labelText: model.contentFilterMessage
                 postImagePreview.embedImages: model.embedImages
                 postImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.embedImagesFull)
 

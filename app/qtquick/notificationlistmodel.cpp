@@ -100,6 +100,41 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
         else
             return QString();
 
+    } else if (role == UserFilterMatchedRole) {
+        for (const auto &label : current.author.labels) {
+            if (m_contentFilterLabels.visibility(label.val, false)
+                != ConfigurableLabelStatus::Show) {
+                return true;
+            }
+        }
+        return false;
+    } else if (role == UserFilterMessageRole) {
+        QString message;
+        for (const auto &label : current.author.labels) {
+            message = m_contentFilterLabels.message(label.val, false);
+            if (!message.isEmpty()) {
+                break;
+            }
+        }
+        return message;
+    } else if (role == ContentFilterMatchedRole) {
+        for (const auto &label : current.labels) {
+            if (m_contentFilterLabels.visibility(label.val, true)
+                != ConfigurableLabelStatus::Show) {
+                return true;
+            }
+        }
+        return false;
+    } else if (role == ContentFilterMessageRole) {
+        QString message;
+        for (const auto &label : current.labels) {
+            message = m_contentFilterLabels.message(label.val, true);
+            if (!message.isEmpty()) {
+                break;
+            }
+        }
+        return message;
+
         //----------------------------------------
     } else if (role == ReasonRole) {
         if (current.reason == "like") {
@@ -541,6 +576,11 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[GeneratorFeedDisplayNameRole] = "generatorFeedDisplayName";
     roles[GeneratorFeedLikeCountRole] = "generatorFeedLikeCount";
     roles[GeneratorFeedAvatarRole] = "generatorFeedAvatar";
+
+    roles[UserFilterMatchedRole] = "userFilterMatched";
+    roles[UserFilterMessageRole] = "userFilterMessage";
+    roles[ContentFilterMatchedRole] = "contentFilterMatched";
+    roles[ContentFilterMessageRole] = "contentFilterMessage";
 
     return roles;
 }
