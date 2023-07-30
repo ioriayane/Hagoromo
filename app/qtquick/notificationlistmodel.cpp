@@ -595,7 +595,28 @@ void NotificationListModel::finishedDisplayingQueuedPosts()
 
 bool NotificationListModel::checkVisibility(const QString &cid)
 {
-    return enableReason(m_notificationHash.value(cid).reason);
+    if (!enableReason(m_notificationHash.value(cid).reason))
+        return false;
+
+    if (!m_notificationHash.contains(cid))
+        return true;
+
+    const auto &current = m_notificationHash.value(cid);
+
+    for (const auto &label : current.author.labels) {
+        if (m_contentFilterLabels.visibility(label.val, false) == ConfigurableLabelStatus::Hide) {
+            qDebug() << "Hide notification by user's label. " << current.author.handle << cid;
+            return false;
+        }
+    }
+    for (const auto &label : current.labels) {
+        if (m_contentFilterLabels.visibility(label.val, true) == ConfigurableLabelStatus::Hide) {
+            qDebug() << "Hide notification by post's label. " << current.author.handle << cid;
+            return false;
+        }
+    }
+
+    return true;
 }
 
 void NotificationListModel::getPosts()

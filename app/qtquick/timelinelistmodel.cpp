@@ -437,12 +437,16 @@ bool TimelineListModel::checkVisibility(const QString &cid)
     const AppBskyFeedDefs::FeedViewPost &current = m_viewPostHash.value(cid);
 
     for (const auto &label : current.post.author.labels) {
-        if (m_contentFilterLabels.visibility(label.val, false) == ConfigurableLabelStatus::Hide)
+        if (m_contentFilterLabels.visibility(label.val, false) == ConfigurableLabelStatus::Hide) {
+            qDebug() << "Hide post by user's label. " << current.post.author.handle << cid;
             return false;
+        }
     }
     for (const auto &label : current.post.labels) {
-        if (m_contentFilterLabels.visibility(label.val, true) == ConfigurableLabelStatus::Hide)
+        if (m_contentFilterLabels.visibility(label.val, true) == ConfigurableLabelStatus::Hide) {
+            qDebug() << "Hide post by post's label. " << current.post.author.handle << cid;
             return false;
+        }
     }
 
     return true;

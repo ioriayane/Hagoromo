@@ -14,11 +14,15 @@ public:
     void getPreferences();
 
     const QList<AtProtocolType::AppBskyActorDefs::SavedFeedsPref> *savedFeedsPrefList() const;
+    const QList<AtProtocolType::AppBskyActorDefs::ContentLabelPref> *contentLabelPrefList() const;
+    const AtProtocolType::AppBskyActorDefs::AdultContentPref adultContentPref() const;
 
 private:
     virtual void parseJson(bool success, const QString reply_json);
 
     QList<AtProtocolType::AppBskyActorDefs::SavedFeedsPref> m_savedFeedsPrefList;
+    QList<AtProtocolType::AppBskyActorDefs::ContentLabelPref> m_contentLabelPrefList;
+    AtProtocolType::AppBskyActorDefs::AdultContentPref m_adultContentPref;
 };
 
 }

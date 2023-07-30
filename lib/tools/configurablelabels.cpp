@@ -1,7 +1,13 @@
 #include "configurablelabels.h"
 
+#include "atprotocol/app/bsky/actor/appbskyactorgetpreferences.h"
+#include "atprotocol/app/bsky/actor/appbskyactorputpreferences.h"
+
+using AtProtocolInterface::AppBskyActorGetPreferences;
+using AtProtocolInterface::AppBskyActorPutPreferences;
+
 ConfigurableLabels::ConfigurableLabels(QObject *parent)
-    : QObject { parent }, m_enableAdultContent(true)
+    : AtProtocolInterface::AccessAtProtocol { parent }, m_enableAdultContent(true)
 {
     initializeLabels();
 }
@@ -9,6 +15,53 @@ ConfigurableLabels::ConfigurableLabels(QObject *parent)
 int ConfigurableLabels::count() const
 {
     return m_labels.count();
+}
+
+void ConfigurableLabels::load()
+{
+    AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
+    connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
+        if (success) {
+            m_enableAdultContent = pref->adultContentPref().enabled;
+            for (const auto &item : *pref->contentLabelPrefList()) {
+                int index = indexOf(item.label);
+                if (index >= 0) {
+                    ConfigurableLabelStatus status = ConfigurableLabelStatus::Hide;
+                    if (item.visibility == "show") {
+                        status = ConfigurableLabelStatus::Show;
+                    } else if (item.visibility == "warn") {
+                        status = ConfigurableLabelStatus::Warning;
+                    } else if (item.visibility == "hide") {
+                        status = ConfigurableLabelStatus::Hide;
+                    }
+                    setStatus(index, status);
+                }
+            }
+        }
+        emit finished(success);
+        pref->deleteLater();
+    });
+    pref->setAccount(account());
+    pref->getPreferences();
+}
+
+void ConfigurableLabels::save() const
+{
+    //
+}
+
+int ConfigurableLabels::indexOf(const QString &id) const
+{
+    if (id.isEmpty())
+        return -1;
+
+    int index = 0;
+    for (const auto &label : m_labels) {
+        if (label.id == id)
+            return index;
+        index++;
+    }
+    return -1;
 }
 
 ConfigurableLabelStatus ConfigurableLabels::visibility(const QString &label,
