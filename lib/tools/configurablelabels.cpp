@@ -12,6 +12,17 @@ ConfigurableLabels::ConfigurableLabels(QObject *parent)
     initializeLabels();
 }
 
+ConfigurableLabels &ConfigurableLabels::operator=(ConfigurableLabels &other)
+{
+    m_enableAdultContent = other.m_enableAdultContent;
+    if (m_labels.count() == other.m_labels.count()) {
+        for (int i = 0; i < m_labels.count(); i++) {
+            m_labels[i].status = other.m_labels.at(i).status;
+        }
+    }
+    return *this;
+}
+
 int ConfigurableLabels::count() const
 {
     return m_labels.count();

@@ -232,6 +232,20 @@ void AtpAbstractListModel::displayQueuedPosts()
     }
 }
 
+void AtpAbstractListModel::updateContentFilterLabels(std::function<void()> callback)
+{
+    ConfigurableLabels *labels = new ConfigurableLabels(this);
+    connect(labels, &ConfigurableLabels::finished, this, [=](bool success) {
+        if (success) {
+            m_contentFilterLabels = *labels;
+        }
+        callback();
+        labels->deleteLater();
+    });
+    labels->setAccount(account());
+    labels->load();
+}
+
 int AtpAbstractListModel::displayInterval() const
 {
     return m_displayInterval;

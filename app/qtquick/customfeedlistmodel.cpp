@@ -12,18 +12,20 @@ void CustomFeedListModel::getLatest()
         return;
     setRunning(true);
 
-    AppBskyFeedGetFeed *feed = new AppBskyFeedGetFeed(this);
-    connect(feed, &AppBskyFeedGetFeed::finished, [=](bool success) {
-        if (success) {
-            copyFrom(feed);
-        } else {
-            emit errorOccured(feed->errorMessage());
-        }
-        QTimer::singleShot(100, this, &CustomFeedListModel::displayQueuedPosts);
-        feed->deleteLater();
+    updateContentFilterLabels([=]() {
+        AppBskyFeedGetFeed *feed = new AppBskyFeedGetFeed(this);
+        connect(feed, &AppBskyFeedGetFeed::finished, [=](bool success) {
+            if (success) {
+                copyFrom(feed);
+            } else {
+                emit errorOccured(feed->errorMessage());
+            }
+            QTimer::singleShot(100, this, &CustomFeedListModel::displayQueuedPosts);
+            feed->deleteLater();
+        });
+        feed->setAccount(account());
+        feed->getFeed(uri(), 50, QString());
     });
-    feed->setAccount(account());
-    feed->getFeed(uri(), 50, QString());
 }
 
 QString CustomFeedListModel::uri() const

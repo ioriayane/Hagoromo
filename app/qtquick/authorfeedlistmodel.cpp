@@ -15,18 +15,20 @@ void AuthorFeedListModel::getLatest()
         return;
     setRunning(true);
 
-    AppBskyFeedGetAuthorFeed *timeline = new AppBskyFeedGetAuthorFeed(this);
-    connect(timeline, &AppBskyFeedGetAuthorFeed::finished, [=](bool success) {
-        if (success) {
-            copyFrom(timeline);
-        } else {
-            emit errorOccured(timeline->errorMessage());
-        }
-        QTimer::singleShot(100, this, &AuthorFeedListModel::displayQueuedPosts);
-        timeline->deleteLater();
+    updateContentFilterLabels([=]() {
+        AppBskyFeedGetAuthorFeed *timeline = new AppBskyFeedGetAuthorFeed(this);
+        connect(timeline, &AppBskyFeedGetAuthorFeed::finished, [=](bool success) {
+            if (success) {
+                copyFrom(timeline);
+            } else {
+                emit errorOccured(timeline->errorMessage());
+            }
+            QTimer::singleShot(100, this, &AuthorFeedListModel::displayQueuedPosts);
+            timeline->deleteLater();
+        });
+        timeline->setAccount(account());
+        timeline->getAuthorFeed(authorDid(), -1, QString());
     });
-    timeline->setAccount(account());
-    timeline->getAuthorFeed(authorDid(), -1, QString());
 }
 
 QString AuthorFeedListModel::authorDid() const

@@ -17,29 +17,32 @@ void SearchPostListModel::getLatest()
         return;
     setRunning(true);
 
-    SearchPosts *posts = new SearchPosts(this);
-    connect(posts, &SearchPosts::finished, [=](bool success) {
-        if (success) {
-            QDateTime reference_time = QDateTime::currentDateTimeUtc();
+    updateContentFilterLabels([=]() {
+        SearchPosts *posts = new SearchPosts(this);
+        connect(posts, &SearchPosts::finished, [=](bool success) {
+            if (success) {
+                QDateTime reference_time = QDateTime::currentDateTimeUtc();
 
-            for (const auto &view_post : *posts->viewPostList()) {
-                m_cueGetPost.append(QString("at://%1/%2").arg(view_post.user.did, view_post.tid));
+                for (const auto &view_post : *posts->viewPostList()) {
+                    m_cueGetPost.append(
+                            QString("at://%1/%2").arg(view_post.user.did, view_post.tid));
 
-                PostCueItem post;
-                post.cid = view_post.cid;
-                post.indexed_at = QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs);
-                post.reference_time = reference_time;
-                m_cuePost.insert(0, post);
+                    PostCueItem post;
+                    post.cid = view_post.cid;
+                    post.indexed_at = QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs);
+                    post.reference_time = reference_time;
+                    m_cuePost.insert(0, post);
+                }
+            } else {
+                emit errorOccured(posts->errorMessage());
             }
-        } else {
-            emit errorOccured(posts->errorMessage());
-        }
-        QTimer::singleShot(100, this, &SearchPostListModel::displayQueuedPosts);
-        posts->deleteLater();
+            QTimer::singleShot(100, this, &SearchPostListModel::displayQueuedPosts);
+            posts->deleteLater();
+        });
+        posts->setAccount(account());
+        posts->setService(searchService());
+        posts->search(text());
     });
-    posts->setAccount(account());
-    posts->setService(searchService());
-    posts->search(text());
 }
 
 void SearchPostListModel::finishedDisplayingQueuedPosts()

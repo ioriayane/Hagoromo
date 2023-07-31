@@ -97,30 +97,32 @@ void FollowsListModel::getLatest()
         return;
     setRunning(true);
 
-    AppBskyGraphGetFollows *follows = new AppBskyGraphGetFollows(this);
-    connect(follows, &AppBskyGraphGetFollows::finished, [=](bool success) {
-        if (success) {
-            for (const auto &profile : *follows->profileList()) {
-                m_profileHash[profile.did] = profile;
-                m_formattedDescriptionHash[profile.did] =
-                        m_systemTool.markupText(profile.description);
-                if (m_didList.contains(profile.did)) {
-                    int row = m_didList.indexOf(profile.did);
-                    emit dataChanged(index(row), index(row));
-                } else {
-                    beginInsertRows(QModelIndex(), m_didList.count(), m_didList.count());
-                    m_didList.append(profile.did);
-                    endInsertRows();
+    updateContentFilterLabels([=]() {
+        AppBskyGraphGetFollows *follows = new AppBskyGraphGetFollows(this);
+        connect(follows, &AppBskyGraphGetFollows::finished, [=](bool success) {
+            if (success) {
+                for (const auto &profile : *follows->profileList()) {
+                    m_profileHash[profile.did] = profile;
+                    m_formattedDescriptionHash[profile.did] =
+                            m_systemTool.markupText(profile.description);
+                    if (m_didList.contains(profile.did)) {
+                        int row = m_didList.indexOf(profile.did);
+                        emit dataChanged(index(row), index(row));
+                    } else {
+                        beginInsertRows(QModelIndex(), m_didList.count(), m_didList.count());
+                        m_didList.append(profile.did);
+                        endInsertRows();
+                    }
                 }
+            } else {
+                emit errorOccured(follows->errorMessage());
             }
-        } else {
-            emit errorOccured(follows->errorMessage());
-        }
-        setRunning(false);
-        follows->deleteLater();
+            setRunning(false);
+            follows->deleteLater();
+        });
+        follows->setAccount(account());
+        follows->getFollows(targetDid(), 50, QString());
     });
-    follows->setAccount(account());
-    follows->getFollows(targetDid(), 50, QString());
 }
 
 QHash<int, QByteArray> FollowsListModel::roleNames() const

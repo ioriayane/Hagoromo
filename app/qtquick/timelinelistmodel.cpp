@@ -254,18 +254,20 @@ void TimelineListModel::getLatest()
         return;
     setRunning(true);
 
-    AppBskyFeedGetTimeline *timeline = new AppBskyFeedGetTimeline(this);
-    connect(timeline, &AppBskyFeedGetTimeline::finished, [=](bool success) {
-        if (success) {
-            copyFrom(timeline);
-        } else {
-            emit errorOccured(timeline->errorMessage());
-        }
-        QTimer::singleShot(100, this, &TimelineListModel::displayQueuedPosts);
-        timeline->deleteLater();
+    updateContentFilterLabels([=]() {
+        AppBskyFeedGetTimeline *timeline = new AppBskyFeedGetTimeline(this);
+        connect(timeline, &AppBskyFeedGetTimeline::finished, [=](bool success) {
+            if (success) {
+                copyFrom(timeline);
+            } else {
+                emit errorOccured(timeline->errorMessage());
+            }
+            QTimer::singleShot(100, this, &TimelineListModel::displayQueuedPosts);
+            timeline->deleteLater();
+        });
+        timeline->setAccount(account());
+        timeline->getTimeline();
     });
-    timeline->setAccount(account());
-    timeline->getTimeline();
 }
 
 void TimelineListModel::deletePost(int row)

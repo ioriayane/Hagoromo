@@ -22,56 +22,60 @@ void AnyFeedListModel::getLatest()
         return;
     setRunning(true);
 
-    ComAtprotoRepoListRecords *records = new ComAtprotoRepoListRecords(this);
-    connect(records, &ComAtprotoRepoListRecords::finished, [=](bool success) {
-        if (success) {
-            QDateTime reference_time = QDateTime::currentDateTimeUtc();
+    updateContentFilterLabels([=]() {
+        ComAtprotoRepoListRecords *records = new ComAtprotoRepoListRecords(this);
+        connect(records, &ComAtprotoRepoListRecords::finished, [=](bool success) {
+            if (success) {
+                QDateTime reference_time = QDateTime::currentDateTimeUtc();
 
-            for (const auto &record : *records->recordList()) {
-                m_recordHash[record.cid] = record;
+                for (const auto &record : *records->recordList()) {
+                    m_recordHash[record.cid] = record;
 
-                QString cid;
-                QString indexed_at;
-                switch (feedType()) {
-                case AnyFeedListModelFeedType::LikeFeedType:
-                    cid = appendGetPostCue<AtProtocolType::AppBskyFeedLike::Main>(record.value);
-                    indexed_at = getIndexedAt<AtProtocolType::AppBskyFeedLike::Main>(record.value);
-                    break;
-                case AnyFeedListModelFeedType::RepostFeedType:
-                    cid = appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(record.value);
-                    indexed_at =
-                            getIndexedAt<AtProtocolType::AppBskyFeedRepost::Main>(record.value);
-                    break;
-                default:
-                    break;
+                    QString cid;
+                    QString indexed_at;
+                    switch (feedType()) {
+                    case AnyFeedListModelFeedType::LikeFeedType:
+                        cid = appendGetPostCue<AtProtocolType::AppBskyFeedLike::Main>(record.value);
+                        indexed_at =
+                                getIndexedAt<AtProtocolType::AppBskyFeedLike::Main>(record.value);
+                        break;
+                    case AnyFeedListModelFeedType::RepostFeedType:
+                        cid = appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(
+                                record.value);
+                        indexed_at =
+                                getIndexedAt<AtProtocolType::AppBskyFeedRepost::Main>(record.value);
+                        break;
+                    default:
+                        break;
+                    }
+                    if (!cid.isEmpty() && !m_cidList.contains(cid)) {
+                        PostCueItem post;
+                        post.cid = cid;
+                        post.indexed_at = indexed_at;
+                        post.reference_time = reference_time;
+                        m_cuePost.insert(0, post);
+                    }
                 }
-                if (!cid.isEmpty() && !m_cidList.contains(cid)) {
-                    PostCueItem post;
-                    post.cid = cid;
-                    post.indexed_at = indexed_at;
-                    post.reference_time = reference_time;
-                    m_cuePost.insert(0, post);
-                }
+            } else {
+                emit errorOccured(records->errorMessage());
             }
-        } else {
-            emit errorOccured(records->errorMessage());
+            QTimer::singleShot(100, this, &AnyFeedListModel::displayQueuedPosts);
+            records->deleteLater();
+        });
+        records->setAccount(account());
+        switch (feedType()) {
+        case AnyFeedListModelFeedType::LikeFeedType:
+            records->listLikes(targetDid());
+            break;
+        case AnyFeedListModelFeedType::RepostFeedType:
+            records->listReposts(targetDid());
+            break;
+        default:
+            setRunning(false);
+            delete records;
+            break;
         }
-        QTimer::singleShot(100, this, &AnyFeedListModel::displayQueuedPosts);
-        records->deleteLater();
     });
-    records->setAccount(account());
-    switch (feedType()) {
-    case AnyFeedListModelFeedType::LikeFeedType:
-        records->listLikes(targetDid());
-        break;
-    case AnyFeedListModelFeedType::RepostFeedType:
-        records->listReposts(targetDid());
-        break;
-    default:
-        setRunning(false);
-        delete records;
-        break;
-    }
 }
 
 QString AnyFeedListModel::targetDid() const

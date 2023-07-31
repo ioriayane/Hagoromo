@@ -13,18 +13,20 @@ void PostThreadListModel::getLatest()
         return;
     setRunning(true);
 
-    AppBskyFeedGetPostThread *thread = new AppBskyFeedGetPostThread(this);
-    connect(thread, &AppBskyFeedGetPostThread::finished, [=](bool success) {
-        if (success) {
-            copyFrom(thread->threadViewPost());
-        } else {
-            emit errorOccured(thread->errorMessage());
-        }
-        QTimer::singleShot(100, this, &PostThreadListModel::displayQueuedPosts);
-        thread->deleteLater();
+    updateContentFilterLabels([=]() {
+        AppBskyFeedGetPostThread *thread = new AppBskyFeedGetPostThread(this);
+        connect(thread, &AppBskyFeedGetPostThread::finished, [=](bool success) {
+            if (success) {
+                copyFrom(thread->threadViewPost());
+            } else {
+                emit errorOccured(thread->errorMessage());
+            }
+            QTimer::singleShot(100, this, &PostThreadListModel::displayQueuedPosts);
+            thread->deleteLater();
+        });
+        thread->setAccount(account());
+        thread->getPostThread(postThreadUri());
     });
-    thread->setAccount(account());
-    thread->getPostThread(postThreadUri());
 }
 
 void PostThreadListModel::finishedDisplayingQueuedPosts()

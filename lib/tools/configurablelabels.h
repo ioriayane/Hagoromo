@@ -26,8 +26,9 @@ class ConfigurableLabels : public AtProtocolInterface::AccessAtProtocol
 public:
     explicit ConfigurableLabels(QObject *parent = nullptr);
 
-    int count() const;
+    ConfigurableLabels &operator=(ConfigurableLabels &other);
 
+    int count() const;
     void load();
     void save() const;
     int indexOf(const QString &id) const;
