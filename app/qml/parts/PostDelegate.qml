@@ -126,6 +126,7 @@ ClickableFrame {
                     id: recordText
                     Layout.preferredWidth: parent.basisWidth
                     Layout.topMargin: 5
+                    visible: text.length > 0
                     textFormat: Text.StyledText
                     wrapMode: Text.WrapAnywhere
                     font.pointSize: 10 * fontSizeRatio
