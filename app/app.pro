@@ -27,6 +27,7 @@ QML_FILES = \
     qml/dialogs/ReportPostDialog.qml \
     qml/dialogs/SearchDialog.qml \
     qml/dialogs/SettingDialog.qml \
+    qml/parts/AccountList.qml \
     qml/parts/ApplicationShortcut.qml \
     qml/parts/Author.qml \
     qml/parts/AvatarImage.qml \
@@ -37,6 +38,8 @@ QML_FILES = \
     qml/parts/PostControls.qml \
     qml/parts/PostDelegate.qml \
     qml/parts/ReactionAuthor.qml \
+    qml/parts/SideBar.qml \
+    qml/parts/VersionInfomation.qml \
     qml/view/ColumnView.qml \
     qml/view/ImageFullView.qml \
     qml/view/NotificationListView.qml \
@@ -67,6 +70,7 @@ IMAGE_FILES += \
     qml/images/expand_less.png \
     qml/images/expand_more.png \
     qml/images/feed.png \
+    qml/images/hand.png \
     qml/images/home.png \
     qml/images/icon_mask.png \
     qml/images/language.png \
