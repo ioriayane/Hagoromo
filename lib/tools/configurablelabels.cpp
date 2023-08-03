@@ -7,7 +7,7 @@ using AtProtocolInterface::AppBskyActorGetPreferences;
 using AtProtocolInterface::AppBskyActorPutPreferences;
 
 ConfigurableLabels::ConfigurableLabels(QObject *parent)
-    : AtProtocolInterface::AccessAtProtocol { parent }, m_enableAdultContent(true)
+    : AtProtocolInterface::AccessAtProtocol { parent }, m_enableAdultContent(true), m_running(false)
 {
     initializeLabels();
 }
@@ -30,6 +30,10 @@ int ConfigurableLabels::count() const
 
 void ConfigurableLabels::load()
 {
+    if (running())
+        return;
+    setRunning(true);
+
     AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
     connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
         if (success) {
@@ -49,6 +53,7 @@ void ConfigurableLabels::load()
                 }
             }
         }
+        setRunning(false);
         emit finished(success);
         pref->deleteLater();
     });
@@ -107,6 +112,29 @@ QString ConfigurableLabels::message(const QString &label, const bool for_image) 
         }
     }
     return result;
+}
+
+QString ConfigurableLabels::title(const int index) const
+{
+    if (index < 0 || index >= m_labels.length())
+        return QString();
+
+    return m_labels.at(index).title;
+}
+
+QString ConfigurableLabels::description(const int index) const
+{
+    if (index < 0 || index >= m_labels.length())
+        return QString();
+    return m_labels.at(index).subtitle;
+}
+
+ConfigurableLabelStatus ConfigurableLabels::status(const int index) const
+{
+    if (index < 0 || index >= m_labels.length())
+        return ConfigurableLabelStatus::Show;
+
+    return m_labels.at(index).status;
 }
 
 void ConfigurableLabels::setStatus(const int index, const ConfigurableLabelStatus status)
@@ -208,4 +236,17 @@ void ConfigurableLabels::initializeLabels()
     item.is_adult_imagery = false;
     item.status = ConfigurableLabelStatus::Hide;
     m_labels.append(item);
+}
+
+bool ConfigurableLabels::running() const
+{
+    return m_running;
+}
+
+void ConfigurableLabels::setRunning(bool newRunning)
+{
+    if (m_running == newRunning)
+        return;
+    m_running = newRunning;
+    emit runningChanged(newRunning);
 }

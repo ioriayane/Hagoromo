@@ -18,6 +18,7 @@ QML_FILES = \
     qml/dialogs/AccountDialog.qml \
     qml/dialogs/AddColumnDialog.qml \
     qml/dialogs/ColumnSettingDialog.qml \
+    qml/dialogs/ContentFilterSettingDialog.qml \
     qml/dialogs/DiscoverFeedsDialog.qml \
     qml/dialogs/LanguageSelectionDialog.qml \
     qml/dialogs/LoginDialog.qml \
