@@ -13,7 +13,8 @@ UserProfile::UserProfile(QObject *parent)
       m_followedBy(false),
       m_muted(false),
       m_blockedBy(false),
-      m_blocking(false)
+      m_blocking(false),
+      m_userFilterMatched(false)
 {
 }
 
@@ -61,6 +62,14 @@ void UserProfile::getProfile(const QString &did)
             setBlockedBy(detail.viewer.blockedBy);
             setBlocking(detail.viewer.blocking.contains(m_account.did));
             setBlockingUri(detail.viewer.blocking);
+            if (detail.labels.isEmpty()) {
+                setUserFilterMatched(false);
+                setUserFilterTitle(QString());
+            } else {
+                setUserFilterMatched(true);
+                setUserFilterTitle(m_contentFilterLabels.title(
+                        m_contentFilterLabels.indexOf(detail.labels.at(0).val)));
+            }
         } else {
             emit errorOccured(profile->errorMessage());
         }
@@ -304,4 +313,30 @@ void UserProfile::setBlockingUri(const QString &newBlockingUri)
         return;
     m_blockingUri = newBlockingUri;
     emit blockingUriChanged();
+}
+
+bool UserProfile::userFilterMatched() const
+{
+    return m_userFilterMatched;
+}
+
+void UserProfile::setUserFilterMatched(bool newUserFilterMatched)
+{
+    if (m_userFilterMatched == newUserFilterMatched)
+        return;
+    m_userFilterMatched = newUserFilterMatched;
+    emit userFilterMatchedChanged();
+}
+
+QString UserProfile::userFilterTitle() const
+{
+    return m_userFilterTitle;
+}
+
+void UserProfile::setUserFilterTitle(const QString &newUserFilterTitle)
+{
+    if (m_userFilterTitle == newUserFilterTitle)
+        return;
+    m_userFilterTitle = newUserFilterTitle;
+    emit userFilterTitleChanged();
 }

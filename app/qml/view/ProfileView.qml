@@ -259,7 +259,6 @@ ColumnLayout {
                 iconSource: "../images/more.png"
                 iconSize: 16
                 foreground: Material.color(Material.Grey)
-                flat: true
                 onClicked: morePopup.open()
                 Menu {
                     id: morePopup
@@ -357,6 +356,15 @@ ColumnLayout {
                     }
                 }
             ]
+        }
+        IconLabelFrame {
+            id: moderationFrame3
+            Layout.preferredWidth: profileView.width
+            visible: userProfile.userFilterMatched
+            backgroundColor: Material.color(Material.Red)
+            borderWidth: 0
+            iconSource: "../images/report.png"
+            labelText: qsTr("This account has been flagged : ") + userProfile.userFilterTitle
         }
         IconLabelFrame {
             id: moderationFrame2
