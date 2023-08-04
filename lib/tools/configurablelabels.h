@@ -38,6 +38,7 @@ public:
     ConfigurableLabelStatus visibility(const QString &label, const bool for_image) const;
     QString message(const QString &label, const bool for_image) const;
     QString title(const int index) const;
+    QString title(const QString &label, const bool for_image) const;
     QString description(const int index) const;
     ConfigurableLabelStatus status(const int index) const;
     void setStatus(const int index, const ConfigurableLabelStatus status);
