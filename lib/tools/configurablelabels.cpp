@@ -209,9 +209,9 @@ void ConfigurableLabels::initializeLabels()
     ConfigurableLabelItem item;
 
     item.id = "nsfw";
-    item.title = "Explicit Sexual Images";
-    item.subtitle = "i.e. pornography";
-    item.warning = "Sexually Explicit";
+    item.title = tr("Explicit Sexual Images");
+    item.subtitle = tr("i.e. pornography");
+    item.warning = tr("Sexually Explicit");
     item.values << "porn"
                 << "nsfl"
                 << "nsfw";
