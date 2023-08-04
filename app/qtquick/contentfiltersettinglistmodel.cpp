@@ -41,7 +41,8 @@ QVariant ContentFilterSettingListModel::item(int row, ContentFilterSettingListMo
         } else if (m_contentFilterLabels.status(row) == ConfigurableLabelStatus::Show) {
             return 2;
         }
-    }
+    } else if (role == IsAdultImageryRole)
+        return m_contentFilterLabels.isAdultImagery(row);
 
     return QVariant();
 }
@@ -94,6 +95,7 @@ QHash<int, QByteArray> ContentFilterSettingListModel::roleNames() const
     roles[TitleRole] = "title";
     roles[DescriptionRole] = "description";
     roles[StatusRole] = "status";
+    roles[IsAdultImageryRole] = "isAdultImagery";
 
     return roles;
 }

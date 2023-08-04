@@ -14,5 +14,11 @@
         <file>response/labels/show/xrpc/app.bsky.actor.getPreferences</file>
         <file>response/labels/warn/xrpc/app.bsky.actor.getPreferences</file>
         <file>response/labels/show_adult_false/xrpc/app.bsky.actor.getPreferences</file>
+        <file>response/labels/save/1/xrpc/app.bsky.actor.getPreferences</file>
+        <file>data/labels/save/1/app.bsky.actor.putPreferences</file>
+        <file>data/labels/save/2/app.bsky.actor.putPreferences</file>
+        <file>response/labels/save/2/xrpc/app.bsky.actor.getPreferences</file>
+        <file>response/labels/save/3/xrpc/app.bsky.actor.getPreferences</file>
+        <file>data/labels/save/3/app.bsky.actor.putPreferences</file>
     </qresource>
 </RCC>

@@ -33,7 +33,7 @@ public:
 
     int count() const;
     void load();
-    void save() const;
+    void save();
     int indexOf(const QString &id) const;
     ConfigurableLabelStatus visibility(const QString &label, const bool for_image) const;
     QString message(const QString &label, const bool for_image) const;
@@ -41,6 +41,7 @@ public:
     QString description(const int index) const;
     ConfigurableLabelStatus status(const int index) const;
     void setStatus(const int index, const ConfigurableLabelStatus status);
+    bool isAdultImagery(const int index) const;
 
     bool enableAdultContent() const;
     void setEnableAdultContent(bool newEnableAdultContent);
@@ -59,6 +60,8 @@ protected:
 
 private:
     void initializeLabels();
+    void putPreferences(const QString &json);
+    QString updatePreferencesJson(const QString &src_json);
 
     QList<ConfigurableLabelItem> m_labels;
     bool m_enableAdultContent;

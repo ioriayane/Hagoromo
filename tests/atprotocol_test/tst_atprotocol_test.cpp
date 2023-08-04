@@ -29,8 +29,12 @@ private slots:
     void test_ConfigurableLabels();
     void test_ConfigurableLabels_load();
     void test_ConfigurableLabels_copy();
+    void test_ConfigurableLabels_save();
 
 private:
+    void test_putPreferences(const QString &path, const QByteArray &body);
+    QJsonDocument loadJson(const QString &path);
+
     WebServer m_mockServer;
     quint16 m_listenPort;
     QString m_service;
@@ -44,13 +48,24 @@ atprotocol_test::atprotocol_test()
 
     connect(&m_mockServer, &WebServer::receivedPost,
             [=](const QHttpServerRequest &request, bool &result, QString &json) {
-                QFile *file = new QFile(":" + request.url().path());
-                if (file->open(QFile::ReadOnly)) {
-                    json = file->readAll();
-                } else {
+                if (request.url().path()
+                            == "/response/labels/save/1/xrpc/app.bsky.actor.putPreferences"
+                    || request.url().path()
+                            == "/response/labels/save/2/xrpc/app.bsky.actor.putPreferences"
+                    || request.url().path()
+                            == "/response/labels/save/3/xrpc/app.bsky.actor.putPreferences") {
+                    test_putPreferences(request.url().path(), request.body());
                     json = "{}";
+                    result = true;
+                } else {
+                    QFile *file = new QFile(":" + request.url().path());
+                    if (file->open(QFile::ReadOnly)) {
+                        json = file->readAll();
+                    } else {
+                        json = "{}";
+                    }
+                    result = true;
                 }
-                result = true;
             });
 }
 
@@ -593,6 +608,77 @@ void atprotocol_test::test_ConfigurableLabels_copy()
     QVERIFY(dest.visibility("behavior-intolerant", false) == ConfigurableLabelStatus::Warning);
     QVERIFY(dest.visibility("spam", false) == ConfigurableLabelStatus::Warning);
     QVERIFY(dest.visibility("impersonation", false) == ConfigurableLabelStatus::Warning);
+}
+
+void atprotocol_test::test_ConfigurableLabels_save()
+{
+    ConfigurableLabels labels;
+    labels.setAccount(m_account);
+    {
+        labels.setService(QString("http://localhost:%1/response/labels/save/1").arg(m_listenPort));
+        QSignalSpy spy(&labels, SIGNAL(finished(bool)));
+        labels.save();
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+    {
+        labels.setEnableAdultContent(false);
+        for (int i = 0; i < labels.count(); i++) {
+            labels.setStatus(i, ConfigurableLabelStatus::Warning);
+        }
+        labels.setService(QString("http://localhost:%1/response/labels/save/2").arg(m_listenPort));
+        QSignalSpy spy(&labels, SIGNAL(finished(bool)));
+        labels.save();
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+    {
+        labels.setEnableAdultContent(false);
+        for (int i = 0; i < labels.count(); i++) {
+            labels.setStatus(i, ConfigurableLabelStatus::Warning);
+        }
+        labels.setService(QString("http://localhost:%1/response/labels/save/3").arg(m_listenPort));
+        QSignalSpy spy(&labels, SIGNAL(finished(bool)));
+        labels.save();
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+}
+
+void atprotocol_test::test_putPreferences(const QString &path, const QByteArray &body)
+{
+    QJsonDocument json_doc_expect;
+    if (path.contains("/save/1/")) {
+        json_doc_expect = loadJson(":/data/labels/save/1/app.bsky.actor.putPreferences");
+    } else if (path.contains("/save/1/")) {
+        json_doc_expect = loadJson(":/data/labels/save/2/app.bsky.actor.putPreferences");
+    } else {
+        json_doc_expect = loadJson(":/data/labels/save/3/app.bsky.actor.putPreferences");
+    }
+
+    QJsonDocument json_doc = QJsonDocument::fromJson(body);
+
+    if (json_doc_expect.object() != json_doc.object()) {
+        qDebug().noquote().nospace() << QString("\nexpect:%1\nactual:%2\n")
+                                                .arg(json_doc_expect.toJson(), json_doc.toJson());
+    }
+    QVERIFY(json_doc_expect.object() == json_doc.object());
+}
+
+QJsonDocument atprotocol_test::loadJson(const QString &path)
+{
+    QFile file(path);
+    if (file.open(QFile::ReadOnly)) {
+        return QJsonDocument::fromJson(file.readAll());
+    } else {
+        return QJsonDocument();
+    }
 }
 
 QTEST_MAIN(atprotocol_test)

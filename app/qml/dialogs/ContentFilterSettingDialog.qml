@@ -16,12 +16,14 @@ Dialog {
     y: (parent.height - height) * 0.5
     title: qsTr("Content Filtering")
 
+    property bool willClose: false
     property bool ready: false
     property alias account: account
     Account {
         id: account
     }
     onOpened: {
+        contentFilterSettingDialog.willClose = false
         if(account.service.length === 0){
             return
         }
@@ -78,7 +80,13 @@ Dialog {
                     service: account.service
                     handle: account.handle
                     accessJwt: account.accessJwt
-                    onFinished: enableAdultContentCheckbox.checked = enableAdultContent
+                    onFinished: {
+                        if(contentFilterSettingDialog.willClose){
+                            contentFilterSettingDialog.accept()
+                        }else{
+                            enableAdultContentCheckbox.checked = enableAdultContent
+                        }
+                    }
                 }
                 delegate: RowLayout {
                     width: 450
@@ -109,6 +117,7 @@ Dialog {
                             Layout.preferredWidth: 55
                             Layout.preferredHeight: 36
                             iconText: qsTr("Hide")
+                            enabled: !model.isAdultImagery || (model.isAdultImagery && enableAdultContentCheckbox.checked)
                             highlighted: model.status === value
                             property int value: 0
                             onClicked: contentFilterSettingListModel.update(model.index,
@@ -119,6 +128,7 @@ Dialog {
                             Layout.preferredWidth: 55
                             Layout.preferredHeight: 36
                             iconText: qsTr("Warn")
+                            enabled: !model.isAdultImagery || (model.isAdultImagery && enableAdultContentCheckbox.checked)
                             highlighted: model.status === value
                             property int value: 1
                             onClicked: contentFilterSettingListModel.update(model.index,
@@ -129,6 +139,7 @@ Dialog {
                             Layout.preferredWidth: 55
                             Layout.preferredHeight: 36
                             iconText: qsTr("Show")
+                            enabled: !model.isAdultImagery || (model.isAdultImagery && enableAdultContentCheckbox.checked)
                             highlighted: model.status === value
                             property int value: 2
                             onClicked: contentFilterSettingListModel.update(model.index,
@@ -150,9 +161,12 @@ Dialog {
                 Layout.fillWidth: true
             }
             Button {
-//                enabled: generatorListView.currentIndex >= 0 && discoverFeedsDialog.selectedUri.length > 0
+                enabled: !contentFilterSettingListModel.running && contentFilterSettingDialog.ready
                 text: qsTr("Accept")
-                onClicked: contentFilterSettingDialog.accept()
+                onClicked: {
+                    contentFilterSettingDialog.willClose = true
+                    contentFilterSettingListModel.save()
+                }
             }
         }
     }

@@ -25,6 +25,7 @@ public:
         TitleRole,
         DescriptionRole,
         StatusRole,
+        IsAdultImageryRole,
     };
     Q_ENUM(ContentFilterSettingListModelRoles)
 

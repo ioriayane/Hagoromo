@@ -3,6 +3,11 @@
 #include "atprotocol/app/bsky/actor/appbskyactorgetpreferences.h"
 #include "atprotocol/app/bsky/actor/appbskyactorputpreferences.h"
 
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonValue>
+
 using AtProtocolInterface::AppBskyActorGetPreferences;
 using AtProtocolInterface::AppBskyActorPutPreferences;
 
@@ -61,9 +66,24 @@ void ConfigurableLabels::load()
     pref->getPreferences();
 }
 
-void ConfigurableLabels::save() const
+void ConfigurableLabels::save()
 {
-    //
+    if (running())
+        return;
+    setRunning(true);
+
+    AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
+    connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
+        if (success) {
+            putPreferences(updatePreferencesJson(pref->replyJson()));
+        } else {
+            setRunning(false);
+            emit finished(success);
+        }
+        pref->deleteLater();
+    });
+    pref->setAccount(account());
+    pref->getPreferences();
 }
 
 int ConfigurableLabels::indexOf(const QString &id) const
@@ -143,6 +163,14 @@ void ConfigurableLabels::setStatus(const int index, const ConfigurableLabelStatu
         return;
 
     m_labels[index].status = status;
+}
+
+bool ConfigurableLabels::isAdultImagery(const int index) const
+{
+    if (index < 0 || index >= m_labels.length())
+        return false;
+
+    return m_labels.at(index).is_adult_imagery;
 }
 
 bool ConfigurableLabels::enableAdultContent() const
@@ -236,6 +264,76 @@ void ConfigurableLabels::initializeLabels()
     item.is_adult_imagery = false;
     item.status = ConfigurableLabelStatus::Hide;
     m_labels.append(item);
+}
+
+void ConfigurableLabels::putPreferences(const QString &json)
+{
+    AppBskyActorPutPreferences *pref = new AppBskyActorPutPreferences(this);
+    connect(pref, &AppBskyActorPutPreferences::finished, [=](bool success) {
+        if (success) {
+            qDebug() << "finish put preferences.";
+        }
+        setRunning(false);
+        emit finished(success);
+        pref->deleteLater();
+    });
+    pref->setAccount(account());
+    pref->putPreferences(json);
+}
+
+QString ConfigurableLabels::updatePreferencesJson(const QString &src_json)
+{
+    QJsonDocument json_doc = QJsonDocument::fromJson(src_json.toUtf8());
+    QJsonObject root_object = json_doc.object();
+    if (root_object.contains("preferences")) {
+        QJsonValue preferences = root_object.value("preferences");
+        QJsonArray dest_preferences;
+        if (preferences.isArray()) {
+            bool existAdult = false;
+            QStringList existId;
+            for (int i = 0; i < preferences.toArray().count(); i++) {
+                if (!preferences.toArray().at(i).isObject())
+                    continue;
+                QJsonObject value = preferences.toArray().takeAt(i).toObject();
+                if (value.value("$type")
+                    == QStringLiteral("app.bsky.actor.defs#adultContentPref")) {
+                    // ここで更新するデータはいったん消す
+                } else if (value.value("$type")
+                           == QStringLiteral("app.bsky.actor.defs#contentLabelPref")) {
+                    // ここで更新するデータはいったん消す（順番を守るため）
+                } else {
+                    // その他のデータはそのまま引き継ぐ
+                    dest_preferences.append(value);
+                }
+            }
+            {
+                QJsonObject value;
+                value.insert("$type", QStringLiteral("app.bsky.actor.defs#adultContentPref"));
+                value.insert("enabled", QJsonValue(enableAdultContent()));
+                dest_preferences.append(value);
+            }
+            for (const auto &label : qAsConst(m_labels)) {
+                QJsonObject value;
+                value.insert("$type", QStringLiteral("app.bsky.actor.defs#contentLabelPref"));
+                value.insert("label", QJsonValue(label.id));
+                if (label.status == ConfigurableLabelStatus::Hide) {
+                    value.insert("visibility", QJsonValue("hide"));
+                } else if (label.status == ConfigurableLabelStatus::Warning) {
+                    value.insert("visibility", QJsonValue("warn"));
+                } else if (label.status == ConfigurableLabelStatus::Show) {
+                    value.insert("visibility", QJsonValue("show"));
+                }
+                dest_preferences.append(value);
+            }
+            root_object.insert("preferences", dest_preferences);
+        }
+    }
+    json_doc.setObject(root_object);
+#ifdef QT_DEBUG
+    return json_doc.toJson();
+#else
+    return json_doc.toJson(QJsonDocument::Compact);
+#endif
 }
 
 bool ConfigurableLabels::running() const
