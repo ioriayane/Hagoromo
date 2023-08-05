@@ -950,6 +950,7 @@ void copyRepoView(const QJsonObject &src, ComAtprotoAdminDefs::RepoView &dest)
         copyModeration(src.value("moderation").toObject(), dest.moderation);
         ComAtprotoServerDefs::copyInviteCode(src.value("invitedBy").toObject(), dest.invitedBy);
         dest.invitesDisabled = src.value("invitesDisabled").toBool();
+        dest.inviteNote = src.value("inviteNote").toString();
     }
 }
 void copyRepoViewNotFound(const QJsonObject &src, ComAtprotoAdminDefs::RepoViewNotFound &dest)
@@ -1165,6 +1166,7 @@ void copyRepoViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::RepoViewDet
             dest.invites.append(child);
         }
         dest.invitesDisabled = src.value("invitesDisabled").toBool();
+        dest.inviteNote = src.value("inviteNote").toString();
     }
 }
 void copyRecordViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::RecordViewDetail &dest)

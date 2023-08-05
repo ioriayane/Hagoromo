@@ -735,6 +735,7 @@ struct RepoView
     Moderation moderation;
     ComAtprotoServerDefs::InviteCode invitedBy;
     bool invitesDisabled = false;
+    QString inviteNote;
 };
 struct RepoViewNotFound
 {
@@ -846,6 +847,7 @@ struct RepoViewDetail
     ComAtprotoServerDefs::InviteCode invitedBy;
     QList<ComAtprotoServerDefs::InviteCode> invites;
     bool invitesDisabled = false;
+    QString inviteNote;
 };
 struct RecordViewDetail
 {
