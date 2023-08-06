@@ -29,8 +29,8 @@ ApplicationWindow {
     Settings {
         //        property alias x: appWindow.x
         //        property alias y: appWindow.y
-//        property alias width: appWindow.width
-//        property alias height: appWindow.height
+        property alias width: appWindow.width
+        property alias height: appWindow.height
     }
 
     SystemTool {

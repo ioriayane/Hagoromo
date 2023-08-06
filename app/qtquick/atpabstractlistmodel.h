@@ -97,6 +97,8 @@ protected:
     ConfigurableLabels m_contentFilterLabels;
 
 private:
+    int searchInsertPosition(const QString &cid);
+
     QTimer m_timer;
     AtProtocolInterface::AccountData m_account;
 
