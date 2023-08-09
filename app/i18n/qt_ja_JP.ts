@@ -381,12 +381,17 @@
         <translation>カスタムフィードの検索</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/DiscoverFeedsDialog.qml" line="184"/>
+        <location filename="../qml/dialogs/DiscoverFeedsDialog.qml" line="75"/>
+        <source>Search</source>
+        <translation>検索</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/DiscoverFeedsDialog.qml" line="217"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/DiscoverFeedsDialog.qml" line="193"/>
+        <location filename="../qml/dialogs/DiscoverFeedsDialog.qml" line="227"/>
         <source>Add</source>
         <translation>追加</translation>
     </message>
