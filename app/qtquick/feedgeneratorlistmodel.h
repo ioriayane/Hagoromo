@@ -6,6 +6,8 @@
 class FeedGeneratorListModel : public AtpAbstractListModel
 {
     Q_OBJECT
+
+    Q_PROPERTY(QString query READ query WRITE setQuery NOTIFY queryChanged)
 public:
     explicit FeedGeneratorListModel(QObject *parent = nullptr);
 
@@ -38,6 +40,12 @@ public:
     Q_INVOKABLE void saveGenerator(const QString &uri);
     Q_INVOKABLE void removeGenerator(const QString &uri);
 
+    QString query() const;
+    void setQuery(const QString &newQuery);
+
+signals:
+    void queryChanged();
+
 protected:
     QHash<int, QByteArray> roleNames() const;
     virtual void finishedDisplayingQueuedPosts() { }
@@ -50,6 +58,9 @@ protected:
 
     QHash<QString, AtProtocolType::AppBskyFeedDefs::GeneratorView> m_generatorViewHash;
     QList<QString> m_savedUriList;
+
+private:
+    QString m_query;
 };
 
 #endif // FEEDGENERATORLISTMODEL_H

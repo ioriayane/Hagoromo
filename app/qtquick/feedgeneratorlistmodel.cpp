@@ -109,7 +109,7 @@ void FeedGeneratorListModel::getLatest()
         generators->deleteLater();
     });
     generators->setAccount(account());
-    generators->getPopularFeedGenerators();
+    generators->getPopularFeedGenerators(50, QString(), query());
 }
 
 void FeedGeneratorListModel::saveGenerator(const QString &uri)
@@ -310,4 +310,17 @@ QString FeedGeneratorListModel::removeGeneratorToPreference(const QString &src_j
     }
     json_doc.setObject(root_object);
     return json_doc.toJson(QJsonDocument::Compact);
+}
+
+QString FeedGeneratorListModel::query() const
+{
+    return m_query;
+}
+
+void FeedGeneratorListModel::setQuery(const QString &newQuery)
+{
+    if (m_query == newQuery)
+        return;
+    m_query = newQuery;
+    emit queryChanged();
 }
