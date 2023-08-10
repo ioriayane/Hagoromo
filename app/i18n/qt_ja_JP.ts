@@ -1528,122 +1528,127 @@
         <translation>フォローする</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="142"/>
+        <location filename="../qml/view/ProfileView.qml" line="143"/>
         <source>Profile</source>
         <translation>プロフィール</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="169"/>
+        <location filename="../qml/view/ProfileView.qml" line="170"/>
         <source>Follows you</source>
         <translation>あなたをフォロー中</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="216"/>
+        <location filename="../qml/view/ProfileView.qml" line="217"/>
         <source>follows</source>
         <translation>フォロー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="227"/>
+        <location filename="../qml/view/ProfileView.qml" line="228"/>
         <source>followers</source>
         <translation>フォロワー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="238"/>
+        <location filename="../qml/view/ProfileView.qml" line="239"/>
         <source>posts</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="266"/>
+        <location filename="../qml/view/ProfileView.qml" line="267"/>
         <source>Send mention</source>
         <translation>メンションを送る</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="273"/>
+        <location filename="../qml/view/ProfileView.qml" line="274"/>
         <source>Copy handle</source>
         <translation>ハンドルをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="279"/>
+        <location filename="../qml/view/ProfileView.qml" line="280"/>
         <source>Copy DID</source>
         <translation>DIDをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="286"/>
+        <location filename="../qml/view/ProfileView.qml" line="287"/>
         <source>Open in new col</source>
         <translation>新しいカラムで開く</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="292"/>
+        <location filename="../qml/view/ProfileView.qml" line="293"/>
         <source>Open in Official</source>
         <translation>公式で開く</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="299"/>
+        <location filename="../qml/view/ProfileView.qml" line="300"/>
         <source>Unmute account</source>
         <translation>ミュート解除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="299"/>
+        <location filename="../qml/view/ProfileView.qml" line="300"/>
         <source>Mute account</source>
         <translation>ミュート</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="311"/>
+        <location filename="../qml/view/ProfileView.qml" line="312"/>
         <source>Unblock account</source>
         <translation>ブロック解除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="311"/>
+        <location filename="../qml/view/ProfileView.qml" line="312"/>
         <source>Block account</source>
         <translation>ブロック</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="323"/>
+        <location filename="../qml/view/ProfileView.qml" line="324"/>
         <source>Report account</source>
         <translation>通報</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="344"/>
+        <location filename="../qml/view/ProfileView.qml" line="345"/>
         <source>Account blocked</source>
         <translation>ブロックしたアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="355"/>
+        <location filename="../qml/view/ProfileView.qml" line="356"/>
         <source>Account muted</source>
         <translation>ミュートしたアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="367"/>
+        <location filename="../qml/view/ProfileView.qml" line="368"/>
         <source>This account has been flagged : </source>
-        <translation>このアカウントに設定されたフラグ : </translation>
+        <translation>このアカウントに設定されたラベル : </translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="376"/>
+        <location filename="../qml/view/ProfileView.qml" line="377"/>
         <source>This account has blocked you</source>
         <translation>あなたをブロックしているアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="387"/>
+        <location filename="../qml/view/ProfileView.qml" line="388"/>
         <source>Posts</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="391"/>
+        <location filename="../qml/view/ProfileView.qml" line="392"/>
         <source>Reposts</source>
         <translation>リポスト</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="395"/>
+        <location filename="../qml/view/ProfileView.qml" line="396"/>
         <source>Likes</source>
         <translation>いいね</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="399"/>
+        <location filename="../qml/view/ProfileView.qml" line="400"/>
+        <source>Media</source>
+        <translation>メディア</translation>
+    </message>
+    <message>
+        <location filename="../qml/view/ProfileView.qml" line="404"/>
         <source>Follows</source>
         <translation>フォロー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="403"/>
+        <location filename="../qml/view/ProfileView.qml" line="408"/>
         <source>Followers</source>
         <translation>フォロワー</translation>
     </message>
