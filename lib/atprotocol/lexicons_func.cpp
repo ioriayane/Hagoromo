@@ -169,6 +169,22 @@ void copyLabel(const QJsonObject &src, ComAtprotoLabelDefs::Label &dest)
         dest.cts = src.value("cts").toString();
     }
 }
+void copySelfLabel(const QJsonObject &src, ComAtprotoLabelDefs::SelfLabel &dest)
+{
+    if (!src.isEmpty()) {
+        dest.val = src.value("val").toString();
+    }
+}
+void copySelfLabels(const QJsonObject &src, ComAtprotoLabelDefs::SelfLabels &dest)
+{
+    if (!src.isEmpty()) {
+        for (const auto &s : src.value("values").toArray()) {
+            SelfLabel child;
+            copySelfLabel(s.toObject(), child);
+            dest.values.append(child);
+        }
+    }
+}
 }
 // app.bsky.actor.profile
 namespace AppBskyActorProfile {
@@ -177,6 +193,13 @@ void copyMain(const QJsonObject &src, AppBskyActorProfile::Main &dest)
     if (!src.isEmpty()) {
         dest.displayName = src.value("displayName").toString();
         dest.description = src.value("description").toString();
+        QString labels_type = src.value("labels").toObject().value("$type").toString();
+        if (labels_type == QStringLiteral("com.atproto.label.defs#selfLabels")) {
+            dest.labels_type =
+                    AppBskyActorProfile::MainLabelsType::labels_ComAtprotoLabelDefs_SelfLabels;
+            ComAtprotoLabelDefs::copySelfLabels(src.value("labels").toObject(),
+                                                dest.labels_ComAtprotoLabelDefs_SelfLabels);
+        }
     }
 }
 }
@@ -700,6 +723,13 @@ void copyMain(const QJsonObject &src, AppBskyFeedGenerator::Main &dest)
             AppBskyRichtextFacet::copyMain(s.toObject(), child);
             dest.descriptionFacets.append(child);
         }
+        QString labels_type = src.value("labels").toObject().value("$type").toString();
+        if (labels_type == QStringLiteral("com.atproto.label.defs#selfLabels")) {
+            dest.labels_type =
+                    AppBskyFeedGenerator::MainLabelsType::labels_ComAtprotoLabelDefs_SelfLabels;
+            ComAtprotoLabelDefs::copySelfLabels(src.value("labels").toObject(),
+                                                dest.labels_ComAtprotoLabelDefs_SelfLabels);
+        }
         dest.createdAt = src.value("createdAt").toString();
     }
 }
@@ -789,6 +819,13 @@ void copyMain(const QJsonObject &src, AppBskyFeedPost::Main &dest)
         for (const auto &value : src.value("langs").toArray()) {
             dest.langs.append(value.toString());
         }
+        QString labels_type = src.value("labels").toObject().value("$type").toString();
+        if (labels_type == QStringLiteral("com.atproto.label.defs#selfLabels")) {
+            dest.labels_type =
+                    AppBskyFeedPost::MainLabelsType::labels_ComAtprotoLabelDefs_SelfLabels;
+            ComAtprotoLabelDefs::copySelfLabels(src.value("labels").toObject(),
+                                                dest.labels_ComAtprotoLabelDefs_SelfLabels);
+        }
         dest.createdAt = src.value("createdAt").toString();
     }
 }
@@ -835,6 +872,13 @@ void copyMain(const QJsonObject &src, AppBskyGraphList::Main &dest)
             AppBskyRichtextFacet::Main child;
             AppBskyRichtextFacet::copyMain(s.toObject(), child);
             dest.descriptionFacets.append(child);
+        }
+        QString labels_type = src.value("labels").toObject().value("$type").toString();
+        if (labels_type == QStringLiteral("com.atproto.label.defs#selfLabels")) {
+            dest.labels_type =
+                    AppBskyGraphList::MainLabelsType::labels_ComAtprotoLabelDefs_SelfLabels;
+            ComAtprotoLabelDefs::copySelfLabels(src.value("labels").toObject(),
+                                                dest.labels_ComAtprotoLabelDefs_SelfLabels);
         }
         dest.createdAt = src.value("createdAt").toString();
     }

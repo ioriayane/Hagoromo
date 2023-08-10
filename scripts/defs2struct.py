@@ -81,8 +81,14 @@ class Defs2Struct:
         return target_list.index(v) if v in target_list else len(target_list)
 
     def defined_before(self, other: str, me: str) -> bool:
-        other_pos = self.history_namespace.index(other)
-        me_pos = self.history_namespace.index(me)
+        if other in self.history_namespace:
+            other_pos = self.history_namespace.index(other)
+        else:
+            other_pos = -1
+        if me in self.history_namespace:
+            me_pos = self.history_namespace.index(me)
+        else:
+            me_pos = -1
         if other_pos == -1:
             return False
         elif me_pos == -1:
