@@ -13,8 +13,15 @@ class AppBskyFeedGetAuthorFeed : public AppBskyFeedGetTimeline
 public:
     explicit AppBskyFeedGetAuthorFeed(QObject *parent = nullptr);
 
+    enum class FilterType : int {
+        PostsWithReplies,
+        PostsNoReplies,
+        PostsWithMedia,
+    };
+
     void getTimeline() = delete;
-    void getAuthorFeed(const QString &actor, const int limit, const QString &cursor);
+    void getAuthorFeed(const QString &actor, const int limit, const QString &cursor,
+                       const FilterType filter = FilterType::PostsWithReplies);
 
 private:
 };

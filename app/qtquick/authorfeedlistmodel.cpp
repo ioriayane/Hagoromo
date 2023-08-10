@@ -26,8 +26,17 @@ void AuthorFeedListModel::getLatest()
             QTimer::singleShot(100, this, &AuthorFeedListModel::displayQueuedPosts);
             timeline->deleteLater();
         });
+
+        AppBskyFeedGetAuthorFeed::FilterType filter_type;
+        if (filter() == AuthorFeedListModelFilterType::PostsNoReplies) {
+            filter_type = AppBskyFeedGetAuthorFeed::FilterType::PostsNoReplies;
+        } else if (filter() == AuthorFeedListModelFilterType::PostsWithMedia) {
+            filter_type = AppBskyFeedGetAuthorFeed::FilterType::PostsWithMedia;
+        } else {
+            filter_type = AppBskyFeedGetAuthorFeed::FilterType::PostsWithReplies;
+        }
         timeline->setAccount(account());
-        timeline->getAuthorFeed(authorDid(), -1, QString());
+        timeline->getAuthorFeed(authorDid(), -1, QString(), filter_type);
     });
 }
 
@@ -42,4 +51,17 @@ void AuthorFeedListModel::setAuthorDid(const QString &newAuthorDid)
         return;
     m_authorDid = newAuthorDid;
     emit authorDidChanged();
+}
+
+AuthorFeedListModel::AuthorFeedListModelFilterType AuthorFeedListModel::filter() const
+{
+    return m_filter;
+}
+
+void AuthorFeedListModel::setFilter(AuthorFeedListModelFilterType newFilter)
+{
+    if (m_filter == newFilter)
+        return;
+    m_filter = newFilter;
+    emit filterChanged();
 }

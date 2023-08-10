@@ -13,10 +13,17 @@ AppBskyFeedGetAuthorFeed::AppBskyFeedGetAuthorFeed(QObject *parent)
 }
 
 void AppBskyFeedGetAuthorFeed::getAuthorFeed(const QString &actor, const int limit,
-                                             const QString &cursor)
+                                             const QString &cursor, const FilterType filter)
 {
     QUrlQuery query;
     query.addQueryItem(QStringLiteral("actor"), actor);
+    if (filter == FilterType::PostsNoReplies) {
+        query.addQueryItem(QStringLiteral("filter"), "posts_no_replies");
+    } else if (filter == FilterType::PostsWithMedia) {
+        query.addQueryItem(QStringLiteral("filter"), "posts_with_media");
+    } else {
+        query.addQueryItem(QStringLiteral("filter"), "posts_with_replies");
+    }
 
     get(QStringLiteral("xrpc/app.bsky.feed.getAuthorFeed"), query);
 }
