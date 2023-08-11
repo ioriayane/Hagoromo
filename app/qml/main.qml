@@ -319,38 +319,11 @@ ApplicationWindow {
         }
     }
 
-    ColumnLayout {
+    VersionInfomation {
         anchors.right: rootLayout.right
         anchors.bottom: rootLayout.bottom
         anchors.rightMargin: 5
         anchors.bottomMargin: scrollView.ScrollBar.horizontal.height + 5
-        Label {
-            Layout.alignment: Qt.AlignRight
-            font.pointSize: 10
-            color: Material.color(Material.Grey)
-            text: "羽衣 -Hagoromo-"
-        }
-        Label {
-            Layout.alignment: Qt.AlignRight
-            Layout.rightMargin: 5
-            font.pointSize: 8
-            color: Material.color(Material.Grey)
-            text: "Version : " + systemTool.applicationVersion
-        }
-        Label {
-            Layout.alignment: Qt.AlignRight
-            Layout.rightMargin: 5
-            font.pointSize: 8
-            color: Material.color(Material.Grey)
-            text: "build on Qt " + systemTool.qtVersion
-        }
-        Label {
-            Layout.alignment: Qt.AlignRight
-            Layout.rightMargin: 5
-            font.pointSize: 8
-            color: Material.color(Material.Grey)
-            text: "© 2023 Iori Ayane"
-        }
     }
 
     RowLayout {
@@ -362,65 +335,15 @@ ApplicationWindow {
             Layout.minimumWidth: 48
             Layout.preferredWidth: 48
             Layout.maximumWidth: 96
-            ColumnLayout {
+            SideBar {
                 anchors.fill: parent
                 anchors.margins: 1
-                spacing: 0
-
-                IconButton {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 36
-                    enabled: accountListModel.count > 0
-                    display: AbstractButton.IconOnly
-                    iconSource: "images/edit.png"
-                    //                    iconText: qsTr("New Post")
-                    onClicked: postDialog.open()
-                }
-
-                IconButton {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 36
-                    enabled: accountListModel.count > 0
-                    display: AbstractButton.IconOnly
-                    iconSource: "images/search.png"
-                    onClicked: searchDialog.open()
-                }
-
-                Item {
-                    Layout.preferredWidth: 1
-                    Layout.fillHeight: true
-                }
-
-                IconButton {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 36
-                    enabled: accountListModel.count > 0
-                    display: AbstractButton.IconOnly
-                    iconSource: "images/column.png"
-                    //                    iconText: qsTr("Add column")
-
-                    onClicked: addColumnDialog.open()
-                }
-
-                IconButton {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 36
-                    display: AbstractButton.IconOnly
-                    iconSource: "images/account.png"
-                    //                    iconText: qsTr("Account")
-
-                    onClicked: accountDialog.open()
-                }
-
-                IconButton {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 36
-                    display: AbstractButton.IconOnly
-                    iconSource: "images/settings.png"
-                    //                    iconText: qsTr("Settings")
-
-                    onClicked: settingDialog.open()
-                }
+                post.onClicked: postDialog.open()
+                search.onClicked: searchDialog.open()
+                addColumn.onClicked: addColumnDialog.open()
+                moderation.onClicked: console.log("click moderation")
+                account.onClicked: accountDialog.open()
+                setting.onClicked: settingDialog.open()
             }
         }
         Rectangle {

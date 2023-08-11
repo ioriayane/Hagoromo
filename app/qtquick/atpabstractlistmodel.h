@@ -3,10 +3,12 @@
 
 #include "atprotocol/accessatprotocol.h"
 #include "atprotocol/lexicons.h"
+#include "tools/configurablelabels.h"
 
 #include <QAbstractListModel>
 #include <QObject>
 #include <QTimer>
+#include <functional>
 
 struct PostCueItem
 {
@@ -80,6 +82,7 @@ protected:
     void displayQueuedPosts();
     virtual void finishedDisplayingQueuedPosts() = 0;
     virtual bool checkVisibility(const QString &cid) = 0;
+    void updateContentFilterLabels(std::function<void()> callback);
 
     // これで取得したポストの順番を管理して実態はm_viewPostHashで管理
     // checkVisibility(cid)の結果次第で間引かれる
@@ -91,7 +94,11 @@ protected:
 
     QHash<QString, QString> m_translations; // QHash<cid, translation>
 
+    ConfigurableLabels m_contentFilterLabels;
+
 private:
+    int searchInsertPosition(const QString &cid);
+
     QTimer m_timer;
     AtProtocolInterface::AccountData m_account;
 

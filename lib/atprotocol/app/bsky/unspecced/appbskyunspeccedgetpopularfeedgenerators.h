@@ -11,7 +11,7 @@ class AppBskyUnspeccedGetPopularFeedGenerators : public AccessAtProtocol
 public:
     explicit AppBskyUnspeccedGetPopularFeedGenerators(QObject *parent = nullptr);
 
-    void getPopularFeedGenerators();
+    void getPopularFeedGenerators(const int limit, const QString &cursor, const QString &query);
 
     const QList<AtProtocolType::AppBskyFeedDefs::GeneratorView> *generatorViewList() const;
 

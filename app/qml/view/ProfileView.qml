@@ -99,6 +99,7 @@ ColumnLayout {
             authorFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             repostFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             likesFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
+            authorMediaFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             followsListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             followersListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
         }
@@ -259,7 +260,6 @@ ColumnLayout {
                 iconSource: "../images/more.png"
                 iconSize: 16
                 foreground: Material.color(Material.Grey)
-                flat: true
                 onClicked: morePopup.open()
                 Menu {
                     id: morePopup
@@ -359,6 +359,15 @@ ColumnLayout {
             ]
         }
         IconLabelFrame {
+            id: moderationFrame3
+            Layout.preferredWidth: profileView.width
+            visible: userProfile.userFilterMatched
+            backgroundColor: Material.color(Material.Red)
+            borderWidth: 0
+            iconSource: "../images/report.png"
+            labelText: qsTr("This account has been flagged : ") + userProfile.userFilterTitle
+        }
+        IconLabelFrame {
             id: moderationFrame2
             Layout.preferredWidth: profileView.width
             visible: userProfile.blockedBy
@@ -385,6 +394,10 @@ ColumnLayout {
         TabButton {
             font.capitalization: Font.MixedCase
             text: qsTr("Likes")
+        }
+        TabButton {
+            font.capitalization: Font.MixedCase
+            text: qsTr("Media")
         }
         TabButton {
             font.capitalization: Font.MixedCase
@@ -417,6 +430,7 @@ ColumnLayout {
                 id: authorFeedListModel
                 autoLoading: false
                 authorDid: profileView.userDid
+                filter: AuthorFeedListModel.PostsWithReplies
 
                 onErrorOccured: (message) => {console.log(message)}
             }
@@ -477,6 +491,36 @@ ColumnLayout {
                 autoLoading: false
                 targetDid: profileView.userDid
                 feedType: AnyFeedListModel.LikeFeedType
+
+                onErrorOccured: (message) => {console.log(message)}
+            }
+            fontSizeRatio: profileView.fontSizeRatio
+            accountDid: profileView.accountDid
+
+            onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
+                            profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+            onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
+                            profileView.requestQuote(cid, uri, avatar, display_name, handle, indexed_at, text)
+
+            onRequestViewThread: (uri) => profileView.requestViewThread(uri)
+            onRequestViewImages: (index, paths) => profileView.requestViewImages(index, paths)
+            onRequestViewProfile: (did) => {
+                                      if(did !== profileView.userDid){
+                                          profileView.requestViewProfile(did)
+                                      }
+                                  }
+            onRequestViewGeneratorFeed: (name, uri) => profileView.requestViewGeneratorFeed(name, uri)
+            onRequestReportPost: (uri, cid) => profileView.requestReportPost(uri, cid)
+            onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
+        }
+
+        TimelineView {
+            Layout.fillWidth: true
+            model: AuthorFeedListModel {
+                id: authorMediaFeedListModel
+                autoLoading: false
+                authorDid: profileView.userDid
+                filter: AuthorFeedListModel.PostsWithMedia
 
                 onErrorOccured: (message) => {console.log(message)}
             }

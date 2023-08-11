@@ -21,6 +21,7 @@
 #include "qtquick/customfeedlistmodel.h"
 #include "qtquick/feedgeneratorlistmodel.h"
 #include "qtquick/languagelistmodel.h"
+#include "qtquick/contentfiltersettinglistmodel.h"
 #include "qtquick/thumbnailprovider.h"
 #include "qtquick/encryption.h"
 #include "qtquick/userprofile.h"
@@ -41,7 +42,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName(QStringLiteral("relog"));
     app.setOrganizationDomain(QStringLiteral("hagoromo.relog.tech"));
     app.setApplicationName(QStringLiteral("Hagoromo"));
-    app.setApplicationVersion(QStringLiteral("0.7.0"));
+    app.setApplicationVersion(QStringLiteral("0.8.0"));
 #ifndef HAGOROMO_RELEASE_BUILD
     app.setApplicationVersion(app.applicationVersion() + "d");
 #endif
@@ -78,6 +79,9 @@ int main(int argc, char *argv[])
                                             "FeedGeneratorListModel");
     qmlRegisterType<LanguageListModel>("tech.relog.hagoromo.languagelistmodel", 1, 0,
                                        "LanguageListModel");
+    qmlRegisterType<ContentFilterSettingListModel>(
+            "tech.relog.hagoromo.contentfiltersettinglistmodel", 1, 0,
+            "ContentFilterSettingListModel");
     qmlRegisterType<Encryption>("tech.relog.hagoromo.encryption", 1, 0, "Encryption");
     qmlRegisterType<UserProfile>("tech.relog.hagoromo.userprofile", 1, 0, "UserProfile");
     qmlRegisterType<SystemTool>("tech.relog.hagoromo.systemtool", 1, 0, "SystemTool");

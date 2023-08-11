@@ -209,8 +209,22 @@ void AtpAbstractListModel::displayQueuedPosts()
                 // （取得できた範囲でしか更新できないのだけど・・・）
                 interval = 0;
                 int r = m_cidList.indexOf(post.cid);
-                if (r > 0) {
-                    emit dataChanged(index(r), index(r));
+                if (r >= 0) {
+                    if (visible) {
+                        emit dataChanged(index(r), index(r));
+                    } else {
+                        beginRemoveRows(QModelIndex(), r, r);
+                        m_cidList.removeAt(r);
+                        endRemoveRows();
+                    }
+                } else {
+                    int r = searchInsertPosition(post.cid);
+                    if (visible && r >= 0) {
+                        // 復活させる
+                        beginInsertRows(QModelIndex(), r, r);
+                        m_cidList.insert(r, post.cid);
+                        endInsertRows();
+                    }
                 }
             }
         } else {
@@ -230,6 +244,35 @@ void AtpAbstractListModel::displayQueuedPosts()
     } else {
         finishedDisplayingQueuedPosts();
     }
+}
+
+void AtpAbstractListModel::updateContentFilterLabels(std::function<void()> callback)
+{
+    ConfigurableLabels *labels = new ConfigurableLabels(this);
+    connect(labels, &ConfigurableLabels::finished, this, [=](bool success) {
+        if (success) {
+            m_contentFilterLabels = *labels;
+        }
+        callback();
+        labels->deleteLater();
+    });
+    labels->setAccount(account());
+    labels->load();
+}
+
+int AtpAbstractListModel::searchInsertPosition(const QString &cid)
+{
+    int basis_pos = m_originalCidList.indexOf(cid);
+    if (basis_pos < 0)
+        return -1;
+    if (basis_pos == 0)
+        return 0;
+    for (int i = basis_pos - 1; i >= 0; i--) {
+        int pos = m_cidList.indexOf(m_originalCidList.at(i));
+        if (pos >= 0)
+            return pos + 1;
+    }
+    return -1;
 }
 
 int AtpAbstractListModel::displayInterval() const

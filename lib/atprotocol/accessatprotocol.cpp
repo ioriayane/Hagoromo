@@ -7,6 +7,7 @@
 #include <QFileInfo>
 #include <QHttpMultiPart>
 #include <QDateTime>
+#include <QUrlQuery>
 
 #define LOG_DATETIME QDateTime::currentDateTime().toString("yyyy/MM/dd hh:mm:ss")
 
@@ -105,6 +106,7 @@ void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
     qDebug() << LOG_DATETIME << "AccessAtProtocol::get()" << this;
     qDebug().noquote() << "   " << handle();
     qDebug().noquote() << "   " << endpoint;
+    qDebug().noquote() << "   " << query.toString();
 
     QUrl url = QString("%1/%2").arg(service(), endpoint);
     url.setQuery(query);

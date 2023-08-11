@@ -72,6 +72,10 @@ ScrollView {
 
             fontSizeRatio: notificationListView.fontSizeRatio
 
+            moderationFrame.visible: model.muted
+            userFilterMatched: model.userFilterMatched
+            userFilterMessage: model.userFilterMessage
+
             reason: model.reason
             postAvatarImage.source: model.avatar
             postAvatarImage.onClicked: requestViewProfile(model.did)
@@ -91,6 +95,8 @@ ScrollView {
             recordAvatar: model.recordAvatar
             recordIndexedAt: model.recordIndexedAt
             recordRecordText: model.recordRecordText
+//            contentFilterFrame.visible: model.contentFilterMatched
+//            contentFilterFrame.labelText: model.contentFilterMessage
             recordImagePreview.embedImages: model.recordImages
             recordImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.recordImagesFull)
 

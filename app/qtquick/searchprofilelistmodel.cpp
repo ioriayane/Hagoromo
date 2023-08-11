@@ -12,19 +12,21 @@ void SearchProfileListModel::getLatest()
         return;
     setRunning(true);
 
-    SearchProfiles *profiles = new SearchProfiles(this);
-    connect(profiles, &SearchProfiles::finished, [=](bool success) {
-        if (success) {
-            m_cueGetProfile.append(*profiles->didList());
-        } else {
-            emit errorOccured(profiles->errorMessage());
-        }
-        QTimer::singleShot(100, this, &SearchProfileListModel::getProfiles);
-        profiles->deleteLater();
+    updateContentFilterLabels([=]() {
+        SearchProfiles *profiles = new SearchProfiles(this);
+        connect(profiles, &SearchProfiles::finished, [=](bool success) {
+            if (success) {
+                m_cueGetProfile.append(*profiles->didList());
+            } else {
+                emit errorOccured(profiles->errorMessage());
+            }
+            QTimer::singleShot(100, this, &SearchProfileListModel::getProfiles);
+            profiles->deleteLater();
+        });
+        profiles->setAccount(account());
+        profiles->setService(searchService());
+        profiles->search(text());
     });
-    profiles->setAccount(account());
-    profiles->setService(searchService());
-    profiles->search(text());
 }
 
 QString SearchProfileListModel::text() const

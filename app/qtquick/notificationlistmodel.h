@@ -34,6 +34,7 @@ public:
         DisplayNameRole,
         HandleRole,
         AvatarRole,
+        MutedRole,
         RecordTextRole,
         RecordTextPlainRole,
         RecordTextTranslationRole,
@@ -68,6 +69,11 @@ public:
         GeneratorFeedDisplayNameRole,
         GeneratorFeedLikeCountRole,
         GeneratorFeedAvatarRole,
+
+        UserFilterMatchedRole,
+        UserFilterMessageRole,
+        ContentFilterMatchedRole,
+        ContentFilterMessageRole,
     };
     Q_ENUM(NotificationListModelRoles)
 

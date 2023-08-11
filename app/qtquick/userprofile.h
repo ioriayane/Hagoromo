@@ -4,6 +4,7 @@
 #include "atprotocol/accessatprotocol.h"
 //#include "atprotocol/lexicons.h"
 #include "systemtool.h"
+#include "tools/configurablelabels.h"
 
 #include <QObject>
 
@@ -33,6 +34,11 @@ class UserProfile : public QObject
     Q_PROPERTY(bool blockedBy READ blockedBy WRITE setBlockedBy NOTIFY blockedByChanged)
     Q_PROPERTY(bool blocking READ blocking WRITE setBlocking NOTIFY blockingChanged)
     Q_PROPERTY(QString blockingUri READ blockingUri WRITE setBlockingUri NOTIFY blockingUriChanged)
+
+    Q_PROPERTY(bool userFilterMatched READ userFilterMatched WRITE setUserFilterMatched NOTIFY
+                       userFilterMatchedChanged)
+    Q_PROPERTY(QString userFilterTitle READ userFilterTitle WRITE setUserFilterTitle NOTIFY
+                       userFilterTitleChanged)
 
 public:
     explicit UserProfile(QObject *parent = nullptr);
@@ -78,6 +84,10 @@ public:
     void setBlocking(bool newBlocking);
     QString blockingUri() const;
     void setBlockingUri(const QString &newBlockingUri);
+    bool userFilterMatched() const;
+    void setUserFilterMatched(bool newUserFilterMatched);
+    QString userFilterTitle() const;
+    void setUserFilterTitle(const QString &newUserFilterTitle);
 
 signals:
     void errorOccured(const QString &message);
@@ -99,10 +109,13 @@ signals:
     void blockedByChanged();
     void blockingChanged();
     void blockingUriChanged();
+    void userFilterMatchedChanged();
+    void userFilterTitleChanged();
 
 private:
     SystemTool m_systemTool;
     AtProtocolInterface::AccountData m_account;
+    ConfigurableLabels m_contentFilterLabels;
     //    AtProtocolType::AppBskyActorDefs::ProfileViewDetailed m_profile;
     bool m_running;
     QString m_formattedDescription;
@@ -124,6 +137,8 @@ private:
     bool m_blockedBy;
     bool m_blocking;
     QString m_blockingUri;
+    bool m_userFilterMatched;
+    QString m_userFilterTitle;
 };
 
 #endif // USERPROFILE_H

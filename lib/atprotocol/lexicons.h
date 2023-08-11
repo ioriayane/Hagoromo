@@ -71,6 +71,14 @@ struct Label
     bool neg = false;
     QString cts; // datetime
 };
+struct SelfLabel
+{
+    QString val;
+};
+struct SelfLabels
+{
+    QList<SelfLabel> values;
+};
 }
 
 // app.bsky.actor.defs
@@ -138,10 +146,18 @@ struct SavedFeedsPref
 
 // app.bsky.actor.profile
 namespace AppBskyActorProfile {
+enum class MainLabelsType : int {
+    none,
+    labels_ComAtprotoLabelDefs_SelfLabels,
+};
 struct Main
 {
     QString displayName;
     QString description;
+    // union start : labels
+    MainLabelsType labels_type = MainLabelsType::none;
+    ComAtprotoLabelDefs::SelfLabels labels_ComAtprotoLabelDefs_SelfLabels;
+    // union end : labels
 };
 }
 
@@ -496,12 +512,20 @@ struct Links
 
 // app.bsky.feed.generator
 namespace AppBskyFeedGenerator {
+enum class MainLabelsType : int {
+    none,
+    labels_ComAtprotoLabelDefs_SelfLabels,
+};
 struct Main
 {
     QString did; // did
     QString displayName;
     QString description;
     QList<AppBskyRichtextFacet::Main> descriptionFacets;
+    // union start : labels
+    MainLabelsType labels_type = MainLabelsType::none;
+    ComAtprotoLabelDefs::SelfLabels labels_ComAtprotoLabelDefs_SelfLabels;
+    // union end : labels
     QString createdAt; // datetime
 };
 }
@@ -534,6 +558,10 @@ enum class MainEmbedType : int {
     embed_AppBskyEmbedRecord_Main,
     embed_AppBskyEmbedRecordWithMedia_Main,
 };
+enum class MainLabelsType : int {
+    none,
+    labels_ComAtprotoLabelDefs_SelfLabels,
+};
 struct TextSlice
 {
     int start = 0;
@@ -564,6 +592,10 @@ struct Main
     AppBskyEmbedRecordWithMedia::Main embed_AppBskyEmbedRecordWithMedia_Main;
     // union end : embed
     QList<QString> langs;
+    // union start : labels
+    MainLabelsType labels_type = MainLabelsType::none;
+    ComAtprotoLabelDefs::SelfLabels labels_ComAtprotoLabelDefs_SelfLabels;
+    // union end : labels
     QString createdAt; // datetime
 };
 }
@@ -597,12 +629,20 @@ struct Main
 
 // app.bsky.graph.list
 namespace AppBskyGraphList {
+enum class MainLabelsType : int {
+    none,
+    labels_ComAtprotoLabelDefs_SelfLabels,
+};
 struct Main
 {
     AppBskyGraphDefs::ListPurpose purpose;
     QString name;
     QString description;
     QList<AppBskyRichtextFacet::Main> descriptionFacets;
+    // union start : labels
+    MainLabelsType labels_type = MainLabelsType::none;
+    ComAtprotoLabelDefs::SelfLabels labels_ComAtprotoLabelDefs_SelfLabels;
+    // union end : labels
     QString createdAt; // datetime
 };
 }
@@ -735,6 +775,7 @@ struct RepoView
     Moderation moderation;
     ComAtprotoServerDefs::InviteCode invitedBy;
     bool invitesDisabled = false;
+    QString inviteNote;
 };
 struct RepoViewNotFound
 {
@@ -846,6 +887,7 @@ struct RepoViewDetail
     ComAtprotoServerDefs::InviteCode invitedBy;
     QList<ComAtprotoServerDefs::InviteCode> invites;
     bool invitesDisabled = false;
+    QString inviteNote;
 };
 struct RecordViewDetail
 {

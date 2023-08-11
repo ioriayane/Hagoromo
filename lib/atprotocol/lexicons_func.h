@@ -35,6 +35,8 @@ void copySavedFeedsPref(const QJsonObject &src, AppBskyActorDefs::SavedFeedsPref
 // com.atproto.label.defs
 namespace ComAtprotoLabelDefs {
 void copyLabel(const QJsonObject &src, ComAtprotoLabelDefs::Label &dest);
+void copySelfLabel(const QJsonObject &src, ComAtprotoLabelDefs::SelfLabel &dest);
+void copySelfLabels(const QJsonObject &src, ComAtprotoLabelDefs::SelfLabels &dest);
 }
 // app.bsky.actor.profile
 namespace AppBskyActorProfile {
@@ -139,7 +141,8 @@ void copyMain(const QJsonObject &src, AppBskyGraphListitem::Main &dest);
 }
 // app.bsky.notification.listNotifications
 namespace AppBskyNotificationListNotifications {
-void copyNotification(const QJsonObject &src, AppBskyNotificationListNotifications::Notification &dest);
+void copyNotification(const QJsonObject &src,
+                      AppBskyNotificationListNotifications::Notification &dest);
 }
 // com.atproto.admin.defs
 namespace ComAtprotoAdminDefs {
@@ -193,7 +196,8 @@ void copyAppPassword(const QJsonObject &src, ComAtprotoServerCreateAppPassword::
 }
 // com.atproto.server.createInviteCodes
 namespace ComAtprotoServerCreateInviteCodes {
-void copyAccountCodes(const QJsonObject &src, ComAtprotoServerCreateInviteCodes::AccountCodes &dest);
+void copyAccountCodes(const QJsonObject &src,
+                      ComAtprotoServerCreateInviteCodes::AccountCodes &dest);
 }
 // com.atproto.server.describeServer
 namespace ComAtprotoServerDescribeServer {

@@ -51,6 +51,8 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
         return current.author.handle;
     else if (role == AvatarRole)
         return current.author.avatar;
+    else if (role == MutedRole)
+        return current.author.viewer.muted;
     else if (role == RecordTextRole)
         return copyRecordText(current.record);
     else if (role == RecordTextPlainRole)
@@ -99,6 +101,41 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             return m_postHash[current.cid].viewer.like;
         else
             return QString();
+
+    } else if (role == UserFilterMatchedRole) {
+        for (const auto &label : current.author.labels) {
+            if (m_contentFilterLabels.visibility(label.val, false)
+                != ConfigurableLabelStatus::Show) {
+                return true;
+            }
+        }
+        return false;
+    } else if (role == UserFilterMessageRole) {
+        QString message;
+        for (const auto &label : current.author.labels) {
+            message = m_contentFilterLabels.message(label.val, false);
+            if (!message.isEmpty()) {
+                break;
+            }
+        }
+        return message;
+    } else if (role == ContentFilterMatchedRole) {
+        for (const auto &label : current.labels) {
+            if (m_contentFilterLabels.visibility(label.val, true)
+                != ConfigurableLabelStatus::Show) {
+                return true;
+            }
+        }
+        return false;
+    } else if (role == ContentFilterMessageRole) {
+        QString message;
+        for (const auto &label : current.labels) {
+            message = m_contentFilterLabels.message(label.val, true);
+            if (!message.isEmpty()) {
+                break;
+            }
+        }
+        return message;
 
         //----------------------------------------
     } else if (role == ReasonRole) {
@@ -340,101 +377,104 @@ void NotificationListModel::getLatest()
         return;
     setRunning(true);
 
-    AppBskyNotificationListNotifications *notification =
-            new AppBskyNotificationListNotifications(this);
-    connect(notification, &AppBskyNotificationListNotifications::finished, [=](bool success) {
-        if (success) {
-            QDateTime reference_time = QDateTime::currentDateTimeUtc();
+    updateContentFilterLabels([=]() {
+        AppBskyNotificationListNotifications *notification =
+                new AppBskyNotificationListNotifications(this);
+        connect(notification, &AppBskyNotificationListNotifications::finished, [=](bool success) {
+            if (success) {
+                QDateTime reference_time = QDateTime::currentDateTimeUtc();
 
-            for (auto item = notification->notificationList()->crbegin();
-                 item != notification->notificationList()->crend(); item++) {
-                m_notificationHash[item->cid] = *item;
+                for (auto item = notification->notificationList()->crbegin();
+                     item != notification->notificationList()->crend(); item++) {
+                    m_notificationHash[item->cid] = *item;
 
-                PostCueItem post;
-                post.cid = item->cid;
-                post.indexed_at = item->indexedAt;
-                post.reference_time = reference_time;
-                m_cuePost.append(post);
+                    PostCueItem post;
+                    post.cid = item->cid;
+                    post.indexed_at = item->indexedAt;
+                    post.reference_time = reference_time;
+                    m_cuePost.append(post);
 
-                if (item->reason == "like") {
-                    appendGetPostCue<AtProtocolType::AppBskyFeedLike::Main>(item->record);
-                } else if (item->reason == "repost") {
-                    appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(item->record);
-                } else if (item->reason == "quote") {
-                    AtProtocolType::AppBskyFeedPost::Main post =
-                            AtProtocolType::LexiconsTypeUnknown::fromQVariant<
-                                    AtProtocolType::AppBskyFeedPost::Main>(item->record);
-                    switch (post.embed_type) {
-                    case AtProtocolType::AppBskyFeedPost::MainEmbedType::
-                            embed_AppBskyEmbedImages_Main:
-                        break;
-                    case AtProtocolType::AppBskyFeedPost::MainEmbedType::
-                            embed_AppBskyEmbedExternal_Main:
-                        break;
-                    case AtProtocolType::AppBskyFeedPost::MainEmbedType::
-                            embed_AppBskyEmbedRecord_Main:
-                        if (!post.embed_AppBskyEmbedRecord_Main.record.cid.isEmpty()
-                            && !m_cueGetPost.contains(
-                                    post.embed_AppBskyEmbedRecord_Main.record.uri)) {
-                            m_cueGetPost.append(post.embed_AppBskyEmbedRecord_Main.record.uri);
+                    if (item->reason == "like") {
+                        appendGetPostCue<AtProtocolType::AppBskyFeedLike::Main>(item->record);
+                    } else if (item->reason == "repost") {
+                        appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(item->record);
+                    } else if (item->reason == "quote") {
+                        AtProtocolType::AppBskyFeedPost::Main post =
+                                AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                                        AtProtocolType::AppBskyFeedPost::Main>(item->record);
+                        switch (post.embed_type) {
+                        case AtProtocolType::AppBskyFeedPost::MainEmbedType::
+                                embed_AppBskyEmbedImages_Main:
+                            break;
+                        case AtProtocolType::AppBskyFeedPost::MainEmbedType::
+                                embed_AppBskyEmbedExternal_Main:
+                            break;
+                        case AtProtocolType::AppBskyFeedPost::MainEmbedType::
+                                embed_AppBskyEmbedRecord_Main:
+                            if (!post.embed_AppBskyEmbedRecord_Main.record.cid.isEmpty()
+                                && !m_cueGetPost.contains(
+                                        post.embed_AppBskyEmbedRecord_Main.record.uri)) {
+                                m_cueGetPost.append(post.embed_AppBskyEmbedRecord_Main.record.uri);
+                            }
+                            // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
+                            if (!m_cueGetPost.contains(item->uri)) {
+                                m_cueGetPost.append(item->uri);
+                            }
+                            break;
+                        case AtProtocolType::AppBskyFeedPost::MainEmbedType::
+                                embed_AppBskyEmbedRecordWithMedia_Main:
+                            if (!post.embed_AppBskyEmbedRecordWithMedia_Main.record.isNull()
+                                && !post.embed_AppBskyEmbedRecordWithMedia_Main.record->record.uri
+                                            .isEmpty()
+                                && !m_cueGetPost.contains(
+                                        post.embed_AppBskyEmbedRecordWithMedia_Main.record->record
+                                                .uri)) {
+                                m_cueGetPost.append(post.embed_AppBskyEmbedRecordWithMedia_Main
+                                                            .record->record.uri);
+                            }
+                            // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
+                            if (!m_cueGetPost.contains(item->uri)) {
+                                m_cueGetPost.append(item->uri);
+                            }
+                            break;
+                        default:
+                            break;
                         }
+                    } else if (item->reason == "reply" || item->reason == "mention") {
                         // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
                         if (!m_cueGetPost.contains(item->uri)) {
                             m_cueGetPost.append(item->uri);
                         }
-                        break;
-                    case AtProtocolType::AppBskyFeedPost::MainEmbedType::
-                            embed_AppBskyEmbedRecordWithMedia_Main:
-                        if (!post.embed_AppBskyEmbedRecordWithMedia_Main.record.isNull()
-                            && !post.embed_AppBskyEmbedRecordWithMedia_Main.record->record.uri
-                                        .isEmpty()
-                            && !m_cueGetPost.contains(post.embed_AppBskyEmbedRecordWithMedia_Main
-                                                              .record->record.uri)) {
-                            m_cueGetPost.append(
-                                    post.embed_AppBskyEmbedRecordWithMedia_Main.record->record.uri);
-                        }
-                        // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
-                        if (!m_cueGetPost.contains(item->uri)) {
-                            m_cueGetPost.append(item->uri);
-                        }
-                        break;
-                    default:
-                        break;
-                    }
-                } else if (item->reason == "reply" || item->reason == "mention") {
-                    // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
-                    if (!m_cueGetPost.contains(item->uri)) {
-                        m_cueGetPost.append(item->uri);
                     }
                 }
+
+                //
+                // m_cidList[cid] :
+                //   表示リスト（replyとquoteはそのPostのcidを入れる。それ以外は元Postのcidを表示リストに入れて集計表示する（予定））
+                // m_list2notificationHash<cid, QList<cid>> :
+                //   表示リストのcidに関連している実体のcidのリスト
+                // m_notificationHash<cid, Notification> :
+                //   apiで取得できるcidをキーにそのまま保存
+                // m_postHash<cid, Post> :
+                //   Notificationの先にあるPostの実体
+
+                // m_post2notificationHash<cid, cid>
+                //   Post側(m_postHash)からNotification側(m_notificationHash)の参照
+                //
+                // m_cueGetPost[cid] :
+                //   Notificationの先にあるPostを取りに行く待ち行列（たぶんいくつも並列でいけるけど）
+                //
+                // likeとかの対象ポストの情報は入っていないので、それぞれ取得する必要あり
+                // 対象ポスト情報は別途cidをキーにして保存する（2重取得と管理を避ける）
+            } else {
+                emit errorOccured(notification->errorMessage());
             }
-
-            //
-            // m_cidList[cid] :
-            //   表示リスト（replyとquoteはそのPostのcidを入れる。それ以外は元Postのcidを表示リストに入れて集計表示する（予定））
-            // m_list2notificationHash<cid, QList<cid>> :
-            //   表示リストのcidに関連している実体のcidのリスト
-            // m_notificationHash<cid, Notification> :
-            //   apiで取得できるcidをキーにそのまま保存
-            // m_postHash<cid, Post> :
-            //   Notificationの先にあるPostの実体
-
-            // m_post2notificationHash<cid, cid>
-            //   Post側(m_postHash)からNotification側(m_notificationHash)の参照
-            //
-            // m_cueGetPost[cid] :
-            //   Notificationの先にあるPostを取りに行く待ち行列（たぶんいくつも並列でいけるけど）
-            //
-            // likeとかの対象ポストの情報は入っていないので、それぞれ取得する必要あり
-            // 対象ポスト情報は別途cidをキーにして保存する（2重取得と管理を避ける）
-        } else {
-            emit errorOccured(notification->errorMessage());
-        }
-        QTimer::singleShot(100, this, &NotificationListModel::displayQueuedPosts);
-        notification->deleteLater();
+            QTimer::singleShot(100, this, &NotificationListModel::displayQueuedPosts);
+            notification->deleteLater();
+        });
+        notification->setAccount(account());
+        notification->listNotifications();
     });
-    notification->setAccount(account());
-    notification->listNotifications();
 }
 
 void NotificationListModel::repost(int row)
@@ -508,6 +548,7 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[DisplayNameRole] = "displayName";
     roles[HandleRole] = "handle";
     roles[AvatarRole] = "avatar";
+    roles[MutedRole] = "muted";
     roles[RecordTextRole] = "recordText";
     roles[RecordTextPlainRole] = "recordTextPlain";
     roles[RecordTextTranslationRole] = "recordTextTranslation";
@@ -542,6 +583,11 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[GeneratorFeedLikeCountRole] = "generatorFeedLikeCount";
     roles[GeneratorFeedAvatarRole] = "generatorFeedAvatar";
 
+    roles[UserFilterMatchedRole] = "userFilterMatched";
+    roles[UserFilterMessageRole] = "userFilterMessage";
+    roles[ContentFilterMatchedRole] = "contentFilterMatched";
+    roles[ContentFilterMessageRole] = "contentFilterMessage";
+
     return roles;
 }
 
@@ -552,7 +598,28 @@ void NotificationListModel::finishedDisplayingQueuedPosts()
 
 bool NotificationListModel::checkVisibility(const QString &cid)
 {
-    return enableReason(m_notificationHash.value(cid).reason);
+    if (!enableReason(m_notificationHash.value(cid).reason))
+        return false;
+
+    if (!m_notificationHash.contains(cid))
+        return true;
+
+    const auto &current = m_notificationHash.value(cid);
+
+    for (const auto &label : current.author.labels) {
+        if (m_contentFilterLabels.visibility(label.val, false) == ConfigurableLabelStatus::Hide) {
+            qDebug() << "Hide notification by user's label. " << current.author.handle << cid;
+            return false;
+        }
+    }
+    for (const auto &label : current.labels) {
+        if (m_contentFilterLabels.visibility(label.val, true) == ConfigurableLabelStatus::Hide) {
+            qDebug() << "Hide notification by post's label. " << current.author.handle << cid;
+            return false;
+        }
+    }
+
+    return true;
 }
 
 void NotificationListModel::getPosts()

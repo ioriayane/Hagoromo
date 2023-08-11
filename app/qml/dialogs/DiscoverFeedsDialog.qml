@@ -35,6 +35,15 @@ Dialog {
 
         generatorListView.currentIndex = -1
     }
+    onClosed: {
+        searchText.text = ""
+    }
+
+    Shortcut {  // Search
+        enabled: searchButton.enabled
+        sequence: "Ctrl+Return"
+        onActivated: searchButton.clicked()
+    }
 
     ColumnLayout {
         spacing: 10
@@ -54,6 +63,29 @@ Dialog {
             }
         }
 
+        RowLayout {
+            TextField  {
+                id: searchText
+                Layout.fillWidth: true
+                selectByMouse: true
+            }
+            Button {
+                id: searchButton
+                enabled: searchText.focus && searchText.text.length > 0 && !feedGeneratorListModel.running
+                text: qsTr("Search")
+                onClicked: {
+                    discoverFeedsDialog.selectedName = ""
+                    discoverFeedsDialog.selectedUri = ""
+                    feedGeneratorListModel.getLatest()
+                }
+                BusyIndicator {
+                    anchors.fill: parent
+                    anchors.margins: 3
+                    visible: feedGeneratorListModel.running
+                }
+            }
+        }
+
         ScrollView {
             id: generatorScrollView
             Layout.preferredWidth: 400
@@ -65,6 +97,7 @@ Dialog {
                 clip: true
                 model: FeedGeneratorListModel {
                     id: feedGeneratorListModel
+                    query: searchText.text
                 }
                 footer: BusyIndicator {
                     width: generatorListView.width - generatorScrollView.ScrollBar.vertical.width
@@ -189,9 +222,12 @@ Dialog {
                 Layout.fillWidth: true
             }
             Button {
+                id: addButton
                 enabled: generatorListView.currentIndex >= 0 && discoverFeedsDialog.selectedUri.length > 0
                 text: qsTr("Add")
-                onClicked: discoverFeedsDialog.accept()
+                onClicked: {
+                    discoverFeedsDialog.accept()
+                }
             }
         }
     }

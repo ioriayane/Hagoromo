@@ -17,6 +17,8 @@ ClickableFrame {
     property int layoutWidth: postFrame.Layout.preferredWidth
     property string hoveredLink: ""
     property real fontSizeRatio: 1.0
+    property bool userFilterMatched: false
+    property string userFilterMessage: ""
 
     property alias moderationFrame: moderationFrame
     property alias repostReactionAuthor: repostReactionAuthor
@@ -24,6 +26,7 @@ ClickableFrame {
     property alias postAvatarImage: postAvatarImage
     property alias postAuthor: postAuthor
     property alias recordText: recordText
+    property alias contentFilterFrame: contentFilterFrame
     property alias postImagePreview: postImagePreview
     property alias childFrame: childFrame
     property alias childAvatarImage: childAvatarImage
@@ -56,26 +59,32 @@ ClickableFrame {
     }
 
     ColumnLayout {
-        IconLabelFrame {
+        states: [
+            State {
+                when: moderationFrame.showContent === false
+                PropertyChanges { target: repostReactionAuthor; visible: false }
+                PropertyChanges { target: replyReactionAuthor; visible: false }
+                PropertyChanges { target: postLayout; visible: false }
+            }
+
+        ]
+
+        CoverFrame {
             id: moderationFrame
             Layout.preferredWidth: postFrame.layoutWidth - postFrame.leftPadding - postFrame.rightPadding
             Layout.bottomMargin: 8
             visible: false
-            backgroundColor: Material.color(Material.Grey)
-            borderWidth: 0
-            iconSource: "../images/visibility_off.png"
             labelText: qsTr("Post from an account you muted.")
-            controlButton.visible: true
-            controlButton.iconText: showPost ? qsTr("Hide") : qsTr("Show")
-            controlButton.onClicked: showPost = !showPost
-            onVisibleChanged: {
-                if(visible){
-                    showPost = false
-                }else{
-                    showPost = true
+            states: [
+                State {
+                    when: postFrame.userFilterMatched
+                    PropertyChanges {
+                        target: moderationFrame
+                        visible: true
+                        labelText: postFrame.userFilterMessage
+                    }
                 }
-            }
-            property bool showPost: true
+            ]
         }
 
         ReactionAuthor {
@@ -94,7 +103,6 @@ ClickableFrame {
         RowLayout {
             id: postLayout
             spacing: 10
-            visible: moderationFrame.showPost
             AvatarImage {
                 id: postAvatarImage
                 Layout.preferredWidth: 36
@@ -118,6 +126,7 @@ ClickableFrame {
                     id: recordText
                     Layout.preferredWidth: parent.basisWidth
                     Layout.topMargin: 5
+                    visible: text.length > 0
                     textFormat: Text.StyledText
                     wrapMode: Text.WrapAnywhere
                     font.pointSize: 10 * fontSizeRatio
@@ -126,10 +135,18 @@ ClickableFrame {
                     onHoveredLinkChanged: displayLink(hoveredLink)
                 }
 
+                CoverFrame {
+                    id: contentFilterFrame
+                    Layout.preferredWidth: parent.basisWidth
+                    Layout.topMargin: 5
+                    visible: false
+                }
+
                 ImagePreview {
                     id: postImagePreview
                     layoutWidth: parent.basisWidth
                     Layout.topMargin: 5
+                    visible: contentFilterFrame.showContent
                 }
 
                 ClickableFrame {

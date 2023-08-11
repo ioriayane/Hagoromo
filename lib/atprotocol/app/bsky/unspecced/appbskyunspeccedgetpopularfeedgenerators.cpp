@@ -15,11 +15,16 @@ AppBskyUnspeccedGetPopularFeedGenerators::AppBskyUnspeccedGetPopularFeedGenerato
 {
 }
 
-void AppBskyUnspeccedGetPopularFeedGenerators::getPopularFeedGenerators()
+void AppBskyUnspeccedGetPopularFeedGenerators::getPopularFeedGenerators(const int limit,
+                                                                        const QString &cursor,
+                                                                        const QString &query)
 {
-    QUrlQuery query;
+    QUrlQuery url_query;
+    if (!query.isEmpty()) {
+        url_query.addQueryItem(QStringLiteral("query"), query);
+    }
 
-    get(QStringLiteral("xrpc/app.bsky.unspecced.getPopularFeedGenerators"), query);
+    get(QStringLiteral("xrpc/app.bsky.unspecced.getPopularFeedGenerators"), url_query);
 }
 
 const QList<AtProtocolType::AppBskyFeedDefs::GeneratorView> *

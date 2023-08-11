@@ -48,6 +48,11 @@ Dialog {
             description: qsTr("Spam; excessive mentions or replies")
             property int reason: Reporter.ReasonSpam
         }
+        RadioButtonEx {
+            mainText: qsTr("Name or Description Violates Community Standards")
+            description: qsTr("Terms used violate community standards")
+            property int reason: Reporter.ReasonViolation
+        }
         RowLayout {
             Button {
                 Layout.alignment: Qt.AlignLeft

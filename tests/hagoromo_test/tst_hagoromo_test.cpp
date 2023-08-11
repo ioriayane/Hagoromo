@@ -9,6 +9,7 @@
 #include "columnlistmodel.h"
 #include "notificationlistmodel.h"
 #include "userprofile.h"
+#include "tools/qstringex.h"
 
 class hagoromo_test : public QObject
 {
@@ -29,6 +30,7 @@ private slots:
     void test_NotificationListModel();
     void test_NotificationListModel2();
     void test_UserProfile();
+    void test_charCount();
 
 private:
     WebServer m_mockServer;
@@ -866,6 +868,22 @@ void hagoromo_test::test_UserProfile()
             == "<a "
                "href=\"https://github.com/ioriayane/Hagoromo\">https://github.com/ioriayane/"
                "Hagoromo</a><br/>hoge");
+}
+
+void hagoromo_test::test_charCount()
+{
+    QFile file(":/string/length.txt");
+    QVERIFY(file.open(QFile::ReadOnly));
+
+    QTextStream ts(&file);
+    ts.setCodec("utf-8");
+    QStringEx text = ts.readAll();
+    qDebug() << text << text.length() << text.count();
+    for (int i = 0; i < text.count(); i++) {
+        qDebug() << i << text.at(i) << text.at(i).isHighSurrogate() << text.at(i).isLowSurrogate()
+                 << QString::number(text.at(i).unicode(), 16) << text.at(i).combiningClass()
+                 << text.at(i).joiningType();
+    }
 }
 
 void hagoromo_test::test_RecordOperatorCreateRecord(const QByteArray &body)

@@ -70,43 +70,11 @@ Dialog {
                 Label {
                     text: qsTr("Account")
                 }
-                ScrollView {
+                AccountList {
+                    id: accountList
                     Layout.preferredWidth: 200
                     Layout.preferredHeight: 300
-                    //ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-                    ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-                    clip: true
-
-                    ListView {
-                        id: accountList
-                        delegate: ItemDelegate {
-                            width: accountList.width
-                            highlighted: ListView.isCurrentItem
-                            onClicked: {
-                                accountList.currentIndex = model.index
-                                changeColumnTypeView(model.index)
-                            }
-
-                            RowLayout {
-                                anchors.fill: parent
-                                anchors.margins: 10
-                                spacing: 5
-                                AvatarImage {
-                                    Layout.preferredWidth: 24
-                                    Layout.preferredHeight: 24
-                                    source: model.avatar
-                                }
-                                Label {
-                                    text: model.handle
-                                    elide: Text.ElideRight
-                                }
-                                Item {
-                                    Layout.fillWidth: true
-                                    Layout.preferredHeight: 1
-                                }
-                            }
-                        }
-                    }
+                    onClicked: (index) => changeColumnTypeView(index)
                 }
             }
             Image {

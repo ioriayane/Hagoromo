@@ -76,6 +76,8 @@ ScrollView {
             onRequestViewProfile: (did) => timelineView.requestViewProfile(did)
 
             moderationFrame.visible: model.muted
+            userFilterMatched: model.userFilterMatched
+            userFilterMessage: model.userFilterMessage
 
             repostReactionAuthor.visible: model.isRepostedBy
             repostReactionAuthor.displayName: model.repostedByDisplayName
@@ -96,6 +98,8 @@ ScrollView {
                 }
                 return text
             }
+            contentFilterFrame.visible: model.contentFilterMatched
+            contentFilterFrame.labelText: model.contentFilterMessage
             postImagePreview.embedImages: model.embedImages
             postImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.embedImagesFull)
 

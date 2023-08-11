@@ -8,6 +8,7 @@ import tech.relog.hagoromo.recordoperator 1.0
 import tech.relog.hagoromo.accountlistmodel 1.0
 import tech.relog.hagoromo.languagelistmodel 1.0
 import tech.relog.hagoromo.externallink 1.0
+import tech.relog.hagoromo.systemtool 1.0
 
 import "../controls"
 import "../parts"
@@ -80,7 +81,9 @@ Dialog {
         onActivated: postDialog.close()
     }
 
-
+    SystemTool {
+        id: systemTool
+    }
     RecordOperator {
         id: createRecord
         onFinished: (success) => {
@@ -200,6 +203,7 @@ Dialog {
                 enabled: !createRecord.running
                 wrapMode: TextInput.WordWrap
                 selectByMouse: true
+                property int realTextLength: systemTool.countText(text)
             }
         }
 
@@ -350,7 +354,7 @@ Dialog {
             Label {
                 Layout.alignment: Qt.AlignVCenter
                 font.pointSize: 8
-                text: 300 - postText.text.length
+                text: 300 - postText.realTextLength
             }
             ProgressCircle {
                 Layout.preferredWidth: 24
@@ -358,12 +362,12 @@ Dialog {
                 Layout.alignment: Qt.AlignVCenter
                 from: 0
                 to: 300
-                value: postText.text.length
+                value: postText.realTextLength
             }
             Button {
                 id: postButton
                 Layout.alignment: Qt.AlignRight
-                enabled: postText.text.length > 0 && !createRecord.running && !externalLink.running
+                enabled: postText.text.length > 0 && postText.realTextLength <= 300 && !createRecord.running && !externalLink.running
                 text: qsTr("Post")
                 onClicked: {
                     var row = accountCombo.currentIndex;

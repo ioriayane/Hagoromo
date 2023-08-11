@@ -27,6 +27,9 @@ Dialog {
             accountModel.updateAccountProfile(session.service, session.identifier)
         }
     }
+    ContentFilterSettingDialog {
+        id: contentFilter
+    }
 
     ColumnLayout {
 
@@ -92,6 +95,24 @@ Dialog {
 //                        iconSource: "../images/edit.png"
 //                        iconSize: 18
 //                    }
+                    IconButton {
+                        Layout.preferredWidth: 36
+                        Layout.preferredHeight: 26
+                        display: AbstractButton.IconOnly
+                        iconSource: "../images/visibility_on.png"
+                        iconSize: 18
+                        onClicked: {
+                            var i = model.index
+                            contentFilter.account.service = accountList.model.item(i, AccountListModel.ServiceRole)
+                            contentFilter.account.did = accountList.model.item(i, AccountListModel.DidRole)
+                            contentFilter.account.handle = accountList.model.item(i, AccountListModel.HandleRole)
+                            contentFilter.account.email = accountList.model.item(i, AccountListModel.EmailRole)
+                            contentFilter.account.accessJwt = accountList.model.item(i, AccountListModel.AccessJwtRole)
+                            contentFilter.account.refreshJwt = accountList.model.item(i, AccountListModel.RefreshJwtRole)
+                            contentFilter.account.avatar = accountList.model.item(i, AccountListModel.AvatarRole)
+                            contentFilter.open()
+                        }
+                    }
                     IconButton {
                         Layout.preferredWidth: 36
                         Layout.preferredHeight: 26

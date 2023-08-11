@@ -163,6 +163,42 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     else if (role == RepostedByHandleRole)
         return current.reason_ReasonRepost.by.handle;
 
+    else if (role == UserFilterMatchedRole) {
+        for (const auto &label : current.post.author.labels) {
+            if (m_contentFilterLabels.visibility(label.val, false)
+                != ConfigurableLabelStatus::Show) {
+                return true;
+            }
+        }
+        return false;
+    } else if (role == UserFilterMessageRole) {
+        QString message;
+        for (const auto &label : current.post.author.labels) {
+            message = m_contentFilterLabels.message(label.val, false);
+            if (!message.isEmpty()) {
+                break;
+            }
+        }
+        return message;
+    } else if (role == ContentFilterMatchedRole) {
+        for (const auto &label : current.post.labels) {
+            if (m_contentFilterLabels.visibility(label.val, true)
+                != ConfigurableLabelStatus::Show) {
+                return true;
+            }
+        }
+        return false;
+    } else if (role == ContentFilterMessageRole) {
+        QString message;
+        for (const auto &label : current.post.labels) {
+            message = m_contentFilterLabels.message(label.val, true);
+            if (!message.isEmpty()) {
+                break;
+            }
+        }
+        return message;
+    }
+
     return QVariant();
 }
 
@@ -218,18 +254,20 @@ void TimelineListModel::getLatest()
         return;
     setRunning(true);
 
-    AppBskyFeedGetTimeline *timeline = new AppBskyFeedGetTimeline(this);
-    connect(timeline, &AppBskyFeedGetTimeline::finished, [=](bool success) {
-        if (success) {
-            copyFrom(timeline);
-        } else {
-            emit errorOccured(timeline->errorMessage());
-        }
-        QTimer::singleShot(100, this, &TimelineListModel::displayQueuedPosts);
-        timeline->deleteLater();
+    updateContentFilterLabels([=]() {
+        AppBskyFeedGetTimeline *timeline = new AppBskyFeedGetTimeline(this);
+        connect(timeline, &AppBskyFeedGetTimeline::finished, [=](bool success) {
+            if (success) {
+                copyFrom(timeline);
+            } else {
+                emit errorOccured(timeline->errorMessage());
+            }
+            QTimer::singleShot(100, this, &TimelineListModel::displayQueuedPosts);
+            timeline->deleteLater();
+        });
+        timeline->setAccount(account());
+        timeline->getTimeline();
     });
-    timeline->setAccount(account());
-    timeline->getTimeline();
 }
 
 void TimelineListModel::deletePost(int row)
@@ -380,6 +418,11 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[RepostedByDisplayNameRole] = "repostedByDisplayName";
     roles[RepostedByHandleRole] = "repostedByHandle";
 
+    roles[UserFilterMatchedRole] = "userFilterMatched";
+    roles[UserFilterMessageRole] = "userFilterMessage";
+    roles[ContentFilterMatchedRole] = "contentFilterMatched";
+    roles[ContentFilterMessageRole] = "contentFilterMessage";
+
     return roles;
 }
 
@@ -390,7 +433,24 @@ void TimelineListModel::finishedDisplayingQueuedPosts()
 
 bool TimelineListModel::checkVisibility(const QString &cid)
 {
-    Q_UNUSED(cid)
+    if (!m_viewPostHash.contains(cid))
+        return true;
+
+    const AppBskyFeedDefs::FeedViewPost &current = m_viewPostHash.value(cid);
+
+    for (const auto &label : current.post.author.labels) {
+        if (m_contentFilterLabels.visibility(label.val, false) == ConfigurableLabelStatus::Hide) {
+            qDebug() << "Hide post by user's label. " << current.post.author.handle << cid;
+            return false;
+        }
+    }
+    for (const auto &label : current.post.labels) {
+        if (m_contentFilterLabels.visibility(label.val, true) == ConfigurableLabelStatus::Hide) {
+            qDebug() << "Hide post by post's label. " << current.post.author.handle << cid;
+            return false;
+        }
+    }
+
     return true;
 }
 

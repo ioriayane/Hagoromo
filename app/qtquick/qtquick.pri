@@ -7,6 +7,7 @@ SOURCES += \
     $$PWD/atpabstractlistmodel.cpp \
     $$PWD/authorfeedlistmodel.cpp \
     $$PWD/columnlistmodel.cpp \
+    $$PWD/contentfiltersettinglistmodel.cpp \
     $$PWD/createsession.cpp \
     $$PWD/customfeedlistmodel.cpp \
     $$PWD/encryption.cpp \
@@ -34,6 +35,7 @@ HEADERS += \
     $$PWD/authorfeedlistmodel.h \
     $$PWD/columnlistmodel.h \
     $$PWD/common.h \
+    $$PWD/contentfiltersettinglistmodel.h \
     $$PWD/createsession.h \
     $$PWD/customfeedlistmodel.h \
     $$PWD/encryption.h \
