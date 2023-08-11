@@ -66,8 +66,13 @@ void UserProfile::getProfile(const QString &did)
                 setUserFilterMatched(false);
                 setUserFilterTitle(QString());
             } else {
+                QString title = m_contentFilterLabels.title(detail.labels.at(0).val, false);
                 setUserFilterMatched(true);
-                setUserFilterTitle(m_contentFilterLabels.title(detail.labels.at(0).val, false));
+                if (title.isEmpty()) {
+                    setUserFilterTitle(detail.labels.at(0).val);
+                } else {
+                    setUserFilterTitle(title);
+                }
             }
         } else {
             emit errorOccured(profile->errorMessage());
