@@ -85,6 +85,11 @@ void RecordOperator::setExternalLink(const QString &uri, const QString &title,
     m_embedImages.append(image_path);
 }
 
+void RecordOperator::setSelfLabels(const QStringList &labels)
+{
+    m_selfLabels = labels;
+}
+
 void RecordOperator::clear()
 {
     m_text.clear();
@@ -125,6 +130,7 @@ void RecordOperator::post()
         create_record->setPostLanguages(m_postLanguages);
         create_record->setExternalLink(m_externalLinkUri, m_externalLinkTitle,
                                        m_externalLinkDescription);
+        create_record->setSelfLabels(m_selfLabels);
         create_record->post(m_text);
     });
 }

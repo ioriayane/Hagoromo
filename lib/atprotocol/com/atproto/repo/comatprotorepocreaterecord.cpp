@@ -149,6 +149,19 @@ void ComAtprotoRepoCreateRecord::post(const QString &text)
         json_record.insert("facets", json_facets);
     }
 
+    if (!m_selfLabels.isEmpty()) {
+        QJsonObject json_labels;
+        QJsonArray json_label_vals;
+        for (const auto &label : qAsConst(m_selfLabels)) {
+            QJsonObject json_val;
+            json_val.insert("val", label);
+            json_label_vals.append(json_val);
+        }
+        json_labels.insert("$type", "com.atproto.label.defs#selfLabels");
+        json_labels.insert("values", json_label_vals);
+        json_record.insert("labels", json_labels);
+    }
+
     QJsonObject json_obj;
     json_obj.insert("repo", did());
     json_obj.insert("collection", "app.bsky.feed.post");
@@ -282,6 +295,11 @@ void ComAtprotoRepoCreateRecord::setExternalLink(const QString &uri, const QStri
     m_externalLinkUri = uri;
     m_externalLinkTitle = title;
     m_externalLinkDescription = description;
+}
+
+void ComAtprotoRepoCreateRecord::setSelfLabels(const QStringList &labels)
+{
+    m_selfLabels = labels;
 }
 
 void ComAtprotoRepoCreateRecord::setFacets(
