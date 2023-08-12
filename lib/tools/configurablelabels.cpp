@@ -208,6 +208,37 @@ void ConfigurableLabels::initializeLabels()
 {
     ConfigurableLabelItem item;
 
+    item.id = "system";
+    item.title = tr("System");
+    item.subtitle = tr("Moderator overrides for special cases.");
+    item.warning = tr("Content hidden");
+    item.values << "!hide";
+    item.is_adult_imagery = false;
+    item.status = ConfigurableLabelStatus::Hide;
+    item.configurable = false;
+    m_labels.append(item);
+
+    item.id = "system";
+    item.title = tr("System");
+    item.subtitle = tr("Moderator overrides for special cases.");
+    item.warning = tr("Content hidden");
+    item.values << "!warn";
+    item.is_adult_imagery = false;
+    item.status = ConfigurableLabelStatus::Warning;
+    item.configurable = false;
+    m_labels.append(item);
+
+    item.id = "legal";
+    item.title = tr("Legal");
+    item.subtitle = tr("Content removed for legal reasons.");
+    item.warning = tr("Legal");
+    item.values << "dmca-violation"
+                << "doxxing";
+    item.is_adult_imagery = false;
+    item.status = ConfigurableLabelStatus::Hide;
+    item.configurable = false;
+    m_labels.append(item);
+
     item.id = "nsfw";
     item.title = tr("Explicit Sexual Images");
     item.subtitle = tr("i.e. pornography");
@@ -217,6 +248,7 @@ void ConfigurableLabels::initializeLabels()
                 << "nsfw";
     item.is_adult_imagery = true;
     item.status = ConfigurableLabelStatus::Hide;
+    item.configurable = true;
     m_labels.append(item);
 
     item.values.clear();
@@ -227,6 +259,7 @@ void ConfigurableLabels::initializeLabels()
     item.values << "nudity";
     item.is_adult_imagery = true;
     item.status = ConfigurableLabelStatus::Hide;
+    item.configurable = true;
     m_labels.append(item);
 
     item.values.clear();
@@ -237,6 +270,7 @@ void ConfigurableLabels::initializeLabels()
     item.values << "sexual";
     item.is_adult_imagery = true;
     item.status = ConfigurableLabelStatus::Warning;
+    item.configurable = true;
     m_labels.append(item);
 
     item.values.clear();
@@ -251,6 +285,7 @@ void ConfigurableLabels::initializeLabels()
                 << "corpse";
     item.is_adult_imagery = true;
     item.status = ConfigurableLabelStatus::Hide;
+    item.configurable = true;
     m_labels.append(item);
 
     item.values.clear();
@@ -264,6 +299,7 @@ void ConfigurableLabels::initializeLabels()
                 << "behavior-intolerant";
     item.is_adult_imagery = false;
     item.status = ConfigurableLabelStatus::Hide;
+    item.configurable = true;
     m_labels.append(item);
 
     item.values.clear();
@@ -274,6 +310,7 @@ void ConfigurableLabels::initializeLabels()
     item.values << "spam";
     item.is_adult_imagery = false;
     item.status = ConfigurableLabelStatus::Hide;
+    item.configurable = true;
     m_labels.append(item);
 
     item.values.clear();
@@ -284,6 +321,7 @@ void ConfigurableLabels::initializeLabels()
     item.values << "impersonation";
     item.is_adult_imagery = false;
     item.status = ConfigurableLabelStatus::Hide;
+    item.configurable = true;
     m_labels.append(item);
 }
 
@@ -334,6 +372,8 @@ QString ConfigurableLabels::updatePreferencesJson(const QString &src_json)
                 dest_preferences.append(value);
             }
             for (const auto &label : qAsConst(m_labels)) {
+                if (!label.configurable)
+                    continue;
                 QJsonObject value;
                 value.insert("$type", QStringLiteral("app.bsky.actor.defs#contentLabelPref"));
                 value.insert("label", QJsonValue(label.id));
