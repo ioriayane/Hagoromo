@@ -4,6 +4,7 @@
 
 #include "webserver.h"
 #include "atprotocol/com/atproto/server/comatprotoservercreatesession.h"
+#include "atprotocol/com/atproto/repo/comatprotorepocreaterecord.h"
 #include "atprotocol/app/bsky/feed/appbskyfeedgettimeline.h"
 #include "tools/opengraphprotocol.h"
 #include "atprotocol/lexicons_func_unknown.h"
@@ -30,6 +31,7 @@ private slots:
     void test_ConfigurableLabels_load();
     void test_ConfigurableLabels_copy();
     void test_ConfigurableLabels_save();
+    void test_ComAtprotoRepoCreateRecord_post();
 
 private:
     void test_putPreferences(const QString &path, const QByteArray &body);
@@ -56,6 +58,9 @@ atprotocol_test::atprotocol_test()
                             == "/response/labels/save/3/xrpc/app.bsky.actor.putPreferences") {
                     test_putPreferences(request.url().path(), request.body());
                     json = "{}";
+                    result = true;
+                } else if (request.url().path() == "/response/xrpc/com.atproto.repo.createRecord") {
+                    json = "{ \"uri\": \"return uri\", \"cid\": \"return cid\" }";
                     result = true;
                 } else {
                     QFile *file = new QFile(":" + request.url().path());
@@ -649,6 +654,20 @@ void atprotocol_test::test_ConfigurableLabels_save()
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
+}
+
+void atprotocol_test::test_ComAtprotoRepoCreateRecord_post()
+{
+    AtProtocolInterface::ComAtprotoRepoCreateRecord createrecord;
+    createrecord.setAccount(m_account);
+    createrecord.setSelfLabels(QStringList() << "!warn"
+                                             << "spam");
+    QSignalSpy spy(&createrecord, SIGNAL(finished(bool)));
+    createrecord.post("hello world");
+    spy.wait();
+    QVERIFY(spy.count() == 1);
+    QList<QVariant> arguments = spy.takeFirst();
+    QVERIFY(arguments.at(0).toBool());
 }
 
 void atprotocol_test::test_putPreferences(const QString &path, const QByteArray &body)

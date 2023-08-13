@@ -26,6 +26,7 @@ public:
     Q_INVOKABLE void setPostLanguages(const QStringList &langs);
     Q_INVOKABLE void setExternalLink(const QString &uri, const QString &title,
                                      const QString &description, const QString &image_path);
+    Q_INVOKABLE void setSelfLabels(const QStringList &labels);
 
     Q_INVOKABLE void clear();
 
@@ -70,6 +71,7 @@ private:
     QString m_externalLinkUri;
     QString m_externalLinkTitle;
     QString m_externalLinkDescription;
+    QStringList m_selfLabels;
 
     bool m_running;
 };
