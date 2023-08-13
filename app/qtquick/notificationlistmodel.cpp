@@ -102,6 +102,11 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
         else
             return QString();
 
+    } else if (role == UserFilterMatchedRole) {
+        return getContentFilterMatched(current.author.labels, false);
+    } else if (role == UserFilterMessageRole) {
+        return getContentFilterMessage(current.author.labels, false);
+
         //----------------------------------------
     } else if (role == ReasonRole) {
         if (current.reason == "like") {
@@ -547,6 +552,9 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[GeneratorFeedDisplayNameRole] = "generatorFeedDisplayName";
     roles[GeneratorFeedLikeCountRole] = "generatorFeedLikeCount";
     roles[GeneratorFeedAvatarRole] = "generatorFeedAvatar";
+
+    roles[UserFilterMatchedRole] = "userFilterMatched";
+    roles[UserFilterMessageRole] = "userFilterMessage";
 
     return roles;
 }
