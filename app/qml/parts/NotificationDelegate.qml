@@ -38,7 +38,7 @@ ClickableFrame {
     property alias postAvatarImage: postAvatarImage
     property alias postAuthor: postAuthor
     property alias recordFrame: recordFrame
-    property alias contentFilterFrame: contentFilterFrame
+    property alias contentMediaFilterFrame: contentMediaFilterFrame
     property alias recordImagePreview: recordImagePreview
     //    property alias generatorViewFrame: generatorFeedFrame
     //    property alias generatorAvatarImage: generatorFeedAvatarImage
@@ -217,12 +217,12 @@ ClickableFrame {
                 }
 
                 CoverFrame {
-                    id: contentFilterFrame
+                    id: contentMediaFilterFrame
                     Layout.preferredWidth: parent.basisWidth
                     Layout.topMargin: 5
                     visible: false
                 }
-                //            visible: contentFilterFrame.showContent
+                //            visible: contentMediaFilterFrame.showContent
 
                 ClickableFrame {
                     id: recordFrame

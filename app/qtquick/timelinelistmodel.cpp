@@ -164,39 +164,17 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return current.reason_ReasonRepost.by.handle;
 
     else if (role == UserFilterMatchedRole) {
-        for (const auto &label : current.post.author.labels) {
-            if (m_contentFilterLabels.visibility(label.val, false)
-                != ConfigurableLabelStatus::Show) {
-                return true;
-            }
-        }
-        return false;
+        return getContentFilterMatched(current.post.author.labels, false);
     } else if (role == UserFilterMessageRole) {
-        QString message;
-        for (const auto &label : current.post.author.labels) {
-            message = m_contentFilterLabels.message(label.val, false);
-            if (!message.isEmpty()) {
-                break;
-            }
-        }
-        return message;
+        return getContentFilterMessage(current.post.author.labels, false);
+    } else if (role == ContentFilterMatchedRole) {
+        return getContentFilterMatched(current.post.labels, false);
+    } else if (role == ContentFilterMessageRole) {
+        return getContentFilterMessage(current.post.labels, false);
     } else if (role == ContentMediaFilterMatchedRole) {
-        for (const auto &label : current.post.labels) {
-            if (m_contentFilterLabels.visibility(label.val, true)
-                != ConfigurableLabelStatus::Show) {
-                return true;
-            }
-        }
-        return false;
+        return getContentFilterMatched(current.post.labels, true);
     } else if (role == ContentMediaFilterMessageRole) {
-        QString message;
-        for (const auto &label : current.post.labels) {
-            message = m_contentFilterLabels.message(label.val, true);
-            if (!message.isEmpty()) {
-                break;
-            }
-        }
-        return message;
+        return getContentFilterMessage(current.post.labels, true);
     }
 
     return QVariant();
@@ -420,6 +398,8 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
 
     roles[UserFilterMatchedRole] = "userFilterMatched";
     roles[UserFilterMessageRole] = "userFilterMessage";
+    roles[ContentFilterMatchedRole] = "contentFilterMatched";
+    roles[ContentFilterMessageRole] = "contentFilterMessage";
     roles[ContentMediaFilterMatchedRole] = "contentMediaFilterMatched";
     roles[ContentMediaFilterMessageRole] = "contentMediaFilterMessage";
 

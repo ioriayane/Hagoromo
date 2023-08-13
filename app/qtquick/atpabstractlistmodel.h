@@ -83,6 +83,10 @@ protected:
     virtual void finishedDisplayingQueuedPosts() = 0;
     virtual bool checkVisibility(const QString &cid) = 0;
     void updateContentFilterLabels(std::function<void()> callback);
+    bool getContentFilterMatched(const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels,
+                                 const bool for_media) const;
+    QString getContentFilterMessage(const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels,
+                                 const bool for_media) const;
 
     // これで取得したポストの順番を管理して実態はm_viewPostHashで管理
     // checkVisibility(cid)の結果次第で間引かれる

@@ -75,6 +75,8 @@ public:
 
         UserFilterMatchedRole,
         UserFilterMessageRole,
+        ContentFilterMatchedRole,
+        ContentFilterMessageRole,
         ContentMediaFilterMatchedRole,
         ContentMediaFilterMessageRole,
     };

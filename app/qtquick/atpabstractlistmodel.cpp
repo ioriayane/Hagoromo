@@ -260,6 +260,31 @@ void AtpAbstractListModel::updateContentFilterLabels(std::function<void()> callb
     labels->load();
 }
 
+bool AtpAbstractListModel::getContentFilterMatched(
+        const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels, const bool for_media) const
+{
+    for (const auto &label : labels) {
+        if (m_contentFilterLabels.visibility(label.val, for_media)
+            != ConfigurableLabelStatus::Show) {
+            return true;
+        }
+    }
+    return false;
+}
+
+QString AtpAbstractListModel::getContentFilterMessage(
+        const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels, const bool for_media) const
+{
+    QString message;
+    for (const auto &label : labels) {
+        message = m_contentFilterLabels.message(label.val, for_media);
+        if (!message.isEmpty()) {
+            break;
+        }
+    }
+    return message;
+}
+
 int AtpAbstractListModel::searchInsertPosition(const QString &cid)
 {
     int basis_pos = m_originalCidList.indexOf(cid);
