@@ -209,7 +209,7 @@ void ConfigurableLabels::initializeLabels()
     ConfigurableLabelItem item;
 
     item.id = "system";
-    item.title = tr("System");
+    item.title = tr("Content hidden");
     item.subtitle = tr("Moderator overrides for special cases.");
     item.warning = tr("Content hidden");
     item.values << "!hide";
@@ -219,9 +219,9 @@ void ConfigurableLabels::initializeLabels()
     m_labels.append(item);
 
     item.id = "system";
-    item.title = tr("System");
+    item.title = tr("Content warning");
     item.subtitle = tr("Moderator overrides for special cases.");
-    item.warning = tr("Content hidden");
+    item.warning = tr("Content warning");
     item.values << "!warn";
     item.is_adult_imagery = false;
     item.status = ConfigurableLabelStatus::Warning;
