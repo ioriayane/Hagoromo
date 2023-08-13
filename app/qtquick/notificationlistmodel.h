@@ -69,11 +69,6 @@ public:
         GeneratorFeedDisplayNameRole,
         GeneratorFeedLikeCountRole,
         GeneratorFeedAvatarRole,
-
-        UserFilterMatchedRole,
-        UserFilterMessageRole,
-        ContentFilterMatchedRole,
-        ContentFilterMessageRole,
     };
     Q_ENUM(NotificationListModelRoles)
 
