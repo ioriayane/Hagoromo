@@ -98,8 +98,8 @@ ScrollView {
                 }
                 return text
             }
-            contentFilterFrame.visible: model.contentFilterMatched
-            contentFilterFrame.labelText: model.contentFilterMessage
+            contentFilterFrame.visible: model.contentMediaFilterMatched
+            contentFilterFrame.labelText: model.contentMediaFilterMessage
             postImagePreview.embedImages: model.embedImages
             postImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.embedImagesFull)
 

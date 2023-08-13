@@ -75,8 +75,8 @@ public:
 
         UserFilterMatchedRole,
         UserFilterMessageRole,
-        ContentFilterMatchedRole,
-        ContentFilterMessageRole,
+        ContentMediaFilterMatchedRole,
+        ContentMediaFilterMessageRole,
     };
     Q_ENUM(TimelineListModelRoles)
 

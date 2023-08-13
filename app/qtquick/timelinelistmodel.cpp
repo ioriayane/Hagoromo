@@ -180,7 +180,7 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
             }
         }
         return message;
-    } else if (role == ContentFilterMatchedRole) {
+    } else if (role == ContentMediaFilterMatchedRole) {
         for (const auto &label : current.post.labels) {
             if (m_contentFilterLabels.visibility(label.val, true)
                 != ConfigurableLabelStatus::Show) {
@@ -188,7 +188,7 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
             }
         }
         return false;
-    } else if (role == ContentFilterMessageRole) {
+    } else if (role == ContentMediaFilterMessageRole) {
         QString message;
         for (const auto &label : current.post.labels) {
             message = m_contentFilterLabels.message(label.val, true);
@@ -420,8 +420,8 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
 
     roles[UserFilterMatchedRole] = "userFilterMatched";
     roles[UserFilterMessageRole] = "userFilterMessage";
-    roles[ContentFilterMatchedRole] = "contentFilterMatched";
-    roles[ContentFilterMessageRole] = "contentFilterMessage";
+    roles[ContentMediaFilterMatchedRole] = "contentMediaFilterMatched";
+    roles[ContentMediaFilterMessageRole] = "contentMediaFilterMessage";
 
     return roles;
 }

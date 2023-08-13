@@ -182,6 +182,8 @@ void ConfigurableLabels::setStatus(const int index, const ConfigurableLabelStatu
 {
     if (index < 0 || index >= m_labels.length())
         return;
+    if (m_labels[index].configurable == false)
+        return;
 
     m_labels[index].status = status;
 }
@@ -208,6 +210,7 @@ void ConfigurableLabels::initializeLabels()
 {
     ConfigurableLabelItem item;
 
+    item.values.clear();
     item.id = "system";
     item.title = tr("Content hidden");
     item.subtitle = tr("Moderator overrides for special cases.");
@@ -218,6 +221,7 @@ void ConfigurableLabels::initializeLabels()
     item.configurable = false;
     m_labels.append(item);
 
+    item.values.clear();
     item.id = "system";
     item.title = tr("Content warning");
     item.subtitle = tr("Moderator overrides for special cases.");
@@ -228,6 +232,7 @@ void ConfigurableLabels::initializeLabels()
     item.configurable = false;
     m_labels.append(item);
 
+    item.values.clear();
     item.id = "legal";
     item.title = tr("Legal");
     item.subtitle = tr("Content removed for legal reasons.");
@@ -239,6 +244,7 @@ void ConfigurableLabels::initializeLabels()
     item.configurable = false;
     m_labels.append(item);
 
+    item.values.clear();
     item.id = "nsfw";
     item.title = tr("Explicit Sexual Images");
     item.subtitle = tr("i.e. pornography");

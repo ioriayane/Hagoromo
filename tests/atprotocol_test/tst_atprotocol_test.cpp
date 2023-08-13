@@ -434,6 +434,31 @@ void atprotocol_test::test_ConfigurableLabels()
     QVERIFY(labels.message("icon-kkk", true) == QString());
     QVERIFY(labels.message("corpse", false) == QString());
     QVERIFY(labels.message("icon-kkk", false) == "Hate Groups");
+
+    labels.setEnableAdultContent(true);
+    for (int i = 0; i < labels.count(); i++) {
+        labels.setStatus(i, ConfigurableLabelStatus::Warning);
+    }
+    QVERIFY(labels.visibility("corpse", true) == ConfigurableLabelStatus::Warning);
+    QVERIFY(labels.visibility("icon-kkk", true) == ConfigurableLabelStatus::Show);
+    QVERIFY(labels.visibility("corpse", false) == ConfigurableLabelStatus::Show);
+    QVERIFY(labels.visibility("icon-kkk", false) == ConfigurableLabelStatus::Warning);
+
+    QVERIFY(labels.message("corpse", true) == "Violence");
+    QVERIFY(labels.message("icon-kkk", true) == QString());
+    QVERIFY(labels.message("corpse", false) == QString());
+    QVERIFY(labels.message("icon-kkk", false) == "Hate Groups");
+
+    // 設定変更できない項目を変更していないか確認
+    for (int i = 0; i < labels.count(); i++) {
+        labels.setStatus(i, ConfigurableLabelStatus::Show);
+    }
+    QVERIFY(labels.visibility("!hide", false) == ConfigurableLabelStatus::Hide);
+    QVERIFY(labels.visibility("doxxing", false) == ConfigurableLabelStatus::Hide);
+    QVERIFY(labels.visibility("!warn", false) == ConfigurableLabelStatus::Warning);
+    QVERIFY(labels.visibility("!warn", true) == ConfigurableLabelStatus::Show);
+    QVERIFY(labels.message("!warn", false) == "Content warning");
+    QVERIFY(labels.message("!warn", true) == QString());
 }
 
 void atprotocol_test::test_ConfigurableLabels_load()
