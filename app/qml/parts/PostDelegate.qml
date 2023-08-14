@@ -26,6 +26,7 @@ ClickableFrame {
     property alias postAvatarImage: postAvatarImage
     property alias postAuthor: postAuthor
     property alias recordText: recordText
+    property alias contentFilterFrame: contentFilterFrame
     property alias contentMediaFilterFrame: contentMediaFilterFrame
     property alias postImagePreview: postImagePreview
     property alias childFrame: childFrame
@@ -122,135 +123,149 @@ ClickableFrame {
                     layoutWidth: parent.basisWidth
                 }
 
-                Label {
-                    id: recordText
-                    Layout.preferredWidth: parent.basisWidth
-                    Layout.topMargin: 5
-                    visible: text.length > 0
-                    textFormat: Text.StyledText
-                    wrapMode: Text.WrapAnywhere
-                    font.pointSize: 10 * fontSizeRatio
-                    lineHeight: 1.3
-                    onLinkActivated: (url) => openLink(url)
-                    onHoveredLinkChanged: displayLink(hoveredLink)
-                }
-
                 CoverFrame {
-                    id: contentMediaFilterFrame
+                    id: contentFilterFrame
                     Layout.preferredWidth: parent.basisWidth
                     Layout.topMargin: 5
                     visible: false
                 }
 
-                ImagePreview {
-                    id: postImagePreview
-                    layoutWidth: parent.basisWidth
-                    Layout.topMargin: 5
-                    visible: contentMediaFilterFrame.showContent
-                }
-
-                ClickableFrame {
-                    id: childFrame
+                ColumnLayout {
+                    id: contentLayout
                     Layout.preferredWidth: parent.basisWidth
-                    Layout.topMargin: 5
-                    RowLayout {
-                        id: childLayout
-                        spacing: 10
-                        AvatarImage {
-                            id: childAvatarImage
-                            Layout.preferredWidth: 16
-                            Layout.preferredHeight: 16
-                            Layout.alignment: Qt.AlignTop
-                        }
-                        ColumnLayout {
-                            Layout.fillWidth: true
-                            property int basisWidth: bodyLayout.basisWidth - childFrame.padding * 2 -
-                                                     childLayout.spacing - childAvatarImage.Layout.preferredWidth
-                            Author {
-                                id: childAuthor
-                                layoutWidth: parent.basisWidth
-                            }
-                            Label {
-                                id: childRecordText
-                                Layout.preferredWidth: parent.basisWidth
-                                Layout.maximumWidth: parent.basisWidth
-                                textFormat: Text.StyledText
-                                wrapMode: Text.WrapAnywhere
-                                font.pointSize: 10 * fontSizeRatio
-                                lineHeight: 1.3
-                                onLinkActivated: (url) => openLink(url)
-                                onHoveredLinkChanged: displayLink(hoveredLink)
-                            }
-                        }
+                    spacing: 0
+                    visible: contentFilterFrame.showContent
+
+                    Label {
+                        id: recordText
+                        Layout.preferredWidth: parent.width
+                        Layout.topMargin: 5
+                        visible: text.length > 0
+                        textFormat: Text.StyledText
+                        wrapMode: Text.WrapAnywhere
+                        font.pointSize: 10 * fontSizeRatio
+                        lineHeight: 1.3
+                        onLinkActivated: (url) => openLink(url)
+                        onHoveredLinkChanged: displayLink(hoveredLink)
                     }
-                }
 
-                ExternalLinkCard {
-                    id: externalLinkFrame
-                    Layout.preferredWidth: parent.basisWidth
-                    Layout.topMargin: 5
-                    visible: externalLink.valid
-                    hoverEnabled: true
-                    onHoveredChanged:{
-                        if(hovered){
-                            displayLink(uriLabel.text)
-                        }else{
-                            displayLink("")
-                        }
+                    CoverFrame {
+                        id: contentMediaFilterFrame
+                        Layout.preferredWidth: parent.width
+                        Layout.topMargin: 5
+                        visible: false
                     }
-                }
 
-                ClickableFrame {
-                    id: generatorFeedFrame
-                    Layout.preferredWidth: parent.basisWidth
-                    Layout.topMargin: 5
+                    ImagePreview {
+                        id: postImagePreview
+                        layoutWidth: parent.width
+                        Layout.topMargin: 5
+                        visible: contentMediaFilterFrame.showContent
+                    }
 
-                    ColumnLayout {
-                        GridLayout {
-                            columns: 2
-                            rowSpacing: 3
-                            AvatarImage {
-                                id: generatorFeedAvatarImage
-                                Layout.preferredWidth: 24
-                                Layout.preferredHeight: 24
-                                Layout.rowSpan: 2
-                                altSource: "../images/account_icon.png"
-                            }
-                            Label {
-                                id: generatorFeedDisplayNameLabel
-                                Layout.fillWidth: true
-                                font.pointSize: 10
-                            }
-                            Label {
-                                id: generatorFeedCreatorHandleLabel
-                                color: Material.color(Material.Grey)
-                                font.pointSize: 8
-                            }
-                        }
+                    ClickableFrame {
+                        id: childFrame
+                        Layout.preferredWidth: parent.width
+                        Layout.topMargin: 5
                         RowLayout {
-                            Layout.leftMargin: 3
-                            spacing: 3
-                            Image {
+                            id: childLayout
+                            spacing: 10
+                            AvatarImage {
+                                id: childAvatarImage
                                 Layout.preferredWidth: 16
                                 Layout.preferredHeight: 16
-                                source: "../images/like.png"
-                                layer.enabled: true
-                                layer.effect: ColorOverlay {
-                                    color: Material.color(Material.Pink)
-                                }
+                                Layout.alignment: Qt.AlignTop
                             }
-                            Label {
-                                id: generatorFeedLikeCountLabel
-                                Layout.alignment: Qt.AlignVCenter
+                            ColumnLayout {
                                 Layout.fillWidth: true
-                                font.pointSize: 8
+                                property int basisWidth: bodyLayout.basisWidth - childFrame.padding * 2 -
+                                                         childLayout.spacing - childAvatarImage.Layout.preferredWidth
+                                Author {
+                                    id: childAuthor
+                                    layoutWidth: parent.basisWidth
+                                }
+                                Label {
+                                    id: childRecordText
+                                    Layout.preferredWidth: parent.basisWidth
+                                    Layout.maximumWidth: parent.basisWidth
+                                    textFormat: Text.StyledText
+                                    wrapMode: Text.WrapAnywhere
+                                    font.pointSize: 10 * fontSizeRatio
+                                    lineHeight: 1.3
+                                    onLinkActivated: (url) => openLink(url)
+                                    onHoveredLinkChanged: displayLink(hoveredLink)
+                                }
                             }
                         }
                     }
-                }
 
-                PostControls {
-                    id: postControls
+                    ExternalLinkCard {
+                        id: externalLinkFrame
+                        Layout.preferredWidth: parent.width
+                        Layout.topMargin: 5
+                        visible: externalLink.valid
+                        hoverEnabled: true
+                        onHoveredChanged:{
+                            if(hovered){
+                                displayLink(uriLabel.text)
+                            }else{
+                                displayLink("")
+                            }
+                        }
+                    }
+
+                    ClickableFrame {
+                        id: generatorFeedFrame
+                        Layout.preferredWidth: parent.width
+                        Layout.topMargin: 5
+
+                        ColumnLayout {
+                            GridLayout {
+                                columns: 2
+                                rowSpacing: 3
+                                AvatarImage {
+                                    id: generatorFeedAvatarImage
+                                    Layout.preferredWidth: 24
+                                    Layout.preferredHeight: 24
+                                    Layout.rowSpan: 2
+                                    altSource: "../images/account_icon.png"
+                                }
+                                Label {
+                                    id: generatorFeedDisplayNameLabel
+                                    Layout.fillWidth: true
+                                    font.pointSize: 10
+                                }
+                                Label {
+                                    id: generatorFeedCreatorHandleLabel
+                                    color: Material.color(Material.Grey)
+                                    font.pointSize: 8
+                                }
+                            }
+                            RowLayout {
+                                Layout.leftMargin: 3
+                                spacing: 3
+                                Image {
+                                    Layout.preferredWidth: 16
+                                    Layout.preferredHeight: 16
+                                    source: "../images/like.png"
+                                    layer.enabled: true
+                                    layer.effect: ColorOverlay {
+                                        color: Material.color(Material.Pink)
+                                    }
+                                }
+                                Label {
+                                    id: generatorFeedLikeCountLabel
+                                    Layout.alignment: Qt.AlignVCenter
+                                    Layout.fillWidth: true
+                                    font.pointSize: 8
+                                }
+                            }
+                        }
+                    }
+
+                    PostControls {
+                        id: postControls
+                    }
                 }
             }
         }

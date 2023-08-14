@@ -132,6 +132,8 @@ ColumnLayout {
                     }
                     return text
                 }
+                contentFilterFrame.visible: model.contentFilterMatched
+                contentFilterFrame.labelText: model.contentFilterMessage
                 contentMediaFilterFrame.visible: model.contentMediaFilterMatched
                 contentMediaFilterFrame.labelText: model.contentMediaFilterMessage
                 postImagePreview.embedImages: model.embedImages
