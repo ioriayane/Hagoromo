@@ -61,6 +61,8 @@ Dialog {
         replyIndexedAt = ""
         replyText = ""
         postLanguagesButton.text = ""
+        selfLabelsButton.value = ""
+        selfLabelsButton.iconText = ""
 
         postText.clear()
         embedImagePreview.embedImages = []
@@ -340,6 +342,41 @@ Dialog {
                 Layout.preferredHeight: 1
             }
             IconButton {
+                id: selfLabelsButton
+                iconSource: "../images/report.png"
+                flat: true
+                foreground: value.length > 0 ? Material.accent : Material.foreground
+                onClicked: selfLabelPopup.open()
+                property string value: ""
+                Menu {
+                    id: selfLabelPopup
+                    MenuItem {
+                        text: qsTr("Spoiler")
+                        property string value: "spoiler"
+                        onTriggered: {
+                            selfLabelsButton.value = value
+                            selfLabelsButton.iconText = text
+                        }
+                    }
+                    MenuItem {
+                        text: qsTr("Sexual")
+                        property string value: "sexual"
+                        onTriggered: {
+                            selfLabelsButton.value = value
+                            selfLabelsButton.iconText = text
+                        }
+                    }
+                    MenuItem {
+                        text: qsTr("Warning")
+                        property string value: "!warn"
+                        onTriggered: {
+                            selfLabelsButton.value = value
+                            selfLabelsButton.iconText = text
+                        }
+                    }
+                }
+            }
+            IconButton {
                 enabled: !createRecord.running && !externalLink.valid
                 iconSource: "../images/add_image.png"
                 flat: true
@@ -384,6 +421,9 @@ Dialog {
                         createRecord.setReply(replyCid, replyUri, replyRootCid, replyRootUri)
                     }else if(postType === "quote"){
                         createRecord.setQuote(replyCid, replyUri)
+                    }
+                    if(selfLabelsButton.value.length > 0){
+                        createRecord.setSelfLabels([selfLabelsButton.value])
                     }
                     if(externalLink.valid){
                         createRecord.setExternalLink(externalLink.uri, externalLink.title, externalLink.description, externalLink.thumbLocal)

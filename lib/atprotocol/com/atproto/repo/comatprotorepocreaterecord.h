@@ -25,6 +25,7 @@ public:
     void setFacets(const QList<AtProtocolType::AppBskyRichtextFacet::Main> &newFacets);
     void setPostLanguages(const QStringList &newPostLanguages);
     void setExternalLink(const QString &uri, const QString &title, const QString &description);
+    void setSelfLabels(const QStringList &labels);
 
     QString replyCid() const;
     QString replyUri() const;
@@ -41,6 +42,7 @@ private:
     QString m_externalLinkUri;
     QString m_externalLinkTitle;
     QString m_externalLinkDescription;
+    QStringList m_selfLabels;
 
     QString m_replyCid;
     QString m_replyUri;
