@@ -260,6 +260,18 @@ void AtpAbstractListModel::updateContentFilterLabels(std::function<void()> callb
     labels->load();
 }
 
+ConfigurableLabelStatus AtpAbstractListModel::getContentFilterStatus(
+        const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels, const bool for_media) const
+{
+    for (const auto &label : labels) {
+        ConfigurableLabelStatus status = m_contentFilterLabels.visibility(label.val, for_media);
+        if (status != ConfigurableLabelStatus::Show) {
+            return status;
+        }
+    }
+    return ConfigurableLabelStatus::Show;
+}
+
 bool AtpAbstractListModel::getContentFilterMatched(
         const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels, const bool for_media) const
 {
@@ -283,6 +295,50 @@ QString AtpAbstractListModel::getContentFilterMessage(
         }
     }
     return message;
+}
+
+bool AtpAbstractListModel::getQuoteFilterMatched(
+        const AtProtocolType::AppBskyFeedDefs::PostView &post) const
+{
+    if (!post.embed_AppBskyEmbedRecord_View.isNull()
+        && post.embed_AppBskyEmbedRecord_View->record_type
+                == AppBskyEmbedRecord::ViewRecordType::record_ViewRecord) {
+        if (post.embed_AppBskyEmbedRecord_View->record_ViewRecord.author.viewer.muted)
+            return true;
+        if (post.embed_AppBskyEmbedRecord_View->record_ViewRecord.author.viewer.blockedBy)
+            return true;
+
+        if (getContentFilterStatus(post.embed_AppBskyEmbedRecord_View->record_ViewRecord.labels,
+                                   false)
+            == ConfigurableLabelStatus::Warning)
+            return true;
+        if (getContentFilterStatus(post.embed_AppBskyEmbedRecord_View->record_ViewRecord.labels,
+                                   true)
+            == ConfigurableLabelStatus::Warning)
+            return true;
+    }
+    if (!post.embed_AppBskyEmbedRecordWithMedia_View.record.isNull()
+        && post.embed_AppBskyEmbedRecordWithMedia_View.record->record_type
+                == AppBskyEmbedRecord::ViewRecordType::record_ViewRecord) {
+        if (post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.author.viewer
+                    .muted)
+            return true;
+        if (post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.author.viewer
+                    .blockedBy)
+            return true;
+        if (getContentFilterStatus(
+                    post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.labels,
+                    false)
+            == ConfigurableLabelStatus::Warning)
+            return true;
+        if (getContentFilterStatus(
+                    post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.labels,
+                    true)
+            == ConfigurableLabelStatus::Warning)
+            return true;
+    }
+
+    return false;
 }
 
 int AtpAbstractListModel::searchInsertPosition(const QString &cid)

@@ -13,5 +13,9 @@
         <file>response/notifications/xrpc/app.bsky.notification.listNotifications</file>
         <file>response/notifications/xrpc/app.bsky.feed.getPosts</file>
         <file>string/length.txt</file>
+        <file>response/timeline/hide/xrpc/app.bsky.feed.getTimeline</file>
+        <file>response/timeline/hide/xrpc/app.bsky.actor.getPreferences</file>
+        <file>response/timeline/warn/xrpc/app.bsky.feed.getTimeline</file>
+        <file>response/timeline/warn/xrpc/app.bsky.actor.getPreferences</file>
     </qresource>
 </RCC>

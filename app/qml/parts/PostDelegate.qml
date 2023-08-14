@@ -19,6 +19,7 @@ ClickableFrame {
     property real fontSizeRatio: 1.0
     property bool userFilterMatched: false
     property string userFilterMessage: ""
+    property bool hasQuote: false
 
     property alias moderationFrame: moderationFrame
     property alias repostReactionAuthor: repostReactionAuthor
@@ -29,10 +30,12 @@ ClickableFrame {
     property alias contentFilterFrame: contentFilterFrame
     property alias contentMediaFilterFrame: contentMediaFilterFrame
     property alias postImagePreview: postImagePreview
+    property alias quoteFilterFrame: quoteFilterFrame
     property alias childFrame: childFrame
     property alias childAvatarImage: childAvatarImage
     property alias childAuthor: childAuthor
     property alias childRecordText: childRecordText
+    property alias blockedQuoteFrame: blockedQuoteFrame
     property alias externalLinkFrame: externalLinkFrame
     property alias generatorViewFrame: generatorFeedFrame
     property alias generatorAvatarImage: generatorFeedAvatarImage
@@ -155,7 +158,6 @@ ClickableFrame {
                         Layout.topMargin: 5
                         visible: false
                     }
-
                     ImagePreview {
                         id: postImagePreview
                         layoutWidth: parent.width
@@ -163,10 +165,17 @@ ClickableFrame {
                         visible: contentMediaFilterFrame.showContent
                     }
 
+                    CoverFrame {
+                        id: quoteFilterFrame
+                        Layout.preferredWidth: parent.width
+                        Layout.topMargin: 5
+                        visible: false
+                    }
                     ClickableFrame {
                         id: childFrame
                         Layout.preferredWidth: parent.width
                         Layout.topMargin: 5
+                        visible: postFrame.hasQuote && quoteFilterFrame.showContent
                         RowLayout {
                             id: childLayout
                             spacing: 10
@@ -196,6 +205,15 @@ ClickableFrame {
                                     onHoveredLinkChanged: displayLink(hoveredLink)
                                 }
                             }
+                        }
+                    }
+                    Frame {
+                        id: blockedQuoteFrame
+                        Layout.preferredWidth: parent.width
+                        Layout.topMargin: 5
+                        visible: false
+                        Label {
+                            text: qsTr("blocked")
                         }
                     }
 

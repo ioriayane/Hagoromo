@@ -139,7 +139,10 @@ ColumnLayout {
                 postImagePreview.embedImages: model.embedImages
                 postImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.embedImagesFull)
 
-                childFrame.visible: model.hasQuoteRecord
+                quoteFilterFrame.visible: model.quoteFilterMatched && !model.quoteRecordBlocked
+                quoteFilterFrame.labelText: qsTr("Quoted content warning")
+                blockedQuoteFrame.visible: model.quoteRecordBlocked
+                hasQuote: model.hasQuoteRecord && !model.quoteRecordBlocked
                 childFrame.onClicked: (mouse) => {
                                           if(model.quoteRecordUri.length > 0){
                                               requestViewThread(model.quoteRecordUri)
