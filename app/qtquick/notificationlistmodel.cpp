@@ -185,59 +185,59 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
         }
 
         //----------------------------------------
-        if (role == RecordCidRole) {
+        if (role == QuoteRecordCidRole) {
             if (m_postHash.contains(record_cid))
                 return m_postHash[record_cid].cid;
             else
                 return QString();
-        } else if (role == RecordUriRole) {
+        } else if (role == QuoteRecordUriRole) {
             if (m_postHash.contains(record_cid))
                 return m_postHash[record_cid].uri;
             else
                 return QString();
-        } else if (role == RecordDisplayNameRole) {
+        } else if (role == QuoteRecordDisplayNameRole) {
             if (m_postHash.contains(record_cid))
                 return m_postHash[record_cid].author.displayName;
             else
                 return QString();
-        } else if (role == RecordHandleRole) {
+        } else if (role == QuoteRecordHandleRole) {
             if (m_postHash.contains(record_cid))
                 return m_postHash[record_cid].author.handle;
             else
                 return QString();
-        } else if (role == RecordAvatarRole) {
+        } else if (role == QuoteRecordAvatarRole) {
             if (m_postHash.contains(record_cid))
                 return m_postHash[record_cid].author.avatar;
             else
                 return QString();
-        } else if (role == RecordIndexedAtRole) {
+        } else if (role == QuoteRecordIndexedAtRole) {
             if (m_postHash.contains(record_cid))
                 return formatDateTime(m_postHash[record_cid].indexedAt);
             else
                 return QString();
-        } else if (role == RecordRecordTextRole) {
+        } else if (role == QuoteRecordRecordTextRole) {
             if (m_postHash.contains(record_cid))
                 return copyRecordText(m_postHash[record_cid].record);
             else
                 return QString();
-        } else if (role == RecordImagesRole) {
+        } else if (role == QuoteRecordImagesRole) {
             if (m_postHash.contains(record_cid))
                 return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
                         m_postHash[record_cid], true);
             else
                 return QString();
-        } else if (role == RecordImagesFullRole) {
+        } else if (role == QuoteRecordImagesFullRole) {
             if (m_postHash.contains(record_cid))
                 return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
                         m_postHash[record_cid], false);
             else
                 return QString();
-        } else if (role == RecordIsRepostedRole) {
+        } else if (role == QuoteRecordIsRepostedRole) {
             if (m_postHash.contains(record_cid))
                 return m_postHash[record_cid].viewer.repost.contains(account().did);
             else
                 return false;
-        } else if (role == RecordIsLikedRole) {
+        } else if (role == QuoteRecordIsLikedRole) {
             if (m_postHash.contains(record_cid))
                 return m_postHash[record_cid].viewer.like.contains(account().did);
             else
@@ -555,17 +555,17 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
 
     roles[ReasonRole] = "reason";
 
-    roles[RecordCidRole] = "recordCid";
-    roles[RecordUriRole] = "recordUri";
-    roles[RecordDisplayNameRole] = "recordDisplayName";
-    roles[RecordHandleRole] = "recordHandle";
-    roles[RecordAvatarRole] = "recordAvatar";
-    roles[RecordIndexedAtRole] = "recordIndexedAt";
-    roles[RecordRecordTextRole] = "recordRecordText";
-    roles[RecordImagesRole] = "recordImages";
-    roles[RecordImagesFullRole] = "recordImagesFull";
-    roles[RecordIsRepostedRole] = "recordIsReposted";
-    roles[RecordIsLikedRole] = "recordIsLiked";
+    roles[QuoteRecordCidRole] = "quoteRecordCid";
+    roles[QuoteRecordUriRole] = "quoteRecordUri";
+    roles[QuoteRecordDisplayNameRole] = "quoteRecordDisplayName";
+    roles[QuoteRecordHandleRole] = "quoteRecordHandle";
+    roles[QuoteRecordAvatarRole] = "quoteRecordAvatar";
+    roles[QuoteRecordIndexedAtRole] = "quoteRecordIndexedAt";
+    roles[QuoteRecordRecordTextRole] = "quoteRecordRecordText";
+    roles[QuoteRecordImagesRole] = "quoteRecordImages";
+    roles[QuoteRecordImagesFullRole] = "quoteRecordImagesFull";
+    roles[QuoteRecordIsRepostedRole] = "quoteRecordIsReposted";
+    roles[QuoteRecordIsLikedRole] = "quoteRecordIsLiked";
 
     roles[HasGeneratorFeedRole] = "hasGeneratorFeed";
     roles[GeneratorFeedUriRole] = "generatorFeedUri";

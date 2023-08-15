@@ -25,11 +25,11 @@ ClickableFrame {
     property int reason: NotificationListModel.ReasonLike
     property string recordText: ""
 
-    property string recordDisplayName: ""
-    property string recordHandle: ""
-    property string recordAvatar: ""
-    property string recordIndexedAt: ""
-    property string recordRecordText: ""
+    property string quoteRecordDisplayName: ""
+    property string quoteRecordHandle: ""
+    property string quoteRecordAvatar: ""
+    property string quoteRecordIndexedAt: ""
+    property string quoteRecordRecordText: ""
 
     property string hoveredLink: ""
     property real fontSizeRatio: 1.0
@@ -40,8 +40,8 @@ ClickableFrame {
     property alias contentFilterFrame: contentFilterFrame
     property alias contentMediaFilterFrame: contentMediaFilterFrame
     property alias postImagePreview: postImagePreview
-    property alias recordFrame: recordFrame
-    property alias recordImagePreview: recordImagePreview
+    property alias quoteRecordFrame: quoteRecordFrame
+    property alias quoteRecordImagePreview: quoteRecordImagePreview
     //    property alias generatorViewFrame: generatorFeedFrame
     //    property alias generatorAvatarImage: generatorFeedAvatarImage
     //    property alias generatorDisplayNameLabel: generatorFeedDisplayNameLabel
@@ -72,7 +72,7 @@ ClickableFrame {
             PropertyChanges { target: reasonImage; source: "../images/like.png" }
             PropertyChanges { target: recordTextLabel; visible: true }
             PropertyChanges { target: recordTextLabel; color: Material.color(Material.Grey) }
-            PropertyChanges { target: recordTextLabel; text: notificationFrame.recordRecordText }
+            PropertyChanges { target: recordTextLabel; text: notificationFrame.quoteRecordRecordText }
             PropertyChanges { target: notificationFrame; bottomPadding: 5 }
         },
         State {
@@ -80,7 +80,7 @@ ClickableFrame {
             PropertyChanges { target: reasonImage; source: "../images/repost.png" }
             PropertyChanges { target: recordTextLabel; visible: true }
             PropertyChanges { target: recordTextLabel; color: Material.color(Material.Grey) }
-            PropertyChanges { target: recordTextLabel; text: notificationFrame.recordRecordText }
+            PropertyChanges { target: recordTextLabel; text: notificationFrame.quoteRecordRecordText }
             PropertyChanges { target: notificationFrame; bottomPadding: 5 }
         },
         State {
@@ -108,13 +108,13 @@ ClickableFrame {
             PropertyChanges { target: reasonImage; source: "../images/quote.png" }
             PropertyChanges { target: recordTextLabel; visible: true }
             PropertyChanges { target: recordTextLabel; text: notificationFrame.recordText }
-            PropertyChanges { target: recordFrame; visible: true }
+            PropertyChanges { target: quoteRecordFrame; visible: true }
 
-            PropertyChanges { target: recordAvatarImage; source: notificationFrame.recordAvatar }
-            PropertyChanges { target: recordAuthor; displayName: notificationFrame.recordDisplayName }
-            PropertyChanges { target: recordAuthor; handle: notificationFrame.recordHandle }
-            PropertyChanges { target: recordAuthor; indexedAt: notificationFrame.recordIndexedAt }
-            PropertyChanges { target: recordText; text: notificationFrame.recordRecordText }
+            PropertyChanges { target: quoteRecordAvatarImage; source: notificationFrame.quoteRecordAvatar }
+            PropertyChanges { target: quoteRecordAuthor; displayName: notificationFrame.quoteRecordDisplayName }
+            PropertyChanges { target: quoteRecordAuthor; handle: notificationFrame.quoteRecordHandle }
+            PropertyChanges { target: quoteRecordAuthor; indexedAt: notificationFrame.quoteRecordIndexedAt }
+            PropertyChanges { target: quoteRecordRecordText; text: notificationFrame.quoteRecordRecordText }
 
             PropertyChanges { target: postControls; visible: true }
             PropertyChanges { target: notificationFrame; bottomPadding: 2 }
@@ -245,7 +245,7 @@ ClickableFrame {
                     }
 
                     ClickableFrame {
-                        id: recordFrame
+                        id: quoteRecordFrame
                         Layout.preferredWidth: parent.width
                         Layout.topMargin: 5
                         visible: false
@@ -254,20 +254,20 @@ ClickableFrame {
 
                         ColumnLayout {
                             RowLayout {
-                                id: recordAuthorLayout
+                                id: quoteRecordAuthorLayout
                                 AvatarImage {
-                                    id: recordAvatarImage
+                                    id: quoteRecordAvatarImage
                                     Layout.preferredWidth: 16
                                     Layout.preferredHeight: 16
                                 }
                                 Author {
-                                    id: recordAuthor
-                                    layoutWidth: recordFrame.basisWidth - recordAvatarImage.Layout.preferredWidth - recordAuthorLayout.spacing
+                                    id: quoteRecordAuthor
+                                    layoutWidth: quoteRecordFrame.basisWidth - quoteRecordAvatarImage.Layout.preferredWidth - quoteRecordAuthorLayout.spacing
                                 }
                             }
                             Label {
-                                id: recordText
-                                Layout.preferredWidth: recordFrame.basisWidth
+                                id: quoteRecordRecordText
+                                Layout.preferredWidth: quoteRecordFrame.basisWidth
                                 textFormat: Text.StyledText
                                 wrapMode: Text.WrapAnywhere
                                 font.pointSize: 10 * fontSizeRatio
@@ -276,8 +276,8 @@ ClickableFrame {
                                 onHoveredLinkChanged: displayLink(hoveredLink)
                             }
                             ImagePreview {
-                                id: recordImagePreview
-                                layoutWidth: recordFrame.basisWidth
+                                id: quoteRecordImagePreview
+                                layoutWidth: quoteRecordFrame.basisWidth
                                 Layout.topMargin: 5
                             }
                         }
