@@ -25,11 +25,11 @@ ClickableFrame {
     property int reason: NotificationListModel.ReasonLike
     property string recordText: ""
 
-    property string recordDisplayName: ""
-    property string recordHandle: ""
-    property string recordAvatar: ""
-    property string recordIndexedAt: ""
-    property string recordRecordText: ""
+    property string quoteRecordDisplayName: ""
+    property string quoteRecordHandle: ""
+    property string quoteRecordAvatar: ""
+    property string quoteRecordIndexedAt: ""
+    property string quoteRecordRecordText: ""
 
     property string hoveredLink: ""
     property real fontSizeRatio: 1.0
@@ -37,9 +37,11 @@ ClickableFrame {
     property alias moderationFrame: moderationFrame
     property alias postAvatarImage: postAvatarImage
     property alias postAuthor: postAuthor
-    property alias recordFrame: recordFrame
     property alias contentFilterFrame: contentFilterFrame
-    property alias recordImagePreview: recordImagePreview
+    property alias contentMediaFilterFrame: contentMediaFilterFrame
+    property alias postImagePreview: postImagePreview
+    property alias quoteRecordFrame: quoteRecordFrame
+    property alias quoteRecordImagePreview: quoteRecordImagePreview
     //    property alias generatorViewFrame: generatorFeedFrame
     //    property alias generatorAvatarImage: generatorFeedAvatarImage
     //    property alias generatorDisplayNameLabel: generatorFeedDisplayNameLabel
@@ -70,7 +72,7 @@ ClickableFrame {
             PropertyChanges { target: reasonImage; source: "../images/like.png" }
             PropertyChanges { target: recordTextLabel; visible: true }
             PropertyChanges { target: recordTextLabel; color: Material.color(Material.Grey) }
-            PropertyChanges { target: recordTextLabel; text: notificationFrame.recordRecordText }
+            PropertyChanges { target: recordTextLabel; text: notificationFrame.quoteRecordRecordText }
             PropertyChanges { target: notificationFrame; bottomPadding: 5 }
         },
         State {
@@ -78,7 +80,7 @@ ClickableFrame {
             PropertyChanges { target: reasonImage; source: "../images/repost.png" }
             PropertyChanges { target: recordTextLabel; visible: true }
             PropertyChanges { target: recordTextLabel; color: Material.color(Material.Grey) }
-            PropertyChanges { target: recordTextLabel; text: notificationFrame.recordRecordText }
+            PropertyChanges { target: recordTextLabel; text: notificationFrame.quoteRecordRecordText }
             PropertyChanges { target: notificationFrame; bottomPadding: 5 }
         },
         State {
@@ -106,13 +108,13 @@ ClickableFrame {
             PropertyChanges { target: reasonImage; source: "../images/quote.png" }
             PropertyChanges { target: recordTextLabel; visible: true }
             PropertyChanges { target: recordTextLabel; text: notificationFrame.recordText }
-            PropertyChanges { target: recordFrame; visible: true }
+            PropertyChanges { target: quoteRecordFrame; visible: true }
 
-            PropertyChanges { target: recordAvatarImage; source: notificationFrame.recordAvatar }
-            PropertyChanges { target: recordAuthor; displayName: notificationFrame.recordDisplayName }
-            PropertyChanges { target: recordAuthor; handle: notificationFrame.recordHandle }
-            PropertyChanges { target: recordAuthor; indexedAt: notificationFrame.recordIndexedAt }
-            PropertyChanges { target: recordText; text: notificationFrame.recordRecordText }
+            PropertyChanges { target: quoteRecordAvatarImage; source: notificationFrame.quoteRecordAvatar }
+            PropertyChanges { target: quoteRecordAuthor; displayName: notificationFrame.quoteRecordDisplayName }
+            PropertyChanges { target: quoteRecordAuthor; handle: notificationFrame.quoteRecordHandle }
+            PropertyChanges { target: quoteRecordAuthor; indexedAt: notificationFrame.quoteRecordIndexedAt }
+            PropertyChanges { target: quoteRecordRecordText; text: notificationFrame.quoteRecordRecordText }
 
             PropertyChanges { target: postControls; visible: true }
             PropertyChanges { target: notificationFrame; bottomPadding: 2 }
@@ -203,117 +205,137 @@ ClickableFrame {
                     }
                 }
 
-                Label {
-                    id: recordTextLabel
-                    visible: false
-                    Layout.preferredWidth: bodyLayout.basisWidth
-                    Layout.topMargin: 8
-                    textFormat: Text.StyledText
-                    wrapMode: Text.WrapAnywhere
-                    font.pointSize: 10 * fontSizeRatio
-                    lineHeight: 1.3
-                    onLinkActivated: (url) => openLink(url)
-                    onHoveredLinkChanged: displayLink(hoveredLink)
-                }
-
                 CoverFrame {
                     id: contentFilterFrame
                     Layout.preferredWidth: parent.basisWidth
                     Layout.topMargin: 5
+                    Layout.bottomMargin: showContent ? 0 : 5
                     visible: false
                 }
-                //            visible: contentFilterFrame.showContent
-
-                ClickableFrame {
-                    id: recordFrame
+                ColumnLayout {
+                    id: contentLayout
                     Layout.preferredWidth: parent.basisWidth
-                    visible: false
+                    spacing: 0
+                    visible: contentFilterFrame.showContent
 
-                    property int basisWidth: parent.basisWidth - padding * 2
+                    Label {
+                        id: recordTextLabel
+                        visible: false
+                        Layout.preferredWidth: parent.width
+                        Layout.topMargin: 8
+                        textFormat: Text.StyledText
+                        wrapMode: Text.WrapAnywhere
+                        font.pointSize: 10 * fontSizeRatio
+                        lineHeight: 1.3
+                        onLinkActivated: (url) => openLink(url)
+                        onHoveredLinkChanged: displayLink(hoveredLink)
+                    }
 
-                    ColumnLayout {
-                        RowLayout {
-                            id: recordAuthorLayout
-                            AvatarImage {
-                                id: recordAvatarImage
-                                Layout.preferredWidth: 16
-                                Layout.preferredHeight: 16
+                    CoverFrame {
+                        id: contentMediaFilterFrame
+                        Layout.preferredWidth: parent.width
+                        Layout.topMargin: 5
+                        visible: false
+                    }
+                    ImagePreview {
+                        id: postImagePreview
+                        layoutWidth: parent.width
+                        Layout.topMargin: 5
+                        visible: contentMediaFilterFrame.showContent
+                    }
+
+                    ClickableFrame {
+                        id: quoteRecordFrame
+                        Layout.preferredWidth: parent.width
+                        Layout.topMargin: 5
+                        visible: false
+
+                        property int basisWidth: parent.width - padding * 2
+
+                        ColumnLayout {
+                            RowLayout {
+                                id: quoteRecordAuthorLayout
+                                AvatarImage {
+                                    id: quoteRecordAvatarImage
+                                    Layout.preferredWidth: 16
+                                    Layout.preferredHeight: 16
+                                }
+                                Author {
+                                    id: quoteRecordAuthor
+                                    layoutWidth: quoteRecordFrame.basisWidth - quoteRecordAvatarImage.Layout.preferredWidth - quoteRecordAuthorLayout.spacing
+                                }
                             }
-                            Author {
-                                id: recordAuthor
-                                layoutWidth: recordFrame.basisWidth - recordAvatarImage.Layout.preferredWidth - recordAuthorLayout.spacing
+                            Label {
+                                id: quoteRecordRecordText
+                                Layout.preferredWidth: quoteRecordFrame.basisWidth
+                                textFormat: Text.StyledText
+                                wrapMode: Text.WrapAnywhere
+                                font.pointSize: 10 * fontSizeRatio
+                                lineHeight: 1.3
+                                onLinkActivated: (url) => openLink(url)
+                                onHoveredLinkChanged: displayLink(hoveredLink)
                             }
-                        }
-                        Label {
-                            id: recordText
-                            Layout.preferredWidth: recordFrame.basisWidth
-                            textFormat: Text.StyledText
-                            wrapMode: Text.WrapAnywhere
-                            font.pointSize: 10 * fontSizeRatio
-                            lineHeight: 1.3
-                            onLinkActivated: (url) => openLink(url)
-                            onHoveredLinkChanged: displayLink(hoveredLink)
-                        }
-                        ImagePreview {
-                            id: recordImagePreview
-                            layoutWidth: recordFrame.basisWidth
-                            Layout.topMargin: 5
+                            ImagePreview {
+                                id: quoteRecordImagePreview
+                                layoutWidth: quoteRecordFrame.basisWidth
+                                Layout.topMargin: 5
+                            }
                         }
                     }
-                }
 
-                //            ClickableFrame {
-                //                id: generatorFeedFrame
-                //                Layout.preferredWidth: parent.basisWidth
-                //                Layout.topMargin: 5
+                    //            ClickableFrame {
+                    //                id: generatorFeedFrame
+                    //                Layout.preferredWidth: parent.width
+                    //                Layout.topMargin: 5
 
-                //                ColumnLayout {
-                //                    GridLayout {
-                //                        columns: 2
-                //                        rowSpacing: 3
-                //                        AvatarImage {
-                //                            id: generatorFeedAvatarImage
-                //                            Layout.preferredWidth: 24
-                //                            Layout.preferredHeight: 24
-                //                            Layout.rowSpan: 2
-                //                            altSource: "../images/account_icon.png"
-                //                        }
-                //                        Label {
-                //                            id: generatorFeedDisplayNameLabel
-                //                            Layout.fillWidth: true
-                //                            font.pointSize: 10
-                //                        }
-                //                        Label {
-                //                            id: generatorFeedCreatorHandleLabel
-                //                            color: Material.color(Material.Grey)
-                //                            font.pointSize: 8
-                //                        }
-                //                    }
-                //                    RowLayout {
-                //                        Layout.leftMargin: 3
-                //                        spacing: 3
-                //                        Image {
-                //                            Layout.preferredWidth: 16
-                //                            Layout.preferredHeight: 16
-                //                            source: "../images/like.png"
-                //                            layer.enabled: true
-                //                            layer.effect: ColorOverlay {
-                //                                color: Material.color(Material.Pink)
-                //                            }
-                //                        }
-                //                        Label {
-                //                            id: generatorFeedLikeCountLabel
-                //                            Layout.alignment: Qt.AlignVCenter
-                //                            Layout.fillWidth: true
-                //                            font.pointSize: 8
-                //                        }
-                //                    }
-                //                }
-                //            }
+                    //                ColumnLayout {
+                    //                    GridLayout {
+                    //                        columns: 2
+                    //                        rowSpacing: 3
+                    //                        AvatarImage {
+                    //                            id: generatorFeedAvatarImage
+                    //                            Layout.preferredWidth: 24
+                    //                            Layout.preferredHeight: 24
+                    //                            Layout.rowSpan: 2
+                    //                            altSource: "../images/account_icon.png"
+                    //                        }
+                    //                        Label {
+                    //                            id: generatorFeedDisplayNameLabel
+                    //                            Layout.fillWidth: true
+                    //                            font.pointSize: 10
+                    //                        }
+                    //                        Label {
+                    //                            id: generatorFeedCreatorHandleLabel
+                    //                            color: Material.color(Material.Grey)
+                    //                            font.pointSize: 8
+                    //                        }
+                    //                    }
+                    //                    RowLayout {
+                    //                        Layout.leftMargin: 3
+                    //                        spacing: 3
+                    //                        Image {
+                    //                            Layout.preferredWidth: 16
+                    //                            Layout.preferredHeight: 16
+                    //                            source: "../images/like.png"
+                    //                            layer.enabled: true
+                    //                            layer.effect: ColorOverlay {
+                    //                                color: Material.color(Material.Pink)
+                    //                            }
+                    //                        }
+                    //                        Label {
+                    //                            id: generatorFeedLikeCountLabel
+                    //                            Layout.alignment: Qt.AlignVCenter
+                    //                            Layout.fillWidth: true
+                    //                            font.pointSize: 8
+                    //                        }
+                    //                    }
+                    //                }
+                    //            }
 
-                PostControls {
-                    id: postControls
-                    visible: false
+                    PostControls {
+                        id: postControls
+                        visible: false
+                    }
                 }
             }
         }

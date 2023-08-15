@@ -50,6 +50,7 @@ public:
         QuoteRecordIndexedAtRole,
         QuoteRecordEmbedImagesRole,
         QuoteRecordEmbedImagesFullRole,
+        QuoteRecordBlockedRole,
 
         HasExternalLinkRole,
         ExternalLinkUriRole,
@@ -77,6 +78,9 @@ public:
         UserFilterMessageRole,
         ContentFilterMatchedRole,
         ContentFilterMessageRole,
+        ContentMediaFilterMatchedRole,
+        ContentMediaFilterMessageRole,
+        QuoteFilterMatchedRole,
     };
     Q_ENUM(TimelineListModelRoles)
 

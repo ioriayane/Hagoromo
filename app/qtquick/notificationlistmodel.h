@@ -42,8 +42,8 @@ public:
         RepostCountRole,
         LikeCountRole,
         IndexedAtRole,
-        // EmbedImagesRole,
-        // EmbedImagesFullRole,
+        EmbedImagesRole,
+        EmbedImagesFullRole,
         IsRepostedRole,
         IsLikedRole,
         RepostedUriRole,
@@ -51,17 +51,17 @@ public:
 
         ReasonRole,
 
-        RecordCidRole,
-        RecordUriRole,
-        RecordDisplayNameRole,
-        RecordHandleRole,
-        RecordAvatarRole,
-        RecordIndexedAtRole,
-        RecordRecordTextRole,
-        RecordImagesRole,
-        RecordImagesFullRole,
-        RecordIsRepostedRole,
-        RecordIsLikedRole,
+        QuoteRecordCidRole,
+        QuoteRecordUriRole,
+        QuoteRecordDisplayNameRole,
+        QuoteRecordHandleRole,
+        QuoteRecordAvatarRole,
+        QuoteRecordIndexedAtRole,
+        QuoteRecordRecordTextRole,
+        QuoteRecordEmbedImagesRole,
+        QuoteRecordEmbedImagesFullRole,
+        QuoteRecordIsRepostedRole,
+        QuoteRecordIsLikedRole,
 
         HasGeneratorFeedRole,
         GeneratorFeedUriRole,
@@ -74,6 +74,8 @@ public:
         UserFilterMessageRole,
         ContentFilterMatchedRole,
         ContentFilterMessageRole,
+        ContentMediaFilterMatchedRole,
+        ContentMediaFilterMessageRole,
     };
     Q_ENUM(NotificationListModelRoles)
 

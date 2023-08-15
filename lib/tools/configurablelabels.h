@@ -18,6 +18,7 @@ struct ConfigurableLabelItem
     QStringList values;
     bool is_adult_imagery = false;
     ConfigurableLabelStatus status = ConfigurableLabelStatus::Hide;
+    bool configurable = true;
 };
 
 class ConfigurableLabels : public AtProtocolInterface::AccessAtProtocol
@@ -43,6 +44,7 @@ public:
     ConfigurableLabelStatus status(const int index) const;
     void setStatus(const int index, const ConfigurableLabelStatus status);
     bool isAdultImagery(const int index) const;
+    bool configurable(const int index) const;
 
     bool enableAdultContent() const;
     void setEnableAdultContent(bool newEnableAdultContent);
