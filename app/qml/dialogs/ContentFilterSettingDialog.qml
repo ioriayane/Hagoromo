@@ -89,8 +89,20 @@ Dialog {
                     }
                 }
                 delegate: RowLayout {
+                    id: listItemLayout
                     width: 450
                     spacing: 0
+                    clip: true
+                    states: [
+                        State {
+                            when: !model.configurable
+                            PropertyChanges {
+                                target: listItemLayout
+                                visible: false
+                                height: 0
+                            }
+                        }
+                    ]
                     ColumnLayout {
                         Layout.topMargin: 10
 //                        Layout.bottomMargin: 5

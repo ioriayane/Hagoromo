@@ -196,6 +196,14 @@ bool ConfigurableLabels::isAdultImagery(const int index) const
     return m_labels.at(index).is_adult_imagery;
 }
 
+bool ConfigurableLabels::configurable(const int index) const
+{
+    if (index < 0 || index >= m_labels.length())
+        return false;
+
+    return m_labels.at(index).configurable;
+}
+
 bool ConfigurableLabels::enableAdultContent() const
 {
     return m_enableAdultContent;
