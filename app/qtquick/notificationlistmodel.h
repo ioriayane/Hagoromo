@@ -58,8 +58,8 @@ public:
         QuoteRecordAvatarRole,
         QuoteRecordIndexedAtRole,
         QuoteRecordRecordTextRole,
-        QuoteRecordImagesRole,
-        QuoteRecordImagesFullRole,
+        QuoteRecordEmbedImagesRole,
+        QuoteRecordEmbedImagesFullRole,
         QuoteRecordIsRepostedRole,
         QuoteRecordIsLikedRole,
 

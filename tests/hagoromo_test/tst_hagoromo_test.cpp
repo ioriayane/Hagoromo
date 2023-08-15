@@ -1046,6 +1046,16 @@ void hagoromo_test::test_TimelineListModel_quote_hide2()
             == "quote a post with labeling image");
     QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == false);
     QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == false);
+    QVERIFY(model.item(row, TimelineListModel::QuoteRecordEmbedImagesRole).toStringList()
+            == QStringList()
+                    << "https://cdn.bsky.social/imgproxy/"
+                       "5Yw3gWICYYm-gCp6LP206jY_NGm3iPn2iH9BD4pw1ZU/rs:fit:1000:1000:1:0/plain/"
+                       "bafkreibmmux3wklplvddwjqszdzx3vnvfllhjrbqsnlgtt6fax7ajdjy5y@jpeg");
+    QVERIFY(model.item(row, TimelineListModel::QuoteRecordEmbedImagesFullRole).toStringList()
+            == QStringList()
+                    << "https://cdn.bsky.social/imgproxy/"
+                       "k46B3Cqu4IiOyilM2gKVFXUWl_6epvzX6d_v6OnyuE0/rs:fit:2000:2000:1:0/plain/"
+                       "bafkreibmmux3wklplvddwjqszdzx3vnvfllhjrbqsnlgtt6fax7ajdjy5y@jpeg");
 
     row = 4;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()

@@ -220,13 +220,13 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
                 return copyRecordText(m_postHash[record_cid].record);
             else
                 return QString();
-        } else if (role == QuoteRecordImagesRole) {
+        } else if (role == QuoteRecordEmbedImagesRole) {
             if (m_postHash.contains(record_cid))
                 return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
                         m_postHash[record_cid], true);
             else
                 return QString();
-        } else if (role == QuoteRecordImagesFullRole) {
+        } else if (role == QuoteRecordEmbedImagesFullRole) {
             if (m_postHash.contains(record_cid))
                 return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
                         m_postHash[record_cid], false);
@@ -562,8 +562,8 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[QuoteRecordAvatarRole] = "quoteRecordAvatar";
     roles[QuoteRecordIndexedAtRole] = "quoteRecordIndexedAt";
     roles[QuoteRecordRecordTextRole] = "quoteRecordRecordText";
-    roles[QuoteRecordImagesRole] = "quoteRecordImages";
-    roles[QuoteRecordImagesFullRole] = "quoteRecordImagesFull";
+    roles[QuoteRecordEmbedImagesRole] = "quoteRecordEmbedImages";
+    roles[QuoteRecordEmbedImagesFullRole] = "quoteRecordEmbedImagesFull";
     roles[QuoteRecordIsRepostedRole] = "quoteRecordIsReposted";
     roles[QuoteRecordIsLikedRole] = "quoteRecordIsLiked";
 

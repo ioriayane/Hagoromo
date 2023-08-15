@@ -101,8 +101,8 @@ ScrollView {
             quoteRecordAvatar: model.quoteRecordAvatar
             quoteRecordIndexedAt: model.quoteRecordIndexedAt
             quoteRecordRecordText: model.quoteRecordRecordText
-            quoteRecordImagePreview.embedImages: model.quoteRecordImages
-            quoteRecordImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.quoteRecordImagesFull)
+            quoteRecordImagePreview.embedImages: model.quoteRecordEmbedImages
+            quoteRecordImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.quoteRecordEmbedImagesFull)
 
 //            generatorViewFrame.visible: model.hasGeneratorFeed
 //            generatorViewFrame.onClicked: notificationListView.requestViewGeneratorFeed(model.generatorFeedDisplayName, model.generatorFeedUri)

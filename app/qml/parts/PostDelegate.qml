@@ -35,6 +35,7 @@ ClickableFrame {
     property alias quoteRecordAvatarImage: quoteRecordAvatarImage
     property alias quoteRecordAuthor: quoteRecordAuthor
     property alias quoteRecordRecordText: quoteRecordRecordText
+    property alias quoteRecordImagePreview: quoteRecordImagePreview
     property alias blockedQuoteFrame: blockedQuoteFrame
     property alias externalLinkFrame: externalLinkFrame
     property alias generatorViewFrame: generatorFeedFrame
@@ -197,12 +198,18 @@ ClickableFrame {
                                     id: quoteRecordRecordText
                                     Layout.preferredWidth: parent.basisWidth
                                     Layout.maximumWidth: parent.basisWidth
+                                    visible: text.length > 0
                                     textFormat: Text.StyledText
                                     wrapMode: Text.WrapAnywhere
                                     font.pointSize: 10 * fontSizeRatio
                                     lineHeight: 1.3
                                     onLinkActivated: (url) => openLink(url)
                                     onHoveredLinkChanged: displayLink(hoveredLink)
+                                }
+                                ImagePreview {
+                                    id: quoteRecordImagePreview
+                                    layoutWidth: parent.basisWidth
+                                    Layout.topMargin: 5
                                 }
                             }
                         }

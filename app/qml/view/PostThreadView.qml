@@ -153,6 +153,8 @@ ColumnLayout {
                 quoteRecordAuthor.handle: model.quoteRecordHandle
                 quoteRecordAuthor.indexedAt: model.quoteRecordIndexedAt
                 quoteRecordRecordText.text: model.quoteRecordRecordText
+                quoteRecordImagePreview.embedImages: model.quoteRecordEmbedImages
+                quoteRecordImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.quoteRecordEmbedImagesFull)
 
                 externalLinkFrame.visible: model.hasExternalLink
                 externalLinkFrame.onClicked: Qt.openUrlExternally(model.externalLinkUri)

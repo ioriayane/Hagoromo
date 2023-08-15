@@ -73,21 +73,28 @@ QStringList copyImagesFromPostView(const AppBskyFeedDefs::PostView &post, const 
 
 QStringList copyImagesFromRecord(const AppBskyEmbedRecord::ViewRecord &record, const bool thumb)
 {
-    if (record.embeds_type
-        == AppBskyEmbedRecord::ViewRecordEmbedsType::embeds_AppBskyEmbedImages_View) {
-        QStringList images;
-        for (const auto &view : record.embeds_AppBskyEmbedImages_View) {
-            for (const auto &image : view.images) {
+    // unionの配列で複数種類を混ぜられる
+    QStringList images;
+    for (const auto &view : record.embeds_AppBskyEmbedImages_View) {
+        for (const auto &image : view.images) {
+            if (thumb)
+                images.append(image.thumb);
+            else
+                images.append(image.fullsize);
+        }
+    }
+    for (const auto &view : record.embeds_AppBskyEmbedRecordWithMedia_View) {
+        if (view.media_type
+            == AppBskyEmbedRecordWithMedia::ViewMediaType::media_AppBskyEmbedImages_View) {
+            for (const auto &image : view.media_AppBskyEmbedImages_View.images) {
                 if (thumb)
                     images.append(image.thumb);
                 else
                     images.append(image.fullsize);
             }
         }
-        return images;
-    } else {
-        return QStringList();
     }
+    return images;
 }
 
 }
