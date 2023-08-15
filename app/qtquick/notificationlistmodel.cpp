@@ -61,12 +61,23 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
                 .text;
     else if (role == RecordTextTranslationRole)
         return m_translations.contains(current.cid) ? m_translations[current.cid] : QString();
-
     else if (role == IndexedAtRole)
         return formatDateTime(current.indexedAt);
+    else if (role == EmbedImagesRole) {
+        if (m_postHash.contains(current.cid))
+            return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
+                    m_postHash[current.cid], true);
+        else
+            return QStringList();
+    } else if (role == EmbedImagesFullRole) {
+        if (m_postHash.contains(current.cid))
+            return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
+                    m_postHash[current.cid], false);
+        else
+            return QStringList();
 
-    //----------------------------------------
-    else if (role == ReplyCountRole) {
+        //----------------------------------------
+    } else if (role == ReplyCountRole) {
         if (m_postHash.contains(current.cid))
             return m_postHash[current.cid].replyCount;
         else
@@ -106,6 +117,14 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
         return getContentFilterMatched(current.author.labels, false);
     } else if (role == UserFilterMessageRole) {
         return getContentFilterMessage(current.author.labels, false);
+    } else if (role == ContentFilterMatchedRole) {
+        return getContentFilterMatched(current.labels, false);
+    } else if (role == ContentFilterMessageRole) {
+        return getContentFilterMessage(current.labels, false);
+    } else if (role == ContentMediaFilterMatchedRole) {
+        return getContentFilterMatched(current.labels, true);
+    } else if (role == ContentMediaFilterMessageRole) {
+        return getContentFilterMessage(current.labels, true);
 
         //----------------------------------------
     } else if (role == ReasonRole) {
@@ -526,6 +545,8 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[RepostCountRole] = "repostCount";
     roles[LikeCountRole] = "likeCount";
     roles[IndexedAtRole] = "indexedAt";
+    roles[EmbedImagesRole] = "embedImages";
+    roles[EmbedImagesFullRole] = "embedImagesFull";
 
     roles[IsRepostedRole] = "isReposted";
     roles[IsLikedRole] = "isLiked";
@@ -555,6 +576,10 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
 
     roles[UserFilterMatchedRole] = "userFilterMatched";
     roles[UserFilterMessageRole] = "userFilterMessage";
+    roles[ContentFilterMatchedRole] = "contentFilterMatched";
+    roles[ContentFilterMessageRole] = "contentFilterMessage";
+    roles[ContentMediaFilterMatchedRole] = "contentMediaFilterMatched";
+    roles[ContentMediaFilterMessageRole] = "contentMediaFilterMessage";
 
     return roles;
 }

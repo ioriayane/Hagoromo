@@ -42,8 +42,8 @@ public:
         RepostCountRole,
         LikeCountRole,
         IndexedAtRole,
-        // EmbedImagesRole,
-        // EmbedImagesFullRole,
+        EmbedImagesRole,
+        EmbedImagesFullRole,
         IsRepostedRole,
         IsLikedRole,
         RepostedUriRole,
@@ -72,6 +72,10 @@ public:
 
         UserFilterMatchedRole,
         UserFilterMessageRole,
+        ContentFilterMatchedRole,
+        ContentFilterMessageRole,
+        ContentMediaFilterMatchedRole,
+        ContentMediaFilterMessageRole,
     };
     Q_ENUM(NotificationListModelRoles)
 

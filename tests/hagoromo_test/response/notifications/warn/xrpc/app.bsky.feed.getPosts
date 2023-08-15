@@ -1,0 +1,393 @@
+{
+    "posts": [
+        {
+            "uri": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3k4w52nxwdm2j",
+            "cid": "bafyreiegferq3itlq4qapotqm3udyi3eobdigoptoyxubvudv5ttrjf5ka",
+            "author": {
+                "did": "did:plc:l4fsx4ujos7uw7n4ijq2ulgs",
+                "handle": "ioriayane.bsky.social",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false,
+                    "following": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.follow/3k2fwocixdw2b",
+                    "followedBy": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.graph.follow/3k2fx3qmuob2g"
+                },
+                "labels": []
+            },
+            "record": {
+                "text": "quote a post with warn label added with image",
+                "$type": "app.bsky.feed.post",
+                "embed": {
+                    "$type": "app.bsky.embed.recordWithMedia",
+                    "media": {
+                        "$type": "app.bsky.embed.images",
+                        "images": [
+                            {
+                                "alt": "",
+                                "image": {
+                                    "$type": "blob",
+                                    "ref": {
+                                        "$link": "bafkreicntacak4uf4kirtl4rsnxrfzaang3ijueuqku5hbljde467di2sa"
+                                    },
+                                    "mimeType": "image/jpeg",
+                                    "size": 29143
+                                }
+                            }
+                        ]
+                    },
+                    "record": {
+                        "$type": "app.bsky.embed.record",
+                        "record": {
+                            "cid": "bafyreigwrjbutytae2lgle3t3wt52gkkrpogerioon73w3vsu7vfk6zqee",
+                            "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k4rh3spkuw2n"
+                        }
+                    }
+                },
+                "langs": [],
+                "createdAt": "2023-08-14T11:56:33.564Z"
+            },
+            "embed": {
+                "$type": "app.bsky.embed.recordWithMedia#view",
+                "record": {
+                    "record": {
+                        "$type": "app.bsky.embed.record#viewRecord",
+                        "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k4rh3spkuw2n",
+                        "cid": "bafyreigwrjbutytae2lgle3t3wt52gkkrpogerioon73w3vsu7vfk6zqee",
+                        "author": {
+                            "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                            "handle": "ioriayane2.bsky.social",
+                            "avatar": "https://cdn.bsky.social/imgproxy/QdJdHqlX6_FaYBBrLNg6OTbw-MdCjwxRj73W41RqLOI/rs:fill:1000:1000:1:0/plain/bafkreiayv34bulrnm5gsnx73b46s2plh76k7fvwcewqrdur7eelf7u6c3u@jpeg",
+                            "viewer": {
+                                "muted": false,
+                                "blockedBy": false
+                            },
+                            "labels": []
+                        },
+                        "value": {
+                            "via": "Hagoromo",
+                            "text": "label test (warn)",
+                            "$type": "app.bsky.feed.post",
+                            "labels": {
+                                "$type": "com.atproto.label.defs#selfLabels",
+                                "values": [
+                                    {
+                                        "val": "!warn"
+                                    }
+                                ]
+                            },
+                            "createdAt": "2023-08-12T15:12:49.272Z"
+                        },
+                        "labels": [
+                            {
+                                "src": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                                "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k4rh3spkuw2n",
+                                "cid": "bafyreigwrjbutytae2lgle3t3wt52gkkrpogerioon73w3vsu7vfk6zqee",
+                                "val": "!warn",
+                                "cts": "2023-08-12T15:12:49.272Z",
+                                "neg": false
+                            }
+                        ],
+                        "indexedAt": "2023-08-12T15:12:55.585Z",
+                        "embeds": []
+                    }
+                },
+                "media": {
+                    "$type": "app.bsky.embed.images#view",
+                    "images": [
+                        {
+                            "thumb": "https://cdn.bsky.social/imgproxy/wCVae3ye6cBCuNZyNpC-dixwF25wmP0Z9_YJVh1JZoc/rs:fit:1000:1000:1:0/plain/bafkreicntacak4uf4kirtl4rsnxrfzaang3ijueuqku5hbljde467di2sa@jpeg",
+                            "fullsize": "https://cdn.bsky.social/imgproxy/hKxJL_w7SRQaeOIZpWEQnfNpz5lCisdyZ3-bnBwhJb4/rs:fit:2000:2000:1:0/plain/bafkreicntacak4uf4kirtl4rsnxrfzaang3ijueuqku5hbljde467di2sa@jpeg",
+                            "alt": ""
+                        }
+                    ]
+                }
+            },
+            "replyCount": 0,
+            "repostCount": 0,
+            "likeCount": 0,
+            "indexedAt": "2023-08-14T11:56:38.397Z",
+            "viewer": {},
+            "labels": []
+        },
+        {
+            "uri": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3k4w5fuw72y2d",
+            "cid": "bafyreia3gadukf62bq3pq46kr3ewjpsao2ltbrlaios332oxqfggbaqha4",
+            "author": {
+                "did": "did:plc:l4fsx4ujos7uw7n4ijq2ulgs",
+                "handle": "ioriayane.bsky.social",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false,
+                    "following": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.follow/3k2fwocixdw2b",
+                    "followedBy": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.graph.follow/3k2fx3qmuob2g"
+                },
+                "labels": []
+            },
+            "record": {
+                "text": "quote a post with labeling image with image",
+                "$type": "app.bsky.feed.post",
+                "embed": {
+                    "$type": "app.bsky.embed.recordWithMedia",
+                    "media": {
+                        "$type": "app.bsky.embed.images",
+                        "images": [
+                            {
+                                "alt": "",
+                                "image": {
+                                    "$type": "blob",
+                                    "ref": {
+                                        "$link": "bafkreicntacak4uf4kirtl4rsnxrfzaang3ijueuqku5hbljde467di2sa"
+                                    },
+                                    "mimeType": "image/jpeg",
+                                    "size": 29143
+                                }
+                            }
+                        ]
+                    },
+                    "record": {
+                        "$type": "app.bsky.embed.record",
+                        "record": {
+                            "cid": "bafyreiebuxprnkypyylqmacpp7sirqoqpspuehtityxxtbtre7lodtmhvm",
+                            "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k4rhbgiidp2s"
+                        }
+                    }
+                },
+                "langs": [],
+                "createdAt": "2023-08-14T12:02:49.949Z"
+            },
+            "embed": {
+                "$type": "app.bsky.embed.recordWithMedia#view",
+                "record": {
+                    "record": {
+                        "$type": "app.bsky.embed.record#viewRecord",
+                        "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k4rhbgiidp2s",
+                        "cid": "bafyreiebuxprnkypyylqmacpp7sirqoqpspuehtityxxtbtre7lodtmhvm",
+                        "author": {
+                            "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                            "handle": "ioriayane2.bsky.social",
+                            "avatar": "https://cdn.bsky.social/imgproxy/QdJdHqlX6_FaYBBrLNg6OTbw-MdCjwxRj73W41RqLOI/rs:fill:1000:1000:1:0/plain/bafkreiayv34bulrnm5gsnx73b46s2plh76k7fvwcewqrdur7eelf7u6c3u@jpeg",
+                            "viewer": {
+                                "muted": false,
+                                "blockedBy": false
+                            },
+                            "labels": []
+                        },
+                        "value": {
+                            "via": "Hagoromo",
+                            "text": "label test (sexual)",
+                            "$type": "app.bsky.feed.post",
+                            "embed": {
+                                "$type": "app.bsky.embed.images",
+                                "images": [
+                                    {
+                                        "alt": "",
+                                        "image": {
+                                            "$type": "blob",
+                                            "ref": {
+                                                "$link": "bafkreibmmux3wklplvddwjqszdzx3vnvfllhjrbqsnlgtt6fax7ajdjy5y"
+                                            },
+                                            "mimeType": "image/jpeg",
+                                            "size": 35488
+                                        }
+                                    }
+                                ]
+                            },
+                            "labels": {
+                                "$type": "com.atproto.label.defs#selfLabels",
+                                "values": [
+                                    {
+                                        "val": "sexual"
+                                    }
+                                ]
+                            },
+                            "createdAt": "2023-08-12T15:15:57.827Z"
+                        },
+                        "labels": [
+                            {
+                                "src": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                                "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k4rhbgiidp2s",
+                                "cid": "bafyreiebuxprnkypyylqmacpp7sirqoqpspuehtityxxtbtre7lodtmhvm",
+                                "val": "sexual",
+                                "cts": "2023-08-12T15:15:57.827Z",
+                                "neg": false
+                            }
+                        ],
+                        "indexedAt": "2023-08-12T15:16:04.088Z",
+                        "embeds": [
+                            {
+                                "$type": "app.bsky.embed.images#view",
+                                "images": [
+                                    {
+                                        "thumb": "https://cdn.bsky.social/imgproxy/5Yw3gWICYYm-gCp6LP206jY_NGm3iPn2iH9BD4pw1ZU/rs:fit:1000:1000:1:0/plain/bafkreibmmux3wklplvddwjqszdzx3vnvfllhjrbqsnlgtt6fax7ajdjy5y@jpeg",
+                                        "fullsize": "https://cdn.bsky.social/imgproxy/k46B3Cqu4IiOyilM2gKVFXUWl_6epvzX6d_v6OnyuE0/rs:fit:2000:2000:1:0/plain/bafkreibmmux3wklplvddwjqszdzx3vnvfllhjrbqsnlgtt6fax7ajdjy5y@jpeg",
+                                        "alt": ""
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "media": {
+                    "$type": "app.bsky.embed.images#view",
+                    "images": [
+                        {
+                            "thumb": "https://cdn.bsky.social/imgproxy/wCVae3ye6cBCuNZyNpC-dixwF25wmP0Z9_YJVh1JZoc/rs:fit:1000:1000:1:0/plain/bafkreicntacak4uf4kirtl4rsnxrfzaang3ijueuqku5hbljde467di2sa@jpeg",
+                            "fullsize": "https://cdn.bsky.social/imgproxy/hKxJL_w7SRQaeOIZpWEQnfNpz5lCisdyZ3-bnBwhJb4/rs:fit:2000:2000:1:0/plain/bafkreicntacak4uf4kirtl4rsnxrfzaang3ijueuqku5hbljde467di2sa@jpeg",
+                            "alt": ""
+                        }
+                    ]
+                }
+            },
+            "replyCount": 0,
+            "repostCount": 0,
+            "likeCount": 0,
+            "indexedAt": "2023-08-14T12:02:54.725Z",
+            "viewer": {},
+            "labels": []
+        },
+        {
+            "uri": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3k4wo4dqrkn2g",
+            "cid": "bafyreigfwfidixv73jiuawbnz7a53kem46qta2g7rmzl7c2ftze5oe3gfq",
+            "author": {
+                "did": "did:plc:l4fsx4ujos7uw7n4ijq2ulgs",
+                "handle": "ioriayane.bsky.social",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false,
+                    "following": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.follow/3k2fwocixdw2b",
+                    "followedBy": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.graph.follow/3k2fx3qmuob2g"
+                },
+                "labels": []
+            },
+            "record": {
+                "via": "Hagoromo",
+                "text": "@ioriayane2.bsky.social labeling warn test",
+                "$type": "app.bsky.feed.post",
+                "facets": [
+                    {
+                        "$type": "app.bsky.richtext.facet",
+                        "index": {
+                            "byteEnd": 23,
+                            "byteStart": 0
+                        },
+                        "features": [
+                            {
+                                "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                                "$type": "app.bsky.richtext.facet#mention"
+                            }
+                        ]
+                    }
+                ],
+                "labels": {
+                    "$type": "com.atproto.label.defs#selfLabels",
+                    "values": [
+                        {
+                            "val": "!warn"
+                        }
+                    ]
+                },
+                "createdAt": "2023-08-14T17:01:43.055Z"
+            },
+            "replyCount": 0,
+            "repostCount": 0,
+            "likeCount": 0,
+            "indexedAt": "2023-08-14T17:01:48.377Z",
+            "viewer": {},
+            "labels": [
+                {
+                    "src": "did:plc:l4fsx4ujos7uw7n4ijq2ulgs",
+                    "uri": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3k4wo4dqrkn2g",
+                    "cid": "bafyreigfwfidixv73jiuawbnz7a53kem46qta2g7rmzl7c2ftze5oe3gfq",
+                    "val": "!warn",
+                    "cts": "2023-08-14T17:01:43.055Z",
+                    "neg": false
+                }
+            ]
+        },
+        {
+            "uri": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3k4wo742scq2l",
+            "cid": "bafyreibxpg7wcdroopduyxpd2rsqbzehqlf3vz3qgiunzpf24pll3ywpfu",
+            "author": {
+                "did": "did:plc:l4fsx4ujos7uw7n4ijq2ulgs",
+                "handle": "ioriayane.bsky.social",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false,
+                    "following": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.follow/3k2fwocixdw2b",
+                    "followedBy": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.graph.follow/3k2fx3qmuob2g"
+                },
+                "labels": []
+            },
+            "record": {
+                "via": "Hagoromo",
+                "text": "@ioriayane2.bsky.social labeling sexual test",
+                "$type": "app.bsky.feed.post",
+                "embed": {
+                    "$type": "app.bsky.embed.images",
+                    "images": [
+                        {
+                            "alt": "",
+                            "image": {
+                                "$type": "blob",
+                                "ref": {
+                                    "$link": "bafkreibmmux3wklplvddwjqszdzx3vnvfllhjrbqsnlgtt6fax7ajdjy5y"
+                                },
+                                "mimeType": "image/jpeg",
+                                "size": 35488
+                            }
+                        }
+                    ]
+                },
+                "facets": [
+                    {
+                        "$type": "app.bsky.richtext.facet",
+                        "index": {
+                            "byteEnd": 23,
+                            "byteStart": 0
+                        },
+                        "features": [
+                            {
+                                "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                                "$type": "app.bsky.richtext.facet#mention"
+                            }
+                        ]
+                    }
+                ],
+                "labels": {
+                    "$type": "com.atproto.label.defs#selfLabels",
+                    "values": [
+                        {
+                            "val": "sexual"
+                        }
+                    ]
+                },
+                "createdAt": "2023-08-14T17:03:15.677Z"
+            },
+            "embed": {
+                "$type": "app.bsky.embed.images#view",
+                "images": [
+                    {
+                        "thumb": "https://cdn.bsky.social/imgproxy/5Yw3gWICYYm-gCp6LP206jY_NGm3iPn2iH9BD4pw1ZU/rs:fit:1000:1000:1:0/plain/bafkreibmmux3wklplvddwjqszdzx3vnvfllhjrbqsnlgtt6fax7ajdjy5y@jpeg",
+                        "fullsize": "https://cdn.bsky.social/imgproxy/k46B3Cqu4IiOyilM2gKVFXUWl_6epvzX6d_v6OnyuE0/rs:fit:2000:2000:1:0/plain/bafkreibmmux3wklplvddwjqszdzx3vnvfllhjrbqsnlgtt6fax7ajdjy5y@jpeg",
+                        "alt": ""
+                    }
+                ]
+            },
+            "replyCount": 0,
+            "repostCount": 0,
+            "likeCount": 0,
+            "indexedAt": "2023-08-14T17:03:20.988Z",
+            "viewer": {},
+            "labels": [
+                {
+                    "src": "did:plc:l4fsx4ujos7uw7n4ijq2ulgs",
+                    "uri": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3k4wo742scq2l",
+                    "cid": "bafyreibxpg7wcdroopduyxpd2rsqbzehqlf3vz3qgiunzpf24pll3ywpfu",
+                    "val": "sexual",
+                    "cts": "2023-08-14T17:03:15.677Z",
+                    "neg": false
+                }
+            ]
+        }
+    ]
+}

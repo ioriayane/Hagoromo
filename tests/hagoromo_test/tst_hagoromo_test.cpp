@@ -33,6 +33,7 @@ private slots:
     void test_charCount();
     void test_TimelineListModel_quote_warn();
     void test_TimelineListModel_quote_hide();
+    void test_NotificationListModel_warn();
 
 private:
     WebServer m_mockServer;
@@ -313,7 +314,7 @@ void hagoromo_test::test_ColumnListModelRemove()
 void hagoromo_test::test_NotificationListModel()
 {
     NotificationListModel model;
-    model.setAccount(m_service + "/notifications", QString(), QString(), QString(), "dummy",
+    model.setAccount(m_service + "/notifications/visible", QString(), QString(), QString(), "dummy",
                      QString());
 
     {
@@ -612,7 +613,7 @@ void hagoromo_test::test_NotificationListModel()
 void hagoromo_test::test_NotificationListModel2()
 {
     NotificationListModel model;
-    model.setAccount(m_service + "/notifications", QString(), QString(), QString(), "dummy",
+    model.setAccount(m_service + "/notifications/visible", QString(), QString(), QString(), "dummy",
                      QString());
 
     int i = 0;
@@ -1002,6 +1003,45 @@ void hagoromo_test::test_TimelineListModel_quote_hide()
             == "quote blocked user's post");
     QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == false);
     QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == true);
+}
+
+void hagoromo_test::test_NotificationListModel_warn()
+{
+    int row = 0;
+    NotificationListModel model;
+    model.setAccount(m_service + "/notifications/warn", QString(), QString(), QString(), "dummy",
+                     QString());
+    model.setDisplayInterval(0);
+
+    QSignalSpy spy(&model, SIGNAL(runningChanged()));
+    model.getLatest();
+    spy.wait();
+    QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+    QVERIFY(model.rowCount() == 2);
+
+    row = 0;
+    QVERIFY(model.item(row, NotificationListModel::RecordTextPlainRole).toString()
+            == "@ioriayane2.bsky.social labeling sexual with image");
+    QVERIFY(model.item(row, NotificationListModel::ContentFilterMatchedRole).toBool() == false);
+    QVERIFY(model.item(row, NotificationListModel::ContentMediaFilterMatchedRole).toBool() == true);
+    QVERIFY(model.item(row, NotificationListModel::EmbedImagesRole).toStringList()
+            == QStringList()
+                    << "https://cdn.bsky.social/imgproxy/"
+                       "5Yw3gWICYYm-gCp6LP206jY_NGm3iPn2iH9BD4pw1ZU/rs:fit:1000:1000:1:0/plain/"
+                       "bafkreibmmux3wklplvddwjqszdzx3vnvfllhjrbqsnlgtt6fax7ajdjy5y@jpeg");
+    QVERIFY(model.item(row, NotificationListModel::EmbedImagesFullRole).toStringList()
+            == QStringList()
+                    << "https://cdn.bsky.social/imgproxy/"
+                       "k46B3Cqu4IiOyilM2gKVFXUWl_6epvzX6d_v6OnyuE0/rs:fit:2000:2000:1:0/plain/"
+                       "bafkreibmmux3wklplvddwjqszdzx3vnvfllhjrbqsnlgtt6fax7ajdjy5y@jpeg");
+
+    row = 1;
+    QVERIFY(model.item(row, NotificationListModel::RecordTextPlainRole).toString()
+            == "@ioriayane2.bsky.social labeling warn");
+    QVERIFY(model.item(row, NotificationListModel::ContentFilterMatchedRole).toBool() == true);
+    QVERIFY(model.item(row, NotificationListModel::ContentMediaFilterMatchedRole).toBool()
+            == false);
 }
 
 void hagoromo_test::test_RecordOperatorCreateRecord(const QByteArray &body)
