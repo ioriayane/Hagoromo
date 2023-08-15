@@ -109,16 +109,16 @@ ScrollView {
             quoteFilterFrame.labelText: qsTr("Quoted content warning")
             blockedQuoteFrame.visible: model.quoteRecordBlocked
             hasQuote: model.hasQuoteRecord && !model.quoteRecordBlocked
-            childFrame.onClicked: (mouse) => {
-                                      if(model.quoteRecordUri.length > 0){
-                                          requestViewThread(model.quoteRecordUri)
-                                      }
-                                  }
-            childAvatarImage.source: model.quoteRecordAvatar
-            childAuthor.displayName: model.quoteRecordDisplayName
-            childAuthor.handle: model.quoteRecordHandle
-            childAuthor.indexedAt: model.quoteRecordIndexedAt
-            childRecordText.text: model.quoteRecordRecordText
+            quoteRecordFrame.onClicked: (mouse) => {
+                                            if(model.quoteRecordUri.length > 0){
+                                                requestViewThread(model.quoteRecordUri)
+                                            }
+                                        }
+            quoteRecordAvatarImage.source: model.quoteRecordAvatar
+            quoteRecordAuthor.displayName: model.quoteRecordDisplayName
+            quoteRecordAuthor.handle: model.quoteRecordHandle
+            quoteRecordAuthor.indexedAt: model.quoteRecordIndexedAt
+            quoteRecordRecordText.text: model.quoteRecordRecordText
 
             externalLinkFrame.visible: model.hasExternalLink
             externalLinkFrame.onClicked: Qt.openUrlExternally(model.externalLinkUri)

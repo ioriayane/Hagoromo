@@ -31,10 +31,10 @@ ClickableFrame {
     property alias contentMediaFilterFrame: contentMediaFilterFrame
     property alias postImagePreview: postImagePreview
     property alias quoteFilterFrame: quoteFilterFrame
-    property alias childFrame: childFrame
-    property alias childAvatarImage: childAvatarImage
-    property alias childAuthor: childAuthor
-    property alias childRecordText: childRecordText
+    property alias quoteRecordFrame: quoteRecordFrame
+    property alias quoteRecordAvatarImage: quoteRecordAvatarImage
+    property alias quoteRecordAuthor: quoteRecordAuthor
+    property alias quoteRecordRecordText: quoteRecordRecordText
     property alias blockedQuoteFrame: blockedQuoteFrame
     property alias externalLinkFrame: externalLinkFrame
     property alias generatorViewFrame: generatorFeedFrame
@@ -172,29 +172,29 @@ ClickableFrame {
                         visible: false
                     }
                     ClickableFrame {
-                        id: childFrame
+                        id: quoteRecordFrame
                         Layout.preferredWidth: parent.width
                         Layout.topMargin: 5
                         visible: postFrame.hasQuote && quoteFilterFrame.showContent
                         RowLayout {
-                            id: childLayout
+                            id: quoteRecordLayout
                             spacing: 10
                             AvatarImage {
-                                id: childAvatarImage
+                                id: quoteRecordAvatarImage
                                 Layout.preferredWidth: 16
                                 Layout.preferredHeight: 16
                                 Layout.alignment: Qt.AlignTop
                             }
                             ColumnLayout {
                                 Layout.fillWidth: true
-                                property int basisWidth: bodyLayout.basisWidth - childFrame.padding * 2 -
-                                                         childLayout.spacing - childAvatarImage.Layout.preferredWidth
+                                property int basisWidth: bodyLayout.basisWidth - quoteRecordFrame.padding * 2 -
+                                                         quoteRecordLayout.spacing - quoteRecordAvatarImage.Layout.preferredWidth
                                 Author {
-                                    id: childAuthor
+                                    id: quoteRecordAuthor
                                     layoutWidth: parent.basisWidth
                                 }
                                 Label {
-                                    id: childRecordText
+                                    id: quoteRecordRecordText
                                     Layout.preferredWidth: parent.basisWidth
                                     Layout.maximumWidth: parent.basisWidth
                                     textFormat: Text.StyledText
