@@ -305,17 +305,18 @@ bool AtpAbstractListModel::getQuoteFilterMatched(
                 == AppBskyEmbedRecord::ViewRecordType::record_ViewRecord) {
         if (post.embed_AppBskyEmbedRecord_View->record_ViewRecord.author.viewer.muted)
             return true;
-        if (post.embed_AppBskyEmbedRecord_View->record_ViewRecord.author.viewer.blockedBy)
-            return true;
 
-        if (getContentFilterStatus(post.embed_AppBskyEmbedRecord_View->record_ViewRecord.labels,
-                                   false)
-            == ConfigurableLabelStatus::Warning)
-            return true;
-        if (getContentFilterStatus(post.embed_AppBskyEmbedRecord_View->record_ViewRecord.labels,
-                                   true)
-            == ConfigurableLabelStatus::Warning)
-            return true;
+        if (post.embed_AppBskyEmbedRecord_View->record_ViewRecord.author.did != account().did) {
+            // 引用されているポストが他人のポストのみ判断する（自分のものの場合は隠さない）
+            if (getContentFilterStatus(post.embed_AppBskyEmbedRecord_View->record_ViewRecord.labels,
+                                       false)
+                == ConfigurableLabelStatus::Warning)
+                return true;
+            if (getContentFilterStatus(post.embed_AppBskyEmbedRecord_View->record_ViewRecord.labels,
+                                       true)
+                == ConfigurableLabelStatus::Warning)
+                return true;
+        }
     }
     if (!post.embed_AppBskyEmbedRecordWithMedia_View.record.isNull()
         && post.embed_AppBskyEmbedRecordWithMedia_View.record->record_type
@@ -323,19 +324,20 @@ bool AtpAbstractListModel::getQuoteFilterMatched(
         if (post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.author.viewer
                     .muted)
             return true;
-        if (post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.author.viewer
-                    .blockedBy)
-            return true;
-        if (getContentFilterStatus(
-                    post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.labels,
-                    false)
-            == ConfigurableLabelStatus::Warning)
-            return true;
-        if (getContentFilterStatus(
-                    post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.labels,
-                    true)
-            == ConfigurableLabelStatus::Warning)
-            return true;
+        if (post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.author.did
+            != account().did) {
+            // 引用されているポストが他人のポストのみ判断する（自分のものの場合は隠さない）
+            if (getContentFilterStatus(post.embed_AppBskyEmbedRecordWithMedia_View.record
+                                               ->record_ViewRecord.labels,
+                                       false)
+                == ConfigurableLabelStatus::Warning)
+                return true;
+            if (getContentFilterStatus(post.embed_AppBskyEmbedRecordWithMedia_View.record
+                                               ->record_ViewRecord.labels,
+                                       true)
+                == ConfigurableLabelStatus::Warning)
+                return true;
+        }
     }
 
     return false;

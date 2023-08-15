@@ -576,28 +576,36 @@ QVariant TimelineListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDefs::
             if (post.embed_AppBskyEmbedRecord_View->record_type
                 == AppBskyEmbedRecord::ViewRecordType::record_ViewBlocked)
                 return true;
-            if (getContentFilterStatus(post.embed_AppBskyEmbedRecord_View->record_ViewRecord.labels,
-                                       false)
-                == ConfigurableLabelStatus::Hide)
-                return true;
-            if (getContentFilterStatus(post.embed_AppBskyEmbedRecord_View->record_ViewRecord.labels,
-                                       true)
-                == ConfigurableLabelStatus::Hide)
-                return true;
+
+            if (post.embed_AppBskyEmbedRecord_View->record_ViewRecord.author.did != account().did) {
+                // 引用されているポストが他人のポストのみ判断する（自分のものの場合は隠さない）
+                if (getContentFilterStatus(
+                            post.embed_AppBskyEmbedRecord_View->record_ViewRecord.labels, false)
+                    == ConfigurableLabelStatus::Hide)
+                    return true;
+                if (getContentFilterStatus(
+                            post.embed_AppBskyEmbedRecord_View->record_ViewRecord.labels, true)
+                    == ConfigurableLabelStatus::Hide)
+                    return true;
+            }
         } else if (has_with_image) {
             if (post.embed_AppBskyEmbedRecordWithMedia_View.record->record_type
                 == AppBskyEmbedRecord::ViewRecordType::record_ViewBlocked)
                 return true;
-            if (getContentFilterStatus(post.embed_AppBskyEmbedRecordWithMedia_View.record
-                                               ->record_ViewRecord.labels,
-                                       false)
-                == ConfigurableLabelStatus::Hide)
-                return true;
-            if (getContentFilterStatus(post.embed_AppBskyEmbedRecordWithMedia_View.record
-                                               ->record_ViewRecord.labels,
-                                       true)
-                == ConfigurableLabelStatus::Hide)
-                return true;
+            if (post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.author.did
+                != account().did) {
+                // 引用されているポストが他人のポストのみ判断する（自分のものの場合は隠さない）
+                if (getContentFilterStatus(post.embed_AppBskyEmbedRecordWithMedia_View.record
+                                                   ->record_ViewRecord.labels,
+                                           false)
+                    == ConfigurableLabelStatus::Hide)
+                    return true;
+                if (getContentFilterStatus(post.embed_AppBskyEmbedRecordWithMedia_View.record
+                                                   ->record_ViewRecord.labels,
+                                           true)
+                    == ConfigurableLabelStatus::Hide)
+                    return true;
+            }
         }
         return false;
     }
