@@ -178,8 +178,9 @@ QString AtpAbstractListModel::copyRecordText(const QVariant &value) const
 void AtpAbstractListModel::displayQueuedPosts()
 {
     int interval = m_displayInterval;
+    bool batch_mode = m_originalCidList.isEmpty();
 
-    if (!m_cuePost.isEmpty()) {
+    while (!m_cuePost.isEmpty()) {
         const PostCueItem &post = m_cuePost.front();
         bool visible = checkVisibility(post.cid);
         if (!visible)
@@ -237,6 +238,9 @@ void AtpAbstractListModel::displayQueuedPosts()
         }
 
         m_cuePost.pop_front();
+
+        if (!batch_mode)
+            break;
     }
 
     if (!m_cuePost.isEmpty()) {
