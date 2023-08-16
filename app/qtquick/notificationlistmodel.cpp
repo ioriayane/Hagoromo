@@ -61,12 +61,23 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
                 .text;
     else if (role == RecordTextTranslationRole)
         return m_translations.contains(current.cid) ? m_translations[current.cid] : QString();
-
     else if (role == IndexedAtRole)
         return formatDateTime(current.indexedAt);
+    else if (role == EmbedImagesRole) {
+        if (m_postHash.contains(current.cid))
+            return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
+                    m_postHash[current.cid], true);
+        else
+            return QStringList();
+    } else if (role == EmbedImagesFullRole) {
+        if (m_postHash.contains(current.cid))
+            return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
+                    m_postHash[current.cid], false);
+        else
+            return QStringList();
 
-    //----------------------------------------
-    else if (role == ReplyCountRole) {
+        //----------------------------------------
+    } else if (role == ReplyCountRole) {
         if (m_postHash.contains(current.cid))
             return m_postHash[current.cid].replyCount;
         else
@@ -103,39 +114,17 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             return QString();
 
     } else if (role == UserFilterMatchedRole) {
-        for (const auto &label : current.author.labels) {
-            if (m_contentFilterLabels.visibility(label.val, false)
-                != ConfigurableLabelStatus::Show) {
-                return true;
-            }
-        }
-        return false;
+        return getContentFilterMatched(current.author.labels, false);
     } else if (role == UserFilterMessageRole) {
-        QString message;
-        for (const auto &label : current.author.labels) {
-            message = m_contentFilterLabels.message(label.val, false);
-            if (!message.isEmpty()) {
-                break;
-            }
-        }
-        return message;
+        return getContentFilterMessage(current.author.labels, false);
     } else if (role == ContentFilterMatchedRole) {
-        for (const auto &label : current.labels) {
-            if (m_contentFilterLabels.visibility(label.val, true)
-                != ConfigurableLabelStatus::Show) {
-                return true;
-            }
-        }
-        return false;
+        return getContentFilterMatched(current.labels, false);
     } else if (role == ContentFilterMessageRole) {
-        QString message;
-        for (const auto &label : current.labels) {
-            message = m_contentFilterLabels.message(label.val, true);
-            if (!message.isEmpty()) {
-                break;
-            }
-        }
-        return message;
+        return getContentFilterMessage(current.labels, false);
+    } else if (role == ContentMediaFilterMatchedRole) {
+        return getContentFilterMatched(current.labels, true);
+    } else if (role == ContentMediaFilterMessageRole) {
+        return getContentFilterMessage(current.labels, true);
 
         //----------------------------------------
     } else if (role == ReasonRole) {
@@ -196,59 +185,59 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
         }
 
         //----------------------------------------
-        if (role == RecordCidRole) {
+        if (role == QuoteRecordCidRole) {
             if (m_postHash.contains(record_cid))
                 return m_postHash[record_cid].cid;
             else
                 return QString();
-        } else if (role == RecordUriRole) {
+        } else if (role == QuoteRecordUriRole) {
             if (m_postHash.contains(record_cid))
                 return m_postHash[record_cid].uri;
             else
                 return QString();
-        } else if (role == RecordDisplayNameRole) {
+        } else if (role == QuoteRecordDisplayNameRole) {
             if (m_postHash.contains(record_cid))
                 return m_postHash[record_cid].author.displayName;
             else
                 return QString();
-        } else if (role == RecordHandleRole) {
+        } else if (role == QuoteRecordHandleRole) {
             if (m_postHash.contains(record_cid))
                 return m_postHash[record_cid].author.handle;
             else
                 return QString();
-        } else if (role == RecordAvatarRole) {
+        } else if (role == QuoteRecordAvatarRole) {
             if (m_postHash.contains(record_cid))
                 return m_postHash[record_cid].author.avatar;
             else
                 return QString();
-        } else if (role == RecordIndexedAtRole) {
+        } else if (role == QuoteRecordIndexedAtRole) {
             if (m_postHash.contains(record_cid))
                 return formatDateTime(m_postHash[record_cid].indexedAt);
             else
                 return QString();
-        } else if (role == RecordRecordTextRole) {
+        } else if (role == QuoteRecordRecordTextRole) {
             if (m_postHash.contains(record_cid))
                 return copyRecordText(m_postHash[record_cid].record);
             else
                 return QString();
-        } else if (role == RecordImagesRole) {
+        } else if (role == QuoteRecordEmbedImagesRole) {
             if (m_postHash.contains(record_cid))
                 return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
                         m_postHash[record_cid], true);
             else
                 return QString();
-        } else if (role == RecordImagesFullRole) {
+        } else if (role == QuoteRecordEmbedImagesFullRole) {
             if (m_postHash.contains(record_cid))
                 return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
                         m_postHash[record_cid], false);
             else
                 return QString();
-        } else if (role == RecordIsRepostedRole) {
+        } else if (role == QuoteRecordIsRepostedRole) {
             if (m_postHash.contains(record_cid))
                 return m_postHash[record_cid].viewer.repost.contains(account().did);
             else
                 return false;
-        } else if (role == RecordIsLikedRole) {
+        } else if (role == QuoteRecordIsLikedRole) {
             if (m_postHash.contains(record_cid))
                 return m_postHash[record_cid].viewer.like.contains(account().did);
             else
@@ -556,6 +545,8 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[RepostCountRole] = "repostCount";
     roles[LikeCountRole] = "likeCount";
     roles[IndexedAtRole] = "indexedAt";
+    roles[EmbedImagesRole] = "embedImages";
+    roles[EmbedImagesFullRole] = "embedImagesFull";
 
     roles[IsRepostedRole] = "isReposted";
     roles[IsLikedRole] = "isLiked";
@@ -564,17 +555,17 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
 
     roles[ReasonRole] = "reason";
 
-    roles[RecordCidRole] = "recordCid";
-    roles[RecordUriRole] = "recordUri";
-    roles[RecordDisplayNameRole] = "recordDisplayName";
-    roles[RecordHandleRole] = "recordHandle";
-    roles[RecordAvatarRole] = "recordAvatar";
-    roles[RecordIndexedAtRole] = "recordIndexedAt";
-    roles[RecordRecordTextRole] = "recordRecordText";
-    roles[RecordImagesRole] = "recordImages";
-    roles[RecordImagesFullRole] = "recordImagesFull";
-    roles[RecordIsRepostedRole] = "recordIsReposted";
-    roles[RecordIsLikedRole] = "recordIsLiked";
+    roles[QuoteRecordCidRole] = "quoteRecordCid";
+    roles[QuoteRecordUriRole] = "quoteRecordUri";
+    roles[QuoteRecordDisplayNameRole] = "quoteRecordDisplayName";
+    roles[QuoteRecordHandleRole] = "quoteRecordHandle";
+    roles[QuoteRecordAvatarRole] = "quoteRecordAvatar";
+    roles[QuoteRecordIndexedAtRole] = "quoteRecordIndexedAt";
+    roles[QuoteRecordRecordTextRole] = "quoteRecordRecordText";
+    roles[QuoteRecordEmbedImagesRole] = "quoteRecordEmbedImages";
+    roles[QuoteRecordEmbedImagesFullRole] = "quoteRecordEmbedImagesFull";
+    roles[QuoteRecordIsRepostedRole] = "quoteRecordIsReposted";
+    roles[QuoteRecordIsLikedRole] = "quoteRecordIsLiked";
 
     roles[HasGeneratorFeedRole] = "hasGeneratorFeed";
     roles[GeneratorFeedUriRole] = "generatorFeedUri";
@@ -587,6 +578,8 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[UserFilterMessageRole] = "userFilterMessage";
     roles[ContentFilterMatchedRole] = "contentFilterMatched";
     roles[ContentFilterMessageRole] = "contentFilterMessage";
+    roles[ContentMediaFilterMatchedRole] = "contentMediaFilterMatched";
+    roles[ContentMediaFilterMessageRole] = "contentMediaFilterMessage";
 
     return roles;
 }
@@ -651,7 +644,7 @@ void NotificationListModel::getPosts()
                 new_cid.append(post.cid);
             }
 
-            //取得した個別のポストデータを表示用のcidリストのどの分か探して紐付ける
+            // 取得した個別のポストデータを表示用のcidリストのどの分か探して紐付ける
             for (int i = 0; i < m_cidList.count(); i++) {
                 if (!m_notificationHash.contains(m_cidList.at(i)))
                     continue;

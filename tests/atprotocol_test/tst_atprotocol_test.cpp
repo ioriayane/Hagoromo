@@ -4,6 +4,7 @@
 
 #include "webserver.h"
 #include "atprotocol/com/atproto/server/comatprotoservercreatesession.h"
+#include "atprotocol/com/atproto/repo/comatprotorepocreaterecord.h"
 #include "atprotocol/app/bsky/feed/appbskyfeedgettimeline.h"
 #include "tools/opengraphprotocol.h"
 #include "atprotocol/lexicons_func_unknown.h"
@@ -30,6 +31,7 @@ private slots:
     void test_ConfigurableLabels_load();
     void test_ConfigurableLabels_copy();
     void test_ConfigurableLabels_save();
+    void test_ComAtprotoRepoCreateRecord_post();
 
 private:
     void test_putPreferences(const QString &path, const QByteArray &body);
@@ -56,6 +58,9 @@ atprotocol_test::atprotocol_test()
                             == "/response/labels/save/3/xrpc/app.bsky.actor.putPreferences") {
                     test_putPreferences(request.url().path(), request.body());
                     json = "{}";
+                    result = true;
+                } else if (request.url().path() == "/response/xrpc/com.atproto.repo.createRecord") {
+                    json = "{ \"uri\": \"return uri\", \"cid\": \"return cid\" }";
                     result = true;
                 } else {
                     QFile *file = new QFile(":" + request.url().path());
@@ -434,6 +439,31 @@ void atprotocol_test::test_ConfigurableLabels()
     QVERIFY(labels.message("icon-kkk", true) == QString());
     QVERIFY(labels.message("corpse", false) == QString());
     QVERIFY(labels.message("icon-kkk", false) == "Hate Groups");
+
+    labels.setEnableAdultContent(true);
+    for (int i = 0; i < labels.count(); i++) {
+        labels.setStatus(i, ConfigurableLabelStatus::Warning);
+    }
+    QVERIFY(labels.visibility("corpse", true) == ConfigurableLabelStatus::Warning);
+    QVERIFY(labels.visibility("icon-kkk", true) == ConfigurableLabelStatus::Show);
+    QVERIFY(labels.visibility("corpse", false) == ConfigurableLabelStatus::Show);
+    QVERIFY(labels.visibility("icon-kkk", false) == ConfigurableLabelStatus::Warning);
+
+    QVERIFY(labels.message("corpse", true) == "Violence");
+    QVERIFY(labels.message("icon-kkk", true) == QString());
+    QVERIFY(labels.message("corpse", false) == QString());
+    QVERIFY(labels.message("icon-kkk", false) == "Hate Groups");
+
+    // 設定変更できない項目を変更していないか確認
+    for (int i = 0; i < labels.count(); i++) {
+        labels.setStatus(i, ConfigurableLabelStatus::Show);
+    }
+    QVERIFY(labels.visibility("!hide", false) == ConfigurableLabelStatus::Hide);
+    QVERIFY(labels.visibility("doxxing", false) == ConfigurableLabelStatus::Hide);
+    QVERIFY(labels.visibility("!warn", false) == ConfigurableLabelStatus::Warning);
+    QVERIFY(labels.visibility("!warn", true) == ConfigurableLabelStatus::Show);
+    QVERIFY(labels.message("!warn", false) == "Content warning");
+    QVERIFY(labels.message("!warn", true) == QString());
 }
 
 void atprotocol_test::test_ConfigurableLabels_load()
@@ -649,6 +679,20 @@ void atprotocol_test::test_ConfigurableLabels_save()
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
+}
+
+void atprotocol_test::test_ComAtprotoRepoCreateRecord_post()
+{
+    AtProtocolInterface::ComAtprotoRepoCreateRecord createrecord;
+    createrecord.setAccount(m_account);
+    createrecord.setSelfLabels(QStringList() << "!warn"
+                                             << "spam");
+    QSignalSpy spy(&createrecord, SIGNAL(finished(bool)));
+    createrecord.post("hello world");
+    spy.wait();
+    QVERIFY(spy.count() == 1);
+    QList<QVariant> arguments = spy.takeFirst();
+    QVERIFY(arguments.at(0).toBool());
 }
 
 void atprotocol_test::test_putPreferences(const QString &path, const QByteArray &body)

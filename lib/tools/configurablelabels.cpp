@@ -182,6 +182,8 @@ void ConfigurableLabels::setStatus(const int index, const ConfigurableLabelStatu
 {
     if (index < 0 || index >= m_labels.length())
         return;
+    if (m_labels[index].configurable == false)
+        return;
 
     m_labels[index].status = status;
 }
@@ -192,6 +194,14 @@ bool ConfigurableLabels::isAdultImagery(const int index) const
         return false;
 
     return m_labels.at(index).is_adult_imagery;
+}
+
+bool ConfigurableLabels::configurable(const int index) const
+{
+    if (index < 0 || index >= m_labels.length())
+        return false;
+
+    return m_labels.at(index).configurable;
 }
 
 bool ConfigurableLabels::enableAdultContent() const
@@ -208,15 +218,55 @@ void ConfigurableLabels::initializeLabels()
 {
     ConfigurableLabelItem item;
 
+    // ラベルの情報
+    // https://github.com/bluesky-social/atproto/blob/main/packages/api/docs/labels.md
+    // idはpreferenceの項目とのマッチングに使うのでconfigurable==trueの
+    // もので重複させないこと
+
+    item.values.clear();
+    item.id = "system";
+    item.title = tr("Content hidden");
+    item.subtitle = tr("Moderator overrides for special cases.");
+    item.warning = tr("Content hidden");
+    item.values << "!hide";
+    item.is_adult_imagery = false;
+    item.status = ConfigurableLabelStatus::Hide;
+    item.configurable = false;
+    m_labels.append(item);
+
+    item.values.clear();
+    item.id = "system";
+    item.title = tr("Content warning");
+    item.subtitle = tr("Moderator overrides for special cases.");
+    item.warning = tr("Content warning");
+    item.values << "!warn";
+    item.is_adult_imagery = false;
+    item.status = ConfigurableLabelStatus::Warning;
+    item.configurable = false;
+    m_labels.append(item);
+
+    item.values.clear();
+    item.id = "legal";
+    item.title = tr("Legal");
+    item.subtitle = tr("Content removed for legal reasons.");
+    item.warning = tr("Legal");
+    item.values << "dmca-violation"
+                << "doxxing";
+    item.is_adult_imagery = false;
+    item.status = ConfigurableLabelStatus::Hide;
+    item.configurable = false;
+    m_labels.append(item);
+
+    item.values.clear();
     item.id = "nsfw";
     item.title = tr("Explicit Sexual Images");
     item.subtitle = tr("i.e. pornography");
     item.warning = tr("Sexually Explicit");
     item.values << "porn"
-                << "nsfl"
                 << "nsfw";
     item.is_adult_imagery = true;
     item.status = ConfigurableLabelStatus::Hide;
+    item.configurable = true;
     m_labels.append(item);
 
     item.values.clear();
@@ -227,6 +277,7 @@ void ConfigurableLabels::initializeLabels()
     item.values << "nudity";
     item.is_adult_imagery = true;
     item.status = ConfigurableLabelStatus::Hide;
+    item.configurable = true;
     m_labels.append(item);
 
     item.values.clear();
@@ -237,6 +288,7 @@ void ConfigurableLabels::initializeLabels()
     item.values << "sexual";
     item.is_adult_imagery = true;
     item.status = ConfigurableLabelStatus::Warning;
+    item.configurable = true;
     m_labels.append(item);
 
     item.values.clear();
@@ -251,6 +303,7 @@ void ConfigurableLabels::initializeLabels()
                 << "corpse";
     item.is_adult_imagery = true;
     item.status = ConfigurableLabelStatus::Hide;
+    item.configurable = true;
     m_labels.append(item);
 
     item.values.clear();
@@ -261,9 +314,16 @@ void ConfigurableLabels::initializeLabels()
     item.values << "icon-kkk"
                 << "icon-nazi"
                 << "icon-intolerant"
-                << "behavior-intolerant";
+                << "behavior-intolerant"
+                << "intolerant-race"
+                << "intolerant-gender"
+                << "intolerant-sexual-orientation"
+                << "intolerant-religion"
+                << "intolerant"
+                << "threat";
     item.is_adult_imagery = false;
     item.status = ConfigurableLabelStatus::Hide;
+    item.configurable = true;
     m_labels.append(item);
 
     item.values.clear();
@@ -271,19 +331,25 @@ void ConfigurableLabels::initializeLabels()
     item.title = tr("Spam");
     item.subtitle = tr("Excessive unwanted interactions");
     item.warning = tr("Spam");
-    item.values << "spam";
+    item.values << "spam"
+                << "spoiler";
     item.is_adult_imagery = false;
     item.status = ConfigurableLabelStatus::Hide;
+    item.configurable = true;
     m_labels.append(item);
 
     item.values.clear();
     item.id = "impersonation";
-    item.title = tr("Impersonation");
+    item.title = tr("Impersonation / Scam");
     item.subtitle = tr("Accounts falsely claiming to be people or orgs");
     item.warning = tr("Impersonation");
-    item.values << "impersonation";
+    item.values << "impersonation"
+                << "account-security"
+                << "net-abuse"
+                << "scam";
     item.is_adult_imagery = false;
     item.status = ConfigurableLabelStatus::Hide;
+    item.configurable = true;
     m_labels.append(item);
 }
 
@@ -334,6 +400,8 @@ QString ConfigurableLabels::updatePreferencesJson(const QString &src_json)
                 dest_preferences.append(value);
             }
             for (const auto &label : qAsConst(m_labels)) {
+                if (!label.configurable)
+                    continue;
                 QJsonObject value;
                 value.insert("$type", QStringLiteral("app.bsky.actor.defs#contentLabelPref"));
                 value.insert("label", QJsonValue(label.id));

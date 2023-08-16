@@ -89,16 +89,20 @@ ScrollView {
                 }
                 return text
             }
+            contentFilterFrame.visible: model.contentFilterMatched
+            contentFilterFrame.labelText: model.contentFilterMessage
+            contentMediaFilterFrame.visible: model.contentMediaFilterMatched
+            contentMediaFilterFrame.labelText: model.contentMediaFilterMessage
+            postImagePreview.embedImages: model.embedImages
+            postImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.embedImagesFull)
 
-            recordDisplayName: model.recordDisplayName
-            recordHandle: model.recordHandle
-            recordAvatar: model.recordAvatar
-            recordIndexedAt: model.recordIndexedAt
-            recordRecordText: model.recordRecordText
-//            contentFilterFrame.visible: model.contentFilterMatched
-//            contentFilterFrame.labelText: model.contentFilterMessage
-            recordImagePreview.embedImages: model.recordImages
-            recordImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.recordImagesFull)
+            quoteRecordDisplayName: model.quoteRecordDisplayName
+            quoteRecordHandle: model.quoteRecordHandle
+            quoteRecordAvatar: model.quoteRecordAvatar
+            quoteRecordIndexedAt: model.quoteRecordIndexedAt
+            quoteRecordRecordText: model.quoteRecordRecordText
+            quoteRecordImagePreview.embedImages: model.quoteRecordEmbedImages
+            quoteRecordImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.quoteRecordEmbedImagesFull)
 
 //            generatorViewFrame.visible: model.hasGeneratorFeed
 //            generatorViewFrame.onClicked: notificationListView.requestViewGeneratorFeed(model.generatorFeedDisplayName, model.generatorFeedUri)
@@ -128,8 +132,8 @@ ScrollView {
             onClicked: {
                 if(model.reason === NotificationListModel.ReasonLike ||
                         model.reason === NotificationListModel.ReasonRepost){
-                    if(model.recordUri.length > 0)
-                        requestViewThread(model.recordUri)
+                    if(model.quoteRecordUri.length > 0)
+                        requestViewThread(model.quoteRecordUri)
                 }else if(model.reason === NotificationListModel.ReasonFollow){
                 }else if(model.reason === NotificationListModel.ReasonMention){
                 }else if(model.reason === NotificationListModel.ReasonReply ||
@@ -138,9 +142,9 @@ ScrollView {
                 }
             }
 
-            recordFrame.onClicked: {
+            quoteRecordFrame.onClicked: {
                 if(model.reason === NotificationListModel.ReasonQuote){
-                    requestViewThread(model.recordUri)
+                    requestViewThread(model.quoteRecordUri)
                 }
             }
             onHoveredLinkChanged: notificationListView.hoveredLink = hoveredLink

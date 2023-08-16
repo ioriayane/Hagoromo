@@ -8,7 +8,7 @@ import "../controls"
 IconLabelFrame {
     backgroundColor: Material.color(Material.Grey)
     borderWidth: 0
-    iconSource: "../images/visibility_off.png"
+    iconSource: showContent ? "../images/visibility_on.png" : "../images/visibility_off.png"
     controlButton.visible: true
     controlButton.iconText: showContent ? qsTr("Hide") : qsTr("Show")
     controlButton.onClicked: showContent = !showContent

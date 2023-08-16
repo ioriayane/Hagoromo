@@ -75,7 +75,7 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
              || role == QuoteRecordDisplayNameRole || role == QuoteRecordHandleRole
              || role == QuoteRecordAvatarRole || role == QuoteRecordRecordTextRole
              || role == QuoteRecordIndexedAtRole || role == QuoteRecordEmbedImagesRole
-             || role == QuoteRecordEmbedImagesFullRole)
+             || role == QuoteRecordEmbedImagesFullRole || role == QuoteRecordBlockedRole)
         return getQuoteItem(current.post, role);
 
     else if (role == HasExternalLinkRole)
@@ -163,40 +163,23 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     else if (role == RepostedByHandleRole)
         return current.reason_ReasonRepost.by.handle;
 
-    else if (role == UserFilterMatchedRole) {
-        for (const auto &label : current.post.author.labels) {
-            if (m_contentFilterLabels.visibility(label.val, false)
-                != ConfigurableLabelStatus::Show) {
-                return true;
-            }
-        }
-        return false;
-    } else if (role == UserFilterMessageRole) {
-        QString message;
-        for (const auto &label : current.post.author.labels) {
-            message = m_contentFilterLabels.message(label.val, false);
-            if (!message.isEmpty()) {
-                break;
-            }
-        }
-        return message;
-    } else if (role == ContentFilterMatchedRole) {
-        for (const auto &label : current.post.labels) {
-            if (m_contentFilterLabels.visibility(label.val, true)
-                != ConfigurableLabelStatus::Show) {
-                return true;
-            }
-        }
-        return false;
-    } else if (role == ContentFilterMessageRole) {
-        QString message;
-        for (const auto &label : current.post.labels) {
-            message = m_contentFilterLabels.message(label.val, true);
-            if (!message.isEmpty()) {
-                break;
-            }
-        }
-        return message;
+    else if (role == UserFilterMatchedRole)
+        return getContentFilterMatched(current.post.author.labels, false);
+    else if (role == UserFilterMessageRole)
+        return getContentFilterMessage(current.post.author.labels, false);
+    else if (role == ContentFilterMatchedRole)
+        return getContentFilterMatched(current.post.labels, false);
+    else if (role == ContentFilterMessageRole)
+        return getContentFilterMessage(current.post.labels, false);
+    else if (role == ContentMediaFilterMatchedRole)
+        return getContentFilterMatched(current.post.labels, true);
+    else if (role == ContentMediaFilterMessageRole)
+        return getContentFilterMessage(current.post.labels, true);
+    else if (role == QuoteFilterMatchedRole) {
+        if (getQuoteItem(current.post, HasQuoteRecordRole).toBool())
+            return getQuoteFilterMatched(current.post);
+        else
+            return false;
     }
 
     return QVariant();
@@ -395,6 +378,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[QuoteRecordIndexedAtRole] = "quoteRecordIndexedAt";
     roles[QuoteRecordEmbedImagesRole] = "quoteRecordEmbedImages";
     roles[QuoteRecordEmbedImagesFullRole] = "quoteRecordEmbedImagesFull";
+    roles[QuoteRecordBlockedRole] = "quoteRecordBlocked";
 
     roles[HasExternalLinkRole] = "hasExternalLink";
     roles[ExternalLinkUriRole] = "externalLinkUri";
@@ -422,6 +406,9 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[UserFilterMessageRole] = "userFilterMessage";
     roles[ContentFilterMatchedRole] = "contentFilterMatched";
     roles[ContentFilterMessageRole] = "contentFilterMessage";
+    roles[ContentMediaFilterMatchedRole] = "contentMediaFilterMatched";
+    roles[ContentMediaFilterMessageRole] = "contentMediaFilterMessage";
+    roles[QuoteFilterMatchedRole] = "quoteFilterMatched";
 
     return roles;
 }
@@ -582,6 +569,45 @@ QVariant TimelineListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDefs::
                     post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord, false);
         else
             return QStringList();
+    } else if (role == QuoteRecordBlockedRole) {
+        // 引用しているポストがブロックしているユーザーのモノか
+        // 付与されているラベルがHide設定の場合block表示をする
+        if (has_record) {
+            if (post.embed_AppBskyEmbedRecord_View->record_type
+                == AppBskyEmbedRecord::ViewRecordType::record_ViewBlocked)
+                return true;
+
+            if (post.embed_AppBskyEmbedRecord_View->record_ViewRecord.author.did != account().did) {
+                // 引用されているポストが他人のポストのみ判断する（自分のものの場合は隠さない）
+                if (getContentFilterStatus(
+                            post.embed_AppBskyEmbedRecord_View->record_ViewRecord.labels, false)
+                    == ConfigurableLabelStatus::Hide)
+                    return true;
+                if (getContentFilterStatus(
+                            post.embed_AppBskyEmbedRecord_View->record_ViewRecord.labels, true)
+                    == ConfigurableLabelStatus::Hide)
+                    return true;
+            }
+        } else if (has_with_image) {
+            if (post.embed_AppBskyEmbedRecordWithMedia_View.record->record_type
+                == AppBskyEmbedRecord::ViewRecordType::record_ViewBlocked)
+                return true;
+            if (post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.author.did
+                != account().did) {
+                // 引用されているポストが他人のポストのみ判断する（自分のものの場合は隠さない）
+                if (getContentFilterStatus(post.embed_AppBskyEmbedRecordWithMedia_View.record
+                                                   ->record_ViewRecord.labels,
+                                           false)
+                    == ConfigurableLabelStatus::Hide)
+                    return true;
+                if (getContentFilterStatus(post.embed_AppBskyEmbedRecordWithMedia_View.record
+                                                   ->record_ViewRecord.labels,
+                                           true)
+                    == ConfigurableLabelStatus::Hide)
+                    return true;
+            }
+        }
+        return false;
     }
 
     return QVariant();

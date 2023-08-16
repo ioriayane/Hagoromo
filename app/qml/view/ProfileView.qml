@@ -364,7 +364,7 @@ ColumnLayout {
             visible: userProfile.userFilterMatched
             backgroundColor: Material.color(Material.Red)
             borderWidth: 0
-            iconSource: "../images/report.png"
+            iconSource: "../images/labeling.png"
             labelText: qsTr("This account has been flagged : ") + userProfile.userFilterTitle
         }
         IconLabelFrame {

@@ -1,0 +1,138 @@
+{
+    "notifications": [
+        {
+            "uri": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3k4wo742scq2l",
+            "cid": "bafyreibxpg7wcdroopduyxpd2rsqbzehqlf3vz3qgiunzpf24pll3ywpfu",
+            "author": {
+                "did": "did:plc:l4fsx4ujos7uw7n4ijq2ulgs",
+                "handle": "ioriayane.bsky.social",
+                "description": "@ioriayane.relog.tech のテスト用のサブアカウントです。\nhttps://github.com/ioriayane/Hagoromo/blob/main/README.md#%E6%A6%82%E8%A6%81",
+                "indexedAt": "2023-07-16T04:47:24.911Z",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false,
+                    "following": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.follow/3k2fwocixdw2b",
+                    "followedBy": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.graph.follow/3k2fx3qmuob2g"
+                },
+                "labels": []
+            },
+            "reason": "mention",
+            "record": {
+                "via": "Hagoromo",
+                "text": "@ioriayane2.bsky.social labeling sexual with image",
+                "$type": "app.bsky.feed.post",
+                "embed": {
+                    "$type": "app.bsky.embed.images",
+                    "images": [
+                        {
+                            "alt": "",
+                            "image": {
+                                "ref": {
+                                    "$link": "bafkreibmmux3wklplvddwjqszdzx3vnvfllhjrbqsnlgtt6fax7ajdjy5y"
+                                },
+                                "size": 35488,
+                                "$type": "blob",
+                                "mimeType": "image/jpeg"
+                            }
+                        }
+                    ]
+                },
+                "facets": [
+                    {
+                        "$type": "app.bsky.richtext.facet",
+                        "index": {
+                            "byteEnd": 23,
+                            "byteStart": 0
+                        },
+                        "features": [
+                            {
+                                "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                                "$type": "app.bsky.richtext.facet#mention"
+                            }
+                        ]
+                    }
+                ],
+                "labels": {
+                    "$type": "com.atproto.label.defs#selfLabels",
+                    "values": [
+                        {
+                            "val": "sexual"
+                        }
+                    ]
+                },
+                "createdAt": "2023-08-14T17:03:15.677Z"
+            },
+            "isRead": false,
+            "indexedAt": "2023-08-14T17:03:20.988Z",
+            "labels": [
+                {
+                    "src": "did:plc:l4fsx4ujos7uw7n4ijq2ulgs",
+                    "uri": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3k4wo742scq2l",
+                    "cid": "bafyreibxpg7wcdroopduyxpd2rsqbzehqlf3vz3qgiunzpf24pll3ywpfu",
+                    "val": "sexual",
+                    "cts": "2023-08-14T17:03:15.677Z",
+                    "neg": false
+                }
+            ]
+        },
+        {
+            "uri": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3k4wo4dqrkn2g",
+            "cid": "bafyreigfwfidixv73jiuawbnz7a53kem46qta2g7rmzl7c2ftze5oe3gfq",
+            "author": {
+                "did": "did:plc:l4fsx4ujos7uw7n4ijq2ulgs",
+                "handle": "ioriayane.bsky.social",
+                "description": "@ioriayane.relog.tech のテスト用のサブアカウントです。\nhttps://github.com/ioriayane/Hagoromo/blob/main/README.md#%E6%A6%82%E8%A6%81",
+                "indexedAt": "2023-07-16T04:47:24.911Z",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false,
+                    "following": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.follow/3k2fwocixdw2b",
+                    "followedBy": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.graph.follow/3k2fx3qmuob2g"
+                },
+                "labels": []
+            },
+            "reason": "mention",
+            "record": {
+                "via": "Hagoromo",
+                "text": "@ioriayane2.bsky.social labeling warn",
+                "$type": "app.bsky.feed.post",
+                "facets": [
+                    {
+                        "$type": "app.bsky.richtext.facet",
+                        "index": {
+                            "byteEnd": 23,
+                            "byteStart": 0
+                        },
+                        "features": [
+                            {
+                                "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                                "$type": "app.bsky.richtext.facet#mention"
+                            }
+                        ]
+                    }
+                ],
+                "labels": {
+                    "$type": "com.atproto.label.defs#selfLabels",
+                    "values": [
+                        {
+                            "val": "!warn"
+                        }
+                    ]
+                },
+                "createdAt": "2023-08-14T17:01:43.055Z"
+            },
+            "isRead": false,
+            "indexedAt": "2023-08-14T17:01:48.377Z",
+            "labels": [
+                {
+                    "src": "did:plc:l4fsx4ujos7uw7n4ijq2ulgs",
+                    "uri": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3k4wo4dqrkn2g",
+                    "cid": "bafyreigfwfidixv73jiuawbnz7a53kem46qta2g7rmzl7c2ftze5oe3gfq",
+                    "val": "!warn",
+                    "cts": "2023-08-14T17:01:43.055Z",
+                    "neg": false
+                }
+            ]
+        }
+    ]
+}
