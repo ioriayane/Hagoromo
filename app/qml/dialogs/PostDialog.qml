@@ -343,37 +343,23 @@ Dialog {
             }
             IconButton {
                 id: selfLabelsButton
-                iconSource: "../images/report.png"
+                iconSource: "../images/labeling.png"
                 flat: true
                 foreground: value.length > 0 ? Material.accent : Material.foreground
                 onClicked: selfLabelPopup.open()
                 property string value: ""
-                Menu {
+                SelfLabelPopup {
                     id: selfLabelPopup
-                    MenuItem {
-                        text: qsTr("Spoiler")
-                        property string value: "spoiler"
-                        onTriggered: {
-                            selfLabelsButton.value = value
-                            selfLabelsButton.iconText = text
-                        }
-                    }
-                    MenuItem {
-                        text: qsTr("Sexual")
-                        property string value: "sexual"
-                        onTriggered: {
-                            selfLabelsButton.value = value
-                            selfLabelsButton.iconText = text
-                        }
-                    }
-                    MenuItem {
-                        text: qsTr("Warning")
-                        property string value: "!warn"
-                        onTriggered: {
-                            selfLabelsButton.value = value
-                            selfLabelsButton.iconText = text
-                        }
-                    }
+                    onTriggered: (value, text) => {
+                                     if(value.length > 0){
+                                         selfLabelsButton.value = value
+                                         selfLabelsButton.iconText = text
+                                     }else{
+                                         selfLabelsButton.value = ""
+                                         selfLabelsButton.iconText = ""
+                                     }
+                                 }
+                    onClosed: postText.forceActiveFocus()
                 }
             }
             IconButton {

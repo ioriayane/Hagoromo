@@ -263,7 +263,6 @@ void ConfigurableLabels::initializeLabels()
     item.subtitle = tr("i.e. pornography");
     item.warning = tr("Sexually Explicit");
     item.values << "porn"
-                << "nsfl"
                 << "nsfw";
     item.is_adult_imagery = true;
     item.status = ConfigurableLabelStatus::Hide;
