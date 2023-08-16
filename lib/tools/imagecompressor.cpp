@@ -11,12 +11,6 @@ ImageCompressor::ImageCompressor(QObject *parent) : QObject { parent } { }
 
 void ImageCompressor::compress(const QString &path)
 {
-    QFileInfo info(path);
-    if (info.size() < 1000000) {
-        emit compressed(path);
-        return;
-    }
-
     QString folder =
             QString("%1/%2").arg(QStandardPaths::writableLocation(QStandardPaths::TempLocation),
                                  QCoreApplication::applicationName());
@@ -28,12 +22,12 @@ void ImageCompressor::compress(const QString &path)
 
     QFileInfo new_info(path);
     for (int quality = 90; quality >= 70; quality -= 5) {
+        src.save(new_path, nullptr, quality);
+        new_info.setFile(new_path);
         // qDebug() << new_info.size() << "/" << info.size() << "," << quality;
         if (new_info.size() < 1000000) {
             break;
         }
-        src.save(new_path, nullptr, quality);
-        new_info.setFile(new_path);
     }
     for (qreal ratio = 0.9; ratio >= 0.1; ratio -= 0.1) {
         // qDebug() << new_info.size() << "/" << info.size() << "," << src.width() << "x"
