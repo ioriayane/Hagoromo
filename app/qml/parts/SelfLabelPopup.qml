@@ -3,6 +3,11 @@ import QtQuick.Controls 2.15
 
 Menu {
     id: selfLabelPopup
+    // メニューをウインドウのセンターに表示する
+    // 本当は親のボタン基準で出したいが2回目の表示から画面外にはみ出ないようにする
+    // 制御が正しく働かないようではみ出てしまうので暫定対策
+    // ポストダイアログがウインドウ中央に表示しているのでそこまで違和感は無し
+    anchors.centerIn: Overlay.overlay
 
     signal triggered(string value, string text)
 
@@ -31,10 +36,7 @@ Menu {
         property string value: "gore"
         onTriggered: selfLabelPopup.triggered(value, text)
     }
-    MenuSeparator {
-        topPadding: 1
-        bottomPadding: 1
-    }
+    MenuSeparator { }
     MenuItem {
         text: qsTr("Spoiler")
         property string value: "spoiler"
@@ -45,10 +47,7 @@ Menu {
         property string value: "!warn"
         onTriggered: selfLabelPopup.triggered(value, text)
     }
-    MenuSeparator {
-        topPadding: 1
-        bottomPadding: 1
-    }
+    MenuSeparator { }
     MenuItem {
         text: qsTr("Remove")
         property string value: ""

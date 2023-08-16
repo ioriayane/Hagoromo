@@ -346,7 +346,7 @@ Dialog {
                 iconSource: "../images/labeling.png"
                 flat: true
                 foreground: value.length > 0 ? Material.accent : Material.foreground
-                onClicked: selfLabelPopup.open()
+                onClicked: selfLabelPopup.popup()
                 property string value: ""
                 SelfLabelPopup {
                     id: selfLabelPopup

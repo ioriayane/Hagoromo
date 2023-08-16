@@ -1512,12 +1512,12 @@
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/PostDialog.qml" line="416"/>
+        <location filename="../qml/dialogs/PostDialog.qml" line="394"/>
         <source>Post</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/PostDialog.qml" line="457"/>
+        <location filename="../qml/dialogs/PostDialog.qml" line="435"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
     </message>
@@ -1838,39 +1838,44 @@
 <context>
     <name>SelfLabelPopup</name>
     <message>
-        <location filename="../qml/parts/SelfLabelPopup.qml" line="10"/>
+        <location filename="../qml/parts/SelfLabelPopup.qml" line="16"/>
         <source>Sexually Explicit</source>
         <translation>露骨な性的表現</translation>
     </message>
     <message>
-        <location filename="../qml/parts/SelfLabelPopup.qml" line="15"/>
+        <location filename="../qml/parts/SelfLabelPopup.qml" line="22"/>
         <source>Nudity</source>
         <translation>ヌード（芸術など）</translation>
     </message>
     <message>
-        <location filename="../qml/parts/SelfLabelPopup.qml" line="20"/>
+        <location filename="../qml/parts/SelfLabelPopup.qml" line="28"/>
         <source>Sexually Suggestive</source>
         <translation>性的な示唆</translation>
     </message>
     <message>
-        <location filename="../qml/parts/SelfLabelPopup.qml" line="25"/>
+        <location filename="../qml/parts/SelfLabelPopup.qml" line="34"/>
         <source>NSFL</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/parts/SelfLabelPopup.qml" line="30"/>
+        <location filename="../qml/parts/SelfLabelPopup.qml" line="40"/>
         <source>Gore</source>
         <translation>ゴア表現</translation>
     </message>
     <message>
-        <location filename="../qml/parts/SelfLabelPopup.qml" line="39"/>
+        <location filename="../qml/parts/SelfLabelPopup.qml" line="50"/>
         <source>Spoiler</source>
         <translation>ネタバレ</translation>
     </message>
     <message>
-        <location filename="../qml/parts/SelfLabelPopup.qml" line="44"/>
+        <location filename="../qml/parts/SelfLabelPopup.qml" line="56"/>
         <source>Content warning</source>
         <translation>閲覧警告</translation>
+    </message>
+    <message>
+        <location filename="../qml/parts/SelfLabelPopup.qml" line="66"/>
+        <source>Remove</source>
+        <translation>解除</translation>
     </message>
 </context>
 <context>
