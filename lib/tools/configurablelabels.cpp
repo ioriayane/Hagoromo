@@ -218,6 +218,11 @@ void ConfigurableLabels::initializeLabels()
 {
     ConfigurableLabelItem item;
 
+    // ラベルの情報
+    // https://github.com/bluesky-social/atproto/blob/main/packages/api/docs/labels.md
+    // idはpreferenceの項目とのマッチングに使うのでconfigurable==trueの
+    // もので重複させないこと
+
     item.values.clear();
     item.id = "system";
     item.title = tr("Content hidden");
@@ -258,7 +263,6 @@ void ConfigurableLabels::initializeLabels()
     item.subtitle = tr("i.e. pornography");
     item.warning = tr("Sexually Explicit");
     item.values << "porn"
-                << "nsfl"
                 << "nsfw";
     item.is_adult_imagery = true;
     item.status = ConfigurableLabelStatus::Hide;
@@ -310,7 +314,13 @@ void ConfigurableLabels::initializeLabels()
     item.values << "icon-kkk"
                 << "icon-nazi"
                 << "icon-intolerant"
-                << "behavior-intolerant";
+                << "behavior-intolerant"
+                << "intolerant-race"
+                << "intolerant-gender"
+                << "intolerant-sexual-orientation"
+                << "intolerant-religion"
+                << "intolerant"
+                << "threat";
     item.is_adult_imagery = false;
     item.status = ConfigurableLabelStatus::Hide;
     item.configurable = true;
@@ -321,7 +331,8 @@ void ConfigurableLabels::initializeLabels()
     item.title = tr("Spam");
     item.subtitle = tr("Excessive unwanted interactions");
     item.warning = tr("Spam");
-    item.values << "spam";
+    item.values << "spam"
+                << "spoiler";
     item.is_adult_imagery = false;
     item.status = ConfigurableLabelStatus::Hide;
     item.configurable = true;
@@ -329,10 +340,13 @@ void ConfigurableLabels::initializeLabels()
 
     item.values.clear();
     item.id = "impersonation";
-    item.title = tr("Impersonation");
+    item.title = tr("Impersonation / Scam");
     item.subtitle = tr("Accounts falsely claiming to be people or orgs");
     item.warning = tr("Impersonation");
-    item.values << "impersonation";
+    item.values << "impersonation"
+                << "account-security"
+                << "net-abuse"
+                << "scam";
     item.is_adult_imagery = false;
     item.status = ConfigurableLabelStatus::Hide;
     item.configurable = true;

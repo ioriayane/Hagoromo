@@ -39,6 +39,7 @@ QML_FILES = \
     qml/parts/PostControls.qml \
     qml/parts/PostDelegate.qml \
     qml/parts/ReactionAuthor.qml \
+    qml/parts/SelfLabelPopup.qml \
     qml/parts/SideBar.qml \
     qml/parts/VersionInfomation.qml \
     qml/view/ColumnView.qml \
@@ -74,6 +75,7 @@ IMAGE_FILES += \
     qml/images/hand.png \
     qml/images/home.png \
     qml/images/icon_mask.png \
+    qml/images/labeling.png \
     qml/images/language.png \
     qml/images/like.png \
     qml/images/logo.png \
