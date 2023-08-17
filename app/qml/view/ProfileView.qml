@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
+import QtGraphicalEffects 1.15
 
 import tech.relog.hagoromo.userprofile 1.0
 import tech.relog.hagoromo.authorfeedlistmodel 1.0
@@ -378,35 +379,11 @@ ColumnLayout {
         }
     }
 
-    TabBar {
+    ProfileTabBar {
         id: tabBar
         Layout.fillWidth: true
         Layout.topMargin: 3
-
-        TabButton {
-            font.capitalization: Font.MixedCase
-            text: qsTr("Posts")
-        }
-        TabButton {
-            font.capitalization: Font.MixedCase
-            text: qsTr("Reposts")
-        }
-        TabButton {
-            font.capitalization: Font.MixedCase
-            text: qsTr("Likes")
-        }
-        TabButton {
-            font.capitalization: Font.MixedCase
-            text: qsTr("Media")
-        }
-        TabButton {
-            font.capitalization: Font.MixedCase
-            text: qsTr("Follows")
-        }
-        TabButton {
-            font.capitalization: Font.MixedCase
-            text: qsTr("Followers")
-        }
+        profileSource: userProfile.avatar
     }
 
     SwipeView {

@@ -38,6 +38,7 @@ QML_FILES = \
     qml/parts/NotificationDelegate.qml \
     qml/parts/PostControls.qml \
     qml/parts/PostDelegate.qml \
+    qml/parts/ProfileTabBar.qml \
     qml/parts/ReactionAuthor.qml \
     qml/parts/SelfLabelPopup.qml \
     qml/parts/SideBar.qml \
@@ -79,6 +80,7 @@ IMAGE_FILES += \
     qml/images/language.png \
     qml/images/like.png \
     qml/images/logo.png \
+    qml/images/media.png \
     qml/images/more.png \
     qml/images/notification.png \
     qml/images/open_in_other.png \
