@@ -34,6 +34,7 @@ private slots:
     void test_TimelineListModel_quote_warn();
     void test_TimelineListModel_quote_hide();
     void test_TimelineListModel_quote_hide2();
+    void test_TimelineListModel_quote_label();
     void test_NotificationListModel_warn();
 
 private:
@@ -1074,6 +1075,43 @@ void hagoromo_test::test_TimelineListModel_quote_hide2()
             == "quote blocked user's post");
     QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == false);
     QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == true);
+    QVERIFY(model.item(row, TimelineListModel::LabelsRole).toStringList() == QStringList());
+}
+
+void hagoromo_test::test_TimelineListModel_quote_label()
+{
+    int row = 0;
+    TimelineListModel model;
+    model.setAccount(m_service + "/timeline/labels", QString(), QString(), QString(), "dummy",
+                     QString());
+    model.setDisplayInterval(0);
+
+    QSignalSpy spy(&model, SIGNAL(runningChanged()));
+    model.getLatest();
+    spy.wait();
+    QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+    QVERIFY(model.rowCount() == 7);
+
+    row = 0;
+    QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
+            == "quoted mute user's post");
+    QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == true);
+    QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == false);
+    QVERIFY(model.item(row, TimelineListModel::LabelsRole).toStringList() == QStringList());
+
+    row = 3;
+    QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
+            == "quote a post with labeling image");
+    QVERIFY(model.item(row, TimelineListModel::LabelsRole).toStringList()
+            == QStringList() << "sexual");
+
+    row = 4;
+    QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
+            == "quote a post with warn label added with image");
+    QVERIFY(model.item(row, TimelineListModel::LabelsRole).toStringList()
+            == QStringList() << "sexual"
+                             << "!warn");
 }
 
 void hagoromo_test::test_NotificationListModel_warn()

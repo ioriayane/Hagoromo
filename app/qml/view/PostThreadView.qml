@@ -170,6 +170,8 @@ ColumnLayout {
                 generatorCreatorHandleLabel.text: model.generatorFeedCreatorHandle
                 generatorLikeCountLabel.text: model.generatorFeedLikeCount
 
+                labelsLayout.model: (postThreadUri === model.uri) ? model.labels : []
+
                 postControls.replyButton.iconText: model.replyCount
                 postControls.repostButton.iconText: model.repostCount
                 postControls.likeButton.iconText: model.likeCount

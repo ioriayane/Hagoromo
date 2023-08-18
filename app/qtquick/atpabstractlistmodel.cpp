@@ -347,6 +347,16 @@ bool AtpAbstractListModel::getQuoteFilterMatched(
     return false;
 }
 
+QStringList AtpAbstractListModel::getLabels(
+        const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels) const
+{
+    QStringList ret;
+    for (const auto &label : labels) {
+        ret.append(label.val);
+    }
+    return ret;
+}
+
 int AtpAbstractListModel::searchInsertPosition(const QString &cid)
 {
     int basis_pos = m_originalCidList.indexOf(cid);

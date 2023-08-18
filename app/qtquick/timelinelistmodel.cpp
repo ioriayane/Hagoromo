@@ -180,7 +180,8 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
             return getQuoteFilterMatched(current.post);
         else
             return false;
-    }
+    } else if (role == LabelsRole)
+        return getLabels(current.post.labels);
 
     return QVariant();
 }
@@ -409,6 +410,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[ContentMediaFilterMatchedRole] = "contentMediaFilterMatched";
     roles[ContentMediaFilterMessageRole] = "contentMediaFilterMessage";
     roles[QuoteFilterMatchedRole] = "quoteFilterMatched";
+    roles[LabelsRole] = "labels";
 
     return roles;
 }

@@ -91,6 +91,7 @@ protected:
     QString getContentFilterMessage(const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels,
                                     const bool for_media) const;
     bool getQuoteFilterMatched(const AtProtocolType::AppBskyFeedDefs::PostView &post) const;
+    QStringList getLabels(const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels) const;
 
     // これで取得したポストの順番を管理して実態はm_viewPostHashで管理
     // checkVisibility(cid)の結果次第で間引かれる
