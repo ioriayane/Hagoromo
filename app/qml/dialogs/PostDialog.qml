@@ -170,6 +170,7 @@ Dialog {
             }
             IconButton {
                 id: postLanguagesButton
+                enabled: !createRecord.running
                 iconSource: "../images/language.png"
                 flat: true
                 onClicked: {
@@ -233,7 +234,7 @@ Dialog {
                 }
                 states: [
                     State {
-                        when: externalLink.running
+                        when: externalLink.running || createRecord.running
                         PropertyChanges {
                             target: externalLinkButton
                             enabled: false
@@ -343,6 +344,7 @@ Dialog {
             }
             IconButton {
                 id: selfLabelsButton
+                enabled: !createRecord.running
                 iconSource: "../images/labeling.png"
                 flat: true
                 foreground: value.length > 0 ? Material.accent : Material.foreground
