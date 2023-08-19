@@ -171,6 +171,7 @@ ColumnLayout {
                 generatorLikeCountLabel.text: model.generatorFeedLikeCount
 
                 labelsLayout.model: (postThreadUri === model.uri) ? model.labels : []
+                languagesLayout.model: (postThreadUri === model.uri) ? model.languages : []
 
                 postControls.replyButton.iconText: model.replyCount
                 postControls.repostButton.iconText: model.repostCount

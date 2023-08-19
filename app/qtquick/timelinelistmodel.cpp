@@ -182,6 +182,8 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
             return false;
     } else if (role == LabelsRole)
         return getLabels(current.post.labels);
+    else if (role == LanguagesRole)
+        return getLaunguages(current.post.record);
 
     return QVariant();
 }
@@ -411,6 +413,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[ContentMediaFilterMessageRole] = "contentMediaFilterMessage";
     roles[QuoteFilterMatchedRole] = "quoteFilterMatched";
     roles[LabelsRole] = "labels";
+    roles[LanguagesRole] = "languages";
 
     return roles;
 }

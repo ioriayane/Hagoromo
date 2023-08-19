@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.15
 
 Item {
     clip: true
-    height: {
+    implicitHeight: {
         if(repeater.count === 0){
             return 0
         }
@@ -14,8 +14,10 @@ Item {
 
     property int columnSpacing: 5
     property int rowSpacing: 5
+    property int tagSpacing: 0
     property alias model: repeater.model
     property alias count: repeater.count
+    property string iconSource: "../images/label.png"
 
     Repeater {
         id: repeater
@@ -61,6 +63,8 @@ Item {
             }
             anchors.leftMargin: lineStatus !== 2 ? 0 : repeater.parent.columnSpacing
             text: model.modelData
+            source: repeater.parent.iconSource
+            spacing: repeater.parent.tagSpacing
         }
     }
 }

@@ -357,6 +357,11 @@ QStringList AtpAbstractListModel::getLabels(
     return ret;
 }
 
+QStringList AtpAbstractListModel::getLaunguages(const QVariant &record) const
+{
+    return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(record).langs;
+}
+
 int AtpAbstractListModel::searchInsertPosition(const QString &cid)
 {
     int basis_pos = m_originalCidList.indexOf(cid);

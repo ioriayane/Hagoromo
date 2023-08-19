@@ -6,7 +6,7 @@ import QtGraphicalEffects 1.15
 
 Rectangle {
     id: tagLabel
-    implicitWidth: image.width + label.contentWidth + 6
+    implicitWidth: image.width + label.contentWidth + label.anchors.leftMargin + 6
     implicitHeight: image.height + 4
     radius: 2
     color: Material.color(Material.BlueGrey,
@@ -14,6 +14,7 @@ Rectangle {
 
     property alias source: image.source
     property alias text: label.text
+    property int spacing: 0
 
     Image {
         id: image
@@ -30,6 +31,7 @@ Rectangle {
     Label {
         id: label
         anchors.left: image.right
+        anchors.leftMargin: tagLabel.spacing
         anchors.verticalCenter: tagLabel.verticalCenter
     }
 }

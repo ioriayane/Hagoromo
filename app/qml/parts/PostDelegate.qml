@@ -44,6 +44,7 @@ ClickableFrame {
     property alias generatorCreatorHandleLabel: generatorFeedCreatorHandleLabel
     property alias generatorLikeCountLabel: generatorFeedLikeCountLabel
     property alias labelsLayout: labelsLayout
+    property alias languagesLayout: languagesLayout
     property alias postControls: postControls
 
     signal requestViewProfile(string did)
@@ -295,6 +296,16 @@ ClickableFrame {
                         Layout.topMargin: 5
                         Layout.bottomMargin: 2
                         visible: count > 0
+                        tagSpacing: 2
+                    }
+                    TagLabelLayout {
+                        id: languagesLayout
+                        Layout.preferredWidth: parent.width
+                        Layout.topMargin: labelsLayout.visible ? 3 : 5
+                        Layout.bottomMargin: 2
+                        visible: count > 0
+                        iconSource: "../images/language.png"
+                        tagSpacing: 5
                     }
 
                     PostControls {

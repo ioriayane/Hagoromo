@@ -81,7 +81,9 @@ public:
         ContentMediaFilterMatchedRole,
         ContentMediaFilterMessageRole,
         QuoteFilterMatchedRole,
+
         LabelsRole,
+        LanguagesRole,
     };
     Q_ENUM(TimelineListModelRoles)
 
