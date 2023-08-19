@@ -326,6 +326,11 @@ enum class PostViewEmbedType : int {
     embed_AppBskyEmbedRecord_View,
     embed_AppBskyEmbedRecordWithMedia_View,
 };
+struct BlockedAuthor
+{
+    QString did; // did
+    AppBskyActorDefs::ViewerState viewer;
+};
 struct GeneratorViewerState
 {
     QString like; // at-uri
@@ -378,6 +383,7 @@ struct BlockedPost
 {
     QString uri; // at-uri
     bool blocked = false;
+    BlockedAuthor author;
 };
 struct ReplyRef
 {
@@ -479,10 +485,13 @@ struct ViewRecord
 struct ViewNotFound
 {
     QString uri; // at-uri
+    bool notFound = false;
 };
 struct ViewBlocked
 {
     QString uri; // at-uri
+    bool blocked = false;
+    AppBskyFeedDefs::BlockedAuthor author;
 };
 struct View
 {
@@ -743,6 +752,7 @@ struct ActionView
 {
     int id = 0;
     ActionType action;
+    int durationInHours = 0;
     // union start : subject
     ActionViewSubjectType subject_type = ActionViewSubjectType::none;
     RepoRef subject_RepoRef;
@@ -761,6 +771,7 @@ struct ActionViewCurrent
 {
     int id = 0;
     ActionType action;
+    int durationInHours = 0;
 };
 struct Moderation
 {
@@ -838,6 +849,7 @@ struct ActionViewDetail
 {
     int id = 0;
     ActionType action;
+    int durationInHours = 0;
     // union start : subject
     ActionViewDetailSubjectType subject_type = ActionViewDetailSubjectType::none;
     RepoView subject_RepoView;

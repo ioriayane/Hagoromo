@@ -73,15 +73,9 @@ namespace AppBskyEmbedRecordWithMedia {
 void copyView(const QJsonObject &src, AppBskyEmbedRecordWithMedia::View &dest);
 void copyMain(const QJsonObject &src, AppBskyEmbedRecordWithMedia::Main &dest);
 }
-// app.bsky.richtext.facet
-namespace AppBskyRichtextFacet {
-void copyByteSlice(const QJsonObject &src, AppBskyRichtextFacet::ByteSlice &dest);
-void copyMention(const QJsonObject &src, AppBskyRichtextFacet::Mention &dest);
-void copyLink(const QJsonObject &src, AppBskyRichtextFacet::Link &dest);
-void copyMain(const QJsonObject &src, AppBskyRichtextFacet::Main &dest);
-}
 // app.bsky.feed.defs
 namespace AppBskyFeedDefs {
+void copyBlockedAuthor(const QJsonObject &src, AppBskyFeedDefs::BlockedAuthor &dest);
 void copyGeneratorViewerState(const QJsonObject &src, AppBskyFeedDefs::GeneratorViewerState &dest);
 void copyGeneratorView(const QJsonObject &src, AppBskyFeedDefs::GeneratorView &dest);
 void copyViewerState(const QJsonObject &src, AppBskyFeedDefs::ViewerState &dest);
@@ -94,6 +88,13 @@ void copyFeedViewPost(const QJsonObject &src, AppBskyFeedDefs::FeedViewPost &des
 void copyThreadViewPost(const QJsonObject &src, AppBskyFeedDefs::ThreadViewPost &dest);
 void copySkeletonReasonRepost(const QJsonObject &src, AppBskyFeedDefs::SkeletonReasonRepost &dest);
 void copySkeletonFeedPost(const QJsonObject &src, AppBskyFeedDefs::SkeletonFeedPost &dest);
+}
+// app.bsky.richtext.facet
+namespace AppBskyRichtextFacet {
+void copyByteSlice(const QJsonObject &src, AppBskyRichtextFacet::ByteSlice &dest);
+void copyMention(const QJsonObject &src, AppBskyRichtextFacet::Mention &dest);
+void copyLink(const QJsonObject &src, AppBskyRichtextFacet::Link &dest);
+void copyMain(const QJsonObject &src, AppBskyRichtextFacet::Main &dest);
 }
 // app.bsky.feed.describeFeedGenerator
 namespace AppBskyFeedDescribeFeedGenerator {
