@@ -56,7 +56,6 @@ Dialog {
     ButtonGroup {
         id: searchTypeButtonGroup
         buttons: searchTypeRowlayout.children
-        onCheckedButtonChanged: searchDialog.searchType = checkedButton.value
     }
 
     ColumnLayout {
@@ -124,7 +123,7 @@ Dialog {
                 enabled: searchText.text.length > 0
                 text: qsTr("Search")
                 onClicked: {
-
+                    searchDialog.searchType = searchTypeButtonGroup.checkedButton.value
                     searchDialog.accept()
                 }
             }
