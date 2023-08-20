@@ -606,6 +606,7 @@ struct Main
     ComAtprotoLabelDefs::SelfLabels labels_ComAtprotoLabelDefs_SelfLabels;
     // union end : labels
     QString createdAt; // datetime
+    QString via; // client name(Unofficial field)
 };
 }
 

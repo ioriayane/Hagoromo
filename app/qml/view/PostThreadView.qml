@@ -172,6 +172,7 @@ ColumnLayout {
 
                 labelsLayout.model: (postThreadUri === model.uri) ? model.labels : []
                 languagesLayout.model: (postThreadUri === model.uri) ? model.languages : []
+                viaTagLabel.text: (postThreadUri === model.uri && model.via.length > 0) ? ("via:" + model.via) : ""
 
                 postControls.replyButton.iconText: model.replyCount
                 postControls.repostButton.iconText: model.repostCount

@@ -93,6 +93,7 @@ IMAGE_FILES += \
     qml/images/repost.png \
     qml/images/search.png \
     qml/images/settings.png \
+    qml/images/terminal.png \
     qml/images/translate.png \
     qml/images/visibility_off.png \
     qml/images/visibility_on.png

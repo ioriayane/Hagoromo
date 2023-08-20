@@ -838,6 +838,7 @@ void copyMain(const QJsonObject &src, AppBskyFeedPost::Main &dest)
                                                 dest.labels_ComAtprotoLabelDefs_SelfLabels);
         }
         dest.createdAt = src.value("createdAt").toString();
+        dest.via = src.value("via").toString();
     }
 }
 }

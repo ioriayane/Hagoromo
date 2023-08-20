@@ -84,6 +84,7 @@ public:
 
         LabelsRole,
         LanguagesRole,
+        ViaRole,
     };
     Q_ENUM(TimelineListModelRoles)
 

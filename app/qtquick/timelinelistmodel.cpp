@@ -184,6 +184,8 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return getLabels(current.post.labels);
     else if (role == LanguagesRole)
         return getLaunguages(current.post.record);
+    else if (role == ViaRole)
+        return getVia(current.post.record);
 
     return QVariant();
 }
@@ -414,6 +416,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[QuoteFilterMatchedRole] = "quoteFilterMatched";
     roles[LabelsRole] = "labels";
     roles[LanguagesRole] = "languages";
+    roles[ViaRole] = "via";
 
     return roles;
 }

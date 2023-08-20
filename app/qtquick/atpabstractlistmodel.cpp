@@ -362,6 +362,11 @@ QStringList AtpAbstractListModel::getLaunguages(const QVariant &record) const
     return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(record).langs;
 }
 
+QString AtpAbstractListModel::getVia(const QVariant &record) const
+{
+    return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(record).via;
+}
+
 int AtpAbstractListModel::searchInsertPosition(const QString &cid)
 {
     int basis_pos = m_originalCidList.indexOf(cid);
