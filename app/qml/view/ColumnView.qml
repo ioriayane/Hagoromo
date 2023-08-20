@@ -353,6 +353,7 @@ ColumnLayout {
                    }
 
         RowLayout {
+            id: headerLayout
             anchors.fill: parent
             spacing: 0
             IconButton {
@@ -379,14 +380,18 @@ ColumnLayout {
                 Layout.leftMargin: 5
                 Layout.topMargin: 5
                 Layout.bottomMargin: 5
-                //                Layout.maximumWidth: columnView.width - leftIconButton.Layout.preferredWidth -
-                //                                     avatarImage.Layout.preferredWidth - autoIconImage.Layout.preferredWidth -
-                //                                     settingButton.Layout.preferredWidth
+                Layout.preferredWidth: accountInfoLabel.contentWidth
+                Layout.maximumWidth: columnView.width - profileFrame.rightPadding -
+                                     leftIconButton.Layout.preferredWidth -
+                                     avatarImage.Layout.preferredWidth - avatarImage.Layout.leftMargin -
+                                     autoIconImage.Layout.preferredWidth - autoIconImage.Layout.rightMargin -
+                                     settingButton.Layout.preferredWidth - 5
                 Label {
                     id: componentTypeLabel
                     elide: Text.ElideRight
                 }
                 Label {
+                    id: accountInfoLabel
                     text: "@" + account.handle + " - " + account.service
                     font.pointSize: 8
                     elide: Text.ElideRight
