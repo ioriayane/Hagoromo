@@ -152,8 +152,9 @@ Dialog {
                         }
                     }
                     Label {
+                        Layout.topMargin: AdjustedValues.s10
                         font.pointSize: AdjustedValues.f10
-                        text: qsTr("Font size") + " : "
+                        text: qsTr("Scaling") + " : "
                     }
                     Slider {
                         id: fontSizeRatioSlider
