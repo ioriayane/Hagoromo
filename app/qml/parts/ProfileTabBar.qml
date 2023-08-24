@@ -4,6 +4,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 import QtGraphicalEffects 1.15
+import tech.relog.hagoromo.singleton 1.0
 
 TabBar {
     id: tabBar
@@ -15,8 +16,8 @@ TabBar {
         bottomPadding: 0
         contentItem: Item {
             Image {
-                width: 16
-                height: 16
+                width: AdjustedValues.i16
+                height: AdjustedValues.i16
                 anchors.centerIn: parent
                 layer.enabled: true
                 layer.effect: ColorOverlay {
@@ -34,8 +35,8 @@ TabBar {
         bottomPadding: 0
         contentItem: Item {
             Image {
-                width: 16
-                height: 16
+                width: AdjustedValues.i16
+                height: AdjustedValues.i16
                 anchors.centerIn: parent
                 layer.enabled: true
                 layer.effect: ColorOverlay {
@@ -53,8 +54,8 @@ TabBar {
         bottomPadding: 0
         contentItem: Item {
             Image {
-                width: 16
-                height: 16
+                width: AdjustedValues.i16
+                height: AdjustedValues.i16
                 anchors.centerIn: parent
                 layer.enabled: true
                 layer.effect: ColorOverlay {
@@ -72,8 +73,8 @@ TabBar {
         bottomPadding: 0
         contentItem: Item {
             Image {
-                width: 16
-                height: 16
+                width: AdjustedValues.i16
+                height: AdjustedValues.i16
                 anchors.centerIn: parent
                 layer.enabled: true
                 layer.effect: ColorOverlay {
@@ -98,8 +99,8 @@ TabBar {
                 Layout.preferredHeight: 1
             }
             Item {
-                Layout.preferredWidth: 16
-                Layout.preferredHeight: 16
+                Layout.preferredWidth: AdjustedValues.i16
+                Layout.preferredHeight: AdjustedValues.i16
                 Image {
                     id: avatorImage1
                     anchors.fill: parent
@@ -120,8 +121,8 @@ TabBar {
                 }
             }
             Image {
-                Layout.preferredWidth: 16
-                Layout.preferredHeight: 16
+                Layout.preferredWidth: AdjustedValues.i16
+                Layout.preferredHeight: AdjustedValues.i16
                 layer.enabled: true
                 layer.effect: ColorOverlay {
                     color: Material.foreground
@@ -149,8 +150,8 @@ TabBar {
                 Layout.preferredHeight: 1
             }
             Item {
-                Layout.preferredWidth: 16
-                Layout.preferredHeight: 16
+                Layout.preferredWidth: AdjustedValues.i16
+                Layout.preferredHeight: AdjustedValues.i16
                 Image {
                     id: avatorImage2
                     anchors.fill: parent
@@ -171,8 +172,8 @@ TabBar {
                 }
             }
             Image {
-                Layout.preferredWidth: 16
-                Layout.preferredHeight: 16
+                Layout.preferredWidth: AdjustedValues.i16
+                Layout.preferredHeight: AdjustedValues.i16
                 layer.enabled: true
                 layer.effect: ColorOverlay {
                     color: Material.foreground

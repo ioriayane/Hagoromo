@@ -14,6 +14,7 @@ QML_FILES = \
     qml/controls/ImageWithIndicator.qml \
     qml/controls/RadioButtonEx.qml \
     qml/data/Account.qml \
+    qml/data/AdjustedValues.qml \
     qml/data/ColumnSettings.qml \
     qml/dialogs/AccountDialog.qml \
     qml/dialogs/AddColumnDialog.qml \

@@ -5,6 +5,8 @@ import QtQuick.Controls.Material 2.15
 import QtGraphicalEffects 1.15
 
 import tech.relog.hagoromo.accountlistmodel 1.0
+import tech.relog.hagoromo.singleton 1.0
+
 import "../controls"
 import "../parts"
 
@@ -36,16 +38,16 @@ Dialog {
         ListView {
             id: accountList
 
-            Layout.preferredWidth: 400
-            Layout.preferredHeight: 300
+            Layout.preferredWidth: 400 * AdjustedValues.ratio
+            Layout.preferredHeight: 300 * AdjustedValues.ratio
 
             footer: ItemDelegate {
                 width: accountList.width
                 padding: 3
                 Image {
                     anchors.centerIn: parent
-                    width: 24
-                    height: 24
+                    width: AdjustedValues.i24
+                    height: AdjustedValues.i24
                     source: "../images/add_user.png"
                     layer.enabled: true
                     layer.effect: ColorOverlay {
@@ -62,6 +64,7 @@ Dialog {
 
             delegate: ItemDelegate {
                 width: accountList.width
+                height: implicitHeight * AdjustedValues.ratio
                 onClicked: {
                     var i = model.index
                     login.serviceText = accountList.model.item(i, AccountListModel.ServiceRole)
@@ -75,11 +78,12 @@ Dialog {
                     anchors.margins: 5
                     spacing: 5
                     AvatarImage {
-                        Layout.preferredWidth: 24
-                        Layout.preferredHeight: 24
+                        Layout.preferredWidth: AdjustedValues.i24
+                        Layout.preferredHeight: AdjustedValues.i24
                         source: model.avatar
                     }
                     Label {
+                        font.pointSize: AdjustedValues.f10
                         text: model.handle
                         elide: Text.ElideRight
                     }
@@ -96,11 +100,11 @@ Dialog {
 //                        iconSize: 18
 //                    }
                     IconButton {
-                        Layout.preferredWidth: 36
-                        Layout.preferredHeight: 26
+                        Layout.preferredWidth: AdjustedValues.b36
+                        Layout.preferredHeight: AdjustedValues.b26
                         display: AbstractButton.IconOnly
                         iconSource: "../images/visibility_on.png"
-                        iconSize: 18
+                        iconSize: AdjustedValues.i18
                         onClicked: {
                             var i = model.index
                             contentFilter.account.service = accountList.model.item(i, AccountListModel.ServiceRole)
@@ -114,11 +118,11 @@ Dialog {
                         }
                     }
                     IconButton {
-                        Layout.preferredWidth: 36
-                        Layout.preferredHeight: 26
+                        Layout.preferredWidth: AdjustedValues.b36
+                        Layout.preferredHeight: AdjustedValues.b26
                         display: AbstractButton.IconOnly
                         iconSource: "../images/delete.png"
-                        iconSize: 18
+                        iconSize: AdjustedValues.i18
                         onClicked: accountList.model.removeAccount(model.index)
                     }
                 }
@@ -126,6 +130,7 @@ Dialog {
 
         }
         Button {
+            font.pointSize: AdjustedValues.f10
             text: qsTr("Close")
             flat: true
             onClicked: accountDialog.close()

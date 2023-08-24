@@ -4,6 +4,8 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 import Qt.labs.settings 1.0
 
+import tech.relog.hagoromo.singleton 1.0
+
 Dialog {
     id: columnSettingDialog
     modal: true
@@ -27,7 +29,7 @@ Dialog {
     property alias visibleQuoteCheckBox: visibleQuoteCheckBox
 
     ColumnLayout {
-
+        spacing: 5 * AdjustedValues.ratio
         RowLayout {
             ColumnLayout {
                 Layout.alignment: Qt.AlignTop
@@ -37,16 +39,20 @@ Dialog {
                     id: autoLoadingCheckbox
                     topPadding: 10
                     bottomPadding: 10
+                    font.pointSize: AdjustedValues.f10
                     text: qsTr("Auto loading")
                 }
                 RowLayout {
                     Layout.topMargin: 10
                     Label {
+                        font.pointSize: AdjustedValues.f10
                         text: qsTr("Interval")
                     }
                     ComboBox {
                         id: autoLoadingIntervalCombo
                         Layout.fillWidth: true
+                        Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
+                        font.pointSize: AdjustedValues.f10
                         textRole: "text"
                         valueRole: "value"
                         model: ListModel {
@@ -56,6 +62,13 @@ Dialog {
                             ListElement { value: 600000; text: qsTr("10 min.") }
                             ListElement { value: 900000; text: qsTr("15 min.") }
                             ListElement { value: 1200000; text: qsTr("20 min.") }
+                        }
+                        delegate: ItemDelegate {
+                            width: parent.width
+                            height: implicitHeight * AdjustedValues.ratio
+                            font.pointSize: AdjustedValues.f10
+                            text: model.text
+                            onClicked: autoLoadingIntervalCombo.currentIndex = model.index
                         }
                         function setByValue(value){
                             for(var i=0; i<model.count; i++){
@@ -71,6 +84,7 @@ Dialog {
 
                 Label {
                     Layout.topMargin: 15
+                    font.pointSize: AdjustedValues.f10
                     text: qsTr("Column width")
                 }
                 RowLayout {
@@ -112,10 +126,11 @@ Dialog {
                 }
 
                 ColumnLayout {
-                    spacing: 5
+                    spacing: 5 * AdjustedValues.ratio
 
                     Label {
                         Layout.bottomMargin: 5
+                        font.pointSize: AdjustedValues.f10
                         text: qsTr("Display")
                     }
 
@@ -123,36 +138,42 @@ Dialog {
                         id: visibleLikeCheckBox
                         topPadding: 5
                         bottomPadding: 5
+                        font.pointSize: AdjustedValues.f10
                         text: qsTr("Like")
                     }
                     CheckBox {
                         id: visibleRepostCheckBox
                         topPadding: 5
                         bottomPadding: 5
+                        font.pointSize: AdjustedValues.f10
                         text: qsTr("Repost")
                     }
                     CheckBox {
                         id: visibleFollowCheckBox
                         topPadding: 5
                         bottomPadding: 5
+                        font.pointSize: AdjustedValues.f10
                         text: qsTr("Follow")
                     }
                     CheckBox {
                         id: visibleMentionCheckBox
                         topPadding: 5
                         bottomPadding: 5
+                        font.pointSize: AdjustedValues.f10
                         text: qsTr("Mention")
                     }
                     CheckBox {
                         id: visibleReplyCheckBox
                         topPadding: 5
                         bottomPadding: 5
+                        font.pointSize: AdjustedValues.f10
                         text: qsTr("Reply")
                     }
                     CheckBox {
                         id: visibleQuoteCheckBox
                         topPadding: 5
                         bottomPadding: 5
+                        font.pointSize: AdjustedValues.f10
                         text: qsTr("Quote")
                     }
                 }
@@ -163,6 +184,7 @@ Dialog {
             Button {
                 Layout.alignment: Qt.AlignLeft
                 flat: true
+                font.pointSize: AdjustedValues.f10
                 text: qsTr("Cancel")
                 onClicked: columnSettingDialog.reject()
             }
@@ -172,6 +194,7 @@ Dialog {
             }
             Button {
                 Layout.alignment: Qt.AlignRight
+                font.pointSize: AdjustedValues.f10
                 text: qsTr("OK")
                 onClicked: {
 

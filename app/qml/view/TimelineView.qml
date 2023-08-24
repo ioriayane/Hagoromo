@@ -5,6 +5,7 @@ import QtQuick.Controls.Material 2.15
 
 import tech.relog.hagoromo.timelinelistmodel 1.0
 import tech.relog.hagoromo.systemtool 1.0
+import tech.relog.hagoromo.singleton 1.0
 
 import "../parts"
 import "../controls"
@@ -16,7 +17,6 @@ ScrollView {
     clip: true
 
     property string hoveredLink: ""
-    property real fontSizeRatio: 1.0
     property string accountDid: ""   // 取得するユーザー
 
     property alias listView: rootListView
@@ -45,21 +45,21 @@ ScrollView {
 
         header: ItemDelegate {
             width: rootListView.width
-            height: 24
+            height: AdjustedValues.h24
             display: AbstractButton.IconOnly
             icon.source: rootListView.model.running ? "" : "../images/expand_less.png"
             onClicked: rootListView.model.getLatest()
 
             BusyIndicator {
                 anchors.centerIn: parent
-                width: 24
-                height: 24
+                width: AdjustedValues.i24
+                height: AdjustedValues.i24
                 visible: rootListView.model.running
             }
         }
         footer: BusyIndicator {
             width: rootListView.width
-            height: 24
+            height: AdjustedValues.i24
             visible: rootListView.model.running && rootListView.model.rowCount() > 0
         }
 
@@ -69,8 +69,6 @@ ScrollView {
 
         delegate: PostDelegate {
             Layout.preferredWidth: rootListView.width
-
-            fontSizeRatio: timelineView.fontSizeRatio
 
             onClicked: (mouse) => requestViewThread(model.uri)
             onRequestViewProfile: (did) => timelineView.requestViewProfile(did)

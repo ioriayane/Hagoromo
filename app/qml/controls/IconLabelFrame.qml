@@ -4,6 +4,8 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 import QtGraphicalEffects 1.15
 
+import tech.relog.hagoromo.singleton 1.0
+
 Frame {
     property alias iconSource: iconImage.source
     property alias labelText: label.text
@@ -29,8 +31,8 @@ Frame {
     RowLayout {
         Image {
             id: iconImage
-            Layout.preferredWidth: 16
-            Layout.preferredHeight: 16
+            Layout.preferredWidth: AdjustedValues.i16
+            Layout.preferredHeight: AdjustedValues.i16
             layer.enabled: true
             layer.effect: ColorOverlay {
                 color: Material.foreground
@@ -38,6 +40,7 @@ Frame {
         }
         Label {
             id: label
+            font.pointSize: AdjustedValues.f10
         }
         Item {
             Layout.fillWidth: true
@@ -47,7 +50,7 @@ Frame {
 
         IconButton {
             id: controlButton
-            Layout.preferredHeight: 24
+            Layout.preferredHeight: AdjustedValues.b24
             topInset: 0
             bottomInset: 0
             visible: false

@@ -5,6 +5,7 @@ import Qt.labs.platform 1.1 as P
 
 import tech.relog.hagoromo.recordoperator 1.0
 import tech.relog.hagoromo.accountlistmodel 1.0
+import tech.relog.hagoromo.singleton 1.0
 
 import "../controls"
 import "../parts"
@@ -59,23 +60,28 @@ Dialog {
     }
 
     ColumnLayout {
+        spacing: 5 * AdjustedValues.ratio
 
         RowLayout {
             AvatarImage {
                 id: accountAvatarImage
-                Layout.preferredWidth: 24
-                Layout.preferredHeight: 24
+                Layout.preferredWidth: AdjustedValues.i24
+                Layout.preferredHeight: AdjustedValues.i24
                 //                source:
             }
 
             ComboBox {
                 id: accountCombo
-                Layout.preferredWidth: 200
+                Layout.preferredWidth: 200 * AdjustedValues.ratio
+                Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
+                font.pointSize: AdjustedValues.f10
                 textRole: "handle"
                 valueRole: "did"
                 delegate: ItemDelegate {
-                    text: model.handle
                     width: parent.width
+                    height: implicitHeight * AdjustedValues.ratio
+                    font.pointSize: AdjustedValues.f10
+                    text: model.handle
                     onClicked: accountCombo.currentIndex = model.index
                 }
                 onCurrentIndexChanged: {
@@ -91,24 +97,28 @@ Dialog {
             id: searchTypeRowlayout
             RadioButton {
                 property string value: "posts"
+                font.pointSize: AdjustedValues.f10
                 text: qsTr("Posts")
                 checked: true
             }
             RadioButton {
                 property string value: "users"
+                font.pointSize: AdjustedValues.f10
                 text: qsTr("Users")
             }
         }
 
         TextField  {
             id: searchText
-            Layout.preferredWidth: 300
+            Layout.preferredWidth: 300 * AdjustedValues.ratio
             selectByMouse: true
+            font.pointSize: AdjustedValues.f10
         }
 
         RowLayout {
             //            Layout.alignment: Qt.AlignRight
             Button {
+                font.pointSize: AdjustedValues.f10
                 flat: true
                 text: qsTr("Cancel")
                 onClicked: searchDialog.close()
@@ -121,6 +131,7 @@ Dialog {
                 id: postButton
                 Layout.alignment: Qt.AlignRight
                 enabled: searchText.text.length > 0
+                font.pointSize: AdjustedValues.f10
                 text: qsTr("Search")
                 onClicked: {
                     searchDialog.searchType = searchTypeButtonGroup.checkedButton.value
