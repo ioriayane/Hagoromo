@@ -60,7 +60,7 @@ Dialog {
     }
 
     ColumnLayout {
-        spacing: 5 * AdjustedValues.ratio
+        spacing: AdjustedValues.s5
 
         RowLayout {
             AvatarImage {

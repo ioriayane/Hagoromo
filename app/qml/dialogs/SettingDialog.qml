@@ -99,7 +99,7 @@ Dialog {
             // General Page
             Frame {
                 ColumnLayout {
-                    spacing: 5 * AdjustedValues.ratio
+                    spacing: AdjustedValues.s5
                     RowLayout {
                         id: themeRowlayout
                         Label {

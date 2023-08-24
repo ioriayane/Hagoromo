@@ -29,7 +29,7 @@ Dialog {
     property alias visibleQuoteCheckBox: visibleQuoteCheckBox
 
     ColumnLayout {
-        spacing: 5 * AdjustedValues.ratio
+        spacing: AdjustedValues.s5
         RowLayout {
             ColumnLayout {
                 Layout.alignment: Qt.AlignTop
@@ -90,13 +90,14 @@ Dialog {
                 RowLayout {
                     Slider {
                         id: columnWidthSlider
-                        Layout.fillWidth: true
+                        Layout.preferredWidth: 175 * AdjustedValues.ratio
                         from: 300
                         to: 500
                         stepSize: 50
                         snapMode: Slider.SnapOnRelease
                     }
                     Label {
+                        font.pointSize: AdjustedValues.f10
                         text: columnWidthSlider.value
                     }
                 }
@@ -126,7 +127,7 @@ Dialog {
                 }
 
                 ColumnLayout {
-                    spacing: 5 * AdjustedValues.ratio
+                    spacing: AdjustedValues.s5
 
                     Label {
                         Layout.bottomMargin: 5
