@@ -20,7 +20,7 @@ ApplicationWindow {
     width: 800
     height: 600
     minimumWidth: 800
-    minimumHeight: 600
+    minimumHeight: 600 * AdjustedValues.ratioHalf
     visible: true
     title: "羽衣 -Hagoromo-"
 

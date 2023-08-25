@@ -94,7 +94,7 @@ Dialog {
         ScrollView {
             id: generatorScrollView
             Layout.preferredWidth: 400 * AdjustedValues.ratio
-            Layout.preferredHeight: 350 * AdjustedValues.ratio
+            Layout.preferredHeight: 350 * AdjustedValues.ratioHalf
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
             ListView {

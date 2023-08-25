@@ -3,6 +3,7 @@ import QtQuick 2.15
 
 QtObject {
     property real ratio: 1.0
+    property real ratioHalf: 1.0 + (ratio - 1.0) / 2
 
     // for Button
     property real b55: 55 * ratio
