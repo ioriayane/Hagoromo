@@ -23,6 +23,7 @@ RadioButton {
         Label {
             id: descriptionLabel
             color: Material.color(Material.Grey)
+            font.pointSize: control.font.pointSize
         }
     }
 }

@@ -5,6 +5,7 @@ import QtQuick.Controls.Material 2.15
 import QtGraphicalEffects 1.15
 
 import tech.relog.hagoromo.notificationlistmodel 1.0
+import tech.relog.hagoromo.singleton 1.0
 
 import "../controls"
 import "../parts"
@@ -32,7 +33,6 @@ ClickableFrame {
     property string quoteRecordRecordText: ""
 
     property string hoveredLink: ""
-    property real fontSizeRatio: 1.0
 
     property alias moderationFrame: moderationFrame
     property alias postAvatarImage: postAvatarImage
@@ -148,8 +148,8 @@ ClickableFrame {
             visible: moderationFrame.showContent
             Image {
                 id: reasonImage
-                Layout.preferredWidth: 16
-                Layout.preferredHeight: 16
+                Layout.preferredWidth: AdjustedValues.i16
+                Layout.preferredHeight: AdjustedValues.i16
                 Layout.alignment: Qt.AlignTop
                 source: "../images/like.png"
                 layer.enabled: true
@@ -196,8 +196,8 @@ ClickableFrame {
                 RowLayout {
                     AvatarImage {
                         id: postAvatarImage
-                        Layout.preferredWidth: 16
-                        Layout.preferredHeight: 16
+                        Layout.preferredWidth: AdjustedValues.i16
+                        Layout.preferredHeight: AdjustedValues.i16
                     }
                     Author {
                         id: postAuthor
@@ -225,7 +225,7 @@ ClickableFrame {
                         Layout.topMargin: 8
                         textFormat: Text.StyledText
                         wrapMode: Text.WrapAnywhere
-                        font.pointSize: 10 * fontSizeRatio
+                        font.pointSize: AdjustedValues.f10
                         lineHeight: 1.3
                         onLinkActivated: (url) => openLink(url)
                         onHoveredLinkChanged: displayLink(hoveredLink)
@@ -257,8 +257,8 @@ ClickableFrame {
                                 id: quoteRecordAuthorLayout
                                 AvatarImage {
                                     id: quoteRecordAvatarImage
-                                    Layout.preferredWidth: 16
-                                    Layout.preferredHeight: 16
+                                    Layout.preferredWidth: AdjustedValues.i16
+                                    Layout.preferredHeight: AdjustedValues.i16
                                 }
                                 Author {
                                     id: quoteRecordAuthor
@@ -270,7 +270,7 @@ ClickableFrame {
                                 Layout.preferredWidth: quoteRecordFrame.basisWidth
                                 textFormat: Text.StyledText
                                 wrapMode: Text.WrapAnywhere
-                                font.pointSize: 10 * fontSizeRatio
+                                font.pointSize: AdjustedValues.f10
                                 lineHeight: 1.3
                                 onLinkActivated: (url) => openLink(url)
                                 onHoveredLinkChanged: displayLink(hoveredLink)

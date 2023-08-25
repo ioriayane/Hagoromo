@@ -6,6 +6,7 @@ import QtGraphicalEffects 1.15
 
 import tech.relog.hagoromo.accountlistmodel 1.0
 import tech.relog.hagoromo.feedtypelistmodel 1.0
+import tech.relog.hagoromo.singleton 1.0
 
 import "../parts"
 
@@ -68,19 +69,20 @@ Dialog {
 
             ColumnLayout {
                 Label {
+                    font.pointSize: AdjustedValues.f10
                     text: qsTr("Account")
                 }
                 AccountList {
                     id: accountList
-                    Layout.preferredWidth: 200
-                    Layout.preferredHeight: 300
+                    Layout.preferredWidth: 200 * AdjustedValues.ratio
+                    Layout.preferredHeight: 300 * AdjustedValues.ratio
                     onClicked: (index) => changeColumnTypeView(index)
                 }
             }
             Image {
                 source: "../images/arrow_forward.png"
-                Layout.preferredWidth: 24
-                Layout.preferredHeight: 24
+                Layout.preferredWidth: AdjustedValues.i24
+                Layout.preferredHeight: AdjustedValues.i24
                 layer.enabled: true
                 layer.effect: ColorOverlay {
                     color: Material.color(Material.Grey)
@@ -88,11 +90,12 @@ Dialog {
             }
             ColumnLayout {
                 Label {
+                    font.pointSize: AdjustedValues.f10
                     text: qsTr("Column type")
                 }
                 Item {
-                    Layout.preferredWidth: 300
-                    Layout.preferredHeight: 300
+                    Layout.preferredWidth: 300 * AdjustedValues.ratio
+                    Layout.preferredHeight: 300 * AdjustedValues.ratio
                     Repeater {
                         id: repeater
                         model: accountModel.count
@@ -112,10 +115,11 @@ Dialog {
                                 model: FeedTypeListModel { }
                                 footer: ItemDelegate {
                                     width: typeList.width - typeScroll.ScrollBar.vertical.width
+                                    height: implicitHeight * AdjustedValues.ratio
                                     BusyIndicator {
                                         id: busyIndicator
                                         anchors.centerIn: parent
-                                        height: 32
+                                        height: AdjustedValues.i32
                                         visible: typeList.model ? typeList.model.running : false
                                     }
                                     RowLayout {
@@ -124,11 +128,12 @@ Dialog {
                                         anchors.margins: 10
                                         visible: !busyIndicator.visible
                                         AvatarImage {
-                                            Layout.preferredWidth: 24
-                                            Layout.preferredHeight: 24
+                                            Layout.preferredWidth: AdjustedValues.i24
+                                            Layout.preferredHeight: AdjustedValues.i24
                                             altSource: "../images/feed.png"
                                         }
                                         Label {
+                                            font.pointSize: AdjustedValues.f10
                                             text: qsTr("Discover Feeds")
                                         }
                                     }
@@ -143,6 +148,7 @@ Dialog {
 
                                 delegate: ItemDelegate {
                                     width: typeList.width - typeScroll.ScrollBar.vertical.width
+                                    height: implicitHeight * AdjustedValues.ratio
                                     highlighted: ListView.isCurrentItem
                                     onClicked: {
                                         typeList.currentIndex = model.index
@@ -156,8 +162,8 @@ Dialog {
                                         anchors.margins: 10
                                         spacing: 5
                                         AvatarImage {
-                                            Layout.preferredWidth: 24
-                                            Layout.preferredHeight: 24
+                                            Layout.preferredWidth: AdjustedValues.i24
+                                            Layout.preferredHeight: AdjustedValues.i24
                                             source: model.avatar
                                             altSource: {
                                                 if(model.feedType === 0){
@@ -170,12 +176,12 @@ Dialog {
                                             }
                                         }
                                         Label {
-                                            font.pointSize: 10
+                                            font.pointSize: AdjustedValues.f10
                                             text: model.displayName
                                         }
                                         Label {
                                             color: Material.color(Material.Grey)
-                                            font.pointSize: 10
+                                            font.pointSize: AdjustedValues.f10
                                             text: model.creatorDisplayName.length > 0 ? "by @" + model.creatorDisplayName : model.creatorDisplayName
                                         }
                                         Item {
@@ -192,6 +198,7 @@ Dialog {
         }
         RowLayout {
             Button {
+                font.pointSize: AdjustedValues.f10
                 text: qsTr("Cancel")
                 flat: true
                 onClicked: addColumnDialog.reject()
@@ -200,6 +207,7 @@ Dialog {
                 Layout.fillWidth: true
             }
             Button {
+                font.pointSize: AdjustedValues.f10
                 enabled: accountList.currentIndex >= 0
                 text: qsTr("Add")
                 onClicked: addColumnDialog.accept()

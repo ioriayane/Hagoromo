@@ -3,6 +3,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 import QtGraphicalEffects 1.15
+import tech.relog.hagoromo.singleton 1.0
 
 RowLayout {
     id: reactionAuthor
@@ -15,8 +16,8 @@ RowLayout {
 
     Image {
         id: iconImage
-        Layout.preferredWidth: 12
-        Layout.preferredHeight: 12
+        Layout.preferredWidth: AdjustedValues.i12
+        Layout.preferredHeight: AdjustedValues.i12
         layer.enabled: true
         layer.effect: ColorOverlay {
             color: reactionAuthor.color
@@ -26,7 +27,7 @@ RowLayout {
         id: displayNameLabel
         Layout.alignment: Qt.AlignCenter
 //        Layout.maximumWidth: reactionAuthor.width - iconImage.width - handleLabel.width - reactionAuthor.spacing * 2
-        font.pointSize: 8
+        font.pointSize: AdjustedValues.f8
         color: reactionAuthor.color
         elide: Text.ElideRight
     }
@@ -34,7 +35,7 @@ RowLayout {
         id: handleLabel
         Layout.alignment: Qt.AlignCenter
         Layout.fillWidth: true
-        font.pointSize: 8
+        font.pointSize: AdjustedValues.f8
         opacity: 0.8
         color: reactionAuthor.color
     }

@@ -3,6 +3,8 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 
+import tech.relog.hagoromo.singleton 1.0
+
 import "../controls"
 
 ClickableFrame {
@@ -35,6 +37,7 @@ ClickableFrame {
             leftPadding: 5
             rightPadding: 5
             elide: Label.ElideRight
+            font.pointSize: AdjustedValues.f10
         }
         Label {
             id: uriLabel
@@ -42,7 +45,7 @@ ClickableFrame {
             leftPadding: 5
             rightPadding: 5
             elide: Label.ElideRight
-            font.pointSize: 8
+            font.pointSize: AdjustedValues.f8
             color: Material.color(Material.Grey)
         }
         Label {
@@ -52,7 +55,7 @@ ClickableFrame {
             leftPadding: 5
             rightPadding: 5
             elide: Label.ElideRight
-            font.pointSize: 8
+            font.pointSize: AdjustedValues.f8
         }
     }
 }

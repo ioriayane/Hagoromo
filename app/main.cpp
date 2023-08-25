@@ -88,6 +88,9 @@ int main(int argc, char *argv[])
     qmlRegisterType<ExternalLink>("tech.relog.hagoromo.externallink", 1, 0, "ExternalLink");
     qmlRegisterType<Reporter>("tech.relog.hagoromo.reporter", 1, 0, "Reporter");
 
+    qmlRegisterSingletonType(QUrl("qrc:/Hagoromo/qml/data/AdjustedValues.qml"),
+                             "tech.relog.hagoromo.singleton", 1, 0, "AdjustedValues");
+
     QString dir = QString("%1/translations").arg(QCoreApplication::applicationDirPath());
     // 翻訳データ登録
     QTranslator translator;

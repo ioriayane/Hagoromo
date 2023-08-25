@@ -4,6 +4,8 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 import QtGraphicalEffects 1.15
 
+import tech.relog.hagoromo.singleton 1.0
+
 import "../controls"
 
 ClickableFrame {
@@ -16,7 +18,6 @@ ClickableFrame {
 
     property int layoutWidth: postFrame.Layout.preferredWidth
     property string hoveredLink: ""
-    property real fontSizeRatio: 1.0
     property bool userFilterMatched: false
     property string userFilterMessage: ""
     property bool hasQuote: false
@@ -110,8 +111,8 @@ ClickableFrame {
             spacing: 10
             AvatarImage {
                 id: postAvatarImage
-                Layout.preferredWidth: 36
-                Layout.preferredHeight: 36
+                Layout.preferredWidth: AdjustedValues.i36
+                Layout.preferredHeight: AdjustedValues.i36
                 Layout.alignment: Qt.AlignTop
             }
             ColumnLayout {
@@ -147,7 +148,7 @@ ClickableFrame {
                         visible: text.length > 0
                         textFormat: Text.StyledText
                         wrapMode: Text.WrapAnywhere
-                        font.pointSize: 10 * fontSizeRatio
+                        font.pointSize: AdjustedValues.f10
                         lineHeight: 1.3
                         onLinkActivated: (url) => openLink(url)
                         onHoveredLinkChanged: displayLink(hoveredLink)
@@ -182,8 +183,8 @@ ClickableFrame {
                             spacing: 10
                             AvatarImage {
                                 id: quoteRecordAvatarImage
-                                Layout.preferredWidth: 16
-                                Layout.preferredHeight: 16
+                                Layout.preferredWidth: AdjustedValues.i16
+                                Layout.preferredHeight: AdjustedValues.i16
                                 Layout.alignment: Qt.AlignTop
                             }
                             ColumnLayout {
@@ -201,7 +202,7 @@ ClickableFrame {
                                     visible: text.length > 0
                                     textFormat: Text.StyledText
                                     wrapMode: Text.WrapAnywhere
-                                    font.pointSize: 10 * fontSizeRatio
+                                    font.pointSize: AdjustedValues.f10
                                     lineHeight: 1.3
                                     onLinkActivated: (url) => openLink(url)
                                     onHoveredLinkChanged: displayLink(hoveredLink)
@@ -220,6 +221,7 @@ ClickableFrame {
                         Layout.topMargin: 5
                         visible: false
                         Label {
+                            font.pointSize: AdjustedValues.f10
                             text: qsTr("blocked")
                         }
                     }
@@ -250,28 +252,28 @@ ClickableFrame {
                                 rowSpacing: 3
                                 AvatarImage {
                                     id: generatorFeedAvatarImage
-                                    Layout.preferredWidth: 24
-                                    Layout.preferredHeight: 24
+                                    Layout.preferredWidth: AdjustedValues.i24
+                                    Layout.preferredHeight: AdjustedValues.i24
                                     Layout.rowSpan: 2
                                     altSource: "../images/account_icon.png"
                                 }
                                 Label {
                                     id: generatorFeedDisplayNameLabel
                                     Layout.fillWidth: true
-                                    font.pointSize: 10
+                                    font.pointSize: AdjustedValues.f10
                                 }
                                 Label {
                                     id: generatorFeedCreatorHandleLabel
                                     color: Material.color(Material.Grey)
-                                    font.pointSize: 8
+                                    font.pointSize: AdjustedValues.f8
                                 }
                             }
                             RowLayout {
                                 Layout.leftMargin: 3
                                 spacing: 3
                                 Image {
-                                    Layout.preferredWidth: 16
-                                    Layout.preferredHeight: 16
+                                    Layout.preferredWidth: AdjustedValues.i16
+                                    Layout.preferredHeight: AdjustedValues.i16
                                     source: "../images/like.png"
                                     layer.enabled: true
                                     layer.effect: ColorOverlay {
@@ -282,7 +284,7 @@ ClickableFrame {
                                     id: generatorFeedLikeCountLabel
                                     Layout.alignment: Qt.AlignVCenter
                                     Layout.fillWidth: true
-                                    font.pointSize: 8
+                                    font.pointSize: AdjustedValues.f8
                                 }
                             }
                         }
