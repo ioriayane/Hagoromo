@@ -338,7 +338,7 @@ Dialog {
         }
 
         RowLayout {
-            //            Layout.alignment: Qt.AlignRight
+            spacing: 0
             Button {
                 enabled: !createRecord.running
                 flat: true
@@ -354,6 +354,7 @@ Dialog {
                 id: selfLabelsButton
                 enabled: !createRecord.running
                 iconSource: "../images/labeling.png"
+                iconSize: AdjustedValues.i16
                 flat: true
                 foreground: value.length > 0 ? Material.accent : Material.foreground
                 onClicked: selfLabelPopup.popup()
@@ -375,6 +376,7 @@ Dialog {
             IconButton {
                 enabled: !createRecord.running && !externalLink.valid
                 iconSource: "../images/add_image.png"
+                iconSize: AdjustedValues.i16
                 flat: true
                 onClicked: {
                     if(fileDialog.prevFolder.length > 0){
@@ -385,11 +387,13 @@ Dialog {
             }
 
             Label {
+                Layout.leftMargin: 5
                 Layout.alignment: Qt.AlignVCenter
                 font.pointSize: AdjustedValues.f8
                 text: 300 - postText.realTextLength
             }
             ProgressCircle {
+                Layout.leftMargin: 5
                 Layout.preferredWidth: AdjustedValues.i24
                 Layout.preferredHeight: AdjustedValues.i24
                 Layout.alignment: Qt.AlignVCenter

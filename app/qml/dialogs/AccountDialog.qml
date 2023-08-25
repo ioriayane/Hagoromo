@@ -43,6 +43,7 @@ Dialog {
 
             footer: ItemDelegate {
                 width: accountList.width
+                height: implicitHeight * AdjustedValues.ratio
                 padding: 3
                 Image {
                     anchors.centerIn: parent

@@ -219,6 +219,7 @@ Dialog {
         }
         RowLayout {
             Button {
+                font.pointSize: AdjustedValues.f10
                 text: qsTr("Cancel")
                 flat: true
                 onClicked: discoverFeedsDialog.reject()
@@ -229,6 +230,7 @@ Dialog {
             Button {
                 id: addButton
                 enabled: generatorListView.currentIndex >= 0 && discoverFeedsDialog.selectedUri.length > 0
+                font.pointSize: AdjustedValues.f10
                 text: qsTr("Add")
                 onClicked: {
                     discoverFeedsDialog.accept()
