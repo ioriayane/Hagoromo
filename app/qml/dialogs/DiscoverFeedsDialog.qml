@@ -41,7 +41,7 @@ Dialog {
     }
 
     Shortcut {  // Search
-        enabled: searchButton.enabled
+        enabled: searchButton.enabled && searchText.focus
         sequence: "Ctrl+Return"
         onActivated: searchButton.clicked()
     }
@@ -75,7 +75,7 @@ Dialog {
             }
             Button {
                 id: searchButton
-                enabled: searchText.focus && searchText.text.length > 0 && !feedGeneratorListModel.running
+                enabled: searchText.text.length > 0 && !feedGeneratorListModel.running
                 font.pointSize: AdjustedValues.f10
                 text: qsTr("Search")
                 onClicked: {
