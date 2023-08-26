@@ -43,7 +43,7 @@ QVariant FollowsListModel::item(int row, FollowsListModelRoles role) const
     else if (role == IndexedAtRole)
         return formatDateTime(profile.indexedAt);
     else if (role == MutedRole)
-        return QVariant(); // TODO
+        return profile.viewer.muted;
     else if (role == BlockedByRole)
         return profile.viewer.blocking;
     else if (role == FollowingRole)

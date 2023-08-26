@@ -14,14 +14,16 @@ Rectangle {
 
     property alias source: image.source
     property alias text: label.text
+    property alias fontPointSize: label.font.pointSize
     property int spacing: 0
 
     Image {
         id: image
         x: 2
         anchors.verticalCenter: tagLabel.verticalCenter
-        width: height
+        width: source.length > 0 ? height: 0
         height: label.contentHeight
+        visible: source.length > 0
         source: "../images/label.png"
         layer.enabled: true
         layer.effect: ColorOverlay {

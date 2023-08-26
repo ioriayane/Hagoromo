@@ -145,23 +145,14 @@ ScrollView {
                         font.pointSize: AdjustedValues.f10
                         text: model.displayName
 
-                        RowLayout {
+                        IconButton {
+                            id: editButton
                             anchors.right: parent.right
-                            Label {
-                                Layout.alignment: Qt.AlignVCenter
-                                visible: model.followedBy
-                                font.pointSize: AdjustedValues.f8
-                                color: Material.accentColor
-                                text: qsTr("Follows you")
-                            }
-                            IconButton {
-                                id: editButton
-                                Layout.preferredHeight: AdjustedValues.b24
-                                iconText: "   "
-                                BusyIndicator {
-                                    anchors.fill: parent
-                                    visible: recordOperator.running
-                                }
+                            height: AdjustedValues.b24
+                            iconText: "   "
+                            BusyIndicator {
+                                anchors.fill: parent
+                                visible: recordOperator.running
                             }
                         }
                     }
@@ -169,6 +160,21 @@ ScrollView {
                         font.pointSize: AdjustedValues.f8
                         color: Material.color(Material.Grey)
                         text: "@" + model.handle
+                    }
+                    RowLayout {
+                        visible: model.followedBy || model.muted
+                        TagLabel {
+                            visible: model.followedBy
+                            source: ""
+                            fontPointSize: AdjustedValues.f8
+                            text: qsTr("Follows you")
+                        }
+                        TagLabel {
+                            visible: model.muted
+                            source: ""
+                            fontPointSize: AdjustedValues.f8
+                            text: qsTr("Muted user")
+                        }
                     }
                     Label {
                         id: childRecordText
