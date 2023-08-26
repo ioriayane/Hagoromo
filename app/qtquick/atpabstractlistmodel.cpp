@@ -122,9 +122,16 @@ void AtpAbstractListModel::setRunning(bool newRunning)
     emit runningChanged();
 }
 
-QString AtpAbstractListModel::formatDateTime(const QString &value) const
+QString AtpAbstractListModel::formatDateTime(const QString &value, const bool is_long) const
 {
-    return QDateTime::fromString(value, Qt::ISODateWithMs).toLocalTime().toString("MM/dd hh:mm");
+    if (is_long)
+        return QDateTime::fromString(value, Qt::ISODateWithMs)
+                .toLocalTime()
+                .toString("yyyy/MM/dd hh:mm:ss");
+    else
+        return QDateTime::fromString(value, Qt::ISODateWithMs)
+                .toLocalTime()
+                .toString("MM/dd hh:mm");
 }
 
 QString AtpAbstractListModel::copyRecordText(const QVariant &value) const
@@ -345,6 +352,26 @@ bool AtpAbstractListModel::getQuoteFilterMatched(
     }
 
     return false;
+}
+
+QStringList AtpAbstractListModel::getLabels(
+        const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels) const
+{
+    QStringList ret;
+    for (const auto &label : labels) {
+        ret.append(label.val);
+    }
+    return ret;
+}
+
+QStringList AtpAbstractListModel::getLaunguages(const QVariant &record) const
+{
+    return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(record).langs;
+}
+
+QString AtpAbstractListModel::getVia(const QVariant &record) const
+{
+    return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(record).via;
 }
 
 int AtpAbstractListModel::searchInsertPosition(const QString &cid)

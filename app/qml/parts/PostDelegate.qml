@@ -44,6 +44,7 @@ ClickableFrame {
     property alias generatorDisplayNameLabel: generatorFeedDisplayNameLabel
     property alias generatorCreatorHandleLabel: generatorFeedCreatorHandleLabel
     property alias generatorLikeCountLabel: generatorFeedLikeCountLabel
+    property alias postInformation: postInformation
     property alias postControls: postControls
 
     signal requestViewProfile(string did)
@@ -145,6 +146,7 @@ ClickableFrame {
                         id: recordText
                         Layout.preferredWidth: parent.width
                         Layout.topMargin: 5
+                        Layout.bottomMargin: -5
                         visible: text.length > 0
                         textFormat: Text.StyledText
                         wrapMode: Text.WrapAnywhere
@@ -230,7 +232,6 @@ ClickableFrame {
                         id: externalLinkFrame
                         Layout.preferredWidth: parent.width
                         Layout.topMargin: 5
-                        visible: externalLink.valid
                         hoverEnabled: true
                         onHoveredChanged:{
                             if(hovered){
@@ -288,6 +289,11 @@ ClickableFrame {
                                 }
                             }
                         }
+                    }
+
+                    PostInformation {
+                        id: postInformation
+                        Layout.preferredWidth: parent.width
                     }
 
                     PostControls {

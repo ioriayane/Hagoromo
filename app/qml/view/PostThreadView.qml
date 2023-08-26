@@ -123,7 +123,7 @@ ColumnLayout {
                 postAvatarImage.onClicked: requestViewProfile(model.did)
                 postAuthor.displayName: model.displayName
                 postAuthor.handle: model.handle
-                postAuthor.indexedAt: model.indexedAt
+                postAuthor.indexedAt: (postThreadUri === model.uri) ? "" : model.indexedAt
                 recordText.text: {
                     var text = model.recordText
                     if(model.recordTextTranslation.length > 0){
@@ -168,6 +168,12 @@ ColumnLayout {
                 generatorDisplayNameLabel.text: model.generatorFeedDisplayName
                 generatorCreatorHandleLabel.text: model.generatorFeedCreatorHandle
                 generatorLikeCountLabel.text: model.generatorFeedLikeCount
+
+                postInformation.visible: (postThreadUri === model.uri)
+                postInformation.labelsLayout.model: postInformation.visible ? model.labels : []
+                postInformation.languagesLayout.model: postInformation.visible ? model.languages : []
+                postInformation.indexedAtLongLabel.text: postInformation.visible ? model.indexedAtLong : ""
+                postInformation.viaTagLabel.text: (postInformation.visible && model.via.length > 0) ? ("via:" + model.via) : ""
 
                 postControls.replyButton.iconText: model.replyCount
                 postControls.repostButton.iconText: model.repostCount

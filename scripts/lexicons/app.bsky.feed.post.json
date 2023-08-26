@@ -1,0 +1,14 @@
+{
+    "defs": {
+        "main": {
+            "record": {
+                "properties": {
+                    "via": {
+                        "type": "string",
+                        "format": "client name(Unofficial field)"
+                    }
+                }
+            }
+        }
+    }
+}

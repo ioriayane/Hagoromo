@@ -39,10 +39,13 @@ QML_FILES = \
     qml/parts/NotificationDelegate.qml \
     qml/parts/PostControls.qml \
     qml/parts/PostDelegate.qml \
+    qml/parts/PostInformation.qml \
     qml/parts/ProfileTabBar.qml \
     qml/parts/ReactionAuthor.qml \
     qml/parts/SelfLabelPopup.qml \
     qml/parts/SideBar.qml \
+    qml/parts/TagLabel.qml \
+    qml/parts/TagLabelLayout.qml \
     qml/parts/VersionInfomation.qml \
     qml/view/ColumnView.qml \
     qml/view/ImageFullView.qml \
@@ -77,6 +80,7 @@ IMAGE_FILES += \
     qml/images/hand.png \
     qml/images/home.png \
     qml/images/icon_mask.png \
+    qml/images/label.png \
     qml/images/labeling.png \
     qml/images/language.png \
     qml/images/like.png \
@@ -91,6 +95,7 @@ IMAGE_FILES += \
     qml/images/repost.png \
     qml/images/search.png \
     qml/images/settings.png \
+    qml/images/terminal.png \
     qml/images/translate.png \
     qml/images/visibility_off.png \
     qml/images/visibility_on.png

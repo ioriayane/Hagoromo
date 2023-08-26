@@ -32,6 +32,7 @@ public:
         RepostCountRole,
         LikeCountRole,
         IndexedAtRole,
+        IndexedAtLongRole,
         EmbedImagesRole,
         EmbedImagesFullRole,
 
@@ -81,6 +82,10 @@ public:
         ContentMediaFilterMatchedRole,
         ContentMediaFilterMessageRole,
         QuoteFilterMatchedRole,
+
+        LabelsRole,
+        LanguagesRole,
+        ViaRole,
     };
     Q_ENUM(TimelineListModelRoles)
 
