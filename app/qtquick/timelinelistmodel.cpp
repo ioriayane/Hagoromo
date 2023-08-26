@@ -57,6 +57,8 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return current.post.likeCount;
     else if (role == IndexedAtRole)
         return formatDateTime(current.post.indexedAt);
+    else if (role == IndexedAtLongRole)
+        return formatDateTime(current.post.indexedAt, true);
     else if (role == EmbedImagesRole)
         return LexiconsTypeUnknown::copyImagesFromPostView(current.post, true);
     else if (role == EmbedImagesFullRole)
@@ -365,6 +367,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[RepostCountRole] = "repostCount";
     roles[LikeCountRole] = "likeCount";
     roles[IndexedAtRole] = "indexedAt";
+    roles[IndexedAtLongRole] = "indexedAtLong";
     roles[EmbedImagesRole] = "embedImages";
     roles[EmbedImagesFullRole] = "embedImagesFull";
 

@@ -123,7 +123,7 @@ ColumnLayout {
                 postAvatarImage.onClicked: requestViewProfile(model.did)
                 postAuthor.displayName: model.displayName
                 postAuthor.handle: model.handle
-                postAuthor.indexedAt: model.indexedAt
+                postAuthor.indexedAt: (postThreadUri === model.uri) ? "" : model.indexedAt
                 recordText.text: {
                     var text = model.recordText
                     if(model.recordTextTranslation.length > 0){
@@ -171,6 +171,7 @@ ColumnLayout {
 
                 labelsLayout.model: (postThreadUri === model.uri) ? model.labels : []
                 languagesLayout.model: (postThreadUri === model.uri) ? model.languages : []
+                indexedAtLongLabel.text: (postThreadUri === model.uri) ? model.indexedAtLong : ""
                 viaTagLabel.text: (postThreadUri === model.uri && model.via.length > 0) ? ("via:" + model.via) : ""
 
                 postControls.replyButton.iconText: model.replyCount

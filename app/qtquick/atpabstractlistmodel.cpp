@@ -122,9 +122,16 @@ void AtpAbstractListModel::setRunning(bool newRunning)
     emit runningChanged();
 }
 
-QString AtpAbstractListModel::formatDateTime(const QString &value) const
+QString AtpAbstractListModel::formatDateTime(const QString &value, const bool is_long) const
 {
-    return QDateTime::fromString(value, Qt::ISODateWithMs).toLocalTime().toString("MM/dd hh:mm");
+    if (is_long)
+        return QDateTime::fromString(value, Qt::ISODateWithMs)
+                .toLocalTime()
+                .toString("yyyy/MM/dd hh:mm:ss");
+    else
+        return QDateTime::fromString(value, Qt::ISODateWithMs)
+                .toLocalTime()
+                .toString("MM/dd hh:mm");
 }
 
 QString AtpAbstractListModel::copyRecordText(const QVariant &value) const

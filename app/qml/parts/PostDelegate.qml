@@ -46,6 +46,7 @@ ClickableFrame {
     property alias generatorLikeCountLabel: generatorFeedLikeCountLabel
     property alias labelsLayout: labelsLayout
     property alias languagesLayout: languagesLayout
+    property alias indexedAtLongLabel: indexedAtLongLabel
     property alias viaTagLabel: viaTagLabel
     property alias postControls: postControls
 
@@ -312,11 +313,19 @@ ClickableFrame {
                     }
 
                     Label {
-                        id: viaTagLabel
+                        id: indexedAtLongLabel
                         Layout.topMargin: (labelsLayout.visible || languagesLayout.visible) ? 3 : 5
-                        Layout.leftMargin: 3
+//                        Layout.leftMargin: 3
                         visible: text.length > 0
-                        font.pointSize: 10
+                        font.pointSize: AdjustedValues.f8
+                        color: Material.color(Material.Grey)
+                    }
+                    Label {
+                        id: viaTagLabel
+                        Layout.topMargin: 3
+//                        Layout.leftMargin: 3
+                        visible: text.length > 0
+                        font.pointSize: AdjustedValues.f8
                         color: Material.color(Material.Grey)
                     }
 

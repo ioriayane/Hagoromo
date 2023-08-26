@@ -77,7 +77,7 @@ public slots:
     virtual Q_INVOKABLE void getLatest() = 0;
 
 protected:
-    QString formatDateTime(const QString &value) const;
+    QString formatDateTime(const QString &value, const bool is_long = false) const;
     QString copyRecordText(const QVariant &value) const;
     void displayQueuedPosts();
     virtual void finishedDisplayingQueuedPosts() = 0;

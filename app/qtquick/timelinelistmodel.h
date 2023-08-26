@@ -32,6 +32,7 @@ public:
         RepostCountRole,
         LikeCountRole,
         IndexedAtRole,
+        IndexedAtLongRole,
         EmbedImagesRole,
         EmbedImagesFullRole,
 
