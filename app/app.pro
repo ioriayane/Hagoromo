@@ -14,6 +14,7 @@ QML_FILES = \
     qml/controls/ImageWithIndicator.qml \
     qml/controls/RadioButtonEx.qml \
     qml/data/Account.qml \
+    qml/data/AdjustedValues.qml \
     qml/data/ColumnSettings.qml \
     qml/dialogs/AccountDialog.qml \
     qml/dialogs/AddColumnDialog.qml \
@@ -104,6 +105,10 @@ resources.prefix = /$${TARGET}
 RESOURCES += resources
 
 TRANSLATIONS += i18n/qt_ja_JP.ts
+
+# icon
+win32:RC_FILE = app.rc
+mac:ICON = app.icns
 
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 CONFIG(HAGOROMO_RELEASE_BUILD):DEFINES += HAGOROMO_RELEASE_BUILD

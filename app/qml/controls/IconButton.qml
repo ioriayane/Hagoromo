@@ -4,6 +4,8 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 import QtGraphicalEffects 1.15
 
+import tech.relog.hagoromo.singleton 1.0
+
 Button {
     id: button
 
@@ -55,6 +57,7 @@ Button {
             Layout.rightMargin: iconImage.visible ? 5 : 20
             visible: button.iconText.length > 0
             color: button.foreground
+            font.pointSize: AdjustedValues.f10
         }
     }
 }

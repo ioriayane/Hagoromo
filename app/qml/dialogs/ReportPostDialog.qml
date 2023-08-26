@@ -3,6 +3,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 import tech.relog.hagoromo.reporter 1.0
+import tech.relog.hagoromo.singleton 1.0
 
 import "../controls"
 import "../data"
@@ -50,26 +51,31 @@ Dialog {
 //        }
 
         RadioButtonEx {
+            font.pointSize: AdjustedValues.f10
             mainText: qsTr("Spam")
             description: qsTr("Excessive mentions or replies")
             property int reason: Reporter.ReasonSpam
         }
         RadioButtonEx {
+            font.pointSize: AdjustedValues.f10
             mainText: qsTr("Unwanted Sexual Content")
             description: qsTr("Nudity or pornography not labeled as such")
             property int reason: Reporter.ReasonSexual
         }
         RadioButtonEx {
+            font.pointSize: AdjustedValues.f10
             mainText: qsTr("Anti-Social Behavior")
             description: qsTr("Harassment, trolling, or intolerance")
             property int reason: Reporter.ReasonRude
         }
         RadioButtonEx {
+            font.pointSize: AdjustedValues.f10
             mainText: qsTr("Illegal and Urgent")
             description: qsTr("Glaring violations of law or terms of service")
             property int reason: Reporter.ReasonViolation
         }
         RadioButtonEx {
+            font.pointSize: AdjustedValues.f10
             mainText: qsTr("Other")
             description: qsTr("An issue not included in these options")
             property int reason: Reporter.ReasonOther
@@ -78,6 +84,7 @@ Dialog {
             Button {
                 Layout.alignment: Qt.AlignLeft
                 flat: true
+                font.pointSize: AdjustedValues.f10
                 text: qsTr("Cancel")
                 onClicked: reportDialog.close()
             }
@@ -88,6 +95,7 @@ Dialog {
             Button {
                 Layout.alignment: Qt.AlignRight
                 enabled: reportTypeButtonGroup.checkState === Qt.PartiallyChecked && !reporter.running
+                font.pointSize: AdjustedValues.f10
                 text: qsTr("Send report")
                 onClicked: {
                     reporter.setAccount(account.service, account.did, account.handle,

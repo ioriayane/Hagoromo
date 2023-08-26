@@ -5,6 +5,7 @@ import QtQuick.Controls.Material 2.15
 
 import tech.relog.hagoromo.postthreadlistmodel 1.0
 import tech.relog.hagoromo.systemtool 1.0
+import tech.relog.hagoromo.singleton 1.0
 
 import "../parts"
 import "../controls"
@@ -13,7 +14,6 @@ ColumnLayout {
     id: postThreadView
 
     property string hoveredLink: ""
-    property real fontSizeRatio: 1.0
     property string accountDid: ""   // 取得するユーザー
 
     property alias postThreadUri: postThreadListModel.postThreadUri
@@ -42,8 +42,8 @@ ColumnLayout {
 
         RowLayout {
             IconButton {
-                Layout.preferredWidth: 30
-                Layout.preferredHeight: 30
+                Layout.preferredWidth: AdjustedValues.b30
+                Layout.preferredHeight: AdjustedValues.b30
                 flat: true
                 iconSource: "../images/arrow_left_single.png"
                 onClicked: postThreadView.back()
@@ -51,6 +51,7 @@ ColumnLayout {
             Label {
                 Layout.fillWidth: true
                 Layout.leftMargin: 10
+                font.pointSize: AdjustedValues.f10
                 text: qsTr("Post thread")
             }
         }
@@ -82,12 +83,12 @@ ColumnLayout {
 
             header: Item {
                 width: rootListView.width
-                height: 24
+                height: AdjustedValues.h24
 
                 BusyIndicator {
                     anchors.centerIn: parent
-                    width: 24
-                    height: 24
+                    width: AdjustedValues.i24
+                    height: AdjustedValues.i24
                     visible: postThreadListModel.running
                 }
             }
@@ -98,8 +99,6 @@ ColumnLayout {
 
             delegate: PostDelegate {
                 Layout.preferredWidth: rootListView.width
-
-                fontSizeRatio: postThreadView.fontSizeRatio
 
                 //自分から自分へは移動しない
                 onClicked: (mouse) => {

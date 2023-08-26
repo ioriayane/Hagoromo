@@ -6,6 +6,7 @@ import Qt.labs.settings 1.0
 
 import tech.relog.hagoromo.encryption 1.0
 import tech.relog.hagoromo.systemtool 1.0
+import tech.relog.hagoromo.singleton 1.0
 
 Dialog {
     id: settingDialog
@@ -45,6 +46,8 @@ Dialog {
             translateApiKeyText.text = encryption.decrypt(settings.translateApiKey)
             translateTargetLanguageCombo.currentIndex = translateTargetLanguageCombo.indexOfValue(settings.translateTargetLanguage)
             fontSizeRatioSlider.value = fontSizeRatio
+
+            AdjustedValues.ratio = fontSizeRatio
         }
 
         function setRadioButton(buttons, value){
@@ -70,22 +73,25 @@ Dialog {
             id: tabBar
             Layout.fillWidth: true
             TabButton {
+                font.pointSize: AdjustedValues.f10
                 font.capitalization: Font.MixedCase
                 text: qsTr("General")
             }
             TabButton {
+                font.pointSize: AdjustedValues.f10
                 font.capitalization: Font.MixedCase
                 text: qsTr("Translate")
             }
             TabButton {
+                font.pointSize: AdjustedValues.f10
                 font.capitalization: Font.MixedCase
                 text: qsTr("About")
             }
         }
 
         SwipeView {
-            Layout.preferredWidth: 450
-            Layout.preferredHeight: 250
+            Layout.preferredWidth: 450 * AdjustedValues.ratio
+            Layout.preferredHeight: 250 * AdjustedValues.ratio
             currentIndex: tabBar.currentIndex
             interactive: false
             clip: true
@@ -93,21 +99,26 @@ Dialog {
             // General Page
             Frame {
                 ColumnLayout {
+                    spacing: AdjustedValues.s5
                     RowLayout {
                         id: themeRowlayout
                         Label {
+                            font.pointSize: AdjustedValues.f10
                             text: qsTr("Theme") + " : "
                         }
                         RadioButton {
                             property int value: Material.Light
+                            font.pointSize: AdjustedValues.f10
                             text: qsTr("Light")
                         }
                         RadioButton {
                             property int value: Material.Dark
+                            font.pointSize: AdjustedValues.f10
                             text: qsTr("Dark")
                         }
                     }
                     Label {
+                        font.pointSize: AdjustedValues.f10
                         text: qsTr("Accent color") + " : "
                     }
                     GridLayout {
@@ -123,8 +134,8 @@ Dialog {
                                 Material.Brown, Material.BlueGrey ]
                             Button {
                                 id: colorSelectButton
-                                Layout.preferredWidth: 30
-                                Layout.preferredHeight: 30
+                                Layout.preferredWidth: AdjustedValues.b30
+                                Layout.preferredHeight: AdjustedValues.b30
                                 topInset: 1
                                 leftInset: 1
                                 rightInset: 1
@@ -141,7 +152,9 @@ Dialog {
                         }
                     }
                     Label {
-                        text: qsTr("Font size") + " : "
+                        Layout.topMargin: AdjustedValues.s10
+                        font.pointSize: AdjustedValues.f10
+                        text: qsTr("Scaling") + " : "
                     }
                     Slider {
                         id: fontSizeRatioSlider
@@ -154,19 +167,19 @@ Dialog {
                             x: parent.background.x + parent.handle.width / 2 - contentWidth / 2
                             y: parent.topPadding + parent.availableHeight / 2 - parent.handle.height / 2 - contentHeight
                             text: qsTr("A")
-                            font.pointSize: 10 * parent.from
+                            font.pointSize: AdjustedValues.f10 * parent.from
                         }
                         Label {
                             x: parent.background.x + 2 * parent.width / ((parent.to - parent.from) / parent.stepSize) - contentWidth / 2
                             y: parent.topPadding + parent.availableHeight / 2 - parent.handle.height / 2 - contentHeight
                             text: qsTr("A")
-                            font.pointSize: 10
+                            font.pointSize: AdjustedValues.f10
                         }
                         Label {
                             x: parent.background.x + parent.background.width - parent.handle.width / 2 - contentWidth / 2
                             y: parent.topPadding + parent.availableHeight / 2 - parent.handle.height / 2 - contentHeight
                             text: qsTr("A")
-                            font.pointSize: 10 * parent.to
+                            font.pointSize: AdjustedValues.f10 * parent.to
                         }
                     }
 
@@ -181,32 +194,40 @@ Dialog {
             Frame {
                 GridLayout {
                     anchors.fill: parent
+                    columnSpacing: 5 * AdjustedValues.ratio
                     columns: 2
                     Label {
+                        font.pointSize: AdjustedValues.f10
                         text: qsTr("Api Url")
                     }
                     TextField {
                         id: translateApiUrlText
                         Layout.fillWidth: true
+                        font.pointSize: AdjustedValues.f10
                         text: ""
                     }
                     Label {
+                        font.pointSize: AdjustedValues.f10
                         text: qsTr("Api Key")
                     }
                     TextField {
                         id: translateApiKeyText
                         Layout.fillWidth: true
                         echoMode: TextInput.Password
+                        font.pointSize: AdjustedValues.f10
                         text: ""
                     }
                     Label {
+                        font.pointSize: AdjustedValues.f10
                         text: qsTr("Target language")
                     }
                     ComboBox {
                         id: translateTargetLanguageCombo
                         Layout.fillWidth: true
+                        Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
                         textRole: "text"
                         valueRole: "value"
+                        font.pointSize: AdjustedValues.f10
                         model: ListModel {
                             ListElement { value: "BG"; text: qsTr("Bulgarian") }
                             ListElement { value: "ZH"; text: qsTr("Chinese (simplified)") }
@@ -254,26 +275,29 @@ Dialog {
                 GridLayout {
                     Layout.alignment: Qt.AlignCenter
                     columns: 2
-                    columnSpacing: 10
-                    rowSpacing: 5
+                    columnSpacing: 10 * AdjustedValues.ratio
+                    rowSpacing: 5 * AdjustedValues.ratio
                     Image {
-                        Layout.preferredWidth: 50
-                        Layout.preferredHeight: 50
+                        Layout.preferredWidth: AdjustedValues.i50
+                        Layout.preferredHeight: AdjustedValues.i50
                         Layout.alignment: Qt.AlignTop
                         Layout.rowSpan: 4
                         source: "../images/logo.png"
                     }
                     Label {
-                        font.pointSize: 14
+                        font.pointSize: AdjustedValues.f14
                         text: "羽衣 -Hagoromo-"
                     }
                     Label {
+                        font.pointSize: AdjustedValues.f10
                         text: "Version:" + systemTool.applicationVersion
                     }
                     Label {
+                        font.pointSize: AdjustedValues.f10
                         text: "build on Qt " + systemTool.qtVersion
                     }
                     Label {
+                        font.pointSize: AdjustedValues.f10
                         text: "© 2023 Iori Ayane"
                     }
 //                    Item {
@@ -303,6 +327,7 @@ Dialog {
         RowLayout {
             Button {
                 flat: true
+                font.pointSize: AdjustedValues.f10
                 text: qsTr("Cancel")
                 onClicked: settingDialog.reject()
             }
@@ -311,6 +336,7 @@ Dialog {
                 Layout.preferredHeight: 1
             }
             Button {
+                font.pointSize: AdjustedValues.f10
                 text: qsTr("OK")
                 onClicked: {
                     settings.theme = themeButtonGroup.checkedButton.value
@@ -319,6 +345,7 @@ Dialog {
                     settings.translateApiKey = encryption.encrypt(translateApiKeyText.text)
                     settings.translateTargetLanguage = translateTargetLanguageCombo.currentValue
                     settings.fontSizeRatio = fontSizeRatioSlider.value
+                    AdjustedValues.ratio = fontSizeRatioSlider.value
 
                     settingDialog.accept()
                 }

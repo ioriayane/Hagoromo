@@ -6,6 +6,7 @@ import QtGraphicalEffects 1.15
 
 import tech.relog.hagoromo.notificationlistmodel 1.0
 import tech.relog.hagoromo.systemtool 1.0
+import tech.relog.hagoromo.singleton 1.0
 
 import "../parts"
 
@@ -17,8 +18,6 @@ ScrollView {
     clip: true
 
     property string hoveredLink: ""
-    property real fontSizeRatio: 1.0
-
     property alias listView: rootListView
     property alias model: rootListView.model
 
@@ -43,21 +42,21 @@ ScrollView {
 
         header: ItemDelegate {
             width: rootListView.width
-            height: 24
+            height: AdjustedValues.h24
             display: AbstractButton.IconOnly
             icon.source: rootListView.model.running ? "" : "../images/expand_less.png"
             onClicked: rootListView.model.getLatest()
 
             BusyIndicator {
                 anchors.centerIn: parent
-                width: 24
-                height: 24
+                width: AdjustedValues.i24
+                height: AdjustedValues.i24
                 visible: rootListView.model.running
             }
         }
         footer: BusyIndicator {
             width: rootListView.width
-            height: 24
+            height: AdjustedValues.i24
             visible: rootListView.model.running && rootListView.model.rowCount() > 0
         }
 
@@ -69,8 +68,6 @@ ScrollView {
             Layout.preferredWidth: rootListView.width
 
             onRequestViewProfile: (did) => notificationListView.requestViewProfile(did)
-
-            fontSizeRatio: notificationListView.fontSizeRatio
 
             moderationFrame.visible: model.muted
             userFilterMatched: model.userFilterMatched

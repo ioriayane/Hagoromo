@@ -3,6 +3,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 import tech.relog.hagoromo.createsession 1.0
+import tech.relog.hagoromo.singleton 1.0
 
 Dialog {
     id: loginDialog
@@ -35,10 +36,11 @@ Dialog {
 
     GridLayout {
         columns: 2
-        columnSpacing: 10
-        rowSpacing: 10
+        columnSpacing: AdjustedValues.s10
+        rowSpacing: AdjustedValues.s10
 
         Label {
+            font.pointSize: AdjustedValues.f10
             text: qsTr("Service")
         }
         TextField {
@@ -46,8 +48,10 @@ Dialog {
             Layout.minimumWidth: loginDialog.parentWidth
             enabled: !session.running
             placeholderText: "https://bsky.social etc..."
+            font.pointSize: AdjustedValues.f10
         }
         Label {
+            font.pointSize: AdjustedValues.f10
             text: qsTr("Identifier")
         }
         TextField {
@@ -55,8 +59,10 @@ Dialog {
             Layout.fillWidth: true
             enabled: !session.running
             placeholderText: "Handle or Email address or DID"
+            font.pointSize: AdjustedValues.f10
         }
         Label {
+            font.pointSize: AdjustedValues.f10
             text: qsTr("Password")
         }
         TextField {
@@ -65,17 +71,20 @@ Dialog {
             enabled: !session.running
             echoMode: TextInput.Password
             placeholderText: "The use of App Password is recommended."
+            font.pointSize: AdjustedValues.f10
         }
 
         Button {
             Layout.alignment: Qt.AlignLeft
             flat: true
+            font.pointSize: AdjustedValues.f10
             text: qsTr("Cancel")
             onClicked: loginDialog.close()
         }
         Button {
             Layout.alignment: Qt.AlignRight
             enabled: !(session.running || serviceTextInput.text.length == 0 || idTextInput.text.length == 0 || passwordTextInput.text.length == 0)
+            font.pointSize: AdjustedValues.f10
             text: qsTr("Login")
             onClicked: session.create()
         }
