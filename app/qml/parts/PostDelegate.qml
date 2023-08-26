@@ -294,7 +294,6 @@ ClickableFrame {
                     PostInformation {
                         id: postInformation
                         Layout.preferredWidth: parent.width
-                        Layout.topMargin: 5
                     }
 
                     PostControls {
