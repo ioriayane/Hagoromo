@@ -26,9 +26,6 @@ TabBar {
                 source: "../images/reply.png"
             }
         }
-//        background: Item {
-//            implicitHeight: 30
-//        }
     }
     TabButton {
         topPadding: 0
@@ -45,9 +42,6 @@ TabBar {
                 source: "../images/repost.png"
             }
         }
-//        background: Item {
-//            implicitHeight: 30
-//        }
     }
     TabButton {
         topPadding: 0
@@ -64,9 +58,6 @@ TabBar {
                 source: "../images/like.png"
             }
         }
-//        background: Item {
-//            implicitHeight: 30
-//        }
     }
     TabButton {
         topPadding: 0
@@ -83,9 +74,6 @@ TabBar {
                 source: "../images/media.png"
             }
         }
-//        background: Item {
-//            implicitHeight: 30
-//        }
     }
     TabButton {
         topPadding: 0
@@ -98,27 +86,11 @@ TabBar {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 1
             }
-            Item {
+            AvatarImage {
                 Layout.preferredWidth: AdjustedValues.i16
                 Layout.preferredHeight: AdjustedValues.i16
-                Image {
-                    id: avatorImage1
-                    anchors.fill: parent
-                    fillMode: Image.PreserveAspectCrop
-                    source: tabBar.profileSource
-                    visible: false
-                }
-                Image {
-                    id: mask1
-                    anchors.fill: parent
-                    source: "../images/icon_mask.png"
-                    visible: false
-                }
-                OpacityMask {
-                    anchors.fill: parent
-                    source: avatorImage1
-                    maskSource: mask1
-                }
+                acceptedButtons: Qt.NoButton
+                source: tabBar.profileSource
             }
             Image {
                 Layout.preferredWidth: AdjustedValues.i16
@@ -134,9 +106,6 @@ TabBar {
                 Layout.preferredHeight: 1
             }
         }
-//        background: Item {
-//            implicitHeight: 30
-//        }
     }
     TabButton {
         topPadding: 0
@@ -149,27 +118,11 @@ TabBar {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 1
             }
-            Item {
+            AvatarImage {
                 Layout.preferredWidth: AdjustedValues.i16
                 Layout.preferredHeight: AdjustedValues.i16
-                Image {
-                    id: avatorImage2
-                    anchors.fill: parent
-                    fillMode: Image.PreserveAspectCrop
-                    source: tabBar.profileSource
-                    visible: false
-                }
-                Image {
-                    id: mask2
-                    anchors.fill: parent
-                    source: "../images/icon_mask.png"
-                    visible: false
-                }
-                OpacityMask {
-                    anchors.fill: parent
-                    source: avatorImage2
-                    maskSource: mask2
-                }
+                acceptedButtons: Qt.NoButton
+                source: tabBar.profileSource
             }
             Image {
                 Layout.preferredWidth: AdjustedValues.i16
@@ -185,8 +138,5 @@ TabBar {
                 Layout.preferredHeight: 1
             }
         }
-//        background: Item {
-//            implicitHeight: 30
-//        }
     }
 }

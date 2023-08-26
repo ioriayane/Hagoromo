@@ -21,9 +21,9 @@ Rectangle {
         id: image
         x: 2
         anchors.verticalCenter: tagLabel.verticalCenter
-        width: source.length > 0 ? height: 0
+        width: status !== Image.Null ? height: 0
         height: label.contentHeight
-        visible: source.length > 0
+        visible: status !== Image.Null
         source: "../images/label.png"
         layer.enabled: true
         layer.effect: ColorOverlay {

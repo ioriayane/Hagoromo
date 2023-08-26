@@ -29,7 +29,7 @@ ColumnLayout {
 
     Label {
         id: indexedAtLongLabel
-        Layout.topMargin: (labelsLayout.visible || languagesLayout.visible) ? 5 : 0
+        Layout.topMargin: 5
         visible: text.length > 0
         font.pointSize: AdjustedValues.f8
         color: Material.color(Material.Grey)
