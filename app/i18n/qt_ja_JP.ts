@@ -9,7 +9,7 @@
         <translation>アカウント管理</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="134"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="135"/>
         <source>Close</source>
         <translation>閉じる</translation>
     </message>
@@ -123,47 +123,47 @@
         <translation>カラムの幅</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="134"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="135"/>
         <source>Display</source>
         <translation>表示</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="142"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="143"/>
         <source>Like</source>
         <translation>いいね</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="149"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="150"/>
         <source>Repost</source>
         <translation>リポスト</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="156"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="157"/>
         <source>Follow</source>
         <translation>フォロー</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="163"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="164"/>
         <source>Mention</source>
         <translation>メンション</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="170"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="171"/>
         <source>Reply</source>
         <translation>リプライ</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="177"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="178"/>
         <source>Quote</source>
         <translation>引用</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="188"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="189"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="198"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="199"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
@@ -419,12 +419,12 @@
         <translation>検索</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/DiscoverFeedsDialog.qml" line="222"/>
+        <location filename="../qml/dialogs/DiscoverFeedsDialog.qml" line="223"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/DiscoverFeedsDialog.qml" line="232"/>
+        <location filename="../qml/dialogs/DiscoverFeedsDialog.qml" line="234"/>
         <source>Add</source>
         <translation>追加</translation>
     </message>
@@ -1477,12 +1477,12 @@
 <context>
     <name>PostDelegate</name>
     <message>
-        <location filename="../qml/parts/PostDelegate.qml" line="83"/>
+        <location filename="../qml/parts/PostDelegate.qml" line="84"/>
         <source>Post from an account you muted.</source>
         <translation>ミュートしているアカウントのポスト</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostDelegate.qml" line="225"/>
+        <location filename="../qml/parts/PostDelegate.qml" line="227"/>
         <source>blocked</source>
         <translation>ブロック済み</translation>
     </message>
@@ -1512,12 +1512,12 @@
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/PostDialog.qml" line="405"/>
+        <location filename="../qml/dialogs/PostDialog.qml" line="409"/>
         <source>Post</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/PostDialog.qml" line="446"/>
+        <location filename="../qml/dialogs/PostDialog.qml" line="450"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
     </message>
@@ -1548,9 +1548,14 @@
         <translation>フォローする</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileListView.qml" line="155"/>
+        <location filename="../qml/view/ProfileListView.qml" line="170"/>
         <source>Follows you</source>
         <translation>あなたをフォロー中</translation>
+    </message>
+    <message>
+        <location filename="../qml/view/ProfileListView.qml" line="176"/>
+        <source>Muted user</source>
+        <translation>ミュート中</translation>
     </message>
 </context>
 <context>
