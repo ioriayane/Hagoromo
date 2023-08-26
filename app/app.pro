@@ -39,6 +39,7 @@ QML_FILES = \
     qml/parts/NotificationDelegate.qml \
     qml/parts/PostControls.qml \
     qml/parts/PostDelegate.qml \
+    qml/parts/PostInformation.qml \
     qml/parts/ProfileTabBar.qml \
     qml/parts/ReactionAuthor.qml \
     qml/parts/SelfLabelPopup.qml \

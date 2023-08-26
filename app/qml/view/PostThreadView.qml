@@ -169,10 +169,11 @@ ColumnLayout {
                 generatorCreatorHandleLabel.text: model.generatorFeedCreatorHandle
                 generatorLikeCountLabel.text: model.generatorFeedLikeCount
 
-                labelsLayout.model: (postThreadUri === model.uri) ? model.labels : []
-                languagesLayout.model: (postThreadUri === model.uri) ? model.languages : []
-                indexedAtLongLabel.text: (postThreadUri === model.uri) ? model.indexedAtLong : ""
-                viaTagLabel.text: (postThreadUri === model.uri && model.via.length > 0) ? ("via:" + model.via) : ""
+                postInformation.visible: (postThreadUri === model.uri)
+                postInformation.labelsLayout.model: postInformation.visible ? model.labels : []
+                postInformation.languagesLayout.model: postInformation.visible ? model.languages : []
+                postInformation.indexedAtLongLabel.text: postInformation.visible ? model.indexedAtLong : ""
+                postInformation.viaTagLabel.text: (postInformation.visible && model.via.length > 0) ? ("via:" + model.via) : ""
 
                 postControls.replyButton.iconText: model.replyCount
                 postControls.repostButton.iconText: model.repostCount

@@ -44,10 +44,7 @@ ClickableFrame {
     property alias generatorDisplayNameLabel: generatorFeedDisplayNameLabel
     property alias generatorCreatorHandleLabel: generatorFeedCreatorHandleLabel
     property alias generatorLikeCountLabel: generatorFeedLikeCountLabel
-    property alias labelsLayout: labelsLayout
-    property alias languagesLayout: languagesLayout
-    property alias indexedAtLongLabel: indexedAtLongLabel
-    property alias viaTagLabel: viaTagLabel
+    property alias postInformation: postInformation
     property alias postControls: postControls
 
     signal requestViewProfile(string did)
@@ -294,39 +291,10 @@ ClickableFrame {
                         }
                     }
 
-                    TagLabelLayout {
-                        id: labelsLayout
+                    PostInformation {
+                        id: postInformation
                         Layout.preferredWidth: parent.width
                         Layout.topMargin: 5
-                        Layout.bottomMargin: 2
-                        visible: count > 0
-                        tagSpacing: 2
-                    }
-                    TagLabelLayout {
-                        id: languagesLayout
-                        Layout.preferredWidth: parent.width
-                        Layout.topMargin: labelsLayout.visible ? 3 : 5
-                        Layout.bottomMargin: 2
-                        visible: count > 0
-                        iconSource: "../images/language.png"
-                        tagSpacing: 5
-                    }
-
-                    Label {
-                        id: indexedAtLongLabel
-                        Layout.topMargin: (labelsLayout.visible || languagesLayout.visible) ? 3 : 5
-//                        Layout.leftMargin: 3
-                        visible: text.length > 0
-                        font.pointSize: AdjustedValues.f8
-                        color: Material.color(Material.Grey)
-                    }
-                    Label {
-                        id: viaTagLabel
-                        Layout.topMargin: 3
-//                        Layout.leftMargin: 3
-                        visible: text.length > 0
-                        font.pointSize: AdjustedValues.f8
-                        color: Material.color(Material.Grey)
                     }
 
                     PostControls {
