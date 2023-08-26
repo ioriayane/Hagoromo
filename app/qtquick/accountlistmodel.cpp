@@ -48,6 +48,8 @@ QVariant AccountListModel::item(int row, AccountListModelRoles role) const
 
     if (role == UuidRole)
         return m_accountList.at(row).uuid;
+    else if (role == IsMainRole)
+        return m_accountList.at(row).is_main;
     else if (role == ServiceRole)
         return m_accountList.at(row).service;
     else if (role == IdentifierRole)
@@ -202,6 +204,35 @@ int AccountListModel::indexAt(const QString &uuid)
     return -1;
 }
 
+int AccountListModel::getMainAccountIndex() const
+{
+    if (m_accountList.isEmpty())
+        return -1;
+
+    for (int i = 0; i < m_accountList.count(); i++) {
+        if (m_accountList.at(i).is_main) {
+            return i;
+        }
+    }
+    return 0;
+}
+
+void AccountListModel::setMainAccount(int row)
+{
+    if (row < 0 || row >= m_accountList.count())
+        return;
+
+    for (int i = 0; i < m_accountList.count(); i++) {
+        bool new_val = (row == i);
+        if (m_accountList.at(i).is_main != new_val) {
+            m_accountList[i].is_main = new_val;
+            emit dataChanged(index(i), index(i));
+        }
+    }
+
+    save();
+}
+
 void AccountListModel::save() const
 {
     QSettings settings;
@@ -210,6 +241,7 @@ void AccountListModel::save() const
     for (const AccountData &item : m_accountList) {
         QJsonObject account_item;
         account_item["uuid"] = item.uuid;
+        account_item["is_main"] = item.is_main;
         account_item["service"] = item.service;
         account_item["identifier"] = item.identifier;
         account_item["password"] = m_encryption.encrypt(item.password);
@@ -239,10 +271,12 @@ void AccountListModel::load()
     QJsonDocument doc = Common::loadJsonDocument(QStringLiteral("account.json"));
 
     if (doc.isArray()) {
+        bool has_main = false;
         for (int i = 0; i < doc.array().count(); i++) {
             if (doc.array().at(i).isObject()) {
                 AccountData item;
                 item.uuid = doc.array().at(i).toObject().value("uuid").toString();
+                item.is_main = doc.array().at(i).toObject().value("is_main").toBool();
                 item.service = doc.array().at(i).toObject().value("service").toString();
                 item.identifier = doc.array().at(i).toObject().value("identifier").toString();
                 item.password = m_encryption.decrypt(
@@ -259,7 +293,15 @@ void AccountListModel::load()
 
                 updateSession(m_accountList.count() - 1, item.service, item.identifier,
                               item.password);
+
+                if (item.is_main) {
+                    has_main = true;
+                }
             }
+        }
+        if (!has_main && !m_accountList.isEmpty()) {
+            // mainになっているものがない
+            m_accountList[0].is_main = true;
         }
     }
 }
@@ -276,6 +318,7 @@ QHash<int, QByteArray> AccountListModel::roleNames() const
     QHash<int, QByteArray> roles;
 
     roles[UuidRole] = "uuid";
+    roles[IsMainRole] = "isMain";
     roles[ServiceRole] = "service";
     roles[IdentifierRole] = "identifier";
     roles[PasswordRole] = "password";

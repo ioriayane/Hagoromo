@@ -47,7 +47,7 @@ Dialog {
         if(i >= 0){
             accountCombo.currentIndex = i
         } else {
-            accountCombo.currentIndex = 0
+            accountCombo.currentIndex = accountModel.getMainAccountIndex()
         }
         postText.forceActiveFocus()
     }

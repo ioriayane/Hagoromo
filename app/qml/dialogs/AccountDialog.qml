@@ -88,47 +88,52 @@ Dialog {
                         text: model.handle
                         elide: Text.ElideRight
                     }
+                    TagLabel {
+                        source: ""
+                        text: " Main "
+                        color: Material.primaryColor
+                        fontPointSize: AdjustedValues.f8
+                        visible: model.isMain
+                    }
                     Item {
                         Layout.fillWidth: true
                         Layout.preferredHeight: 1
                     }
-//                    IconButton {
-//                        // プロフィールの編集
-//                        Layout.preferredWidth: 36
-//                        Layout.preferredHeight: 26
-//                        display: AbstractButton.IconOnly
-//                        iconSource: "../images/edit.png"
-//                        iconSize: 18
-//                    }
                     IconButton {
-                        Layout.preferredWidth: AdjustedValues.b36
                         Layout.preferredHeight: AdjustedValues.b26
-                        display: AbstractButton.IconOnly
-                        iconSource: "../images/visibility_on.png"
-                        iconSize: AdjustedValues.i18
-                        onClicked: {
-                            var i = model.index
-                            contentFilter.account.service = accountList.model.item(i, AccountListModel.ServiceRole)
-                            contentFilter.account.did = accountList.model.item(i, AccountListModel.DidRole)
-                            contentFilter.account.handle = accountList.model.item(i, AccountListModel.HandleRole)
-                            contentFilter.account.email = accountList.model.item(i, AccountListModel.EmailRole)
-                            contentFilter.account.accessJwt = accountList.model.item(i, AccountListModel.AccessJwtRole)
-                            contentFilter.account.refreshJwt = accountList.model.item(i, AccountListModel.RefreshJwtRole)
-                            contentFilter.account.avatar = accountList.model.item(i, AccountListModel.AvatarRole)
-                            contentFilter.open()
+                        iconSource: "../images/more.png"
+                        onClicked: moreMenu.open()
+                        Menu {
+                            id: moreMenu
+                            MenuItem {
+                                icon.source: "../images/account_icon.png"
+                                text: qsTr("Set as main")
+                                onTriggered: accountList.model.setMainAccount(model.index)
+                            }
+                            MenuItem {
+                                icon.source: "../images/visibility_on.png"
+                                text: qsTr("Content filter")
+                                onTriggered: {
+                                    var i = model.index
+                                    contentFilter.account.service = accountList.model.item(i, AccountListModel.ServiceRole)
+                                    contentFilter.account.did = accountList.model.item(i, AccountListModel.DidRole)
+                                    contentFilter.account.handle = accountList.model.item(i, AccountListModel.HandleRole)
+                                    contentFilter.account.email = accountList.model.item(i, AccountListModel.EmailRole)
+                                    contentFilter.account.accessJwt = accountList.model.item(i, AccountListModel.AccessJwtRole)
+                                    contentFilter.account.refreshJwt = accountList.model.item(i, AccountListModel.RefreshJwtRole)
+                                    contentFilter.account.avatar = accountList.model.item(i, AccountListModel.AvatarRole)
+                                    contentFilter.open()
+                                }
+                            }
+                            MenuItem {
+                                icon.source: "../images/delete.png"
+                                text: qsTr("Remove account")
+                                onTriggered: accountList.model.removeAccount(model.index)
+                            }
                         }
-                    }
-                    IconButton {
-                        Layout.preferredWidth: AdjustedValues.b36
-                        Layout.preferredHeight: AdjustedValues.b26
-                        display: AbstractButton.IconOnly
-                        iconSource: "../images/delete.png"
-                        iconSize: AdjustedValues.i18
-                        onClicked: accountList.model.removeAccount(model.index)
                     }
                 }
             }
-
         }
         Button {
             font.pointSize: AdjustedValues.f10
