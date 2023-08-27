@@ -14,6 +14,7 @@ QML_FILES = \
     qml/controls/ImageWithIndicator.qml \
     qml/controls/RadioButtonEx.qml \
     qml/data/Account.qml \
+    qml/data/AdjustedValues.qml \
     qml/data/ColumnSettings.qml \
     qml/dialogs/AccountDialog.qml \
     qml/dialogs/AddColumnDialog.qml \
@@ -38,9 +39,13 @@ QML_FILES = \
     qml/parts/NotificationDelegate.qml \
     qml/parts/PostControls.qml \
     qml/parts/PostDelegate.qml \
+    qml/parts/PostInformation.qml \
+    qml/parts/ProfileTabBar.qml \
     qml/parts/ReactionAuthor.qml \
     qml/parts/SelfLabelPopup.qml \
     qml/parts/SideBar.qml \
+    qml/parts/TagLabel.qml \
+    qml/parts/TagLabelLayout.qml \
     qml/parts/VersionInfomation.qml \
     qml/view/ColumnView.qml \
     qml/view/ImageFullView.qml \
@@ -75,10 +80,12 @@ IMAGE_FILES += \
     qml/images/hand.png \
     qml/images/home.png \
     qml/images/icon_mask.png \
+    qml/images/label.png \
     qml/images/labeling.png \
     qml/images/language.png \
     qml/images/like.png \
     qml/images/logo.png \
+    qml/images/media.png \
     qml/images/more.png \
     qml/images/notification.png \
     qml/images/open_in_other.png \
@@ -88,6 +95,7 @@ IMAGE_FILES += \
     qml/images/repost.png \
     qml/images/search.png \
     qml/images/settings.png \
+    qml/images/terminal.png \
     qml/images/translate.png \
     qml/images/visibility_off.png \
     qml/images/visibility_on.png
@@ -98,6 +106,10 @@ resources.prefix = /$${TARGET}
 RESOURCES += resources
 
 TRANSLATIONS += i18n/qt_ja_JP.ts
+
+# icon
+win32:RC_FILE = app.rc
+mac:ICON = app.icns
 
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 CONFIG(HAGOROMO_RELEASE_BUILD):DEFINES += HAGOROMO_RELEASE_BUILD

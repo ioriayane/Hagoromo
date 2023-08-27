@@ -77,7 +77,7 @@ public slots:
     virtual Q_INVOKABLE void getLatest() = 0;
 
 protected:
-    QString formatDateTime(const QString &value) const;
+    QString formatDateTime(const QString &value, const bool is_long = false) const;
     QString copyRecordText(const QVariant &value) const;
     void displayQueuedPosts();
     virtual void finishedDisplayingQueuedPosts() = 0;
@@ -91,6 +91,9 @@ protected:
     QString getContentFilterMessage(const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels,
                                     const bool for_media) const;
     bool getQuoteFilterMatched(const AtProtocolType::AppBskyFeedDefs::PostView &post) const;
+    QStringList getLabels(const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels) const;
+    QStringList getLaunguages(const QVariant &record) const;
+    QString getVia(const QVariant &record) const;
 
     // これで取得したポストの順番を管理して実態はm_viewPostHashで管理
     // checkVisibility(cid)の結果次第で間引かれる

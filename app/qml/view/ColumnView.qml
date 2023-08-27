@@ -11,6 +11,7 @@ import tech.relog.hagoromo.searchpostlistmodel 1.0
 import tech.relog.hagoromo.searchprofilelistmodel 1.0
 import tech.relog.hagoromo.customfeedlistmodel 1.0
 import tech.relog.hagoromo.authorfeedlistmodel 1.0
+import tech.relog.hagoromo.singleton 1.0
 
 import "../controls"
 import "../data"
@@ -22,7 +23,6 @@ ColumnLayout {
 
     property string columnKey: ""
     property int componentType: 0
-    property real fontSizeRatio: 1.0
 
     property alias settings: settings
     property alias account: account
@@ -63,7 +63,6 @@ ColumnLayout {
 
                 onErrorOccured: (message) => {console.log(message)}
             }
-            fontSizeRatio: columnView.fontSizeRatio
             accountDid: account.did
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
@@ -101,7 +100,6 @@ ColumnLayout {
 
                 onErrorOccured: (message) => {console.log(message)}
             }
-            fontSizeRatio: columnView.fontSizeRatio
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -122,7 +120,6 @@ ColumnLayout {
     Component {
         id: postThreadComponent
         PostThreadView {
-            fontSizeRatio: columnView.fontSizeRatio
             accountDid: account.did
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
@@ -152,8 +149,6 @@ ColumnLayout {
     Component {
         id: profileComponent
         ProfileView {
-            fontSizeRatio: columnView.fontSizeRatio
-
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
@@ -193,7 +188,6 @@ ColumnLayout {
 
                 onErrorOccured: (message) => {console.log(message)}
             }
-            fontSizeRatio: columnView.fontSizeRatio
             accountDid: account.did
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
@@ -241,7 +235,6 @@ ColumnLayout {
 
                 onErrorOccured: (message) => {console.log(message)}
             }
-            fontSizeRatio: columnView.fontSizeRatio
             accountDid: account.did
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
@@ -274,7 +267,6 @@ ColumnLayout {
 
                 onErrorOccured: (message) => {console.log(message)}
             }
-            fontSizeRatio: columnView.fontSizeRatio
             accountDid: account.did
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
@@ -353,12 +345,13 @@ ColumnLayout {
                    }
 
         RowLayout {
+            id: headerLayout
             anchors.fill: parent
             spacing: 0
             IconButton {
                 id: leftIconButton
-                Layout.preferredWidth: 30
-                Layout.preferredHeight: 30
+                Layout.preferredWidth: AdjustedValues.b30
+                Layout.preferredHeight: AdjustedValues.b30
                 visible: columnStackView.depth > 1
                 flat: true
                 iconSource: "../images/arrow_left_double.png"
@@ -368,8 +361,8 @@ ColumnLayout {
             AvatarImage {
                 id: avatarImage
                 Layout.leftMargin: 10
-                Layout.preferredWidth: 24
-                Layout.preferredHeight: 24
+                Layout.preferredWidth: AdjustedValues.i24
+                Layout.preferredHeight: AdjustedValues.i24
                 source: account.avatar
                 onClicked: columnStackView.push(profileComponent, { "userDid": account.did })
             }
@@ -379,16 +372,21 @@ ColumnLayout {
                 Layout.leftMargin: 5
                 Layout.topMargin: 5
                 Layout.bottomMargin: 5
-                //                Layout.maximumWidth: columnView.width - leftIconButton.Layout.preferredWidth -
-                //                                     avatarImage.Layout.preferredWidth - autoIconImage.Layout.preferredWidth -
-                //                                     settingButton.Layout.preferredWidth
+                Layout.preferredWidth: accountInfoLabel.contentWidth
+                Layout.maximumWidth: columnView.width - profileFrame.rightPadding -
+                                     leftIconButton.Layout.preferredWidth -
+                                     avatarImage.Layout.preferredWidth - avatarImage.Layout.leftMargin -
+                                     autoIconImage.Layout.preferredWidth - autoIconImage.Layout.rightMargin -
+                                     settingButton.Layout.preferredWidth - 5
                 Label {
                     id: componentTypeLabel
                     elide: Text.ElideRight
+                    font.pointSize: AdjustedValues.f10
                 }
                 Label {
+                    id: accountInfoLabel
                     text: "@" + account.handle + " - " + account.service
-                    font.pointSize: 8
+                    font.pointSize: AdjustedValues.f8
                     elide: Text.ElideRight
                     color: Material.color(Material.Grey)
                 }
@@ -399,8 +397,8 @@ ColumnLayout {
             }
             Image {
                 id: autoIconImage
-                Layout.preferredWidth: 16
-                Layout.preferredHeight: 16
+                Layout.preferredWidth: AdjustedValues.i16
+                Layout.preferredHeight: AdjustedValues.i16
                 Layout.rightMargin: 3
                 Layout.alignment: Qt.AlignVCenter
                 source: "../images/auto.png"
@@ -411,10 +409,10 @@ ColumnLayout {
             }
             IconButton {
                 id: settingButton
-                Layout.preferredWidth: 30
-                Layout.preferredHeight: 24
+                Layout.preferredWidth: AdjustedValues.b30
+                Layout.preferredHeight: AdjustedValues.b24
                 iconSource: "../images/settings.png"
-                iconSize: 16
+                iconSize: AdjustedValues.i16
                 onClicked: popup.open()
                 Menu {
                     id: popup
@@ -464,5 +462,4 @@ ColumnLayout {
             currentItem.model.getLatest()
         }
     }
-
 }

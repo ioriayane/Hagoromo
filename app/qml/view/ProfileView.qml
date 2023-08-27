@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
+import QtGraphicalEffects 1.15
 
 import tech.relog.hagoromo.userprofile 1.0
 import tech.relog.hagoromo.authorfeedlistmodel 1.0
@@ -10,6 +11,7 @@ import tech.relog.hagoromo.recordoperator 1.0
 import tech.relog.hagoromo.followslistmodel 1.0
 import tech.relog.hagoromo.followerslistmodel 1.0
 import tech.relog.hagoromo.systemtool 1.0
+import tech.relog.hagoromo.singleton 1.0
 
 import "../parts"
 import "../controls"
@@ -21,7 +23,6 @@ ColumnLayout {
     spacing: 0
 
     property string hoveredLink: ""
-    property real fontSizeRatio: 1.0
 
     property alias model: relayObject
 
@@ -131,8 +132,8 @@ ColumnLayout {
 
         RowLayout {
             IconButton {
-                Layout.preferredWidth: 30
-                Layout.preferredHeight: 30
+                Layout.preferredWidth: AdjustedValues.b30
+                Layout.preferredHeight: AdjustedValues.b30
                 flat: true
                 iconSource: "../images/arrow_left_single.png"
                 onClicked: profileView.back()
@@ -140,6 +141,7 @@ ColumnLayout {
             Label {
                 Layout.fillWidth: true
                 Layout.leftMargin: 10
+                font.pointSize: AdjustedValues.f10
                 text: qsTr("Profile")
             }
         }
@@ -165,13 +167,13 @@ ColumnLayout {
 
                 Label {
                     visible: userProfile.followedBy
-                    font.pointSize: 8
+                    font.pointSize: AdjustedValues.f8
                     color: Material.accentColor
                     text: qsTr("Follows you")
                 }
                 IconButton {
                     id: editButton
-                    Layout.preferredHeight: 24
+                    Layout.preferredHeight: AdjustedValues.b24
                     iconText: "   "
                     BusyIndicator {
                         anchors.fill: parent
@@ -185,56 +187,56 @@ ColumnLayout {
             Layout.rightMargin: 5
             AvatarImage {
                 id: avatarImage
-                Layout.preferredWidth: 48
-                Layout.preferredHeight: 48
+                Layout.preferredWidth: AdjustedValues.i48
+                Layout.preferredHeight: AdjustedValues.i48
                 Layout.rowSpan: 2
                 source: userProfile.avatar
             }
             ColumnLayout {
                 Label {
                     Layout.preferredWidth: profileView.width - avatarImage.width - parent.columnSpacing
-                    font.pointSize: 12
+                    font.pointSize: AdjustedValues.f12
                     elide: Text.ElideRight
                     text: userProfile.displayName
                 }
                 Label {
                     Layout.preferredWidth: profileView.width - avatarImage.width - parent.columnSpacing
                     elide: Text.ElideRight
-                    font.pointSize: 8
+                    font.pointSize: AdjustedValues.f8
                     color: Material.color(Material.Grey)
                     text: "@" + userProfile.handle
                 }
                 RowLayout {
                     spacing: 3
                     Label {
-                        font.pointSize: 8
+                        font.pointSize: AdjustedValues.f8
                         font.bold: true
                         text: userProfile.followsCount
                     }
                     Label {
-                        font.pointSize: 8
+                        font.pointSize: AdjustedValues.f8
                         color: Material.color(Material.Grey)
                         text: qsTr("follows")
                     }
                     Label {
                         Layout.leftMargin: 5
-                        font.pointSize: 8
+                        font.pointSize: AdjustedValues.f8
                         font.bold: true
                         text: userProfile.followersCount
                     }
                     Label {
-                        font.pointSize: 8
+                        font.pointSize: AdjustedValues.f8
                         color: Material.color(Material.Grey)
                         text: qsTr("followers")
                     }
                     Label {
                         Layout.leftMargin: 5
-                        font.pointSize: 8
+                        font.pointSize: AdjustedValues.f8
                         font.bold: true
                         text: userProfile.postsCount
                     }
                     Label {
-                        font.pointSize: 8
+                        font.pointSize: AdjustedValues.f8
                         color: Material.color(Material.Grey)
                         text: qsTr("posts")
                     }
@@ -245,7 +247,7 @@ ColumnLayout {
             Layout.preferredWidth: profileView.width
             wrapMode: Text.Wrap
             lineHeight: 1.1
-            font.pointSize: 10
+            font.pointSize: AdjustedValues.f10
             textFormat: Text.StyledText
             text: userProfile.description
 
@@ -256,9 +258,9 @@ ColumnLayout {
                 id: moreButton
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
-                height: 24
+                height: AdjustedValues.b24
                 iconSource: "../images/more.png"
-                iconSize: 16
+                iconSize: AdjustedValues.i16
                 foreground: Material.color(Material.Grey)
                 onClicked: morePopup.open()
                 Menu {
@@ -299,7 +301,7 @@ ColumnLayout {
                     MenuItem {
                         text: userProfile.muted ? qsTr("Unmute account") : qsTr("Mute account")
                         icon.source: userProfile.muted ? "../images/visibility_on.png" : "../images/visibility_off.png"
-                        enabled: userProfile.handle.length > 0
+                        enabled: userProfile.handle.length > 0 && profileView.userDid !== profileView.accountDid
                         onTriggered: {
                             if(userProfile.muted){
                                 recordOperator.deleteMute(userProfile.did)
@@ -311,7 +313,7 @@ ColumnLayout {
                     MenuItem {
                         text: userProfile.blocking ? qsTr("Unblock account") : qsTr("Block account")
                         icon.source: userProfile.blocking ? "../images/block.png" : "../images/block.png"
-                        enabled: userProfile.handle.length > 0
+                        enabled: userProfile.handle.length > 0 && profileView.userDid !== profileView.accountDid
                         onTriggered: {
                             if(userProfile.blocking){
                                 recordOperator.deleteBlock(userProfile.blockingUri)
@@ -323,7 +325,7 @@ ColumnLayout {
                     MenuItem {
                         text: qsTr("Report account")
                         icon.source: "../images/report.png"
-                        enabled: userProfile.handle.length > 0
+                        enabled: userProfile.handle.length > 0 && profileView.userDid !== profileView.accountDid
                         onTriggered: requestReportAccount(userProfile.did)
                     }
                 }
@@ -378,35 +380,11 @@ ColumnLayout {
         }
     }
 
-    TabBar {
+    ProfileTabBar {
         id: tabBar
         Layout.fillWidth: true
         Layout.topMargin: 3
-
-        TabButton {
-            font.capitalization: Font.MixedCase
-            text: qsTr("Posts")
-        }
-        TabButton {
-            font.capitalization: Font.MixedCase
-            text: qsTr("Reposts")
-        }
-        TabButton {
-            font.capitalization: Font.MixedCase
-            text: qsTr("Likes")
-        }
-        TabButton {
-            font.capitalization: Font.MixedCase
-            text: qsTr("Media")
-        }
-        TabButton {
-            font.capitalization: Font.MixedCase
-            text: qsTr("Follows")
-        }
-        TabButton {
-            font.capitalization: Font.MixedCase
-            text: qsTr("Followers")
-        }
+        profileSource: userProfile.avatar
     }
 
     SwipeView {
@@ -434,7 +412,6 @@ ColumnLayout {
 
                 onErrorOccured: (message) => {console.log(message)}
             }
-            fontSizeRatio: profileView.fontSizeRatio
             accountDid: profileView.accountDid
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
@@ -464,7 +441,6 @@ ColumnLayout {
 
                 onErrorOccured: (message) => {console.log(message)}
             }
-            fontSizeRatio: profileView.fontSizeRatio
             accountDid: profileView.accountDid
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
@@ -494,7 +470,6 @@ ColumnLayout {
 
                 onErrorOccured: (message) => {console.log(message)}
             }
-            fontSizeRatio: profileView.fontSizeRatio
             accountDid: profileView.accountDid
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
@@ -524,7 +499,6 @@ ColumnLayout {
 
                 onErrorOccured: (message) => {console.log(message)}
             }
-            fontSizeRatio: profileView.fontSizeRatio
             accountDid: profileView.accountDid
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>

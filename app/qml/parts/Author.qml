@@ -2,6 +2,8 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
+import tech.relog.hagoromo.singleton 1.0
+
 RowLayout {
     id: headerLayout
     clip: true
@@ -14,7 +16,7 @@ RowLayout {
     Label {
         Layout.maximumWidth: layoutWidth - handleText.width - indexAtText.width - headerLayout.spacing * 3
         Layout.alignment: Qt.AlignTop
-        font.pointSize: 10
+        font.pointSize: AdjustedValues.f10
         elide: Text.ElideRight
         text: headerLayout.displayName
     }
@@ -22,7 +24,7 @@ RowLayout {
         id: handleText
         Layout.alignment: Qt.AlignTop
         opacity: 0.8
-        font.pointSize: 8
+        font.pointSize: AdjustedValues.f8
         text: headerLayout.handle
     }
     Item {
@@ -34,7 +36,7 @@ RowLayout {
         Layout.alignment: Qt.AlignTop
         Layout.minimumWidth: contentWidth
         opacity: 0.8
-        font.pointSize: 8
+        font.pointSize: AdjustedValues.f8
         text: headerLayout.indexedAt
     }
 }

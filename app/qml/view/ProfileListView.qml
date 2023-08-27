@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 
 import tech.relog.hagoromo.recordoperator 1.0
+import tech.relog.hagoromo.singleton 1.0
 
 import "../parts"
 import "../controls"
@@ -50,21 +51,21 @@ ScrollView {
 
         header: ItemDelegate {
             width: rootListView.width
-            height: 24
+            height: AdjustedValues.h24
             display: AbstractButton.IconOnly
             icon.source: rootListView.model.running ? "" : "../images/expand_less.png"
             onClicked: rootListView.model.getLatest()
 
             BusyIndicator {
                 anchors.centerIn: parent
-                width: 24
-                height: 24
+                width: AdjustedValues.i24
+                height: AdjustedValues.i24
                 visible: rootListView.model.running
             }
         }
         footer: BusyIndicator {
             width: rootListView.width
-            height: 24
+            height: AdjustedValues.i24
             visible: rootListView.model.running && rootListView.model.rowCount() > 0
         }
 
@@ -129,8 +130,8 @@ ScrollView {
             RowLayout{
                 AvatarImage {
                     id: postAvatarImage
-                    Layout.preferredWidth: 36
-                    Layout.preferredHeight: 36
+                    Layout.preferredWidth: AdjustedValues.i36
+                    Layout.preferredHeight: AdjustedValues.i36
                     Layout.alignment: Qt.AlignTop
                     source: model.avatar
                     onClicked: requestViewProfile(model.did)
@@ -141,40 +142,46 @@ ScrollView {
                                              postAvatarImage.width - parent.spacing
                     Label {
                         Layout.fillWidth: true
-                        font.pointSize: 10
+                        font.pointSize: AdjustedValues.f10
                         text: model.displayName
 
-                        RowLayout {
+                        IconButton {
+                            id: editButton
                             anchors.right: parent.right
-                            Label {
-                                Layout.alignment: Qt.AlignVCenter
-                                visible: model.followedBy
-                                font.pointSize: 8
-                                color: Material.accentColor
-                                text: qsTr("Follows you")
-                            }
-                            IconButton {
-                                id: editButton
-                                Layout.preferredHeight: 24
-                                iconText: "   "
-                                BusyIndicator {
-                                    anchors.fill: parent
-                                    visible: recordOperator.running
-                                }
+                            height: AdjustedValues.b24
+                            iconText: "   "
+                            BusyIndicator {
+                                anchors.fill: parent
+                                visible: recordOperator.running
                             }
                         }
                     }
                     Label {
-                        font.pointSize: 8
+                        font.pointSize: AdjustedValues.f8
                         color: Material.color(Material.Grey)
                         text: "@" + model.handle
+                    }
+                    RowLayout {
+                        visible: model.followedBy || model.muted
+                        TagLabel {
+                            visible: model.followedBy
+                            source: ""
+                            fontPointSize: AdjustedValues.f8
+                            text: qsTr("Follows you")
+                        }
+                        TagLabel {
+                            visible: model.muted
+                            source: ""
+                            fontPointSize: AdjustedValues.f8
+                            text: qsTr("Muted user")
+                        }
                     }
                     Label {
                         id: childRecordText
                         Layout.preferredWidth: parent.basisWidth
                         Layout.maximumWidth: parent.basisWidth
                         wrapMode: Text.WrapAnywhere
-                        font.pointSize: 8
+                        font.pointSize: AdjustedValues.f8
                         lineHeight: 1.3
                         textFormat: Text.StyledText
                         text: model.description

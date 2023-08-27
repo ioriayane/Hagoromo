@@ -57,6 +57,8 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return current.post.likeCount;
     else if (role == IndexedAtRole)
         return formatDateTime(current.post.indexedAt);
+    else if (role == IndexedAtLongRole)
+        return formatDateTime(current.post.indexedAt, true);
     else if (role == EmbedImagesRole)
         return LexiconsTypeUnknown::copyImagesFromPostView(current.post, true);
     else if (role == EmbedImagesFullRole)
@@ -180,7 +182,12 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
             return getQuoteFilterMatched(current.post);
         else
             return false;
-    }
+    } else if (role == LabelsRole)
+        return getLabels(current.post.labels);
+    else if (role == LanguagesRole)
+        return getLaunguages(current.post.record);
+    else if (role == ViaRole)
+        return getVia(current.post.record);
 
     return QVariant();
 }
@@ -360,6 +367,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[RepostCountRole] = "repostCount";
     roles[LikeCountRole] = "likeCount";
     roles[IndexedAtRole] = "indexedAt";
+    roles[IndexedAtLongRole] = "indexedAtLong";
     roles[EmbedImagesRole] = "embedImages";
     roles[EmbedImagesFullRole] = "embedImagesFull";
 
@@ -409,6 +417,9 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[ContentMediaFilterMatchedRole] = "contentMediaFilterMatched";
     roles[ContentMediaFilterMessageRole] = "contentMediaFilterMessage";
     roles[QuoteFilterMatchedRole] = "quoteFilterMatched";
+    roles[LabelsRole] = "labels";
+    roles[LanguagesRole] = "languages";
+    roles[ViaRole] = "via";
 
     return roles;
 }

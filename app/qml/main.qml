@@ -8,6 +8,7 @@ import Qt.labs.settings 1.1
 import tech.relog.hagoromo.accountlistmodel 1.0
 import tech.relog.hagoromo.columnlistmodel 1.0
 import tech.relog.hagoromo.systemtool 1.0
+import tech.relog.hagoromo.singleton 1.0
 
 import "controls"
 import "dialogs"
@@ -19,7 +20,7 @@ ApplicationWindow {
     width: 800
     height: 600
     minimumWidth: 800
-    minimumHeight: 600
+    minimumHeight: 600 * AdjustedValues.ratioHalf
     visible: true
     title: "羽衣 -Hagoromo-"
 
@@ -219,8 +220,6 @@ ApplicationWindow {
     Component {
         id: columnView
         ColumnView {
-            fontSizeRatio: settingDialog.settings.fontSizeRatio
-
             onRequestReply: (account_uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) => {
                                 console.log(account_uuid + ",\n" +
                                             cid + ", "+ uri + ",\n" +
@@ -333,8 +332,8 @@ ApplicationWindow {
         Item {
             Layout.fillHeight: true
             Layout.minimumWidth: 48
-            Layout.preferredWidth: 48
-            Layout.maximumWidth: 96
+            Layout.preferredWidth: AdjustedValues.v48
+            Layout.maximumWidth: AdjustedValues.v96
             SideBar {
                 anchors.fill: parent
                 anchors.margins: 1
@@ -460,7 +459,7 @@ ApplicationWindow {
                 Loader {
                     id: loader
                     height: scrollView.childHeight
-                    width: model.width
+                    width: model.width * AdjustedValues.ratio
                     sourceComponent: columnView
 
                     onLoaded: {
@@ -569,7 +568,7 @@ ApplicationWindow {
 
         Label {
             color: "white"
-            font.pointSize: 10
+            font.pointSize: AdjustedValues.f10
             text: hoveredLinkFrame.text
         }
     }

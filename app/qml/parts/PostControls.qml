@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
+import tech.relog.hagoromo.singleton 1.0
 
 import "../controls"
 
@@ -37,17 +38,17 @@ RowLayout {
 
     IconButton {
         id: replyButton
-        Layout.preferredHeight: 24
+        Layout.preferredHeight: AdjustedValues.b24
         iconSource: "../images/reply.png"
-        iconSize: 16
+        iconSize: AdjustedValues.i16
         foreground: Material.color(Material.Grey)
         flat: true
     }
     IconButton {
         id: repostButton
-        Layout.preferredHeight: 24
+        Layout.preferredHeight: AdjustedValues.b24
         iconSource: "../images/repost.png"
-        iconSize: 16
+        iconSize: AdjustedValues.i16
         foreground: isReposted ? Material.color(Material.Green) : Material.color(Material.Grey)
         flat: true
         onClicked: popup.open()
@@ -67,9 +68,9 @@ RowLayout {
     }
     IconButton {
         id: likeButton
-        Layout.preferredHeight: 24
+        Layout.preferredHeight: AdjustedValues.b24
         iconSource: "../images/like.png"
-        iconSize: 16
+        iconSize: AdjustedValues.i16
         foreground: isLiked ? Material.color(Material.Pink) : Material.color(Material.Grey)
         flat: true
     }
@@ -79,9 +80,9 @@ RowLayout {
     }
     IconButton {
         id: moreButton
-        Layout.preferredHeight: 24
+        Layout.preferredHeight: AdjustedValues.b24
         iconSource: "../images/more.png"
-        iconSize: 16
+        iconSize: AdjustedValues.i16
         foreground: Material.color(Material.Grey)
         flat: true
         onClicked:{

@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 
 import tech.relog.hagoromo.contentfiltersettinglistmodel 1.0
+import tech.relog.hagoromo.singleton 1.0
 
 import "../controls"
 import "../data"
@@ -37,11 +38,12 @@ Dialog {
         RowLayout {
             Layout.bottomMargin: 10
             AvatarImage {
-                Layout.preferredWidth: 24
-                Layout.preferredHeight: 24
+                Layout.preferredWidth: AdjustedValues.i24
+                Layout.preferredHeight: AdjustedValues.i24
                 source: account.avatar
             }
             Label {
+                font.pointSize: AdjustedValues.f10
                 text: account.handle
                 elide: Text.ElideRight
             }
@@ -50,8 +52,8 @@ Dialog {
                 Layout.preferredHeight: 1
             }
             BusyIndicator {
-                Layout.preferredWidth: 24
-                Layout.preferredHeight: 24
+                Layout.preferredWidth: AdjustedValues.i24
+                Layout.preferredHeight: AdjustedValues.i24
                 visible: contentFilterSettingListModel.running
             }
         }
@@ -60,14 +62,15 @@ Dialog {
             id: enableAdultContentCheckbox
             Layout.bottomMargin: 0
             enabled: !contentFilterSettingListModel.running && contentFilterSettingDialog.ready
+            font.pointSize: AdjustedValues.f10
             text: qsTr("Enable adult content")
         }
 
         ScrollView {
             id: settingScrollView
             Layout.bottomMargin: 10
-            Layout.preferredWidth: 450
-//            Layout.preferredHeight: 350
+            Layout.preferredWidth: 450 * AdjustedValues.ratio
+            //            Layout.preferredHeight: 350
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
             enabled: !contentFilterSettingListModel.running && contentFilterSettingDialog.ready
 
@@ -90,7 +93,7 @@ Dialog {
                 }
                 delegate: RowLayout {
                     id: listItemLayout
-                    width: 450
+                    width: 450 * AdjustedValues.ratio
                     spacing: 0
                     clip: true
                     states: [
@@ -105,15 +108,16 @@ Dialog {
                     ]
                     ColumnLayout {
                         Layout.topMargin: 10
-//                        Layout.bottomMargin: 5
+                        //                        Layout.bottomMargin: 5
                         Label {
+                            font.pointSize: AdjustedValues.f10
                             text: model.title
                         }
                         Label {
-                            Layout.preferredWidth: 250
-                            Layout.maximumWidth: 450 - selectButtonLayout.width - 10
+                            Layout.preferredWidth: 250 * AdjustedValues.ratio
+                            Layout.maximumWidth: 450 * AdjustedValues.ratio - selectButtonLayout.width - 10
                             wrapMode: Text.Wrap
-                            font.pointSize: 8
+                            font.pointSize: AdjustedValues.f8
                             color: Material.color(Material.Grey)
                             text: model.description
                         }
@@ -126,8 +130,8 @@ Dialog {
                         id: selectButtonLayout
                         spacing: 0
                         IconButton {
-                            Layout.preferredWidth: 55
-                            Layout.preferredHeight: 36
+                            Layout.preferredWidth: AdjustedValues.b55
+                            Layout.preferredHeight: AdjustedValues.b36
                             iconText: qsTr("Hide")
                             enabled: !model.isAdultImagery || (model.isAdultImagery && enableAdultContentCheckbox.checked)
                             highlighted: model.status === value
@@ -137,8 +141,8 @@ Dialog {
                                                                             value)
                         }
                         IconButton {
-                            Layout.preferredWidth: 55
-                            Layout.preferredHeight: 36
+                            Layout.preferredWidth: AdjustedValues.b55
+                            Layout.preferredHeight: AdjustedValues.b36
                             iconText: qsTr("Warn")
                             enabled: !model.isAdultImagery || (model.isAdultImagery && enableAdultContentCheckbox.checked)
                             highlighted: model.status === value
@@ -148,8 +152,8 @@ Dialog {
                                                                             value)
                         }
                         IconButton {
-                            Layout.preferredWidth: 55
-                            Layout.preferredHeight: 36
+                            Layout.preferredWidth: AdjustedValues.b55
+                            Layout.preferredHeight: AdjustedValues.b36
                             iconText: qsTr("Show")
                             enabled: !model.isAdultImagery || (model.isAdultImagery && enableAdultContentCheckbox.checked)
                             highlighted: model.status === value
@@ -165,6 +169,7 @@ Dialog {
 
         RowLayout {
             Button {
+                font.pointSize: AdjustedValues.f10
                 text: qsTr("Cancel")
                 flat: true
                 onClicked: contentFilterSettingDialog.reject()
@@ -174,6 +179,7 @@ Dialog {
             }
             Button {
                 enabled: !contentFilterSettingListModel.running && contentFilterSettingDialog.ready
+                font.pointSize: AdjustedValues.f10
                 text: qsTr("Accept")
                 onClicked: {
                     contentFilterSettingDialog.willClose = true
@@ -182,5 +188,4 @@ Dialog {
             }
         }
     }
-
 }

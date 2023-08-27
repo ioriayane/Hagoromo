@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
+import tech.relog.hagoromo.singleton 1.0
 
 import "../controls"
 
@@ -20,7 +21,7 @@ ColumnLayout {
     IconButton {
         id: post
         Layout.fillWidth: true
-        Layout.preferredHeight: 36
+        Layout.preferredHeight: AdjustedValues.b36
         enabled: accountListModel.count > 0
         display: AbstractButton.IconOnly
         iconSource: "../images/edit.png"
@@ -30,7 +31,7 @@ ColumnLayout {
     IconButton {
         id: search
         Layout.fillWidth: true
-        Layout.preferredHeight: 36
+        Layout.preferredHeight: AdjustedValues.b36
         enabled: accountListModel.count > 0
         display: AbstractButton.IconOnly
         iconSource: "../images/search.png"
@@ -44,7 +45,7 @@ ColumnLayout {
     IconButton {
         id: addColumn
         Layout.fillWidth: true
-        Layout.preferredHeight: 36
+        Layout.preferredHeight: AdjustedValues.b36
         enabled: accountListModel.count > 0
         display: AbstractButton.IconOnly
         iconSource: "../images/column.png"
@@ -54,7 +55,7 @@ ColumnLayout {
     IconButton {
         id: moderation
         Layout.fillWidth: true
-        Layout.preferredHeight: 36
+        Layout.preferredHeight: AdjustedValues.b36
         visible: false
         enabled: accountListModel.count > 0
         display: AbstractButton.IconOnly
@@ -64,7 +65,7 @@ ColumnLayout {
     IconButton {
         id: account
         Layout.fillWidth: true
-        Layout.preferredHeight: 36
+        Layout.preferredHeight: AdjustedValues.b36
         display: AbstractButton.IconOnly
         iconSource: "../images/account.png"
         //                    iconText: qsTr("Account")
@@ -73,7 +74,7 @@ ColumnLayout {
     IconButton {
         id: setting
         Layout.fillWidth: true
-        Layout.preferredHeight: 36
+        Layout.preferredHeight: AdjustedValues.b36
         display: AbstractButton.IconOnly
         iconSource: "../images/settings.png"
         //                    iconText: qsTr("Settings")

@@ -3,6 +3,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 import tech.relog.hagoromo.reporter 1.0
+import tech.relog.hagoromo.singleton 1.0
 
 import "../controls"
 import "../data"
@@ -39,16 +40,19 @@ Dialog {
         Layout.rightMargin: 10
 
         RadioButtonEx {
+            font.pointSize: AdjustedValues.f10
             mainText: qsTr("Misleading Account")
             description: qsTr("Impersonation or false claims about identity or affiliation")
             property int reason: Reporter.ReasonMisleading
         }
         RadioButtonEx {
+            font.pointSize: AdjustedValues.f10
             mainText: qsTr("Frequently Posts Unwanted Content")
             description: qsTr("Spam; excessive mentions or replies")
             property int reason: Reporter.ReasonSpam
         }
         RadioButtonEx {
+            font.pointSize: AdjustedValues.f10
             mainText: qsTr("Name or Description Violates Community Standards")
             description: qsTr("Terms used violate community standards")
             property int reason: Reporter.ReasonViolation
@@ -57,6 +61,7 @@ Dialog {
             Button {
                 Layout.alignment: Qt.AlignLeft
                 flat: true
+                font.pointSize: AdjustedValues.f10
                 text: qsTr("Cancel")
                 onClicked: reportDialog.close()
             }
@@ -67,6 +72,7 @@ Dialog {
             Button {
                 Layout.alignment: Qt.AlignRight
                 enabled: reportTypeButtonGroup.checkState === Qt.PartiallyChecked && !reporter.running
+                font.pointSize: AdjustedValues.f10
                 text: qsTr("Send report")
                 onClicked: {
                     reporter.setAccount(account.service, account.did, account.handle,

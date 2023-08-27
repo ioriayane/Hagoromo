@@ -766,6 +766,15 @@ class Defs2Struct:
         self.output_lexicons_func_h(environment, output_path)
         self.output_api_class_cpp_h(environment, os.path.join(os.path.dirname(__file__), 'out'))
 
+    def json_deep_merge(self, dest, src):
+        """ 再帰的に辞書をマージ """
+        for key in src:
+            if key in dest:
+                if isinstance(dest[key], dict) and isinstance(src[key], dict):
+                    self.json_deep_merge(dest[key], src[key])
+            else:
+                dest[key] = src[key]
+        return dest
 
     def open(self, lexicons_path: str, base_path: str) -> None:
         obj = None
@@ -778,6 +787,13 @@ class Defs2Struct:
         if rel_path[0] == '/':
             rel_path = rel_path[1:]
         namespace = rel_path.replace('/', '.')
+        
+        extend_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'lexicons', namespace + '.json')
+        if os.path.isfile(extend_path):
+            # lexiconのユーザー拡張のJSONファイルがあれば合体する
+            with open(extend_path, 'r') as fp: 
+                extend_obj = json.load(fp)
+                obj = self.json_deep_merge(obj, extend_obj)
 
         self.json_obj[namespace] = obj
 

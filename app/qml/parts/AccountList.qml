@@ -2,6 +2,8 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
+import tech.relog.hagoromo.singleton 1.0
+
 ScrollView {
     id: parts
 //    Layout.preferredWidth: 200
@@ -18,6 +20,7 @@ ScrollView {
         id: accountList
         delegate: ItemDelegate {
             width: accountList.width
+            height: implicitHeight * AdjustedValues.ratio
             highlighted: ListView.isCurrentItem
             onClicked: {
                 accountList.currentIndex = model.index
@@ -29,13 +32,14 @@ ScrollView {
                 anchors.margins: 10
                 spacing: 5
                 AvatarImage {
-                    Layout.preferredWidth: 24
-                    Layout.preferredHeight: 24
+                    Layout.preferredWidth: AdjustedValues.i24
+                    Layout.preferredHeight: AdjustedValues.i24
                     source: model.avatar
                 }
                 Label {
                     text: model.handle
                     elide: Text.ElideRight
+                    font.pointSize: AdjustedValues.f10
                 }
                 Item {
                     Layout.fillWidth: true

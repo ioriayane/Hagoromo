@@ -9,6 +9,7 @@ import tech.relog.hagoromo.accountlistmodel 1.0
 import tech.relog.hagoromo.languagelistmodel 1.0
 import tech.relog.hagoromo.externallink 1.0
 import tech.relog.hagoromo.systemtool 1.0
+import tech.relog.hagoromo.singleton 1.0
 
 import "../controls"
 import "../parts"
@@ -46,7 +47,7 @@ Dialog {
         if(i >= 0){
             accountCombo.currentIndex = i
         } else {
-            accountCombo.currentIndex = 0
+            accountCombo.currentIndex = accountModel.getMainAccountIndex()
         }
         postText.forceActiveFocus()
     }
@@ -107,16 +108,16 @@ Dialog {
         Frame {
             id: replyFrame
             Layout.preferredWidth: postText.width
-            Layout.maximumHeight: 200
+            Layout.maximumHeight: 200 * AdjustedValues.ratio
             visible: postType === "reply"
             clip: true
             ColumnLayout {
                 anchors.fill: parent
                 RowLayout {
-                    Image {
+                    AvatarImage {
                         id: replyAvatarImage
-                        Layout.preferredWidth: 16
-                        Layout.preferredHeight: 16
+                        Layout.preferredWidth: AdjustedValues.i16
+                        Layout.preferredHeight: AdjustedValues.i16
                         source: replyAvatar
                     }
                     Author {
@@ -129,7 +130,7 @@ Dialog {
                 Label {
                     Layout.preferredWidth: postText.width - replyFrame.padding * 2
                     wrapMode: Text.WrapAnywhere
-                    font.pointSize: 8
+                    font.pointSize: AdjustedValues.f8
                     text: replyText
                 }
             }
@@ -138,20 +139,24 @@ Dialog {
         RowLayout {
             AvatarImage {
                 id: accountAvatarImage
-                Layout.preferredWidth: 24
-                Layout.preferredHeight: 24
+                Layout.preferredWidth: AdjustedValues.i24
+                Layout.preferredHeight: AdjustedValues.i24
                 //                source:
             }
 
             ComboBox {
                 id: accountCombo
-                Layout.preferredWidth: 200
+                Layout.preferredWidth: 200 * AdjustedValues.ratio
+                Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
                 enabled: !createRecord.running
+                font.pointSize: AdjustedValues.f10
                 textRole: "handle"
                 valueRole: "did"
                 delegate: ItemDelegate {
-                    text: model.handle
                     width: parent.width
+                    height: implicitHeight * AdjustedValues.ratio
+                    font.pointSize: AdjustedValues.f10
+                    text: model.handle
                     onClicked: accountCombo.currentIndex = model.index
                 }
                 onCurrentIndexChanged: {
@@ -170,6 +175,7 @@ Dialog {
             }
             IconButton {
                 id: postLanguagesButton
+                enabled: !createRecord.running
                 iconSource: "../images/language.png"
                 flat: true
                 onClicked: {
@@ -197,20 +203,21 @@ Dialog {
         }
 
         ScrollView {
-            Layout.preferredWidth: 400
-            Layout.preferredHeight: 100
+            Layout.preferredWidth: 400 * AdjustedValues.ratio
+            Layout.preferredHeight: 100 * AdjustedValues.ratio
             TextArea {
                 id: postText
                 verticalAlignment: TextInput.AlignTop
                 enabled: !createRecord.running
                 wrapMode: TextInput.WordWrap
                 selectByMouse: true
+                font.pointSize: AdjustedValues.f10
                 property int realTextLength: systemTool.countText(text)
             }
         }
 
         RowLayout {
-            Layout.maximumWidth: 400
+            Layout.maximumWidth: 400 * AdjustedValues.ratio
             visible: postType !== "quote" && embedImagePreview.embedImages.length === 0
             ScrollView {
                 Layout.fillWidth: true
@@ -218,6 +225,7 @@ Dialog {
                 TextArea {
                     id: addingExternalLinkUrlText
                     selectByMouse: true
+                    font.pointSize: AdjustedValues.f10
                     placeholderText: qsTr("Link card URL")
                 }
             }
@@ -233,7 +241,7 @@ Dialog {
                 }
                 states: [
                     State {
-                        when: externalLink.running
+                        when: externalLink.running || createRecord.running
                         PropertyChanges {
                             target: externalLinkButton
                             enabled: false
@@ -252,8 +260,8 @@ Dialog {
             }
         }
         ExternalLinkCard {
-            Layout.preferredWidth: 400
-            Layout.maximumHeight: 280
+            Layout.preferredWidth: 400 * AdjustedValues.ratio
+            Layout.maximumHeight: 280 * AdjustedValues.ratio
             visible: externalLink.valid
 
             thumbImage.source: externalLink.thumbLocal
@@ -270,14 +278,14 @@ Dialog {
                 property var embedImages: []
                 model: embedImagePreview.embedImages
                 delegate: ImageWithIndicator {
-                    Layout.preferredWidth: 97
-                    Layout.preferredHeight: 97
+                    Layout.preferredWidth: 97 * AdjustedValues.ratio
+                    Layout.preferredHeight: 97 * AdjustedValues.ratio
                     fillMode: Image.PreserveAspectCrop
                     source: modelData
                     IconButton {
                         enabled: !createRecord.running
-                        width: 24
-                        height: 24
+                        width: AdjustedValues.b24
+                        height: AdjustedValues.b24
                         anchors.top: parent.top
                         anchors.right: parent.right
                         anchors.margins: 5
@@ -301,16 +309,16 @@ Dialog {
         Frame {
             id: quoteFrame
             Layout.preferredWidth: postText.width
-            Layout.maximumHeight: 200
+            Layout.maximumHeight: 200 * AdjustedValues.ratio
             visible: postType === "quote"
             clip: true
             ColumnLayout {
                 Layout.preferredWidth: postText.width
                 RowLayout {
-                    Image {
+                    AvatarImage {
                         id: quoteAvatarImage
-                        Layout.preferredWidth: 16
-                        Layout.preferredHeight: 16
+                        Layout.preferredWidth: AdjustedValues.i16
+                        Layout.preferredHeight: AdjustedValues.i16
                         source: replyAvatar
                     }
                     Author {
@@ -323,17 +331,18 @@ Dialog {
                 Label {
                     Layout.preferredWidth: postText.width - quoteFrame.padding * 2
                     wrapMode: Text.WrapAnywhere
-                    font.pointSize: 8
+                    font.pointSize: AdjustedValues.f8
                     text: replyText
                 }
             }
         }
 
         RowLayout {
-            //            Layout.alignment: Qt.AlignRight
+            spacing: 0
             Button {
                 enabled: !createRecord.running
                 flat: true
+                font.pointSize: AdjustedValues.f10
                 text: qsTr("Cancel")
                 onClicked: postDialog.close()
             }
@@ -343,7 +352,9 @@ Dialog {
             }
             IconButton {
                 id: selfLabelsButton
+                enabled: !createRecord.running
                 iconSource: "../images/labeling.png"
+                iconSize: AdjustedValues.i16
                 flat: true
                 foreground: value.length > 0 ? Material.accent : Material.foreground
                 onClicked: selfLabelPopup.popup()
@@ -365,6 +376,7 @@ Dialog {
             IconButton {
                 enabled: !createRecord.running && !externalLink.valid
                 iconSource: "../images/add_image.png"
+                iconSize: AdjustedValues.i16
                 flat: true
                 onClicked: {
                     if(fileDialog.prevFolder.length > 0){
@@ -375,13 +387,15 @@ Dialog {
             }
 
             Label {
+                Layout.leftMargin: 5
                 Layout.alignment: Qt.AlignVCenter
-                font.pointSize: 8
+                font.pointSize: AdjustedValues.f8
                 text: 300 - postText.realTextLength
             }
             ProgressCircle {
-                Layout.preferredWidth: 24
-                Layout.preferredHeight: 24
+                Layout.leftMargin: 5
+                Layout.preferredWidth: AdjustedValues.i24
+                Layout.preferredHeight: AdjustedValues.i24
                 Layout.alignment: Qt.AlignVCenter
                 from: 0
                 to: 300
@@ -391,6 +405,7 @@ Dialog {
                 id: postButton
                 Layout.alignment: Qt.AlignRight
                 enabled: postText.text.length > 0 && postText.realTextLength <= 300 && !createRecord.running && !externalLink.running
+                font.pointSize: AdjustedValues.f10
                 text: qsTr("Post")
                 onClicked: {
                     var row = accountCombo.currentIndex;

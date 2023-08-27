@@ -20,6 +20,7 @@ public:
     enum AccountListModelRoles {
         ModelData = Qt::UserRole + 1,
         UuidRole,
+        IsMainRole,
         ServiceRole,
         IdentifierRole,
         PasswordRole,
@@ -51,6 +52,8 @@ public:
     Q_INVOKABLE void removeAccount(int row);
     Q_INVOKABLE void updateAccountProfile(const QString &service, const QString &identifier);
     Q_INVOKABLE int indexAt(const QString &uuid);
+    Q_INVOKABLE int getMainAccountIndex() const;
+    Q_INVOKABLE void setMainAccount(int row);
 
     Q_INVOKABLE void save() const;
     Q_INVOKABLE void load();

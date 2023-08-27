@@ -3,6 +3,8 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 
+import tech.relog.hagoromo.singleton 1.0
+
 Dialog {
     id: messageDialog
     modal: true
@@ -22,6 +24,8 @@ Dialog {
     }
 
     ColumnLayout {
+        spacing: AdjustedValues.s5
+
         Frame {
             background: Rectangle {
                 id: backgroundRect
@@ -43,14 +47,17 @@ Dialog {
             TextArea {
                 id: messageTextArea
                 width: parentWidth * 0.6 < 800 ? parentWidth * 0.6 : 800
+                height: implicitHeight * AdjustedValues.ratio
                 wrapMode: TextInput.WordWrap
                 selectByMouse: true
                 readOnly: true
                 background: Item {}
+                font.pointSize: AdjustedValues.f10
             }
         }
         Button {
             Layout.alignment: Qt.AlignHCenter
+            font.pointSize: AdjustedValues.f10
             text: qsTr("OK")
             onClicked: messageDialog.close()
         }

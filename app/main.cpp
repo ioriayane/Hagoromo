@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName(QStringLiteral("relog"));
     app.setOrganizationDomain(QStringLiteral("hagoromo.relog.tech"));
     app.setApplicationName(QStringLiteral("Hagoromo"));
-    app.setApplicationVersion(QStringLiteral("0.9.0"));
+    app.setApplicationVersion(QStringLiteral("0.10.0"));
 #ifndef HAGOROMO_RELEASE_BUILD
     app.setApplicationVersion(app.applicationVersion() + "d");
 #endif
@@ -87,6 +87,9 @@ int main(int argc, char *argv[])
     qmlRegisterType<SystemTool>("tech.relog.hagoromo.systemtool", 1, 0, "SystemTool");
     qmlRegisterType<ExternalLink>("tech.relog.hagoromo.externallink", 1, 0, "ExternalLink");
     qmlRegisterType<Reporter>("tech.relog.hagoromo.reporter", 1, 0, "Reporter");
+
+    qmlRegisterSingletonType(QUrl("qrc:/Hagoromo/qml/data/AdjustedValues.qml"),
+                             "tech.relog.hagoromo.singleton", 1, 0, "AdjustedValues");
 
     QString dir = QString("%1/translations").arg(QCoreApplication::applicationDirPath());
     // 翻訳データ登録
