@@ -233,6 +233,18 @@ void AccountListModel::setMainAccount(int row)
     save();
 }
 
+bool AccountListModel::allAccountsReady() const
+{
+    bool ready = true;
+    for (const AccountData &item : qAsConst(m_accountList)) {
+        if (item.status == AccountStatus::Unknown) {
+            ready = false;
+            break;
+        }
+    }
+    return ready;
+}
+
 void AccountListModel::save() const
 {
     QSettings settings;
@@ -291,8 +303,7 @@ void AccountListModel::load()
                 endInsertRows();
                 emit countChanged();
 
-                updateSession(m_accountList.count() - 1, item.service, item.identifier,
-                              item.password);
+                createSession(m_accountList.count() - 1);
 
                 if (item.is_main) {
                     has_main = true;
@@ -336,38 +347,37 @@ QHash<int, QByteArray> AccountListModel::roleNames() const
     return roles;
 }
 
-void AccountListModel::updateSession(int row, const QString &service, const QString &identifier,
-                                     const QString &password)
+void AccountListModel::createSession(int row)
 {
+    if (row < 0 || row >= m_accountList.count())
+        return;
+
     ComAtprotoServerCreateSession *session = new ComAtprotoServerCreateSession(this);
-    session->setService(service);
     connect(session, &ComAtprotoServerCreateSession::finished, [=](bool success) {
         //        qDebug() << session << session->service() << session->did() << session->handle()
         //                 << session->email() << session->accessJwt() << session->refreshJwt();
         //        qDebug() << service << identifier << password;
-        updateAccount(service, identifier, password, session->did(), session->handle(),
-                      session->email(), session->accessJwt(), session->refreshJwt(), success);
         if (success) {
-            emit appendedAccount(row);
+            qDebug() << "Create session" << session->did() << session->handle();
+            m_accountList[row].did = session->did();
+            m_accountList[row].handle = session->handle();
+            m_accountList[row].accessJwt = session->accessJwt();
+            m_accountList[row].refreshJwt = session->refreshJwt();
+            m_accountList[row].status = AccountStatus::Authorized;
+
+            emit updatedSession(row, m_accountList[row].uuid);
 
             // 詳細を取得
             getProfile(row);
         } else {
+            m_accountList[row].status = AccountStatus::Unauthorized;
             emit errorOccured(session->errorMessage());
         }
-        bool all_finished = true;
-        for (const AccountData &item : qAsConst(m_accountList)) {
-            if (item.status == AccountStatus::Unknown) {
-                all_finished = false;
-                break;
-            }
-        }
-        if (all_finished) {
-            emit allFinished();
-        }
+        emit dataChanged(index(row), index(row));
         session->deleteLater();
     });
-    session->create(identifier, password);
+    session->setAccount(m_accountList.at(row));
+    session->create(m_accountList.at(row).identifier, m_accountList.at(row).password);
 }
 
 void AccountListModel::refreshSession(int row)
@@ -376,7 +386,6 @@ void AccountListModel::refreshSession(int row)
         return;
 
     ComAtprotoServerRefreshSession *session = new ComAtprotoServerRefreshSession(this);
-    session->setAccount(m_accountList.at(row));
     connect(session, &ComAtprotoServerRefreshSession::finished, [=](bool success) {
         if (success) {
             qDebug() << "Refresh session" << session->did() << session->handle();
@@ -386,7 +395,10 @@ void AccountListModel::refreshSession(int row)
             m_accountList[row].refreshJwt = session->refreshJwt();
             m_accountList[row].status = AccountStatus::Authorized;
 
-            emit updatedAccount(row, m_accountList[row].uuid);
+            emit updatedSession(row, m_accountList[row].uuid);
+
+            // 詳細を取得
+            getProfile(row);
         } else {
             m_accountList[row].status = AccountStatus::Unauthorized;
             emit errorOccured(session->errorMessage());
@@ -394,6 +406,7 @@ void AccountListModel::refreshSession(int row)
         emit dataChanged(index(row), index(row));
         session->deleteLater();
     });
+    session->setAccount(m_accountList.at(row));
     session->refreshSession();
 }
 
