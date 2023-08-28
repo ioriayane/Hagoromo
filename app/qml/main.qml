@@ -182,22 +182,19 @@ ApplicationWindow {
     // アカウント管理で内容が変更されたときにカラムとインデックスの関係が崩れるのでuuidで確認する
     AccountListModel {
         id: accountListModel
-        onAppendedAccount: (row) => {
-                               console.log("onAppendedAccount:" + row)
-                           }
+        onUpdatedSession: (row, uuid) => {
+                              console.log("onUpdatedSession:" + row + ", " + uuid)
+                              if(columnManageModel.rowCount() === 0 && allAccountsReady()){
+                                  // すべてのアカウント情報の認証が終わったのでカラムを復元
+                                  console.log("start loading columns")
+                                  columnManageModel.load()
+                              }
+                          }
         onUpdatedAccount: (row, uuid) => {
                               console.log("onUpdatedAccount:" + row + ", " + uuid)
                               // カラムを更新しにいく
                               repeater.updateAccount(uuid)
                           }
-
-        onAllFinished: {
-            // すべてのアカウント情報の認証が終わったのでカラムを復元（成功しているとは限らない）
-            console.log("allFinished()" + accountListModel.count)
-            if(columnManageModel.rowCount() === 0){
-                columnManageModel.load()
-            }
-        }
         onErrorOccured: (message) => {console.log(message)}
 
         function syncColumn(){
