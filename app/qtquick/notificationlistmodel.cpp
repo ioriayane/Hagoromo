@@ -466,6 +466,11 @@ void NotificationListModel::getLatest()
     });
 }
 
+void NotificationListModel::getNext()
+{
+    //
+}
+
 void NotificationListModel::repost(int row)
 {
     if (row < 0 || row >= m_cidList.count())

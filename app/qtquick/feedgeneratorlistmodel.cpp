@@ -112,6 +112,11 @@ void FeedGeneratorListModel::getLatest()
     generators->getPopularFeedGenerators(50, QString(), query());
 }
 
+void FeedGeneratorListModel::getNext()
+{
+    //
+}
+
 void FeedGeneratorListModel::saveGenerator(const QString &uri)
 {
     if (running())

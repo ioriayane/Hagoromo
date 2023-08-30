@@ -39,6 +39,12 @@ ScrollView {
         anchors.rightMargin: parent.ScrollBar.vertical.width
         spacing: 5
 
+        onMovementEnded: {
+            if(atYEnd){
+                rootListView.model.getNext()
+            }
+        }
+
         SystemTool {
             id: systemTool
         }

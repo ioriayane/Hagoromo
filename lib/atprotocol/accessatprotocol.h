@@ -59,6 +59,8 @@ public:
 
     QString replyJson() const;
     QString errorMessage() const;
+    QString cursor() const;
+    void setCursor(const QString &newCursor);
 
 signals:
     void finished(bool success);
@@ -78,6 +80,7 @@ private:
     AccountData m_account;
     QString m_replyJson;
     QString m_errorMessage;
+    QString m_cursor;
 };
 }
 

@@ -125,6 +125,11 @@ void FollowsListModel::getLatest()
     });
 }
 
+void FollowsListModel::getNext()
+{
+    //
+}
+
 QHash<int, QByteArray> FollowsListModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
