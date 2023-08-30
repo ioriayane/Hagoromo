@@ -93,7 +93,7 @@ void FeedGeneratorListModel::getLatest()
     AppBskyUnspeccedGetPopularFeedGenerators *generators =
             new AppBskyUnspeccedGetPopularFeedGenerators(this);
     connect(generators, &AppBskyUnspeccedGetPopularFeedGenerators::finished, [=](bool success) {
-        if (success) {
+        if (success && !generators->generatorViewList()->isEmpty()) {
             beginInsertRows(QModelIndex(), 0, generators->generatorViewList()->count() - 1);
             for (const auto &generator : *generators->generatorViewList()) {
                 m_cidList.append(generator.cid);
@@ -101,6 +101,7 @@ void FeedGeneratorListModel::getLatest()
             }
             endInsertRows();
 
+            m_cursor = generators->cursor();
             getSavedGenerators();
         } else {
             emit errorOccured(generators->errorMessage());
@@ -114,7 +115,33 @@ void FeedGeneratorListModel::getLatest()
 
 void FeedGeneratorListModel::getNext()
 {
-    //
+    if (running() || m_cursor.isEmpty())
+        return;
+    setRunning(true);
+
+    AppBskyUnspeccedGetPopularFeedGenerators *generators =
+            new AppBskyUnspeccedGetPopularFeedGenerators(this);
+    connect(generators, &AppBskyUnspeccedGetPopularFeedGenerators::finished, [=](bool success) {
+        if (success && !generators->generatorViewList()->isEmpty()) {
+            beginInsertRows(QModelIndex(), m_cidList.count(),
+                            m_cidList.count() + generators->generatorViewList()->count() - 1);
+            for (const auto &generator : *generators->generatorViewList()) {
+                m_cidList.append(generator.cid);
+                m_generatorViewHash[generator.cid] = generator;
+            }
+            endInsertRows();
+
+            m_cursor = generators->cursor();
+            // getSavedGenerators();
+        } else {
+            m_cursor.clear();
+            emit errorOccured(generators->errorMessage());
+        }
+        setRunning(false);
+        generators->deleteLater();
+    });
+    generators->setAccount(account());
+    generators->getPopularFeedGenerators(50, m_cursor, query());
 }
 
 void FeedGeneratorListModel::saveGenerator(const QString &uri)

@@ -292,7 +292,7 @@ void AtpAbstractListModel::displayQueuedPostsNext()
             }
         } else {
             if (visible) {
-                beginInsertRows(QModelIndex(), 0, 0);
+                beginInsertRows(QModelIndex(), m_cidList.count(), m_cidList.count());
                 m_cidList.append(post.cid);
                 endInsertRows();
             }
