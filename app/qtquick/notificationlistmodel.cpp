@@ -373,6 +373,9 @@ void NotificationListModel::getLatest()
             if (success) {
                 QDateTime reference_time = QDateTime::currentDateTimeUtc();
 
+                if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
+                    m_cursor = notification->cursor();
+                }
                 for (auto item = notification->notificationList()->crbegin();
                      item != notification->notificationList()->crend(); item++) {
                     m_notificationHash[item->cid] = *item;
@@ -462,13 +465,97 @@ void NotificationListModel::getLatest()
             notification->deleteLater();
         });
         notification->setAccount(account());
-        notification->listNotifications();
+        notification->listNotifications(QString());
     });
 }
 
 void NotificationListModel::getNext()
 {
-    //
+    if (running() || m_cursor.isEmpty())
+        return;
+    setRunning(true);
+
+    updateContentFilterLabels([=]() {
+        AppBskyNotificationListNotifications *notification =
+                new AppBskyNotificationListNotifications(this);
+        connect(notification, &AppBskyNotificationListNotifications::finished, [=](bool success) {
+            if (success) {
+                QDateTime reference_time = QDateTime::currentDateTimeUtc();
+
+                m_cursor = notification->cursor();
+
+                for (auto item = notification->notificationList()->cbegin();
+                     item != notification->notificationList()->cend(); item++) {
+                    m_notificationHash[item->cid] = *item;
+
+                    PostCueItem post;
+                    post.cid = item->cid;
+                    post.indexed_at = item->indexedAt;
+                    post.reference_time = reference_time;
+                    m_cuePost.append(post);
+
+                    if (item->reason == "like") {
+                        appendGetPostCue<AtProtocolType::AppBskyFeedLike::Main>(item->record);
+                    } else if (item->reason == "repost") {
+                        appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(item->record);
+                    } else if (item->reason == "quote") {
+                        AtProtocolType::AppBskyFeedPost::Main post =
+                                AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                                        AtProtocolType::AppBskyFeedPost::Main>(item->record);
+                        switch (post.embed_type) {
+                        case AtProtocolType::AppBskyFeedPost::MainEmbedType::
+                                embed_AppBskyEmbedImages_Main:
+                            break;
+                        case AtProtocolType::AppBskyFeedPost::MainEmbedType::
+                                embed_AppBskyEmbedExternal_Main:
+                            break;
+                        case AtProtocolType::AppBskyFeedPost::MainEmbedType::
+                                embed_AppBskyEmbedRecord_Main:
+                            if (!post.embed_AppBskyEmbedRecord_Main.record.cid.isEmpty()
+                                && !m_cueGetPost.contains(
+                                        post.embed_AppBskyEmbedRecord_Main.record.uri)) {
+                                m_cueGetPost.append(post.embed_AppBskyEmbedRecord_Main.record.uri);
+                            }
+                            // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
+                            if (!m_cueGetPost.contains(item->uri)) {
+                                m_cueGetPost.append(item->uri);
+                            }
+                            break;
+                        case AtProtocolType::AppBskyFeedPost::MainEmbedType::
+                                embed_AppBskyEmbedRecordWithMedia_Main:
+                            if (!post.embed_AppBskyEmbedRecordWithMedia_Main.record.isNull()
+                                && !post.embed_AppBskyEmbedRecordWithMedia_Main.record->record.uri
+                                            .isEmpty()
+                                && !m_cueGetPost.contains(
+                                        post.embed_AppBskyEmbedRecordWithMedia_Main.record->record
+                                                .uri)) {
+                                m_cueGetPost.append(post.embed_AppBskyEmbedRecordWithMedia_Main
+                                                            .record->record.uri);
+                            }
+                            // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
+                            if (!m_cueGetPost.contains(item->uri)) {
+                                m_cueGetPost.append(item->uri);
+                            }
+                            break;
+                        default:
+                            break;
+                        }
+                    } else if (item->reason == "reply" || item->reason == "mention") {
+                        // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
+                        if (!m_cueGetPost.contains(item->uri)) {
+                            m_cueGetPost.append(item->uri);
+                        }
+                    }
+                }
+            } else {
+                emit errorOccured(notification->errorMessage());
+            }
+            QTimer::singleShot(10, this, &NotificationListModel::displayQueuedPostsNext);
+            notification->deleteLater();
+        });
+        notification->setAccount(account());
+        notification->listNotifications(m_cursor);
+    });
 }
 
 void NotificationListModel::repost(int row)

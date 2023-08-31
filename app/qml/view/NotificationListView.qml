@@ -40,6 +40,12 @@ ScrollView {
             id: systemTool
         }
 
+        onMovementEnded: {
+            if(atYEnd){
+                rootListView.model.getNext()
+            }
+        }
+
         header: ItemDelegate {
             width: rootListView.width
             height: AdjustedValues.h24
