@@ -17,6 +17,9 @@ void AppBskyGraphGetFollows::getFollows(const QString &actor, const int limit,
 {
     QUrlQuery query;
     query.addQueryItem(QStringLiteral("actor"), actor);
+    if (!cursor.isEmpty()) {
+        query.addQueryItem(QStringLiteral("cursor"), cursor);
+    }
 
     get(QStringLiteral("xrpc/app.bsky.graph.getFollows"), query);
 }
@@ -33,6 +36,7 @@ void AppBskyGraphGetFollows::parseJson(bool success, const QString reply_json)
     if (json_doc.isEmpty() || !json_doc.object().contains(m_listKey)) {
         success = false;
     } else {
+        setCursor(json_doc.object().value("cursor").toString());
         for (const auto &obj : json_doc.object().value(m_listKey).toArray()) {
             AtProtocolType::AppBskyActorDefs::ProfileView profile;
             AtProtocolType::AppBskyActorDefs::copyProfileView(obj.toObject(), profile);

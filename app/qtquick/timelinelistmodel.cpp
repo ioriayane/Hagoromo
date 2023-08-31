@@ -248,11 +248,10 @@ void TimelineListModel::getLatest()
         AppBskyFeedGetTimeline *timeline = new AppBskyFeedGetTimeline(this);
         connect(timeline, &AppBskyFeedGetTimeline::finished, [=](bool success) {
             if (success) {
-                copyFrom(timeline);
-
                 if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
                     m_cursor = timeline->cursor();
                 }
+                copyFrom(timeline);
             } else {
                 emit errorOccured(timeline->errorMessage());
             }
@@ -274,10 +273,9 @@ void TimelineListModel::getNext()
         AppBskyFeedGetTimeline *timeline = new AppBskyFeedGetTimeline(this);
         connect(timeline, &AppBskyFeedGetTimeline::finished, [=](bool success) {
             if (success) {
-                copyFromNext(timeline);
+                m_cursor = timeline->cursor(); // 続きの読み込みの時は必ず上書き
 
-                // 続きの読み込みの時は必ず上書き
-                m_cursor = timeline->cursor();
+                copyFromNext(timeline);
             } else {
                 emit errorOccured(timeline->errorMessage());
             }
