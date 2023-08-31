@@ -484,8 +484,8 @@ void NotificationListModel::getNext()
 
                 m_cursor = notification->cursor();
 
-                for (auto item = notification->notificationList()->cbegin();
-                     item != notification->notificationList()->cend(); item++) {
+                for (auto item = notification->notificationList()->crbegin();
+                     item != notification->notificationList()->crend(); item++) {
                     m_notificationHash[item->cid] = *item;
 
                     PostCueItem post;

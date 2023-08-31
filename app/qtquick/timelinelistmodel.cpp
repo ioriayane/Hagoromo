@@ -508,7 +508,8 @@ void TimelineListModel::copyFromNext(AtProtocolInterface::AppBskyFeedGetTimeline
 {
     QDateTime reference_time = QDateTime::currentDateTimeUtc();
 
-    for (auto item = timeline->feedList()->cbegin(); item != timeline->feedList()->cend(); item++) {
+    for (auto item = timeline->feedList()->crbegin(); item != timeline->feedList()->crend();
+         item++) {
         m_viewPostHash[item->post.cid] = *item;
 
         PostCueItem post;

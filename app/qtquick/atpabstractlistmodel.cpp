@@ -260,7 +260,7 @@ void AtpAbstractListModel::displayQueuedPosts()
 void AtpAbstractListModel::displayQueuedPostsNext()
 {
     while (!m_cuePost.isEmpty()) {
-        const PostCueItem &post = m_cuePost.front();
+        const PostCueItem &post = m_cuePost.back();
         bool visible = checkVisibility(post.cid);
 
         if (m_originalCidList.contains(post.cid)) {
@@ -299,7 +299,7 @@ void AtpAbstractListModel::displayQueuedPostsNext()
             m_originalCidList.append(post.cid);
         }
 
-        m_cuePost.pop_front();
+        m_cuePost.pop_back();
     }
 
     finishedDisplayingQueuedPosts();

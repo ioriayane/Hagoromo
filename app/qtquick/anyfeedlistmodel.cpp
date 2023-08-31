@@ -95,24 +95,22 @@ void AnyFeedListModel::getNext()
 
                 m_cursor = records->cursor();
 
-                for (auto record = records->recordList()->crbegin();
-                     record != records->recordList()->crend(); record++) {
-                    m_recordHash[record->cid] = *record;
+                for (const auto &record : *records->recordList()) {
+                    m_recordHash[record.cid] = record;
 
                     QString cid;
                     QString indexed_at;
                     switch (feedType()) {
                     case AnyFeedListModelFeedType::LikeFeedType:
-                        cid = appendGetPostCue<AtProtocolType::AppBskyFeedLike::Main>(
-                                record->value);
+                        cid = appendGetPostCue<AtProtocolType::AppBskyFeedLike::Main>(record.value);
                         indexed_at =
-                                getIndexedAt<AtProtocolType::AppBskyFeedLike::Main>(record->value);
+                                getIndexedAt<AtProtocolType::AppBskyFeedLike::Main>(record.value);
                         break;
                     case AnyFeedListModelFeedType::RepostFeedType:
                         cid = appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(
-                                record->value);
-                        indexed_at = getIndexedAt<AtProtocolType::AppBskyFeedRepost::Main>(
-                                record->value);
+                                record.value);
+                        indexed_at =
+                                getIndexedAt<AtProtocolType::AppBskyFeedRepost::Main>(record.value);
                         break;
                     default:
                         break;
