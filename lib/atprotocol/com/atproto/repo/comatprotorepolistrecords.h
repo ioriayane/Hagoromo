@@ -13,8 +13,8 @@ public:
 
     void listRecords(const QString &repo, const QString &collection, const int limit,
                      const QString &cursor, const QString &rkeyStart, const QString &rkeyEnd);
-    void listLikes(const QString &repo);
-    void listReposts(const QString &repo);
+    void listLikes(const QString &repo, const QString &cursor);
+    void listReposts(const QString &repo, const QString &cursor);
 
     const QList<AtProtocolType::ComAtprotoRepoListRecords::Record> *recordList() const;
 

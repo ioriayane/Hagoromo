@@ -17,6 +17,9 @@ void AppBskyFeedGetAuthorFeed::getAuthorFeed(const QString &actor, const int lim
 {
     QUrlQuery query;
     query.addQueryItem(QStringLiteral("actor"), actor);
+    if (!cursor.isEmpty()) {
+        query.addQueryItem(QStringLiteral("cursor"), cursor);
+    }
     if (filter == FilterType::PostsNoReplies) {
         query.addQueryItem(QStringLiteral("filter"), "posts_no_replies");
     } else if (filter == FilterType::PostsWithMedia) {

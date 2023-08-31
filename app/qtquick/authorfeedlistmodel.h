@@ -22,6 +22,7 @@ public:
     Q_ENUM(AuthorFeedListModelFilterType)
 
     Q_INVOKABLE void getLatest();
+    Q_INVOKABLE void getNext();
 
     QString authorDid() const;
     void setAuthorDid(const QString &newAuthorDid);

@@ -21,18 +21,21 @@ void ComAtprotoRepoListRecords::listRecords(const QString &repo, const QString &
     QUrlQuery query;
     query.addQueryItem(QStringLiteral("repo"), repo);
     query.addQueryItem(QStringLiteral("collection"), collection);
+    if (!cursor.isEmpty()) {
+        query.addQueryItem(QStringLiteral("cursor"), cursor);
+    }
 
     get(QStringLiteral("xrpc/com.atproto.repo.listRecords"), query);
 }
 
-void ComAtprotoRepoListRecords::listLikes(const QString &repo)
+void ComAtprotoRepoListRecords::listLikes(const QString &repo, const QString &cursor)
 {
-    listRecords(repo, "app.bsky.feed.like", 50, QString(), QString(), QString());
+    listRecords(repo, "app.bsky.feed.like", 50, cursor, QString(), QString());
 }
 
-void ComAtprotoRepoListRecords::listReposts(const QString &repo)
+void ComAtprotoRepoListRecords::listReposts(const QString &repo, const QString &cursor)
 {
-    listRecords(repo, "app.bsky.feed.repost", 50, QString(), QString(), QString());
+    listRecords(repo, "app.bsky.feed.repost", 50, cursor, QString(), QString());
 }
 
 const QList<AtProtocolType::ComAtprotoRepoListRecords::Record> *
@@ -47,6 +50,7 @@ void ComAtprotoRepoListRecords::parseJson(bool success, const QString reply_json
     if (json_doc.isEmpty()) {
         success = false;
     } else {
+        setCursor(json_doc.object().value("cursor").toString());
         for (const auto &obj : json_doc.object().value("records").toArray()) {
             AtProtocolType::ComAtprotoRepoListRecords::Record record;
 
