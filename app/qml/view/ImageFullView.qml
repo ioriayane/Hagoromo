@@ -21,6 +21,16 @@ Rectangle {
         sequence: "Esc"
         onActivated: imageFullView.visible = false
     }
+    Shortcut {
+        enabled: imageFullView.visible && leftMoveButton.enabled
+        sequence: "left"
+        onActivated: leftMoveButton.clicked()
+    }
+    Shortcut {
+        enabled: imageFullView.visible && righttMoveButton.enabled
+        sequence: "right"
+        onActivated: righttMoveButton.clicked()
+    }
 
     MouseArea {
         anchors.fill: parent
