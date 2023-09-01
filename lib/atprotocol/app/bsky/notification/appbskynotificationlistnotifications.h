@@ -11,7 +11,7 @@ class AppBskyNotificationListNotifications : public AccessAtProtocol
 public:
     explicit AppBskyNotificationListNotifications(QObject *parent = nullptr);
 
-    void listNotifications();
+    void listNotifications(const QString &cursor);
 
     const QList<AtProtocolType::AppBskyNotificationListNotifications::Notification> *
     notificationList() const;

@@ -11,6 +11,7 @@ public:
 
 public slots:
     Q_INVOKABLE void getLatest();
+    Q_INVOKABLE void getNext();
 };
 
 #endif // FOLLOWERSLISTMODEL_H

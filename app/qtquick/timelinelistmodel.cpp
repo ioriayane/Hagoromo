@@ -248,6 +248,9 @@ void TimelineListModel::getLatest()
         AppBskyFeedGetTimeline *timeline = new AppBskyFeedGetTimeline(this);
         connect(timeline, &AppBskyFeedGetTimeline::finished, [=](bool success) {
             if (success) {
+                if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
+                    m_cursor = timeline->cursor();
+                }
                 copyFrom(timeline);
             } else {
                 emit errorOccured(timeline->errorMessage());
@@ -257,6 +260,30 @@ void TimelineListModel::getLatest()
         });
         timeline->setAccount(account());
         timeline->getTimeline();
+    });
+}
+
+void TimelineListModel::getNext()
+{
+    if (running() || m_cursor.isEmpty())
+        return;
+    setRunning(true);
+
+    updateContentFilterLabels([=]() {
+        AppBskyFeedGetTimeline *timeline = new AppBskyFeedGetTimeline(this);
+        connect(timeline, &AppBskyFeedGetTimeline::finished, [=](bool success) {
+            if (success) {
+                m_cursor = timeline->cursor(); // 続きの読み込みの時は必ず上書き
+
+                copyFromNext(timeline);
+            } else {
+                emit errorOccured(timeline->errorMessage());
+            }
+            QTimer::singleShot(10, this, &TimelineListModel::displayQueuedPostsNext);
+            timeline->deleteLater();
+        });
+        timeline->setAccount(account());
+        timeline->getTimeline(m_cursor);
     });
 }
 
@@ -464,6 +491,23 @@ void TimelineListModel::copyFrom(AppBskyFeedGetTimeline *timeline)
     } else {
         reference_time = QDateTime::currentDateTimeUtc();
     }
+    for (auto item = timeline->feedList()->crbegin(); item != timeline->feedList()->crend();
+         item++) {
+        m_viewPostHash[item->post.cid] = *item;
+
+        PostCueItem post;
+        post.cid = item->post.cid;
+        post.indexed_at = getReferenceTime(*item);
+        post.reference_time = reference_time;
+        post.reason_type = item->reason_type;
+        m_cuePost.append(post);
+    }
+}
+
+void TimelineListModel::copyFromNext(AtProtocolInterface::AppBskyFeedGetTimeline *timeline)
+{
+    QDateTime reference_time = QDateTime::currentDateTimeUtc();
+
     for (auto item = timeline->feedList()->crbegin(); item != timeline->feedList()->crend();
          item++) {
         m_viewPostHash[item->post.cid] = *item;

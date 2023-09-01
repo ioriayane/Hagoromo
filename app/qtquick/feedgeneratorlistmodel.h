@@ -37,6 +37,7 @@ public:
 
     Q_INVOKABLE void clear();
     Q_INVOKABLE void getLatest();
+    Q_INVOKABLE void getNext();
     Q_INVOKABLE void saveGenerator(const QString &uri);
     Q_INVOKABLE void removeGenerator(const QString &uri);
 

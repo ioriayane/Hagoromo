@@ -38,6 +38,7 @@ public:
 
     Q_INVOKABLE void clear();
     Q_INVOKABLE void getLatest();
+    Q_INVOKABLE void getNext();
 
 protected:
     QHash<int, QByteArray> roleNames() const;

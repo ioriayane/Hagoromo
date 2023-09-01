@@ -49,6 +49,12 @@ ScrollView {
             }
         }
 
+        onMovementEnded: {
+            if(atYEnd){
+                profileListView.model.getNext()
+            }
+        }
+
         header: ItemDelegate {
             width: rootListView.width
             height: AdjustedValues.h24

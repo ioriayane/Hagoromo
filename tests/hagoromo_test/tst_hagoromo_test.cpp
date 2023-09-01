@@ -36,6 +36,7 @@ private slots:
     void test_TimelineListModel_quote_hide2();
     void test_TimelineListModel_quote_label();
     void test_NotificationListModel_warn();
+    void test_TimelineListModel_next();
 
 private:
     WebServer m_mockServer;
@@ -1151,6 +1152,77 @@ void hagoromo_test::test_NotificationListModel_warn()
     QVERIFY(model.item(row, NotificationListModel::ContentFilterMatchedRole).toBool() == true);
     QVERIFY(model.item(row, NotificationListModel::ContentMediaFilterMatchedRole).toBool()
             == false);
+}
+
+void hagoromo_test::test_TimelineListModel_next()
+{
+    int row = 0;
+    TimelineListModel model;
+    model.setAccount(m_service + "/timeline/next/1st", QString(), QString(), QString(), "dummy",
+                     QString());
+    model.setDisplayInterval(0);
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+    QVERIFY(model.rowCount() == 6);
+
+    row = 0;
+    QVERIFY(model.item(row, TimelineListModel::CidRole).toString()
+            == "bafyreig7i2uyva4rpgxv3slogiwf5fvlwy2wx4bjvwuoywy6e7ojjvcrky_1");
+    row = 1;
+    QVERIFY(model.item(row, TimelineListModel::CidRole).toString()
+            == "bafyreiajxwbfoa5cbnphxcwvunisgjiqkjjqkqxpnr4mgfu3vqqupr6wca_2");
+    row = 2;
+    QVERIFY(model.item(row, TimelineListModel::CidRole).toString()
+            == "bafyreif2ux6qo4b2ez266iewichrjvqgeeehui5c7lo3gcglrzdi54pjja_3");
+    QVERIFY(model.item(row, TimelineListModel::IsRepostedRole).toBool() == true);
+
+    row = 3;
+    QVERIFY(model.item(row, TimelineListModel::CidRole).toString()
+            == "bafyreidmpxa2bdcohuxa4p62q3d6oja75mohihxsliuasvmsxds3utokqa_4");
+    row = 4;
+    QVERIFY(model.item(row, TimelineListModel::CidRole).toString()
+            == "bafyreif2ux6qo4b2ez266iewichrjvqgeeehui5c7lo3gcglrzdi54pjjb_5");
+    row = 5;
+    QVERIFY(model.item(row, TimelineListModel::CidRole).toString()
+            == "bafyreihr2hrmavhzdpmnc65udreph5vfmd3xceqtw2jm3b4clbfbacgsqe_6");
+
+    model.setAccount(m_service + "/timeline/next/2nd", QString(), QString(), QString(), "dummy",
+                     QString());
+    model.setDisplayInterval(0);
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getNext();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+    QVERIFY(model.rowCount() == 13);
+
+    row = 6;
+    QVERIFY(model.item(row, TimelineListModel::CidRole).toString()
+            == "bafyreiejog3yvjc2tdg4muknodbplaib2yqftukwurd4qjcnal3zdxu4ni_7");
+    row = 7;
+    QVERIFY2(model.item(row, TimelineListModel::CidRole).toString()
+                     == "bafyreib67ewj54g6maljtbclhno7mrkquf3w7wbex2woedj5m23mjwyite_8",
+             model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+    row = 8;
+    QVERIFY(model.item(row, TimelineListModel::CidRole).toString()
+            == "bafyreigj7v4cnmqpu5jiaqk2e4z7lele7toehjjbzbgmnaydufkayrsrly_9");
+    row = 9;
+    QVERIFY(model.item(row, TimelineListModel::CidRole).toString()
+            == "bafyreiemuasu6a6snzjjhke5tr3f462bfz62t7yqlidkxrpnedbzbrnnou_10");
+    row = 10;
+    QVERIFY(model.item(row, TimelineListModel::CidRole).toString()
+            == "bafyreiegferq3itlq4qapotqm3udyi3eobdigoptoyxubvudv5ttrjf5ka_11");
+    row = 11;
+    QVERIFY(model.item(row, TimelineListModel::CidRole).toString()
+            == "bafyreia3gadukf62bq3pq46kr3ewjpsao2ltbrlaios332oxqfggbaqha4_12");
+    row = 12;
+    QVERIFY(model.item(row, TimelineListModel::CidRole).toString()
+            == "bafyreiejog3yvjc2tdg4muknodbplaib2yqftukwurd4qjcnal3zdxu4ni11_13");
 }
 
 void hagoromo_test::test_RecordOperatorCreateRecord(const QByteArray &body)

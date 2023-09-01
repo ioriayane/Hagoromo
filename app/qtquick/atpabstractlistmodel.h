@@ -75,11 +75,13 @@ signals:
 
 public slots:
     virtual Q_INVOKABLE void getLatest() = 0;
+    virtual Q_INVOKABLE void getNext() = 0;
 
 protected:
     QString formatDateTime(const QString &value, const bool is_long = false) const;
     QString copyRecordText(const QVariant &value) const;
     void displayQueuedPosts();
+    void displayQueuedPostsNext();
     virtual void finishedDisplayingQueuedPosts() = 0;
     virtual bool checkVisibility(const QString &cid) = 0;
     void updateContentFilterLabels(std::function<void()> callback);
@@ -102,6 +104,7 @@ protected:
     // displayQueuedPosts()を使ってcidのリストを構成しないと使わない
     QList<QString> m_originalCidList;
     QList<PostCueItem> m_cuePost;
+    QString m_cursor;
 
     QHash<QString, QString> m_translations; // QHash<cid, translation>
 

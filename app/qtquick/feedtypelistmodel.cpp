@@ -102,6 +102,11 @@ void FeedTypeListModel::getLatest()
     pref->getPreferences();
 }
 
+void FeedTypeListModel::getNext()
+{
+    //
+}
+
 QHash<int, QByteArray> FeedTypeListModel::roleNames() const
 {
     QHash<int, QByteArray> roles;

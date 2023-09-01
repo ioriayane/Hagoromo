@@ -11,7 +11,7 @@ class AppBskyFeedGetTimeline : public AccessAtProtocol
 public:
     explicit AppBskyFeedGetTimeline(QObject *parent = nullptr);
 
-    void getTimeline();
+    void getTimeline(const QString &cursor = QString());
 
     const QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> *feedList() const;
 
