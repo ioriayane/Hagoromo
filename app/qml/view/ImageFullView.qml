@@ -2,6 +2,8 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
+import tech.relog.hagoromo.singleton 1.0
+
 import "../controls"
 
 Rectangle {
@@ -9,9 +11,11 @@ Rectangle {
     color: "#aa000000"
 
     property var sources: []
+    property var alts: []
 
-    function open(index, sources){
+    function open(index, sources, alts){
         imageFullView.sources = sources
+        imageFullView.alts = alts
         imageFullView.visible = true
         imageFullListView.currentIndex = index
     }
@@ -45,17 +49,35 @@ Rectangle {
         interactive: false
 
         model: imageFullView.sources
-        delegate: ImageWithIndicator {
+        delegate: ColumnLayout {
             width: imageFullListView.width
             height: imageFullListView.height
-            fillMode: Image.PreserveAspectFit
-            source: modelData
-            MouseArea {
-                x: parent.width/2 - width/2
-                y: parent.height/2 - height/2
-                width: parent.paintedWidth
-                height: parent.paintedHeight
-                onClicked: (mouse) => mouse.accepted = false
+            spacing: 0
+            ImageWithIndicator {
+                id: image
+                Layout.preferredWidth: imageFullListView.width
+//                Layout.preferredHeight: imageFullListView.height - altMessage.height - 10
+                Layout.fillHeight: true
+                fillMode: Image.PreserveAspectFit
+                source: modelData
+                MouseArea {
+                    x: parent.width/2 - width/2
+                    y: parent.height/2 - height/2
+                    width: parent.paintedWidth
+                    height: parent.paintedHeight
+                    onClicked: (mouse) => mouse.accepted = false
+                }
+            }
+            Label {
+                id: altMessage
+                Layout.preferredWidth: image.paintedWidth
+                Layout.topMargin: 5
+                Layout.bottomMargin: 5
+                Layout.alignment: Qt.AlignHCenter
+                visible: text.length > 0
+                wrapMode: Text.Wrap
+                font.pointSize: AdjustedValues.f10
+                text: model.index < imageFullView.alts.length ? imageFullView.alts[model.index] : ""
             }
         }
     }

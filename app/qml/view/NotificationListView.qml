@@ -26,7 +26,7 @@ ScrollView {
                           string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestQuote(string cid, string uri, string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestViewThread(string uri)
-    signal requestViewImages(int index, var paths)
+    signal requestViewImages(int index, var paths, var alts)
     signal requestViewProfile(string did)
     signal requestViewGeneratorFeed(string name, string uri)
     signal requestReportPost(string uri, string cid)
@@ -97,7 +97,8 @@ ScrollView {
             contentMediaFilterFrame.visible: model.contentMediaFilterMatched
             contentMediaFilterFrame.labelText: model.contentMediaFilterMessage
             postImagePreview.embedImages: model.embedImages
-            postImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.embedImagesFull)
+            postImagePreview.embedAlts: model.embedImagesAlt
+            postImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.embedImagesFull, model.embedImagesAlt)
 
             quoteRecordDisplayName: model.quoteRecordDisplayName
             quoteRecordHandle: model.quoteRecordHandle
@@ -105,7 +106,8 @@ ScrollView {
             quoteRecordIndexedAt: model.quoteRecordIndexedAt
             quoteRecordRecordText: model.quoteRecordRecordText
             quoteRecordImagePreview.embedImages: model.quoteRecordEmbedImages
-            quoteRecordImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.quoteRecordEmbedImagesFull)
+            quoteRecordImagePreview.embedAlts: model.quoteRecordEmbedImagesAlt
+            quoteRecordImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.quoteRecordEmbedImagesFull, model.quoteRecordEmbedImagesAlt)
 
 //            generatorViewFrame.visible: model.hasGeneratorFeed
 //            generatorViewFrame.onClicked: notificationListView.requestViewGeneratorFeed(model.generatorFeedDisplayName, model.generatorFeedUri)

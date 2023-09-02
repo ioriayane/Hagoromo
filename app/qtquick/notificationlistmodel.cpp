@@ -66,13 +66,22 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
     else if (role == EmbedImagesRole) {
         if (m_postHash.contains(current.cid))
             return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
-                    m_postHash[current.cid], true);
+                    m_postHash[current.cid],
+                    AtProtocolType::LexiconsTypeUnknown::CopyImageType::Thumb);
         else
             return QStringList();
     } else if (role == EmbedImagesFullRole) {
         if (m_postHash.contains(current.cid))
             return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
-                    m_postHash[current.cid], false);
+                    m_postHash[current.cid],
+                    AtProtocolType::LexiconsTypeUnknown::CopyImageType::FullSize);
+        else
+            return QStringList();
+    } else if (role == EmbedImagesAltRole) {
+        if (m_postHash.contains(current.cid))
+            return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
+                    m_postHash[current.cid],
+                    AtProtocolType::LexiconsTypeUnknown::CopyImageType::Alt);
         else
             return QStringList();
 
@@ -223,15 +232,24 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
         } else if (role == QuoteRecordEmbedImagesRole) {
             if (m_postHash.contains(record_cid))
                 return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
-                        m_postHash[record_cid], true);
+                        m_postHash[record_cid],
+                        AtProtocolType::LexiconsTypeUnknown::CopyImageType::Thumb);
             else
-                return QString();
+                return QStringList();
         } else if (role == QuoteRecordEmbedImagesFullRole) {
             if (m_postHash.contains(record_cid))
                 return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
-                        m_postHash[record_cid], false);
+                        m_postHash[record_cid],
+                        AtProtocolType::LexiconsTypeUnknown::CopyImageType::FullSize);
             else
-                return QString();
+                return QStringList();
+        } else if (role == QuoteRecordEmbedImagesAltRole) {
+            if (m_postHash.contains(record_cid))
+                return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
+                        m_postHash[record_cid],
+                        AtProtocolType::LexiconsTypeUnknown::CopyImageType::Alt);
+            else
+                return QStringList();
         } else if (role == QuoteRecordIsRepostedRole) {
             if (m_postHash.contains(record_cid))
                 return m_postHash[record_cid].viewer.repost.contains(account().did);

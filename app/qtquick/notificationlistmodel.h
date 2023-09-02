@@ -44,6 +44,7 @@ public:
         IndexedAtRole,
         EmbedImagesRole,
         EmbedImagesFullRole,
+        EmbedImagesAltRole,
         IsRepostedRole,
         IsLikedRole,
         RepostedUriRole,
@@ -60,6 +61,7 @@ public:
         QuoteRecordRecordTextRole,
         QuoteRecordEmbedImagesRole,
         QuoteRecordEmbedImagesFullRole,
+        QuoteRecordEmbedImagesAltRole,
         QuoteRecordIsRepostedRole,
         QuoteRecordIsLikedRole,
 
