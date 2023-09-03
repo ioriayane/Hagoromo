@@ -37,7 +37,7 @@ ColumnLayout {
                         string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestMention(string account_uuid, string handle)
     signal requestViewAuthorFeed(string account_uuid, string did, string handle)
-    signal requestViewImages(int index, var paths)
+    signal requestViewImages(int index, var paths, var alts)
     signal requestViewGeneratorFeed(string account_uuid, string name, string uri)
     signal requestReportPost(string account_uuid, string uri, string cid)
     signal requestReportAccount(string account_uuid, string did)
@@ -76,7 +76,7 @@ ColumnLayout {
                                      columnStackView.push(postThreadComponent, { "postThreadUri": uri })
                                  }
 
-            onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
+            onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
 
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onRequestViewGeneratorFeed: (name, uri) => columnView.requestViewGeneratorFeed(account.uuid, name, uri)
@@ -110,7 +110,7 @@ ColumnLayout {
                                      // これはPostThreadViewのプロパティにダイレクトに設定する
                                      columnStackView.push(postThreadComponent, { "postThreadUri": uri })
                                  }
-            onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
+            onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
 
@@ -132,7 +132,7 @@ ColumnLayout {
                                      // これはPostThreadViewのプロパティにダイレクトに設定する
                                      columnStackView.push(postThreadComponent, { "postThreadUri": uri })
                                  }
-            onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
+            onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onRequestViewGeneratorFeed: (name, uri) => columnView.requestViewGeneratorFeed(account.uuid, name, uri)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
@@ -163,7 +163,7 @@ ColumnLayout {
             onRequestViewAuthorFeed: (did, handle) =>
                                      columnView.requestViewAuthorFeed(account.uuid, did, handle)
 
-            onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
+            onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onRequestViewGeneratorFeed: (name, uri) => columnView.requestViewGeneratorFeed(account.uuid, name, uri)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
@@ -201,7 +201,7 @@ ColumnLayout {
                                      columnStackView.push(postThreadComponent, { "postThreadUri": uri })
                                  }
 
-            onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
+            onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onRequestViewGeneratorFeed: (name, uri) => columnView.requestViewGeneratorFeed(account.uuid, name, uri)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
@@ -248,7 +248,7 @@ ColumnLayout {
                                      columnStackView.push(postThreadComponent, { "postThreadUri": uri })
                                  }
 
-            onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
+            onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onRequestViewGeneratorFeed: (name, uri) => columnView.requestViewGeneratorFeed(account.uuid, name, uri)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
@@ -280,7 +280,7 @@ ColumnLayout {
                                      columnStackView.push(postThreadComponent, { "postThreadUri": uri })
                                  }
 
-            onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
+            onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onRequestViewGeneratorFeed: (name, uri) => columnView.requestViewGeneratorFeed(account.uuid, name, uri)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)

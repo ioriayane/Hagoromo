@@ -41,15 +41,17 @@ void copyUnknown(const QJsonObject &src, QVariant &dest)
     }
 }
 
-QStringList copyImagesFromPostView(const AppBskyFeedDefs::PostView &post, const bool thumb)
+QStringList copyImagesFromPostView(const AppBskyFeedDefs::PostView &post, const CopyImageType type)
 {
     if (post.embed_type == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedImages_View) {
         QStringList images;
         for (const auto &image : post.embed_AppBskyEmbedImages_View.images) {
-            if (thumb)
+            if (type == CopyImageType::Thumb)
                 images.append(image.thumb);
-            else
+            else if (type == CopyImageType::FullSize)
                 images.append(image.fullsize);
+            else if (type == CopyImageType::Alt)
+                images.append(image.alt);
         }
         return images;
     } else if (post.embed_type
@@ -60,10 +62,12 @@ QStringList copyImagesFromPostView(const AppBskyFeedDefs::PostView &post, const 
         QStringList images;
         for (const auto &image :
              post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedImages_View.images) {
-            if (thumb)
+            if (type == CopyImageType::Thumb)
                 images.append(image.thumb);
-            else
+            else if (type == CopyImageType::FullSize)
                 images.append(image.fullsize);
+            else if (type == CopyImageType::Alt)
+                images.append(image.alt);
         }
         return images;
     } else {
@@ -71,26 +75,31 @@ QStringList copyImagesFromPostView(const AppBskyFeedDefs::PostView &post, const 
     }
 }
 
-QStringList copyImagesFromRecord(const AppBskyEmbedRecord::ViewRecord &record, const bool thumb)
+QStringList copyImagesFromRecord(const AppBskyEmbedRecord::ViewRecord &record,
+                                 const CopyImageType type)
 {
     // unionの配列で複数種類を混ぜられる
     QStringList images;
     for (const auto &view : record.embeds_AppBskyEmbedImages_View) {
         for (const auto &image : view.images) {
-            if (thumb)
+            if (type == CopyImageType::Thumb)
                 images.append(image.thumb);
-            else
+            else if (type == CopyImageType::FullSize)
                 images.append(image.fullsize);
+            else if (type == CopyImageType::Alt)
+                images.append(image.alt);
         }
     }
     for (const auto &view : record.embeds_AppBskyEmbedRecordWithMedia_View) {
         if (view.media_type
             == AppBskyEmbedRecordWithMedia::ViewMediaType::media_AppBskyEmbedImages_View) {
             for (const auto &image : view.media_AppBskyEmbedImages_View.images) {
-                if (thumb)
+                if (type == CopyImageType::Thumb)
                     images.append(image.thumb);
-                else
+                else if (type == CopyImageType::FullSize)
                     images.append(image.fullsize);
+                else if (type == CopyImageType::Alt)
+                    images.append(image.alt);
             }
         }
     }

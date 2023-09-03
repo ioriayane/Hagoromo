@@ -60,9 +60,14 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     else if (role == IndexedAtLongRole)
         return formatDateTime(current.post.indexedAt, true);
     else if (role == EmbedImagesRole)
-        return LexiconsTypeUnknown::copyImagesFromPostView(current.post, true);
+        return LexiconsTypeUnknown::copyImagesFromPostView(
+                current.post, LexiconsTypeUnknown::CopyImageType::Thumb);
     else if (role == EmbedImagesFullRole)
-        return LexiconsTypeUnknown::copyImagesFromPostView(current.post, false);
+        return LexiconsTypeUnknown::copyImagesFromPostView(
+                current.post, LexiconsTypeUnknown::CopyImageType::FullSize);
+    else if (role == EmbedImagesAltRole)
+        return LexiconsTypeUnknown::copyImagesFromPostView(current.post,
+                                                           LexiconsTypeUnknown::CopyImageType::Alt);
 
     else if (role == IsRepostedRole)
         return current.post.viewer.repost.contains(account().did);
@@ -77,7 +82,8 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
              || role == QuoteRecordDisplayNameRole || role == QuoteRecordHandleRole
              || role == QuoteRecordAvatarRole || role == QuoteRecordRecordTextRole
              || role == QuoteRecordIndexedAtRole || role == QuoteRecordEmbedImagesRole
-             || role == QuoteRecordEmbedImagesFullRole || role == QuoteRecordBlockedRole)
+             || role == QuoteRecordEmbedImagesFullRole || role == QuoteRecordEmbedImagesAltRole
+             || role == QuoteRecordBlockedRole)
         return getQuoteItem(current.post, role);
 
     else if (role == HasExternalLinkRole)
@@ -397,6 +403,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[IndexedAtLongRole] = "indexedAtLong";
     roles[EmbedImagesRole] = "embedImages";
     roles[EmbedImagesFullRole] = "embedImagesFull";
+    roles[EmbedImagesAltRole] = "embedImagesAlt";
 
     roles[IsRepostedRole] = "isReposted";
     roles[IsLikedRole] = "isLiked";
@@ -413,6 +420,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[QuoteRecordIndexedAtRole] = "quoteRecordIndexedAt";
     roles[QuoteRecordEmbedImagesRole] = "quoteRecordEmbedImages";
     roles[QuoteRecordEmbedImagesFullRole] = "quoteRecordEmbedImagesFull";
+    roles[QuoteRecordEmbedImagesAltRole] = "quoteRecordEmbedImagesAlt";
     roles[QuoteRecordBlockedRole] = "quoteRecordBlocked";
 
     roles[HasExternalLinkRole] = "hasExternalLink";
@@ -608,20 +616,35 @@ QVariant TimelineListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDefs::
         // unionの配列で読み込んでない
         if (has_record)
             return LexiconsTypeUnknown::copyImagesFromRecord(
-                    post.embed_AppBskyEmbedRecord_View->record_ViewRecord, true);
+                    post.embed_AppBskyEmbedRecord_View->record_ViewRecord,
+                    LexiconsTypeUnknown::CopyImageType::Thumb);
         else if (has_with_image)
             return LexiconsTypeUnknown::copyImagesFromRecord(
-                    post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord, true);
+                    post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord,
+                    LexiconsTypeUnknown::CopyImageType::Thumb);
         else
             return QStringList();
     } else if (role == QuoteRecordEmbedImagesFullRole) {
         // unionの配列で読み込んでない
         if (has_record)
             return LexiconsTypeUnknown::copyImagesFromRecord(
-                    post.embed_AppBskyEmbedRecord_View->record_ViewRecord, false);
+                    post.embed_AppBskyEmbedRecord_View->record_ViewRecord,
+                    LexiconsTypeUnknown::CopyImageType::FullSize);
         else if (has_with_image)
             return LexiconsTypeUnknown::copyImagesFromRecord(
-                    post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord, false);
+                    post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord,
+                    LexiconsTypeUnknown::CopyImageType::FullSize);
+        else
+            return QStringList();
+    } else if (role == QuoteRecordEmbedImagesAltRole) {
+        if (has_record)
+            return LexiconsTypeUnknown::copyImagesFromRecord(
+                    post.embed_AppBskyEmbedRecord_View->record_ViewRecord,
+                    LexiconsTypeUnknown::CopyImageType::Alt);
+        else if (has_with_image)
+            return LexiconsTypeUnknown::copyImagesFromRecord(
+                    post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord,
+                    LexiconsTypeUnknown::CopyImageType::Alt);
         else
             return QStringList();
     } else if (role == QuoteRecordBlockedRole) {

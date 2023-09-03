@@ -87,7 +87,7 @@ void ComAtprotoRepoCreateRecord::post(const QString &text)
             json_image.insert("mimeType", blob.mimeType);
             json_image.insert("size", blob.size);
             json_blob.insert("image", json_image);
-            json_blob.insert("alt", "");
+            json_blob.insert("alt", blob.alt);
 
             json_blobs.append(json_blob);
         }
