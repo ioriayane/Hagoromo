@@ -67,6 +67,7 @@ Dialog {
 
         postText.clear()
         embedImagePreview.embedImages = []
+        embedImagePreview.embedAlts = []
         externalLink.clear()
         addingExternalLinkUrlText.text = ""
     }
@@ -276,12 +277,33 @@ Dialog {
             Repeater {
                 id: embedImagePreview
                 property var embedImages: []
+                property var embedAlts: []
                 model: embedImagePreview.embedImages
                 delegate: ImageWithIndicator {
                     Layout.preferredWidth: 97 * AdjustedValues.ratio
                     Layout.preferredHeight: 97 * AdjustedValues.ratio
                     fillMode: Image.PreserveAspectCrop
                     source: modelData
+                    TagLabel {
+                        anchors.left: parent.left
+                        anchors.bottom: parent.bottom
+                        anchors.margins: 3
+                        visible: model.index < embedImagePreview.embedAlts.length ? embedImagePreview.embedAlts[model.index].length > 0 : false
+                        source: ""
+                        fontPointSize: AdjustedValues.f8
+                        text: "Alt"
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            altEditDialog.editingIndex = model.index
+                            altEditDialog.embedImage = modelData
+                            if(model.index < embedImagePreview.embedAlts.length){
+                                altEditDialog.embedAlt = embedImagePreview.embedAlts[model.index]
+                            }
+                            altEditDialog.open()
+                        }
+                    }
                     IconButton {
                         enabled: !createRecord.running
                         width: AdjustedValues.b24
@@ -290,18 +312,23 @@ Dialog {
                         anchors.right: parent.right
                         anchors.margins: 5
                         iconSource: "../images/delete.png"
-                        onClicked: {
-                            var images = embedImagePreview.embedImages
-                            var new_images = []
-                            for(var i=0; i<images.length; i++){
-                                if(images[i] === modelData){
-                                    continue;
-                                }
-                                new_images.push(images[i])
-                            }
-                            embedImagePreview.embedImages = new_images
-                        }
+                        onClicked: embedImagePreview.removeImage(modelData)
                     }
+                }
+                function removeImage(path){
+                    var images = embedImagePreview.embedImages
+                    var alts = embedImagePreview.embedAlts
+                    var new_images = []
+                    var new_alts = []
+                    for(var i=0; i<images.length; i++){
+                        if(images[i] === path){
+                            continue;
+                        }
+                        new_images.push(images[i])
+                        new_alts.push(alts[i])
+                    }
+                    embedImagePreview.embedImages = new_images
+                    embedImagePreview.embedAlts = new_alts
                 }
             }
         }
@@ -461,6 +488,7 @@ Dialog {
                 return
             }
             var new_images = embedImagePreview.embedImages
+            var new_alts = embedImagePreview.embedAlts
             for(var i=0; i<files.length; i++){
                 if(new_images.length >= 4){
                     break
@@ -469,8 +497,10 @@ Dialog {
                     continue;
                 }
                 new_images.push(files[i])
+                new_alts.push("")
             }
             embedImagePreview.embedImages = new_images
+            embedImagePreview.embedAlts = new_alts
         }
         property string prevFolder
     }
@@ -480,6 +510,18 @@ Dialog {
         onAccepted: {
             postDialog.accountModel.update(accountCombo.currentIndex, AccountListModel.PostLanguagesRole, selectedLanguages)
             postLanguagesButton.setLanguageText(selectedLanguages)
+        }
+    }
+
+    AltEditDialog {
+        id: altEditDialog
+        property int editingIndex: -1
+        onAccepted: {
+            if(editingIndex >= 0 && editingIndex < embedImagePreview.embedAlts.length){
+                var alts = embedImagePreview.embedAlts
+                alts[editingIndex] = altEditDialog.embedAlt
+                embedImagePreview.embedAlts = alts
+            }
         }
     }
 }
