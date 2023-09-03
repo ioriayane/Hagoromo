@@ -657,6 +657,7 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[IndexedAtRole] = "indexedAt";
     roles[EmbedImagesRole] = "embedImages";
     roles[EmbedImagesFullRole] = "embedImagesFull";
+    roles[EmbedImagesAltRole] = "embedImagesAlt";
 
     roles[IsRepostedRole] = "isReposted";
     roles[IsLikedRole] = "isLiked";
@@ -674,6 +675,7 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[QuoteRecordRecordTextRole] = "quoteRecordRecordText";
     roles[QuoteRecordEmbedImagesRole] = "quoteRecordEmbedImages";
     roles[QuoteRecordEmbedImagesFullRole] = "quoteRecordEmbedImagesFull";
+    roles[QuoteRecordEmbedImagesAltRole] = "quoteRecordEmbedImagesAlt";
     roles[QuoteRecordIsRepostedRole] = "quoteRecordIsReposted";
     roles[QuoteRecordIsLikedRole] = "quoteRecordIsLiked";
 
