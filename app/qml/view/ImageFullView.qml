@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import QtQuick.Controls.Material 2.15
 
 import tech.relog.hagoromo.singleton 1.0
 
@@ -71,13 +72,20 @@ Rectangle {
             Label {
                 id: altMessage
                 Layout.preferredWidth: image.paintedWidth
-                Layout.topMargin: 5
-                Layout.bottomMargin: 5
                 Layout.alignment: Qt.AlignHCenter
+                topPadding: 5
+                leftPadding: 5
+                rightPadding: 5
+                bottomPadding: 5
                 visible: text.length > 0
                 wrapMode: Text.Wrap
                 font.pointSize: AdjustedValues.f10
                 text: model.index < imageFullView.alts.length ? imageFullView.alts[model.index] : ""
+                background: Rectangle {
+                    width: altMessage.width
+                    height: altMessage.height
+                    color: Material.backgroundColor
+                }
             }
         }
     }
