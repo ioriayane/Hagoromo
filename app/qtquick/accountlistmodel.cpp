@@ -361,6 +361,7 @@ void AccountListModel::createSession(int row)
             qDebug() << "Create session" << session->did() << session->handle();
             m_accountList[row].did = session->did();
             m_accountList[row].handle = session->handle();
+            m_accountList[row].email = session->email();
             m_accountList[row].accessJwt = session->accessJwt();
             m_accountList[row].refreshJwt = session->refreshJwt();
             m_accountList[row].status = AccountStatus::Authorized;
@@ -391,6 +392,7 @@ void AccountListModel::refreshSession(int row)
             qDebug() << "Refresh session" << session->did() << session->handle();
             m_accountList[row].did = session->did();
             m_accountList[row].handle = session->handle();
+            m_accountList[row].email = session->email();
             m_accountList[row].accessJwt = session->accessJwt();
             m_accountList[row].refreshJwt = session->refreshJwt();
             m_accountList[row].status = AccountStatus::Authorized;
