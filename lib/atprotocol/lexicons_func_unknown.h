@@ -17,6 +17,7 @@ struct Blob
 {
     QString cid;
     QString mimeType;
+    QString alt;
     int size = 0;
 };
 

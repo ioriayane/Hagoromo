@@ -457,7 +457,7 @@ Dialog {
                         createRecord.setExternalLink(externalLink.uri, externalLink.title, externalLink.description, externalLink.thumbLocal)
                         createRecord.postWithImages()
                     }else if(embedImagePreview.embedImages.length > 0){
-                        createRecord.setImages(embedImagePreview.embedImages)
+                        createRecord.setImages(embedImagePreview.embedImages, embedImagePreview.embedAlts)
                         createRecord.postWithImages()
                     }else{
                         createRecord.post()
