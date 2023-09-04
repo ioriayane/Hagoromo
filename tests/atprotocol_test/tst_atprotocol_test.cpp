@@ -292,6 +292,22 @@ void atprotocol_test::test_OpenGraphProtocol()
                  ogp.description().toLocal8Bit());
         QVERIFY(ogp.thumb() == "");
     }
+
+    {
+        QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
+        ogp.getData(m_service + "/ogp/file6.html");
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+
+        QVERIFY2(ogp.uri() == "http://localhost/response/ogp/file6.html", ogp.uri().toLocal8Bit());
+        QVERIFY2(ogp.title() == QString("file6 TITLE"), ogp.title().toLocal8Bit());
+        QVERIFY2(ogp.description() == QString("file6 ").append(QChar(0x8a73)).append(QChar(0x7d30)),
+                 ogp.description().toLocal8Bit());
+        QVERIFY(ogp.thumb() == "http://localhost:%1/response/ogp/images/file6.png");
+    }
 }
 
 void atprotocol_test::test_getTimeline()

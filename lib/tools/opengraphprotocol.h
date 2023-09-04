@@ -31,6 +31,7 @@ private:
     bool parse(const QByteArray &data, const QString &src_uri);
     QString extractCharset(const QString &data) const;
     QString rebuildHtml(const QString &text) const;
+    QString rebuildTag(QString text) const;
 
     QRegularExpression m_rxMeta;
 
