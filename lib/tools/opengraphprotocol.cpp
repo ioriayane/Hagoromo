@@ -115,7 +115,7 @@ void OpenGraphProtocol::setThumb(const QString &newThumb)
 bool OpenGraphProtocol::parse(const QByteArray &data, const QString &src_uri)
 {
     bool ret = false;
-    QString charset = extractCharset(rebuildHtml(QString::fromUtf8(data)));
+    QString charset = extractCharset(QString::fromUtf8(data));
     qDebug() << "charset" << charset;
 
     QTextStream ts(data);
@@ -130,6 +130,9 @@ bool OpenGraphProtocol::parse(const QByteArray &data, const QString &src_uri)
     QDomDocument doc;
     if (!doc.setContent(rebuild_text, false, &errorMsg, &errorLine, &errorColumn)) {
         qDebug() << "parse" << errorMsg << ", Line=" << errorLine << ", Column=" << errorColumn;
+        qDebug().noquote().nospace() << "--- rebuild_text -----------------";
+        qDebug().noquote().nospace() << rebuild_text;
+        qDebug().noquote().nospace() << "----------------------------------";
     } else {
         QDomElement root = doc.documentElement();
         QDomElement head = root.firstChildElement("head");
@@ -169,48 +172,52 @@ QString OpenGraphProtocol::extractCharset(const QString &data) const
 {
     QString charset = "utf-8";
 
+    QRegularExpressionMatch match = m_rxMeta.match(data);
+    if (match.capturedTexts().isEmpty())
+        return charset;
+
     QString errorMsg;
     int errorLine;
     int errorColumn;
+
     QDomDocument doc;
+    QString result;
+    int pos;
+    while ((pos = match.capturedStart()) != -1) {
+        result = rebuildTag(match.captured());
 
-    if (!doc.setContent(data, false, &errorMsg, &errorLine, &errorColumn)) {
-        qDebug() << "extractCharset" << errorMsg << ", Line=" << errorLine
-                 << ", Column=" << errorColumn;
-        qDebug().noquote().nospace() << "--------------------";
-        qDebug().noquote().nospace() << data;
-        qDebug().noquote().nospace() << "--------------------";
-    } else {
-        QDomElement root = doc.documentElement();
-        QDomElement head = root.firstChildElement("head");
-
-        QDomElement element = head.firstChildElement("meta");
-        while (!element.isNull()) {
-            if (element.attribute("http-equiv") == "content-type") {
-                QString content = element.attribute("content");
-                QStringList items = content.split(";");
-                bool exist = false;
-                for (const QString &item : qAsConst(items)) {
-                    QStringList parts = item.trimmed().split("=");
-                    if (parts.length() != 2)
-                        continue;
-                    if (parts[0] == "charset") {
-                        charset = parts[1].trimmed();
-                        exist = true;
+        if (!doc.setContent(result, false, &errorMsg, &errorLine, &errorColumn)) {
+            qDebug() << "parse" << errorMsg << ", Line=" << errorLine << ", Column=" << errorColumn;
+        } else {
+            QDomElement element = doc.documentElement();
+            if (element.tagName().toLower() == "meta") {
+                if (element.attribute("http-equiv") == "content-type") {
+                    QString content = element.attribute("content");
+                    QStringList items = content.split(";");
+                    bool exist = false;
+                    for (const QString &item : qAsConst(items)) {
+                        QStringList parts = item.trimmed().split("=");
+                        if (parts.length() != 2)
+                            continue;
+                        if (parts[0] == "charset") {
+                            charset = parts[1].trimmed();
+                            exist = true;
+                            break;
+                        }
+                    }
+                    if (exist)
+                        break;
+                } else {
+                    QString temp = element.attribute("charset");
+                    if (!temp.isEmpty()) {
+                        charset = temp;
                         break;
                     }
                 }
-                if (exist)
-                    break;
-            } else {
-                QString temp = element.attribute("charset");
-                if (!temp.isEmpty()) {
-                    charset = temp;
-                    break;
-                }
             }
-            element = element.nextSiblingElement("meta");
         }
+
+        match = m_rxMeta.match(data, pos + match.capturedLength());
     }
 
     return charset;
@@ -222,66 +229,76 @@ QString OpenGraphProtocol::rebuildHtml(const QString &text) const
     if (match.capturedTexts().isEmpty())
         return text;
 
+    QString errorMsg;
+    int errorLine;
+    int errorColumn;
+    QDomDocument doc;
     QString result;
-    QString temp;
     int pos;
-    QChar c;
-    int state = 0;
-    // 0:属性より前
-    // 1:属性名
-    // 2:スペース（=より後ろ）
-    // 3:属性値
-    bool in_quote = false;
     while ((pos = match.capturedStart()) != -1) {
-        temp = match.captured();
-        if (!temp.endsWith("/>") && !temp.toLower().startsWith("<title")) {
-            temp.replace(">", "/>");
+        QString temp = rebuildTag(match.captured());
+        if (doc.setContent(temp, false, &errorMsg, &errorLine, &errorColumn)) {
+            result += temp + "\n";
         }
-
-        for (int i = 0; i < temp.length(); i++) {
-            c = temp.at(i);
-            if (state == 0) {
-                if (c == ' ') {
-                    state = 1;
-                }
-                result += c;
-            } else if (state == 1) {
-                if (c == '=') {
-                    state = 2;
-                    in_quote = false;
-                }
-                result += c;
-            } else if (state == 2) {
-                if (c == '\"') {
-                    in_quote = true;
-                    state = 3;
-                } else if (c != ' ') {
-                    result += '\"';
-                    in_quote = false;
-                    state = 3;
-                }
-                result += c;
-            } else if (state == 3) {
-                if (in_quote) {
-                    if (c == '\"') {
-                        state = 1;
-                        in_quote = false;
-                    }
-                } else {
-                    if (c == ' ') {
-                        result += '\"';
-                        state = 1;
-                    }
-                }
-                result += c;
-            } else {
-            }
-        }
-
-        result += "\n";
-
         match = m_rxMeta.match(text, pos + match.capturedLength());
     }
 
     return QString("<html><head>%1</head></html>").arg(result);
+}
+
+QString OpenGraphProtocol::rebuildTag(QString text) const
+{
+    QChar c;
+    int state = 0;
+    bool in_quote = false;
+    // 0:属性より前
+    // 1:属性名
+    // 2:スペース（=より後ろ）
+    // 3:属性値
+    QString result;
+
+    if (!text.endsWith("/>") && !text.toLower().startsWith("<title")) {
+        text.replace(">", "/>");
+    }
+
+    for (int i = 0; i < text.length(); i++) {
+        c = text.at(i);
+        if (state == 0) {
+            if (c == ' ') {
+                state = 1;
+            }
+            result += c;
+        } else if (state == 1) {
+            if (c == '=') {
+                state = 2;
+                in_quote = false;
+            }
+            result += c;
+        } else if (state == 2) {
+            if (c == '\"') {
+                in_quote = true;
+                state = 3;
+            } else if (c != ' ') {
+                result += '\"';
+                in_quote = false;
+                state = 3;
+            }
+            result += c;
+        } else if (state == 3) {
+            if (in_quote) {
+                if (c == '\"') {
+                    state = 1;
+                    in_quote = false;
+                }
+            } else {
+                if (c == ' ') {
+                    result += '\"';
+                    state = 1;
+                }
+            }
+            result += c;
+        } else {
+        }
+    }
+    return result;
 }
