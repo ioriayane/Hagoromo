@@ -6,6 +6,7 @@
 #include "atprotocol/com/atproto/server/comatprotoservercreatesession.h"
 #include "atprotocol/com/atproto/repo/comatprotorepocreaterecord.h"
 #include "atprotocol/app/bsky/feed/appbskyfeedgettimeline.h"
+#include "atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerator.h"
 #include "tools/opengraphprotocol.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "tools/configurablelabels.h"
@@ -32,6 +33,7 @@ private slots:
     void test_ConfigurableLabels_copy();
     void test_ConfigurableLabels_save();
     void test_ComAtprotoRepoCreateRecord_post();
+    void test_AppBskyFeedGetFeedGenerator();
 
 private:
     void test_putPreferences(const QString &path, const QByteArray &body);
@@ -709,6 +711,31 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_post()
     QVERIFY(spy.count() == 1);
     QList<QVariant> arguments = spy.takeFirst();
     QVERIFY(arguments.at(0).toBool());
+}
+
+void atprotocol_test::test_AppBskyFeedGetFeedGenerator()
+{
+    AtProtocolInterface::AppBskyFeedGetFeedGenerator generator;
+    generator.setAccount(m_account);
+    generator.setService(QString("http://localhost:%1/response").arg(m_listenPort));
+
+    QSignalSpy spy(&generator, SIGNAL(finished(bool)));
+    generator.getFeedGenerator("at://did:plc:42fxwa2jeumqzzggx/app.bsky.feed.generator/aaagrsa");
+    spy.wait();
+    QVERIFY(spy.count() == 1);
+
+    QVERIFY(generator.generatorView().uri
+            == "at://did:plc:42fxwa2jeumqzzggx/app.bsky.feed.generator/aaagrsa");
+    QVERIFY(generator.generatorView().cid == "bafyreib7pgajpklwexy4lidm");
+    QVERIFY(generator.generatorView().did == "did:web:view.bsky.social");
+    QVERIFY(generator.generatorView().displayName == "view:displayName");
+    QVERIFY(generator.generatorView().description == "view:description");
+    QVERIFY(generator.generatorView().avatar == "https://cdn.bsky.social/view_avator.jpeg");
+    QVERIFY(generator.generatorView().creator.did == "did:plc:42fxwa2jeumqzzggxj");
+    QVERIFY(generator.generatorView().creator.handle == "creator.bsky.social");
+    QVERIFY(generator.generatorView().creator.displayName == "creator:displayName");
+    QVERIFY(generator.generatorView().creator.avatar
+            == "https://cdn.bsky.social/creator_avator.jpeg");
 }
 
 void atprotocol_test::test_putPreferences(const QString &path, const QByteArray &body)
