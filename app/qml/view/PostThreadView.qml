@@ -166,10 +166,10 @@ ColumnLayout {
 
                 generatorViewFrame.visible: model.hasGeneratorFeed
                 generatorViewFrame.onClicked: postThreadView.requestViewGeneratorFeed(model.generatorFeedDisplayName, model.generatorFeedUri)
-                generatorAvatarImage.source: model.generatorFeedAvatar
-                generatorDisplayNameLabel.text: model.generatorFeedDisplayName
-                generatorCreatorHandleLabel.text: model.generatorFeedCreatorHandle
-                generatorLikeCountLabel.text: model.generatorFeedLikeCount
+                generatorViewFrame.avatarImage.source: model.generatorFeedAvatar
+                generatorViewFrame.displayNameLabel.text: model.generatorFeedDisplayName
+                generatorViewFrame.creatorHandleLabel.text: model.generatorFeedCreatorHandle
+                generatorViewFrame.likeCountLabel.text: model.generatorFeedLikeCount
 
                 postInformation.visible: (postThreadUri === model.uri)
                 postInformation.labelsLayout.model: postInformation.visible ? model.labels : []

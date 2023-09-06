@@ -40,10 +40,6 @@ ClickableFrame {
     property alias blockedQuoteFrame: blockedQuoteFrame
     property alias externalLinkFrame: externalLinkFrame
     property alias generatorViewFrame: generatorFeedFrame
-    property alias generatorAvatarImage: generatorFeedAvatarImage
-    property alias generatorDisplayNameLabel: generatorFeedDisplayNameLabel
-    property alias generatorCreatorHandleLabel: generatorFeedCreatorHandleLabel
-    property alias generatorLikeCountLabel: generatorFeedLikeCountLabel
     property alias postInformation: postInformation
     property alias postControls: postControls
 
@@ -242,53 +238,10 @@ ClickableFrame {
                         }
                     }
 
-                    ClickableFrame {
+                    GeneratorFeedLinkCard {
                         id: generatorFeedFrame
                         Layout.preferredWidth: parent.width
                         Layout.topMargin: 5
-
-                        ColumnLayout {
-                            GridLayout {
-                                columns: 2
-                                rowSpacing: 3
-                                AvatarImage {
-                                    id: generatorFeedAvatarImage
-                                    Layout.preferredWidth: AdjustedValues.i24
-                                    Layout.preferredHeight: AdjustedValues.i24
-                                    Layout.rowSpan: 2
-                                    altSource: "../images/account_icon.png"
-                                }
-                                Label {
-                                    id: generatorFeedDisplayNameLabel
-                                    Layout.fillWidth: true
-                                    font.pointSize: AdjustedValues.f10
-                                }
-                                Label {
-                                    id: generatorFeedCreatorHandleLabel
-                                    color: Material.color(Material.Grey)
-                                    font.pointSize: AdjustedValues.f8
-                                }
-                            }
-                            RowLayout {
-                                Layout.leftMargin: 3
-                                spacing: 3
-                                Image {
-                                    Layout.preferredWidth: AdjustedValues.i16
-                                    Layout.preferredHeight: AdjustedValues.i16
-                                    source: "../images/like.png"
-                                    layer.enabled: true
-                                    layer.effect: ColorOverlay {
-                                        color: Material.color(Material.Pink)
-                                    }
-                                }
-                                Label {
-                                    id: generatorFeedLikeCountLabel
-                                    Layout.alignment: Qt.AlignVCenter
-                                    Layout.fillWidth: true
-                                    font.pointSize: AdjustedValues.f8
-                                }
-                            }
-                        }
                     }
 
                     PostInformation {
