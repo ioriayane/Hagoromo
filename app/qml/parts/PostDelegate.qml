@@ -39,7 +39,7 @@ ClickableFrame {
     property alias quoteRecordImagePreview: quoteRecordImagePreview
     property alias blockedQuoteFrame: blockedQuoteFrame
     property alias externalLinkFrame: externalLinkFrame
-    property alias generatorViewFrame: generatorFeedFrame
+    property alias feedGeneratorFrame: feedGeneratorFrame
     property alias postInformation: postInformation
     property alias postControls: postControls
 
@@ -238,8 +238,8 @@ ClickableFrame {
                         }
                     }
 
-                    GeneratorFeedLinkCard {
-                        id: generatorFeedFrame
+                    FeedGeneratorLinkCard {
+                        id: feedGeneratorFrame
                         Layout.preferredWidth: parent.width
                         Layout.topMargin: 5
                     }

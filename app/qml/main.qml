@@ -261,7 +261,7 @@ ApplicationWindow {
                                          scrollView.showRightMost()
                                      }
             onRequestViewImages: (index, paths, alts) => imageFullView.open(index, paths, alts)
-            onRequestViewGeneratorFeed: (account_uuid, name, uri) => {
+            onRequestViewFeedGenerator: (account_uuid, name, uri) => {
                                             columnManageModel.append(account.uuid, 4, false, 300000, 400, name, uri)
                                             scrollView.showRightMost()
                                         }

@@ -61,12 +61,12 @@ public:
         ExternalLinkDescriptionRole,
         ExternalLinkThumbRole,
 
-        HasGeneratorFeedRole,
-        GeneratorFeedUriRole,
-        GeneratorFeedCreatorHandleRole,
-        GeneratorFeedDisplayNameRole,
-        GeneratorFeedLikeCountRole,
-        GeneratorFeedAvatarRole,
+        HasFeedGeneratorRole,
+        FeedGeneratorUriRole,
+        FeedGeneratorCreatorHandleRole,
+        FeedGeneratorDisplayNameRole,
+        FeedGeneratorLikeCountRole,
+        FeedGeneratorAvatarRole,
 
         HasReplyRole,
         ReplyRootCidRole,

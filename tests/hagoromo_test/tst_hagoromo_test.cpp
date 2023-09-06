@@ -10,6 +10,7 @@
 #include "notificationlistmodel.h"
 #include "userprofile.h"
 #include "tools/qstringex.h"
+#include "feedgeneratorlink.h"
 
 class hagoromo_test : public QObject
 {
@@ -37,6 +38,7 @@ private slots:
     void test_TimelineListModel_quote_label();
     void test_NotificationListModel_warn();
     void test_TimelineListModel_next();
+    void test_FeedGeneratorLink();
 
 private:
     WebServer m_mockServer;
@@ -1223,6 +1225,34 @@ void hagoromo_test::test_TimelineListModel_next()
     row = 12;
     QVERIFY(model.item(row, TimelineListModel::CidRole).toString()
             == "bafyreiejog3yvjc2tdg4muknodbplaib2yqftukwurd4qjcnal3zdxu4ni11_13");
+}
+
+void hagoromo_test::test_FeedGeneratorLink()
+{
+    FeedGeneratorLink link;
+
+    QVERIFY(link.checkUri("https://bsky.app/profile/did:plc:hoge/feed/aaaaaaaa") == true);
+    QVERIFY(link.checkUri("https://staging.bsky.app/profile/did:plc:hoge/feed/aaaaaaaa") == false);
+    QVERIFY(link.checkUri("https://bsky.app/feeds/did:plc:hoge/feed/aaaaaaaa") == false);
+    QVERIFY(link.checkUri("https://bsky.app/profile/did:plc:hoge/feeds/aaaaaaaa") == false);
+    QVERIFY(link.checkUri("https://bsky.app/profile/did:plc:hoge/feed/") == false);
+    QVERIFY(link.checkUri("https://bsky.app/profile/handle/feed/aaaaaaaa") == false);
+
+    QVERIFY(link.convertToAtUri("https://bsky.app/profile/did:plc:hoge/feed/aaaaaaaa")
+            == "at://did:plc:hoge/app.bsky.feed.generator/aaaaaaaa");
+
+    link.setAccount(m_service + "/generator", QString(), QString(), QString(), "dummy", QString());
+    {
+        QSignalSpy spy(&link, SIGNAL(runningChanged()));
+        link.getFeedGenerator("https://bsky.app/profile/did:plc:hoge/feed/aaaaaaaa");
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    QVERIFY(link.avatar() == "https://cdn.bsky.social/view_avator.jpeg");
+    QVERIFY(link.displayName() == "view:displayName");
+    QVERIFY(link.creatorHandle() == "creator.bsky.social");
+    QVERIFY(link.likeCount() == 9);
 }
 
 void hagoromo_test::test_RecordOperatorCreateRecord(const QByteArray &body)

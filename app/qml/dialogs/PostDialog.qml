@@ -8,6 +8,7 @@ import tech.relog.hagoromo.recordoperator 1.0
 import tech.relog.hagoromo.accountlistmodel 1.0
 import tech.relog.hagoromo.languagelistmodel 1.0
 import tech.relog.hagoromo.externallink 1.0
+import tech.relog.hagoromo.feedgeneratorlink 1.0
 import tech.relog.hagoromo.systemtool 1.0
 import tech.relog.hagoromo.singleton 1.0
 
@@ -69,6 +70,7 @@ Dialog {
         embedImagePreview.embedImages = []
         embedImagePreview.embedAlts = []
         externalLink.clear()
+        feedGeneratorLink.clear()
         addingExternalLinkUrlText.text = ""
     }
 
@@ -102,6 +104,9 @@ Dialog {
     }
     ExternalLink {
         id: externalLink
+    }
+    FeedGeneratorLink {
+        id: feedGeneratorLink
     }
 
     ColumnLayout {
@@ -234,15 +239,30 @@ Dialog {
                 id: externalLinkButton
                 iconSource: "../images/add.png"
                 enabled: addingExternalLinkUrlText.text.length > 0
-                onClicked: externalLink.getExternalLink(addingExternalLinkUrlText.text)
+                onClicked: {
+                    var uri = addingExternalLinkUrlText.text
+                    var at_uri = feedGeneratorLink.convertToAtUri(uri)
+                    if(at_uri.length > 0){
+                        var row = accountCombo.currentIndex;
+                        feedGeneratorLink.setAccount(postDialog.accountModel.item(row, AccountListModel.ServiceRole),
+                                                     postDialog.accountModel.item(row, AccountListModel.DidRole),
+                                                     postDialog.accountModel.item(row, AccountListModel.HandleRole),
+                                                     postDialog.accountModel.item(row, AccountListModel.EmailRole),
+                                                     postDialog.accountModel.item(row, AccountListModel.AccessJwtRole),
+                                                     postDialog.accountModel.item(row, AccountListModel.RefreshJwtRole))
+                        feedGeneratorLink.getFeedGenerator(at_uri)
+                    }else{
+                        externalLink.getExternalLink(uri)
+                    }
+                }
                 BusyIndicator {
                     anchors.fill: parent
                     anchors.margins: 3
-                    visible: externalLink.running
+                    visible: externalLink.running || feedGeneratorLink.running
                 }
                 states: [
                     State {
-                        when: externalLink.running || createRecord.running
+                        when: externalLink.running || feedGeneratorLink.running || createRecord.running
                         PropertyChanges {
                             target: externalLinkButton
                             enabled: false
@@ -250,11 +270,14 @@ Dialog {
                         }
                     },
                     State {
-                        when: externalLink.valid
+                        when: externalLink.valid || feedGeneratorLink.valid
                         PropertyChanges {
                             target: externalLinkButton
                             iconSource: "../images/delete.png"
-                            onClicked: externalLink.clear()
+                            onClicked: {
+                                externalLink.clear()
+                                feedGeneratorLink.clear()
+                            }
                         }
                     }
                 ]
@@ -269,6 +292,15 @@ Dialog {
             uriLabel.text: externalLink.uri
             titleLabel.text: externalLink.title
             descriptionLabel.text: externalLink.description
+        }
+        FeedGeneratorLinkCard {
+            Layout.preferredWidth: 400 * AdjustedValues.ratio
+            visible: feedGeneratorLink.valid
+
+            avatarImage.source: feedGeneratorLink.avatar
+            displayNameLabel.text: feedGeneratorLink.displayName
+            creatorHandleLabel.text: feedGeneratorLink.creatorHandle
+            likeCountLabel.text: feedGeneratorLink.likeCount
         }
 
         RowLayout {
@@ -401,7 +433,7 @@ Dialog {
                 }
             }
             IconButton {
-                enabled: !createRecord.running && !externalLink.valid
+                enabled: !createRecord.running && !externalLink.valid && !feedGeneratorLink.valid
                 iconSource: "../images/add_image.png"
                 iconSize: AdjustedValues.i16
                 flat: true
@@ -431,7 +463,11 @@ Dialog {
             Button {
                 id: postButton
                 Layout.alignment: Qt.AlignRight
-                enabled: postText.text.length > 0 && postText.realTextLength <= 300 && !createRecord.running && !externalLink.running
+                enabled: postText.text.length > 0 &&
+                         postText.realTextLength <= 300 &&
+                         !createRecord.running &&
+                         !externalLink.running &&
+                         !feedGeneratorLink.running
                 font.pointSize: AdjustedValues.f10
                 text: qsTr("Post")
                 onClicked: {
@@ -456,6 +492,8 @@ Dialog {
                     if(externalLink.valid){
                         createRecord.setExternalLink(externalLink.uri, externalLink.title, externalLink.description, externalLink.thumbLocal)
                         createRecord.postWithImages()
+                    }else if(feedGeneratorLink.valid){
+
                     }else if(embedImagePreview.embedImages.length > 0){
                         createRecord.setImages(embedImagePreview.embedImages, embedImagePreview.embedAlts)
                         createRecord.postWithImages()

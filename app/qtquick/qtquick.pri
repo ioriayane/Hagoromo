@@ -12,6 +12,7 @@ SOURCES += \
     $$PWD/customfeedlistmodel.cpp \
     $$PWD/encryption.cpp \
     $$PWD/externallink.cpp \
+    $$PWD/feedgeneratorlink.cpp \
     $$PWD/feedgeneratorlistmodel.cpp \
     $$PWD/feedtypelistmodel.cpp \
     $$PWD/followerslistmodel.cpp \
@@ -41,6 +42,7 @@ HEADERS += \
     $$PWD/encryption.h \
     $$PWD/encryption_seed.h \
     $$PWD/externallink.h \
+    $$PWD/feedgeneratorlink.h \
     $$PWD/feedgeneratorlistmodel.h \
     $$PWD/feedtypelistmodel.h \
     $$PWD/followerslistmodel.h \

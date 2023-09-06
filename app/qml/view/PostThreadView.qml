@@ -27,7 +27,7 @@ ColumnLayout {
     signal requestViewThread(string uri)
     signal requestViewImages(int index, var paths, var alts)
     signal requestViewProfile(string did)
-    signal requestViewGeneratorFeed(string name, string uri)
+    signal requestViewFeedGenerator(string name, string uri)
     signal requestReportPost(string uri, string cid)
 
     signal back()
@@ -164,12 +164,12 @@ ColumnLayout {
                 externalLinkFrame.uriLabel.text: model.externalLinkUri
                 externalLinkFrame.descriptionLabel.text: model.externalLinkDescription
 
-                generatorViewFrame.visible: model.hasGeneratorFeed
-                generatorViewFrame.onClicked: postThreadView.requestViewGeneratorFeed(model.generatorFeedDisplayName, model.generatorFeedUri)
-                generatorViewFrame.avatarImage.source: model.generatorFeedAvatar
-                generatorViewFrame.displayNameLabel.text: model.generatorFeedDisplayName
-                generatorViewFrame.creatorHandleLabel.text: model.generatorFeedCreatorHandle
-                generatorViewFrame.likeCountLabel.text: model.generatorFeedLikeCount
+                feedGeneratorFrame.visible: model.hasFeedGenerator
+                feedGeneratorFrame.onClicked: postThreadView.requestViewFeedGenerator(model.feedGeneratorDisplayName, model.feedGeneratorUri)
+                feedGeneratorFrame.avatarImage.source: model.feedGeneratorAvatar
+                feedGeneratorFrame.displayNameLabel.text: model.feedGeneratorDisplayName
+                feedGeneratorFrame.creatorHandleLabel.text: model.feedGeneratorCreatorHandle
+                feedGeneratorFrame.likeCountLabel.text: model.feedGeneratorLikeCount
 
                 postInformation.visible: (postThreadUri === model.uri)
                 postInformation.labelsLayout.model: postInformation.visible ? model.labels : []

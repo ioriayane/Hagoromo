@@ -9,29 +9,29 @@ import tech.relog.hagoromo.singleton 1.0
 import "../controls"
 
 ClickableFrame {
-    property alias avatarImage: generatorFeedAvatarImage
-    property alias displayNameLabel: generatorFeedDisplayNameLabel
-    property alias creatorHandleLabel: generatorFeedCreatorHandleLabel
-    property alias likeCountLabel: generatorFeedLikeCountLabel
+    property alias avatarImage: feedGeneratorAvatarImage
+    property alias displayNameLabel: feedGeneratorDisplayNameLabel
+    property alias creatorHandleLabel: feedGeneratorCreatorHandleLabel
+    property alias likeCountLabel: feedGeneratorLikeCountLabel
 
     ColumnLayout {
         GridLayout {
             columns: 2
             rowSpacing: 3
             AvatarImage {
-                id: generatorFeedAvatarImage
+                id: feedGeneratorAvatarImage
                 Layout.preferredWidth: AdjustedValues.i24
                 Layout.preferredHeight: AdjustedValues.i24
                 Layout.rowSpan: 2
                 altSource: "../images/account_icon.png"
             }
             Label {
-                id: generatorFeedDisplayNameLabel
+                id: feedGeneratorDisplayNameLabel
                 Layout.fillWidth: true
                 font.pointSize: AdjustedValues.f10
             }
             Label {
-                id: generatorFeedCreatorHandleLabel
+                id: feedGeneratorCreatorHandleLabel
                 color: Material.color(Material.Grey)
                 font.pointSize: AdjustedValues.f8
             }
@@ -49,7 +49,7 @@ ClickableFrame {
                 }
             }
             Label {
-                id: generatorFeedLikeCountLabel
+                id: feedGeneratorLikeCountLabel
                 Layout.alignment: Qt.AlignVCenter
                 Layout.fillWidth: true
                 font.pointSize: AdjustedValues.f8
