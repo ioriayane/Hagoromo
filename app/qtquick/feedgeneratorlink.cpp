@@ -65,6 +65,8 @@ void FeedGeneratorLink::getFeedGenerator(const QString &uri)
             setDisplayName(generator->generatorView().displayName);
             setCreatorHandle(generator->generatorView().creator.handle);
             setLikeCount(generator->generatorView().likeCount);
+            setUri(generator->generatorView().uri);
+            setCid(generator->generatorView().cid);
             setValid(true);
         }
         setRunning(false);
@@ -81,6 +83,8 @@ void FeedGeneratorLink::clear()
     setDisplayName(QString());
     setCreatorHandle(QString());
     setLikeCount(0);
+    setUri(QString());
+    setCid(QString());
 }
 
 bool FeedGeneratorLink::running() const
@@ -159,4 +163,30 @@ void FeedGeneratorLink::setLikeCount(int newLikeCount)
         return;
     m_likeCount = newLikeCount;
     emit likeCountChanged();
+}
+
+QString FeedGeneratorLink::uri() const
+{
+    return m_uri;
+}
+
+void FeedGeneratorLink::setUri(const QString &newUri)
+{
+    if (m_uri == newUri)
+        return;
+    m_uri = newUri;
+    emit uriChanged();
+}
+
+QString FeedGeneratorLink::cid() const
+{
+    return m_cid;
+}
+
+void FeedGeneratorLink::setCid(const QString &newCid)
+{
+    if (m_cid == newCid)
+        return;
+    m_cid = newCid;
+    emit cidChanged();
 }

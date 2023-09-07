@@ -232,7 +232,7 @@ Dialog {
                     id: addingExternalLinkUrlText
                     selectByMouse: true
                     font.pointSize: AdjustedValues.f10
-                    placeholderText: qsTr("Link card URL")
+                    placeholderText: qsTr("Link card URL or custom feed URL")
                 }
             }
             IconButton {
@@ -493,7 +493,8 @@ Dialog {
                         createRecord.setExternalLink(externalLink.uri, externalLink.title, externalLink.description, externalLink.thumbLocal)
                         createRecord.postWithImages()
                     }else if(feedGeneratorLink.valid){
-
+                        createRecord.setFeedGeneratorLink(feedGeneratorLink.uri, feedGeneratorLink.cid)
+                        createRecord.post()
                     }else if(embedImagePreview.embedImages.length > 0){
                         createRecord.setImages(embedImagePreview.embedImages, embedImagePreview.embedAlts)
                         createRecord.postWithImages()

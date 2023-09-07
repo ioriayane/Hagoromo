@@ -16,6 +16,8 @@ class FeedGeneratorLink : public QObject
     Q_PROPERTY(QString creatorHandle READ creatorHandle WRITE setCreatorHandle NOTIFY
                        creatorHandleChanged)
     Q_PROPERTY(int likeCount READ likeCount WRITE setLikeCount NOTIFY likeCountChanged)
+    Q_PROPERTY(QString uri READ uri WRITE setUri NOTIFY uriChanged)
+    Q_PROPERTY(QString cid READ cid WRITE setCid NOTIFY cidChanged)
 public:
     explicit FeedGeneratorLink(QObject *parent = nullptr);
 
@@ -39,6 +41,10 @@ public:
     void setCreatorHandle(const QString &newCreatorHandle);
     int likeCount() const;
     void setLikeCount(int newLikeCount);
+    QString uri() const;
+    void setUri(const QString &newUri);
+    QString cid() const;
+    void setCid(const QString &newCid);
 
 signals:
     void runningChanged();
@@ -48,6 +54,10 @@ signals:
     void creatorHandleChanged();
     void likeCountChanged();
 
+    void uriChanged();
+
+    void cidChanged();
+
 private:
     AtProtocolInterface::AccountData m_account;
     bool m_running;
@@ -56,6 +66,8 @@ private:
     QString m_displayName;
     QString m_creatorHandle;
     int m_likeCount;
+    QString m_uri;
+    QString m_cid;
 };
 
 #endif // FEEDGENERATORLINK_H
