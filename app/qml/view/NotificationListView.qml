@@ -28,7 +28,7 @@ ScrollView {
     signal requestViewThread(string uri)
     signal requestViewImages(int index, var paths, var alts)
     signal requestViewProfile(string did)
-    signal requestViewGeneratorFeed(string name, string uri)
+    signal requestViewFeedGenerator(string name, string uri)
     signal requestReportPost(string uri, string cid)
 
     ListView {
@@ -109,12 +109,12 @@ ScrollView {
             quoteRecordImagePreview.embedAlts: model.quoteRecordEmbedImagesAlt
             quoteRecordImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.quoteRecordEmbedImagesFull, model.quoteRecordEmbedImagesAlt)
 
-//            generatorViewFrame.visible: model.hasGeneratorFeed
-//            generatorViewFrame.onClicked: notificationListView.requestViewGeneratorFeed(model.generatorFeedDisplayName, model.generatorFeedUri)
-//            generatorAvatarImage.source: model.generatorFeedAvatar
-//            generatorDisplayNameLabel.text: model.generatorFeedDisplayName
-//            generatorCreatorHandleLabel.text: model.generatorFeedCreatorHandle
-//            generatorLikeCountLabel.text: model.generatorFeedLikeCount
+//            generatorViewFrame.visible: model.hasFeedGenerator
+//            generatorViewFrame.onClicked: notificationListView.requestViewFeedGenerator(model.feedGeneratorDisplayName, model.feedGeneratorUri)
+//            generatorAvatarImage.source: model.feedGeneratorAvatar
+//            generatorDisplayNameLabel.text: model.feedGeneratorDisplayName
+//            generatorCreatorHandleLabel.text: model.feedGeneratorCreatorHandle
+//            generatorLikeCountLabel.text: model.feedGeneratorLikeCount
 
             postControls.replyButton.iconText: model.replyCount
             postControls.repostButton.iconText: model.repostCount

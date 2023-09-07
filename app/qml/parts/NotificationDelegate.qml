@@ -42,11 +42,11 @@ ClickableFrame {
     property alias postImagePreview: postImagePreview
     property alias quoteRecordFrame: quoteRecordFrame
     property alias quoteRecordImagePreview: quoteRecordImagePreview
-    //    property alias generatorViewFrame: generatorFeedFrame
-    //    property alias generatorAvatarImage: generatorFeedAvatarImage
-    //    property alias generatorDisplayNameLabel: generatorFeedDisplayNameLabel
-    //    property alias generatorCreatorHandleLabel: generatorFeedCreatorHandleLabel
-    //    property alias generatorLikeCountLabel: generatorFeedLikeCountLabel
+    //    property alias generatorViewFrame: feedGeneratorFrame
+    //    property alias generatorAvatarImage: feedGeneratorAvatarImage
+    //    property alias generatorDisplayNameLabel: feedGeneratorDisplayNameLabel
+    //    property alias generatorCreatorHandleLabel: feedGeneratorCreatorHandleLabel
+    //    property alias generatorLikeCountLabel: feedGeneratorLikeCountLabel
     property alias postControls: postControls
 
     signal requestViewProfile(string did)
@@ -284,7 +284,7 @@ ClickableFrame {
                     }
 
                     //            ClickableFrame {
-                    //                id: generatorFeedFrame
+                    //                id: feedGeneratorFrame
                     //                Layout.preferredWidth: parent.width
                     //                Layout.topMargin: 5
 
@@ -293,19 +293,19 @@ ClickableFrame {
                     //                        columns: 2
                     //                        rowSpacing: 3
                     //                        AvatarImage {
-                    //                            id: generatorFeedAvatarImage
+                    //                            id: feedGeneratorAvatarImage
                     //                            Layout.preferredWidth: 24
                     //                            Layout.preferredHeight: 24
                     //                            Layout.rowSpan: 2
                     //                            altSource: "../images/account_icon.png"
                     //                        }
                     //                        Label {
-                    //                            id: generatorFeedDisplayNameLabel
+                    //                            id: feedGeneratorDisplayNameLabel
                     //                            Layout.fillWidth: true
                     //                            font.pointSize: 10
                     //                        }
                     //                        Label {
-                    //                            id: generatorFeedCreatorHandleLabel
+                    //                            id: feedGeneratorCreatorHandleLabel
                     //                            color: Material.color(Material.Grey)
                     //                            font.pointSize: 8
                     //                        }
@@ -323,7 +323,7 @@ ClickableFrame {
                     //                            }
                     //                        }
                     //                        Label {
-                    //                            id: generatorFeedLikeCountLabel
+                    //                            id: feedGeneratorLikeCountLabel
                     //                            Layout.alignment: Qt.AlignVCenter
                     //                            Layout.fillWidth: true
                     //                            font.pointSize: 8

@@ -65,12 +65,12 @@ public:
         QuoteRecordIsRepostedRole,
         QuoteRecordIsLikedRole,
 
-        HasGeneratorFeedRole,
-        GeneratorFeedUriRole,
-        GeneratorFeedCreatorHandleRole,
-        GeneratorFeedDisplayNameRole,
-        GeneratorFeedLikeCountRole,
-        GeneratorFeedAvatarRole,
+        HasFeedGeneratorRole,
+        FeedGeneratorUriRole,
+        FeedGeneratorCreatorHandleRole,
+        FeedGeneratorDisplayNameRole,
+        FeedGeneratorLikeCountRole,
+        FeedGeneratorAvatarRole,
 
         UserFilterMatchedRole,
         UserFilterMessageRole,

@@ -75,6 +75,14 @@ void ComAtprotoRepoCreateRecord::post(const QString &text)
         json_embed_images.insert("$type", "app.bsky.embed.external");
         json_embed_images.insert("external", json_external);
 
+    } else if (!m_feedGeneratorLinkUri.isEmpty()) {
+        // カスタムフィードカード
+        QJsonObject json_generator;
+        json_generator.insert("uri", m_feedGeneratorLinkUri);
+        json_generator.insert("cid", m_feedGeneratorLinkCid);
+        json_embed_images.insert("$type", "app.bsky.embed.record");
+        json_embed_images.insert("record", json_generator);
+
     } else if (!m_embedImageBlobs.isEmpty()) {
         QJsonArray json_blobs;
         for (const auto &blob : qAsConst(m_embedImageBlobs)) {
@@ -295,6 +303,12 @@ void ComAtprotoRepoCreateRecord::setExternalLink(const QString &uri, const QStri
     m_externalLinkUri = uri;
     m_externalLinkTitle = title;
     m_externalLinkDescription = description;
+}
+
+void ComAtprotoRepoCreateRecord::setFeedGeneratorLink(const QString &uri, const QString &cid)
+{
+    m_feedGeneratorLinkUri = uri;
+    m_feedGeneratorLinkCid = cid;
 }
 
 void ComAtprotoRepoCreateRecord::setSelfLabels(const QStringList &labels)

@@ -261,7 +261,7 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             else
                 return false;
 
-        } else if (role == HasGeneratorFeedRole) {
+        } else if (role == HasFeedGeneratorRole) {
             if (m_postHash.contains(record_cid)
                 && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
                 return m_postHash[record_cid].embed_type
@@ -273,7 +273,7 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             } else {
                 return false;
             }
-        } else if (role == GeneratorFeedUriRole) {
+        } else if (role == FeedGeneratorUriRole) {
             if (m_postHash.contains(record_cid)
                 && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
                 return m_postHash[record_cid]
@@ -281,7 +281,7 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             } else {
                 return QString();
             }
-        } else if (role == GeneratorFeedCreatorHandleRole) {
+        } else if (role == FeedGeneratorCreatorHandleRole) {
             if (m_postHash.contains(record_cid)
                 && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
                 return m_postHash[record_cid]
@@ -290,7 +290,7 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             } else {
                 return QString();
             }
-        } else if (role == GeneratorFeedDisplayNameRole) {
+        } else if (role == FeedGeneratorDisplayNameRole) {
             if (m_postHash.contains(record_cid)
                 && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
                 return m_postHash[record_cid]
@@ -299,7 +299,7 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             } else {
                 return QString();
             }
-        } else if (role == GeneratorFeedLikeCountRole) {
+        } else if (role == FeedGeneratorLikeCountRole) {
             if (m_postHash.contains(record_cid)
                 && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
                 return m_postHash[record_cid]
@@ -308,7 +308,7 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             } else {
                 return QString();
             }
-        } else if (role == GeneratorFeedAvatarRole) {
+        } else if (role == FeedGeneratorAvatarRole) {
             if (m_postHash.contains(record_cid)
                 && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
                 return m_postHash[record_cid]
@@ -679,12 +679,12 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[QuoteRecordIsRepostedRole] = "quoteRecordIsReposted";
     roles[QuoteRecordIsLikedRole] = "quoteRecordIsLiked";
 
-    roles[HasGeneratorFeedRole] = "hasGeneratorFeed";
-    roles[GeneratorFeedUriRole] = "generatorFeedUri";
-    roles[GeneratorFeedCreatorHandleRole] = "generatorFeedCreatorHandle";
-    roles[GeneratorFeedDisplayNameRole] = "generatorFeedDisplayName";
-    roles[GeneratorFeedLikeCountRole] = "generatorFeedLikeCount";
-    roles[GeneratorFeedAvatarRole] = "generatorFeedAvatar";
+    roles[HasFeedGeneratorRole] = "hasFeedGenerator";
+    roles[FeedGeneratorUriRole] = "feedGeneratorUri";
+    roles[FeedGeneratorCreatorHandleRole] = "feedGeneratorCreatorHandle";
+    roles[FeedGeneratorDisplayNameRole] = "feedGeneratorDisplayName";
+    roles[FeedGeneratorLikeCountRole] = "feedGeneratorLikeCount";
+    roles[FeedGeneratorAvatarRole] = "feedGeneratorAvatar";
 
     roles[UserFilterMatchedRole] = "userFilterMatched";
     roles[UserFilterMessageRole] = "userFilterMessage";

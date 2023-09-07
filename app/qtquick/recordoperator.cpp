@@ -94,6 +94,12 @@ void RecordOperator::setExternalLink(const QString &uri, const QString &title,
     m_embedImages.append(e);
 }
 
+void RecordOperator::setFeedGeneratorLink(const QString &uri, const QString &cid)
+{
+    m_feedGeneratorLinkUri = uri;
+    m_feedGeneratorLinkCid = cid;
+}
+
 void RecordOperator::setSelfLabels(const QStringList &labels)
 {
     m_selfLabels = labels;
@@ -111,6 +117,8 @@ void RecordOperator::clear()
     m_externalLinkUri.clear();
     m_externalLinkTitle.clear();
     m_externalLinkDescription.clear();
+    m_feedGeneratorLinkUri.clear();
+    m_feedGeneratorLinkCid.clear();
 }
 
 void RecordOperator::post()
@@ -139,6 +147,7 @@ void RecordOperator::post()
         create_record->setPostLanguages(m_postLanguages);
         create_record->setExternalLink(m_externalLinkUri, m_externalLinkTitle,
                                        m_externalLinkDescription);
+        create_record->setFeedGeneratorLink(m_feedGeneratorLinkUri, m_feedGeneratorLinkCid);
         create_record->setSelfLabels(m_selfLabels);
         create_record->post(m_text);
     });

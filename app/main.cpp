@@ -28,6 +28,7 @@
 #include "qtquick/systemtool.h"
 #include "qtquick/externallink.h"
 #include "qtquick/reporter.h"
+#include "qtquick/feedgeneratorlink.h"
 
 int main(int argc, char *argv[])
 {
@@ -87,6 +88,8 @@ int main(int argc, char *argv[])
     qmlRegisterType<SystemTool>("tech.relog.hagoromo.systemtool", 1, 0, "SystemTool");
     qmlRegisterType<ExternalLink>("tech.relog.hagoromo.externallink", 1, 0, "ExternalLink");
     qmlRegisterType<Reporter>("tech.relog.hagoromo.reporter", 1, 0, "Reporter");
+    qmlRegisterType<FeedGeneratorLink>("tech.relog.hagoromo.feedgeneratorlink", 1, 0,
+                                       "FeedGeneratorLink");
 
     qmlRegisterSingletonType(QUrl("qrc:/Hagoromo/qml/data/AdjustedValues.qml"),
                              "tech.relog.hagoromo.singleton", 1, 0, "AdjustedValues");

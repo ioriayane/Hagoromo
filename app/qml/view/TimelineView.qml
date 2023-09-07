@@ -29,7 +29,7 @@ ScrollView {
     signal requestViewThread(string uri)
     signal requestViewImages(int index, var paths, var alts)
     signal requestViewProfile(string did)
-    signal requestViewGeneratorFeed(string name, string uri)
+    signal requestViewFeedGenerator(string name, string uri)
     signal requestReportPost(string uri, string cid)
 
 
@@ -135,12 +135,12 @@ ScrollView {
             externalLinkFrame.uriLabel.text: model.externalLinkUri
             externalLinkFrame.descriptionLabel.text: model.externalLinkDescription
 
-            generatorViewFrame.visible: model.hasGeneratorFeed
-            generatorViewFrame.onClicked: requestViewGeneratorFeed(model.generatorFeedDisplayName, model.generatorFeedUri)
-            generatorAvatarImage.source: model.generatorFeedAvatar
-            generatorDisplayNameLabel.text: model.generatorFeedDisplayName
-            generatorCreatorHandleLabel.text: model.generatorFeedCreatorHandle
-            generatorLikeCountLabel.text: model.generatorFeedLikeCount
+            feedGeneratorFrame.visible: model.hasFeedGenerator
+            feedGeneratorFrame.onClicked: requestViewFeedGenerator(model.feedGeneratorDisplayName, model.feedGeneratorUri)
+            feedGeneratorFrame.avatarImage.source: model.feedGeneratorAvatar
+            feedGeneratorFrame.displayNameLabel.text: model.feedGeneratorDisplayName
+            feedGeneratorFrame.creatorHandleLabel.text: model.feedGeneratorCreatorHandle
+            feedGeneratorFrame.likeCountLabel.text: model.feedGeneratorLikeCount
 
             postControls.replyButton.iconText: model.replyCount
             postControls.repostButton.iconText: model.repostCount

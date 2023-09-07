@@ -32,6 +32,7 @@ public:
     Q_INVOKABLE void setPostLanguages(const QStringList &langs);
     Q_INVOKABLE void setExternalLink(const QString &uri, const QString &title,
                                      const QString &description, const QString &image_path);
+    Q_INVOKABLE void setFeedGeneratorLink(const QString &uri, const QString &cid);
     Q_INVOKABLE void setSelfLabels(const QStringList &labels);
 
     Q_INVOKABLE void clear();
@@ -77,6 +78,8 @@ private:
     QString m_externalLinkUri;
     QString m_externalLinkTitle;
     QString m_externalLinkDescription;
+    QString m_feedGeneratorLinkUri;
+    QString m_feedGeneratorLinkCid;
     QStringList m_selfLabels;
 
     bool m_running;

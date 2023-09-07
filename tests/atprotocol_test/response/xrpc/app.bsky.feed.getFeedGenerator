@@ -1,0 +1,26 @@
+{
+    "view": {
+        "uri": "at://did:plc:42fxwa2jeumqzzggx/app.bsky.feed.generator/aaagrsa",
+        "cid": "bafyreib7pgajpklwexy4lidm",
+        "did": "did:web:view.bsky.social",
+        "creator": {
+            "did": "did:plc:42fxwa2jeumqzzggxj",
+            "handle": "creator.bsky.social",
+            "displayName": "creator:displayName",
+            "avatar": "https://cdn.bsky.social/creator_avator.jpeg",
+            "viewer": {
+                "muted": false,
+                "blockedBy": false
+            },
+            "labels": []
+        },
+        "displayName": "view:displayName",
+        "description": "view:description",
+        "avatar": "https://cdn.bsky.social/view_avator.jpeg",
+        "likeCount": 9,
+        "viewer": {},
+        "indexedAt": "2023-07-27T14:40:06.637Z"
+    },
+    "isOnline": true,
+    "isValid": true
+}
