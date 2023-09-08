@@ -110,6 +110,7 @@ void atprotocol_test::test_ComAtprotoServerCreateSession()
 void atprotocol_test::test_OpenGraphProtocol()
 {
     OpenGraphProtocol ogp;
+
     {
         QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
         ogp.getData(m_service + "/ogp/file1.html");
@@ -282,7 +283,8 @@ void atprotocol_test::test_OpenGraphProtocol()
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QVERIFY2(ogp.uri() == "http://localhost/response/ogp/file5.html", ogp.uri().toLocal8Bit());
+        QVERIFY2(ogp.uri() == "http://localhost/response/ogp/file5.html?id=10186&s=720",
+                 ogp.uri().toLocal8Bit());
         QVERIFY2(ogp.title()
                          == QString("file5 ")
                                     .append(QChar(0x30bf))
@@ -308,7 +310,10 @@ void atprotocol_test::test_OpenGraphProtocol()
         QVERIFY2(ogp.title() == QString("file6 TITLE"), ogp.title().toLocal8Bit());
         QVERIFY2(ogp.description() == QString("file6 ").append(QChar(0x8a73)).append(QChar(0x7d30)),
                  ogp.description().toLocal8Bit());
-        QVERIFY(ogp.thumb() == "http://localhost:%1/response/ogp/images/file6.png");
+        QVERIFY2(ogp.thumb()
+                         == QString("http://localhost:%1/response/ogp/images/file6.png")
+                                    .arg(QString::number(m_listenPort)),
+                 ogp.thumb().toLocal8Bit());
     }
 }
 

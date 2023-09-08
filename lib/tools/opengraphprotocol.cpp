@@ -121,50 +121,46 @@ bool OpenGraphProtocol::parse(const QByteArray &data, const QString &src_uri)
     QTextStream ts(data);
     ts.setCodec(charset.toLatin1());
 
-    QString rebuild_text = rebuildHtml(ts.readAll());
-
-    QString errorMsg;
-    int errorLine;
-    int errorColumn;
-
     QDomDocument doc;
-    if (!doc.setContent(rebuild_text, false, &errorMsg, &errorLine, &errorColumn)) {
-        qDebug() << "parse" << errorMsg << ", Line=" << errorLine << ", Column=" << errorColumn;
-        qDebug().noquote().nospace() << "--- rebuild_text -----------------";
-        qDebug().noquote().nospace() << rebuild_text;
-        qDebug().noquote().nospace() << "----------------------------------";
-    } else {
-        QDomElement root = doc.documentElement();
-        QDomElement head = root.firstChildElement("head");
+    rebuildHtml(ts.readAll(), doc);
+    qDebug().noquote().nospace() << doc.toString();
 
-        setUri(src_uri);
+    QDomElement root = doc.documentElement();
+    QDomElement head = root.firstChildElement("head");
 
-        QDomElement element = head.firstChildElement();
-        while (!element.isNull()) {
-            if (element.tagName().toLower() == "meta") {
-                QString property = element.attribute("property");
-                QString content = element.attribute("content");
-                if (property == "og:url") {
-                    setUri(content);
-                } else if (property == "og:title") {
-                    setTitle(content);
-                } else if (property == "og:description") {
-                    setDescription(content);
-                } else if (property == "og:image") {
-                    // ダウンロードしてローカルパスに置換が必要
+    setUri(src_uri);
+
+    QDomElement element = head.firstChildElement();
+    while (!element.isNull()) {
+        if (element.tagName().toLower() == "meta") {
+            QString property = element.attribute("property");
+            QString content = element.attribute("content");
+            if (property == "og:url") {
+                setUri(content);
+            } else if (property == "og:title") {
+                setTitle(content);
+            } else if (property == "og:description") {
+                setDescription(content);
+            } else if (property == "og:image") {
+                // ダウンロードしてローカルパスに置換が必要
+                if (content.startsWith("/")) {
+                    QUrl uri(src_uri);
+                    setThumb(uri.toString(QUrl::RemovePath) + content);
+                } else {
                     setThumb(content);
                 }
-            } else if (element.tagName().toLower() == "title") {
-                if (title().isEmpty()) {
-                    setTitle(element.text());
-                }
             }
-            element = element.nextSiblingElement();
+        } else if (element.tagName().toLower() == "title") {
+            if (title().isEmpty()) {
+                setTitle(element.text());
+            }
         }
-        if (!uri().isEmpty() && !title().isEmpty()) {
-            ret = true;
-        }
+        element = element.nextSiblingElement();
     }
+    if (!uri().isEmpty() && !title().isEmpty()) {
+        ret = true;
+    }
+
     return ret;
 }
 
@@ -176,20 +172,12 @@ QString OpenGraphProtocol::extractCharset(const QString &data) const
     if (match.capturedTexts().isEmpty())
         return charset;
 
-    QString errorMsg;
-    int errorLine;
-    int errorColumn;
-
     QDomDocument doc;
     QString result;
     int pos;
     while ((pos = match.capturedStart()) != -1) {
-        result = rebuildTag(match.captured());
-
-        if (!doc.setContent(result, false, &errorMsg, &errorLine, &errorColumn)) {
-            qDebug() << "parse" << errorMsg << ", Line=" << errorLine << ", Column=" << errorColumn;
-        } else {
-            QDomElement element = doc.documentElement();
+        QDomElement element = doc.createElement("meta");
+        if (rebuildTag(match.captured(), element)) {
             if (element.tagName().toLower() == "meta") {
                 if (element.attribute("http-equiv") == "content-type") {
                     QString content = element.attribute("content");
@@ -223,30 +211,31 @@ QString OpenGraphProtocol::extractCharset(const QString &data) const
     return charset;
 }
 
-QString OpenGraphProtocol::rebuildHtml(const QString &text) const
+void OpenGraphProtocol::rebuildHtml(const QString &text, QDomDocument &doc) const
 {
     QRegularExpressionMatch match = m_rxMeta.match(text);
     if (match.capturedTexts().isEmpty())
-        return text;
+        return;
 
-    QString errorMsg;
-    int errorLine;
-    int errorColumn;
-    QDomDocument doc;
-    QString result;
+    QDomElement html = doc.createElement("html");
+    QDomElement head = doc.createElement("head");
+
     int pos;
     while ((pos = match.capturedStart()) != -1) {
-        QString temp = rebuildTag(match.captured());
-        if (doc.setContent(temp, false, &errorMsg, &errorLine, &errorColumn)) {
-            result += temp + "\n";
+        QDomElement element = doc.createElement("meta");
+        if (rebuildTag(match.captured(), element)) {
+            head.appendChild(element);
         }
         match = m_rxMeta.match(text, pos + match.capturedLength());
     }
 
-    return QString("<html><head>%1</head></html>").arg(result);
+    html.appendChild(head);
+    doc.appendChild(html);
+
+    return;
 }
 
-QString OpenGraphProtocol::rebuildTag(QString text) const
+bool OpenGraphProtocol::rebuildTag(QString text, QDomElement &element) const
 {
     QChar c;
     int state = 0;
@@ -256,7 +245,17 @@ QString OpenGraphProtocol::rebuildTag(QString text) const
     // 2:スペース（=より後ろ）
     // 3:属性値
     QString result;
+    QStringList names;
+    QStringList values;
 
+    text = text.trimmed();
+
+    int close_tag_pos = -1;
+    if (text.toLower().startsWith("<title")) {
+        element.setTagName("title");
+        close_tag_pos = text.indexOf(
+                QRegularExpression("</title[ \\t]*>$", QRegularExpression::CaseInsensitiveOption));
+    }
     if (!text.endsWith("/>") && !text.toLower().startsWith("<title")) {
         text.replace(">", "/>");
     }
@@ -266,12 +265,22 @@ QString OpenGraphProtocol::rebuildTag(QString text) const
         if (state == 0) {
             if (c == ' ') {
                 state = 1;
+                names.append("");
+                values.append("");
             }
             result += c;
         } else if (state == 1) {
-            if (c == '=') {
+            if (c == '/' || c == '>') {
+                if (close_tag_pos > i) {
+                    element.appendChild(element.toDocument().createTextNode(
+                            text.mid(i + 1, close_tag_pos - (i + 1))));
+                }
+                break;
+            } else if (c == '=') {
                 state = 2;
                 in_quote = false;
+            } else {
+                names.last().append(c);
             }
             result += c;
         } else if (state == 2) {
@@ -282,6 +291,7 @@ QString OpenGraphProtocol::rebuildTag(QString text) const
                 result += '\"';
                 in_quote = false;
                 state = 3;
+                values.last().append(c);
             }
             result += c;
         } else if (state == 3) {
@@ -289,16 +299,41 @@ QString OpenGraphProtocol::rebuildTag(QString text) const
                 if (c == '\"') {
                     state = 1;
                     in_quote = false;
+                    names.append("");
+                    values.append("");
+                } else {
+                    values.last().append(c);
                 }
             } else {
-                if (c == ' ') {
+                if (c == '/' || c == '>') {
+                    if (close_tag_pos > i) {
+                        element.appendChild(element.toDocument().createTextNode(
+                                text.mid(i + 1, close_tag_pos - (i + 1))));
+                    }
+                    break;
+                } else if (c == ' ') {
                     result += '\"';
                     state = 1;
+                    names.append("");
+                    values.append("");
+                } else {
+                    values.last().append(c);
                 }
             }
             result += c;
         } else {
         }
     }
-    return result;
+
+    if (names.length() == values.length() && !names.isEmpty()) {
+        for (int i = 0; i < names.length(); i++) {
+            if (!names.at(i).trimmed().isEmpty())
+                element.setAttribute(names.at(i).trimmed(), values.at(i).trimmed());
+        }
+        return true;
+    } else if (element.tagName() == "title") {
+        return true;
+    } else {
+        return false;
+    }
 }
