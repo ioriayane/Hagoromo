@@ -143,7 +143,12 @@ bool OpenGraphProtocol::parse(const QByteArray &data, const QString &src_uri)
                 setDescription(content);
             } else if (property == "og:image") {
                 // ダウンロードしてローカルパスに置換が必要
-                setThumb(content);
+                if (content.startsWith("/")) {
+                    QUrl uri(src_uri);
+                    setThumb(uri.toString(QUrl::RemovePath) + content);
+                } else {
+                    setThumb(content);
+                }
             }
         } else if (element.tagName().toLower() == "title") {
             if (title().isEmpty()) {

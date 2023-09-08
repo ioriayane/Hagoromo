@@ -310,7 +310,10 @@ void atprotocol_test::test_OpenGraphProtocol()
         QVERIFY2(ogp.title() == QString("file6 TITLE"), ogp.title().toLocal8Bit());
         QVERIFY2(ogp.description() == QString("file6 ").append(QChar(0x8a73)).append(QChar(0x7d30)),
                  ogp.description().toLocal8Bit());
-        QVERIFY(ogp.thumb() == "http://localhost:%1/response/ogp/images/file6.png");
+        QVERIFY2(ogp.thumb()
+                         == QString("http://localhost:%1/response/ogp/images/file6.png")
+                                    .arg(QString::number(m_listenPort)),
+                 ogp.thumb().toLocal8Bit());
     }
 }
 
