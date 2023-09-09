@@ -97,6 +97,7 @@ RowLayout {
         }
         Menu {
             id: myMorePopup
+            width: 230
             MenuItem {
                 icon.source: "../images/translate.png"
                 text: qsTr("Translate")
@@ -117,13 +118,13 @@ RowLayout {
             MenuItem {
                 text: qsTr("Reposted by")
                 enabled: repostButton.iconText > 0
-                icon.source: "../images/open_in_other.png"
+                icon.source: "../images/repost.png"
                 onTriggered: triggeredRequestViewRepostedBy()
             }
             MenuItem {
                 text: qsTr("Liked by")
                 enabled: likeButton.iconText > 0
-                icon.source: "../images/open_in_other.png"
+                icon.source: "../images/like.png"
                 onTriggered: triggeredRequestViewLikedBy()
             }
             MenuSeparator {}
@@ -142,6 +143,7 @@ RowLayout {
         }
         Menu {
             id: theirMorePopup
+            width: 230
             MenuItem {
                 icon.source: "../images/translate.png"
                 text: qsTr("Translate")
@@ -162,13 +164,13 @@ RowLayout {
             MenuItem {
                 text: qsTr("Reposted by")
                 enabled: repostButton.iconText > 0
-                icon.source: "../images/open_in_other.png"
+                icon.source: "../images/repost.png"
                 onTriggered: triggeredRequestViewRepostedBy()
             }
             MenuItem {
                 text: qsTr("Liked by")
                 enabled: likeButton.iconText > 0
-                icon.source: "../images/open_in_other.png"
+                icon.source: "../images/like.png"
                 onTriggered: triggeredRequestViewLikedBy()
             }
             MenuSeparator {}

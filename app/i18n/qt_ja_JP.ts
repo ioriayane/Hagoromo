@@ -76,6 +76,19 @@
     </message>
 </context>
 <context>
+    <name>AnyProfileListView</name>
+    <message>
+        <location filename="../qml/view/AnyProfileListView.qml" line="46"/>
+        <source>Liked by</source>
+        <translation>いいねしたアカウント</translation>
+    </message>
+    <message>
+        <location filename="../qml/view/AnyProfileListView.qml" line="46"/>
+        <source>Reposted by</source>
+        <translation>リポストしたアカウント</translation>
+    </message>
+</context>
+<context>
     <name>ColumnListModel</name>
     <message>
         <location filename="../qtquick/columnlistmodel.cpp" line="325"/>
@@ -199,57 +212,57 @@
 <context>
     <name>ColumnView</name>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="296"/>
+        <location filename="../qml/view/ColumnView.qml" line="346"/>
         <source>Home</source>
         <translation>ホーム</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="299"/>
+        <location filename="../qml/view/ColumnView.qml" line="349"/>
         <source>Notifications</source>
         <translation>通知</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="302"/>
+        <location filename="../qml/view/ColumnView.qml" line="352"/>
         <source>Search posts</source>
         <translation>検索(ポスト)</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="305"/>
+        <location filename="../qml/view/ColumnView.qml" line="355"/>
         <source>Search users</source>
         <translation>検索(ユーザー)</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="308"/>
+        <location filename="../qml/view/ColumnView.qml" line="358"/>
         <source>Feed</source>
         <translation>フィード</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="311"/>
+        <location filename="../qml/view/ColumnView.qml" line="361"/>
         <source>User</source>
         <translation>ユーザー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="314"/>
+        <location filename="../qml/view/ColumnView.qml" line="364"/>
         <source>Unknown</source>
         <translation>不明</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="421"/>
+        <location filename="../qml/view/ColumnView.qml" line="471"/>
         <source>Move to left</source>
         <translation>左へ移動</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="426"/>
+        <location filename="../qml/view/ColumnView.qml" line="476"/>
         <source>Move to right</source>
         <translation>右へ移動</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="431"/>
+        <location filename="../qml/view/ColumnView.qml" line="481"/>
         <source>Delete column</source>
         <translation>削除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="437"/>
+        <location filename="../qml/view/ColumnView.qml" line="487"/>
         <source>Settings</source>
         <translation>設定</translation>
     </message>
@@ -1463,41 +1476,53 @@
 <context>
     <name>PostControls</name>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="60"/>
+        <location filename="../qml/parts/PostControls.qml" line="63"/>
         <source>Repost</source>
         <translation>リポスト</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="65"/>
+        <location filename="../qml/parts/PostControls.qml" line="68"/>
         <source>Quote</source>
         <translation>引用</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="99"/>
-        <location filename="../qml/parts/PostControls.qml" line="131"/>
+        <location filename="../qml/parts/PostControls.qml" line="102"/>
+        <location filename="../qml/parts/PostControls.qml" line="147"/>
         <source>Translate</source>
         <translation>翻訳</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="104"/>
-        <location filename="../qml/parts/PostControls.qml" line="136"/>
+        <location filename="../qml/parts/PostControls.qml" line="107"/>
+        <location filename="../qml/parts/PostControls.qml" line="152"/>
         <source>Copy post text</source>
         <translation>ポストをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="108"/>
-        <location filename="../qml/parts/PostControls.qml" line="140"/>
+        <location filename="../qml/parts/PostControls.qml" line="111"/>
+        <location filename="../qml/parts/PostControls.qml" line="156"/>
         <source>Open in Official</source>
         <translation>公式で開く</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="115"/>
+        <location filename="../qml/parts/PostControls.qml" line="118"/>
+        <location filename="../qml/parts/PostControls.qml" line="163"/>
+        <source>Reposted by</source>
+        <translation>リポストしたアカウント</translation>
+    </message>
+    <message>
+        <location filename="../qml/parts/PostControls.qml" line="124"/>
+        <location filename="../qml/parts/PostControls.qml" line="169"/>
+        <source>Liked by</source>
+        <translation>いいねしたアカウント</translation>
+    </message>
+    <message>
+        <location filename="../qml/parts/PostControls.qml" line="131"/>
         <source>Delete post</source>
         <translation>ポストを削除</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="122"/>
-        <location filename="../qml/parts/PostControls.qml" line="147"/>
+        <location filename="../qml/parts/PostControls.qml" line="138"/>
+        <location filename="../qml/parts/PostControls.qml" line="176"/>
         <source>Report post</source>
         <translation>ポストを通報</translation>
     </message>
@@ -1557,12 +1582,12 @@
 <context>
     <name>PostThreadView</name>
     <message>
-        <location filename="../qml/view/PostThreadView.qml" line="55"/>
+        <location filename="../qml/view/PostThreadView.qml" line="57"/>
         <source>Post thread</source>
         <translation>ポストスレッド</translation>
     </message>
     <message>
-        <location filename="../qml/view/PostThreadView.qml" line="143"/>
+        <location filename="../qml/view/PostThreadView.qml" line="145"/>
         <source>Quoted content warning</source>
         <translation>閲覧注意な引用</translation>
     </message>
@@ -1593,112 +1618,112 @@
 <context>
     <name>ProfileView</name>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="58"/>
+        <location filename="../qml/view/ProfileView.qml" line="60"/>
         <source>Edit Profile</source>
         <translation>プロフィールを編集</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="66"/>
+        <location filename="../qml/view/ProfileView.qml" line="68"/>
         <source>Following</source>
         <translation>フォロー中</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="76"/>
+        <location filename="../qml/view/ProfileView.qml" line="78"/>
         <source>Follow</source>
         <translation>フォローする</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="145"/>
+        <location filename="../qml/view/ProfileView.qml" line="147"/>
         <source>Profile</source>
         <translation>プロフィール</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="172"/>
+        <location filename="../qml/view/ProfileView.qml" line="174"/>
         <source>Follows you</source>
         <translation>あなたをフォロー中</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="219"/>
+        <location filename="../qml/view/ProfileView.qml" line="221"/>
         <source>follows</source>
         <translation>フォロー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="230"/>
+        <location filename="../qml/view/ProfileView.qml" line="232"/>
         <source>followers</source>
         <translation>フォロワー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="241"/>
+        <location filename="../qml/view/ProfileView.qml" line="243"/>
         <source>posts</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="269"/>
+        <location filename="../qml/view/ProfileView.qml" line="271"/>
         <source>Send mention</source>
         <translation>メンションを送る</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="276"/>
+        <location filename="../qml/view/ProfileView.qml" line="278"/>
         <source>Copy handle</source>
         <translation>ハンドルをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="282"/>
+        <location filename="../qml/view/ProfileView.qml" line="284"/>
         <source>Copy DID</source>
         <translation>DIDをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="289"/>
+        <location filename="../qml/view/ProfileView.qml" line="291"/>
         <source>Open in new col</source>
         <translation>新しいカラムで開く</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="295"/>
+        <location filename="../qml/view/ProfileView.qml" line="297"/>
         <source>Open in Official</source>
         <translation>公式で開く</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="302"/>
+        <location filename="../qml/view/ProfileView.qml" line="304"/>
         <source>Unmute account</source>
         <translation>ミュート解除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="302"/>
+        <location filename="../qml/view/ProfileView.qml" line="304"/>
         <source>Mute account</source>
         <translation>ミュート</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="314"/>
+        <location filename="../qml/view/ProfileView.qml" line="316"/>
         <source>Unblock account</source>
         <translation>ブロック解除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="314"/>
+        <location filename="../qml/view/ProfileView.qml" line="316"/>
         <source>Block account</source>
         <translation>ブロック</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="326"/>
+        <location filename="../qml/view/ProfileView.qml" line="328"/>
         <source>Report account</source>
         <translation>通報</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="347"/>
+        <location filename="../qml/view/ProfileView.qml" line="349"/>
         <source>Account blocked</source>
         <translation>ブロックしたアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="358"/>
+        <location filename="../qml/view/ProfileView.qml" line="360"/>
         <source>Account muted</source>
         <translation>ミュートしたアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="370"/>
+        <location filename="../qml/view/ProfileView.qml" line="372"/>
         <source>This account has been flagged : </source>
         <translation>このアカウントに設定されたラベル : </translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="379"/>
+        <location filename="../qml/view/ProfileView.qml" line="381"/>
         <source>This account has blocked you</source>
         <translation>あなたをブロックしているアカウント</translation>
     </message>
@@ -2146,7 +2171,7 @@
 <context>
     <name>TimelineView</name>
     <message>
-        <location filename="../qml/view/TimelineView.qml" line="114"/>
+        <location filename="../qml/view/TimelineView.qml" line="116"/>
         <source>Quoted content warning</source>
         <translation>閲覧注意な引用</translation>
     </message>
