@@ -49,6 +49,7 @@ QML_FILES = \
     qml/parts/TagLabel.qml \
     qml/parts/TagLabelLayout.qml \
     qml/parts/VersionInfomation.qml \
+    qml/view/AnyProfileListView.qml \
     qml/view/ColumnView.qml \
     qml/view/ImageFullView.qml \
     qml/view/NotificationListView.qml \

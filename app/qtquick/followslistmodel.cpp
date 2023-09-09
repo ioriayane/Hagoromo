@@ -67,6 +67,19 @@ void FollowsListModel::remove(const QString &did)
     endRemoveRows();
 }
 
+void FollowsListModel::clear()
+{
+    if (m_didList.isEmpty())
+        return;
+
+    beginRemoveRows(QModelIndex(), 0, m_didList.count() - 1);
+    m_didList.clear();
+    m_profileHash.clear();
+    m_formattedDescriptionHash.clear();
+    m_cursor.clear();
+    endRemoveRows();
+}
+
 int FollowsListModel::indexOf(const QString &cid) const
 {
     Q_UNUSED(cid)

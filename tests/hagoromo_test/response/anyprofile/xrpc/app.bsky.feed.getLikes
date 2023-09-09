@@ -1,0 +1,98 @@
+{
+    "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3k6tpw4xr4d27",
+    "cursor": "1694130477596::bafyreie3732qmxxyvyup3fdshrwu4tgrzavppp3arcudiwkwzc3q4of2tu",
+    "likes": [
+        {
+            "createdAt": "2023-09-08T08:52:10.115Z",
+            "indexedAt": "2023-09-08T08:52:10.585Z",
+            "actor": {
+                "did": "did:plc:l4fsx4ujos7uw7n4ijq2ulgs",
+                "handle": "ioriayane.bsky.social",
+                "displayName": "hoge",
+                "description": "description of hoge",
+                "avatar": "https://av-cdn.bsky.app/img/avatar/plain/did:plc:l4fsx4ujos7uw7n4ijq2ulgs/hoge@jpeg",
+                "indexedAt": "2023-08-26T14:42:20.929Z",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false
+                },
+                "labels": []
+            }
+        },
+        {
+            "createdAt": "2023-09-08T00:16:45.937Z",
+            "indexedAt": "2023-09-08T00:16:46.244Z",
+            "actor": {
+                "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                "handle": "ioriayane2.bsky.social",
+                "displayName": "fuga",
+                "description": "description of fuga",
+                "avatar": "https://av-cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/fuga@jpeg",
+                "indexedAt": "2023-08-27T10:19:47.742Z",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false,
+                    "following": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3jx4lj4udu22t",
+                    "followedBy": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.follow/aaaaaaaaaaaa"
+                },
+                "labels": []
+            }
+        },
+        {
+            "createdAt": "2023-09-08T00:15:38.086Z",
+            "indexedAt": "2023-09-08T00:15:39.848Z",
+            "actor": {
+                "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid6",
+                "handle": "ioriayane3.bsky.social",
+                "displayName": "foo",
+                "description": "description of foo",
+                "avatar": "https://av-cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/foo@jpeg",
+                "indexedAt": "2023-08-27T10:19:47.742Z",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false,
+                    "following": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3jx4lj4udu22t",
+                    "followedBy": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid6/app.bsky.graph.follow/aaaaaaaaaaaa"
+                },
+                "labels": []
+            }
+        },
+        {
+            "createdAt": "2023-09-08T00:15:38.086Z",
+            "indexedAt": "2023-09-08T00:15:39.848Z",
+            "actor": {
+                "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid7",
+                "handle": "ioriayane4.bsky.social",
+                "displayName": "bar",
+                "description": "description of bar",
+                "avatar": "https://av-cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bar@jpeg",
+                "indexedAt": "2023-08-27T10:19:47.742Z",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false,
+                    "following": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3jx4lj4udu22t",
+                    "followedBy": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid7/app.bsky.graph.follow/aaaaaaaaaaaa"
+                },
+                "labels": []
+            }
+        },
+        {
+            "createdAt": "2023-09-08T00:14:05.525Z",
+            "indexedAt": "2023-09-08T00:14:06.073Z",
+            "actor": {
+                "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid8",
+                "handle": "ioriayane5.bsky.social",
+                "displayName": "charry",
+                "description": "description of charry",
+                "avatar": "https://av-cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/charry@jpeg",
+                "indexedAt": "2023-08-27T10:19:47.742Z",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false,
+                    "followedBy": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid8/app.bsky.graph.follow/aaaaaaaaaaaa"
+                },
+                "labels": []
+            }
+        }
+    ]
+}

@@ -29,6 +29,8 @@ ScrollView {
     signal requestViewImages(int index, var paths, var alts)
     signal requestViewProfile(string did)
     signal requestViewFeedGenerator(string name, string uri)
+    signal requestViewLikedBy(string uri)
+    signal requestViewRepostedBy(string uri)
     signal requestReportPost(string uri, string cid)
 
     ListView {
@@ -132,6 +134,8 @@ ScrollView {
             postControls.postUri: model.uri
             postControls.handle: model.handle
             postControls.onTriggeredCopyToClipboard: systemTool.copyToClipboard(model.recordTextPlain)
+            postControls.onTriggeredRequestViewLikedBy: notificationListView.requestViewLikedBy(model.uri)
+            postControls.onTriggeredRequestViewRepostedBy: notificationListView.requestViewRepostedBy(model.uri)
             postControls.onTriggeredRequestReport: notificationListView.requestReportPost(model.uri, model.cid)
 
             onClicked: {
