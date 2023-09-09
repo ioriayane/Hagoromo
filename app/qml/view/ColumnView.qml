@@ -173,6 +173,8 @@ ColumnLayout {
             onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onRequestViewFeedGenerator: (name, uri) => columnView.requestViewFeedGenerator(account.uuid, name, uri)
+            onRequestViewLikedBy: (uri) => columnStackView.push(likesProfilesComponent, { "targetUri": uri })
+            onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
             onRequestReportAccount: (did) => columnView.requestReportAccount(account.uuid, did)
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
@@ -305,26 +307,34 @@ ColumnLayout {
         id: likesProfilesComponent
         AnyProfileListView {
             accountDid: account.did
-            unfollowAndRemove: false
             autoLoading: settings.autoLoading
             type: AnyProfileListModel.Like
 
             onErrorOccured: (message) => { console.log(message) }
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
+            onBack: {
+                if(!columnStackView.empty){
+                    columnStackView.pop()
+                }
+            }
         }
     }
     Component {
         id: repostsProfilesComponent
         AnyProfileListView {
             accountDid: account.did
-            unfollowAndRemove: false
             autoLoading: settings.autoLoading
             type: AnyProfileListModel.Repost
 
             onErrorOccured: (message) => { console.log(message) }
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
+            onBack: {
+                if(!columnStackView.empty){
+                    columnStackView.pop()
+                }
+            }
         }
     }
 
