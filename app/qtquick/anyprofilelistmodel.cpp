@@ -41,7 +41,7 @@ void AnyProfileListModel::getLatest()
             likes->deleteLater();
         });
         likes->setAccount(account());
-        likes->getLikes(targetUri(), QString(), 5, QString());
+        likes->getLikes(targetUri(), QString(), 0, QString());
 
     } else if (type() == AnyProfileListModelType::Repost) {
         AppBskyFeedGetRepostedBy *reposts = new AppBskyFeedGetRepostedBy(this);
@@ -68,7 +68,7 @@ void AnyProfileListModel::getLatest()
             reposts->deleteLater();
         });
         reposts->setAccount(account());
-        reposts->getRepostedBy(targetUri(), QString(), 5, QString());
+        reposts->getRepostedBy(targetUri(), QString(), 0, QString());
     }
 }
 
@@ -106,7 +106,7 @@ void AnyProfileListModel::getNext()
             likes->deleteLater();
         });
         likes->setAccount(account());
-        likes->getLikes(targetUri(), QString(), 5, m_cursor);
+        likes->getLikes(targetUri(), QString(), 0, m_cursor);
 
     } else if (type() == AnyProfileListModelType::Repost) {
         AppBskyFeedGetRepostedBy *reposts = new AppBskyFeedGetRepostedBy(this);
@@ -136,7 +136,7 @@ void AnyProfileListModel::getNext()
             reposts->deleteLater();
         });
         reposts->setAccount(account());
-        reposts->getRepostedBy(targetUri(), QString(), 5, m_cursor);
+        reposts->getRepostedBy(targetUri(), QString(), 0, m_cursor);
     }
 }
 
