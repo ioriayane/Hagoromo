@@ -18,6 +18,7 @@ public:
     Q_ENUM(AnyFeedListModelFeedType)
 
     Q_INVOKABLE void getLatest();
+    Q_INVOKABLE void getNext();
 
     QString targetDid() const;
     void setTargetDid(const QString &newTargetDid);

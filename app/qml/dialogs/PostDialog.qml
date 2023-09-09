@@ -8,6 +8,7 @@ import tech.relog.hagoromo.recordoperator 1.0
 import tech.relog.hagoromo.accountlistmodel 1.0
 import tech.relog.hagoromo.languagelistmodel 1.0
 import tech.relog.hagoromo.externallink 1.0
+import tech.relog.hagoromo.feedgeneratorlink 1.0
 import tech.relog.hagoromo.systemtool 1.0
 import tech.relog.hagoromo.singleton 1.0
 
@@ -67,7 +68,9 @@ Dialog {
 
         postText.clear()
         embedImagePreview.embedImages = []
+        embedImagePreview.embedAlts = []
         externalLink.clear()
+        feedGeneratorLink.clear()
         addingExternalLinkUrlText.text = ""
     }
 
@@ -101,6 +104,9 @@ Dialog {
     }
     ExternalLink {
         id: externalLink
+    }
+    FeedGeneratorLink {
+        id: feedGeneratorLink
     }
 
     ColumnLayout {
@@ -226,22 +232,37 @@ Dialog {
                     id: addingExternalLinkUrlText
                     selectByMouse: true
                     font.pointSize: AdjustedValues.f10
-                    placeholderText: qsTr("Link card URL")
+                    placeholderText: qsTr("Link card URL or custom feed URL")
                 }
             }
             IconButton {
                 id: externalLinkButton
                 iconSource: "../images/add.png"
                 enabled: addingExternalLinkUrlText.text.length > 0
-                onClicked: externalLink.getExternalLink(addingExternalLinkUrlText.text)
+                onClicked: {
+                    var uri = addingExternalLinkUrlText.text
+                    var at_uri = feedGeneratorLink.convertToAtUri(uri)
+                    if(at_uri.length > 0){
+                        var row = accountCombo.currentIndex;
+                        feedGeneratorLink.setAccount(postDialog.accountModel.item(row, AccountListModel.ServiceRole),
+                                                     postDialog.accountModel.item(row, AccountListModel.DidRole),
+                                                     postDialog.accountModel.item(row, AccountListModel.HandleRole),
+                                                     postDialog.accountModel.item(row, AccountListModel.EmailRole),
+                                                     postDialog.accountModel.item(row, AccountListModel.AccessJwtRole),
+                                                     postDialog.accountModel.item(row, AccountListModel.RefreshJwtRole))
+                        feedGeneratorLink.getFeedGenerator(at_uri)
+                    }else{
+                        externalLink.getExternalLink(uri)
+                    }
+                }
                 BusyIndicator {
                     anchors.fill: parent
                     anchors.margins: 3
-                    visible: externalLink.running
+                    visible: externalLink.running || feedGeneratorLink.running
                 }
                 states: [
                     State {
-                        when: externalLink.running || createRecord.running
+                        when: externalLink.running || feedGeneratorLink.running || createRecord.running
                         PropertyChanges {
                             target: externalLinkButton
                             enabled: false
@@ -249,11 +270,14 @@ Dialog {
                         }
                     },
                     State {
-                        when: externalLink.valid
+                        when: externalLink.valid || feedGeneratorLink.valid
                         PropertyChanges {
                             target: externalLinkButton
                             iconSource: "../images/delete.png"
-                            onClicked: externalLink.clear()
+                            onClicked: {
+                                externalLink.clear()
+                                feedGeneratorLink.clear()
+                            }
                         }
                     }
                 ]
@@ -269,6 +293,15 @@ Dialog {
             titleLabel.text: externalLink.title
             descriptionLabel.text: externalLink.description
         }
+        FeedGeneratorLinkCard {
+            Layout.preferredWidth: 400 * AdjustedValues.ratio
+            visible: feedGeneratorLink.valid
+
+            avatarImage.source: feedGeneratorLink.avatar
+            displayNameLabel.text: feedGeneratorLink.displayName
+            creatorHandleLabel.text: feedGeneratorLink.creatorHandle
+            likeCountLabel.text: feedGeneratorLink.likeCount
+        }
 
         RowLayout {
             visible: embedImagePreview.embedImages.length > 0
@@ -276,12 +309,33 @@ Dialog {
             Repeater {
                 id: embedImagePreview
                 property var embedImages: []
+                property var embedAlts: []
                 model: embedImagePreview.embedImages
                 delegate: ImageWithIndicator {
                     Layout.preferredWidth: 97 * AdjustedValues.ratio
                     Layout.preferredHeight: 97 * AdjustedValues.ratio
                     fillMode: Image.PreserveAspectCrop
                     source: modelData
+                    TagLabel {
+                        anchors.left: parent.left
+                        anchors.bottom: parent.bottom
+                        anchors.margins: 3
+                        visible: model.index < embedImagePreview.embedAlts.length ? embedImagePreview.embedAlts[model.index].length > 0 : false
+                        source: ""
+                        fontPointSize: AdjustedValues.f8
+                        text: "Alt"
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            altEditDialog.editingIndex = model.index
+                            altEditDialog.embedImage = modelData
+                            if(model.index < embedImagePreview.embedAlts.length){
+                                altEditDialog.embedAlt = embedImagePreview.embedAlts[model.index]
+                            }
+                            altEditDialog.open()
+                        }
+                    }
                     IconButton {
                         enabled: !createRecord.running
                         width: AdjustedValues.b24
@@ -290,18 +344,23 @@ Dialog {
                         anchors.right: parent.right
                         anchors.margins: 5
                         iconSource: "../images/delete.png"
-                        onClicked: {
-                            var images = embedImagePreview.embedImages
-                            var new_images = []
-                            for(var i=0; i<images.length; i++){
-                                if(images[i] === modelData){
-                                    continue;
-                                }
-                                new_images.push(images[i])
-                            }
-                            embedImagePreview.embedImages = new_images
-                        }
+                        onClicked: embedImagePreview.removeImage(modelData)
                     }
+                }
+                function removeImage(path){
+                    var images = embedImagePreview.embedImages
+                    var alts = embedImagePreview.embedAlts
+                    var new_images = []
+                    var new_alts = []
+                    for(var i=0; i<images.length; i++){
+                        if(images[i] === path){
+                            continue;
+                        }
+                        new_images.push(images[i])
+                        new_alts.push(alts[i])
+                    }
+                    embedImagePreview.embedImages = new_images
+                    embedImagePreview.embedAlts = new_alts
                 }
             }
         }
@@ -374,7 +433,7 @@ Dialog {
                 }
             }
             IconButton {
-                enabled: !createRecord.running && !externalLink.valid
+                enabled: !createRecord.running && !externalLink.valid && !feedGeneratorLink.valid
                 iconSource: "../images/add_image.png"
                 iconSize: AdjustedValues.i16
                 flat: true
@@ -404,7 +463,11 @@ Dialog {
             Button {
                 id: postButton
                 Layout.alignment: Qt.AlignRight
-                enabled: postText.text.length > 0 && postText.realTextLength <= 300 && !createRecord.running && !externalLink.running
+                enabled: postText.text.length > 0 &&
+                         postText.realTextLength <= 300 &&
+                         !createRecord.running &&
+                         !externalLink.running &&
+                         !feedGeneratorLink.running
                 font.pointSize: AdjustedValues.f10
                 text: qsTr("Post")
                 onClicked: {
@@ -429,8 +492,11 @@ Dialog {
                     if(externalLink.valid){
                         createRecord.setExternalLink(externalLink.uri, externalLink.title, externalLink.description, externalLink.thumbLocal)
                         createRecord.postWithImages()
+                    }else if(feedGeneratorLink.valid){
+                        createRecord.setFeedGeneratorLink(feedGeneratorLink.uri, feedGeneratorLink.cid)
+                        createRecord.post()
                     }else if(embedImagePreview.embedImages.length > 0){
-                        createRecord.setImages(embedImagePreview.embedImages)
+                        createRecord.setImages(embedImagePreview.embedImages, embedImagePreview.embedAlts)
                         createRecord.postWithImages()
                     }else{
                         createRecord.post()
@@ -461,6 +527,7 @@ Dialog {
                 return
             }
             var new_images = embedImagePreview.embedImages
+            var new_alts = embedImagePreview.embedAlts
             for(var i=0; i<files.length; i++){
                 if(new_images.length >= 4){
                     break
@@ -469,8 +536,10 @@ Dialog {
                     continue;
                 }
                 new_images.push(files[i])
+                new_alts.push("")
             }
             embedImagePreview.embedImages = new_images
+            embedImagePreview.embedAlts = new_alts
         }
         property string prevFolder
     }
@@ -480,6 +549,18 @@ Dialog {
         onAccepted: {
             postDialog.accountModel.update(accountCombo.currentIndex, AccountListModel.PostLanguagesRole, selectedLanguages)
             postLanguagesButton.setLanguageText(selectedLanguages)
+        }
+    }
+
+    AltEditDialog {
+        id: altEditDialog
+        property int editingIndex: -1
+        onAccepted: {
+            if(editingIndex >= 0 && editingIndex < embedImagePreview.embedAlts.length){
+                var alts = embedImagePreview.embedAlts
+                alts[editingIndex] = altEditDialog.embedAlt
+                embedImagePreview.embedAlts = alts
+            }
         }
     }
 }

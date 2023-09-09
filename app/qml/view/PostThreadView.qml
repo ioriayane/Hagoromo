@@ -25,9 +25,11 @@ ColumnLayout {
                         string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestQuote(string cid, string uri, string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestViewThread(string uri)
-    signal requestViewImages(int index, var paths)
+    signal requestViewImages(int index, var paths, var alts)
     signal requestViewProfile(string did)
-    signal requestViewGeneratorFeed(string name, string uri)
+    signal requestViewFeedGenerator(string name, string uri)
+    signal requestViewLikedBy(string uri)
+    signal requestViewRepostedBy(string uri)
     signal requestReportPost(string uri, string cid)
 
     signal back()
@@ -136,7 +138,8 @@ ColumnLayout {
                 contentMediaFilterFrame.visible: model.contentMediaFilterMatched
                 contentMediaFilterFrame.labelText: model.contentMediaFilterMessage
                 postImagePreview.embedImages: model.embedImages
-                postImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.embedImagesFull)
+                postImagePreview.embedAlts: model.embedImagesAlt
+                postImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.embedImagesFull, model.embedImagesAlt)
 
                 quoteFilterFrame.visible: model.quoteFilterMatched && !model.quoteRecordBlocked
                 quoteFilterFrame.labelText: qsTr("Quoted content warning")
@@ -153,7 +156,8 @@ ColumnLayout {
                 quoteRecordAuthor.indexedAt: model.quoteRecordIndexedAt
                 quoteRecordRecordText.text: model.quoteRecordRecordText
                 quoteRecordImagePreview.embedImages: model.quoteRecordEmbedImages
-                quoteRecordImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.quoteRecordEmbedImagesFull)
+                quoteRecordImagePreview.embedAlts: model.quoteRecordEmbedImagesAlt
+                quoteRecordImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.quoteRecordEmbedImagesFull, model.quoteRecordEmbedImagesAlt)
 
                 externalLinkFrame.visible: model.hasExternalLink
                 externalLinkFrame.onClicked: Qt.openUrlExternally(model.externalLinkUri)
@@ -162,12 +166,12 @@ ColumnLayout {
                 externalLinkFrame.uriLabel.text: model.externalLinkUri
                 externalLinkFrame.descriptionLabel.text: model.externalLinkDescription
 
-                generatorViewFrame.visible: model.hasGeneratorFeed
-                generatorViewFrame.onClicked: postThreadView.requestViewGeneratorFeed(model.generatorFeedDisplayName, model.generatorFeedUri)
-                generatorAvatarImage.source: model.generatorFeedAvatar
-                generatorDisplayNameLabel.text: model.generatorFeedDisplayName
-                generatorCreatorHandleLabel.text: model.generatorFeedCreatorHandle
-                generatorLikeCountLabel.text: model.generatorFeedLikeCount
+                feedGeneratorFrame.visible: model.hasFeedGenerator
+                feedGeneratorFrame.onClicked: postThreadView.requestViewFeedGenerator(model.feedGeneratorDisplayName, model.feedGeneratorUri)
+                feedGeneratorFrame.avatarImage.source: model.feedGeneratorAvatar
+                feedGeneratorFrame.displayNameLabel.text: model.feedGeneratorDisplayName
+                feedGeneratorFrame.creatorHandleLabel.text: model.feedGeneratorCreatorHandle
+                feedGeneratorFrame.likeCountLabel.text: model.feedGeneratorLikeCount
 
                 postInformation.visible: (postThreadUri === model.uri)
                 postInformation.labelsLayout.model: postInformation.visible ? model.labels : []
@@ -194,6 +198,8 @@ ColumnLayout {
                 postControls.onTriggeredCopyToClipboard: systemTool.copyToClipboard(model.recordTextPlain)
                 postControls.onTriggeredDeletePost: rootListView.model.deletePost(model.index)
                 postControls.onTriggeredRequestReport: postThreadView.requestReportPost(model.uri, model.cid)
+                postControls.onTriggeredRequestViewLikedBy: postThreadView.requestViewLikedBy(model.uri)
+                postControls.onTriggeredRequestViewRepostedBy: postThreadView.requestViewRepostedBy(model.uri)
 
                 onHoveredLinkChanged: postThreadView.hoveredLink = hoveredLink
             }

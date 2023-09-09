@@ -6,6 +6,12 @@
 #include "atprotocol/accessatprotocol.h"
 #include <QObject>
 
+struct EmbedImage
+{
+    QString path;
+    QString alt;
+};
+
 class RecordOperator : public QObject
 {
     Q_OBJECT
@@ -22,10 +28,11 @@ public:
     Q_INVOKABLE void setReply(const QString &parent_cid, const QString &parent_uri,
                               const QString &root_cid, const QString &root_uri);
     Q_INVOKABLE void setQuote(const QString &cid, const QString &uri);
-    Q_INVOKABLE void setImages(const QStringList &images);
+    Q_INVOKABLE void setImages(const QStringList &images, const QStringList &alts);
     Q_INVOKABLE void setPostLanguages(const QStringList &langs);
     Q_INVOKABLE void setExternalLink(const QString &uri, const QString &title,
                                      const QString &description, const QString &image_path);
+    Q_INVOKABLE void setFeedGeneratorLink(const QString &uri, const QString &cid);
     Q_INVOKABLE void setSelfLabels(const QStringList &labels);
 
     Q_INVOKABLE void clear();
@@ -64,13 +71,15 @@ private:
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_replyParent;
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_replyRoot;
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_embedQuote;
-    QStringList m_embedImages;
+    QList<EmbedImage> m_embedImages;
     QList<AtProtocolType::LexiconsTypeUnknown::Blob> m_embedImageBlogs;
     QList<AtProtocolType::AppBskyRichtextFacet::Main> m_facets;
     QStringList m_postLanguages;
     QString m_externalLinkUri;
     QString m_externalLinkTitle;
     QString m_externalLinkDescription;
+    QString m_feedGeneratorLinkUri;
+    QString m_feedGeneratorLinkCid;
     QStringList m_selfLabels;
 
     bool m_running;

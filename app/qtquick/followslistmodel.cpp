@@ -67,6 +67,19 @@ void FollowsListModel::remove(const QString &did)
     endRemoveRows();
 }
 
+void FollowsListModel::clear()
+{
+    if (m_didList.isEmpty())
+        return;
+
+    beginRemoveRows(QModelIndex(), 0, m_didList.count() - 1);
+    m_didList.clear();
+    m_profileHash.clear();
+    m_formattedDescriptionHash.clear();
+    m_cursor.clear();
+    endRemoveRows();
+}
+
 int FollowsListModel::indexOf(const QString &cid) const
 {
     Q_UNUSED(cid)
@@ -101,6 +114,9 @@ void FollowsListModel::getLatest()
         AppBskyGraphGetFollows *follows = new AppBskyGraphGetFollows(this);
         connect(follows, &AppBskyGraphGetFollows::finished, [=](bool success) {
             if (success) {
+                if (m_didList.isEmpty()) {
+                    m_cursor = follows->cursor();
+                }
                 for (const auto &profile : *follows->profileList()) {
                     m_profileHash[profile.did] = profile;
                     m_formattedDescriptionHash[profile.did] =
@@ -122,6 +138,41 @@ void FollowsListModel::getLatest()
         });
         follows->setAccount(account());
         follows->getFollows(targetDid(), 50, QString());
+    });
+}
+
+void FollowsListModel::getNext()
+{
+    if (running() || m_cursor.isEmpty())
+        return;
+    setRunning(true);
+
+    updateContentFilterLabels([=]() {
+        AppBskyGraphGetFollows *follows = new AppBskyGraphGetFollows(this);
+        connect(follows, &AppBskyGraphGetFollows::finished, [=](bool success) {
+            if (success) {
+                m_cursor = follows->cursor();
+                for (const auto &profile : *follows->profileList()) {
+                    m_profileHash[profile.did] = profile;
+                    m_formattedDescriptionHash[profile.did] =
+                            m_systemTool.markupText(profile.description);
+                    if (m_didList.contains(profile.did)) {
+                        int row = m_didList.indexOf(profile.did);
+                        emit dataChanged(index(row), index(row));
+                    } else {
+                        beginInsertRows(QModelIndex(), m_didList.count(), m_didList.count());
+                        m_didList.append(profile.did);
+                        endInsertRows();
+                    }
+                }
+            } else {
+                emit errorOccured(follows->errorMessage());
+            }
+            setRunning(false);
+            follows->deleteLater();
+        });
+        follows->setAccount(account());
+        follows->getFollows(targetDid(), 50, m_cursor);
     });
 }
 

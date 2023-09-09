@@ -35,6 +35,7 @@ public:
         IndexedAtLongRole,
         EmbedImagesRole,
         EmbedImagesFullRole,
+        EmbedImagesAltRole,
 
         IsRepostedRole,
         IsLikedRole,
@@ -51,6 +52,7 @@ public:
         QuoteRecordIndexedAtRole,
         QuoteRecordEmbedImagesRole,
         QuoteRecordEmbedImagesFullRole,
+        QuoteRecordEmbedImagesAltRole,
         QuoteRecordBlockedRole,
 
         HasExternalLinkRole,
@@ -59,12 +61,12 @@ public:
         ExternalLinkDescriptionRole,
         ExternalLinkThumbRole,
 
-        HasGeneratorFeedRole,
-        GeneratorFeedUriRole,
-        GeneratorFeedCreatorHandleRole,
-        GeneratorFeedDisplayNameRole,
-        GeneratorFeedLikeCountRole,
-        GeneratorFeedAvatarRole,
+        HasFeedGeneratorRole,
+        FeedGeneratorUriRole,
+        FeedGeneratorCreatorHandleRole,
+        FeedGeneratorDisplayNameRole,
+        FeedGeneratorLikeCountRole,
+        FeedGeneratorAvatarRole,
 
         HasReplyRole,
         ReplyRootCidRole,
@@ -99,6 +101,7 @@ public:
     virtual Q_INVOKABLE QString getRecordText(const QString &cid);
 
     Q_INVOKABLE void getLatest();
+    Q_INVOKABLE void getNext();
     Q_INVOKABLE void deletePost(int row);
     Q_INVOKABLE void repost(int row);
     Q_INVOKABLE void like(int row);
@@ -108,6 +111,7 @@ protected:
     virtual void finishedDisplayingQueuedPosts();
     virtual bool checkVisibility(const QString &cid);
     void copyFrom(AtProtocolInterface::AppBskyFeedGetTimeline *timeline);
+    void copyFromNext(AtProtocolInterface::AppBskyFeedGetTimeline *timeline);
     QString getReferenceTime(const AtProtocolType::AppBskyFeedDefs::FeedViewPost &view_post);
     QVariant getQuoteItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
                           const TimelineListModel::TimelineListModelRoles role) const;

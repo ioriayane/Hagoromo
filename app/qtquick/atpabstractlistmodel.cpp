@@ -257,6 +257,54 @@ void AtpAbstractListModel::displayQueuedPosts()
     }
 }
 
+void AtpAbstractListModel::displayQueuedPostsNext()
+{
+    while (!m_cuePost.isEmpty()) {
+        const PostCueItem &post = m_cuePost.back();
+        bool visible = checkVisibility(post.cid);
+
+        if (m_originalCidList.contains(post.cid)) {
+            if (post.reason_type == AppBskyFeedDefs::FeedViewPostReasonType::reason_ReasonRepost) {
+                // 通常、repostのときはいったん消して上へ移動だけど
+                // 続きの読み込みの時は下へ入れることになるので無視
+            } else {
+                // リストは更新しないでデータのみ入れ替える
+                // 更新をUIに通知
+                // （取得できた範囲でしか更新できないのだけど・・・）
+                int r = m_cidList.indexOf(post.cid);
+                if (r >= 0) {
+                    if (visible) {
+                        emit dataChanged(index(r), index(r));
+                    } else {
+                        beginRemoveRows(QModelIndex(), r, r);
+                        m_cidList.removeAt(r);
+                        endRemoveRows();
+                    }
+                } else {
+                    int r = searchInsertPosition(post.cid);
+                    if (visible && r >= 0) {
+                        // 復活させる
+                        beginInsertRows(QModelIndex(), r, r);
+                        m_cidList.insert(r, post.cid);
+                        endInsertRows();
+                    }
+                }
+            }
+        } else {
+            if (visible) {
+                beginInsertRows(QModelIndex(), m_cidList.count(), m_cidList.count());
+                m_cidList.append(post.cid);
+                endInsertRows();
+            }
+            m_originalCidList.append(post.cid);
+        }
+
+        m_cuePost.pop_back();
+    }
+
+    finishedDisplayingQueuedPosts();
+}
+
 void AtpAbstractListModel::updateContentFilterLabels(std::function<void()> callback)
 {
     ConfigurableLabels *labels = new ConfigurableLabels(this);

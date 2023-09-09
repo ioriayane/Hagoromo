@@ -12,11 +12,13 @@ namespace AtProtocolInterface {
 
 AppBskyFeedGetTimeline::AppBskyFeedGetTimeline(QObject *parent) : AccessAtProtocol { parent } { }
 
-void AppBskyFeedGetTimeline::getTimeline()
+void AppBskyFeedGetTimeline::getTimeline(const QString &cursor)
 {
     QUrlQuery query;
     query.addQueryItem(QStringLiteral("actor"), handle());
-    //    query.addQueryItem(QStringLiteral("actor"), cursor);
+    if (!cursor.isEmpty()) {
+        query.addQueryItem(QStringLiteral("cursor"), cursor);
+    }
 
     get(QStringLiteral("xrpc/app.bsky.feed.getTimeline"), query);
 }
@@ -34,6 +36,7 @@ void AppBskyFeedGetTimeline::parseJson(bool success, const QString reply_json)
     if (json_doc.isEmpty() || !json_doc.object().contains("feed")) {
         success = false;
     } else {
+        setCursor(json_doc.object().value("cursor").toString());
         for (const auto &obj : json_doc.object().value("feed").toArray()) {
             AppBskyFeedDefs::FeedViewPost feed_item;
 

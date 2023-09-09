@@ -35,6 +35,7 @@ public:
 
     Q_INVOKABLE QVariant item(int row, FollowsListModel::FollowsListModelRoles role) const;
     Q_INVOKABLE void remove(const QString &did);
+    Q_INVOKABLE void clear();
 
     virtual Q_INVOKABLE int indexOf(const QString &cid) const;
     virtual Q_INVOKABLE QString getRecordText(const QString &cid);
@@ -45,6 +46,7 @@ public:
 
 public slots:
     Q_INVOKABLE void getLatest();
+    Q_INVOKABLE void getNext();
 
 signals:
     void profileTypeChanged();

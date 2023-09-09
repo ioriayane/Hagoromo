@@ -26,9 +26,11 @@ ScrollView {
                           string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestQuote(string cid, string uri, string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestViewThread(string uri)
-    signal requestViewImages(int index, var paths)
+    signal requestViewImages(int index, var paths, var alts)
     signal requestViewProfile(string did)
-    signal requestViewGeneratorFeed(string name, string uri)
+    signal requestViewFeedGenerator(string name, string uri)
+    signal requestViewLikedBy(string uri)
+    signal requestViewRepostedBy(string uri)
     signal requestReportPost(string uri, string cid)
 
     ListView {
@@ -38,6 +40,12 @@ ScrollView {
 
         SystemTool {
             id: systemTool
+        }
+
+        onMovementEnded: {
+            if(atYEnd){
+                rootListView.model.getNext()
+            }
         }
 
         header: ItemDelegate {
@@ -91,7 +99,8 @@ ScrollView {
             contentMediaFilterFrame.visible: model.contentMediaFilterMatched
             contentMediaFilterFrame.labelText: model.contentMediaFilterMessage
             postImagePreview.embedImages: model.embedImages
-            postImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.embedImagesFull)
+            postImagePreview.embedAlts: model.embedImagesAlt
+            postImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.embedImagesFull, model.embedImagesAlt)
 
             quoteRecordDisplayName: model.quoteRecordDisplayName
             quoteRecordHandle: model.quoteRecordHandle
@@ -99,14 +108,15 @@ ScrollView {
             quoteRecordIndexedAt: model.quoteRecordIndexedAt
             quoteRecordRecordText: model.quoteRecordRecordText
             quoteRecordImagePreview.embedImages: model.quoteRecordEmbedImages
-            quoteRecordImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.quoteRecordEmbedImagesFull)
+            quoteRecordImagePreview.embedAlts: model.quoteRecordEmbedImagesAlt
+            quoteRecordImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.quoteRecordEmbedImagesFull, model.quoteRecordEmbedImagesAlt)
 
-//            generatorViewFrame.visible: model.hasGeneratorFeed
-//            generatorViewFrame.onClicked: notificationListView.requestViewGeneratorFeed(model.generatorFeedDisplayName, model.generatorFeedUri)
-//            generatorAvatarImage.source: model.generatorFeedAvatar
-//            generatorDisplayNameLabel.text: model.generatorFeedDisplayName
-//            generatorCreatorHandleLabel.text: model.generatorFeedCreatorHandle
-//            generatorLikeCountLabel.text: model.generatorFeedLikeCount
+//            generatorViewFrame.visible: model.hasFeedGenerator
+//            generatorViewFrame.onClicked: notificationListView.requestViewFeedGenerator(model.feedGeneratorDisplayName, model.feedGeneratorUri)
+//            generatorAvatarImage.source: model.feedGeneratorAvatar
+//            generatorDisplayNameLabel.text: model.feedGeneratorDisplayName
+//            generatorCreatorHandleLabel.text: model.feedGeneratorCreatorHandle
+//            generatorLikeCountLabel.text: model.feedGeneratorLikeCount
 
             postControls.replyButton.iconText: model.replyCount
             postControls.repostButton.iconText: model.repostCount
@@ -124,6 +134,8 @@ ScrollView {
             postControls.postUri: model.uri
             postControls.handle: model.handle
             postControls.onTriggeredCopyToClipboard: systemTool.copyToClipboard(model.recordTextPlain)
+            postControls.onTriggeredRequestViewLikedBy: notificationListView.requestViewLikedBy(model.uri)
+            postControls.onTriggeredRequestViewRepostedBy: notificationListView.requestViewRepostedBy(model.uri)
             postControls.onTriggeredRequestReport: notificationListView.requestReportPost(model.uri, model.cid)
 
             onClicked: {

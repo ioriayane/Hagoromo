@@ -65,9 +65,16 @@ void RecordOperator::setQuote(const QString &cid, const QString &uri)
     m_embedQuote.uri = uri;
 }
 
-void RecordOperator::setImages(const QStringList &images)
+void RecordOperator::setImages(const QStringList &images, const QStringList &alts)
 {
-    m_embedImages = images;
+    for (int i = 0; i < images.length(); i++) {
+        EmbedImage e;
+        e.path = images.at(i);
+        if (i < alts.length()) {
+            e.alt = alts.at(i);
+        }
+        m_embedImages.append(e);
+    }
 }
 
 void RecordOperator::setPostLanguages(const QStringList &langs)
@@ -82,7 +89,15 @@ void RecordOperator::setExternalLink(const QString &uri, const QString &title,
     m_externalLinkTitle = title;
     m_externalLinkDescription = description;
     m_embedImages.clear();
-    m_embedImages.append(image_path);
+    EmbedImage e;
+    e.path = image_path;
+    m_embedImages.append(e);
+}
+
+void RecordOperator::setFeedGeneratorLink(const QString &uri, const QString &cid)
+{
+    m_feedGeneratorLinkUri = uri;
+    m_feedGeneratorLinkCid = cid;
 }
 
 void RecordOperator::setSelfLabels(const QStringList &labels)
@@ -102,6 +117,8 @@ void RecordOperator::clear()
     m_externalLinkUri.clear();
     m_externalLinkTitle.clear();
     m_externalLinkDescription.clear();
+    m_feedGeneratorLinkUri.clear();
+    m_feedGeneratorLinkCid.clear();
 }
 
 void RecordOperator::post()
@@ -130,6 +147,7 @@ void RecordOperator::post()
         create_record->setPostLanguages(m_postLanguages);
         create_record->setExternalLink(m_externalLinkUri, m_externalLinkTitle,
                                        m_externalLinkDescription);
+        create_record->setFeedGeneratorLink(m_feedGeneratorLinkUri, m_feedGeneratorLinkCid);
         create_record->setSelfLabels(m_selfLabels);
         create_record->post(m_text);
     });
@@ -142,7 +160,8 @@ void RecordOperator::postWithImages()
 
     setRunning(true);
 
-    QString path = QUrl(m_embedImages.first()).toLocalFile();
+    QString path = QUrl(m_embedImages.first().path).toLocalFile();
+    QString alt = m_embedImages.first().alt;
     m_embedImages.removeFirst();
 
     ComAtprotoRepoUploadBlob *upload_blob = new ComAtprotoRepoUploadBlob(this);
@@ -155,6 +174,7 @@ void RecordOperator::postWithImages()
             blob.cid = upload_blob->cid();
             blob.mimeType = upload_blob->mimeType();
             blob.size = upload_blob->size();
+            blob.alt = alt;
             m_embedImageBlogs.append(blob);
 
             if (m_embedImages.isEmpty()) {

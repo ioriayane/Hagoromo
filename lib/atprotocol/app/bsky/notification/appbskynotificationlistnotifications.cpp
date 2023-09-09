@@ -13,11 +13,13 @@ AppBskyNotificationListNotifications::AppBskyNotificationListNotifications(QObje
 {
 }
 
-void AppBskyNotificationListNotifications::listNotifications()
+void AppBskyNotificationListNotifications::listNotifications(const QString &cursor)
 {
     QUrlQuery query;
     //    query.addQueryItem(QStringLiteral("actor"), handle());
-    //    query.addQueryItem(QStringLiteral("cursor"), cursor);
+    if (!cursor.isEmpty()) {
+        query.addQueryItem(QStringLiteral("cursor"), cursor);
+    }
 
     get(QStringLiteral("xrpc/app.bsky.notification.listNotifications"), query);
 }
@@ -34,6 +36,7 @@ void AppBskyNotificationListNotifications::parseJson(bool success, const QString
     if (json_doc.isEmpty() || !json_doc.object().contains("notifications")) {
         success = false;
     } else {
+        setCursor(json_doc.object().value("cursor").toString());
         for (const auto &obj : json_doc.object().value("notifications").toArray()) {
             AtProtocolType::AppBskyNotificationListNotifications::Notification notification;
 

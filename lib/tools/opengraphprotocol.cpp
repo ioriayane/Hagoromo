@@ -115,53 +115,52 @@ void OpenGraphProtocol::setThumb(const QString &newThumb)
 bool OpenGraphProtocol::parse(const QByteArray &data, const QString &src_uri)
 {
     bool ret = false;
-    QString charset = extractCharset(rebuildHtml(QString::fromUtf8(data)));
+    QString charset = extractCharset(QString::fromUtf8(data));
     qDebug() << "charset" << charset;
 
     QTextStream ts(data);
     ts.setCodec(charset.toLatin1());
 
-    QString rebuild_text = rebuildHtml(ts.readAll());
-
-    QString errorMsg;
-    int errorLine;
-    int errorColumn;
-
     QDomDocument doc;
-    if (!doc.setContent(rebuild_text, false, &errorMsg, &errorLine, &errorColumn)) {
-        qDebug() << "parse" << errorMsg << ", Line=" << errorLine << ", Column=" << errorColumn;
-    } else {
-        QDomElement root = doc.documentElement();
-        QDomElement head = root.firstChildElement("head");
+    rebuildHtml(ts.readAll(), doc);
+    qDebug().noquote().nospace() << doc.toString();
 
-        setUri(src_uri);
+    QDomElement root = doc.documentElement();
+    QDomElement head = root.firstChildElement("head");
 
-        QDomElement element = head.firstChildElement();
-        while (!element.isNull()) {
-            if (element.tagName().toLower() == "meta") {
-                QString property = element.attribute("property");
-                QString content = element.attribute("content");
-                if (property == "og:url") {
-                    setUri(content);
-                } else if (property == "og:title") {
-                    setTitle(content);
-                } else if (property == "og:description") {
-                    setDescription(content);
-                } else if (property == "og:image") {
-                    // ダウンロードしてローカルパスに置換が必要
+    setUri(src_uri);
+
+    QDomElement element = head.firstChildElement();
+    while (!element.isNull()) {
+        if (element.tagName().toLower() == "meta") {
+            QString property = element.attribute("property");
+            QString content = element.attribute("content");
+            if (property == "og:url") {
+                setUri(content);
+            } else if (property == "og:title") {
+                setTitle(content);
+            } else if (property == "og:description") {
+                setDescription(content);
+            } else if (property == "og:image") {
+                // ダウンロードしてローカルパスに置換が必要
+                if (content.startsWith("/")) {
+                    QUrl uri(src_uri);
+                    setThumb(uri.toString(QUrl::RemovePath) + content);
+                } else {
                     setThumb(content);
                 }
-            } else if (element.tagName().toLower() == "title") {
-                if (title().isEmpty()) {
-                    setTitle(element.text());
-                }
             }
-            element = element.nextSiblingElement();
+        } else if (element.tagName().toLower() == "title") {
+            if (title().isEmpty()) {
+                setTitle(element.text());
+            }
         }
-        if (!uri().isEmpty() && !title().isEmpty()) {
-            ret = true;
-        }
+        element = element.nextSiblingElement();
     }
+    if (!uri().isEmpty() && !title().isEmpty()) {
+        ret = true;
+    }
+
     return ret;
 }
 
@@ -169,119 +168,172 @@ QString OpenGraphProtocol::extractCharset(const QString &data) const
 {
     QString charset = "utf-8";
 
-    QString errorMsg;
-    int errorLine;
-    int errorColumn;
+    QRegularExpressionMatch match = m_rxMeta.match(data);
+    if (match.capturedTexts().isEmpty())
+        return charset;
+
     QDomDocument doc;
-
-    if (!doc.setContent(data, false, &errorMsg, &errorLine, &errorColumn)) {
-        qDebug() << "extractCharset" << errorMsg << ", Line=" << errorLine
-                 << ", Column=" << errorColumn;
-        qDebug().noquote().nospace() << "--------------------";
-        qDebug().noquote().nospace() << data;
-        qDebug().noquote().nospace() << "--------------------";
-    } else {
-        QDomElement root = doc.documentElement();
-        QDomElement head = root.firstChildElement("head");
-
-        QDomElement element = head.firstChildElement("meta");
-        while (!element.isNull()) {
-            if (element.attribute("http-equiv") == "content-type") {
-                QString content = element.attribute("content");
-                QStringList items = content.split(";");
-                bool exist = false;
-                for (const QString &item : qAsConst(items)) {
-                    QStringList parts = item.trimmed().split("=");
-                    if (parts.length() != 2)
-                        continue;
-                    if (parts[0] == "charset") {
-                        charset = parts[1].trimmed();
-                        exist = true;
+    QString result;
+    int pos;
+    while ((pos = match.capturedStart()) != -1) {
+        QDomElement element = doc.createElement("meta");
+        if (rebuildTag(match.captured(), element)) {
+            if (element.tagName().toLower() == "meta") {
+                if (element.attribute("http-equiv") == "content-type") {
+                    QString content = element.attribute("content");
+                    QStringList items = content.split(";");
+                    bool exist = false;
+                    for (const QString &item : qAsConst(items)) {
+                        QStringList parts = item.trimmed().split("=");
+                        if (parts.length() != 2)
+                            continue;
+                        if (parts[0] == "charset") {
+                            charset = parts[1].trimmed();
+                            exist = true;
+                            break;
+                        }
+                    }
+                    if (exist)
+                        break;
+                } else {
+                    QString temp = element.attribute("charset");
+                    if (!temp.isEmpty()) {
+                        charset = temp;
                         break;
                     }
                 }
-                if (exist)
-                    break;
-            } else {
-                QString temp = element.attribute("charset");
-                if (!temp.isEmpty()) {
-                    charset = temp;
-                    break;
-                }
             }
-            element = element.nextSiblingElement("meta");
         }
+
+        match = m_rxMeta.match(data, pos + match.capturedLength());
     }
 
     return charset;
 }
 
-QString OpenGraphProtocol::rebuildHtml(const QString &text) const
+void OpenGraphProtocol::rebuildHtml(const QString &text, QDomDocument &doc) const
 {
     QRegularExpressionMatch match = m_rxMeta.match(text);
     if (match.capturedTexts().isEmpty())
-        return text;
+        return;
 
-    QString result;
-    QString temp;
+    QDomElement html = doc.createElement("html");
+    QDomElement head = doc.createElement("head");
+
     int pos;
+    while ((pos = match.capturedStart()) != -1) {
+        QDomElement element = doc.createElement("meta");
+        if (rebuildTag(match.captured(), element)) {
+            head.appendChild(element);
+        }
+        match = m_rxMeta.match(text, pos + match.capturedLength());
+    }
+
+    html.appendChild(head);
+    doc.appendChild(html);
+
+    return;
+}
+
+bool OpenGraphProtocol::rebuildTag(QString text, QDomElement &element) const
+{
     QChar c;
     int state = 0;
+    bool in_quote = false;
     // 0:属性より前
     // 1:属性名
     // 2:スペース（=より後ろ）
     // 3:属性値
-    bool in_quote = false;
-    while ((pos = match.capturedStart()) != -1) {
-        temp = match.captured();
-        if (!temp.endsWith("/>") && !temp.toLower().startsWith("<title")) {
-            temp.replace(">", "/>");
-        }
+    QString result;
+    QStringList names;
+    QStringList values;
 
-        for (int i = 0; i < temp.length(); i++) {
-            c = temp.at(i);
-            if (state == 0) {
-                if (c == ' ') {
-                    state = 1;
-                }
-                result += c;
-            } else if (state == 1) {
-                if (c == '=') {
-                    state = 2;
-                    in_quote = false;
-                }
-                result += c;
-            } else if (state == 2) {
-                if (c == '\"') {
-                    in_quote = true;
-                    state = 3;
-                } else if (c != ' ') {
-                    result += '\"';
-                    in_quote = false;
-                    state = 3;
-                }
-                result += c;
-            } else if (state == 3) {
-                if (in_quote) {
-                    if (c == '\"') {
-                        state = 1;
-                        in_quote = false;
-                    }
-                } else {
-                    if (c == ' ') {
-                        result += '\"';
-                        state = 1;
-                    }
-                }
-                result += c;
-            } else {
-            }
-        }
+    text = text.trimmed();
 
-        result += "\n";
-
-        match = m_rxMeta.match(text, pos + match.capturedLength());
+    int close_tag_pos = -1;
+    if (text.toLower().startsWith("<title")) {
+        element.setTagName("title");
+        close_tag_pos = text.indexOf(
+                QRegularExpression("</title[ \\t]*>$", QRegularExpression::CaseInsensitiveOption));
+    }
+    if (!text.endsWith("/>") && !text.toLower().startsWith("<title")) {
+        text.replace(">", "/>");
     }
 
-    return QString("<html><head>%1</head></html>").arg(result);
+    for (int i = 0; i < text.length(); i++) {
+        c = text.at(i);
+        if (state == 0) {
+            if (c == ' ') {
+                state = 1;
+                names.append("");
+                values.append("");
+            }
+            result += c;
+        } else if (state == 1) {
+            if (c == '/' || c == '>') {
+                if (close_tag_pos > i) {
+                    element.appendChild(element.toDocument().createTextNode(
+                            text.mid(i + 1, close_tag_pos - (i + 1))));
+                }
+                break;
+            } else if (c == '=') {
+                state = 2;
+                in_quote = false;
+            } else {
+                names.last().append(c);
+            }
+            result += c;
+        } else if (state == 2) {
+            if (c == '\"') {
+                in_quote = true;
+                state = 3;
+            } else if (c != ' ') {
+                result += '\"';
+                in_quote = false;
+                state = 3;
+                values.last().append(c);
+            }
+            result += c;
+        } else if (state == 3) {
+            if (in_quote) {
+                if (c == '\"') {
+                    state = 1;
+                    in_quote = false;
+                    names.append("");
+                    values.append("");
+                } else {
+                    values.last().append(c);
+                }
+            } else {
+                if (c == '/' || c == '>') {
+                    if (close_tag_pos > i) {
+                        element.appendChild(element.toDocument().createTextNode(
+                                text.mid(i + 1, close_tag_pos - (i + 1))));
+                    }
+                    break;
+                } else if (c == ' ') {
+                    result += '\"';
+                    state = 1;
+                    names.append("");
+                    values.append("");
+                } else {
+                    values.last().append(c);
+                }
+            }
+            result += c;
+        } else {
+        }
+    }
+
+    if (names.length() == values.length() && !names.isEmpty()) {
+        for (int i = 0; i < names.length(); i++) {
+            if (!names.at(i).trimmed().isEmpty())
+                element.setAttribute(names.at(i).trimmed(), values.at(i).trimmed());
+        }
+        return true;
+    } else if (element.tagName() == "title") {
+        return true;
+    } else {
+        return false;
+    }
 }

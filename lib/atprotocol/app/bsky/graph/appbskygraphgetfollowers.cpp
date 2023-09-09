@@ -18,6 +18,9 @@ void AppBskyGraphGetFollowers::getFollowers(const QString &actor, const int limi
 {
     QUrlQuery query;
     query.addQueryItem(QStringLiteral("actor"), actor);
+    if (!cursor.isEmpty()) {
+        query.addQueryItem(QStringLiteral("cursor"), cursor);
+    }
 
     get(QStringLiteral("xrpc/app.bsky.graph.getFollowers"), query);
 }

@@ -66,13 +66,22 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
     else if (role == EmbedImagesRole) {
         if (m_postHash.contains(current.cid))
             return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
-                    m_postHash[current.cid], true);
+                    m_postHash[current.cid],
+                    AtProtocolType::LexiconsTypeUnknown::CopyImageType::Thumb);
         else
             return QStringList();
     } else if (role == EmbedImagesFullRole) {
         if (m_postHash.contains(current.cid))
             return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
-                    m_postHash[current.cid], false);
+                    m_postHash[current.cid],
+                    AtProtocolType::LexiconsTypeUnknown::CopyImageType::FullSize);
+        else
+            return QStringList();
+    } else if (role == EmbedImagesAltRole) {
+        if (m_postHash.contains(current.cid))
+            return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
+                    m_postHash[current.cid],
+                    AtProtocolType::LexiconsTypeUnknown::CopyImageType::Alt);
         else
             return QStringList();
 
@@ -223,15 +232,24 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
         } else if (role == QuoteRecordEmbedImagesRole) {
             if (m_postHash.contains(record_cid))
                 return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
-                        m_postHash[record_cid], true);
+                        m_postHash[record_cid],
+                        AtProtocolType::LexiconsTypeUnknown::CopyImageType::Thumb);
             else
-                return QString();
+                return QStringList();
         } else if (role == QuoteRecordEmbedImagesFullRole) {
             if (m_postHash.contains(record_cid))
                 return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
-                        m_postHash[record_cid], false);
+                        m_postHash[record_cid],
+                        AtProtocolType::LexiconsTypeUnknown::CopyImageType::FullSize);
             else
-                return QString();
+                return QStringList();
+        } else if (role == QuoteRecordEmbedImagesAltRole) {
+            if (m_postHash.contains(record_cid))
+                return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
+                        m_postHash[record_cid],
+                        AtProtocolType::LexiconsTypeUnknown::CopyImageType::Alt);
+            else
+                return QStringList();
         } else if (role == QuoteRecordIsRepostedRole) {
             if (m_postHash.contains(record_cid))
                 return m_postHash[record_cid].viewer.repost.contains(account().did);
@@ -243,7 +261,7 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             else
                 return false;
 
-        } else if (role == HasGeneratorFeedRole) {
+        } else if (role == HasFeedGeneratorRole) {
             if (m_postHash.contains(record_cid)
                 && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
                 return m_postHash[record_cid].embed_type
@@ -255,7 +273,7 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             } else {
                 return false;
             }
-        } else if (role == GeneratorFeedUriRole) {
+        } else if (role == FeedGeneratorUriRole) {
             if (m_postHash.contains(record_cid)
                 && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
                 return m_postHash[record_cid]
@@ -263,7 +281,7 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             } else {
                 return QString();
             }
-        } else if (role == GeneratorFeedCreatorHandleRole) {
+        } else if (role == FeedGeneratorCreatorHandleRole) {
             if (m_postHash.contains(record_cid)
                 && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
                 return m_postHash[record_cid]
@@ -272,7 +290,7 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             } else {
                 return QString();
             }
-        } else if (role == GeneratorFeedDisplayNameRole) {
+        } else if (role == FeedGeneratorDisplayNameRole) {
             if (m_postHash.contains(record_cid)
                 && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
                 return m_postHash[record_cid]
@@ -281,7 +299,7 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             } else {
                 return QString();
             }
-        } else if (role == GeneratorFeedLikeCountRole) {
+        } else if (role == FeedGeneratorLikeCountRole) {
             if (m_postHash.contains(record_cid)
                 && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
                 return m_postHash[record_cid]
@@ -290,7 +308,7 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             } else {
                 return QString();
             }
-        } else if (role == GeneratorFeedAvatarRole) {
+        } else if (role == FeedGeneratorAvatarRole) {
             if (m_postHash.contains(record_cid)
                 && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
                 return m_postHash[record_cid]
@@ -373,6 +391,9 @@ void NotificationListModel::getLatest()
             if (success) {
                 QDateTime reference_time = QDateTime::currentDateTimeUtc();
 
+                if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
+                    m_cursor = notification->cursor();
+                }
                 for (auto item = notification->notificationList()->crbegin();
                      item != notification->notificationList()->crend(); item++) {
                     m_notificationHash[item->cid] = *item;
@@ -462,7 +483,96 @@ void NotificationListModel::getLatest()
             notification->deleteLater();
         });
         notification->setAccount(account());
-        notification->listNotifications();
+        notification->listNotifications(QString());
+    });
+}
+
+void NotificationListModel::getNext()
+{
+    if (running() || m_cursor.isEmpty())
+        return;
+    setRunning(true);
+
+    updateContentFilterLabels([=]() {
+        AppBskyNotificationListNotifications *notification =
+                new AppBskyNotificationListNotifications(this);
+        connect(notification, &AppBskyNotificationListNotifications::finished, [=](bool success) {
+            if (success) {
+                QDateTime reference_time = QDateTime::currentDateTimeUtc();
+
+                m_cursor = notification->cursor();
+
+                for (auto item = notification->notificationList()->crbegin();
+                     item != notification->notificationList()->crend(); item++) {
+                    m_notificationHash[item->cid] = *item;
+
+                    PostCueItem post;
+                    post.cid = item->cid;
+                    post.indexed_at = item->indexedAt;
+                    post.reference_time = reference_time;
+                    m_cuePost.append(post);
+
+                    if (item->reason == "like") {
+                        appendGetPostCue<AtProtocolType::AppBskyFeedLike::Main>(item->record);
+                    } else if (item->reason == "repost") {
+                        appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(item->record);
+                    } else if (item->reason == "quote") {
+                        AtProtocolType::AppBskyFeedPost::Main post =
+                                AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                                        AtProtocolType::AppBskyFeedPost::Main>(item->record);
+                        switch (post.embed_type) {
+                        case AtProtocolType::AppBskyFeedPost::MainEmbedType::
+                                embed_AppBskyEmbedImages_Main:
+                            break;
+                        case AtProtocolType::AppBskyFeedPost::MainEmbedType::
+                                embed_AppBskyEmbedExternal_Main:
+                            break;
+                        case AtProtocolType::AppBskyFeedPost::MainEmbedType::
+                                embed_AppBskyEmbedRecord_Main:
+                            if (!post.embed_AppBskyEmbedRecord_Main.record.cid.isEmpty()
+                                && !m_cueGetPost.contains(
+                                        post.embed_AppBskyEmbedRecord_Main.record.uri)) {
+                                m_cueGetPost.append(post.embed_AppBskyEmbedRecord_Main.record.uri);
+                            }
+                            // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
+                            if (!m_cueGetPost.contains(item->uri)) {
+                                m_cueGetPost.append(item->uri);
+                            }
+                            break;
+                        case AtProtocolType::AppBskyFeedPost::MainEmbedType::
+                                embed_AppBskyEmbedRecordWithMedia_Main:
+                            if (!post.embed_AppBskyEmbedRecordWithMedia_Main.record.isNull()
+                                && !post.embed_AppBskyEmbedRecordWithMedia_Main.record->record.uri
+                                            .isEmpty()
+                                && !m_cueGetPost.contains(
+                                        post.embed_AppBskyEmbedRecordWithMedia_Main.record->record
+                                                .uri)) {
+                                m_cueGetPost.append(post.embed_AppBskyEmbedRecordWithMedia_Main
+                                                            .record->record.uri);
+                            }
+                            // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
+                            if (!m_cueGetPost.contains(item->uri)) {
+                                m_cueGetPost.append(item->uri);
+                            }
+                            break;
+                        default:
+                            break;
+                        }
+                    } else if (item->reason == "reply" || item->reason == "mention") {
+                        // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
+                        if (!m_cueGetPost.contains(item->uri)) {
+                            m_cueGetPost.append(item->uri);
+                        }
+                    }
+                }
+            } else {
+                emit errorOccured(notification->errorMessage());
+            }
+            QTimer::singleShot(10, this, &NotificationListModel::displayQueuedPostsNext);
+            notification->deleteLater();
+        });
+        notification->setAccount(account());
+        notification->listNotifications(m_cursor);
     });
 }
 
@@ -547,6 +657,7 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[IndexedAtRole] = "indexedAt";
     roles[EmbedImagesRole] = "embedImages";
     roles[EmbedImagesFullRole] = "embedImagesFull";
+    roles[EmbedImagesAltRole] = "embedImagesAlt";
 
     roles[IsRepostedRole] = "isReposted";
     roles[IsLikedRole] = "isLiked";
@@ -564,15 +675,16 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[QuoteRecordRecordTextRole] = "quoteRecordRecordText";
     roles[QuoteRecordEmbedImagesRole] = "quoteRecordEmbedImages";
     roles[QuoteRecordEmbedImagesFullRole] = "quoteRecordEmbedImagesFull";
+    roles[QuoteRecordEmbedImagesAltRole] = "quoteRecordEmbedImagesAlt";
     roles[QuoteRecordIsRepostedRole] = "quoteRecordIsReposted";
     roles[QuoteRecordIsLikedRole] = "quoteRecordIsLiked";
 
-    roles[HasGeneratorFeedRole] = "hasGeneratorFeed";
-    roles[GeneratorFeedUriRole] = "generatorFeedUri";
-    roles[GeneratorFeedCreatorHandleRole] = "generatorFeedCreatorHandle";
-    roles[GeneratorFeedDisplayNameRole] = "generatorFeedDisplayName";
-    roles[GeneratorFeedLikeCountRole] = "generatorFeedLikeCount";
-    roles[GeneratorFeedAvatarRole] = "generatorFeedAvatar";
+    roles[HasFeedGeneratorRole] = "hasFeedGenerator";
+    roles[FeedGeneratorUriRole] = "feedGeneratorUri";
+    roles[FeedGeneratorCreatorHandleRole] = "feedGeneratorCreatorHandle";
+    roles[FeedGeneratorDisplayNameRole] = "feedGeneratorDisplayName";
+    roles[FeedGeneratorLikeCountRole] = "feedGeneratorLikeCount";
+    roles[FeedGeneratorAvatarRole] = "feedGeneratorAvatar";
 
     roles[UserFilterMatchedRole] = "userFilterMatched";
     roles[UserFilterMessageRole] = "userFilterMessage";

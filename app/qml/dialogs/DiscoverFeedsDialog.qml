@@ -100,6 +100,11 @@ Dialog {
             ListView {
                 id: generatorListView
                 clip: true
+                onMovementEnded: {
+                    if(atYEnd){
+                        feedGeneratorListModel.getNext()
+                    }
+                }
                 model: FeedGeneratorListModel {
                     id: feedGeneratorListModel
                     query: searchText.text

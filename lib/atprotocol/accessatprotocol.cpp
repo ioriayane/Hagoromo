@@ -175,6 +175,16 @@ void AccessAtProtocol::postWithImage(const QString &endpoint, const QString &pat
     file->setParent(reply);
 }
 
+QString AccessAtProtocol::cursor() const
+{
+    return m_cursor;
+}
+
+void AccessAtProtocol::setCursor(const QString &newCursor)
+{
+    m_cursor = newCursor;
+}
+
 QString AccessAtProtocol::errorMessage() const
 {
     return m_errorMessage;

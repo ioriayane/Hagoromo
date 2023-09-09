@@ -44,6 +44,7 @@ public:
         IndexedAtRole,
         EmbedImagesRole,
         EmbedImagesFullRole,
+        EmbedImagesAltRole,
         IsRepostedRole,
         IsLikedRole,
         RepostedUriRole,
@@ -60,15 +61,16 @@ public:
         QuoteRecordRecordTextRole,
         QuoteRecordEmbedImagesRole,
         QuoteRecordEmbedImagesFullRole,
+        QuoteRecordEmbedImagesAltRole,
         QuoteRecordIsRepostedRole,
         QuoteRecordIsLikedRole,
 
-        HasGeneratorFeedRole,
-        GeneratorFeedUriRole,
-        GeneratorFeedCreatorHandleRole,
-        GeneratorFeedDisplayNameRole,
-        GeneratorFeedLikeCountRole,
-        GeneratorFeedAvatarRole,
+        HasFeedGeneratorRole,
+        FeedGeneratorUriRole,
+        FeedGeneratorCreatorHandleRole,
+        FeedGeneratorDisplayNameRole,
+        FeedGeneratorLikeCountRole,
+        FeedGeneratorAvatarRole,
 
         UserFilterMatchedRole,
         UserFilterMessageRole,
@@ -103,6 +105,7 @@ public:
     virtual Q_INVOKABLE QString getRecordText(const QString &cid);
 
     Q_INVOKABLE void getLatest();
+    Q_INVOKABLE void getNext();
     Q_INVOKABLE void repost(int row);
     Q_INVOKABLE void like(int row);
 

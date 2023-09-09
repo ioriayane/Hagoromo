@@ -4,6 +4,7 @@
 #include <QNetworkAccessManager>
 #include <QObject>
 #include <QRegularExpression>
+#include <QDomElement>
 
 class OpenGraphProtocol : public QObject
 {
@@ -30,7 +31,8 @@ signals:
 private:
     bool parse(const QByteArray &data, const QString &src_uri);
     QString extractCharset(const QString &data) const;
-    QString rebuildHtml(const QString &text) const;
+    void rebuildHtml(const QString &text, QDomDocument &doc) const;
+    bool rebuildTag(QString text, QDomElement &element) const;
 
     QRegularExpression m_rxMeta;
 

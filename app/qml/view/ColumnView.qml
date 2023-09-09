@@ -11,6 +11,7 @@ import tech.relog.hagoromo.searchpostlistmodel 1.0
 import tech.relog.hagoromo.searchprofilelistmodel 1.0
 import tech.relog.hagoromo.customfeedlistmodel 1.0
 import tech.relog.hagoromo.authorfeedlistmodel 1.0
+import tech.relog.hagoromo.anyprofilelistmodel 1.0
 import tech.relog.hagoromo.singleton 1.0
 
 import "../controls"
@@ -37,8 +38,8 @@ ColumnLayout {
                         string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestMention(string account_uuid, string handle)
     signal requestViewAuthorFeed(string account_uuid, string did, string handle)
-    signal requestViewImages(int index, var paths)
-    signal requestViewGeneratorFeed(string account_uuid, string name, string uri)
+    signal requestViewImages(int index, var paths, var alts)
+    signal requestViewFeedGenerator(string account_uuid, string name, string uri)
     signal requestReportPost(string account_uuid, string uri, string cid)
     signal requestReportAccount(string account_uuid, string did)
 
@@ -76,10 +77,12 @@ ColumnLayout {
                                      columnStackView.push(postThreadComponent, { "postThreadUri": uri })
                                  }
 
-            onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
+            onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
 
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
-            onRequestViewGeneratorFeed: (name, uri) => columnView.requestViewGeneratorFeed(account.uuid, name, uri)
+            onRequestViewFeedGenerator: (name, uri) => columnView.requestViewFeedGenerator(account.uuid, name, uri)
+            onRequestViewLikedBy: (uri) => columnStackView.push(likesProfilesComponent, { "targetUri": uri })
+            onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
@@ -110,8 +113,10 @@ ColumnLayout {
                                      // これはPostThreadViewのプロパティにダイレクトに設定する
                                      columnStackView.push(postThreadComponent, { "postThreadUri": uri })
                                  }
-            onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
+            onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+            onRequestViewLikedBy: (uri) => columnStackView.push(likesProfilesComponent, { "targetUri": uri })
+            onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
@@ -132,9 +137,11 @@ ColumnLayout {
                                      // これはPostThreadViewのプロパティにダイレクトに設定する
                                      columnStackView.push(postThreadComponent, { "postThreadUri": uri })
                                  }
-            onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
+            onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
-            onRequestViewGeneratorFeed: (name, uri) => columnView.requestViewGeneratorFeed(account.uuid, name, uri)
+            onRequestViewFeedGenerator: (name, uri) => columnView.requestViewFeedGenerator(account.uuid, name, uri)
+            onRequestViewLikedBy: (uri) => columnStackView.push(likesProfilesComponent, { "targetUri": uri })
+            onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
@@ -163,9 +170,11 @@ ColumnLayout {
             onRequestViewAuthorFeed: (did, handle) =>
                                      columnView.requestViewAuthorFeed(account.uuid, did, handle)
 
-            onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
+            onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
-            onRequestViewGeneratorFeed: (name, uri) => columnView.requestViewGeneratorFeed(account.uuid, name, uri)
+            onRequestViewFeedGenerator: (name, uri) => columnView.requestViewFeedGenerator(account.uuid, name, uri)
+            onRequestViewLikedBy: (uri) => columnStackView.push(likesProfilesComponent, { "targetUri": uri })
+            onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
             onRequestReportAccount: (did) => columnView.requestReportAccount(account.uuid, did)
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
@@ -201,9 +210,11 @@ ColumnLayout {
                                      columnStackView.push(postThreadComponent, { "postThreadUri": uri })
                                  }
 
-            onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
+            onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
-            onRequestViewGeneratorFeed: (name, uri) => columnView.requestViewGeneratorFeed(account.uuid, name, uri)
+            onRequestViewFeedGenerator: (name, uri) => columnView.requestViewFeedGenerator(account.uuid, name, uri)
+            onRequestViewLikedBy: (uri) => columnStackView.push(likesProfilesComponent, { "targetUri": uri })
+            onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
@@ -248,9 +259,11 @@ ColumnLayout {
                                      columnStackView.push(postThreadComponent, { "postThreadUri": uri })
                                  }
 
-            onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
+            onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
-            onRequestViewGeneratorFeed: (name, uri) => columnView.requestViewGeneratorFeed(account.uuid, name, uri)
+            onRequestViewFeedGenerator: (name, uri) => columnView.requestViewFeedGenerator(account.uuid, name, uri)
+            onRequestViewLikedBy: (uri) => columnStackView.push(likesProfilesComponent, { "targetUri": uri })
+            onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
@@ -280,14 +293,51 @@ ColumnLayout {
                                      columnStackView.push(postThreadComponent, { "postThreadUri": uri })
                                  }
 
-            onRequestViewImages: (index, paths) => columnView.requestViewImages(index, paths)
+            onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
-            onRequestViewGeneratorFeed: (name, uri) => columnView.requestViewGeneratorFeed(account.uuid, name, uri)
+            onRequestViewFeedGenerator: (name, uri) => columnView.requestViewFeedGenerator(account.uuid, name, uri)
+            onRequestViewLikedBy: (uri) => columnStackView.push(likesProfilesComponent, { "targetUri": uri })
+            onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
         }
     }
+    Component {
+        id: likesProfilesComponent
+        AnyProfileListView {
+            accountDid: account.did
+            autoLoading: settings.autoLoading
+            type: AnyProfileListModel.Like
+
+            onErrorOccured: (message) => { console.log(message) }
+            onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+            onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
+            onBack: {
+                if(!columnStackView.empty){
+                    columnStackView.pop()
+                }
+            }
+        }
+    }
+    Component {
+        id: repostsProfilesComponent
+        AnyProfileListView {
+            accountDid: account.did
+            autoLoading: settings.autoLoading
+            type: AnyProfileListModel.Repost
+
+            onErrorOccured: (message) => { console.log(message) }
+            onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+            onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
+            onBack: {
+                if(!columnStackView.empty){
+                    columnStackView.pop()
+                }
+            }
+        }
+    }
+
 
     function load(){
         console.log("ColumnLayout:componentType=" + componentType)

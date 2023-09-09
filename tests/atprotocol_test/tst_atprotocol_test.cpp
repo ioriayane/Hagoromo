@@ -6,6 +6,7 @@
 #include "atprotocol/com/atproto/server/comatprotoservercreatesession.h"
 #include "atprotocol/com/atproto/repo/comatprotorepocreaterecord.h"
 #include "atprotocol/app/bsky/feed/appbskyfeedgettimeline.h"
+#include "atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerator.h"
 #include "tools/opengraphprotocol.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "tools/configurablelabels.h"
@@ -32,6 +33,7 @@ private slots:
     void test_ConfigurableLabels_copy();
     void test_ConfigurableLabels_save();
     void test_ComAtprotoRepoCreateRecord_post();
+    void test_AppBskyFeedGetFeedGenerator();
 
 private:
     void test_putPreferences(const QString &path, const QByteArray &body);
@@ -108,6 +110,7 @@ void atprotocol_test::test_ComAtprotoServerCreateSession()
 void atprotocol_test::test_OpenGraphProtocol()
 {
     OpenGraphProtocol ogp;
+
     {
         QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
         ogp.getData(m_service + "/ogp/file1.html");
@@ -280,7 +283,8 @@ void atprotocol_test::test_OpenGraphProtocol()
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QVERIFY2(ogp.uri() == "http://localhost/response/ogp/file5.html", ogp.uri().toLocal8Bit());
+        QVERIFY2(ogp.uri() == "http://localhost/response/ogp/file5.html?id=10186&s=720",
+                 ogp.uri().toLocal8Bit());
         QVERIFY2(ogp.title()
                          == QString("file5 ")
                                     .append(QChar(0x30bf))
@@ -291,6 +295,25 @@ void atprotocol_test::test_OpenGraphProtocol()
         QVERIFY2(ogp.description() == QString("file5 ").append(QChar(0x8a73)).append(QChar(0x7d30)),
                  ogp.description().toLocal8Bit());
         QVERIFY(ogp.thumb() == "");
+    }
+
+    {
+        QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
+        ogp.getData(m_service + "/ogp/file6.html");
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+
+        QVERIFY2(ogp.uri() == "http://localhost/response/ogp/file6.html", ogp.uri().toLocal8Bit());
+        QVERIFY2(ogp.title() == QString("file6 TITLE"), ogp.title().toLocal8Bit());
+        QVERIFY2(ogp.description() == QString("file6 ").append(QChar(0x8a73)).append(QChar(0x7d30)),
+                 ogp.description().toLocal8Bit());
+        QVERIFY2(ogp.thumb()
+                         == QString("http://localhost:%1/response/ogp/images/file6.png")
+                                    .arg(QString::number(m_listenPort)),
+                 ogp.thumb().toLocal8Bit());
     }
 }
 
@@ -693,6 +716,31 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_post()
     QVERIFY(spy.count() == 1);
     QList<QVariant> arguments = spy.takeFirst();
     QVERIFY(arguments.at(0).toBool());
+}
+
+void atprotocol_test::test_AppBskyFeedGetFeedGenerator()
+{
+    AtProtocolInterface::AppBskyFeedGetFeedGenerator generator;
+    generator.setAccount(m_account);
+    generator.setService(QString("http://localhost:%1/response").arg(m_listenPort));
+
+    QSignalSpy spy(&generator, SIGNAL(finished(bool)));
+    generator.getFeedGenerator("at://did:plc:42fxwa2jeumqzzggx/app.bsky.feed.generator/aaagrsa");
+    spy.wait();
+    QVERIFY(spy.count() == 1);
+
+    QVERIFY(generator.generatorView().uri
+            == "at://did:plc:42fxwa2jeumqzzggx/app.bsky.feed.generator/aaagrsa");
+    QVERIFY(generator.generatorView().cid == "bafyreib7pgajpklwexy4lidm");
+    QVERIFY(generator.generatorView().did == "did:web:view.bsky.social");
+    QVERIFY(generator.generatorView().displayName == "view:displayName");
+    QVERIFY(generator.generatorView().description == "view:description");
+    QVERIFY(generator.generatorView().avatar == "https://cdn.bsky.social/view_avator.jpeg");
+    QVERIFY(generator.generatorView().creator.did == "did:plc:42fxwa2jeumqzzggxj");
+    QVERIFY(generator.generatorView().creator.handle == "creator.bsky.social");
+    QVERIFY(generator.generatorView().creator.displayName == "creator:displayName");
+    QVERIFY(generator.generatorView().creator.avatar
+            == "https://cdn.bsky.social/creator_avator.jpeg");
 }
 
 void atprotocol_test::test_putPreferences(const QString &path, const QByteArray &body)

@@ -23,6 +23,9 @@ void AppBskyUnspeccedGetPopularFeedGenerators::getPopularFeedGenerators(const in
     if (!query.isEmpty()) {
         url_query.addQueryItem(QStringLiteral("query"), query);
     }
+    if (!cursor.isEmpty()) {
+        url_query.addQueryItem(QStringLiteral("cursor"), cursor);
+    }
 
     get(QStringLiteral("xrpc/app.bsky.unspecced.getPopularFeedGenerators"), url_query);
 }
@@ -40,6 +43,7 @@ void AppBskyUnspeccedGetPopularFeedGenerators::parseJson(bool success, const QSt
     if (json_doc.isEmpty() || !json_doc.object().contains("feeds")) {
         success = false;
     } else {
+        setCursor(json_doc.object().value("cursor").toString());
         for (const auto &value : json_doc.object().value("feeds").toArray()) {
             GeneratorView generator;
             copyGeneratorView(value.toObject(), generator);

@@ -54,6 +54,7 @@ public:
     Q_INVOKABLE int indexAt(const QString &uuid);
     Q_INVOKABLE int getMainAccountIndex() const;
     Q_INVOKABLE void setMainAccount(int row);
+    Q_INVOKABLE bool allAccountsReady() const;
 
     Q_INVOKABLE void save() const;
     Q_INVOKABLE void load();
@@ -64,9 +65,8 @@ public:
 
 signals:
     void errorOccured(const QString &message);
-    void appendedAccount(int row);
+    void updatedSession(int row, const QString &uuid);
     void updatedAccount(int row, const QString &uuid);
-    void allFinished();
     void countChanged();
 
 protected:
@@ -80,8 +80,7 @@ private:
 
     QString appDataFolder() const;
 
-    void updateSession(int row, const QString &service, const QString &identifier,
-                       const QString &password);
+    void createSession(int row);
     void refreshSession(int row);
     void getProfile(int row);
 };

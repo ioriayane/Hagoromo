@@ -22,12 +22,14 @@
 #include "qtquick/feedgeneratorlistmodel.h"
 #include "qtquick/languagelistmodel.h"
 #include "qtquick/contentfiltersettinglistmodel.h"
+#include "qtquick/anyprofilelistmodel.h"
 #include "qtquick/thumbnailprovider.h"
 #include "qtquick/encryption.h"
 #include "qtquick/userprofile.h"
 #include "qtquick/systemtool.h"
 #include "qtquick/externallink.h"
 #include "qtquick/reporter.h"
+#include "qtquick/feedgeneratorlink.h"
 
 int main(int argc, char *argv[])
 {
@@ -42,7 +44,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName(QStringLiteral("relog"));
     app.setOrganizationDomain(QStringLiteral("hagoromo.relog.tech"));
     app.setApplicationName(QStringLiteral("Hagoromo"));
-    app.setApplicationVersion(QStringLiteral("0.10.0"));
+    app.setApplicationVersion(QStringLiteral("0.11.0"));
 #ifndef HAGOROMO_RELEASE_BUILD
     app.setApplicationVersion(app.applicationVersion() + "d");
 #endif
@@ -82,11 +84,15 @@ int main(int argc, char *argv[])
     qmlRegisterType<ContentFilterSettingListModel>(
             "tech.relog.hagoromo.contentfiltersettinglistmodel", 1, 0,
             "ContentFilterSettingListModel");
+    qmlRegisterType<AnyProfileListModel>("tech.relog.hagoromo.anyprofilelistmodel", 1, 0,
+                                         "AnyProfileListModel");
     qmlRegisterType<Encryption>("tech.relog.hagoromo.encryption", 1, 0, "Encryption");
     qmlRegisterType<UserProfile>("tech.relog.hagoromo.userprofile", 1, 0, "UserProfile");
     qmlRegisterType<SystemTool>("tech.relog.hagoromo.systemtool", 1, 0, "SystemTool");
     qmlRegisterType<ExternalLink>("tech.relog.hagoromo.externallink", 1, 0, "ExternalLink");
     qmlRegisterType<Reporter>("tech.relog.hagoromo.reporter", 1, 0, "Reporter");
+    qmlRegisterType<FeedGeneratorLink>("tech.relog.hagoromo.feedgeneratorlink", 1, 0,
+                                       "FeedGeneratorLink");
 
     qmlRegisterSingletonType(QUrl("qrc:/Hagoromo/qml/data/AdjustedValues.qml"),
                              "tech.relog.hagoromo.singleton", 1, 0, "AdjustedValues");

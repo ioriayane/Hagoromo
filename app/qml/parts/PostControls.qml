@@ -25,6 +25,9 @@ RowLayout {
     signal triggeredCopyToClipboard()
     signal triggeredDeletePost()
     signal triggeredRequestReport()
+    signal triggeredRequestViewLikedBy()
+    signal triggeredRequestViewRepostedBy()
+
 
     function openInOhters(uri, handle){
         if(uri.length === 0 || uri.startsWith("at://") === false){
@@ -94,6 +97,7 @@ RowLayout {
         }
         Menu {
             id: myMorePopup
+            width: 230
             MenuItem {
                 icon.source: "../images/translate.png"
                 text: qsTr("Translate")
@@ -109,6 +113,19 @@ RowLayout {
                 enabled: postUri.length > 0 && handle.length > 0
                 icon.source: "../images/open_in_other.png"
                 onTriggered: openInOhters(postUri, handle)
+            }
+            MenuSeparator {}
+            MenuItem {
+                text: qsTr("Reposted by")
+                enabled: repostButton.iconText > 0
+                icon.source: "../images/repost.png"
+                onTriggered: triggeredRequestViewRepostedBy()
+            }
+            MenuItem {
+                text: qsTr("Liked by")
+                enabled: likeButton.iconText > 0
+                icon.source: "../images/like.png"
+                onTriggered: triggeredRequestViewLikedBy()
             }
             MenuSeparator {}
             MenuItem {
@@ -126,6 +143,7 @@ RowLayout {
         }
         Menu {
             id: theirMorePopup
+            width: 230
             MenuItem {
                 icon.source: "../images/translate.png"
                 text: qsTr("Translate")
@@ -141,6 +159,19 @@ RowLayout {
                 enabled: postUri.length > 0 && handle.length > 0
                 icon.source: "../images/open_in_other.png"
                 onTriggered: openInOhters(postUri, handle)
+            }
+            MenuSeparator {}
+            MenuItem {
+                text: qsTr("Reposted by")
+                enabled: repostButton.iconText > 0
+                icon.source: "../images/repost.png"
+                onTriggered: triggeredRequestViewRepostedBy()
+            }
+            MenuItem {
+                text: qsTr("Liked by")
+                enabled: likeButton.iconText > 0
+                icon.source: "../images/like.png"
+                onTriggered: triggeredRequestViewLikedBy()
             }
             MenuSeparator {}
             MenuItem {
