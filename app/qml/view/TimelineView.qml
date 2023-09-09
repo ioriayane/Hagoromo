@@ -30,6 +30,8 @@ ScrollView {
     signal requestViewImages(int index, var paths, var alts)
     signal requestViewProfile(string did)
     signal requestViewFeedGenerator(string name, string uri)
+    signal requestViewLikedBy(string uri)
+    signal requestViewRepostedBy(string uri)
     signal requestReportPost(string uri, string cid)
 
 
@@ -161,7 +163,8 @@ ScrollView {
             postControls.onTriggeredCopyToClipboard: systemTool.copyToClipboard(model.recordTextPlain)
             postControls.onTriggeredDeletePost: rootListView.model.deletePost(model.index)
             postControls.onTriggeredRequestReport: timelineView.requestReportPost(model.uri, model.cid)
-
+            postControls.onTriggeredRequestViewLikedBy: timelineView.requestViewLikedBy(model.uri)
+            postControls.onTriggeredRequestViewRepostedBy: timelineView.requestViewRepostedBy(model.uri)
             onHoveredLinkChanged: timelineView.hoveredLink = hoveredLink
         }
     }

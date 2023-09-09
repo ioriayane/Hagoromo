@@ -11,6 +11,7 @@
 #include "userprofile.h"
 #include "tools/qstringex.h"
 #include "feedgeneratorlink.h"
+#include "anyprofilelistmodel.h"
 
 class hagoromo_test : public QObject
 {
@@ -39,6 +40,7 @@ private slots:
     void test_NotificationListModel_warn();
     void test_TimelineListModel_next();
     void test_FeedGeneratorLink();
+    void test_AnyProfileListModel();
 
 private:
     WebServer m_mockServer;
@@ -1253,6 +1255,34 @@ void hagoromo_test::test_FeedGeneratorLink()
     QVERIFY(link.displayName() == "view:displayName");
     QVERIFY(link.creatorHandle() == "creator.bsky.social");
     QVERIFY(link.likeCount() == 9);
+}
+
+void hagoromo_test::test_AnyProfileListModel()
+{
+    AnyProfileListModel model;
+    model.setAccount(m_service + "/anyprofile", QString(), QString(), QString(), "dummy",
+                     QString());
+    model.setTargetUri("at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3k6tpw4xr4d27");
+
+    model.setType(AnyProfileListModel::AnyProfileListModelType::Like);
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    QVERIFY(model.rowCount() == 5);
+
+    model.setType(AnyProfileListModel::AnyProfileListModelType::Repost);
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    QVERIFY(model.rowCount() == 2);
 }
 
 void hagoromo_test::test_RecordOperatorCreateRecord(const QByteArray &body)

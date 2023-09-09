@@ -28,6 +28,8 @@ ColumnLayout {
     signal requestViewImages(int index, var paths, var alts)
     signal requestViewProfile(string did)
     signal requestViewFeedGenerator(string name, string uri)
+    signal requestViewLikedBy(string uri)
+    signal requestViewRepostedBy(string uri)
     signal requestReportPost(string uri, string cid)
 
     signal back()
@@ -196,6 +198,8 @@ ColumnLayout {
                 postControls.onTriggeredCopyToClipboard: systemTool.copyToClipboard(model.recordTextPlain)
                 postControls.onTriggeredDeletePost: rootListView.model.deletePost(model.index)
                 postControls.onTriggeredRequestReport: postThreadView.requestReportPost(model.uri, model.cid)
+                postControls.onTriggeredRequestViewLikedBy: postThreadView.requestViewLikedBy(model.uri)
+                postControls.onTriggeredRequestViewRepostedBy: postThreadView.requestViewRepostedBy(model.uri)
 
                 onHoveredLinkChanged: postThreadView.hoveredLink = hoveredLink
             }
