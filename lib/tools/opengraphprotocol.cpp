@@ -136,7 +136,12 @@ bool OpenGraphProtocol::parse(const QByteArray &data, const QString &src_uri)
             QString property = element.attribute("property");
             QString content = element.attribute("content");
             if (property == "og:url") {
-                setUri(content);
+                if (content.startsWith("/")) {
+                    QUrl uri(src_uri);
+                    setUri(uri.toString(QUrl::RemovePath) + content);
+                } else {
+                    setUri(content);
+                }
             } else if (property == "og:title") {
                 setTitle(content);
             } else if (property == "og:description") {
