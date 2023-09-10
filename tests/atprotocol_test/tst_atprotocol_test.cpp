@@ -306,7 +306,10 @@ void atprotocol_test::test_OpenGraphProtocol()
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
-        QVERIFY2(ogp.uri() == "http://localhost/response/ogp/file6.html", ogp.uri().toLocal8Bit());
+        QVERIFY2(ogp.uri()
+                         == QString("http://localhost:%1/response/ogp/file6.html")
+                                    .arg(QString::number(m_listenPort)),
+                 ogp.uri().toLocal8Bit());
         QVERIFY2(ogp.title() == QString("file6 TITLE"), ogp.title().toLocal8Bit());
         QVERIFY2(ogp.description() == QString("file6 ").append(QChar(0x8a73)).append(QChar(0x7d30)),
                  ogp.description().toLocal8Bit());
