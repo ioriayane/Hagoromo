@@ -12,6 +12,7 @@ import tech.relog.hagoromo.searchprofilelistmodel 1.0
 import tech.relog.hagoromo.customfeedlistmodel 1.0
 import tech.relog.hagoromo.authorfeedlistmodel 1.0
 import tech.relog.hagoromo.anyprofilelistmodel 1.0
+import tech.relog.hagoromo.systemtool 1.0
 import tech.relog.hagoromo.singleton 1.0
 
 import "../controls"
@@ -53,6 +54,9 @@ ColumnLayout {
     }
     Account {
         id: account
+    }
+    SystemTool {
+        id: systemTool
     }
 
     Component {
@@ -488,6 +492,15 @@ ColumnLayout {
                         id: feedMenu
                         title: qsTr("Feed")
                         enabled: (componentType === 4) && columnStackView.depth == 1
+                        MenuItem {
+                            text: qsTr("Copy url")
+                            icon.source: "../images/copy.png"
+                            onTriggered: {
+                                if(componentType === 4){
+                                    systemTool.copyToClipboard(columnStackView.get(0).model.getOfficialUrl())
+                                }
+                            }
+                        }
                         MenuItem {
                             text: qsTr("Open in Official")
                             icon.source: "../images/open_in_other.png"
