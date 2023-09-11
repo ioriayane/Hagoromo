@@ -243,7 +243,9 @@ ColumnLayout {
                 autoLoading: settings.autoLoading
                 loadingInterval: settings.loadingInterval
                 uri: settings.columnValue
-
+                onSavingChanged: {
+                    saveFeedMenuItem.saving = saving
+                }
                 onErrorOccured: (message) => {console.log(message)}
             }
             accountDid: account.did
@@ -469,23 +471,55 @@ ColumnLayout {
                     MenuItem {
                         icon.source: "../images/arrow_back.png"
                         text: qsTr("Move to left")
-                        onClicked: requestMoveToLeft(columnKey)
+                        onTriggered: requestMoveToLeft(columnKey)
                     }
                     MenuItem {
                         icon.source: "../images/arrow_forward.png"
                         text: qsTr("Move to right")
-                        onClicked: requestMoveToRight(columnKey)
+                        onTriggered: requestMoveToRight(columnKey)
                     }
                     MenuItem {
                         icon.source: "../images/delete.png"
                         text: qsTr("Delete column")
-                        onClicked: requestRemove(columnKey)
+                        onTriggered: requestRemove(columnKey)
+                    }
+                    MenuSeparator {}
+                    Menu {
+                        id: feedMenu
+                        title: qsTr("Feed")
+                        enabled: (componentType === 4) && columnStackView.depth == 1
+                        MenuItem {
+                            text: qsTr("Open in Official")
+                            icon.source: "../images/open_in_other.png"
+                            onTriggered: {
+                                if(componentType === 4){
+                                    Qt.openUrlExternally(columnStackView.get(0).model.getOfficialUrl())
+                                }
+                            }
+                        }
+                        MenuItem {
+                            id: saveFeedMenuItem
+                            icon.source: "../images/bookmark_add.png"
+                            text: saving ? qsTr("Drop") : qsTr("Save")
+                            property bool saving: false
+                            onTriggered: {
+                                if(componentType === 4){
+                                    if(saving){
+                                        console.log("drop bookmark")
+                                        columnStackView.get(0).model.removeGenerator()
+                                    }else{
+                                        console.log("save bookmark")
+                                        columnStackView.get(0).model.saveGenerator()
+                                    }
+                                }
+                            }
+                        }
                     }
                     MenuSeparator {}
                     MenuItem {
                         icon.source: "../images/settings.png"
                         text: qsTr("Settings")
-                        onClicked: requestDisplayOfColumnSetting(columnKey)
+                        onTriggered: requestDisplayOfColumnSetting(columnKey)
                     }
                 }
             }

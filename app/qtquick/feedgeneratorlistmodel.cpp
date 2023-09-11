@@ -184,6 +184,11 @@ void FeedGeneratorListModel::removeGenerator(const QString &uri)
     pref->getPreferences();
 }
 
+bool FeedGeneratorListModel::getSaving(const QString &uri) const
+{
+    return m_savedUriList.contains(uri);
+}
+
 QHash<int, QByteArray> FeedGeneratorListModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
