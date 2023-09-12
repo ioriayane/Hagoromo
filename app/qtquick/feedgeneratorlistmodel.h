@@ -40,6 +40,7 @@ public:
     Q_INVOKABLE void getNext();
     Q_INVOKABLE void saveGenerator(const QString &uri);
     Q_INVOKABLE void removeGenerator(const QString &uri);
+    Q_INVOKABLE bool getSaving(const QString &uri) const;
 
     QString query() const;
     void setQuery(const QString &newQuery);

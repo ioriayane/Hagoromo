@@ -1,16 +1,32 @@
 #include "customfeedlistmodel.h"
 
 #include "atprotocol/app/bsky/feed/appbskyfeedgetfeed.h"
+#include "atprotocol/app/bsky/actor/appbskyactorgetpreferences.h"
 
+using AtProtocolInterface::AppBskyActorGetPreferences;
 using AtProtocolInterface::AppBskyFeedGetFeed;
 
-CustomFeedListModel::CustomFeedListModel(QObject *parent) : TimelineListModel { parent } { }
+CustomFeedListModel::CustomFeedListModel(QObject *parent)
+    : TimelineListModel { parent }, m_saving(false)
+{
+    connect(&m_feedGeneratorListModel, &FeedGeneratorListModel::runningChanged, [=]() {
+        qDebug() << "m_feedGeneratorListModel" << m_feedGeneratorListModel.running();
+        setRunning(m_feedGeneratorListModel.running());
+        if (!m_feedGeneratorListModel.running()) {
+            setSaving(m_feedGeneratorListModel.getSaving(uri()));
+        }
+    });
+}
 
 void CustomFeedListModel::getLatest()
 {
     if (running())
         return;
     setRunning(true);
+
+    if (m_cidList.isEmpty()) {
+        updateFeedSaveStatus();
+    }
 
     updateContentFilterLabels([=]() {
         AppBskyFeedGetFeed *feed = new AppBskyFeedGetFeed(this);
@@ -28,6 +44,58 @@ void CustomFeedListModel::getLatest()
     });
 }
 
+void CustomFeedListModel::updateFeedSaveStatus()
+{
+    AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
+    connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
+        if (success) {
+            bool exist = false;
+            for (const auto &feed : *pref->savedFeedsPrefList()) {
+                for (const auto &saved : feed.saved) {
+                    if (saved == uri()) {
+                        exist = true;
+                        break;
+                    }
+                }
+            }
+            setSaving(exist);
+        } else {
+            emit errorOccured(pref->errorMessage());
+        }
+        pref->deleteLater();
+    });
+    pref->setAccount(account());
+    pref->getPreferences();
+}
+
+void CustomFeedListModel::saveGenerator()
+{
+    if (uri().isEmpty())
+        return;
+    m_feedGeneratorListModel.setAccount(account().service, account().did, account().handle,
+                                        account().email, account().accessJwt, account().refreshJwt);
+    m_feedGeneratorListModel.saveGenerator(uri());
+}
+
+void CustomFeedListModel::removeGenerator()
+{
+    if (uri().isEmpty())
+        return;
+    m_feedGeneratorListModel.setAccount(account().service, account().did, account().handle,
+                                        account().email, account().accessJwt, account().refreshJwt);
+    m_feedGeneratorListModel.removeGenerator(uri());
+}
+
+QString CustomFeedListModel::getOfficialUrl() const
+{
+    QStringList items = uri().split("/");
+    if (items.length() == 5) {
+        return QString("https://bsky.app/profile/%1/feed/%2").arg(items.at(2), items.at(4));
+    } else {
+        return QString();
+    }
+}
+
 QString CustomFeedListModel::uri() const
 {
     return m_uri;
@@ -39,4 +107,17 @@ void CustomFeedListModel::setUri(const QString &newUri)
         return;
     m_uri = newUri;
     emit uriChanged();
+}
+
+bool CustomFeedListModel::saving() const
+{
+    return m_saving;
+}
+
+void CustomFeedListModel::setSaving(bool newSaving)
+{
+    if (m_saving == newSaving)
+        return;
+    m_saving = newSaving;
+    emit savingChanged();
 }
