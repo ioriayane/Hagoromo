@@ -212,57 +212,78 @@
 <context>
     <name>ColumnView</name>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="346"/>
+        <location filename="../qml/view/ColumnView.qml" line="352"/>
         <source>Home</source>
         <translation>ホーム</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="349"/>
+        <location filename="../qml/view/ColumnView.qml" line="355"/>
         <source>Notifications</source>
         <translation>通知</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="352"/>
+        <location filename="../qml/view/ColumnView.qml" line="358"/>
         <source>Search posts</source>
         <translation>検索(ポスト)</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="355"/>
+        <location filename="../qml/view/ColumnView.qml" line="361"/>
         <source>Search users</source>
         <translation>検索(ユーザー)</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="358"/>
+        <location filename="../qml/view/ColumnView.qml" line="364"/>
+        <location filename="../qml/view/ColumnView.qml" line="493"/>
         <source>Feed</source>
         <translation>フィード</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="361"/>
+        <location filename="../qml/view/ColumnView.qml" line="367"/>
         <source>User</source>
         <translation>ユーザー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="364"/>
+        <location filename="../qml/view/ColumnView.qml" line="370"/>
         <source>Unknown</source>
         <translation>不明</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="471"/>
+        <location filename="../qml/view/ColumnView.qml" line="477"/>
         <source>Move to left</source>
         <translation>左へ移動</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="476"/>
+        <location filename="../qml/view/ColumnView.qml" line="482"/>
         <source>Move to right</source>
         <translation>右へ移動</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="481"/>
+        <location filename="../qml/view/ColumnView.qml" line="487"/>
         <source>Delete column</source>
         <translation>削除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="487"/>
+        <location filename="../qml/view/ColumnView.qml" line="496"/>
+        <source>Copy url</source>
+        <translation>URLをコピー</translation>
+    </message>
+    <message>
+        <location filename="../qml/view/ColumnView.qml" line="505"/>
+        <source>Open in Official</source>
+        <translation>公式で開く</translation>
+    </message>
+    <message>
+        <location filename="../qml/view/ColumnView.qml" line="516"/>
+        <source>Drop</source>
+        <translation>解除</translation>
+    </message>
+    <message>
+        <location filename="../qml/view/ColumnView.qml" line="516"/>
+        <source>Save</source>
+        <translation>保存</translation>
+    </message>
+    <message>
+        <location filename="../qml/view/ColumnView.qml" line="534"/>
         <source>Settings</source>
         <translation>設定</translation>
     </message>
@@ -1486,43 +1507,43 @@
         <translation>引用</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="102"/>
-        <location filename="../qml/parts/PostControls.qml" line="147"/>
+        <location filename="../qml/parts/PostControls.qml" line="103"/>
+        <location filename="../qml/parts/PostControls.qml" line="149"/>
         <source>Translate</source>
         <translation>翻訳</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="107"/>
-        <location filename="../qml/parts/PostControls.qml" line="152"/>
+        <location filename="../qml/parts/PostControls.qml" line="108"/>
+        <location filename="../qml/parts/PostControls.qml" line="154"/>
         <source>Copy post text</source>
         <translation>ポストをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="111"/>
-        <location filename="../qml/parts/PostControls.qml" line="156"/>
+        <location filename="../qml/parts/PostControls.qml" line="112"/>
+        <location filename="../qml/parts/PostControls.qml" line="158"/>
         <source>Open in Official</source>
         <translation>公式で開く</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="118"/>
-        <location filename="../qml/parts/PostControls.qml" line="163"/>
+        <location filename="../qml/parts/PostControls.qml" line="119"/>
+        <location filename="../qml/parts/PostControls.qml" line="165"/>
         <source>Reposted by</source>
         <translation>リポストしたアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="124"/>
-        <location filename="../qml/parts/PostControls.qml" line="169"/>
+        <location filename="../qml/parts/PostControls.qml" line="125"/>
+        <location filename="../qml/parts/PostControls.qml" line="171"/>
         <source>Liked by</source>
         <translation>いいねしたアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="131"/>
+        <location filename="../qml/parts/PostControls.qml" line="132"/>
         <source>Delete post</source>
         <translation>ポストを削除</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="138"/>
-        <location filename="../qml/parts/PostControls.qml" line="176"/>
+        <location filename="../qml/parts/PostControls.qml" line="139"/>
+        <location filename="../qml/parts/PostControls.qml" line="178"/>
         <source>Report post</source>
         <translation>ポストを通報</translation>
     </message>
