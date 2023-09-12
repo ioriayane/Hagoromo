@@ -52,6 +52,13 @@ QVariant FollowsListModel::item(int row, FollowsListModelRoles role) const
         return profile.viewer.followedBy.contains(profile.did);
     else if (role == FollowingUriRole)
         return profile.viewer.following;
+    else if (role == LabelsRole) {
+        QStringList labels;
+        for (const auto &label : profile.labels) {
+            labels.append(label.val);
+        }
+        return labels;
+    }
 
     return QVariant();
 }
@@ -191,6 +198,7 @@ QHash<int, QByteArray> FollowsListModel::roleNames() const
     roles[FollowingRole] = "following";
     roles[FollowedByRole] = "followedBy";
     roles[FollowingUriRole] = "followingUri";
+    roles[LabelsRole] = "labels";
 
     return roles;
 }
