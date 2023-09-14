@@ -155,6 +155,12 @@ void copySavedFeedsPref(const QJsonObject &src, AppBskyActorDefs::SavedFeedsPref
         }
     }
 }
+void copyPersonalDetailsPref(const QJsonObject &src, AppBskyActorDefs::PersonalDetailsPref &dest)
+{
+    if (!src.isEmpty()) {
+        dest.birthDate = src.value("birthDate").toString();
+    }
+}
 }
 // com.atproto.label.defs
 namespace ComAtprotoLabelDefs {
@@ -237,10 +243,18 @@ void copyView(const QJsonObject &src, AppBskyEmbedExternal::View &dest)
 }
 // app.bsky.embed.images
 namespace AppBskyEmbedImages {
+void copyAspectRatio(const QJsonObject &src, AppBskyEmbedImages::AspectRatio &dest)
+{
+    if (!src.isEmpty()) {
+        dest.width = src.value("width").toInt();
+        dest.height = src.value("height").toInt();
+    }
+}
 void copyImage(const QJsonObject &src, AppBskyEmbedImages::Image &dest)
 {
     if (!src.isEmpty()) {
         dest.alt = src.value("alt").toString();
+        copyAspectRatio(src.value("aspectRatio").toObject(), dest.aspectRatio);
     }
 }
 void copyMain(const QJsonObject &src, AppBskyEmbedImages::Main &dest)
@@ -259,6 +273,7 @@ void copyViewImage(const QJsonObject &src, AppBskyEmbedImages::ViewImage &dest)
         dest.thumb = src.value("thumb").toString();
         dest.fullsize = src.value("fullsize").toString();
         dest.alt = src.value("alt").toString();
+        copyAspectRatio(src.value("aspectRatio").toObject(), dest.aspectRatio);
     }
 }
 void copyView(const QJsonObject &src, AppBskyEmbedImages::View &dest)
@@ -1410,6 +1425,8 @@ void copyCommit(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Commit &de
         dest.rebase = src.value("rebase").toBool();
         dest.tooBig = src.value("tooBig").toBool();
         dest.repo = src.value("repo").toString();
+        dest.rev = src.value("rev").toString();
+        dest.since = src.value("since").toString();
         for (const auto &s : src.value("ops").toArray()) {
             RepoOp child;
             copyRepoOp(s.toObject(), child);
