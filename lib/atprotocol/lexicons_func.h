@@ -31,6 +31,7 @@ void copyProfileViewDetailed(const QJsonObject &src, AppBskyActorDefs::ProfileVi
 void copyAdultContentPref(const QJsonObject &src, AppBskyActorDefs::AdultContentPref &dest);
 void copyContentLabelPref(const QJsonObject &src, AppBskyActorDefs::ContentLabelPref &dest);
 void copySavedFeedsPref(const QJsonObject &src, AppBskyActorDefs::SavedFeedsPref &dest);
+void copyPersonalDetailsPref(const QJsonObject &src, AppBskyActorDefs::PersonalDetailsPref &dest);
 }
 // com.atproto.label.defs
 namespace ComAtprotoLabelDefs {
@@ -51,6 +52,7 @@ void copyView(const QJsonObject &src, AppBskyEmbedExternal::View &dest);
 }
 // app.bsky.embed.images
 namespace AppBskyEmbedImages {
+void copyAspectRatio(const QJsonObject &src, AppBskyEmbedImages::AspectRatio &dest);
 void copyImage(const QJsonObject &src, AppBskyEmbedImages::Image &dest);
 void copyMain(const QJsonObject &src, AppBskyEmbedImages::Main &dest);
 void copyViewImage(const QJsonObject &src, AppBskyEmbedImages::ViewImage &dest);

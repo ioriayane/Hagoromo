@@ -142,6 +142,10 @@ struct SavedFeedsPref
     QList<QString> pinned;
     QList<QString> saved;
 };
+struct PersonalDetailsPref
+{
+    QString birthDate; // datetime
+};
 }
 
 // app.bsky.actor.profile
@@ -190,9 +194,15 @@ struct View
 // app.bsky.embed.images
 namespace AppBskyEmbedImages {
 // A set of images embedded in some other form of content
+struct AspectRatio
+{
+    int width = 0;
+    int height = 0;
+};
 struct Image
 {
     QString alt;
+    AspectRatio aspectRatio;
 };
 struct Main
 {
@@ -203,6 +213,7 @@ struct ViewImage
     QString thumb;
     QString fullsize;
     QString alt;
+    AspectRatio aspectRatio;
 };
 struct View
 {
@@ -1019,6 +1030,8 @@ struct Commit
     bool rebase = false;
     bool tooBig = false;
     QString repo; // did
+    QString rev;
+    QString since;
     QList<RepoOp> ops;
     QString time; // datetime
 };
