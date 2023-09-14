@@ -3,6 +3,7 @@ INCLUDEPATH += $$PWD
 
 SOURCES += \
     $$PWD/accountlistmodel.cpp \
+    $$PWD/actorfeedgeneratorlistmodel.cpp \
     $$PWD/anyfeedlistmodel.cpp \
     $$PWD/anyprofilelistmodel.cpp \
     $$PWD/atpabstractlistmodel.cpp \
@@ -32,6 +33,7 @@ SOURCES += \
 
 HEADERS += \
     $$PWD/accountlistmodel.h \
+    $$PWD/actorfeedgeneratorlistmodel.h \
     $$PWD/anyfeedlistmodel.h \
     $$PWD/anyprofilelistmodel.h \
     $$PWD/atpabstractlistmodel.h \

@@ -20,6 +20,7 @@
 #include "qtquick/feedtypelistmodel.h"
 #include "qtquick/customfeedlistmodel.h"
 #include "qtquick/feedgeneratorlistmodel.h"
+#include "qtquick/actorfeedgeneratorlistmodel.h"
 #include "qtquick/languagelistmodel.h"
 #include "qtquick/contentfiltersettinglistmodel.h"
 #include "qtquick/anyprofilelistmodel.h"
@@ -79,6 +80,8 @@ int main(int argc, char *argv[])
                                          "CustomFeedListModel");
     qmlRegisterType<FeedGeneratorListModel>("tech.relog.hagoromo.feedgeneratorlistmodel", 1, 0,
                                             "FeedGeneratorListModel");
+    qmlRegisterType<ActorFeedGeneratorListModel>("tech.relog.hagoromo.actorfeedgeneratorlistmodel",
+                                                 1, 0, "ActorFeedGeneratorListModel");
     qmlRegisterType<LanguageListModel>("tech.relog.hagoromo.languagelistmodel", 1, 0,
                                        "LanguageListModel");
     qmlRegisterType<ContentFilterSettingListModel>(
