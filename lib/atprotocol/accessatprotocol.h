@@ -58,6 +58,7 @@ public:
     QString refreshJwt() const;
 
     QString replyJson() const;
+    QString errorCode() const;
     QString errorMessage() const;
     QString cursor() const;
     void setCursor(const QString &newCursor);
@@ -73,12 +74,14 @@ protected:
     void postWithImage(const QString &endpoint, const QString &path);
 
     virtual void parseJson(bool success, const QString reply_json) = 0;
+    void parseErrorJson(const QString reply_json);
 
 private:
     QNetworkAccessManager m_manager;
 
     AccountData m_account;
     QString m_replyJson;
+    QString m_errorCode;
     QString m_errorMessage;
     QString m_cursor;
 };
