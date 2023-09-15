@@ -95,6 +95,7 @@ IMAGE_FILES += \
     qml/images/notification.png \
     qml/images/open_in_other.png \
     qml/images/quote.png \
+    qml/images/refresh.png \
     qml/images/reply.png \
     qml/images/report.png \
     qml/images/repost.png \
