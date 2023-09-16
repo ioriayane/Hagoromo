@@ -45,6 +45,7 @@ ColumnLayout {
     signal requestReportPost(string uri, string cid)
     signal requestReportAccount(string did)
 
+    signal errorOccured(string code, string message)
     signal back()
 
     states: [
@@ -416,7 +417,7 @@ ColumnLayout {
                 authorDid: profileView.userDid
                 filter: AuthorFeedListModel.PostsWithReplies
 
-                onErrorOccured: (code, message) => { console.log(code + ":" + message) }
+                onErrorOccured: (code, message) => profileView.errorOccured(code, message)
             }
             accountDid: profileView.accountDid
 
@@ -447,7 +448,7 @@ ColumnLayout {
                 targetDid: profileView.userDid
                 feedType: AnyFeedListModel.RepostFeedType
 
-                onErrorOccured: (code, message) => { console.log(code + ":" + message) }
+                onErrorOccured: (code, message) => profileView.errorOccured(code, message)
             }
             accountDid: profileView.accountDid
 
@@ -478,7 +479,7 @@ ColumnLayout {
                 targetDid: profileView.userDid
                 feedType: AnyFeedListModel.LikeFeedType
 
-                onErrorOccured: (code, message) => { console.log(code + ":" + message) }
+                onErrorOccured: (code, message) => profileView.errorOccured(code, message)
             }
             accountDid: profileView.accountDid
 
@@ -509,7 +510,7 @@ ColumnLayout {
                 authorDid: profileView.userDid
                 filter: AuthorFeedListModel.PostsWithMedia
 
-                onErrorOccured: (code, message) => { console.log(code + ":" + message) }
+                onErrorOccured: (code, message) => profileView.errorOccured(code, message)
             }
             accountDid: profileView.accountDid
 
@@ -556,7 +557,7 @@ ColumnLayout {
                 autoLoading: false
                 targetDid: profileView.userDid
 
-                onErrorOccured: (code, message) => { console.log(code + ":" + message) }
+                onErrorOccured: (code, message) => profileView.errorOccured(code, message)
             }
             onRequestViewProfile: (did) => {
                                       if(did !== profileView.userDid){
@@ -577,7 +578,7 @@ ColumnLayout {
                 autoLoading: false
                 targetDid: profileView.userDid
 
-                onErrorOccured: (code, message) => { console.log(code + ":" + message) }
+                onErrorOccured: (code, message) => profileView.errorOccured(code, message)
             }
             onRequestViewProfile: (did) => {
                                       if(did !== profileView.userDid){

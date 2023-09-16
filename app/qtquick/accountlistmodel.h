@@ -55,6 +55,7 @@ public:
     Q_INVOKABLE int getMainAccountIndex() const;
     Q_INVOKABLE void setMainAccount(int row);
     Q_INVOKABLE bool allAccountsReady() const;
+    Q_INVOKABLE void refreshAccountSession(const QString &uuid);
 
     Q_INVOKABLE void save() const;
     Q_INVOKABLE void load();

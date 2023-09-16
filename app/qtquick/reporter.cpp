@@ -37,6 +37,7 @@ void Reporter::reportPost(const QString &uri, const QString &cid, Reporter::Repo
     ComAtprotoModerationCreateReport *report = new ComAtprotoModerationCreateReport(this);
     connect(report, &ComAtprotoModerationCreateReport::finished, [=](bool success) {
         setRunning(false);
+        emit errorOccured(report->errorCode(), report->errorMessage());
         emit finished(success);
         report->deleteLater();
     });
@@ -56,6 +57,7 @@ void Reporter::reportAccount(const QString &did, ReportReason reason)
     ComAtprotoModerationCreateReport *report = new ComAtprotoModerationCreateReport(this);
     connect(report, &ComAtprotoModerationCreateReport::finished, [=](bool success) {
         setRunning(false);
+        emit errorOccured(report->errorCode(), report->errorMessage());
         emit finished(success);
         report->deleteLater();
     });

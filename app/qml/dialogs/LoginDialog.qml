@@ -18,6 +18,8 @@ Dialog {
     property alias idText: idTextInput.text
     property alias passwordText: passwordTextInput.text
 
+    signal errorOccured(string code, string message)
+
     CreateSession {
         id: session
         service: serviceTextInput.text
@@ -31,7 +33,7 @@ Dialog {
                           // NG
                       }
                   }
-        onErrorOccured: (code, message) => { console.log(code + ":" + message) }
+        onErrorOccured: (code, message) => loginDialog.errorOccured(code, message)
     }
 
     GridLayout {

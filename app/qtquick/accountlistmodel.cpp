@@ -245,6 +245,14 @@ bool AccountListModel::allAccountsReady() const
     return ready;
 }
 
+void AccountListModel::refreshAccountSession(const QString &uuid)
+{
+    int row = indexAt(uuid);
+    if (row < 0)
+        return;
+    refreshSession(row);
+}
+
 void AccountListModel::save() const
 {
     QSettings settings;

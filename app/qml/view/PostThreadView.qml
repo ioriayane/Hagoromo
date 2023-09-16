@@ -32,8 +32,8 @@ ColumnLayout {
     signal requestViewRepostedBy(string uri)
     signal requestReportPost(string uri, string cid)
 
+    signal errorOccured(string code, string message)
     signal back()
-
 
     Frame {
         Layout.fillWidth: true
@@ -80,7 +80,7 @@ ColumnLayout {
                 id: postThreadListModel
                 autoLoading: false
 
-                onErrorOccured: (code, message) => { console.log(code + ":" + message) }
+                onErrorOccured: (code, message) => profileView.errorOccured(code, message)
             }
 
             header: Item {

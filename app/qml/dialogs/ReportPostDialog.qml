@@ -20,6 +20,7 @@ Dialog {
     property string targetUri: ""
     property string targetCid: ""
     property alias account: account
+    signal errorOccured(string account_uuid, string code, string message)
 
     onClosed: reportTypeButtonGroup.checkState = Qt.Unchecked
 
@@ -29,6 +30,7 @@ Dialog {
     Reporter {
         id: reporter
         onFinished: (success) => reportDialog.accept()
+        onErrorOccured: (code, message) => reportDialog.errorOccured(reportDialog.account.uuid, code, message)
     }
 
     ButtonGroup {
