@@ -17,11 +17,11 @@ void AppBskyGraphMuteActor::muteActor(const QString &actor)
     post(QStringLiteral("xrpc/app.bsky.graph.muteActor"), json_doc.toJson(QJsonDocument::Compact));
 }
 
-void AppBskyGraphMuteActor::parseJson(bool success, const QString reply_json)
+bool AppBskyGraphMuteActor::parseJson(bool success, const QString reply_json)
 {
     Q_UNUSED(reply_json)
 
-    emit finished(success);
+    return success;
 }
 
 }

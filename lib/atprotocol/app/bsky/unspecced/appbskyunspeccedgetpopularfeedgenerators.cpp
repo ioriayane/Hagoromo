@@ -36,7 +36,7 @@ AppBskyUnspeccedGetPopularFeedGenerators::generatorViewList() const
     return &m_generatorViewList;
 }
 
-void AppBskyUnspeccedGetPopularFeedGenerators::parseJson(bool success, const QString reply_json)
+bool AppBskyUnspeccedGetPopularFeedGenerators::parseJson(bool success, const QString reply_json)
 {
 
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
@@ -51,7 +51,7 @@ void AppBskyUnspeccedGetPopularFeedGenerators::parseJson(bool success, const QSt
         }
     }
 
-    emit finished(success);
+    return success;
 }
 
 }

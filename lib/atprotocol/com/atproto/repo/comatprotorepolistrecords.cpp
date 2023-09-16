@@ -44,7 +44,7 @@ ComAtprotoRepoListRecords::recordList() const
     return &m_recordList;
 }
 
-void ComAtprotoRepoListRecords::parseJson(bool success, const QString reply_json)
+bool ComAtprotoRepoListRecords::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
     if (json_doc.isEmpty()) {
@@ -60,7 +60,7 @@ void ComAtprotoRepoListRecords::parseJson(bool success, const QString reply_json
         }
     }
 
-    emit finished(success);
+    return success;
 }
 
 }

@@ -16,7 +16,7 @@ public:
     AtProtocolType::AppBskyActorDefs::ProfileViewDetailed profileViewDetailed() const;
 
 private:
-    virtual void parseJson(bool success, const QString reply_json);
+    virtual bool parseJson(bool success, const QString reply_json);
 
     AtProtocolType::AppBskyActorDefs::ProfileViewDetailed m_profileViewDetailed;
 };

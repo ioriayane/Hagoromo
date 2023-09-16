@@ -39,12 +39,12 @@ void ComAtprotoModerationCreateReport::reportAccount(const QString &did, const Q
          json_doc.toJson(QJsonDocument::Compact));
 }
 
-void ComAtprotoModerationCreateReport::parseJson(bool success, const QString reply_json)
+bool ComAtprotoModerationCreateReport::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
     if (json_doc.isEmpty()) { }
 
-    emit finished(success);
+    return success;
 }
 
 }

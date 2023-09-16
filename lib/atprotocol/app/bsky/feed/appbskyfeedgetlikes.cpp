@@ -29,7 +29,7 @@ void AppBskyFeedGetLikes::getLikes(const QString &uri, const QString &cid, const
     get(QStringLiteral("xrpc/app.bsky.feed.getLikes"), query);
 }
 
-void AppBskyFeedGetLikes::parseJson(bool success, const QString reply_json)
+bool AppBskyFeedGetLikes::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
     if (json_doc.isEmpty()) {
@@ -43,7 +43,7 @@ void AppBskyFeedGetLikes::parseJson(bool success, const QString reply_json)
         }
     }
 
-    emit finished(success);
+    return success;
 }
 
 }

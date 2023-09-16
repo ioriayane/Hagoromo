@@ -24,7 +24,7 @@ const QStringList *SearchProfiles::didList() const
     return &m_didList;
 }
 
-void SearchProfiles::parseJson(bool success, const QString reply_json)
+bool SearchProfiles::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
     if (json_doc.isEmpty()) {
@@ -38,7 +38,7 @@ void SearchProfiles::parseJson(bool success, const QString reply_json)
         }
     }
 
-    emit finished(success);
+    return success;
 }
 
 }

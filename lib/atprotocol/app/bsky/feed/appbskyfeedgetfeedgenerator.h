@@ -16,7 +16,7 @@ public:
     const AtProtocolType::AppBskyFeedDefs::GeneratorView &generatorView() const;
 
 private:
-    virtual void parseJson(bool success, const QString reply_json);
+    virtual bool parseJson(bool success, const QString reply_json);
 
     AtProtocolType::AppBskyFeedDefs::GeneratorView m_generatorView;
 };

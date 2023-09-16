@@ -73,7 +73,7 @@ protected:
     void post(const QString &endpoint, const QByteArray &json, const bool with_auth_header = true);
     void postWithImage(const QString &endpoint, const QString &path);
 
-    virtual void parseJson(bool success, const QString reply_json) = 0;
+    virtual bool parseJson(bool success, const QString reply_json) = 0;
     void parseErrorJson(const QString reply_json);
 
 private:

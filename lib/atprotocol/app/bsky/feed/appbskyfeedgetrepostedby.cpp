@@ -31,7 +31,7 @@ void AppBskyFeedGetRepostedBy::getRepostedBy(const QString &uri, const QString &
     get(QStringLiteral("xrpc/app.bsky.feed.getRepostedBy"), query);
 }
 
-void AppBskyFeedGetRepostedBy::parseJson(bool success, const QString reply_json)
+bool AppBskyFeedGetRepostedBy::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
     if (json_doc.isEmpty()) {
@@ -45,7 +45,7 @@ void AppBskyFeedGetRepostedBy::parseJson(bool success, const QString reply_json)
         }
     }
 
-    emit finished(success);
+    return success;
 }
 
 }

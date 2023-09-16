@@ -55,10 +55,11 @@ signals:
     void runningChanged(bool running);
 
 protected:
-    virtual void parseJson(bool success, const QString reply_json)
+    virtual bool parseJson(bool success, const QString reply_json)
     {
         Q_UNUSED(success)
         Q_UNUSED(reply_json)
+        return true;
     }
 
 private:

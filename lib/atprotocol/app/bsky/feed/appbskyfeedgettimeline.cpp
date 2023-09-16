@@ -28,7 +28,7 @@ const QList<AppBskyFeedDefs::FeedViewPost> *AppBskyFeedGetTimeline::feedList() c
     return &m_feedList;
 }
 
-void AppBskyFeedGetTimeline::parseJson(bool success, const QString reply_json)
+bool AppBskyFeedGetTimeline::parseJson(bool success, const QString reply_json)
 {
     m_feedList.clear();
 
@@ -46,7 +46,7 @@ void AppBskyFeedGetTimeline::parseJson(bool success, const QString reply_json)
         }
     }
 
-    emit finished(success);
+    return success;
 }
 
 }

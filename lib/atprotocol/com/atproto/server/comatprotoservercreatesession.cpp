@@ -30,7 +30,7 @@ void ComAtprotoServerCreateSession::create(const QString &id, const QString &pas
          json_doc.toJson(QJsonDocument::Compact), false);
 }
 
-void ComAtprotoServerCreateSession::parseJson(bool success, const QString reply_json)
+bool ComAtprotoServerCreateSession::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
     if (json_doc.isEmpty()) {
@@ -48,7 +48,7 @@ void ComAtprotoServerCreateSession::parseJson(bool success, const QString reply_
         }
     }
 
-    emit finished(success);
+    return success;
 }
 
 }

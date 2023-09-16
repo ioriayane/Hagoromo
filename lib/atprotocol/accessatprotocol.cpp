@@ -21,13 +21,14 @@ AccessAtProtocol::AccessAtProtocol(QObject *parent) : QObject { parent }
         m_errorCode.clear();
         m_errorMessage.clear();
 
+        bool success = false;
         if (reply->error() != QNetworkReply::NoError) {
             qCritical() << LOG_DATETIME << m_replyJson;
             parseErrorJson(m_replyJson);
-            emit finished(false);
         } else {
-            parseJson(true, m_replyJson);
+            success = parseJson(true, m_replyJson);
         }
+        emit finished(success);
 
         reply->deleteLater();
     });
@@ -185,7 +186,7 @@ void AccessAtProtocol::parseErrorJson(const QString reply_json)
         m_errorCode = json_doc.object().value("error").toString();
         m_errorMessage = json_doc.object().value("message").toString();
     } else {
-        m_errorCode = QStringLiteral("Unknown");
+        m_errorCode = QStringLiteral("Other");
         m_errorMessage = m_replyJson;
     }
 }
