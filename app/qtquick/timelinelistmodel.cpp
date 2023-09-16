@@ -259,7 +259,7 @@ void TimelineListModel::getLatest()
                 }
                 copyFrom(timeline);
             } else {
-                emit errorOccured(timeline->errorMessage());
+                emit errorOccured(timeline->errorCode(), timeline->errorMessage());
             }
             QTimer::singleShot(100, this, &TimelineListModel::displayQueuedPosts);
             timeline->deleteLater();
@@ -283,7 +283,7 @@ void TimelineListModel::getNext()
 
                 copyFromNext(timeline);
             } else {
-                emit errorOccured(timeline->errorMessage());
+                emit errorOccured(timeline->errorCode(), timeline->errorMessage());
             }
             QTimer::singleShot(10, this, &TimelineListModel::displayQueuedPostsNext);
             timeline->deleteLater();

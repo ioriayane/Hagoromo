@@ -66,7 +66,7 @@ ColumnLayout {
                 autoLoading: settings.autoLoading
                 loadingInterval: settings.loadingInterval
 
-                onErrorOccured: (message) => {console.log(message)}
+                onErrorOccured: (code, message) => { console.log(code + ":" + message) }
             }
             accountDid: account.did
 
@@ -105,7 +105,7 @@ ColumnLayout {
                 visibleReply: settings.visibleReply
                 visibleQuote: settings.visibleQuote
 
-                onErrorOccured: (message) => {console.log(message)}
+                onErrorOccured: (code, message) => { console.log(code + ":" + message) }
             }
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
@@ -199,7 +199,7 @@ ColumnLayout {
                 text: settings.columnValue
                 searchService: "https://search.bsky.social"
 
-                onErrorOccured: (message) => {console.log(message)}
+                onErrorOccured: (code, message) => { console.log(code + ":" + message) }
             }
             accountDid: account.did
 
@@ -234,7 +234,7 @@ ColumnLayout {
                 text: settings.columnValue
                 searchService: "https://search.bsky.social"
 
-                onErrorOccured: (message) => {console.log(message)}
+                onErrorOccured: (code, message) => { console.log(code + ":" + message) }
             }
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
@@ -250,7 +250,7 @@ ColumnLayout {
                 onSavingChanged: {
                     saveFeedMenuItem.saving = saving
                 }
-                onErrorOccured: (message) => {console.log(message)}
+                onErrorOccured: (code, message) => { console.log(code + ":" + message) }
             }
             accountDid: account.did
 
@@ -284,7 +284,7 @@ ColumnLayout {
                 loadingInterval: settings.loadingInterval
                 authorDid: settings.columnValue
 
-                onErrorOccured: (message) => {console.log(message)}
+                onErrorOccured: (code, message) => { console.log(code + ":" + message) }
             }
             accountDid: account.did
 
@@ -316,7 +316,7 @@ ColumnLayout {
             autoLoading: settings.autoLoading
             type: AnyProfileListModel.Like
 
-            onErrorOccured: (message) => { console.log(message) }
+            onErrorOccured: (code, message) => { console.log(code + ":" + message) }
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
             onBack: {
@@ -333,7 +333,7 @@ ColumnLayout {
             autoLoading: settings.autoLoading
             type: AnyProfileListModel.Repost
 
-            onErrorOccured: (message) => { console.log(message) }
+            onErrorOccured: (code, message) => { console.log(code + ":" + message) }
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
             onBack: {

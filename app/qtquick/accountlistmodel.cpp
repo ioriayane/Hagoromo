@@ -372,7 +372,7 @@ void AccountListModel::createSession(int row)
             getProfile(row);
         } else {
             m_accountList[row].status = AccountStatus::Unauthorized;
-            emit errorOccured(session->errorMessage());
+            emit errorOccured(session->errorCode(), session->errorMessage());
         }
         emit dataChanged(index(row), index(row));
         session->deleteLater();
@@ -403,7 +403,7 @@ void AccountListModel::refreshSession(int row)
             getProfile(row);
         } else {
             m_accountList[row].status = AccountStatus::Unauthorized;
-            emit errorOccured(session->errorMessage());
+            emit errorOccured(session->errorCode(), session->errorMessage());
         }
         emit dataChanged(index(row), index(row));
         session->deleteLater();
@@ -432,7 +432,7 @@ void AccountListModel::getProfile(int row)
             emit updatedAccount(row, m_accountList[row].uuid);
             emit dataChanged(index(row), index(row));
         } else {
-            emit errorOccured(profile->errorMessage());
+            emit errorOccured(profile->errorCode(), profile->errorMessage());
         }
         profile->deleteLater();
     });

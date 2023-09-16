@@ -75,7 +75,7 @@ void UserProfile::getProfile(const QString &did)
                 }
             }
         } else {
-            emit errorOccured(profile->errorMessage());
+            emit errorOccured(profile->errorCode(), profile->errorMessage());
         }
         setRunning(false);
         profile->deleteLater();

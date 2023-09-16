@@ -93,7 +93,7 @@ void FeedTypeListModel::getLatest()
                 m_cueUri = feed.saved;
             }
         } else {
-            emit errorOccured(pref->errorMessage());
+            emit errorOccured(pref->errorCode(), pref->errorMessage());
         }
         QTimer::singleShot(10, this, &FeedTypeListModel::getFeedDetails);
         pref->deleteLater();
@@ -161,7 +161,7 @@ void FeedTypeListModel::getFeedDetails()
                 }
             }
         } else {
-            emit errorOccured(generators->errorMessage());
+            emit errorOccured(generators->errorCode(), generators->errorMessage());
         }
         QTimer::singleShot(10, this, &FeedTypeListModel::getFeedDetails);
         generators->deleteLater();

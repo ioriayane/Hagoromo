@@ -90,7 +90,7 @@ public:
     void setUserFilterTitle(const QString &newUserFilterTitle);
 
 signals:
-    void errorOccured(const QString &message);
+    void errorOccured(const QString &code, const QString &message);
     void runningChanged();
     void didChanged();
     void handleChanged();

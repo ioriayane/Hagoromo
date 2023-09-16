@@ -34,7 +34,7 @@ void SearchPostListModel::getLatest()
                     m_cuePost.insert(0, post);
                 }
             } else {
-                emit errorOccured(posts->errorMessage());
+                emit errorOccured(posts->errorCode(), posts->errorMessage());
             }
             QTimer::singleShot(100, this, &SearchPostListModel::displayQueuedPosts);
             posts->deleteLater();
@@ -85,7 +85,7 @@ void SearchPostListModel::getPosts()
                 }
             }
         } else {
-            emit errorOccured(posts->errorMessage());
+            emit errorOccured(posts->errorCode(), posts->errorMessage());
         }
         // 残ってたらもう1回
         QTimer::singleShot(100, this, &SearchPostListModel::getPosts);

@@ -477,7 +477,7 @@ void NotificationListModel::getLatest()
                 // likeとかの対象ポストの情報は入っていないので、それぞれ取得する必要あり
                 // 対象ポスト情報は別途cidをキーにして保存する（2重取得と管理を避ける）
             } else {
-                emit errorOccured(notification->errorMessage());
+                emit errorOccured(notification->errorCode(), notification->errorMessage());
             }
             QTimer::singleShot(100, this, &NotificationListModel::displayQueuedPosts);
             notification->deleteLater();
@@ -566,7 +566,7 @@ void NotificationListModel::getNext()
                     }
                 }
             } else {
-                emit errorOccured(notification->errorMessage());
+                emit errorOccured(notification->errorCode(), notification->errorMessage());
             }
             QTimer::singleShot(10, this, &NotificationListModel::displayQueuedPostsNext);
             notification->deleteLater();
@@ -814,7 +814,7 @@ void NotificationListModel::getPosts()
                 }
             }
         } else {
-            emit errorOccured(posts->errorMessage());
+            emit errorOccured(posts->errorCode(), posts->errorMessage());
         }
         // 残ってたらもう1回
         QTimer::singleShot(100, this, &NotificationListModel::getPosts);

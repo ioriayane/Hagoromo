@@ -21,7 +21,7 @@ ColumnLayout {
     property alias model: anyProfileListModel
 
     signal requestViewProfile(string did)
-    signal errorOccured(string message)
+    signal errorOccured(string code, string message)
     signal back()
 
     Frame {
@@ -56,7 +56,7 @@ ColumnLayout {
 
         model: AnyProfileListModel {
             id: anyProfileListModel
-            onErrorOccured: (message) => anyProfileListView.errorOccured(message)
+            onErrorOccured: (code, message) => anyProfileListView.errorOccured(code, message)
         }
 
         onRequestViewProfile: (did) => anyProfileListView.requestViewProfile(did)

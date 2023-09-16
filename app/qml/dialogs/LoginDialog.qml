@@ -31,7 +31,7 @@ Dialog {
                           // NG
                       }
                   }
-        onErrorOccured: (message) => {console.log(message)}
+        onErrorOccured: (code, message) => { console.log(code + ":" + message) }
     }
 
     GridLayout {

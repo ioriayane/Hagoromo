@@ -24,7 +24,7 @@ void CreateSession::create()
         setRefreshJwt(session->refreshJwt());
         setAuthorized(success);
         if (!success) {
-            emit errorOccured(session->errorMessage());
+            emit errorOccured(session->errorCode(), session->errorMessage());
         }
         emit finished(success);
         setRunning(false);

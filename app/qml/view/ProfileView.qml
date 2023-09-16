@@ -416,7 +416,7 @@ ColumnLayout {
                 authorDid: profileView.userDid
                 filter: AuthorFeedListModel.PostsWithReplies
 
-                onErrorOccured: (message) => {console.log(message)}
+                onErrorOccured: (code, message) => { console.log(code + ":" + message) }
             }
             accountDid: profileView.accountDid
 
@@ -447,7 +447,7 @@ ColumnLayout {
                 targetDid: profileView.userDid
                 feedType: AnyFeedListModel.RepostFeedType
 
-                onErrorOccured: (message) => {console.log(message)}
+                onErrorOccured: (code, message) => { console.log(code + ":" + message) }
             }
             accountDid: profileView.accountDid
 
@@ -478,7 +478,7 @@ ColumnLayout {
                 targetDid: profileView.userDid
                 feedType: AnyFeedListModel.LikeFeedType
 
-                onErrorOccured: (message) => {console.log(message)}
+                onErrorOccured: (code, message) => { console.log(code + ":" + message) }
             }
             accountDid: profileView.accountDid
 
@@ -509,7 +509,7 @@ ColumnLayout {
                 authorDid: profileView.userDid
                 filter: AuthorFeedListModel.PostsWithMedia
 
-                onErrorOccured: (message) => {console.log(message)}
+                onErrorOccured: (code, message) => { console.log(code + ":" + message) }
             }
             accountDid: profileView.accountDid
 
@@ -556,7 +556,7 @@ ColumnLayout {
                 autoLoading: false
                 targetDid: profileView.userDid
 
-                onErrorOccured: (message) => {console.log(message)}
+                onErrorOccured: (code, message) => { console.log(code + ":" + message) }
             }
             onRequestViewProfile: (did) => {
                                       if(did !== profileView.userDid){
@@ -577,7 +577,7 @@ ColumnLayout {
                 autoLoading: false
                 targetDid: profileView.userDid
 
-                onErrorOccured: (message) => {console.log(message)}
+                onErrorOccured: (code, message) => { console.log(code + ":" + message) }
             }
             onRequestViewProfile: (did) => {
                                       if(did !== profileView.userDid){

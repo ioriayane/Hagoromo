@@ -80,7 +80,7 @@ ColumnLayout {
                 id: postThreadListModel
                 autoLoading: false
 
-                onErrorOccured: (message) => {console.log(message)}
+                onErrorOccured: (code, message) => { console.log(code + ":" + message) }
             }
 
             header: Item {

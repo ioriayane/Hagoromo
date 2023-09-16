@@ -64,7 +64,7 @@ public:
     int count() const;
 
 signals:
-    void errorOccured(const QString &message);
+    void errorOccured(const QString &code, const QString &message);
     void updatedSession(int row, const QString &uuid);
     void updatedAccount(int row, const QString &uuid);
     void countChanged();

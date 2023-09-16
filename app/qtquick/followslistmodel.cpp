@@ -138,7 +138,7 @@ void FollowsListModel::getLatest()
                     }
                 }
             } else {
-                emit errorOccured(follows->errorMessage());
+                emit errorOccured(follows->errorCode(), follows->errorMessage());
             }
             setRunning(false);
             follows->deleteLater();
@@ -173,7 +173,7 @@ void FollowsListModel::getNext()
                     }
                 }
             } else {
-                emit errorOccured(follows->errorMessage());
+                emit errorOccured(follows->errorCode(), follows->errorMessage());
             }
             setRunning(false);
             follows->deleteLater();
@@ -255,7 +255,7 @@ void FollowsListModel::getProfiles()
                 }
             }
         } else {
-            emit errorOccured(posts->errorMessage());
+            emit errorOccured(posts->errorCode(), posts->errorMessage());
         }
         // 残ってたらもう1回
         QTimer::singleShot(100, this, &FollowsListModel::getProfiles);

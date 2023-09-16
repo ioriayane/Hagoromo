@@ -30,7 +30,7 @@ void ActorFeedGeneratorListModel::getLatest()
             m_cursor = feeds->cursor();
             getSavedGenerators();
         } else {
-            emit errorOccured(feeds->errorMessage());
+            emit errorOccured(feeds->errorCode(), feeds->errorMessage());
             setRunning(false);
         }
         feeds->deleteLater();

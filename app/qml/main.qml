@@ -195,7 +195,7 @@ ApplicationWindow {
                               // カラムを更新しにいく
                               repeater.updateAccount(uuid)
                           }
-        onErrorOccured: (message) => {console.log(message)}
+        onErrorOccured: (code, message) => { console.log(code + ":" + message) }
 
         function syncColumn(){
             // アカウント一覧にないものを消す
