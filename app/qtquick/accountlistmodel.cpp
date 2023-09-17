@@ -25,7 +25,7 @@ AccountListModel::AccountListModel(QObject *parent) : QAbstractListModel { paren
             refreshSession(row);
         }
     });
-    m_timer.start(15 * 60 * 1000);
+    m_timer.start(60 * 60 * 1000);
 
 #ifndef HAGOROMO_UNIT_TEST
     load();
