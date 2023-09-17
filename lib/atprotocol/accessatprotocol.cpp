@@ -203,15 +203,18 @@ bool AccessAtProtocol::checkReply(QNetworkReply *reply)
             m_errorCode = QStringLiteral("Other");
             m_errorMessage = m_replyJson;
         }
-        for (const auto &header : reply->rawHeaderPairs()) {
-            if (header.first.toLower().startsWith("ratelimit-")) {
-                if (header.first.toLower() == "ratelimit-reset") {
-                    m_errorMessage += QString("\n%1:%2").arg(
-                            header.first,
-                            QDateTime::fromSecsSinceEpoch(header.second.toInt())
-                                    .toString("yyyy/MM/dd hh:mm:ss"));
-                } else {
-                    m_errorMessage += QString("\n%1:%2").arg(header.first, header.second);
+        if (m_errorCode == "RateLimitExceeded") {
+            m_errorMessage += "\n";
+            for (const auto &header : reply->rawHeaderPairs()) {
+                if (header.first.toLower().startsWith("ratelimit-")) {
+                    if (header.first.toLower() == "ratelimit-reset") {
+                        m_errorMessage += QString("\n%1:%2").arg(
+                                header.first,
+                                QDateTime::fromSecsSinceEpoch(header.second.toInt())
+                                        .toString("yyyy/MM/dd hh:mm:ss"));
+                    } else {
+                        m_errorMessage += QString("\n%1:%2").arg(header.first, header.second);
+                    }
                 }
             }
         }

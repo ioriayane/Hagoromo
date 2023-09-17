@@ -125,7 +125,7 @@ void atprotocol_test::test_ComAtprotoServerCreateSession()
     QVERIFY(session.errorCode() == "RateLimitExceeded");
     QVERIFY(session.errorMessage()
             == "Rate Limit "
-               "Exceeded\nratelimit-limit:30\nratelimit-remaining:10\nratelimit-reset:2023/09/17 "
+               "Exceeded\n\nratelimit-limit:30\nratelimit-remaining:10\nratelimit-reset:2023/09/17 "
                "10:31:07\nratelimit-policy:30;w=300");
     QVERIFY(session.replyJson()
             == "{\"error\":\"RateLimitExceeded\",\"message\":\"Rate Limit Exceeded\"}");
