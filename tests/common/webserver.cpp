@@ -12,9 +12,27 @@ bool WebServer::handleRequest(const QHttpServerRequest &request, QTcpSocket *soc
         QString json;
         emit receivedPost(request, result, json);
         if (result) {
-            makeResponder(request, socket)
-                    .write(json.toUtf8(), m_MimeDb.mimeTypeForFile("result.json").name().toUtf8(),
-                           QHttpServerResponder::StatusCode::Ok);
+            if (request.url().path().endsWith("/xrpc/com.atproto.server.createSession")) {
+                QHttpServerResponder::HeaderList headers {
+                    std::make_pair(QByteArray("ratelimit-limit"), QByteArray("30")),
+                    std::make_pair(QByteArray("ratelimit-remaining"), QByteArray("10")),
+                    std::make_pair(QByteArray("ratelimit-reset"), QByteArray("1694914267")),
+                    std::make_pair(QByteArray("ratelimit-policy"), QByteArray("30;w=300"))
+                };
+                if (request.url().path().endsWith("/limit/xrpc/com.atproto.server.createSession")) {
+                    makeResponder(request, socket)
+                            .write(json.toUtf8(), headers,
+                                   QHttpServerResponder::StatusCode::Unauthorized);
+                } else {
+                    makeResponder(request, socket)
+                            .write(json.toUtf8(), headers, QHttpServerResponder::StatusCode::Ok);
+                }
+            } else {
+                makeResponder(request, socket)
+                        .write(json.toUtf8(),
+                               m_MimeDb.mimeTypeForFile("result.json").name().toUtf8(),
+                               QHttpServerResponder::StatusCode::Ok);
+            }
         } else {
             makeResponder(request, socket)
                     .write(QHttpServerResponder::StatusCode::InternalServerError);

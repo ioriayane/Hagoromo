@@ -29,5 +29,9 @@
         <file>response/generator/xrpc/app.bsky.feed.getFeedGenerator</file>
         <file>response/anyprofile/xrpc/app.bsky.feed.getLikes</file>
         <file>response/anyprofile/xrpc/app.bsky.feed.getRepostedBy</file>
+        <file>response/account/account1/xrpc/com.atproto.server.refreshSession</file>
+        <file>response/account/account2/xrpc/com.atproto.server.refreshSession</file>
+        <file>response/account/account1/xrpc/app.bsky.actor.getProfile</file>
+        <file>response/account/account2/xrpc/app.bsky.actor.getProfile</file>
     </qresource>
 </RCC>

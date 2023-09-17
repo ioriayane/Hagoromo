@@ -74,7 +74,7 @@ protected:
     void postWithImage(const QString &endpoint, const QString &path);
 
     virtual bool parseJson(bool success, const QString reply_json) = 0;
-    void parseErrorJson(const QString reply_json);
+    bool checkReply(QNetworkReply *reply);
 
 private:
     QNetworkAccessManager m_manager;

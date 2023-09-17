@@ -1,0 +1,14 @@
+{
+    "did": "did:plc:account2",
+    "handle": "account2.relog.tech",
+    "description": "description of account2.relog.tech",
+    "followsCount": 4,
+    "followersCount": 20,
+    "postsCount": 100,
+    "indexedAt": "2023-05-10T10:07:08.751Z",
+    "viewer": {
+        "muted": false,
+        "blockedBy": true
+    },
+    "labels": []
+}
