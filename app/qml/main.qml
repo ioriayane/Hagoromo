@@ -31,7 +31,14 @@ ApplicationWindow {
         if(code === "ExpiredToken" && account_uuid.length > 0){
             accountListModel.refreshAccountSession(account_uuid)
         }else{
-            console.log("ERROR:" + account_uuid + ":" + code + ":" + message)
+            var row = accountListModel.indexAt(account_uuid)
+            var handle = ""
+            if(row >= 0){
+                handle = accountListModel.item(row, AccountListModel.HandleRole)
+            }
+            console.log("ERROR: " + handle + "(" + account_uuid + ") " + code + ":" + message)
+            message += "\n\n@" + handle
+            messageDialog.show("error", code, message)
         }
     }
 
