@@ -14,6 +14,8 @@ bool WebServer::handleRequest(const QHttpServerRequest &request, QTcpSocket *soc
         if (result) {
             if (request.url().path().endsWith("/xrpc/com.atproto.server.createSession")) {
                 QHttpServerResponder::HeaderList headers {
+                    std::make_pair(QByteArray("content-type"),
+                                   QByteArray("application/json; charset=utf-8")),
                     std::make_pair(QByteArray("ratelimit-limit"), QByteArray("30")),
                     std::make_pair(QByteArray("ratelimit-remaining"), QByteArray("10")),
                     std::make_pair(QByteArray("ratelimit-reset"), QByteArray("1694914267")),
