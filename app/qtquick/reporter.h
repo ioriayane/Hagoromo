@@ -33,6 +33,7 @@ public:
     void setRunning(bool newRunning);
 
 signals:
+    void errorOccured(const QString &code, const QString &message);
     void finished(bool success);
     void runningChanged();
 

@@ -18,13 +18,17 @@ AccessAtProtocol::AccessAtProtocol(QObject *parent) : QObject { parent }
     connect(&m_manager, &QNetworkAccessManager::finished, [=](QNetworkReply *reply) {
         qDebug() << LOG_DATETIME << reply->error() << reply->url();
         m_replyJson = QString::fromUtf8(reply->readAll());
+        m_errorCode.clear();
         m_errorMessage.clear();
 
+        bool success = false;
         if (reply->error() != QNetworkReply::NoError) {
             qCritical() << LOG_DATETIME << m_replyJson;
-            m_errorMessage = m_replyJson;
+            parseErrorJson(m_replyJson);
+        } else {
+            success = parseJson(true, m_replyJson);
         }
-        parseJson(reply->error() == QNetworkReply::NoError, m_replyJson);
+        emit finished(success);
 
         reply->deleteLater();
     });
@@ -175,6 +179,18 @@ void AccessAtProtocol::postWithImage(const QString &endpoint, const QString &pat
     file->setParent(reply);
 }
 
+void AccessAtProtocol::parseErrorJson(const QString reply_json)
+{
+    QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
+    if (json_doc.object().contains("error") && json_doc.object().contains("error")) {
+        m_errorCode = json_doc.object().value("error").toString();
+        m_errorMessage = json_doc.object().value("message").toString();
+    } else {
+        m_errorCode = QStringLiteral("Other");
+        m_errorMessage = m_replyJson;
+    }
+}
+
 QString AccessAtProtocol::cursor() const
 {
     return m_cursor;
@@ -193,6 +209,11 @@ QString AccessAtProtocol::errorMessage() const
 QString AccessAtProtocol::replyJson() const
 {
     return m_replyJson;
+}
+
+QString AccessAtProtocol::errorCode() const
+{
+    return m_errorCode;
 }
 
 }

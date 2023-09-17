@@ -55,6 +55,7 @@ public:
     Q_INVOKABLE int getMainAccountIndex() const;
     Q_INVOKABLE void setMainAccount(int row);
     Q_INVOKABLE bool allAccountsReady() const;
+    Q_INVOKABLE void refreshAccountSession(const QString &uuid);
 
     Q_INVOKABLE void save() const;
     Q_INVOKABLE void load();
@@ -64,7 +65,7 @@ public:
     int count() const;
 
 signals:
-    void errorOccured(const QString &message);
+    void errorOccured(const QString &code, const QString &message);
     void updatedSession(int row, const QString &uuid);
     void updatedAccount(int row, const QString &uuid);
     void countChanged();

@@ -30,7 +30,7 @@ AppBskyNotificationListNotifications::notificationList() const
     return &m_notificationList;
 }
 
-void AppBskyNotificationListNotifications::parseJson(bool success, const QString reply_json)
+bool AppBskyNotificationListNotifications::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
     if (json_doc.isEmpty() || !json_doc.object().contains("notifications")) {
@@ -46,7 +46,7 @@ void AppBskyNotificationListNotifications::parseJson(bool success, const QString
         }
     }
 
-    emit finished(success);
+    return success;
 }
 
 }

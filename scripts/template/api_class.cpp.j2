@@ -32,7 +32,7 @@ void {{ class_name }}::parseJson(bool success, const QString reply_json)
     if (json_doc.isEmpty()) {
     }
 
-    emit finished(success);
+    return success;
 }
 
 }

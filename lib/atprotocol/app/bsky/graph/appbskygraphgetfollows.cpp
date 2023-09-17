@@ -30,7 +30,7 @@ AppBskyGraphGetFollows::profileList() const
     return &m_profileList;
 }
 
-void AppBskyGraphGetFollows::parseJson(bool success, const QString reply_json)
+bool AppBskyGraphGetFollows::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
     if (json_doc.isEmpty() || !json_doc.object().contains(m_listKey)) {
@@ -45,7 +45,7 @@ void AppBskyGraphGetFollows::parseJson(bool success, const QString reply_json)
         }
     }
 
-    emit finished(success);
+    return success;
 }
 
 }

@@ -133,7 +133,7 @@ void RecordOperator::post()
         connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
             emit finished(success, QString(), QString());
             if (!success) {
-                emit errorOccured(create_record->errorMessage());
+                emit errorOccured(create_record->errorCode(), create_record->errorMessage());
             }
             setRunning(false);
             create_record->deleteLater();
@@ -183,7 +183,7 @@ void RecordOperator::postWithImages()
                 postWithImages();
             }
         } else {
-            emit errorOccured(upload_blob->errorMessage());
+            emit errorOccured(upload_blob->errorCode(), upload_blob->errorMessage());
             emit finished(success, QString(), QString());
             setRunning(false);
         }
@@ -202,7 +202,7 @@ void RecordOperator::repost(const QString &cid, const QString &uri)
     ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord(this);
     connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
         if (!success) {
-            emit errorOccured(create_record->errorMessage());
+            emit errorOccured(create_record->errorCode(), create_record->errorMessage());
         }
         emit finished(success, create_record->replyUri(), create_record->replyCid());
         setRunning(false);
@@ -223,7 +223,7 @@ void RecordOperator::like(const QString &cid, const QString &uri)
     ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord(this);
     connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
         if (!success) {
-            emit errorOccured(create_record->errorMessage());
+            emit errorOccured(create_record->errorCode(), create_record->errorMessage());
         }
         emit finished(success, create_record->replyUri(), create_record->replyCid());
         setRunning(false);
@@ -244,7 +244,7 @@ void RecordOperator::follow(const QString &did)
     ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord(this);
     connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
         if (!success) {
-            emit errorOccured(create_record->errorMessage());
+            emit errorOccured(create_record->errorCode(), create_record->errorMessage());
         }
         emit finished(success, QString(), QString());
         setRunning(false);
@@ -264,7 +264,7 @@ void RecordOperator::mute(const QString &did)
     connect(mute, &AppBskyGraphMuteActor::finished, [=](bool success) {
         if (success) {
         } else {
-            emit errorOccured(mute->errorMessage());
+            emit errorOccured(mute->errorCode(), mute->errorMessage());
         }
         emit finished(success, QString(), QString());
         setRunning(false);
@@ -283,7 +283,7 @@ void RecordOperator::block(const QString &did)
     ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord(this);
     connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
         if (!success) {
-            emit errorOccured(create_record->errorMessage());
+            emit errorOccured(create_record->errorCode(), create_record->errorMessage());
         }
         emit finished(success, QString(), QString());
         setRunning(false);
@@ -304,7 +304,7 @@ void RecordOperator::deletePost(const QString &uri)
     ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord(this);
     connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
         if (!success) {
-            emit errorOccured(delete_record->errorMessage());
+            emit errorOccured(delete_record->errorCode(), delete_record->errorMessage());
         }
         emit finished(success, QString(), QString());
         setRunning(false);
@@ -325,7 +325,7 @@ void RecordOperator::deleteLike(const QString &uri)
     ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord(this);
     connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
         if (!success) {
-            emit errorOccured(delete_record->errorMessage());
+            emit errorOccured(delete_record->errorCode(), delete_record->errorMessage());
         }
         emit finished(success, QString(), QString());
         setRunning(false);
@@ -346,7 +346,7 @@ void RecordOperator::deleteRepost(const QString &uri)
     ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord(this);
     connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
         if (!success) {
-            emit errorOccured(delete_record->errorMessage());
+            emit errorOccured(delete_record->errorCode(), delete_record->errorMessage());
         }
         emit finished(success, QString(), QString());
         setRunning(false);
@@ -367,7 +367,7 @@ void RecordOperator::deleteFollow(const QString &uri)
     ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord(this);
     connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
         if (!success) {
-            emit errorOccured(delete_record->errorMessage());
+            emit errorOccured(delete_record->errorCode(), delete_record->errorMessage());
         }
         emit finished(success, QString(), QString());
         setRunning(false);
@@ -387,7 +387,7 @@ void RecordOperator::deleteMute(const QString &did)
     connect(unmute, &AppBskyGraphMuteActor::finished, [=](bool success) {
         if (success) {
         } else {
-            emit errorOccured(unmute->errorMessage());
+            emit errorOccured(unmute->errorCode(), unmute->errorMessage());
         }
         emit finished(success, QString(), QString());
         setRunning(false);
@@ -408,7 +408,7 @@ void RecordOperator::deleteBlock(const QString &uri)
     ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord(this);
     connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
         if (!success) {
-            emit errorOccured(delete_record->errorMessage());
+            emit errorOccured(delete_record->errorCode(), delete_record->errorMessage());
         }
         emit finished(success, QString(), QString());
         setRunning(false);

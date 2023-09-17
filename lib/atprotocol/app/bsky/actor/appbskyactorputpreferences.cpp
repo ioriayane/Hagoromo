@@ -16,10 +16,10 @@ void AppBskyActorPutPreferences::putPreferences(const QString &json)
     post(QStringLiteral("xrpc/app.bsky.actor.putPreferences"), json.toUtf8(), true);
 }
 
-void AppBskyActorPutPreferences::parseJson(bool success, const QString reply_json)
+bool AppBskyActorPutPreferences::parseJson(bool success, const QString reply_json)
 {
     Q_UNUSED(reply_json)
-    emit finished(success);
+    return success;
 }
 
 }

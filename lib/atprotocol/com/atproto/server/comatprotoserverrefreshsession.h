@@ -13,7 +13,7 @@ public:
     void refreshSession();
 
 private:
-    virtual void parseJson(bool success, const QString reply_json);
+    virtual bool parseJson(bool success, const QString reply_json);
 };
 
 }

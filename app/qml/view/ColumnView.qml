@@ -49,6 +49,8 @@ ColumnLayout {
     signal requestRemove(string key)
     signal requestDisplayOfColumnSetting(string key)
 
+    signal errorOccured(string account_uuid, string code, string message)
+
     ColumnSettings {
         id: settings
     }
@@ -66,7 +68,7 @@ ColumnLayout {
                 autoLoading: settings.autoLoading
                 loadingInterval: settings.loadingInterval
 
-                onErrorOccured: (message) => {console.log(message)}
+                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }
             accountDid: account.did
 
@@ -105,7 +107,7 @@ ColumnLayout {
                 visibleReply: settings.visibleReply
                 visibleQuote: settings.visibleQuote
 
-                onErrorOccured: (message) => {console.log(message)}
+                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
@@ -149,7 +151,7 @@ ColumnLayout {
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
-
+            onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             onBack: {
                 if(!columnStackView.empty){
                     columnStackView.pop()
@@ -183,6 +185,7 @@ ColumnLayout {
             onRequestReportAccount: (did) => columnView.requestReportAccount(account.uuid, did)
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
 
+            onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             onBack: {
                 if(!columnStackView.empty){
                     columnStackView.pop()
@@ -199,7 +202,7 @@ ColumnLayout {
                 text: settings.columnValue
                 searchService: "https://search.bsky.social"
 
-                onErrorOccured: (message) => {console.log(message)}
+                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }
             accountDid: account.did
 
@@ -234,7 +237,7 @@ ColumnLayout {
                 text: settings.columnValue
                 searchService: "https://search.bsky.social"
 
-                onErrorOccured: (message) => {console.log(message)}
+                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
@@ -250,7 +253,7 @@ ColumnLayout {
                 onSavingChanged: {
                     saveFeedMenuItem.saving = saving
                 }
-                onErrorOccured: (message) => {console.log(message)}
+                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }
             accountDid: account.did
 
@@ -284,7 +287,7 @@ ColumnLayout {
                 loadingInterval: settings.loadingInterval
                 authorDid: settings.columnValue
 
-                onErrorOccured: (message) => {console.log(message)}
+                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }
             accountDid: account.did
 
@@ -316,7 +319,7 @@ ColumnLayout {
             autoLoading: settings.autoLoading
             type: AnyProfileListModel.Like
 
-            onErrorOccured: (message) => { console.log(message) }
+            onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
             onBack: {
@@ -333,7 +336,7 @@ ColumnLayout {
             autoLoading: settings.autoLoading
             type: AnyProfileListModel.Repost
 
-            onErrorOccured: (message) => { console.log(message) }
+            onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
             onBack: {

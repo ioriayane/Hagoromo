@@ -18,6 +18,7 @@ Dialog {
     title: qsTr("Account management")
 
     property alias accountModel: accountList.model
+    signal errorOccured(string account_uuid, string code, string message)
 
     LoginDialog {
         id: login
@@ -28,6 +29,7 @@ Dialog {
                                        session.authorized)
             accountModel.updateAccountProfile(session.service, session.identifier)
         }
+        onErrorOccured: (code, message) => accountDialog.errorOccured("", code, message)
     }
     ContentFilterSettingDialog {
         id: contentFilter

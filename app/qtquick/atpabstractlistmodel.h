@@ -67,7 +67,7 @@ public:
     QString refreshJwt() const;
 
 signals:
-    void errorOccured(const QString &message);
+    void errorOccured(const QString &code, const QString &message);
     void runningChanged();
     void autoLoadingChanged();
     void loadingIntervalChanged();

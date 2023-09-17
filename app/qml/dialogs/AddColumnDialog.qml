@@ -26,6 +26,7 @@ Dialog {
     property string selectedUri: ""
 
     signal openDiscoverFeeds(int account_index)
+    signal errorOccured(string account_uuid, string code, string message)
 
     onOpened: {
         if(accountList.currentIndex === -1){
@@ -129,7 +130,12 @@ Dialog {
 
                             ListView {
                                 id: typeList
-                                model: FeedTypeListModel { }
+                                model: FeedTypeListModel {
+                                    onErrorOccured: (code, message) => {
+                                                        var uuid = accountModel.item(accountList.currentIndex, AccountListModel.UuidRole)
+                                                        addColumnDialog.errorOccured(uuid, code, message)
+                                                    }
+                                }
                                 footer: ItemDelegate {
                                     width: typeList.width - typeScroll.ScrollBar.vertical.width
                                     height: implicitHeight * AdjustedValues.ratio

@@ -268,7 +268,7 @@ void ComAtprotoRepoCreateRecord::setImageBlobs(
     m_embedImageBlobs = blobs;
 }
 
-void ComAtprotoRepoCreateRecord::parseJson(bool success, const QString reply_json)
+bool ComAtprotoRepoCreateRecord::parseJson(bool success, const QString reply_json)
 {
     m_replyUri.clear();
     m_replyCid.clear();
@@ -289,7 +289,7 @@ void ComAtprotoRepoCreateRecord::parseJson(bool success, const QString reply_jso
         }
     }
 
-    emit finished(success);
+    return success;
 }
 
 void ComAtprotoRepoCreateRecord::setPostLanguages(const QStringList &newPostLanguages)

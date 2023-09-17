@@ -16,7 +16,7 @@ void ComAtprotoServerRefreshSession::refreshSession()
     post(QStringLiteral("xrpc/com.atproto.server.refreshSession"), QByteArray(), true);
 }
 
-void ComAtprotoServerRefreshSession::parseJson(bool success, const QString reply_json)
+bool ComAtprotoServerRefreshSession::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
     if (json_doc.isEmpty()) {
@@ -33,7 +33,7 @@ void ComAtprotoServerRefreshSession::parseJson(bool success, const QString reply
         }
     }
 
-    emit finished(success);
+    return success;
 }
 
 }

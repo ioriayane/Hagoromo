@@ -16,7 +16,7 @@ public:
     const QList<AtProtocolType::AppBskyFeedDefs::PostView> *postList() const;
 
 private:
-    virtual void parseJson(bool success, const QString reply_json);
+    virtual bool parseJson(bool success, const QString reply_json);
 
     QList<AtProtocolType::AppBskyFeedDefs::PostView> m_postList;
 };
