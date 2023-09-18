@@ -10,6 +10,7 @@ Dialog {
     modal: true
     x: (parent.width - width) * 0.5
     y: (parent.height - height) * 0.5
+    closePolicy: Dialog.CloseOnEscape
 
     bottomPadding: AdjustedValues.s5
 
