@@ -139,7 +139,7 @@ QString AtpAbstractListModel::copyRecordText(const QVariant &value) const
     const AppBskyFeedPost::Main record =
             LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(value);
     if (record.facets.isEmpty()) {
-        return QString(record.text).replace("\n", "<br/>");
+        return QString(record.text).toHtmlEscaped().replace("\n", "<br/>");
     } else {
         QByteArray text_ba = record.text.toUtf8();
         QString text;
@@ -160,6 +160,7 @@ QString AtpAbstractListModel::copyRecordText(const QVariant &value) const
 
             if (pos_start > pos_prev_end) {
                 text += QString(text_ba.mid(pos_prev_end, pos_start - pos_prev_end))
+                                .toHtmlEscaped()
                                 .replace("\n", "<br/>");
             }
             QString display_url = QString::fromUtf8(text_ba.mid(pos_start, pos_end - pos_start));
@@ -170,12 +171,14 @@ QString AtpAbstractListModel::copyRecordText(const QVariant &value) const
                 text += QString("<a href=\"%1\">%2</a>")
                                 .arg(part.features_Mention.first().did, display_url);
             } else {
-                text += QString(text_ba.mid(pos_start, pos_end - pos_start)).replace("\n", "<br/>");
+                text += QString(text_ba.mid(pos_start, pos_end - pos_start))
+                                .toHtmlEscaped()
+                                .replace("\n", "<br/>");
             }
             pos_prev_end = pos_end;
         }
         if (pos_prev_end < (text_ba.length() - 1)) {
-            text += QString(text_ba.mid(pos_prev_end)).replace("\n", "<br/>");
+            text += QString(text_ba.mid(pos_prev_end)).toHtmlEscaped().replace("\n", "<br/>");
         }
 
         return text;

@@ -44,6 +44,7 @@ private slots:
     void test_FeedGeneratorLink();
     void test_AnyProfileListModel();
     void test_AccountListModel();
+    void test_TimelineListModel_text();
 
 private:
     WebServer m_mockServer;
@@ -1357,6 +1358,41 @@ void hagoromo_test::test_AccountListModel()
     QVERIFY2(model2.item(row, AccountListModel::RefreshJwtRole).toString()
                      == "refreshJwt_account2_refresh",
              model2.item(row, AccountListModel::RefreshJwtRole).toString().toLocal8Bit());
+}
+
+void hagoromo_test::test_TimelineListModel_text()
+{
+    int row = 0;
+    TimelineListModel model;
+    model.setAccount(m_service + "/timeline/text", QString(), QString(), QString(), "dummy",
+                     QString());
+    model.setDisplayInterval(0);
+
+    QSignalSpy spy(&model, SIGNAL(runningChanged()));
+    model.getLatest();
+    spy.wait();
+    QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+    QVERIFY(model.rowCount() == 4);
+
+    qDebug() << QString("hoge\nfuga<>\"foo").toHtmlEscaped();
+
+    row = 0;
+    QVERIFY(model.item(row, TimelineListModel::RecordTextPlainRole).toString() == "test < data");
+    QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString() == "test &lt; data");
+
+    row = 1;
+    QVERIFY(model.item(row, TimelineListModel::RecordTextPlainRole).toString()
+            == "@ioriayane.relog.tech resp.remainingPoints < lowest.remainingPoints");
+    QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
+            == "<a href=\"did:plc:ipj5qejfoqu6eukvt72uhyit\">@ioriayane.relog.tech</a> "
+               "resp.remainingPoints &lt; lowest.remainingPoints");
+
+    row = 2;
+    qDebug().noquote()
+            << model.item(row, TimelineListModel::RecordTextPlainRole).toString().toLocal8Bit();
+    qDebug().noquote()
+            << model.item(row, TimelineListModel::RecordTextRole).toString().toLocal8Bit();
 }
 
 void hagoromo_test::test_RecordOperatorCreateRecord(const QByteArray &body)

@@ -33,5 +33,7 @@
         <file>response/account/account2/xrpc/com.atproto.server.refreshSession</file>
         <file>response/account/account1/xrpc/app.bsky.actor.getProfile</file>
         <file>response/account/account2/xrpc/app.bsky.actor.getProfile</file>
+        <file>response/timeline/text/xrpc/app.bsky.actor.getPreferences</file>
+        <file>response/timeline/text/xrpc/app.bsky.feed.getTimeline</file>
     </qresource>
 </RCC>
