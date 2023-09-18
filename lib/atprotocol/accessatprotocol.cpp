@@ -17,14 +17,12 @@ AccessAtProtocol::AccessAtProtocol(QObject *parent) : QObject { parent }
 {
     connect(&m_manager, &QNetworkAccessManager::finished, [=](QNetworkReply *reply) {
         qDebug() << LOG_DATETIME << reply->error() << reply->url();
-        m_replyJson = QString::fromUtf8(reply->readAll());
-        m_errorMessage.clear();
 
-        if (reply->error() != QNetworkReply::NoError) {
-            qCritical() << LOG_DATETIME << m_replyJson;
-            m_errorMessage = m_replyJson;
+        bool success = false;
+        if (checkReply(reply)) {
+            success = parseJson(true, m_replyJson);
         }
-        parseJson(reply->error() == QNetworkReply::NoError, m_replyJson);
+        emit finished(success);
 
         reply->deleteLater();
     });
@@ -175,6 +173,59 @@ void AccessAtProtocol::postWithImage(const QString &endpoint, const QString &pat
     file->setParent(reply);
 }
 
+bool AccessAtProtocol::checkReply(QNetworkReply *reply)
+{
+    bool status = false;
+    m_replyJson = QString::fromUtf8(reply->readAll());
+    m_errorCode.clear();
+    m_errorMessage.clear();
+
+#ifdef QT_DEBUG
+    for (const auto &header : reply->rawHeaderPairs()) {
+        if (header.first.toLower().startsWith("ratelimit-")) {
+            if (header.first.toLower() == "ratelimit-reset") {
+                qDebug() << LOG_DATETIME << header.first
+                         << QDateTime::fromSecsSinceEpoch(header.second.toInt())
+                                    .toString("yyyy/MM/dd hh:mm:ss");
+            } else {
+                qDebug() << LOG_DATETIME << header.first << header.second;
+            }
+        }
+    }
+#endif
+
+    QJsonDocument json_doc = QJsonDocument::fromJson(m_replyJson.toUtf8());
+    if (reply->error() != QNetworkReply::NoError) {
+        if (json_doc.object().contains("error") && json_doc.object().contains("error")) {
+            m_errorCode = json_doc.object().value("error").toString();
+            m_errorMessage = json_doc.object().value("message").toString();
+        } else {
+            m_errorCode = QStringLiteral("Other");
+            m_errorMessage = m_replyJson;
+        }
+        if (m_errorCode == "RateLimitExceeded") {
+            m_errorMessage += "\n";
+            for (const auto &header : reply->rawHeaderPairs()) {
+                if (header.first.toLower().startsWith("ratelimit-")) {
+                    if (header.first.toLower() == "ratelimit-reset") {
+                        m_errorMessage += QString("\n%1:%2").arg(
+                                header.first,
+                                QDateTime::fromSecsSinceEpoch(header.second.toInt())
+                                        .toString("yyyy/MM/dd hh:mm:ss"));
+                    } else {
+                        m_errorMessage += QString("\n%1:%2").arg(header.first, header.second);
+                    }
+                }
+            }
+        }
+        qCritical() << LOG_DATETIME << m_errorCode << m_errorMessage;
+        qCritical() << LOG_DATETIME << m_replyJson;
+    } else {
+        status = true;
+    }
+    return status;
+}
+
 QString AccessAtProtocol::cursor() const
 {
     return m_cursor;
@@ -193,6 +244,11 @@ QString AccessAtProtocol::errorMessage() const
 QString AccessAtProtocol::replyJson() const
 {
     return m_replyJson;
+}
+
+QString AccessAtProtocol::errorCode() const
+{
+    return m_errorCode;
 }
 
 }

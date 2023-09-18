@@ -10,15 +10,18 @@ Dialog {
     modal: true
     x: (parent.width - width) * 0.5
     y: (parent.height - height) * 0.5
-//    standardButtons: DialogButtonBox.Ok
+    closePolicy: Dialog.CloseOnEscape
+
+    bottomPadding: AdjustedValues.s5
 
     property int parentWidth: parent.width
     property alias text: messageTextArea.text
 
     property string status: "normal"
 
-    function show(status, message){
+    function show(status, title, message){
         messageDialog.status = status
+        titleLabel.text = title
         messageTextArea.text = message
         messageDialog.open()
     }
@@ -26,7 +29,14 @@ Dialog {
     ColumnLayout {
         spacing: AdjustedValues.s5
 
+        Label {
+            id: titleLabel
+            Layout.topMargin: 15
+            font.pointSize: AdjustedValues.f10
+            text: "Title"
+        }
         Frame {
+            Layout.topMargin: 5
             background: Rectangle {
                 id: backgroundRect
                 states: [
@@ -58,6 +68,7 @@ Dialog {
         Button {
             Layout.alignment: Qt.AlignHCenter
             font.pointSize: AdjustedValues.f10
+            flat: true
             text: qsTr("OK")
             onClicked: messageDialog.close()
         }

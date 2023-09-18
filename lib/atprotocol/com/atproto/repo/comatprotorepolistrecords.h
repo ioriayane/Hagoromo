@@ -19,7 +19,7 @@ public:
     const QList<AtProtocolType::ComAtprotoRepoListRecords::Record> *recordList() const;
 
 private:
-    virtual void parseJson(bool success, const QString reply_json);
+    virtual bool parseJson(bool success, const QString reply_json);
 
     QList<AtProtocolType::ComAtprotoRepoListRecords::Record> m_recordList;
 };

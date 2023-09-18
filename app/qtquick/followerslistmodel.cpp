@@ -33,7 +33,7 @@ void FollowersListModel::getLatest()
                     }
                 }
             } else {
-                emit errorOccured(followers->errorMessage());
+                emit errorOccured(followers->errorCode(), followers->errorMessage());
             }
             setRunning(false);
             followers->deleteLater();
@@ -68,7 +68,7 @@ void FollowersListModel::getNext()
                     }
                 }
             } else {
-                emit errorOccured(followers->errorMessage());
+                emit errorOccured(followers->errorCode(), followers->errorMessage());
             }
             setRunning(false);
             followers->deleteLater();

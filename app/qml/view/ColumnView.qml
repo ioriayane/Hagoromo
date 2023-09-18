@@ -12,6 +12,7 @@ import tech.relog.hagoromo.searchprofilelistmodel 1.0
 import tech.relog.hagoromo.customfeedlistmodel 1.0
 import tech.relog.hagoromo.authorfeedlistmodel 1.0
 import tech.relog.hagoromo.anyprofilelistmodel 1.0
+import tech.relog.hagoromo.systemtool 1.0
 import tech.relog.hagoromo.singleton 1.0
 
 import "../controls"
@@ -48,11 +49,16 @@ ColumnLayout {
     signal requestRemove(string key)
     signal requestDisplayOfColumnSetting(string key)
 
+    signal errorOccured(string account_uuid, string code, string message)
+
     ColumnSettings {
         id: settings
     }
     Account {
         id: account
+    }
+    SystemTool {
+        id: systemTool
     }
 
     Component {
@@ -62,7 +68,7 @@ ColumnLayout {
                 autoLoading: settings.autoLoading
                 loadingInterval: settings.loadingInterval
 
-                onErrorOccured: (message) => {console.log(message)}
+                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }
             accountDid: account.did
 
@@ -101,7 +107,7 @@ ColumnLayout {
                 visibleReply: settings.visibleReply
                 visibleQuote: settings.visibleQuote
 
-                onErrorOccured: (message) => {console.log(message)}
+                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
@@ -145,7 +151,7 @@ ColumnLayout {
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
-
+            onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             onBack: {
                 if(!columnStackView.empty){
                     columnStackView.pop()
@@ -179,6 +185,7 @@ ColumnLayout {
             onRequestReportAccount: (did) => columnView.requestReportAccount(account.uuid, did)
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
 
+            onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             onBack: {
                 if(!columnStackView.empty){
                     columnStackView.pop()
@@ -195,7 +202,7 @@ ColumnLayout {
                 text: settings.columnValue
                 searchService: "https://search.bsky.social"
 
-                onErrorOccured: (message) => {console.log(message)}
+                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }
             accountDid: account.did
 
@@ -230,7 +237,7 @@ ColumnLayout {
                 text: settings.columnValue
                 searchService: "https://search.bsky.social"
 
-                onErrorOccured: (message) => {console.log(message)}
+                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
@@ -243,8 +250,10 @@ ColumnLayout {
                 autoLoading: settings.autoLoading
                 loadingInterval: settings.loadingInterval
                 uri: settings.columnValue
-
-                onErrorOccured: (message) => {console.log(message)}
+                onSavingChanged: {
+                    saveFeedMenuItem.saving = saving
+                }
+                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }
             accountDid: account.did
 
@@ -278,7 +287,7 @@ ColumnLayout {
                 loadingInterval: settings.loadingInterval
                 authorDid: settings.columnValue
 
-                onErrorOccured: (message) => {console.log(message)}
+                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }
             accountDid: account.did
 
@@ -310,7 +319,7 @@ ColumnLayout {
             autoLoading: settings.autoLoading
             type: AnyProfileListModel.Like
 
-            onErrorOccured: (message) => { console.log(message) }
+            onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
             onBack: {
@@ -327,7 +336,7 @@ ColumnLayout {
             autoLoading: settings.autoLoading
             type: AnyProfileListModel.Repost
 
-            onErrorOccured: (message) => { console.log(message) }
+            onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
             onBack: {
@@ -469,23 +478,64 @@ ColumnLayout {
                     MenuItem {
                         icon.source: "../images/arrow_back.png"
                         text: qsTr("Move to left")
-                        onClicked: requestMoveToLeft(columnKey)
+                        onTriggered: requestMoveToLeft(columnKey)
                     }
                     MenuItem {
                         icon.source: "../images/arrow_forward.png"
                         text: qsTr("Move to right")
-                        onClicked: requestMoveToRight(columnKey)
+                        onTriggered: requestMoveToRight(columnKey)
                     }
                     MenuItem {
                         icon.source: "../images/delete.png"
                         text: qsTr("Delete column")
-                        onClicked: requestRemove(columnKey)
+                        onTriggered: requestRemove(columnKey)
+                    }
+                    MenuSeparator {}
+                    Menu {
+                        id: feedMenu
+                        title: qsTr("Feed")
+                        enabled: (componentType === 4) && columnStackView.depth == 1
+                        MenuItem {
+                            text: qsTr("Copy url")
+                            icon.source: "../images/copy.png"
+                            onTriggered: {
+                                if(componentType === 4){
+                                    systemTool.copyToClipboard(columnStackView.get(0).model.getOfficialUrl())
+                                }
+                            }
+                        }
+                        MenuItem {
+                            text: qsTr("Open in Official")
+                            icon.source: "../images/open_in_other.png"
+                            onTriggered: {
+                                if(componentType === 4){
+                                    Qt.openUrlExternally(columnStackView.get(0).model.getOfficialUrl())
+                                }
+                            }
+                        }
+                        MenuItem {
+                            id: saveFeedMenuItem
+                            icon.source: "../images/bookmark_add.png"
+                            text: saving ? qsTr("Drop") : qsTr("Save")
+                            property bool saving: false
+                            onTriggered: {
+                                if(componentType === 4){
+                                    if(saving){
+                                        console.log("drop bookmark")
+                                        columnStackView.get(0).model.removeGenerator()
+                                    }else{
+                                        console.log("save bookmark")
+                                        columnStackView.get(0).model.saveGenerator()
+                                    }
+                                }
+                            }
+                        }
                     }
                     MenuSeparator {}
                     MenuItem {
                         icon.source: "../images/settings.png"
                         text: qsTr("Settings")
-                        onClicked: requestDisplayOfColumnSetting(columnKey)
+                        onTriggered: requestDisplayOfColumnSetting(columnKey)
                     }
                 }
             }

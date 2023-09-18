@@ -24,7 +24,7 @@ void AuthorFeedListModel::getLatest()
                 }
                 copyFrom(timeline);
             } else {
-                emit errorOccured(timeline->errorMessage());
+                emit errorOccured(timeline->errorCode(), timeline->errorMessage());
             }
             QTimer::singleShot(100, this, &AuthorFeedListModel::displayQueuedPosts);
             timeline->deleteLater();
@@ -56,7 +56,7 @@ void AuthorFeedListModel::getNext()
                 m_cursor = timeline->cursor();
                 copyFromNext(timeline);
             } else {
-                emit errorOccured(timeline->errorMessage());
+                emit errorOccured(timeline->errorCode(), timeline->errorMessage());
             }
             QTimer::singleShot(10, this, &AuthorFeedListModel::displayQueuedPostsNext);
             timeline->deleteLater();

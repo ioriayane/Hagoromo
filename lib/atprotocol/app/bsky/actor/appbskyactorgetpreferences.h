@@ -18,7 +18,7 @@ public:
     const AtProtocolType::AppBskyActorDefs::AdultContentPref adultContentPref() const;
 
 private:
-    virtual void parseJson(bool success, const QString reply_json);
+    virtual bool parseJson(bool success, const QString reply_json);
 
     QList<AtProtocolType::AppBskyActorDefs::SavedFeedsPref> m_savedFeedsPrefList;
     QList<AtProtocolType::AppBskyActorDefs::ContentLabelPref> m_contentLabelPrefList;

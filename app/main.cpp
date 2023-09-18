@@ -13,6 +13,7 @@
 #include "qtquick/timelinelistmodel.h"
 #include "qtquick/authorfeedlistmodel.h"
 #include "qtquick/anyfeedlistmodel.h"
+#include "qtquick/actorlikelistmodel.h"
 #include "qtquick/followslistmodel.h"
 #include "qtquick/followerslistmodel.h"
 #include "qtquick/searchpostlistmodel.h"
@@ -20,6 +21,7 @@
 #include "qtquick/feedtypelistmodel.h"
 #include "qtquick/customfeedlistmodel.h"
 #include "qtquick/feedgeneratorlistmodel.h"
+#include "qtquick/actorfeedgeneratorlistmodel.h"
 #include "qtquick/languagelistmodel.h"
 #include "qtquick/contentfiltersettinglistmodel.h"
 #include "qtquick/anyprofilelistmodel.h"
@@ -44,7 +46,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName(QStringLiteral("relog"));
     app.setOrganizationDomain(QStringLiteral("hagoromo.relog.tech"));
     app.setApplicationName(QStringLiteral("Hagoromo"));
-    app.setApplicationVersion(QStringLiteral("0.11.0"));
+    app.setApplicationVersion(QStringLiteral("0.12.0"));
 #ifndef HAGOROMO_RELEASE_BUILD
     app.setApplicationVersion(app.applicationVersion() + "d");
 #endif
@@ -65,6 +67,8 @@ int main(int argc, char *argv[])
                                          "AuthorFeedListModel");
     qmlRegisterType<AnyFeedListModel>("tech.relog.hagoromo.anyfeedlistmodel", 1, 0,
                                       "AnyFeedListModel");
+    qmlRegisterType<ActorLikeListModel>("tech.relog.hagoromo.actorlikelistmodel", 1, 0,
+                                        "ActorLikeListModel");
     qmlRegisterType<FollowsListModel>("tech.relog.hagoromo.followslistmodel", 1, 0,
                                       "FollowsListModel");
     qmlRegisterType<FollowersListModel>("tech.relog.hagoromo.followerslistmodel", 1, 0,
@@ -79,6 +83,8 @@ int main(int argc, char *argv[])
                                          "CustomFeedListModel");
     qmlRegisterType<FeedGeneratorListModel>("tech.relog.hagoromo.feedgeneratorlistmodel", 1, 0,
                                             "FeedGeneratorListModel");
+    qmlRegisterType<ActorFeedGeneratorListModel>("tech.relog.hagoromo.actorfeedgeneratorlistmodel",
+                                                 1, 0, "ActorFeedGeneratorListModel");
     qmlRegisterType<LanguageListModel>("tech.relog.hagoromo.languagelistmodel", 1, 0,
                                        "LanguageListModel");
     qmlRegisterType<ContentFilterSettingListModel>(

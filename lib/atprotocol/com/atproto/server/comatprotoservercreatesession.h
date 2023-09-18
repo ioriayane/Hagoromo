@@ -14,7 +14,7 @@ public:
     void create(const QString &id, const QString &password);
 
 private:
-    virtual void parseJson(bool success, const QString reply_json);
+    virtual bool parseJson(bool success, const QString reply_json);
 };
 
 }

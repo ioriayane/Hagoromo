@@ -16,7 +16,7 @@ public:
     void getLikes(const QString &uri, const QString &cid, const int limit, const QString &cursor);
 
 private:
-    virtual void parseJson(bool success, const QString reply_json);
+    virtual bool parseJson(bool success, const QString reply_json);
 
     QList<AtProtocolType::AppBskyFeedGetLikes::Like> m_likes;
 };

@@ -89,6 +89,7 @@ ScrollView {
             bottomPadding: 0
 
             property int layoutWidth: rootListView.width
+            property var userLabels: model.labels
 
             states: [
                 State {
@@ -181,6 +182,11 @@ ScrollView {
                             fontPointSize: AdjustedValues.f8
                             text: qsTr("Muted user")
                         }
+                    }
+                    TagLabelLayout {
+                        Layout.preferredWidth: parent.basisWidth
+                        visible: count > 0
+                        model: profileLayout.userLabels
                     }
                     Label {
                         id: childRecordText

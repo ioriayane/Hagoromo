@@ -16,7 +16,7 @@ void ComAtprotoServerRefreshSession::refreshSession()
     post(QStringLiteral("xrpc/com.atproto.server.refreshSession"), QByteArray(), true);
 }
 
-void ComAtprotoServerRefreshSession::parseJson(bool success, const QString reply_json)
+bool ComAtprotoServerRefreshSession::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
     if (json_doc.isEmpty()) {
@@ -27,13 +27,13 @@ void ComAtprotoServerRefreshSession::parseJson(bool success, const QString reply
                    json_doc.object().value("accessJwt").toString(),
                    json_doc.object().value("refreshJwt").toString());
 
-        if (did().isEmpty() || handle().isEmpty() || email().isEmpty() || accessJwt().isEmpty()
+        if (did().isEmpty() || handle().isEmpty() || accessJwt().isEmpty()
             || refreshJwt().isEmpty()) {
             success = false;
         }
     }
 
-    emit finished(success);
+    return success;
 }
 
 }

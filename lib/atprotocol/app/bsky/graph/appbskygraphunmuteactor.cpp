@@ -18,11 +18,11 @@ void AppBskyGraphUnmuteActor::unmuteActor(const QString &actor)
          json_doc.toJson(QJsonDocument::Compact));
 }
 
-void AppBskyGraphUnmuteActor::parseJson(bool success, const QString reply_json)
+bool AppBskyGraphUnmuteActor::parseJson(bool success, const QString reply_json)
 {
     Q_UNUSED(reply_json)
 
-    emit finished(success);
+    return success;
 }
 
 }

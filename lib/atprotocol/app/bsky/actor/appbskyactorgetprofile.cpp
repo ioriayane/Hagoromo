@@ -17,7 +17,7 @@ void AppBskyActorGetProfile::getProfile(const QString &actor)
     get(QStringLiteral("xrpc/app.bsky.actor.getProfile"), query);
 }
 
-void AppBskyActorGetProfile::parseJson(bool success, const QString reply_json)
+bool AppBskyActorGetProfile::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
     if (json_doc.isEmpty()) {
@@ -27,7 +27,7 @@ void AppBskyActorGetProfile::parseJson(bool success, const QString reply_json)
                                                                   m_profileViewDetailed);
     }
 
-    emit finished(success);
+    return success;
 }
 
 AtProtocolType::AppBskyActorDefs::ProfileViewDetailed

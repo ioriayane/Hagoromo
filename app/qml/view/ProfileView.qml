@@ -10,6 +10,7 @@ import tech.relog.hagoromo.anyfeedlistmodel 1.0
 import tech.relog.hagoromo.recordoperator 1.0
 import tech.relog.hagoromo.followslistmodel 1.0
 import tech.relog.hagoromo.followerslistmodel 1.0
+import tech.relog.hagoromo.actorfeedgeneratorlistmodel 1.0
 import tech.relog.hagoromo.systemtool 1.0
 import tech.relog.hagoromo.singleton 1.0
 
@@ -44,6 +45,7 @@ ColumnLayout {
     signal requestReportPost(string uri, string cid)
     signal requestReportAccount(string did)
 
+    signal errorOccured(string code, string message)
     signal back()
 
     states: [
@@ -103,12 +105,13 @@ ColumnLayout {
             repostFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             likesFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             authorMediaFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
+            actorFeedGeneratorListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             followsListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             followersListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
         }
         function getLatest() {
             userProfile.getProfile(userDid)
-            authorFeedListModel.getLatest()
+            tabBar.currentIndex = 0
         }
     }
 
@@ -397,6 +400,8 @@ ColumnLayout {
         interactive: false
 
         onCurrentItemChanged: {
+            if(currentItem == null)
+                return
             if(currentItem.model === undefined)
                 return
             if(currentItem.model.rowCount() > 0)
@@ -412,7 +417,7 @@ ColumnLayout {
                 authorDid: profileView.userDid
                 filter: AuthorFeedListModel.PostsWithReplies
 
-                onErrorOccured: (message) => {console.log(message)}
+                onErrorOccured: (code, message) => profileView.errorOccured(code, message)
             }
             accountDid: profileView.accountDid
 
@@ -443,7 +448,7 @@ ColumnLayout {
                 targetDid: profileView.userDid
                 feedType: AnyFeedListModel.RepostFeedType
 
-                onErrorOccured: (message) => {console.log(message)}
+                onErrorOccured: (code, message) => profileView.errorOccured(code, message)
             }
             accountDid: profileView.accountDid
 
@@ -474,7 +479,7 @@ ColumnLayout {
                 targetDid: profileView.userDid
                 feedType: AnyFeedListModel.LikeFeedType
 
-                onErrorOccured: (message) => {console.log(message)}
+                onErrorOccured: (code, message) => profileView.errorOccured(code, message)
             }
             accountDid: profileView.accountDid
 
@@ -505,7 +510,7 @@ ColumnLayout {
                 authorDid: profileView.userDid
                 filter: AuthorFeedListModel.PostsWithMedia
 
-                onErrorOccured: (message) => {console.log(message)}
+                onErrorOccured: (code, message) => profileView.errorOccured(code, message)
             }
             accountDid: profileView.accountDid
 
@@ -528,6 +533,20 @@ ColumnLayout {
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
         }
 
+        FeedGeneratorListView {
+            id: generatorScrollView
+            Layout.fillWidth: true
+            selectable: false
+            model: ActorFeedGeneratorListModel {
+                id: actorFeedGeneratorListModel
+                actor: profileView.userDid
+            }
+            onClicked: (display_name, uri) => profileView.requestViewFeedGenerator(display_name, uri)
+            onRequestRemoveGenerator: (uri) => actorFeedGeneratorListModel.removeGenerator(uri)
+            onRequestSaveGenerator: (uri) => actorFeedGeneratorListModel.saveGenerator(uri)
+        }
+
+
         ProfileListView {
             id: followsListView
             Layout.fillWidth: true
@@ -538,7 +557,7 @@ ColumnLayout {
                 autoLoading: false
                 targetDid: profileView.userDid
 
-                onErrorOccured: (message) => {console.log(message)}
+                onErrorOccured: (code, message) => profileView.errorOccured(code, message)
             }
             onRequestViewProfile: (did) => {
                                       if(did !== profileView.userDid){
@@ -559,7 +578,7 @@ ColumnLayout {
                 autoLoading: false
                 targetDid: profileView.userDid
 
-                onErrorOccured: (message) => {console.log(message)}
+                onErrorOccured: (code, message) => profileView.errorOccured(code, message)
             }
             onRequestViewProfile: (did) => {
                                       if(did !== profileView.userDid){

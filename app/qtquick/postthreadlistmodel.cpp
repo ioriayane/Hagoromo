@@ -19,7 +19,7 @@ void PostThreadListModel::getLatest()
             if (success) {
                 copyFrom(thread->threadViewPost());
             } else {
-                emit errorOccured(thread->errorMessage());
+                emit errorOccured(thread->errorCode(), thread->errorMessage());
             }
             QTimer::singleShot(100, this, &PostThreadListModel::displayQueuedPosts);
             thread->deleteLater();

@@ -72,6 +72,9 @@ public:
         FeedGeneratorLikeCountRole,
         FeedGeneratorAvatarRole,
 
+        ReplyRootCidRole,
+        ReplyRootUriRole,
+
         UserFilterMatchedRole,
         UserFilterMessageRole,
         ContentFilterMatchedRole,

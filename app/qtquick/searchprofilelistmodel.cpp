@@ -18,7 +18,7 @@ void SearchProfileListModel::getLatest()
             if (success) {
                 m_cueGetProfile.append(*profiles->didList());
             } else {
-                emit errorOccured(profiles->errorMessage());
+                emit errorOccured(profiles->errorCode(), profiles->errorMessage());
             }
             QTimer::singleShot(100, this, &SearchProfileListModel::getProfiles);
             profiles->deleteLater();

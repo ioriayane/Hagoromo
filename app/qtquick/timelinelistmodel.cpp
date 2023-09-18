@@ -147,12 +147,16 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         if (current.reply.root_type == AppBskyFeedDefs::ReplyRefRootType::root_PostView)
             return current.reply.root_PostView.cid;
         else
-            return QString();
+            return AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                           AtProtocolType::AppBskyFeedPost::Main>(current.post.record)
+                    .reply.root.cid;
     } else if (role == ReplyRootUriRole) {
         if (current.reply.root_type == AppBskyFeedDefs::ReplyRefRootType::root_PostView)
             return current.reply.root_PostView.uri;
         else
-            return QString();
+            return AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                           AtProtocolType::AppBskyFeedPost::Main>(current.post.record)
+                    .reply.root.uri;
     } else if (role == ReplyParentDisplayNameRole) {
         if (current.reply.parent_type == AppBskyFeedDefs::ReplyRefParentType::parent_PostView)
             return current.reply.parent_PostView.author.displayName;
@@ -259,7 +263,7 @@ void TimelineListModel::getLatest()
                 }
                 copyFrom(timeline);
             } else {
-                emit errorOccured(timeline->errorMessage());
+                emit errorOccured(timeline->errorCode(), timeline->errorMessage());
             }
             QTimer::singleShot(100, this, &TimelineListModel::displayQueuedPosts);
             timeline->deleteLater();
@@ -283,7 +287,7 @@ void TimelineListModel::getNext()
 
                 copyFromNext(timeline);
             } else {
-                emit errorOccured(timeline->errorMessage());
+                emit errorOccured(timeline->errorCode(), timeline->errorMessage());
             }
             QTimer::singleShot(10, this, &TimelineListModel::displayQueuedPostsNext);
             timeline->deleteLater();

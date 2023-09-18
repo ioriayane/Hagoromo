@@ -27,6 +27,21 @@ ApplicationWindow {
     Material.theme: settingDialog.settings.theme
     Material.accent: settingDialog.settings.accent
 
+    function errorHandler(account_uuid, code, message) {
+        if(code === "ExpiredToken" && account_uuid.length > 0){
+            accountListModel.refreshAccountSession(account_uuid)
+        }else{
+            var row = accountListModel.indexAt(account_uuid)
+            var handle = ""
+            if(row >= 0){
+                handle = accountListModel.item(row, AccountListModel.HandleRole)
+            }
+            console.log("ERROR: " + handle + "(" + account_uuid + ") " + code + ":" + message)
+            message += "\n\n@" + handle
+            messageDialog.show("error", code, message)
+        }
+    }
+
     Settings {
         //        property alias x: appWindow.x
         //        property alias y: appWindow.y
@@ -106,12 +121,14 @@ ApplicationWindow {
 
                                  addColumnDialog.reject()
                              }
+        onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
     }
 
     AccountDialog {
         id: accountDialog
         accountModel: accountListModel
         onClosed: accountListModel.syncColumn()
+        onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
     }
 
     DiscoverFeedsDialog {
@@ -121,6 +138,7 @@ ApplicationWindow {
                                      4, false, 300000, 400, selectedName, selectedUri)
             scrollView.showRightMost()
         }
+        onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
     }
 
     ColumnSettingDialog {
@@ -168,9 +186,11 @@ ApplicationWindow {
 
     ReportPostDialog {
         id: reportDialog
+        onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
     }
     ReportAccountDialog {
         id: reportAccountDialog
+        onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
     }
 
     MessageDialog {
@@ -195,7 +215,7 @@ ApplicationWindow {
                               // カラムを更新しにいく
                               repeater.updateAccount(uuid)
                           }
-        onErrorOccured: (message) => {console.log(message)}
+        onErrorOccured: (code, message) => appWindow.errorHandler("", code, message)
 
         function syncColumn(){
             // アカウント一覧にないものを消す
@@ -270,6 +290,7 @@ ApplicationWindow {
                                      if(row >= 0){
                                          reportDialog.targetUri = uri
                                          reportDialog.targetCid = cid
+                                         reportDialog.account.uuid = account_uuid
                                          reportDialog.account.service = accountListModel.item(row, AccountListModel.ServiceRole)
                                          reportDialog.account.did = accountListModel.item(row, AccountListModel.DidRole)
                                          reportDialog.account.handle = accountListModel.item(row, AccountListModel.HandleRole)
@@ -284,6 +305,7 @@ ApplicationWindow {
                                         var row = accountListModel.indexAt(account_uuid)
                                         if(row >= 0){
                                             reportAccountDialog.targetDid = did
+                                            reportAccountDialog.account.uuid = account_uuid
                                             reportAccountDialog.account.service = accountListModel.item(row, AccountListModel.ServiceRole)
                                             reportAccountDialog.account.did = accountListModel.item(row, AccountListModel.DidRole)
                                             reportAccountDialog.account.handle = accountListModel.item(row, AccountListModel.HandleRole)
@@ -312,6 +334,7 @@ ApplicationWindow {
                              }
             onRequestDisplayOfColumnSetting: (key) => columnsettingDialog.openWithKey(key)
             onHoveredLinkChanged: hoveredLinkFrame.text = hoveredLink
+            onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
         }
     }
 

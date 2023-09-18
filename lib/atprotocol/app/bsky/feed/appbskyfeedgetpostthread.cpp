@@ -23,7 +23,7 @@ AppBskyFeedGetPostThread::threadViewPost() const
     return &m_threadViewPost;
 }
 
-void AppBskyFeedGetPostThread::parseJson(bool success, const QString reply_json)
+bool AppBskyFeedGetPostThread::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
     if (json_doc.isEmpty() || !json_doc.object().contains("thread")) {
@@ -33,7 +33,7 @@ void AppBskyFeedGetPostThread::parseJson(bool success, const QString reply_json)
                 json_doc.object().value("thread").toObject(), m_threadViewPost);
     }
 
-    emit finished(success);
+    return success;
 }
 
 }

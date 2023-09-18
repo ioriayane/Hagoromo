@@ -17,7 +17,7 @@ public:
     const QList<SearchType::ViewPost> *viewPostList() const;
 
 private:
-    virtual void parseJson(bool success, const QString reply_json);
+    virtual bool parseJson(bool success, const QString reply_json);
 
     QList<SearchType::ViewPost> m_viewPostList;
 };

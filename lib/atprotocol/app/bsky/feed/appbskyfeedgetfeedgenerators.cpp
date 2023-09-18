@@ -31,7 +31,7 @@ AppBskyFeedGetFeedGenerators::generatorViewList() const
     return &m_generatorViewList;
 }
 
-void AppBskyFeedGetFeedGenerators::parseJson(bool success, const QString reply_json)
+bool AppBskyFeedGetFeedGenerators::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
     if (json_doc.isEmpty() || !json_doc.object().contains("feeds")) {
@@ -44,7 +44,7 @@ void AppBskyFeedGetFeedGenerators::parseJson(bool success, const QString reply_j
         }
     }
 
-    emit finished(success);
+    return success;
 }
 
 }

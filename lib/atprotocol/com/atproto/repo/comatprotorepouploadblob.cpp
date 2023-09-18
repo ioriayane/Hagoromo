@@ -28,7 +28,7 @@ void ComAtprotoRepoUploadBlob::uploadBlob(const QString &path)
     emit compress(path);
 }
 
-void ComAtprotoRepoUploadBlob::parseJson(bool success, const QString reply_json)
+bool ComAtprotoRepoUploadBlob::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
     if (json_doc.isEmpty()) {
@@ -53,7 +53,7 @@ void ComAtprotoRepoUploadBlob::parseJson(bool success, const QString reply_json)
         }
     }
 
-    emit finished(success);
+    return success;
 }
 
 int ComAtprotoRepoUploadBlob::size() const

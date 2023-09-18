@@ -26,7 +26,7 @@ const QList<AppBskyFeedDefs::PostView> *AppBskyFeedGetPosts::postList() const
     return &m_postList;
 }
 
-void AppBskyFeedGetPosts::parseJson(bool success, const QString reply_json)
+bool AppBskyFeedGetPosts::parseJson(bool success, const QString reply_json)
 {
 
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
@@ -40,7 +40,7 @@ void AppBskyFeedGetPosts::parseJson(bool success, const QString reply_json)
             m_postList.append(post);
         }
     }
-    emit finished(success);
+    return success;
 }
 
 } // namespace AtProtocolInterface
