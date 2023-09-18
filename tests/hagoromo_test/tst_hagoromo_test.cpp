@@ -1115,7 +1115,7 @@ void hagoromo_test::test_TimelineListModel_quote_label()
     spy.wait();
     QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
-    QVERIFY(model.rowCount() == 7);
+    QVERIFY(model.rowCount() == 9);
 
     row = 0;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
@@ -1123,6 +1123,8 @@ void hagoromo_test::test_TimelineListModel_quote_label()
     QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == true);
     QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == false);
     QVERIFY(model.item(row, TimelineListModel::LabelsRole).toStringList() == QStringList());
+    QVERIFY(model.item(row, TimelineListModel::ReplyRootCidRole).toString().isEmpty());
+    QVERIFY(model.item(row, TimelineListModel::ReplyRootUriRole).toString().isEmpty());
 
     row = 3;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
@@ -1136,6 +1138,20 @@ void hagoromo_test::test_TimelineListModel_quote_label()
     QVERIFY(model.item(row, TimelineListModel::LabelsRole).toStringList()
             == QStringList() << "sexual"
                              << "!warn");
+
+    row = 7;
+    QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString() == "test reply full");
+    QVERIFY(model.item(row, TimelineListModel::ReplyRootCidRole).toString()
+            == "bafyreievv2yz3obnigwjix5kr2icycfkqdobrfufd3cm4wfavnjfeqhxbe");
+    QVERIFY(model.item(row, TimelineListModel::ReplyRootUriRole).toString()
+            == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k7n55v57bn26");
+
+    row = 8;
+    QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString() == "test reply simple");
+    QVERIFY(model.item(row, TimelineListModel::ReplyRootCidRole).toString()
+            == "bafyreievv2yz3obnigwjix5kr2icycfkqdobrfufd3cm4wfavnjfeqhxbe");
+    QVERIFY(model.item(row, TimelineListModel::ReplyRootUriRole).toString()
+            == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k7n55v57bn26");
 }
 
 void hagoromo_test::test_NotificationListModel_warn()

@@ -122,6 +122,15 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
         else
             return QString();
 
+    } else if (role == ReplyRootCidRole) {
+        return AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                       AtProtocolType::AppBskyFeedPost::Main>(current.record)
+                .reply.root.cid;
+    } else if (role == ReplyRootUriRole) {
+        return AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                       AtProtocolType::AppBskyFeedPost::Main>(current.record)
+                .reply.root.uri;
+
     } else if (role == UserFilterMatchedRole) {
         return getContentFilterMatched(current.author.labels, false);
     } else if (role == UserFilterMessageRole) {
@@ -685,6 +694,9 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[FeedGeneratorDisplayNameRole] = "feedGeneratorDisplayName";
     roles[FeedGeneratorLikeCountRole] = "feedGeneratorLikeCount";
     roles[FeedGeneratorAvatarRole] = "feedGeneratorAvatar";
+
+    roles[ReplyRootCidRole] = "replyRootCid";
+    roles[ReplyRootUriRole] = "replyRootUri";
 
     roles[UserFilterMatchedRole] = "userFilterMatched";
     roles[UserFilterMessageRole] = "userFilterMessage";

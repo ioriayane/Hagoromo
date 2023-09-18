@@ -147,12 +147,16 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         if (current.reply.root_type == AppBskyFeedDefs::ReplyRefRootType::root_PostView)
             return current.reply.root_PostView.cid;
         else
-            return QString();
+            return AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                           AtProtocolType::AppBskyFeedPost::Main>(current.post.record)
+                    .reply.root.cid;
     } else if (role == ReplyRootUriRole) {
         if (current.reply.root_type == AppBskyFeedDefs::ReplyRefRootType::root_PostView)
             return current.reply.root_PostView.uri;
         else
-            return QString();
+            return AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                           AtProtocolType::AppBskyFeedPost::Main>(current.post.record)
+                    .reply.root.uri;
     } else if (role == ReplyParentDisplayNameRole) {
         if (current.reply.parent_type == AppBskyFeedDefs::ReplyRefParentType::parent_PostView)
             return current.reply.parent_PostView.author.displayName;
