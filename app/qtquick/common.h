@@ -16,7 +16,9 @@ inline QString appDataFolder()
             .arg(QCoreApplication::organizationName())
             .arg(QCoreApplication::applicationName())
             .arg(
-#ifdef QT_DEBUG
+#if defined(HAGOROMO_UNIT_TEST)
+                    QStringLiteral("_unittest")
+#elif defined(QT_DEBUG)
                     QStringLiteral("_debug")
 #else
                     QString()

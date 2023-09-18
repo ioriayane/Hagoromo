@@ -27,7 +27,7 @@ bool ComAtprotoServerRefreshSession::parseJson(bool success, const QString reply
                    json_doc.object().value("accessJwt").toString(),
                    json_doc.object().value("refreshJwt").toString());
 
-        if (did().isEmpty() || handle().isEmpty() || email().isEmpty() || accessJwt().isEmpty()
+        if (did().isEmpty() || handle().isEmpty() || accessJwt().isEmpty()
             || refreshJwt().isEmpty()) {
             success = false;
         }

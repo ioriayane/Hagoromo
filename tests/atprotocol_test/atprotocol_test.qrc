@@ -22,5 +22,6 @@
         <file>data/labels/save/3/app.bsky.actor.putPreferences</file>
         <file>response/ogp/file6.html</file>
         <file>response/xrpc/app.bsky.feed.getFeedGenerator</file>
+        <file>response/limit/xrpc/com.atproto.server.createSession</file>
     </qresource>
 </RCC>

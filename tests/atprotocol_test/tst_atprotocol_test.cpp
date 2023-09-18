@@ -47,6 +47,9 @@ private:
 
 atprotocol_test::atprotocol_test()
 {
+    QCoreApplication::setOrganizationName(QStringLiteral("relog"));
+    QCoreApplication::setApplicationName(QStringLiteral("Hagoromo"));
+
     m_listenPort = m_mockServer.listen(QHostAddress::LocalHost, 0);
     m_service = QString("http://localhost:%1/response").arg(m_listenPort);
 
@@ -90,13 +93,14 @@ void atprotocol_test::test_ComAtprotoServerCreateSession()
     AtProtocolInterface::ComAtprotoServerCreateSession session;
     session.setService(m_service);
 
-    QSignalSpy spy(&session, SIGNAL(finished(bool)));
-    session.create("hoge", "fuga");
-    spy.wait();
-    QVERIFY(spy.count() == 1);
-
-    QList<QVariant> arguments = spy.takeFirst();
-    QVERIFY(arguments.at(0).toBool());
+    {
+        QSignalSpy spy(&session, SIGNAL(finished(bool)));
+        session.create("hoge", "fuga");
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
 
     QVERIFY(session.did() == "did:plc:ipj5qejfoqu6eukvt72uhyit");
     QVERIFY(session.handle() == "ioriayane.relog.tech");
@@ -104,7 +108,27 @@ void atprotocol_test::test_ComAtprotoServerCreateSession()
     QVERIFY(session.accessJwt() == "hoge hoge accessJwt");
     QVERIFY(session.refreshJwt() == "hoge hoge refreshJwt");
 
+    // 後ろのテストで使うアカウント情報
     m_account = session.account();
+
+    session.setService(m_service + "/limit");
+
+    {
+        QSignalSpy spy(&session, SIGNAL(finished(bool)));
+        session.create("hoge", "fuga");
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool() == false);
+    }
+
+    QVERIFY(session.errorCode() == "RateLimitExceeded");
+    QVERIFY(session.errorMessage()
+            == "Rate Limit "
+               "Exceeded\n\nratelimit-limit:30\nratelimit-remaining:10\nratelimit-reset:2023/09/17 "
+               "10:31:07\nratelimit-policy:30;w=300");
+    QVERIFY(session.replyJson()
+            == "{\"error\":\"RateLimitExceeded\",\"message\":\"Rate Limit Exceeded\"}");
 }
 
 void atprotocol_test::test_OpenGraphProtocol()

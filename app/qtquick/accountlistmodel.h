@@ -82,7 +82,7 @@ private:
     QString appDataFolder() const;
 
     void createSession(int row);
-    void refreshSession(int row);
+    void refreshSession(int row, bool initial = false);
     void getProfile(int row);
 };
 

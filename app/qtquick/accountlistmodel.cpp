@@ -25,9 +25,11 @@ AccountListModel::AccountListModel(QObject *parent) : QAbstractListModel { paren
             refreshSession(row);
         }
     });
-    m_timer.start(15 * 60 * 1000);
+    m_timer.start(60 * 60 * 1000);
 
+#ifndef HAGOROMO_UNIT_TEST
     load();
+#endif
 }
 
 int AccountListModel::rowCount(const QModelIndex &parent) const
@@ -265,6 +267,7 @@ void AccountListModel::save() const
         account_item["service"] = item.service;
         account_item["identifier"] = item.identifier;
         account_item["password"] = m_encryption.encrypt(item.password);
+        account_item["refresh_jwt"] = m_encryption.encrypt(item.refreshJwt);
 
         if (!item.post_languages.isEmpty()) {
             QJsonArray post_langs;
@@ -295,12 +298,14 @@ void AccountListModel::load()
         for (int i = 0; i < doc.array().count(); i++) {
             if (doc.array().at(i).isObject()) {
                 AccountData item;
+                QString temp_refresh = doc.array().at(i).toObject().value("refresh_jwt").toString();
                 item.uuid = doc.array().at(i).toObject().value("uuid").toString();
                 item.is_main = doc.array().at(i).toObject().value("is_main").toBool();
                 item.service = doc.array().at(i).toObject().value("service").toString();
                 item.identifier = doc.array().at(i).toObject().value("identifier").toString();
                 item.password = m_encryption.decrypt(
                         doc.array().at(i).toObject().value("password").toString());
+                item.refreshJwt = m_encryption.decrypt(temp_refresh);
                 for (const auto &value :
                      doc.array().at(i).toObject().value("post_languages").toArray()) {
                     item.post_languages.append(value.toString());
@@ -311,7 +316,11 @@ void AccountListModel::load()
                 endInsertRows();
                 emit countChanged();
 
-                createSession(m_accountList.count() - 1);
+                if (temp_refresh.isEmpty()) {
+                    createSession(m_accountList.count() - 1);
+                } else {
+                    refreshSession(m_accountList.count() - 1, true);
+                }
 
                 if (item.is_main) {
                     has_main = true;
@@ -389,7 +398,7 @@ void AccountListModel::createSession(int row)
     session->create(m_accountList.at(row).identifier, m_accountList.at(row).password);
 }
 
-void AccountListModel::refreshSession(int row)
+void AccountListModel::refreshSession(int row, bool initial)
 {
     if (row < 0 || row >= m_accountList.count())
         return;
@@ -411,7 +420,13 @@ void AccountListModel::refreshSession(int row)
             getProfile(row);
         } else {
             m_accountList[row].status = AccountStatus::Unauthorized;
-            emit errorOccured(session->errorCode(), session->errorMessage());
+            if (initial) {
+                //初期化時のみ（つまりloadから呼ばれたときだけは失敗したらcreateSessionで再スタート）
+                qDebug() << "Initial refresh session fail.";
+                createSession(row);
+            } else {
+                emit errorOccured(session->errorCode(), session->errorMessage());
+            }
         }
         emit dataChanged(index(row), index(row));
         session->deleteLater();
@@ -436,6 +451,8 @@ void AccountListModel::getProfile(int row)
             m_accountList[row].description = detail.description;
             m_accountList[row].avatar = detail.avatar;
             m_accountList[row].banner = detail.banner;
+
+            save();
 
             emit updatedAccount(row, m_accountList[row].uuid);
             emit dataChanged(index(row), index(row));

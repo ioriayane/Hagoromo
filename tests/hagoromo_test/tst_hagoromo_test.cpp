@@ -12,6 +12,8 @@
 #include "tools/qstringex.h"
 #include "feedgeneratorlink.h"
 #include "anyprofilelistmodel.h"
+#include "accountlistmodel.h"
+#include "common.h"
 
 class hagoromo_test : public QObject
 {
@@ -41,6 +43,7 @@ private slots:
     void test_TimelineListModel_next();
     void test_FeedGeneratorLink();
     void test_AnyProfileListModel();
+    void test_AccountListModel();
 
 private:
     WebServer m_mockServer;
@@ -57,6 +60,9 @@ private:
 
 hagoromo_test::hagoromo_test()
 {
+    QCoreApplication::setOrganizationName(QStringLiteral("relog"));
+    QCoreApplication::setApplicationName(QStringLiteral("Hagoromo"));
+
     m_listenPort = m_mockServer.listen(QHostAddress::LocalHost, 0);
     m_service = QString("http://localhost:%1/response").arg(m_listenPort);
 
@@ -74,6 +80,19 @@ hagoromo_test::hagoromo_test()
                     test_putPreferences(request.url().path(), request.body());
                     json = "{}";
                     result = true;
+                } else if (request.url().path().endsWith(
+                                   "/xrpc/com.atproto.server.refreshSession")) {
+                    QFileInfo file_info(request.url().path());
+                    QString path = ":" + file_info.filePath();
+                    QFile file(path);
+                    if (file.open(QFile::ReadOnly)) {
+                        json = file.readAll();
+                        file.close();
+                        result = true;
+                    } else {
+                        json = "{}";
+                        result = false;
+                    }
                 } else {
                     json = "{}";
                     result = false;
@@ -1283,6 +1302,45 @@ void hagoromo_test::test_AnyProfileListModel()
     }
 
     QVERIFY(model.rowCount() == 2);
+}
+
+void hagoromo_test::test_AccountListModel()
+{
+    QString temp_path = Common::appDataFolder() + "/account.json";
+    if (QFile::exists(temp_path)) {
+        QFile::remove(temp_path);
+    }
+
+    AccountListModel model;
+
+    model.updateAccount(m_service + "/account/account1", "id1", "password1", "did:plc:account1",
+                        "account1.relog.tech", "account1@relog.tech", "accessJwt_account1",
+                        "refreshJwt_account1", true);
+    model.updateAccount(m_service + "/account/account2", "id2", "password2", "did:plc:account2",
+                        "account2.relog.tech", "account2@relog.tech", "accessJwt_account2",
+                        "refreshJwt_account2", true);
+
+    AccountListModel model2;
+    {
+        QSignalSpy spy(&model2, SIGNAL(updatedAccount(int, const QString &)));
+        model2.load();
+        spy.wait();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+    QVERIFY2(model2.rowCount() == 2, QString::number(model2.rowCount()).toLocal8Bit());
+    int row = 0;
+    QVERIFY2(model2.item(row, AccountListModel::DidRole).toString() == "did:plc:account1_refresh",
+             model2.item(row, AccountListModel::DidRole).toString().toLocal8Bit());
+    QVERIFY2(model2.item(row, AccountListModel::RefreshJwtRole).toString()
+                     == "refreshJwt_account1_refresh",
+             model2.item(row, AccountListModel::RefreshJwtRole).toString().toLocal8Bit());
+    row = 1;
+    QVERIFY2(model2.item(row, AccountListModel::DidRole).toString() == "did:plc:account2_refresh",
+             model2.item(row, AccountListModel::DidRole).toString().toLocal8Bit());
+    QVERIFY2(model2.item(row, AccountListModel::RefreshJwtRole).toString()
+                     == "refreshJwt_account2_refresh",
+             model2.item(row, AccountListModel::RefreshJwtRole).toString().toLocal8Bit());
 }
 
 void hagoromo_test::test_RecordOperatorCreateRecord(const QByteArray &body)
