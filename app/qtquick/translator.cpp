@@ -3,6 +3,7 @@
 
 #include <QSettings>
 #include <QDebug>
+#include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -17,8 +18,21 @@ Translator::Translator(QObject *parent) : QObject { parent }
     setApiUrl(settings.value("translateApiUrl").toString());
     setApiKey(encryption.decrypt(settings.value("translateApiKey").toString()));
     setTargetLanguage(settings.value("translateTargetLanguage").toString());
+}
 
-    connect(&m_manager, &QNetworkAccessManager::finished, [=](QNetworkReply *reply) {
+void Translator::translate(const QString &text)
+{
+    QNetworkRequest request((QUrl(apiUrl())));
+    request.setRawHeader(QByteArray("Authorization"),
+                         QByteArray("DeepL-Auth-Key ") + apiKey().toUtf8());
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+
+    QUrlQuery params;
+    params.addQueryItem("text", text);
+    params.addQueryItem("target_lang", targetLanguage());
+
+    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+    connect(manager, &QNetworkAccessManager::finished, [=](QNetworkReply *reply) {
         qDebug() << "Translator reply" << reply->error() << reply->url();
         QString json = QString::fromUtf8(reply->readAll());
         QString text;
@@ -39,21 +53,9 @@ Translator::Translator(QObject *parent) : QObject { parent }
 
         emit finished(text);
         reply->deleteLater();
+        manager->deleteLater();
     });
-}
-
-void Translator::translate(const QString &text)
-{
-    QNetworkRequest request((QUrl(apiUrl())));
-    request.setRawHeader(QByteArray("Authorization"),
-                         QByteArray("DeepL-Auth-Key ") + apiKey().toUtf8());
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-
-    QUrlQuery params;
-    params.addQueryItem("text", text);
-    params.addQueryItem("target_lang", targetLanguage());
-
-    m_manager.post(request, params.toString(QUrl::FullyEncoded).toUtf8());
+    manager->post(request, params.toString(QUrl::FullyEncoded).toUtf8());
 }
 
 bool Translator::validSettings()
