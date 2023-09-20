@@ -13,27 +13,14 @@
 
 namespace AtProtocolInterface {
 
-AccessAtProtocol::AccessAtProtocol(QObject *parent) : QObject { parent }
-{
-    connect(&m_manager, &QNetworkAccessManager::finished, [=](QNetworkReply *reply) {
-        qDebug() << LOG_DATETIME << reply->error() << reply->url();
+AtProtocolAccount::AtProtocolAccount(QObject *parent) : QObject { parent } { }
 
-        bool success = false;
-        if (checkReply(reply)) {
-            success = parseJson(true, m_replyJson);
-        }
-        emit finished(success);
-
-        reply->deleteLater();
-    });
-}
-
-const AccountData &AccessAtProtocol::account() const
+const AccountData &AtProtocolAccount::account() const
 {
     return m_account;
 }
 
-void AccessAtProtocol::setAccount(const AccountData &account)
+void AtProtocolAccount::setAccount(const AccountData &account)
 {
     m_account.service = account.service;
     m_account.identifier.clear();
@@ -47,8 +34,8 @@ void AccessAtProtocol::setAccount(const AccountData &account)
     m_account.status = account.status;
 }
 
-void AccessAtProtocol::setSession(const QString &did, const QString &handle, const QString &email,
-                                  const QString &accessJwt, const QString &refresh_jwt)
+void AtProtocolAccount::setSession(const QString &did, const QString &handle, const QString &email,
+                                   const QString &accessJwt, const QString &refresh_jwt)
 {
     m_account.did = did;
     m_account.handle = handle;
@@ -57,39 +44,54 @@ void AccessAtProtocol::setSession(const QString &did, const QString &handle, con
     m_account.refreshJwt = refresh_jwt;
 }
 
-QString AccessAtProtocol::service() const
+QString AtProtocolAccount::service() const
 {
     return m_account.service;
 }
 
-void AccessAtProtocol::setService(const QString &newService)
+void AtProtocolAccount::setService(const QString &newService)
 {
     m_account.service = newService;
 }
 
-QString AccessAtProtocol::did() const
+QString AtProtocolAccount::did() const
 {
     return m_account.did;
 }
 
-QString AccessAtProtocol::handle() const
+QString AtProtocolAccount::handle() const
 {
     return m_account.handle;
 }
 
-QString AccessAtProtocol::email() const
+QString AtProtocolAccount::email() const
 {
     return m_account.email;
 }
 
-QString AccessAtProtocol::accessJwt() const
+QString AtProtocolAccount::accessJwt() const
 {
     return m_account.accessJwt;
 }
 
-QString AccessAtProtocol::refreshJwt() const
+QString AtProtocolAccount::refreshJwt() const
 {
     return m_account.refreshJwt;
+}
+
+AccessAtProtocol::AccessAtProtocol(QObject *parent) : AtProtocolAccount { parent }
+{
+    connect(&m_manager, &QNetworkAccessManager::finished, [=](QNetworkReply *reply) {
+        qDebug() << LOG_DATETIME << reply->error() << reply->url();
+
+        bool success = false;
+        if (checkReply(reply)) {
+            success = parseJson(true, m_replyJson);
+        }
+        emit finished(success);
+
+        reply->deleteLater();
+    });
 }
 
 void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
