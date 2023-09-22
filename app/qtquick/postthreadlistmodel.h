@@ -29,7 +29,8 @@ protected:
 private:
     QString m_postThreadUri;
 
-    void copyFrom(const AtProtocolType::AppBskyFeedDefs::ThreadViewPost *thread_view_post);
+    void copyFrom(const AtProtocolType::AppBskyFeedDefs::ThreadViewPost *thread_view_post,
+                  const bool is_basis = false);
 };
 
 #endif // POSTTHREADLISTMODEL_H

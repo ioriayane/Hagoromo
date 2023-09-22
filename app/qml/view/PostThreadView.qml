@@ -201,6 +201,9 @@ ColumnLayout {
                 postControls.onTriggeredRequestViewLikedBy: postThreadView.requestViewLikedBy(model.uri)
                 postControls.onTriggeredRequestViewRepostedBy: postThreadView.requestViewRepostedBy(model.uri)
 
+                threadConnectorTop.visible:  model.threadConnectorTop
+                threadConnectorBottom.visible: model.threadConnectorBottom
+
                 onHoveredLinkChanged: postThreadView.hoveredLink = hoveredLink
             }
         }

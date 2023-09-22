@@ -8,6 +8,12 @@
 #include <QAbstractListModel>
 #include <QObject>
 
+struct ThreadConnector
+{
+    bool top = false;
+    bool bottom = false;
+};
+
 class TimelineListModel : public AtpAbstractListModel
 {
     Q_OBJECT
@@ -88,6 +94,9 @@ public:
         LabelsRole,
         LanguagesRole,
         ViaRole,
+
+        ThreadConnectorTopRole,
+        ThreadConnectorBottomRole,
     };
     Q_ENUM(TimelineListModelRoles)
 
@@ -117,6 +126,7 @@ protected:
                           const TimelineListModel::TimelineListModelRoles role) const;
 
     QHash<QString, AtProtocolType::AppBskyFeedDefs::FeedViewPost> m_viewPostHash;
+    QHash<QString, ThreadConnector> m_threadConnectorHash;
 };
 
 #endif // TIMELINELISTMODEL_H
