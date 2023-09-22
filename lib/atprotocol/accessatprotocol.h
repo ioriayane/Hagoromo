@@ -87,7 +87,7 @@ protected:
     bool checkReply(QNetworkReply *reply);
 
 private:
-    QNetworkAccessManager m_manager;
+    static QNetworkAccessManager *m_manager;
 
     QString m_replyJson;
     QString m_errorCode;
