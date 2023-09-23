@@ -200,7 +200,7 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return getVia(current.post.record);
 
     else if (role == ThreadConnectedRole) {
-        if (m_threadConnectorHash.contains(current.post.cid)) {
+        if (m_threadConnectorHash.contains(current.post.cid) && row > 0) {
             return item(row - 1, ThreadConnectorBottomRole);
         } else {
             return false;
