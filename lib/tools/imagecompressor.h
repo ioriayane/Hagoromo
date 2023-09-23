@@ -14,6 +14,9 @@ public slots:
 
 signals:
     void compressed(const QString &path);
+
+private:
+    bool save(const QString path, const QImage img, const int quality);
 };
 
 #endif // IMAGECOMPRESSOR_H

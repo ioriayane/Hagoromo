@@ -183,6 +183,8 @@ void AccessAtProtocol::postWithImage(const QString &endpoint, const QString &pat
     QMimeDatabase mime;
     QFileInfo info(path);
     QNetworkRequest request(QUrl(QString("%1/%2").arg(service(), endpoint)));
+    request.setAttribute(QNetworkRequest::CacheLoadControlAttribute,
+                         QNetworkRequest::AlwaysNetwork);
     request.setRawHeader(QByteArray("Cache-Control"), QByteArray("no-cache"));
     request.setRawHeader(QByteArray("Authorization"), QByteArray("Bearer ") + accessJwt().toUtf8());
     request.setHeader(QNetworkRequest::ContentTypeHeader, mime.mimeTypeForFile(info).name());
@@ -209,6 +211,10 @@ void AccessAtProtocol::postWithImage(const QString &endpoint, const QString &pat
 
         reply->deleteLater();
     });
+    //    connect(reply, &QNetworkReply::uploadProgress, [=](qint64 bytesSent, qint64 bytesTotal) {
+    //        qDebug() << LOG_DATETIME << "bytesSent" << bytesSent << "bytesTotal" << bytesTotal
+    //                 << (100 * bytesSent / bytesTotal);
+    //    });
 }
 
 bool AccessAtProtocol::checkReply(QNetworkReply *reply)

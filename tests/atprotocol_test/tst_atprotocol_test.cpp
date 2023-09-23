@@ -10,6 +10,7 @@
 #include "tools/opengraphprotocol.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "tools/configurablelabels.h"
+#include "tools/imagecompressor.h"
 
 using namespace AtProtocolType;
 using namespace AtProtocolType::LexiconsTypeUnknown;
@@ -34,6 +35,7 @@ private slots:
     void test_ConfigurableLabels_save();
     void test_ComAtprotoRepoCreateRecord_post();
     void test_AppBskyFeedGetFeedGenerator();
+    void test_ImageCompressor();
 
 private:
     void test_putPreferences(const QString &path, const QByteArray &body);
@@ -768,6 +770,74 @@ void atprotocol_test::test_AppBskyFeedGetFeedGenerator()
     QVERIFY(generator.generatorView().creator.displayName == "creator:displayName");
     QVERIFY(generator.generatorView().creator.avatar
             == "https://cdn.bsky.social/creator_avator.jpeg");
+}
+
+void atprotocol_test::test_ImageCompressor()
+{
+    ImageCompressor comp;
+
+    {
+        QSignalSpy spy(&comp, SIGNAL(compressed(QString)));
+        comp.compress(":/data/images/image01.jpg");
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+        QList<QVariant> arguments = spy.takeFirst();
+        QString new_path = arguments.at(0).toString();
+        QFileInfo info(new_path);
+        QImage img(new_path);
+        qDebug() << "new_path" << new_path << info.size() << img.width() << img.height();
+        QVERIFY(QFile::exists(new_path));
+        QVERIFY(info.size() < 1000000);
+        QVERIFY(img.width() == 4000);
+        QVERIFY(img.height() == 3000);
+        QFile file(new_path);
+        QVERIFY(file.open(QFile::ReadOnly));
+        QByteArray b = file.readAll();
+        QVERIFY(b.size() == info.size());
+        file.close();
+    }
+
+    {
+        QSignalSpy spy(&comp, SIGNAL(compressed(QString)));
+        comp.compress(":/data/images/image02.jpg");
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+        QList<QVariant> arguments = spy.takeFirst();
+        QString new_path = arguments.at(0).toString();
+        QFileInfo info(new_path);
+        QImage img(new_path);
+        qDebug() << "new_path" << new_path << info.size() << img.width() << img.height();
+        QVERIFY(QFile::exists(new_path));
+        QVERIFY(info.size() < 1000000);
+        QVERIFY(img.width() == 4000);
+        QVERIFY(img.height() == 3000);
+        QFile file(new_path);
+        QVERIFY(file.open(QFile::ReadOnly));
+        QByteArray b = file.readAll();
+        QVERIFY(b.size() == info.size());
+        file.close();
+    }
+
+    {
+        QSignalSpy spy(&comp, SIGNAL(compressed(QString)));
+        comp.compress(":/data/images/image03.png");
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+        QList<QVariant> arguments = spy.takeFirst();
+        QString new_path = arguments.at(0).toString();
+        QFileInfo info(new_path);
+        QImage img(new_path);
+        qDebug() << "new_path" << new_path << info.size() << img.width() << img.height();
+        QVERIFY(QFile::exists(new_path));
+        QVERIFY(info.size() < 1000000);
+        QVERIFY(img.width() == 3600);
+        QVERIFY(img.height() == 2700);
+        QFile file(new_path);
+        QVERIFY(file.open(QFile::ReadOnly));
+        QByteArray b = file.readAll();
+        QVERIFY(b.size() == info.size());
+        file.close();
+    }
 }
 
 void atprotocol_test::test_putPreferences(const QString &path, const QByteArray &body)

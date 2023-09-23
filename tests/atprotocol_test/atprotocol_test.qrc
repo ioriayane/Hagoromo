@@ -23,5 +23,8 @@
         <file>response/ogp/file6.html</file>
         <file>response/xrpc/app.bsky.feed.getFeedGenerator</file>
         <file>response/limit/xrpc/com.atproto.server.createSession</file>
+        <file>data/images/image01.jpg</file>
+        <file>data/images/image02.jpg</file>
+        <file>data/images/image03.png</file>
     </qresource>
 </RCC>
