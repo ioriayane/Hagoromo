@@ -33,6 +33,26 @@ Frame {
                         anchors.right: parent.right
                         anchors.bottom: undefined
                     }
+                },
+                State {
+                    when: clickableFrame.style == "PostConnected"
+                    PropertyChanges {
+                        target: backgroundRect
+                        anchors.leftMargin: 5
+                        anchors.rightMargin: 5
+                        border.width: 0
+                        height: 1
+                        color: Material.color(Material.Grey, Material.Shade600)
+                        opacity: 0.3
+                        radius: 0
+                    }
+                    AnchorChanges {
+                        target: backgroundRect
+                        anchors.top: parent.top
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.bottom: undefined
+                    }
                 }
             ]
             anchors.top: parent.top

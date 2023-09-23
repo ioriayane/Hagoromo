@@ -14,6 +14,7 @@
 #include "anyprofilelistmodel.h"
 #include "accountlistmodel.h"
 #include "common.h"
+#include "postthreadlistmodel.h"
 
 class hagoromo_test : public QObject
 {
@@ -45,6 +46,7 @@ private slots:
     void test_AnyProfileListModel();
     void test_AccountListModel();
     void test_TimelineListModel_text();
+    void test_PostThreadListModel();
 
 private:
     WebServer m_mockServer;
@@ -1393,6 +1395,114 @@ void hagoromo_test::test_TimelineListModel_text()
             << model.item(row, TimelineListModel::RecordTextPlainRole).toString().toLocal8Bit();
     qDebug().noquote()
             << model.item(row, TimelineListModel::RecordTextRole).toString().toLocal8Bit();
+}
+
+void hagoromo_test::test_PostThreadListModel()
+{
+    PostThreadListModel model;
+    model.setAccount(m_service + "/postthread/1", QString(), QString(), QString(), "dummy",
+                     QString());
+    model.setDisplayInterval(0);
+    model.setPostThreadUri("at://uri");
+
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    int row;
+
+    QVERIFY2(model.rowCount() == 4, QString("rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    row = 0;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "test");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == false);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    row = 1;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 2");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    row = 2;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 3");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    row = 3;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 4");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == false);
+
+    model.clear();
+    model.setAccount(m_service + "/postthread/2", QString(), QString(), QString(), "dummy",
+                     QString());
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    QVERIFY2(model.rowCount() == 6, QString("rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    row = 0;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "test");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == false);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    row = 1;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 2");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    row = 2;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 3 - 2");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    row = 3;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 4 - 2");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == false);
+    row = 4;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 3");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    row = 5;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 4");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == false);
+
+    model.clear();
+    model.setAccount(m_service + "/postthread/3", QString(), QString(), QString(), "dummy",
+                     QString());
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    QVERIFY2(model.rowCount() == 6, QString("rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    row = 0;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "test");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == false);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    row = 1;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 2");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    row = 2;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 3 - 2");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    row = 3;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 4 - 2");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == false);
+    row = 4;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 3");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    row = 5;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 4");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == false);
 }
 
 void hagoromo_test::test_RecordOperatorCreateRecord(const QByteArray &body)

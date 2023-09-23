@@ -14,13 +14,14 @@ ClickableFrame {
     leftPadding: 10
     rightPadding: 10
     bottomPadding: 2
-    style: "Post"
+    style: threadConnected ? "PostConnected" : "Post"
 
     property int layoutWidth: postFrame.Layout.preferredWidth
     property string hoveredLink: ""
     property bool userFilterMatched: false
     property string userFilterMessage: ""
     property bool hasQuote: false
+    property bool threadConnected: false
 
     property alias moderationFrame: moderationFrame
     property alias repostReactionAuthor: repostReactionAuthor
@@ -42,6 +43,8 @@ ClickableFrame {
     property alias feedGeneratorFrame: feedGeneratorFrame
     property alias postInformation: postInformation
     property alias postControls: postControls
+    property alias threadConnectorTop: threadConnectorTop
+    property alias threadConnectorBottom: threadConnectorBottom
 
     signal requestViewProfile(string did)
 
@@ -111,6 +114,25 @@ ClickableFrame {
                 Layout.preferredWidth: AdjustedValues.i36
                 Layout.preferredHeight: AdjustedValues.i36
                 Layout.alignment: Qt.AlignTop
+                clip: false
+                Rectangle {
+                    id: threadConnectorTop
+                    x: (parent.width - width) / 2
+                    y: -1 * postFrame.height
+                    width: 2
+                    height: postFrame.height - 2
+                    visible: false
+                    color: Material.color(Material.Grey)
+                }
+                Rectangle {
+                    id: threadConnectorBottom
+                    x: (parent.width - width) / 2
+                    y: parent.height + 2
+                    width: 2
+                    height: postFrame.height
+                    visible: false
+                    color: Material.color(Material.Grey)
+                }
             }
             ColumnLayout {
                 id: bodyLayout
