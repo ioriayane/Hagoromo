@@ -14,13 +14,14 @@ ClickableFrame {
     leftPadding: 10
     rightPadding: 10
     bottomPadding: 2
-    style: "Post"
+    style: threadConnected ? "PostConnected" : "Post"
 
     property int layoutWidth: postFrame.Layout.preferredWidth
     property string hoveredLink: ""
     property bool userFilterMatched: false
     property string userFilterMessage: ""
     property bool hasQuote: false
+    property bool threadConnected: false
 
     property alias moderationFrame: moderationFrame
     property alias repostReactionAuthor: repostReactionAuthor

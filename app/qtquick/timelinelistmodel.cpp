@@ -199,7 +199,13 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     else if (role == ViaRole)
         return getVia(current.post.record);
 
-    else if (role == ThreadConnectorTopRole) {
+    else if (role == ThreadConnectedRole) {
+        if (m_threadConnectorHash.contains(current.post.cid)) {
+            return item(row - 1, ThreadConnectorBottomRole);
+        } else {
+            return false;
+        }
+    } else if (role == ThreadConnectorTopRole) {
         if (m_threadConnectorHash.contains(current.post.cid)) {
             return m_threadConnectorHash[current.post.cid].top;
         } else {
@@ -474,6 +480,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[LanguagesRole] = "languages";
     roles[ViaRole] = "via";
 
+    roles[ThreadConnectedRole] = "threadConnected";
     roles[ThreadConnectorTopRole] = "threadConnectorTop";
     roles[ThreadConnectorBottomRole] = "threadConnectorBottom";
 

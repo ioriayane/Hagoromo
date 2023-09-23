@@ -1442,7 +1442,7 @@ void hagoromo_test::test_PostThreadListModel()
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
 
-    QVERIFY2(model.rowCount() == 4, QString("rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QVERIFY2(model.rowCount() == 6, QString("rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
     row = 0;
     QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "test");
     QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == false);
@@ -1454,9 +1454,17 @@ void hagoromo_test::test_PostThreadListModel()
     row = 2;
     QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 3 - 2");
     QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
-    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == false);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
     row = 3;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 4 - 2");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == false);
+    row = 4;
     QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 3");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    row = 5;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 4");
     QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
     QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == false);
 
@@ -1470,13 +1478,29 @@ void hagoromo_test::test_PostThreadListModel()
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
 
-    QVERIFY2(model.rowCount() == 2, QString("rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QVERIFY2(model.rowCount() == 6, QString("rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
     row = 0;
     QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "test");
     QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == false);
     QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
     row = 1;
     QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 2");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    row = 2;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 3 - 2");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    row = 3;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 4 - 2");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == false);
+    row = 4;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 3");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    row = 5;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 4");
     QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
     QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == false);
 }

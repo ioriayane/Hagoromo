@@ -95,6 +95,7 @@ public:
         LanguagesRole,
         ViaRole,
 
+        ThreadConnectedRole,
         ThreadConnectorTopRole,
         ThreadConnectorBottomRole,
     };

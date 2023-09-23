@@ -17,7 +17,7 @@ void PostThreadListModel::getLatest()
         AppBskyFeedGetPostThread *thread = new AppBskyFeedGetPostThread(this);
         connect(thread, &AppBskyFeedGetPostThread::finished, [=](bool success) {
             if (success) {
-                copyFrom(thread->threadViewPost(), true);
+                copyFrom(thread->threadViewPost(), 0);
             } else {
                 emit errorOccured(thread->errorCode(), thread->errorMessage());
             }
@@ -34,8 +34,12 @@ void PostThreadListModel::finishedDisplayingQueuedPosts()
     setRunning(false);
 }
 
+// type
+// 0 : 基準になっているポスト
+// 1 : 親方向のポスト
+// 2 : リプライ方向のポスト
 void PostThreadListModel::copyFrom(const AppBskyFeedDefs::ThreadViewPost *thread_view_post,
-                                   const bool is_basis)
+                                   const int type)
 {
     if (thread_view_post == nullptr)
         return;
@@ -44,7 +48,7 @@ void PostThreadListModel::copyFrom(const AppBskyFeedDefs::ThreadViewPost *thread
     bool has_parent = false;
     if (thread_view_post->parent_type
         == AppBskyFeedDefs::ThreadViewPostParentType::parent_ThreadViewPost) {
-        copyFrom(thread_view_post->parent_ThreadViewPost.get());
+        copyFrom(thread_view_post->parent_ThreadViewPost.get(), 1);
         has_parent = true;
     }
 
@@ -59,10 +63,14 @@ void PostThreadListModel::copyFrom(const AppBskyFeedDefs::ThreadViewPost *thread
     m_viewPostHash[thread_view_post->post.cid] = feed_view_post;
 
     ThreadConnector connector;
-    connector.top = has_parent;
-    if (!is_basis) {
+    if (type == 0) {
+        connector.top = has_parent;
+        connector.bottom = (thread_view_post->replies_ThreadViewPost.length() > 0);
+    } else if (type == 1) {
+        connector.top = has_parent;
         connector.bottom = true;
-    } else {
+    } else if (type == 2) {
+        connector.top = true;
         connector.bottom = (thread_view_post->replies_ThreadViewPost.length() > 0);
     }
     m_threadConnectorHash[thread_view_post->post.cid] = connector;
@@ -85,7 +93,12 @@ void PostThreadListModel::copyFrom(const AppBskyFeedDefs::ThreadViewPost *thread
 
         ThreadConnector connector;
         connector.top = true;
+        connector.bottom = !view_post->replies_ThreadViewPost.isEmpty();
         m_threadConnectorHash[view_post->post.cid] = connector;
+
+        for (const auto &reply_view_post : view_post->replies_ThreadViewPost) {
+            copyFrom(reply_view_post.get(), 2);
+        }
     }
 }
 

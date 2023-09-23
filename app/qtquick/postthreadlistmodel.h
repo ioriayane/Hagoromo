@@ -30,7 +30,7 @@ private:
     QString m_postThreadUri;
 
     void copyFrom(const AtProtocolType::AppBskyFeedDefs::ThreadViewPost *thread_view_post,
-                  const bool is_basis = false);
+                  const int type);
 };
 
 #endif // POSTTHREADLISTMODEL_H
