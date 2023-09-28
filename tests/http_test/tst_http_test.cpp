@@ -16,7 +16,8 @@ public:
 private slots:
     void initTestCase();
     void cleanupTestCase();
-    void test_case1();
+    void test_get();
+    void test_post();
 
 private:
     WebServer m_mockServer;
@@ -35,8 +36,31 @@ http_test::http_test()
     connect(&m_mockServer, &WebServer::receivedPost,
             [=](const QHttpServerRequest &request, bool &result, QString &json) {
                 qDebug() << "receive POST" << request.url().path();
-                json = "{}";
-                result = true;
+                QByteArray data;
+                if (request.url().path() == "/response/xrpc/com.atproto.repo.uploadBlob") {
+                    for (const auto key : request.headers().keys()) {
+                        QString value = request.headers().value(key).toString();
+                        qDebug().noquote() << "  header:" << key << value;
+                        if (key == "PostFile") {
+                            QVERIFY(QFile::exists(value));
+                            QVERIFY(WebServer::readFile(value, data));
+                            QVERIFY2(request.body().size() == data.size(),
+                                     QString("%1 == %2")
+                                             .arg(request.body().size(), data.size())
+                                             .toLocal8Bit());
+                            QVERIFY(request.body() == data);
+                            break;
+                        }
+                    }
+                }
+                data.clear();
+                if (WebServer::readFile(WebServer::convertResoucePath(request.url()), data)) {
+                    json = QString::fromUtf8(data);
+                    result = true;
+                } else {
+                    json = "{}";
+                    result = false;
+                }
             });
 }
 
@@ -46,10 +70,8 @@ void http_test::initTestCase() { }
 
 void http_test::cleanupTestCase() { }
 
-void http_test::test_case1()
+void http_test::test_get()
 {
-    qDebug() << m_service;
-
     HttpAccessManager manager;
     QNetworkRequest request(m_service + "/xrpc/app.bsky.feed.getTimeline");
 
@@ -74,11 +96,37 @@ void http_test::test_case1()
         QVERIFY(arguments.at(0).toBool());
         qDebug().noquote() << reply->body().left(40);
     }
+}
+
+void http_test::test_post()
+{
+    HttpAccessManager manager;
+    QNetworkRequest request(m_service + "/xrpc/com.atproto.repo.createRecord");
 
     {
         request.setUrl(m_service + "/xrpc/com.atproto.repo.createRecord");
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
         HttpReply *reply = manager.post(request, QString("{\"create\": \"record\"}").toUtf8());
+        QSignalSpy spy(reply, SIGNAL(finished(bool)));
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+        qDebug().noquote() << reply->body().left(40);
+    }
+
+    {
+        QFile file(":/data/images/file01.png");
+        QByteArray data;
+        QMimeDatabase mime;
+        QVERIFY(file.open(QFile::ReadOnly));
+        data = file.readAll();
+        file.close();
+        request.setUrl(m_service + "/xrpc/com.atproto.repo.uploadBlob");
+        request.setHeader(QNetworkRequest::ContentTypeHeader,
+                          mime.mimeTypeForFile(file.fileName()).name());
+        request.setRawHeader("PostFile", file.fileName().toLocal8Bit());
+        HttpReply *reply = manager.post(request, data);
         QSignalSpy spy(reply, SIGNAL(finished(bool)));
         spy.wait();
         QVERIFY(spy.count() == 1);

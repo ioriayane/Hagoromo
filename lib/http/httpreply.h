@@ -16,6 +16,24 @@ public:
         PostOperation,
     };
 
+    enum Error {
+        Success = 0,
+        Unknown,
+        Connection,
+        BindIPAddress,
+        Read,
+        Write,
+        ExceedRedirectCount,
+        Canceled,
+        SSLConnection,
+        SSLLoadingCerts,
+        SSLServerVerification,
+        UnsupportedMultipartBoundaryChars,
+        Compression,
+        ConnectionTimeout,
+        ProxyConnection,
+    };
+
     Operation operation() const;
     void setOperation(Operation newOperation);
     const QNetworkRequest *request() const;
@@ -24,6 +42,8 @@ public:
     void setSendData(const QByteArray &newSendData);
     QString body() const;
     void setBody(const QString &newBody);
+    Error error() const;
+    void setError(Error newError);
 
 public slots:
 
@@ -35,6 +55,7 @@ private:
     QNetworkRequest m_request;
     QByteArray m_sendData;
     QString m_body;
+    Error m_error;
 };
 
 #endif // HTTPREPLY_H

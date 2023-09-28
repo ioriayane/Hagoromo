@@ -3,7 +3,7 @@
 #include <QUrl>
 #include <QDebug>
 
-HttpReply::HttpReply(QObject *parent) : QObject { parent }
+HttpReply::HttpReply(QObject *parent) : QObject { parent }, m_error(HttpReply::Unknown)
 {
     qDebug().noquote() << this << "HttpReply()";
 }
@@ -41,6 +41,16 @@ QString HttpReply::body() const
 void HttpReply::setBody(const QString &newBody)
 {
     m_body = newBody;
+}
+
+HttpReply::Error HttpReply::error() const
+{
+    return m_error;
+}
+
+void HttpReply::setError(Error newError)
+{
+    m_error = newError;
 }
 
 QByteArray HttpReply::sendData() const

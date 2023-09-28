@@ -12,14 +12,16 @@ public:
     explicit HttpAccess(QObject *parent = nullptr);
     ~HttpAccess();
 
-    bool get(HttpReply *reply);
-    bool post(HttpReply *reply);
-
 public slots:
     void process(HttpReply *reply);
 
 signals:
     void finished(bool success);
+
+private:
+    class Private;
+    Private *d;
+    Q_DISABLE_COPY(HttpAccess)
 };
 
 #endif // HTTPACCESS_H
