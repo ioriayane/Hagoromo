@@ -34,6 +34,10 @@ public:
         ProxyConnection,
     };
 
+    const QList<QPair<QByteArray, QByteArray>> &rawHeaderPairs() const;
+    QByteArray rawHeader(const QByteArray &name) const;
+    void setRawHeader(const QByteArray &name, const QByteArray &value);
+
     Operation operation() const;
     void setOperation(Operation newOperation);
     const QNetworkRequest *request() const;
@@ -51,6 +55,8 @@ signals:
     void finished(bool success);
 
 private:
+    QList<QPair<QByteArray, QByteArray>> m_rawHeaders;
+
     Operation m_operation;
     QNetworkRequest m_request;
     QByteArray m_sendData;

@@ -61,9 +61,11 @@ bool HttpAccess::Private::get(HttpReply *reply)
     qDebug().noquote() << "response";
     if (res) {
         qDebug().noquote() << "  status" << res->status;
-        for (const auto &key : res->headers) {
-            qDebug().noquote() << "  header:" << QString::fromStdString(key.first)
-                               << QString::fromStdString(key.second);
+        for (const auto &header : res->headers) {
+            qDebug().noquote() << "  header:" << QString::fromStdString(header.first)
+                               << QString::fromStdString(header.second);
+            reply->setRawHeader(QByteArray::fromStdString(header.first),
+                                QByteArray::fromStdString(header.second));
         }
         if (res->status == 200) {
             reply->setBody(QString::fromStdString(res->body));
@@ -114,9 +116,11 @@ bool HttpAccess::Private::post(HttpReply *reply)
     qDebug().noquote() << "response";
     if (res) {
         qDebug().noquote() << "  status" << res->status;
-        for (const auto &key : res->headers) {
-            qDebug().noquote() << "  header:" << QString::fromStdString(key.first)
-                               << QString::fromStdString(key.second);
+        for (const auto &header : res->headers) {
+            qDebug().noquote() << "  header:" << QString::fromStdString(header.first)
+                               << QString::fromStdString(header.second);
+            reply->setRawHeader(QByteArray::fromStdString(header.first),
+                                QByteArray::fromStdString(header.second));
         }
         if (res->status == 200) {
             reply->setBody(QString::fromStdString(res->body));

@@ -18,6 +18,7 @@ private slots:
     void cleanupTestCase();
     void test_get();
     void test_post();
+    void test_HttpReply();
 
 private:
     WebServer m_mockServer;
@@ -86,8 +87,10 @@ void http_test::test_get()
 
         QVERIFY(WebServer::readFile(":/response/xrpc/app.bsky.feed.getTimeline", expect_data));
         expect_str = QString::fromUtf8(expect_data);
-        QVERIFY(expect_str.size() == reply->body().size());
-        QVERIFY(expect_str == reply->body());
+        QVERIFY(reply->body().size() == expect_str.size());
+        QVERIFY(reply->body() == QString::fromUtf8(expect_data));
+        QVERIFY(reply->rawHeader("Content-Length").toInt() == expect_data.size());
+        QVERIFY(reply->rawHeader("Content-Type") == "application/octet-stream");
 
         reply->deleteLater();
     }
@@ -103,8 +106,10 @@ void http_test::test_get()
 
         QVERIFY(WebServer::readFile(":/response/xrpc/app.bsky.actor.getPreferences", expect_data));
         expect_str = QString::fromUtf8(expect_data);
-        QVERIFY(expect_str.size() == reply->body().size());
-        QVERIFY(QString::fromUtf8(expect_data) == reply->body());
+        QVERIFY(reply->body().size() == expect_str.size());
+        QVERIFY(reply->body() == QString::fromUtf8(expect_data));
+        QVERIFY(reply->rawHeader("Content-Length").toInt() == expect_data.size());
+        QVERIFY(reply->rawHeader("Content-Type") == "application/octet-stream");
     }
 }
 
@@ -127,8 +132,10 @@ void http_test::test_post()
 
         QVERIFY(WebServer::readFile(":/response/xrpc/com.atproto.repo.createRecord", expect_data));
         expect_str = QString::fromUtf8(expect_data);
-        QVERIFY(expect_str.size() == reply->body().size());
-        QVERIFY(QString::fromUtf8(expect_data) == reply->body());
+        QVERIFY(reply->body().size() == expect_str.size());
+        QVERIFY(reply->body() == QString::fromUtf8(expect_data));
+        QVERIFY(reply->rawHeader("Content-Length").toInt() == expect_data.size());
+        QVERIFY(reply->rawHeader("Content-Type") == "application/json");
     }
 
     {
@@ -150,9 +157,50 @@ void http_test::test_post()
 
         QVERIFY(WebServer::readFile(":/response/xrpc/com.atproto.repo.uploadBlob", expect_data));
         expect_str = QString::fromUtf8(expect_data);
-        QVERIFY(expect_str.size() == reply->body().size());
-        QVERIFY(QString::fromUtf8(expect_data) == reply->body());
+        QVERIFY(reply->body().size() == expect_str.size());
+        QVERIFY(reply->body() == QString::fromUtf8(expect_data));
+        QVERIFY(reply->rawHeader("Content-Length").toInt() == expect_data.size());
+        QVERIFY(reply->rawHeader("Content-Type") == "application/json");
     }
+}
+
+void http_test::test_HttpReply()
+{
+    HttpReply reply;
+
+    reply.setRawHeader("Accept", "*/*");
+    reply.setRawHeader("Connection", "close");
+    reply.setRawHeader("Content-Type", "image/png");
+    reply.setRawHeader("Content-Length", "1234");
+
+    QVERIFY2(reply.rawHeader("Accept") == "*/*", reply.rawHeader("Accept"));
+    QVERIFY2(reply.rawHeader("Connection") == "close", reply.rawHeader("Connection"));
+    QVERIFY2(reply.rawHeader("Content-Type") == "image/png", reply.rawHeader("Content-Type"));
+    QVERIFY2(reply.rawHeader("Content-Length") == "1234", reply.rawHeader("Content-Length"));
+
+    QVERIFY2(reply.rawHeader("accept") == "*/*", reply.rawHeader("Accept"));
+    QVERIFY2(reply.rawHeader("connection") == "close", reply.rawHeader("Connection"));
+    QVERIFY2(reply.rawHeader("content-type") == "image/png", reply.rawHeader("Content-Type"));
+    QVERIFY2(reply.rawHeader("content-length") == "1234", reply.rawHeader("Content-Length"));
+
+    reply.setRawHeader("accept", "application/json");
+    reply.setRawHeader("connection", "open");
+    reply.setRawHeader("content-type", "application/octet-stream");
+    reply.setRawHeader("content-length", "4321");
+
+    QVERIFY2(reply.rawHeaderPairs().at(0).first == "accept", reply.rawHeaderPairs().at(0).first);
+    QVERIFY2(reply.rawHeaderPairs().at(0).second == "application/json",
+             reply.rawHeaderPairs().at(0).second);
+    QVERIFY2(reply.rawHeaderPairs().at(1).first == "connection",
+             reply.rawHeaderPairs().at(1).first);
+    QVERIFY2(reply.rawHeaderPairs().at(1).second == "open", reply.rawHeaderPairs().at(1).second);
+    QVERIFY2(reply.rawHeaderPairs().at(2).first == "content-type",
+             reply.rawHeaderPairs().at(2).first);
+    QVERIFY2(reply.rawHeaderPairs().at(2).second == "application/octet-stream",
+             reply.rawHeaderPairs().at(2).second);
+    QVERIFY2(reply.rawHeaderPairs().at(3).first == "content-length",
+             reply.rawHeaderPairs().at(3).first);
+    QVERIFY2(reply.rawHeaderPairs().at(3).second == "4321", reply.rawHeaderPairs().at(3).second);
 }
 
 QTEST_MAIN(http_test)
