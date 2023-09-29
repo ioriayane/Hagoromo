@@ -40,7 +40,7 @@ public:
 
     Operation operation() const;
     void setOperation(Operation newOperation);
-    const QNetworkRequest *request() const;
+    const QNetworkRequest &request() const;
     void setRequest(const QNetworkRequest &newRequest);
     QByteArray sendData() const;
     void setSendData(const QByteArray &newSendData);
@@ -53,6 +53,8 @@ public slots:
 
 signals:
     void finished(bool success);
+    void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
+    void uploadProgress(qint64 bytesSent, qint64 bytesTotal);
 
 private:
     QList<QPair<QByteArray, QByteArray>> m_rawHeaders;

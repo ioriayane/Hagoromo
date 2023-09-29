@@ -74,10 +74,21 @@ void http_test::cleanupTestCase() { }
 void http_test::test_get()
 {
     HttpAccessManager manager;
-    QNetworkRequest request(m_service + "/xrpc/app.bsky.feed.getTimeline");
+    QUrl url;
+    QUrlQuery url_query;
+    QNetworkRequest request(m_service);
     QByteArray expect_data;
     QString expect_str;
+
     {
+        url.setUrl(m_service + "/xrpc/app.bsky.feed.getTimeline");
+        url_query.addQueryItem("actor", "ioriayane.relog.tech");
+        url_query.addQueryItem("cursor", "AcDe Fg");
+        url.setQuery(url_query);
+        request.setUrl(url);
+        request.setRawHeader(QByteArray("Authorization"),
+                             QByteArray("Bearer ACCOUNT_ioriayane.relog.tech_TOKEN"));
+
         QSignalSpy spy(&manager, SIGNAL(finished(bool)));
         HttpReply *reply = manager.get(request);
         spy.wait();
@@ -96,7 +107,13 @@ void http_test::test_get()
     }
 
     {
-        request.setUrl(m_service + "/xrpc/app.bsky.actor.getPreferences");
+        url.setUrl(m_service + "/xrpc/app.bsky.actor.getPreferences");
+        url_query.addQueryItem("actor", "ioriayane2.bsky.social");
+        url.setQuery(url_query);
+        request.setUrl(url);
+        request.setRawHeader(QByteArray("Authorization"),
+                             QByteArray("Bearer ACCOUNT_ioriayane2.bsky.socialh_TOKEN"));
+
         HttpReply *reply = manager.get(request);
         QSignalSpy spy(reply, SIGNAL(finished(bool)));
         spy.wait();

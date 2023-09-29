@@ -50,9 +50,9 @@ void HttpReply::setOperation(Operation newOperation)
     m_operation = newOperation;
 }
 
-const QNetworkRequest *HttpReply::request() const
+const QNetworkRequest &HttpReply::request() const
 {
-    return &m_request;
+    return m_request;
 }
 
 void HttpReply::setRequest(const QNetworkRequest &newRequest)
