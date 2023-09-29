@@ -74,7 +74,8 @@ void http_test::test_get()
 {
     HttpAccessManager manager;
     QNetworkRequest request(m_service + "/xrpc/app.bsky.feed.getTimeline");
-
+    QByteArray expect_data;
+    QString expect_str;
     {
         QSignalSpy spy(&manager, SIGNAL(finished(bool)));
         HttpReply *reply = manager.get(request);
@@ -82,7 +83,12 @@ void http_test::test_get()
         QVERIFY(spy.count() == 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
-        qDebug().noquote() << reply->body().left(40);
+
+        QVERIFY(WebServer::readFile(":/response/xrpc/app.bsky.feed.getTimeline", expect_data));
+        expect_str = QString::fromUtf8(expect_data);
+        QVERIFY(expect_str.size() == reply->body().size());
+        QVERIFY(expect_str == reply->body());
+
         reply->deleteLater();
     }
 
@@ -94,7 +100,11 @@ void http_test::test_get()
         QVERIFY(spy.count() == 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
-        qDebug().noquote() << reply->body().left(40);
+
+        QVERIFY(WebServer::readFile(":/response/xrpc/app.bsky.actor.getPreferences", expect_data));
+        expect_str = QString::fromUtf8(expect_data);
+        QVERIFY(expect_str.size() == reply->body().size());
+        QVERIFY(QString::fromUtf8(expect_data) == reply->body());
     }
 }
 
@@ -102,6 +112,8 @@ void http_test::test_post()
 {
     HttpAccessManager manager;
     QNetworkRequest request(m_service + "/xrpc/com.atproto.repo.createRecord");
+    QByteArray expect_data;
+    QString expect_str;
 
     {
         request.setUrl(m_service + "/xrpc/com.atproto.repo.createRecord");
@@ -112,27 +124,34 @@ void http_test::test_post()
         QVERIFY(spy.count() == 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
-        qDebug().noquote() << reply->body().left(40);
+
+        QVERIFY(WebServer::readFile(":/response/xrpc/com.atproto.repo.createRecord", expect_data));
+        expect_str = QString::fromUtf8(expect_data);
+        QVERIFY(expect_str.size() == reply->body().size());
+        QVERIFY(QString::fromUtf8(expect_data) == reply->body());
     }
 
     {
-        QFile file(":/data/images/file01.png");
+        QString data_path = ":/data/images/file01.png";
         QByteArray data;
         QMimeDatabase mime;
-        QVERIFY(file.open(QFile::ReadOnly));
-        data = file.readAll();
-        file.close();
+
+        QVERIFY(WebServer::readFile(data_path, data));
         request.setUrl(m_service + "/xrpc/com.atproto.repo.uploadBlob");
         request.setHeader(QNetworkRequest::ContentTypeHeader,
-                          mime.mimeTypeForFile(file.fileName()).name());
-        request.setRawHeader("PostFile", file.fileName().toLocal8Bit());
+                          mime.mimeTypeForFile(data_path).name());
+        request.setRawHeader("PostFile", data_path.toLocal8Bit());
         HttpReply *reply = manager.post(request, data);
         QSignalSpy spy(reply, SIGNAL(finished(bool)));
         spy.wait();
         QVERIFY(spy.count() == 1);
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
-        qDebug().noquote() << reply->body().left(40);
+
+        QVERIFY(WebServer::readFile(":/response/xrpc/com.atproto.repo.uploadBlob", expect_data));
+        expect_str = QString::fromUtf8(expect_data);
+        QVERIFY(expect_str.size() == reply->body().size());
+        QVERIFY(QString::fromUtf8(expect_data) == reply->body());
     }
 }
 
