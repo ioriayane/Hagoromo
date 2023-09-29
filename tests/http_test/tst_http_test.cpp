@@ -78,7 +78,6 @@ void http_test::test_get()
     QUrlQuery url_query;
     QNetworkRequest request(m_service);
     QByteArray expect_data;
-    QString expect_str;
 
     {
         url.setUrl(m_service + "/xrpc/app.bsky.feed.getTimeline");
@@ -97,9 +96,8 @@ void http_test::test_get()
         QVERIFY(arguments.at(0).toBool());
 
         QVERIFY(WebServer::readFile(":/response/xrpc/app.bsky.feed.getTimeline", expect_data));
-        expect_str = QString::fromUtf8(expect_data);
-        QVERIFY(reply->body().size() == expect_str.size());
-        QVERIFY(reply->body() == QString::fromUtf8(expect_data));
+        QVERIFY(reply->readAll().size() == expect_data.size());
+        QVERIFY(reply->readAll() == expect_data);
         QVERIFY(reply->rawHeader("Content-Length").toInt() == expect_data.size());
         QVERIFY(reply->rawHeader("Content-Type") == "application/octet-stream");
 
@@ -122,9 +120,8 @@ void http_test::test_get()
         QVERIFY(arguments.at(0).toBool());
 
         QVERIFY(WebServer::readFile(":/response/xrpc/app.bsky.actor.getPreferences", expect_data));
-        expect_str = QString::fromUtf8(expect_data);
-        QVERIFY(reply->body().size() == expect_str.size());
-        QVERIFY(reply->body() == QString::fromUtf8(expect_data));
+        QVERIFY(reply->readAll().size() == expect_data.size());
+        QVERIFY(reply->readAll() == expect_data);
         QVERIFY(reply->rawHeader("Content-Length").toInt() == expect_data.size());
         QVERIFY(reply->rawHeader("Content-Type") == "application/octet-stream");
     }
@@ -135,7 +132,6 @@ void http_test::test_post()
     HttpAccessManager manager;
     QNetworkRequest request(m_service + "/xrpc/com.atproto.repo.createRecord");
     QByteArray expect_data;
-    QString expect_str;
 
     {
         request.setUrl(m_service + "/xrpc/com.atproto.repo.createRecord");
@@ -148,9 +144,8 @@ void http_test::test_post()
         QVERIFY(arguments.at(0).toBool());
 
         QVERIFY(WebServer::readFile(":/response/xrpc/com.atproto.repo.createRecord", expect_data));
-        expect_str = QString::fromUtf8(expect_data);
-        QVERIFY(reply->body().size() == expect_str.size());
-        QVERIFY(reply->body() == QString::fromUtf8(expect_data));
+        QVERIFY(reply->readAll().size() == expect_data.size());
+        QVERIFY(reply->readAll() == expect_data);
         QVERIFY(reply->rawHeader("Content-Length").toInt() == expect_data.size());
         QVERIFY(reply->rawHeader("Content-Type") == "application/json");
     }
@@ -173,9 +168,8 @@ void http_test::test_post()
         QVERIFY(arguments.at(0).toBool());
 
         QVERIFY(WebServer::readFile(":/response/xrpc/com.atproto.repo.uploadBlob", expect_data));
-        expect_str = QString::fromUtf8(expect_data);
-        QVERIFY(reply->body().size() == expect_str.size());
-        QVERIFY(reply->body() == QString::fromUtf8(expect_data));
+        QVERIFY(reply->readAll().size() == expect_data.size());
+        QVERIFY(reply->readAll() == expect_data);
         QVERIFY(reply->rawHeader("Content-Length").toInt() == expect_data.size());
         QVERIFY(reply->rawHeader("Content-Type") == "application/json");
     }

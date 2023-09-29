@@ -95,7 +95,7 @@ bool HttpAccess::Private::process(HttpReply *reply)
                                 QByteArray::fromStdString(header.second));
         }
         if (res->status == 200) {
-            reply->setBody(QString::fromStdString(res->body));
+            reply->setRecvData(QByteArray::fromStdString(res->body));
             reply->setError(HttpReply::Success);
             result = true;
         } else {

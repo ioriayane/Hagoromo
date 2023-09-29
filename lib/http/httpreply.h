@@ -37,6 +37,7 @@ public:
     const QList<QPair<QByteArray, QByteArray>> &rawHeaderPairs() const;
     QByteArray rawHeader(const QByteArray &name) const;
     void setRawHeader(const QByteArray &name, const QByteArray &value);
+    QByteArray readAll();
 
     Operation operation() const;
     void setOperation(Operation newOperation);
@@ -44,8 +45,8 @@ public:
     void setRequest(const QNetworkRequest &newRequest);
     QByteArray sendData() const;
     void setSendData(const QByteArray &newSendData);
-    QString body() const;
-    void setBody(const QString &newBody);
+    QByteArray recvData() const;
+    void setRecvData(const QByteArray &newRecvData);
     Error error() const;
     void setError(Error newError);
 
@@ -62,7 +63,7 @@ private:
     Operation m_operation;
     QNetworkRequest m_request;
     QByteArray m_sendData;
-    QString m_body;
+    QByteArray m_recvData;
     Error m_error;
 };
 

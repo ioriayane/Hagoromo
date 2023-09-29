@@ -40,6 +40,11 @@ void HttpReply::setRawHeader(const QByteArray &name, const QByteArray &value)
     m_rawHeaders.append(QPair<QByteArray, QByteArray>(name, value));
 }
 
+QByteArray HttpReply::readAll()
+{
+    return m_recvData;
+}
+
 HttpReply::Operation HttpReply::operation() const
 {
     return m_operation;
@@ -60,14 +65,23 @@ void HttpReply::setRequest(const QNetworkRequest &newRequest)
     m_request = newRequest;
 }
 
-QString HttpReply::body() const
+QByteArray HttpReply::sendData() const
 {
-    return m_body;
+    return m_sendData;
 }
 
-void HttpReply::setBody(const QString &newBody)
+void HttpReply::setSendData(const QByteArray &newSendData)
 {
-    m_body = newBody;
+    m_sendData = newSendData;
+}
+QByteArray HttpReply::recvData() const
+{
+    return m_recvData;
+}
+
+void HttpReply::setRecvData(const QByteArray &newRecvData)
+{
+    m_recvData = newRecvData;
 }
 
 HttpReply::Error HttpReply::error() const
@@ -78,14 +92,4 @@ HttpReply::Error HttpReply::error() const
 void HttpReply::setError(Error newError)
 {
     m_error = newError;
-}
-
-QByteArray HttpReply::sendData() const
-{
-    return m_sendData;
-}
-
-void HttpReply::setSendData(const QByteArray &newSendData)
-{
-    m_sendData = newSendData;
 }
