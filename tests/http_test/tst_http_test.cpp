@@ -73,7 +73,7 @@ void http_test::cleanupTestCase() { }
 
 void http_test::test_get()
 {
-    HttpAccessManager manager;
+    HttpAccessManager *manager = new HttpAccessManager(QCoreApplication::instance());
     QUrl url;
     QUrlQuery url_query;
     QNetworkRequest request(m_service);
@@ -81,6 +81,7 @@ void http_test::test_get()
 
     {
         url.setUrl(m_service + "/xrpc/app.bsky.feed.getTimeline");
+        url_query.clear();
         url_query.addQueryItem("actor", "ioriayane.relog.tech");
         url_query.addQueryItem("cursor", "AcDe Fg");
         url.setQuery(url_query);
@@ -88,13 +89,15 @@ void http_test::test_get()
         request.setRawHeader(QByteArray("Authorization"),
                              QByteArray("Bearer ACCOUNT_ioriayane.relog.tech_TOKEN"));
 
-        QSignalSpy spy(&manager, SIGNAL(finished(bool)));
-        HttpReply *reply = manager.get(request);
+        QSignalSpy spy(manager, SIGNAL(finished(HttpReply *)));
+        HttpReply *reply = manager->get(request);
         spy.wait();
         QVERIFY(spy.count() == 1);
         QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY(arguments.at(0).toBool());
+        QVERIFY(arguments.at(0).canConvert<HttpReply *>());
+        QVERIFY(arguments.at(0).value<HttpReply *>()->error() == HttpReply::Success);
 
+        QVERIFY(reply->error() == HttpReply::Success);
         QVERIFY(WebServer::readFile(":/response/xrpc/app.bsky.feed.getTimeline", expect_data));
         QVERIFY(reply->readAll().size() == expect_data.size());
         QVERIFY(reply->readAll() == expect_data);
@@ -106,25 +109,47 @@ void http_test::test_get()
 
     {
         url.setUrl(m_service + "/xrpc/app.bsky.actor.getPreferences");
+        url_query.clear();
         url_query.addQueryItem("actor", "ioriayane2.bsky.social");
         url.setQuery(url_query);
         request.setUrl(url);
         request.setRawHeader(QByteArray("Authorization"),
                              QByteArray("Bearer ACCOUNT_ioriayane2.bsky.socialh_TOKEN"));
 
-        HttpReply *reply = manager.get(request);
-        QSignalSpy spy(reply, SIGNAL(finished(bool)));
+        HttpReply *reply = manager->get(request);
+        QSignalSpy spy(reply, SIGNAL(finished()));
         spy.wait();
         QVERIFY(spy.count() == 1);
-        QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY(arguments.at(0).toBool());
 
+        QVERIFY(reply->error() == HttpReply::Success);
         QVERIFY(WebServer::readFile(":/response/xrpc/app.bsky.actor.getPreferences", expect_data));
         QVERIFY(reply->readAll().size() == expect_data.size());
         QVERIFY(reply->readAll() == expect_data);
         QVERIFY(reply->rawHeader("Content-Length").toInt() == expect_data.size());
         QVERIFY(reply->rawHeader("Content-Type") == "application/octet-stream");
     }
+
+    {
+        url.setUrl(m_service + "/xrpc/app.bsky.unknown");
+        url_query.clear();
+        url_query.addQueryItem("actor", "ioriayane2.bsky.social");
+        url.setQuery(url_query);
+        request.setUrl(url);
+        request.setRawHeader(QByteArray("Authorization"),
+                             QByteArray("Bearer ACCOUNT_ioriayane2.bsky.socialh_TOKEN"));
+
+        HttpReply *reply = manager->get(request);
+        QSignalSpy spy(reply, SIGNAL(finished()));
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+
+        QVERIFY(reply->error() != HttpReply::Success);
+        QVERIFY(reply->readAll().size() == 0);
+        QVERIFY(reply->rawHeader("Content-Length").toInt() == 0);
+        QVERIFY(reply->rawHeader("Content-Type") == "application/x-empty");
+    }
+
+    delete manager;
 }
 
 void http_test::test_post()
@@ -137,12 +162,11 @@ void http_test::test_post()
         request.setUrl(m_service + "/xrpc/com.atproto.repo.createRecord");
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
         HttpReply *reply = manager.post(request, QString("{\"create\": \"record\"}").toUtf8());
-        QSignalSpy spy(reply, SIGNAL(finished(bool)));
+        QSignalSpy spy(reply, SIGNAL(finished()));
         spy.wait();
         QVERIFY(spy.count() == 1);
-        QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY(arguments.at(0).toBool());
 
+        QVERIFY(reply->error() == HttpReply::Success);
         QVERIFY(WebServer::readFile(":/response/xrpc/com.atproto.repo.createRecord", expect_data));
         QVERIFY(reply->readAll().size() == expect_data.size());
         QVERIFY(reply->readAll() == expect_data);
@@ -161,12 +185,11 @@ void http_test::test_post()
                           mime.mimeTypeForFile(data_path).name());
         request.setRawHeader("PostFile", data_path.toLocal8Bit());
         HttpReply *reply = manager.post(request, data);
-        QSignalSpy spy(reply, SIGNAL(finished(bool)));
+        QSignalSpy spy(reply, SIGNAL(finished()));
         spy.wait();
         QVERIFY(spy.count() == 1);
-        QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY(arguments.at(0).toBool());
 
+        QVERIFY(reply->error() == HttpReply::Success);
         QVERIFY(WebServer::readFile(":/response/xrpc/com.atproto.repo.uploadBlob", expect_data));
         QVERIFY(reply->readAll().size() == expect_data.size());
         QVERIFY(reply->readAll() == expect_data);

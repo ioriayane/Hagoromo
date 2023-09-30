@@ -16,7 +16,7 @@ public slots:
     void process(HttpReply *reply);
 
 signals:
-    void finished(bool success);
+    void finished(HttpReply *reply);
 
 private:
     class Private;

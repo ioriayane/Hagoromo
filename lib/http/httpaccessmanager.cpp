@@ -10,7 +10,7 @@ HttpAccessManager::HttpAccessManager(QObject *parent) : QObject { parent }
     m_access.moveToThread(&m_thread);
 
     connect(this, &HttpAccessManager::process, &m_access, &HttpAccess::process);
-    connect(&m_access, &HttpAccess::finished, this, &HttpAccessManager::finished);
+    connect(&m_access, &HttpAccess::finished, this, &HttpAccessManager::processReply);
 
     m_thread.start();
 }
@@ -45,4 +45,14 @@ HttpReply *HttpAccessManager::post(const QNetworkRequest &request, const QByteAr
     emit process(reply);
 
     return reply;
+}
+
+void HttpAccessManager::processReply(HttpReply *reply)
+{
+    qDebug().noquote() << this << "processReply() in " << this->thread();
+
+    if (reply != nullptr)
+        emit reply->finished();
+
+    emit finished(reply);
 }

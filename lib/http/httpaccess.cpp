@@ -94,8 +94,8 @@ bool HttpAccess::Private::process(HttpReply *reply)
             reply->setRawHeader(QByteArray::fromStdString(header.first),
                                 QByteArray::fromStdString(header.second));
         }
+        reply->setRecvData(QByteArray::fromStdString(res->body));
         if (res->status == 200) {
-            reply->setRecvData(QByteArray::fromStdString(res->body));
             reply->setError(HttpReply::Success);
             result = true;
         } else {
@@ -159,10 +159,10 @@ HttpAccess::~HttpAccess()
 
 void HttpAccess::process(HttpReply *reply)
 {
-    qDebug().noquote() << this << "process()";
+    qDebug().noquote() << this << "process() in " << this->thread();
 
     if (reply == nullptr) {
-        emit finished(false);
+        emit finished(nullptr);
         return;
     }
     qDebug().noquote() << "  reply->operation()" << reply->operation();
@@ -171,7 +171,6 @@ void HttpAccess::process(HttpReply *reply)
 
     bool result = d->process(reply);
 
-    emit reply->finished(result);
-    emit finished(result);
+    emit finished(reply);
     qDebug().noquote() << this << "process() emit finished" << result;
 }

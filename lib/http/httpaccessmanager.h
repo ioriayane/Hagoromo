@@ -18,10 +18,13 @@ public:
     HttpReply *get(const QNetworkRequest &request);
     HttpReply *post(const QNetworkRequest &request, const QByteArray &data);
 
+public slots:
+    void processReply(HttpReply *reply);
+
 signals:
     void process(HttpReply *reply);
     void getAccess(const QString &url);
-    void finished(bool success);
+    void finished(HttpReply *reply);
 
 private:
     HttpAccess m_access;

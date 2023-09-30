@@ -5,7 +5,8 @@
 
 HttpReply::HttpReply(QObject *parent) : QObject { parent }, m_error(HttpReply::Unknown)
 {
-    qDebug().noquote() << this << "HttpReply()";
+    qDebug().noquote() << this << "HttpReply()"
+                       << ", parent" << parent;
 }
 
 HttpReply::~HttpReply()
@@ -43,6 +44,11 @@ void HttpReply::setRawHeader(const QByteArray &name, const QByteArray &value)
 QByteArray HttpReply::readAll()
 {
     return m_recvData;
+}
+
+QUrl HttpReply::url() const
+{
+    return m_request.url();
 }
 
 HttpReply::Operation HttpReply::operation() const

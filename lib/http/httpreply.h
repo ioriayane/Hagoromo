@@ -38,6 +38,7 @@ public:
     QByteArray rawHeader(const QByteArray &name) const;
     void setRawHeader(const QByteArray &name, const QByteArray &value);
     QByteArray readAll();
+    QUrl url() const;
 
     Operation operation() const;
     void setOperation(Operation newOperation);
@@ -53,7 +54,7 @@ public:
 public slots:
 
 signals:
-    void finished(bool success);
+    void finished();
     void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
     void uploadProgress(qint64 bytesSent, qint64 bytesTotal);
 
