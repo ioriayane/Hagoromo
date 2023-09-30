@@ -7,6 +7,9 @@
 #include <QUrlQuery>
 #include <QDebug>
 
+#include <QDateTime>
+#define LOG_DATETIME QDateTime::currentDateTime().toString("yyyy/MM/dd hh:mm:ss.zzz")
+
 class HttpAccess::Private
 {
 public:
@@ -23,38 +26,40 @@ private:
 
 HttpAccess::Private::Private(HttpAccess *parent) : q(parent)
 {
-    qDebug().noquote() << "HttpAccess::Private(" << this << ") Private()";
+    qDebug().noquote() << LOG_DATETIME << "HttpAccess::Private(" << this << ") Private()";
 }
 
 HttpAccess::Private::~Private()
 {
-    qDebug().noquote() << "HttpAccess::Private(" << this << ") ~Private()";
+    qDebug().noquote() << LOG_DATETIME << "HttpAccess::Private(" << this << ") ~Private()";
 }
 
 bool HttpAccess::Private::process(HttpReply *reply)
 {
-    qDebug().noquote() << "HttpAccess::Private(" << this << ") post()";
+    qDebug().noquote() << LOG_DATETIME << "HttpAccess::Private(" << this << ") process()";
     if (reply == nullptr)
         return false;
 
     QUrl uri = reply->request().url();
     httplib::Client cli(uri.toString(QUrl::RemovePath | QUrl::RemoveQuery).toStdString());
 
-    qDebug().noquote() << "  " << uri.toString(QUrl::RemovePath | QUrl::RemoveQuery);
-    qDebug().noquote() << "  uri.path()" << uri.path();
-    qDebug().noquote() << "  ContentType"
+    qDebug().noquote() << LOG_DATETIME << "  uri"
+                       << uri.toString(QUrl::RemovePath | QUrl::RemoveQuery);
+    qDebug().noquote() << LOG_DATETIME << "  uri.path()" << uri.path();
+    qDebug().noquote() << LOG_DATETIME << "  ContentType"
                        << reply->request().header(QNetworkRequest::ContentTypeHeader).toString();
-    qDebug().noquote() << "  size()" << reply->sendData().size();
+    qDebug().noquote() << LOG_DATETIME << "  size()" << reply->sendData().size();
 
     httplib::Headers headers;
     for (const auto &header : reply->request().rawHeaderList()) {
-        qDebug() << "  header:" << header << reply->request().rawHeader(header);
+        qDebug().noquote() << LOG_DATETIME << "  header:" << header
+                           << reply->request().rawHeader(header);
         headers.emplace(header.toStdString(), reply->request().rawHeader(header).toStdString());
     }
     QUrlQuery url_query(reply->request().url());
     httplib::Params params;
     for (const auto &query : url_query.queryItems()) {
-        qDebug() << "  query:" << query.first << query.second;
+        qDebug().noquote() << LOG_DATETIME << "  query:" << query.first << query.second;
         params.emplace(query.first.toStdString(), query.second.toStdString());
     }
 
@@ -64,6 +69,7 @@ bool HttpAccess::Private::process(HttpReply *reply)
     if (reply->operation() == HttpReply::GetOperation) {
         res = cli.Get(uri.path().toStdString(), params, headers, [=](uint64_t len, uint64_t total) {
             qDebug().noquote()
+                    << LOG_DATETIME
                     << QString("%1 / %2 (%3\%)").arg(len).arg(total).arg((int)(len * 100 / total));
             emit reply->downloadProgress(len, total);
             return true;
@@ -72,7 +78,7 @@ bool HttpAccess::Private::process(HttpReply *reply)
         res = cli.Post(
                 uri.path().toStdString(), headers, reply->sendData().size(),
                 [=](size_t offset, size_t length, httplib::DataSink &sink) {
-                    qDebug().noquote() << "  posting..." << offset << length;
+                    qDebug().noquote() << LOG_DATETIME << "  posting..." << offset << length;
                     sink.write(reply->sendData().mid(offset, length).data(), length);
                     emit reply->uploadProgress(offset, reply->sendData().size());
                     return true;
@@ -85,11 +91,12 @@ bool HttpAccess::Private::process(HttpReply *reply)
         res = httplib::Result { nullptr, httplib::Error::Unknown, std::move(headers) };
     }
 
-    qDebug().noquote() << "response";
+    qDebug().noquote() << LOG_DATETIME << "response";
     if (res) {
-        qDebug().noquote() << "  status" << res->status;
+        qDebug().noquote() << LOG_DATETIME << "  status" << res->status;
         for (const auto &header : res->headers) {
-            qDebug().noquote() << "  header:" << QString::fromStdString(header.first)
+            qDebug().noquote() << LOG_DATETIME
+                               << "  header:" << QString::fromStdString(header.first)
                                << QString::fromStdString(header.second);
             reply->setRawHeader(QByteArray::fromStdString(header.first),
                                 QByteArray::fromStdString(header.second));
@@ -103,7 +110,8 @@ bool HttpAccess::Private::process(HttpReply *reply)
         }
     } else {
         auto err = res.error();
-        qDebug().noquote() << "HTTP error: " << QString::fromStdString(httplib::to_string(err));
+        qDebug().noquote() << LOG_DATETIME
+                           << "HTTP error: " << QString::fromStdString(httplib::to_string(err));
         reply->setError(errorFrom(err));
     }
 
@@ -148,29 +156,30 @@ HttpReply::Error HttpAccess::Private::errorFrom(httplib::Error error)
 
 HttpAccess::HttpAccess(QObject *parent) : QObject { parent }, d(new Private(this))
 {
-    qDebug().noquote() << this << "HttpAccess()";
+    qDebug().noquote() << LOG_DATETIME << this << "HttpAccess()";
     connect(this, &QObject::destroyed, [this]() { delete d; });
 }
 
 HttpAccess::~HttpAccess()
 {
-    qDebug().noquote() << this << "~HttpAccess()";
+    qDebug().noquote() << LOG_DATETIME << this << "~HttpAccess()";
 }
 
 void HttpAccess::process(HttpReply *reply)
 {
-    qDebug().noquote() << this << "process() in " << this->thread();
+    qDebug().noquote() << LOG_DATETIME << this << "process() in " << this->thread();
 
     if (reply == nullptr) {
         emit finished(nullptr);
         return;
     }
-    qDebug().noquote() << "  reply->operation()" << reply->operation();
-    qDebug().noquote() << "  reply->request()->url().toString()"
+    qDebug().noquote() << LOG_DATETIME << "  reply" << reply;
+    qDebug().noquote() << LOG_DATETIME << "  reply->operation()" << reply->operation();
+    qDebug().noquote() << LOG_DATETIME << "  reply->request()->url().toString()"
                        << reply->request().url().toString();
 
     bool result = d->process(reply);
 
     emit finished(reply);
-    qDebug().noquote() << this << "process() emit finished" << result;
+    qDebug().noquote() << LOG_DATETIME << this << "process() emit finished" << result;
 }

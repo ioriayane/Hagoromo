@@ -3,15 +3,18 @@
 #include <QUrl>
 #include <QDebug>
 
+#include <QDateTime>
+#define LOG_DATETIME QDateTime::currentDateTime().toString("yyyy/MM/dd hh:mm:ss.zzz")
+
 HttpReply::HttpReply(QObject *parent) : QObject { parent }, m_error(HttpReply::Unknown)
 {
-    qDebug().noquote() << this << "HttpReply()"
+    qDebug().noquote() << LOG_DATETIME << this << "HttpReply()"
                        << ", parent" << parent;
 }
 
 HttpReply::~HttpReply()
 {
-    qDebug().noquote() << this << "~HttpReply()";
+    qDebug().noquote() << LOG_DATETIME << this << "~HttpReply()";
 }
 
 const QList<QPair<QByteArray, QByteArray>> &HttpReply::rawHeaderPairs() const

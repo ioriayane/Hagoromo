@@ -23,7 +23,6 @@ public slots:
 
 signals:
     void process(HttpReply *reply);
-    void getAccess(const QString &url);
     void finished(HttpReply *reply);
 
 private:

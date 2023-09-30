@@ -1,7 +1,7 @@
 #ifndef ACCESSATPROTOCOL_H
 #define ACCESSATPROTOCOL_H
 
-#include <QNetworkAccessManager>
+#include "http/httpaccessmanager.h"
 #include <QNetworkReply>
 #include <QObject>
 #include <QUrl>
@@ -84,10 +84,10 @@ protected:
     void postWithImage(const QString &endpoint, const QString &path);
 
     virtual bool parseJson(bool success, const QString reply_json) = 0;
-    bool checkReply(QNetworkReply *reply);
+    bool checkReply(HttpReply *reply);
 
 private:
-    static QNetworkAccessManager *m_manager;
+    static HttpAccessManager *m_manager;
 
     QString m_replyJson;
     QString m_errorCode;
