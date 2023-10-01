@@ -10,6 +10,7 @@
 #include <QDateTime>
 #include <QUrlQuery>
 #include <QMimeDatabase>
+#include <QPointer>
 
 #define LOG_DATETIME QDateTime::currentDateTime().toString("yyyy/MM/dd hh:mm:ss.zzz")
 
@@ -116,17 +117,21 @@ void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
                              QByteArray("Bearer ") + accessJwt().toUtf8());
     }
 
+    QPointer<AccessAtProtocol> alive = this;
     HttpReply *reply = m_manager->get(request);
     connect(reply, &HttpReply::finished, [=]() {
         qDebug().noquote() << LOG_DATETIME << reply->error() << reply->url().toString();
-        qDebug().noquote() << LOG_DATETIME << "  " << this->thread();
+        if (alive) {
+            qDebug().noquote() << LOG_DATETIME << "  " << this->thread();
 
-        bool success = false;
-        if (checkReply(reply)) {
-            success = parseJson(true, m_replyJson);
+            bool success = false;
+            if (checkReply(reply)) {
+                success = parseJson(true, m_replyJson);
+            }
+            emit finished(success);
+        } else {
+            qDebug().noquote() << LOG_DATETIME << "Parent is deleted!!!!!!!!!!";
         }
-        emit finished(success);
-
         reply->deleteLater();
     });
 }
@@ -153,16 +158,19 @@ void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
                              QByteArray("Bearer ") + accessJwt().toUtf8());
     }
 
+    QPointer<AccessAtProtocol> alive = this;
     HttpReply *reply = m_manager->post(request, json);
     connect(reply, &HttpReply::finished, [=]() {
         qDebug().noquote() << LOG_DATETIME << reply->error() << reply->url().toString();
-
-        bool success = false;
-        if (checkReply(reply)) {
-            success = parseJson(true, m_replyJson);
+        if (alive) {
+            bool success = false;
+            if (checkReply(reply)) {
+                success = parseJson(true, m_replyJson);
+            }
+            emit finished(success);
+        } else {
+            qDebug().noquote() << LOG_DATETIME << "Parent is deleted!!!!!!!!!!";
         }
-        emit finished(success);
-
         reply->deleteLater();
     });
 }
@@ -198,17 +206,20 @@ void AccessAtProtocol::postWithImage(const QString &endpoint, const QString &pat
     }
     request.setHeader(QNetworkRequest::ContentLengthHeader, file->size());
 
+    QPointer<AccessAtProtocol> alive = this;
     HttpReply *reply = m_manager->post(request, file->readAll());
     file->setParent(reply);
     connect(reply, &HttpReply::finished, [=]() {
         qDebug().noquote() << LOG_DATETIME << reply->error() << reply->url().toString();
-
-        bool success = false;
-        if (checkReply(reply)) {
-            success = parseJson(true, m_replyJson);
+        if (alive) {
+            bool success = false;
+            if (checkReply(reply)) {
+                success = parseJson(true, m_replyJson);
+            }
+            emit finished(success);
+        } else {
+            qDebug().noquote() << LOG_DATETIME << "Parent is deleted!!!!!!!!!!";
         }
-        emit finished(success);
-
         reply->deleteLater();
     });
 }
