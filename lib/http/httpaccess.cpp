@@ -70,7 +70,7 @@ bool HttpAccess::Private::process(HttpReply *reply)
         res = cli.Get(uri.path().toStdString(), params, headers, [=](uint64_t len, uint64_t total) {
             qDebug().noquote()
                     << LOG_DATETIME
-                    << QString("%1 / %2 (%3\%)").arg(len).arg(total).arg((int)(len * 100 / total));
+                    << QString("%1 / %2 (%3%)").arg(len).arg(total).arg((int)(len * 100 / total));
             emit reply->downloadProgress(len, total);
             return true;
         });

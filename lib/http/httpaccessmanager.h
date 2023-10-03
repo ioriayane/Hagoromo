@@ -22,12 +22,17 @@ public slots:
     void processReply(HttpReply *reply);
 
 signals:
-    void process(HttpReply *reply);
+    void process0(HttpReply *reply);
+    void process1(HttpReply *reply);
+    void process2(HttpReply *reply);
+    void process3(HttpReply *reply);
+    void process4(HttpReply *reply);
     void finished(HttpReply *reply);
 
 private:
-    HttpAccess m_access;
-    QThread m_thread;
+    class Private;
+    Private *d;
+    Q_DISABLE_COPY(HttpAccessManager)
 };
 
 #endif // HTTPACCESSMANAGER_H

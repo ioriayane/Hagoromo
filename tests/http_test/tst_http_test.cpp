@@ -149,6 +149,106 @@ void http_test::test_get()
         QVERIFY(reply->rawHeader("Content-Type") == "application/x-empty");
     }
 
+    {
+        url.setUrl(m_service + "/xrpc/app.bsky.unknown");
+        url_query.clear();
+        url_query.addQueryItem("actor", "ioriayane2.bsky.social");
+        url.setQuery(url_query);
+        request.setUrl(url);
+        request.setRawHeader(QByteArray("Authorization"),
+                             QByteArray("Bearer ACCOUNT_ioriayane2.bsky.socialh_TOKEN"));
+
+        HttpReply *reply = manager->get(request);
+        QSignalSpy spy(reply, SIGNAL(finished()));
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+
+        QVERIFY(reply->error() != HttpReply::Success);
+        QVERIFY(reply->readAll().size() == 0);
+        QVERIFY(reply->rawHeader("Content-Length").toInt() == 0);
+        QVERIFY(reply->rawHeader("Content-Type") == "application/x-empty");
+    }
+
+    {
+        url.setUrl(m_service + "/xrpc/app.bsky.unknown");
+        url_query.clear();
+        url_query.addQueryItem("actor", "ioriayane2.bsky.social");
+        url.setQuery(url_query);
+        request.setUrl(url);
+        request.setRawHeader(QByteArray("Authorization"),
+                             QByteArray("Bearer ACCOUNT_ioriayane2.bsky.socialh_TOKEN"));
+
+        HttpReply *reply = manager->get(request);
+        QSignalSpy spy(reply, SIGNAL(finished()));
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+
+        QVERIFY(reply->error() != HttpReply::Success);
+        QVERIFY(reply->readAll().size() == 0);
+        QVERIFY(reply->rawHeader("Content-Length").toInt() == 0);
+        QVERIFY(reply->rawHeader("Content-Type") == "application/x-empty");
+    }
+
+    {
+        url.setUrl(m_service + "/xrpc/app.bsky.unknown");
+        url_query.clear();
+        url_query.addQueryItem("actor", "ioriayane2.bsky.social");
+        url.setQuery(url_query);
+        request.setUrl(url);
+        request.setRawHeader(QByteArray("Authorization"),
+                             QByteArray("Bearer ACCOUNT_ioriayane2.bsky.socialh_TOKEN"));
+
+        HttpReply *reply = manager->get(request);
+        QSignalSpy spy(reply, SIGNAL(finished()));
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+
+        QVERIFY(reply->error() != HttpReply::Success);
+        QVERIFY(reply->readAll().size() == 0);
+        QVERIFY(reply->rawHeader("Content-Length").toInt() == 0);
+        QVERIFY(reply->rawHeader("Content-Type") == "application/x-empty");
+    }
+
+    {
+        url.setUrl(m_service + "/xrpc/app.bsky.unknown");
+        url_query.clear();
+        url_query.addQueryItem("actor", "ioriayane2.bsky.social");
+        url.setQuery(url_query);
+        request.setUrl(url);
+        request.setRawHeader(QByteArray("Authorization"),
+                             QByteArray("Bearer ACCOUNT_ioriayane2.bsky.socialh_TOKEN"));
+
+        HttpReply *reply = manager->get(request);
+        QSignalSpy spy(reply, SIGNAL(finished()));
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+
+        QVERIFY(reply->error() != HttpReply::Success);
+        QVERIFY(reply->readAll().size() == 0);
+        QVERIFY(reply->rawHeader("Content-Length").toInt() == 0);
+        QVERIFY(reply->rawHeader("Content-Type") == "application/x-empty");
+    }
+
+    {
+        url.setUrl(m_service + "/xrpc/app.bsky.unknown");
+        url_query.clear();
+        url_query.addQueryItem("actor", "ioriayane2.bsky.social");
+        url.setQuery(url_query);
+        request.setUrl(url);
+        request.setRawHeader(QByteArray("Authorization"),
+                             QByteArray("Bearer ACCOUNT_ioriayane2.bsky.socialh_TOKEN"));
+
+        HttpReply *reply = manager->get(request);
+        QSignalSpy spy(reply, SIGNAL(finished()));
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+
+        QVERIFY(reply->error() != HttpReply::Success);
+        QVERIFY(reply->readAll().size() == 0);
+        QVERIFY(reply->rawHeader("Content-Length").toInt() == 0);
+        QVERIFY(reply->rawHeader("Content-Type") == "application/x-empty");
+    }
+
     delete manager;
 }
 
