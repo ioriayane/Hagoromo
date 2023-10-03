@@ -159,9 +159,11 @@ void http_test::test_post()
     QByteArray expect_data;
 
     {
+        QByteArray actual_data = QString("{\"create\": \"record\"}").toUtf8();
         request.setUrl(m_service + "/xrpc/com.atproto.repo.createRecord");
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-        HttpReply *reply = manager.post(request, QString("{\"create\": \"record\"}").toUtf8());
+        request.setHeader(QNetworkRequest::ContentLengthHeader, actual_data.size());
+        HttpReply *reply = manager.post(request, actual_data);
         QSignalSpy spy(reply, SIGNAL(finished()));
         spy.wait();
         QVERIFY(spy.count() == 1);
@@ -183,10 +185,11 @@ void http_test::test_post()
         request.setUrl(m_service + "/xrpc/com.atproto.repo.uploadBlob");
         request.setHeader(QNetworkRequest::ContentTypeHeader,
                           mime.mimeTypeForFile(data_path).name());
+        request.setHeader(QNetworkRequest::ContentLengthHeader, data.size());
         request.setRawHeader("PostFile", data_path.toLocal8Bit());
         HttpReply *reply = manager.post(request, data);
         QSignalSpy spy(reply, SIGNAL(finished()));
-        spy.wait();
+        spy.wait(10 * 1000);
         QVERIFY(spy.count() == 1);
 
         QVERIFY(reply->error() == HttpReply::Success);
