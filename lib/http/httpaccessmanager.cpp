@@ -12,10 +12,14 @@ public:
     Private(HttpAccessManager *parent);
     ~Private();
 
-    int signalIndex();
+    HttpReply *process(HttpReply::Operation operation, const QNetworkRequest &request,
+                       const QByteArray &data = QByteArray());
+    void processReply(HttpReply *reply);
 
 private:
     HttpAccessManager *q;
+
+    int signalIndex();
 
     QList<QPair<HttpAccess *, QThread *>> m_accessThread;
     int m_signalIndex;
@@ -61,6 +65,43 @@ HttpAccessManager::Private::~Private()
     qDebug().noquote() << LOG_DATETIME << "HttpAccessManager::Private(" << this << ") ~Private()";
 }
 
+HttpReply *HttpAccessManager::Private::process(HttpReply::Operation operation,
+                                               const QNetworkRequest &request,
+                                               const QByteArray &data)
+{
+    HttpReply *reply = new HttpReply(q);
+
+    reply->setOperation(operation);
+    reply->setRequest(request);
+    reply->setSendData(data);
+
+    int index = signalIndex();
+    if (index == 0) {
+        emit q->process0(reply);
+    } else if (index == 1) {
+        emit q->process1(reply);
+    } else if (index == 2) {
+        emit q->process2(reply);
+    } else if (index == 3) {
+        emit q->process3(reply);
+    } else {
+        emit q->process4(reply);
+    }
+
+    return reply;
+}
+
+void HttpAccessManager::Private::processReply(HttpReply *reply)
+{
+    qDebug().noquote() << LOG_DATETIME << this << "processReply() in " << q->thread();
+    qDebug().noquote() << LOG_DATETIME << "  reply" << reply;
+
+    if (reply != nullptr)
+        emit reply->finished();
+
+    emit q->finished(reply);
+}
+
 int HttpAccessManager::Private::signalIndex()
 {
     if (m_signalIndex >= m_accessThread.length()) {
@@ -82,58 +123,15 @@ HttpAccessManager::~HttpAccessManager()
 
 HttpReply *HttpAccessManager::get(const QNetworkRequest &request)
 {
-    HttpReply *reply = new HttpReply(this);
-
-    reply->setOperation(HttpReply::Operation::GetOperation);
-    reply->setRequest(request);
-
-    int index = d->signalIndex();
-    if (index == 0) {
-        emit process0(reply);
-    } else if (index == 1) {
-        emit process1(reply);
-    } else if (index == 2) {
-        emit process2(reply);
-    } else if (index == 3) {
-        emit process3(reply);
-    } else {
-        emit process4(reply);
-    }
-
-    return reply;
+    return d->process(HttpReply::GetOperation, request);
 }
 
 HttpReply *HttpAccessManager::post(const QNetworkRequest &request, const QByteArray &data)
 {
-    HttpReply *reply = new HttpReply(this);
-
-    reply->setOperation(HttpReply::Operation::PostOperation);
-    reply->setRequest(request);
-    reply->setSendData(data);
-
-    int index = d->signalIndex();
-    if (index == 0) {
-        emit process0(reply);
-    } else if (index == 1) {
-        emit process1(reply);
-    } else if (index == 2) {
-        emit process2(reply);
-    } else if (index == 3) {
-        emit process3(reply);
-    } else {
-        emit process4(reply);
-    }
-
-    return reply;
+    return d->process(HttpReply::PostOperation, request, data);
 }
 
 void HttpAccessManager::processReply(HttpReply *reply)
 {
-    qDebug().noquote() << LOG_DATETIME << this << "processReply() in " << this->thread();
-    qDebug().noquote() << LOG_DATETIME << "  reply" << reply;
-
-    if (reply != nullptr)
-        emit reply->finished();
-
-    emit finished(reply);
+    d->processReply(reply);
 }
