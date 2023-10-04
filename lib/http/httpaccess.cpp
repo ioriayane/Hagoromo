@@ -6,6 +6,7 @@
 #include <QUrl>
 #include <QUrlQuery>
 #include <QDebug>
+#include <QElapsedTimer>
 
 #include <QDateTime>
 #define LOG_DATETIME QDateTime::currentDateTime().toString("yyyy/MM/dd hh:mm:ss.zzz")
@@ -78,18 +79,17 @@ bool HttpAccess::Private::process(HttpReply *reply)
         res = cli.Post(
                 uri.path().toStdString(), headers, reply->sendData().size(),
                 [=](size_t offset, size_t length, httplib::DataSink &sink) {
-                    length = 1024;
+                    length = 8192;
                     if (reply->sendData().length() < static_cast<int>(offset + length)) {
                         length = reply->sendData().length() - offset;
                     }
+                    qDebug().noquote() << LOG_DATETIME << "  posting..." << offset << length << "="
+                                       << (offset + length);
+                    emit reply->uploadProgress(offset, reply->sendData().size());
                     if (length > 0) {
-                        qDebug().noquote() << LOG_DATETIME << "  posting..." << offset << length
-                                           << "=" << (offset + length);
                         sink.write(reply->sendData().mid(offset, length).data(), length);
-                        emit reply->uploadProgress(offset, reply->sendData().size());
                     } else {
-                        qDebug().noquote() << LOG_DATETIME << "  posting..." << offset << length
-                                           << "=" << (offset + length) << "done";
+                        qDebug().noquote() << LOG_DATETIME << "  posting... done";
                         sink.done();
                     }
                     return true;
