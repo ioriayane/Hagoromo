@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>response/xrpc/app.bsky.actor.getPreferences</file>
+        <file>response/xrpc/app.bsky.feed.getTimeline</file>
+        <file>response/xrpc/com.atproto.repo.createRecord</file>
+        <file>data/images/file01.png</file>
+        <file>response/xrpc/com.atproto.repo.uploadBlob</file>
+    </qresource>
+</RCC>

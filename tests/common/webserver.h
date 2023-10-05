@@ -11,6 +11,8 @@ public:
 
     bool handleRequest(const QHttpServerRequest &request, QTcpSocket *socket) override;
 
+    static QString convertResoucePath(const QUrl &url);
+    static bool readFile(const QString &path, QByteArray &data);
 signals:
     void receivedPost(const QHttpServerRequest &request, bool &result, QString &json);
 
