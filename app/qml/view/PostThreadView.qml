@@ -174,6 +174,7 @@ ColumnLayout {
                 feedGeneratorFrame.likeCountLabel.text: model.feedGeneratorLikeCount
 
                 postInformation.visible: (postThreadUri === model.uri)
+                postInformation.tagsLayout.model: postInformation.visible ? model.tags : []
                 postInformation.labelsLayout.model: postInformation.visible ? model.labels : []
                 postInformation.languagesLayout.model: postInformation.visible ? model.languages : []
                 postInformation.indexedAtLongLabel.text: postInformation.visible ? model.indexedAtLong : ""
