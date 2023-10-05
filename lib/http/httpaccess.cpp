@@ -3,12 +3,14 @@
 
 #include "httpaccess.h"
 
+#include <QDateTime>
+#include <QDebug>
+#include <QDir>
+#include <QDirIterator>
+#include <QElapsedTimer>
 #include <QUrl>
 #include <QUrlQuery>
-#include <QDebug>
-#include <QElapsedTimer>
 
-#include <QDateTime>
 #define LOG_DATETIME QDateTime::currentDateTime().toString("yyyy/MM/dd hh:mm:ss.zzz")
 
 class HttpAccess::Private
@@ -23,11 +25,26 @@ public:
 
 private:
     HttpAccess *q;
+
+#ifdef Q_OS_UNIX
+    QString m_systemCertPath;
+    QString searchSystemCertPath();
+    QStringList unixCertFolders() const;
+#endif
 };
 
 HttpAccess::Private::Private(HttpAccess *parent) : q(parent)
 {
     qDebug().noquote() << LOG_DATETIME << "HttpAccess::Private(" << this << ") Private()";
+#ifdef Q_OS_UNIX
+    m_systemCertPath = searchSystemCertPath();
+    if (m_systemCertPath.isEmpty()) {
+        qCritical().noquote()
+            << "Not found system cert file. Disable server crtificate verification.";
+    } else {
+        qDebug() << LOG_DATETIME << "  cert file:" << m_systemCertPath;
+    }
+#endif
 }
 
 HttpAccess::Private::~Private()
@@ -43,6 +60,13 @@ bool HttpAccess::Private::process(HttpReply *reply)
 
     QUrl uri = reply->request().url();
     httplib::Client cli(uri.toString(QUrl::RemovePath | QUrl::RemoveQuery).toStdString());
+#ifdef Q_OS_UNIX
+    if (m_systemCertPath.isEmpty()) {
+        cli.enable_server_certificate_verification(false);
+    } else {
+        cli.set_ca_cert_path(m_systemCertPath.toStdString());
+    }
+#endif
 
     qDebug().noquote() << LOG_DATETIME << "  uri"
                        << uri.toString(QUrl::RemovePath | QUrl::RemoveQuery);
@@ -164,6 +188,39 @@ HttpReply::Error HttpAccess::Private::errorFrom(httplib::Error error)
         return HttpReply::Error::Unknown;
     }
 }
+
+#ifdef Q_OS_UNIX
+QString HttpAccess::Private::searchSystemCertPath()
+{
+    QStringList folders = unixCertFolders();
+    QStringList name_filters = QStringList() << "*.crt";
+    QDir::Filters filters = QDir::Files;
+    QDirIterator::IteratorFlags flags = QDirIterator::NoIteratorFlags;
+    for (const auto &folder : folders) {
+        QDirIterator it(folder, name_filters, filters, flags);
+        while (it.hasNext()) {
+            m_systemCertPath = it.next();
+            return m_systemCertPath;
+        }
+    }
+    return m_systemCertPath;
+}
+
+QStringList HttpAccess::Private::unixCertFolders() const
+{
+    return QStringList() << "/etc/ssl/certs/"         // (K)ubuntu, OpenSUSE, Mandriva ...
+                         << "/usr/lib/ssl/certs/"     // Gentoo, Mandrake
+                         << "/usr/share/ssl/"         // Centos, Redhat, SuSE
+                         << "/usr/local/ssl/"         // Normal OpenSSL Tarball
+                         << "/var/ssl/certs/"         // AIX
+                         << "/usr/local/ssl/certs/"   // Solaris
+                         << "/etc/openssl/certs/"     // BlackBerry
+                         << "/opt/openssl/certs/"     // HP-UX
+                         << "/etc/pki/tls/certs/"     // Fedora, Mandriva
+                         << "/usr/local/share/certs/" // FreeBSD's ca_root_nss
+                         << "/etc/ssl/";              // OpenBSD
+}
+#endif
 
 HttpAccess::HttpAccess(QObject *parent) : QObject { parent }, d(new Private(this))
 {
