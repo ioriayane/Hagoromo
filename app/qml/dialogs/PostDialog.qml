@@ -238,7 +238,10 @@ Dialog {
             IconButton {
                 id: externalLinkButton
                 iconSource: "../images/add.png"
-                enabled: addingExternalLinkUrlText.text.length > 0
+                enabled: addingExternalLinkUrlText.text.length > 0 &&
+                         !externalLink.running &&
+                         !feedGeneratorLink.running &&
+                         !createRecord.running
                 onClicked: {
                     var uri = addingExternalLinkUrlText.text
                     var at_uri = feedGeneratorLink.convertToAtUri(uri)
@@ -261,14 +264,6 @@ Dialog {
                     visible: externalLink.running || feedGeneratorLink.running
                 }
                 states: [
-                    State {
-                        when: externalLink.running || feedGeneratorLink.running || createRecord.running
-                        PropertyChanges {
-                            target: externalLinkButton
-                            enabled: false
-                            onClicked: {}
-                        }
-                    },
                     State {
                         when: externalLink.valid || feedGeneratorLink.valid
                         PropertyChanges {
