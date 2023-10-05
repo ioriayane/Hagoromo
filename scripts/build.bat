@@ -19,6 +19,7 @@ REM --- main -----------------------------
 
 set JOM_BIN_FOLDER=%QT_BIN_FOLDER%\..\..\..\Tools\QtCreator\bin\jom
 set VS_SETUP_BAT="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+set VS_REDIST_FOLDER="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC"
 set BUILD_FOLDER=build-hagoromo
 set DEPLOY_FOLDER=deploy-hagoromo
 
@@ -60,6 +61,7 @@ REM --- deploy -------
 copy %BUILD_FOLDER%\release\Hagoromo.exe %DEPLOY_FOLDER%\hagoromo\
 copy %BUILD_FOLDER%\release\*.dll %DEPLOY_FOLDER%\hagoromo\
 windeployqt --qmldir app\qml %DEPLOY_FOLDER%\hagoromo\Hagoromo.exe
+python3 scripts\copymsvcfiles.py %VS_REDIST_FOLDER% %DEPLOY_FOLDER%\hagoromo\
 
 copy %BUILD_FOLDER%\release\translations\*.qm %DEPLOY_FOLDER%\hagoromo\translations\
 
