@@ -18,6 +18,7 @@ void copyListViewerState(const QJsonObject &src, AppBskyGraphDefs::ListViewerSta
 {
     if (!src.isEmpty()) {
         dest.muted = src.value("muted").toBool();
+        dest.blocked = src.value("blocked").toString();
     }
 }
 void copyListViewBasic(const QJsonObject &src, AppBskyGraphDefs::ListViewBasic &dest)
@@ -159,6 +160,24 @@ void copyPersonalDetailsPref(const QJsonObject &src, AppBskyActorDefs::PersonalD
 {
     if (!src.isEmpty()) {
         dest.birthDate = src.value("birthDate").toString();
+    }
+}
+void copyFeedViewPref(const QJsonObject &src, AppBskyActorDefs::FeedViewPref &dest)
+{
+    if (!src.isEmpty()) {
+        dest.feed = src.value("feed").toString();
+        dest.hideReplies = src.value("hideReplies").toBool();
+        dest.hideRepliesByUnfollowed = src.value("hideRepliesByUnfollowed").toBool();
+        dest.hideRepliesByLikeCount = src.value("hideRepliesByLikeCount").toInt();
+        dest.hideReposts = src.value("hideReposts").toBool();
+        dest.hideQuotePosts = src.value("hideQuotePosts").toBool();
+    }
+}
+void copyThreadViewPref(const QJsonObject &src, AppBskyActorDefs::ThreadViewPref &dest)
+{
+    if (!src.isEmpty()) {
+        dest.sort = src.value("sort").toString();
+        dest.prioritizeFollowedUsers = src.value("prioritizeFollowedUsers").toBool();
     }
 }
 }
@@ -489,6 +508,19 @@ void copyViewerState(const QJsonObject &src, AppBskyFeedDefs::ViewerState &dest)
         dest.like = src.value("like").toString();
     }
 }
+void copyThreadgateView(const QJsonObject &src, AppBskyFeedDefs::ThreadgateView &dest)
+{
+    if (!src.isEmpty()) {
+        dest.uri = src.value("uri").toString();
+        dest.cid = src.value("cid").toString();
+        LexiconsTypeUnknown::copyUnknown(src.value("record").toObject(), dest.record);
+        for (const auto &s : src.value("lists").toArray()) {
+            AppBskyGraphDefs::ListViewBasic child;
+            AppBskyGraphDefs::copyListViewBasic(s.toObject(), child);
+            dest.lists.append(child);
+        }
+    }
+}
 void copyPostView(const QJsonObject &src, AppBskyFeedDefs::PostView &dest)
 {
     if (!src.isEmpty()) {
@@ -532,6 +564,7 @@ void copyPostView(const QJsonObject &src, AppBskyFeedDefs::PostView &dest)
             ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
             dest.labels.append(child);
         }
+        copyThreadgateView(src.value("threadgate").toObject(), dest.threadgate);
     }
 }
 void copyNotFoundPost(const QJsonObject &src, AppBskyFeedDefs::NotFoundPost &dest)
@@ -602,6 +635,12 @@ void copyFeedViewPost(const QJsonObject &src, AppBskyFeedDefs::FeedViewPost &des
         }
     }
 }
+void copyViewerThreadState(const QJsonObject &src, AppBskyFeedDefs::ViewerThreadState &dest)
+{
+    if (!src.isEmpty()) {
+        dest.canReply = src.value("canReply").toBool();
+    }
+}
 void copyThreadViewPost(const QJsonObject &src, AppBskyFeedDefs::ThreadViewPost &dest)
 {
     if (!src.isEmpty()) {
@@ -653,6 +692,7 @@ void copyThreadViewPost(const QJsonObject &src, AppBskyFeedDefs::ThreadViewPost 
                 dest.replies_BlockedPost.append(child);
             }
         }
+        copyViewerThreadState(src.value("viewer").toObject(), dest.viewer);
     }
 }
 void copySkeletonReasonRepost(const QJsonObject &src, AppBskyFeedDefs::SkeletonReasonRepost &dest)
@@ -696,6 +736,12 @@ void copyLink(const QJsonObject &src, AppBskyRichtextFacet::Link &dest)
         dest.uri = src.value("uri").toString();
     }
 }
+void copyTag(const QJsonObject &src, AppBskyRichtextFacet::Tag &dest)
+{
+    if (!src.isEmpty()) {
+        dest.tag = src.value("tag").toString();
+    }
+}
 void copyMain(const QJsonObject &src, AppBskyRichtextFacet::Main &dest)
 {
     if (!src.isEmpty()) {
@@ -715,6 +761,14 @@ void copyMain(const QJsonObject &src, AppBskyRichtextFacet::Main &dest)
                 AppBskyRichtextFacet::Link child;
                 AppBskyRichtextFacet::copyLink(value.toObject(), child);
                 dest.features_Link.append(child);
+            }
+        }
+        for (const auto &value : src.value("features").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type == QStringLiteral("app.bsky.richtext.facet#tag")) {
+                AppBskyRichtextFacet::Tag child;
+                AppBskyRichtextFacet::copyTag(value.toObject(), child);
+                dest.features_Tag.append(child);
             }
         }
     }
@@ -852,6 +906,9 @@ void copyMain(const QJsonObject &src, AppBskyFeedPost::Main &dest)
             ComAtprotoLabelDefs::copySelfLabels(src.value("labels").toObject(),
                                                 dest.labels_ComAtprotoLabelDefs_SelfLabels);
         }
+        for (const auto &value : src.value("tags").toArray()) {
+            dest.tags.append(value.toString());
+        }
         dest.createdAt = src.value("createdAt").toString();
         dest.via = src.value("via").toString();
     }
@@ -863,6 +920,55 @@ void copyMain(const QJsonObject &src, AppBskyFeedRepost::Main &dest)
 {
     if (!src.isEmpty()) {
         ComAtprotoRepoStrongRef::copyMain(src.value("subject").toObject(), dest.subject);
+        dest.createdAt = src.value("createdAt").toString();
+    }
+}
+}
+// app.bsky.feed.threadgate
+namespace AppBskyFeedThreadgate {
+void copyMentionRule(const QJsonObject &src, AppBskyFeedThreadgate::MentionRule &dest)
+{
+    if (!src.isEmpty()) { }
+}
+void copyFollowingRule(const QJsonObject &src, AppBskyFeedThreadgate::FollowingRule &dest)
+{
+    if (!src.isEmpty()) { }
+}
+void copyListRule(const QJsonObject &src, AppBskyFeedThreadgate::ListRule &dest)
+{
+    if (!src.isEmpty()) {
+        dest.list = src.value("list").toString();
+    }
+}
+void copyMain(const QJsonObject &src, AppBskyFeedThreadgate::Main &dest)
+{
+    if (!src.isEmpty()) {
+        dest.post = src.value("post").toString();
+        // array<union> allow
+        for (const auto &value : src.value("allow").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type == QStringLiteral("app.bsky.feed.threadgate#mentionRule")) {
+                AppBskyFeedThreadgate::MentionRule child;
+                AppBskyFeedThreadgate::copyMentionRule(value.toObject(), child);
+                dest.allow_MentionRule.append(child);
+            }
+        }
+        for (const auto &value : src.value("allow").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type == QStringLiteral("app.bsky.feed.threadgate#followingRule")) {
+                AppBskyFeedThreadgate::FollowingRule child;
+                AppBskyFeedThreadgate::copyFollowingRule(value.toObject(), child);
+                dest.allow_FollowingRule.append(child);
+            }
+        }
+        for (const auto &value : src.value("allow").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type == QStringLiteral("app.bsky.feed.threadgate#listRule")) {
+                AppBskyFeedThreadgate::ListRule child;
+                AppBskyFeedThreadgate::copyListRule(value.toObject(), child);
+                dest.allow_ListRule.append(child);
+            }
+        }
         dest.createdAt = src.value("createdAt").toString();
     }
 }
@@ -911,6 +1017,16 @@ void copyMain(const QJsonObject &src, AppBskyGraphList::Main &dest)
     }
 }
 }
+// app.bsky.graph.listblock
+namespace AppBskyGraphListblock {
+void copyMain(const QJsonObject &src, AppBskyGraphListblock::Main &dest)
+{
+    if (!src.isEmpty()) {
+        dest.subject = src.value("subject").toString();
+        dest.createdAt = src.value("createdAt").toString();
+    }
+}
+}
 // app.bsky.graph.listitem
 namespace AppBskyGraphListitem {
 void copyMain(const QJsonObject &src, AppBskyGraphListitem::Main &dest)
@@ -941,6 +1057,22 @@ void copyNotification(const QJsonObject &src,
             ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
             dest.labels.append(child);
         }
+    }
+}
+}
+// app.bsky.unspecced.defs
+namespace AppBskyUnspeccedDefs {
+void copySkeletonSearchPost(const QJsonObject &src, AppBskyUnspeccedDefs::SkeletonSearchPost &dest)
+{
+    if (!src.isEmpty()) {
+        dest.uri = src.value("uri").toString();
+    }
+}
+void copySkeletonSearchActor(const QJsonObject &src,
+                             AppBskyUnspeccedDefs::SkeletonSearchActor &dest)
+{
+    if (!src.isEmpty()) {
+        dest.did = src.value("did").toString();
     }
 }
 }
@@ -1406,6 +1538,7 @@ void copyRepo(const QJsonObject &src, ComAtprotoSyncListRepos::Repo &dest)
     if (!src.isEmpty()) {
         dest.did = src.value("did").toString();
         dest.head = src.value("head").toString();
+        dest.rev = src.value("rev").toString();
     }
 }
 }
