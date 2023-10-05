@@ -78,7 +78,7 @@ void ColumnListModel::update(int row, ColumnListModelRoles role, const QVariant 
     else if (role == NameRole)
         m_columnList[row].name = value.toString();
     else if (role == ValueRole)
-        m_columnList[row].value = value.toInt();
+        m_columnList[row].value = value.toString();
 
     else if (role == VisibleLikeRole)
         m_columnList[row].type_visibility.like = value.toBool();
