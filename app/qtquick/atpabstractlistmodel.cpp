@@ -170,6 +170,9 @@ QString AtpAbstractListModel::copyRecordText(const QVariant &value) const
             } else if (!part.features_Mention.isEmpty()) {
                 text += QString("<a href=\"%1\">%2</a>")
                                 .arg(part.features_Mention.first().did, display_url);
+            } else if (!part.features_Tag.isEmpty()) {
+                text += QString("<a href=\"search://%1\">%2</a>")
+                                .arg(part.features_Tag.first().tag, display_url);
             } else {
                 text += QString(text_ba.mid(pos_start, pos_end - pos_start))
                                 .toHtmlEscaped()

@@ -30,6 +30,7 @@ ColumnLayout {
     signal requestViewFeedGenerator(string name, string uri)
     signal requestViewLikedBy(string uri)
     signal requestViewRepostedBy(string uri)
+    signal requestViewSearchPosts(string text)
     signal requestReportPost(string uri, string cid)
 
     signal errorOccured(string code, string message)
@@ -109,6 +110,7 @@ ColumnLayout {
                                }
                            }
                 onRequestViewProfile: (did) => postThreadView.requestViewProfile(did)
+                onRequestViewSearchPosts: (text) => postThreadView.requestViewSearchPosts(text)
 
                 moderationFrame.visible: model.muted
                 userFilterMatched: model.userFilterMatched

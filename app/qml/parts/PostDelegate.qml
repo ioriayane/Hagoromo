@@ -47,17 +47,20 @@ ClickableFrame {
     property alias threadConnectorBottom: threadConnectorBottom
 
     signal requestViewProfile(string did)
+    signal requestViewSearchPosts(string text)
 
     function openLink(url){
         if(url.indexOf("did:") === 0){
             requestViewProfile(url)
+        }else if(url.indexOf("search://") === 0){
+            requestViewSearchPosts(url.substring(9))
         }else{
             Qt.openUrlExternally(url)
         }
     }
 
     function displayLink(url){
-        if(url === undefined || url.indexOf("did:") === 0){
+        if(url === undefined || url.indexOf("did:") === 0 || url.indexOf("search://") === 0){
             hoveredLink = ""
         }else{
             hoveredLink = url

@@ -129,6 +129,36 @@ void ColumnListModel::insert(int row, const QString &account_uuid, int component
     save();
 }
 
+void ColumnListModel::insertNext(const QString &key, const QString &account_uuid,
+                                 int component_type, bool auto_loading, int interval, int width,
+                                 const QString &name, const QString &value)
+{
+    insert(rowCount(), account_uuid, component_type, auto_loading, interval, width, name, value);
+
+    int to_position = -1;
+    int from_index = -1;
+    int to_index = rowCount() - 1;
+    for (int i = 0; i < m_columnList.length(); i++) {
+        if (m_columnList.at(i).key == key) {
+            to_position = m_columnList.at(i).position + 1;
+            from_index = i;
+            break;
+        }
+    }
+    if (to_position == -1)
+        return;
+    for (int i = 0; i < m_columnList.length(); i++) {
+        if (m_columnList.at(i).position >= to_position) {
+            m_columnList[i].position++;
+        }
+    }
+    m_columnList.last().position = to_position;
+
+    emit dataChanged(index(from_index), index(to_index));
+
+    save();
+}
+
 void ColumnListModel::move(const QString &key, const MoveDirection direction)
 {
     // モデルのリストの位置は変更しないで管理indexを移動させる

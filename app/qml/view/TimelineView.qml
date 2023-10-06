@@ -32,6 +32,7 @@ ScrollView {
     signal requestViewFeedGenerator(string name, string uri)
     signal requestViewLikedBy(string uri)
     signal requestViewRepostedBy(string uri)
+    signal requestViewSearchPosts(string text)
     signal requestReportPost(string uri, string cid)
 
 
@@ -80,6 +81,7 @@ ScrollView {
 
             onClicked: (mouse) => requestViewThread(model.uri)
             onRequestViewProfile: (did) => timelineView.requestViewProfile(did)
+            onRequestViewSearchPosts: (text) => timelineView.requestViewSearchPosts(text)
 
             moderationFrame.visible: model.muted
             userFilterMatched: model.userFilterMatched
