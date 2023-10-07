@@ -148,6 +148,10 @@ void ComAtprotoRepoCreateRecord::post(const QString &text)
                 json_facet.insert("$type", "app.bsky.richtext.facet");
                 json_feature.insert("did", facet.features_Mention.first().did);
                 json_feature.insert("$type", "app.bsky.richtext.facet#mention");
+            } else if (facet.features_type == AppBskyRichtextFacet::MainFeaturesType::features_Tag
+                       && !facet.features_Tag.isEmpty()) {
+                json_feature.insert("tag", facet.features_Tag.first().tag);
+                json_feature.insert("$type", "app.bsky.richtext.facet#tag");
             }
             json_facet.insert("index", json_index);
             json_features.append(json_feature);

@@ -123,6 +123,7 @@ void hagoromo_test::test_TimelineListModelFacet()
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     model.getLatest();
     spy.wait();
+    spy.wait();
     QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
     QFile file(":/response/facet/xrpc/app.bsky.feed.getTimeline.expect");
@@ -144,6 +145,7 @@ void hagoromo_test::test_TimelineListModelFacet()
 void hagoromo_test::test_RecordOperator()
 {
     RecordOperator ope;
+    ope.setAccount(m_service + "/facet", QString(), QString(), QString(), "dummy", QString());
     QHash<QString, QString> hash = loadPostHash(":/data/com.atproto.repo.createRecord_post.expect");
 
     QHashIterator<QString, QString> i(hash);

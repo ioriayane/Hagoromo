@@ -25,7 +25,9 @@ struct MentionData
 
 RecordOperator::RecordOperator(QObject *parent) : QObject { parent }, m_running(false)
 {
-    m_rxFacet = QRegularExpression(QString("(?:%1)|(?:%2)").arg(REG_EXP_URL, REG_EXP_MENTION));
+    m_rxFacet = QRegularExpression(QString("(?:%1)|(?:%2)|(?:%3)")
+                                           .arg(REG_EXP_URL, REG_EXP_MENTION)
+                                           .arg(REG_EXP_HASH_TAG));
 }
 
 void RecordOperator::setAccount(const QString &service, const QString &did, const QString &handle,
@@ -442,12 +444,35 @@ void RecordOperator::makeFacets(const QString &text, F callback)
             temp = match.captured();
             byte_end = byte_start + temp.toUtf8().length();
 
+            int trimmed_offset = 0;
+            QString trimmed_temp = temp.trimmed();
+            int temp_pos = temp.indexOf(trimmed_temp);
+            int temp_diff_len = temp.length() - trimmed_temp.length();
+            if (temp_diff_len > 0) {
+                // 前後の空白を消す
+                // 今のところhashtagだけここにくる可能性がある
+                byte_start = text.left(pos + temp_pos).toUtf8().length();
+                byte_end = byte_start + trimmed_temp.toUtf8().length();
+                temp = trimmed_temp;
+                if (temp_diff_len == 2 || (temp_diff_len == 1 && temp_pos == 0)) {
+                    trimmed_offset = 1;
+                }
+            }
             if (temp.startsWith("@")) {
                 temp.remove("@");
                 MentionData position;
                 position.start = byte_start;
                 position.end = byte_end;
                 mention.insert(temp, position);
+            } else if (temp.startsWith("#")) {
+                AppBskyRichtextFacet::Main facet;
+                facet.index.byteStart = byte_start;
+                facet.index.byteEnd = byte_end;
+                AppBskyRichtextFacet::Tag tag;
+                tag.tag = temp.mid(1);
+                facet.features_type = AppBskyRichtextFacet::MainFeaturesType::features_Tag;
+                facet.features_Tag.append(tag);
+                m_facets.append(facet);
             } else {
                 AppBskyRichtextFacet::Main facet;
                 facet.index.byteStart = byte_start;
@@ -459,7 +484,7 @@ void RecordOperator::makeFacets(const QString &text, F callback)
                 m_facets.append(facet);
             }
 
-            match = m_rxFacet.match(text, pos + match.capturedLength());
+            match = m_rxFacet.match(text, pos + match.capturedLength() - trimmed_offset);
         }
 
         if (!mention.isEmpty()) {
