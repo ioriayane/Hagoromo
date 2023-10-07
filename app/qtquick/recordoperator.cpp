@@ -5,6 +5,7 @@
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofiles.h"
 #include "atprotocol/app/bsky/graph/appbskygraphmuteactor.h"
 #include "atprotocol/app/bsky/graph/appbskygraphunmuteactor.h"
+#include "systemtool.h"
 
 #include <QTimer>
 
@@ -24,13 +25,7 @@ struct MentionData
 
 RecordOperator::RecordOperator(QObject *parent) : QObject { parent }, m_running(false)
 {
-    m_rxFacet = QRegularExpression(
-            QString("(?:%1)|(?:%2)")
-                    .arg("http[s]?://"
-                         "(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F])|#(?:["
-                         "a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))*)+",
-                         "@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+(?:[a-zA-Z0-9](?:["
-                         "a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)"));
+    m_rxFacet = QRegularExpression(QString("(?:%1)|(?:%2)").arg(REG_EXP_URL, REG_EXP_MENTION));
 }
 
 void RecordOperator::setAccount(const QString &service, const QString &did, const QString &handle,
