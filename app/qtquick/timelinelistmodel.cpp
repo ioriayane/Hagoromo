@@ -196,6 +196,9 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return getLabels(current.post.labels);
     else if (role == LanguagesRole)
         return getLaunguages(current.post.record);
+    else if (role == TagsRole)
+        return QStringList(
+                LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(current.post.record).tags);
     else if (role == ViaRole)
         return getVia(current.post.record);
 
@@ -478,6 +481,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[QuoteFilterMatchedRole] = "quoteFilterMatched";
     roles[LabelsRole] = "labels";
     roles[LanguagesRole] = "languages";
+    roles[TagsRole] = "tags";
     roles[ViaRole] = "via";
 
     roles[ThreadConnectedRole] = "threadConnected";

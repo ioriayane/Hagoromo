@@ -7,10 +7,7 @@
 
 SystemTool::SystemTool(QObject *parent) : QObject { parent }
 {
-    m_rxUrl = QRegularExpression(QString("%1").arg(
-            "http[s]?://"
-            "(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F])|#(?:[a-zA-Z]|[0-9]"
-            "|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))*)+"));
+    m_rxUrl = QRegularExpression(QString("%1").arg(REG_EXP_URL));
 }
 
 void SystemTool::copyToClipboard(const QString &text) const

@@ -31,6 +31,7 @@ ScrollView {
     signal requestViewFeedGenerator(string name, string uri)
     signal requestViewLikedBy(string uri)
     signal requestViewRepostedBy(string uri)
+    signal requestViewSearchPosts(string text)
     signal requestReportPost(string uri, string cid)
 
     ListView {
@@ -76,6 +77,7 @@ ScrollView {
             Layout.preferredWidth: rootListView.width
 
             onRequestViewProfile: (did) => notificationListView.requestViewProfile(did)
+            onRequestViewSearchPosts: (text) => notificationListView.requestViewSearchPosts(text)
 
             moderationFrame.visible: model.muted
             userFilterMatched: model.userFilterMatched

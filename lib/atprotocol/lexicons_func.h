@@ -32,6 +32,8 @@ void copyAdultContentPref(const QJsonObject &src, AppBskyActorDefs::AdultContent
 void copyContentLabelPref(const QJsonObject &src, AppBskyActorDefs::ContentLabelPref &dest);
 void copySavedFeedsPref(const QJsonObject &src, AppBskyActorDefs::SavedFeedsPref &dest);
 void copyPersonalDetailsPref(const QJsonObject &src, AppBskyActorDefs::PersonalDetailsPref &dest);
+void copyFeedViewPref(const QJsonObject &src, AppBskyActorDefs::FeedViewPref &dest);
+void copyThreadViewPref(const QJsonObject &src, AppBskyActorDefs::ThreadViewPref &dest);
 }
 // com.atproto.label.defs
 namespace ComAtprotoLabelDefs {
@@ -81,12 +83,14 @@ void copyBlockedAuthor(const QJsonObject &src, AppBskyFeedDefs::BlockedAuthor &d
 void copyGeneratorViewerState(const QJsonObject &src, AppBskyFeedDefs::GeneratorViewerState &dest);
 void copyGeneratorView(const QJsonObject &src, AppBskyFeedDefs::GeneratorView &dest);
 void copyViewerState(const QJsonObject &src, AppBskyFeedDefs::ViewerState &dest);
+void copyThreadgateView(const QJsonObject &src, AppBskyFeedDefs::ThreadgateView &dest);
 void copyPostView(const QJsonObject &src, AppBskyFeedDefs::PostView &dest);
 void copyNotFoundPost(const QJsonObject &src, AppBskyFeedDefs::NotFoundPost &dest);
 void copyBlockedPost(const QJsonObject &src, AppBskyFeedDefs::BlockedPost &dest);
 void copyReplyRef(const QJsonObject &src, AppBskyFeedDefs::ReplyRef &dest);
 void copyReasonRepost(const QJsonObject &src, AppBskyFeedDefs::ReasonRepost &dest);
 void copyFeedViewPost(const QJsonObject &src, AppBskyFeedDefs::FeedViewPost &dest);
+void copyViewerThreadState(const QJsonObject &src, AppBskyFeedDefs::ViewerThreadState &dest);
 void copyThreadViewPost(const QJsonObject &src, AppBskyFeedDefs::ThreadViewPost &dest);
 void copySkeletonReasonRepost(const QJsonObject &src, AppBskyFeedDefs::SkeletonReasonRepost &dest);
 void copySkeletonFeedPost(const QJsonObject &src, AppBskyFeedDefs::SkeletonFeedPost &dest);
@@ -96,6 +100,7 @@ namespace AppBskyRichtextFacet {
 void copyByteSlice(const QJsonObject &src, AppBskyRichtextFacet::ByteSlice &dest);
 void copyMention(const QJsonObject &src, AppBskyRichtextFacet::Mention &dest);
 void copyLink(const QJsonObject &src, AppBskyRichtextFacet::Link &dest);
+void copyTag(const QJsonObject &src, AppBskyRichtextFacet::Tag &dest);
 void copyMain(const QJsonObject &src, AppBskyRichtextFacet::Main &dest);
 }
 // app.bsky.feed.describeFeedGenerator
@@ -126,6 +131,13 @@ void copyMain(const QJsonObject &src, AppBskyFeedPost::Main &dest);
 namespace AppBskyFeedRepost {
 void copyMain(const QJsonObject &src, AppBskyFeedRepost::Main &dest);
 }
+// app.bsky.feed.threadgate
+namespace AppBskyFeedThreadgate {
+void copyMentionRule(const QJsonObject &src, AppBskyFeedThreadgate::MentionRule &dest);
+void copyFollowingRule(const QJsonObject &src, AppBskyFeedThreadgate::FollowingRule &dest);
+void copyListRule(const QJsonObject &src, AppBskyFeedThreadgate::ListRule &dest);
+void copyMain(const QJsonObject &src, AppBskyFeedThreadgate::Main &dest);
+}
 // app.bsky.graph.block
 namespace AppBskyGraphBlock {
 void copyMain(const QJsonObject &src, AppBskyGraphBlock::Main &dest);
@@ -138,6 +150,10 @@ void copyMain(const QJsonObject &src, AppBskyGraphFollow::Main &dest);
 namespace AppBskyGraphList {
 void copyMain(const QJsonObject &src, AppBskyGraphList::Main &dest);
 }
+// app.bsky.graph.listblock
+namespace AppBskyGraphListblock {
+void copyMain(const QJsonObject &src, AppBskyGraphListblock::Main &dest);
+}
 // app.bsky.graph.listitem
 namespace AppBskyGraphListitem {
 void copyMain(const QJsonObject &src, AppBskyGraphListitem::Main &dest);
@@ -146,6 +162,12 @@ void copyMain(const QJsonObject &src, AppBskyGraphListitem::Main &dest);
 namespace AppBskyNotificationListNotifications {
 void copyNotification(const QJsonObject &src,
                       AppBskyNotificationListNotifications::Notification &dest);
+}
+// app.bsky.unspecced.defs
+namespace AppBskyUnspeccedDefs {
+void copySkeletonSearchPost(const QJsonObject &src, AppBskyUnspeccedDefs::SkeletonSearchPost &dest);
+void copySkeletonSearchActor(const QJsonObject &src,
+                             AppBskyUnspeccedDefs::SkeletonSearchActor &dest);
 }
 // com.atproto.admin.defs
 namespace ComAtprotoAdminDefs {

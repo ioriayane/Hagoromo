@@ -30,6 +30,7 @@ typedef QString ListPurpose;
 struct ListViewerState
 {
     bool muted = false;
+    QString blocked; // at-uri
 };
 struct ListViewBasic
 {
@@ -145,6 +146,20 @@ struct SavedFeedsPref
 struct PersonalDetailsPref
 {
     QString birthDate; // datetime
+};
+struct FeedViewPref
+{
+    QString feed;
+    bool hideReplies = false;
+    bool hideRepliesByUnfollowed = false;
+    int hideRepliesByLikeCount = 0;
+    bool hideReposts = false;
+    bool hideQuotePosts = false;
+};
+struct ThreadViewPref
+{
+    QString sort;
+    bool prioritizeFollowedUsers = false;
 };
 }
 
@@ -271,6 +286,7 @@ enum class MainFeaturesType : int {
     none,
     features_Mention,
     features_Link,
+    features_Tag,
 };
 struct ByteSlice
 {
@@ -285,6 +301,10 @@ struct Link
 {
     QString uri; // uri
 };
+struct Tag
+{
+    QString tag;
+};
 struct Main
 {
     ByteSlice index;
@@ -292,6 +312,7 @@ struct Main
     MainFeaturesType features_type = MainFeaturesType::none;
     QList<Mention> features_Mention;
     QList<Link> features_Link;
+    QList<Tag> features_Tag;
     // union end : features
 };
 }
@@ -365,6 +386,13 @@ struct ViewerState
     QString repost; // at-uri
     QString like; // at-uri
 };
+struct ThreadgateView
+{
+    QString uri; // at-uri
+    QString cid; // cid
+    QVariant record;
+    QList<AppBskyGraphDefs::ListViewBasic> lists;
+};
 struct PostView
 {
     QString uri; // at-uri
@@ -384,6 +412,7 @@ struct PostView
     QString indexedAt; // datetime
     ViewerState viewer;
     QList<ComAtprotoLabelDefs::Label> labels;
+    ThreadgateView threadgate;
 };
 struct NotFoundPost
 {
@@ -425,6 +454,10 @@ struct FeedViewPost
     ReasonRepost reason_ReasonRepost;
     // union end : reason
 };
+struct ViewerThreadState
+{
+    bool canReply = false;
+};
 struct ThreadViewPost
 {
     PostView post;
@@ -440,6 +473,7 @@ struct ThreadViewPost
     QList<NotFoundPost> replies_NotFoundPost;
     QList<BlockedPost> replies_BlockedPost;
     // union end : replies
+    ViewerThreadState viewer;
 };
 struct SkeletonReasonRepost
 {
@@ -616,6 +650,7 @@ struct Main
     MainLabelsType labels_type = MainLabelsType::none;
     ComAtprotoLabelDefs::SelfLabels labels_ComAtprotoLabelDefs_SelfLabels;
     // union end : labels
+    QList<QString> tags;
     QString createdAt; // datetime
     QString via; // client name(Unofficial field)
 };
@@ -626,6 +661,37 @@ namespace AppBskyFeedRepost {
 struct Main
 {
     ComAtprotoRepoStrongRef::Main subject;
+    QString createdAt; // datetime
+};
+}
+
+// app.bsky.feed.threadgate
+namespace AppBskyFeedThreadgate {
+enum class MainAllowType : int {
+    none,
+    allow_MentionRule,
+    allow_FollowingRule,
+    allow_ListRule,
+};
+struct MentionRule
+{
+};
+struct FollowingRule
+{
+};
+struct ListRule
+{
+    QString list; // at-uri
+};
+struct Main
+{
+    QString post; // at-uri
+    // union start : allow
+    MainAllowType allow_type = MainAllowType::none;
+    QList<MentionRule> allow_MentionRule;
+    QList<FollowingRule> allow_FollowingRule;
+    QList<ListRule> allow_ListRule;
+    // union end : allow
     QString createdAt; // datetime
 };
 }
@@ -668,6 +734,15 @@ struct Main
 };
 }
 
+// app.bsky.graph.listblock
+namespace AppBskyGraphListblock {
+struct Main
+{
+    QString subject; // at-uri
+    QString createdAt; // datetime
+};
+}
+
 // app.bsky.graph.listitem
 namespace AppBskyGraphListitem {
 struct Main
@@ -691,6 +766,18 @@ struct Notification
     bool isRead = false;
     QString indexedAt; // datetime
     QList<ComAtprotoLabelDefs::Label> labels;
+};
+}
+
+// app.bsky.unspecced.defs
+namespace AppBskyUnspeccedDefs {
+struct SkeletonSearchPost
+{
+    QString uri; // at-uri
+};
+struct SkeletonSearchActor
+{
+    QString did; // did
 };
 }
 
@@ -1014,6 +1101,7 @@ struct Repo
 {
     QString did; // did
     QString head; // cid
+    QString rev;
 };
 }
 

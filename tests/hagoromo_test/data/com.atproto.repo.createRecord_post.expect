@@ -209,5 +209,437 @@
             },
             "repo": "post_0021"
         }
+    },
+    "post_0030": {
+        "text": "hoge #hashtag fuga",
+        "expect": {
+            "collection": "app.bsky.feed.post",
+            "record": {
+                "createdAt": "2023-06-05T15:15:45.457Z",
+                "text": "hoge #hashtag fuga",
+                "facets": [
+                    {
+                        "index": {
+                            "byteEnd": 13,
+                            "byteStart": 5
+                        },
+                        "features": [
+                            {
+                                "tag": "hashtag",
+                                "$type": "app.bsky.richtext.facet#tag"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "repo": "post_0030"
+        }
+    },
+    "post_0031": {
+        "text": "#hashtag",
+        "expect": {
+            "collection": "app.bsky.feed.post",
+            "record": {
+                "createdAt": "2023-06-05T15:15:45.457Z",
+                "text": "#hashtag",
+                "facets": [
+                    {
+                        "index": {
+                            "byteEnd": 8,
+                            "byteStart": 0
+                        },
+                        "features": [
+                            {
+                                "tag": "hashtag",
+                                "$type": "app.bsky.richtext.facet#tag"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "repo": "post_0031"
+        }
+    },
+    "post_0032": {
+        "text": "hoge #hashtag",
+        "expect": {
+            "collection": "app.bsky.feed.post",
+            "record": {
+                "createdAt": "2023-06-05T15:15:45.457Z",
+                "text": "hoge #hashtag",
+                "facets": [
+                    {
+                        "index": {
+                            "byteEnd": 13,
+                            "byteStart": 5
+                        },
+                        "features": [
+                            {
+                                "tag": "hashtag",
+                                "$type": "app.bsky.richtext.facet#tag"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "repo": "post_0032"
+        }
+    },
+    "post_0033": {
+        "text": "あ #tag い",
+        "expect": {
+            "collection": "app.bsky.feed.post",
+            "record": {
+                "createdAt": "2023-06-05T15:15:45.457Z",
+                "text": "あ #tag い",
+                "facets": [
+                    {
+                        "index": {
+                            "byteEnd": 8,
+                            "byteStart": 4
+                        },
+                        "features": [
+                            {
+                                "tag": "tag",
+                                "$type": "app.bsky.richtext.facet#tag"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "repo": "post_0033"
+        }
+    },
+    "post_0034": {
+        "text": "あ　#tag い",
+        "expect": {
+            "collection": "app.bsky.feed.post",
+            "record": {
+                "createdAt": "2023-06-05T15:15:45.457Z",
+                "text": "あ　#tag い",
+                "facets": [
+                    {
+                        "index": {
+                            "byteEnd": 10,
+                            "byteStart": 6
+                        },
+                        "features": [
+                            {
+                                "tag": "tag",
+                                "$type": "app.bsky.richtext.facet#tag"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "repo": "post_0034"
+        }
+    },
+    "post_0035": {
+        "text": "あ #0000not_tag い",
+        "expect": {
+            "collection": "app.bsky.feed.post",
+            "record": {
+                "createdAt": "2023-06-05T15:15:45.457Z",
+                "text": "あ #0000not_tag い"
+            },
+            "repo": "post_0035"
+        }
+    },
+    "post_0036": {
+        "text": "あ #たぐ い",
+        "expect": {
+            "collection": "app.bsky.feed.post",
+            "record": {
+                "createdAt": "2023-06-05T15:15:45.457Z",
+                "text": "あ #たぐ い",
+                "facets": [
+                    {
+                        "index": {
+                            "byteEnd": 11,
+                            "byteStart": 4
+                        },
+                        "features": [
+                            {
+                                "tag": "たぐ",
+                                "$type": "app.bsky.richtext.facet#tag"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "repo": "post_0036"
+        }
+    },
+    "post_0037": {
+        "text": "あ　#たぐ　い",
+        "expect": {
+            "collection": "app.bsky.feed.post",
+            "record": {
+                "createdAt": "2023-06-05T15:15:45.457Z",
+                "text": "あ　#たぐ　い",
+                "facets": [
+                    {
+                        "index": {
+                            "byteEnd": 13,
+                            "byteStart": 6
+                        },
+                        "features": [
+                            {
+                                "tag": "たぐ",
+                                "$type": "app.bsky.richtext.facet#tag"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "repo": "post_0037"
+        }
+    },
+    "post_0038": {
+        "text": "たぐ #たぐ てすと #🐧🐧🐧🐧🐧　絵文字",
+        "expect": {
+            "collection": "app.bsky.feed.post",
+            "record": {
+                "createdAt": "2023-06-05T15:15:45.457Z",
+                "text": "たぐ #たぐ てすと #🐧🐧🐧🐧🐧　絵文字",
+                "facets": [
+                    {
+                        "index": {
+                            "byteEnd": 14,
+                            "byteStart": 7
+                        },
+                        "features": [
+                            {
+                                "tag": "たぐ",
+                                "$type": "app.bsky.richtext.facet#tag"
+                            }
+                        ]
+                    },
+                    {
+                        "index": {
+                            "byteEnd": 46,
+                            "byteStart": 25
+                        },
+                        "features": [
+                            {
+                                "tag": "🐧🐧🐧🐧🐧",
+                                "$type": "app.bsky.richtext.facet#tag"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "repo": "post_0038"
+        }
+    },
+    "post_0039": {
+        "text": "たぐ #たぐ #🐧🐧🐧🐧🐧",
+        "expect": {
+            "collection": "app.bsky.feed.post",
+            "record": {
+                "createdAt": "2023-06-05T15:15:45.457Z",
+                "text": "たぐ #たぐ #🐧🐧🐧🐧🐧",
+                "facets": [
+                    {
+                        "index": {
+                            "byteEnd": 14,
+                            "byteStart": 7
+                        },
+                        "features": [
+                            {
+                                "tag": "たぐ",
+                                "$type": "app.bsky.richtext.facet#tag"
+                            }
+                        ]
+                    },
+                    {
+                        "index": {
+                            "byteEnd": 36,
+                            "byteStart": 15
+                        },
+                        "features": [
+                            {
+                                "tag": "🐧🐧🐧🐧🐧",
+                                "$type": "app.bsky.richtext.facet#tag"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "repo": "post_0039"
+        }
+    },
+    "post_0040": {
+        "text": "たぐ #たぐ　#🐧🐧🐧🐧🐧　#tag",
+        "expect": {
+            "collection": "app.bsky.feed.post",
+            "record": {
+                "createdAt": "2023-06-05T15:15:45.457Z",
+                "text": "たぐ #たぐ　#🐧🐧🐧🐧🐧　#tag",
+                "facets": [
+                    {
+                        "index": {
+                            "byteEnd": 14,
+                            "byteStart": 7
+                        },
+                        "features": [
+                            {
+                                "tag": "たぐ",
+                                "$type": "app.bsky.richtext.facet#tag"
+                            }
+                        ]
+                    },
+                    {
+                        "index": {
+                            "byteEnd": 38,
+                            "byteStart": 17
+                        },
+                        "features": [
+                            {
+                                "tag": "🐧🐧🐧🐧🐧",
+                                "$type": "app.bsky.richtext.facet#tag"
+                            }
+                        ]
+                    },
+                    {
+                        "index": {
+                            "byteEnd": 45,
+                            "byteStart": 41
+                        },
+                        "features": [
+                            {
+                                "tag": "tag",
+                                "$type": "app.bsky.richtext.facet#tag"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "repo": "post_0040"
+        }
+    },
+    "post_0041": {
+        "text": "たぐ\n#たぐ\n#🐧🐧🐧🐧🐧\n#tag\n",
+        "expect": {
+            "collection": "app.bsky.feed.post",
+            "record": {
+                "createdAt": "2023-06-05T15:15:45.457Z",
+                "text": "たぐ\n#たぐ\n#🐧🐧🐧🐧🐧\n#tag\n",
+                "facets": [
+                    {
+                        "index": {
+                            "byteEnd": 14,
+                            "byteStart": 7
+                        },
+                        "features": [
+                            {
+                                "tag": "たぐ",
+                                "$type": "app.bsky.richtext.facet#tag"
+                            }
+                        ]
+                    },
+                    {
+                        "index": {
+                            "byteEnd": 36,
+                            "byteStart": 15
+                        },
+                        "features": [
+                            {
+                                "tag": "🐧🐧🐧🐧🐧",
+                                "$type": "app.bsky.richtext.facet#tag"
+                            }
+                        ]
+                    },
+                    {
+                        "index": {
+                            "byteEnd": 41,
+                            "byteStart": 37
+                        },
+                        "features": [
+                            {
+                                "tag": "tag",
+                                "$type": "app.bsky.richtext.facet#tag"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "repo": "post_0041"
+        }
+    },
+    "post_0042": {
+        "text": "たぐ\n#たぐ\n@ioriayane2.bsky.social \n#🐧🐧🐧🐧🐧\nhttps://leme.style\n#tag",
+        "expect": {
+            "collection": "app.bsky.feed.post",
+            "record": {
+                "createdAt": "2023-06-05T15:15:45.457Z",
+                "text": "たぐ\n#たぐ\n@ioriayane2.bsky.social \n#🐧🐧🐧🐧🐧\nhttps://leme.style\n#tag",
+                "facets": [
+                    {
+                        "index": {
+                            "byteEnd": 14,
+                            "byteStart": 7
+                        },
+                        "features": [
+                            {
+                                "tag": "たぐ",
+                                "$type": "app.bsky.richtext.facet#tag"
+                            }
+                        ]
+                    },
+                    {
+                        "index": {
+                            "byteEnd": 61,
+                            "byteStart": 40
+                        },
+                        "features": [
+                            {
+                                "tag": "🐧🐧🐧🐧🐧",
+                                "$type": "app.bsky.richtext.facet#tag"
+                            }
+                        ]
+                    },
+                    {
+                        "index": {
+                            "byteEnd": 80,
+                            "byteStart": 62
+                        },
+                        "features": [
+                            {
+                                "uri": "https://leme.style",
+                                "$type": "app.bsky.richtext.facet#link"
+                            }
+                        ]
+                    },
+                    {
+                        "index": {
+                            "byteEnd": 85,
+                            "byteStart": 81
+                        },
+                        "features": [
+                            {
+                                "tag": "tag",
+                                "$type": "app.bsky.richtext.facet#tag"
+                            }
+                        ]
+                    },
+                    {
+                        "$type": "app.bsky.richtext.facet",
+                        "index": {
+                            "byteEnd": 38,
+                            "byteStart": 15
+                        },
+                        "features": [
+                            {
+                                "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                                "$type": "app.bsky.richtext.facet#mention"
+                            }
+                        ]
+                   }
+                ]
+            },
+            "repo": "post_0042"
+        }
     }
 }

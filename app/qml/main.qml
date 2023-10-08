@@ -285,6 +285,13 @@ ApplicationWindow {
                                             columnManageModel.append(account.uuid, 4, false, 300000, 400, name, uri)
                                             scrollView.showRightMost()
                                         }
+            onRequestViewSearchPosts: (account_uuid, text, current_column_key) => {
+                                          console.log("Search:" + account_uuid + ", " + text + ", " + current_column_key)
+                                          columnManageModel.insertNext(current_column_key, account_uuid, 2, false, 300000, 350,
+                                                                   qsTr("Search posts"), text)
+                                          repeater.updatePosition()
+                                      }
+
             onRequestReportPost: (account_uuid, uri, cid) => {
                                      var row = accountListModel.indexAt(account_uuid)
                                      if(row >= 0){

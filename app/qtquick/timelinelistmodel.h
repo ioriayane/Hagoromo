@@ -93,6 +93,7 @@ public:
 
         LabelsRole,
         LanguagesRole,
+        TagsRole,
         ViaRole,
 
         ThreadConnectedRole,

@@ -32,6 +32,23 @@
                 "followedBy": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.graph.follow/3jwn752grz32g"
             },
             "labels": []
+        },
+        {
+            "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+            "handle": "ioriayane2.bsky.social",
+            "description": "ioriayane.relog.techのテスト用アカウントの2つ目\n\nThis account is used to test the report function.\nIt reports from @ioriayane.relog.tech and @ioriayane.bsky.social.",
+            "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreiayv34bulrnm5gsnx73b46s2plh76k7fvwcewqrdur7eelf7u6c3u@jpeg",
+            "followsCount": 1,
+            "followersCount": 3,
+            "postsCount": 214,
+            "indexedAt": "2023-07-15T10:59:28.547Z",
+            "viewer": {
+                "muted": false,
+                "blockedBy": false,
+                "following": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.graph.follow/3k2fx3qmuob2g",
+                "followedBy": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.follow/3k5u735ydrb2p"
+            },
+            "labels": []
         }
     ]
 }
