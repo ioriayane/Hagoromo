@@ -51,7 +51,11 @@ void AtProtocolAccount::setSession(const QString &did, const QString &handle, co
 
 QString AtProtocolAccount::service() const
 {
-    return m_account.service;
+    if (m_account.service.endsWith("/")) {
+        return m_account.service.chopped(1);
+    } else {
+        return m_account.service;
+    }
 }
 
 void AtProtocolAccount::setService(const QString &newService)
