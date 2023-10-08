@@ -4,7 +4,9 @@ WebServer::WebServer(QObject *parent) : QAbstractHttpServer(parent) { }
 
 bool WebServer::handleRequest(const QHttpServerRequest &request, QTcpSocket *socket)
 {
-    if (request.method() == QHttpServerRequest::Method::Post) {
+    if (request.url().path().contains("//")) {
+        makeResponder(request, socket).write(QHttpServerResponder::StatusCode::NotFound);
+    } else if (request.method() == QHttpServerRequest::Method::Post) {
         bool result = false;
         QString json;
         emit receivedPost(request, result, json);
