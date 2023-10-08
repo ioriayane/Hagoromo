@@ -16,6 +16,7 @@
 
 - [Qt 5.15.2](https://www.qt.io/)
 - [OpenSSL 1.1.1q](http://www.openssl.org/)
+- [cpp-httplib](https://github.com/yhirose/cpp-httplib)
 - [Qt HTTP Server](https://code.qt.io/cgit/qt-extensions/qthttpserver.git/)(for unit test only)
 
 ## ダウンロード
@@ -32,7 +33,7 @@
 
 ビルドするプラットフォームのQt 5.15.2をインストールしてください。
 
-Official sise : [Qt](https://www.qt.io/)
+Official site : [Qt](https://www.qt.io/)
 
 ### Windows
 
@@ -116,6 +117,7 @@ This is a multi-column [Bluesky](https://blueskyweb.xyz/) client.
 
 - [Qt 5.15.2](https://www.qt.io/)
 - [OpenSSL 1.1.1q](http://www.openssl.org/)
+- [cpp-httplib](https://github.com/yhirose/cpp-httplib)
 - [Qt HTTP Server](https://code.qt.io/cgit/qt-extensions/qthttpserver.git/)(for unit test only)
 
 ## Download
@@ -132,7 +134,7 @@ Unzip the archive and save it in any folder.
 
 Install Qt 5.15.2 for the platform you want to build.
 
-Official sise : [Qt](https://www.qt.io/)
+Official site : [Qt](https://www.qt.io/)
 
 
 ### Windows

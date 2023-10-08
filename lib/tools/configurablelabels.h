@@ -21,7 +21,7 @@ struct ConfigurableLabelItem
     bool configurable = true;
 };
 
-class ConfigurableLabels : public AtProtocolInterface::AccessAtProtocol
+class ConfigurableLabels : public AtProtocolInterface::AtProtocolAccount
 {
     Q_OBJECT
 
@@ -53,6 +53,7 @@ public:
 
 signals:
     void runningChanged(bool running);
+    void finished(bool success);
 
 protected:
     virtual bool parseJson(bool success, const QString reply_json)

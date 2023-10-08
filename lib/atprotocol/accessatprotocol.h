@@ -1,7 +1,7 @@
 #ifndef ACCESSATPROTOCOL_H
 #define ACCESSATPROTOCOL_H
 
-#include <QNetworkAccessManager>
+#include "http/httpaccessmanager.h"
 #include <QNetworkReply>
 #include <QObject>
 #include <QUrl>
@@ -39,11 +39,11 @@ struct AccountData
     AccountStatus status = AccountStatus::Unknown;
 };
 
-class AccessAtProtocol : public QObject
+class AtProtocolAccount : public QObject
 {
     Q_OBJECT
 public:
-    explicit AccessAtProtocol(QObject *parent = nullptr);
+    explicit AtProtocolAccount(QObject *parent = nullptr);
 
     const AccountData &account() const;
     void setAccount(const AccountData &account);
@@ -56,6 +56,16 @@ public:
     QString email() const;
     QString accessJwt() const;
     QString refreshJwt() const;
+
+private:
+    AccountData m_account;
+};
+
+class AccessAtProtocol : public AtProtocolAccount
+{
+    Q_OBJECT
+public:
+    explicit AccessAtProtocol(QObject *parent = nullptr);
 
     QString replyJson() const;
     QString errorCode() const;
@@ -74,12 +84,11 @@ protected:
     void postWithImage(const QString &endpoint, const QString &path);
 
     virtual bool parseJson(bool success, const QString reply_json) = 0;
-    bool checkReply(QNetworkReply *reply);
+    bool checkReply(HttpReply *reply);
 
 private:
-    QNetworkAccessManager m_manager;
+    static HttpAccessManager *m_manager;
 
-    AccountData m_account;
     QString m_replyJson;
     QString m_errorCode;
     QString m_errorMessage;

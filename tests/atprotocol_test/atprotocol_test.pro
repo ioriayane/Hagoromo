@@ -10,6 +10,7 @@ SOURCES +=  tst_atprotocol_test.cpp
 
 include(../common/common.pri)
 include(../../lib/lib.pri)
+include(../../openssl/openssl.pri)
 
 RESOURCES += \
     atprotocol_test.qrc

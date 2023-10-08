@@ -12,7 +12,9 @@ using AtProtocolInterface::AppBskyActorGetPreferences;
 using AtProtocolInterface::AppBskyActorPutPreferences;
 
 ConfigurableLabels::ConfigurableLabels(QObject *parent)
-    : AtProtocolInterface::AccessAtProtocol { parent }, m_enableAdultContent(true), m_running(false)
+    : AtProtocolInterface::AtProtocolAccount { parent },
+      m_enableAdultContent(true),
+      m_running(false)
 {
     initializeLabels();
 }

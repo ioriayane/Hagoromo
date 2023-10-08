@@ -1,0 +1,10 @@
+{
+    "blob": {
+        "$type": "blob",
+        "ref": {
+            "$link": "ABCDEFG"
+        },
+        "mimeType": "image/jpeg",
+        "size": 210678
+    }
+}

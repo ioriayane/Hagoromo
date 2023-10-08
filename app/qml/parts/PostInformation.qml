@@ -7,11 +7,20 @@ import tech.relog.hagoromo.singleton 1.0
 
 ColumnLayout {
     spacing: 0
+    property alias tagsLayout: tagsLayout
     property alias labelsLayout: labelsLayout
     property alias languagesLayout: languagesLayout
     property alias indexedAtLongLabel: indexedAtLongLabel
     property alias viaTagLabel: viaTagLabel
 
+    TagLabelLayout {
+        id: tagsLayout
+        Layout.preferredWidth: parent.width
+        Layout.topMargin: 5
+        visible: count > 0
+        iconSource: "../images/tag.png"
+        tagSpacing: 5
+    }
     TagLabelLayout {
         id: labelsLayout
         Layout.preferredWidth: parent.width

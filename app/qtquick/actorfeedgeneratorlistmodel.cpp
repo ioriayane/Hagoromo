@@ -20,15 +20,19 @@ void ActorFeedGeneratorListModel::getLatest()
     AppBskyFeedGetActorFeeds *feeds = new AppBskyFeedGetActorFeeds(this);
     connect(feeds, &AppBskyFeedGetActorFeeds::finished, [=](bool success) {
         if (success) {
-            beginInsertRows(QModelIndex(), 0, feeds->generatorViewList()->count() - 1);
-            for (const auto &generator : *feeds->generatorViewList()) {
-                m_cidList.append(generator.cid);
-                m_generatorViewHash[generator.cid] = generator;
-            }
-            endInsertRows();
-
             m_cursor = feeds->cursor();
-            getSavedGenerators();
+
+            if (!feeds->generatorViewList()->isEmpty()) {
+                beginInsertRows(QModelIndex(), 0, feeds->generatorViewList()->count() - 1);
+                for (const auto &generator : *feeds->generatorViewList()) {
+                    m_cidList.append(generator.cid);
+                    m_generatorViewHash[generator.cid] = generator;
+                }
+                endInsertRows();
+                getSavedGenerators();
+            } else {
+                setRunning(false);
+            }
         } else {
             emit errorOccured(feeds->errorCode(), feeds->errorMessage());
             setRunning(false);

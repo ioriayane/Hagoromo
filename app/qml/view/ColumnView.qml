@@ -41,6 +41,7 @@ ColumnLayout {
     signal requestViewAuthorFeed(string account_uuid, string did, string handle)
     signal requestViewImages(int index, var paths, var alts)
     signal requestViewFeedGenerator(string account_uuid, string name, string uri)
+    signal requestViewSearchPosts(string account_uuid, string text, string current_column_key)
     signal requestReportPost(string account_uuid, string uri, string cid)
     signal requestReportAccount(string account_uuid, string did)
 
@@ -89,6 +90,7 @@ ColumnLayout {
             onRequestViewFeedGenerator: (name, uri) => columnView.requestViewFeedGenerator(account.uuid, name, uri)
             onRequestViewLikedBy: (uri) => columnStackView.push(likesProfilesComponent, { "targetUri": uri })
             onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
+            onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
@@ -123,6 +125,7 @@ ColumnLayout {
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onRequestViewLikedBy: (uri) => columnStackView.push(likesProfilesComponent, { "targetUri": uri })
             onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
+            onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
@@ -148,6 +151,7 @@ ColumnLayout {
             onRequestViewFeedGenerator: (name, uri) => columnView.requestViewFeedGenerator(account.uuid, name, uri)
             onRequestViewLikedBy: (uri) => columnStackView.push(likesProfilesComponent, { "targetUri": uri })
             onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
+            onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
@@ -181,6 +185,7 @@ ColumnLayout {
             onRequestViewFeedGenerator: (name, uri) => columnView.requestViewFeedGenerator(account.uuid, name, uri)
             onRequestViewLikedBy: (uri) => columnStackView.push(likesProfilesComponent, { "targetUri": uri })
             onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
+            onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
             onRequestReportAccount: (did) => columnView.requestReportAccount(account.uuid, did)
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
@@ -222,6 +227,7 @@ ColumnLayout {
             onRequestViewFeedGenerator: (name, uri) => columnView.requestViewFeedGenerator(account.uuid, name, uri)
             onRequestViewLikedBy: (uri) => columnStackView.push(likesProfilesComponent, { "targetUri": uri })
             onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
+            onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
@@ -273,6 +279,7 @@ ColumnLayout {
             onRequestViewFeedGenerator: (name, uri) => columnView.requestViewFeedGenerator(account.uuid, name, uri)
             onRequestViewLikedBy: (uri) => columnStackView.push(likesProfilesComponent, { "targetUri": uri })
             onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
+            onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
@@ -307,6 +314,7 @@ ColumnLayout {
             onRequestViewFeedGenerator: (name, uri) => columnView.requestViewFeedGenerator(account.uuid, name, uri)
             onRequestViewLikedBy: (uri) => columnStackView.push(likesProfilesComponent, { "targetUri": uri })
             onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
+            onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink

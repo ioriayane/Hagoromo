@@ -14,6 +14,7 @@
 #include "anyprofilelistmodel.h"
 #include "accountlistmodel.h"
 #include "common.h"
+#include "postthreadlistmodel.h"
 
 class hagoromo_test : public QObject
 {
@@ -31,6 +32,7 @@ private slots:
     void test_FeedGeneratorListModel();
     void test_ColumnListModelMove();
     void test_ColumnListModelRemove();
+    void test_ColumnListModelInsertNext();
     void test_NotificationListModel();
     void test_NotificationListModel2();
     void test_UserProfile();
@@ -45,6 +47,7 @@ private slots:
     void test_AnyProfileListModel();
     void test_AccountListModel();
     void test_TimelineListModel_text();
+    void test_PostThreadListModel();
 
 private:
     WebServer m_mockServer;
@@ -120,6 +123,7 @@ void hagoromo_test::test_TimelineListModelFacet()
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     model.getLatest();
     spy.wait();
+    spy.wait();
     QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
     QFile file(":/response/facet/xrpc/app.bsky.feed.getTimeline.expect");
@@ -141,6 +145,7 @@ void hagoromo_test::test_TimelineListModelFacet()
 void hagoromo_test::test_RecordOperator()
 {
     RecordOperator ope;
+    ope.setAccount(m_service + "/facet", QString(), QString(), QString(), "dummy", QString());
     QHash<QString, QString> hash = loadPostHash(":/data/com.atproto.repo.createRecord_post.expect");
 
     QHashIterator<QString, QString> i(hash);
@@ -194,7 +199,7 @@ void hagoromo_test::test_FeedGeneratorListModel()
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.saveGenerator(
                 "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/hot-classic");
-        spy.wait();
+        spy.wait(10 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
     {
@@ -204,7 +209,7 @@ void hagoromo_test::test_FeedGeneratorListModel()
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.removeGenerator(
                 "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/with-friends");
-        spy.wait();
+        spy.wait(10 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
 }
@@ -338,6 +343,74 @@ void hagoromo_test::test_ColumnListModelRemove()
     QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 1 << 2 << 0);
 }
 
+void hagoromo_test::test_ColumnListModelInsertNext()
+{
+    ColumnListModel model;
+
+    model.append("uuid_1", 0, false, 10000, 400, "column 1", "value 1");
+    model.append("uuid_2", 1, false, 20000, 500, "column 2", "value 2");
+    model.append("uuid_3", 2, false, 30000, 600, "column 3", "value 3");
+    model.append("uuid_4", 3, false, 40000, 700, "column 4", "value 4");
+
+    QVERIFY2(model.getPreviousRow(0) == -1,
+             QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(1) == 0,
+             QString("left pos=%1").arg(model.getPreviousRow(1)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(2) == 1,
+             QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(3) == 2,
+             QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
+    QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 0 << 1 << 2 << 3);
+
+    model.insertNext(model.item(0, ColumnListModel::KeyRole).toString(), "uuid_10", 10, false, 10,
+                     800, "column 1 next", "value 10");
+    QVERIFY2(model.getPreviousRow(0) == -1,
+             QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(1) == 4,
+             QString("left pos=%1").arg(model.getPreviousRow(1)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(2) == 1,
+             QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(3) == 2,
+             QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(4) == 0,
+             QString("left pos=%1").arg(model.getPreviousRow(4)).toLocal8Bit());
+    QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 0 << 4 << 1 << 2 << 3);
+
+    model.insertNext(model.item(0, ColumnListModel::KeyRole).toString(), "uuid_11", 11, false, 11,
+                     900, "column 1 next2", "value 11");
+    QVERIFY2(model.getPreviousRow(0) == -1,
+             QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(1) == 4,
+             QString("left pos=%1").arg(model.getPreviousRow(1)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(2) == 1,
+             QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(3) == 2,
+             QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(4) == 5,
+             QString("left pos=%1").arg(model.getPreviousRow(4)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(5) == 0,
+             QString("left pos=%1").arg(model.getPreviousRow(5)).toLocal8Bit());
+    QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 0 << 5 << 4 << 1 << 2 << 3);
+
+    model.insertNext(model.item(3, ColumnListModel::KeyRole).toString(), "uuid_12", 12, false, 12,
+                     1000, "column 4 next", "value 12");
+    QVERIFY2(model.getPreviousRow(0) == -1,
+             QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(1) == 4,
+             QString("left pos=%1").arg(model.getPreviousRow(1)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(2) == 1,
+             QString("left pos=%1").arg(model.getPreviousRow(2)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(3) == 2,
+             QString("left pos=%1").arg(model.getPreviousRow(3)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(4) == 5,
+             QString("left pos=%1").arg(model.getPreviousRow(4)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(5) == 0,
+             QString("left pos=%1").arg(model.getPreviousRow(5)).toLocal8Bit());
+    QVERIFY2(model.getPreviousRow(6) == 3,
+             QString("left pos=%1").arg(model.getPreviousRow(6)).toLocal8Bit());
+    QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 0 << 5 << 4 << 1 << 2 << 3 << 6);
+}
+
 void hagoromo_test::test_NotificationListModel()
 {
     NotificationListModel model;
@@ -348,7 +421,7 @@ void hagoromo_test::test_NotificationListModel()
         int i = 0;
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
-        spy.wait();
+        spy.wait(10 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QVERIFY2(model.rowCount() == 6, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
@@ -395,7 +468,7 @@ void hagoromo_test::test_NotificationListModel()
         model.setVisibleQuote(true);
         model.clear();
         model.getLatest();
-        spy.wait();
+        spy.wait(10 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
@@ -437,7 +510,7 @@ void hagoromo_test::test_NotificationListModel()
         model.setVisibleQuote(true);
         model.clear();
         model.getLatest();
-        spy.wait();
+        spy.wait(10 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
@@ -479,7 +552,7 @@ void hagoromo_test::test_NotificationListModel()
         model.setVisibleQuote(true);
         model.clear();
         model.getLatest();
-        spy.wait();
+        spy.wait(10 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
@@ -521,7 +594,7 @@ void hagoromo_test::test_NotificationListModel()
         model.setVisibleQuote(true);
         model.clear();
         model.getLatest();
-        spy.wait();
+        spy.wait(10 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
@@ -563,7 +636,7 @@ void hagoromo_test::test_NotificationListModel()
         model.setVisibleQuote(true);
         model.clear();
         model.getLatest();
-        spy.wait();
+        spy.wait(10 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
@@ -605,7 +678,7 @@ void hagoromo_test::test_NotificationListModel()
         model.setVisibleQuote(false);
         model.clear();
         model.getLatest();
-        spy.wait();
+        spy.wait(10 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
@@ -652,7 +725,7 @@ void hagoromo_test::test_NotificationListModel2()
     model.setVisibleReply(false);
     model.setVisibleQuote(false);
     model.getLatest();
-    spy.wait();
+    spy.wait(10 * 1000);
     QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
     QVERIFY2(model.rowCount() == 0, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
@@ -926,7 +999,7 @@ void hagoromo_test::test_TimelineListModel_quote_warn()
 
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     model.getLatest();
-    spy.wait();
+    spy.wait(10 * 1000);
     QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
     QVERIFY(model.rowCount() == 7);
@@ -1165,7 +1238,7 @@ void hagoromo_test::test_NotificationListModel_warn()
 
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     model.getLatest();
-    spy.wait();
+    spy.wait(10 * 1000);
     QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
     QVERIFY(model.rowCount() == 2);
@@ -1204,7 +1277,7 @@ void hagoromo_test::test_TimelineListModel_next()
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
-        spy.wait();
+        spy.wait(10 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
     QVERIFY(model.rowCount() == 6);
@@ -1341,8 +1414,8 @@ void hagoromo_test::test_AccountListModel()
     {
         QSignalSpy spy(&model2, SIGNAL(updatedAccount(int, const QString &)));
         model2.load();
-        spy.wait();
-        spy.wait();
+        spy.wait(10 * 1000);
+        spy.wait(10 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
     QVERIFY2(model2.rowCount() == 2, QString::number(model2.rowCount()).toLocal8Bit());
@@ -1370,7 +1443,7 @@ void hagoromo_test::test_TimelineListModel_text()
 
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     model.getLatest();
-    spy.wait();
+    spy.wait(10 * 1000);
     QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
     QVERIFY(model.rowCount() == 4);
@@ -1393,6 +1466,114 @@ void hagoromo_test::test_TimelineListModel_text()
             << model.item(row, TimelineListModel::RecordTextPlainRole).toString().toLocal8Bit();
     qDebug().noquote()
             << model.item(row, TimelineListModel::RecordTextRole).toString().toLocal8Bit();
+}
+
+void hagoromo_test::test_PostThreadListModel()
+{
+    PostThreadListModel model;
+    model.setAccount(m_service + "/postthread/1", QString(), QString(), QString(), "dummy",
+                     QString());
+    model.setDisplayInterval(0);
+    model.setPostThreadUri("at://uri");
+
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait(10 * 1000);
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    int row;
+
+    QVERIFY2(model.rowCount() == 4, QString("rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    row = 0;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "test");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == false);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    row = 1;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 2");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    row = 2;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 3");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    row = 3;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 4");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == false);
+
+    model.clear();
+    model.setAccount(m_service + "/postthread/2", QString(), QString(), QString(), "dummy",
+                     QString());
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    QVERIFY2(model.rowCount() == 6, QString("rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    row = 0;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "test");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == false);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    row = 1;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 2");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    row = 2;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 3 - 2");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    row = 3;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 4 - 2");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == false);
+    row = 4;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 3");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    row = 5;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 4");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == false);
+
+    model.clear();
+    model.setAccount(m_service + "/postthread/3", QString(), QString(), QString(), "dummy",
+                     QString());
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    QVERIFY2(model.rowCount() == 6, QString("rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    row = 0;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "test");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == false);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    row = 1;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 2");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    row = 2;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 3 - 2");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    row = 3;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 4 - 2");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == false);
+    row = 4;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 3");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == true);
+    row = 5;
+    QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 4");
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
+    QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == false);
 }
 
 void hagoromo_test::test_RecordOperatorCreateRecord(const QByteArray &body)

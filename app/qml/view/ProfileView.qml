@@ -42,6 +42,7 @@ ColumnLayout {
     signal requestViewAuthorFeed(string did, string handle)
     signal requestViewLikedBy(string uri)
     signal requestViewRepostedBy(string uri)
+    signal requestViewSearchPosts(string text)
     signal requestReportPost(string uri, string cid)
     signal requestReportAccount(string did)
 
@@ -436,6 +437,7 @@ ColumnLayout {
             onRequestViewFeedGenerator: (name, uri) => profileView.requestViewFeedGenerator(name, uri)
             onRequestViewLikedBy: (uri) => profileView.requestViewLikedBy(uri)
             onRequestViewRepostedBy: (uri) => profileView.requestViewRepostedBy(uri)
+            onRequestViewSearchPosts: (text) => profileView.requestViewSearchPosts(text)
             onRequestReportPost: (uri, cid) => profileView.requestReportPost(uri, cid)
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
         }
@@ -467,6 +469,7 @@ ColumnLayout {
             onRequestViewFeedGenerator: (name, uri) => profileView.requestViewFeedGenerator(name, uri)
             onRequestViewLikedBy: (uri) => profileView.requestViewLikedBy(uri)
             onRequestViewRepostedBy: (uri) => profileView.requestViewRepostedBy(uri)
+            onRequestViewSearchPosts: (text) => profileView.requestViewSearchPosts(text)
             onRequestReportPost: (uri, cid) => profileView.requestReportPost(uri, cid)
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
         }
@@ -498,6 +501,7 @@ ColumnLayout {
             onRequestViewFeedGenerator: (name, uri) => profileView.requestViewFeedGenerator(name, uri)
             onRequestViewLikedBy: (uri) => profileView.requestViewLikedBy(uri)
             onRequestViewRepostedBy: (uri) => profileView.requestViewRepostedBy(uri)
+            onRequestViewSearchPosts: (text) => profileView.requestViewSearchPosts(text)
             onRequestReportPost: (uri, cid) => profileView.requestReportPost(uri, cid)
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
         }
@@ -529,6 +533,7 @@ ColumnLayout {
             onRequestViewFeedGenerator: (name, uri) => profileView.requestViewFeedGenerator(name, uri)
             onRequestViewLikedBy: (uri) => profileView.requestViewLikedBy(uri)
             onRequestViewRepostedBy: (uri) => profileView.requestViewRepostedBy(uri)
+            onRequestViewSearchPosts: (text) => profileView.requestViewSearchPosts(text)
             onRequestReportPost: (uri, cid) => profileView.requestReportPost(uri, cid)
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
         }

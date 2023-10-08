@@ -4,6 +4,33 @@
 #include <QObject>
 #include <QRegularExpression>
 
+#define REG_EXP_URL                                                                                \
+    "http[s]?://"                                                                                  \
+    "(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F])|#(?:[a-zA-Z]|[0-9]|[$-_@" \
+    ".&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))*)+"
+#define REG_EXP_MENTION                                                                            \
+    "@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-" \
+    "zA-Z0-9])?)"
+#define REG_EXP_HASH_TAG                                                                           \
+    QStringLiteral("(?:^|"                                                                         \
+                   "[ \\f\\n\\r\\t\\v%1%2%3-%4%5%6%7%8%9%10])"                                     \
+                   "(?:#[^0-9 \\f\\n\\r\\t\\v%1%2%3-%4%5%6%7%8%9%10]"                              \
+                   "[^ \\f\\n\\r\\t\\v%1%2%3-%4%5%6%7%8%9%10]*)"                                   \
+                   "(?:$|[ \\f\\n\\r\\t\\v%1%2%3-%4%5%6%7%8%9%10]?)")                              \
+            .arg(QChar(0x00a0))                                                                    \
+            .arg(QChar(0x1680))                                                                    \
+            .arg(QChar(0x2000))                                                                    \
+            .arg(QChar(0x200a))                                                                    \
+            .arg(QChar(0x2028))                                                                    \
+            .arg(QChar(0x2029))                                                                    \
+            .arg(QChar(0x202f))                                                                    \
+            .arg(QChar(0x205f))                                                                    \
+            .arg(QChar(0x3000))                                                                    \
+            .arg(QChar(0xfeff))
+
+// #define REG_EXP_HASH_TAG "(?:^|\\s)(#[^\\d\\s]\\S*)(?=\\s)"
+// (?:^|[ \t\r\n])(#[^0-9 \t\r\n][^ \t\r\n]*)(?=[ \t\r\n])?
+// (?:^|[ \t\r\n])(#[^0-9 \t\r\n][^ \t\r\n]*)([^ \t\r\n])?
 class SystemTool : public QObject
 {
     Q_OBJECT

@@ -97,7 +97,7 @@ void atprotocol_test::test_ComAtprotoServerCreateSession()
         QSignalSpy spy(&session, SIGNAL(finished(bool)));
         session.create("hoge", "fuga");
         spy.wait();
-        QVERIFY(spy.count() == 1);
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -117,18 +117,20 @@ void atprotocol_test::test_ComAtprotoServerCreateSession()
         QSignalSpy spy(&session, SIGNAL(finished(bool)));
         session.create("hoge", "fuga");
         spy.wait();
-        QVERIFY(spy.count() == 1);
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool() == false);
     }
 
-    QVERIFY(session.errorCode() == "RateLimitExceeded");
-    QVERIFY(session.errorMessage()
-            == "Rate Limit "
-               "Exceeded\n\nratelimit-limit:30\nratelimit-remaining:10\nratelimit-reset:2023/09/17 "
-               "10:31:07\nratelimit-policy:30;w=300");
-    QVERIFY(session.replyJson()
-            == "{\"error\":\"RateLimitExceeded\",\"message\":\"Rate Limit Exceeded\"}");
+    QVERIFY2(session.errorCode() == "RateLimitExceeded", session.errorCode().toLocal8Bit());
+    QVERIFY2(session.errorMessage()
+                     == "Rate Limit "
+                        "Exceeded\n\nratelimit-limit:30\nratelimit-policy:30;w=300\nratelimit-"
+                        "remaining:10\nratelimit-reset:2023/09/17 10:31:07",
+             session.errorMessage().toLocal8Bit());
+    QVERIFY2(session.replyJson()
+                     == "{\"error\":\"RateLimitExceeded\",\"message\":\"Rate Limit Exceeded\"}",
+             session.replyJson().toLocal8Bit());
 }
 
 void atprotocol_test::test_OpenGraphProtocol()
@@ -139,7 +141,7 @@ void atprotocol_test::test_OpenGraphProtocol()
         QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
         ogp.getData(m_service + "/ogp/file1.html");
         spy.wait();
-        QVERIFY(spy.count() == 1);
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
@@ -157,7 +159,7 @@ void atprotocol_test::test_OpenGraphProtocol()
         QSignalSpy spy(&ogp, SIGNAL(finishedDownload(bool)));
         ogp.downloadThumb(temp_file.fileName());
         spy.wait();
-        QVERIFY(spy.count() == 1);
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
@@ -173,7 +175,7 @@ void atprotocol_test::test_OpenGraphProtocol()
         QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
         ogp.getData(m_service + "/ogp/file2.html");
         spy.wait();
-        QVERIFY(spy.count() == 1);
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
@@ -199,7 +201,7 @@ void atprotocol_test::test_OpenGraphProtocol()
         QSignalSpy spy(&ogp, SIGNAL(finishedDownload(bool)));
         ogp.downloadThumb(temp_file.fileName());
         spy.wait();
-        QVERIFY(spy.count() == 1);
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
@@ -215,7 +217,7 @@ void atprotocol_test::test_OpenGraphProtocol()
         QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
         ogp.getData(m_service + "/ogp/file3.html");
         spy.wait();
-        QVERIFY(spy.count() == 1);
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
@@ -241,7 +243,7 @@ void atprotocol_test::test_OpenGraphProtocol()
         QSignalSpy spy(&ogp, SIGNAL(finishedDownload(bool)));
         ogp.downloadThumb(temp_file.fileName());
         spy.wait();
-        QVERIFY(spy.count() == 1);
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
@@ -257,7 +259,7 @@ void atprotocol_test::test_OpenGraphProtocol()
         QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
         ogp.getData(m_service + "/ogp/file4.html");
         spy.wait();
-        QVERIFY(spy.count() == 1);
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
@@ -286,7 +288,7 @@ void atprotocol_test::test_OpenGraphProtocol()
         QSignalSpy spy(&ogp, SIGNAL(finishedDownload(bool)));
         ogp.downloadThumb(temp_file.fileName());
         spy.wait();
-        QVERIFY(spy.count() == 1);
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
@@ -302,7 +304,7 @@ void atprotocol_test::test_OpenGraphProtocol()
         QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
         ogp.getData(m_service + "/ogp/file5.html");
         spy.wait();
-        QVERIFY(spy.count() == 1);
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
@@ -325,7 +327,7 @@ void atprotocol_test::test_OpenGraphProtocol()
         QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
         ogp.getData(m_service + "/ogp/file6.html");
         spy.wait();
-        QVERIFY(spy.count() == 1);
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
@@ -352,7 +354,7 @@ void atprotocol_test::test_getTimeline()
     QSignalSpy spy(&timeline, SIGNAL(finished(bool)));
     timeline.getTimeline();
     spy.wait();
-    QVERIFY(spy.count() == 1);
+    QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
     QList<QVariant> arguments = spy.takeFirst();
     QVERIFY(arguments.at(0).toBool());
@@ -525,7 +527,7 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.load();
         spy.wait();
-        QVERIFY(spy.count() == 1);
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
@@ -550,7 +552,7 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.load();
         spy.wait();
-        QVERIFY(spy.count() == 1);
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
@@ -576,7 +578,7 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.load();
         spy.wait();
-        QVERIFY(spy.count() == 1);
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
@@ -601,7 +603,7 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.load();
         spy.wait();
-        QVERIFY(spy.count() == 1);
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
 
@@ -693,13 +695,14 @@ void atprotocol_test::test_ConfigurableLabels_copy()
 void atprotocol_test::test_ConfigurableLabels_save()
 {
     ConfigurableLabels labels;
+    m_account.accessJwt = "aaaa";
     labels.setAccount(m_account);
     {
         labels.setService(QString("http://localhost:%1/response/labels/save/1").arg(m_listenPort));
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.save();
-        spy.wait();
-        QVERIFY(spy.count() == 1);
+        spy.wait(10 * 1000);
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -712,7 +715,7 @@ void atprotocol_test::test_ConfigurableLabels_save()
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.save();
         spy.wait();
-        QVERIFY(spy.count() == 1);
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -725,7 +728,7 @@ void atprotocol_test::test_ConfigurableLabels_save()
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.save();
         spy.wait();
-        QVERIFY(spy.count() == 1);
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
@@ -740,7 +743,7 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_post()
     QSignalSpy spy(&createrecord, SIGNAL(finished(bool)));
     createrecord.post("hello world");
     spy.wait();
-    QVERIFY(spy.count() == 1);
+    QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     QList<QVariant> arguments = spy.takeFirst();
     QVERIFY(arguments.at(0).toBool());
 }
@@ -754,7 +757,7 @@ void atprotocol_test::test_AppBskyFeedGetFeedGenerator()
     QSignalSpy spy(&generator, SIGNAL(finished(bool)));
     generator.getFeedGenerator("at://did:plc:42fxwa2jeumqzzggx/app.bsky.feed.generator/aaagrsa");
     spy.wait();
-    QVERIFY(spy.count() == 1);
+    QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
     QVERIFY(generator.generatorView().uri
             == "at://did:plc:42fxwa2jeumqzzggx/app.bsky.feed.generator/aaagrsa");

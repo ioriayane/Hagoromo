@@ -1,5 +1,6 @@
 #include "accessatprotocol.h"
 
+#include <QCoreApplication>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QNetworkReply>
@@ -8,32 +9,23 @@
 #include <QHttpMultiPart>
 #include <QDateTime>
 #include <QUrlQuery>
+#include <QMimeDatabase>
+#include <QPointer>
 
-#define LOG_DATETIME QDateTime::currentDateTime().toString("yyyy/MM/dd hh:mm:ss")
+#define LOG_DATETIME QDateTime::currentDateTime().toString("yyyy/MM/dd hh:mm:ss.zzz")
 
 namespace AtProtocolInterface {
 
-AccessAtProtocol::AccessAtProtocol(QObject *parent) : QObject { parent }
-{
-    connect(&m_manager, &QNetworkAccessManager::finished, [=](QNetworkReply *reply) {
-        qDebug() << LOG_DATETIME << reply->error() << reply->url();
+HttpAccessManager *AccessAtProtocol::m_manager = nullptr;
 
-        bool success = false;
-        if (checkReply(reply)) {
-            success = parseJson(true, m_replyJson);
-        }
-        emit finished(success);
+AtProtocolAccount::AtProtocolAccount(QObject *parent) : QObject { parent } { }
 
-        reply->deleteLater();
-    });
-}
-
-const AccountData &AccessAtProtocol::account() const
+const AccountData &AtProtocolAccount::account() const
 {
     return m_account;
 }
 
-void AccessAtProtocol::setAccount(const AccountData &account)
+void AtProtocolAccount::setAccount(const AccountData &account)
 {
     m_account.service = account.service;
     m_account.identifier.clear();
@@ -47,8 +39,8 @@ void AccessAtProtocol::setAccount(const AccountData &account)
     m_account.status = account.status;
 }
 
-void AccessAtProtocol::setSession(const QString &did, const QString &handle, const QString &email,
-                                  const QString &accessJwt, const QString &refresh_jwt)
+void AtProtocolAccount::setSession(const QString &did, const QString &handle, const QString &email,
+                                   const QString &accessJwt, const QString &refresh_jwt)
 {
     m_account.did = did;
     m_account.handle = handle;
@@ -57,75 +49,103 @@ void AccessAtProtocol::setSession(const QString &did, const QString &handle, con
     m_account.refreshJwt = refresh_jwt;
 }
 
-QString AccessAtProtocol::service() const
+QString AtProtocolAccount::service() const
 {
     return m_account.service;
 }
 
-void AccessAtProtocol::setService(const QString &newService)
+void AtProtocolAccount::setService(const QString &newService)
 {
     m_account.service = newService;
 }
 
-QString AccessAtProtocol::did() const
+QString AtProtocolAccount::did() const
 {
     return m_account.did;
 }
 
-QString AccessAtProtocol::handle() const
+QString AtProtocolAccount::handle() const
 {
     return m_account.handle;
 }
 
-QString AccessAtProtocol::email() const
+QString AtProtocolAccount::email() const
 {
     return m_account.email;
 }
 
-QString AccessAtProtocol::accessJwt() const
+QString AtProtocolAccount::accessJwt() const
 {
     return m_account.accessJwt;
 }
 
-QString AccessAtProtocol::refreshJwt() const
+QString AtProtocolAccount::refreshJwt() const
 {
     return m_account.refreshJwt;
+}
+
+AccessAtProtocol::AccessAtProtocol(QObject *parent) : AtProtocolAccount { parent }
+{
+    qDebug().noquote() << LOG_DATETIME << "AccessAtProtocol::AccessAtProtocol()" << this;
+    if (m_manager == nullptr) {
+        qDebug().noquote() << LOG_DATETIME << this << "new HttpAccessManager()"
+                           << QCoreApplication::instance();
+        m_manager = new HttpAccessManager(QCoreApplication::instance());
+    }
 }
 
 void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
                            const bool with_auth_header)
 {
     if (accessJwt().isEmpty() && with_auth_header) {
-        qCritical() << LOG_DATETIME << "AccessAtProtocol::get()"
-                    << "Emty accessJwt!";
+        qCritical().noquote() << LOG_DATETIME << "AccessAtProtocol::get()"
+                              << "Emty accessJwt!";
         return;
     }
 
-    qDebug() << LOG_DATETIME << "AccessAtProtocol::get()" << this;
-    qDebug().noquote() << "   " << handle();
-    qDebug().noquote() << "   " << endpoint;
-    qDebug().noquote() << "   " << query.toString();
+    qDebug().noquote() << LOG_DATETIME << "AccessAtProtocol::get()" << this;
+    qDebug().noquote() << LOG_DATETIME << "   " << handle();
+    qDebug().noquote() << LOG_DATETIME << "   " << endpoint;
+    qDebug().noquote() << LOG_DATETIME << "   " << query.toString();
 
     QUrl url = QString("%1/%2").arg(service(), endpoint);
     url.setQuery(query);
     QNetworkRequest request(url);
+    request.setRawHeader(QByteArray("Cache-Control"), QByteArray("no-cache"));
     if (with_auth_header) {
         request.setRawHeader(QByteArray("Authorization"),
                              QByteArray("Bearer ") + accessJwt().toUtf8());
     }
 
-    m_manager.get(request);
+    QPointer<AccessAtProtocol> alive = this;
+    HttpReply *reply = m_manager->get(request);
+    connect(reply, &HttpReply::finished, [=]() {
+        qDebug().noquote() << LOG_DATETIME << reply->error() << reply->url().toString();
+        if (alive) {
+            qDebug().noquote() << LOG_DATETIME << "  " << this->thread();
+
+            bool success = false;
+            if (checkReply(reply)) {
+                success = parseJson(true, m_replyJson);
+            }
+            emit finished(success);
+        } else {
+            qDebug().noquote() << LOG_DATETIME << "Parent is deleted!!!!!!!!!!";
+        }
+        reply->deleteLater();
+    });
 }
 
 void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
                             const bool with_auth_header)
 {
-    qDebug() << LOG_DATETIME << "AccessAtProtocol::post()" << this;
-    qDebug().noquote() << "   " << handle();
-    qDebug().noquote() << "   " << endpoint;
-    qDebug().noquote() << "   " << json;
+    qDebug().noquote() << LOG_DATETIME << "AccessAtProtocol::post()" << this;
+    qDebug().noquote() << LOG_DATETIME << "   " << handle();
+    qDebug().noquote() << LOG_DATETIME << "   " << endpoint;
+    qDebug().noquote() << LOG_DATETIME << "   " << json;
 
     QNetworkRequest request(QUrl(QString("%1/%2").arg(service(), endpoint)));
+    request.setRawHeader(QByteArray("Cache-Control"), QByteArray("no-cache"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     if (with_auth_header) {
         if (accessJwt().isEmpty()) {
@@ -138,42 +158,73 @@ void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
                              QByteArray("Bearer ") + accessJwt().toUtf8());
     }
 
-    m_manager.post(request, json);
+    QPointer<AccessAtProtocol> alive = this;
+    HttpReply *reply = m_manager->post(request, json);
+    connect(reply, &HttpReply::finished, [=]() {
+        qDebug().noquote() << LOG_DATETIME << reply->error() << reply->url().toString();
+        if (alive) {
+            bool success = false;
+            if (checkReply(reply)) {
+                success = parseJson(true, m_replyJson);
+            }
+            emit finished(success);
+        } else {
+            qDebug().noquote() << LOG_DATETIME << "Parent is deleted!!!!!!!!!!";
+        }
+        reply->deleteLater();
+    });
 }
 
 void AccessAtProtocol::postWithImage(const QString &endpoint, const QString &path)
 {
     if (accessJwt().isEmpty()) {
-        qCritical() << LOG_DATETIME << "AccessAtProtocol::postWithImage()"
-                    << "Empty accessJwt!";
+        qCritical().noquote() << LOG_DATETIME << "AccessAtProtocol::postWithImage()"
+                              << "Empty accessJwt!";
         return;
     }
     if (!QFile::exists(path)) {
-        qCritical() << LOG_DATETIME << "AccessAtProtocol::postWithImage()"
-                    << "Not found" << path;
+        qCritical().noquote() << LOG_DATETIME << "AccessAtProtocol::postWithImage()"
+                              << "Not found" << path;
         return;
     }
-    qDebug() << LOG_DATETIME << "AccessAtProtocol::postWithImage()" << this << endpoint << path;
+    qDebug().noquote() << LOG_DATETIME << "AccessAtProtocol::postWithImage()" << this << endpoint
+                       << path;
 
+    QMimeDatabase mime;
     QFileInfo info(path);
     QNetworkRequest request(QUrl(QString("%1/%2").arg(service(), endpoint)));
+    request.setRawHeader(QByteArray("Cache-Control"), QByteArray("no-cache"));
     request.setRawHeader(QByteArray("Authorization"), QByteArray("Bearer ") + accessJwt().toUtf8());
-    request.setHeader(QNetworkRequest::ContentTypeHeader,
-                      QString("image/%1").arg(info.suffix().toLower()));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, mime.mimeTypeForFile(info).name());
 
     QFile *file = new QFile(path);
     if (!file->open(QIODevice::ReadOnly)) {
-        qCritical() << LOG_DATETIME << "AccessAtProtocol::postWithImage()"
-                    << "Not open" << path;
+        qCritical().noquote() << LOG_DATETIME << LOG_DATETIME << "AccessAtProtocol::postWithImage()"
+                              << "Not open" << path;
         delete file;
         return;
     }
+    request.setHeader(QNetworkRequest::ContentLengthHeader, file->size());
 
-    QNetworkReply *reply = m_manager.post(request, file);
+    QPointer<AccessAtProtocol> alive = this;
+    HttpReply *reply = m_manager->post(request, file->readAll());
     file->setParent(reply);
+    connect(reply, &HttpReply::finished, [=]() {
+        qDebug().noquote() << LOG_DATETIME << reply->error() << reply->url().toString();
+        if (alive) {
+            bool success = false;
+            if (checkReply(reply)) {
+                success = parseJson(true, m_replyJson);
+            }
+            emit finished(success);
+        } else {
+            qDebug().noquote() << LOG_DATETIME << "Parent is deleted!!!!!!!!!!";
+        }
+        reply->deleteLater();
+    });
 }
 
-bool AccessAtProtocol::checkReply(QNetworkReply *reply)
+bool AccessAtProtocol::checkReply(HttpReply *reply)
 {
     bool status = false;
     m_replyJson = QString::fromUtf8(reply->readAll());
@@ -184,18 +235,18 @@ bool AccessAtProtocol::checkReply(QNetworkReply *reply)
     for (const auto &header : reply->rawHeaderPairs()) {
         if (header.first.toLower().startsWith("ratelimit-")) {
             if (header.first.toLower() == "ratelimit-reset") {
-                qDebug() << LOG_DATETIME << header.first
-                         << QDateTime::fromSecsSinceEpoch(header.second.toInt())
-                                    .toString("yyyy/MM/dd hh:mm:ss");
+                qDebug().noquote() << LOG_DATETIME << header.first
+                                   << QDateTime::fromSecsSinceEpoch(header.second.toInt())
+                                              .toString("yyyy/MM/dd hh:mm:ss");
             } else {
-                qDebug() << LOG_DATETIME << header.first << header.second;
+                qDebug().noquote() << LOG_DATETIME << header.first << header.second;
             }
         }
     }
 #endif
 
     QJsonDocument json_doc = QJsonDocument::fromJson(m_replyJson.toUtf8());
-    if (reply->error() != QNetworkReply::NoError) {
+    if (reply->error() != HttpReply::Success) {
         if (json_doc.object().contains("error") && json_doc.object().contains("error")) {
             m_errorCode = json_doc.object().value("error").toString();
             m_errorMessage = json_doc.object().value("message").toString();
@@ -218,8 +269,8 @@ bool AccessAtProtocol::checkReply(QNetworkReply *reply)
                 }
             }
         }
-        qCritical() << LOG_DATETIME << m_errorCode << m_errorMessage;
-        qCritical() << LOG_DATETIME << m_replyJson;
+        qCritical().noquote() << LOG_DATETIME << m_errorCode << m_errorMessage;
+        qCritical().noquote() << LOG_DATETIME << m_replyJson;
     } else {
         status = true;
     }

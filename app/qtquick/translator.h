@@ -1,7 +1,6 @@
 #ifndef TRANSLATOR_H
 #define TRANSLATOR_H
 
-#include <QNetworkAccessManager>
 #include <QObject>
 
 class Translator : public QObject
@@ -34,8 +33,6 @@ signals:
     void targetLanguageChanged();
 
 private:
-    QNetworkAccessManager m_manager;
-
     QString m_apiUrl;
     QString m_apiKey;
     QString m_targetLanguage;

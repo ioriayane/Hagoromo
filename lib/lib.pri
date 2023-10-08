@@ -1,6 +1,7 @@
 QT += xml
 
-INCLUDEPATH += $$PWD
+INCLUDEPATH += $$PWD \
+    $$PWD/../3rdparty/cpp-httplib
 
 SOURCES += \
     $$PWD/atprotocol/accessatprotocol.cpp \
@@ -34,6 +35,9 @@ SOURCES += \
     $$PWD/atprotocol/com/atproto/server/comatprotoserverrefreshsession.cpp \
     $$PWD/atprotocol/lexicons_func.cpp \
     $$PWD/atprotocol/lexicons_func_unknown.cpp \
+    $$PWD/http/httpaccess.cpp \
+    $$PWD/http/httpaccessmanager.cpp \
+    $$PWD/http/httpreply.cpp \
     $$PWD/search/search_func.cpp \
     $$PWD/search/searchposts.cpp \
     $$PWD/search/searchprofiles.cpp \
@@ -74,6 +78,9 @@ HEADERS += \
     $$PWD/atprotocol/lexicons.h \
     $$PWD/atprotocol/lexicons_func.h \
     $$PWD/atprotocol/lexicons_func_unknown.h \
+    $$PWD/http/httpaccess.h \
+    $$PWD/http/httpaccessmanager.h \
+    $$PWD/http/httpreply.h \
     $$PWD/search/search.h \
     $$PWD/search/search_func.h \
     $$PWD/search/searchposts.h \

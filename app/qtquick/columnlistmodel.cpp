@@ -78,7 +78,7 @@ void ColumnListModel::update(int row, ColumnListModelRoles role, const QVariant 
     else if (role == NameRole)
         m_columnList[row].name = value.toString();
     else if (role == ValueRole)
-        m_columnList[row].value = value.toInt();
+        m_columnList[row].value = value.toString();
 
     else if (role == VisibleLikeRole)
         m_columnList[row].type_visibility.like = value.toBool();
@@ -125,6 +125,36 @@ void ColumnListModel::insert(int row, const QString &account_uuid, int component
     beginInsertRows(QModelIndex(), row, row);
     m_columnList.insert(row, item);
     endInsertRows();
+
+    save();
+}
+
+void ColumnListModel::insertNext(const QString &key, const QString &account_uuid,
+                                 int component_type, bool auto_loading, int interval, int width,
+                                 const QString &name, const QString &value)
+{
+    insert(rowCount(), account_uuid, component_type, auto_loading, interval, width, name, value);
+
+    int to_position = -1;
+    int from_index = -1;
+    int to_index = rowCount() - 1;
+    for (int i = 0; i < m_columnList.length(); i++) {
+        if (m_columnList.at(i).key == key) {
+            to_position = m_columnList.at(i).position + 1;
+            from_index = i;
+            break;
+        }
+    }
+    if (to_position == -1)
+        return;
+    for (int i = 0; i < m_columnList.length(); i++) {
+        if (m_columnList.at(i).position >= to_position) {
+            m_columnList[i].position++;
+        }
+    }
+    m_columnList.last().position = to_position;
+
+    emit dataChanged(index(from_index), index(to_index));
 
     save();
 }
