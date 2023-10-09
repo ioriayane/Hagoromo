@@ -129,9 +129,9 @@ void ColumnListModel::insert(int row, const QString &account_uuid, int component
     save();
 }
 
-void ColumnListModel::insertNext(const QString &key, const QString &account_uuid,
-                                 int component_type, bool auto_loading, int interval, int width,
-                                 const QString &name, const QString &value)
+int ColumnListModel::insertNext(const QString &key, const QString &account_uuid, int component_type,
+                                bool auto_loading, int interval, int width, const QString &name,
+                                const QString &value)
 {
     insert(rowCount(), account_uuid, component_type, auto_loading, interval, width, name, value);
 
@@ -146,7 +146,7 @@ void ColumnListModel::insertNext(const QString &key, const QString &account_uuid
         }
     }
     if (to_position == -1)
-        return;
+        return -1;
     for (int i = 0; i < m_columnList.length(); i++) {
         if (m_columnList.at(i).position >= to_position) {
             m_columnList[i].position++;
@@ -157,6 +157,8 @@ void ColumnListModel::insertNext(const QString &key, const QString &account_uuid
     emit dataChanged(index(from_index), index(to_index));
 
     save();
+
+    return to_position;
 }
 
 void ColumnListModel::move(const QString &key, const MoveDirection direction)

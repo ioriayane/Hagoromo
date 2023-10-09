@@ -90,9 +90,9 @@ public:
     Q_INVOKABLE void insert(int row, const QString &account_uuid, int component_type,
                             bool auto_loading, int interval, int width, const QString &name,
                             const QString &value);
-    Q_INVOKABLE void insertNext(const QString &key, const QString &account_uuid, int component_type,
-                                bool auto_loading, int interval, int width, const QString &name,
-                                const QString &value);
+    Q_INVOKABLE int insertNext(const QString &key, const QString &account_uuid, int component_type,
+                               bool auto_loading, int interval, int width, const QString &name,
+                               const QString &value);
     Q_INVOKABLE void move(const QString &key, const ColumnListModel::MoveDirection direction);
     Q_INVOKABLE void remove(int row);
     Q_INVOKABLE void removeByKey(const QString &key);

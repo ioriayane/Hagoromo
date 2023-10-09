@@ -287,9 +287,10 @@ ApplicationWindow {
                                         }
             onRequestViewSearchPosts: (account_uuid, text, current_column_key) => {
                                           console.log("Search:" + account_uuid + ", " + text + ", " + current_column_key)
-                                          columnManageModel.insertNext(current_column_key, account_uuid, 2, false, 300000, 350,
+                                          var pos = columnManageModel.insertNext(current_column_key, account_uuid, 2, false, 300000, 350,
                                                                    qsTr("Search posts"), text)
                                           repeater.updatePosition()
+                                          scrollView.showColumn(pos)
                                       }
 
             onRequestReportPost: (account_uuid, uri, cid) => {
