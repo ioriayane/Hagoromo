@@ -18,6 +18,8 @@ class TimelineListModel : public AtpAbstractListModel
 {
     Q_OBJECT
 
+    Q_PROPERTY(bool visibleReplyFollowdUserOnly READ visibleReplyFollowdUserOnly WRITE
+                       setVisibleReplyFollowdUserOnly NOTIFY visibleReplyFollowdUserOnlyChanged)
 public:
     explicit TimelineListModel(QObject *parent = nullptr);
 
@@ -117,6 +119,12 @@ public:
     Q_INVOKABLE void repost(int row);
     Q_INVOKABLE void like(int row);
 
+    bool visibleReplyFollowdUserOnly() const;
+    void setVisibleReplyFollowdUserOnly(bool newVisibleReplyFollowdUserOnly);
+
+signals:
+    void visibleReplyFollowdUserOnlyChanged();
+
 protected:
     QHash<int, QByteArray> roleNames() const;
     virtual void finishedDisplayingQueuedPosts();
@@ -129,6 +137,9 @@ protected:
 
     QHash<QString, AtProtocolType::AppBskyFeedDefs::FeedViewPost> m_viewPostHash;
     QHash<QString, ThreadConnector> m_threadConnectorHash;
+
+private:
+    bool m_visibleReplyFollowdUserOnly;
 };
 
 #endif // TIMELINELISTMODEL_H

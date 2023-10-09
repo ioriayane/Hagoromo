@@ -8,7 +8,10 @@ using AtProtocolInterface::AccountData;
 using AtProtocolInterface::AppBskyFeedGetTimeline;
 using namespace AtProtocolType;
 
-TimelineListModel::TimelineListModel(QObject *parent) : AtpAbstractListModel { parent } { }
+TimelineListModel::TimelineListModel(QObject *parent)
+    : AtpAbstractListModel { parent }, m_visibleReplyFollowdUserOnly(false)
+{
+}
 
 int TimelineListModel::rowCount(const QModelIndex &parent) const
 {
@@ -142,7 +145,7 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         if (current.reply.parent_type == AppBskyFeedDefs::ReplyRefParentType::parent_PostView)
             return current.reply.parent_PostView.cid.length() > 0;
         else
-            return QString();
+            return false;
     } else if (role == ReplyRootCidRole) {
         if (current.reply.root_type == AppBskyFeedDefs::ReplyRefRootType::root_PostView)
             return current.reply.root_PostView.cid;
@@ -515,7 +518,17 @@ bool TimelineListModel::checkVisibility(const QString &cid)
             return false;
         }
     }
-
+    if (visibleReplyFollowdUserOnly()) {
+        if (current.reply.parent_type == AppBskyFeedDefs::ReplyRefParentType::parent_PostView
+            && current.reply.parent_PostView.cid.length() > 0) {
+            // まずreplyあり判定となる場合のみ、判断する
+            if (!current.reply.parent_PostView.author.viewer.following.contains(account().did)) {
+                qDebug() << "Hide a reply to users account do not follow. "
+                         << current.post.author.handle << cid;
+                return false;
+            }
+        }
+    }
     return true;
 }
 
@@ -721,4 +734,17 @@ QVariant TimelineListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDefs::
     }
 
     return QVariant();
+}
+
+bool TimelineListModel::visibleReplyFollowdUserOnly() const
+{
+    return m_visibleReplyFollowdUserOnly;
+}
+
+void TimelineListModel::setVisibleReplyFollowdUserOnly(bool newVisibleReplyFollowdUserOnly)
+{
+    if (m_visibleReplyFollowdUserOnly == newVisibleReplyFollowdUserOnly)
+        return;
+    m_visibleReplyFollowdUserOnly = newVisibleReplyFollowdUserOnly;
+    emit visibleReplyFollowdUserOnlyChanged();
 }
