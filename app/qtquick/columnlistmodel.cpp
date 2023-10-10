@@ -54,6 +54,8 @@ QVariant ColumnListModel::item(int row, ColumnListModelRoles role) const
         return m_columnList.at(row).type_visibility.reply;
     else if (role == VisibleQuoteRole)
         return m_columnList.at(row).type_visibility.quote;
+    else if (role == VisibleReplyToUnfollowedUsersRole)
+        return m_columnList.at(row).type_visibility.reply_to_unfollowed_users;
 
     return QVariant();
 }
@@ -92,6 +94,8 @@ void ColumnListModel::update(int row, ColumnListModelRoles role, const QVariant 
         m_columnList[row].type_visibility.reply = value.toBool();
     else if (role == VisibleQuoteRole)
         m_columnList[row].type_visibility.quote = value.toBool();
+    else if (role == VisibleReplyToUnfollowedUsersRole)
+        m_columnList[row].type_visibility.reply_to_unfollowed_users = value.toBool();
 
     emit dataChanged(index(row), index(row));
 
@@ -302,6 +306,7 @@ void ColumnListModel::save() const
         notification["mention"] = item.type_visibility.mention;
         notification["reply"] = item.type_visibility.reply;
         notification["quote"] = item.type_visibility.quote;
+        notification["reply_to_unfollowed_users"] = item.type_visibility.reply_to_unfollowed_users;
         column_item["type_visibility"] = notification;
 
         column_array.append(column_item);
@@ -349,6 +354,11 @@ void ColumnListModel::load()
                         obj.value("type_visibility").toObject().value("reply").toBool(true);
                 item.type_visibility.quote =
                         obj.value("type_visibility").toObject().value("quote").toBool(true);
+                item.type_visibility.reply_to_unfollowed_users =
+                        obj.value("type_visibility")
+                                .toObject()
+                                .value("reply_to_unfollowed_users")
+                                .toBool(true);
 
                 if (item.name.isEmpty()) {
                     // version 0.2.0以前との互換性のため
@@ -396,6 +406,7 @@ QHash<int, QByteArray> ColumnListModel::roleNames() const
     roles[VisibleMentionRole] = "visibleMention";
     roles[VisibleReplyRole] = "visibleReply";
     roles[VisibleQuoteRole] = "visibleQuote";
+    roles[VisibleReplyToUnfollowedUsersRole] = "visibleReplyToUnfollowedUsers";
 
     return roles;
 }

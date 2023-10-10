@@ -9,7 +9,7 @@ using AtProtocolInterface::AppBskyFeedGetTimeline;
 using namespace AtProtocolType;
 
 TimelineListModel::TimelineListModel(QObject *parent)
-    : AtpAbstractListModel { parent }, m_visibleReplyFollowdUserOnly(false)
+    : AtpAbstractListModel { parent }, m_visibleReplyToUnfollowedUsers(true)
 {
 }
 
@@ -518,7 +518,7 @@ bool TimelineListModel::checkVisibility(const QString &cid)
             return false;
         }
     }
-    if (visibleReplyFollowdUserOnly()) {
+    if (!visibleReplyToUnfollowedUsers()) {
         if (current.reply.parent_type == AppBskyFeedDefs::ReplyRefParentType::parent_PostView
             && current.reply.parent_PostView.cid.length() > 0) {
             // まずreplyあり判定となる場合のみ、判断する
@@ -736,15 +736,16 @@ QVariant TimelineListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDefs::
     return QVariant();
 }
 
-bool TimelineListModel::visibleReplyFollowdUserOnly() const
+bool TimelineListModel::visibleReplyToUnfollowedUsers() const
 {
-    return m_visibleReplyFollowdUserOnly;
+    return m_visibleReplyToUnfollowedUsers;
 }
 
-void TimelineListModel::setVisibleReplyFollowdUserOnly(bool newVisibleReplyFollowdUserOnly)
+void TimelineListModel::setVisibleReplyToUnfollowedUsers(bool newVisibleReplyToUnfollowedUser)
 {
-    if (m_visibleReplyFollowdUserOnly == newVisibleReplyFollowdUserOnly)
+    if (m_visibleReplyToUnfollowedUsers == newVisibleReplyToUnfollowedUser)
         return;
-    m_visibleReplyFollowdUserOnly = newVisibleReplyFollowdUserOnly;
-    emit visibleReplyFollowdUserOnlyChanged();
+    m_visibleReplyToUnfollowedUsers = newVisibleReplyToUnfollowedUser;
+    emit visibleReplyToUnfollowedUsersChanged();
+    reflectVisibility();
 }

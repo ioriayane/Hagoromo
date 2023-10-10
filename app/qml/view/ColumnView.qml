@@ -68,6 +68,7 @@ ColumnLayout {
             model: TimelineListModel {
                 autoLoading: settings.autoLoading
                 loadingInterval: settings.loadingInterval
+                visibleReplyToUnfollowedUsers: settings.visibleReplyToUnfollowedUsers
 
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }

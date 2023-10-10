@@ -24,6 +24,7 @@ struct ColumnPostType
     bool mention = true;
     bool reply = true;
     bool quote = true;
+    bool reply_to_unfollowed_users = true;
 };
 
 struct ColumnItem
@@ -69,6 +70,7 @@ public:
         VisibleMentionRole,
         VisibleReplyRole,
         VisibleQuoteRole,
+        VisibleReplyToUnfollowedUsersRole,
     };
     Q_ENUM(ColumnListModelRoles)
     Q_ENUM(FeedComponentType)

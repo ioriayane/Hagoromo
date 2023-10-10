@@ -1477,7 +1477,7 @@ void hagoromo_test::test_TimelineListModel_reply()
                      QString(), "dummy", QString());
     model.setDisplayInterval(0);
 
-    model.setVisibleReplyFollowdUserOnly(false);
+    model.setVisibleReplyToUnfollowedUsers(true);
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
@@ -1495,7 +1495,7 @@ void hagoromo_test::test_TimelineListModel_reply()
     QVERIFY(model.item(3, TimelineListModel::CidRole)
             == "bafyreievv2yz3obnigwjix5kr2icycfkqdobrfufd3cm4wfavnjfeqhxbe_4");
 
-    model.setVisibleReplyFollowdUserOnly(true);
+    model.setVisibleReplyToUnfollowedUsers(false);
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
