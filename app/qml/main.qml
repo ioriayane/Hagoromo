@@ -160,6 +160,7 @@ ApplicationWindow {
                 visibleMentionCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleMentionRole)
                 visibleReplyCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleReplyRole)
                 visibleQuoteCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleQuoteRole)
+                visibleReplyToUnfollowedUsersCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleReplyToUnfollowedUsersRole)
 
                 open()
             }
@@ -178,6 +179,7 @@ ApplicationWindow {
                 columnManageModel.update(i, ColumnListModel.VisibleMentionRole, visibleMentionCheckBox.checked)
                 columnManageModel.update(i, ColumnListModel.VisibleReplyRole, visibleReplyCheckBox.checked)
                 columnManageModel.update(i, ColumnListModel.VisibleQuoteRole, visibleQuoteCheckBox.checked)
+                columnManageModel.update(i, ColumnListModel.VisibleReplyToUnfollowedUsersRole, visibleReplyToUnfollowedUsersCheckBox.checked)
 
                 repeater.updateSetting()
             }
@@ -537,6 +539,7 @@ ApplicationWindow {
                         item.settings.visibleMention = model.visibleMention
                         item.settings.visibleReply = model.visibleReply
                         item.settings.visibleQuote = model.visibleQuote
+                        item.settings.visibleReplyToUnfollowedUsers = model.visibleReplyToUnfollowedUsers
                     }
 
                     function setAccount(row) {

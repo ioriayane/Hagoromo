@@ -12,4 +12,5 @@ QtObject {
     property bool visibleMention: true
     property bool visibleReply: true
     property bool visibleQuote: true
+    property bool visibleReplyToUnfollowedUsers: true
 }
