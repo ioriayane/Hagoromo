@@ -1485,7 +1485,7 @@ void hagoromo_test::test_TimelineListModel_reply()
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
 
-    QVERIFY2(model.rowCount() == 4, QString("rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
     QVERIFY(model.item(0, TimelineListModel::CidRole)
             == "bafyreidsfmfwqaoud3c64lzuxoblcfgcnkmurjcvgx67hmzgp5vhm3tcia_1");
     QVERIFY(model.item(1, TimelineListModel::CidRole)
@@ -1494,6 +1494,8 @@ void hagoromo_test::test_TimelineListModel_reply()
             == "bafyreiayu2dsqvwfyumuepg6b62a24dwtntagoh5lkym7h3lawxcpvz7f4_3");
     QVERIFY(model.item(3, TimelineListModel::CidRole)
             == "bafyreievv2yz3obnigwjix5kr2icycfkqdobrfufd3cm4wfavnjfeqhxbe_4");
+    QVERIFY(model.item(4, TimelineListModel::CidRole)
+            == "bafyreiayu2dsqvwfyumuepg6b62a24dwtntagoh5lkym7h3lawxcpvz7f4_5");
 
     model.setVisibleReplyToUnfollowedUsers(false);
     {
@@ -1510,6 +1512,26 @@ void hagoromo_test::test_TimelineListModel_reply()
             == "bafyreienuzckap2uhylwn2sq2pq5k7rj445exfxtzkrk7xby7dvfy4muoa_2");
     QVERIFY(model.item(2, TimelineListModel::CidRole)
             == "bafyreievv2yz3obnigwjix5kr2icycfkqdobrfufd3cm4wfavnjfeqhxbe_4");
+
+    model.setAccount(m_service + "/timeline/reply", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", QString(),
+                     QString(), "dummy", QString());
+    model.setVisibleReplyToUnfollowedUsers(false);
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    QVERIFY2(model.rowCount() == 4, QString("rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.item(0, TimelineListModel::CidRole)
+            == "bafyreienuzckap2uhylwn2sq2pq5k7rj445exfxtzkrk7xby7dvfy4muoa_2");
+    QVERIFY(model.item(1, TimelineListModel::CidRole)
+            == "bafyreiayu2dsqvwfyumuepg6b62a24dwtntagoh5lkym7h3lawxcpvz7f4_3");
+    QVERIFY(model.item(2, TimelineListModel::CidRole)
+            == "bafyreievv2yz3obnigwjix5kr2icycfkqdobrfufd3cm4wfavnjfeqhxbe_4");
+    QVERIFY(model.item(3, TimelineListModel::CidRole)
+            == "bafyreiayu2dsqvwfyumuepg6b62a24dwtntagoh5lkym7h3lawxcpvz7f4_5");
 }
 
 void hagoromo_test::test_PostThreadListModel()

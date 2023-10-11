@@ -522,7 +522,8 @@ bool TimelineListModel::checkVisibility(const QString &cid)
         if (current.reply.parent_type == AppBskyFeedDefs::ReplyRefParentType::parent_PostView
             && current.reply.parent_PostView.cid.length() > 0) {
             // まずreplyあり判定となる場合のみ、判断する
-            if (!current.reply.parent_PostView.author.viewer.following.contains(account().did)) {
+            if (current.post.author.did != account().did
+                && !current.reply.parent_PostView.author.viewer.following.contains(account().did)) {
                 qDebug() << "Hide a reply to users account do not follow. "
                          << current.post.author.handle << cid;
                 return false;
