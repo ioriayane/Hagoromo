@@ -15,6 +15,7 @@
 #include "accountlistmodel.h"
 #include "common.h"
 #include "postthreadlistmodel.h"
+#include "listslistmodel.h"
 
 class hagoromo_test : public QObject
 {
@@ -49,6 +50,7 @@ private slots:
     void test_TimelineListModel_text();
     void test_TimelineListModel_reply();
     void test_PostThreadListModel();
+    void test_ListsListModel();
 
 private:
     WebServer m_mockServer;
@@ -1640,6 +1642,91 @@ void hagoromo_test::test_PostThreadListModel()
     QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 4");
     QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
     QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == false);
+}
+
+void hagoromo_test::test_ListsListModel()
+{
+    ListsListModel model;
+
+    model.setAccount(m_service + "/lists/lists/0", QString(), QString(), QString(), "dummy",
+                     QString());
+
+    model.setVisibilityType(ListsListModel::VisibilityTypeAll);
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+    QVERIFY2(model.rowCount() == 3,
+             QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.item(0, ListsListModel::CidRole).toString()
+            == "bafyreihnheyk74x4jts23gl23icubyarggmo37xn55pop2lpystq426bqu");
+    QVERIFY(model.item(1, ListsListModel::CidRole).toString()
+            == "bafyreieyd765syuilkovwe3ms3cpegt7wo3xksistzy2v4xmazrwbzlwtm");
+    QVERIFY(model.item(2, ListsListModel::CidRole).toString()
+            == "bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy");
+
+    model.clear();
+    model.setVisibilityType(ListsListModel::VisibilityTypeCuration);
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+    QVERIFY2(model.rowCount() == 2,
+             QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.item(0, ListsListModel::CidRole).toString()
+            == "bafyreihnheyk74x4jts23gl23icubyarggmo37xn55pop2lpystq426bqu");
+    QVERIFY(model.item(1, ListsListModel::CidRole).toString()
+            == "bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy");
+
+    model.clear();
+    model.setVisibilityType(ListsListModel::VisibilityTypeModeration);
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+    QVERIFY2(model.rowCount() == 1,
+             QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.item(0, ListsListModel::CidRole).toString()
+            == "bafyreieyd765syuilkovwe3ms3cpegt7wo3xksistzy2v4xmazrwbzlwtm");
+
+    model.setAccount(m_service + "/lists/lists/0", QString(), QString(), QString(), "dummy",
+                     QString());
+    model.clear();
+    model.setVisibilityType(ListsListModel::VisibilityTypeAll);
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+    model.setAccount(m_service + "/lists/lists/1", QString(), QString(), QString(), "dummy",
+                     QString());
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getNext();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+    QVERIFY2(model.rowCount() == 6,
+             QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.item(0, ListsListModel::CidRole).toString()
+            == "bafyreihnheyk74x4jts23gl23icubyarggmo37xn55pop2lpystq426bqu");
+    QVERIFY(model.item(1, ListsListModel::CidRole).toString()
+            == "bafyreieyd765syuilkovwe3ms3cpegt7wo3xksistzy2v4xmazrwbzlwtm");
+    QVERIFY(model.item(2, ListsListModel::CidRole).toString()
+            == "bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy");
+    QVERIFY(model.item(3, ListsListModel::CidRole).toString()
+            == "bafyreihnheyk74x4jts23gl23icubyarggmo37xn55pop2lpystq426bqu_next");
+    QVERIFY(model.item(4, ListsListModel::CidRole).toString()
+            == "bafyreieyd765syuilkovwe3ms3cpegt7wo3xksistzy2v4xmazrwbzlwtm_next");
+    QVERIFY(model.item(5, ListsListModel::CidRole).toString()
+            == "bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy_next");
 }
 
 void hagoromo_test::test_RecordOperatorCreateRecord(const QByteArray &body)

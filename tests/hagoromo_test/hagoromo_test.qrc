@@ -44,5 +44,7 @@
         <file>response/notifications/visible/xrpc/app.bsky.actor.getPreferences</file>
         <file>response/timeline/reply/xrpc/app.bsky.actor.getPreferences</file>
         <file>response/timeline/reply/xrpc/app.bsky.feed.getTimeline</file>
+        <file>response/lists/lists/0/xrpc/app.bsky.graph.getLists</file>
+        <file>response/lists/lists/1/xrpc/app.bsky.graph.getLists</file>
     </qresource>
 </RCC>

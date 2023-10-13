@@ -89,6 +89,7 @@ IMAGE_FILES += \
     qml/images/labeling.png \
     qml/images/language.png \
     qml/images/like.png \
+    qml/images/list.png \
     qml/images/logo.png \
     qml/images/media.png \
     qml/images/more.png \
@@ -145,3 +146,4 @@ mac:translations.path = \
 translations.files = $$PWD/i18n/*.qm
 #qmファイルが存在しないとmakefileに追加されないので注意
 INSTALLS += translations
+

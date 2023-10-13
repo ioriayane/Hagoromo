@@ -25,6 +25,7 @@ void AtpAbstractListModel::clear()
     }
     m_originalCidList.clear();
     m_translations.clear();
+    m_cursor.clear();
 }
 
 AtProtocolInterface::AccountData AtpAbstractListModel::account() const
