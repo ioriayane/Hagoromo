@@ -15,13 +15,10 @@ ScrollView {
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     clip: true
 
-    property string hoveredLink: ""
-    //    property string userDid: ""     // 表示するアカウント
-    //    property string accountDid: ""  // 認証しているアカウント
-
     property alias listView: rootListView
     property alias model: rootListView.model
-    //    property alias recordOperator: recordOperator
+
+    signal requestViewListDetail(string uri)
 
 
     ListView {
@@ -67,6 +64,8 @@ ScrollView {
             bottomPadding: 0
 
             property int layoutWidth: rootListView.width
+
+            onClicked: (mouse) => listsListView.requestViewListDetail(model.uri)
 
             RowLayout{
                 spacing: 10

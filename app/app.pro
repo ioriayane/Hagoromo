@@ -54,6 +54,7 @@ QML_FILES = \
     qml/view/ColumnView.qml \
     qml/view/FeedGeneratorListView.qml \
     qml/view/ImageFullView.qml \
+    qml/view/ListDetailView.qml \
     qml/view/ListsListView.qml \
     qml/view/NotificationListView.qml \
     qml/view/PostThreadView.qml \

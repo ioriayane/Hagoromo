@@ -187,6 +187,7 @@ ColumnLayout {
             onRequestViewLikedBy: (uri) => columnStackView.push(likesProfilesComponent, { "targetUri": uri })
             onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
             onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
+            onRequestViewListDetail: (uri) => columnStackView.push(listDetailComponent, { "listUri": uri })
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
             onRequestReportAccount: (did) => columnView.requestReportAccount(account.uuid, did)
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
@@ -348,6 +349,16 @@ ColumnLayout {
             onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
+            onBack: {
+                if(!columnStackView.empty){
+                    columnStackView.pop()
+                }
+            }
+        }
+    }
+    Component {
+        id: listDetailComponent
+        ListDetailView {
             onBack: {
                 if(!columnStackView.empty){
                     columnStackView.pop()

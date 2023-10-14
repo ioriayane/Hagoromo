@@ -44,6 +44,7 @@ ColumnLayout {
     signal requestViewLikedBy(string uri)
     signal requestViewRepostedBy(string uri)
     signal requestViewSearchPosts(string text)
+    signal requestViewListDetail(string uri)
     signal requestReportPost(string uri, string cid)
     signal requestReportAccount(string did)
 
@@ -561,6 +562,7 @@ ColumnLayout {
                 actor: profileView.userDid
                 visibilityType: ListsListModel.VisibilityTypeCuration
             }
+            onRequestViewListDetail: (uri) => profileView.requestViewListDetail(uri)
         }
 
         ProfileListView {
