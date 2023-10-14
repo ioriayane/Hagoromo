@@ -23,6 +23,7 @@ public:
         AvatarRole,
         NameRole,
         DescriptionRole,
+        SubscribedRole,
         CreatorHandleRole,
         CreatorDisplayNameRole,
         CreatoravatarRole,

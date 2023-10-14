@@ -33,7 +33,7 @@
             "purpose": "app.bsky.graph.defs#modlist",
             "indexedAt": "2023-10-12T15:37:51.839Z",
             "viewer": {
-                "muted": false
+                "muted": true
             },
             "creator": {
                 "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",

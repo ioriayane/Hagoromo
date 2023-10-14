@@ -1662,10 +1662,13 @@ void hagoromo_test::test_ListsListModel()
              QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
     QVERIFY(model.item(0, ListsListModel::CidRole).toString()
             == "bafyreihnheyk74x4jts23gl23icubyarggmo37xn55pop2lpystq426bqu");
+    QVERIFY(model.item(0, ListsListModel::SubscribedRole).toBool() == false);
     QVERIFY(model.item(1, ListsListModel::CidRole).toString()
             == "bafyreieyd765syuilkovwe3ms3cpegt7wo3xksistzy2v4xmazrwbzlwtm");
+    QVERIFY(model.item(1, ListsListModel::SubscribedRole).toBool() == true);
     QVERIFY(model.item(2, ListsListModel::CidRole).toString()
             == "bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy");
+    QVERIFY(model.item(2, ListsListModel::SubscribedRole).toBool() == false);
 
     model.clear();
     model.setVisibilityType(ListsListModel::VisibilityTypeCuration);
@@ -1679,8 +1682,10 @@ void hagoromo_test::test_ListsListModel()
              QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
     QVERIFY(model.item(0, ListsListModel::CidRole).toString()
             == "bafyreihnheyk74x4jts23gl23icubyarggmo37xn55pop2lpystq426bqu");
+    QVERIFY(model.item(0, ListsListModel::SubscribedRole).toBool() == false);
     QVERIFY(model.item(1, ListsListModel::CidRole).toString()
             == "bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy");
+    QVERIFY(model.item(1, ListsListModel::SubscribedRole).toBool() == false);
 
     model.clear();
     model.setVisibilityType(ListsListModel::VisibilityTypeModeration);
@@ -1694,6 +1699,7 @@ void hagoromo_test::test_ListsListModel()
              QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
     QVERIFY(model.item(0, ListsListModel::CidRole).toString()
             == "bafyreieyd765syuilkovwe3ms3cpegt7wo3xksistzy2v4xmazrwbzlwtm");
+    QVERIFY(model.item(0, ListsListModel::SubscribedRole).toBool() == true);
 
     model.setAccount(m_service + "/lists/lists/0", QString(), QString(), QString(), "dummy",
                      QString());
