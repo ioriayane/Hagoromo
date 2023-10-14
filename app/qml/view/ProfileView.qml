@@ -11,6 +11,7 @@ import tech.relog.hagoromo.recordoperator 1.0
 import tech.relog.hagoromo.followslistmodel 1.0
 import tech.relog.hagoromo.followerslistmodel 1.0
 import tech.relog.hagoromo.actorfeedgeneratorlistmodel 1.0
+import tech.relog.hagoromo.listslistmodel 1.0
 import tech.relog.hagoromo.systemtool 1.0
 import tech.relog.hagoromo.singleton 1.0
 
@@ -107,6 +108,7 @@ ColumnLayout {
             likesFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             authorMediaFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             actorFeedGeneratorListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
+            listsListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             followsListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             followersListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
         }
@@ -551,6 +553,15 @@ ColumnLayout {
             onRequestSaveGenerator: (uri) => actorFeedGeneratorListModel.saveGenerator(uri)
         }
 
+        ListsListView {
+            id: listsListView
+            Layout.fillWidth: true
+            model: ListsListModel {
+                id: listsListModel
+                actor: profileView.userDid
+                visibilityType: ListsListModel.VisibilityTypeCuration
+            }
+        }
 
         ProfileListView {
             id: followsListView

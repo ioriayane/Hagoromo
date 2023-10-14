@@ -23,7 +23,8 @@
                     "followedBy": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3jwielvxo622v"
                 },
                 "labels": []
-            }
+            },
+            "description": "3rd party client accounts"
         },
         {
             "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/3kbkuwma4lc27",
@@ -74,7 +75,8 @@
                     "followedBy": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3jwielvxo622v"
                 },
                 "labels": []
-            }
+            },
+            "description": "ioriayane series\nテスト用のリストです。\nお気になさらず。"
         }
     ],
     "cursor": "1694842376207::bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy"

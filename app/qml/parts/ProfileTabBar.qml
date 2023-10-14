@@ -92,13 +92,19 @@ ColumnLayout {
             value: 4
             source: "../images/feed.png"
         }
+        ProfileTabButton {
+            Layout.fillWidth: true
+            ButtonGroup.group: group
+            value: 5
+            source: "../images/list.png"
+        }
     }
     RowLayout {
         spacing: 0
         ProfileTabButton {
             Layout.fillWidth: true
             ButtonGroup.group: group
-            value: 5
+            value: 6
             contentItem: RowLayout {
                 spacing: 1
                 Item {
@@ -129,7 +135,7 @@ ColumnLayout {
         ProfileTabButton {
             Layout.fillWidth: true
             ButtonGroup.group: group
-            value: 6
+            value: 7
             contentItem: RowLayout {
                 spacing: 1
                 Item {

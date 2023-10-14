@@ -5,7 +5,8 @@
 using AtProtocolInterface::AppBskyGraphGetLists;
 using namespace AtProtocolType;
 
-ListsListModel::ListsListModel(QObject *parent) : AtpAbstractListModel { parent }
+ListsListModel::ListsListModel(QObject *parent)
+    : AtpAbstractListModel { parent }, m_visibilityType(ListsListModel::VisibilityTypeAll)
 {
     setDisplayInterval(0);
 }
@@ -32,6 +33,8 @@ QVariant ListsListModel::item(int row, ListsListModelRoles role) const
         return current.cid;
     else if (role == UriRole)
         return current.uri;
+    else if (role == AvatarRole)
+        return current.avatar;
     else if (role == NameRole)
         return current.name;
     else if (role == DescriptionRole)
@@ -123,6 +126,7 @@ QHash<int, QByteArray> ListsListModel::roleNames() const
 
     roles[CidRole] = "cid";
     roles[UriRole] = "uri";
+    roles[AvatarRole] = "avatar";
     roles[NameRole] = "name";
     roles[DescriptionRole] = "description";
     roles[CreatorHandleRole] = "creatorHandle";

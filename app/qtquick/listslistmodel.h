@@ -20,6 +20,7 @@ public:
         ModelData = Qt::UserRole + 1,
         CidRole,
         UriRole,
+        AvatarRole,
         NameRole,
         DescriptionRole,
         CreatorHandleRole,

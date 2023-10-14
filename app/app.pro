@@ -54,6 +54,7 @@ QML_FILES = \
     qml/view/ColumnView.qml \
     qml/view/FeedGeneratorListView.qml \
     qml/view/ImageFullView.qml \
+    qml/view/ListsListView.qml \
     qml/view/NotificationListView.qml \
     qml/view/PostThreadView.qml \
     qml/view/ProfileListView.qml \
@@ -146,4 +147,3 @@ mac:translations.path = \
 translations.files = $$PWD/i18n/*.qm
 #qmファイルが存在しないとmakefileに追加されないので注意
 INSTALLS += translations
-
