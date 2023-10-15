@@ -30,7 +30,7 @@ QString SystemTool::qtVersion() const
     return QT_VERSION_STR;
 }
 
-QString SystemTool::markupText(const QString &text)
+QString SystemTool::markupText(const QString &text) const
 {
     if (text.isEmpty())
         return text;

@@ -360,6 +360,7 @@ ColumnLayout {
         id: listDetailComponent
         ListDetailView {
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+            onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
 
             onBack: {
                 if(!columnStackView.empty){

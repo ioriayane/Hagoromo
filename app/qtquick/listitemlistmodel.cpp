@@ -32,7 +32,7 @@ QVariant ListItemListModel::item(int row, ListItemListModelRoles role) const
     else if (role == DisplayNameRole)
         return current.subject->displayName;
     else if (role == DescriptionRole)
-        return current.subject->description;
+        return m_systemTool.markupText(current.subject->description);
     else if (role == AvatarRole)
         return current.subject->avatar;
     else if (role == IndexedAtRole)
@@ -76,7 +76,7 @@ void ListItemListModel::getLatest()
         list->deleteLater();
     });
     list->setAccount(account());
-    list->getList(uri(), 0, QString());
+    list->getList(uri(), 10, QString());
 }
 
 void ListItemListModel::getNext()

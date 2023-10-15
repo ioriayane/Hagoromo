@@ -47,7 +47,7 @@ public:
     QString applicationVersion() const;
     QString qtVersion() const;
 
-    QString markupText(const QString &text);
+    QString markupText(const QString &text) const;
 
 private:
     QRegularExpression m_rxUrl;

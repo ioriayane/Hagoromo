@@ -37,6 +37,9 @@ ColumnLayout {
         function getLatest() {
             listItemListModel.getLatest()
         }
+        function getNext() {
+            listItemListModel.getNext()
+        }
     }
 
     Frame {
@@ -63,6 +66,42 @@ ColumnLayout {
         }
     }
 
+    RowLayout {
+        Layout.fillWidth: true
+        Layout.topMargin: 5
+        Layout.leftMargin: 5
+        Layout.rightMargin: 5
+        Layout.bottomMargin: 5
+        AvatarImage {
+            id: avatarImage
+            Layout.preferredWidth: AdjustedValues.i48
+            Layout.preferredHeight: AdjustedValues.i48
+            Layout.rowSpan: 2
+            source: listItemListModel.avatar
+        }
+        ColumnLayout {
+            Label {
+                Layout.preferredWidth: listDetailView.width - avatarImage.width - 15
+                font.pointSize: AdjustedValues.f12
+                elide: Text.ElideRight
+                text: listItemListModel.name
+            }
+            Label {
+                Layout.preferredWidth: listDetailView.width - avatarImage.width - 15
+                elide: Text.ElideRight
+                font.pointSize: AdjustedValues.f8
+                color: Material.color(Material.Grey)
+                text: "by " + listItemListModel.creatorDisplayName + " (" + listItemListModel.creatorHandle + ")"
+            }
+            Label {
+                Layout.preferredWidth: listDetailView.width - avatarImage.width - 15
+                font.pointSize: AdjustedValues.f8
+                visible: text.length > 0
+                text: listItemListModel.description
+            }
+        }
+    }
+
     ScrollView {
         Layout.fillWidth: true
         Layout.fillHeight: true
@@ -83,6 +122,12 @@ ColumnLayout {
                 onErrorOccured: (code, message) => listDetailView.errorOccured(code, message)
             }
 
+            onMovementEnded: {
+                if(atYEnd){
+                    listDetailView.model.getNext()
+                }
+            }
+
             header: Item {
                 width: rootListView.width
                 height: AdjustedValues.h24
@@ -93,6 +138,11 @@ ColumnLayout {
                     height: AdjustedValues.i24
                     visible: listItemListModel.running
                 }
+            }
+            footer: BusyIndicator {
+                width: rootListView.width
+                height: AdjustedValues.i24
+                visible: rootListView.model.running && rootListView.model.rowCount() > 0
             }
 
             delegate: ClickableFrame {
