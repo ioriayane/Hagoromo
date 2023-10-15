@@ -359,6 +359,8 @@ ColumnLayout {
     Component {
         id: listDetailComponent
         ListDetailView {
+            onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+
             onBack: {
                 if(!columnStackView.empty){
                     columnStackView.pop()

@@ -22,6 +22,7 @@ SOURCES += \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgettimeline.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollowers.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollows.cpp \
+    $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlist.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlists.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphmuteactor.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphunmuteactor.cpp \
@@ -65,6 +66,7 @@ HEADERS += \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgettimeline.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollowers.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollows.h \
+    $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlist.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlists.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphmuteactor.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphunmuteactor.h \
