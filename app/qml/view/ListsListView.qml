@@ -61,7 +61,7 @@ ScrollView {
             topPadding: 10
             leftPadding: 10
             rightPadding: 10
-            bottomPadding: 0
+            bottomPadding: 10
 
             property int layoutWidth: rootListView.width
 

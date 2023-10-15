@@ -294,6 +294,9 @@ ApplicationWindow {
                                           repeater.updatePosition()
                                           scrollView.showColumn(pos)
                                       }
+            onRequestViewListFeed: (account_uuid, uri) => {
+                                       console.log("uuid=" + account_uuid + "\nuri=" + uri)
+                                   }
 
             onRequestReportPost: (account_uuid, uri, cid) => {
                                      var row = accountListModel.indexAt(account_uuid)

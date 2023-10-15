@@ -11,6 +11,7 @@ class ListItemListModel : public AtpAbstractListModel
 
     Q_PROPERTY(QString uri READ uri WRITE setUri NOTIFY uriChanged)
     Q_PROPERTY(QString cid READ cid WRITE setCid NOTIFY cidChanged)
+    Q_PROPERTY(QString rkey READ rkey WRITE setRkey NOTIFY rkeyChanged)
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(QString avatar READ avatar WRITE setAvatar NOTIFY avatarChanged)
     Q_PROPERTY(QString description READ description WRITE setDescription NOTIFY descriptionChanged)
@@ -48,6 +49,8 @@ public:
     void setUri(const QString &newUri);
     QString cid() const;
     void setCid(const QString &newCid);
+    QString rkey() const;
+    void setRkey(const QString &newRkey);
     QString name() const;
     void setName(const QString &newName);
     QString avatar() const;
@@ -70,6 +73,7 @@ public slots:
 signals:
     void uriChanged();
     void cidChanged();
+    void rkeyChanged();
     void nameChanged();
     void avatarChanged();
     void descriptionChanged();
@@ -92,6 +96,7 @@ private:
 
     QString m_uri;
     QString m_cid;
+    QString m_rkey;
     QString m_name;
     QString m_avatar;
     QString m_description;

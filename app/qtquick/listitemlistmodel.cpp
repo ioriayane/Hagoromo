@@ -3,7 +3,10 @@
 using AtProtocolInterface::AppBskyGraphGetList;
 using namespace AtProtocolType;
 
-ListItemListModel::ListItemListModel(QObject *parent) : AtpAbstractListModel { parent } { }
+ListItemListModel::ListItemListModel(QObject *parent)
+    : AtpAbstractListModel { parent }, m_subscribed(false)
+{
+}
 
 int ListItemListModel::rowCount(const QModelIndex &parent) const
 {
@@ -158,6 +161,13 @@ void ListItemListModel::setUri(const QString &newUri)
         return;
     m_uri = newUri;
     emit uriChanged();
+
+    if (m_uri.startsWith("at://")) {
+        QStringList items = m_uri.split("/");
+        if (!items.isEmpty()) {
+            setRkey(items.last());
+        }
+    }
 }
 
 QString ListItemListModel::cid() const
@@ -171,6 +181,19 @@ void ListItemListModel::setCid(const QString &newCid)
         return;
     m_cid = newCid;
     emit cidChanged();
+}
+
+QString ListItemListModel::rkey() const
+{
+    return m_rkey;
+}
+
+void ListItemListModel::setRkey(const QString &newRkey)
+{
+    if (m_rkey == newRkey)
+        return;
+    m_rkey = newRkey;
+    emit rkeyChanged();
 }
 
 QString ListItemListModel::name() const

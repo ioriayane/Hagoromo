@@ -42,6 +42,7 @@ ColumnLayout {
     signal requestViewImages(int index, var paths, var alts)
     signal requestViewFeedGenerator(string account_uuid, string name, string uri)
     signal requestViewSearchPosts(string account_uuid, string text, string current_column_key)
+    signal requestViewListFeed(string account_uuid, string uri)
     signal requestReportPost(string account_uuid, string uri, string cid)
     signal requestReportAccount(string account_uuid, string did)
 
@@ -360,6 +361,9 @@ ColumnLayout {
         id: listDetailComponent
         ListDetailView {
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+            onRequestViewListFeed: (uri) => columnView.requestViewListFeed(account.uuid, uri)
+
+            onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
 
             onBack: {

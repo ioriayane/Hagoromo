@@ -18,13 +18,18 @@ ColumnLayout {
 
     property string hoveredLink: ""
 
-    property alias model: relayObject
     property string listUri: ""
+    property alias model: relayObject
 
     signal requestViewProfile(string did)
+    signal requestViewListFeed(string uri)
 
     signal errorOccured(string code, string message)
     signal back()
+
+    function openInOhters(handle, rkey) {
+        Qt.openUrlExternally("https://bsky.app/profile/" + handle + "/lists/" + rkey)
+    }
 
     QtObject {
         id: relayObject
@@ -80,24 +85,59 @@ ColumnLayout {
             source: listItemListModel.avatar
         }
         ColumnLayout {
+            property int basisWidth: listDetailView.width - avatarImage.width -
+                                     parent.spacing - parent.Layout.leftMargin - parent.Layout.rightMargin
             Label {
-                Layout.preferredWidth: listDetailView.width - avatarImage.width - 15
+                Layout.preferredWidth: parent.basisWidth
                 font.pointSize: AdjustedValues.f12
                 elide: Text.ElideRight
                 text: listItemListModel.name
             }
             Label {
-                Layout.preferredWidth: listDetailView.width - avatarImage.width - 15
+                Layout.preferredWidth: parent.basisWidth
                 elide: Text.ElideRight
                 font.pointSize: AdjustedValues.f8
                 color: Material.color(Material.Grey)
-                text: "by " + listItemListModel.creatorDisplayName + " (" + listItemListModel.creatorHandle + ")"
+                text: listItemListModel.creatorHandle.length == 0 ?
+                          "" : "by " + listItemListModel.creatorDisplayName + " (" + listItemListModel.creatorHandle + ")"
             }
             Label {
-                Layout.preferredWidth: listDetailView.width - avatarImage.width - 15
+                Layout.preferredWidth: parent.basisWidth
                 font.pointSize: AdjustedValues.f8
                 visible: text.length > 0
                 text: listItemListModel.description
+
+                IconButton {
+                    id: moreButton
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    height: AdjustedValues.b24
+                    iconSource: "../images/more.png"
+                    iconSize: AdjustedValues.i16
+                    foreground: Material.color(Material.Grey)
+                    onClicked: morePopup.open()
+                    Menu {
+                        id: morePopup
+                        MenuItem {
+                            text: qsTr("Open in new col")
+                            icon.source: "../images/add.png"
+                            onTriggered: listDetailView.requestViewListFeed(listDetailView.listUri)
+                        }
+                        MenuItem {
+                            text: qsTr("Open in Official")
+                            icon.source: "../images/open_in_other.png"
+                            onTriggered: listDetailView.openInOhters(listItemListModel.handle, listItemListModel.rkey)
+                        }
+//                        MenuSeparator {}
+//                        MenuItem {
+//                            text: qsTr("Report account")
+//                            icon.source: "../images/report.png"
+//                            enabled: false
+//                            //enabled: userProfile.handle.length > 0 && profileView.userDid !== profileView.accountDid
+//                            //onTriggered: requestReportAccount(userProfile.did)
+//                        }
+                    }
+                }
             }
         }
     }
@@ -124,7 +164,7 @@ ColumnLayout {
 
             onMovementEnded: {
                 if(atYEnd){
-                    listDetailView.model.getNext()
+                    listItemListModel.getNext()
                 }
             }
 
@@ -132,17 +172,18 @@ ColumnLayout {
                 width: rootListView.width
                 height: AdjustedValues.h24
 
-                BusyIndicator {
-                    anchors.centerIn: parent
-                    width: AdjustedValues.i24
-                    height: AdjustedValues.i24
-                    visible: listItemListModel.running
+                Label {
+                    anchors.left: parent.left
+                    anchors.leftMargin: 10 * AdjustedValues.ratio
+                    anchors.verticalCenter: parent.verticalCenter
+                    font.pointSize: AdjustedValues.f8
+                    text: qsTr("Users")
                 }
             }
             footer: BusyIndicator {
                 width: rootListView.width
                 height: AdjustedValues.i24
-                visible: rootListView.model.running && rootListView.model.rowCount() > 0
+                visible: listItemListModel.running
             }
 
             delegate: ClickableFrame {
@@ -152,7 +193,7 @@ ColumnLayout {
                 topPadding: 10
                 leftPadding: 10
                 rightPadding: 10
-                bottomPadding: 0
+                bottomPadding: 10
 
                 property int layoutWidth: rootListView.width
                 property var userLabels: [] //model.labels
