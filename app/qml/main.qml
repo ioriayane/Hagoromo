@@ -284,7 +284,7 @@ ApplicationWindow {
                                      }
             onRequestViewImages: (index, paths, alts) => imageFullView.open(index, paths, alts)
             onRequestViewFeedGenerator: (account_uuid, name, uri) => {
-                                            columnManageModel.append(account.uuid, 4, false, 300000, 400, name, uri)
+                                            columnManageModel.append(account_uuid, 4, false, 300000, 400, name, uri)
                                             scrollView.showRightMost()
                                         }
             onRequestViewSearchPosts: (account_uuid, text, current_column_key) => {
@@ -297,6 +297,7 @@ ApplicationWindow {
             onRequestViewListFeed: (account_uuid, uri, name) => {
                                        console.log("uuid=" + account_uuid + "\nuri=" + uri + "\nname=" + name)
                                        columnManageModel.append(account_uuid, 6, false, 300000, 400, name, uri)
+                                       scrollView.showRightMost()
                                    }
 
             onRequestReportPost: (account_uuid, uri, cid) => {
