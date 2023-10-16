@@ -22,7 +22,7 @@ ColumnLayout {
     property alias model: relayObject
 
     signal requestViewProfile(string did)
-    signal requestViewListFeed(string uri)
+    signal requestViewListFeed(string uri, string name)
 
     signal errorOccured(string code, string message)
     signal back()
@@ -121,7 +121,7 @@ ColumnLayout {
                         MenuItem {
                             text: qsTr("Open in new col")
                             icon.source: "../images/add.png"
-                            onTriggered: listDetailView.requestViewListFeed(listDetailView.listUri)
+                            onTriggered: listDetailView.requestViewListFeed(listDetailView.listUri, listItemListModel.name)
                         }
                         MenuItem {
                             text: qsTr("Open in Official")

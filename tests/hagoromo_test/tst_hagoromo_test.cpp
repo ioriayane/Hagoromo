@@ -17,6 +17,7 @@
 #include "postthreadlistmodel.h"
 #include "listslistmodel.h"
 #include "listitemlistmodel.h"
+#include "listfeedlistmodel.h"
 
 class hagoromo_test : public QObject
 {
@@ -53,6 +54,7 @@ private slots:
     void test_PostThreadListModel();
     void test_ListsListModel();
     void test_ListItemListModel();
+    void test_ListFeedListModel();
 
 private:
     WebServer m_mockServer;
@@ -1798,6 +1800,24 @@ void hagoromo_test::test_ListItemListModel()
     QVERIFY(model.avatar() == "");
     QVERIFY(model.description() == "");
     QVERIFY(model.subscribed() == false);
+}
+
+void hagoromo_test::test_ListFeedListModel()
+{
+    ListFeedListModel model;
+
+    model.setAccount(m_service + "/lists/feed/0", "did:plc:l4fsx4ujos7uw7n4ijq2ulgs", QString(),
+                     QString(), "dummy", QString());
+    model.setUri("at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/3k7igyxfizg27");
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    QVERIFY2(model.rowCount() == 6,
+             QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
 }
 
 void hagoromo_test::test_RecordOperatorCreateRecord(const QByteArray &body)

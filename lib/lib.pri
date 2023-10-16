@@ -16,6 +16,7 @@ SOURCES += \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerator.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerators.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetlikes.cpp \
+    $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetlistfeed.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetposts.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetpostthread.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetrepostedby.cpp \
@@ -60,6 +61,7 @@ HEADERS += \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerator.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerators.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetlikes.h \
+    $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetlistfeed.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetposts.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetpostthread.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetrepostedby.h \

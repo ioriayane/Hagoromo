@@ -27,6 +27,7 @@
 #include "qtquick/anyprofilelistmodel.h"
 #include "qtquick/listslistmodel.h"
 #include "qtquick/listitemlistmodel.h"
+#include "qtquick/listfeedlistmodel.h"
 #include "qtquick/thumbnailprovider.h"
 #include "qtquick/encryption.h"
 #include "qtquick/userprofile.h"
@@ -97,6 +98,8 @@ int main(int argc, char *argv[])
     qmlRegisterType<ListsListModel>("tech.relog.hagoromo.listslistmodel", 1, 0, "ListsListModel");
     qmlRegisterType<ListItemListModel>("tech.relog.hagoromo.listitemlistmodel", 1, 0,
                                        "ListItemListModel");
+    qmlRegisterType<ListFeedListModel>("tech.relog.hagoromo.listfeedlistmodel", 1, 0,
+                                       "ListFeedListModel");
     qmlRegisterType<Encryption>("tech.relog.hagoromo.encryption", 1, 0, "Encryption");
     qmlRegisterType<UserProfile>("tech.relog.hagoromo.userprofile", 1, 0, "UserProfile");
     qmlRegisterType<SystemTool>("tech.relog.hagoromo.systemtool", 1, 0, "SystemTool");
