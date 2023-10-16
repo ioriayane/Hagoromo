@@ -30,6 +30,9 @@ bool {{ class_name }}::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
     if (json_doc.isEmpty()) {
+        success = false;
+    } else {
+        //setCursor(json_doc.object().value("cursor").toString());
     }
 
     return success;
