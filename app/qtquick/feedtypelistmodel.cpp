@@ -3,9 +3,11 @@
 #include "atprotocol/lexicons.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetpreferences.h"
 #include "atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerators.h"
+#include "atprotocol/app/bsky/graph/appbskygraphgetlists.h"
 
 using AtProtocolInterface::AppBskyActorGetPreferences;
 using AtProtocolInterface::AppBskyFeedGetFeedGenerators;
+using AtProtocolInterface::AppBskyGraphGetLists;
 using namespace AtProtocolType::AppBskyActorDefs;
 
 FeedTypeListModel::FeedTypeListModel(QObject *parent) : AtpAbstractListModel { parent }
@@ -29,17 +31,35 @@ QVariant FeedTypeListModel::item(int row, FeedTypeListModelRoles role) const
     if (row < 0 || row >= m_feedTypeItemList.count())
         return QVariant();
 
-    if (role == FeedTypeListModelRoles::FeedTypeRole)
+    if (role == GroupRole)
+        return m_feedTypeItemList.at(row).group;
+    else if (role == FeedTypeRole)
         return static_cast<int>(m_feedTypeItemList.at(row).type);
-    else if (role == FeedTypeListModelRoles::DisplayNameRole)
-        return m_feedTypeItemList.at(row).generator.displayName;
-    else if (role == FeedTypeListModelRoles::AvatarRole)
-        return m_feedTypeItemList.at(row).generator.avatar;
-    else if (role == FeedTypeListModelRoles::UriRole)
-        return m_feedTypeItemList.at(row).generator.uri;
-    else if (role == FeedTypeListModelRoles::CreatorDisplayNameRole)
-        return m_feedTypeItemList.at(row).generator.creator.displayName;
 
+    else if (m_feedTypeItemList.at(row).type == FeedComponentType::ListFeed) {
+        if (role == DisplayNameRole)
+            return m_feedTypeItemList.at(row).list.name;
+        else if (role == AvatarRole)
+            return m_feedTypeItemList.at(row).list.avatar;
+        else if (role == UriRole)
+            return m_feedTypeItemList.at(row).list.uri;
+        else if (role == CreatorDisplayNameRole) {
+            if (m_feedTypeItemList.at(row).list.creator) {
+                return m_feedTypeItemList.at(row).list.creator->displayName;
+            } else {
+                return QString();
+            }
+        }
+    } else {
+        if (role == DisplayNameRole)
+            return m_feedTypeItemList.at(row).generator.displayName;
+        else if (role == AvatarRole)
+            return m_feedTypeItemList.at(row).generator.avatar;
+        else if (role == UriRole)
+            return m_feedTypeItemList.at(row).generator.uri;
+        else if (role == CreatorDisplayNameRole)
+            return m_feedTypeItemList.at(row).generator.creator.displayName;
+    }
     return QVariant();
 }
 
@@ -57,6 +77,7 @@ QString FeedTypeListModel::getRecordText(const QString &cid)
 
 void FeedTypeListModel::clear()
 {
+    m_cursor.clear();
     if (!m_feedTypeItemList.isEmpty()) {
         beginRemoveRows(QModelIndex(), 0, rowCount() - 1);
         m_feedTypeItemList.clear();
@@ -65,12 +86,14 @@ void FeedTypeListModel::clear()
     beginInsertRows(QModelIndex(), 0, 1);
     {
         FeedTypeItem item;
+        item.group = tr("Default Feeds");
         item.type = FeedComponentType::Timeline;
         item.generator.displayName = tr("Following");
         m_feedTypeItemList.append(item);
     }
     {
         FeedTypeItem item;
+        item.group = tr("Default Feeds");
         item.type = FeedComponentType::Notification;
         item.generator.displayName = tr("Notification");
         m_feedTypeItemList.append(item);
@@ -111,6 +134,7 @@ QHash<int, QByteArray> FeedTypeListModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
 
+    roles[GroupRole] = "group";
     roles[FeedTypeRole] = "feedType";
     roles[DisplayNameRole] = "displayName";
     roles[AvatarRole] = "avatar";
@@ -129,7 +153,15 @@ bool FeedTypeListModel::checkVisibility(const QString &cid)
 void FeedTypeListModel::getFeedDetails()
 {
     if (m_cueUri.isEmpty()) {
-        setRunning(false);
+        FeedTypeItem item;
+        item.group = tr("My Feeds");
+        item.type = FeedComponentType::DiscoverFeeds;
+        item.generator.displayName = tr("Discover Feeds");
+        beginInsertRows(QModelIndex(), rowCount(), rowCount());
+        m_feedTypeItemList.append(item);
+        endInsertRows();
+
+        QTimer::singleShot(10, this, &FeedTypeListModel::getLists);
         return;
     }
 
@@ -151,6 +183,7 @@ void FeedTypeListModel::getFeedDetails()
                 for (const auto &generator : *generators->generatorViewList()) {
                     if (uri == generator.uri) {
                         FeedTypeItem item;
+                        item.group = tr("My Feeds");
                         item.type = FeedComponentType::CustomFeed;
                         item.generator = generator;
                         beginInsertRows(QModelIndex(), rowCount(), rowCount());
@@ -168,4 +201,34 @@ void FeedTypeListModel::getFeedDetails()
     });
     generators->setAccount(account());
     generators->getFeedGenerators(uris);
+}
+
+void FeedTypeListModel::getLists()
+{
+    AppBskyGraphGetLists *lists = new AppBskyGraphGetLists(this);
+    connect(lists, &AppBskyGraphGetLists::finished, [=](bool success) {
+        if (success) {
+            if (m_cursor.isEmpty()) {
+                m_cursor = lists->cursor();
+            }
+            for (const auto &list : *lists->listViewList()) {
+                if (list.purpose == "app.bsky.graph.defs#modlist") {
+                    continue;
+                }
+                FeedTypeItem item;
+                item.group = tr("My Lists");
+                item.type = FeedComponentType::ListFeed;
+                item.list = list;
+                beginInsertRows(QModelIndex(), rowCount(), rowCount());
+                m_feedTypeItemList.append(item);
+                endInsertRows();
+            }
+        } else {
+            emit errorOccured(lists->errorCode(), lists->errorMessage());
+        }
+        setRunning(false);
+        lists->deleteLater();
+    });
+    lists->setAccount(account());
+    lists->getLists(account().did, 0, QString());
 }
