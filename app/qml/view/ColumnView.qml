@@ -46,6 +46,7 @@ ColumnLayout {
     signal requestViewListFeed(string account_uuid, string uri, string name)
     signal requestReportPost(string account_uuid, string uri, string cid)
     signal requestReportAccount(string account_uuid, string did)
+    signal requestAddRemoveFromLists(string account_uuid, string did)
 
     signal requestMoveToLeft(string key)
     signal requestMoveToRight(string key)
@@ -192,6 +193,7 @@ ColumnLayout {
             onRequestViewListDetail: (uri) => columnStackView.push(listDetailComponent, { "listUri": uri })
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
             onRequestReportAccount: (did) => columnView.requestReportAccount(account.uuid, did)
+            onRequestAddRemoveFromLists: (did) => columnView.requestAddRemoveFromLists(account.uuid, did)
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
 
             onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)

@@ -47,6 +47,7 @@ ColumnLayout {
     signal requestViewListDetail(string uri)
     signal requestReportPost(string uri, string cid)
     signal requestReportAccount(string did)
+    signal requestAddRemoveFromLists(string did)
 
     signal errorOccured(string code, string message)
     signal back()
@@ -274,6 +275,7 @@ ColumnLayout {
                 onClicked: morePopup.open()
                 Menu {
                     id: morePopup
+                    width: 240
                     MenuItem {
                         text: qsTr("Send mention")
                         icon.source: "../images/reply.png"
@@ -305,6 +307,13 @@ ColumnLayout {
                         icon.source: "../images/open_in_other.png"
                         enabled: userProfile.handle.length > 0
                         onTriggered: openInOhters(userProfile.handle)
+                    }
+                    MenuSeparator {}
+                    MenuItem {
+                        text: qsTr("Add/Remove from lists")
+                        icon.source: "../images/list.png"
+                        enabled: userProfile.handle.length > 0 && userProfile.did !== account.did
+                        onTriggered: requestAddRemoveFromLists(userProfile.did)
                     }
                     MenuSeparator {}
                     MenuItem {
