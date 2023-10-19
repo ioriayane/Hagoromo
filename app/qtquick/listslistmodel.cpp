@@ -1,4 +1,5 @@
 #include "listslistmodel.h"
+#include "listitemlistmodel.h"
 
 #include "atprotocol/app/bsky/graph/appbskygraphgetlists.h"
 
@@ -85,6 +86,7 @@ void ListsListModel::getLatest()
         return;
     setRunning(true);
 
+    m_searchQue.clear();
     AppBskyGraphGetLists *lists = new AppBskyGraphGetLists(this);
     connect(lists, &AppBskyGraphGetLists::finished, [=](bool success) {
         if (success) {
@@ -102,12 +104,11 @@ void ListsListModel::getLatest()
     lists->getLists(actor(), 0, QString());
 }
 
-void ListsListModel::getNext()
 {
     if (running() || m_cursor.isEmpty())
-        return;
     setRunning(true);
 
+    m_searchQue.clear();
     AppBskyGraphGetLists *lists = new AppBskyGraphGetLists(this);
     connect(lists, &AppBskyGraphGetLists::finished, [=](bool success) {
         if (success) {
@@ -143,7 +144,11 @@ QHash<int, QByteArray> ListsListModel::roleNames() const
 
 void ListsListModel::finishedDisplayingQueuedPosts()
 {
-    setRunning(false);
+    if (m_searchQue.isEmpty()) {
+        setRunning(false);
+    } else {
+        QTimer::singleShot(0, this, &ListsListModel::searchActorInEachLists);
+    }
 }
 
 bool ListsListModel::checkVisibility(const QString &cid)
@@ -153,10 +158,17 @@ bool ListsListModel::checkVisibility(const QString &cid)
 
     const AppBskyGraphDefs::ListView &current = m_listViewHash.value(cid);
 
-    return (visibilityType() == VisibilityTypeCuration
-            && current.purpose == "app.bsky.graph.defs#curatelist")
-            || (visibilityType() == VisibilityTypeModeration
-                && current.purpose == "app.bsky.graph.defs#modlist");
+    if ((visibilityType() == VisibilityTypeCuration
+         && current.purpose == "app.bsky.graph.defs#curatelist")
+        || (visibilityType() == VisibilityTypeModeration
+            && current.purpose == "app.bsky.graph.defs#modlist")) {
+        if (searchTarget().startsWith("did:")) {
+            m_searchQue.append(cid);
+        }
+        return true;
+    } else {
+        return false;
+    }
 }
 
 void ListsListModel::copyFrom(AtProtocolInterface::AppBskyGraphGetLists *lists)
@@ -170,6 +182,18 @@ void ListsListModel::copyFrom(AtProtocolInterface::AppBskyGraphGetLists *lists)
         post.reference_time = QDateTime::currentDateTimeUtc();
         m_cuePost.insert(0, post);
     }
+}
+
+void ListsListModel::searchActorInEachLists()
+{
+    if (m_searchQue.isEmpty()) {
+        setRunning(false);
+        return;
+    }
+
+    ListItemListModel *list = new ListItemListModel(this);
+    m_searchQue.pop_back();
+    QTimer::singleShot(0, this, &ListsListModel::searchActorInEachLists);
 }
 
 QString ListsListModel::actor() const
@@ -196,4 +220,17 @@ void ListsListModel::setVisibilityType(const VisibilityType &newVisibilityType)
         return;
     m_visibilityType = newVisibilityType;
     emit visibilityTypeChanged();
+}
+
+QString ListsListModel::searchTarget() const
+{
+    return m_searchTarget;
+}
+
+void ListsListModel::setSearchTarget(const QString &newSearchTarget)
+{
+    if (m_searchTarget == newSearchTarget)
+        return;
+    m_searchTarget = newSearchTarget;
+    emit searchTargetChanged();
 }

@@ -11,6 +11,9 @@ class ListsListModel : public AtpAbstractListModel
     Q_PROPERTY(QString actor READ actor WRITE setActor NOTIFY actorChanged)
     Q_PROPERTY(VisibilityType visibilityType READ visibilityType WRITE setVisibilityType NOTIFY
                        visibilityTypeChanged)
+    // 取得したリストそれぞれの中に登録されているか確認するユーザーのdid
+    Q_PROPERTY(
+            QString searchTarget READ searchTarget WRITE setSearchTarget NOTIFY searchTargetChanged)
 
 public:
     explicit ListsListModel(QObject *parent = nullptr);
@@ -54,9 +57,10 @@ public:
 
     QString actor() const;
     void setActor(const QString &newActor);
-
     VisibilityType visibilityType() const;
     void setVisibilityType(const VisibilityType &newVisibilityType);
+    QString searchTarget() const;
+    void setSearchTarget(const QString &newSearchTarget);
 
 public slots:
     Q_INVOKABLE void getLatest();
@@ -64,8 +68,8 @@ public slots:
 
 signals:
     void actorChanged();
-
     void visibilityTypeChanged();
+    void searchTargetChanged();
 
 protected:
     QHash<int, QByteArray> roleNames() const;
@@ -74,10 +78,13 @@ protected:
 
 private:
     void copyFrom(AtProtocolInterface::AppBskyGraphGetLists *lists);
+    void searchActorInEachLists();
 
     QHash<QString, AtProtocolType::AppBskyGraphDefs::ListView> m_listViewHash;
+    QStringList m_searchQue;
     QString m_actor;
     VisibilityType m_visibilityType;
+    QString m_searchTarget;
 };
 
 #endif // LISTSLISTMODEL_H
