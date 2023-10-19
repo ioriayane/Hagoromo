@@ -27,6 +27,7 @@ public:
         CreatorHandleRole,
         CreatorDisplayNameRole,
         CreatoravatarRole,
+        SearchStatusRole,
     };
     Q_ENUM(ListsListModelRoles);
     enum VisibilityType {
@@ -35,6 +36,13 @@ public:
         VisibilityTypeModeration,
     };
     Q_ENUM(VisibilityType);
+    enum SearchStatusType {
+        SearchStatusTypeUnknown, // まだ探していない
+        SearchStatusTypeRunning, // 検索中
+        SearchStatusTypeNotContains,
+        SearchStatusTypeContains,
+    };
+    Q_ENUM(SearchStatusType);
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;

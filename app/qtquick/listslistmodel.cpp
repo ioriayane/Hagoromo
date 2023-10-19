@@ -56,7 +56,8 @@ QVariant ListsListModel::item(int row, ListsListModelRoles role) const
             return QString();
         else
             return current.creator->avatar;
-    }
+    } else if (role == SearchStatusRole)
+        return SearchStatusTypeUnknown;
 
     return QVariant();
 }
@@ -135,6 +136,7 @@ QHash<int, QByteArray> ListsListModel::roleNames() const
     roles[CreatorHandleRole] = "creatorHandle";
     roles[CreatorDisplayNameRole] = "creatorDisplayName";
     roles[CreatoravatarRole] = "creatoravatar";
+    roles[SearchStatusRole] = "searchStatus";
 
     return roles;
 }
