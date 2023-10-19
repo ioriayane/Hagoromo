@@ -1739,7 +1739,7 @@ void hagoromo_test::test_ListItemListModel()
 {
     ListItemListModel model;
 
-    model.setAccount(m_service + "/lists/list/0", "did:plc:ipj5qejfoqu6eukvt72uhyit", QString(),
+    model.setAccount(m_service + "/lists/list", "did:plc:ipj5qejfoqu6eukvt72uhyit", QString(),
                      QString(), "dummy", QString());
 
     model.setUri("at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/3k7igyxfizg27");
@@ -1764,9 +1764,6 @@ void hagoromo_test::test_ListItemListModel()
     QVERIFY(model.avatar() == "");
     QVERIFY(model.description() == "my accounts list");
     QVERIFY(model.subscribed() == false);
-
-    model.setAccount(m_service + "/lists/list/1", "did:plc:ipj5qejfoqu6eukvt72uhyit", QString(),
-                     QString(), "dummy", QString());
 
     model.setUri("at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/3k7igyxfizg27");
     {
