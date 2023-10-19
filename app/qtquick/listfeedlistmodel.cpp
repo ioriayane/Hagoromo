@@ -12,7 +12,7 @@ bool ListFeedListModel::getLatest()
         return false;
     setRunning(true);
 
-    updateContentFilterLabels([=]() {
+    return updateContentFilterLabels([=]() {
         AppBskyFeedGetListFeed *list = new AppBskyFeedGetListFeed(this);
         connect(list, &AppBskyFeedGetListFeed::finished, [=](bool success) {
             if (success) {
@@ -29,7 +29,6 @@ bool ListFeedListModel::getLatest()
         list->setAccount(account());
         list->getListFeed(uri(), 0, QString());
     });
-    return true;
 }
 
 bool ListFeedListModel::getNext()
@@ -38,7 +37,7 @@ bool ListFeedListModel::getNext()
         return false;
     setRunning(true);
 
-    updateContentFilterLabels([=]() {
+    return updateContentFilterLabels([=]() {
         AppBskyFeedGetListFeed *list = new AppBskyFeedGetListFeed(this);
         connect(list, &AppBskyFeedGetListFeed::finished, [=](bool success) {
             if (success) {
@@ -54,7 +53,6 @@ bool ListFeedListModel::getNext()
         list->setAccount(account());
         list->getListFeed(uri(), 0, m_cursor);
     });
-    return true;
 }
 
 QString ListFeedListModel::uri() const

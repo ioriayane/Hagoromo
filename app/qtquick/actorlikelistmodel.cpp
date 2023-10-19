@@ -12,7 +12,7 @@ bool ActorLikeListModel::getLatest()
         return false;
     setRunning(true);
 
-    updateContentFilterLabels([=]() {
+    return updateContentFilterLabels([=]() {
         AppBskyFeedGetActorLikes *likes = new AppBskyFeedGetActorLikes(this);
         connect(likes, &AppBskyFeedGetActorLikes::finished, [=](bool success) {
             if (success) {
@@ -29,7 +29,6 @@ bool ActorLikeListModel::getLatest()
         likes->setAccount(account());
         likes->getActorLikes(actor(), 0, QString());
     });
-    return true;
 }
 
 bool ActorLikeListModel::getNext()
@@ -38,7 +37,7 @@ bool ActorLikeListModel::getNext()
         return false;
     setRunning(true);
 
-    updateContentFilterLabels([=]() {
+    return updateContentFilterLabels([=]() {
         AppBskyFeedGetActorLikes *likes = new AppBskyFeedGetActorLikes(this);
         connect(likes, &AppBskyFeedGetActorLikes::finished, [=](bool success) {
             if (success) {
@@ -53,7 +52,6 @@ bool ActorLikeListModel::getNext()
         likes->setAccount(account());
         likes->getActorLikes(actor(), 0, m_cursor);
     });
-    return true;
 }
 
 QString ActorLikeListModel::actor() const

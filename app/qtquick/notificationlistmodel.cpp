@@ -393,7 +393,7 @@ bool NotificationListModel::getLatest()
         return false;
     setRunning(true);
 
-    updateContentFilterLabels([=]() {
+    return updateContentFilterLabels([=]() {
         AppBskyNotificationListNotifications *notification =
                 new AppBskyNotificationListNotifications(this);
         connect(notification, &AppBskyNotificationListNotifications::finished, [=](bool success) {
@@ -494,8 +494,6 @@ bool NotificationListModel::getLatest()
         notification->setAccount(account());
         notification->listNotifications(QString());
     });
-
-    return true;
 }
 
 bool NotificationListModel::getNext()
@@ -504,7 +502,7 @@ bool NotificationListModel::getNext()
         return false;
     setRunning(true);
 
-    updateContentFilterLabels([=]() {
+    return updateContentFilterLabels([=]() {
         AppBskyNotificationListNotifications *notification =
                 new AppBskyNotificationListNotifications(this);
         connect(notification, &AppBskyNotificationListNotifications::finished, [=](bool success) {
@@ -585,8 +583,6 @@ bool NotificationListModel::getNext()
         notification->setAccount(account());
         notification->listNotifications(m_cursor);
     });
-
-    return true;
 }
 
 bool NotificationListModel::repost(int row)

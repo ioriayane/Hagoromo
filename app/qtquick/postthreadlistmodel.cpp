@@ -13,7 +13,7 @@ bool PostThreadListModel::getLatest()
         return false;
     setRunning(true);
 
-    updateContentFilterLabels([=]() {
+    return updateContentFilterLabels([=]() {
         AppBskyFeedGetPostThread *thread = new AppBskyFeedGetPostThread(this);
         connect(thread, &AppBskyFeedGetPostThread::finished, [=](bool success) {
             if (success) {
@@ -27,7 +27,6 @@ bool PostThreadListModel::getLatest()
         thread->setAccount(account());
         thread->getPostThread(postThreadUri());
     });
-    return true;
 }
 
 void PostThreadListModel::finishedDisplayingQueuedPosts()

@@ -17,7 +17,7 @@ bool SearchPostListModel::getLatest()
         return false;
     setRunning(true);
 
-    updateContentFilterLabels([=]() {
+    return updateContentFilterLabels([=]() {
         SearchPosts *posts = new SearchPosts(this);
         connect(posts, &SearchPosts::finished, [=](bool success) {
             if (success) {
@@ -43,7 +43,6 @@ bool SearchPostListModel::getLatest()
         posts->setService(searchService());
         posts->search(text());
     });
-    return true;
 }
 
 void SearchPostListModel::finishedDisplayingQueuedPosts()

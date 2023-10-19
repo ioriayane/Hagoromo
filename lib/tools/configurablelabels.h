@@ -33,8 +33,8 @@ public:
     ConfigurableLabels &operator=(ConfigurableLabels &other);
 
     int count() const;
-    void load();
-    void save();
+    bool load();
+    bool save();
     int indexOf(const QString &id) const;
     ConfigurableLabelStatus visibility(const QString &label, const bool for_image) const;
     QString message(const QString &label, const bool for_image) const;

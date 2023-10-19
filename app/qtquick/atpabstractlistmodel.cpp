@@ -312,7 +312,7 @@ void AtpAbstractListModel::displayQueuedPostsNext()
     finishedDisplayingQueuedPosts();
 }
 
-void AtpAbstractListModel::updateContentFilterLabels(std::function<void()> callback)
+bool AtpAbstractListModel::updateContentFilterLabels(std::function<void()> callback)
 {
     ConfigurableLabels *labels = new ConfigurableLabels(this);
     connect(labels, &ConfigurableLabels::finished, this, [=](bool success) {
@@ -323,7 +323,7 @@ void AtpAbstractListModel::updateContentFilterLabels(std::function<void()> callb
         labels->deleteLater();
     });
     labels->setAccount(account());
-    labels->load();
+    return labels->load();
 }
 
 ConfigurableLabelStatus AtpAbstractListModel::getContentFilterStatus(

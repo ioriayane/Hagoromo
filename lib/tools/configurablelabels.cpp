@@ -35,10 +35,10 @@ int ConfigurableLabels::count() const
     return m_labels.count();
 }
 
-void ConfigurableLabels::load()
+bool ConfigurableLabels::load()
 {
     if (running())
-        return;
+        return false;
     setRunning(true);
 
     AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
@@ -66,12 +66,13 @@ void ConfigurableLabels::load()
     });
     pref->setAccount(account());
     pref->getPreferences();
+    return true;
 }
 
-void ConfigurableLabels::save()
+bool ConfigurableLabels::save()
 {
     if (running())
-        return;
+        return false;
     setRunning(true);
 
     AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
@@ -86,6 +87,7 @@ void ConfigurableLabels::save()
     });
     pref->setAccount(account());
     pref->getPreferences();
+    return true;
 }
 
 int ConfigurableLabels::indexOf(const QString &id) const

@@ -12,7 +12,7 @@ bool SearchProfileListModel::getLatest()
         return false;
     setRunning(true);
 
-    updateContentFilterLabels([=]() {
+    return updateContentFilterLabels([=]() {
         SearchProfiles *profiles = new SearchProfiles(this);
         connect(profiles, &SearchProfiles::finished, [=](bool success) {
             if (success) {
@@ -27,7 +27,6 @@ bool SearchProfileListModel::getLatest()
         profiles->setService(searchService());
         profiles->search(text());
     });
-    return true;
 }
 
 QString SearchProfileListModel::text() const
