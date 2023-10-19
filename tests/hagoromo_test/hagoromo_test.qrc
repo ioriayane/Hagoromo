@@ -22,10 +22,9 @@
         <file>response/notifications/warn/xrpc/app.bsky.notification.listNotifications</file>
         <file>response/timeline/labels/xrpc/app.bsky.actor.getPreferences</file>
         <file>response/timeline/labels/xrpc/app.bsky.feed.getTimeline</file>
-        <file>response/timeline/next/1st/xrpc/app.bsky.actor.getPreferences</file>
-        <file>response/timeline/next/1st/xrpc/app.bsky.feed.getTimeline</file>
-        <file>response/timeline/next/2nd/xrpc/app.bsky.actor.getPreferences</file>
-        <file>response/timeline/next/2nd/xrpc/app.bsky.feed.getTimeline</file>
+        <file>response/timeline/next/xrpc/app.bsky.actor.getPreferences</file>
+        <file>response/timeline/next/xrpc/app.bsky.feed.getTimeline</file>
+        <file>response/timeline/next/xrpc/app.bsky.feed.getTimeline_1</file>
         <file>response/generator/xrpc/app.bsky.feed.getFeedGenerator</file>
         <file>response/anyprofile/xrpc/app.bsky.feed.getLikes</file>
         <file>response/anyprofile/xrpc/app.bsky.feed.getRepostedBy</file>

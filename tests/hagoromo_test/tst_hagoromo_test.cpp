@@ -1278,7 +1278,7 @@ void hagoromo_test::test_TimelineListModel_next()
 {
     int row = 0;
     TimelineListModel model;
-    model.setAccount(m_service + "/timeline/next/1st", QString(), QString(), QString(), "dummy",
+    model.setAccount(m_service + "/timeline/next", QString(), QString(), QString(), "dummy",
                      QString());
     model.setDisplayInterval(0);
     {
@@ -1310,8 +1310,6 @@ void hagoromo_test::test_TimelineListModel_next()
     QVERIFY(model.item(row, TimelineListModel::CidRole).toString()
             == "bafyreihr2hrmavhzdpmnc65udreph5vfmd3xceqtw2jm3b4clbfbacgsqe_6");
 
-    model.setAccount(m_service + "/timeline/next/2nd", QString(), QString(), QString(), "dummy",
-                     QString());
     model.setDisplayInterval(0);
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
