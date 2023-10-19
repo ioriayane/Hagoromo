@@ -6,10 +6,10 @@ using AtProtocolInterface::AppBskyFeedGetListFeed;
 
 ListFeedListModel::ListFeedListModel(QObject *parent) : TimelineListModel { parent } { }
 
-void ListFeedListModel::getLatest()
+bool ListFeedListModel::getLatest()
 {
     if (running() || uri().isEmpty())
-        return;
+        return false;
     setRunning(true);
 
     updateContentFilterLabels([=]() {
@@ -29,12 +29,13 @@ void ListFeedListModel::getLatest()
         list->setAccount(account());
         list->getListFeed(uri(), 0, QString());
     });
+    return true;
 }
 
-void ListFeedListModel::getNext()
+bool ListFeedListModel::getNext()
 {
     if (running() || m_cursor.isEmpty() || uri().isEmpty())
-        return;
+        return false;
     setRunning(true);
 
     updateContentFilterLabels([=]() {
@@ -53,6 +54,7 @@ void ListFeedListModel::getNext()
         list->setAccount(account());
         list->getListFeed(uri(), 0, m_cursor);
     });
+    return true;
 }
 
 QString ListFeedListModel::uri() const

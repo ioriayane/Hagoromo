@@ -11,10 +11,10 @@ SearchPostListModel::SearchPostListModel(QObject *parent) : TimelineListModel { 
     setDisplayInterval(0);
 }
 
-void SearchPostListModel::getLatest()
+bool SearchPostListModel::getLatest()
 {
     if (running() || text().isEmpty())
-        return;
+        return false;
     setRunning(true);
 
     updateContentFilterLabels([=]() {
@@ -43,6 +43,7 @@ void SearchPostListModel::getLatest()
         posts->setService(searchService());
         posts->search(text());
     });
+    return true;
 }
 
 void SearchPostListModel::finishedDisplayingQueuedPosts()

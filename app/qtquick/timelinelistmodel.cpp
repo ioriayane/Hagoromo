@@ -274,10 +274,10 @@ QString TimelineListModel::getRecordText(const QString &cid)
             .text;
 }
 
-void TimelineListModel::getLatest()
+bool TimelineListModel::getLatest()
 {
     if (running())
-        return;
+        return false;
     setRunning(true);
 
     updateContentFilterLabels([=]() {
@@ -297,12 +297,13 @@ void TimelineListModel::getLatest()
         timeline->setAccount(account());
         timeline->getTimeline();
     });
+    return true;
 }
 
-void TimelineListModel::getNext()
+bool TimelineListModel::getNext()
 {
     if (running() || m_cursor.isEmpty())
-        return;
+        return false;
     setRunning(true);
 
     updateContentFilterLabels([=]() {
@@ -321,15 +322,16 @@ void TimelineListModel::getNext()
         timeline->setAccount(account());
         timeline->getTimeline(m_cursor);
     });
+    return true;
 }
 
-void TimelineListModel::deletePost(int row)
+bool TimelineListModel::deletePost(int row)
 {
     if (row < 0 || row >= m_cidList.count())
-        return;
+        return false;
 
     if (running())
-        return;
+        return false;
     setRunning(true);
 
     RecordOperator *ope = new RecordOperator(this);
@@ -349,17 +351,19 @@ void TimelineListModel::deletePost(int row)
     ope->setAccount(account().service, account().did, account().handle, account().email,
                     account().accessJwt, account().refreshJwt);
     ope->deletePost(item(row, UriRole).toString());
+
+    return true;
 }
 
-void TimelineListModel::repost(int row)
+bool TimelineListModel::repost(int row)
 {
     if (row < 0 || row >= m_cidList.count())
-        return;
+        return false;
 
     bool current = item(row, IsRepostedRole).toBool();
 
     if (running())
-        return;
+        return false;
     setRunning(true);
 
     RecordOperator *ope = new RecordOperator(this);
@@ -379,17 +383,19 @@ void TimelineListModel::repost(int row)
         ope->repost(item(row, CidRole).toString(), item(row, UriRole).toString());
     else
         ope->deleteRepost(item(row, RepostedUriRole).toString());
+
+    return true;
 }
 
-void TimelineListModel::like(int row)
+bool TimelineListModel::like(int row)
 {
     if (row < 0 || row >= m_cidList.count())
-        return;
+        return false;
 
     bool current = item(row, IsLikedRole).toBool();
 
     if (running())
-        return;
+        return false;
     setRunning(true);
 
     RecordOperator *ope = new RecordOperator(this);
@@ -410,6 +416,8 @@ void TimelineListModel::like(int row)
         ope->like(item(row, CidRole).toString(), item(row, UriRole).toString());
     else
         ope->deleteLike(item(row, LikedUriRole).toString());
+
+    return true;
 }
 
 QHash<int, QByteArray> TimelineListModel::roleNames() const

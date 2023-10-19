@@ -101,10 +101,10 @@ void FeedTypeListModel::clear()
     endInsertRows();
 }
 
-void FeedTypeListModel::getLatest()
+bool FeedTypeListModel::getLatest()
 {
     if (running())
-        return;
+        return false;
     setRunning(true);
 
     clear();
@@ -123,11 +123,13 @@ void FeedTypeListModel::getLatest()
     });
     pref->setAccount(account());
     pref->getPreferences();
+
+    return true;
 }
 
-void FeedTypeListModel::getNext()
+bool FeedTypeListModel::getNext()
 {
-    //
+    return true;
 }
 
 QHash<int, QByteArray> FeedTypeListModel::roleNames() const

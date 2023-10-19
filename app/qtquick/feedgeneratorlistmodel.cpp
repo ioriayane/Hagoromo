@@ -82,10 +82,10 @@ void FeedGeneratorListModel::clear()
     m_savedUriList.clear();
 }
 
-void FeedGeneratorListModel::getLatest()
+bool FeedGeneratorListModel::getLatest()
 {
     if (running())
-        return;
+        return false;
     setRunning(true);
 
     clear();
@@ -111,12 +111,14 @@ void FeedGeneratorListModel::getLatest()
     });
     generators->setAccount(account());
     generators->getPopularFeedGenerators(50, QString(), query());
+
+    return true;
 }
 
-void FeedGeneratorListModel::getNext()
+bool FeedGeneratorListModel::getNext()
 {
     if (running() || m_cursor.isEmpty())
-        return;
+        return false;
     setRunning(true);
 
     AppBskyUnspeccedGetPopularFeedGenerators *generators =
@@ -142,6 +144,8 @@ void FeedGeneratorListModel::getNext()
     });
     generators->setAccount(account());
     generators->getPopularFeedGenerators(50, m_cursor, query());
+
+    return true;
 }
 
 void FeedGeneratorListModel::saveGenerator(const QString &uri)

@@ -11,8 +11,8 @@ class ActorFeedGeneratorListModel : public FeedGeneratorListModel
 public:
     explicit ActorFeedGeneratorListModel(QObject *parent = nullptr);
 
-    Q_INVOKABLE void getLatest();
-    Q_INVOKABLE void getNext();
+    Q_INVOKABLE bool getLatest();
+    Q_INVOKABLE bool getNext();
 
     QString actor() const;
     void setActor(const QString &newActor);

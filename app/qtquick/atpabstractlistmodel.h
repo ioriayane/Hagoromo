@@ -74,8 +74,8 @@ signals:
     void displayIntervalChanged();
 
 public slots:
-    virtual Q_INVOKABLE void getLatest() = 0;
-    virtual Q_INVOKABLE void getNext() = 0;
+    virtual Q_INVOKABLE bool getLatest() = 0;
+    virtual Q_INVOKABLE bool getNext() = 0;
 
 protected:
     QString formatDateTime(const QString &value, const bool is_long = false) const;

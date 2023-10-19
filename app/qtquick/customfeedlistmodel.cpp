@@ -18,10 +18,10 @@ CustomFeedListModel::CustomFeedListModel(QObject *parent)
     });
 }
 
-void CustomFeedListModel::getLatest()
+bool CustomFeedListModel::getLatest()
 {
     if (running())
-        return;
+        return false;
     setRunning(true);
 
     if (m_cidList.isEmpty()) {
@@ -42,6 +42,7 @@ void CustomFeedListModel::getLatest()
         feed->setAccount(account());
         feed->getFeed(uri(), 50, QString());
     });
+    return true;
 }
 
 void CustomFeedListModel::updateFeedSaveStatus()

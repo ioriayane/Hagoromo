@@ -80,10 +80,10 @@ void ListsListModel::clear()
     AtpAbstractListModel::clear();
 }
 
-void ListsListModel::getLatest()
+bool ListsListModel::getLatest()
 {
     if (running())
-        return;
+        return false;
     setRunning(true);
 
     m_searchQue.clear();
@@ -102,10 +102,14 @@ void ListsListModel::getLatest()
     });
     lists->setAccount(account());
     lists->getLists(actor(), 0, QString());
+
+    return true;
 }
 
+bool ListsListModel::getNext()
 {
     if (running() || m_cursor.isEmpty())
+        return false;
     setRunning(true);
 
     m_searchQue.clear();
@@ -122,6 +126,8 @@ void ListsListModel::getLatest()
     });
     lists->setAccount(account());
     lists->getLists(actor(), 0, m_cursor);
+
+    return true;
 }
 
 QHash<int, QByteArray> ListsListModel::roleNames() const

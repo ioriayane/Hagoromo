@@ -7,10 +7,10 @@ using namespace AtProtocolType;
 
 PostThreadListModel::PostThreadListModel(QObject *parent) : TimelineListModel { parent } { }
 
-void PostThreadListModel::getLatest()
+bool PostThreadListModel::getLatest()
 {
     if (running() || postThreadUri().isEmpty())
-        return;
+        return false;
     setRunning(true);
 
     updateContentFilterLabels([=]() {
@@ -27,6 +27,7 @@ void PostThreadListModel::getLatest()
         thread->setAccount(account());
         thread->getPostThread(postThreadUri());
     });
+    return true;
 }
 
 void PostThreadListModel::finishedDisplayingQueuedPosts()

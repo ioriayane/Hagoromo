@@ -61,10 +61,10 @@ void ListItemListModel::clear()
     AtpAbstractListModel::clear();
 }
 
-void ListItemListModel::getLatest()
+bool ListItemListModel::getLatest()
 {
     if (running())
-        return;
+        return false;
     setRunning(true);
 
     AppBskyGraphGetList *list = new AppBskyGraphGetList(this);
@@ -79,13 +79,15 @@ void ListItemListModel::getLatest()
         list->deleteLater();
     });
     list->setAccount(account());
-    list->getList(uri(), 10, QString());
+    list->getList(uri(), 100, QString());
+
+    return true;
 }
 
-void ListItemListModel::getNext()
+bool ListItemListModel::getNext()
 {
     if (running() || m_cursor.isEmpty())
-        return;
+        return false;
     setRunning(true);
 
     AppBskyGraphGetList *list = new AppBskyGraphGetList(this);
@@ -98,7 +100,9 @@ void ListItemListModel::getNext()
         list->deleteLater();
     });
     list->setAccount(account());
-    list->getList(uri(), 0, m_cursor);
+    list->getList(uri(), 100, m_cursor);
+
+    return true;
 }
 
 QHash<int, QByteArray> ListItemListModel::roleNames() const

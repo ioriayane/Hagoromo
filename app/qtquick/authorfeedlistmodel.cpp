@@ -9,10 +9,10 @@ AuthorFeedListModel::AuthorFeedListModel(QObject *parent) : TimelineListModel { 
     setDisplayInterval(0);
 }
 
-void AuthorFeedListModel::getLatest()
+bool AuthorFeedListModel::getLatest()
 {
     if (running())
-        return;
+        return false;
     setRunning(true);
 
     updateContentFilterLabels([=]() {
@@ -41,12 +41,13 @@ void AuthorFeedListModel::getLatest()
         timeline->setAccount(account());
         timeline->getAuthorFeed(authorDid(), -1, QString(), filter_type);
     });
+    return true;
 }
 
-void AuthorFeedListModel::getNext()
+bool AuthorFeedListModel::getNext()
 {
     if (running() || m_cursor.isEmpty())
-        return;
+        return false;
     setRunning(true);
 
     updateContentFilterLabels([=]() {
@@ -73,6 +74,7 @@ void AuthorFeedListModel::getNext()
         timeline->setAccount(account());
         timeline->getAuthorFeed(authorDid(), -1, m_cursor, filter_type);
     });
+    return true;
 }
 
 QString AuthorFeedListModel::authorDid() const

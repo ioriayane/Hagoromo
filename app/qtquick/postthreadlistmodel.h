@@ -14,7 +14,7 @@ class PostThreadListModel : public TimelineListModel
 public:
     explicit PostThreadListModel(QObject *parent = nullptr);
 
-    Q_INVOKABLE void getLatest();
+    Q_INVOKABLE bool getLatest();
 
     QString postThreadUri() const;
     void setPostThreadUri(const QString &newPostThreadUri);

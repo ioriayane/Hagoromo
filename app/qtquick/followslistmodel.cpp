@@ -111,10 +111,10 @@ void FollowsListModel::getProfile(const QString &did)
     getProfiles();
 }
 
-void FollowsListModel::getLatest()
+bool FollowsListModel::getLatest()
 {
     if (running())
-        return;
+        return false;
     setRunning(true);
 
     updateContentFilterLabels([=]() {
@@ -146,12 +146,14 @@ void FollowsListModel::getLatest()
         follows->setAccount(account());
         follows->getFollows(targetDid(), 50, QString());
     });
+
+    return true;
 }
 
-void FollowsListModel::getNext()
+bool FollowsListModel::getNext()
 {
     if (running() || m_cursor.isEmpty())
-        return;
+        return false;
     setRunning(true);
 
     updateContentFilterLabels([=]() {
@@ -181,6 +183,8 @@ void FollowsListModel::getNext()
         follows->setAccount(account());
         follows->getFollows(targetDid(), 50, m_cursor);
     });
+
+    return true;
 }
 
 QHash<int, QByteArray> FollowsListModel::roleNames() const

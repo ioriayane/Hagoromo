@@ -6,10 +6,10 @@ using AtProtocolInterface::AppBskyFeedGetActorLikes;
 
 ActorLikeListModel::ActorLikeListModel(QObject *parent) : TimelineListModel { parent } { }
 
-void ActorLikeListModel::getLatest()
+bool ActorLikeListModel::getLatest()
 {
     if (running() || actor().isEmpty())
-        return;
+        return false;
     setRunning(true);
 
     updateContentFilterLabels([=]() {
@@ -29,12 +29,13 @@ void ActorLikeListModel::getLatest()
         likes->setAccount(account());
         likes->getActorLikes(actor(), 0, QString());
     });
+    return true;
 }
 
-void ActorLikeListModel::getNext()
+bool ActorLikeListModel::getNext()
 {
     if (running() || actor().isEmpty() || m_cursor.isEmpty())
-        return;
+        return false;
     setRunning(true);
 
     updateContentFilterLabels([=]() {
@@ -52,6 +53,7 @@ void ActorLikeListModel::getNext()
         likes->setAccount(account());
         likes->getActorLikes(actor(), 0, m_cursor);
     });
+    return true;
 }
 
 QString ActorLikeListModel::actor() const
