@@ -1652,7 +1652,7 @@ void hagoromo_test::test_ListsListModel()
 {
     ListsListModel model;
 
-    model.setAccount(m_service + "/lists/lists/0", QString(), QString(), QString(), "dummy",
+    model.setAccount(m_service + "/lists/lists", QString(), QString(), QString(), "dummy",
                      QString());
 
     model.setVisibilityType(ListsListModel::VisibilityTypeAll);
@@ -1705,8 +1705,6 @@ void hagoromo_test::test_ListsListModel()
             == "bafyreieyd765syuilkovwe3ms3cpegt7wo3xksistzy2v4xmazrwbzlwtm");
     QVERIFY(model.item(0, ListsListModel::SubscribedRole).toBool() == true);
 
-    model.setAccount(m_service + "/lists/lists/0", QString(), QString(), QString(), "dummy",
-                     QString());
     model.clear();
     model.setVisibilityType(ListsListModel::VisibilityTypeAll);
     {
@@ -1715,8 +1713,6 @@ void hagoromo_test::test_ListsListModel()
         spy.wait();
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
-    model.setAccount(m_service + "/lists/lists/1", QString(), QString(), QString(), "dummy",
-                     QString());
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getNext();

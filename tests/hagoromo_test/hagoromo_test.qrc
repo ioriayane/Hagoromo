@@ -44,8 +44,8 @@
         <file>response/notifications/visible/xrpc/app.bsky.actor.getPreferences</file>
         <file>response/timeline/reply/xrpc/app.bsky.actor.getPreferences</file>
         <file>response/timeline/reply/xrpc/app.bsky.feed.getTimeline</file>
-        <file>response/lists/lists/0/xrpc/app.bsky.graph.getLists</file>
-        <file>response/lists/lists/1/xrpc/app.bsky.graph.getLists</file>
+        <file>response/lists/lists/xrpc/app.bsky.graph.getLists</file>
+        <file>response/lists/lists/xrpc/app.bsky.graph.getLists_1</file>
         <file>response/lists/list/0/xrpc/app.bsky.graph.getList</file>
         <file>response/lists/list/1/xrpc/app.bsky.graph.getList</file>
         <file>response/lists/feed/0/xrpc/app.bsky.actor.getPreferences</file>

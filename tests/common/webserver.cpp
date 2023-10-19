@@ -41,9 +41,13 @@ bool WebServer::handleRequest(const QHttpServerRequest &request, QTcpSocket *soc
     } else if (!QFile::exists(WebServer::convertResoucePath(request.url()))) {
         makeResponder(request, socket).write(QHttpServerResponder::StatusCode::NotFound);
     } else {
+        QString path_ext;
+        if (request.query().hasQueryItem("cursor")) {
+            path_ext = "_" + request.query().queryItemValue("cursor");
+        }
         QFileInfo file_info(request.url().path());
         QByteArray data;
-        if (WebServer::readFile(WebServer::convertResoucePath(request.url()), data)) {
+        if (WebServer::readFile(WebServer::convertResoucePath(request.url()) + path_ext, data)) {
             makeResponder(request, socket)
                     .write(data, m_MimeDb.mimeTypeForFile(file_info).name().toUtf8(),
                            QHttpServerResponder::StatusCode::Ok);
