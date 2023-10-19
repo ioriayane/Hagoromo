@@ -295,7 +295,10 @@ bool TimelineListModel::getLatest()
             timeline->deleteLater();
         });
         timeline->setAccount(account());
-        timeline->getTimeline();
+        if (!timeline->getTimeline()) {
+            emit errorOccured(timeline->errorCode(), timeline->errorMessage());
+            setRunning(false);
+        }
     });
 }
 
@@ -319,7 +322,10 @@ bool TimelineListModel::getNext()
             timeline->deleteLater();
         });
         timeline->setAccount(account());
-        timeline->getTimeline(m_cursor);
+        if (!timeline->getTimeline(m_cursor)) {
+            emit errorOccured(timeline->errorCode(), timeline->errorMessage());
+            setRunning(false);
+        }
     });
 }
 

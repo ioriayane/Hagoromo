@@ -65,8 +65,7 @@ bool ConfigurableLabels::load()
         pref->deleteLater();
     });
     pref->setAccount(account());
-    pref->getPreferences();
-    return true;
+    return pref->getPreferences();
 }
 
 bool ConfigurableLabels::save()
@@ -78,7 +77,9 @@ bool ConfigurableLabels::save()
     AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
     connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
         if (success) {
-            putPreferences(updatePreferencesJson(pref->replyJson()));
+            if (!putPreferences(updatePreferencesJson(pref->replyJson()))) {
+                setRunning(false);
+            }
         } else {
             setRunning(false);
             emit finished(success);
@@ -86,8 +87,7 @@ bool ConfigurableLabels::save()
         pref->deleteLater();
     });
     pref->setAccount(account());
-    pref->getPreferences();
-    return true;
+    return pref->getPreferences();
 }
 
 int ConfigurableLabels::indexOf(const QString &id) const
@@ -357,7 +357,7 @@ void ConfigurableLabels::initializeLabels()
     m_labels.append(item);
 }
 
-void ConfigurableLabels::putPreferences(const QString &json)
+bool ConfigurableLabels::putPreferences(const QString &json)
 {
     AppBskyActorPutPreferences *pref = new AppBskyActorPutPreferences(this);
     connect(pref, &AppBskyActorPutPreferences::finished, [=](bool success) {
@@ -369,7 +369,7 @@ void ConfigurableLabels::putPreferences(const QString &json)
         pref->deleteLater();
     });
     pref->setAccount(account());
-    pref->putPreferences(json);
+    return pref->putPreferences(json);
 }
 
 QString ConfigurableLabels::updatePreferencesJson(const QString &src_json)

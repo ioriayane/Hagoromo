@@ -65,7 +65,7 @@ protected:
 
 private:
     void initializeLabels();
-    void putPreferences(const QString &json);
+    bool putPreferences(const QString &json);
     QString updatePreferencesJson(const QString &src_json);
 
     QList<ConfigurableLabelItem> m_labels;

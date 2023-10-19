@@ -30,6 +30,7 @@ public:
 private slots:
     void initTestCase();
     void cleanupTestCase();
+    void test_test_TimelineListModelError();
     void test_TimelineListModelFacet();
     void test_RecordOperator();
     void test_FeedGeneratorListModel();
@@ -120,6 +121,19 @@ void hagoromo_test::initTestCase()
 }
 
 void hagoromo_test::cleanupTestCase() { }
+
+void hagoromo_test::test_test_TimelineListModelError()
+{
+    TimelineListModel model;
+
+    model.setRunning(true);
+    QVERIFY(model.getLatest() == false);
+    QVERIFY(model.getNext() == false);
+
+    model.setRunning(false);
+    QVERIFY(model.getLatest() == false);
+    QVERIFY(model.getNext() == false);
+}
 
 void hagoromo_test::test_TimelineListModelFacet()
 {
