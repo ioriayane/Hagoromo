@@ -10,7 +10,7 @@ class ComAtprotoRepoDeleteRecord : public AccessAtProtocol
 public:
     explicit ComAtprotoRepoDeleteRecord(QObject *parent = nullptr);
 
-    void deleteRecord(const QString &repo, const QString &collection, const QString &rkey,
+    bool deleteRecord(const QString &repo, const QString &collection, const QString &rkey,
                       const QString &swapRecord, const QString &swapCommit);
 
     void deletePost(const QString &rkey);
@@ -18,6 +18,8 @@ public:
     void deleteRepost(const QString &rkey);
     void unfollow(const QString &rkey);
     void deleteBlock(const QString &rkey);
+    bool deleteList(const QString &rkey);
+    bool deleteListItem(const QString &rkey);
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);

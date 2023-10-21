@@ -1,5 +1,6 @@
 #include "listslistmodel.h"
 #include "listitemlistmodel.h"
+#include "recordoperator.h"
 
 #include "atprotocol/app/bsky/graph/appbskygraphgetlists.h"
 
@@ -63,6 +64,12 @@ QVariant ListsListModel::item(int row, ListsListModelRoles role) const
         } else {
             return SearchStatusTypeUnknown;
         }
+    } else if (role == ListItemUriRole) {
+        if (m_listItemUriHash.contains(current.cid)) {
+            return m_listItemUriHash[current.cid];
+        } else {
+            return QString();
+        }
     }
 
     return QVariant();
@@ -82,6 +89,9 @@ void ListsListModel::update(int row, ListsListModelRoles role, const QVariant &v
             m_searchStatusHash[current.cid] = new_type;
             emit dataChanged(index(row), index(row));
         }
+    } else if (role == ListItemUriRole) {
+        m_listItemUriHash[current.cid] = value.toString();
+        emit dataChanged(index(row), index(row));
     }
 }
 
@@ -99,7 +109,46 @@ QString ListsListModel::getRecordText(const QString &cid)
 void ListsListModel::clear()
 {
     m_listViewHash.clear();
+    m_searchStatusHash.clear();
+    m_listItemUriHash.clear();
     AtpAbstractListModel::clear();
+}
+
+bool ListsListModel::addRemoveFromList(const int row, const QString &did)
+{
+    QString uri = item(row, ListsListModel::UriRole).toString();
+    SearchStatusType status =
+            static_cast<SearchStatusType>(item(row, ListsListModel::SearchStatusRole).toInt());
+    if (status == SearchStatusTypeContains) {
+        uri = ""; // change to ListItem uri
+    }
+    if (running() || uri.isEmpty())
+        return false;
+
+    RecordOperator *ope = new RecordOperator(this);
+    connect(ope, &RecordOperator::finished,
+            [=](bool success, const QString &uri, const QString &cid) {
+                Q_UNUSED(uri)
+                Q_UNUSED(cid)
+                if (success) {
+                    update(row, ListsListModel::SearchStatusRole,
+                           SearchStatusType::SearchStatusTypeContains);
+                }
+                setRunning(false);
+                ope->deleteLater();
+            });
+    ope->setAccount(account().service, account().did, account().handle, account().email,
+                    account().accessJwt, account().refreshJwt);
+    if (status == SearchStatusTypeContains) {
+        // delete
+        setRunning(ope->deleteListItem(uri));
+    } else if (status == SearchStatusTypeNotContains) {
+        // Add
+        setRunning(ope->listItem(uri, did));
+    } else {
+        ope->deleteLater();
+    }
+    return running();
 }
 
 bool ListsListModel::getLatest()
@@ -166,6 +215,7 @@ QHash<int, QByteArray> ListsListModel::roleNames() const
     roles[CreatorDisplayNameRole] = "creatorDisplayName";
     roles[CreatoravatarRole] = "creatoravatar";
     roles[SearchStatusRole] = "searchStatus";
+    roles[ListItemUriRole] = "listItemUri";
 
     return roles;
 }
@@ -239,15 +289,18 @@ void ListsListModel::searchActorInEachLists()
     ListItemListModel *list = new ListItemListModel(this);
     connect(list, &ListItemListModel::finished, [=](bool success) {
         if (success) {
-            QString did;
+            QString listitem_did;
+            QString listitem_uri;
             bool found = false;
             for (int i = 0; i < list->rowCount(); i++) {
-                did = list->item(i, ListItemListModel::DidRole).toString();
-                qDebug() << "DID?" << did << searchTarget();
-                if (did == searchTarget()) {
+                listitem_did = list->item(i, ListItemListModel::DidRole).toString();
+                listitem_uri = ""; // TODO listRecordsで取得できるように変更する
+                qDebug() << "DID?" << listitem_did << searchTarget();
+                if (listitem_did == searchTarget()) {
                     // hit
                     update(indexOf(cid), ListsListModel::SearchStatusRole,
                            SearchStatusType::SearchStatusTypeContains);
+                    update(indexOf(cid), ListsListModel::ListItemUriRole, listitem_uri);
                     found = true;
                     break;
                 }

@@ -1,5 +1,4 @@
 #include "recordoperator.h"
-#include "atprotocol/com/atproto/repo/comatprotorepocreaterecord.h"
 #include "atprotocol/com/atproto/repo/comatprotorepouploadblob.h"
 #include "atprotocol/com/atproto/repo/comatprotorepodeleterecord.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofiles.h"
@@ -290,6 +289,36 @@ void RecordOperator::block(const QString &did)
     create_record->block(did);
 }
 
+bool RecordOperator::list(
+        const QString &name,
+        const AtProtocolInterface::ComAtprotoRepoCreateRecord::ListPurpose purpose,
+        const QString &description)
+{
+    Q_UNUSED(name)
+    Q_UNUSED(purpose)
+    Q_UNUSED(description)
+    return false;
+}
+
+bool RecordOperator::listItem(const QString &uri, const QString &did)
+{
+    if (running())
+        return false;
+
+    ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord(this);
+    connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
+        if (!success) {
+            emit errorOccured(create_record->errorCode(), create_record->errorMessage());
+        }
+        emit finished(success, QString(), QString());
+        setRunning(false);
+        create_record->deleteLater();
+    });
+    create_record->setAccount(m_account);
+    setRunning(create_record->listItem(uri, did));
+    return running();
+}
+
 void RecordOperator::deletePost(const QString &uri)
 {
     if (running() || !uri.startsWith("at://"))
@@ -413,6 +442,48 @@ void RecordOperator::deleteBlock(const QString &uri)
     });
     delete_record->setAccount(m_account);
     delete_record->deleteBlock(r_key);
+}
+
+bool RecordOperator::deleteList(const QString &uri)
+{
+    if (running() || !uri.startsWith("at://"))
+        return false;
+
+    QString r_key = uri.split("/").last();
+
+    ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord(this);
+    connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
+        if (!success) {
+            emit errorOccured(delete_record->errorCode(), delete_record->errorMessage());
+        }
+        emit finished(success, QString(), QString());
+        setRunning(false);
+        delete_record->deleteLater();
+    });
+    delete_record->setAccount(m_account);
+    setRunning(delete_record->deleteList(r_key));
+    return running();
+}
+
+bool RecordOperator::deleteListItem(const QString &uri)
+{
+    if (running() || !uri.startsWith("at://"))
+        return false;
+
+    QString r_key = uri.split("/").last();
+
+    ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord(this);
+    connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
+        if (!success) {
+            emit errorOccured(delete_record->errorCode(), delete_record->errorMessage());
+        }
+        emit finished(success, QString(), QString());
+        setRunning(false);
+        delete_record->deleteLater();
+    });
+    delete_record->setAccount(m_account);
+    setRunning(delete_record->deleteListItem(r_key));
+    return running();
 }
 
 bool RecordOperator::running() const

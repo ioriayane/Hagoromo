@@ -4,6 +4,7 @@
 #include "atprotocol/lexicons.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "atprotocol/accessatprotocol.h"
+#include "atprotocol/com/atproto/repo/comatprotorepocreaterecord.h"
 #include <QObject>
 
 struct EmbedImage
@@ -44,6 +45,11 @@ public:
     Q_INVOKABLE void follow(const QString &did);
     Q_INVOKABLE void mute(const QString &did);
     Q_INVOKABLE void block(const QString &did);
+    Q_INVOKABLE bool
+    list(const QString &name,
+         const AtProtocolInterface::ComAtprotoRepoCreateRecord::ListPurpose purpose,
+         const QString &description);
+    Q_INVOKABLE bool listItem(const QString &uri, const QString &did);
 
     Q_INVOKABLE void deletePost(const QString &uri);
     Q_INVOKABLE void deleteLike(const QString &uri);
@@ -51,6 +57,8 @@ public:
     Q_INVOKABLE void deleteFollow(const QString &uri);
     Q_INVOKABLE void deleteMute(const QString &did);
     Q_INVOKABLE void deleteBlock(const QString &uri);
+    Q_INVOKABLE bool deleteList(const QString &uri);
+    Q_INVOKABLE bool deleteListItem(const QString &uri);
 
     bool running() const;
     void setRunning(bool newRunning);

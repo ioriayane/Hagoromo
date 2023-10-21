@@ -31,6 +31,7 @@ public:
         CreatorDisplayNameRole,
         CreatoravatarRole,
         SearchStatusRole,
+        ListItemUriRole, // searchTargetで登録しているか確認したユーザーのListItemのレコードURI
     };
     Q_ENUM(ListsListModelRoles);
     enum VisibilityType {
@@ -56,6 +57,7 @@ public:
     virtual Q_INVOKABLE int indexOf(const QString &cid) const;
     virtual Q_INVOKABLE QString getRecordText(const QString &cid);
     Q_INVOKABLE void clear();
+    Q_INVOKABLE bool addRemoveFromList(const int row, const QString &did);
 
     QString actor() const;
     void setActor(const QString &newActor);
@@ -84,6 +86,7 @@ private:
 
     QHash<QString, AtProtocolType::AppBskyGraphDefs::ListView> m_listViewHash;
     QHash<QString, SearchStatusType> m_searchStatusHash;
+    QHash<QString, QString> m_listItemUriHash;
     QStringList m_searchCidQue;
     QString m_actor;
     VisibilityType m_visibilityType;

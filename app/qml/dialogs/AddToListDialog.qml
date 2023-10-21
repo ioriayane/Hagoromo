@@ -30,11 +30,13 @@ Dialog {
             return
         }
 
-        listsListView.model.setAccount(account.service, account.did, account.handle,
+        listsListModel.clear()
+        listsListModel.setAccount(account.service, account.did, account.handle,
                                        account.email, account.accessJwt, account.refreshJwt)
-        listsListView.model.getLatest()
+        listsListModel.getLatest()
     }
     onClosed: {
+        listsListModel.clear()
     }
 
     ColumnLayout {
@@ -68,6 +70,7 @@ Dialog {
                 anchors.rightMargin: parent.ScrollBar.vertical.width
 
                 model: ListsListModel {
+                    id: listsListModel
                     actor: account.did
                     visibilityType: ListsListModel.VisibilityTypeCuration
                     searchTarget: addToListDialog.targetDid
@@ -169,7 +172,8 @@ Dialog {
                         }
                     }
                     onClicked: {
-                        console.log("Add or remove from list:" + model.uri + " <- " + addToListDialog.targetDid)
+                        console.log("Add or remove from list(" + model.index + "):" + model.uri + " <- " + addToListDialog.targetDid)
+                        listsListModel.addRemoveFromList(model.index, addToListDialog.targetDid)
                     }
                 }
             }
