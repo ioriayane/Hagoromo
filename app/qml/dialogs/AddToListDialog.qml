@@ -70,6 +70,7 @@ Dialog {
                 model: ListsListModel {
                     actor: account.did
                     visibilityType: ListsListModel.VisibilityTypeCuration
+                    searchTarget: addToListDialog.targetDid
                 }
                 footer:  ItemDelegate {
                     width: listsListView.width - listsListScroll.ScrollBar.vertical.width
@@ -88,7 +89,7 @@ Dialog {
                         AvatarImage {
                             Layout.preferredWidth: AdjustedValues.i24
                             Layout.preferredHeight: AdjustedValues.i24
-                            altSource: "../images/list.png"
+                            altSource: "../images/add.png"
                         }
                         Label {
                             font.pointSize: AdjustedValues.f10
@@ -108,18 +109,18 @@ Dialog {
                     states: [
                         State {
                             when: model.searchStatus === ListsListModel.SearchStatusTypeRunning
-                            PropertyChanges { target: saveButton; iconSource: ""; enabled: false }
+                            PropertyChanges { target: saveButton; source: ""; enabled: false }
                         },
                         State {
                             when: model.searchStatus === ListsListModel.SearchStatusTypeUnknown
-                            PropertyChanges { target: saveButton; iconSource: ""; enabled: false }
+                            PropertyChanges { target: saveButton; source: ""; enabled: false }
                         },
                         State {
                             when: model.searchStatus === ListsListModel.SearchStatusTypeContains
                             PropertyChanges {
                                 target: saveButton
-                                iconSource: "../images/bookmark_add.png"
-                                foreground: Material.color(Material.Pink)
+                                source: "../images/bookmark_add.png"
+                                foreground: Material.accentColor
                                 //                            onClicked: generatorScrollView.requestRemoveGenerator(model.uri)
                             }
                         },
@@ -127,7 +128,7 @@ Dialog {
                             when: model.searchStatus === ListsListModel.SearchStatusTypeNotContains
                             PropertyChanges {
                                 target: saveButton
-                                iconSource: "../images/bookmark_add.png"
+                                source: "../images/bookmark_add.png"
                                 foreground: Material.color(Material.Grey)
                                 //                            onClicked: generatorScrollView.requestSaveGenerator(model.uri)
                             }
@@ -150,16 +151,18 @@ Dialog {
                             text: model.name
                         }
                     }
-                    IconButton {
+                    Image {
                         id: saveButton
                         anchors.right: parent.right
                         anchors.rightMargin: 20
                         anchors.verticalCenter: parent.verticalCenter
-                        width: AdjustedValues.b36
-                        height: AdjustedValues.b26
-                        display: AbstractButton.IconOnly
-                        iconSize: AdjustedValues.i18
-                        flat: true
+                        width: AdjustedValues.i18
+                        height: AdjustedValues.i18
+                        layer.enabled: true
+                        layer.effect: ColorOverlay {
+                            color: saveButton.foreground
+                        }
+                        property color foreground: Material.foreground
                         BusyIndicator {
                             anchors.fill: parent
                             visible: model.searchStatus === ListsListModel.SearchStatusTypeRunning

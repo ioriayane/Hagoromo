@@ -1,0 +1,83 @@
+{
+    "lists": [
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list1",
+            "cid": "bafyreihnheyk74x4jts23gl23icubyarggmo37xn55pop2lpystq426bqu",
+            "name": "client",
+            "purpose": "app.bsky.graph.defs#curatelist",
+            "indexedAt": "2023-10-13T16:59:57.407Z",
+            "viewer": {
+                "muted": false
+            },
+            "creator": {
+                "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+                "handle": "ioriayane.relog.tech",
+                "displayName": "IoriAYANE",
+                "description": "epubを作るソフトのLeMEを作ってます。\nhttps://leme.style\nBlueskyクライアントの羽衣を作ってます。\nhttps://github.com/ioriayane/Hagoromo\nX:@ioriayane\nアイコンは X:@keikawagutiさん",
+                "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy@jpeg",
+                "indexedAt": "2023-07-25T07:56:00.861Z",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false,
+                    "following": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.graph.follow/3jxtb56ycoc2w",
+                    "followedBy": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3jwielvxo622v"
+                },
+                "labels": []
+            },
+            "description": "3rd party client accounts"
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list2",
+            "cid": "bafyreieyd765syuilkovwe3ms3cpegt7wo3xksistzy2v4xmazrwbzlwtm",
+            "name": "sample",
+            "purpose": "app.bsky.graph.defs#modlist",
+            "indexedAt": "2023-10-12T15:37:51.839Z",
+            "viewer": {
+                "muted": true
+            },
+            "creator": {
+                "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+                "handle": "ioriayane.relog.tech",
+                "displayName": "IoriAYANE",
+                "description": "epubを作るソフトのLeMEを作ってます。\nhttps://leme.style\nBlueskyクライアントの羽衣を作ってます。\nhttps://github.com/ioriayane/Hagoromo\nX:@ioriayane\nアイコンは X:@keikawagutiさん",
+                "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy@jpeg",
+                "indexedAt": "2023-07-25T07:56:00.861Z",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false,
+                    "following": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.graph.follow/3jxtb56ycoc2w",
+                    "followedBy": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3jwielvxo622v"
+                },
+                "labels": []
+            },
+            "description": "test"
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list3",
+            "cid": "bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy",
+            "name": "my accounts",
+            "purpose": "app.bsky.graph.defs#curatelist",
+            "indexedAt": "2023-09-16T05:32:56.207Z",
+            "viewer": {
+                "muted": false
+            },
+            "creator": {
+                "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+                "handle": "ioriayane.relog.tech",
+                "displayName": "IoriAYANE",
+                "description": "epubを作るソフトのLeMEを作ってます。\nhttps://leme.style\nBlueskyクライアントの羽衣を作ってます。\nhttps://github.com/ioriayane/Hagoromo\nX:@ioriayane\nアイコンは X:@keikawagutiさん",
+                "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy@jpeg",
+                "indexedAt": "2023-07-25T07:56:00.861Z",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false,
+                    "following": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.graph.follow/3jxtb56ycoc2w",
+                    "followedBy": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3jwielvxo622v"
+                },
+                "labels": []
+            },
+            "description": "ioriayane series\nテスト用のリストです。\nお気になさらず。"
+        }
+    ],
+    "cursor": "1"
+}

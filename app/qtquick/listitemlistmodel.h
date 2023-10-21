@@ -71,6 +71,7 @@ public slots:
     Q_INVOKABLE bool getNext();
 
 signals:
+    void finished(bool success);
     void uriChanged();
     void cidChanged();
     void rkeyChanged();

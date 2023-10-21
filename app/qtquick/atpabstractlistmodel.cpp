@@ -429,6 +429,16 @@ QString AtpAbstractListModel::getVia(const QVariant &record) const
     return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(record).via;
 }
 
+QString AtpAbstractListModel::cursor() const
+{
+    return m_cursor;
+}
+
+void AtpAbstractListModel::setCursor(const QString &newCursor)
+{
+    m_cursor = newCursor;
+}
+
 int AtpAbstractListModel::searchInsertPosition(const QString &cid)
 {
     int basis_pos = m_originalCidList.indexOf(cid);

@@ -45,9 +45,14 @@
         <file>response/timeline/reply/xrpc/app.bsky.feed.getTimeline</file>
         <file>response/lists/lists/xrpc/app.bsky.graph.getLists</file>
         <file>response/lists/lists/xrpc/app.bsky.graph.getLists_1</file>
-        <file>response/lists/list/xrpc/app.bsky.graph.getList</file>
-        <file>response/lists/list/xrpc/app.bsky.graph.getList_1</file>
+        <file>response/lists/list/xrpc/app.bsky.graph.getList_3k7igyxfizg27</file>
+        <file>response/lists/list/xrpc/app.bsky.graph.getList_3k7igyxfizg27_1</file>
         <file>response/lists/feed/0/xrpc/app.bsky.actor.getPreferences</file>
         <file>response/lists/feed/0/xrpc/app.bsky.feed.getListFeed</file>
+        <file>response/lists/search/xrpc/app.bsky.graph.getList_list1</file>
+        <file>response/lists/search/xrpc/app.bsky.graph.getList_list2</file>
+        <file>response/lists/search/xrpc/app.bsky.graph.getList_list3</file>
+        <file>response/lists/search/xrpc/app.bsky.graph.getLists</file>
+        <file>response/lists/search/xrpc/app.bsky.graph.getLists_1</file>
     </qresource>
 </RCC>

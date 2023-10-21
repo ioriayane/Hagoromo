@@ -9,7 +9,7 @@ namespace AtProtocolInterface {
 
 AppBskyGraphGetList::AppBskyGraphGetList(QObject *parent) : AccessAtProtocol { parent } { }
 
-void AppBskyGraphGetList::getList(const QString &list, const int limit, const QString &cursor)
+bool AppBskyGraphGetList::getList(const QString &list, const int limit, const QString &cursor)
 {
     QUrlQuery query;
     query.addQueryItem(QStringLiteral("list"), list);
@@ -20,7 +20,7 @@ void AppBskyGraphGetList::getList(const QString &list, const int limit, const QS
         query.addQueryItem(QStringLiteral("cursor"), cursor);
     }
 
-    get(QStringLiteral("xrpc/app.bsky.graph.getList"), query);
+    return get(QStringLiteral("xrpc/app.bsky.graph.getList"), query);
 }
 
 const AtProtocolType::AppBskyGraphDefs::ListView *AppBskyGraphGetList::listView() const

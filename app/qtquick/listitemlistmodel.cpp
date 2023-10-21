@@ -65,7 +65,6 @@ bool ListItemListModel::getLatest()
 {
     if (running())
         return false;
-    setRunning(true);
 
     AppBskyGraphGetList *list = new AppBskyGraphGetList(this);
     connect(list, &AppBskyGraphGetList::finished, [=](bool success) {
@@ -74,35 +73,42 @@ bool ListItemListModel::getLatest()
                 m_cursor = list->cursor();
             }
             copyFrom(list);
+            QTimer::singleShot(10, this, &ListItemListModel::displayQueuedPosts);
+        } else {
+            emit errorOccured(list->errorCode(), list->errorMessage());
+            setRunning(false);
+            emit finished(false);
         }
-        QTimer::singleShot(10, this, &ListItemListModel::displayQueuedPosts);
         list->deleteLater();
     });
     list->setAccount(account());
-    list->getList(uri(), 100, QString());
+    setRunning(list->getList(uri(), 100, QString()));
 
-    return true;
+    return running();
 }
 
 bool ListItemListModel::getNext()
 {
     if (running() || m_cursor.isEmpty())
         return false;
-    setRunning(true);
 
     AppBskyGraphGetList *list = new AppBskyGraphGetList(this);
     connect(list, &AppBskyGraphGetList::finished, [=](bool success) {
         if (success) {
             m_cursor = list->cursor();
             copyFrom(list);
+            QTimer::singleShot(10, this, &ListItemListModel::displayQueuedPostsNext);
+        } else {
+            emit errorOccured(list->errorCode(), list->errorMessage());
+            setRunning(false);
+            emit finished(false);
         }
-        QTimer::singleShot(10, this, &ListItemListModel::displayQueuedPostsNext);
         list->deleteLater();
     });
     list->setAccount(account());
-    list->getList(uri(), 100, m_cursor);
+    setRunning(list->getList(uri(), 100, m_cursor));
 
-    return true;
+    return running();
 }
 
 QHash<int, QByteArray> ListItemListModel::roleNames() const
@@ -122,6 +128,7 @@ QHash<int, QByteArray> ListItemListModel::roleNames() const
 void ListItemListModel::finishedDisplayingQueuedPosts()
 {
     setRunning(false);
+    emit finished(true);
 }
 
 bool ListItemListModel::checkVisibility(const QString &cid)

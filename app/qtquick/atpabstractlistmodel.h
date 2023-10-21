@@ -66,6 +66,9 @@ public:
     QString accessJwt() const;
     QString refreshJwt() const;
 
+    QString cursor() const;
+    void setCursor(const QString &newCursor);
+
 signals:
     void errorOccured(const QString &code, const QString &message);
     void runningChanged();

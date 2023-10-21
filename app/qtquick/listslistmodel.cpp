@@ -57,10 +57,32 @@ QVariant ListsListModel::item(int row, ListsListModelRoles role) const
             return QString();
         else
             return current.creator->avatar;
-    } else if (role == SearchStatusRole)
-        return SearchStatusTypeUnknown;
+    } else if (role == SearchStatusRole) {
+        if (m_searchStatusHash.contains(current.cid)) {
+            return m_searchStatusHash[current.cid];
+        } else {
+            return SearchStatusTypeUnknown;
+        }
+    }
 
     return QVariant();
+}
+
+void ListsListModel::update(int row, ListsListModelRoles role, const QVariant &value)
+{
+    if (row < 0 || row >= m_cidList.count())
+        return;
+
+    const AppBskyGraphDefs::ListView &current = m_listViewHash.value(m_cidList.at(row));
+
+    if (role == SearchStatusRole) {
+        SearchStatusType new_type = static_cast<SearchStatusType>(value.toInt());
+        if (!m_searchStatusHash.contains(current.cid)
+            || m_searchStatusHash[current.cid] != new_type) {
+            m_searchStatusHash[current.cid] = new_type;
+            emit dataChanged(index(row), index(row));
+        }
+    }
 }
 
 int ListsListModel::indexOf(const QString &cid) const
@@ -84,9 +106,8 @@ bool ListsListModel::getLatest()
 {
     if (running())
         return false;
-    setRunning(true);
 
-    m_searchQue.clear();
+    m_searchCidQue.clear();
     AppBskyGraphGetLists *lists = new AppBskyGraphGetLists(this);
     connect(lists, &AppBskyGraphGetLists::finished, [=](bool success) {
         if (success) {
@@ -94,40 +115,41 @@ bool ListsListModel::getLatest()
                 m_cursor = lists->cursor();
             }
             copyFrom(lists);
+            QTimer::singleShot(10, this, &ListsListModel::displayQueuedPosts);
         } else {
             emit errorOccured(lists->errorCode(), lists->errorMessage());
+            setRunning(false);
         }
-        QTimer::singleShot(10, this, &ListsListModel::displayQueuedPosts);
         lists->deleteLater();
     });
     lists->setAccount(account());
-    lists->getLists(actor(), 0, QString());
+    setRunning(lists->getLists(actor(), 0, QString()));
 
-    return true;
+    return running();
 }
 
 bool ListsListModel::getNext()
 {
     if (running() || m_cursor.isEmpty())
         return false;
-    setRunning(true);
 
-    m_searchQue.clear();
+    m_searchCidQue.clear();
     AppBskyGraphGetLists *lists = new AppBskyGraphGetLists(this);
     connect(lists, &AppBskyGraphGetLists::finished, [=](bool success) {
         if (success) {
             m_cursor = lists->cursor(); // 続きの読み込みの時は必ず上書き
             copyFrom(lists);
+            QTimer::singleShot(10, this, &ListsListModel::displayQueuedPostsNext);
         } else {
             emit errorOccured(lists->errorCode(), lists->errorMessage());
+            setRunning(false);
         }
-        QTimer::singleShot(10, this, &ListsListModel::displayQueuedPostsNext);
         lists->deleteLater();
     });
     lists->setAccount(account());
-    lists->getLists(actor(), 0, m_cursor);
+    setRunning(lists->getLists(actor(), 0, m_cursor));
 
-    return true;
+    return running();
 }
 
 QHash<int, QByteArray> ListsListModel::roleNames() const
@@ -150,7 +172,7 @@ QHash<int, QByteArray> ListsListModel::roleNames() const
 
 void ListsListModel::finishedDisplayingQueuedPosts()
 {
-    if (m_searchQue.isEmpty()) {
+    if (m_searchCidQue.isEmpty()) {
         setRunning(false);
     } else {
         QTimer::singleShot(0, this, &ListsListModel::searchActorInEachLists);
@@ -159,8 +181,12 @@ void ListsListModel::finishedDisplayingQueuedPosts()
 
 bool ListsListModel::checkVisibility(const QString &cid)
 {
-    if (visibilityType() == VisibilityTypeAll)
+    if (visibilityType() == VisibilityTypeAll) {
+        if (searchTarget().startsWith("did:")) {
+            m_searchCidQue.insert(0, cid);
+        }
         return true;
+    }
 
     const AppBskyGraphDefs::ListView &current = m_listViewHash.value(cid);
 
@@ -169,7 +195,7 @@ bool ListsListModel::checkVisibility(const QString &cid)
         || (visibilityType() == VisibilityTypeModeration
             && current.purpose == "app.bsky.graph.defs#modlist")) {
         if (searchTarget().startsWith("did:")) {
-            m_searchQue.append(cid);
+            m_searchCidQue.insert(0, cid);
         }
         return true;
     } else {
@@ -192,14 +218,57 @@ void ListsListModel::copyFrom(AtProtocolInterface::AppBskyGraphGetLists *lists)
 
 void ListsListModel::searchActorInEachLists()
 {
-    if (m_searchQue.isEmpty()) {
+    if (m_searchCidQue.isEmpty()) {
         setRunning(false);
         return;
     }
 
+    QString cid = m_searchCidQue.first();
+    m_searchCidQue.pop_front();
+
+    if (!m_listViewHash.contains(cid)) {
+        update(indexOf(cid), ListsListModel::SearchStatusRole,
+               SearchStatusType::SearchStatusTypeNotContains);
+        setRunning(false);
+        m_searchCidQue.clear();
+        return;
+    }
+    update(indexOf(cid), ListsListModel::SearchStatusRole,
+           SearchStatusType::SearchStatusTypeRunning);
+
     ListItemListModel *list = new ListItemListModel(this);
-    m_searchQue.pop_back();
-    QTimer::singleShot(0, this, &ListsListModel::searchActorInEachLists);
+    connect(list, &ListItemListModel::finished, [=](bool success) {
+        if (success) {
+            QString did;
+            bool found = false;
+            for (int i = 0; i < list->rowCount(); i++) {
+                did = list->item(i, ListItemListModel::DidRole).toString();
+                qDebug() << "DID?" << did << searchTarget();
+                if (did == searchTarget()) {
+                    // hit
+                    update(indexOf(cid), ListsListModel::SearchStatusRole,
+                           SearchStatusType::SearchStatusTypeContains);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                update(indexOf(cid), ListsListModel::SearchStatusRole,
+                       SearchStatusType::SearchStatusTypeNotContains);
+            }
+        } else {
+            m_searchCidQue.clear();
+        }
+        QTimer::singleShot(0, this, &ListsListModel::searchActorInEachLists);
+        list->deleteLater();
+    });
+    list->setAccount(account().service, account().did, account().handle, account().email,
+                     account().accessJwt, account().refreshJwt);
+    list->setUri(m_listViewHash.value(cid).uri);
+    if (!list->getLatest()) {
+        m_searchCidQue.clear();
+        setRunning(false);
+    }
 }
 
 QString ListsListModel::actor() const

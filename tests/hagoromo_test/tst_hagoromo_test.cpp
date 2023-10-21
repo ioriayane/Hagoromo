@@ -54,7 +54,10 @@ private slots:
     void test_TimelineListModel_reply();
     void test_PostThreadListModel();
     void test_ListsListModel();
+    void test_ListsListModel_search();
+    void test_ListsListModel_error();
     void test_ListItemListModel();
+    void test_ListItemListModel_error();
     void test_ListFeedListModel();
 
 private:
@@ -1747,6 +1750,44 @@ void hagoromo_test::test_ListsListModel()
             == "bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy_next");
 }
 
+void hagoromo_test::test_ListsListModel_search()
+{
+    ListsListModel model;
+
+    model.setAccount(m_service + "/lists/search", QString(), QString(), QString(), "dummy",
+                     QString());
+    model.setSearchTarget("did:plc:l4fsx4ujos7uw7n4ijq2ulgs_3");
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait(10 * 1000);
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    QVERIFY2(model.rowCount() == 3,
+             QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.item(0, ListsListModel::SearchStatusRole).toInt()
+            == ListsListModel::SearchStatusTypeNotContains);
+    QVERIFY(model.item(1, ListsListModel::SearchStatusRole).toInt()
+            == ListsListModel::SearchStatusTypeNotContains);
+    QVERIFY(model.item(2, ListsListModel::SearchStatusRole).toInt()
+            == ListsListModel::SearchStatusTypeContains);
+}
+
+void hagoromo_test::test_ListsListModel_error()
+{
+    ListsListModel model;
+
+    model.setRunning(true);
+    QVERIFY(model.getLatest() == false);
+    QVERIFY(model.getNext() == false);
+
+    model.setRunning(false);
+    model.setCursor("hoge");
+    QVERIFY(model.getLatest() == false);
+    QVERIFY(model.getNext() == false);
+}
+
 void hagoromo_test::test_ListItemListModel()
 {
     ListItemListModel model;
@@ -1805,6 +1846,20 @@ void hagoromo_test::test_ListItemListModel()
     QVERIFY(model.avatar() == "");
     QVERIFY(model.description() == "");
     QVERIFY(model.subscribed() == false);
+}
+
+void hagoromo_test::test_ListItemListModel_error()
+{
+    ListItemListModel model;
+
+    model.setRunning(true);
+    QVERIFY(model.getLatest() == false);
+    QVERIFY(model.getNext() == false);
+
+    model.setRunning(false);
+    model.setCursor("hoge");
+    QVERIFY(model.getLatest() == false);
+    QVERIFY(model.getNext() == false);
 }
 
 void hagoromo_test::test_ListFeedListModel()

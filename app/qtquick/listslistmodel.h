@@ -51,6 +51,8 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
     Q_INVOKABLE QVariant item(int row, ListsListModel::ListsListModelRoles role) const;
+    Q_INVOKABLE void update(int row, ListsListModel::ListsListModelRoles role,
+                            const QVariant &value);
     virtual Q_INVOKABLE int indexOf(const QString &cid) const;
     virtual Q_INVOKABLE QString getRecordText(const QString &cid);
     Q_INVOKABLE void clear();
@@ -81,7 +83,8 @@ private:
     void searchActorInEachLists();
 
     QHash<QString, AtProtocolType::AppBskyGraphDefs::ListView> m_listViewHash;
-    QStringList m_searchQue;
+    QHash<QString, SearchStatusType> m_searchStatusHash;
+    QStringList m_searchCidQue;
     QString m_actor;
     VisibilityType m_visibilityType;
     QString m_searchTarget;
