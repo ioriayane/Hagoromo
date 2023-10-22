@@ -1,9 +1,9 @@
 {
     "lists": [
         {
-            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/3kbnjyc3xjm2g",
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list_4",
             "cid": "bafyreihnheyk74x4jts23gl23icubyarggmo37xn55pop2lpystq426bqu_next",
-            "name": "client",
+            "name": "client(list_4)",
             "purpose": "app.bsky.graph.defs#curatelist",
             "indexedAt": "2023-10-13T16:59:57.407Z",
             "viewer": {
@@ -26,9 +26,9 @@
             }
         },
         {
-            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/3kbkuwma4lc27",
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list_5",
             "cid": "bafyreieyd765syuilkovwe3ms3cpegt7wo3xksistzy2v4xmazrwbzlwtm_next",
-            "name": "sample",
+            "name": "sample(list_5)",
             "purpose": "app.bsky.graph.defs#modlist",
             "indexedAt": "2023-10-12T15:37:51.839Z",
             "viewer": {
@@ -52,9 +52,9 @@
             "description": "test"
         },
         {
-            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/3k7igyxfizg27",
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list_6",
             "cid": "bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy_next",
-            "name": "my accounts",
+            "name": "my accounts(list_6)",
             "purpose": "app.bsky.graph.defs#curatelist",
             "indexedAt": "2023-09-16T05:32:56.207Z",
             "viewer": {
@@ -77,5 +77,5 @@
             }
         }
     ],
-    "cursor": "1694842376207::bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy_next"
+    "cursor": "2"
 }

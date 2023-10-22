@@ -83,11 +83,14 @@ protected:
 private:
     void copyFrom(AtProtocolInterface::AppBskyGraphGetLists *lists);
     void searchActorInEachLists();
+    QString getListCidByUri(const QString &uri) const;
+    void setListItemStatus(const SearchStatusType status);
 
     QHash<QString, AtProtocolType::AppBskyGraphDefs::ListView> m_listViewHash;
     QHash<QString, SearchStatusType> m_searchStatusHash;
     QHash<QString, QString> m_listItemUriHash;
     QStringList m_searchCidQue;
+    QString m_listItemCursor;
     QString m_actor;
     VisibilityType m_visibilityType;
     QString m_searchTarget;

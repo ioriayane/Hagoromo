@@ -1,9 +1,9 @@
 {
     "lists": [
         {
-            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list1",
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list_1",
             "cid": "bafyreihnheyk74x4jts23gl23icubyarggmo37xn55pop2lpystq426bqu",
-            "name": "client",
+            "name": "client(list_1)",
             "purpose": "app.bsky.graph.defs#curatelist",
             "indexedAt": "2023-10-13T16:59:57.407Z",
             "viewer": {
@@ -27,9 +27,9 @@
             "description": "3rd party client accounts"
         },
         {
-            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list2",
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list_2",
             "cid": "bafyreieyd765syuilkovwe3ms3cpegt7wo3xksistzy2v4xmazrwbzlwtm",
-            "name": "sample",
+            "name": "sample(list_2)",
             "purpose": "app.bsky.graph.defs#modlist",
             "indexedAt": "2023-10-12T15:37:51.839Z",
             "viewer": {
@@ -53,9 +53,9 @@
             "description": "test"
         },
         {
-            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list3",
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list_3",
             "cid": "bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy",
-            "name": "my accounts",
+            "name": "my accounts(list_3)",
             "purpose": "app.bsky.graph.defs#curatelist",
             "indexedAt": "2023-09-16T05:32:56.207Z",
             "viewer": {

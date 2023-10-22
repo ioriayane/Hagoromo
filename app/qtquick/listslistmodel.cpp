@@ -1,10 +1,12 @@
 #include "listslistmodel.h"
-#include "listitemlistmodel.h"
+//#include "listitemlistmodel.h"
 #include "recordoperator.h"
 
 #include "atprotocol/app/bsky/graph/appbskygraphgetlists.h"
+#include "atprotocol/com/atproto/repo/comatprotorepolistrecords.h"
 
 using AtProtocolInterface::AppBskyGraphGetLists;
+using AtProtocolInterface::ComAtprotoRepoListRecords;
 using namespace AtProtocolType;
 
 ListsListModel::ListsListModel(QObject *parent)
@@ -90,8 +92,11 @@ void ListsListModel::update(int row, ListsListModelRoles role, const QVariant &v
             emit dataChanged(index(row), index(row));
         }
     } else if (role == ListItemUriRole) {
-        m_listItemUriHash[current.cid] = value.toString();
-        emit dataChanged(index(row), index(row));
+        QString new_uri = value.toString();
+        if (!m_listItemUriHash.contains(current.cid) || m_listItemUriHash[current.cid] != new_uri) {
+            m_listItemUriHash[current.cid] = new_uri;
+            emit dataChanged(index(row), index(row));
+        }
     }
 }
 
@@ -111,6 +116,7 @@ void ListsListModel::clear()
     m_listViewHash.clear();
     m_searchStatusHash.clear();
     m_listItemUriHash.clear();
+    m_listItemCursor.clear();
     AtpAbstractListModel::clear();
 }
 
@@ -157,6 +163,8 @@ bool ListsListModel::getLatest()
         return false;
 
     m_searchCidQue.clear();
+    m_listItemCursor.clear();
+
     AppBskyGraphGetLists *lists = new AppBskyGraphGetLists(this);
     connect(lists, &AppBskyGraphGetLists::finished, [=](bool success) {
         if (success) {
@@ -187,9 +195,12 @@ bool ListsListModel::getNext()
     connect(lists, &AppBskyGraphGetLists::finished, [=](bool success) {
         if (success) {
             m_cursor = lists->cursor(); // 続きの読み込みの時は必ず上書き
+            if (lists->listViewList()->isEmpty())
+                m_cursor.clear(); //すべて読み切って空になったときはカーソルこないので空になるはずだけど念のため
             copyFrom(lists);
             QTimer::singleShot(10, this, &ListsListModel::displayQueuedPostsNext);
         } else {
+            m_cursor.clear();
             emit errorOccured(lists->errorCode(), lists->errorMessage());
             setRunning(false);
         }
@@ -222,10 +233,17 @@ QHash<int, QByteArray> ListsListModel::roleNames() const
 
 void ListsListModel::finishedDisplayingQueuedPosts()
 {
-    if (m_searchCidQue.isEmpty()) {
+    if (searchTarget().isEmpty()) {
         setRunning(false);
     } else {
-        QTimer::singleShot(0, this, &ListsListModel::searchActorInEachLists);
+        if (!m_cursor.isEmpty()) {
+            setRunning(false);
+            QTimer::singleShot(0, this, &ListsListModel::getNext);
+        } else {
+            m_listItemCursor = QStringLiteral("__start__");
+            setListItemStatus(SearchStatusTypeRunning);
+            QTimer::singleShot(0, this, &ListsListModel::searchActorInEachLists);
+        }
     }
 }
 
@@ -268,59 +286,129 @@ void ListsListModel::copyFrom(AtProtocolInterface::AppBskyGraphGetLists *lists)
 
 void ListsListModel::searchActorInEachLists()
 {
-    if (m_searchCidQue.isEmpty()) {
+    if (m_listItemCursor.isEmpty()) {
+        setListItemStatus(SearchStatusTypeNotContains);
         setRunning(false);
         return;
     }
-
-    QString cid = m_searchCidQue.first();
-    m_searchCidQue.pop_front();
-
-    if (!m_listViewHash.contains(cid)) {
-        update(indexOf(cid), ListsListModel::SearchStatusRole,
-               SearchStatusType::SearchStatusTypeNotContains);
-        setRunning(false);
-        m_searchCidQue.clear();
-        return;
+    QString cursor = m_listItemCursor;
+    if (m_listItemCursor == "__start__") {
+        cursor.clear();
+        m_listItemCursor.clear();
     }
-    update(indexOf(cid), ListsListModel::SearchStatusRole,
-           SearchStatusType::SearchStatusTypeRunning);
-
-    ListItemListModel *list = new ListItemListModel(this);
-    connect(list, &ListItemListModel::finished, [=](bool success) {
+    AtProtocolInterface::ComAtprotoRepoListRecords *list =
+            new AtProtocolInterface::ComAtprotoRepoListRecords(this);
+    connect(list, &AtProtocolInterface::ComAtprotoRepoListRecords::finished, [=](bool success) {
         if (success) {
-            QString listitem_did;
-            QString listitem_uri;
-            bool found = false;
-            for (int i = 0; i < list->rowCount(); i++) {
-                listitem_did = list->item(i, ListItemListModel::DidRole).toString();
-                listitem_uri = ""; // TODO listRecordsで取得できるように変更する
-                qDebug() << "DID?" << listitem_did << searchTarget();
-                if (listitem_did == searchTarget()) {
-                    // hit
-                    update(indexOf(cid), ListsListModel::SearchStatusRole,
-                           SearchStatusType::SearchStatusTypeContains);
-                    update(indexOf(cid), ListsListModel::ListItemUriRole, listitem_uri);
-                    found = true;
-                    break;
+            m_listItemCursor = list->cursor();
+            if (list->recordList()->isEmpty())
+                m_listItemCursor.clear();
+
+            for (const auto &item : *list->recordList()) {
+                AppBskyGraphListitem::Main record =
+                        AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                                AppBskyGraphListitem::Main>(item.value);
+                QString list_cid = getListCidByUri(record.list);
+                if (!list_cid.isEmpty()) {
+                    update(indexOf(list_cid), ListsListModel::ListItemUriRole, record.list);
+                    const AppBskyGraphDefs::ListView &current = m_listViewHash.value(list_cid);
+                    if (record.subject == searchTarget()) {
+                        update(indexOf(list_cid), ListsListModel::SearchStatusRole,
+                               SearchStatusType::SearchStatusTypeContains);
+                        // Listを横断してListItemを探索するのでbreakはできない
+                    }
                 }
             }
-            if (!found) {
-                update(indexOf(cid), ListsListModel::SearchStatusRole,
-                       SearchStatusType::SearchStatusTypeNotContains);
-            }
+            QTimer::singleShot(0, this, &ListsListModel::searchActorInEachLists);
         } else {
-            m_searchCidQue.clear();
+            setRunning(false);
         }
-        QTimer::singleShot(0, this, &ListsListModel::searchActorInEachLists);
         list->deleteLater();
     });
-    list->setAccount(account().service, account().did, account().handle, account().email,
-                     account().accessJwt, account().refreshJwt);
-    list->setUri(m_listViewHash.value(cid).uri);
-    if (!list->getLatest()) {
-        m_searchCidQue.clear();
+    list->setAccount(account());
+    if (!list->listListItems(account().did, cursor)) {
+        setListItemStatus(SearchStatusTypeNotContains);
         setRunning(false);
+    }
+
+    //    if (m_searchCidQue.isEmpty()) {
+    //        setRunning(false);
+    //        return;
+    //    }
+
+    //    QString cid = m_searchCidQue.first();
+    //    m_searchCidQue.pop_front();
+
+    //    if (!m_listViewHash.contains(cid)) {
+    //        update(indexOf(cid), ListsListModel::SearchStatusRole,
+    //               SearchStatusType::SearchStatusTypeNotContains);
+    //        setRunning(false);
+    //        m_searchCidQue.clear();
+    //        return;
+    //    }
+    //    update(indexOf(cid), ListsListModel::SearchStatusRole,
+    //           SearchStatusType::SearchStatusTypeRunning);
+
+    //    ListItemListModel *list = new ListItemListModel(this);
+    //    connect(list, &ListItemListModel::finished, [=](bool success) {
+    //        if (success) {
+    //            QString listitem_did;
+    //            QString listitem_uri;
+    //            bool found = false;
+    //            for (int i = 0; i < list->rowCount(); i++) {
+    //                listitem_did = list->item(i, ListItemListModel::DidRole).toString();
+    //                listitem_uri = ""; // TODO listRecordsで取得できるように変更する
+    //                qDebug() << "DID?" << listitem_did << searchTarget();
+    //                if (listitem_did == searchTarget()) {
+    //                    // hit
+    //                    update(indexOf(cid), ListsListModel::SearchStatusRole,
+    //                           SearchStatusType::SearchStatusTypeContains);
+    //                    update(indexOf(cid), ListsListModel::ListItemUriRole, listitem_uri);
+    //                    found = true;
+    //                    break;
+    //                }
+    //            }
+    //            if (!found) {
+    //                update(indexOf(cid), ListsListModel::SearchStatusRole,
+    //                       SearchStatusType::SearchStatusTypeNotContains);
+    //            }
+    //        } else {
+    //            m_searchCidQue.clear();
+    //        }
+    //        QTimer::singleShot(0, this, &ListsListModel::searchActorInEachLists);
+    //        list->deleteLater();
+    //    });
+    //    list->setAccount(account().service, account().did, account().handle, account().email,
+    //                     account().accessJwt, account().refreshJwt);
+    //    list->setUri(m_listViewHash.value(cid).uri);
+    //    if (!list->getLatest()) {
+    //        m_searchCidQue.clear();
+    //        setRunning(false);
+    //    }
+}
+
+QString ListsListModel::getListCidByUri(const QString &uri) const
+{
+    for (const auto &cid : m_cidList) {
+        if (m_listViewHash.value(cid).uri == uri) {
+            return cid;
+        }
+    }
+    return QString();
+}
+
+void ListsListModel::setListItemStatus(const SearchStatusType status)
+{
+    for (int i = 0; i < m_cidList.count(); i++) {
+        SearchStatusType now_status =
+                static_cast<SearchStatusType>(item(i, SearchStatusRole).toInt());
+        if (status == SearchStatusTypeUnknown || status == SearchStatusTypeRunning) {
+            update(i, ListsListModel::SearchStatusRole, status);
+        } else if (status == SearchStatusTypeNotContains) {
+            if (now_status == SearchStatusTypeRunning) {
+                update(i, ListsListModel::SearchStatusRole, status);
+            }
+        }
     }
 }
 

@@ -1756,15 +1756,20 @@ void hagoromo_test::test_ListsListModel_search()
 
     model.setAccount(m_service + "/lists/search", QString(), QString(), QString(), "dummy",
                      QString());
-    model.setSearchTarget("did:plc:l4fsx4ujos7uw7n4ijq2ulgs_3");
+    model.setSearchTarget("did:plc:user_42");
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
         spy.wait(10 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        spy.wait(10 * 1000);
+        spy.wait(10 * 1000);
+        spy.wait(10 * 1000);
+        spy.wait(10 * 1000);
+        spy.wait(10 * 1000);
+        QVERIFY2(spy.count() == 6, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
 
-    QVERIFY2(model.rowCount() == 3,
+    QVERIFY2(model.rowCount() == 6,
              QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
     QVERIFY(model.item(0, ListsListModel::SearchStatusRole).toInt()
             == ListsListModel::SearchStatusTypeNotContains);
