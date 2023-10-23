@@ -1760,11 +1760,11 @@ void hagoromo_test::test_ListsListModel_search()
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
-        spy.wait(10 * 1000);
-        spy.wait(10 * 1000);
-        spy.wait(10 * 1000);
-        spy.wait(10 * 1000);
-        spy.wait(10 * 1000);
+        spy.wait();
+        spy.wait();
+        spy.wait();
+        spy.wait();
+        spy.wait();
         spy.wait(10 * 1000);
         QVERIFY2(spy.count() == 6, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
@@ -1777,6 +1777,26 @@ void hagoromo_test::test_ListsListModel_search()
             == ListsListModel::SearchStatusTypeNotContains);
     QVERIFY(model.item(2, ListsListModel::SearchStatusRole).toInt()
             == ListsListModel::SearchStatusTypeContains);
+    QVERIFY(model.item(3, ListsListModel::SearchStatusRole).toInt()
+            == ListsListModel::SearchStatusTypeNotContains);
+    QVERIFY(model.item(4, ListsListModel::SearchStatusRole).toInt()
+            == ListsListModel::SearchStatusTypeNotContains);
+    QVERIFY(model.item(5, ListsListModel::SearchStatusRole).toInt()
+            == ListsListModel::SearchStatusTypeNotContains);
+
+    QVERIFY2(model.item(0, ListsListModel::ListItemUriRole).toString() == "",
+             model.item(0, ListsListModel::ListItemUriRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(1, ListsListModel::ListItemUriRole).toString() == "",
+             model.item(1, ListsListModel::ListItemUriRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(2, ListsListModel::ListItemUriRole).toString()
+                     == "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.listitem/101",
+             model.item(2, ListsListModel::ListItemUriRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(3, ListsListModel::ListItemUriRole).toString() == "",
+             model.item(3, ListsListModel::ListItemUriRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(4, ListsListModel::ListItemUriRole).toString() == "",
+             model.item(4, ListsListModel::ListItemUriRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(5, ListsListModel::ListItemUriRole).toString() == "",
+             model.item(5, ListsListModel::ListItemUriRole).toString().toLocal8Bit());
 }
 
 void hagoromo_test::test_ListsListModel_error()

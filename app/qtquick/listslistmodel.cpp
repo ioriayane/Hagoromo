@@ -126,7 +126,7 @@ bool ListsListModel::addRemoveFromList(const int row, const QString &did)
     SearchStatusType status =
             static_cast<SearchStatusType>(item(row, ListsListModel::SearchStatusRole).toInt());
     if (status == SearchStatusTypeContains) {
-        uri = ""; // change to ListItem uri
+        uri = item(row, ListsListModel::ListItemUriRole).toString();
     }
     if (running() || uri.isEmpty())
         return false;
@@ -137,8 +137,13 @@ bool ListsListModel::addRemoveFromList(const int row, const QString &did)
                 Q_UNUSED(uri)
                 Q_UNUSED(cid)
                 if (success) {
-                    update(row, ListsListModel::SearchStatusRole,
-                           SearchStatusType::SearchStatusTypeContains);
+                    if (status == SearchStatusTypeContains) {
+                        update(row, ListsListModel::SearchStatusRole,
+                               SearchStatusType::SearchStatusTypeNotContains);
+                    } else {
+                        update(row, ListsListModel::SearchStatusRole,
+                               SearchStatusType::SearchStatusTypeContains);
+                    }
                 }
                 setRunning(false);
                 ope->deleteLater();
@@ -147,9 +152,11 @@ bool ListsListModel::addRemoveFromList(const int row, const QString &did)
                     account().accessJwt, account().refreshJwt);
     if (status == SearchStatusTypeContains) {
         // delete
+        // uriのレコードを消す（リストに登録しているユーザーの情報）
         setRunning(ope->deleteListItem(uri));
     } else if (status == SearchStatusTypeNotContains) {
         // Add
+        // uriのリストにdidのユーザーを追加する
         setRunning(ope->listItem(uri, did));
     } else {
         ope->deleteLater();
@@ -310,9 +317,9 @@ void ListsListModel::searchActorInEachLists()
                                 AppBskyGraphListitem::Main>(item.value);
                 QString list_cid = getListCidByUri(record.list);
                 if (!list_cid.isEmpty()) {
-                    update(indexOf(list_cid), ListsListModel::ListItemUriRole, record.list);
                     const AppBskyGraphDefs::ListView &current = m_listViewHash.value(list_cid);
                     if (record.subject == searchTarget()) {
+                        update(indexOf(list_cid), ListsListModel::ListItemUriRole, item.uri);
                         update(indexOf(list_cid), ListsListModel::SearchStatusRole,
                                SearchStatusType::SearchStatusTypeContains);
                         // Listを横断してListItemを探索するのでbreakはできない
