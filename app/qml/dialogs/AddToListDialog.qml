@@ -24,11 +24,19 @@ Dialog {
         id: account
     }
     signal errorOccured(string account_uuid, string code, string message)
+    signal requestAddList()
 
     onOpened: {
         if(account.service.length === 0){
             return
         }
+        addListDialog.account.uuid = account.uuid
+        addListDialog.account.service = account.service
+        addListDialog.account.did = account.did
+        addListDialog.account.handle = account.handle
+        addListDialog.account.accessJwt = account.accessJwt
+        addListDialog.account.refreshJwt = account.refreshJwt
+        addListDialog.account.avatar = account.avatar
 
         listsListModel.clear()
         listsListModel.setAccount(account.service, account.did, account.handle,
@@ -103,7 +111,7 @@ Dialog {
                         if(busyIndicator.visible){
                             return
                         }
-                        //addColumnDialog.openDiscoverFeeds(accountList.currentIndex)
+                        addListDialog.open()
                     }
                 }
                 delegate: ItemDelegate {
@@ -188,6 +196,14 @@ Dialog {
             Item {
                 Layout.fillWidth: true
             }
+        }
+    }
+
+    AddListDialog {
+        id: addListDialog
+        onAccepted: {
+            listsListModel.clear()
+            listsListModel.getLatest()
         }
     }
 }

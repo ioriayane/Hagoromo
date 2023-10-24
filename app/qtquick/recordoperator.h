@@ -22,6 +22,12 @@ class RecordOperator : public QObject
 public:
     explicit RecordOperator(QObject *parent = nullptr);
 
+    enum ListPurpose : int {
+        Curation = AtProtocolInterface::ComAtprotoRepoCreateRecord::ListPurpose::Curation,
+        Moderation = AtProtocolInterface::ComAtprotoRepoCreateRecord::ListPurpose::Moderation,
+    };
+    Q_ENUM(ListPurpose);
+
     Q_INVOKABLE void setAccount(const QString &service, const QString &did, const QString &handle,
                                 const QString &email, const QString &accessJwt,
                                 const QString &refreshJwt);
@@ -45,10 +51,8 @@ public:
     Q_INVOKABLE void follow(const QString &did);
     Q_INVOKABLE void mute(const QString &did);
     Q_INVOKABLE void block(const QString &did);
-    Q_INVOKABLE bool
-    list(const QString &name,
-         const AtProtocolInterface::ComAtprotoRepoCreateRecord::ListPurpose purpose,
-         const QString &description);
+    Q_INVOKABLE bool list(const QString &name, const ListPurpose purpose,
+                          const QString &description);
     Q_INVOKABLE bool listItem(const QString &uri, const QString &did);
 
     Q_INVOKABLE void deletePost(const QString &uri);

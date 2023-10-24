@@ -289,15 +289,27 @@ void RecordOperator::block(const QString &did)
     create_record->block(did);
 }
 
-bool RecordOperator::list(
-        const QString &name,
-        const AtProtocolInterface::ComAtprotoRepoCreateRecord::ListPurpose purpose,
-        const QString &description)
+bool RecordOperator::list(const QString &name, const RecordOperator::ListPurpose purpose,
+                          const QString &description)
 {
-    Q_UNUSED(name)
-    Q_UNUSED(purpose)
-    Q_UNUSED(description)
-    return false;
+    if (running())
+        return false;
+
+    ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord(this);
+    connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
+        if (!success) {
+            emit errorOccured(create_record->errorCode(), create_record->errorMessage());
+        }
+        emit finished(success, create_record->replyUri(), create_record->replyCid());
+        setRunning(false);
+        create_record->deleteLater();
+    });
+    create_record->setAccount(m_account);
+    setRunning(create_record->list(
+            name,
+            static_cast<AtProtocolInterface::ComAtprotoRepoCreateRecord::ListPurpose>(purpose),
+            description, QString()));
+    return running();
 }
 
 bool RecordOperator::listItem(const QString &uri, const QString &did)
@@ -310,7 +322,7 @@ bool RecordOperator::listItem(const QString &uri, const QString &did)
         if (!success) {
             emit errorOccured(create_record->errorCode(), create_record->errorMessage());
         }
-        emit finished(success, QString(), QString());
+        emit finished(success, create_record->replyUri(), create_record->replyCid());
         setRunning(false);
         create_record->deleteLater();
     });

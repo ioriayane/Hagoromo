@@ -264,8 +264,10 @@ bool ComAtprotoRepoCreateRecord::list(const QString &name, const ListPurpose pur
     QJsonObject json_record;
     json_record.insert("purpose", p);
     json_record.insert("name", name);
-    json_record.insert("description", description);
-    json_record.insert("avatar", avatar);
+    if (!description.isEmpty())
+        json_record.insert("description", description);
+    if (!avatar.isEmpty())
+        json_record.insert("avatar", avatar);
     // descriptionFacets
     // labels
     json_record.insert("createdAt", QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
