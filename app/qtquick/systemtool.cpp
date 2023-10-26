@@ -4,6 +4,11 @@
 
 #include <QClipboard>
 #include <QGuiApplication>
+#include <QDebug>
+#include <QImage>
+#include <QDir>
+#include <QStandardPaths>
+#include <QUuid>
 
 SystemTool::SystemTool(QObject *parent) : QObject { parent }
 {
@@ -18,6 +23,26 @@ void SystemTool::copyToClipboard(const QString &text) const
 int SystemTool::countText(const QString &text) const
 {
     return QStringEx(text).length();
+}
+
+QUrl SystemTool::clipImage(const QUrl &url, const int x, const int y, const int width,
+                           const int height) const
+{
+    QString folder =
+            QString("%1/%2").arg(QStandardPaths::writableLocation(QStandardPaths::TempLocation),
+                                 QCoreApplication::applicationName());
+    QDir dir(folder);
+    dir.mkpath(folder);
+
+    QString new_path = QString("%1/%2.jpg").arg(folder, QUuid::createUuid().toString(QUuid::Id128));
+
+    qDebug() << "clipImage" << url.toLocalFile();
+    qDebug() << "dest" << new_path;
+
+    QImage img(url.toLocalFile());
+    qDebug() << "saved" << img.copy(x, y, width, height).save(new_path);
+
+    return QUrl::fromLocalFile(new_path);
 }
 
 QString SystemTool::applicationVersion() const

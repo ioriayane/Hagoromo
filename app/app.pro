@@ -24,6 +24,7 @@ QML_FILES = \
     qml/dialogs/ColumnSettingDialog.qml \
     qml/dialogs/ContentFilterSettingDialog.qml \
     qml/dialogs/DiscoverFeedsDialog.qml \
+    qml/dialogs/ImageClipDialog.qml \
     qml/dialogs/LanguageSelectionDialog.qml \
     qml/dialogs/LoginDialog.qml \
     qml/dialogs/MessageDialog.qml \
@@ -37,6 +38,8 @@ QML_FILES = \
     qml/parts/Author.qml \
     qml/parts/AvatarImage.qml \
     qml/parts/CoverFrame.qml \
+    qml/parts/CursorRect.qml \
+    qml/parts/CursorRectHandle.qml \
     qml/parts/ImagePreview.qml \
     qml/parts/ExternalLinkCard.qml \
     qml/parts/FeedGeneratorLinkCard.qml \

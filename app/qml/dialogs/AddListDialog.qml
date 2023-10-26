@@ -3,6 +3,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 import QtGraphicalEffects 1.15
+import Qt.labs.platform 1.1 as P
 
 import tech.relog.hagoromo.recordoperator 1.0
 import tech.relog.hagoromo.systemtool 1.0
@@ -59,7 +60,7 @@ Dialog {
     }
 
     ColumnLayout {
-        spacing: 10
+        spacing: 5
         RowLayout {
             AvatarImage {
                 Layout.preferredWidth: AdjustedValues.i24
@@ -79,10 +80,32 @@ Dialog {
 
         Label {
             Layout.fillWidth: true
+            Layout.topMargin: 5
+            font.pointSize: AdjustedValues.f10
+            text: "Avatar"
+        }
+        Rectangle {
+            Layout.preferredWidth: AdjustedValues.i48
+            Layout.preferredHeight: AdjustedValues.i48
+            color: Material.frameColor
+            Image {
+                id: avatar
+                anchors.fill: parent
+                anchors.margins: 1
+                source: "../images/edit.png"
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: fileDialog.open()
+                }
+            }
+        }
+
+        Label {
+            Layout.fillWidth: true
+            Layout.topMargin: 5
             font.pointSize: AdjustedValues.f10
             text: "Name"
         }
-
         TextField  {
             id: nameText
             Layout.preferredWidth: 300 * AdjustedValues.ratio
@@ -93,10 +116,10 @@ Dialog {
 
         Label {
             Layout.fillWidth: true
+            Layout.topMargin: 5
             font.pointSize: AdjustedValues.f10
             text: "Description"
         }
-
         ScrollView {
             Layout.preferredWidth: 400 * AdjustedValues.ratio
             Layout.preferredHeight: 150 * AdjustedValues.ratio
@@ -144,6 +167,32 @@ Dialog {
                     visible: recordOperator.running
                 }
             }
+        }
+    }
+
+    P.FileDialog {
+        id: fileDialog
+        title: qsTr("Select contents")
+        visible: false
+        fileMode : P.FileDialog.OpenFiles
+
+        nameFilters: ["Image files (*.jpg *.jpeg *.png)"
+            , "All files (*)"]
+        onAccepted: {
+            prevFolder = folder
+            imageClipDialog.embedImage = file
+            imageClipDialog.open()
+        }
+        property string prevFolder
+    }
+    ImageClipDialog {
+        id: imageClipDialog
+        onAccepted: {
+            console.log("Selected=" + selectedX + "," + selectedY + "," + selectedWidth + "," + selectedHeight)
+            avatar.source = systemTool.clipImage(embedImage,
+                                                 selectedX, selectedY,
+                                                 selectedWidth,selectedHeight)
+            console.log(avatar.source)
         }
     }
 }

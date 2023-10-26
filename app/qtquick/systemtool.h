@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QRegularExpression>
+#include <QUrl>
 
 #define REG_EXP_URL                                                                                \
     "http[s]?://"                                                                                  \
@@ -43,6 +44,8 @@ public:
 
     Q_INVOKABLE void copyToClipboard(const QString &text) const;
     Q_INVOKABLE int countText(const QString &text) const;
+    Q_INVOKABLE QUrl clipImage(const QUrl &url, const int x, const int y, const int width,
+                               const int height) const;
 
     QString applicationVersion() const;
     QString qtVersion() const;

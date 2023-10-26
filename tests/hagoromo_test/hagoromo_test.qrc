@@ -56,5 +56,6 @@
         <file>response/lists/search/xrpc/com.atproto.repo.listRecords_2</file>
         <file>response/lists/search/xrpc/com.atproto.repo.listRecords_3</file>
         <file>response/lists/search/xrpc/app.bsky.graph.getLists_2</file>
+        <file>data/images/sample.jpg</file>
     </qresource>
 </RCC>

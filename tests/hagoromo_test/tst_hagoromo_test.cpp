@@ -59,6 +59,7 @@ private slots:
     void test_ListItemListModel();
     void test_ListItemListModel_error();
     void test_ListFeedListModel();
+    void test_SystemTool_ImageClip();
 
 private:
     WebServer m_mockServer;
@@ -1903,6 +1904,14 @@ void hagoromo_test::test_ListFeedListModel()
 
     QVERIFY2(model.rowCount() == 6,
              QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+}
+
+void hagoromo_test::test_SystemTool_ImageClip()
+{
+    SystemTool tool;
+
+    qDebug() << tool.clipImage(QUrl::fromLocalFile(":/data/images/sample.jpg"), 1700, 130, 400,
+                               250);
 }
 
 void hagoromo_test::test_RecordOperatorCreateRecord(const QByteArray &body)
