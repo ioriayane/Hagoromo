@@ -122,7 +122,7 @@ Dialog {
         }
         ScrollView {
             Layout.preferredWidth: 400 * AdjustedValues.ratio
-            Layout.preferredHeight: 150 * AdjustedValues.ratio
+            Layout.preferredHeight: 120 * AdjustedValues.ratio
             TextArea {
                 id: descriptionText
                 verticalAlignment: TextInput.AlignTop
@@ -159,6 +159,10 @@ Dialog {
                 enabled: nameText.text.length > 0 && descriptionText.realTextLength <= 300 && !recordOperator.running
                 text: qsTr("Add")
                 onClicked: {
+                    recordOperator.clear()
+                    if(avatar.status === Image.Ready){
+                        recordOperator.setImages([avatar.source], [])
+                    }
                     recordOperator.list(nameText.text, RecordOperator.Curation, descriptionText.text)
                 }
                 BusyIndicator {

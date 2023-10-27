@@ -22,8 +22,7 @@ public:
     void like(const QString &cid, const QString &uri);
     void follow(const QString &did);
     void block(const QString &did);
-    bool list(const QString &name, const ListPurpose purpose, const QString &description,
-              const QString &avatar);
+    bool list(const QString &name, const ListPurpose purpose, const QString &description);
     bool listItem(const QString &uri, const QString &did);
 
     void setReply(const QString &parent_cid, const QString &parent_uri, const QString &root_cid,

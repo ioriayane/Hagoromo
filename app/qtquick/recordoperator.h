@@ -73,8 +73,8 @@ signals:
     void runningChanged();
 
 private:
-    template<typename F>
-    void makeFacets(const QString &text, F callback);
+    void makeFacets(const QString &text, std::function<void()> callback);
+    void uploadBlob(std::function<void(bool)> callback);
 
     QRegularExpression m_rxFacet;
     AtProtocolInterface::AccountData m_account;

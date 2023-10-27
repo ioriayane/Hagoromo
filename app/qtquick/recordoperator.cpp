@@ -156,37 +156,14 @@ void RecordOperator::postWithImages()
 
     setRunning(true);
 
-    QString path = QUrl(m_embedImages.first().path).toLocalFile();
-    QString alt = m_embedImages.first().alt;
-    m_embedImages.removeFirst();
-
-    ComAtprotoRepoUploadBlob *upload_blob = new ComAtprotoRepoUploadBlob(this);
-    connect(upload_blob, &ComAtprotoRepoUploadBlob::finished, [=](bool success) {
+    uploadBlob([=](bool success) {
         if (success) {
-            qDebug() << "Uploaded blob" << upload_blob->cid() << upload_blob->mimeType()
-                     << upload_blob->size();
-
-            LexiconsTypeUnknown::Blob blob;
-            blob.cid = upload_blob->cid();
-            blob.mimeType = upload_blob->mimeType();
-            blob.size = upload_blob->size();
-            blob.alt = alt;
-            m_embedImageBlogs.append(blob);
-
-            if (m_embedImages.isEmpty()) {
-                post();
-            } else {
-                postWithImages();
-            }
+            post();
         } else {
-            emit errorOccured(upload_blob->errorCode(), upload_blob->errorMessage());
             emit finished(success, QString(), QString());
             setRunning(false);
         }
-        upload_blob->deleteLater();
     });
-    upload_blob->setAccount(m_account);
-    upload_blob->uploadBlob(path);
 }
 
 void RecordOperator::repost(const QString &cid, const QString &uri)
@@ -295,20 +272,33 @@ bool RecordOperator::list(const QString &name, const RecordOperator::ListPurpose
     if (running())
         return false;
 
-    ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord(this);
-    connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
-        if (!success) {
-            emit errorOccured(create_record->errorCode(), create_record->errorMessage());
+    uploadBlob([=](bool success) {
+        if (success) {
+            ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord(this);
+            connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
+                if (!success) {
+                    emit errorOccured(create_record->errorCode(), create_record->errorMessage());
+                }
+                emit finished(success, create_record->replyUri(), create_record->replyCid());
+                setRunning(false);
+                create_record->deleteLater();
+            });
+            create_record->setImageBlobs(m_embedImageBlogs);
+            create_record->setAccount(m_account);
+            if (!create_record->list(
+                        name,
+                        static_cast<AtProtocolInterface::ComAtprotoRepoCreateRecord::ListPurpose>(
+                                purpose),
+                        description)) {
+                setRunning(false);
+            }
+        } else {
+            emit finished(success, QString(), QString());
+            setRunning(false);
         }
-        emit finished(success, create_record->replyUri(), create_record->replyCid());
-        setRunning(false);
-        create_record->deleteLater();
     });
-    create_record->setAccount(m_account);
-    setRunning(create_record->list(
-            name,
-            static_cast<AtProtocolInterface::ComAtprotoRepoCreateRecord::ListPurpose>(purpose),
-            description, QString()));
+
+    setRunning(true);
     return running();
 }
 
@@ -511,8 +501,7 @@ void RecordOperator::setRunning(bool newRunning)
     emit runningChanged();
 }
 
-template<typename F>
-void RecordOperator::makeFacets(const QString &text, F callback)
+void RecordOperator::makeFacets(const QString &text, std::function<void()> callback)
 {
     QMultiMap<QString, MentionData> mention;
 
@@ -615,4 +604,43 @@ void RecordOperator::makeFacets(const QString &text, F callback)
         // uriもmentionがないときは直接戻る
         callback();
     }
+}
+
+void RecordOperator::uploadBlob(std::function<void(bool)> callback)
+{
+    if (m_embedImages.isEmpty()) {
+        callback(true);
+        return;
+    }
+
+    QString path = QUrl(m_embedImages.first().path).toLocalFile();
+    QString alt = m_embedImages.first().alt;
+    m_embedImages.removeFirst();
+
+    ComAtprotoRepoUploadBlob *upload_blob = new ComAtprotoRepoUploadBlob(this);
+    connect(upload_blob, &ComAtprotoRepoUploadBlob::finished, [=](bool success) {
+        if (success) {
+            qDebug().noquote() << "Uploaded blob" << upload_blob->cid() << upload_blob->mimeType()
+                               << upload_blob->size();
+
+            LexiconsTypeUnknown::Blob blob;
+            blob.cid = upload_blob->cid();
+            blob.mimeType = upload_blob->mimeType();
+            blob.size = upload_blob->size();
+            blob.alt = alt;
+            m_embedImageBlogs.append(blob);
+
+            if (m_embedImages.isEmpty()) {
+                callback(true);
+            } else {
+                uploadBlob(callback);
+            }
+        } else {
+            emit errorOccured(upload_blob->errorCode(), upload_blob->errorMessage());
+            callback(false);
+        }
+        upload_blob->deleteLater();
+    });
+    upload_blob->setAccount(m_account);
+    upload_blob->uploadBlob(path);
 }

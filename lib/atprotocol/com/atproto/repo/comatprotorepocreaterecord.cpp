@@ -252,7 +252,7 @@ void ComAtprotoRepoCreateRecord::block(const QString &did)
 }
 
 bool ComAtprotoRepoCreateRecord::list(const QString &name, const ListPurpose purpose,
-                                      const QString &description, const QString &avatar)
+                                      const QString &description)
 {
     QString p;
     if (purpose == ComAtprotoRepoCreateRecord::Curation) {
@@ -266,8 +266,19 @@ bool ComAtprotoRepoCreateRecord::list(const QString &name, const ListPurpose pur
     json_record.insert("name", name);
     if (!description.isEmpty())
         json_record.insert("description", description);
-    if (!avatar.isEmpty())
-        json_record.insert("avatar", avatar);
+    if (!m_embedImageBlobs.isEmpty()) {
+        const auto &blob = m_embedImageBlobs.first();
+
+        QJsonObject json_image;
+        json_image.insert("$type", "blob");
+        QJsonObject json_link;
+        json_link.insert("$link", blob.cid);
+        json_image.insert("ref", json_link);
+        json_image.insert("mimeType", blob.mimeType);
+        json_image.insert("size", blob.size);
+
+        json_record.insert("avatar", json_image);
+    }
     // descriptionFacets
     // labels
     json_record.insert("createdAt", QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
