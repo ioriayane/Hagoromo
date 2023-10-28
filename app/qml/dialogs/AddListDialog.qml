@@ -37,6 +37,7 @@ Dialog {
     onClosed: {
         nameText.clear()
         descriptionText.clear()
+        avatar.source = "../images/edit.png"
     }
 
     Shortcut {  // Close
@@ -191,12 +192,12 @@ Dialog {
     }
     ImageClipDialog {
         id: imageClipDialog
+        onRejected: embedImage = ""
         onAccepted: {
             console.log("Selected=" + selectedX + "," + selectedY + "," + selectedWidth + "," + selectedHeight)
             avatar.source = systemTool.clipImage(embedImage,
                                                  selectedX, selectedY,
                                                  selectedWidth,selectedHeight)
-            console.log(avatar.source)
         }
     }
 }

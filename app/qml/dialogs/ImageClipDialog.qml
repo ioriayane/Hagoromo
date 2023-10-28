@@ -10,7 +10,7 @@ Dialog {
     modal: true
     x: (parent.width - width) * 0.5
     y: (parent.height - height) * 0.5
-    closePolicy: Popup.NoAutoClose
+    closePolicy: Popup.CloseOnEscape
 
     property string embedImage: ""
 
@@ -25,8 +25,10 @@ Dialog {
     ColumnLayout {
         Image {
             id: image
-            Layout.preferredWidth: 300 //* AdjustedValues.ratio
-            Layout.preferredHeight: 300 //* AdjustedValues.ratio
+            Layout.preferredWidth: 450 //* AdjustedValues.ratioHalf
+            Layout.preferredHeight: 450 //* AdjustedValues.ratioHalf
+            Layout.maximumWidth: 1000
+            Layout.maximumHeight: 1000
             fillMode: Image.PreserveAspectFit
             source: imageClipDialog.embedImage
 
@@ -58,7 +60,7 @@ Dialog {
         RowLayout {
             Button {
                 flat: true
-                font.pointSize: 10 //AdjustedValues.f10
+                font.pointSize: AdjustedValues.f10
                 text: qsTr("Cancel")
                 onClicked: {
                     selectedX = -1
@@ -74,7 +76,7 @@ Dialog {
                 Layout.preferredHeight: 1
             }
             Button {
-                font.pointSize: 10 //AdjustedValues.f10
+                font.pointSize: AdjustedValues.f10
                 text: qsTr("Apply")
                 onClicked: {
                     selectedX = (cursorRect.cursorX - image.offsetX) * image.widthRatio

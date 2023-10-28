@@ -1,10 +1,12 @@
 import QtQuick 2.15
 import QtQuick.Controls.Material 2.15
 
+import tech.relog.hagoromo.singleton 1.0
+
 Rectangle {
     id: handle
-    width: 12
-    height: 12
+    width: 12 * AdjustedValues.ratioHalf
+    height: 12 * AdjustedValues.ratioHalf
     radius: 6
     color: Material.accentColor
     signal cursorMoved(int diff_x, int diff_y)
