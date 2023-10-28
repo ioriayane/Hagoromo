@@ -38,7 +38,10 @@ ScrollView {
             height: AdjustedValues.h24
             display: AbstractButton.IconOnly
             icon.source: rootListView.model.running ? "" : "../images/expand_less.png"
-            onClicked: rootListView.model.getLatest()
+            onClicked: {
+                rootListView.model.clear()
+                rootListView.model.getLatest()
+            }
 
             BusyIndicator {
                 anchors.centerIn: parent

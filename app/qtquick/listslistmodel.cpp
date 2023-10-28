@@ -337,61 +337,6 @@ void ListsListModel::searchActorInEachLists()
         setListItemStatus(SearchStatusTypeNotContains);
         setRunning(false);
     }
-
-    //    if (m_searchCidQue.isEmpty()) {
-    //        setRunning(false);
-    //        return;
-    //    }
-
-    //    QString cid = m_searchCidQue.first();
-    //    m_searchCidQue.pop_front();
-
-    //    if (!m_listViewHash.contains(cid)) {
-    //        update(indexOf(cid), ListsListModel::SearchStatusRole,
-    //               SearchStatusType::SearchStatusTypeNotContains);
-    //        setRunning(false);
-    //        m_searchCidQue.clear();
-    //        return;
-    //    }
-    //    update(indexOf(cid), ListsListModel::SearchStatusRole,
-    //           SearchStatusType::SearchStatusTypeRunning);
-
-    //    ListItemListModel *list = new ListItemListModel(this);
-    //    connect(list, &ListItemListModel::finished, [=](bool success) {
-    //        if (success) {
-    //            QString listitem_did;
-    //            QString listitem_uri;
-    //            bool found = false;
-    //            for (int i = 0; i < list->rowCount(); i++) {
-    //                listitem_did = list->item(i, ListItemListModel::DidRole).toString();
-    //                listitem_uri = ""; // TODO listRecordsで取得できるように変更する
-    //                qDebug() << "DID?" << listitem_did << searchTarget();
-    //                if (listitem_did == searchTarget()) {
-    //                    // hit
-    //                    update(indexOf(cid), ListsListModel::SearchStatusRole,
-    //                           SearchStatusType::SearchStatusTypeContains);
-    //                    update(indexOf(cid), ListsListModel::ListItemUriRole, listitem_uri);
-    //                    found = true;
-    //                    break;
-    //                }
-    //            }
-    //            if (!found) {
-    //                update(indexOf(cid), ListsListModel::SearchStatusRole,
-    //                       SearchStatusType::SearchStatusTypeNotContains);
-    //            }
-    //        } else {
-    //            m_searchCidQue.clear();
-    //        }
-    //        QTimer::singleShot(0, this, &ListsListModel::searchActorInEachLists);
-    //        list->deleteLater();
-    //    });
-    //    list->setAccount(account().service, account().did, account().handle, account().email,
-    //                     account().accessJwt, account().refreshJwt);
-    //    list->setUri(m_listViewHash.value(cid).uri);
-    //    if (!list->getLatest()) {
-    //        m_searchCidQue.clear();
-    //        setRunning(false);
-    //    }
 }
 
 QString ListsListModel::getListCidByUri(const QString &uri) const

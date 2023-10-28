@@ -1,6 +1,7 @@
 #include "recordoperator.h"
 #include "atprotocol/com/atproto/repo/comatprotorepouploadblob.h"
 #include "atprotocol/com/atproto/repo/comatprotorepodeleterecord.h"
+#include "atprotocol/com/atproto/repo/comatprotorepolistrecords.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofiles.h"
 #include "atprotocol/app/bsky/graph/appbskygraphmuteactor.h"
 #include "atprotocol/app/bsky/graph/appbskygraphunmuteactor.h"
@@ -13,6 +14,7 @@ using AtProtocolInterface::AppBskyGraphMuteActor;
 using AtProtocolInterface::AppBskyGraphUnmuteActor;
 using AtProtocolInterface::ComAtprotoRepoCreateRecord;
 using AtProtocolInterface::ComAtprotoRepoDeleteRecord;
+using AtProtocolInterface::ComAtprotoRepoListRecords;
 using AtProtocolInterface::ComAtprotoRepoUploadBlob;
 using namespace AtProtocolType;
 
@@ -451,19 +453,63 @@ bool RecordOperator::deleteList(const QString &uri)
     if (running() || !uri.startsWith("at://"))
         return false;
 
-    QString r_key = uri.split("/").last();
+    m_listItemCursor = "__start__";
+    m_listItems.clear();
+    bool res = getAllListItems(uri, [=](bool success3) {
+        if (success3) {
+            bool res2 = deleteAllListItems([=](bool success2) {
+                if (success2) {
+                    QString r_key = uri.split("/").last();
 
-    ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord(this);
-    connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
-        if (!success) {
-            emit errorOccured(delete_record->errorCode(), delete_record->errorMessage());
+                    ComAtprotoRepoDeleteRecord *delete_record =
+                            new ComAtprotoRepoDeleteRecord(this);
+                    connect(delete_record, &ComAtprotoRepoDeleteRecord::finished,
+                            [=](bool success) {
+                                if (!success) {
+                                    emit errorOccured(delete_record->errorCode(),
+                                                      delete_record->errorMessage());
+                                }
+                                emit finished(success, QString(), QString());
+                                setRunning(false);
+                                delete_record->deleteLater();
+                            });
+                    delete_record->setAccount(m_account);
+                    if (!delete_record->deleteList(r_key)) {
+                        emit errorOccured(delete_record->errorCode(),
+                                          delete_record->errorMessage());
+                        emit finished(false, QString(), QString());
+                        setRunning(false);
+                    }
+                } else {
+                    emit errorOccured(
+                            QStringLiteral("FailDeleteList"),
+                            QStringLiteral(
+                                    "An error occurred while deleting a user in the list.(2)"));
+                    emit finished(false, QString(), QString());
+                    setRunning(false);
+                }
+            });
+            if (!res2) {
+                emit errorOccured(
+                        QStringLiteral("FailDeleteList"),
+                        QStringLiteral("An error occurred while deleting a user in the list.(1)"));
+                emit finished(false, QString(), QString());
+                setRunning(false);
+            }
+        } else {
+            emit errorOccured(QStringLiteral("FailDeleteList"),
+                              QStringLiteral("An error occurred while retrieving user information "
+                                             "registered in the list.(2)"));
+            emit finished(false, QString(), QString());
+            setRunning(false);
         }
-        emit finished(success, QString(), QString());
-        setRunning(false);
-        delete_record->deleteLater();
     });
-    delete_record->setAccount(m_account);
-    setRunning(delete_record->deleteList(r_key));
+    if (!res) {
+        emit errorOccured(QStringLiteral("FailDeleteList"),
+                          QStringLiteral("An error occurred while retrieving user information "
+                                         "registered in the list.(1)"));
+    }
+    setRunning(res);
     return running();
 }
 
@@ -643,4 +689,72 @@ void RecordOperator::uploadBlob(std::function<void(bool)> callback)
     });
     upload_blob->setAccount(m_account);
     upload_blob->uploadBlob(path);
+}
+
+bool RecordOperator::getAllListItems(const QString &list_uri, std::function<void(bool)> callback)
+{
+    // 使う前にm_listItemsをクリアすること！
+
+    if (m_listItemCursor.isEmpty()) {
+        callback(true);
+        return true;
+    }
+    QString cursor = m_listItemCursor;
+    if (m_listItemCursor == "__start__") {
+        cursor.clear();
+        m_listItemCursor.clear();
+    }
+
+    AtProtocolInterface::ComAtprotoRepoListRecords *list =
+            new AtProtocolInterface::ComAtprotoRepoListRecords(this);
+    connect(list, &AtProtocolInterface::ComAtprotoRepoListRecords::finished, [=](bool success) {
+        if (success) {
+            m_listItemCursor = list->cursor();
+            if (list->recordList()->isEmpty())
+                m_listItemCursor.clear();
+            for (const auto &item : *list->recordList()) {
+                AppBskyGraphListitem::Main record =
+                        AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                                AppBskyGraphListitem::Main>(item.value);
+                if (record.list == list_uri) {
+                    qDebug().noquote() << "DELETE ITEM:" << item.uri << " in " << list_uri;
+                    m_listItems.append(item.uri);
+                }
+            }
+            if (!getAllListItems(list_uri, callback)) {
+                callback(false);
+            }
+        } else {
+            emit errorOccured(list->errorCode(), list->errorMessage());
+            callback(false);
+        }
+        list->deleteLater();
+    });
+    list->setAccount(m_account);
+    return list->listListItems(m_account.did, cursor);
+}
+
+bool RecordOperator::deleteAllListItems(std::function<void(bool)> callback)
+{
+    if (m_listItems.isEmpty()) {
+        callback(true);
+        return true;
+    }
+
+    QString r_key = m_listItems.front().split("/").last();
+    m_listItems.pop_front();
+
+    ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord(this);
+    connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
+        if (success) {
+            if (!deleteAllListItems(callback)) {
+                callback(false);
+            }
+        } else {
+            callback(false);
+        }
+        delete_record->deleteLater();
+    });
+    delete_record->setAccount(m_account);
+    return delete_record->deleteListItem(r_key);
 }

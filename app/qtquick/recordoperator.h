@@ -75,6 +75,8 @@ signals:
 private:
     void makeFacets(const QString &text, std::function<void()> callback);
     void uploadBlob(std::function<void(bool)> callback);
+    bool getAllListItems(const QString &list_uri, std::function<void(bool)> callback);
+    bool deleteAllListItems(std::function<void(bool)> callback);
 
     QRegularExpression m_rxFacet;
     AtProtocolInterface::AccountData m_account;
@@ -93,6 +95,8 @@ private:
     QString m_feedGeneratorLinkUri;
     QString m_feedGeneratorLinkCid;
     QStringList m_selfLabels;
+    QString m_listItemCursor;
+    QStringList m_listItems;
 
     bool m_running;
 };

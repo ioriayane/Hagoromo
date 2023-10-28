@@ -103,7 +103,9 @@ bool AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
 {
     if (accessJwt().isEmpty() && with_auth_header) {
         qCritical().noquote() << LOG_DATETIME << "AccessAtProtocol::get()"
-                              << "Emty accessJwt!";
+                              << "Empty accessJwt!";
+        m_errorCode = QStringLiteral("IncompleteAuthenticationInformation");
+        m_errorMessage = "AccessJwt is empty.";
         return false;
     }
 
@@ -156,6 +158,8 @@ bool AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
         if (accessJwt().isEmpty()) {
             qCritical() << LOG_DATETIME << "AccessAtProtocol::post()"
                         << "Empty accessJwt!";
+            m_errorCode = QStringLiteral("IncompleteAuthenticationInformation");
+            m_errorMessage = "AccessJwt is empty.";
             return false;
         }
 

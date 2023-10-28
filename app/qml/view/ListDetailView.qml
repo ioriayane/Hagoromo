@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 import QtGraphicalEffects 1.15
 
+import tech.relog.hagoromo.recordoperator 1.0
 import tech.relog.hagoromo.listitemlistmodel 1.0
 import tech.relog.hagoromo.singleton 1.0
 
@@ -31,6 +32,16 @@ ColumnLayout {
         Qt.openUrlExternally("https://bsky.app/profile/" + handle + "/lists/" + rkey)
     }
 
+    RecordOperator {
+        id: recordOperator
+        onFinished: (success) => {
+                        if(success){
+                            listDetailView.back()
+                        }
+                    }
+        onErrorOccured: (code, message) => listDetailView.errorOccured(code, message)
+    }
+
     QtObject {
         id: relayObject
         function rowCount() {
@@ -38,6 +49,7 @@ ColumnLayout {
         }
         function setAccount(service, did, handle, email, accessJwt, refreshJwt) {
             listItemListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
+            recordOperator.setAccount(service, did, handle, email, accessJwt, refreshJwt)
         }
         function getLatest() {
             listItemListModel.getLatest()
@@ -104,7 +116,7 @@ ColumnLayout {
             Label {
                 Layout.preferredWidth: parent.basisWidth
                 font.pointSize: AdjustedValues.f8
-                visible: text.length > 0
+                //visible: text.length > 0
                 text: listItemListModel.description
 
                 IconButton {
@@ -128,14 +140,12 @@ ColumnLayout {
                             icon.source: "../images/open_in_other.png"
                             onTriggered: listDetailView.openInOhters(listItemListModel.handle, listItemListModel.rkey)
                         }
-//                        MenuSeparator {}
-//                        MenuItem {
-//                            text: qsTr("Report account")
-//                            icon.source: "../images/report.png"
-//                            enabled: false
-//                            //enabled: userProfile.handle.length > 0 && profileView.userDid !== profileView.accountDid
-//                            //onTriggered: requestReportAccount(userProfile.did)
-//                        }
+                        MenuSeparator {}
+                        MenuItem {
+                            text: qsTr("Delete list")
+                            icon.source: "../images/delete.png"
+                            onTriggered: recordOperator.deleteList(listDetailView.listUri)
+                        }
                     }
                 }
             }
@@ -179,11 +189,10 @@ ColumnLayout {
                     font.pointSize: AdjustedValues.f8
                     text: qsTr("Users")
                 }
-            }
-            footer: BusyIndicator {
-                width: rootListView.width
-                height: AdjustedValues.i24
-                visible: listItemListModel.running
+                BusyIndicator {
+                    anchors.fill: parent
+                    visible: listItemListModel.running || recordOperator.running
+                }
             }
 
             delegate: ClickableFrame {
@@ -222,21 +231,21 @@ ColumnLayout {
                             color: Material.color(Material.Grey)
                             text: "@" + model.handle
                         }
-//                        RowLayout {
-//                            visible: model.followedBy || model.muted
-//                            TagLabel {
-//                                visible: model.followedBy
-//                                source: ""
-//                                fontPointSize: AdjustedValues.f8
-//                                text: qsTr("Follows you")
-//                            }
-//                            TagLabel {
-//                                visible: model.muted
-//                                source: ""
-//                                fontPointSize: AdjustedValues.f8
-//                                text: qsTr("Muted user")
-//                            }
-//                        }
+                        //                        RowLayout {
+                        //                            visible: model.followedBy || model.muted
+                        //                            TagLabel {
+                        //                                visible: model.followedBy
+                        //                                source: ""
+                        //                                fontPointSize: AdjustedValues.f8
+                        //                                text: qsTr("Follows you")
+                        //                            }
+                        //                            TagLabel {
+                        //                                visible: model.muted
+                        //                                source: ""
+                        //                                fontPointSize: AdjustedValues.f8
+                        //                                text: qsTr("Muted user")
+                        //                            }
+                        //                        }
                         TagLabelLayout {
                             Layout.preferredWidth: parent.basisWidth
                             visible: count > 0
