@@ -38,11 +38,19 @@ Dialog {
             CursorRect {
                 id: cursorRect
                 anchors.fill: parent
+                squareMode: true
+                paddingH: image.offsetX
+                paddingV: image.offsetY
                 function updateDefaultRect(){
                     cursorX = image.offsetX
                     cursorY = image.offsetY
-                    cursorWidth = image.paintedWidth
-                    cursorHeight = image.paintedHeight
+                    if(image.paintedWidth < image.paintedHeight){
+                        cursorWidth = image.paintedWidth
+                        cursorHeight = image.paintedWidth
+                    }else{
+                        cursorWidth = image.paintedHeight
+                        cursorHeight = image.paintedHeight
+                    }
                 }
             }
         }

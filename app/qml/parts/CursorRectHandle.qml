@@ -9,6 +9,7 @@ Rectangle {
     color: Material.accentColor
     signal cursorMoved(int diff_x, int diff_y)
 
+    property bool squareMode: false
     property int cursorShape: Qt.SizeBDiagCursor
 
     MouseArea {
@@ -30,7 +31,16 @@ Rectangle {
                    }
         onPositionChanged: (mouse) => {
                                if(pressed){
-                                   cursorMoved(mouse.x - startX, mouse.y - startY)
+                                   var dx = mouse.x - startX
+                                   var dy = mouse.y - startY
+                                   var dx2 = Math.abs(dx)
+                                   var dy2 = Math.abs(dy)
+                                   if(dx2 < dy2){
+                                       dy = dx2 * (dy > 0 ? 1 : -1)
+                                   }else{
+                                       dx = dy2 * (dx > 0 ? 1 : -1)
+                                   }
+                                   cursorMoved(dx, dy)
                                }
                            }
     }
