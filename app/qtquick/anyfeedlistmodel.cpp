@@ -12,17 +12,17 @@ AnyFeedListModel::AnyFeedListModel(QObject *parent) : TimelineListModel { parent
     setDisplayInterval(0);
 }
 
-void AnyFeedListModel::getLatest()
+bool AnyFeedListModel::getLatest()
 {
     // 親クラスのm_cidListとm_viewPostHashは表示のために使う
     // listRecordで直接取得するレコード情報はこのクラスで別途保存する
     // 続きを読み込めるようにするときはこのクラスでカーソルの管理を含めて実施
 
     if (running())
-        return;
+        return false;
     setRunning(true);
 
-    updateContentFilterLabels([=]() {
+    return updateContentFilterLabels([=]() {
         ComAtprotoRepoListRecords *records = new ComAtprotoRepoListRecords(this);
         connect(records, &ComAtprotoRepoListRecords::finished, [=](bool success) {
             if (success) {
@@ -81,13 +81,13 @@ void AnyFeedListModel::getLatest()
     });
 }
 
-void AnyFeedListModel::getNext()
+bool AnyFeedListModel::getNext()
 {
     if (running() || m_cursor.isEmpty())
-        return;
+        return false;
     setRunning(true);
 
-    updateContentFilterLabels([=]() {
+    return updateContentFilterLabels([=]() {
         ComAtprotoRepoListRecords *records = new ComAtprotoRepoListRecords(this);
         connect(records, &ComAtprotoRepoListRecords::finished, [=](bool success) {
             if (success) {

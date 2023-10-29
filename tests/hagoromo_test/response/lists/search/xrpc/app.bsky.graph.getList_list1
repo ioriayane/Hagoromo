@@ -1,0 +1,67 @@
+{
+    "list": {
+        "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list1",
+        "cid": "bafyreihnheyk74x4jts23gl23icubyarggmo37xn55pop2lpystq426bqu",
+        "name": "list2",
+        "purpose": "app.bsky.graph.defs#curatelist",
+        "indexedAt": "2023-09-16T05:32:56.207Z",
+        "viewer": {
+            "muted": false
+        },
+        "creator": {
+            "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+            "handle": "ioriayane.relog.tech",
+            "displayName": "IoriAYANE",
+            "indexedAt": "2023-07-25T07:56:00.861Z",
+            "viewer": {
+                "muted": false,
+                "blockedBy": false
+            },
+            "labels": []
+        },
+        "description": "list2"
+    },
+    "items": [
+        {
+            "subject": {
+                "did": "did:plc:ipj5qejfoqu6eukvt72uhyit_1",
+                "handle": "ioriayane.relog.tech_1",
+                "displayName": "IoriAYANE",
+                "indexedAt": "2023-07-25T07:56:00.861Z",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false
+                },
+                "labels": []
+            }
+        },
+        {
+            "subject": {
+                "did": "did:plc:l4fsx4ujos7uw7n4ijq2ulgs_1",
+                "handle": "ioriayane.bsky.social_1",
+                "indexedAt": "2023-07-16T04:47:24.927Z",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false,
+                    "following": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3jwielvxo622v",
+                    "followedBy": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.graph.follow/3jxtb56ycoc2w"
+                },
+                "labels": []
+            }
+        },
+        {
+            "subject": {
+                "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5_1",
+                "handle": "ioriayane2.bsky.social_1",
+                "indexedAt": "2023-07-15T10:59:28.547Z",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false,
+                    "following": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3k4odyt4qk42g"
+                },
+                "labels": []
+            }
+        }
+    ],
+    "cursor": "1"
+}

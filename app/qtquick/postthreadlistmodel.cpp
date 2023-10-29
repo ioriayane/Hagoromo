@@ -7,13 +7,13 @@ using namespace AtProtocolType;
 
 PostThreadListModel::PostThreadListModel(QObject *parent) : TimelineListModel { parent } { }
 
-void PostThreadListModel::getLatest()
+bool PostThreadListModel::getLatest()
 {
     if (running() || postThreadUri().isEmpty())
-        return;
+        return false;
     setRunning(true);
 
-    updateContentFilterLabels([=]() {
+    return updateContentFilterLabels([=]() {
         AppBskyFeedGetPostThread *thread = new AppBskyFeedGetPostThread(this);
         connect(thread, &AppBskyFeedGetPostThread::finished, [=](bool success) {
             if (success) {

@@ -16,12 +16,15 @@ SOURCES += \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerator.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerators.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetlikes.cpp \
+    $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetlistfeed.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetposts.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetpostthread.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetrepostedby.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgettimeline.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollowers.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollows.cpp \
+    $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlist.cpp \
+    $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlists.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphmuteactor.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphunmuteactor.cpp \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationlistnotifications.cpp \
@@ -58,12 +61,15 @@ HEADERS += \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerator.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerators.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetlikes.h \
+    $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetlistfeed.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetposts.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetpostthread.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetrepostedby.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgettimeline.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollowers.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollows.h \
+    $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlist.h \
+    $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlists.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphmuteactor.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphunmuteactor.h \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationlistnotifications.h \

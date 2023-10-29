@@ -387,13 +387,13 @@ QString NotificationListModel::getRecordText(const QString &cid)
             .text;
 }
 
-void NotificationListModel::getLatest()
+bool NotificationListModel::getLatest()
 {
     if (running())
-        return;
+        return false;
     setRunning(true);
 
-    updateContentFilterLabels([=]() {
+    return updateContentFilterLabels([=]() {
         AppBskyNotificationListNotifications *notification =
                 new AppBskyNotificationListNotifications(this);
         connect(notification, &AppBskyNotificationListNotifications::finished, [=](bool success) {
@@ -496,13 +496,13 @@ void NotificationListModel::getLatest()
     });
 }
 
-void NotificationListModel::getNext()
+bool NotificationListModel::getNext()
 {
     if (running() || m_cursor.isEmpty())
-        return;
+        return false;
     setRunning(true);
 
-    updateContentFilterLabels([=]() {
+    return updateContentFilterLabels([=]() {
         AppBskyNotificationListNotifications *notification =
                 new AppBskyNotificationListNotifications(this);
         connect(notification, &AppBskyNotificationListNotifications::finished, [=](bool success) {
@@ -585,15 +585,15 @@ void NotificationListModel::getNext()
     });
 }
 
-void NotificationListModel::repost(int row)
+bool NotificationListModel::repost(int row)
 {
     if (row < 0 || row >= m_cidList.count())
-        return;
+        return false;
 
     bool current = item(row, IsRepostedRole).toBool();
 
     if (running())
-        return;
+        return false;
     setRunning(true);
 
     RecordOperator *ope = new RecordOperator(this);
@@ -614,17 +614,19 @@ void NotificationListModel::repost(int row)
         ope->repost(item(row, CidRole).toString(), item(row, UriRole).toString());
     else
         ope->deleteRepost(item(row, RepostedUriRole).toString());
+
+    return true;
 }
 
-void NotificationListModel::like(int row)
+bool NotificationListModel::like(int row)
 {
     if (row < 0 || row >= m_cidList.count())
-        return;
+        return false;
 
     bool current = item(row, IsLikedRole).toBool();
 
     if (running())
-        return;
+        return false;
     setRunning(true);
 
     RecordOperator *ope = new RecordOperator(this);
@@ -644,6 +646,8 @@ void NotificationListModel::like(int row)
         ope->like(item(row, CidRole).toString(), item(row, UriRole).toString());
     else
         ope->deleteLike(item(row, LikedUriRole).toString());
+
+    return true;
 }
 
 QHash<int, QByteArray> NotificationListModel::roleNames() const

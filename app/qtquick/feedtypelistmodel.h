@@ -8,8 +8,10 @@
 
 struct FeedTypeItem
 {
+    QString group;
     FeedComponentType type = FeedComponentType::Timeline;
     AtProtocolType::AppBskyFeedDefs::GeneratorView generator;
+    AtProtocolType::AppBskyGraphDefs::ListView list;
 };
 
 class FeedTypeListModel : public AtpAbstractListModel
@@ -21,6 +23,7 @@ public:
     // モデルで提供する項目のルールID的な（QML側へ公開するために大文字で始めること）
     enum FeedTypeListModelRoles {
         ModelData = Qt::UserRole + 1,
+        GroupRole,
         FeedTypeRole,
         DisplayNameRole,
         AvatarRole,
@@ -37,8 +40,8 @@ public:
     virtual Q_INVOKABLE QString getRecordText(const QString &cid);
 
     Q_INVOKABLE void clear();
-    Q_INVOKABLE void getLatest();
-    Q_INVOKABLE void getNext();
+    Q_INVOKABLE bool getLatest();
+    Q_INVOKABLE bool getNext();
 
 protected:
     QHash<int, QByteArray> roleNames() const;
@@ -47,6 +50,7 @@ protected:
 
 private:
     void getFeedDetails();
+    void getLists();
 
     QList<QString> m_cueUri;
     QList<FeedTypeItem> m_feedTypeItemList;

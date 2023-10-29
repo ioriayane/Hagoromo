@@ -33,8 +33,8 @@ public:
     ConfigurableLabels &operator=(ConfigurableLabels &other);
 
     int count() const;
-    void load();
-    void save();
+    bool load();
+    bool save();
     int indexOf(const QString &id) const;
     ConfigurableLabelStatus visibility(const QString &label, const bool for_image) const;
     QString message(const QString &label, const bool for_image) const;
@@ -65,7 +65,7 @@ protected:
 
 private:
     void initializeLabels();
-    void putPreferences(const QString &json);
+    bool putPreferences(const QString &json);
     QString updatePreferencesJson(const QString &src_json);
 
     QList<ConfigurableLabelItem> m_labels;

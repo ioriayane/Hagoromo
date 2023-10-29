@@ -25,8 +25,8 @@ public:
     void setType(const AnyProfileListModelType &newType);
 
 public slots:
-    Q_INVOKABLE void getLatest();
-    Q_INVOKABLE void getNext();
+    Q_INVOKABLE bool getLatest();
+    Q_INVOKABLE bool getNext();
 
 signals:
     void targetUriChanged();

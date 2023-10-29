@@ -34,7 +34,7 @@ bool ComAtprotoRepoUploadBlob::parseJson(bool success, const QString reply_json)
     if (json_doc.isEmpty()) {
         success = false;
     } else {
-        qDebug() << reply_json;
+        qDebug().noquote() << reply_json;
         QString cid = json_doc.object()
                               .value("blob")
                               .toObject()
@@ -63,7 +63,9 @@ int ComAtprotoRepoUploadBlob::size() const
 
 void ComAtprotoRepoUploadBlob::compressed(const QString &path)
 {
-    postWithImage(QStringLiteral("xrpc/com.atproto.repo.uploadBlob"), path);
+    if (!postWithImage(QStringLiteral("xrpc/com.atproto.repo.uploadBlob"), path)) {
+        emit finished(false);
+    }
 }
 
 QString ComAtprotoRepoUploadBlob::mimeType() const

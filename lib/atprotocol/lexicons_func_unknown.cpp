@@ -38,6 +38,14 @@ void copyUnknown(const QJsonObject &src, QVariant &dest)
 #else
         dest.setValue(record);
 #endif
+    } else if (type == QStringLiteral("app.bsky.graph.listitem")) {
+        AppBskyGraphListitem::Main record;
+        AppBskyGraphListitem::copyMain(src, record);
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+        dest.setValue<AppBskyGraphListitem::Main>(record);
+#else
+        dest.setValue(record);
+#endif
     }
 }
 

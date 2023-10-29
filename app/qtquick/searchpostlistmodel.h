@@ -14,7 +14,7 @@ class SearchPostListModel : public TimelineListModel
 public:
     explicit SearchPostListModel(QObject *parent = nullptr);
 
-    Q_INVOKABLE void getLatest();
+    Q_INVOKABLE bool getLatest();
 
     QString text() const;
     void setText(const QString &newText);

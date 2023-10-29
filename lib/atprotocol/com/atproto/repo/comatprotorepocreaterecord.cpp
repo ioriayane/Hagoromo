@@ -251,6 +251,65 @@ void ComAtprotoRepoCreateRecord::block(const QString &did)
                            json_doc.toJson(QJsonDocument::Compact));
 }
 
+bool ComAtprotoRepoCreateRecord::list(const QString &name, const ListPurpose purpose,
+                                      const QString &description)
+{
+    QString p;
+    if (purpose == ComAtprotoRepoCreateRecord::Curation) {
+        p = "app.bsky.graph.defs#curatelist";
+    } else {
+        p = "app.bsky.graph.defs#modlist";
+    }
+
+    QJsonObject json_record;
+    json_record.insert("purpose", p);
+    json_record.insert("name", name);
+    if (!description.isEmpty())
+        json_record.insert("description", description);
+    if (!m_embedImageBlobs.isEmpty()) {
+        const auto &blob = m_embedImageBlobs.first();
+
+        QJsonObject json_image;
+        json_image.insert("$type", "blob");
+        QJsonObject json_link;
+        json_link.insert("$link", blob.cid);
+        json_image.insert("ref", json_link);
+        json_image.insert("mimeType", blob.mimeType);
+        json_image.insert("size", blob.size);
+
+        json_record.insert("avatar", json_image);
+    }
+    // descriptionFacets
+    // labels
+    json_record.insert("createdAt", QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
+    json_record.insert("$type", "app.bsky.graph.list");
+    QJsonObject json_obj;
+    json_obj.insert("repo", this->did());
+    json_obj.insert("collection", "app.bsky.graph.list");
+    json_obj.insert("record", json_record);
+    QJsonDocument json_doc(json_obj);
+
+    return AccessAtProtocol::post(QStringLiteral("xrpc/com.atproto.repo.createRecord"),
+                                  json_doc.toJson(QJsonDocument::Compact));
+}
+
+bool ComAtprotoRepoCreateRecord::listItem(const QString &uri, const QString &did)
+{
+    QJsonObject json_record;
+    json_record.insert("subject", did);
+    json_record.insert("list", uri);
+    json_record.insert("createdAt", QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
+    json_record.insert("$type", "app.bsky.graph.listitem");
+    QJsonObject json_obj;
+    json_obj.insert("repo", this->did());
+    json_obj.insert("collection", "app.bsky.graph.listitem");
+    json_obj.insert("record", json_record);
+    QJsonDocument json_doc(json_obj);
+
+    return AccessAtProtocol::post(QStringLiteral("xrpc/com.atproto.repo.createRecord"),
+                                  json_doc.toJson(QJsonDocument::Compact));
+}
+
 void ComAtprotoRepoCreateRecord::setReply(const QString &parent_cid, const QString &parent_uri,
                                           const QString &root_cid, const QString &root_uri)
 {

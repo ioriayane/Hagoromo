@@ -136,37 +136,11 @@ Dialog {
                                                         addColumnDialog.errorOccured(uuid, code, message)
                                                     }
                                 }
-                                footer: ItemDelegate {
+                                footer: BusyIndicator {
+                                    id: busyIndicator
                                     width: typeList.width - typeScroll.ScrollBar.vertical.width
-                                    height: implicitHeight * AdjustedValues.ratio
-                                    BusyIndicator {
-                                        id: busyIndicator
-                                        anchors.centerIn: parent
-                                        height: AdjustedValues.i32
-                                        visible: typeList.model ? typeList.model.running : false
-                                    }
-                                    RowLayout {
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        anchors.left: parent.left
-                                        anchors.margins: 10
-                                        visible: !busyIndicator.visible
-                                        AvatarImage {
-                                            Layout.preferredWidth: AdjustedValues.i24
-                                            Layout.preferredHeight: AdjustedValues.i24
-                                            altSource: "../images/feed.png"
-                                        }
-                                        Label {
-                                            font.pointSize: AdjustedValues.f10
-                                            text: qsTr("Discover Feeds")
-                                        }
-                                    }
-
-                                    onClicked: {
-                                        if(busyIndicator.visible){
-                                            return
-                                        }
-                                        addColumnDialog.openDiscoverFeeds(accountList.currentIndex)
-                                    }
+                                    height: AdjustedValues.i32
+                                    visible: typeList.model ? typeList.model.running : false
                                 }
 
                                 delegate: ItemDelegate {
@@ -174,11 +148,17 @@ Dialog {
                                     height: implicitHeight * AdjustedValues.ratio
                                     highlighted: ListView.isCurrentItem
                                     onClicked: {
-                                        typeList.currentIndex = model.index
+                                        if(model.feedType === 101){
+                                            if(!typeList.model.running){
+                                                addColumnDialog.openDiscoverFeeds(accountList.currentIndex)
+                                            }
+                                        }else{
+                                            typeList.currentIndex = model.index
 
-                                        addColumnDialog.selectedType = model.feedType
-                                        addColumnDialog.selectedName = model.displayName
-                                        addColumnDialog.selectedUri = model.uri
+                                            addColumnDialog.selectedType = model.feedType
+                                            addColumnDialog.selectedName = model.displayName
+                                            addColumnDialog.selectedUri = model.uri
+                                        }
                                     }
                                     RowLayout {
                                         anchors.fill: parent
@@ -193,6 +173,8 @@ Dialog {
                                                     return "../images/home.png"
                                                 }else if(model.feedType === 1){
                                                     return "../images/notification.png"
+                                                }else if(model.feedType === 101){
+                                                    return "../images/feed.png"
                                                 }else{
                                                     return "../images/account_icon.png"
                                                 }
@@ -211,6 +193,25 @@ Dialog {
                                             Layout.fillWidth: true
                                             Layout.preferredHeight: 1
                                         }
+                                    }
+                                }
+
+                                section.property: "group"
+                                section.criteria: ViewSection.FullString
+                                section.delegate: Rectangle {
+                                    width: typeList.width - typeScroll.ScrollBar.vertical.width
+                                    height: text.contentHeight * 1.3 * AdjustedValues.ratio
+                                    color: Material.color(Material.BlueGrey)
+                                    required property string section
+                                    Text {
+                                        id: text
+                                        anchors.left: parent.left
+                                        anchors.leftMargin: 5
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        text: parent.section
+                                        font.bold: true
+                                        font.pixelSize: AdjustedValues.f12
+                                        color: "white"
                                     }
                                 }
                             }

@@ -12,8 +12,10 @@ enum class FeedComponentType : int {
     SearchProfiles = 3,
     CustomFeed = 4,
     AuthorFeed = 5,
+    ListFeed = 6,
 
     PostThread = 100,
+    DiscoverFeeds = 101,
 };
 
 struct ColumnPostType

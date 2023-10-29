@@ -19,7 +19,7 @@ public:
     void setSearchService(const QString &newSearchService);
 
 public slots:
-    Q_INVOKABLE void getLatest();
+    Q_INVOKABLE bool getLatest();
 
 signals:
     void textChanged();

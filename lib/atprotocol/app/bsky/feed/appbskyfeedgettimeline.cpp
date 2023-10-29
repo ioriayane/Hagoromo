@@ -12,7 +12,7 @@ namespace AtProtocolInterface {
 
 AppBskyFeedGetTimeline::AppBskyFeedGetTimeline(QObject *parent) : AccessAtProtocol { parent } { }
 
-void AppBskyFeedGetTimeline::getTimeline(const QString &cursor)
+bool AppBskyFeedGetTimeline::getTimeline(const QString &cursor)
 {
     QUrlQuery query;
     query.addQueryItem(QStringLiteral("actor"), handle());
@@ -20,7 +20,7 @@ void AppBskyFeedGetTimeline::getTimeline(const QString &cursor)
         query.addQueryItem(QStringLiteral("cursor"), cursor);
     }
 
-    get(QStringLiteral("xrpc/app.bsky.feed.getTimeline"), query);
+    return get(QStringLiteral("xrpc/app.bsky.feed.getTimeline"), query);
 }
 
 const QList<AppBskyFeedDefs::FeedViewPost> *AppBskyFeedGetTimeline::feedList() const

@@ -194,6 +194,10 @@ ApplicationWindow {
         id: reportAccountDialog
         onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
     }
+    AddToListDialog {
+        id: addToListDialog
+        onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
+    }
 
     MessageDialog {
         id: messageDialog
@@ -284,16 +288,21 @@ ApplicationWindow {
                                      }
             onRequestViewImages: (index, paths, alts) => imageFullView.open(index, paths, alts)
             onRequestViewFeedGenerator: (account_uuid, name, uri) => {
-                                            columnManageModel.append(account.uuid, 4, false, 300000, 400, name, uri)
+                                            columnManageModel.append(account_uuid, 4, false, 300000, 400, name, uri)
                                             scrollView.showRightMost()
                                         }
             onRequestViewSearchPosts: (account_uuid, text, current_column_key) => {
                                           console.log("Search:" + account_uuid + ", " + text + ", " + current_column_key)
                                           var pos = columnManageModel.insertNext(current_column_key, account_uuid, 2, false, 300000, 350,
-                                                                   qsTr("Search posts"), text)
+                                                                                 qsTr("Search posts"), text)
                                           repeater.updatePosition()
                                           scrollView.showColumn(pos)
                                       }
+            onRequestViewListFeed: (account_uuid, uri, name) => {
+                                       console.log("uuid=" + account_uuid + "\nuri=" + uri + "\nname=" + name)
+                                       columnManageModel.append(account_uuid, 6, false, 300000, 400, name, uri)
+                                       scrollView.showRightMost()
+                                   }
 
             onRequestReportPost: (account_uuid, uri, cid) => {
                                      var row = accountListModel.indexAt(account_uuid)
@@ -326,6 +335,21 @@ ApplicationWindow {
                                             reportAccountDialog.open()
                                         }
                                     }
+            onRequestAddRemoveFromLists: (account_uuid, did) => {
+                                             var row = accountListModel.indexAt(account_uuid)
+                                             if(row >= 0){
+                                                 addToListDialog.targetDid = did
+                                                 addToListDialog.account.uuid = account_uuid
+                                                 addToListDialog.account.service = accountListModel.item(row, AccountListModel.ServiceRole)
+                                                 addToListDialog.account.did = accountListModel.item(row, AccountListModel.DidRole)
+                                                 addToListDialog.account.handle = accountListModel.item(row, AccountListModel.HandleRole)
+                                                 addToListDialog.account.email = accountListModel.item(row, AccountListModel.EmailRole)
+                                                 addToListDialog.account.accessJwt = accountListModel.item(row, AccountListModel.AccessJwtRole)
+                                                 addToListDialog.account.refreshJwt = accountListModel.item(row, AccountListModel.RefreshJwtRole)
+                                                 addToListDialog.account.avatar = accountListModel.item(row, AccountListModel.AvatarRole)
+                                                 addToListDialog.open()
+                                             }
+                                         }
 
             onRequestMoveToLeft: (key) => {
                                      console.log("move to left:" + key)

@@ -66,6 +66,9 @@ public:
     QString accessJwt() const;
     QString refreshJwt() const;
 
+    QString cursor() const;
+    void setCursor(const QString &newCursor);
+
 signals:
     void errorOccured(const QString &code, const QString &message);
     void runningChanged();
@@ -74,8 +77,8 @@ signals:
     void displayIntervalChanged();
 
 public slots:
-    virtual Q_INVOKABLE void getLatest() = 0;
-    virtual Q_INVOKABLE void getNext() = 0;
+    virtual Q_INVOKABLE bool getLatest() = 0;
+    virtual Q_INVOKABLE bool getNext() = 0;
 
 protected:
     QString formatDateTime(const QString &value, const bool is_long = false) const;
@@ -84,7 +87,7 @@ protected:
     void displayQueuedPostsNext();
     virtual void finishedDisplayingQueuedPosts() = 0;
     virtual bool checkVisibility(const QString &cid) = 0;
-    void updateContentFilterLabels(std::function<void()> callback);
+    bool updateContentFilterLabels(std::function<void()> callback);
     ConfigurableLabelStatus
     getContentFilterStatus(const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels,
                            const bool for_media) const;

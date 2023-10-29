@@ -107,10 +107,10 @@ public:
     virtual Q_INVOKABLE int indexOf(const QString &cid) const;
     virtual Q_INVOKABLE QString getRecordText(const QString &cid);
 
-    Q_INVOKABLE void getLatest();
-    Q_INVOKABLE void getNext();
-    Q_INVOKABLE void repost(int row);
-    Q_INVOKABLE void like(int row);
+    Q_INVOKABLE bool getLatest();
+    Q_INVOKABLE bool getNext();
+    Q_INVOKABLE bool repost(int row);
+    Q_INVOKABLE bool like(int row);
 
     bool visibleLike() const;
     void setVisibleLike(bool newVisibleLike);

@@ -25,6 +25,7 @@ void AtpAbstractListModel::clear()
     }
     m_originalCidList.clear();
     m_translations.clear();
+    m_cursor.clear();
 }
 
 AtProtocolInterface::AccountData AtpAbstractListModel::account() const
@@ -311,7 +312,7 @@ void AtpAbstractListModel::displayQueuedPostsNext()
     finishedDisplayingQueuedPosts();
 }
 
-void AtpAbstractListModel::updateContentFilterLabels(std::function<void()> callback)
+bool AtpAbstractListModel::updateContentFilterLabels(std::function<void()> callback)
 {
     ConfigurableLabels *labels = new ConfigurableLabels(this);
     connect(labels, &ConfigurableLabels::finished, this, [=](bool success) {
@@ -322,7 +323,7 @@ void AtpAbstractListModel::updateContentFilterLabels(std::function<void()> callb
         labels->deleteLater();
     });
     labels->setAccount(account());
-    labels->load();
+    return labels->load();
 }
 
 ConfigurableLabelStatus AtpAbstractListModel::getContentFilterStatus(
@@ -426,6 +427,16 @@ QStringList AtpAbstractListModel::getLaunguages(const QVariant &record) const
 QString AtpAbstractListModel::getVia(const QVariant &record) const
 {
     return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(record).via;
+}
+
+QString AtpAbstractListModel::cursor() const
+{
+    return m_cursor;
+}
+
+void AtpAbstractListModel::setCursor(const QString &newCursor)
+{
+    m_cursor = newCursor;
 }
 
 int AtpAbstractListModel::searchInsertPosition(const QString &cid)

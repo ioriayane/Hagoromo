@@ -6,13 +6,13 @@ using AtProtocolInterface::AppBskyFeedGetActorLikes;
 
 ActorLikeListModel::ActorLikeListModel(QObject *parent) : TimelineListModel { parent } { }
 
-void ActorLikeListModel::getLatest()
+bool ActorLikeListModel::getLatest()
 {
     if (running() || actor().isEmpty())
-        return;
+        return false;
     setRunning(true);
 
-    updateContentFilterLabels([=]() {
+    return updateContentFilterLabels([=]() {
         AppBskyFeedGetActorLikes *likes = new AppBskyFeedGetActorLikes(this);
         connect(likes, &AppBskyFeedGetActorLikes::finished, [=](bool success) {
             if (success) {
@@ -31,13 +31,13 @@ void ActorLikeListModel::getLatest()
     });
 }
 
-void ActorLikeListModel::getNext()
+bool ActorLikeListModel::getNext()
 {
     if (running() || actor().isEmpty() || m_cursor.isEmpty())
-        return;
+        return false;
     setRunning(true);
 
-    updateContentFilterLabels([=]() {
+    return updateContentFilterLabels([=]() {
         AppBskyFeedGetActorLikes *likes = new AppBskyFeedGetActorLikes(this);
         connect(likes, &AppBskyFeedGetActorLikes::finished, [=](bool success) {
             if (success) {

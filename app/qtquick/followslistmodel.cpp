@@ -111,13 +111,13 @@ void FollowsListModel::getProfile(const QString &did)
     getProfiles();
 }
 
-void FollowsListModel::getLatest()
+bool FollowsListModel::getLatest()
 {
     if (running())
-        return;
+        return false;
     setRunning(true);
 
-    updateContentFilterLabels([=]() {
+    return updateContentFilterLabels([=]() {
         AppBskyGraphGetFollows *follows = new AppBskyGraphGetFollows(this);
         connect(follows, &AppBskyGraphGetFollows::finished, [=](bool success) {
             if (success) {
@@ -148,13 +148,13 @@ void FollowsListModel::getLatest()
     });
 }
 
-void FollowsListModel::getNext()
+bool FollowsListModel::getNext()
 {
     if (running() || m_cursor.isEmpty())
-        return;
+        return false;
     setRunning(true);
 
-    updateContentFilterLabels([=]() {
+    return updateContentFilterLabels([=]() {
         AppBskyGraphGetFollows *follows = new AppBskyGraphGetFollows(this);
         connect(follows, &AppBskyGraphGetFollows::finished, [=](bool success) {
             if (success) {

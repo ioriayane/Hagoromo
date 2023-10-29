@@ -11,13 +11,13 @@ SearchPostListModel::SearchPostListModel(QObject *parent) : TimelineListModel { 
     setDisplayInterval(0);
 }
 
-void SearchPostListModel::getLatest()
+bool SearchPostListModel::getLatest()
 {
     if (running() || text().isEmpty())
-        return;
+        return false;
     setRunning(true);
 
-    updateContentFilterLabels([=]() {
+    return updateContentFilterLabels([=]() {
         SearchPosts *posts = new SearchPosts(this);
         connect(posts, &SearchPosts::finished, [=](bool success) {
             if (success) {

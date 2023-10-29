@@ -36,8 +36,8 @@ public:
     virtual Q_INVOKABLE QString getRecordText(const QString &cid);
 
     Q_INVOKABLE void clear();
-    Q_INVOKABLE void getLatest();
-    Q_INVOKABLE void getNext();
+    Q_INVOKABLE bool getLatest();
+    Q_INVOKABLE bool getNext();
     Q_INVOKABLE void saveGenerator(const QString &uri);
     Q_INVOKABLE void removeGenerator(const QString &uri);
     Q_INVOKABLE bool getSaving(const QString &uri) const;
