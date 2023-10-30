@@ -133,6 +133,11 @@ bool AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
             bool success = false;
             if (checkReply(reply)) {
                 success = parseJson(true, m_replyJson);
+                if (!success && m_errorCode.isEmpty()) {
+                    m_errorCode = QStringLiteral("ContentParseError");
+                    m_errorMessage = m_replyJson.left(200);
+                    m_errorMessage += "\n---\n" + endpoint;
+                }
             }
             emit finished(success);
         } else {
