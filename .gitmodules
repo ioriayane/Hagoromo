@@ -7,3 +7,6 @@
 [submodule "3rdparty/cpp-httplib"]
 	path = 3rdparty/cpp-httplib
 	url = https://github.com/ioriayane/cpp-httplib.git
+[submodule "1stparty/atproto"]
+	path = 1stparty/atproto
+	url = https://github.com/bluesky-social/atproto.git
