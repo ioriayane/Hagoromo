@@ -91,6 +91,7 @@ struct ViewerState
     AppBskyGraphDefs::ListViewBasic mutedByList;
     bool blockedBy = false;
     QString blocking; // at-uri
+    AppBskyGraphDefs::ListViewBasic blockingByList;
     QString following; // at-uri
     QString followedBy; // at-uri
 };
