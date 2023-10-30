@@ -75,6 +75,8 @@ void copyViewerState(const QJsonObject &src, AppBskyActorDefs::ViewerState &dest
         AppBskyGraphDefs::copyListViewBasic(src.value("mutedByList").toObject(), dest.mutedByList);
         dest.blockedBy = src.value("blockedBy").toBool();
         dest.blocking = src.value("blocking").toString();
+        AppBskyGraphDefs::copyListViewBasic(src.value("blockingByList").toObject(),
+                                            dest.blockingByList);
         dest.following = src.value("following").toString();
         dest.followedBy = src.value("followedBy").toString();
     }
