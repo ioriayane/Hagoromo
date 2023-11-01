@@ -40,7 +40,7 @@ QUrl SystemTool::clipImage(const QUrl &url, const int x, const int y, const int 
     qDebug() << "dest" << new_path;
 
     QImage img(url.toLocalFile());
-    qDebug() << "saved" << img.copy(x, y, width, height).save(new_path);
+    img.copy(x, y, width, height).save(new_path);
 
     return QUrl::fromLocalFile(new_path);
 }
