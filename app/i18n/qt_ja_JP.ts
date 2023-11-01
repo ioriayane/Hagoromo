@@ -47,19 +47,74 @@
         <translation>カラムタイプ</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AddColumnDialog.qml" line="160"/>
         <source>Discover Feeds</source>
-        <translation>カスタムフィードの検索</translation>
+        <translation type="vanished">カスタムフィードの検索</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AddColumnDialog.qml" line="225"/>
+        <location filename="../qml/dialogs/AddColumnDialog.qml" line="226"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AddColumnDialog.qml" line="235"/>
+        <location filename="../qml/dialogs/AddColumnDialog.qml" line="236"/>
         <source>Add</source>
         <translation>追加</translation>
+    </message>
+</context>
+<context>
+    <name>AddListDialog</name>
+    <message>
+        <location filename="../qml/dialogs/AddListDialog.qml" line="21"/>
+        <source>Add a list</source>
+        <translation>リストの追加</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/AddListDialog.qml" line="86"/>
+        <source>Avatar</source>
+        <translation>アイコン</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/AddListDialog.qml" line="108"/>
+        <source>Name</source>
+        <translation>名称</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/AddListDialog.qml" line="122"/>
+        <source>Description</source>
+        <translation>説明</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/AddListDialog.qml" line="149"/>
+        <source>Cancel</source>
+        <translation>キャンセル</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/AddListDialog.qml" line="161"/>
+        <source>Add</source>
+        <translation>追加</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/AddListDialog.qml" line="180"/>
+        <source>Select contents</source>
+        <translation>コンテンツの選択</translation>
+    </message>
+</context>
+<context>
+    <name>AddToListDialog</name>
+    <message>
+        <location filename="../qml/dialogs/AddToListDialog.qml" line="19"/>
+        <source>Add/Remove from lists</source>
+        <translation>リストへ追加/削除</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/AddToListDialog.qml" line="107"/>
+        <source>Add list</source>
+        <translation>リストの追加</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/AddToListDialog.qml" line="192"/>
+        <source>Close</source>
+        <translation>閉じる</translation>
     </message>
 </context>
 <context>
@@ -217,78 +272,83 @@
 <context>
     <name>ColumnView</name>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="364"/>
+        <location filename="../qml/view/ColumnView.qml" line="419"/>
         <source>Home</source>
         <translation>ホーム</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="367"/>
+        <location filename="../qml/view/ColumnView.qml" line="422"/>
         <source>Notifications</source>
         <translation>通知</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="370"/>
+        <location filename="../qml/view/ColumnView.qml" line="425"/>
         <source>Search posts</source>
         <translation>検索(ポスト)</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="373"/>
+        <location filename="../qml/view/ColumnView.qml" line="428"/>
         <source>Search users</source>
         <translation>検索(ユーザー)</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="376"/>
-        <location filename="../qml/view/ColumnView.qml" line="505"/>
+        <location filename="../qml/view/ColumnView.qml" line="431"/>
+        <location filename="../qml/view/ColumnView.qml" line="563"/>
         <source>Feed</source>
         <translation>フィード</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="379"/>
+        <location filename="../qml/view/ColumnView.qml" line="434"/>
         <source>User</source>
         <translation>ユーザー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="382"/>
+        <location filename="../qml/view/ColumnView.qml" line="437"/>
+        <source>List</source>
+        <translation>リスト</translation>
+    </message>
+    <message>
+        <location filename="../qml/view/ColumnView.qml" line="440"/>
         <source>Unknown</source>
         <translation>不明</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="489"/>
+        <location filename="../qml/view/ColumnView.qml" line="547"/>
         <source>Move to left</source>
         <translation>左へ移動</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="494"/>
+        <location filename="../qml/view/ColumnView.qml" line="552"/>
         <source>Move to right</source>
         <translation>右へ移動</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="499"/>
+        <location filename="../qml/view/ColumnView.qml" line="557"/>
         <source>Delete column</source>
         <translation>削除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="508"/>
+        <location filename="../qml/view/ColumnView.qml" line="566"/>
         <source>Copy url</source>
         <translation>URLをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="517"/>
+        <location filename="../qml/view/ColumnView.qml" line="575"/>
         <source>Open in Official</source>
         <translation>公式で開く</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="528"/>
+        <location filename="../qml/view/ColumnView.qml" line="586"/>
         <source>Drop</source>
         <translation>解除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="528"/>
+        <location filename="../qml/view/ColumnView.qml" line="586"/>
         <source>Save</source>
         <translation>保存</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="546"/>
+        <location filename="../qml/view/ColumnView.qml" line="604"/>
         <source>Settings</source>
         <translation>設定</translation>
     </message>
@@ -296,128 +356,128 @@
 <context>
     <name>ConfigurableLabels</name>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="230"/>
         <location filename="../../lib/tools/configurablelabels.cpp" line="232"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="234"/>
         <source>Content hidden</source>
         <translation>閲覧不可</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="231"/>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="242"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="233"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="244"/>
         <source>Moderator overrides for special cases.</source>
         <translation>特別な場合のためのモデレーターによるオーバーライド。</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="241"/>
         <location filename="../../lib/tools/configurablelabels.cpp" line="243"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="245"/>
         <source>Content warning</source>
         <translation>閲覧警告</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="252"/>
         <location filename="../../lib/tools/configurablelabels.cpp" line="254"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="256"/>
         <source>Legal</source>
         <translation>法的</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="253"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="255"/>
         <source>Content removed for legal reasons.</source>
         <translation>法的な理由で削除されたコンテンツ。</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="264"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="266"/>
         <source>Explicit Sexual Images</source>
         <translation>露骨な性的な画像</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="265"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="267"/>
         <source>i.e. pornography</source>
         <translation>例えばポルノ</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="266"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="268"/>
         <source>Sexually Explicit</source>
         <translation>露骨な性的表現</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="276"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="278"/>
         <source>Other Nudity</source>
         <translation>その他ヌード</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="277"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="279"/>
         <source>Including non-sexual and artistic</source>
         <translation>ノンセクシャルや芸術的なものも含む</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="278"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="280"/>
         <source>Nudity</source>
         <translation>ヌード</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="287"/>
         <location filename="../../lib/tools/configurablelabels.cpp" line="289"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="291"/>
         <source>Sexually Suggestive</source>
         <translation>性的な示唆</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="288"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="290"/>
         <source>Does not include nudity</source>
         <translation>ヌードは含まない</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="298"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="300"/>
         <source>Violent / Bloody</source>
         <translation>暴力 / 流血</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="299"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="301"/>
         <source>Gore, self-harm, torture</source>
         <translation>血糊、自傷行為、拷問</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="300"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="302"/>
         <source>Violence</source>
         <translation>暴力</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="313"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="315"/>
         <source>Hate Group Iconography</source>
         <translation>ヘイトグループの象徴</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="314"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="316"/>
         <source>Images of terror groups, articles covering events, etc.</source>
         <translation>テロ集団の画像、事件を取り上げた記事など</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="315"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="317"/>
         <source>Hate Groups</source>
         <translation>ヘイトグループ</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="333"/>
         <location filename="../../lib/tools/configurablelabels.cpp" line="335"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="337"/>
         <source>Spam</source>
         <translation>スパム</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="334"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="336"/>
         <source>Excessive unwanted interactions</source>
         <translation>過剰な不要な干渉</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="345"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="347"/>
         <source>Impersonation / Scam</source>
         <translation>なりすまし / 詐欺</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="347"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="349"/>
         <source>Impersonation</source>
         <translation>なりすまし</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="346"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="348"/>
         <source>Accounts falsely claiming to be people or orgs</source>
         <translation>個人や団体を偽ったアカウント</translation>
     </message>
@@ -499,14 +559,49 @@
 <context>
     <name>FeedTypeListModel</name>
     <message>
-        <location filename="../qtquick/feedtypelistmodel.cpp" line="69"/>
+        <location filename="../qtquick/feedtypelistmodel.cpp" line="89"/>
+        <location filename="../qtquick/feedtypelistmodel.cpp" line="96"/>
+        <source>Default Feeds</source>
+        <translation>標準フィード</translation>
+    </message>
+    <message>
+        <location filename="../qtquick/feedtypelistmodel.cpp" line="91"/>
         <source>Following</source>
         <translation>タイムライン</translation>
     </message>
     <message>
-        <location filename="../qtquick/feedtypelistmodel.cpp" line="75"/>
+        <location filename="../qtquick/feedtypelistmodel.cpp" line="98"/>
         <source>Notification</source>
         <translation>通知</translation>
+    </message>
+    <message>
+        <location filename="../qtquick/feedtypelistmodel.cpp" line="159"/>
+        <location filename="../qtquick/feedtypelistmodel.cpp" line="188"/>
+        <source>My Feeds</source>
+        <translation>カスタムフィード</translation>
+    </message>
+    <message>
+        <location filename="../qtquick/feedtypelistmodel.cpp" line="161"/>
+        <source>Discover Feeds</source>
+        <translation>カスタムフィードの検索</translation>
+    </message>
+    <message>
+        <location filename="../qtquick/feedtypelistmodel.cpp" line="221"/>
+        <source>My Lists</source>
+        <translation>リスト</translation>
+    </message>
+</context>
+<context>
+    <name>ImageClipDialog</name>
+    <message>
+        <location filename="../qml/dialogs/ImageClipDialog.qml" line="66"/>
+        <source>Cancel</source>
+        <translation>キャンセル</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/ImageClipDialog.qml" line="82"/>
+        <source>Apply</source>
+        <translation>適用</translation>
     </message>
 </context>
 <context>
@@ -1456,6 +1551,34 @@
     </message>
 </context>
 <context>
+    <name>ListDetailView</name>
+    <message>
+        <location filename="../qml/view/ListDetailView.qml" line="81"/>
+        <source>List</source>
+        <translation>リスト</translation>
+    </message>
+    <message>
+        <location filename="../qml/view/ListDetailView.qml" line="134"/>
+        <source>Open in new col</source>
+        <translation>新しいカラムで開く</translation>
+    </message>
+    <message>
+        <location filename="../qml/view/ListDetailView.qml" line="139"/>
+        <source>Open in Official</source>
+        <translation>公式で開く</translation>
+    </message>
+    <message>
+        <location filename="../qml/view/ListDetailView.qml" line="145"/>
+        <source>Delete list</source>
+        <translation>リストを削除</translation>
+    </message>
+    <message>
+        <location filename="../qml/view/ListDetailView.qml" line="190"/>
+        <source>Users</source>
+        <translation>ユーザー</translation>
+    </message>
+</context>
+<context>
     <name>LoginDialog</name>
     <message>
         <location filename="../qml/dialogs/LoginDialog.qml" line="46"/>
@@ -1644,112 +1767,117 @@
 <context>
     <name>ProfileView</name>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="63"/>
+        <location filename="../qml/view/ProfileView.qml" line="66"/>
         <source>Edit Profile</source>
         <translation>プロフィールを編集</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="71"/>
+        <location filename="../qml/view/ProfileView.qml" line="74"/>
         <source>Following</source>
         <translation>フォロー中</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="81"/>
+        <location filename="../qml/view/ProfileView.qml" line="84"/>
         <source>Follow</source>
         <translation>フォローする</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="151"/>
+        <location filename="../qml/view/ProfileView.qml" line="155"/>
         <source>Profile</source>
         <translation>プロフィール</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="178"/>
+        <location filename="../qml/view/ProfileView.qml" line="182"/>
         <source>Follows you</source>
         <translation>あなたをフォロー中</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="225"/>
+        <location filename="../qml/view/ProfileView.qml" line="229"/>
         <source>follows</source>
         <translation>フォロー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="236"/>
+        <location filename="../qml/view/ProfileView.qml" line="240"/>
         <source>followers</source>
         <translation>フォロワー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="247"/>
+        <location filename="../qml/view/ProfileView.qml" line="251"/>
         <source>posts</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="275"/>
+        <location filename="../qml/view/ProfileView.qml" line="280"/>
         <source>Send mention</source>
         <translation>メンションを送る</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="282"/>
+        <location filename="../qml/view/ProfileView.qml" line="287"/>
         <source>Copy handle</source>
         <translation>ハンドルをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="288"/>
+        <location filename="../qml/view/ProfileView.qml" line="293"/>
         <source>Copy DID</source>
         <translation>DIDをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="295"/>
+        <location filename="../qml/view/ProfileView.qml" line="300"/>
         <source>Open in new col</source>
         <translation>新しいカラムで開く</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="301"/>
+        <location filename="../qml/view/ProfileView.qml" line="306"/>
         <source>Open in Official</source>
         <translation>公式で開く</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="308"/>
+        <location filename="../qml/view/ProfileView.qml" line="313"/>
+        <source>Add/Remove from lists</source>
+        <translation>リストへ追加/削除</translation>
+    </message>
+    <message>
+        <location filename="../qml/view/ProfileView.qml" line="320"/>
         <source>Unmute account</source>
         <translation>ミュート解除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="308"/>
+        <location filename="../qml/view/ProfileView.qml" line="320"/>
         <source>Mute account</source>
         <translation>ミュート</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="320"/>
+        <location filename="../qml/view/ProfileView.qml" line="332"/>
         <source>Unblock account</source>
         <translation>ブロック解除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="320"/>
+        <location filename="../qml/view/ProfileView.qml" line="332"/>
         <source>Block account</source>
         <translation>ブロック</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="332"/>
+        <location filename="../qml/view/ProfileView.qml" line="344"/>
         <source>Report account</source>
         <translation>通報</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="353"/>
+        <location filename="../qml/view/ProfileView.qml" line="365"/>
         <source>Account blocked</source>
         <translation>ブロックしたアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="364"/>
+        <location filename="../qml/view/ProfileView.qml" line="376"/>
         <source>Account muted</source>
         <translation>ミュートしたアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="376"/>
+        <location filename="../qml/view/ProfileView.qml" line="388"/>
         <source>This account has been flagged : </source>
         <translation>このアカウントに設定されたラベル : </translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="385"/>
+        <location filename="../qml/view/ProfileView.qml" line="397"/>
         <source>This account has blocked you</source>
         <translation>あなたをブロックしているアカウント</translation>
     </message>
@@ -2210,7 +2338,7 @@
     </message>
     <message>
         <location filename="../qml/main.qml" line="88"/>
-        <location filename="../qml/main.qml" line="293"/>
+        <location filename="../qml/main.qml" line="297"/>
         <source>Search posts</source>
         <translation>検索(ポスト)</translation>
     </message>
