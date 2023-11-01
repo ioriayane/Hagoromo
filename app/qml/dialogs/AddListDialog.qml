@@ -83,7 +83,7 @@ Dialog {
             Layout.fillWidth: true
             Layout.topMargin: 5
             font.pointSize: AdjustedValues.f10
-            text: "Avatar"
+            text: qsTr("Avatar")
         }
         Rectangle {
             Layout.preferredWidth: AdjustedValues.i48
@@ -105,7 +105,7 @@ Dialog {
             Layout.fillWidth: true
             Layout.topMargin: 5
             font.pointSize: AdjustedValues.f10
-            text: "Name"
+            text: qsTr("Name")
         }
         TextField  {
             id: nameText
@@ -119,7 +119,7 @@ Dialog {
             Layout.fillWidth: true
             Layout.topMargin: 5
             font.pointSize: AdjustedValues.f10
-            text: "Description"
+            text: qsTr("Description")
         }
         ScrollView {
             Layout.preferredWidth: 400 * AdjustedValues.ratio
