@@ -11,7 +11,7 @@ class AppBskyActorGetPreferences : public AccessAtProtocol
 public:
     explicit AppBskyActorGetPreferences(QObject *parent = nullptr);
 
-    void getPreferences();
+    bool getPreferences();
 
     const QList<AtProtocolType::AppBskyActorDefs::SavedFeedsPref> *savedFeedsPrefList() const;
     const QList<AtProtocolType::AppBskyActorDefs::ContentLabelPref> *contentLabelPrefList() const;

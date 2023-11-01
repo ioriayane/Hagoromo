@@ -12,8 +12,10 @@ enum class FeedComponentType : int {
     SearchProfiles = 3,
     CustomFeed = 4,
     AuthorFeed = 5,
+    ListFeed = 6,
 
     PostThread = 100,
+    DiscoverFeeds = 101,
 };
 
 struct ColumnPostType
@@ -24,6 +26,7 @@ struct ColumnPostType
     bool mention = true;
     bool reply = true;
     bool quote = true;
+    bool reply_to_unfollowed_users = true;
 };
 
 struct ColumnItem
@@ -69,6 +72,7 @@ public:
         VisibleMentionRole,
         VisibleReplyRole,
         VisibleQuoteRole,
+        VisibleReplyToUnfollowedUsersRole,
     };
     Q_ENUM(ColumnListModelRoles)
     Q_ENUM(FeedComponentType)
@@ -90,9 +94,9 @@ public:
     Q_INVOKABLE void insert(int row, const QString &account_uuid, int component_type,
                             bool auto_loading, int interval, int width, const QString &name,
                             const QString &value);
-    Q_INVOKABLE void insertNext(const QString &key, const QString &account_uuid, int component_type,
-                                bool auto_loading, int interval, int width, const QString &name,
-                                const QString &value);
+    Q_INVOKABLE int insertNext(const QString &key, const QString &account_uuid, int component_type,
+                               bool auto_loading, int interval, int width, const QString &name,
+                               const QString &value);
     Q_INVOKABLE void move(const QString &key, const ColumnListModel::MoveDirection direction);
     Q_INVOKABLE void remove(int row);
     Q_INVOKABLE void removeByKey(const QString &key);

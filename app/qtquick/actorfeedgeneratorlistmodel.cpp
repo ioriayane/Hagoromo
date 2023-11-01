@@ -9,10 +9,10 @@ ActorFeedGeneratorListModel::ActorFeedGeneratorListModel(QObject *parent)
 {
 }
 
-void ActorFeedGeneratorListModel::getLatest()
+bool ActorFeedGeneratorListModel::getLatest()
 {
     if (running() || actor().isEmpty())
-        return;
+        return false;
     setRunning(true);
 
     clear();
@@ -41,11 +41,13 @@ void ActorFeedGeneratorListModel::getLatest()
     });
     feeds->setAccount(account());
     feeds->getActorFeeds(actor(), 50, QString());
+
+    return true;
 }
 
-void ActorFeedGeneratorListModel::getNext()
+bool ActorFeedGeneratorListModel::getNext()
 {
-    //
+    return true;
 }
 
 QString ActorFeedGeneratorListModel::actor() const

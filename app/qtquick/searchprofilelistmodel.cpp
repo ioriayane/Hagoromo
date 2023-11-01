@@ -6,13 +6,13 @@ using SearchInterface::SearchProfiles;
 
 SearchProfileListModel::SearchProfileListModel(QObject *parent) : FollowsListModel { parent } { }
 
-void SearchProfileListModel::getLatest()
+bool SearchProfileListModel::getLatest()
 {
     if (running() || text().isEmpty())
-        return;
+        return false;
     setRunning(true);
 
-    updateContentFilterLabels([=]() {
+    return updateContentFilterLabels([=]() {
         SearchProfiles *profiles = new SearchProfiles(this);
         connect(profiles, &SearchProfiles::finished, [=](bool success) {
             if (success) {

@@ -15,6 +15,9 @@
 #include "accountlistmodel.h"
 #include "common.h"
 #include "postthreadlistmodel.h"
+#include "listslistmodel.h"
+#include "listitemlistmodel.h"
+#include "listfeedlistmodel.h"
 
 class hagoromo_test : public QObject
 {
@@ -27,6 +30,7 @@ public:
 private slots:
     void initTestCase();
     void cleanupTestCase();
+    void test_test_TimelineListModelError();
     void test_TimelineListModelFacet();
     void test_RecordOperator();
     void test_FeedGeneratorListModel();
@@ -47,7 +51,15 @@ private slots:
     void test_AnyProfileListModel();
     void test_AccountListModel();
     void test_TimelineListModel_text();
+    void test_TimelineListModel_reply();
     void test_PostThreadListModel();
+    void test_ListsListModel();
+    void test_ListsListModel_search();
+    void test_ListsListModel_error();
+    void test_ListItemListModel();
+    void test_ListItemListModel_error();
+    void test_ListFeedListModel();
+    void test_SystemTool_ImageClip();
 
 private:
     WebServer m_mockServer;
@@ -113,6 +125,19 @@ void hagoromo_test::initTestCase()
 }
 
 void hagoromo_test::cleanupTestCase() { }
+
+void hagoromo_test::test_test_TimelineListModelError()
+{
+    TimelineListModel model;
+
+    model.setRunning(true);
+    QVERIFY(model.getLatest() == false);
+    QVERIFY(model.getNext() == false);
+
+    model.setRunning(false);
+    QVERIFY(model.getLatest() == false);
+    QVERIFY(model.getNext() == false);
+}
 
 void hagoromo_test::test_TimelineListModelFacet()
 {
@@ -1271,7 +1296,7 @@ void hagoromo_test::test_TimelineListModel_next()
 {
     int row = 0;
     TimelineListModel model;
-    model.setAccount(m_service + "/timeline/next/1st", QString(), QString(), QString(), "dummy",
+    model.setAccount(m_service + "/timeline/next", QString(), QString(), QString(), "dummy",
                      QString());
     model.setDisplayInterval(0);
     {
@@ -1303,8 +1328,6 @@ void hagoromo_test::test_TimelineListModel_next()
     QVERIFY(model.item(row, TimelineListModel::CidRole).toString()
             == "bafyreihr2hrmavhzdpmnc65udreph5vfmd3xceqtw2jm3b4clbfbacgsqe_6");
 
-    model.setAccount(m_service + "/timeline/next/2nd", QString(), QString(), QString(), "dummy",
-                     QString());
     model.setDisplayInterval(0);
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
@@ -1468,6 +1491,71 @@ void hagoromo_test::test_TimelineListModel_text()
             << model.item(row, TimelineListModel::RecordTextRole).toString().toLocal8Bit();
 }
 
+void hagoromo_test::test_TimelineListModel_reply()
+{
+    int row = 0;
+    TimelineListModel model;
+    model.setAccount(m_service + "/timeline/reply", "did:plc:ipj5qejfoqu6eukvt72uhyit", QString(),
+                     QString(), "dummy", QString());
+    model.setDisplayInterval(0);
+
+    model.setVisibleReplyToUnfollowedUsers(true);
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.item(0, TimelineListModel::CidRole)
+            == "bafyreidsfmfwqaoud3c64lzuxoblcfgcnkmurjcvgx67hmzgp5vhm3tcia_1");
+    QVERIFY(model.item(1, TimelineListModel::CidRole)
+            == "bafyreienuzckap2uhylwn2sq2pq5k7rj445exfxtzkrk7xby7dvfy4muoa_2");
+    QVERIFY(model.item(2, TimelineListModel::CidRole)
+            == "bafyreiayu2dsqvwfyumuepg6b62a24dwtntagoh5lkym7h3lawxcpvz7f4_3");
+    QVERIFY(model.item(3, TimelineListModel::CidRole)
+            == "bafyreievv2yz3obnigwjix5kr2icycfkqdobrfufd3cm4wfavnjfeqhxbe_4");
+    QVERIFY(model.item(4, TimelineListModel::CidRole)
+            == "bafyreiayu2dsqvwfyumuepg6b62a24dwtntagoh5lkym7h3lawxcpvz7f4_5");
+
+    model.setVisibleReplyToUnfollowedUsers(false);
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    QVERIFY2(model.rowCount() == 3, QString("rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.item(0, TimelineListModel::CidRole)
+            == "bafyreidsfmfwqaoud3c64lzuxoblcfgcnkmurjcvgx67hmzgp5vhm3tcia_1");
+    QVERIFY(model.item(1, TimelineListModel::CidRole)
+            == "bafyreienuzckap2uhylwn2sq2pq5k7rj445exfxtzkrk7xby7dvfy4muoa_2");
+    QVERIFY(model.item(2, TimelineListModel::CidRole)
+            == "bafyreievv2yz3obnigwjix5kr2icycfkqdobrfufd3cm4wfavnjfeqhxbe_4");
+
+    model.setAccount(m_service + "/timeline/reply", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", QString(),
+                     QString(), "dummy", QString());
+    model.setVisibleReplyToUnfollowedUsers(false);
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    QVERIFY2(model.rowCount() == 4, QString("rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.item(0, TimelineListModel::CidRole)
+            == "bafyreienuzckap2uhylwn2sq2pq5k7rj445exfxtzkrk7xby7dvfy4muoa_2");
+    QVERIFY(model.item(1, TimelineListModel::CidRole)
+            == "bafyreiayu2dsqvwfyumuepg6b62a24dwtntagoh5lkym7h3lawxcpvz7f4_3");
+    QVERIFY(model.item(2, TimelineListModel::CidRole)
+            == "bafyreievv2yz3obnigwjix5kr2icycfkqdobrfufd3cm4wfavnjfeqhxbe_4");
+    QVERIFY(model.item(3, TimelineListModel::CidRole)
+            == "bafyreiayu2dsqvwfyumuepg6b62a24dwtntagoh5lkym7h3lawxcpvz7f4_5");
+}
+
 void hagoromo_test::test_PostThreadListModel()
 {
     PostThreadListModel model;
@@ -1574,6 +1662,256 @@ void hagoromo_test::test_PostThreadListModel()
     QVERIFY(model.item(row, PostThreadListModel::RecordTextPlainRole).toString() == "reply 4");
     QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
     QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == false);
+}
+
+void hagoromo_test::test_ListsListModel()
+{
+    ListsListModel model;
+
+    model.setAccount(m_service + "/lists/lists", QString(), QString(), QString(), "dummy",
+                     QString());
+
+    model.setVisibilityType(ListsListModel::VisibilityTypeAll);
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+    QVERIFY2(model.rowCount() == 3,
+             QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.item(0, ListsListModel::CidRole).toString()
+            == "bafyreihnheyk74x4jts23gl23icubyarggmo37xn55pop2lpystq426bqu");
+    QVERIFY(model.item(0, ListsListModel::SubscribedRole).toBool() == false);
+    QVERIFY(model.item(1, ListsListModel::CidRole).toString()
+            == "bafyreieyd765syuilkovwe3ms3cpegt7wo3xksistzy2v4xmazrwbzlwtm");
+    QVERIFY(model.item(1, ListsListModel::SubscribedRole).toBool() == true);
+    QVERIFY(model.item(2, ListsListModel::CidRole).toString()
+            == "bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy");
+    QVERIFY(model.item(2, ListsListModel::SubscribedRole).toBool() == false);
+
+    model.clear();
+    model.setVisibilityType(ListsListModel::VisibilityTypeCuration);
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+    QVERIFY2(model.rowCount() == 2,
+             QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.item(0, ListsListModel::CidRole).toString()
+            == "bafyreihnheyk74x4jts23gl23icubyarggmo37xn55pop2lpystq426bqu");
+    QVERIFY(model.item(0, ListsListModel::SubscribedRole).toBool() == false);
+    QVERIFY(model.item(1, ListsListModel::CidRole).toString()
+            == "bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy");
+    QVERIFY(model.item(1, ListsListModel::SubscribedRole).toBool() == false);
+
+    model.clear();
+    model.setVisibilityType(ListsListModel::VisibilityTypeModeration);
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+    QVERIFY2(model.rowCount() == 1,
+             QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.item(0, ListsListModel::CidRole).toString()
+            == "bafyreieyd765syuilkovwe3ms3cpegt7wo3xksistzy2v4xmazrwbzlwtm");
+    QVERIFY(model.item(0, ListsListModel::SubscribedRole).toBool() == true);
+
+    model.clear();
+    model.setVisibilityType(ListsListModel::VisibilityTypeAll);
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getNext();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+    QVERIFY2(model.rowCount() == 6,
+             QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.item(0, ListsListModel::CidRole).toString()
+            == "bafyreihnheyk74x4jts23gl23icubyarggmo37xn55pop2lpystq426bqu");
+    QVERIFY(model.item(1, ListsListModel::CidRole).toString()
+            == "bafyreieyd765syuilkovwe3ms3cpegt7wo3xksistzy2v4xmazrwbzlwtm");
+    QVERIFY(model.item(2, ListsListModel::CidRole).toString()
+            == "bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy");
+    QVERIFY(model.item(3, ListsListModel::CidRole).toString()
+            == "bafyreihnheyk74x4jts23gl23icubyarggmo37xn55pop2lpystq426bqu_next");
+    QVERIFY(model.item(4, ListsListModel::CidRole).toString()
+            == "bafyreieyd765syuilkovwe3ms3cpegt7wo3xksistzy2v4xmazrwbzlwtm_next");
+    QVERIFY(model.item(5, ListsListModel::CidRole).toString()
+            == "bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy_next");
+}
+
+void hagoromo_test::test_ListsListModel_search()
+{
+    ListsListModel model;
+
+    model.setAccount(m_service + "/lists/search", QString(), QString(), QString(), "dummy",
+                     QString());
+    model.setSearchTarget("did:plc:user_42");
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait();
+        spy.wait();
+        spy.wait();
+        spy.wait();
+        spy.wait();
+        spy.wait(10 * 1000);
+        QVERIFY2(spy.count() == 6, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    QVERIFY2(model.rowCount() == 6,
+             QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.item(0, ListsListModel::SearchStatusRole).toInt()
+            == ListsListModel::SearchStatusTypeNotContains);
+    QVERIFY(model.item(1, ListsListModel::SearchStatusRole).toInt()
+            == ListsListModel::SearchStatusTypeNotContains);
+    QVERIFY(model.item(2, ListsListModel::SearchStatusRole).toInt()
+            == ListsListModel::SearchStatusTypeContains);
+    QVERIFY(model.item(3, ListsListModel::SearchStatusRole).toInt()
+            == ListsListModel::SearchStatusTypeNotContains);
+    QVERIFY(model.item(4, ListsListModel::SearchStatusRole).toInt()
+            == ListsListModel::SearchStatusTypeNotContains);
+    QVERIFY(model.item(5, ListsListModel::SearchStatusRole).toInt()
+            == ListsListModel::SearchStatusTypeNotContains);
+
+    QVERIFY2(model.item(0, ListsListModel::ListItemUriRole).toString() == "",
+             model.item(0, ListsListModel::ListItemUriRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(1, ListsListModel::ListItemUriRole).toString() == "",
+             model.item(1, ListsListModel::ListItemUriRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(2, ListsListModel::ListItemUriRole).toString()
+                     == "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.listitem/101",
+             model.item(2, ListsListModel::ListItemUriRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(3, ListsListModel::ListItemUriRole).toString() == "",
+             model.item(3, ListsListModel::ListItemUriRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(4, ListsListModel::ListItemUriRole).toString() == "",
+             model.item(4, ListsListModel::ListItemUriRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(5, ListsListModel::ListItemUriRole).toString() == "",
+             model.item(5, ListsListModel::ListItemUriRole).toString().toLocal8Bit());
+}
+
+void hagoromo_test::test_ListsListModel_error()
+{
+    ListsListModel model;
+
+    model.setRunning(true);
+    QVERIFY(model.getLatest() == false);
+    QVERIFY(model.getNext() == false);
+
+    model.setRunning(false);
+    model.setCursor("hoge");
+    QVERIFY(model.getLatest() == false);
+    QVERIFY(model.getNext() == false);
+}
+
+void hagoromo_test::test_ListItemListModel()
+{
+    ListItemListModel model;
+
+    model.setAccount(m_service + "/lists/list", "did:plc:ipj5qejfoqu6eukvt72uhyit", QString(),
+                     QString(), "dummy", QString());
+
+    model.setUri("at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/3k7igyxfizg27");
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+    QVERIFY2(model.rowCount() == 3,
+             QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.item(0, ListItemListModel::DidRole).toString()
+            == "did:plc:ipj5qejfoqu6eukvt72uhyit");
+    QVERIFY(model.item(1, ListItemListModel::DidRole).toString()
+            == "did:plc:l4fsx4ujos7uw7n4ijq2ulgs");
+    QVERIFY(model.item(2, ListItemListModel::DidRole).toString()
+            == "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
+    QVERIFY(model.uri()
+            == "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/3k7igyxfizg27");
+    QVERIFY(model.cid() == "bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy");
+    QVERIFY(model.name() == "my accounts");
+    QVERIFY(model.avatar() == "");
+    QVERIFY(model.description() == "my accounts list");
+    QVERIFY(model.subscribed() == false);
+
+    model.setUri("at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/3k7igyxfizg27");
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getNext();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+    QVERIFY2(model.rowCount() == 6,
+             QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.item(0, ListItemListModel::DidRole).toString()
+            == "did:plc:ipj5qejfoqu6eukvt72uhyit");
+    QVERIFY(model.item(1, ListItemListModel::DidRole).toString()
+            == "did:plc:l4fsx4ujos7uw7n4ijq2ulgs");
+    QVERIFY(model.item(2, ListItemListModel::DidRole).toString()
+            == "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
+    QVERIFY(model.item(3, ListItemListModel::DidRole).toString()
+            == "did:plc:ipj5qejfoqu6eukvt72uhyit_next");
+    QVERIFY(model.item(4, ListItemListModel::DidRole).toString()
+            == "did:plc:l4fsx4ujos7uw7n4ijq2ulgs_next");
+    QVERIFY(model.item(5, ListItemListModel::DidRole).toString()
+            == "did:plc:mqxsuw5b5rhpwo4lw6iwlid5_next");
+    QVERIFY(model.uri()
+            == "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/3k7igyxfizg27");
+    QVERIFY(model.cid() == "bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy");
+    QVERIFY(model.name() == "my accounts");
+    QVERIFY(model.avatar() == "");
+    QVERIFY(model.description() == "");
+    QVERIFY(model.subscribed() == false);
+}
+
+void hagoromo_test::test_ListItemListModel_error()
+{
+    ListItemListModel model;
+
+    model.setRunning(true);
+    QVERIFY(model.getLatest() == false);
+    QVERIFY(model.getNext() == false);
+
+    model.setRunning(false);
+    model.setCursor("hoge");
+    QVERIFY(model.getLatest() == false);
+    QVERIFY(model.getNext() == false);
+}
+
+void hagoromo_test::test_ListFeedListModel()
+{
+    ListFeedListModel model;
+
+    model.setAccount(m_service + "/lists/feed/0", "did:plc:l4fsx4ujos7uw7n4ijq2ulgs", QString(),
+                     QString(), "dummy", QString());
+    model.setUri("at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/3k7igyxfizg27");
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    QVERIFY2(model.rowCount() == 6,
+             QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
+}
+
+void hagoromo_test::test_SystemTool_ImageClip()
+{
+    SystemTool tool;
+
+    qDebug() << tool.clipImage(QUrl::fromLocalFile(":/data/images/sample.jpg"), 1700, 130, 400,
+                               250);
 }
 
 void hagoromo_test::test_RecordOperatorCreateRecord(const QByteArray &body)

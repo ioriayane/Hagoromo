@@ -18,17 +18,17 @@ CustomFeedListModel::CustomFeedListModel(QObject *parent)
     });
 }
 
-void CustomFeedListModel::getLatest()
+bool CustomFeedListModel::getLatest()
 {
     if (running())
-        return;
+        return false;
     setRunning(true);
 
     if (m_cidList.isEmpty()) {
         updateFeedSaveStatus();
     }
 
-    updateContentFilterLabels([=]() {
+    return updateContentFilterLabels([=]() {
         AppBskyFeedGetFeed *feed = new AppBskyFeedGetFeed(this);
         connect(feed, &AppBskyFeedGetFeed::finished, [=](bool success) {
             if (success) {

@@ -83,7 +83,7 @@ void http_test::test_get()
         url.setUrl(m_service + "/xrpc/app.bsky.feed.getTimeline");
         url_query.clear();
         url_query.addQueryItem("actor", "ioriayane.relog.tech");
-        url_query.addQueryItem("cursor", "AcDe Fg");
+        url_query.addQueryItem("hoge", "AcDe Fg");
         url.setQuery(url_query);
         request.setUrl(url);
         request.setRawHeader(QByteArray("Authorization"),

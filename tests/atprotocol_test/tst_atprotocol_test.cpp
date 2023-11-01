@@ -34,6 +34,7 @@ private slots:
     void test_ConfigurableLabels_save();
     void test_ComAtprotoRepoCreateRecord_post();
     void test_AppBskyFeedGetFeedGenerator();
+    void test_ServiceUrl();
 
 private:
     void test_putPreferences(const QString &path, const QByteArray &body);
@@ -771,6 +772,21 @@ void atprotocol_test::test_AppBskyFeedGetFeedGenerator()
     QVERIFY(generator.generatorView().creator.displayName == "creator:displayName");
     QVERIFY(generator.generatorView().creator.avatar
             == "https://cdn.bsky.social/creator_avator.jpeg");
+}
+
+void atprotocol_test::test_ServiceUrl()
+{
+    AtProtocolInterface::ComAtprotoServerCreateSession session;
+    session.setService(m_service + "/");
+
+    {
+        QSignalSpy spy(&session, SIGNAL(finished(bool)));
+        session.create("hoge", "fuga");
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
 }
 
 void atprotocol_test::test_putPreferences(const QString &path, const QByteArray &body)

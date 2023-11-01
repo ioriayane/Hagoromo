@@ -4,7 +4,9 @@ WebServer::WebServer(QObject *parent) : QAbstractHttpServer(parent) { }
 
 bool WebServer::handleRequest(const QHttpServerRequest &request, QTcpSocket *socket)
 {
-    if (request.method() == QHttpServerRequest::Method::Post) {
+    if (request.url().path().contains("//")) {
+        makeResponder(request, socket).write(QHttpServerResponder::StatusCode::NotFound);
+    } else if (request.method() == QHttpServerRequest::Method::Post) {
         bool result = false;
         QString json;
         emit receivedPost(request, result, json);
@@ -36,18 +38,34 @@ bool WebServer::handleRequest(const QHttpServerRequest &request, QTcpSocket *soc
             makeResponder(request, socket)
                     .write(QHttpServerResponder::StatusCode::InternalServerError);
         }
-    } else if (!QFile::exists(WebServer::convertResoucePath(request.url()))) {
-        makeResponder(request, socket).write(QHttpServerResponder::StatusCode::NotFound);
     } else {
-        QFileInfo file_info(request.url().path());
-        QByteArray data;
-        if (WebServer::readFile(WebServer::convertResoucePath(request.url()), data)) {
-            makeResponder(request, socket)
-                    .write(data, m_MimeDb.mimeTypeForFile(file_info).name().toUtf8(),
-                           QHttpServerResponder::StatusCode::Ok);
+        QString path = WebServer::convertResoucePath(request.url());
+        if (path.endsWith("xrpc/app.bsky.graph.getList")) {
+            if (request.query().hasQueryItem("list")) {
+                path += "_"
+                        + request.query()
+                                  .queryItemValue("list", QUrl::FullyDecoded)
+                                  .split("/")
+                                  .last();
+            }
+        }
+        if (request.query().hasQueryItem("cursor")) {
+            path += "_" + request.query().queryItemValue("cursor", QUrl::DecodeReserved);
+        }
+        qDebug().noquote() << "SERVER PATH=" << path;
+        if (!QFile::exists(path)) {
+            makeResponder(request, socket).write(QHttpServerResponder::StatusCode::NotFound);
         } else {
-            makeResponder(request, socket)
-                    .write(QHttpServerResponder::StatusCode::InternalServerError);
+            QFileInfo file_info(request.url().path());
+            QByteArray data;
+            if (WebServer::readFile(path, data)) {
+                makeResponder(request, socket)
+                        .write(data, m_MimeDb.mimeTypeForFile(file_info).name().toUtf8(),
+                               QHttpServerResponder::StatusCode::Ok);
+            } else {
+                makeResponder(request, socket)
+                        .write(QHttpServerResponder::StatusCode::InternalServerError);
+            }
         }
     }
     return true;

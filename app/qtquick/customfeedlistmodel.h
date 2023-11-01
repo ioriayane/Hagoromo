@@ -14,7 +14,7 @@ class CustomFeedListModel : public TimelineListModel
 public:
     explicit CustomFeedListModel(QObject *parent = nullptr);
 
-    Q_INVOKABLE void getLatest();
+    Q_INVOKABLE bool getLatest();
     Q_INVOKABLE void updateFeedSaveStatus();
     Q_INVOKABLE void saveGenerator();
     Q_INVOKABLE void removeGenerator();

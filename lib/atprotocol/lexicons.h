@@ -91,6 +91,7 @@ struct ViewerState
     AppBskyGraphDefs::ListViewBasic mutedByList;
     bool blockedBy = false;
     QString blocking; // at-uri
+    AppBskyGraphDefs::ListViewBasic blockingByList;
     QString following; // at-uri
     QString followedBy; // at-uri
 };
@@ -1154,5 +1155,6 @@ struct Info
 Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedPost::Main)
 Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedLike::Main)
 Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedRepost::Main)
+Q_DECLARE_METATYPE(AtProtocolType::AppBskyGraphListitem::Main)
 
 #endif // LEXICONS_H

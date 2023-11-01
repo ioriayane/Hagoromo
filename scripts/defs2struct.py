@@ -2,7 +2,7 @@
 # https://github.com/bluesky-social/atproto/tree/main/lexicons
 # query系のoutputからの参照を起点に定義を作った方が良いかもしれない
 
-# python3 ./scripts/defs2struct.py ../atproto/lexicons/ ./lib/atprotocol
+# python3 ./scripts/defs2struct.py
 
 import sys
 import os
@@ -34,7 +34,8 @@ class Defs2Struct:
         # （単純にすべてではない）
         self.metatype = ('AppBskyFeedPost::Main', 
                          'AppBskyFeedLike::Main',
-                         'AppBskyFeedRepost::Main', )
+                         'AppBskyFeedRepost::Main',
+                         'AppBskyGraphListitem::Main', )
 
     def to_struct_style(self, name: str) -> str:
         return name[0].upper() + name[1:]
@@ -810,12 +811,8 @@ def main(lexicons_path: str, output_path: str) -> None:
 
 if __name__ == "__main__":
 
-    if len(sys.argv) != 3:
-        print('usage: python defs2struct.py path/to/atproto/lexicons path/to/lexicons.h')
-        print('   atproto/lexicons : https://github.com/bluesky-social/atproto/tree/main/lexicons')
-        exit(1)
-
-    lexicons_path: str = sys.argv[1]
-    output: str = sys.argv[2]
+    base_dir = os.path.dirname(__file__)
+    lexicons_path: str = os.path.join(base_dir, '..', '1stparty', 'atproto', 'lexicons')
+    output: str = os.path.join(base_dir, '..', 'lib', 'atprotocol')
 
     main(lexicons_path, output)

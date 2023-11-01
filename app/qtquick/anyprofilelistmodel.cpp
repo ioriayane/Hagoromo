@@ -8,10 +8,10 @@ using AtProtocolInterface::AppBskyFeedGetRepostedBy;
 
 AnyProfileListModel::AnyProfileListModel(QObject *parent) : FollowsListModel { parent } { }
 
-void AnyProfileListModel::getLatest()
+bool AnyProfileListModel::getLatest()
 {
     if (running() || targetUri().isEmpty())
-        return;
+        return false;
     setRunning(true);
 
     clear();
@@ -70,12 +70,13 @@ void AnyProfileListModel::getLatest()
         reposts->setAccount(account());
         reposts->getRepostedBy(targetUri(), QString(), 0, QString());
     }
+    return true;
 }
 
-void AnyProfileListModel::getNext()
+bool AnyProfileListModel::getNext()
 {
     if (running() || targetUri().isEmpty() || m_cursor.isEmpty())
-        return;
+        return false;
     setRunning(true);
 
     if (type() == AnyProfileListModelType::Like) {
@@ -138,6 +139,7 @@ void AnyProfileListModel::getNext()
         reposts->setAccount(account());
         reposts->getRepostedBy(targetUri(), QString(), 0, m_cursor);
     }
+    return true;
 }
 
 QString AnyProfileListModel::targetUri() const

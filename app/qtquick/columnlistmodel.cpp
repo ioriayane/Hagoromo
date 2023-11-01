@@ -54,6 +54,8 @@ QVariant ColumnListModel::item(int row, ColumnListModelRoles role) const
         return m_columnList.at(row).type_visibility.reply;
     else if (role == VisibleQuoteRole)
         return m_columnList.at(row).type_visibility.quote;
+    else if (role == VisibleReplyToUnfollowedUsersRole)
+        return m_columnList.at(row).type_visibility.reply_to_unfollowed_users;
 
     return QVariant();
 }
@@ -92,6 +94,8 @@ void ColumnListModel::update(int row, ColumnListModelRoles role, const QVariant 
         m_columnList[row].type_visibility.reply = value.toBool();
     else if (role == VisibleQuoteRole)
         m_columnList[row].type_visibility.quote = value.toBool();
+    else if (role == VisibleReplyToUnfollowedUsersRole)
+        m_columnList[row].type_visibility.reply_to_unfollowed_users = value.toBool();
 
     emit dataChanged(index(row), index(row));
 
@@ -129,9 +133,9 @@ void ColumnListModel::insert(int row, const QString &account_uuid, int component
     save();
 }
 
-void ColumnListModel::insertNext(const QString &key, const QString &account_uuid,
-                                 int component_type, bool auto_loading, int interval, int width,
-                                 const QString &name, const QString &value)
+int ColumnListModel::insertNext(const QString &key, const QString &account_uuid, int component_type,
+                                bool auto_loading, int interval, int width, const QString &name,
+                                const QString &value)
 {
     insert(rowCount(), account_uuid, component_type, auto_loading, interval, width, name, value);
 
@@ -146,7 +150,7 @@ void ColumnListModel::insertNext(const QString &key, const QString &account_uuid
         }
     }
     if (to_position == -1)
-        return;
+        return -1;
     for (int i = 0; i < m_columnList.length(); i++) {
         if (m_columnList.at(i).position >= to_position) {
             m_columnList[i].position++;
@@ -157,6 +161,8 @@ void ColumnListModel::insertNext(const QString &key, const QString &account_uuid
     emit dataChanged(index(from_index), index(to_index));
 
     save();
+
+    return to_position;
 }
 
 void ColumnListModel::move(const QString &key, const MoveDirection direction)
@@ -300,6 +306,7 @@ void ColumnListModel::save() const
         notification["mention"] = item.type_visibility.mention;
         notification["reply"] = item.type_visibility.reply;
         notification["quote"] = item.type_visibility.quote;
+        notification["reply_to_unfollowed_users"] = item.type_visibility.reply_to_unfollowed_users;
         column_item["type_visibility"] = notification;
 
         column_array.append(column_item);
@@ -347,6 +354,11 @@ void ColumnListModel::load()
                         obj.value("type_visibility").toObject().value("reply").toBool(true);
                 item.type_visibility.quote =
                         obj.value("type_visibility").toObject().value("quote").toBool(true);
+                item.type_visibility.reply_to_unfollowed_users =
+                        obj.value("type_visibility")
+                                .toObject()
+                                .value("reply_to_unfollowed_users")
+                                .toBool(true);
 
                 if (item.name.isEmpty()) {
                     // version 0.2.0以前との互換性のため
@@ -394,6 +406,7 @@ QHash<int, QByteArray> ColumnListModel::roleNames() const
     roles[VisibleMentionRole] = "visibleMention";
     roles[VisibleReplyRole] = "visibleReply";
     roles[VisibleQuoteRole] = "visibleQuote";
+    roles[VisibleReplyToUnfollowedUsersRole] = "visibleReplyToUnfollowedUsers";
 
     return roles;
 }

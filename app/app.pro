@@ -18,10 +18,13 @@ QML_FILES = \
     qml/data/ColumnSettings.qml \
     qml/dialogs/AccountDialog.qml \
     qml/dialogs/AddColumnDialog.qml \
+    qml/dialogs/AddListDialog.qml \
+    qml/dialogs/AddToListDialog.qml \
     qml/dialogs/AltEditDialog.qml \
     qml/dialogs/ColumnSettingDialog.qml \
     qml/dialogs/ContentFilterSettingDialog.qml \
     qml/dialogs/DiscoverFeedsDialog.qml \
+    qml/dialogs/ImageClipDialog.qml \
     qml/dialogs/LanguageSelectionDialog.qml \
     qml/dialogs/LoginDialog.qml \
     qml/dialogs/MessageDialog.qml \
@@ -35,6 +38,8 @@ QML_FILES = \
     qml/parts/Author.qml \
     qml/parts/AvatarImage.qml \
     qml/parts/CoverFrame.qml \
+    qml/parts/CursorRect.qml \
+    qml/parts/CursorRectHandle.qml \
     qml/parts/ImagePreview.qml \
     qml/parts/ExternalLinkCard.qml \
     qml/parts/FeedGeneratorLinkCard.qml \
@@ -54,6 +59,8 @@ QML_FILES = \
     qml/view/ColumnView.qml \
     qml/view/FeedGeneratorListView.qml \
     qml/view/ImageFullView.qml \
+    qml/view/ListDetailView.qml \
+    qml/view/ListsListView.qml \
     qml/view/NotificationListView.qml \
     qml/view/PostThreadView.qml \
     qml/view/ProfileListView.qml \
@@ -89,6 +96,7 @@ IMAGE_FILES += \
     qml/images/labeling.png \
     qml/images/language.png \
     qml/images/like.png \
+    qml/images/list.png \
     qml/images/logo.png \
     qml/images/media.png \
     qml/images/more.png \

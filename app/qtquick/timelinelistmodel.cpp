@@ -8,7 +8,10 @@ using AtProtocolInterface::AccountData;
 using AtProtocolInterface::AppBskyFeedGetTimeline;
 using namespace AtProtocolType;
 
-TimelineListModel::TimelineListModel(QObject *parent) : AtpAbstractListModel { parent } { }
+TimelineListModel::TimelineListModel(QObject *parent)
+    : AtpAbstractListModel { parent }, m_visibleReplyToUnfollowedUsers(true)
+{
+}
 
 int TimelineListModel::rowCount(const QModelIndex &parent) const
 {
@@ -142,7 +145,7 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         if (current.reply.parent_type == AppBskyFeedDefs::ReplyRefParentType::parent_PostView)
             return current.reply.parent_PostView.cid.length() > 0;
         else
-            return QString();
+            return false;
     } else if (role == ReplyRootCidRole) {
         if (current.reply.root_type == AppBskyFeedDefs::ReplyRefRootType::root_PostView)
             return current.reply.root_PostView.cid;
@@ -271,13 +274,13 @@ QString TimelineListModel::getRecordText(const QString &cid)
             .text;
 }
 
-void TimelineListModel::getLatest()
+bool TimelineListModel::getLatest()
 {
     if (running())
-        return;
+        return false;
     setRunning(true);
 
-    updateContentFilterLabels([=]() {
+    return updateContentFilterLabels([=]() {
         AppBskyFeedGetTimeline *timeline = new AppBskyFeedGetTimeline(this);
         connect(timeline, &AppBskyFeedGetTimeline::finished, [=](bool success) {
             if (success) {
@@ -292,17 +295,20 @@ void TimelineListModel::getLatest()
             timeline->deleteLater();
         });
         timeline->setAccount(account());
-        timeline->getTimeline();
+        if (!timeline->getTimeline()) {
+            emit errorOccured(timeline->errorCode(), timeline->errorMessage());
+            setRunning(false);
+        }
     });
 }
 
-void TimelineListModel::getNext()
+bool TimelineListModel::getNext()
 {
     if (running() || m_cursor.isEmpty())
-        return;
+        return false;
     setRunning(true);
 
-    updateContentFilterLabels([=]() {
+    return updateContentFilterLabels([=]() {
         AppBskyFeedGetTimeline *timeline = new AppBskyFeedGetTimeline(this);
         connect(timeline, &AppBskyFeedGetTimeline::finished, [=](bool success) {
             if (success) {
@@ -316,17 +322,20 @@ void TimelineListModel::getNext()
             timeline->deleteLater();
         });
         timeline->setAccount(account());
-        timeline->getTimeline(m_cursor);
+        if (!timeline->getTimeline(m_cursor)) {
+            emit errorOccured(timeline->errorCode(), timeline->errorMessage());
+            setRunning(false);
+        }
     });
 }
 
-void TimelineListModel::deletePost(int row)
+bool TimelineListModel::deletePost(int row)
 {
     if (row < 0 || row >= m_cidList.count())
-        return;
+        return false;
 
     if (running())
-        return;
+        return false;
     setRunning(true);
 
     RecordOperator *ope = new RecordOperator(this);
@@ -346,17 +355,19 @@ void TimelineListModel::deletePost(int row)
     ope->setAccount(account().service, account().did, account().handle, account().email,
                     account().accessJwt, account().refreshJwt);
     ope->deletePost(item(row, UriRole).toString());
+
+    return true;
 }
 
-void TimelineListModel::repost(int row)
+bool TimelineListModel::repost(int row)
 {
     if (row < 0 || row >= m_cidList.count())
-        return;
+        return false;
 
     bool current = item(row, IsRepostedRole).toBool();
 
     if (running())
-        return;
+        return false;
     setRunning(true);
 
     RecordOperator *ope = new RecordOperator(this);
@@ -376,17 +387,19 @@ void TimelineListModel::repost(int row)
         ope->repost(item(row, CidRole).toString(), item(row, UriRole).toString());
     else
         ope->deleteRepost(item(row, RepostedUriRole).toString());
+
+    return true;
 }
 
-void TimelineListModel::like(int row)
+bool TimelineListModel::like(int row)
 {
     if (row < 0 || row >= m_cidList.count())
-        return;
+        return false;
 
     bool current = item(row, IsLikedRole).toBool();
 
     if (running())
-        return;
+        return false;
     setRunning(true);
 
     RecordOperator *ope = new RecordOperator(this);
@@ -407,6 +420,8 @@ void TimelineListModel::like(int row)
         ope->like(item(row, CidRole).toString(), item(row, UriRole).toString());
     else
         ope->deleteLike(item(row, LikedUriRole).toString());
+
+    return true;
 }
 
 QHash<int, QByteArray> TimelineListModel::roleNames() const
@@ -515,7 +530,18 @@ bool TimelineListModel::checkVisibility(const QString &cid)
             return false;
         }
     }
-
+    if (!visibleReplyToUnfollowedUsers()) {
+        if (current.reply.parent_type == AppBskyFeedDefs::ReplyRefParentType::parent_PostView
+            && current.reply.parent_PostView.cid.length() > 0) {
+            // まずreplyあり判定となる場合のみ、判断する
+            if (current.post.author.did != account().did
+                && !current.reply.parent_PostView.author.viewer.following.contains(account().did)) {
+                qDebug() << "Hide a reply to users account do not follow. "
+                         << current.post.author.handle << cid;
+                return false;
+            }
+        }
+    }
     return true;
 }
 
@@ -721,4 +747,18 @@ QVariant TimelineListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDefs::
     }
 
     return QVariant();
+}
+
+bool TimelineListModel::visibleReplyToUnfollowedUsers() const
+{
+    return m_visibleReplyToUnfollowedUsers;
+}
+
+void TimelineListModel::setVisibleReplyToUnfollowedUsers(bool newVisibleReplyToUnfollowedUser)
+{
+    if (m_visibleReplyToUnfollowedUsers == newVisibleReplyToUnfollowedUser)
+        return;
+    m_visibleReplyToUnfollowedUsers = newVisibleReplyToUnfollowedUser;
+    emit visibleReplyToUnfollowedUsersChanged();
+    reflectVisibility();
 }

@@ -6,13 +6,13 @@ using AtProtocolInterface::AppBskyGraphGetFollowers;
 
 FollowersListModel::FollowersListModel(QObject *parent) : FollowsListModel { parent } { }
 
-void FollowersListModel::getLatest()
+bool FollowersListModel::getLatest()
 {
     if (running())
-        return;
+        return false;
     setRunning(true);
 
-    updateContentFilterLabels([=]() {
+    return updateContentFilterLabels([=]() {
         AppBskyGraphGetFollowers *followers = new AppBskyGraphGetFollowers(this);
         connect(followers, &AppBskyGraphGetFollowers::finished, [=](bool success) {
             if (success) {
@@ -43,13 +43,13 @@ void FollowersListModel::getLatest()
     });
 }
 
-void FollowersListModel::getNext()
+bool FollowersListModel::getNext()
 {
     if (running() || m_cursor.isEmpty())
-        return;
+        return false;
     setRunning(true);
 
-    updateContentFilterLabels([=]() {
+    return updateContentFilterLabels([=]() {
         AppBskyGraphGetFollowers *followers = new AppBskyGraphGetFollowers(this);
         connect(followers, &AppBskyGraphGetFollowers::finished, [=](bool success) {
             if (success) {

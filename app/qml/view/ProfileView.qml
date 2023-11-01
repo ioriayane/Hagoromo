@@ -11,6 +11,7 @@ import tech.relog.hagoromo.recordoperator 1.0
 import tech.relog.hagoromo.followslistmodel 1.0
 import tech.relog.hagoromo.followerslistmodel 1.0
 import tech.relog.hagoromo.actorfeedgeneratorlistmodel 1.0
+import tech.relog.hagoromo.listslistmodel 1.0
 import tech.relog.hagoromo.systemtool 1.0
 import tech.relog.hagoromo.singleton 1.0
 
@@ -43,8 +44,10 @@ ColumnLayout {
     signal requestViewLikedBy(string uri)
     signal requestViewRepostedBy(string uri)
     signal requestViewSearchPosts(string text)
+    signal requestViewListDetail(string uri)
     signal requestReportPost(string uri, string cid)
     signal requestReportAccount(string did)
+    signal requestAddRemoveFromLists(string did)
 
     signal errorOccured(string code, string message)
     signal back()
@@ -107,6 +110,7 @@ ColumnLayout {
             likesFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             authorMediaFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             actorFeedGeneratorListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
+            listsListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             followsListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             followersListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
         }
@@ -271,6 +275,7 @@ ColumnLayout {
                 onClicked: morePopup.open()
                 Menu {
                     id: morePopup
+                    width: 240
                     MenuItem {
                         text: qsTr("Send mention")
                         icon.source: "../images/reply.png"
@@ -302,6 +307,13 @@ ColumnLayout {
                         icon.source: "../images/open_in_other.png"
                         enabled: userProfile.handle.length > 0
                         onTriggered: openInOhters(userProfile.handle)
+                    }
+                    MenuSeparator {}
+                    MenuItem {
+                        text: qsTr("Add/Remove from lists")
+                        icon.source: "../images/list.png"
+                        enabled: userProfile.handle.length > 0 && userProfile.did !== account.did
+                        onTriggered: requestAddRemoveFromLists(userProfile.did)
                     }
                     MenuSeparator {}
                     MenuItem {
@@ -551,6 +563,16 @@ ColumnLayout {
             onRequestSaveGenerator: (uri) => actorFeedGeneratorListModel.saveGenerator(uri)
         }
 
+        ListsListView {
+            id: listsListView
+            Layout.fillWidth: true
+            model: ListsListModel {
+                id: listsListModel
+                actor: profileView.userDid
+                visibilityType: ListsListModel.VisibilityTypeCuration
+            }
+            onRequestViewListDetail: (uri) => profileView.requestViewListDetail(uri)
+        }
 
         ProfileListView {
             id: followsListView

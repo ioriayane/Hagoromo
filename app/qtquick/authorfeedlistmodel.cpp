@@ -9,13 +9,13 @@ AuthorFeedListModel::AuthorFeedListModel(QObject *parent) : TimelineListModel { 
     setDisplayInterval(0);
 }
 
-void AuthorFeedListModel::getLatest()
+bool AuthorFeedListModel::getLatest()
 {
     if (running())
-        return;
+        return false;
     setRunning(true);
 
-    updateContentFilterLabels([=]() {
+    return updateContentFilterLabels([=]() {
         AppBskyFeedGetAuthorFeed *timeline = new AppBskyFeedGetAuthorFeed(this);
         connect(timeline, &AppBskyFeedGetAuthorFeed::finished, [=](bool success) {
             if (success) {
@@ -43,13 +43,13 @@ void AuthorFeedListModel::getLatest()
     });
 }
 
-void AuthorFeedListModel::getNext()
+bool AuthorFeedListModel::getNext()
 {
     if (running() || m_cursor.isEmpty())
-        return;
+        return false;
     setRunning(true);
 
-    updateContentFilterLabels([=]() {
+    return updateContentFilterLabels([=]() {
         AppBskyFeedGetAuthorFeed *timeline = new AppBskyFeedGetAuthorFeed(this);
         connect(timeline, &AppBskyFeedGetAuthorFeed::finished, [=](bool success) {
             if (success) {

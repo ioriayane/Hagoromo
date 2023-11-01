@@ -27,6 +27,7 @@ Dialog {
     property alias visibleMentionCheckBox: visibleMentionCheckBox
     property alias visibleReplyCheckBox: visibleReplyCheckBox
     property alias visibleQuoteCheckBox: visibleQuoteCheckBox
+    property alias visibleReplyToUnfollowedUsersCheckBox: visibleReplyToUnfollowedUsersCheckBox
 
     ColumnLayout {
         spacing: AdjustedValues.s5
@@ -105,12 +106,24 @@ Dialog {
             Frame {
                 id: displayFrame
                 Layout.leftMargin: 10
+                Layout.fillHeight: true
                 visible: false
 
                 states: [
                     State {
+                        when: columnSettingDialog.componentType === 0
+                        PropertyChanges { target: displayFrame; visible: true }
+                        PropertyChanges { target: visibleReplyToUnfollowedUsersCheckBox; visible: true }
+                    },
+                    State {
                         when: columnSettingDialog.componentType === 1
                         PropertyChanges { target: displayFrame; visible: true }
+                        PropertyChanges { target: visibleLikeCheckBox; visible: true }
+                        PropertyChanges { target: visibleRepostCheckBox; visible: true }
+                        PropertyChanges { target: visibleFollowCheckBox; visible: true }
+                        PropertyChanges { target: visibleMentionCheckBox; visible: true }
+                        PropertyChanges { target: visibleReplyCheckBox; visible: true }
+                        PropertyChanges { target: visibleQuoteCheckBox; visible: true }
                     }
                 ]
 
@@ -139,6 +152,7 @@ Dialog {
                         id: visibleLikeCheckBox
                         topPadding: 5
                         bottomPadding: 5
+                        visible: false
                         font.pointSize: AdjustedValues.f10
                         text: qsTr("Like")
                     }
@@ -146,6 +160,7 @@ Dialog {
                         id: visibleRepostCheckBox
                         topPadding: 5
                         bottomPadding: 5
+                        visible: false
                         font.pointSize: AdjustedValues.f10
                         text: qsTr("Repost")
                     }
@@ -153,6 +168,7 @@ Dialog {
                         id: visibleFollowCheckBox
                         topPadding: 5
                         bottomPadding: 5
+                        visible: false
                         font.pointSize: AdjustedValues.f10
                         text: qsTr("Follow")
                     }
@@ -160,6 +176,7 @@ Dialog {
                         id: visibleMentionCheckBox
                         topPadding: 5
                         bottomPadding: 5
+                        visible: false
                         font.pointSize: AdjustedValues.f10
                         text: qsTr("Mention")
                     }
@@ -167,6 +184,7 @@ Dialog {
                         id: visibleReplyCheckBox
                         topPadding: 5
                         bottomPadding: 5
+                        visible: false
                         font.pointSize: AdjustedValues.f10
                         text: qsTr("Reply")
                     }
@@ -174,8 +192,17 @@ Dialog {
                         id: visibleQuoteCheckBox
                         topPadding: 5
                         bottomPadding: 5
+                        visible: false
                         font.pointSize: AdjustedValues.f10
                         text: qsTr("Quote")
+                    }
+                    CheckBox {
+                        id: visibleReplyToUnfollowedUsersCheckBox
+                        topPadding: 5
+                        bottomPadding: 5
+                        visible: false
+                        font.pointSize: AdjustedValues.f10
+                        text: qsTr("Reply to unfollowed users")
                     }
                 }
             }

@@ -35,10 +35,10 @@ int ConfigurableLabels::count() const
     return m_labels.count();
 }
 
-void ConfigurableLabels::load()
+bool ConfigurableLabels::load()
 {
     if (running())
-        return;
+        return false;
     setRunning(true);
 
     AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
@@ -65,19 +65,21 @@ void ConfigurableLabels::load()
         pref->deleteLater();
     });
     pref->setAccount(account());
-    pref->getPreferences();
+    return pref->getPreferences();
 }
 
-void ConfigurableLabels::save()
+bool ConfigurableLabels::save()
 {
     if (running())
-        return;
+        return false;
     setRunning(true);
 
     AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
     connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
         if (success) {
-            putPreferences(updatePreferencesJson(pref->replyJson()));
+            if (!putPreferences(updatePreferencesJson(pref->replyJson()))) {
+                setRunning(false);
+            }
         } else {
             setRunning(false);
             emit finished(success);
@@ -85,7 +87,7 @@ void ConfigurableLabels::save()
         pref->deleteLater();
     });
     pref->setAccount(account());
-    pref->getPreferences();
+    return pref->getPreferences();
 }
 
 int ConfigurableLabels::indexOf(const QString &id) const
@@ -355,7 +357,7 @@ void ConfigurableLabels::initializeLabels()
     m_labels.append(item);
 }
 
-void ConfigurableLabels::putPreferences(const QString &json)
+bool ConfigurableLabels::putPreferences(const QString &json)
 {
     AppBskyActorPutPreferences *pref = new AppBskyActorPutPreferences(this);
     connect(pref, &AppBskyActorPutPreferences::finished, [=](bool success) {
@@ -367,7 +369,7 @@ void ConfigurableLabels::putPreferences(const QString &json)
         pref->deleteLater();
     });
     pref->setAccount(account());
-    pref->putPreferences(json);
+    return pref->putPreferences(json);
 }
 
 QString ConfigurableLabels::updatePreferencesJson(const QString &src_json)

@@ -18,6 +18,8 @@ class TimelineListModel : public AtpAbstractListModel
 {
     Q_OBJECT
 
+    Q_PROPERTY(bool visibleReplyToUnfollowedUsers READ visibleReplyToUnfollowedUsers WRITE
+                       setVisibleReplyToUnfollowedUsers NOTIFY visibleReplyToUnfollowedUsersChanged)
 public:
     explicit TimelineListModel(QObject *parent = nullptr);
 
@@ -111,11 +113,17 @@ public:
     virtual Q_INVOKABLE int indexOf(const QString &cid) const;
     virtual Q_INVOKABLE QString getRecordText(const QString &cid);
 
-    Q_INVOKABLE void getLatest();
-    Q_INVOKABLE void getNext();
-    Q_INVOKABLE void deletePost(int row);
-    Q_INVOKABLE void repost(int row);
-    Q_INVOKABLE void like(int row);
+    Q_INVOKABLE bool getLatest();
+    Q_INVOKABLE bool getNext();
+    Q_INVOKABLE bool deletePost(int row);
+    Q_INVOKABLE bool repost(int row);
+    Q_INVOKABLE bool like(int row);
+
+    bool visibleReplyToUnfollowedUsers() const;
+    void setVisibleReplyToUnfollowedUsers(bool newVisibleReplyToUnfollowedUser);
+
+signals:
+    void visibleReplyToUnfollowedUsersChanged();
 
 protected:
     QHash<int, QByteArray> roleNames() const;
@@ -129,6 +137,9 @@ protected:
 
     QHash<QString, AtProtocolType::AppBskyFeedDefs::FeedViewPost> m_viewPostHash;
     QHash<QString, ThreadConnector> m_threadConnectorHash;
+
+private:
+    bool m_visibleReplyToUnfollowedUsers;
 };
 
 #endif // TIMELINELISTMODEL_H
