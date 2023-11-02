@@ -442,10 +442,10 @@ ApplicationWindow {
                     return
                 }
                 for(var i=0; i<row_list.length; i++){
-                    if(row_list[i] < index){
+                    if(i < index){
                         item = repeater.itemAt(row_list[i])   //ここのitemはloader自身
                         w += item.width + item.anchors.leftMargin
-                    }else if(row_list[i] === index){
+                    }else if(i === index){
                         item = repeater.itemAt(row_list[i])   //ここのitemはloader自身
                         last_w = item.width + item.anchors.leftMargin
                         margin = item.anchors.leftMargin
