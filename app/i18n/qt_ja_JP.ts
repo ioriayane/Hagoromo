@@ -2091,37 +2091,37 @@
 <context>
     <name>SettingDialog</name>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="78"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="92"/>
         <source>General</source>
         <translation>一般</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="83"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="97"/>
         <source>Translate</source>
         <translation>翻訳</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="88"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="102"/>
         <source>About</source>
         <translation>羽衣について</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="107"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="121"/>
         <source>Theme</source>
         <translation>テーマ</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="112"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="128"/>
         <source>Light</source>
         <translation>ライト</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="117"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="133"/>
         <source>Dark</source>
         <translation>ダーク</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="122"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="138"/>
         <source>Accent color</source>
         <translation>アクセント色</translation>
     </message>
@@ -2130,194 +2130,204 @@
         <translation type="vanished">フォントサイズ</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="157"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="174"/>
         <source>Scaling</source>
         <translation>拡大/縮小</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="169"/>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="175"/>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="181"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="187"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="193"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="200"/>
         <source>A</source>
         <translation>あ</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="201"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="207"/>
+        <source>Font family</source>
+        <translation>フォント名</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="233"/>
+        <source>*Please restart to apply the settings.</source>
+        <translation>*設定の反映に再起動が必要な項目。</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="253"/>
         <source>Api Url</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="211"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="263"/>
         <source>Api Key</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="222"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="274"/>
         <source>Target language</source>
         <translation>翻訳後の言語</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="232"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="284"/>
         <source>Bulgarian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="233"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="285"/>
         <source>Chinese (simplified)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="234"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="286"/>
         <source>Czech</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="235"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="287"/>
         <source>Danish</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="236"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="288"/>
         <source>Dutch</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="237"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="289"/>
         <source>English (American)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="238"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="290"/>
         <source>English (British)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="239"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="291"/>
         <source>Estonian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="240"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="292"/>
         <source>Finnish</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="241"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="293"/>
         <source>French</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="242"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="294"/>
         <source>German</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="243"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="295"/>
         <source>Greek</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="244"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="296"/>
         <source>Hungarian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="245"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="297"/>
         <source>Indonesian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="246"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="298"/>
         <source>Italian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="247"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="299"/>
         <source>Japanese</source>
         <translation>日本語</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="248"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="300"/>
         <source>Korean</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="249"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="301"/>
         <source>Latvian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="250"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="302"/>
         <source>Lithuanian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="251"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="303"/>
         <source>Norwegian (Bokmål)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="252"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="304"/>
         <source>Polish</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="253"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="305"/>
         <source>Portuguese (Brazilian)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="254"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="306"/>
         <source>Portuguese (excluding Brazilian)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="255"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="307"/>
         <source>Romanian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="256"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="308"/>
         <source>Russian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="257"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="309"/>
         <source>Slovak</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="258"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="310"/>
         <source>Slovenian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="259"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="311"/>
         <source>Spanish</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="260"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="312"/>
         <source>Swedish</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="261"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="313"/>
         <source>Turkish</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="262"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="314"/>
         <source>Ukrainian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="331"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="383"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="340"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="392"/>
         <source>OK</source>
         <translation></translation>
     </message>

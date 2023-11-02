@@ -1,6 +1,8 @@
+#include <QFont>
 #include <QGuiApplication>
 #include <QLoggingCategory>
 #include <QQmlApplicationEngine>
+#include <QSettings>
 #include <QTranslator>
 #include <QtQuickControls2/QQuickStyle>
 
@@ -121,6 +123,12 @@ int main(int argc, char *argv[])
     QTranslator translator2;
     if (translator2.load(QString("qt_ja"), dir)) {
         app.installTranslator(&translator2);
+    }
+
+    QSettings settings;
+    QString family = settings.value("fontFamily", QString()).toString();
+    if (!family.isEmpty()) {
+        app.setFont(QFont(family));
     }
 
 #ifdef QT_NO_DEBUG
