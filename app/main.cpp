@@ -49,7 +49,7 @@ void setAppFont(QGuiApplication &app)
         family = "Yu Gothic UI";
 #elif defined(Q_OS_OSX)
 #else
-        family = "Segoe UI";
+        family = "Noto Sans CJK JP";
 #endif
     }
     if (db.families().contains(family)) {
