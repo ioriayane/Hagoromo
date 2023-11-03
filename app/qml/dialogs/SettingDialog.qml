@@ -16,7 +16,6 @@ Dialog {
 
     property alias settings: settings
 
-    //    onOpened: settings.load()
     onRejected: settings.load()
 
     Encryption {
@@ -118,6 +117,7 @@ Dialog {
                     rowSpacing: AdjustedValues.s5
                     Label {
                         font.pointSize: AdjustedValues.f10
+                        font.family: fontFamilyComboBox.currentText
                         text: qsTr("Theme")
                     }
                     RowLayout {
@@ -125,16 +125,19 @@ Dialog {
                         RadioButton {
                             property int value: Material.Light
                             font.pointSize: AdjustedValues.f10
+                            font.family: fontFamilyComboBox.currentText
                             text: qsTr("Light")
                         }
                         RadioButton {
                             property int value: Material.Dark
                             font.pointSize: AdjustedValues.f10
+                            font.family: fontFamilyComboBox.currentText
                             text: qsTr("Dark")
                         }
                     }
                     Label {
                         font.pointSize: AdjustedValues.f10
+                        font.family: fontFamilyComboBox.currentText
                         text: qsTr("Accent color")
                     }
                     GridLayout {
@@ -171,6 +174,7 @@ Dialog {
                     Label {
                         Layout.topMargin: AdjustedValues.s10
                         font.pointSize: AdjustedValues.f10
+                        font.family: fontFamilyComboBox.currentText
                         text: qsTr("Scaling")
                     }
                     Slider {
@@ -184,12 +188,14 @@ Dialog {
                         Label {
                             x: parent.background.x + parent.handle.width / 2 - contentWidth / 2
                             y: parent.topPadding + parent.availableHeight / 2 - parent.handle.height / 2 - contentHeight
+                            font.family: fontFamilyComboBox.currentText
                             text: qsTr("A")
                             font.pointSize: AdjustedValues.f10 * parent.from
                         }
                         Label {
                             x: parent.background.x + 2 * parent.width / ((parent.to - parent.from) / parent.stepSize) - contentWidth / 2
                             y: parent.topPadding + parent.availableHeight / 2 - parent.handle.height / 2 - contentHeight
+                            font.family: fontFamilyComboBox.currentText
                             text: qsTr("A")
                             font.pointSize: AdjustedValues.f10
                         }
@@ -197,6 +203,7 @@ Dialog {
                             id: sliderLabel
                             x: parent.background.x + parent.background.width - parent.handle.width / 2 - contentWidth / 2
                             y: parent.topPadding + parent.availableHeight / 2 - parent.handle.height / 2 - contentHeight
+                            font.family: fontFamilyComboBox.currentText
                             text: qsTr("A")
                             font.pointSize: AdjustedValues.f10 * parent.to
                         }
@@ -204,6 +211,7 @@ Dialog {
 
                     Label {
                         font.pointSize: AdjustedValues.f10
+                        font.family: fontFamilyComboBox.currentText
                         text: qsTr("Font family")
                     }
                     ColumnLayout {
@@ -229,7 +237,8 @@ Dialog {
                         Label {
                             Layout.leftMargin: 5
                             font.pointSize: AdjustedValues.f8
-                            color: Material.color(Material.Grey)
+                            font.family: fontFamilyComboBox.currentText
+                            color: (settings.fontFamily === fontFamilyComboBox.currentText) ? Material.color(Material.Grey) : Material.accentColor
                             text: qsTr("*Please restart to apply the settings.")
                         }
                     }

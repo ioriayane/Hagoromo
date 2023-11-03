@@ -2149,7 +2149,7 @@
     <message>
         <location filename="../qml/dialogs/SettingDialog.qml" line="233"/>
         <source>*Please restart to apply the settings.</source>
-        <translation>*設定の反映に再起動が必要な項目。</translation>
+        <translation>*設定の反映に再起動が必要です。</translation>
     </message>
     <message>
         <location filename="../qml/dialogs/SettingDialog.qml" line="253"/>

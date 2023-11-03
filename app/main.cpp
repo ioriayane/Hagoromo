@@ -1,4 +1,5 @@
 #include <QFont>
+#include <QFontDatabase>
 #include <QGuiApplication>
 #include <QLoggingCategory>
 #include <QQmlApplicationEngine>
@@ -37,6 +38,27 @@
 #include "qtquick/externallink.h"
 #include "qtquick/reporter.h"
 #include "qtquick/feedgeneratorlink.h"
+
+void setAppFont(QGuiApplication &app)
+{
+    QFontDatabase db;
+    QSettings settings;
+    QString family = settings.value("fontFamily").toString();
+    if (family.isEmpty()) {
+#if defined(Q_OS_WIN)
+        family = "Yu Gothic UI";
+#elif defined(Q_OS_OSX)
+#else
+        family = "Segoe UI";
+#endif
+    }
+    if (db.families().contains(family)) {
+        app.setFont(QFont(family));
+        if (settings.value("fontFamily").toString() != family) {
+            settings.setValue("fontFamily", family);
+        }
+    }
+}
 
 int main(int argc, char *argv[])
 {
@@ -125,11 +147,7 @@ int main(int argc, char *argv[])
         app.installTranslator(&translator2);
     }
 
-    QSettings settings;
-    QString family = settings.value("fontFamily", QString()).toString();
-    if (!family.isEmpty()) {
-        app.setFont(QFont(family));
-    }
+    setAppFont(app);
 
 #ifdef QT_NO_DEBUG
     QLoggingCategory::setFilterRules("*.debug=false\n"
