@@ -227,19 +227,12 @@ Dialog {
                                 contentItem: Text {
                                     text: modelData
                                     color: fontFamilyComboBox.currentIndex === index ? Material.accentColor : Material.foreground
-                                    font: modelData
+                                    //font.family: modelData
                                     elide: Text.ElideRight
                                     verticalAlignment: Text.AlignVCenter
                                 }
                                 highlighted: fontFamilyComboBox.highlightedIndex === index
                             }
-                        }
-                        Label {
-                            Layout.leftMargin: 5
-                            font.pointSize: AdjustedValues.f8
-                            font.family: fontFamilyComboBox.currentText
-                            color: (settings.fontFamily === fontFamilyComboBox.currentText) ? Material.color(Material.Grey) : Material.accentColor
-                            text: qsTr("*Please restart to apply the settings.")
                         }
                     }
 
@@ -407,7 +400,10 @@ Dialog {
                     settings.translateTargetLanguage = translateTargetLanguageCombo.currentValue
                     settings.fontSizeRatio = fontSizeRatioSlider.value
                     AdjustedValues.ratio = fontSizeRatioSlider.value
-                    settings.fontFamily = fontFamilyComboBox.currentText
+                    if(settings.fontFamily !== fontFamilyComboBox.currentText){
+                        settings.fontFamily = fontFamilyComboBox.currentText
+                        systemTool.updateFont(settings.fontFamily)
+                    }
 
                     settingDialog.accept()
                 }
