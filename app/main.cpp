@@ -1,6 +1,9 @@
+#include <QFont>
+#include <QFontDatabase>
 #include <QGuiApplication>
 #include <QLoggingCategory>
 #include <QQmlApplicationEngine>
+#include <QSettings>
 #include <QTranslator>
 #include <QtQuickControls2/QQuickStyle>
 
@@ -35,6 +38,27 @@
 #include "qtquick/externallink.h"
 #include "qtquick/reporter.h"
 #include "qtquick/feedgeneratorlink.h"
+
+void setAppFont(QGuiApplication &app)
+{
+    QFontDatabase db;
+    QSettings settings;
+    QString family = settings.value("fontFamily").toString();
+    if (family.isEmpty()) {
+#if defined(Q_OS_WIN)
+        family = "Yu Gothic UI";
+#elif defined(Q_OS_OSX)
+#else
+        family = "Noto Sans CJK JP";
+#endif
+    }
+    if (db.families().contains(family)) {
+        app.setFont(QFont(family));
+        if (settings.value("fontFamily").toString() != family) {
+            settings.setValue("fontFamily", family);
+        }
+    }
+}
 
 int main(int argc, char *argv[])
 {
@@ -122,6 +146,8 @@ int main(int argc, char *argv[])
     if (translator2.load(QString("qt_ja"), dir)) {
         app.installTranslator(&translator2);
     }
+
+    setAppFont(app);
 
 #ifdef QT_NO_DEBUG
     QLoggingCategory::setFilterRules("*.debug=false\n"

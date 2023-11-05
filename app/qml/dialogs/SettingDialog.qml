@@ -35,6 +35,7 @@ Dialog {
         property string translateTargetLanguage: "JA"
 
         property real fontSizeRatio: 1.0
+        property string fontFamily: ""
 
 
         Component.onCompleted: load()
@@ -46,7 +47,7 @@ Dialog {
             translateApiKeyText.text = encryption.decrypt(settings.translateApiKey)
             translateTargetLanguageCombo.currentIndex = translateTargetLanguageCombo.indexOfValue(settings.translateTargetLanguage)
             fontSizeRatioSlider.value = fontSizeRatio
-
+            setFontFamily(fontFamilyComboBox, settings.fontFamily)
             AdjustedValues.ratio = fontSizeRatio
         }
 
@@ -54,6 +55,18 @@ Dialog {
             for(var i=0; i<buttons.length; i++){
                 if(buttons[i].value === value){
                     buttons[i].checked = true
+                }
+            }
+        }
+
+        function setFontFamily(combobox, value){
+            var ffc_index = combobox.find(value)
+            if(ffc_index >= 0){
+                combobox.currentIndex = ffc_index
+            }else{
+                ffc_index = combobox.find(combobox.font.family)
+                if(ffc_index >= 0){
+                    combobox.currentIndex = ffc_index
                 }
             }
         }
@@ -91,35 +104,41 @@ Dialog {
 
         SwipeView {
             Layout.preferredWidth: 450 * AdjustedValues.ratio
-            Layout.preferredHeight: 250 * AdjustedValues.ratio
+            Layout.preferredHeight: 300 * AdjustedValues.ratio
             currentIndex: tabBar.currentIndex
             interactive: false
             clip: true
 
             // General Page
             Frame {
-                ColumnLayout {
-                    spacing: AdjustedValues.s5
+                GridLayout {
+                    anchors.fill: parent
+                    columns: 2
+                    rowSpacing: AdjustedValues.s5
+                    Label {
+                        font.pointSize: AdjustedValues.f10
+                        font.family: fontFamilyComboBox.currentText
+                        text: qsTr("Theme")
+                    }
                     RowLayout {
                         id: themeRowlayout
-                        Label {
-                            font.pointSize: AdjustedValues.f10
-                            text: qsTr("Theme") + " : "
-                        }
                         RadioButton {
                             property int value: Material.Light
                             font.pointSize: AdjustedValues.f10
+                            font.family: fontFamilyComboBox.currentText
                             text: qsTr("Light")
                         }
                         RadioButton {
                             property int value: Material.Dark
                             font.pointSize: AdjustedValues.f10
+                            font.family: fontFamilyComboBox.currentText
                             text: qsTr("Dark")
                         }
                     }
                     Label {
                         font.pointSize: AdjustedValues.f10
-                        text: qsTr("Accent color") + " : "
+                        font.family: fontFamilyComboBox.currentText
+                        text: qsTr("Accent color")
                     }
                     GridLayout {
                         id: accentGridLayout
@@ -151,13 +170,16 @@ Dialog {
                             }
                         }
                     }
+
                     Label {
                         Layout.topMargin: AdjustedValues.s10
                         font.pointSize: AdjustedValues.f10
-                        text: qsTr("Scaling") + " : "
+                        font.family: fontFamilyComboBox.currentText
+                        text: qsTr("Scaling")
                     }
                     Slider {
                         id: fontSizeRatioSlider
+                        Layout.topMargin: AdjustedValues.s10
                         Layout.fillWidth: true
                         from: 0.6
                         to: 2.0
@@ -166,24 +188,56 @@ Dialog {
                         Label {
                             x: parent.background.x + parent.handle.width / 2 - contentWidth / 2
                             y: parent.topPadding + parent.availableHeight / 2 - parent.handle.height / 2 - contentHeight
+                            font.family: fontFamilyComboBox.currentText
                             text: qsTr("A")
                             font.pointSize: AdjustedValues.f10 * parent.from
                         }
                         Label {
                             x: parent.background.x + 2 * parent.width / ((parent.to - parent.from) / parent.stepSize) - contentWidth / 2
                             y: parent.topPadding + parent.availableHeight / 2 - parent.handle.height / 2 - contentHeight
+                            font.family: fontFamilyComboBox.currentText
                             text: qsTr("A")
                             font.pointSize: AdjustedValues.f10
                         }
                         Label {
+                            id: sliderLabel
                             x: parent.background.x + parent.background.width - parent.handle.width / 2 - contentWidth / 2
                             y: parent.topPadding + parent.availableHeight / 2 - parent.handle.height / 2 - contentHeight
+                            font.family: fontFamilyComboBox.currentText
                             text: qsTr("A")
                             font.pointSize: AdjustedValues.f10 * parent.to
                         }
                     }
 
+                    Label {
+                        font.pointSize: AdjustedValues.f10
+                        font.family: fontFamilyComboBox.currentText
+                        text: qsTr("Font family")
+                    }
+                    ColumnLayout {
+                        spacing: 1
+                        ComboBox {
+                            id: fontFamilyComboBox
+                            Layout.fillWidth: true
+                            font.pointSize: AdjustedValues.f10
+                            font.family: currentText
+                            model: Qt.fontFamilies()
+                            delegate: ItemDelegate {
+                                width: fontFamilyComboBox.width
+                                contentItem: Text {
+                                    text: modelData
+                                    color: fontFamilyComboBox.currentIndex === index ? Material.accentColor : Material.foreground
+                                    //font.family: modelData
+                                    elide: Text.ElideRight
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+                                highlighted: fontFamilyComboBox.highlightedIndex === index
+                            }
+                        }
+                    }
+
                     Item {
+                        Layout.columnSpan: 2
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                     }
@@ -300,11 +354,11 @@ Dialog {
                         font.pointSize: AdjustedValues.f10
                         text: "© 2023 Iori Ayane"
                     }
-//                    Item {
-//                        Layout.fillWidth: true
-//                        Layout.fillHeight: true
-//                        Layout.rightMargin: 5
-//                    }
+                    //                    Item {
+                    //                        Layout.fillWidth: true
+                    //                        Layout.fillHeight: true
+                    //                        Layout.rightMargin: 5
+                    //                    }
                 }
             }
         }
@@ -346,6 +400,10 @@ Dialog {
                     settings.translateTargetLanguage = translateTargetLanguageCombo.currentValue
                     settings.fontSizeRatio = fontSizeRatioSlider.value
                     AdjustedValues.ratio = fontSizeRatioSlider.value
+                    if(settings.fontFamily !== fontFamilyComboBox.currentText){
+                        settings.fontFamily = fontFamilyComboBox.currentText
+                        systemTool.updateFont(settings.fontFamily)
+                    }
 
                     settingDialog.accept()
                 }
