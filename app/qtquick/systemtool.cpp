@@ -62,6 +62,17 @@ void SystemTool::updateFont(const QString &family)
     }
 }
 
+QString SystemTool::defaultFontFamily()
+{
+#if defined(Q_OS_WIN)
+    return QStringLiteral("Yu Gothic UI");
+#elif defined(Q_OS_OSX)
+    return QStringLiteral("Hiragino Sans");
+#else
+    return QStringLiteral("Noto Sans CJK JP");
+#endif
+}
+
 QString SystemTool::applicationVersion() const
 {
     return QCoreApplication::applicationVersion();
@@ -119,7 +130,7 @@ QObject *SystemTool::findRootType(QObject *object)
 void SystemTool::updateFontOfChildType(QObject *object, const QFont &font)
 {
     for (auto *child : object->children()) {
-        qDebug().noquote().nospace() << "> " << child->metaObject()->className();
+        // qDebug().noquote().nospace() << "> " << child->metaObject()->className();
         updateFontProperty(child, font);
         updateFontOfChildType(child, font);
     }
@@ -149,7 +160,7 @@ void SystemTool::updateFontOfChildType(QObject *object, const QFont &font)
                 if (QMetaObject::invokeMethod(object, method_name.toLocal8Bit().constData(),
                                               Q_RETURN_ARG(QQuickItem *, item), Q_ARG(int, i))) {
                     if (item != nullptr) {
-                        qDebug().noquote().nospace() << "> " << item->metaObject()->className();
+                        // qDebug().noquote().nospace() << "> " << item->metaObject()->className();
                         updateFontProperty(item, font);
                         updateFontOfChildType(item, font);
                     }
@@ -164,8 +175,8 @@ void SystemTool::updateFontProperty(QObject *item, const QFont &font)
     QVariant p = item->property("font");
     if (p.isValid() && p.canConvert<QFont>()) {
         QFont f = p.value<QFont>();
-        qDebug().noquote().nospace()
-                << " #" << p.isValid() << " " << p.typeName() << " " << f.family();
+        qDebug().noquote().nospace() << "#" << item->metaObject()->className() << " " << p.isValid()
+                                     << " " << p.typeName() << " " << f.family();
         f.setFamily(font.family());
         item->setProperty("font", f);
     }

@@ -29,7 +29,7 @@ ApplicationWindow {
     // SystemTools::updateFont()で裏からすべてのフォントを変更出来れば良いが
     // Componentの内容を動的に読み込むケースに対応するため、ここを使用する
     // 逆にこの設定はListViewの内容へ反映されない
-    font.family: settingDialog.settings.fontFamily ? settingDialog.settings.fontFamily : ""
+    font.family: settingDialog.settings.fontFamily.length > 0 ? settingDialog.settings.fontFamily : font.family
 
     function errorHandler(account_uuid, code, message) {
         if(code === "ExpiredToken" && account_uuid.length > 0){

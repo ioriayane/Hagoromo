@@ -45,13 +45,7 @@ void setAppFont(QGuiApplication &app)
     QSettings settings;
     QString family = settings.value("fontFamily").toString();
     if (family.isEmpty()) {
-#if defined(Q_OS_WIN)
-        family = "Yu Gothic UI";
-#elif defined(Q_OS_OSX)
-        family = "Hiragino Sans";
-#else
-        family = "Noto Sans CJK JP";
-#endif
+        family = SystemTool::defaultFontFamily();
     }
     if (db.families().contains(family)) {
         app.setFont(QFont(family));
