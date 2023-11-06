@@ -47,6 +47,7 @@ public:
     Q_INVOKABLE QUrl clipImage(const QUrl &url, const int x, const int y, const int width,
                                const int height) const;
     Q_INVOKABLE void updateFont(const QString &family);
+    Q_INVOKABLE static QString defaultFontFamily();
 
     QString applicationVersion() const;
     QString qtVersion() const;
