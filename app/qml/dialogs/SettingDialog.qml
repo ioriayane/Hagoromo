@@ -103,16 +103,17 @@ Dialog {
         }
 
         SwipeView {
-            Layout.preferredWidth: 450 * AdjustedValues.ratio
-            Layout.preferredHeight: 300 * AdjustedValues.ratio
             currentIndex: tabBar.currentIndex
             interactive: false
             clip: true
+            implicitWidth: generalPageLayout.width + generalPageFrame.leftPadding + generalPageFrame.rightPadding
+            implicitHeight: generalPageLayout.height + generalPageFrame.topPadding + generalPageFrame.bottomPadding
 
             // General Page
             Frame {
+                id: generalPageFrame
                 GridLayout {
-                    anchors.fill: parent
+                    id: generalPageLayout
                     columns: 2
                     rowSpacing: AdjustedValues.s5
                     Label {
@@ -180,7 +181,7 @@ Dialog {
                     Slider {
                         id: fontSizeRatioSlider
                         Layout.topMargin: AdjustedValues.s10
-                        Layout.fillWidth: true
+                        Layout.preferredWidth: 390 * AdjustedValues.ratio
                         from: 0.6
                         to: 2.0
                         stepSize: 0.2
@@ -234,12 +235,6 @@ Dialog {
                                 highlighted: fontFamilyComboBox.highlightedIndex === index
                             }
                         }
-                    }
-
-                    Item {
-                        Layout.columnSpan: 2
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
                     }
                 }
             }
