@@ -19,8 +19,12 @@ Dialog {
     id: postDialog
     modal: true
     x: (parent.width - width) * 0.5
-    y: (parent.height - height) * 0.5
+    y: (parent.height - scrollView.implicitHeight - postDialog.topPadding - postDialog.bottomPadding) * 0.5
     closePolicy: Popup.NoAutoClose
+    topPadding: 20
+    bottomPadding: 20
+    rightPadding: 0
+    property real basisHeight: parent.height * 0.9 - postDialog.topPadding - postDialog.bottomPadding
 
     property int parentWidth: parent.width
     property alias accountModel: accountCombo.model
@@ -39,8 +43,6 @@ Dialog {
     property string replyText: ""
 
     property alias postText: postText
-
-    height: mainLayout.implicitHeight + postDialog.topPadding + postDialog.bottomPadding
 
     onOpened: {
         var i = accountModel.indexAt(defaultAccountUuid)
@@ -109,398 +111,405 @@ Dialog {
         id: feedGeneratorLink
     }
 
-    ColumnLayout {
-        id: mainLayout
-        Frame {
-            id: replyFrame
-            Layout.preferredWidth: postText.width
-            Layout.maximumHeight: 200 * AdjustedValues.ratio
-            visible: postType === "reply"
-            clip: true
-            ColumnLayout {
-                anchors.fill: parent
-                RowLayout {
-                    AvatarImage {
-                        id: replyAvatarImage
-                        Layout.preferredWidth: AdjustedValues.i16
-                        Layout.preferredHeight: AdjustedValues.i16
-                        source: replyAvatar
+    ScrollView {
+        id: scrollView
+        implicitWidth: mainLayout.width + postDialog.leftPadding
+        implicitHeight: (mainLayout.height > basisHeight) ? basisHeight : mainLayout.height
+        ScrollBar.vertical.policy: (mainLayout.height > basisHeight) ? ScrollBar.AlwaysOn :ScrollBar.AlwaysOff
+        clip: true
+        ColumnLayout {
+            id: mainLayout
+            Frame {
+                id: replyFrame
+                Layout.preferredWidth: postText.width
+                Layout.maximumHeight: 200 * AdjustedValues.ratio
+                visible: postType === "reply"
+                clip: true
+                ColumnLayout {
+                    anchors.fill: parent
+                    RowLayout {
+                        AvatarImage {
+                            id: replyAvatarImage
+                            Layout.preferredWidth: AdjustedValues.i16
+                            Layout.preferredHeight: AdjustedValues.i16
+                            source: replyAvatar
+                        }
+                        Author {
+                            layoutWidth: replyFrame.width - replyFrame.padding * 2 - replyAvatarImage.width - parent.spacing
+                            displayName: replyDisplayName
+                            handle: replyHandle
+                            indexedAt: replyIndexedAt
+                        }
                     }
-                    Author {
-                        layoutWidth: replyFrame.width - replyFrame.padding * 2 - replyAvatarImage.width - parent.spacing
-                        displayName: replyDisplayName
-                        handle: replyHandle
-                        indexedAt: replyIndexedAt
+                    Label {
+                        Layout.preferredWidth: postText.width - replyFrame.padding * 2
+                        wrapMode: Text.WrapAnywhere
+                        font.pointSize: AdjustedValues.f8
+                        text: replyText
                     }
                 }
-                Label {
-                    Layout.preferredWidth: postText.width - replyFrame.padding * 2
-                    wrapMode: Text.WrapAnywhere
-                    font.pointSize: AdjustedValues.f8
-                    text: replyText
+            }
+
+            RowLayout {
+                AvatarImage {
+                    id: accountAvatarImage
+                    Layout.preferredWidth: AdjustedValues.i24
+                    Layout.preferredHeight: AdjustedValues.i24
+                    //                source:
                 }
-            }
-        }
 
-        RowLayout {
-            AvatarImage {
-                id: accountAvatarImage
-                Layout.preferredWidth: AdjustedValues.i24
-                Layout.preferredHeight: AdjustedValues.i24
-                //                source:
-            }
-
-            ComboBox {
-                id: accountCombo
-                Layout.preferredWidth: 200 * AdjustedValues.ratio
-                Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
-                enabled: !createRecord.running
-                font.pointSize: AdjustedValues.f10
-                textRole: "handle"
-                valueRole: "did"
-                delegate: ItemDelegate {
-                    width: parent.width
-                    height: implicitHeight * AdjustedValues.ratio
+                ComboBox {
+                    id: accountCombo
+                    Layout.preferredWidth: 200 * AdjustedValues.ratio
+                    Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
+                    enabled: !createRecord.running
                     font.pointSize: AdjustedValues.f10
-                    text: model.handle
-                    onClicked: accountCombo.currentIndex = model.index
+                    textRole: "handle"
+                    valueRole: "did"
+                    delegate: ItemDelegate {
+                        width: parent.width
+                        height: implicitHeight * AdjustedValues.ratio
+                        font.pointSize: AdjustedValues.f10
+                        text: model.handle
+                        onClicked: accountCombo.currentIndex = model.index
+                    }
+                    onCurrentIndexChanged: {
+                        if(accountCombo.currentIndex >= 0){
+                            accountAvatarImage.source =
+                                    postDialog.accountModel.item(accountCombo.currentIndex, AccountListModel.AvatarRole)
+                            postLanguagesButton.setLanguageText(
+                                        postDialog.accountModel.item(accountCombo.currentIndex, AccountListModel.PostLanguagesRole)
+                                        )
+                        }
+                    }
                 }
-                onCurrentIndexChanged: {
-                    if(accountCombo.currentIndex >= 0){
-                        accountAvatarImage.source =
-                                postDialog.accountModel.item(accountCombo.currentIndex, AccountListModel.AvatarRole)
-                        postLanguagesButton.setLanguageText(
+                Item {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 1
+                }
+                IconButton {
+                    id: postLanguagesButton
+                    enabled: !createRecord.running
+                    iconSource: "../images/language.png"
+                    flat: true
+                    onClicked: {
+                        languageSelectionDialog.setSelectedLanguages(
                                     postDialog.accountModel.item(accountCombo.currentIndex, AccountListModel.PostLanguagesRole)
                                     )
+                        languageSelectionDialog.open()
                     }
-                }
-            }
-            Item {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 1
-            }
-            IconButton {
-                id: postLanguagesButton
-                enabled: !createRecord.running
-                iconSource: "../images/language.png"
-                flat: true
-                onClicked: {
-                    languageSelectionDialog.setSelectedLanguages(
-                                postDialog.accountModel.item(accountCombo.currentIndex, AccountListModel.PostLanguagesRole)
-                                )
-                    languageSelectionDialog.open()
-                }
 
-                function setLanguageText(post_langs){
-                    var langs = languageListModel.convertLanguageNames(post_langs)
-                    var lang_str = ""
-                    for(var i=0;i<langs.length;i++){
-                        if(lang_str.length > 0){
-                            lang_str += ", "
+                    function setLanguageText(post_langs){
+                        var langs = languageListModel.convertLanguageNames(post_langs)
+                        var lang_str = ""
+                        for(var i=0;i<langs.length;i++){
+                            if(lang_str.length > 0){
+                                lang_str += ", "
+                            }
+                            lang_str += langs[i]
                         }
-                        lang_str += langs[i]
+                        if(lang_str.length > 13){
+                            lang_str = lang_str.substring(0, 10) + "..."
+                        }
+                        iconText = lang_str
                     }
-                    if(lang_str.length > 13){
-                        lang_str = lang_str.substring(0, 10) + "..."
-                    }
-                    iconText = lang_str
                 }
             }
-        }
 
-        ScrollView {
-            Layout.preferredWidth: 400 * AdjustedValues.ratio
-            Layout.preferredHeight: 100 * AdjustedValues.ratio
-            TextArea {
-                id: postText
-                verticalAlignment: TextInput.AlignTop
-                enabled: !createRecord.running
-                wrapMode: TextInput.WordWrap
-                selectByMouse: true
-                font.pointSize: AdjustedValues.f10
-                property int realTextLength: systemTool.countText(text)
-            }
-        }
-
-        RowLayout {
-            Layout.maximumWidth: 400 * AdjustedValues.ratio
-            visible: postType !== "quote" && embedImagePreview.embedImages.length === 0
             ScrollView {
-                Layout.fillWidth: true
-                clip: true
+                Layout.preferredWidth: 400 * AdjustedValues.ratio
+                Layout.preferredHeight: 100 * AdjustedValues.ratio
                 TextArea {
-                    id: addingExternalLinkUrlText
+                    id: postText
+                    verticalAlignment: TextInput.AlignTop
+                    enabled: !createRecord.running
+                    wrapMode: TextInput.WordWrap
                     selectByMouse: true
                     font.pointSize: AdjustedValues.f10
-                    placeholderText: qsTr("Link card URL or custom feed URL")
+                    property int realTextLength: systemTool.countText(text)
                 }
             }
-            IconButton {
-                id: externalLinkButton
-                iconSource: "../images/add.png"
-                enabled: addingExternalLinkUrlText.text.length > 0 &&
-                         !externalLink.running &&
-                         !feedGeneratorLink.running &&
-                         !createRecord.running
-                onClicked: {
-                    var uri = addingExternalLinkUrlText.text
-                    var at_uri = feedGeneratorLink.convertToAtUri(uri)
-                    if(at_uri.length > 0){
-                        var row = accountCombo.currentIndex;
-                        feedGeneratorLink.setAccount(postDialog.accountModel.item(row, AccountListModel.ServiceRole),
-                                                     postDialog.accountModel.item(row, AccountListModel.DidRole),
-                                                     postDialog.accountModel.item(row, AccountListModel.HandleRole),
-                                                     postDialog.accountModel.item(row, AccountListModel.EmailRole),
-                                                     postDialog.accountModel.item(row, AccountListModel.AccessJwtRole),
-                                                     postDialog.accountModel.item(row, AccountListModel.RefreshJwtRole))
-                        feedGeneratorLink.getFeedGenerator(at_uri)
-                    }else{
-                        externalLink.getExternalLink(uri)
+
+            RowLayout {
+                Layout.maximumWidth: 400 * AdjustedValues.ratio
+                visible: postType !== "quote" && embedImagePreview.embedImages.length === 0
+                ScrollView {
+                    Layout.fillWidth: true
+                    clip: true
+                    TextArea {
+                        id: addingExternalLinkUrlText
+                        selectByMouse: true
+                        font.pointSize: AdjustedValues.f10
+                        placeholderText: qsTr("Link card URL or custom feed URL")
                     }
                 }
-                BusyIndicator {
-                    anchors.fill: parent
-                    anchors.margins: 3
-                    visible: externalLink.running || feedGeneratorLink.running
-                }
-                states: [
-                    State {
-                        when: externalLink.valid || feedGeneratorLink.valid
-                        PropertyChanges {
-                            target: externalLinkButton
-                            iconSource: "../images/delete.png"
-                            onClicked: {
-                                externalLink.clear()
-                                feedGeneratorLink.clear()
-                            }
+                IconButton {
+                    id: externalLinkButton
+                    iconSource: "../images/add.png"
+                    enabled: addingExternalLinkUrlText.text.length > 0 &&
+                             !externalLink.running &&
+                             !feedGeneratorLink.running &&
+                             !createRecord.running
+                    onClicked: {
+                        var uri = addingExternalLinkUrlText.text
+                        var at_uri = feedGeneratorLink.convertToAtUri(uri)
+                        if(at_uri.length > 0){
+                            var row = accountCombo.currentIndex;
+                            feedGeneratorLink.setAccount(postDialog.accountModel.item(row, AccountListModel.ServiceRole),
+                                                         postDialog.accountModel.item(row, AccountListModel.DidRole),
+                                                         postDialog.accountModel.item(row, AccountListModel.HandleRole),
+                                                         postDialog.accountModel.item(row, AccountListModel.EmailRole),
+                                                         postDialog.accountModel.item(row, AccountListModel.AccessJwtRole),
+                                                         postDialog.accountModel.item(row, AccountListModel.RefreshJwtRole))
+                            feedGeneratorLink.getFeedGenerator(at_uri)
+                        }else{
+                            externalLink.getExternalLink(uri)
                         }
                     }
-                ]
-            }
-        }
-        ExternalLinkCard {
-            Layout.preferredWidth: 400 * AdjustedValues.ratio
-            Layout.maximumHeight: 280 * AdjustedValues.ratio
-            visible: externalLink.valid
-
-            thumbImage.source: externalLink.thumbLocal
-            uriLabel.text: externalLink.uri
-            titleLabel.text: externalLink.title
-            descriptionLabel.text: externalLink.description
-        }
-        FeedGeneratorLinkCard {
-            Layout.preferredWidth: 400 * AdjustedValues.ratio
-            visible: feedGeneratorLink.valid
-
-            avatarImage.source: feedGeneratorLink.avatar
-            displayNameLabel.text: feedGeneratorLink.displayName
-            creatorHandleLabel.text: feedGeneratorLink.creatorHandle
-            likeCountLabel.text: feedGeneratorLink.likeCount
-        }
-
-        RowLayout {
-            visible: embedImagePreview.embedImages.length > 0
-            spacing: 4
-            Repeater {
-                id: embedImagePreview
-                property var embedImages: []
-                property var embedAlts: []
-                model: embedImagePreview.embedImages
-                delegate: ImageWithIndicator {
-                    Layout.preferredWidth: 97 * AdjustedValues.ratio
-                    Layout.preferredHeight: 97 * AdjustedValues.ratio
-                    fillMode: Image.PreserveAspectCrop
-                    source: modelData
-                    TagLabel {
-                        anchors.left: parent.left
-                        anchors.bottom: parent.bottom
-                        anchors.margins: 3
-                        visible: model.index < embedImagePreview.embedAlts.length ? embedImagePreview.embedAlts[model.index].length > 0 : false
-                        source: ""
-                        fontPointSize: AdjustedValues.f8
-                        text: "Alt"
-                    }
-                    MouseArea {
+                    BusyIndicator {
                         anchors.fill: parent
-                        onClicked: {
-                            altEditDialog.editingIndex = model.index
-                            altEditDialog.embedImage = modelData
-                            if(model.index < embedImagePreview.embedAlts.length){
-                                altEditDialog.embedAlt = embedImagePreview.embedAlts[model.index]
+                        anchors.margins: 3
+                        visible: externalLink.running || feedGeneratorLink.running
+                    }
+                    states: [
+                        State {
+                            when: externalLink.valid || feedGeneratorLink.valid
+                            PropertyChanges {
+                                target: externalLinkButton
+                                iconSource: "../images/delete.png"
+                                onClicked: {
+                                    externalLink.clear()
+                                    feedGeneratorLink.clear()
+                                }
                             }
-                            altEditDialog.open()
                         }
-                    }
-                    IconButton {
-                        enabled: !createRecord.running
-                        width: AdjustedValues.b24
-                        height: AdjustedValues.b24
-                        anchors.top: parent.top
-                        anchors.right: parent.right
-                        anchors.margins: 5
-                        iconSource: "../images/delete.png"
-                        onClicked: embedImagePreview.removeImage(modelData)
-                    }
-                }
-                function removeImage(path){
-                    var images = embedImagePreview.embedImages
-                    var alts = embedImagePreview.embedAlts
-                    var new_images = []
-                    var new_alts = []
-                    for(var i=0; i<images.length; i++){
-                        if(images[i] === path){
-                            continue;
-                        }
-                        new_images.push(images[i])
-                        new_alts.push(alts[i])
-                    }
-                    embedImagePreview.embedImages = new_images
-                    embedImagePreview.embedAlts = new_alts
+                    ]
                 }
             }
-        }
+            ExternalLinkCard {
+                Layout.preferredWidth: 400 * AdjustedValues.ratio
+                Layout.maximumHeight: 280 * AdjustedValues.ratio
+                visible: externalLink.valid
 
-        Frame {
-            id: quoteFrame
-            Layout.preferredWidth: postText.width
-            Layout.maximumHeight: 200 * AdjustedValues.ratio
-            visible: postType === "quote"
-            clip: true
-            ColumnLayout {
+                thumbImage.source: externalLink.thumbLocal
+                uriLabel.text: externalLink.uri
+                titleLabel.text: externalLink.title
+                descriptionLabel.text: externalLink.description
+            }
+            FeedGeneratorLinkCard {
+                Layout.preferredWidth: 400 * AdjustedValues.ratio
+                visible: feedGeneratorLink.valid
+
+                avatarImage.source: feedGeneratorLink.avatar
+                displayNameLabel.text: feedGeneratorLink.displayName
+                creatorHandleLabel.text: feedGeneratorLink.creatorHandle
+                likeCountLabel.text: feedGeneratorLink.likeCount
+            }
+
+            RowLayout {
+                visible: embedImagePreview.embedImages.length > 0
+                spacing: 4
+                Repeater {
+                    id: embedImagePreview
+                    property var embedImages: []
+                    property var embedAlts: []
+                    model: embedImagePreview.embedImages
+                    delegate: ImageWithIndicator {
+                        Layout.preferredWidth: 97 * AdjustedValues.ratio
+                        Layout.preferredHeight: 97 * AdjustedValues.ratio
+                        fillMode: Image.PreserveAspectCrop
+                        source: modelData
+                        TagLabel {
+                            anchors.left: parent.left
+                            anchors.bottom: parent.bottom
+                            anchors.margins: 3
+                            visible: model.index < embedImagePreview.embedAlts.length ? embedImagePreview.embedAlts[model.index].length > 0 : false
+                            source: ""
+                            fontPointSize: AdjustedValues.f8
+                            text: "Alt"
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                altEditDialog.editingIndex = model.index
+                                altEditDialog.embedImage = modelData
+                                if(model.index < embedImagePreview.embedAlts.length){
+                                    altEditDialog.embedAlt = embedImagePreview.embedAlts[model.index]
+                                }
+                                altEditDialog.open()
+                            }
+                        }
+                        IconButton {
+                            enabled: !createRecord.running
+                            width: AdjustedValues.b24
+                            height: AdjustedValues.b24
+                            anchors.top: parent.top
+                            anchors.right: parent.right
+                            anchors.margins: 5
+                            iconSource: "../images/delete.png"
+                            onClicked: embedImagePreview.removeImage(modelData)
+                        }
+                    }
+                    function removeImage(path){
+                        var images = embedImagePreview.embedImages
+                        var alts = embedImagePreview.embedAlts
+                        var new_images = []
+                        var new_alts = []
+                        for(var i=0; i<images.length; i++){
+                            if(images[i] === path){
+                                continue;
+                            }
+                            new_images.push(images[i])
+                            new_alts.push(alts[i])
+                        }
+                        embedImagePreview.embedImages = new_images
+                        embedImagePreview.embedAlts = new_alts
+                    }
+                }
+            }
+
+            Frame {
+                id: quoteFrame
                 Layout.preferredWidth: postText.width
-                RowLayout {
-                    AvatarImage {
-                        id: quoteAvatarImage
-                        Layout.preferredWidth: AdjustedValues.i16
-                        Layout.preferredHeight: AdjustedValues.i16
-                        source: replyAvatar
+                Layout.maximumHeight: 200 * AdjustedValues.ratio
+                visible: postType === "quote"
+                clip: true
+                ColumnLayout {
+                    Layout.preferredWidth: postText.width
+                    RowLayout {
+                        AvatarImage {
+                            id: quoteAvatarImage
+                            Layout.preferredWidth: AdjustedValues.i16
+                            Layout.preferredHeight: AdjustedValues.i16
+                            source: replyAvatar
+                        }
+                        Author {
+                            layoutWidth: postText.width - quoteFrame.padding * 2 - quoteAvatarImage.width - parent.spacing
+                            displayName: replyDisplayName
+                            handle: replyHandle
+                            indexedAt: replyIndexedAt
+                        }
                     }
-                    Author {
-                        layoutWidth: postText.width - quoteFrame.padding * 2 - quoteAvatarImage.width - parent.spacing
-                        displayName: replyDisplayName
-                        handle: replyHandle
-                        indexedAt: replyIndexedAt
+                    Label {
+                        Layout.preferredWidth: postText.width - quoteFrame.padding * 2
+                        wrapMode: Text.WrapAnywhere
+                        font.pointSize: AdjustedValues.f8
+                        text: replyText
                     }
-                }
-                Label {
-                    Layout.preferredWidth: postText.width - quoteFrame.padding * 2
-                    wrapMode: Text.WrapAnywhere
-                    font.pointSize: AdjustedValues.f8
-                    text: replyText
                 }
             }
-        }
 
-        RowLayout {
-            spacing: 0
-            Button {
-                enabled: !createRecord.running
-                flat: true
-                font.pointSize: AdjustedValues.f10
-                text: qsTr("Cancel")
-                onClicked: postDialog.close()
-            }
-            Item {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 1
-            }
-            IconButton {
-                id: selfLabelsButton
-                enabled: !createRecord.running
-                iconSource: "../images/labeling.png"
-                iconSize: AdjustedValues.i16
-                flat: true
-                foreground: value.length > 0 ? Material.accent : Material.foreground
-                onClicked: selfLabelPopup.popup()
-                property string value: ""
-                SelfLabelPopup {
-                    id: selfLabelPopup
-                    onTriggered: (value, text) => {
-                                     if(value.length > 0){
-                                         selfLabelsButton.value = value
-                                         selfLabelsButton.iconText = text
-                                     }else{
-                                         selfLabelsButton.value = ""
-                                         selfLabelsButton.iconText = ""
+            RowLayout {
+                spacing: 0
+                Button {
+                    enabled: !createRecord.running
+                    flat: true
+                    font.pointSize: AdjustedValues.f10
+                    text: qsTr("Cancel")
+                    onClicked: postDialog.close()
+                }
+                Item {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 1
+                }
+                IconButton {
+                    id: selfLabelsButton
+                    enabled: !createRecord.running
+                    iconSource: "../images/labeling.png"
+                    iconSize: AdjustedValues.i16
+                    flat: true
+                    foreground: value.length > 0 ? Material.accent : Material.foreground
+                    onClicked: selfLabelPopup.popup()
+                    property string value: ""
+                    SelfLabelPopup {
+                        id: selfLabelPopup
+                        onTriggered: (value, text) => {
+                                         if(value.length > 0){
+                                             selfLabelsButton.value = value
+                                             selfLabelsButton.iconText = text
+                                         }else{
+                                             selfLabelsButton.value = ""
+                                             selfLabelsButton.iconText = ""
+                                         }
                                      }
-                                 }
-                    onClosed: postText.forceActiveFocus()
-                }
-            }
-            IconButton {
-                enabled: !createRecord.running && !externalLink.valid && !feedGeneratorLink.valid
-                iconSource: "../images/add_image.png"
-                iconSize: AdjustedValues.i16
-                flat: true
-                onClicked: {
-                    if(fileDialog.prevFolder.length > 0){
-                        fileDialog.folder = fileDialog.prevFolder
+                        onClosed: postText.forceActiveFocus()
                     }
-                    fileDialog.open()
                 }
-            }
+                IconButton {
+                    enabled: !createRecord.running && !externalLink.valid && !feedGeneratorLink.valid
+                    iconSource: "../images/add_image.png"
+                    iconSize: AdjustedValues.i16
+                    flat: true
+                    onClicked: {
+                        if(fileDialog.prevFolder.length > 0){
+                            fileDialog.folder = fileDialog.prevFolder
+                        }
+                        fileDialog.open()
+                    }
+                }
 
-            Label {
-                Layout.leftMargin: 5
-                Layout.alignment: Qt.AlignVCenter
-                font.pointSize: AdjustedValues.f8
-                text: 300 - postText.realTextLength
-            }
-            ProgressCircle {
-                Layout.leftMargin: 5
-                Layout.preferredWidth: AdjustedValues.i24
-                Layout.preferredHeight: AdjustedValues.i24
-                Layout.alignment: Qt.AlignVCenter
-                from: 0
-                to: 300
-                value: postText.realTextLength
-            }
-            Button {
-                id: postButton
-                Layout.alignment: Qt.AlignRight
-                enabled: postText.text.length > 0 &&
-                         postText.realTextLength <= 300 &&
-                         !createRecord.running &&
-                         !externalLink.running &&
-                         !feedGeneratorLink.running
-                font.pointSize: AdjustedValues.f10
-                text: qsTr("Post")
-                onClicked: {
-                    var row = accountCombo.currentIndex;
-                    createRecord.setAccount(postDialog.accountModel.item(row, AccountListModel.ServiceRole),
-                                            postDialog.accountModel.item(row, AccountListModel.DidRole),
-                                            postDialog.accountModel.item(row, AccountListModel.HandleRole),
-                                            postDialog.accountModel.item(row, AccountListModel.EmailRole),
-                                            postDialog.accountModel.item(row, AccountListModel.AccessJwtRole),
-                                            postDialog.accountModel.item(row, AccountListModel.RefreshJwtRole))
-                    createRecord.clear()
-                    createRecord.setText(postText.text)
-                    createRecord.setPostLanguages(postDialog.accountModel.item(row, AccountListModel.PostLanguagesRole))
-                    if(postType === "reply"){
-                        createRecord.setReply(replyCid, replyUri, replyRootCid, replyRootUri)
-                    }else if(postType === "quote"){
-                        createRecord.setQuote(replyCid, replyUri)
-                    }
-                    if(selfLabelsButton.value.length > 0){
-                        createRecord.setSelfLabels([selfLabelsButton.value])
-                    }
-                    if(externalLink.valid){
-                        createRecord.setExternalLink(externalLink.uri, externalLink.title, externalLink.description, externalLink.thumbLocal)
-                        createRecord.postWithImages()
-                    }else if(feedGeneratorLink.valid){
-                        createRecord.setFeedGeneratorLink(feedGeneratorLink.uri, feedGeneratorLink.cid)
-                        createRecord.post()
-                    }else if(embedImagePreview.embedImages.length > 0){
-                        createRecord.setImages(embedImagePreview.embedImages, embedImagePreview.embedAlts)
-                        createRecord.postWithImages()
-                    }else{
-                        createRecord.post()
-                    }
+                Label {
+                    Layout.leftMargin: 5
+                    Layout.alignment: Qt.AlignVCenter
+                    font.pointSize: AdjustedValues.f8
+                    text: 300 - postText.realTextLength
                 }
-                BusyIndicator {
-                    anchors.fill: parent
-                    anchors.margins: 3
-                    visible: createRecord.running
+                ProgressCircle {
+                    Layout.leftMargin: 5
+                    Layout.preferredWidth: AdjustedValues.i24
+                    Layout.preferredHeight: AdjustedValues.i24
+                    Layout.alignment: Qt.AlignVCenter
+                    from: 0
+                    to: 300
+                    value: postText.realTextLength
+                }
+                Button {
+                    id: postButton
+                    Layout.alignment: Qt.AlignRight
+                    enabled: postText.text.length > 0 &&
+                             postText.realTextLength <= 300 &&
+                             !createRecord.running &&
+                             !externalLink.running &&
+                             !feedGeneratorLink.running
+                    font.pointSize: AdjustedValues.f10
+                    text: qsTr("Post")
+                    onClicked: {
+                        var row = accountCombo.currentIndex;
+                        createRecord.setAccount(postDialog.accountModel.item(row, AccountListModel.ServiceRole),
+                                                postDialog.accountModel.item(row, AccountListModel.DidRole),
+                                                postDialog.accountModel.item(row, AccountListModel.HandleRole),
+                                                postDialog.accountModel.item(row, AccountListModel.EmailRole),
+                                                postDialog.accountModel.item(row, AccountListModel.AccessJwtRole),
+                                                postDialog.accountModel.item(row, AccountListModel.RefreshJwtRole))
+                        createRecord.clear()
+                        createRecord.setText(postText.text)
+                        createRecord.setPostLanguages(postDialog.accountModel.item(row, AccountListModel.PostLanguagesRole))
+                        if(postType === "reply"){
+                            createRecord.setReply(replyCid, replyUri, replyRootCid, replyRootUri)
+                        }else if(postType === "quote"){
+                            createRecord.setQuote(replyCid, replyUri)
+                        }
+                        if(selfLabelsButton.value.length > 0){
+                            createRecord.setSelfLabels([selfLabelsButton.value])
+                        }
+                        if(externalLink.valid){
+                            createRecord.setExternalLink(externalLink.uri, externalLink.title, externalLink.description, externalLink.thumbLocal)
+                            createRecord.postWithImages()
+                        }else if(feedGeneratorLink.valid){
+                            createRecord.setFeedGeneratorLink(feedGeneratorLink.uri, feedGeneratorLink.cid)
+                            createRecord.post()
+                        }else if(embedImagePreview.embedImages.length > 0){
+                            createRecord.setImages(embedImagePreview.embedImages, embedImagePreview.embedAlts)
+                            createRecord.postWithImages()
+                        }else{
+                            createRecord.post()
+                        }
+                    }
+                    BusyIndicator {
+                        anchors.fill: parent
+                        anchors.margins: 3
+                        visible: createRecord.running
+                    }
                 }
             }
         }
