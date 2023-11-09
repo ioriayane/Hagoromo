@@ -12,6 +12,7 @@
 #include <QFont>
 #include <QFontDatabase>
 #include <QQuickItem>
+#include <QPainter>
 
 SystemTool::SystemTool(QObject *parent) : QObject { parent }
 {
@@ -42,8 +43,12 @@ QUrl SystemTool::clipImage(const QUrl &url, const int x, const int y, const int 
     qDebug() << "clipImage" << url.toLocalFile();
     qDebug() << "dest" << new_path;
 
-    QImage img(url.toLocalFile());
-    img.copy(x, y, width, height).save(new_path);
+    QImage src(url.toLocalFile());
+    QImage dest(src.size(), QImage::Format_RGB32);
+    dest.fill(QColor(Qt::white));
+    QPainter p_dest(&dest);
+    p_dest.drawImage(0, 0, src, x, y, width, height);
+    dest.save(new_path);
 
     return QUrl::fromLocalFile(new_path);
 }
