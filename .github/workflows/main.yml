@@ -9,4 +9,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name : Check pullrequest title
-        run: echo The Title of your PR is ${{ github.event.pull_request.title }}
+        run: |
+          name="${{ github.event.pull_request.title }}"
+          pattern="$Release v[0-9]+\.[0-9]+\.[0-9]+$"
+          if [[ $name =~ $pattern ]]; then
+              ret=0
+              echo ok
+          else
+              ret=1
+              echo Please format the title of the pull request as "Release vX.Y.Z".
+          fi
+          exit $ret
