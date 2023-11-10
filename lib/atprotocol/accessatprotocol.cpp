@@ -271,8 +271,11 @@ bool AccessAtProtocol::checkReply(HttpReply *reply)
             m_errorMessage = m_replyJson;
         } else {
             m_errorCode = QStringLiteral("Unknown");
-            m_errorMessage = QString("error code : %1\nurl : %2")
-                                     .arg(QString::number(reply->error()), reply->url().toString());
+            if (reply->error() != HttpReply::Error::Read) {
+                m_errorMessage =
+                        QString("error code : %1\nurl : %2")
+                                .arg(QString::number(reply->error()), reply->url().toString());
+            }
         }
         if (m_errorCode == "RateLimitExceeded") {
             m_errorMessage += "\n";
