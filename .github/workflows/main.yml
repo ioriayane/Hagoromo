@@ -1,0 +1,12 @@
+name: Release Check
+on:
+  pull_request:
+    branches:    
+      - main
+      - dev
+jobs:
+  release_check:
+    runs-on: ubuntu-latest
+    steps:
+      - name : Check pullrequest title
+        run: echo The Title of your PR is ${{ github.event.pull_request.title }}
