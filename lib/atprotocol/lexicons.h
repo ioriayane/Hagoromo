@@ -858,6 +858,11 @@ enum class ActionViewSubjectType : int {
     subject_RepoRef,
     subject_ComAtprotoRepoStrongRef_Main,
 };
+struct StatusAttr
+{
+    bool applied = false;
+    QString ref;
+};
 typedef QString ActionType;
 struct RepoRef
 {
@@ -1021,6 +1026,25 @@ struct RepoViewDetail
     QList<ComAtprotoServerDefs::InviteCode> invites;
     bool invitesDisabled = false;
     QString inviteNote;
+    QString emailConfirmedAt; // datetime
+};
+struct AccountView
+{
+    QString did; // did
+    QString handle; // handle
+    QString email;
+    QString indexedAt; // datetime
+    ComAtprotoServerDefs::InviteCode invitedBy;
+    QList<ComAtprotoServerDefs::InviteCode> invites;
+    bool invitesDisabled = false;
+    QString emailConfirmedAt; // datetime
+    QString inviteNote;
+};
+struct RepoBlobRef
+{
+    QString did; // did
+    QString cid; // cid
+    QString recordUri; // at-uri
 };
 struct RecordViewDetail
 {

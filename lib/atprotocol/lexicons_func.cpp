@@ -1080,6 +1080,13 @@ void copySkeletonSearchActor(const QJsonObject &src,
 }
 // com.atproto.admin.defs
 namespace ComAtprotoAdminDefs {
+void copyStatusAttr(const QJsonObject &src, ComAtprotoAdminDefs::StatusAttr &dest)
+{
+    if (!src.isEmpty()) {
+        dest.applied = src.value("applied").toBool();
+        dest.ref = src.value("ref").toString();
+    }
+}
 void copyActionType(const QJsonValue &src, ComAtprotoAdminDefs::ActionType &dest)
 {
     dest = src.toString();
@@ -1375,6 +1382,33 @@ void copyRepoViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::RepoViewDet
         }
         dest.invitesDisabled = src.value("invitesDisabled").toBool();
         dest.inviteNote = src.value("inviteNote").toString();
+        dest.emailConfirmedAt = src.value("emailConfirmedAt").toString();
+    }
+}
+void copyAccountView(const QJsonObject &src, ComAtprotoAdminDefs::AccountView &dest)
+{
+    if (!src.isEmpty()) {
+        dest.did = src.value("did").toString();
+        dest.handle = src.value("handle").toString();
+        dest.email = src.value("email").toString();
+        dest.indexedAt = src.value("indexedAt").toString();
+        ComAtprotoServerDefs::copyInviteCode(src.value("invitedBy").toObject(), dest.invitedBy);
+        for (const auto &s : src.value("invites").toArray()) {
+            ComAtprotoServerDefs::InviteCode child;
+            ComAtprotoServerDefs::copyInviteCode(s.toObject(), child);
+            dest.invites.append(child);
+        }
+        dest.invitesDisabled = src.value("invitesDisabled").toBool();
+        dest.emailConfirmedAt = src.value("emailConfirmedAt").toString();
+        dest.inviteNote = src.value("inviteNote").toString();
+    }
+}
+void copyRepoBlobRef(const QJsonObject &src, ComAtprotoAdminDefs::RepoBlobRef &dest)
+{
+    if (!src.isEmpty()) {
+        dest.did = src.value("did").toString();
+        dest.cid = src.value("cid").toString();
+        dest.recordUri = src.value("recordUri").toString();
     }
 }
 void copyRecordViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::RecordViewDetail &dest)
