@@ -312,7 +312,7 @@ ColumnLayout {
                     MenuItem {
                         text: qsTr("Add/Remove from lists")
                         icon.source: "../images/list.png"
-                        enabled: userProfile.handle.length > 0 && userProfile.did !== account.did
+                        enabled: userProfile.handle.length > 0
                         onTriggered: requestAddRemoveFromLists(userProfile.did)
                     }
                     MenuSeparator {}

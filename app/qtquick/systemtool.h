@@ -46,6 +46,8 @@ public:
     Q_INVOKABLE int countText(const QString &text) const;
     Q_INVOKABLE QUrl clipImage(const QUrl &url, const int x, const int y, const int width,
                                const int height) const;
+    Q_INVOKABLE void updateFont(const QString &family);
+    Q_INVOKABLE static QString defaultFontFamily();
 
     QString applicationVersion() const;
     QString qtVersion() const;
@@ -53,6 +55,10 @@ public:
     QString markupText(const QString &text) const;
 
 private:
+    QObject *findRootType(QObject *object);
+    void updateFontOfChildType(QObject *object, const QFont &font);
+    void updateFontProperty(QObject *item, const QFont &font);
+
     QRegularExpression m_rxUrl;
 };
 

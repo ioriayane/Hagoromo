@@ -26,10 +26,15 @@ ApplicationWindow {
 
     Material.theme: settingDialog.settings.theme
     Material.accent: settingDialog.settings.accent
+    // SystemTools::updateFont()で裏からすべてのフォントを変更出来れば良いが
+    // Componentの内容を動的に読み込むケースに対応するため、ここを使用する
+    // 逆にこの設定はListViewの内容へ反映されない
+    font.family: settingDialog.settings.fontFamily.length > 0 ? settingDialog.settings.fontFamily : font.family
 
     function errorHandler(account_uuid, code, message) {
         if(code === "ExpiredToken" && account_uuid.length > 0){
             accountListModel.refreshAccountSession(account_uuid)
+        }else if(message.length === 0){
         }else{
             var row = accountListModel.indexAt(account_uuid)
             var handle = ""
@@ -442,10 +447,10 @@ ApplicationWindow {
                     return
                 }
                 for(var i=0; i<row_list.length; i++){
-                    if(row_list[i] < index){
+                    if(i < index){
                         item = repeater.itemAt(row_list[i])   //ここのitemはloader自身
                         w += item.width + item.anchors.leftMargin
-                    }else if(row_list[i] === index){
+                    }else if(i === index){
                         item = repeater.itemAt(row_list[i])   //ここのitemはloader自身
                         last_w = item.width + item.anchors.leftMargin
                         margin = item.anchors.leftMargin

@@ -1,6 +1,9 @@
+#include <QFont>
+#include <QFontDatabase>
 #include <QGuiApplication>
 #include <QLoggingCategory>
 #include <QQmlApplicationEngine>
+#include <QSettings>
 #include <QTranslator>
 #include <QtQuickControls2/QQuickStyle>
 
@@ -36,6 +39,22 @@
 #include "qtquick/reporter.h"
 #include "qtquick/feedgeneratorlink.h"
 
+void setAppFont(QGuiApplication &app)
+{
+    QFontDatabase db;
+    QSettings settings;
+    QString family = settings.value("fontFamily").toString();
+    if (family.isEmpty()) {
+        family = SystemTool::defaultFontFamily();
+    }
+    if (db.families().contains(family)) {
+        app.setFont(QFont(family));
+        if (settings.value("fontFamily").toString() != family) {
+            settings.setValue("fontFamily", family);
+        }
+    }
+}
+
 int main(int argc, char *argv[])
 {
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
@@ -49,7 +68,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName(QStringLiteral("relog"));
     app.setOrganizationDomain(QStringLiteral("hagoromo.relog.tech"));
     app.setApplicationName(QStringLiteral("Hagoromo"));
-    app.setApplicationVersion(QStringLiteral("0.14.1"));
+    app.setApplicationVersion(QStringLiteral("0.15.0"));
 #ifndef HAGOROMO_RELEASE_BUILD
     app.setApplicationVersion(app.applicationVersion() + "d");
 #endif
@@ -122,6 +141,8 @@ int main(int argc, char *argv[])
     if (translator2.load(QString("qt_ja"), dir)) {
         app.installTranslator(&translator2);
     }
+
+    setAppFont(app);
 
 #ifdef QT_NO_DEBUG
     QLoggingCategory::setFilterRules("*.debug=false\n"
