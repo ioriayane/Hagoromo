@@ -195,6 +195,10 @@ void copyRecordViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::RecordVie
 namespace ComAtprotoServerDefs {
 void copyInviteCodeUse(const QJsonObject &src, ComAtprotoServerDefs::InviteCodeUse &dest);
 void copyInviteCode(const QJsonObject &src, ComAtprotoServerDefs::InviteCode &dest);
+void copyDidDocVerificationMethod(const QJsonObject &src,
+                                  ComAtprotoServerDefs::DidDocVerificationMethod &dest);
+void copyDidDocService(const QJsonObject &src, ComAtprotoServerDefs::DidDocService &dest);
+void copyDidDoc(const QJsonObject &src, ComAtprotoServerDefs::DidDoc &dest);
 }
 // com.atproto.moderation.defs
 namespace ComAtprotoModerationDefs {

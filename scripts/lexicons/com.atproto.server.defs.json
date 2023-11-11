@@ -1,0 +1,31 @@
+{
+  "defs": {
+    "didDocVerificationMethod": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string" },
+        "controller": { "type": "string" },
+        "publicKeyMultibase": { "type": "string" }
+      }
+    },
+    "didDocService": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string" },
+        "serviceEndpoint": { "type": "string" }
+      }
+    },
+    "didDoc": {
+      "type": "object",
+      "properties": {
+        "context": { "type": "array", "items": { "type": "string", "uri": "string" } },
+        "id": { "type": "string", "format": "did" },
+        "alsoKnownAs": { "type": "string", "description": "at://HANDLE" },
+        "verificationMethod": { "type": "array", "items": { "type": "ref", "ref": "#didDocVerificationMethod" } },
+        "service": { "type": "array", "items": { "type": "ref", "ref": "#didDocService" } }
+      }
+    }
+  }
+}
