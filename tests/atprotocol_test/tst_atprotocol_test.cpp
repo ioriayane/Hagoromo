@@ -108,6 +108,7 @@ void atprotocol_test::test_ComAtprotoServerCreateSession()
     QVERIFY(session.email() == "iori.ayane@gmail.com");
     QVERIFY(session.accessJwt() == "hoge hoge accessJwt");
     QVERIFY(session.refreshJwt() == "hoge hoge refreshJwt");
+    QVERIFY(session.serviceEndpoint() == "https://porcini.us-east.host.bsky.network");
 
     // 後ろのテストで使うアカウント情報
     m_account = session.account();

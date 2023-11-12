@@ -1,4 +1,5 @@
 #include "comatprotoserverrefreshsession.h"
+#include "atprotocol/lexicons_func.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -22,10 +23,17 @@ bool ComAtprotoServerRefreshSession::parseJson(bool success, const QString reply
     if (json_doc.isEmpty()) {
         success = false;
     } else {
+        AtProtocolType::ComAtprotoServerDefs::DidDoc did_doc;
+        AtProtocolType::ComAtprotoServerDefs::copyDidDoc(
+                json_doc.object().value("didDoc").toObject(), did_doc);
+
         setSession(json_doc.object().value("did").toString(),
                    json_doc.object().value("handle").toString(), email(),
                    json_doc.object().value("accessJwt").toString(),
                    json_doc.object().value("refreshJwt").toString());
+        if (!did_doc.service.isEmpty()) {
+            setServiceEndpoint(did_doc.service.front().serviceEndpoint);
+        }
 
         if (did().isEmpty() || handle().isEmpty() || accessJwt().isEmpty()
             || refreshJwt().isEmpty()) {

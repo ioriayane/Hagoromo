@@ -54,6 +54,8 @@ QVariant AccountListModel::item(int row, AccountListModelRoles role) const
         return m_accountList.at(row).is_main;
     else if (role == ServiceRole)
         return m_accountList.at(row).service;
+    else if (role == ServiceEndpointRole)
+        return m_accountList.at(row).service_endpoint;
     else if (role == IdentifierRole)
         return m_accountList.at(row).identifier;
     else if (role == PasswordRole)
@@ -93,6 +95,8 @@ void AccountListModel::update(int row, AccountListModelRoles role, const QVarian
         m_accountList[row].uuid = value.toString();
     else if (role == ServiceRole)
         m_accountList[row].service = value.toString();
+    else if (role == ServiceEndpointRole)
+        m_accountList[row].service_endpoint = value.toString();
     else if (role == IdentifierRole)
         m_accountList[row].identifier = value.toString();
     else if (role == PasswordRole)
@@ -123,17 +127,18 @@ void AccountListModel::update(int row, AccountListModelRoles role, const QVarian
     emit dataChanged(index(row), index(row));
 }
 
-void AccountListModel::updateAccount(const QString &service, const QString &identifier,
-                                     const QString &password, const QString &did,
-                                     const QString &handle, const QString &email,
-                                     const QString &accessJwt, const QString &refreshJwt,
-                                     const bool authorized)
+void AccountListModel::updateAccount(const QString &service, const QString &service_endpoint,
+                                     const QString &identifier, const QString &password,
+                                     const QString &did, const QString &handle,
+                                     const QString &email, const QString &accessJwt,
+                                     const QString &refreshJwt, const bool authorized)
 {
     bool updated = false;
     for (int i = 0; i < m_accountList.count(); i++) {
         if (m_accountList.at(i).service == service
             && m_accountList.at(i).identifier == identifier) {
             // update
+            m_accountList[i].service_endpoint = service_endpoint;
             m_accountList[i].password = password;
             m_accountList[i].did = did;
             m_accountList[i].handle = handle;
@@ -151,6 +156,7 @@ void AccountListModel::updateAccount(const QString &service, const QString &iden
         AtProtocolInterface::AccountData item;
         item.uuid = QUuid::createUuid().toString(QUuid::WithoutBraces);
         item.service = service;
+        item.service_endpoint = service_endpoint;
         item.identifier = identifier;
         item.password = password;
         item.did = did;
@@ -265,6 +271,7 @@ void AccountListModel::save() const
         account_item["uuid"] = item.uuid;
         account_item["is_main"] = item.is_main;
         account_item["service"] = item.service;
+        account_item["service_endpoint"] = item.service_endpoint;
         account_item["identifier"] = item.identifier;
         account_item["password"] = m_encryption.encrypt(item.password);
         account_item["refresh_jwt"] = m_encryption.encrypt(item.refreshJwt);
@@ -302,6 +309,8 @@ void AccountListModel::load()
                 item.uuid = doc.array().at(i).toObject().value("uuid").toString();
                 item.is_main = doc.array().at(i).toObject().value("is_main").toBool();
                 item.service = doc.array().at(i).toObject().value("service").toString();
+                item.service_endpoint =
+                        doc.array().at(i).toObject().value("service_endpoint").toString();
                 item.identifier = doc.array().at(i).toObject().value("identifier").toString();
                 item.password = m_encryption.decrypt(
                         doc.array().at(i).toObject().value("password").toString());
@@ -375,7 +384,9 @@ void AccountListModel::createSession(int row)
         //                 << session->email() << session->accessJwt() << session->refreshJwt();
         //        qDebug() << service << identifier << password;
         if (success) {
-            qDebug() << "Create session" << session->did() << session->handle();
+            qDebug() << "Create session" << session->did() << session->handle()
+                     << session->serviceEndpoint();
+            m_accountList[row].service_endpoint = session->serviceEndpoint();
             m_accountList[row].did = session->did();
             m_accountList[row].handle = session->handle();
             m_accountList[row].email = session->email();
@@ -407,6 +418,7 @@ void AccountListModel::refreshSession(int row, bool initial)
     connect(session, &ComAtprotoServerRefreshSession::finished, [=](bool success) {
         if (success) {
             qDebug() << "Refresh session" << session->did() << session->handle();
+            m_accountList[row].service_endpoint = session->serviceEndpoint();
             m_accountList[row].did = session->did();
             m_accountList[row].handle = session->handle();
             m_accountList[row].email = session->email();

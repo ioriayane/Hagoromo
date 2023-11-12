@@ -22,6 +22,7 @@ public:
         UuidRole,
         IsMainRole,
         ServiceRole,
+        ServiceEndpointRole,
         IdentifierRole,
         PasswordRole,
         DidRole,
@@ -44,9 +45,9 @@ public:
     Q_INVOKABLE void update(int row, AccountListModel::AccountListModelRoles role,
                             const QVariant &value);
 
-    Q_INVOKABLE void updateAccount(const QString &service, const QString &identifier,
-                                   const QString &password, const QString &did,
-                                   const QString &handle, const QString &email,
+    Q_INVOKABLE void updateAccount(const QString &service, const QString &service_endpoint,
+                                   const QString &identifier, const QString &password,
+                                   const QString &did, const QString &handle, const QString &email,
                                    const QString &accessJwt, const QString &refreshJwt,
                                    const bool authorized);
     Q_INVOKABLE void removeAccount(int row);

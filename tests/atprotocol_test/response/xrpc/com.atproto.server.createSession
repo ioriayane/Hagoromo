@@ -1,5 +1,31 @@
 {
     "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+    "didDoc": {
+        "@context": [
+            "https://www.w3.org/ns/did/v1",
+            "https://w3id.org/security/multikey/v1",
+            "https://w3id.org/security/suites/secp256k1-2019/v1"
+        ],
+        "id": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+        "alsoKnownAs": [
+            "at://ioriayane.relog.tech"
+        ],
+        "verificationMethod": [
+            {
+                "id": "did:plc:ipj5qejfoqu6eukvt72uhyit#atproto",
+                "type": "Multikey",
+                "controller": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+                "publicKeyMultibase": "zQ3shYNo9wSChjqSMPZUmgwjEFMgsk5efZX5UYm8SFrXR5YUd"
+            }
+        ],
+        "service": [
+            {
+                "id": "#atproto_pds",
+                "type": "AtprotoPersonalDataServer",
+                "serviceEndpoint": "https://porcini.us-east.host.bsky.network"
+            }
+        ]
+    },
     "handle": "ioriayane.relog.tech",
     "email": "iori.ayane@gmail.com",
     "accessJwt": "hoge hoge accessJwt",

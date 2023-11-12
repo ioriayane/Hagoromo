@@ -23,7 +23,8 @@ Dialog {
     LoginDialog {
         id: login
         onAccepted: {
-            accountModel.updateAccount(session.service, session.identifier, session.password,
+            accountModel.updateAccount(session.service, session.serviceEndpoint,
+                                       session.identifier, session.password,
                                        session.did, session.handle, session.email,
                                        session.accessJwt, session.refreshJwt,
                                        session.authorized)

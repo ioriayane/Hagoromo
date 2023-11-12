@@ -17,6 +17,7 @@ void CreateSession::create()
 
     ComAtprotoServerCreateSession *session = new ComAtprotoServerCreateSession(this);
     connect(session, &ComAtprotoServerCreateSession::finished, [=](bool success) {
+        setServiceEndpoint(session->serviceEndpoint());
         setDid(session->did());
         setHandle(session->handle());
         setEmail(session->email());
@@ -45,6 +46,19 @@ void CreateSession::setService(const QString &newService)
         return;
     m_session.service = newService;
     emit serviceChanged();
+}
+
+QString CreateSession::serviceEndpoint() const
+{
+    return m_session.service_endpoint;
+}
+
+void CreateSession::setServiceEndpoint(const QString &newServiceEndpoint)
+{
+    if (m_session.service_endpoint == newServiceEndpoint)
+        return;
+    m_session.service_endpoint = newServiceEndpoint;
+    emit serviceEndpointChanged();
 }
 
 QString CreateSession::identifier() const

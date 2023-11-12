@@ -1426,10 +1426,10 @@ void hagoromo_test::test_AccountListModel()
 
     AccountListModel model;
 
-    model.updateAccount(m_service + "/account/account1", "id1", "password1", "did:plc:account1",
+    model.updateAccount(m_service + "/account/account1", "", "id1", "password1", "did:plc:account1",
                         "account1.relog.tech", "account1@relog.tech", "accessJwt_account1",
                         "refreshJwt_account1", true);
-    model.updateAccount(m_service + "/account/account2", "id2", "password2", "did:plc:account2",
+    model.updateAccount(m_service + "/account/account2", "", "id2", "password2", "did:plc:account2",
                         "account2.relog.tech", "account2@relog.tech", "accessJwt_account2",
                         "refreshJwt_account2", true);
 
