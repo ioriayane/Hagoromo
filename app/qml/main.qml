@@ -115,7 +115,7 @@ ApplicationWindow {
         }
         onOpenDiscoverFeeds: (account_index) => {
                                  discoverFeedsDialog.account.uuid = accountListModel.item(account_index, AccountListModel.UuidRole)
-                                 discoverFeedsDialog.account.service = accountListModel.item(account_index, AccountListModel.ServiceRole)
+                                 discoverFeedsDialog.account.service = accountListModel.getService(account_index)
                                  discoverFeedsDialog.account.did = accountListModel.item(account_index, AccountListModel.DidRole)
                                  discoverFeedsDialog.account.handle = accountListModel.item(account_index, AccountListModel.HandleRole)
                                  discoverFeedsDialog.account.email = accountListModel.item(account_index, AccountListModel.EmailRole)
@@ -315,7 +315,7 @@ ApplicationWindow {
                                          reportDialog.targetUri = uri
                                          reportDialog.targetCid = cid
                                          reportDialog.account.uuid = account_uuid
-                                         reportDialog.account.service = accountListModel.item(row, AccountListModel.ServiceRole)
+                                         reportDialog.account.service = accountListModel.getService(row)
                                          reportDialog.account.did = accountListModel.item(row, AccountListModel.DidRole)
                                          reportDialog.account.handle = accountListModel.item(row, AccountListModel.HandleRole)
                                          reportDialog.account.email = accountListModel.item(row, AccountListModel.EmailRole)
@@ -330,7 +330,7 @@ ApplicationWindow {
                                         if(row >= 0){
                                             reportAccountDialog.targetDid = did
                                             reportAccountDialog.account.uuid = account_uuid
-                                            reportAccountDialog.account.service = accountListModel.item(row, AccountListModel.ServiceRole)
+                                            reportAccountDialog.account.service = accountListModel.getService(row)
                                             reportAccountDialog.account.did = accountListModel.item(row, AccountListModel.DidRole)
                                             reportAccountDialog.account.handle = accountListModel.item(row, AccountListModel.HandleRole)
                                             reportAccountDialog.account.email = accountListModel.item(row, AccountListModel.EmailRole)
@@ -345,7 +345,7 @@ ApplicationWindow {
                                              if(row >= 0){
                                                  addToListDialog.targetDid = did
                                                  addToListDialog.account.uuid = account_uuid
-                                                 addToListDialog.account.service = accountListModel.item(row, AccountListModel.ServiceRole)
+                                                 addToListDialog.account.service = accountListModel.getService(row)
                                                  addToListDialog.account.did = accountListModel.item(row, AccountListModel.DidRole)
                                                  addToListDialog.account.handle = accountListModel.item(row, AccountListModel.HandleRole)
                                                  addToListDialog.account.email = accountListModel.item(row, AccountListModel.EmailRole)
@@ -572,7 +572,7 @@ ApplicationWindow {
                     }
 
                     function setAccount(row) {
-                        item.account.service = accountListModel.item(row, AccountListModel.ServiceRole)
+                        item.account.service = accountListModel.getService(row)
                         item.account.did = accountListModel.item(row, AccountListModel.DidRole)
                         item.account.handle = accountListModel.item(row, AccountListModel.HandleRole)
                         item.account.email = accountListModel.item(row, AccountListModel.EmailRole)

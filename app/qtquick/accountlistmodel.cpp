@@ -212,6 +212,18 @@ int AccountListModel::indexAt(const QString &uuid)
     return -1;
 }
 
+QString AccountListModel::getService(int row) const
+{
+    if (row < 0 || row >= m_accountList.count())
+        return QString();
+
+    if (m_accountList.at(row).service_endpoint.isEmpty()) {
+        return m_accountList.at(row).service;
+    } else {
+        return m_accountList.at(row).service_endpoint;
+    }
+}
+
 int AccountListModel::getMainAccountIndex() const
 {
     if (m_accountList.isEmpty())

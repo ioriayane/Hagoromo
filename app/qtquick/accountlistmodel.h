@@ -53,6 +53,7 @@ public:
     Q_INVOKABLE void removeAccount(int row);
     Q_INVOKABLE void updateAccountProfile(const QString &service, const QString &identifier);
     Q_INVOKABLE int indexAt(const QString &uuid);
+    Q_INVOKABLE QString getService(int row) const;
     Q_INVOKABLE int getMainAccountIndex() const;
     Q_INVOKABLE void setMainAccount(int row);
     Q_INVOKABLE bool allAccountsReady() const;
