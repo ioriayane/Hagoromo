@@ -122,27 +122,28 @@ void ListsListModel::clear()
 
 bool ListsListModel::addRemoveFromList(const int row, const QString &did)
 {
-    QString uri = item(row, ListsListModel::UriRole).toString();
+    QString target_uri = item(row, ListsListModel::UriRole).toString();
     SearchStatusType status =
             static_cast<SearchStatusType>(item(row, ListsListModel::SearchStatusRole).toInt());
     if (status == SearchStatusTypeContains) {
-        uri = item(row, ListsListModel::ListItemUriRole).toString();
+        target_uri = item(row, ListsListModel::ListItemUriRole).toString();
     }
-    if (running() || uri.isEmpty())
+    if (running() || target_uri.isEmpty())
         return false;
 
     RecordOperator *ope = new RecordOperator(this);
     connect(ope, &RecordOperator::finished,
             [=](bool success, const QString &uri, const QString &cid) {
-                Q_UNUSED(uri)
                 Q_UNUSED(cid)
                 if (success) {
                     if (status == SearchStatusTypeContains) {
                         update(row, ListsListModel::SearchStatusRole,
                                SearchStatusType::SearchStatusTypeNotContains);
+                        update(row, ListsListModel::ListItemUriRole, QString());
                     } else {
                         update(row, ListsListModel::SearchStatusRole,
                                SearchStatusType::SearchStatusTypeContains);
+                        update(row, ListsListModel::ListItemUriRole, uri);
                     }
                 }
                 setRunning(false);
@@ -153,11 +154,11 @@ bool ListsListModel::addRemoveFromList(const int row, const QString &did)
     if (status == SearchStatusTypeContains) {
         // delete
         // uriのレコードを消す（リストに登録しているユーザーの情報）
-        setRunning(ope->deleteListItem(uri));
+        setRunning(ope->deleteListItem(target_uri));
     } else if (status == SearchStatusTypeNotContains) {
         // Add
         // uriのリストにdidのユーザーを追加する
-        setRunning(ope->listItem(uri, did));
+        setRunning(ope->listItem(target_uri, did));
     } else {
         ope->deleteLater();
     }
