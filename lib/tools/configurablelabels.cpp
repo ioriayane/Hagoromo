@@ -49,7 +49,7 @@ bool ConfigurableLabels::load()
                 int index = indexOf(item.label);
                 if (index >= 0) {
                     ConfigurableLabelStatus status = ConfigurableLabelStatus::Hide;
-                    if (item.visibility == "show") {
+                    if (item.visibility == "show" || item.visibility == "ignore") {
                         status = ConfigurableLabelStatus::Show;
                     } else if (item.visibility == "warn") {
                         status = ConfigurableLabelStatus::Warning;
@@ -414,7 +414,7 @@ QString ConfigurableLabels::updatePreferencesJson(const QString &src_json)
                 } else if (label.status == ConfigurableLabelStatus::Warning) {
                     value.insert("visibility", QJsonValue("warn"));
                 } else if (label.status == ConfigurableLabelStatus::Show) {
-                    value.insert("visibility", QJsonValue("show"));
+                    value.insert("visibility", QJsonValue("ignore"));
                 }
                 dest_preferences.append(value);
             }
