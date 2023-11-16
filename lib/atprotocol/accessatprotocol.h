@@ -84,6 +84,7 @@ protected:
     bool postWithImage(const QString &endpoint, const QString &path);
 
     virtual bool parseJson(bool success, const QString reply_json) = 0;
+    virtual bool recvImage(const QByteArray &data);
     bool checkReply(HttpReply *reply);
 
 private:

@@ -34,6 +34,8 @@ QByteArray HttpReply::rawHeader(const QByteArray &name) const
 
 void HttpReply::setRawHeader(const QByteArray &name, const QByteArray &value)
 {
+    setContentType(name, value);
+
     for (auto &header : m_rawHeaders) {
         if (header.first.toLower() == name.toLower()) {
             header.first = name;
@@ -101,4 +103,24 @@ HttpReply::Error HttpReply::error() const
 void HttpReply::setError(Error newError)
 {
     m_error = newError;
+}
+
+QString HttpReply::contentType() const
+{
+    return m_contentType;
+}
+
+void HttpReply::setContentType(const QString &newContentType)
+{
+    m_contentType = newContentType;
+}
+
+void HttpReply::setContentType(const QByteArray &name, const QByteArray &value)
+{
+    if (name.toLower() == QStringLiteral("Content-Type")) {
+        QList<QByteArray> items = value.split(';');
+        if (!items.isEmpty()) {
+            m_contentType = items.first();
+        }
+    }
 }

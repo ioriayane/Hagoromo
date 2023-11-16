@@ -132,10 +132,18 @@ bool AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
 
             bool success = false;
             if (checkReply(reply)) {
-                success = parseJson(true, m_replyJson);
-                if (!success && m_errorCode.isEmpty()) {
-                    m_errorCode = QStringLiteral("ContentParseError");
-                    m_errorMessage = m_replyJson.left(200);
+                if (reply->contentType().startsWith("image/")) {
+                    success = recvImage(reply->recvData());
+                } else if (reply->contentType().startsWith("application/json")) {
+                    success = parseJson(true, m_replyJson);
+                    if (!success && m_errorCode.isEmpty()) {
+                        m_errorCode = QStringLiteral("ContentParseError");
+                        m_errorMessage = m_replyJson.left(200);
+                        m_errorMessage += "\n---\n" + endpoint;
+                    }
+                } else {
+                    m_errorCode = "InvalidContentType";
+                    m_errorMessage = "Invalid content type : " + reply->contentType();
                     m_errorMessage += "\n---\n" + endpoint;
                 }
             }
@@ -237,6 +245,12 @@ bool AccessAtProtocol::postWithImage(const QString &endpoint, const QString &pat
         }
         reply->deleteLater();
     });
+    return true;
+}
+
+bool AccessAtProtocol::recvImage(const QByteArray &data)
+{
+    Q_UNUSED(data)
     return true;
 }
 
