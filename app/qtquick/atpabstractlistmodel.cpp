@@ -1,11 +1,14 @@
 #include "atpabstractlistmodel.h"
+#include "atprotocol/com/atproto/sync/comatprotosyncgetblob.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "translator.h"
+#include "common.h"
 
 #include <QDesktopServices>
 #include <QUrlQuery>
 
 using namespace AtProtocolType;
+using AtProtocolInterface::ComAtprotoSyncGetBlob;
 
 AtpAbstractListModel::AtpAbstractListModel(QObject *parent)
     : QAbstractListModel { parent },
@@ -427,6 +430,60 @@ QStringList AtpAbstractListModel::getLaunguages(const QVariant &record) const
 QString AtpAbstractListModel::getVia(const QVariant &record) const
 {
     return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(record).via;
+}
+
+void AtpAbstractListModel::appendExtendMediaFileToClue(const QString &did, const QString &cid)
+{
+    if (did.isEmpty() || cid.isEmpty()) {
+        return;
+    } else {
+        m_cueExtendMedia.append(BlobCueItem(did, cid));
+    }
+}
+
+void AtpAbstractListModel::getExtendMediaFiles()
+{
+    BlobCueItem blob_item;
+    if (m_cueExtendMedia.isEmpty()) {
+        return;
+    } else {
+        blob_item = m_cueExtendMedia.front();
+        m_cueExtendMedia.pop_front();
+    }
+
+    ComAtprotoSyncGetBlob *blob = new ComAtprotoSyncGetBlob(this);
+    connect(blob, &ComAtprotoSyncGetBlob::finished, [=](bool success) {
+        if (success) {
+            QString path = saveMediaFile(blob->blobData(), blob_item.cid, blob->extension());
+            if (!path.isEmpty()) {
+                updateExtendMediaFile(path);
+            }
+        }
+        QTimer::singleShot(10, this, &AtpAbstractListModel::getExtendMediaFiles);
+        blob->deleteLater();
+    });
+    blob->setAccount(account());
+    blob->getBlob(blob_item.did, blob_item.cid);
+}
+
+QString AtpAbstractListModel::saveMediaFile(const QByteArray &data, const QString &cid,
+                                            const QString &ext)
+{
+    QString folder = Common::appTempFolder("ext_images");
+    QString path = QString("%1/%2.%3").arg(folder, cid, ext);
+    QFile out(path);
+    if (out.open(QFile::WriteOnly)) {
+        qDebug().noquote().nospace() << "Save extend media file : " << path;
+        out.write(data);
+        out.close();
+        return path;
+    }
+    return QString();
+}
+
+void AtpAbstractListModel::updateExtendMediaFile(const QString &path)
+{
+    Q_UNUSED(path)
 }
 
 QString AtpAbstractListModel::cursor() const

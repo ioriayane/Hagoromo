@@ -60,8 +60,7 @@ bool WebServer::handleRequest(const QHttpServerRequest &request, QTcpSocket *soc
             QByteArray data;
             if (WebServer::readFile(path, data)) {
                 makeResponder(request, socket)
-                        .write(data, m_MimeDb.mimeTypeForFile(file_info).name().toUtf8(),
-                               QHttpServerResponder::StatusCode::Ok);
+                        .write(data, "application/json", QHttpServerResponder::StatusCode::Ok);
             } else {
                 makeResponder(request, socket)
                         .write(QHttpServerResponder::StatusCode::InternalServerError);

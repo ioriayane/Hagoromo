@@ -19,6 +19,18 @@ struct PostCueItem
             AtProtocolType::AppBskyFeedDefs::FeedViewPostReasonType::none;
 };
 
+struct BlobCueItem
+{
+    BlobCueItem() {};
+    BlobCueItem(const QString &did, const QString &cid)
+    {
+        this->did = did;
+        this->cid = cid;
+    }
+    QString did;
+    QString cid;
+};
+
 class AtpAbstractListModel : public QAbstractListModel
 {
     Q_OBJECT
@@ -100,6 +112,11 @@ protected:
     QStringList getLaunguages(const QVariant &record) const;
     QString getVia(const QVariant &record) const;
 
+    void appendExtendMediaFileToClue(const QString &did, const QString &cid);
+    void getExtendMediaFiles();
+    QString saveMediaFile(const QByteArray &data, const QString &cid, const QString &ext);
+    virtual void updateExtendMediaFile(const QString &path);
+
     // これで取得したポストの順番を管理して実態はm_viewPostHashで管理
     // checkVisibility(cid)の結果次第で間引かれる
     QList<QString> m_cidList;
@@ -110,6 +127,9 @@ protected:
     QString m_cursor;
 
     QHash<QString, QString> m_translations; // QHash<cid, translation>
+
+    QHash<QString, QString> m_extendMediaFiles; // QHash<cid, file>
+    QList<BlobCueItem> m_cueExtendMedia;
 
     ConfigurableLabels m_contentFilterLabels;
 

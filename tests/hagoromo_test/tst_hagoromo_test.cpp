@@ -45,6 +45,7 @@ private slots:
     void test_TimelineListModel_quote_hide();
     void test_TimelineListModel_quote_hide2();
     void test_TimelineListModel_quote_label();
+    void test_TimelineListModel_animated_image();
     void test_NotificationListModel_warn();
     void test_TimelineListModel_next();
     void test_FeedGeneratorLink();
@@ -1251,6 +1252,29 @@ void hagoromo_test::test_TimelineListModel_quote_label()
             == "bafyreievv2yz3obnigwjix5kr2icycfkqdobrfufd3cm4wfavnjfeqhxbe");
     QVERIFY(model.item(row, TimelineListModel::ReplyRootUriRole).toString()
             == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k7n55v57bn26");
+}
+
+void hagoromo_test::test_TimelineListModel_animated_image()
+{
+    int row = 0;
+    TimelineListModel model;
+    model.setAccount(m_service + "/timeline/animated", QString(), QString(), QString(), "dummy",
+                     QString());
+    model.setDisplayInterval(0);
+
+    QSignalSpy spy(&model, SIGNAL(runningChanged()));
+    QVERIFY(model.getLatest());
+    spy.wait();
+    QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+    QVERIFY2(model.rowCount() == 2, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+
+    row = 0;
+    QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString() == "animated images");
+    QVERIFY(model.item(row, TimelineListModel::EmbedImagesRole).toString()
+            == "quoted mute user's post");
+    QVERIFY(model.item(row, TimelineListModel::EmbedImagesFullRole).toString()
+            == "quoted mute user's post");
 }
 
 void hagoromo_test::test_NotificationListModel_warn()

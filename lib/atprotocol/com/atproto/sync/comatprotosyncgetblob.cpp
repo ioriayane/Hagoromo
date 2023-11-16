@@ -1,9 +1,5 @@
 #include "comatprotosyncgetblob.h"
-#include "atprotocol/lexicons_func.h"
 
-#include <QFile>
-#include <QJsonDocument>
-#include <QJsonObject>
 #include <QUrlQuery>
 
 namespace AtProtocolInterface {
@@ -26,10 +22,21 @@ bool ComAtprotoSyncGetBlob::parseJson(bool success, const QString reply_json)
     return false;
 }
 
-bool ComAtprotoSyncGetBlob::recvImage(const QByteArray &data)
+bool ComAtprotoSyncGetBlob::recvImage(const QByteArray &data, const QString &content_type)
 {
     m_blobData = data;
+
+    QStringList items = content_type.split("/");
+    if (items.length() == 2) {
+        m_extention = items.last();
+    }
+
     return true;
+}
+
+QString ComAtprotoSyncGetBlob::extension() const
+{
+    return m_extention;
 }
 
 const QByteArray &ComAtprotoSyncGetBlob::blobData() const

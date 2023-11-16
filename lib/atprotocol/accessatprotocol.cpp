@@ -133,7 +133,7 @@ bool AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
             bool success = false;
             if (checkReply(reply)) {
                 if (reply->contentType().startsWith("image/")) {
-                    success = recvImage(reply->recvData());
+                    success = recvImage(reply->recvData(), reply->contentType());
                 } else if (reply->contentType().startsWith("application/json")) {
                     success = parseJson(true, m_replyJson);
                     if (!success && m_errorCode.isEmpty()) {
@@ -248,9 +248,10 @@ bool AccessAtProtocol::postWithImage(const QString &endpoint, const QString &pat
     return true;
 }
 
-bool AccessAtProtocol::recvImage(const QByteArray &data)
+bool AccessAtProtocol::recvImage(const QByteArray &data, const QString &content_type)
 {
     Q_UNUSED(data)
+    Q_UNUSED(content_type)
     return true;
 }
 
