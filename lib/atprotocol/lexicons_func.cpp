@@ -220,6 +220,8 @@ void copyMain(const QJsonObject &src, AppBskyActorProfile::Main &dest)
     if (!src.isEmpty()) {
         dest.displayName = src.value("displayName").toString();
         dest.description = src.value("description").toString();
+        LexiconsTypeUnknown::copyBlob(src.value("avatar").toObject(), dest.avatar);
+        LexiconsTypeUnknown::copyBlob(src.value("banner").toObject(), dest.banner);
         QString labels_type = src.value("labels").toObject().value("$type").toString();
         if (labels_type == QStringLiteral("com.atproto.label.defs#selfLabels")) {
             dest.labels_type =
@@ -238,6 +240,7 @@ void copyExternal(const QJsonObject &src, AppBskyEmbedExternal::External &dest)
         dest.uri = src.value("uri").toString();
         dest.title = src.value("title").toString();
         dest.description = src.value("description").toString();
+        LexiconsTypeUnknown::copyBlob(src.value("thumb").toObject(), dest.thumb);
     }
 }
 void copyMain(const QJsonObject &src, AppBskyEmbedExternal::Main &dest)
@@ -274,6 +277,7 @@ void copyAspectRatio(const QJsonObject &src, AppBskyEmbedImages::AspectRatio &de
 void copyImage(const QJsonObject &src, AppBskyEmbedImages::Image &dest)
 {
     if (!src.isEmpty()) {
+        LexiconsTypeUnknown::copyBlob(src.value("image").toObject(), dest.image);
         dest.alt = src.value("alt").toString();
         copyAspectRatio(src.value("aspectRatio").toObject(), dest.aspectRatio);
     }
@@ -805,6 +809,7 @@ void copyMain(const QJsonObject &src, AppBskyFeedGenerator::Main &dest)
             AppBskyRichtextFacet::copyMain(s.toObject(), child);
             dest.descriptionFacets.append(child);
         }
+        LexiconsTypeUnknown::copyBlob(src.value("avatar").toObject(), dest.avatar);
         QString labels_type = src.value("labels").toObject().value("$type").toString();
         if (labels_type == QStringLiteral("com.atproto.label.defs#selfLabels")) {
             dest.labels_type =
@@ -1008,6 +1013,7 @@ void copyMain(const QJsonObject &src, AppBskyGraphList::Main &dest)
             AppBskyRichtextFacet::copyMain(s.toObject(), child);
             dest.descriptionFacets.append(child);
         }
+        LexiconsTypeUnknown::copyBlob(src.value("avatar").toObject(), dest.avatar);
         QString labels_type = src.value("labels").toObject().value("$type").toString();
         if (labels_type == QStringLiteral("com.atproto.label.defs#selfLabels")) {
             dest.labels_type =
