@@ -138,7 +138,6 @@ protected:
 
     QHash<QString, QString> m_translations; // QHash<cid, translation>
 
-    QHash<QString, QString> m_extendMediaFiles; // QHash<cid, file>
     QList<BlobCueItem> m_cueExtendMedia;
 
     ConfigurableLabels m_contentFilterLabels;
