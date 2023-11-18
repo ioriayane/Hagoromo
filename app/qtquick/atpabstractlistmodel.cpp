@@ -432,12 +432,13 @@ QString AtpAbstractListModel::getVia(const QVariant &record) const
     return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(record).via;
 }
 
-void AtpAbstractListModel::appendExtendMediaFileToClue(const QString &did, const QString &cid)
+void AtpAbstractListModel::appendExtendMediaFileToClue(const QString &did, const QString &cid,
+                                                       const QString &parent_cid)
 {
-    if (did.isEmpty() || cid.isEmpty()) {
+    if (did.isEmpty() || cid.isEmpty() || parent_cid.isEmpty()) {
         return;
     } else {
-        m_cueExtendMedia.append(BlobCueItem(did, cid));
+        m_cueExtendMedia.append(BlobCueItem(did, cid, parent_cid));
     }
 }
 
@@ -456,7 +457,7 @@ void AtpAbstractListModel::getExtendMediaFiles()
         if (success) {
             QString path = saveMediaFile(blob->blobData(), blob_item.cid, blob->extension());
             if (!path.isEmpty()) {
-                updateExtendMediaFile(path);
+                updateExtendMediaFile(blob_item.parent_cid);
             }
         }
         QTimer::singleShot(10, this, &AtpAbstractListModel::getExtendMediaFiles);
@@ -466,11 +467,16 @@ void AtpAbstractListModel::getExtendMediaFiles()
     blob->getBlob(blob_item.did, blob_item.cid);
 }
 
+QString AtpAbstractListModel::getMediaFilePath(const QString &cid, const QString &ext) const
+{
+    QString folder = Common::appTempFolder("ext_images");
+    return QString("%1/%2.%3").arg(folder, cid, ext);
+}
+
 QString AtpAbstractListModel::saveMediaFile(const QByteArray &data, const QString &cid,
                                             const QString &ext)
 {
-    QString folder = Common::appTempFolder("ext_images");
-    QString path = QString("%1/%2.%3").arg(folder, cid, ext);
+    QString path = getMediaFilePath(cid, ext);
     QFile out(path);
     if (out.open(QFile::WriteOnly)) {
         qDebug().noquote().nospace() << "Save extend media file : " << path;
@@ -481,9 +487,87 @@ QString AtpAbstractListModel::saveMediaFile(const QByteArray &data, const QStrin
     return QString();
 }
 
-void AtpAbstractListModel::updateExtendMediaFile(const QString &path)
+void AtpAbstractListModel::updateExtendMediaFile(const QString &parent_cid)
 {
-    Q_UNUSED(path)
+    Q_UNUSED(parent_cid)
+}
+
+// 画像URLを取得する
+// recordのembed/blobにgifがある場合はローカルに保存されているファイルパスを返す
+// 無ければ通常のサムネ画像のURLを返す
+QStringList AtpAbstractListModel::copyImagesFromPostView(
+        const AtProtocolType::AppBskyFeedDefs::PostView &post,
+        const AtProtocolType::LexiconsTypeUnknown::CopyImageType type) const
+{
+    QStringList ret = LexiconsTypeUnknown::copyImagesFromPostView(post, type);
+
+    const AppBskyFeedPost::Main record =
+            LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(post.record);
+    for (int i = 0; i < record.embed_AppBskyEmbedImages_Main.images.length(); i++) {
+        const auto &image = record.embed_AppBskyEmbedImages_Main.images.at(i);
+        if (image.image.mimeType != "image/gif")
+            continue;
+        QString path = getMediaFilePath(image.image.cid,
+                                        Common::mimeTypeToExtension(image.image.mimeType));
+        if (QFile::exists(path)) {
+            path = QUrl::fromLocalFile(path).toString();
+            if (i < ret.length()) {
+                ret[i] = path;
+            } else {
+                ret.append(path);
+            }
+        }
+    }
+    for (int i = 0; i < record.embed_AppBskyEmbedRecordWithMedia_Main.media_AppBskyEmbedImages_Main
+                                .images.length();
+         i++) {
+        const auto &image = record.embed_AppBskyEmbedRecordWithMedia_Main
+                                    .media_AppBskyEmbedImages_Main.images.at(i);
+        if (image.image.mimeType != "image/gif")
+            continue;
+        QString path = getMediaFilePath(image.image.cid,
+                                        Common::mimeTypeToExtension(image.image.mimeType));
+        if (QFile::exists(path)) {
+            path = QUrl::fromLocalFile(path).toString();
+            if (i < ret.length()) {
+                ret[i] = path;
+            } else {
+                ret.append(path);
+            }
+        }
+    }
+    return ret;
+}
+
+// recordのembed/blobにgifがあればgetBlobするためのキューに入れる
+void AtpAbstractListModel::copyImagesFromPostViewToCue(
+        const AtProtocolType::AppBskyFeedDefs::PostView &post)
+{
+    const AppBskyFeedPost::Main record =
+            LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(post.record);
+    for (int i = 0; i < record.embed_AppBskyEmbedImages_Main.images.length(); i++) {
+        const auto &image = record.embed_AppBskyEmbedImages_Main.images.at(i);
+        if (image.image.mimeType != "image/gif")
+            continue;
+        QString path = getMediaFilePath(image.image.cid,
+                                        Common::mimeTypeToExtension(image.image.mimeType));
+        if (!QFile::exists(path)) {
+            appendExtendMediaFileToClue(post.author.did, image.image.cid, post.cid);
+        }
+    }
+    for (int i = 0; i < record.embed_AppBskyEmbedRecordWithMedia_Main.media_AppBskyEmbedImages_Main
+                                .images.length();
+         i++) {
+        const auto &image = record.embed_AppBskyEmbedRecordWithMedia_Main
+                                    .media_AppBskyEmbedImages_Main.images.at(i);
+        if (image.image.mimeType != "image/gif")
+            continue;
+        QString path = getMediaFilePath(image.image.cid,
+                                        Common::mimeTypeToExtension(image.image.mimeType));
+        if (!QFile::exists(path)) {
+            appendExtendMediaFileToClue(post.author.did, image.image.cid, post.cid);
+        }
+    }
 }
 
 QString AtpAbstractListModel::cursor() const

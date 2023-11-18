@@ -99,7 +99,7 @@
                                 "image": {
                                     "$type": "blob",
                                     "ref": {
-                                        "$link": "bafkreicwnlvi3jfbpm7wp5rm676gy4epqdvvu4xts4tdvw4axvrejtamuy"
+                                        "$link": "bafkreicwnlvi3jfbpm7wp5rm676gy4epqdvvu4xts4tdvw4axvrejtamuy_"
                                     },
                                     "mimeType": "image/gif",
                                     "size": 670466
@@ -110,7 +110,7 @@
                                 "image": {
                                     "$type": "blob",
                                     "ref": {
-                                        "$link": "bafkreiau5tvk6ddh34ztxp5q4fjyxspizsbnecv3skttpcppi4ilikbbpu"
+                                        "$link": "bafkreiau5tvk6ddh34ztxp5q4fjyxspizsbnecv3skttpcppi4ilikbbpu_"
                                     },
                                     "mimeType": "image/gif",
                                     "size": 733737

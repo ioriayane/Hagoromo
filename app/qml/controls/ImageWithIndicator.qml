@@ -1,8 +1,10 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 
-Image {
+AnimatedImage {
     id: imageWithIndicator
+    onStatusChanged: playing = (status == AnimatedImage.Ready)
+
     BusyIndicator {
         anchors.centerIn: parent
         width: parent.width > 100 ? 100 : parent.width

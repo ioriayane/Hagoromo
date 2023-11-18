@@ -40,7 +40,7 @@ HttpAccess::Private::Private(HttpAccess *parent) : q(parent)
     m_systemCertPath = searchSystemCertPath();
     if (m_systemCertPath.isEmpty()) {
         qCritical().noquote()
-            << "Not found system cert file. Disable server crtificate verification.";
+                << "Not found system cert file. Disable server crtificate verification.";
     } else {
         qDebug() << LOG_DATETIME << "  cert file:" << m_systemCertPath;
     }
@@ -92,6 +92,7 @@ bool HttpAccess::Private::process(HttpReply *reply)
     httplib::Result res;
 
     if (reply->operation() == HttpReply::GetOperation) {
+        cli.set_follow_location(true);
         res = cli.Get(uri.path().toStdString(), params, headers, [=](uint64_t len, uint64_t total) {
             qDebug().noquote()
                     << LOG_DATETIME
@@ -208,17 +209,17 @@ QString HttpAccess::Private::searchSystemCertPath()
 
 QStringList HttpAccess::Private::unixCertFolders() const
 {
-    return QStringList() << "/etc/ssl/certs/"         // (K)ubuntu, OpenSUSE, Mandriva ...
-                         << "/usr/lib/ssl/certs/"     // Gentoo, Mandrake
-                         << "/usr/share/ssl/"         // Centos, Redhat, SuSE
-                         << "/usr/local/ssl/"         // Normal OpenSSL Tarball
-                         << "/var/ssl/certs/"         // AIX
-                         << "/usr/local/ssl/certs/"   // Solaris
-                         << "/etc/openssl/certs/"     // BlackBerry
-                         << "/opt/openssl/certs/"     // HP-UX
-                         << "/etc/pki/tls/certs/"     // Fedora, Mandriva
+    return QStringList() << "/etc/ssl/certs/" // (K)ubuntu, OpenSUSE, Mandriva ...
+                         << "/usr/lib/ssl/certs/" // Gentoo, Mandrake
+                         << "/usr/share/ssl/" // Centos, Redhat, SuSE
+                         << "/usr/local/ssl/" // Normal OpenSSL Tarball
+                         << "/var/ssl/certs/" // AIX
+                         << "/usr/local/ssl/certs/" // Solaris
+                         << "/etc/openssl/certs/" // BlackBerry
+                         << "/opt/openssl/certs/" // HP-UX
+                         << "/etc/pki/tls/certs/" // Fedora, Mandriva
                          << "/usr/local/share/certs/" // FreeBSD's ca_root_nss
-                         << "/etc/ssl/";              // OpenBSD
+                         << "/etc/ssl/"; // OpenBSD
 }
 #endif
 

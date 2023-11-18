@@ -3,6 +3,7 @@
 
 #include "atprotocol/accessatprotocol.h"
 #include "atprotocol/lexicons.h"
+#include "atprotocol/lexicons_func_unknown.h"
 #include "tools/configurablelabels.h"
 
 #include <QAbstractListModel>
@@ -22,13 +23,15 @@ struct PostCueItem
 struct BlobCueItem
 {
     BlobCueItem() {};
-    BlobCueItem(const QString &did, const QString &cid)
+    BlobCueItem(const QString &did, const QString &cid, const QString &parent_cid)
     {
         this->did = did;
         this->cid = cid;
+        this->parent_cid = parent_cid;
     }
     QString did;
     QString cid;
+    QString parent_cid;
 };
 
 class AtpAbstractListModel : public QAbstractListModel
@@ -112,10 +115,17 @@ protected:
     QStringList getLaunguages(const QVariant &record) const;
     QString getVia(const QVariant &record) const;
 
-    void appendExtendMediaFileToClue(const QString &did, const QString &cid);
+    void appendExtendMediaFileToClue(const QString &did, const QString &cid,
+                                     const QString &parent_cid);
     void getExtendMediaFiles();
+    QString getMediaFilePath(const QString &cid, const QString &ext) const;
     QString saveMediaFile(const QByteArray &data, const QString &cid, const QString &ext);
-    virtual void updateExtendMediaFile(const QString &path);
+    virtual void updateExtendMediaFile(const QString &parent_cid);
+
+    QStringList
+    copyImagesFromPostView(const AtProtocolType::AppBskyFeedDefs::PostView &post,
+                           const AtProtocolType::LexiconsTypeUnknown::CopyImageType type) const;
+    void copyImagesFromPostViewToCue(const AtProtocolType::AppBskyFeedDefs::PostView &post);
 
     // これで取得したポストの順番を管理して実態はm_viewPostHashで管理
     // checkVisibility(cid)の結果次第で間引かれる

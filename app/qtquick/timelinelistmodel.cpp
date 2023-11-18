@@ -63,11 +63,9 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     else if (role == IndexedAtLongRole)
         return formatDateTime(current.post.indexedAt, true);
     else if (role == EmbedImagesRole)
-        return LexiconsTypeUnknown::copyImagesFromPostView(
-                current.post, LexiconsTypeUnknown::CopyImageType::Thumb);
+        return copyImagesFromPostView(current.post, LexiconsTypeUnknown::CopyImageType::Thumb);
     else if (role == EmbedImagesFullRole)
-        return LexiconsTypeUnknown::copyImagesFromPostView(
-                current.post, LexiconsTypeUnknown::CopyImageType::FullSize);
+        return copyImagesFromPostView(current.post, LexiconsTypeUnknown::CopyImageType::FullSize);
     else if (role == EmbedImagesAltRole)
         return LexiconsTypeUnknown::copyImagesFromPostView(current.post,
                                                            LexiconsTypeUnknown::CopyImageType::Alt);
@@ -567,7 +565,12 @@ void TimelineListModel::copyFrom(AppBskyFeedGetTimeline *timeline)
         post.reference_time = reference_time;
         post.reason_type = item->reason_type;
         m_cuePost.append(post);
+
+        // emebed画像の取得のキューに入れる
+        copyImagesFromPostViewToCue(item->post);
     }
+    // embed画像を取得
+    getExtendMediaFiles();
 }
 
 void TimelineListModel::copyFromNext(AtProtocolInterface::AppBskyFeedGetTimeline *timeline)
@@ -584,7 +587,12 @@ void TimelineListModel::copyFromNext(AtProtocolInterface::AppBskyFeedGetTimeline
         post.reference_time = reference_time;
         post.reason_type = item->reason_type;
         m_cuePost.append(post);
+
+        // emebed画像の取得のキューに入れる
+        copyImagesFromPostViewToCue(item->post);
     }
+    // embed画像を取得
+    getExtendMediaFiles();
 }
 
 QString
@@ -747,6 +755,16 @@ QVariant TimelineListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDefs::
     }
 
     return QVariant();
+}
+
+void TimelineListModel::updateExtendMediaFile(const QString &parent_cid)
+{
+    const AppBskyFeedDefs::FeedViewPost &current = m_viewPostHash.value(parent_cid);
+    // m_cidList.at(row));
+    int row = m_cidList.indexOf(parent_cid);
+    if (row >= 0) {
+        emit dataChanged(index(row), index(row));
+    }
 }
 
 bool TimelineListModel::visibleReplyToUnfollowedUsers() const

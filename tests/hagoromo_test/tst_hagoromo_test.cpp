@@ -1,6 +1,8 @@
 #include <QtTest>
 #include <QCoreApplication>
 #include <QJsonDocument>
+#include <QDir>
+#include <QFile>
 
 #include "webserver.h"
 #include "timelinelistmodel.h"
@@ -1264,17 +1266,135 @@ void hagoromo_test::test_TimelineListModel_animated_image()
 
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     QVERIFY(model.getLatest());
-    spy.wait();
+    spy.wait(10 * 1000);
     QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
     QVERIFY2(model.rowCount() == 2, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
 
-    row = 0;
+    QString folder = Common::appTempFolder("ext_images");
+    QStringList thumb_paths;
+    QStringList full_paths;
+    QStringList image_paths;
+    QDir dir;
+    dir.mkpath(folder);
+
+    image_paths << QString("%1/%2.%3")
+                           .arg(folder,
+                                "bafkreicwnlvi3jfbpm7wp5rm676gy4epqdvvu4xts4tdvw4axvrejtamuy_",
+                                "gif")
+                << QString("%1/%2.%3")
+                           .arg(folder,
+                                "bafkreiau5tvk6ddh34ztxp5q4fjyxspizsbnecv3skttpcppi4ilikbbpu_",
+                                "gif");
+    for (const auto &image_path : qAsConst(image_paths)) {
+        QFile::setPermissions(image_path, QFile::WriteOwner | QFile::ReadOwner);
+        QFile::remove(image_path);
+    }
+
+    row = 1;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString() == "animated images");
-    QVERIFY(model.item(row, TimelineListModel::EmbedImagesRole).toString()
-            == "quoted mute user's post");
-    QVERIFY(model.item(row, TimelineListModel::EmbedImagesFullRole).toString()
-            == "quoted mute user's post");
+
+    // //////////////////////
+    thumb_paths.clear();
+    full_paths.clear();
+    thumb_paths << "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
+                   "bafkreicwnlvi3jfbpm7wp5rm676gy4epqdvvu4xts4tdvw4axvrejtamuy@jpeg"
+                << "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
+                   "bafkreiau5tvk6ddh34ztxp5q4fjyxspizsbnecv3skttpcppi4ilikbbpu@jpeg";
+    full_paths << "https://cdn.bsky.app/img/feed_fullsize/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
+                  "bafkreicwnlvi3jfbpm7wp5rm676gy4epqdvvu4xts4tdvw4axvrejtamuy@jpeg"
+               << "https://cdn.bsky.app/img/feed_fullsize/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
+                  "bafkreiau5tvk6ddh34ztxp5q4fjyxspizsbnecv3skttpcppi4ilikbbpu@jpeg";
+    QVERIFY2(model.item(row, TimelineListModel::EmbedImagesRole).toStringList() == thumb_paths,
+             model.item(row, TimelineListModel::EmbedImagesRole)
+                             .toStringList()
+                             .join("\n")
+                             .toLocal8Bit()
+                     + "\n<>\n" + thumb_paths.join("\n").toLocal8Bit());
+    QVERIFY2(model.item(row, TimelineListModel::EmbedImagesFullRole).toStringList() == full_paths,
+             model.item(row, TimelineListModel::EmbedImagesFullRole)
+                             .toStringList()
+                             .join("\n")
+                             .toLocal8Bit()
+                     + "\n<>\n" + full_paths.join("\n").toLocal8Bit());
+
+    // //////////////////
+    QVERIFY(QFile::copy(":/data/images/sample.jpg", image_paths.at(0)));
+    thumb_paths.clear();
+    full_paths.clear();
+    thumb_paths << QUrl::fromLocalFile(image_paths.at(0)).toString()
+                << "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
+                   "bafkreiau5tvk6ddh34ztxp5q4fjyxspizsbnecv3skttpcppi4ilikbbpu@jpeg";
+    full_paths << QUrl::fromLocalFile(image_paths.at(0)).toString()
+               << "https://cdn.bsky.app/img/feed_fullsize/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
+                  "bafkreiau5tvk6ddh34ztxp5q4fjyxspizsbnecv3skttpcppi4ilikbbpu@jpeg";
+    QVERIFY2(model.item(row, TimelineListModel::EmbedImagesRole).toStringList() == thumb_paths,
+             model.item(row, TimelineListModel::EmbedImagesRole)
+                             .toStringList()
+                             .join("\n")
+                             .toLocal8Bit()
+                     + "\n<>\n" + thumb_paths.join("\n").toLocal8Bit());
+    QVERIFY2(model.item(row, TimelineListModel::EmbedImagesFullRole).toStringList() == full_paths,
+             model.item(row, TimelineListModel::EmbedImagesFullRole)
+                             .toStringList()
+                             .join("\n")
+                             .toLocal8Bit()
+                     + "\n<>\n" + full_paths.join("\n").toLocal8Bit());
+
+    for (const auto &image_path : qAsConst(image_paths)) {
+        QFile::setPermissions(image_path, QFile::WriteOwner | QFile::ReadOwner);
+        QFile::remove(image_path);
+    }
+
+    // ///////////////////
+    QVERIFY(QFile::copy(":/data/images/sample.jpg", image_paths.at(1)));
+    thumb_paths.clear();
+    full_paths.clear();
+    thumb_paths << "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
+                   "bafkreicwnlvi3jfbpm7wp5rm676gy4epqdvvu4xts4tdvw4axvrejtamuy@jpeg"
+                << QUrl::fromLocalFile(image_paths.at(1)).toString();
+    full_paths << "https://cdn.bsky.app/img/feed_fullsize/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
+                  "bafkreicwnlvi3jfbpm7wp5rm676gy4epqdvvu4xts4tdvw4axvrejtamuy@jpeg"
+               << QUrl::fromLocalFile(image_paths.at(1)).toString();
+    QVERIFY2(model.item(row, TimelineListModel::EmbedImagesRole).toStringList() == thumb_paths,
+             model.item(row, TimelineListModel::EmbedImagesRole)
+                             .toStringList()
+                             .join("\n")
+                             .toLocal8Bit()
+                     + "\n<>\n" + thumb_paths.join("\n").toLocal8Bit());
+    QVERIFY2(model.item(row, TimelineListModel::EmbedImagesFullRole).toStringList() == full_paths,
+             model.item(row, TimelineListModel::EmbedImagesFullRole)
+                             .toStringList()
+                             .join("\n")
+                             .toLocal8Bit()
+                     + "\n<>\n" + full_paths.join("\n").toLocal8Bit());
+
+    // ////////////////////
+    QVERIFY(QFile::copy(":/data/images/sample.jpg", image_paths.at(0)));
+    // QVERIFY(QFile::copy(":/data/images/sample.jpg", image_paths.at(1)));
+    thumb_paths.clear();
+    full_paths.clear();
+    thumb_paths << QUrl::fromLocalFile(image_paths.at(0)).toString()
+                << QUrl::fromLocalFile(image_paths.at(1)).toString();
+    full_paths << QUrl::fromLocalFile(image_paths.at(0)).toString()
+               << QUrl::fromLocalFile(image_paths.at(1)).toString();
+    QVERIFY2(model.item(row, TimelineListModel::EmbedImagesRole).toStringList() == thumb_paths,
+             model.item(row, TimelineListModel::EmbedImagesRole)
+                             .toStringList()
+                             .join("\n")
+                             .toLocal8Bit()
+                     + "\n<>\n" + thumb_paths.join("\n").toLocal8Bit());
+    QVERIFY2(model.item(row, TimelineListModel::EmbedImagesFullRole).toStringList() == full_paths,
+             model.item(row, TimelineListModel::EmbedImagesFullRole)
+                             .toStringList()
+                             .join("\n")
+                             .toLocal8Bit()
+                     + "\n<>\n" + full_paths.join("\n").toLocal8Bit());
+
+    for (const auto &image_path : qAsConst(image_paths)) {
+        QFile::setPermissions(image_path, QFile::WriteOwner | QFile::ReadOwner);
+        QFile::remove(image_path);
+    }
 }
 
 void hagoromo_test::test_NotificationListModel_warn()

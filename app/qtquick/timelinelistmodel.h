@@ -135,6 +135,8 @@ protected:
     QVariant getQuoteItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
                           const TimelineListModel::TimelineListModelRoles role) const;
 
+    virtual void updateExtendMediaFile(const QString &parent_cid);
+
     QHash<QString, AtProtocolType::AppBskyFeedDefs::FeedViewPost> m_viewPostHash;
     QHash<QString, ThreadConnector> m_threadConnectorHash;
 

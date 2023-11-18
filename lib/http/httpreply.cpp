@@ -117,7 +117,7 @@ void HttpReply::setContentType(const QString &newContentType)
 
 void HttpReply::setContentType(const QByteArray &name, const QByteArray &value)
 {
-    if (name.toLower() == QStringLiteral("Content-Type")) {
+    if (name.toLower() == QStringLiteral("content-type")) {
         QList<QByteArray> items = value.split(';');
         if (!items.isEmpty()) {
             m_contentType = items.first();
