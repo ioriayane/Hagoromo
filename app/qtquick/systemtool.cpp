@@ -1,6 +1,7 @@
 #include "systemtool.h"
 #include "qregularexpression.h"
 #include "tools/qstringex.h"
+#include "common.h"
 
 #include <QClipboard>
 #include <QGuiApplication>
@@ -32,11 +33,7 @@ int SystemTool::countText(const QString &text) const
 QUrl SystemTool::clipImage(const QUrl &url, const int x, const int y, const int width,
                            const int height) const
 {
-    QString folder =
-            QString("%1/%2").arg(QStandardPaths::writableLocation(QStandardPaths::TempLocation),
-                                 QCoreApplication::applicationName());
-    QDir dir(folder);
-    dir.mkpath(folder);
+    QString folder = Common::appTempFolder();
 
     QString new_path = QString("%1/%2.jpg").arg(folder, QUuid::createUuid().toString(QUuid::Id128));
 

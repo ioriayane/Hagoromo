@@ -669,7 +669,7 @@ void RecordOperator::uploadBlob(std::function<void(bool)> callback)
             qDebug().noquote() << "Uploaded blob" << upload_blob->cid() << upload_blob->mimeType()
                                << upload_blob->size();
 
-            LexiconsTypeUnknown::Blob blob;
+            AtProtocolType::Blob blob;
             blob.cid = upload_blob->cid();
             blob.mimeType = upload_blob->mimeType();
             blob.size = upload_blob->size();

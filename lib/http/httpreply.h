@@ -50,6 +50,9 @@ public:
     void setRecvData(const QByteArray &newRecvData);
     Error error() const;
     void setError(Error newError);
+    QString contentType() const;
+    void setContentType(const QString &newContentType);
+    void setContentType(const QByteArray &name, const QByteArray &value);
 
 public slots:
 
@@ -66,6 +69,7 @@ private:
     QByteArray m_sendData;
     QByteArray m_recvData;
     Error m_error;
+    QString m_contentType;
 };
 
 #endif // HTTPREPLY_H

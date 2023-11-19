@@ -102,7 +102,7 @@ void http_test::test_get()
         QVERIFY(reply->readAll().size() == expect_data.size());
         QVERIFY(reply->readAll() == expect_data);
         QVERIFY(reply->rawHeader("Content-Length").toInt() == expect_data.size());
-        QVERIFY(reply->rawHeader("Content-Type") == "application/octet-stream");
+        QVERIFY(reply->rawHeader("Content-Type") == "application/json");
 
         reply->deleteLater();
     }
@@ -126,7 +126,7 @@ void http_test::test_get()
         QVERIFY(reply->readAll().size() == expect_data.size());
         QVERIFY(reply->readAll() == expect_data);
         QVERIFY(reply->rawHeader("Content-Length").toInt() == expect_data.size());
-        QVERIFY(reply->rawHeader("Content-Type") == "application/octet-stream");
+        QVERIFY(reply->rawHeader("Content-Type") == "application/json");
     }
 
     {
@@ -322,7 +322,7 @@ void http_test::test_HttpReply()
 
     reply.setRawHeader("accept", "application/json");
     reply.setRawHeader("connection", "open");
-    reply.setRawHeader("content-type", "application/octet-stream");
+    reply.setRawHeader("content-type", "application/json");
     reply.setRawHeader("content-length", "4321");
 
     QVERIFY2(reply.rawHeaderPairs().at(0).first == "accept", reply.rawHeaderPairs().at(0).first);
@@ -333,7 +333,7 @@ void http_test::test_HttpReply()
     QVERIFY2(reply.rawHeaderPairs().at(1).second == "open", reply.rawHeaderPairs().at(1).second);
     QVERIFY2(reply.rawHeaderPairs().at(2).first == "content-type",
              reply.rawHeaderPairs().at(2).first);
-    QVERIFY2(reply.rawHeaderPairs().at(2).second == "application/octet-stream",
+    QVERIFY2(reply.rawHeaderPairs().at(2).second == "application/json",
              reply.rawHeaderPairs().at(2).second);
     QVERIFY2(reply.rawHeaderPairs().at(3).first == "content-length",
              reply.rawHeaderPairs().at(3).first);

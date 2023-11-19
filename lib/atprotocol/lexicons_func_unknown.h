@@ -13,15 +13,8 @@
 namespace AtProtocolType {
 namespace LexiconsTypeUnknown {
 
-struct Blob
-{
-    QString cid;
-    QString mimeType;
-    QString alt;
-    int size = 0;
-};
-
 void copyUnknown(const QJsonObject &src, QVariant &dest);
+void copyBlob(const QJsonObject &src, Blob &dest);
 
 enum class CopyImageType : int {
     Thumb,

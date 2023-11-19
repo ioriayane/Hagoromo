@@ -49,6 +49,19 @@ void copyUnknown(const QJsonObject &src, QVariant &dest)
     }
 }
 
+void copyBlob(const QJsonObject &src, Blob &dest)
+{
+    if (src.isEmpty())
+        return;
+    if (src.value("$type").toString() != "blob")
+        return;
+
+    dest.cid = src.value("ref").toObject().value("$link").toString();
+    dest.alt = src.value("alt").toString();
+    dest.mimeType = src.value("mimeType").toString();
+    dest.size = src.value("size").toInt();
+}
+
 QStringList copyImagesFromPostView(const AppBskyFeedDefs::PostView &post, const CopyImageType type)
 {
     if (post.embed_type == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedImages_View) {
