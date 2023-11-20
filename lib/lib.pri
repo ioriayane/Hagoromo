@@ -21,6 +21,7 @@ SOURCES += \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetpostthread.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetrepostedby.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgettimeline.cpp \
+    $$PWD/atprotocol/app/bsky/feed/appbskyfeedsearchposts.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollowers.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollows.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlist.cpp \
@@ -67,6 +68,7 @@ HEADERS += \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetpostthread.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetrepostedby.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgettimeline.h \
+    $$PWD/atprotocol/app/bsky/feed/appbskyfeedsearchposts.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollowers.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollows.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlist.h \

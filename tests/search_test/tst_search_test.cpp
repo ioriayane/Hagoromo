@@ -104,7 +104,6 @@ void search_test::test_SearchPostListModel()
 {
     SearchPostListModel model;
     model.setAccount(m_service, QString(), QString(), QString(), "dummy", QString());
-    model.setSearchService(m_service);
     model.setText("epub");
 
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
