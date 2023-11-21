@@ -36,6 +36,10 @@ bool SearchProfileListModel::getLatest()
 
 bool SearchProfileListModel::getNext()
 {
+    if (running() || text().isEmpty() || m_cursor.isEmpty())
+        return false;
+    setRunning(true);
+
     return updateContentFilterLabels([=]() {
         AppBskyActorSearchActors *profiles = new AppBskyActorSearchActors(this);
         connect(profiles, &AppBskyActorSearchActors::finished, [=](bool success) {
@@ -67,17 +71,4 @@ void SearchProfileListModel::setText(const QString &newText)
         return;
     m_text = newText;
     emit textChanged();
-}
-
-QString SearchProfileListModel::searchService() const
-{
-    return m_searchService;
-}
-
-void SearchProfileListModel::setSearchService(const QString &newSearchService)
-{
-    if (m_searchService == newSearchService)
-        return;
-    m_searchService = newSearchService;
-    emit searchServiceChanged();
 }

@@ -246,7 +246,6 @@ ColumnLayout {
             model: SearchProfileListModel {
                 autoLoading: settings.autoLoading
                 text: settings.columnValue
-                searchService: "https://search.bsky.social"
 
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }
