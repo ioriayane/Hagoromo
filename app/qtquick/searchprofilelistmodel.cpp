@@ -1,8 +1,8 @@
 #include "searchprofilelistmodel.h"
 
-#include "search/searchprofiles.h"
+#include "atprotocol/app/bsky/actor/appbskyactorsearchactors.h"
 
-using SearchInterface::SearchProfiles;
+using AtProtocolInterface::AppBskyActorSearchActors;
 
 SearchProfileListModel::SearchProfileListModel(QObject *parent) : FollowsListModel { parent } { }
 
@@ -13,19 +13,46 @@ bool SearchProfileListModel::getLatest()
     setRunning(true);
 
     return updateContentFilterLabels([=]() {
-        SearchProfiles *profiles = new SearchProfiles(this);
-        connect(profiles, &SearchProfiles::finished, [=](bool success) {
+        AppBskyActorSearchActors *profiles = new AppBskyActorSearchActors(this);
+        connect(profiles, &AppBskyActorSearchActors::finished, [=](bool success) {
             if (success) {
-                m_cueGetProfile.append(*profiles->didList());
+                if (m_didList.isEmpty()) {
+                    m_cursor = profiles->cursor();
+                }
+                copyProfiles(profiles);
             } else {
                 emit errorOccured(profiles->errorCode(), profiles->errorMessage());
             }
-            QTimer::singleShot(100, this, &SearchProfileListModel::getProfiles);
+            setRunning(false);
             profiles->deleteLater();
         });
         profiles->setAccount(account());
-        profiles->setService(searchService());
-        profiles->search(text());
+        if (!profiles->searchActors(text(), 10, QString())) {
+            emit errorOccured(profiles->errorCode(), profiles->errorMessage());
+            setRunning(false);
+        }
+    });
+}
+
+bool SearchProfileListModel::getNext()
+{
+    return updateContentFilterLabels([=]() {
+        AppBskyActorSearchActors *profiles = new AppBskyActorSearchActors(this);
+        connect(profiles, &AppBskyActorSearchActors::finished, [=](bool success) {
+            if (success) {
+                m_cursor = profiles->cursor();
+                copyProfiles(profiles);
+            } else {
+                emit errorOccured(profiles->errorCode(), profiles->errorMessage());
+            }
+            setRunning(false);
+            profiles->deleteLater();
+        });
+        profiles->setAccount(account());
+        if (!profiles->searchActors(text(), 10, m_cursor)) {
+            emit errorOccured(profiles->errorCode(), profiles->errorMessage());
+            setRunning(false);
+        }
     });
 }
 

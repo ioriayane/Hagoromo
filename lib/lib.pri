@@ -9,6 +9,7 @@ SOURCES += \
     $$PWD/atprotocol/app/bsky/actor/appbskyactorgetprofile.cpp \
     $$PWD/atprotocol/app/bsky/actor/appbskyactorgetprofiles.cpp \
     $$PWD/atprotocol/app/bsky/actor/appbskyactorputpreferences.cpp \
+    $$PWD/atprotocol/app/bsky/actor/appbskyactorsearchactors.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetactorfeeds.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetactorlikes.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetauthorfeed.cpp \
@@ -56,6 +57,7 @@ HEADERS += \
     $$PWD/atprotocol/app/bsky/actor/appbskyactorgetprofile.h \
     $$PWD/atprotocol/app/bsky/actor/appbskyactorgetprofiles.h \
     $$PWD/atprotocol/app/bsky/actor/appbskyactorputpreferences.h \
+    $$PWD/atprotocol/app/bsky/actor/appbskyactorsearchactors.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetactorfeeds.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetactorlikes.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetauthorfeed.h \

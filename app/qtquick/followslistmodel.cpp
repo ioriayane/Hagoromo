@@ -124,19 +124,7 @@ bool FollowsListModel::getLatest()
                 if (m_didList.isEmpty()) {
                     m_cursor = follows->cursor();
                 }
-                for (const auto &profile : *follows->profileList()) {
-                    m_profileHash[profile.did] = profile;
-                    m_formattedDescriptionHash[profile.did] =
-                            m_systemTool.markupText(profile.description);
-                    if (m_didList.contains(profile.did)) {
-                        int row = m_didList.indexOf(profile.did);
-                        emit dataChanged(index(row), index(row));
-                    } else {
-                        beginInsertRows(QModelIndex(), m_didList.count(), m_didList.count());
-                        m_didList.append(profile.did);
-                        endInsertRows();
-                    }
-                }
+                copyProfiles(follows);
             } else {
                 emit errorOccured(follows->errorCode(), follows->errorMessage());
             }
@@ -159,19 +147,7 @@ bool FollowsListModel::getNext()
         connect(follows, &AppBskyGraphGetFollows::finished, [=](bool success) {
             if (success) {
                 m_cursor = follows->cursor();
-                for (const auto &profile : *follows->profileList()) {
-                    m_profileHash[profile.did] = profile;
-                    m_formattedDescriptionHash[profile.did] =
-                            m_systemTool.markupText(profile.description);
-                    if (m_didList.contains(profile.did)) {
-                        int row = m_didList.indexOf(profile.did);
-                        emit dataChanged(index(row), index(row));
-                    } else {
-                        beginInsertRows(QModelIndex(), m_didList.count(), m_didList.count());
-                        m_didList.append(profile.did);
-                        endInsertRows();
-                    }
-                }
+                copyProfiles(follows);
             } else {
                 emit errorOccured(follows->errorCode(), follows->errorMessage());
             }
@@ -263,6 +239,25 @@ void FollowsListModel::getProfiles()
     });
     posts->setAccount(account());
     posts->getProfiles(dids);
+}
+
+void FollowsListModel::copyProfiles(const AtProtocolInterface::AppBskyGraphGetFollows *followers)
+{
+    if (followers == nullptr)
+        return;
+
+    for (const auto &profile : *followers->profileList()) {
+        m_profileHash[profile.did] = profile;
+        m_formattedDescriptionHash[profile.did] = m_systemTool.markupText(profile.description);
+        if (m_didList.contains(profile.did)) {
+            int row = m_didList.indexOf(profile.did);
+            emit dataChanged(index(row), index(row));
+        } else {
+            beginInsertRows(QModelIndex(), m_didList.count(), m_didList.count());
+            m_didList.append(profile.did);
+            endInsertRows();
+        }
+    }
 }
 
 QString FollowsListModel::targetDid() const

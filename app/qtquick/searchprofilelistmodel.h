@@ -20,6 +20,7 @@ public:
 
 public slots:
     Q_INVOKABLE bool getLatest();
+    Q_INVOKABLE bool getNext();
 
 signals:
     void textChanged();
