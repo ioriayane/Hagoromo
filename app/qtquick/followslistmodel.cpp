@@ -118,21 +118,24 @@ bool FollowsListModel::getLatest()
     setRunning(true);
 
     return updateContentFilterLabels([=]() {
-        AppBskyGraphGetFollows *follows = new AppBskyGraphGetFollows(this);
-        connect(follows, &AppBskyGraphGetFollows::finished, [=](bool success) {
+        AppBskyGraphGetFollows *profiles = new AppBskyGraphGetFollows(this);
+        connect(profiles, &AppBskyGraphGetFollows::finished, [=](bool success) {
             if (success) {
                 if (m_didList.isEmpty()) {
-                    m_cursor = follows->cursor();
+                    m_cursor = profiles->cursor();
                 }
-                copyProfiles(follows);
+                copyProfiles(profiles);
             } else {
-                emit errorOccured(follows->errorCode(), follows->errorMessage());
+                emit errorOccured(profiles->errorCode(), profiles->errorMessage());
             }
             setRunning(false);
-            follows->deleteLater();
+            profiles->deleteLater();
         });
-        follows->setAccount(account());
-        follows->getFollows(targetDid(), 50, QString());
+        profiles->setAccount(account());
+        if (!profiles->getFollows(targetDid(), 50, QString())) {
+            emit errorOccured(profiles->errorCode(), profiles->errorMessage());
+            setRunning(false);
+        }
     });
 }
 
@@ -143,19 +146,22 @@ bool FollowsListModel::getNext()
     setRunning(true);
 
     return updateContentFilterLabels([=]() {
-        AppBskyGraphGetFollows *follows = new AppBskyGraphGetFollows(this);
-        connect(follows, &AppBskyGraphGetFollows::finished, [=](bool success) {
+        AppBskyGraphGetFollows *profiles = new AppBskyGraphGetFollows(this);
+        connect(profiles, &AppBskyGraphGetFollows::finished, [=](bool success) {
             if (success) {
-                m_cursor = follows->cursor();
-                copyProfiles(follows);
+                m_cursor = profiles->cursor();
+                copyProfiles(profiles);
             } else {
-                emit errorOccured(follows->errorCode(), follows->errorMessage());
+                emit errorOccured(profiles->errorCode(), profiles->errorMessage());
             }
             setRunning(false);
-            follows->deleteLater();
+            profiles->deleteLater();
         });
-        follows->setAccount(account());
-        follows->getFollows(targetDid(), 50, m_cursor);
+        profiles->setAccount(account());
+        if (!profiles->getFollows(targetDid(), 50, m_cursor)) {
+            emit errorOccured(profiles->errorCode(), profiles->errorMessage());
+            setRunning(false);
+        }
     });
 }
 

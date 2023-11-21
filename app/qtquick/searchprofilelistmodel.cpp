@@ -27,7 +27,7 @@ bool SearchProfileListModel::getLatest()
             profiles->deleteLater();
         });
         profiles->setAccount(account());
-        if (!profiles->searchActors(text(), 10, QString())) {
+        if (!profiles->searchActors(text(), 50, QString())) {
             emit errorOccured(profiles->errorCode(), profiles->errorMessage());
             setRunning(false);
         }
@@ -49,7 +49,7 @@ bool SearchProfileListModel::getNext()
             profiles->deleteLater();
         });
         profiles->setAccount(account());
-        if (!profiles->searchActors(text(), 10, m_cursor)) {
+        if (!profiles->searchActors(text(), 50, m_cursor)) {
             emit errorOccured(profiles->errorCode(), profiles->errorMessage());
             setRunning(false);
         }

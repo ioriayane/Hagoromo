@@ -12,7 +12,7 @@ AppBskyGraphGetFollows::AppBskyGraphGetFollows(QObject *parent)
 {
 }
 
-void AppBskyGraphGetFollows::getFollows(const QString &actor, const int limit,
+bool AppBskyGraphGetFollows::getFollows(const QString &actor, const int limit,
                                         const QString &cursor)
 {
     QUrlQuery query;
@@ -21,7 +21,7 @@ void AppBskyGraphGetFollows::getFollows(const QString &actor, const int limit,
         query.addQueryItem(QStringLiteral("cursor"), cursor);
     }
 
-    get(QStringLiteral("xrpc/app.bsky.graph.getFollows"), query);
+    return get(QStringLiteral("xrpc/app.bsky.graph.getFollows"), query);
 }
 
 const QList<AtProtocolType::AppBskyActorDefs::ProfileView> *
