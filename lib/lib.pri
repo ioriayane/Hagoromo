@@ -44,9 +44,6 @@ SOURCES += \
     $$PWD/http/httpaccess.cpp \
     $$PWD/http/httpaccessmanager.cpp \
     $$PWD/http/httpreply.cpp \
-    $$PWD/search/search_func.cpp \
-    $$PWD/search/searchposts.cpp \
-    $$PWD/search/searchprofiles.cpp \
     $$PWD/tools/configurablelabels.cpp \
     $$PWD/tools/imagecompressor.cpp \
     $$PWD/tools/opengraphprotocol.cpp
@@ -94,9 +91,6 @@ HEADERS += \
     $$PWD/http/httpaccessmanager.h \
     $$PWD/http/httpreply.h \
     $$PWD/search/search.h \
-    $$PWD/search/search_func.h \
-    $$PWD/search/searchposts.h \
-    $$PWD/search/searchprofiles.h \
     $$PWD/tools/configurablelabels.h \
     $$PWD/tools/imagecompressor.h \
     $$PWD/tools/opengraphprotocol.h \

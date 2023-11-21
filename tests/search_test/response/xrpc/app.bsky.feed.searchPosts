@@ -1,0 +1,114 @@
+{
+    "posts": [
+        {
+            "uri": "at://did:plc:73l5atmh7p3fn3xigbp6ao5x/app.bsky.feed.post/3kdvx4mkpb22f",
+            "cid": "bafyreih3wtgcqz3qwp3x6svvqirmvb2sde6wyxfkxulbbbsmt76cebji5u",
+            "author": {
+                "did": "did:plc:73l5atmh7p3fn3xigbp6ao5x",
+                "handle": "hagoromo.relog.tech",
+                "displayName": "羽衣 -Hagoromo-",
+                "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:73l5atmh7p3fn3xigbp6ao5x/bafkreif42yycinokltjrfizxgvyyw4z63a264jc4ws723pauxtc7vqo7la@jpeg",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false,
+                    "following": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3jymcihm43f2u",
+                    "followedBy": "at://did:plc:73l5atmh7p3fn3xigbp6ao5x/app.bsky.graph.follow/3jymch3bdnf2q"
+                },
+                "labels": []
+            },
+            "record": {
+                "via": "Hagoromo",
+                "text": "マルチカラム対応Blueskyクライアント「羽衣 -Hagoromo- v0.15.0」のリリースです。\n\n更新内容\n・フォント選択機能の追加\n・デフォルトフォントの変更\n・自身をリストに追加できるように変更\n・カラムのカーソル位置の修正\n・エラー発生時のメッセージの内容を修正\n・リストに登録するアイコンの切り抜き処理の修正",
+                "$type": "app.bsky.feed.post",
+                "embed": {
+                    "$type": "app.bsky.embed.external",
+                    "external": {
+                        "uri": "https://github.com/ioriayane/Hagoromo/releases/tag/v0.15.0",
+                        "thumb": {
+                            "$type": "blob",
+                            "ref": {
+                                "$link": "bafkreielt5ryjxv4krlugxa7p23vh6tam5ksszjgc3rs7aggkyoag4fhr4"
+                            },
+                            "mimeType": "image/jpeg",
+                            "size": 51360
+                        },
+                        "title": "Release Ver 0.15.0 · ioriayane/Hagoromo",
+                        "description": "更新内容 / Changelog\n\n追加\n\nフォント選択機能の追加\n\n\n更新\n\nデフォルトフォントの変更\n自身をリストに追加できるように変更\n\n\n修正\n\nカラムのカーソル位置の修正\nエラー発生時のメッセージの内容を修正\nリストに登録するアイコンの切り抜き処理の修正\n\n\n\nen\n\nAdd\n\nAdd font selection function\n\n\nUpdate\n\nChange default..."
+                    }
+                },
+                "createdAt": "2023-11-11T12:06:40.769Z"
+            },
+            "embed": {
+                "$type": "app.bsky.embed.external#view",
+                "external": {
+                    "uri": "https://github.com/ioriayane/Hagoromo/releases/tag/v0.15.0",
+                    "title": "Release Ver 0.15.0 · ioriayane/Hagoromo",
+                    "description": "更新内容 / Changelog\n\n追加\n\nフォント選択機能の追加\n\n\n更新\n\nデフォルトフォントの変更\n自身をリストに追加できるように変更\n\n\n修正\n\nカラムのカーソル位置の修正\nエラー発生時のメッセージの内容を修正\nリストに登録するアイコンの切り抜き処理の修正\n\n\n\nen\n\nAdd\n\nAdd font selection function\n\n\nUpdate\n\nChange default...",
+                    "thumb": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:73l5atmh7p3fn3xigbp6ao5x/bafkreielt5ryjxv4krlugxa7p23vh6tam5ksszjgc3rs7aggkyoag4fhr4@jpeg"
+                }
+            },
+            "replyCount": 0,
+            "repostCount": 7,
+            "likeCount": 6,
+            "indexedAt": "2023-11-11T12:06:40.769Z",
+            "viewer": {},
+            "labels": []
+        },
+        {
+            "uri": "at://did:plc:73l5atmh7p3fn3xigbp6ao5x/app.bsky.feed.post/3kd4zxs3ovv26",
+            "cid": "bafyreibtiionmcoydykzmun3qqmpj7jiwudwit2aore4vuel72f3cngyee",
+            "author": {
+                "did": "did:plc:73l5atmh7p3fn3xigbp6ao5x",
+                "handle": "hagoromo.relog.tech",
+                "displayName": "羽衣 -Hagoromo-",
+                "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:73l5atmh7p3fn3xigbp6ao5x/bafkreif42yycinokltjrfizxgvyyw4z63a264jc4ws723pauxtc7vqo7la@jpeg",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false,
+                    "following": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3jymcihm43f2u",
+                    "followedBy": "at://did:plc:73l5atmh7p3fn3xigbp6ao5x/app.bsky.graph.follow/3jymch3bdnf2q"
+                },
+                "labels": []
+            },
+            "record": {
+                "via": "Hagoromo",
+                "text": "マルチカラム対応Blueskyクライアント「羽衣 -Hagoromo- v0.14.0」のリリースです。\n\n・リスト対応\n・フォローしているユーザーへのリプのみ表示する機能\n・カラムを追加したときの表示位置を変更\n・サービスのURLの最後にスラッシュを指定されたときに正常に処理する\n・エラーログの修正",
+                "$type": "app.bsky.feed.post",
+                "embed": {
+                    "$type": "app.bsky.embed.external",
+                    "external": {
+                        "uri": "https://github.com/ioriayane/Hagoromo/releases/tag/v0.14.0",
+                        "thumb": {
+                            "$type": "blob",
+                            "ref": {
+                                "$link": "bafkreiddfwyzniag4swnrdeecrshecywqq2to2ahofs42qpyxbfmum5cwm"
+                            },
+                            "mimeType": "image/jpeg",
+                            "size": 49171
+                        },
+                        "title": "Release Ver 0.14.0 · ioriayane/Hagoromo",
+                        "description": "更新内容 / Changelog\n\n追加\n\nリスト対応\nフォローしているユーザーへのリプのみ表示する機能\n\n\n更新\n\nカラムを追加したときの表示位置を変更\n\n\n修正\n\nサービスのURLの最後にスラッシュを指定されたときに正常に処理する\nエラーログの修正\n\n\n\nen\n\nAdd\n\nSupport for curation lists\nAbility to display only the rep..."
+                    }
+                },
+                "createdAt": "2023-11-01T14:21:07.705Z"
+            },
+            "embed": {
+                "$type": "app.bsky.embed.external#view",
+                "external": {
+                    "uri": "https://github.com/ioriayane/Hagoromo/releases/tag/v0.14.0",
+                    "title": "Release Ver 0.14.0 · ioriayane/Hagoromo",
+                    "description": "更新内容 / Changelog\n\n追加\n\nリスト対応\nフォローしているユーザーへのリプのみ表示する機能\n\n\n更新\n\nカラムを追加したときの表示位置を変更\n\n\n修正\n\nサービスのURLの最後にスラッシュを指定されたときに正常に処理する\nエラーログの修正\n\n\n\nen\n\nAdd\n\nSupport for curation lists\nAbility to display only the rep...",
+                    "thumb": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:73l5atmh7p3fn3xigbp6ao5x/bafkreiddfwyzniag4swnrdeecrshecywqq2to2ahofs42qpyxbfmum5cwm@jpeg"
+                }
+            },
+            "replyCount": 1,
+            "repostCount": 11,
+            "likeCount": 15,
+            "indexedAt": "2023-11-01T14:21:07.705Z",
+            "viewer": {},
+            "labels": []
+        }
+    ],
+    "cursor": "10",
+    "hitsTotal": 94
+}
