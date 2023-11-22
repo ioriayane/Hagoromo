@@ -118,33 +118,24 @@ bool FollowsListModel::getLatest()
     setRunning(true);
 
     return updateContentFilterLabels([=]() {
-        AppBskyGraphGetFollows *follows = new AppBskyGraphGetFollows(this);
-        connect(follows, &AppBskyGraphGetFollows::finished, [=](bool success) {
+        AppBskyGraphGetFollows *profiles = new AppBskyGraphGetFollows(this);
+        connect(profiles, &AppBskyGraphGetFollows::finished, [=](bool success) {
             if (success) {
                 if (m_didList.isEmpty()) {
-                    m_cursor = follows->cursor();
+                    m_cursor = profiles->cursor();
                 }
-                for (const auto &profile : *follows->profileList()) {
-                    m_profileHash[profile.did] = profile;
-                    m_formattedDescriptionHash[profile.did] =
-                            m_systemTool.markupText(profile.description);
-                    if (m_didList.contains(profile.did)) {
-                        int row = m_didList.indexOf(profile.did);
-                        emit dataChanged(index(row), index(row));
-                    } else {
-                        beginInsertRows(QModelIndex(), m_didList.count(), m_didList.count());
-                        m_didList.append(profile.did);
-                        endInsertRows();
-                    }
-                }
+                copyProfiles(profiles);
             } else {
-                emit errorOccured(follows->errorCode(), follows->errorMessage());
+                emit errorOccured(profiles->errorCode(), profiles->errorMessage());
             }
             setRunning(false);
-            follows->deleteLater();
+            profiles->deleteLater();
         });
-        follows->setAccount(account());
-        follows->getFollows(targetDid(), 50, QString());
+        profiles->setAccount(account());
+        if (!profiles->getFollows(targetDid(), 50, QString())) {
+            emit errorOccured(profiles->errorCode(), profiles->errorMessage());
+            setRunning(false);
+        }
     });
 }
 
@@ -155,31 +146,22 @@ bool FollowsListModel::getNext()
     setRunning(true);
 
     return updateContentFilterLabels([=]() {
-        AppBskyGraphGetFollows *follows = new AppBskyGraphGetFollows(this);
-        connect(follows, &AppBskyGraphGetFollows::finished, [=](bool success) {
+        AppBskyGraphGetFollows *profiles = new AppBskyGraphGetFollows(this);
+        connect(profiles, &AppBskyGraphGetFollows::finished, [=](bool success) {
             if (success) {
-                m_cursor = follows->cursor();
-                for (const auto &profile : *follows->profileList()) {
-                    m_profileHash[profile.did] = profile;
-                    m_formattedDescriptionHash[profile.did] =
-                            m_systemTool.markupText(profile.description);
-                    if (m_didList.contains(profile.did)) {
-                        int row = m_didList.indexOf(profile.did);
-                        emit dataChanged(index(row), index(row));
-                    } else {
-                        beginInsertRows(QModelIndex(), m_didList.count(), m_didList.count());
-                        m_didList.append(profile.did);
-                        endInsertRows();
-                    }
-                }
+                m_cursor = profiles->cursor();
+                copyProfiles(profiles);
             } else {
-                emit errorOccured(follows->errorCode(), follows->errorMessage());
+                emit errorOccured(profiles->errorCode(), profiles->errorMessage());
             }
             setRunning(false);
-            follows->deleteLater();
+            profiles->deleteLater();
         });
-        follows->setAccount(account());
-        follows->getFollows(targetDid(), 50, m_cursor);
+        profiles->setAccount(account());
+        if (!profiles->getFollows(targetDid(), 50, m_cursor)) {
+            emit errorOccured(profiles->errorCode(), profiles->errorMessage());
+            setRunning(false);
+        }
     });
 }
 
@@ -263,6 +245,25 @@ void FollowsListModel::getProfiles()
     });
     posts->setAccount(account());
     posts->getProfiles(dids);
+}
+
+void FollowsListModel::copyProfiles(const AtProtocolInterface::AppBskyGraphGetFollows *followers)
+{
+    if (followers == nullptr)
+        return;
+
+    for (const auto &profile : *followers->profileList()) {
+        m_profileHash[profile.did] = profile;
+        m_formattedDescriptionHash[profile.did] = m_systemTool.markupText(profile.description);
+        if (m_didList.contains(profile.did)) {
+            int row = m_didList.indexOf(profile.did);
+            emit dataChanged(index(row), index(row));
+        } else {
+            beginInsertRows(QModelIndex(), m_didList.count(), m_didList.count());
+            m_didList.append(profile.did);
+            endInsertRows();
+        }
+    }
 }
 
 QString FollowsListModel::targetDid() const

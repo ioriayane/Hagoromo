@@ -4,6 +4,7 @@
 #include "atprotocol/lexicons.h"
 #include "atpabstractlistmodel.h"
 #include "systemtool.h"
+#include "atprotocol/app/bsky/graph/appbskygraphgetfollows.h"
 
 class FollowsListModel : public AtpAbstractListModel
 {
@@ -58,6 +59,7 @@ protected:
     virtual void finishedDisplayingQueuedPosts() { }
     virtual bool checkVisibility(const QString &cid);
     void getProfiles();
+    void copyProfiles(const AtProtocolInterface::AppBskyGraphGetFollows *followers);
 
     SystemTool m_systemTool;
     QStringList m_didList;
