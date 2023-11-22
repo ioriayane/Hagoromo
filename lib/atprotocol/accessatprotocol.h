@@ -1,7 +1,9 @@
 #ifndef ACCESSATPROTOCOL_H
 #define ACCESSATPROTOCOL_H
 
+#include "atprotocol/lexicons.h"
 #include "http/httpaccessmanager.h"
+#include <QJsonObject>
 #include <QNetworkReply>
 #include <QObject>
 #include <QUrl>
@@ -86,6 +88,8 @@ protected:
     virtual bool parseJson(bool success, const QString reply_json) = 0;
     virtual bool recvImage(const QByteArray &data, const QString &content_type);
     bool checkReply(HttpReply *reply);
+
+    void setJsonBlob(const AtProtocolType::Blob &blob, QJsonObject &json_blob);
 
 private:
     static HttpAccessManager *m_manager;
