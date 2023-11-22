@@ -28,6 +28,7 @@ const AccountData &AtProtocolAccount::account() const
 void AtProtocolAccount::setAccount(const AccountData &account)
 {
     m_account.service = account.service;
+    m_account.service_endpoint = account.service_endpoint;
     m_account.identifier.clear();
     m_account.password.clear();
 
@@ -61,6 +62,20 @@ QString AtProtocolAccount::service() const
 void AtProtocolAccount::setService(const QString &newService)
 {
     m_account.service = newService;
+}
+
+QString AtProtocolAccount::serviceEndpoint() const
+{
+    if (m_account.service_endpoint.endsWith("/")) {
+        return m_account.service_endpoint.chopped(1);
+    } else {
+        return m_account.service_endpoint;
+    }
+}
+
+void AtProtocolAccount::setServiceEndpoint(const QString &newServiceEndpoint)
+{
+    m_account.service_endpoint = newServiceEndpoint;
 }
 
 QString AtProtocolAccount::did() const

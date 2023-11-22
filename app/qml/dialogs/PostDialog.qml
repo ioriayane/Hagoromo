@@ -255,7 +255,7 @@ Dialog {
                         var at_uri = feedGeneratorLink.convertToAtUri(uri)
                         if(at_uri.length > 0){
                             var row = accountCombo.currentIndex;
-                            feedGeneratorLink.setAccount(postDialog.accountModel.item(row, AccountListModel.ServiceRole),
+                            feedGeneratorLink.setAccount(postDialog.accountModel.getService(row),
                                                          postDialog.accountModel.item(row, AccountListModel.DidRole),
                                                          postDialog.accountModel.item(row, AccountListModel.HandleRole),
                                                          postDialog.accountModel.item(row, AccountListModel.EmailRole),
@@ -475,7 +475,7 @@ Dialog {
                     text: qsTr("Post")
                     onClicked: {
                         var row = accountCombo.currentIndex;
-                        createRecord.setAccount(postDialog.accountModel.item(row, AccountListModel.ServiceRole),
+                        createRecord.setAccount(postDialog.accountModel.getService(row),
                                                 postDialog.accountModel.item(row, AccountListModel.DidRole),
                                                 postDialog.accountModel.item(row, AccountListModel.HandleRole),
                                                 postDialog.accountModel.item(row, AccountListModel.EmailRole),

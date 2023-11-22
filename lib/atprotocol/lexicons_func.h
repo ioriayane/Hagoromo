@@ -171,6 +171,7 @@ void copySkeletonSearchActor(const QJsonObject &src,
 }
 // com.atproto.admin.defs
 namespace ComAtprotoAdminDefs {
+void copyStatusAttr(const QJsonObject &src, ComAtprotoAdminDefs::StatusAttr &dest);
 void copyActionType(const QJsonValue &src, ComAtprotoAdminDefs::ActionType &dest);
 void copyRepoRef(const QJsonObject &src, ComAtprotoAdminDefs::RepoRef &dest);
 void copyActionReversal(const QJsonObject &src, ComAtprotoAdminDefs::ActionReversal &dest);
@@ -189,12 +190,18 @@ void copyActionViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::ActionVie
 void copyReportViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::ReportViewDetail &dest);
 void copyModerationDetail(const QJsonObject &src, ComAtprotoAdminDefs::ModerationDetail &dest);
 void copyRepoViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::RepoViewDetail &dest);
+void copyAccountView(const QJsonObject &src, ComAtprotoAdminDefs::AccountView &dest);
+void copyRepoBlobRef(const QJsonObject &src, ComAtprotoAdminDefs::RepoBlobRef &dest);
 void copyRecordViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::RecordViewDetail &dest);
 }
 // com.atproto.server.defs
 namespace ComAtprotoServerDefs {
 void copyInviteCodeUse(const QJsonObject &src, ComAtprotoServerDefs::InviteCodeUse &dest);
 void copyInviteCode(const QJsonObject &src, ComAtprotoServerDefs::InviteCode &dest);
+void copyDidDocVerificationMethod(const QJsonObject &src,
+                                  ComAtprotoServerDefs::DidDocVerificationMethod &dest);
+void copyDidDocService(const QJsonObject &src, ComAtprotoServerDefs::DidDocService &dest);
+void copyDidDoc(const QJsonObject &src, ComAtprotoServerDefs::DidDoc &dest);
 }
 // com.atproto.moderation.defs
 namespace ComAtprotoModerationDefs {

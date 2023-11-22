@@ -23,7 +23,8 @@ Dialog {
     LoginDialog {
         id: login
         onAccepted: {
-            accountModel.updateAccount(session.service, session.identifier, session.password,
+            accountModel.updateAccount(session.service, session.serviceEndpoint,
+                                       session.identifier, session.password,
                                        session.did, session.handle, session.email,
                                        session.accessJwt, session.refreshJwt,
                                        session.authorized)
@@ -117,7 +118,7 @@ Dialog {
                                 text: qsTr("Content filter")
                                 onTriggered: {
                                     var i = model.index
-                                    contentFilter.account.service = accountList.model.item(i, AccountListModel.ServiceRole)
+                                    contentFilter.account.service = accountList.model.getService(i)
                                     contentFilter.account.did = accountList.model.item(i, AccountListModel.DidRole)
                                     contentFilter.account.handle = accountList.model.item(i, AccountListModel.HandleRole)
                                     contentFilter.account.email = accountList.model.item(i, AccountListModel.EmailRole)

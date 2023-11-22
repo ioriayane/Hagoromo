@@ -42,9 +42,8 @@ Dialog {
             item.visible = (i === index)
             if(i === index){
                 if(item.model.rowCount() === 2){
-                    var service = accountModel.item(index, AccountListModel.ServiceRole)
-                    var did = accountModel.item(index, AccountListModel.DidRole)
-                    item.model.setAccount(service, did,
+                    item.model.setAccount(accountModel.getService(index),
+                                          accountModel.item(index, AccountListModel.DidRole),
                                           accountModel.item(index, AccountListModel.HandleRole),
                                           accountModel.item(index, AccountListModel.EmailRole),
                                           accountModel.item(index, AccountListModel.AccessJwtRole),

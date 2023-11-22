@@ -812,6 +812,27 @@ struct InviteCode
     QString createdAt; // datetime
     QList<InviteCodeUse> uses;
 };
+struct DidDocVerificationMethod
+{
+    QString id;
+    QString type;
+    QString controller;
+    QString publicKeyMultibase;
+};
+struct DidDocService
+{
+    QString id;
+    QString type;
+    QString serviceEndpoint;
+};
+struct DidDoc
+{
+    QList<QString> context;
+    QString id; // did
+    QString alsoKnownAs;
+    QList<DidDocVerificationMethod> verificationMethod;
+    QList<DidDocService> service;
+};
 }
 
 // com.atproto.moderation.defs
@@ -849,6 +870,11 @@ enum class ActionViewSubjectType : int {
     none,
     subject_RepoRef,
     subject_ComAtprotoRepoStrongRef_Main,
+};
+struct StatusAttr
+{
+    bool applied = false;
+    QString ref;
 };
 typedef QString ActionType;
 struct RepoRef
@@ -1013,6 +1039,25 @@ struct RepoViewDetail
     QList<ComAtprotoServerDefs::InviteCode> invites;
     bool invitesDisabled = false;
     QString inviteNote;
+    QString emailConfirmedAt; // datetime
+};
+struct AccountView
+{
+    QString did; // did
+    QString handle; // handle
+    QString email;
+    QString indexedAt; // datetime
+    ComAtprotoServerDefs::InviteCode invitedBy;
+    QList<ComAtprotoServerDefs::InviteCode> invites;
+    bool invitesDisabled = false;
+    QString emailConfirmedAt; // datetime
+    QString inviteNote;
+};
+struct RepoBlobRef
+{
+    QString did; // did
+    QString cid; // cid
+    QString recordUri; // at-uri
 };
 struct RecordViewDetail
 {

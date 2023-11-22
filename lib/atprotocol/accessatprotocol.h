@@ -20,6 +20,7 @@ struct AccountData
     bool is_main = false;
 
     QString service;
+    QString service_endpoint;
     QString identifier;
     QString password;
 
@@ -51,6 +52,8 @@ public:
                     const QString &access_jwt, const QString &refresh_jwt);
     QString service() const;
     void setService(const QString &newService);
+    QString serviceEndpoint() const;
+    void setServiceEndpoint(const QString &newServiceEndpoint);
     QString did() const;
     QString handle() const;
     QString email() const;

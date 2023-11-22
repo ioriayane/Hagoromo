@@ -9,6 +9,8 @@ class CreateSession : public QObject
     Q_OBJECT
 
     Q_PROPERTY(QString service READ service WRITE setService NOTIFY serviceChanged)
+    Q_PROPERTY(QString serviceEndpoint READ serviceEndpoint WRITE setServiceEndpoint NOTIFY
+                       serviceEndpointChanged)
     Q_PROPERTY(QString identifier READ identifier WRITE setIdentifier NOTIFY identifierChanged)
     Q_PROPERTY(QString password READ password WRITE setPassword NOTIFY passwordChanged)
 
@@ -28,6 +30,8 @@ public:
 
     QString service() const;
     void setService(const QString &newService);
+    QString serviceEndpoint() const;
+    void setServiceEndpoint(const QString &newServiceEndpoint);
     QString identifier() const;
     void setIdentifier(const QString &newIdentifier);
     QString password() const;
@@ -52,6 +56,7 @@ signals:
     void errorOccured(const QString &code, const QString &message);
     void finished(bool success);
     void serviceChanged();
+    void serviceEndpointChanged();
     void identifierChanged();
     void passwordChanged();
     void didChanged();
