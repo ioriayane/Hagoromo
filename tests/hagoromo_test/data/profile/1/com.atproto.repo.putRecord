@@ -1,0 +1,12 @@
+{
+    "repo": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+    "collection": "app.bsky.actor.profile",
+    "rkey": "self",
+    "record": {
+        "$type": "app.bsky.actor.profile",
+        "description": "description",
+        "displayName": "display_name"
+    },
+    "swapRecord": "bafyreif4chy7iugq3blmvqt6sgqeo72pxkkr4v4fnzjqii2yriijh545ei",
+    "validate": true
+}
