@@ -10,6 +10,13 @@
 #include <QVariant>
 
 namespace AtProtocolType {
+struct Blob
+{
+    QString cid;
+    QString mimeType;
+    QString alt;
+    int size = 0;
+};
 namespace AppBskyActorDefs {
 struct ProfileView;
 }
@@ -174,6 +181,8 @@ struct Main
 {
     QString displayName;
     QString description;
+    Blob avatar;
+    Blob banner;
     // union start : labels
     MainLabelsType labels_type = MainLabelsType::none;
     ComAtprotoLabelDefs::SelfLabels labels_ComAtprotoLabelDefs_SelfLabels;
@@ -189,6 +198,7 @@ struct External
     QString uri; // uri
     QString title;
     QString description;
+    Blob thumb;
 };
 struct Main
 {
@@ -217,6 +227,7 @@ struct AspectRatio
 };
 struct Image
 {
+    Blob image;
     QString alt;
     AspectRatio aspectRatio;
 };
@@ -577,6 +588,7 @@ struct Main
     QString displayName;
     QString description;
     QList<AppBskyRichtextFacet::Main> descriptionFacets;
+    Blob avatar;
     // union start : labels
     MainLabelsType labels_type = MainLabelsType::none;
     ComAtprotoLabelDefs::SelfLabels labels_ComAtprotoLabelDefs_SelfLabels;
@@ -727,6 +739,7 @@ struct Main
     QString name;
     QString description;
     QList<AppBskyRichtextFacet::Main> descriptionFacets;
+    Blob avatar;
     // union start : labels
     MainLabelsType labels_type = MainLabelsType::none;
     ComAtprotoLabelDefs::SelfLabels labels_ComAtprotoLabelDefs_SelfLabels;

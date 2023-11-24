@@ -10,6 +10,13 @@
 #include <QVariant>
 
 namespace AtProtocolType {
+struct Blob
+{
+    QString cid;
+    QString mimeType;
+    QString alt;
+    int size = 0;
+};
 {% for pre_define in pre_defines -%}
 namespace {{ pre_define.namespace }} {
 {% for struct in pre_define.structs -%}

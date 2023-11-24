@@ -86,7 +86,7 @@ private:
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_replyRoot;
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_embedQuote;
     QList<EmbedImage> m_embedImages;
-    QList<AtProtocolType::LexiconsTypeUnknown::Blob> m_embedImageBlogs;
+    QList<AtProtocolType::Blob> m_embedImageBlogs;
     QList<AtProtocolType::AppBskyRichtextFacet::Main> m_facets;
     QStringList m_postLanguages;
     QString m_externalLinkUri;

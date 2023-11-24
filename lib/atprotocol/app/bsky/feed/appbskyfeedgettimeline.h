@@ -15,10 +15,11 @@ public:
 
     const QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> *feedList() const;
 
+protected:
+    QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> m_feedList;
+
 private:
     virtual bool parseJson(bool success, const QString reply_json);
-
-    QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> m_feedList;
 };
 
 }

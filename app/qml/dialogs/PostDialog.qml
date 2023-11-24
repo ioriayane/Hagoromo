@@ -520,7 +520,7 @@ Dialog {
         title: qsTr("Select contents")
         visible: false
         fileMode : P.FileDialog.OpenFiles
-        nameFilters: ["Image files (*.jpg *.jpeg *.png)"
+        nameFilters: ["Image files (*.jpg *.jpeg *.png *.gif)"
             , "All files (*)"]
         onAccepted: {
             //選択されたファイルをすべて追加

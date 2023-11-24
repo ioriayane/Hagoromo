@@ -338,6 +338,8 @@ class Defs2Struct:
                             self.output_text[namespace].append('    QList<QString> %s; // %s' % (property_name, comment))
                         else:
                             self.output_text[namespace].append('    QList<QString> %s;' % (property_name, ))
+                elif p_type == 'blob':
+                    self.output_text[namespace].append('    Blob %s;' % (property_name, ))
 
             self.output_text[namespace].append('};')
 
@@ -541,6 +543,9 @@ class Defs2Struct:
                         self.output_func_text[namespace].append('        for (const auto &value : src.value("%s").toArray()) {' % (property_name, ))
                         self.output_func_text[namespace].append('            dest.%s.append(value.toString());' % (property_name, ))
                         self.output_func_text[namespace].append('        }')
+                elif p_type == 'blob':
+                    self.output_func_text[namespace].append('        LexiconsTypeUnknown::copyBlob(src.value("%s").toObject(), dest.%s);' % (property_name, property_name, ))
+                    # self.output_text[namespace].append('    Blob %s;' % (property_name, ))
 
             self.output_func_text[namespace].append('    }')
             self.output_func_text[namespace].append('}')

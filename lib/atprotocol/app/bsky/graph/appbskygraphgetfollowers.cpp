@@ -13,7 +13,7 @@ AppBskyGraphGetFollowers::AppBskyGraphGetFollowers(QObject *parent)
     m_listKey = QStringLiteral("followers");
 }
 
-void AppBskyGraphGetFollowers::getFollowers(const QString &actor, const int limit,
+bool AppBskyGraphGetFollowers::getFollowers(const QString &actor, const int limit,
                                             const QString &cursor)
 {
     QUrlQuery query;
@@ -22,17 +22,7 @@ void AppBskyGraphGetFollowers::getFollowers(const QString &actor, const int limi
         query.addQueryItem(QStringLiteral("cursor"), cursor);
     }
 
-    get(QStringLiteral("xrpc/app.bsky.graph.getFollowers"), query);
+    return get(QStringLiteral("xrpc/app.bsky.graph.getFollowers"), query);
 }
-
-// void AppBskyGraphGetFollowers::parseJson(const QString reply_json)
-//{
-//    bool success = false;
-
-//    QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
-//    if (json_doc.isEmpty()) { }
-
-//    emit finished(success);
-//}
 
 }

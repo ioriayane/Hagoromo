@@ -9,6 +9,7 @@ SOURCES += \
     $$PWD/atprotocol/app/bsky/actor/appbskyactorgetprofile.cpp \
     $$PWD/atprotocol/app/bsky/actor/appbskyactorgetprofiles.cpp \
     $$PWD/atprotocol/app/bsky/actor/appbskyactorputpreferences.cpp \
+    $$PWD/atprotocol/app/bsky/actor/appbskyactorsearchactors.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetactorfeeds.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetactorlikes.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetauthorfeed.cpp \
@@ -21,6 +22,7 @@ SOURCES += \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetpostthread.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetrepostedby.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgettimeline.cpp \
+    $$PWD/atprotocol/app/bsky/feed/appbskyfeedsearchposts.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollowers.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollows.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlist.cpp \
@@ -36,14 +38,12 @@ SOURCES += \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepouploadblob.cpp \
     $$PWD/atprotocol/com/atproto/server/comatprotoservercreatesession.cpp \
     $$PWD/atprotocol/com/atproto/server/comatprotoserverrefreshsession.cpp \
+    $$PWD/atprotocol/com/atproto/sync/comatprotosyncgetblob.cpp \
     $$PWD/atprotocol/lexicons_func.cpp \
     $$PWD/atprotocol/lexicons_func_unknown.cpp \
     $$PWD/http/httpaccess.cpp \
     $$PWD/http/httpaccessmanager.cpp \
     $$PWD/http/httpreply.cpp \
-    $$PWD/search/search_func.cpp \
-    $$PWD/search/searchposts.cpp \
-    $$PWD/search/searchprofiles.cpp \
     $$PWD/tools/configurablelabels.cpp \
     $$PWD/tools/imagecompressor.cpp \
     $$PWD/tools/opengraphprotocol.cpp
@@ -54,6 +54,7 @@ HEADERS += \
     $$PWD/atprotocol/app/bsky/actor/appbskyactorgetprofile.h \
     $$PWD/atprotocol/app/bsky/actor/appbskyactorgetprofiles.h \
     $$PWD/atprotocol/app/bsky/actor/appbskyactorputpreferences.h \
+    $$PWD/atprotocol/app/bsky/actor/appbskyactorsearchactors.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetactorfeeds.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetactorlikes.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetauthorfeed.h \
@@ -66,6 +67,7 @@ HEADERS += \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetpostthread.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetrepostedby.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgettimeline.h \
+    $$PWD/atprotocol/app/bsky/feed/appbskyfeedsearchposts.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollowers.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollows.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlist.h \
@@ -81,6 +83,7 @@ HEADERS += \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepouploadblob.h \
     $$PWD/atprotocol/com/atproto/server/comatprotoservercreatesession.h \
     $$PWD/atprotocol/com/atproto/server/comatprotoserverrefreshsession.h \
+    $$PWD/atprotocol/com/atproto/sync/comatprotosyncgetblob.h \
     $$PWD/atprotocol/lexicons.h \
     $$PWD/atprotocol/lexicons_func.h \
     $$PWD/atprotocol/lexicons_func_unknown.h \
@@ -88,9 +91,6 @@ HEADERS += \
     $$PWD/http/httpaccessmanager.h \
     $$PWD/http/httpreply.h \
     $$PWD/search/search.h \
-    $$PWD/search/search_func.h \
-    $$PWD/search/searchposts.h \
-    $$PWD/search/searchprofiles.h \
     $$PWD/tools/configurablelabels.h \
     $$PWD/tools/imagecompressor.h \
     $$PWD/tools/opengraphprotocol.h \

@@ -325,8 +325,7 @@ void ComAtprotoRepoCreateRecord::setQuote(const QString &cid, const QString &uri
     m_embedQuote.uri = uri;
 }
 
-void ComAtprotoRepoCreateRecord::setImageBlobs(
-        const QList<AtProtocolType::LexiconsTypeUnknown::Blob> &blobs)
+void ComAtprotoRepoCreateRecord::setImageBlobs(const QList<AtProtocolType::Blob> &blobs)
 {
     m_embedImageBlobs = blobs;
 }

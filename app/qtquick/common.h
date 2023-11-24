@@ -26,6 +26,28 @@ inline QString appDataFolder()
             );
 }
 
+inline QString appTempFolder(const QString &sub = QString())
+{
+    QString folder =
+            QString("%1/%2").arg(QStandardPaths::writableLocation(QStandardPaths::TempLocation),
+                                 QCoreApplication::applicationName());
+    if (!sub.isEmpty()) {
+        folder.append("/" + sub);
+    }
+    QDir dir(folder);
+    dir.mkpath(folder);
+    return folder;
+}
+
+inline QString mimeTypeToExtension(const QString &mime_type)
+{
+    QStringList items = mime_type.split("/");
+    if (items.length() == 2) {
+        return items.last();
+    }
+    return mime_type;
+}
+
 inline void saveJsonDocument(const QJsonDocument &doc, const QString &file_name)
 {
     QString folder = Common::appDataFolder();
