@@ -41,7 +41,7 @@ QUrl SystemTool::clipImage(const QUrl &url, const int x, const int y, const int 
     qDebug() << "dest" << new_path;
 
     QImage src(url.toLocalFile());
-    QImage dest(src.size(), QImage::Format_RGB32);
+    QImage dest(width, height, QImage::Format_RGB32);
     dest.fill(QColor(Qt::white));
     QPainter p_dest(&dest);
     p_dest.drawImage(0, 0, src, x, y, width, height);
