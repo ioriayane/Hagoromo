@@ -206,6 +206,7 @@ ApplicationWindow {
     EditProfileDialog {
         id: editProfileDialog
         onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
+        onAccepted: accountListModel.refreshAccountProfile(editProfileDialog.account.uuid)
     }
 
     MessageDialog {
