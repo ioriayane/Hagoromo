@@ -49,7 +49,10 @@ Dialog {
                 function updateDefaultRect(){
                     cursorX = image.offsetX
                     cursorY = image.offsetY
-                    if(image.paintedWidth < image.paintedHeight){
+                    if(!imageClipDialog.squareMode){
+                        cursorWidth = image.paintedWidth
+                        cursorHeight = image.paintedHeight
+                    }else if(image.paintedWidth < image.paintedHeight){
                         cursorWidth = image.paintedWidth
                         cursorHeight = image.paintedWidth
                     }else{
