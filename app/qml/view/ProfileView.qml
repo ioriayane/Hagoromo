@@ -48,6 +48,7 @@ ColumnLayout {
     signal requestReportPost(string uri, string cid)
     signal requestReportAccount(string did)
     signal requestAddRemoveFromLists(string did)
+    signal requestEditProfile(string did, string avatar, string banner, string display_name, string description)
 
     signal errorOccured(string code, string message)
     signal back()
@@ -62,10 +63,14 @@ ColumnLayout {
         State {
             // 認証しているアカウントを表示しているとき
             when: userDid === accountDid
-            PropertyChanges { target: editButton; visible: false }  // 仮
+            PropertyChanges { target: editButton; visible: true }
             PropertyChanges { target: editButton; iconText: qsTr("Edit Profile") }
             PropertyChanges { target: editButton; onClicked: {
-                    // edit profile
+                    profileView.requestEditProfile(accountDid,
+                                                   userProfile.avatar,
+                                                   userProfile.banner,
+                                                   userProfile.displayName,
+                                                   userProfile.description)
                 } }
         },
         State {
@@ -259,7 +264,7 @@ ColumnLayout {
             lineHeight: 1.1
             font.pointSize: AdjustedValues.f10
             textFormat: Text.StyledText
-            text: userProfile.description
+            text: userProfile.formattedDescription
 
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
             onLinkActivated: (url) => Qt.openUrlExternally(url)

@@ -125,7 +125,7 @@ void UserProfile::setDisplayName(const QString &newDisplayName)
 
 QString UserProfile::description() const
 {
-    return m_formattedDescription; // m_description;
+    return m_description;
 }
 
 void UserProfile::setDescription(const QString &newDescription)
@@ -135,6 +135,7 @@ void UserProfile::setDescription(const QString &newDescription)
     m_description = newDescription;
     m_formattedDescription = m_systemTool.markupText(m_description);
     emit descriptionChanged();
+    emit formattedDescriptionChanged();
 }
 
 QString UserProfile::avatar() const
@@ -343,4 +344,9 @@ void UserProfile::setUserFilterTitle(const QString &newUserFilterTitle)
         return;
     m_userFilterTitle = newUserFilterTitle;
     emit userFilterTitleChanged();
+}
+
+QString UserProfile::formattedDescription() const
+{
+    return m_formattedDescription;
 }

@@ -15,6 +15,7 @@ Dialog {
     closePolicy: Popup.CloseOnEscape
 
     property string embedImage: ""
+    property bool squareMode: true
 
     property int selectedX: -1
     property int selectedY: -1
@@ -27,8 +28,8 @@ Dialog {
     ColumnLayout {
         Image {
             id: image
-            Layout.preferredWidth: 450 //* AdjustedValues.ratioHalf
-            Layout.preferredHeight: 450 //* AdjustedValues.ratioHalf
+            Layout.preferredWidth: 450 * AdjustedValues.ratioHalf
+            Layout.preferredHeight: 450 * AdjustedValues.ratioHalf
             Layout.maximumWidth: 1000
             Layout.maximumHeight: 1000
             fillMode: Image.PreserveAspectFit
@@ -42,7 +43,7 @@ Dialog {
             CursorRect {
                 id: cursorRect
                 anchors.fill: parent
-                squareMode: true
+                squareMode: imageClipDialog.squareMode
                 paddingH: image.offsetX
                 paddingV: image.offsetY
                 function updateDefaultRect(){

@@ -546,11 +546,11 @@ void RecordOperator::updateProfile(const QString &avatar_url, const QString &ban
 
     QStringList images;
     QStringList alts;
-    if (!avatar_url.isEmpty()) {
+    if (!avatar_url.isEmpty() && QUrl(avatar_url).isLocalFile()) {
         images.append(avatar_url);
         alts.append(QStringLiteral("avatar"));
     }
-    if (!banner_url.isEmpty()) {
+    if (!banner_url.isEmpty() && QUrl(banner_url).isLocalFile()) {
         images.append(banner_url);
         alts.append(QStringLiteral("banner"));
     }
@@ -559,10 +559,14 @@ void RecordOperator::updateProfile(const QString &avatar_url, const QString &ban
     ComAtprotoRepoGetRecord *old_profile = new ComAtprotoRepoGetRecord(this);
     connect(old_profile, &ComAtprotoRepoGetRecord::finished, [=](bool success1) {
         if (success1) {
+            AppBskyActorProfile::Main old_record =
+                    LexiconsTypeUnknown::fromQVariant<AppBskyActorProfile::Main>(
+                            old_profile->record());
+            QString old_cid = old_profile->cid();
             uploadBlob([=](bool success2) {
                 if (success2) {
-                    AtProtocolType::Blob avatar;
-                    AtProtocolType::Blob banner;
+                    AtProtocolType::Blob avatar = old_record.avatar;
+                    AtProtocolType::Blob banner = old_record.banner;
                     for (const auto &blob : qAsConst(m_embedImageBlogs)) {
                         if (blob.alt == "avatar") {
                             avatar = blob;
@@ -572,7 +576,6 @@ void RecordOperator::updateProfile(const QString &avatar_url, const QString &ban
                             banner.alt.clear();
                         }
                     }
-                    // ////
                     ComAtprotoRepoPutRecord *new_profile = new ComAtprotoRepoPutRecord(this);
                     connect(new_profile, &ComAtprotoRepoPutRecord::finished, [=](bool success3) {
                         if (!success3) {
@@ -584,8 +587,7 @@ void RecordOperator::updateProfile(const QString &avatar_url, const QString &ban
                         new_profile->deleteLater();
                     });
                     new_profile->setAccount(m_account);
-                    if (!new_profile->profile(avatar, banner, description, display_name,
-                                              old_profile->cid())) {
+                    if (!new_profile->profile(avatar, banner, description, display_name, old_cid)) {
                         emit errorOccured(new_profile->errorCode(), new_profile->errorMessage());
                         emit finished(false, QString(), QString());
                         setRunning(false);
@@ -603,9 +605,9 @@ void RecordOperator::updateProfile(const QString &avatar_url, const QString &ban
         old_profile->deleteLater();
     });
     old_profile->setAccount(m_account);
-    if (!old_profile->profile(m_account.did)) {
+    setRunning(old_profile->profile(m_account.did));
+    if (!running()) {
         emit errorOccured(old_profile->errorCode(), old_profile->errorMessage());
-        setRunning(false);
     }
 }
 

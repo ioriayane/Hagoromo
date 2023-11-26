@@ -203,6 +203,10 @@ ApplicationWindow {
         id: addToListDialog
         onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
     }
+    EditProfileDialog {
+        id: editProfileDialog
+        onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
+    }
 
     MessageDialog {
         id: messageDialog
@@ -355,6 +359,24 @@ ApplicationWindow {
                                                  addToListDialog.open()
                                              }
                                          }
+            onRequestEditProfile: (account_uuid, did, avatar, banner, display_name, description) => {
+                                      var row = accountListModel.indexAt(account_uuid)
+                                      if(row >= 0){
+                                          editProfileDialog.avatar = avatar
+                                          editProfileDialog.banner = banner
+                                          editProfileDialog.displayName = display_name
+                                          editProfileDialog.description = description
+                                          editProfileDialog.account.uuid = account_uuid
+                                          editProfileDialog.account.service = accountListModel.item(row, AccountListModel.ServiceRole)
+                                          editProfileDialog.account.did = accountListModel.item(row, AccountListModel.DidRole)
+                                          editProfileDialog.account.handle = accountListModel.item(row, AccountListModel.HandleRole)
+                                          editProfileDialog.account.email = accountListModel.item(row, AccountListModel.EmailRole)
+                                          editProfileDialog.account.accessJwt = accountListModel.item(row, AccountListModel.AccessJwtRole)
+                                          editProfileDialog.account.refreshJwt = accountListModel.item(row, AccountListModel.RefreshJwtRole)
+                                          editProfileDialog.account.avatar = accountListModel.item(row, AccountListModel.AvatarRole)
+                                          editProfileDialog.open()
+                                      }
+                                  }
 
             onRequestMoveToLeft: (key) => {
                                      console.log("move to left:" + key)

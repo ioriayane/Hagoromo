@@ -18,6 +18,8 @@ class UserProfile : public QObject
     Q_PROPERTY(QString handle READ handle WRITE setHandle NOTIFY handleChanged)
     Q_PROPERTY(QString displayName READ displayName WRITE setDisplayName NOTIFY displayNameChanged)
     Q_PROPERTY(QString description READ description WRITE setDescription NOTIFY descriptionChanged)
+    Q_PROPERTY(QString formattedDescription READ formattedDescription NOTIFY
+                       formattedDescriptionChanged)
     Q_PROPERTY(QString avatar READ avatar WRITE setAvatar NOTIFY avatarChanged)
     Q_PROPERTY(QString banner READ banner WRITE setBanner NOTIFY bannerChanged)
     Q_PROPERTY(int followersCount READ followersCount WRITE setFollowersCount NOTIFY
@@ -89,6 +91,8 @@ public:
     QString userFilterTitle() const;
     void setUserFilterTitle(const QString &newUserFilterTitle);
 
+    QString formattedDescription() const;
+
 signals:
     void errorOccured(const QString &code, const QString &message);
     void runningChanged();
@@ -111,6 +115,8 @@ signals:
     void blockingUriChanged();
     void userFilterMatchedChanged();
     void userFilterTitleChanged();
+
+    void formattedDescriptionChanged();
 
 private:
     SystemTool m_systemTool;

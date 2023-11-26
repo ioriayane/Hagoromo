@@ -46,8 +46,8 @@ Dialog {
     onClosed: {
         displayNameText.clear()
         descriptionText.clear()
-        avatarImage.source = "../images/edit.png"
-        bannerImage.source = "../images/edit.png"
+        avatarImage.source = ""
+        bannerImage.source = ""
     }
 
     Shortcut {  // Close
@@ -68,6 +68,7 @@ Dialog {
                             editProfileDialog.accept()
                         }
                     }
+        onErrorOccured: (code, message) => editProfileDialog.errorOccured(account.uuid, code, message)
     }
 
     ColumnLayout {
@@ -84,36 +85,68 @@ Dialog {
             }
         }
 
-        ImageWithIndicator {
-            id: bannerImage
-            Layout.fillWidth: true
+        Rectangle {
+            Layout.preferredWidth: 400 * AdjustedValues.ratio
             Layout.preferredHeight: 80
-            fillMode: Image.PreserveAspectCrop
-            source: "../images/edit.png"
-            MouseArea {
+            color: Material.frameColor
+            ImageWithIndicator {
+                id: bannerImage
                 anchors.fill: parent
-                onClicked: (mouse) => {
-                               imageClipDialog.target = "banner"
-                               fileDialog.open()
-                           }
+                fillMode: Image.PreserveAspectCrop
+                Rectangle {
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    anchors.margins: 2
+                    width: AdjustedValues.i24
+                    height: AdjustedValues.i24
+                    radius: width / 2
+                    border.color: "black"
+                    border.width: 1
+                    Image {
+                        anchors.fill: parent
+                        anchors.margins: 5
+                        source: "../images/edit.png"
+                    }
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: (mouse) => {
+                                   imageClipDialog.target = "banner"
+                                   imageClipDialog.squareMode = false
+                                   fileDialog.open()
+                               }
+                }
             }
         }
-
-
         Rectangle {
-            Layout.preferredWidth: AdjustedValues.i24
-            Layout.preferredHeight: AdjustedValues.i24
-            color: "white"
+            Layout.preferredWidth: AdjustedValues.i48
+            Layout.preferredHeight: AdjustedValues.i48
+            color: Material.frameColor
             radius: width / 2
             AvatarImage {
                 id: avatarImage
                 anchors.fill: parent
-                anchors.margins: 1
-                source: "../images/edit.png"
                 onClicked: (mouse) => {
                                imageClipDialog.target = "avatar"
+                               imageClipDialog.squareMode = true
                                fileDialog.open()
                            }
+                Rectangle {
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    anchors.margins: 2
+                    width: AdjustedValues.i18
+                    height: AdjustedValues.i18
+                    radius: width / 2
+                    border.color: "black"
+                    border.width: 1
+                    Image {
+                        anchors.fill: parent
+                        anchors.margins: 3
+                        source: "../images/edit.png"
+                    }
+                }
             }
         }
 
@@ -125,10 +158,11 @@ Dialog {
         }
         TextField  {
             id: displayNameText
-            Layout.preferredWidth: 300 * AdjustedValues.ratio
+            Layout.preferredWidth: 400 * AdjustedValues.ratio
             enabled: !recordOperator.running
             selectByMouse: true
             font.pointSize: AdjustedValues.f10
+            property int realTextLength: systemTool.countText(text)
         }
 
         Label {
@@ -154,7 +188,7 @@ Dialog {
         Label {
             Layout.alignment: Qt.AlignRight
             font.pointSize: AdjustedValues.f8
-            text: 300 - descriptionText.realTextLength
+            text: 256 - descriptionText.realTextLength
         }
 
         RowLayout {
@@ -173,12 +207,12 @@ Dialog {
                 id: addButton
                 Layout.alignment: Qt.AlignRight
                 font.pointSize: AdjustedValues.f10
-                enabled: displayNameText.text.length > 0 && descriptionText.realTextLength <= 300 && !recordOperator.running
-                text: qsTr("Add")
+                enabled: displayNameText.realTextLength <= 64 && descriptionText.realTextLength <= 256 && !recordOperator.running
+                text: qsTr("Update")
                 onClicked: {
                     recordOperator.clear()
                     recordOperator.updateProfile(avatarImage.source, bannerImage.source,
-                                                 displayNameText.text, descriptionText.text)
+                                                 descriptionText.text, displayNameText.text)
                 }
                 BusyIndicator {
                     anchors.fill: parent
@@ -210,13 +244,13 @@ Dialog {
         onRejected: embedImage = ""
         onAccepted: {
             console.log("Selected=" + selectedX + "," + selectedY + "," + selectedWidth + "," + selectedHeight)
-            var cliped = systemTool.clipImage(embedImage,
-                                              selectedX, selectedY,
-                                              selectedWidth, selectedHeight)
+            var clipped = systemTool.clipImage(embedImage,
+                                               selectedX, selectedY,
+                                               selectedWidth, selectedHeight)
             if(target === "avatar"){
-                avatarImage.source = cliped
+                avatarImage.source = clipped
             }else if(target === "banner"){
-                bannerImage.source = cliped
+                bannerImage.source = clipped
             }
         }
     }

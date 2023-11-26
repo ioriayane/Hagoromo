@@ -4,6 +4,22 @@
     "rkey": "self",
     "record": {
         "$type": "app.bsky.actor.profile",
+        "avatar": {
+            "$type": "blob",
+            "ref": {
+                "$link": "bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy"
+            },
+            "mimeType": "image/jpeg",
+            "size": 68308
+        },
+        "banner": {
+            "$type": "blob",
+            "ref": {
+                "$link": "bafkreifbbm2bipst4ekqtxckcv56vbqsee5q5pckkqvubz3gcoi243a6ni"
+            },
+            "mimeType": "image/jpeg",
+            "size": 51567
+        },
         "description": "description",
         "displayName": "display_name"
     },

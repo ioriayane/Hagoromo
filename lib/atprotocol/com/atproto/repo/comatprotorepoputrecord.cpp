@@ -42,8 +42,12 @@ bool ComAtprotoRepoPutRecord::profile(const AtProtocolType::Blob &avatar,
     QString type = QStringLiteral("app.bsky.actor.profile");
     QJsonObject json_record;
     json_record.insert("$type", type);
-    json_record.insert("description", description);
-    json_record.insert("displayName", display_name);
+    if (!description.isEmpty()) {
+        json_record.insert("description", description);
+    }
+    if (!display_name.isEmpty()) {
+        json_record.insert("displayName", display_name);
+    }
     if (!avatar.cid.isEmpty()) {
         QJsonObject json_avatar;
         setJsonBlob(avatar, json_avatar);
