@@ -46,6 +46,14 @@ void copyUnknown(const QJsonObject &src, QVariant &dest)
 #else
         dest.setValue(record);
 #endif
+    } else if (type == QStringLiteral("app.bsky.actor.profile")) {
+        AppBskyActorProfile::Main record;
+        AppBskyActorProfile::copyMain(src, record);
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+        dest.setValue<AppBskyActorProfile::Main>(record);
+#else
+        dest.setValue(record);
+#endif
     }
 }
 

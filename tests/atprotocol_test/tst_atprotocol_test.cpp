@@ -7,6 +7,8 @@
 #include "atprotocol/com/atproto/repo/comatprotorepocreaterecord.h"
 #include "atprotocol/app/bsky/feed/appbskyfeedgettimeline.h"
 #include "atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerator.h"
+#include "atprotocol/com/atproto/repo/comatprotorepogetrecord.h"
+#include "atprotocol/com/atproto/repo/comatprotorepoputrecord.h"
 #include "tools/opengraphprotocol.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "tools/configurablelabels.h"
@@ -35,9 +37,12 @@ private slots:
     void test_ComAtprotoRepoCreateRecord_post();
     void test_AppBskyFeedGetFeedGenerator();
     void test_ServiceUrl();
+    void test_ComAtprotoRepoGetRecord_profile();
+    void test_ComAtprotoRepoPutRecord_profile();
 
 private:
     void test_putPreferences(const QString &path, const QByteArray &body);
+    void test_putRecord(const QString &path, const QByteArray &body);
     QJsonDocument loadJson(const QString &path);
 
     WebServer m_mockServer;
@@ -65,6 +70,10 @@ atprotocol_test::atprotocol_test()
                     test_putPreferences(request.url().path(), request.body());
                     json = "{}";
                     result = true;
+                } else if (request.url().path().endsWith("/com.atproto.repo.putRecord")) {
+                    test_putRecord(request.url().path(), request.body());
+                    json = "{}";
+                    result = true;
                 } else if (request.url().path() == "/response/xrpc/com.atproto.repo.createRecord") {
                     json = "{ \"uri\": \"return uri\", \"cid\": \"return cid\" }";
                     result = true;
@@ -85,6 +94,7 @@ atprotocol_test::~atprotocol_test() { }
 void atprotocol_test::initTestCase()
 {
     QVERIFY(m_listenPort != 0);
+    m_account.accessJwt = "dummy";
 }
 
 void atprotocol_test::cleanupTestCase() { }
@@ -789,12 +799,90 @@ void atprotocol_test::test_ServiceUrl()
     }
 }
 
+void atprotocol_test::test_ComAtprotoRepoGetRecord_profile()
+{
+    AtProtocolInterface::ComAtprotoRepoGetRecord record;
+    record.setAccount(m_account);
+    record.setService(QString("http://localhost:%1/response/profile").arg(m_listenPort));
+
+    {
+        QSignalSpy spy(&record, SIGNAL(finished(bool)));
+        record.profile("did:plc:ipj5qejfoqu6eukvt72uhyit");
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+
+    QVERIFY2(record.uri() == "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.actor.profile/self",
+             record.cid().toLocal8Bit());
+    QVERIFY2(record.cid() == "bafyreif4chy7iugq3blmvqt6sgqeo72pxkkr4v4fnzjqii2yriijh545ei",
+             record.cid().toLocal8Bit());
+    AppBskyActorProfile::Main value =
+            LexiconsTypeUnknown::fromQVariant<AppBskyActorProfile::Main>(record.record());
+    QVERIFY2(value.description == "epub\nLeME", value.description.toLocal8Bit());
+    QVERIFY2(value.displayName == "IoriAYANE", value.displayName.toLocal8Bit());
+    QVERIFY2(value.avatar.cid == "bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy",
+             value.avatar.cid.toLocal8Bit());
+    QVERIFY2(value.avatar.alt == "", value.avatar.alt.toLocal8Bit());
+    QVERIFY2(value.avatar.mimeType == "image/jpeg", value.avatar.mimeType.toLocal8Bit());
+    QVERIFY2(value.avatar.size == 68308, QString::number(value.avatar.size).toLocal8Bit());
+    QVERIFY2(value.banner.cid == "bafkreifbbm2bipst4ekqtxckcv56vbqsee5q5pckkqvubz3gcoi243a6ni",
+             value.banner.cid.toLocal8Bit());
+    QVERIFY2(value.banner.alt == "", value.banner.alt.toLocal8Bit());
+    QVERIFY2(value.banner.mimeType == "image/jpeg", value.banner.mimeType.toLocal8Bit());
+    QVERIFY2(value.banner.size == 51567, QString::number(value.banner.size).toLocal8Bit());
+}
+
+void atprotocol_test::test_ComAtprotoRepoPutRecord_profile()
+{
+    AtProtocolInterface::ComAtprotoRepoPutRecord record;
+
+    AtProtocolType::Blob avatar;
+    AtProtocolType::Blob banner;
+
+    m_account.did = "did:plc:mqxsuw5b5rhpwo4lw6iwlid5";
+    record.setAccount(m_account);
+    record.setService(QString("http://localhost:%1/response/profile/1").arg(m_listenPort));
+    avatar.cid = "bafkreiayv34bulrnm5gsnx73b46s2plh76k7fvwcewqrdur7eelf7u6c3u";
+    avatar.mimeType = "image/jpeg";
+    avatar.size = 52880;
+    {
+        QSignalSpy spy(&record, SIGNAL(finished(bool)));
+        record.profile(avatar, banner, "description", "display name",
+                       "bafyreie3ckzfk5xadlunbotovrffkhsfb2hdnr7bujofy2bb5ro45elcmy");
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+
+    m_account.did = "did:plc:ipj5qejfoqu6eukvt72uhyit";
+    record.setAccount(m_account);
+    record.setService(QString("http://localhost:%1/response/profile/2").arg(m_listenPort));
+    avatar.cid = "bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy";
+    avatar.mimeType = "image/jpeg";
+    avatar.size = 68308;
+    banner.cid = "bafkreifbbm2bipst4ekqtxckcv56vbqsee5q5pckkqvubz3gcoi243a6ni";
+    banner.mimeType = "image/jpeg";
+    banner.size = 51567;
+    {
+        QSignalSpy spy(&record, SIGNAL(finished(bool)));
+        record.profile(avatar, banner, "epub\nLeME", "IoriAYANE",
+                       "bafyreif4chy7iugq3blmvqt6sgqeo72pxkkr4v4fnzjqii2yriijh545ei");
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+}
+
 void atprotocol_test::test_putPreferences(const QString &path, const QByteArray &body)
 {
     QJsonDocument json_doc_expect;
     if (path.contains("/save/1/")) {
         json_doc_expect = loadJson(":/data/labels/save/1/app.bsky.actor.putPreferences");
-    } else if (path.contains("/save/1/")) {
+    } else if (path.contains("/save/2/")) {
         json_doc_expect = loadJson(":/data/labels/save/2/app.bsky.actor.putPreferences");
     } else {
         json_doc_expect = loadJson(":/data/labels/save/3/app.bsky.actor.putPreferences");
@@ -802,6 +890,26 @@ void atprotocol_test::test_putPreferences(const QString &path, const QByteArray 
 
     QJsonDocument json_doc = QJsonDocument::fromJson(body);
 
+    if (json_doc_expect.object() != json_doc.object()) {
+        qDebug().noquote().nospace() << QString("\nexpect:%1\nactual:%2\n")
+                                                .arg(json_doc_expect.toJson(), json_doc.toJson());
+    }
+    QVERIFY(json_doc_expect.object() == json_doc.object());
+}
+
+void atprotocol_test::test_putRecord(const QString &path, const QByteArray &body)
+{
+    QJsonDocument json_doc_expect;
+    if (path.contains("/profile/1/")) {
+        json_doc_expect = loadJson(":/data/profile/1/com.atproto.repo.putRecord");
+    } else if (path.contains("/profile/2/")) {
+        json_doc_expect = loadJson(":/data/profile/2/com.atproto.repo.putRecord");
+    } else {
+        qDebug() << path;
+        QVERIFY(false);
+    }
+
+    QJsonDocument json_doc = QJsonDocument::fromJson(body);
     if (json_doc_expect.object() != json_doc.object()) {
         qDebug().noquote().nospace() << QString("\nexpect:%1\nactual:%2\n")
                                                 .arg(json_doc_expect.toJson(), json_doc.toJson());

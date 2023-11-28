@@ -64,6 +64,9 @@ public:
     Q_INVOKABLE bool deleteList(const QString &uri);
     Q_INVOKABLE bool deleteListItem(const QString &uri);
 
+    Q_INVOKABLE void updateProfile(const QString &avatar_url, const QString &banner_url,
+                                   const QString &description, const QString &display_name);
+
     bool running() const;
     void setRunning(bool newRunning);
 

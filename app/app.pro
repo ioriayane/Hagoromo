@@ -24,6 +24,7 @@ QML_FILES = \
     qml/dialogs/ColumnSettingDialog.qml \
     qml/dialogs/ContentFilterSettingDialog.qml \
     qml/dialogs/DiscoverFeedsDialog.qml \
+    qml/dialogs/EditProfileDialog.qml \
     qml/dialogs/ImageClipDialog.qml \
     qml/dialogs/LanguageSelectionDialog.qml \
     qml/dialogs/LoginDialog.qml \

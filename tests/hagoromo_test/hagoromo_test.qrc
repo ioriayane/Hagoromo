@@ -59,5 +59,7 @@
         <file>data/images/sample.jpg</file>
         <file>response/timeline/animated/xrpc/app.bsky.actor.getPreferences</file>
         <file>response/timeline/animated/xrpc/app.bsky.feed.getTimeline</file>
+        <file>data/profile/1/com.atproto.repo.putRecord</file>
+        <file>response/profile/1/xrpc/com.atproto.repo.getRecord</file>
     </qresource>
 </RCC>
