@@ -64,12 +64,7 @@ void ComAtprotoRepoCreateRecord::post(const QString &text)
         json_external.insert("description", m_externalLinkDescription);
         if (!m_embedImageBlobs.isEmpty()) {
             QJsonObject json_external_thumb;
-            json_external_thumb.insert("$type", "blob");
-            json_external_thumb.insert("mimeType", m_embedImageBlobs.at(0).mimeType);
-            json_external_thumb.insert("size", m_embedImageBlobs.at(0).size);
-            QJsonObject json_external_thumb_link;
-            json_external_thumb_link.insert("$link", m_embedImageBlobs.at(0).cid);
-            json_external_thumb.insert("ref", json_external_thumb_link);
+            setJsonBlob(m_embedImageBlobs.at(0), json_external_thumb);
             json_external.insert("thumb", json_external_thumb);
         }
         json_embed_images.insert("$type", "app.bsky.embed.external");
@@ -88,12 +83,7 @@ void ComAtprotoRepoCreateRecord::post(const QString &text)
         for (const auto &blob : qAsConst(m_embedImageBlobs)) {
             QJsonObject json_blob;
             QJsonObject json_image;
-            json_image.insert("$type", "blob");
-            QJsonObject json_link;
-            json_link.insert("$link", blob.cid);
-            json_image.insert("ref", json_link);
-            json_image.insert("mimeType", blob.mimeType);
-            json_image.insert("size", blob.size);
+            setJsonBlob(blob, json_image);
             json_blob.insert("image", json_image);
             json_blob.insert("alt", blob.alt);
 
@@ -270,13 +260,7 @@ bool ComAtprotoRepoCreateRecord::list(const QString &name, const ListPurpose pur
         const auto &blob = m_embedImageBlobs.first();
 
         QJsonObject json_image;
-        json_image.insert("$type", "blob");
-        QJsonObject json_link;
-        json_link.insert("$link", blob.cid);
-        json_image.insert("ref", json_link);
-        json_image.insert("mimeType", blob.mimeType);
-        json_image.insert("size", blob.size);
-
+        setJsonBlob(blob, json_image);
         json_record.insert("avatar", json_image);
     }
     // descriptionFacets
