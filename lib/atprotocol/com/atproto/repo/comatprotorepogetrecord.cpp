@@ -37,6 +37,11 @@ bool ComAtprotoRepoGetRecord::profile(const QString &did)
                      QString());
 }
 
+bool ComAtprotoRepoGetRecord::list(const QString &did, const QString &rkey)
+{
+    return getRecord(did, QStringLiteral("app.bsky.graph.list"), rkey, QString());
+}
+
 bool ComAtprotoRepoGetRecord::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());

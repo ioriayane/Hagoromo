@@ -62,6 +62,30 @@ bool ComAtprotoRepoPutRecord::profile(const AtProtocolType::Blob &avatar,
     return putRecord(this->did(), type, QStringLiteral("self"), true, cid, QString(), json_record);
 }
 
+bool ComAtprotoRepoPutRecord::list(const AtProtocolType::Blob &avatar, const QString &purpose,
+                                   const QString &description, const QString &name,
+                                   const QString &rkey)
+{
+    QString type = QStringLiteral("app.bsky.graph.list");
+    QJsonObject json_record;
+    json_record.insert("$type", type);
+    json_record.insert("purpose", purpose);
+    json_record.insert("createdAt", QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
+    if (!description.isEmpty()) {
+        json_record.insert("description", description);
+    }
+    if (!name.isEmpty()) {
+        json_record.insert("name", name);
+    }
+    if (!avatar.cid.isEmpty()) {
+        QJsonObject json_avatar;
+        setJsonBlob(avatar, json_avatar);
+        json_record.insert("avatar", json_avatar);
+    }
+
+    return putRecord(this->did(), type, rkey, true, QString(), QString(), json_record);
+}
+
 bool ComAtprotoRepoPutRecord::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());

@@ -18,8 +18,14 @@ Dialog {
     modal: true
     x: (parent.width - width) * 0.5
     y: (parent.height - height) * 0.5
-    title: qsTr("Add a list")
+    title: editMode ? qsTr("Edit a list") : qsTr("Add a list")
     closePolicy: Popup.NoAutoClose
+
+    property bool editMode: false
+    property string listUri: ""
+    property string avatar: ""
+    property string displayName: ""
+    property string description: ""
 
     property alias account: account
     Account {
@@ -33,11 +39,19 @@ Dialog {
         }
         recordOperator.setAccount(account.service, account.did, account.handle,
                                   account.email, account.accessJwt, account.refreshJwt)
+        if(addListDialog.editMode){
+            if(addListDialog.avatar.length > 0){
+                avatarImage.source = addListDialog.avatar
+            }
+            nameText.text = addListDialog.displayName
+            descriptionText.text = addListDialog.description
+        }
     }
     onClosed: {
+        addListDialog.editMode = false
         nameText.clear()
         descriptionText.clear()
-        avatar.source = "../images/edit.png"
+        avatarImage.source = "../images/edit.png"
     }
 
     Shortcut {  // Close
@@ -58,6 +72,7 @@ Dialog {
                             addListDialog.accept()
                         }
                     }
+        onErrorOccured: (code, message) => addListDialog.errorOccured(account.uuid, code, message)
     }
 
     ColumnLayout {
@@ -90,7 +105,7 @@ Dialog {
             Layout.preferredHeight: AdjustedValues.i48
             color: Material.frameColor
             Image {
-                id: avatar
+                id: avatarImage
                 anchors.fill: parent
                 anchors.margins: 1
                 source: "../images/edit.png"
@@ -158,13 +173,18 @@ Dialog {
                 Layout.alignment: Qt.AlignRight
                 font.pointSize: AdjustedValues.f10
                 enabled: nameText.text.length > 0 && descriptionText.realTextLength <= 300 && !recordOperator.running
-                text: qsTr("Add")
+                text: addListDialog.editMode ? qsTr("Update") : qsTr("Add")
                 onClicked: {
                     recordOperator.clear()
-                    if(avatar.status === Image.Ready){
-                        recordOperator.setImages([avatar.source], [])
+                    if(addListDialog.editMode){
+                        recordOperator.updateList(addListDialog.listUri, avatarImage.source,
+                                                  descriptionText.text, nameText.text)
+                    }else{
+                        if(avatarImage.status === Image.Ready){
+                            recordOperator.setImages([avatarImage.source], [])
+                        }
+                        recordOperator.list(nameText.text, RecordOperator.Curation, descriptionText.text)
                     }
-                    recordOperator.list(nameText.text, RecordOperator.Curation, descriptionText.text)
                 }
                 BusyIndicator {
                     anchors.fill: parent
@@ -195,7 +215,7 @@ Dialog {
         onRejected: embedImage = ""
         onAccepted: {
             console.log("Selected=" + selectedX + "," + selectedY + "," + selectedWidth + "," + selectedHeight)
-            avatar.source = systemTool.clipImage(embedImage,
+            avatarImage.source = systemTool.clipImage(embedImage,
                                                  selectedX, selectedY,
                                                  selectedWidth,selectedHeight)
         }

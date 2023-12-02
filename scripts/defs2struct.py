@@ -36,7 +36,9 @@ class Defs2Struct:
                          'AppBskyFeedLike::Main',
                          'AppBskyFeedRepost::Main',
                          'AppBskyGraphListitem::Main',
-                         'AppBskyActorProfile::Main', )
+                         'AppBskyActorProfile::Main',
+                         'AppBskyGraphList::Main',
+                        )
 
     def to_struct_style(self, name: str) -> str:
         return name[0].upper() + name[1:]

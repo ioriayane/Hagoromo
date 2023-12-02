@@ -611,6 +611,70 @@ void RecordOperator::updateProfile(const QString &avatar_url, const QString &ban
     }
 }
 
+void RecordOperator::updateList(const QString &uri, const QString &avatar_url,
+                                const QString &description, const QString &name)
+{
+    if (running() || !uri.startsWith("at://"))
+        return;
+
+    QString r_key = uri.split("/").last();
+
+    QStringList images;
+    QStringList alts;
+    if (!avatar_url.isEmpty() && QUrl(avatar_url).isLocalFile()) {
+        images.append(avatar_url);
+        alts.append(QStringLiteral("avatar"));
+    }
+    setImages(images, alts);
+
+    ComAtprotoRepoGetRecord *old_list = new ComAtprotoRepoGetRecord(this);
+    connect(old_list, &ComAtprotoRepoGetRecord::finished, [=](bool success1) {
+        if (success1) {
+            AppBskyGraphList::Main old_record =
+                    LexiconsTypeUnknown::fromQVariant<AppBskyGraphList::Main>(old_list->record());
+            uploadBlob([=](bool success2) {
+                if (success2) {
+                    AtProtocolType::Blob avatar = old_record.avatar;
+                    for (const auto &blob : qAsConst(m_embedImageBlogs)) {
+                        if (blob.alt == "avatar") {
+                            avatar = blob;
+                            avatar.alt.clear();
+                        }
+                    }
+                    ComAtprotoRepoPutRecord *new_list = new ComAtprotoRepoPutRecord(this);
+                    connect(new_list, &ComAtprotoRepoPutRecord::finished, [=](bool success3) {
+                        if (!success3) {
+                            emit errorOccured(new_list->errorCode(), new_list->errorMessage());
+                        }
+                        emit finished(success3, QString(), QString());
+                        setRunning(false);
+                        new_list->deleteLater();
+                    });
+                    new_list->setAccount(m_account);
+                    if (!new_list->list(avatar, old_record.purpose, description, name, r_key)) {
+                        emit errorOccured(new_list->errorCode(), new_list->errorMessage());
+                        emit finished(false, QString(), QString());
+                        setRunning(false);
+                    }
+                } else {
+                    emit finished(false, QString(), QString());
+                    setRunning(false);
+                }
+            });
+        } else {
+            emit errorOccured(old_list->errorCode(), old_list->errorMessage());
+            emit finished(false, QString(), QString());
+            setRunning(false);
+        }
+        old_list->deleteLater();
+    });
+    old_list->setAccount(m_account);
+    setRunning(old_list->list(m_account.did, r_key));
+    if (!running()) {
+        emit errorOccured(old_list->errorCode(), old_list->errorMessage());
+    }
+}
+
 bool RecordOperator::running() const
 {
     return m_running;
