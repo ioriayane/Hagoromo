@@ -78,6 +78,7 @@ ScrollView {
                     Layout.preferredHeight: AdjustedValues.i36
                     Layout.alignment: Qt.AlignTop
                     source: model.avatar
+                    onClicked: (mouse) => listsLayout.clicked(mouse)
                 }
 
                 ColumnLayout {
