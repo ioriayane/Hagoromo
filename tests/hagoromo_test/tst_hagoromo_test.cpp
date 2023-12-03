@@ -990,34 +990,34 @@ void hagoromo_test::test_UserProfile()
     UserProfile profile;
 
     profile.setDescription("test \r\ntest\ntest");
-    QVERIFY(profile.description() == "test <br/>test<br/>test");
+    QVERIFY(profile.formattedDescription() == "test <br/>test<br/>test");
 
     profile.setDescription("https://github.com/ioriayane/Hagoromo");
-    QVERIFY(profile.description()
+    QVERIFY(profile.formattedDescription()
             == "<a "
                "href=\"https://github.com/ioriayane/Hagoromo\">https://github.com/ioriayane/"
                "Hagoromo</a>");
 
     profile.setDescription("hoge https://github.com/ioriayane/Hagoromo");
-    QVERIFY(profile.description()
+    QVERIFY(profile.formattedDescription()
             == "hoge <a "
                "href=\"https://github.com/ioriayane/Hagoromo\">https://github.com/ioriayane/"
                "Hagoromo</a>");
 
     profile.setDescription("https://github.com/ioriayane/Hagoromo hoge");
-    QVERIFY(profile.description()
+    QVERIFY(profile.formattedDescription()
             == "<a "
                "href=\"https://github.com/ioriayane/Hagoromo\">https://github.com/ioriayane/"
                "Hagoromo</a> hoge");
 
     profile.setDescription("hoge\nhttps://github.com/ioriayane/Hagoromo");
-    QVERIFY(profile.description()
+    QVERIFY(profile.formattedDescription()
             == "hoge<br/><a "
                "href=\"https://github.com/ioriayane/Hagoromo\">https://github.com/ioriayane/"
                "Hagoromo</a>");
 
     profile.setDescription("https://github.com/ioriayane/Hagoromo\nhoge");
-    QVERIFY(profile.description()
+    QVERIFY(profile.formattedDescription()
             == "<a "
                "href=\"https://github.com/ioriayane/Hagoromo\">https://github.com/ioriayane/"
                "Hagoromo</a><br/>hoge");
