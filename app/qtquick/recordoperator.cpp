@@ -2,6 +2,8 @@
 #include "atprotocol/com/atproto/repo/comatprotorepouploadblob.h"
 #include "atprotocol/com/atproto/repo/comatprotorepodeleterecord.h"
 #include "atprotocol/com/atproto/repo/comatprotorepolistrecords.h"
+#include "atprotocol/com/atproto/repo/comatprotorepogetrecord.h"
+#include "atprotocol/com/atproto/repo/comatprotorepoputrecord.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofiles.h"
 #include "atprotocol/app/bsky/graph/appbskygraphmuteactor.h"
 #include "atprotocol/app/bsky/graph/appbskygraphunmuteactor.h"
@@ -14,7 +16,9 @@ using AtProtocolInterface::AppBskyGraphMuteActor;
 using AtProtocolInterface::AppBskyGraphUnmuteActor;
 using AtProtocolInterface::ComAtprotoRepoCreateRecord;
 using AtProtocolInterface::ComAtprotoRepoDeleteRecord;
+using AtProtocolInterface::ComAtprotoRepoGetRecord;
 using AtProtocolInterface::ComAtprotoRepoListRecords;
+using AtProtocolInterface::ComAtprotoRepoPutRecord;
 using AtProtocolInterface::ComAtprotoRepoUploadBlob;
 using namespace AtProtocolType;
 
@@ -532,6 +536,143 @@ bool RecordOperator::deleteListItem(const QString &uri)
     delete_record->setAccount(m_account);
     setRunning(delete_record->deleteListItem(r_key));
     return running();
+}
+
+void RecordOperator::updateProfile(const QString &avatar_url, const QString &banner_url,
+                                   const QString &description, const QString &display_name)
+{
+    if (running())
+        return;
+
+    QStringList images;
+    QStringList alts;
+    if (!avatar_url.isEmpty() && QUrl(avatar_url).isLocalFile()) {
+        images.append(avatar_url);
+        alts.append(QStringLiteral("avatar"));
+    }
+    if (!banner_url.isEmpty() && QUrl(banner_url).isLocalFile()) {
+        images.append(banner_url);
+        alts.append(QStringLiteral("banner"));
+    }
+    setImages(images, alts);
+
+    ComAtprotoRepoGetRecord *old_profile = new ComAtprotoRepoGetRecord(this);
+    connect(old_profile, &ComAtprotoRepoGetRecord::finished, [=](bool success1) {
+        if (success1) {
+            AppBskyActorProfile::Main old_record =
+                    LexiconsTypeUnknown::fromQVariant<AppBskyActorProfile::Main>(
+                            old_profile->record());
+            QString old_cid = old_profile->cid();
+            uploadBlob([=](bool success2) {
+                if (success2) {
+                    AtProtocolType::Blob avatar = old_record.avatar;
+                    AtProtocolType::Blob banner = old_record.banner;
+                    for (const auto &blob : qAsConst(m_embedImageBlogs)) {
+                        if (blob.alt == "avatar") {
+                            avatar = blob;
+                            avatar.alt.clear();
+                        } else if (blob.alt == "banner") {
+                            banner = blob;
+                            banner.alt.clear();
+                        }
+                    }
+                    ComAtprotoRepoPutRecord *new_profile = new ComAtprotoRepoPutRecord(this);
+                    connect(new_profile, &ComAtprotoRepoPutRecord::finished, [=](bool success3) {
+                        if (!success3) {
+                            emit errorOccured(new_profile->errorCode(),
+                                              new_profile->errorMessage());
+                        }
+                        emit finished(success3, QString(), QString());
+                        setRunning(false);
+                        new_profile->deleteLater();
+                    });
+                    new_profile->setAccount(m_account);
+                    if (!new_profile->profile(avatar, banner, description, display_name, old_cid)) {
+                        emit errorOccured(new_profile->errorCode(), new_profile->errorMessage());
+                        emit finished(false, QString(), QString());
+                        setRunning(false);
+                    }
+                } else {
+                    emit finished(false, QString(), QString());
+                    setRunning(false);
+                }
+            });
+        } else {
+            emit errorOccured(old_profile->errorCode(), old_profile->errorMessage());
+            emit finished(false, QString(), QString());
+            setRunning(false);
+        }
+        old_profile->deleteLater();
+    });
+    old_profile->setAccount(m_account);
+    setRunning(old_profile->profile(m_account.did));
+    if (!running()) {
+        emit errorOccured(old_profile->errorCode(), old_profile->errorMessage());
+    }
+}
+
+void RecordOperator::updateList(const QString &uri, const QString &avatar_url,
+                                const QString &description, const QString &name)
+{
+    if (running() || !uri.startsWith("at://"))
+        return;
+
+    QString r_key = uri.split("/").last();
+
+    QStringList images;
+    QStringList alts;
+    if (!avatar_url.isEmpty() && QUrl(avatar_url).isLocalFile()) {
+        images.append(avatar_url);
+        alts.append(QStringLiteral("avatar"));
+    }
+    setImages(images, alts);
+
+    ComAtprotoRepoGetRecord *old_list = new ComAtprotoRepoGetRecord(this);
+    connect(old_list, &ComAtprotoRepoGetRecord::finished, [=](bool success1) {
+        if (success1) {
+            AppBskyGraphList::Main old_record =
+                    LexiconsTypeUnknown::fromQVariant<AppBskyGraphList::Main>(old_list->record());
+            uploadBlob([=](bool success2) {
+                if (success2) {
+                    AtProtocolType::Blob avatar = old_record.avatar;
+                    for (const auto &blob : qAsConst(m_embedImageBlogs)) {
+                        if (blob.alt == "avatar") {
+                            avatar = blob;
+                            avatar.alt.clear();
+                        }
+                    }
+                    ComAtprotoRepoPutRecord *new_list = new ComAtprotoRepoPutRecord(this);
+                    connect(new_list, &ComAtprotoRepoPutRecord::finished, [=](bool success3) {
+                        if (!success3) {
+                            emit errorOccured(new_list->errorCode(), new_list->errorMessage());
+                        }
+                        emit finished(success3, QString(), QString());
+                        setRunning(false);
+                        new_list->deleteLater();
+                    });
+                    new_list->setAccount(m_account);
+                    if (!new_list->list(avatar, old_record.purpose, description, name, r_key)) {
+                        emit errorOccured(new_list->errorCode(), new_list->errorMessage());
+                        emit finished(false, QString(), QString());
+                        setRunning(false);
+                    }
+                } else {
+                    emit finished(false, QString(), QString());
+                    setRunning(false);
+                }
+            });
+        } else {
+            emit errorOccured(old_list->errorCode(), old_list->errorMessage());
+            emit finished(false, QString(), QString());
+            setRunning(false);
+        }
+        old_list->deleteLater();
+    });
+    old_list->setAccount(m_account);
+    setRunning(old_list->list(m_account.did, r_key));
+    if (!running()) {
+        emit errorOccured(old_list->errorCode(), old_list->errorMessage());
+    }
 }
 
 bool RecordOperator::running() const

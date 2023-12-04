@@ -14,16 +14,15 @@ import "../data"
 import "../parts"
 
 Dialog {
-    id: addListDialog
+    id: editProfileDialog
     modal: true
     x: (parent.width - width) * 0.5
     y: (parent.height - height) * 0.5
-    title: editMode ? qsTr("Edit a list") : qsTr("Add a list")
+    title: qsTr("Edit my profile")
     closePolicy: Popup.NoAutoClose
 
-    property bool editMode: false
-    property string listUri: ""
     property string avatar: ""
+    property string banner: ""
     property string displayName: ""
     property string description: ""
 
@@ -39,27 +38,24 @@ Dialog {
         }
         recordOperator.setAccount(account.service, account.did, account.handle,
                                   account.email, account.accessJwt, account.refreshJwt)
-        if(addListDialog.editMode){
-            if(addListDialog.avatar.length > 0){
-                avatarImage.source = addListDialog.avatar
-            }
-            nameText.text = addListDialog.displayName
-            descriptionText.text = addListDialog.description
-        }
+        avatarImage.source = editProfileDialog.avatar
+        bannerImage.source = editProfileDialog.banner
+        displayNameText.text = editProfileDialog.displayName
+        descriptionText.text = editProfileDialog.description
     }
     onClosed: {
-        addListDialog.editMode = false
-        nameText.clear()
+        displayNameText.clear()
         descriptionText.clear()
-        avatarImage.source = "../images/edit.png"
+        avatarImage.source = ""
+        bannerImage.source = ""
     }
 
     Shortcut {  // Close
         // DialogのclosePolicyでEscで閉じられるけど、そのうち編集中の確認ダイアログを
         // 入れたいので別でイベント処理をする。onClosedで閉じるをキャンセルできなさそうなので。
-        enabled: addListDialog.visible && !addButton.enabled
+        enabled: editProfileDialog.visible && !addButton.enabled
         sequence: "Esc"
-        onActivated: addListDialog.close()
+        onActivated: editProfileDialog.close()
     }
 
     SystemTool {
@@ -69,20 +65,15 @@ Dialog {
         id: recordOperator
         onFinished: (success) => {
                         if(success){
-                            addListDialog.accept()
+                            editProfileDialog.accept()
                         }
                     }
-        onErrorOccured: (code, message) => addListDialog.errorOccured(account.uuid, code, message)
+        onErrorOccured: (code, message) => editProfileDialog.errorOccured(account.uuid, code, message)
     }
 
     ColumnLayout {
         spacing: 5
         RowLayout {
-            AvatarImage {
-                Layout.preferredWidth: AdjustedValues.i24
-                Layout.preferredHeight: AdjustedValues.i24
-                source: account.avatar
-            }
             Label {
                 font.pointSize: AdjustedValues.f10
                 text: account.handle
@@ -94,24 +85,67 @@ Dialog {
             }
         }
 
-        Label {
-            Layout.fillWidth: true
-            Layout.topMargin: 5
-            font.pointSize: AdjustedValues.f10
-            text: qsTr("Avatar")
+        Rectangle {
+            Layout.preferredWidth: 400 * AdjustedValues.ratio
+            Layout.preferredHeight: 80
+            color: Material.frameColor
+            ImageWithIndicator {
+                id: bannerImage
+                anchors.fill: parent
+                fillMode: Image.PreserveAspectCrop
+                Rectangle {
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    anchors.margins: 2
+                    width: AdjustedValues.i24
+                    height: AdjustedValues.i24
+                    radius: width / 2
+                    border.color: "black"
+                    border.width: 1
+                    Image {
+                        anchors.fill: parent
+                        anchors.margins: 5
+                        source: "../images/edit.png"
+                    }
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: (mouse) => {
+                                   imageClipDialog.target = "banner"
+                                   imageClipDialog.squareMode = false
+                                   fileDialog.open()
+                               }
+                }
+            }
         }
         Rectangle {
             Layout.preferredWidth: AdjustedValues.i48
             Layout.preferredHeight: AdjustedValues.i48
             color: Material.frameColor
-            Image {
+            radius: width / 2
+            AvatarImage {
                 id: avatarImage
                 anchors.fill: parent
-                anchors.margins: 1
-                source: "../images/edit.png"
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: fileDialog.open()
+                onClicked: (mouse) => {
+                               imageClipDialog.target = "avatar"
+                               imageClipDialog.squareMode = true
+                               fileDialog.open()
+                           }
+                Rectangle {
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    anchors.margins: 2
+                    width: AdjustedValues.i18
+                    height: AdjustedValues.i18
+                    radius: width / 2
+                    border.color: "black"
+                    border.width: 1
+                    Image {
+                        anchors.fill: parent
+                        anchors.margins: 3
+                        source: "../images/edit.png"
+                    }
                 }
             }
         }
@@ -120,14 +154,15 @@ Dialog {
             Layout.fillWidth: true
             Layout.topMargin: 5
             font.pointSize: AdjustedValues.f10
-            text: qsTr("Name")
+            text: qsTr("Display Name")
         }
         TextField  {
-            id: nameText
-            Layout.preferredWidth: 300 * AdjustedValues.ratio
+            id: displayNameText
+            Layout.preferredWidth: 400 * AdjustedValues.ratio
             enabled: !recordOperator.running
             selectByMouse: true
             font.pointSize: AdjustedValues.f10
+            property int realTextLength: systemTool.countText(text)
         }
 
         Label {
@@ -153,7 +188,7 @@ Dialog {
         Label {
             Layout.alignment: Qt.AlignRight
             font.pointSize: AdjustedValues.f8
-            text: 300 - descriptionText.realTextLength
+            text: 256 - descriptionText.realTextLength
         }
 
         RowLayout {
@@ -162,7 +197,7 @@ Dialog {
                 flat: true
                 font.pointSize: AdjustedValues.f10
                 text: qsTr("Cancel")
-                onClicked: addListDialog.reject()
+                onClicked: editProfileDialog.reject()
             }
             Item {
                 Layout.fillWidth: true
@@ -172,19 +207,12 @@ Dialog {
                 id: addButton
                 Layout.alignment: Qt.AlignRight
                 font.pointSize: AdjustedValues.f10
-                enabled: nameText.text.length > 0 && descriptionText.realTextLength <= 300 && !recordOperator.running
-                text: addListDialog.editMode ? qsTr("Update") : qsTr("Add")
+                enabled: displayNameText.realTextLength <= 64 && descriptionText.realTextLength <= 256 && !recordOperator.running
+                text: qsTr("Update")
                 onClicked: {
                     recordOperator.clear()
-                    if(addListDialog.editMode){
-                        recordOperator.updateList(addListDialog.listUri, avatarImage.source,
-                                                  descriptionText.text, nameText.text)
-                    }else{
-                        if(avatarImage.status === Image.Ready){
-                            recordOperator.setImages([avatarImage.source], [])
-                        }
-                        recordOperator.list(nameText.text, RecordOperator.Curation, descriptionText.text)
-                    }
+                    recordOperator.updateProfile(avatarImage.source, bannerImage.source,
+                                                 descriptionText.text, displayNameText.text)
                 }
                 BusyIndicator {
                     anchors.fill: parent
@@ -212,12 +240,18 @@ Dialog {
     }
     ImageClipDialog {
         id: imageClipDialog
+        property string target: ""
         onRejected: embedImage = ""
         onAccepted: {
             console.log("Selected=" + selectedX + "," + selectedY + "," + selectedWidth + "," + selectedHeight)
-            avatarImage.source = systemTool.clipImage(embedImage,
-                                                 selectedX, selectedY,
-                                                 selectedWidth,selectedHeight)
+            var clipped = systemTool.clipImage(embedImage,
+                                               selectedX, selectedY,
+                                               selectedWidth, selectedHeight)
+            if(target === "avatar"){
+                avatarImage.source = clipped
+            }else if(target === "banner"){
+                bannerImage.source = clipped
+            }
         }
     }
 }

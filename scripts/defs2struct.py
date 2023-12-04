@@ -35,7 +35,10 @@ class Defs2Struct:
         self.metatype = ('AppBskyFeedPost::Main', 
                          'AppBskyFeedLike::Main',
                          'AppBskyFeedRepost::Main',
-                         'AppBskyGraphListitem::Main', )
+                         'AppBskyGraphListitem::Main',
+                         'AppBskyActorProfile::Main',
+                         'AppBskyGraphList::Main',
+                        )
 
     def to_struct_style(self, name: str) -> str:
         return name[0].upper() + name[1:]

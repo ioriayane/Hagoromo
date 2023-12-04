@@ -35,6 +35,7 @@ private slots:
     void test_test_TimelineListModelError();
     void test_TimelineListModelFacet();
     void test_RecordOperator();
+    void test_RecordOperator_profile();
     void test_FeedGeneratorListModel();
     void test_ColumnListModelMove();
     void test_ColumnListModelRemove();
@@ -71,6 +72,7 @@ private:
 
     void test_RecordOperatorCreateRecord(const QByteArray &body);
     void test_putPreferences(const QString &path, const QByteArray &body);
+    void test_putRecord(const QString &path, const QByteArray &body);
     void verifyStr(const QString &expect, const QString &actual);
     QJsonDocument loadJson(const QString &path);
     QHash<QString, QString> loadPostHash(const QString &path);
@@ -97,6 +99,10 @@ hagoromo_test::hagoromo_test()
                                    == "/response/generator/remove/xrpc/"
                                       "app.bsky.actor.putPreferences") {
                     test_putPreferences(request.url().path(), request.body());
+                    json = "{}";
+                    result = true;
+                } else if (request.url().path().endsWith("/com.atproto.repo.putRecord")) {
+                    test_putRecord(request.url().path(), request.body());
                     json = "{}";
                     result = true;
                 } else if (request.url().path().endsWith(
@@ -193,6 +199,22 @@ void hagoromo_test::test_RecordOperator()
         QVERIFY(arguments.at(0).type() == QVariant::Bool);
         QVERIFY(arguments.at(0).toBool() == true);
     }
+}
+
+void hagoromo_test::test_RecordOperator_profile()
+{
+    RecordOperator ope;
+    ope.setAccount(m_service + "/profile/1", "did:plc:ipj5qejfoqu6eukvt72uhyit", QString(),
+                   QString(), "dummy", QString());
+
+    QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
+    ope.updateProfile("", "", "description", "display_name");
+    spy.wait();
+    QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+    QList<QVariant> arguments = spy.takeFirst();
+    QVERIFY(arguments.at(0).type() == QVariant::Bool);
+    QVERIFY(arguments.at(0).toBool() == true);
 }
 
 void hagoromo_test::test_FeedGeneratorListModel()
@@ -968,34 +990,34 @@ void hagoromo_test::test_UserProfile()
     UserProfile profile;
 
     profile.setDescription("test \r\ntest\ntest");
-    QVERIFY(profile.description() == "test <br/>test<br/>test");
+    QVERIFY(profile.formattedDescription() == "test <br/>test<br/>test");
 
     profile.setDescription("https://github.com/ioriayane/Hagoromo");
-    QVERIFY(profile.description()
+    QVERIFY(profile.formattedDescription()
             == "<a "
                "href=\"https://github.com/ioriayane/Hagoromo\">https://github.com/ioriayane/"
                "Hagoromo</a>");
 
     profile.setDescription("hoge https://github.com/ioriayane/Hagoromo");
-    QVERIFY(profile.description()
+    QVERIFY(profile.formattedDescription()
             == "hoge <a "
                "href=\"https://github.com/ioriayane/Hagoromo\">https://github.com/ioriayane/"
                "Hagoromo</a>");
 
     profile.setDescription("https://github.com/ioriayane/Hagoromo hoge");
-    QVERIFY(profile.description()
+    QVERIFY(profile.formattedDescription()
             == "<a "
                "href=\"https://github.com/ioriayane/Hagoromo\">https://github.com/ioriayane/"
                "Hagoromo</a> hoge");
 
     profile.setDescription("hoge\nhttps://github.com/ioriayane/Hagoromo");
-    QVERIFY(profile.description()
+    QVERIFY(profile.formattedDescription()
             == "hoge<br/><a "
                "href=\"https://github.com/ioriayane/Hagoromo\">https://github.com/ioriayane/"
                "Hagoromo</a>");
 
     profile.setDescription("https://github.com/ioriayane/Hagoromo\nhoge");
-    QVERIFY(profile.description()
+    QVERIFY(profile.formattedDescription()
             == "<a "
                "href=\"https://github.com/ioriayane/Hagoromo\">https://github.com/ioriayane/"
                "Hagoromo</a><br/>hoge");
@@ -2087,6 +2109,24 @@ void hagoromo_test::test_putPreferences(const QString &path, const QByteArray &b
         json_doc_expect = loadJson(":/data/generator/save/app.bsky.actor.putPreferences");
     } else {
         json_doc_expect = loadJson(":/data/generator/remove/app.bsky.actor.putPreferences");
+    }
+
+    QJsonDocument json_doc = QJsonDocument::fromJson(body);
+
+    if (json_doc_expect.object() != json_doc.object()) {
+        qDebug().noquote().nospace() << QString("\nexpect:%1\nactual:%2\n")
+                                                .arg(json_doc_expect.toJson(), json_doc.toJson());
+    }
+    QVERIFY(json_doc_expect.object() == json_doc.object());
+}
+
+void hagoromo_test::test_putRecord(const QString &path, const QByteArray &body)
+{
+    QJsonDocument json_doc_expect;
+    if (path.contains("/profile/1/")) {
+        json_doc_expect = loadJson(":/data/profile/1/com.atproto.repo.putRecord");
+    } else {
+        QVERIFY(false);
     }
 
     QJsonDocument json_doc = QJsonDocument::fromJson(body);

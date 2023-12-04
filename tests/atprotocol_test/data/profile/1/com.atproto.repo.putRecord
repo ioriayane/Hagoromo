@@ -1,0 +1,20 @@
+{
+    "repo": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+    "collection": "app.bsky.actor.profile",
+    "rkey": "self",
+    "record": {
+        "$type": "app.bsky.actor.profile",
+        "avatar": {
+            "$type": "blob",
+            "ref": {
+                "$link": "bafkreiayv34bulrnm5gsnx73b46s2plh76k7fvwcewqrdur7eelf7u6c3u"
+            },
+            "mimeType": "image/jpeg",
+            "size": 52880
+        },
+        "description": "description",
+        "displayName": "display name"
+    },
+    "swapRecord": "bafyreie3ckzfk5xadlunbotovrffkhsfb2hdnr7bujofy2bb5ro45elcmy",
+    "validate": true
+}

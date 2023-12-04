@@ -24,6 +24,7 @@ ColumnLayout {
 
     signal requestViewProfile(string did)
     signal requestViewListFeed(string uri, string name)
+    signal requestEditList(string uri, string avatar, string name, string description)
 
     signal errorOccured(string code, string message)
     signal back()
@@ -34,6 +35,7 @@ ColumnLayout {
 
     RecordOperator {
         id: recordOperator
+        property string accountHandle: ""
         onFinished: (success) => {
                         if(success){
                             listDetailView.back()
@@ -50,6 +52,7 @@ ColumnLayout {
         function setAccount(service, did, handle, email, accessJwt, refreshJwt) {
             listItemListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             recordOperator.setAccount(service, did, handle, email, accessJwt, refreshJwt)
+            recordOperator.accountHandle = handle
         }
         function getLatest() {
             listItemListModel.getLatest()
@@ -104,6 +107,21 @@ ColumnLayout {
                 font.pointSize: AdjustedValues.f12
                 elide: Text.ElideRight
                 text: listItemListModel.name
+
+                IconButton {
+                    id: editButton
+                    anchors.top: parent.top
+                    anchors.right: parent.right
+                    height: AdjustedValues.b24
+                    iconText: qsTr("Edit")
+                    visible: (listItemListModel.creatorHandle === recordOperator.accountHandle) &&  recordOperator.accountHandle.length > 0
+                    onClicked: listDetailView.requestEditList(listDetailView.listUri, avatarImage.source,
+                                                              listItemListModel.name, listItemListModel.description)
+                    BusyIndicator {
+                        anchors.fill: parent
+                        visible: recordOperator.running
+                    }
+                }
             }
             Label {
                 Layout.preferredWidth: parent.basisWidth

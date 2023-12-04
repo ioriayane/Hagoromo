@@ -47,6 +47,8 @@ ColumnLayout {
     signal requestReportPost(string account_uuid, string uri, string cid)
     signal requestReportAccount(string account_uuid, string did)
     signal requestAddRemoveFromLists(string account_uuid, string did)
+    signal requestEditProfile(string account_uuid, string did, string avatar, string banner, string display_name, string description)
+    signal requestEditList(string account_uuid, string uri, string avatar, string name, string description)
 
     signal requestMoveToLeft(string key)
     signal requestMoveToRight(string key)
@@ -194,6 +196,9 @@ ColumnLayout {
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
             onRequestReportAccount: (did) => columnView.requestReportAccount(account.uuid, did)
             onRequestAddRemoveFromLists: (did) => columnView.requestAddRemoveFromLists(account.uuid, did)
+            onRequestEditProfile: (did, avatar, banner, display_name, description) => {
+                                      columnView.requestEditProfile(account.uuid, did, avatar, banner, display_name, description)
+                                  }
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
 
             onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
@@ -363,6 +368,7 @@ ColumnLayout {
         ListDetailView {
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onRequestViewListFeed: (uri, name) => columnView.requestViewListFeed(account.uuid, uri, name)
+            onRequestEditList: (uri, avatar, name, description) => columnView.requestEditList(account.uuid, uri, avatar, name, description)
 
             onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink

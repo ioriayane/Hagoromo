@@ -255,6 +255,14 @@ void AccountListModel::refreshAccountSession(const QString &uuid)
     refreshSession(row);
 }
 
+void AccountListModel::refreshAccountProfile(const QString &uuid)
+{
+    int row = indexAt(uuid);
+    if (row < 0)
+        return;
+    getProfile(row);
+}
+
 void AccountListModel::save() const
 {
     QSettings settings;

@@ -315,6 +315,16 @@ bool AccessAtProtocol::checkReply(HttpReply *reply)
     return status;
 }
 
+void AccessAtProtocol::setJsonBlob(const AtProtocolType::Blob &blob, QJsonObject &json_blob)
+{
+    json_blob.insert("$type", "blob");
+    QJsonObject json_link;
+    json_link.insert("$link", blob.cid);
+    json_blob.insert("ref", json_link);
+    json_blob.insert("mimeType", blob.mimeType);
+    json_blob.insert("size", blob.size);
+}
+
 QString AccessAtProtocol::cursor() const
 {
     return m_cursor;
