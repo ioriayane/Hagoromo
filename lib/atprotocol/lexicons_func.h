@@ -90,7 +90,6 @@ void copyBlockedPost(const QJsonObject &src, AppBskyFeedDefs::BlockedPost &dest)
 void copyReplyRef(const QJsonObject &src, AppBskyFeedDefs::ReplyRef &dest);
 void copyReasonRepost(const QJsonObject &src, AppBskyFeedDefs::ReasonRepost &dest);
 void copyFeedViewPost(const QJsonObject &src, AppBskyFeedDefs::FeedViewPost &dest);
-void copyViewerThreadState(const QJsonObject &src, AppBskyFeedDefs::ViewerThreadState &dest);
 void copyThreadViewPost(const QJsonObject &src, AppBskyFeedDefs::ThreadViewPost &dest);
 void copySkeletonReasonRepost(const QJsonObject &src, AppBskyFeedDefs::SkeletonReasonRepost &dest);
 void copySkeletonFeedPost(const QJsonObject &src, AppBskyFeedDefs::SkeletonFeedPost &dest);
@@ -171,11 +170,22 @@ void copySkeletonSearchActor(const QJsonObject &src,
 }
 // com.atproto.admin.defs
 namespace ComAtprotoAdminDefs {
-void copyActionType(const QJsonValue &src, ComAtprotoAdminDefs::ActionType &dest);
+void copyStatusAttr(const QJsonObject &src, ComAtprotoAdminDefs::StatusAttr &dest);
+void copyModEventTakedown(const QJsonObject &src, ComAtprotoAdminDefs::ModEventTakedown &dest);
+void copyModEventReverseTakedown(const QJsonObject &src,
+                                 ComAtprotoAdminDefs::ModEventReverseTakedown &dest);
+void copyModEventComment(const QJsonObject &src, ComAtprotoAdminDefs::ModEventComment &dest);
+void copyModEventReport(const QJsonObject &src, ComAtprotoAdminDefs::ModEventReport &dest);
+void copyModEventLabel(const QJsonObject &src, ComAtprotoAdminDefs::ModEventLabel &dest);
+void copyModEventAcknowledge(const QJsonObject &src,
+                             ComAtprotoAdminDefs::ModEventAcknowledge &dest);
+void copyModEventEscalate(const QJsonObject &src, ComAtprotoAdminDefs::ModEventEscalate &dest);
+void copyModEventMute(const QJsonObject &src, ComAtprotoAdminDefs::ModEventMute &dest);
+void copyModEventEmail(const QJsonObject &src, ComAtprotoAdminDefs::ModEventEmail &dest);
 void copyRepoRef(const QJsonObject &src, ComAtprotoAdminDefs::RepoRef &dest);
-void copyActionReversal(const QJsonObject &src, ComAtprotoAdminDefs::ActionReversal &dest);
-void copyActionView(const QJsonObject &src, ComAtprotoAdminDefs::ActionView &dest);
-void copyActionViewCurrent(const QJsonObject &src, ComAtprotoAdminDefs::ActionViewCurrent &dest);
+void copyModEventView(const QJsonObject &src, ComAtprotoAdminDefs::ModEventView &dest);
+void copySubjectReviewState(const QJsonValue &src, ComAtprotoAdminDefs::SubjectReviewState &dest);
+void copySubjectStatusView(const QJsonObject &src, ComAtprotoAdminDefs::SubjectStatusView &dest);
 void copyModeration(const QJsonObject &src, ComAtprotoAdminDefs::Moderation &dest);
 void copyRepoView(const QJsonObject &src, ComAtprotoAdminDefs::RepoView &dest);
 void copyRepoViewNotFound(const QJsonObject &src, ComAtprotoAdminDefs::RepoViewNotFound &dest);
@@ -184,21 +194,24 @@ void copyRecordViewNotFound(const QJsonObject &src, ComAtprotoAdminDefs::RecordV
 void copyImageDetails(const QJsonObject &src, ComAtprotoAdminDefs::ImageDetails &dest);
 void copyVideoDetails(const QJsonObject &src, ComAtprotoAdminDefs::VideoDetails &dest);
 void copyBlobView(const QJsonObject &src, ComAtprotoAdminDefs::BlobView &dest);
+void copyModEventViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::ModEventViewDetail &dest);
 void copyReportView(const QJsonObject &src, ComAtprotoAdminDefs::ReportView &dest);
-void copyActionViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::ActionViewDetail &dest);
 void copyReportViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::ReportViewDetail &dest);
 void copyModerationDetail(const QJsonObject &src, ComAtprotoAdminDefs::ModerationDetail &dest);
 void copyRepoViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::RepoViewDetail &dest);
+void copyAccountView(const QJsonObject &src, ComAtprotoAdminDefs::AccountView &dest);
+void copyRepoBlobRef(const QJsonObject &src, ComAtprotoAdminDefs::RepoBlobRef &dest);
 void copyRecordViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::RecordViewDetail &dest);
+void copyModEventUnmute(const QJsonObject &src, ComAtprotoAdminDefs::ModEventUnmute &dest);
+}
+// com.atproto.moderation.defs
+namespace ComAtprotoModerationDefs {
+void copyReasonType(const QJsonValue &src, ComAtprotoModerationDefs::ReasonType &dest);
 }
 // com.atproto.server.defs
 namespace ComAtprotoServerDefs {
 void copyInviteCodeUse(const QJsonObject &src, ComAtprotoServerDefs::InviteCodeUse &dest);
 void copyInviteCode(const QJsonObject &src, ComAtprotoServerDefs::InviteCode &dest);
-}
-// com.atproto.moderation.defs
-namespace ComAtprotoModerationDefs {
-void copyReasonType(const QJsonValue &src, ComAtprotoModerationDefs::ReasonType &dest);
 }
 // com.atproto.label.subscribeLabels
 namespace ComAtprotoLabelSubscribeLabels {
