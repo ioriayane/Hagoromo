@@ -69,32 +69,42 @@
         <translation>リストの追加</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AddListDialog.qml" line="86"/>
+        <location filename="../qml/dialogs/AddListDialog.qml" line="21"/>
+        <source>Edit a list</source>
+        <translation>リストの編集</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/AddListDialog.qml" line="101"/>
         <source>Avatar</source>
         <translation>アイコン</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AddListDialog.qml" line="108"/>
+        <location filename="../qml/dialogs/AddListDialog.qml" line="123"/>
         <source>Name</source>
         <translation>名称</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AddListDialog.qml" line="122"/>
+        <location filename="../qml/dialogs/AddListDialog.qml" line="137"/>
         <source>Description</source>
         <translation>説明</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AddListDialog.qml" line="149"/>
+        <location filename="../qml/dialogs/AddListDialog.qml" line="164"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AddListDialog.qml" line="161"/>
+        <location filename="../qml/dialogs/AddListDialog.qml" line="176"/>
         <source>Add</source>
         <translation>追加</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AddListDialog.qml" line="180"/>
+        <location filename="../qml/dialogs/AddListDialog.qml" line="176"/>
+        <source>Update</source>
+        <translation>更新</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/AddListDialog.qml" line="200"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
     </message>
@@ -272,83 +282,83 @@
 <context>
     <name>ColumnView</name>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="419"/>
+        <location filename="../qml/view/ColumnView.qml" line="423"/>
         <source>Home</source>
         <translation>ホーム</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="422"/>
+        <location filename="../qml/view/ColumnView.qml" line="426"/>
         <source>Notifications</source>
         <translation>通知</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="425"/>
+        <location filename="../qml/view/ColumnView.qml" line="429"/>
         <source>Search posts</source>
         <translation>検索(ポスト)</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="428"/>
+        <location filename="../qml/view/ColumnView.qml" line="432"/>
         <source>Search users</source>
         <translation>検索(ユーザー)</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="431"/>
-        <location filename="../qml/view/ColumnView.qml" line="563"/>
+        <location filename="../qml/view/ColumnView.qml" line="435"/>
+        <location filename="../qml/view/ColumnView.qml" line="567"/>
         <source>Feed</source>
         <translation>フィード</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="434"/>
+        <location filename="../qml/view/ColumnView.qml" line="438"/>
         <source>User</source>
         <translation>ユーザー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="437"/>
+        <location filename="../qml/view/ColumnView.qml" line="441"/>
         <source>List</source>
         <translation>リスト</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="440"/>
+        <location filename="../qml/view/ColumnView.qml" line="444"/>
         <source>Unknown</source>
         <translation>不明</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="547"/>
+        <location filename="../qml/view/ColumnView.qml" line="551"/>
         <source>Move to left</source>
         <translation>左へ移動</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="552"/>
+        <location filename="../qml/view/ColumnView.qml" line="556"/>
         <source>Move to right</source>
         <translation>右へ移動</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="557"/>
+        <location filename="../qml/view/ColumnView.qml" line="561"/>
         <source>Delete column</source>
         <translation>削除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="566"/>
+        <location filename="../qml/view/ColumnView.qml" line="570"/>
         <source>Copy url</source>
         <translation>URLをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="575"/>
+        <location filename="../qml/view/ColumnView.qml" line="579"/>
         <source>Open in Official</source>
         <translation>公式で開く</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="586"/>
+        <location filename="../qml/view/ColumnView.qml" line="590"/>
         <source>Drop</source>
         <translation>解除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="586"/>
+        <location filename="../qml/view/ColumnView.qml" line="590"/>
         <source>Save</source>
         <translation>保存</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="604"/>
+        <location filename="../qml/view/ColumnView.qml" line="608"/>
         <source>Settings</source>
         <translation>設定</translation>
     </message>
@@ -557,6 +567,39 @@
     </message>
 </context>
 <context>
+    <name>EditProfileDialog</name>
+    <message>
+        <location filename="../qml/dialogs/EditProfileDialog.qml" line="21"/>
+        <source>Edit my profile</source>
+        <translation>プロフィールの編集</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/EditProfileDialog.qml" line="157"/>
+        <source>Display Name</source>
+        <translation>表示名</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/EditProfileDialog.qml" line="172"/>
+        <source>Description</source>
+        <translation>説明</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/EditProfileDialog.qml" line="199"/>
+        <source>Cancel</source>
+        <translation>キャンセル</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/EditProfileDialog.qml" line="211"/>
+        <source>Update</source>
+        <translation>更新</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/EditProfileDialog.qml" line="228"/>
+        <source>Select contents</source>
+        <translation>コンテンツの選択</translation>
+    </message>
+</context>
+<context>
     <name>FeedTypeListModel</name>
     <message>
         <location filename="../qtquick/feedtypelistmodel.cpp" line="89"/>
@@ -594,12 +637,12 @@
 <context>
     <name>ImageClipDialog</name>
     <message>
-        <location filename="../qml/dialogs/ImageClipDialog.qml" line="66"/>
+        <location filename="../qml/dialogs/ImageClipDialog.qml" line="70"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ImageClipDialog.qml" line="82"/>
+        <location filename="../qml/dialogs/ImageClipDialog.qml" line="86"/>
         <source>Apply</source>
         <translation>適用</translation>
     </message>
@@ -1553,27 +1596,32 @@
 <context>
     <name>ListDetailView</name>
     <message>
-        <location filename="../qml/view/ListDetailView.qml" line="81"/>
+        <location filename="../qml/view/ListDetailView.qml" line="84"/>
         <source>List</source>
         <translation>リスト</translation>
     </message>
     <message>
-        <location filename="../qml/view/ListDetailView.qml" line="134"/>
+        <location filename="../qml/view/ListDetailView.qml" line="116"/>
+        <source>Edit</source>
+        <translation>編集</translation>
+    </message>
+    <message>
+        <location filename="../qml/view/ListDetailView.qml" line="152"/>
         <source>Open in new col</source>
         <translation>新しいカラムで開く</translation>
     </message>
     <message>
-        <location filename="../qml/view/ListDetailView.qml" line="139"/>
+        <location filename="../qml/view/ListDetailView.qml" line="157"/>
         <source>Open in Official</source>
         <translation>公式で開く</translation>
     </message>
     <message>
-        <location filename="../qml/view/ListDetailView.qml" line="145"/>
+        <location filename="../qml/view/ListDetailView.qml" line="163"/>
         <source>Delete list</source>
         <translation>リストを削除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ListDetailView.qml" line="190"/>
+        <location filename="../qml/view/ListDetailView.qml" line="208"/>
         <source>Users</source>
         <translation>ユーザー</translation>
     </message>
@@ -1708,22 +1756,22 @@
         <translation type="vanished">リンクカードのURL</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/PostDialog.qml" line="235"/>
+        <location filename="../qml/dialogs/PostDialog.qml" line="243"/>
         <source>Link card URL or custom feed URL</source>
         <translation>リンクカードかフィードカードのURL</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/PostDialog.qml" line="400"/>
+        <location filename="../qml/dialogs/PostDialog.qml" line="408"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/PostDialog.qml" line="467"/>
+        <location filename="../qml/dialogs/PostDialog.qml" line="475"/>
         <source>Post</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/PostDialog.qml" line="511"/>
+        <location filename="../qml/dialogs/PostDialog.qml" line="520"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
     </message>
@@ -1767,117 +1815,117 @@
 <context>
     <name>ProfileView</name>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="66"/>
+        <location filename="../qml/view/ProfileView.qml" line="67"/>
         <source>Edit Profile</source>
         <translation>プロフィールを編集</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="74"/>
+        <location filename="../qml/view/ProfileView.qml" line="79"/>
         <source>Following</source>
         <translation>フォロー中</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="84"/>
+        <location filename="../qml/view/ProfileView.qml" line="89"/>
         <source>Follow</source>
         <translation>フォローする</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="155"/>
+        <location filename="../qml/view/ProfileView.qml" line="160"/>
         <source>Profile</source>
         <translation>プロフィール</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="182"/>
+        <location filename="../qml/view/ProfileView.qml" line="187"/>
         <source>Follows you</source>
         <translation>あなたをフォロー中</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="229"/>
+        <location filename="../qml/view/ProfileView.qml" line="234"/>
         <source>follows</source>
         <translation>フォロー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="240"/>
+        <location filename="../qml/view/ProfileView.qml" line="245"/>
         <source>followers</source>
         <translation>フォロワー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="251"/>
+        <location filename="../qml/view/ProfileView.qml" line="256"/>
         <source>posts</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="280"/>
+        <location filename="../qml/view/ProfileView.qml" line="285"/>
         <source>Send mention</source>
         <translation>メンションを送る</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="287"/>
+        <location filename="../qml/view/ProfileView.qml" line="292"/>
         <source>Copy handle</source>
         <translation>ハンドルをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="293"/>
+        <location filename="../qml/view/ProfileView.qml" line="298"/>
         <source>Copy DID</source>
         <translation>DIDをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="300"/>
+        <location filename="../qml/view/ProfileView.qml" line="305"/>
         <source>Open in new col</source>
         <translation>新しいカラムで開く</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="306"/>
+        <location filename="../qml/view/ProfileView.qml" line="311"/>
         <source>Open in Official</source>
         <translation>公式で開く</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="313"/>
+        <location filename="../qml/view/ProfileView.qml" line="318"/>
         <source>Add/Remove from lists</source>
         <translation>リストへ追加/削除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="320"/>
+        <location filename="../qml/view/ProfileView.qml" line="325"/>
         <source>Unmute account</source>
         <translation>ミュート解除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="320"/>
+        <location filename="../qml/view/ProfileView.qml" line="325"/>
         <source>Mute account</source>
         <translation>ミュート</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="332"/>
+        <location filename="../qml/view/ProfileView.qml" line="337"/>
         <source>Unblock account</source>
         <translation>ブロック解除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="332"/>
+        <location filename="../qml/view/ProfileView.qml" line="337"/>
         <source>Block account</source>
         <translation>ブロック</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="344"/>
+        <location filename="../qml/view/ProfileView.qml" line="349"/>
         <source>Report account</source>
         <translation>通報</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="365"/>
+        <location filename="../qml/view/ProfileView.qml" line="370"/>
         <source>Account blocked</source>
         <translation>ブロックしたアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="376"/>
+        <location filename="../qml/view/ProfileView.qml" line="381"/>
         <source>Account muted</source>
         <translation>ミュートしたアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="388"/>
+        <location filename="../qml/view/ProfileView.qml" line="393"/>
         <source>This account has been flagged : </source>
         <translation>このアカウントに設定されたラベル : </translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="397"/>
+        <location filename="../qml/view/ProfileView.qml" line="402"/>
         <source>This account has blocked you</source>
         <translation>あなたをブロックしているアカウント</translation>
     </message>
@@ -2091,37 +2139,37 @@
 <context>
     <name>SettingDialog</name>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="92"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="91"/>
         <source>General</source>
         <translation>一般</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="97"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="96"/>
         <source>Translate</source>
         <translation>翻訳</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="102"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="101"/>
         <source>About</source>
         <translation>羽衣について</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="121"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="122"/>
         <source>Theme</source>
         <translation>テーマ</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="128"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="130"/>
         <source>Light</source>
         <translation>ライト</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="133"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="136"/>
         <source>Dark</source>
         <translation>ダーク</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="138"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="142"/>
         <source>Accent color</source>
         <translation>アクセント色</translation>
     </message>
@@ -2130,204 +2178,203 @@
         <translation type="vanished">フォントサイズ</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="174"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="179"/>
         <source>Scaling</source>
         <translation>拡大/縮小</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="187"/>
         <location filename="../qml/dialogs/SettingDialog.qml" line="193"/>
         <location filename="../qml/dialogs/SettingDialog.qml" line="200"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="208"/>
         <source>A</source>
         <translation>あ</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="207"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="216"/>
         <source>Font family</source>
         <translation>フォント名</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="233"/>
         <source>*Please restart to apply the settings.</source>
-        <translation>*設定の反映に再起動が必要です。</translation>
+        <translation type="vanished">*設定の反映に再起動が必要です。</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="253"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="250"/>
         <source>Api Url</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="263"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="260"/>
         <source>Api Key</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="274"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="271"/>
         <source>Target language</source>
         <translation>翻訳後の言語</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="284"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="281"/>
         <source>Bulgarian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="285"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="282"/>
         <source>Chinese (simplified)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="286"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="283"/>
         <source>Czech</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="287"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="284"/>
         <source>Danish</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="288"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="285"/>
         <source>Dutch</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="289"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="286"/>
         <source>English (American)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="290"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="287"/>
         <source>English (British)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="291"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="288"/>
         <source>Estonian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="292"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="289"/>
         <source>Finnish</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="293"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="290"/>
         <source>French</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="294"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="291"/>
         <source>German</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="295"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="292"/>
         <source>Greek</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="296"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="293"/>
         <source>Hungarian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="297"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="294"/>
         <source>Indonesian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="298"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="295"/>
         <source>Italian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="299"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="296"/>
         <source>Japanese</source>
         <translation>日本語</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="300"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="297"/>
         <source>Korean</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="301"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="298"/>
         <source>Latvian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="302"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="299"/>
         <source>Lithuanian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="303"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="300"/>
         <source>Norwegian (Bokmål)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="304"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="301"/>
         <source>Polish</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="305"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="302"/>
         <source>Portuguese (Brazilian)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="306"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="303"/>
         <source>Portuguese (excluding Brazilian)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="307"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="304"/>
         <source>Romanian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="308"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="305"/>
         <source>Russian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="309"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="306"/>
         <source>Slovak</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="310"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="307"/>
         <source>Slovenian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="311"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="308"/>
         <source>Spanish</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="312"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="309"/>
         <source>Swedish</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="313"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="310"/>
         <source>Turkish</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="314"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="311"/>
         <source>Ukrainian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="383"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="380"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="392"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="389"/>
         <source>OK</source>
         <translation></translation>
     </message>
@@ -2347,13 +2394,13 @@
         <translation type="vanished">羽衣</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="88"/>
-        <location filename="../qml/main.qml" line="297"/>
+        <location filename="../qml/main.qml" line="93"/>
+        <location filename="../qml/main.qml" line="311"/>
         <source>Search posts</source>
         <translation>検索(ポスト)</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="91"/>
+        <location filename="../qml/main.qml" line="96"/>
         <source>Search users</source>
         <translation>検索(ユーザー)</translation>
     </message>

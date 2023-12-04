@@ -15,6 +15,7 @@ public:
                    const QString &cid);
 
     bool profile(const QString &did);
+    bool list(const QString &did, const QString &rkey);
 
     QString cid() const;
     QString uri() const;

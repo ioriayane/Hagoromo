@@ -66,6 +66,8 @@ public:
 
     Q_INVOKABLE void updateProfile(const QString &avatar_url, const QString &banner_url,
                                    const QString &description, const QString &display_name);
+    Q_INVOKABLE void updateList(const QString &uri, const QString &avatar_url, const QString &description,
+                                const QString &name);
 
     bool running() const;
     void setRunning(bool newRunning);

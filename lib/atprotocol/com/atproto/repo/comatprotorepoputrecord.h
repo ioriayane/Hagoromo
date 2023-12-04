@@ -17,6 +17,8 @@ public:
 
     bool profile(const AtProtocolType::Blob &avatar, const AtProtocolType::Blob &banner,
                  const QString &description, const QString &display_name, const QString &cid);
+    bool list(const AtProtocolType::Blob &avatar, const QString &purpose,
+              const QString &description, const QString &name, const QString &rkey);
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);
