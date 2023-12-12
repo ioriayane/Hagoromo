@@ -28,7 +28,7 @@ Button {
             when: !button.enabled
             PropertyChanges {
                 target: button
-                foreground: Material.color(Material.Grey)
+                foreground: Material.color(Material.Grey, Material.theme === Material.Light ? Material.Shade300 : Material.Shade700)
             }
         }
     ]
