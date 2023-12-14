@@ -1,0 +1,16 @@
+{
+    "collection": "app.bsky.feed.threadgate",
+    "repo": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+    "rkey": "3kggopmh3kd2s",
+    "record": {
+        "post": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kggopmh3kd2s",
+        "createdAt": "2023-12-13T14:41:55.415Z",
+        "allow": [
+            {
+                "$type": "app.bsky.feed.threadgate#listRule",
+                "list": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/3kflf2r3lwg2x"
+            }
+        ],
+        "$type": "app.bsky.feed.threadgate"
+    }
+}
