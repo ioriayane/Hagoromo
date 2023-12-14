@@ -107,6 +107,11 @@ void RecordOperator::setSelfLabels(const QStringList &labels)
     m_selfLabels = labels;
 }
 
+void RecordOperator::setThreadGate(const QStringList &rules)
+{
+    m_threadGateRules = rules;
+}
+
 void RecordOperator::clear()
 {
     m_text.clear();
@@ -133,11 +138,20 @@ void RecordOperator::post()
     makeFacets(m_text, [=]() {
         ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord(this);
         connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
-            emit finished(success, QString(), QString());
-            if (!success) {
+            if (success) {
+                bool ret = threadGate(create_record->replyUri(), [=](bool success2) {
+                    emit finished(success2, QString(), QString());
+                    setRunning(false);
+                });
+                if (!ret) {
+                    emit finished(ret, QString(), QString());
+                    setRunning(false);
+                }
+            } else {
                 emit errorOccured(create_record->errorCode(), create_record->errorMessage());
+                emit finished(success, QString(), QString());
+                setRunning(false);
             }
-            setRunning(false);
             create_record->deleteLater();
         });
         create_record->setAccount(m_account);
@@ -898,4 +912,55 @@ bool RecordOperator::deleteAllListItems(std::function<void(bool)> callback)
     });
     delete_record->setAccount(m_account);
     return delete_record->deleteListItem(r_key);
+}
+
+bool RecordOperator::threadGate(const QString &uri, std::function<void(bool)> callback)
+{
+    if (m_threadGateRules.isEmpty()) {
+        callback(true);
+        return true;
+    }
+
+    AtProtocolType::ThreadGateType type = AtProtocolType::ThreadGateType::Everybody;
+    QList<AtProtocolType::ThreadGateAllow> rules;
+    AtProtocolType::ThreadGateAllow rule;
+
+    for (const auto &cmd : m_threadGateRules) {
+        if (cmd == "nobody") {
+            type = AtProtocolType::ThreadGateType::Nobody;
+            rules.clear();
+            break;
+        } else if (cmd == "mentioned") {
+            type = AtProtocolType::ThreadGateType::Choice;
+            rule.type = AtProtocolType::ThreadGateAllowType::Mentioned;
+            rule.uri.clear();
+            rules.append(rule);
+        } else if (cmd == "followed") {
+            type = AtProtocolType::ThreadGateType::Choice;
+            rule.type = AtProtocolType::ThreadGateAllowType::Followed;
+            rule.uri.clear();
+            rules.append(rule);
+        } else if (cmd.startsWith("at://")) {
+            type = AtProtocolType::ThreadGateType::Choice;
+            rule.type = AtProtocolType::ThreadGateAllowType::List;
+            rule.uri = cmd;
+            rules.append(rule);
+        }
+    }
+
+    if (type == AtProtocolType::ThreadGateType::Everybody) {
+        callback(true);
+        return true;
+    }
+
+    ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord(this);
+    connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
+        if (!success) {
+            emit errorOccured(create_record->errorCode(), create_record->errorMessage());
+        }
+        callback(success);
+        create_record->deleteLater();
+    });
+    create_record->setAccount(m_account);
+    return create_record->threadGate(uri, type, rules);
 }
