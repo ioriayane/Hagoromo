@@ -1,0 +1,206 @@
+import QtQuick 2.15
+import QtQuick.Controls 2.15
+import QtQuick.Layouts 1.15
+import QtQuick.Controls.Material 2.15
+
+import tech.relog.hagoromo.listslistmodel 1.0
+import tech.relog.hagoromo.singleton 1.0
+
+import "../controls"
+import "../data"
+import "../parts"
+
+Dialog {
+    id: selectThreadGateDialog
+    modal: true
+    x: (parent.width - width) * 0.5
+    y: (parent.height - height) * 0.5
+    title: qsTr("Who can reply")
+
+
+    property string initialType: "everybody"
+    property variant initialOptions: []
+    property string selectedType: "everybody"
+    property variant selectedOptions: []
+
+    property alias account: account
+    Account {
+        id: account
+    }
+    signal errorOccured(string account_uuid, string code, string message)
+
+    onOpened: {
+        var i
+        choiceRadioButton.checked = true
+        for(i=0; i<group.buttons.length; i++){
+            group.buttons[i].checked = (group.buttons[i].value === initialType)
+        }
+        mentionedCheckBox.checked = false
+        followedCheckBox.checked = false
+        for(i=0; i<initialOptions.length; i++){
+            if(initialOptions[i] === "mentioned"){
+                mentionedCheckBox.checked = true
+            }else if(initialOptions[i] === "followed"){
+                followedCheckBox.checked = true
+            }else{
+                rootListView.model.setInitialSelected(initialOptions[i])
+            }
+        }
+        rootListView.model.clear()
+        rootListView.model.setAccount(account.service, account.did, account.handle,
+                                       account.email, account.accessJwt, account.refreshJwt)
+        rootListView.model.getLatest()
+    }
+    onClosed: {
+        rootListView.model.clear()
+    }
+
+    function clear(){
+        selectedType = "everybody"
+        selectedOptions = []
+    }
+
+    ButtonGroup {
+        id: group
+        onClicked: (button) => console.log("" + button.value)
+    }
+
+    ColumnLayout {
+        spacing: AdjustedValues.s20
+        RadioButton {
+            ButtonGroup.group: group
+            verticalPadding: 0
+            font.pointSize: AdjustedValues.f10
+            text: qsTr("Everybody")
+            property string value: "everybody"
+        }
+        RadioButton {
+            ButtonGroup.group: group
+            verticalPadding: 0
+            font.pointSize: AdjustedValues.f10
+            text: qsTr("Nobody")
+            property string value: "nobody"
+        }
+        GroupBox {
+            label: RadioButton {
+                id: choiceRadioButton
+                ButtonGroup.group: group
+                topPadding: 0
+                bottomPadding: 5
+                font.pointSize: AdjustedValues.f10
+                text: qsTr("Combine these options")
+                property string value: "choice"
+            }
+
+            ColumnLayout {
+                anchors.fill: parent
+                enabled: choiceRadioButton.checked
+                spacing: 0 //AdjustedValues.s20
+                CheckBox {
+                    id: mentionedCheckBox
+                    leftPadding: 15
+                    topPadding: 3
+                    bottomPadding: AdjustedValues.s10
+                    font.pointSize: AdjustedValues.f10
+                    text: qsTr("Mentioned users")
+                    property string value: "mentioned"
+                }
+                CheckBox {
+                    id: followedCheckBox
+                    leftPadding: 15
+                    topPadding: AdjustedValues.s10
+                    bottomPadding: AdjustedValues.s10
+                    font.pointSize: AdjustedValues.f10
+                    text: qsTr("Followed users")
+                    property string value: "followed"
+                }
+
+                ScrollView {
+                    id: listsListScroll
+                    Layout.preferredWidth: 350 * AdjustedValues.ratio
+                    Layout.preferredHeight: 150 * AdjustedValues.ratioHalf
+                    ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+                    ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+                    clip: true
+
+                    ListView {
+                        id: rootListView
+                        anchors.fill: parent
+                        model: ListsListModel {
+                            actor: account.did
+                            visibilityType: ListsListModel.VisibilityTypeCuration
+                        }
+                        onMovementEnded: {
+                            if(atYEnd){
+                                rootListView.model.getNext()
+                            }
+                        }
+
+                        footer:  Item {
+                            width: rootListView.width - listsListScroll.ScrollBar.vertical.width
+                            height: AdjustedValues.b24
+                            BusyIndicator {
+                                id: busyIndicator
+                                anchors.centerIn: parent
+                                height: AdjustedValues.i32
+                                visible: rootListView.model ? rootListView.model.running : false
+                            }
+                        }
+                        delegate: CheckBox {
+                            verticalPadding: AdjustedValues.s10
+                            leftPadding: 15
+                            font.pointSize: AdjustedValues.f10
+                            text: qsTr("Users in \"%1\"").replace("%1", model.name)
+                            property string value: model.uri
+                        }
+                    }
+                }
+            }
+        }
+        RowLayout {
+            Button {
+                flat: true
+                font.pointSize: AdjustedValues.f10
+                text: qsTr("Cancel")
+                onClicked: {
+                    selectThreadGateDialog.selectedType = selectThreadGateDialog.initialType
+                    selectThreadGateDialog.selectedOptions = selectThreadGateDialog.initialOptions
+                    selectThreadGateDialog.reject()
+                }
+            }
+            Item {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 1
+            }
+            Button {
+                font.pointSize: AdjustedValues.f10
+                text: qsTr("Apply")
+                onClicked: {
+                    selectThreadGateDialog.selectedType = "everybody"
+                    selectThreadGateDialog.selectedOptions = []
+                    var i
+                    for(i=0; i<group.buttons.length; i++){
+                        if(group.buttons[i].checked){
+                            selectThreadGateDialog.selectedType = group.buttons[i].value
+                            break
+                        }
+                    }
+                    var o_i = 0
+                    if(mentionedCheckBox.checked){
+                        selectThreadGateDialog.selectedOptions[o_i++] = "mentioned"
+                    }
+                    if(followedCheckBox.checked){
+                        selectThreadGateDialog.selectedOptions[o_i++] = "followed"
+                    }
+                    for(i=0; i<rootListView.count; i++){
+                        if(rootListView.itemAtIndex(i).checked){
+                            selectThreadGateDialog.selectedOptions[o_i++] = rootListView.itemAtIndex(i).value
+                        }
+                    }
+
+                    selectThreadGateDialog.accept()
+                }
+            }
+        }
+    }
+}

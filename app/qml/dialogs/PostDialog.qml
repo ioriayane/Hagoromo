@@ -74,6 +74,7 @@ Dialog {
         externalLink.clear()
         feedGeneratorLink.clear()
         addingExternalLinkUrlText.text = ""
+        selectThreadGateDialog.clear()
     }
 
     Shortcut {  // Post
@@ -188,9 +189,31 @@ Dialog {
                     Layout.preferredHeight: 1
                 }
                 IconButton {
+                    id: threadGateButton
+                    enabled: !createRecord.running
+                    iconSource: "../images/thread.png"
+                    iconSize: AdjustedValues.i18
+                    flat: true
+                    foreground: selectThreadGateDialog.selectedType !== "everybody" ? Material.accent : Material.foreground
+                    onClicked: {
+                        var row = accountCombo.currentIndex;
+                        selectThreadGateDialog.account.service = postDialog.accountModel.item(row, AccountListModel.ServiceRole)
+                        selectThreadGateDialog.account.did = postDialog.accountModel.item(row, AccountListModel.DidRole)
+                        selectThreadGateDialog.account.handle = postDialog.accountModel.item(row, AccountListModel.HandleRole)
+                        selectThreadGateDialog.account.email = postDialog.accountModel.item(row, AccountListModel.EmailRole)
+                        selectThreadGateDialog.account.accessJwt = postDialog.accountModel.item(row, AccountListModel.AccessJwtRole)
+                        selectThreadGateDialog.account.refreshJwt = postDialog.accountModel.item(row, AccountListModel.RefreshJwtRole)
+
+                        // initialをユーザーアカウントの情報から設定
+                        selectThreadGateDialog.open()
+                    }
+                }
+
+                IconButton {
                     id: postLanguagesButton
                     enabled: !createRecord.running
                     iconSource: "../images/language.png"
+                    iconSize: AdjustedValues.i18
                     flat: true
                     onClicked: {
                         languageSelectionDialog.setSelectedLanguages(
@@ -416,7 +439,7 @@ Dialog {
                     id: selfLabelsButton
                     enabled: !createRecord.running
                     iconSource: "../images/labeling.png"
-                    iconSize: AdjustedValues.i16
+                    iconSize: AdjustedValues.i18
                     flat: true
                     foreground: value.length > 0 ? Material.accent : Material.foreground
                     onClicked: selfLabelPopup.popup()
@@ -438,7 +461,7 @@ Dialog {
                 IconButton {
                     enabled: !createRecord.running && !externalLink.valid && !feedGeneratorLink.valid
                     iconSource: "../images/add_image.png"
-                    iconSize: AdjustedValues.i16
+                    iconSize: AdjustedValues.i18
                     flat: true
                     onClicked: {
                         if(fileDialog.prevFolder.length > 0){
@@ -484,6 +507,7 @@ Dialog {
                         createRecord.clear()
                         createRecord.setText(postText.text)
                         createRecord.setPostLanguages(postDialog.accountModel.item(row, AccountListModel.PostLanguagesRole))
+                        createRecord.setThreadGate(selectThreadGateDialog.selectedType, selectThreadGateDialog.selectedOptions)
                         if(postType === "reply"){
                             createRecord.setReply(replyCid, replyUri, replyRootCid, replyRootUri)
                         }else if(postType === "quote"){
@@ -566,5 +590,14 @@ Dialog {
                 embedImagePreview.embedAlts = alts
             }
         }
+    }
+
+    SelectThreadGateDialog {
+        id: selectThreadGateDialog
+
+        onAccepted: {
+
+        }
+        onClosed: postText.forceActiveFocus()
     }
 }

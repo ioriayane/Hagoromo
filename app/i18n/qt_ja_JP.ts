@@ -1756,22 +1756,22 @@
         <translation type="vanished">リンクカードのURL</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/PostDialog.qml" line="243"/>
+        <location filename="../qml/dialogs/PostDialog.qml" line="266"/>
         <source>Link card URL or custom feed URL</source>
         <translation>リンクカードかフィードカードのURL</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/PostDialog.qml" line="408"/>
+        <location filename="../qml/dialogs/PostDialog.qml" line="431"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/PostDialog.qml" line="475"/>
+        <location filename="../qml/dialogs/PostDialog.qml" line="498"/>
         <source>Post</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/PostDialog.qml" line="520"/>
+        <location filename="../qml/dialogs/PostDialog.qml" line="544"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
     </message>
@@ -2091,6 +2091,54 @@
         <location filename="../qml/dialogs/SearchDialog.qml" line="135"/>
         <source>Search</source>
         <translation>検索</translation>
+    </message>
+</context>
+<context>
+    <name>SelectThreadGateDialog</name>
+    <message>
+        <location filename="../qml/dialogs/SelectThreadGateDialog.qml" line="18"/>
+        <source>Who can reply</source>
+        <translation>リプライできるユーザー</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/SelectThreadGateDialog.qml" line="74"/>
+        <source>Everybody</source>
+        <translation>誰でも</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/SelectThreadGateDialog.qml" line="81"/>
+        <source>Nobody</source>
+        <translation>自分のみ</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/SelectThreadGateDialog.qml" line="91"/>
+        <source>Combine these options</source>
+        <translation>以下の組み合わせ</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/SelectThreadGateDialog.qml" line="105"/>
+        <source>Mentioned users</source>
+        <translation>メンションするユーザー</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/SelectThreadGateDialog.qml" line="114"/>
+        <source>Followed users</source>
+        <translation>フォローしているユーザー</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/SelectThreadGateDialog.qml" line="153"/>
+        <source>Users in &quot;%1&quot;</source>
+        <translation>&quot;%1&quot;のユーザー</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/SelectThreadGateDialog.qml" line="164"/>
+        <source>Cancel</source>
+        <translation>キャンセル</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/SelectThreadGateDialog.qml" line="177"/>
+        <source>Apply</source>
+        <translation>適用</translation>
     </message>
 </context>
 <context>
