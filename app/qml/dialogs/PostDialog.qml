@@ -175,12 +175,18 @@ Dialog {
                         onClicked: accountCombo.currentIndex = model.index
                     }
                     onCurrentIndexChanged: {
-                        if(accountCombo.currentIndex >= 0){
+                        var row = accountCombo.currentIndex
+                        if(row >= 0){
                             accountAvatarImage.source =
-                                    postDialog.accountModel.item(accountCombo.currentIndex, AccountListModel.AvatarRole)
+                                    postDialog.accountModel.item(row, AccountListModel.AvatarRole)
                             postLanguagesButton.setLanguageText(
-                                        postDialog.accountModel.item(accountCombo.currentIndex, AccountListModel.PostLanguagesRole)
+                                        postDialog.accountModel.item(row, AccountListModel.PostLanguagesRole)
                                         )
+                            selectThreadGateDialog.initialType = postDialog.accountModel.item(row, AccountListModel.ThreadGateTypeRole)
+                            selectThreadGateDialog.initialOptions = postDialog.accountModel.item(row, AccountListModel.ThreadGateOptionsRole)
+                            // リプライ制限のダイアログを開かずにポストするときのため選択済みにも設定する
+                            selectThreadGateDialog.selectedType = selectThreadGateDialog.initialType
+                            selectThreadGateDialog.selectedOptions = selectThreadGateDialog.initialOptions
                         }
                     }
                 }
@@ -203,8 +209,8 @@ Dialog {
                         selectThreadGateDialog.account.email = postDialog.accountModel.item(row, AccountListModel.EmailRole)
                         selectThreadGateDialog.account.accessJwt = postDialog.accountModel.item(row, AccountListModel.AccessJwtRole)
                         selectThreadGateDialog.account.refreshJwt = postDialog.accountModel.item(row, AccountListModel.RefreshJwtRole)
-
-                        // initialをユーザーアカウントの情報から設定
+                        selectThreadGateDialog.initialType = selectThreadGateDialog.selectedType
+                        selectThreadGateDialog.initialOptions = selectThreadGateDialog.selectedOptions
                         selectThreadGateDialog.open()
                     }
                 }
