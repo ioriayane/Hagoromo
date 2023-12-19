@@ -15,8 +15,9 @@ Dialog {
     modal: true
     x: (parent.width - width) * 0.5
     y: (parent.height - height) * 0.5
-    title: qsTr("Who can reply")
+    title: qsTr("Who can reply") + (defaultSettingMode ? qsTr("(default value)") : "")
 
+    property bool defaultSettingMode: false
 
     property string initialType: "everybody"
     property variant initialOptions: []
@@ -43,16 +44,16 @@ Dialog {
             }else if(initialOptions[i] === "followed"){
                 followedCheckBox.checked = true
             }else{
-                rootListView.model.setInitialSelected(initialOptions[i])
+                listsListModel.setInitialSelected(initialOptions[i])
             }
         }
-        rootListView.model.clear()
-        rootListView.model.setAccount(account.service, account.did, account.handle,
+        listsListModel.clear()
+        listsListModel.setAccount(account.service, account.did, account.handle,
                                        account.email, account.accessJwt, account.refreshJwt)
-        rootListView.model.getLatest()
+        listsListModel.getLatest()
     }
     onClosed: {
-        rootListView.model.clear()
+        listsListModel.clear()
     }
 
     function clear(){
@@ -127,12 +128,33 @@ Dialog {
                         id: rootListView
                         anchors.fill: parent
                         model: ListsListModel {
+                            id: listsListModel
                             actor: account.did
                             visibilityType: ListsListModel.VisibilityTypeCuration
+                            property variant initialSelected: []
+
+//                            onRunningChanged: {
+//                                if(!running){
+//                                    var uri = ""
+//                                    for(var i=0; i<rootListView.count; i++){
+//                                        uri = listsListModel.item(i, ListsListModel.UriRole)
+//                                        console.log("uri=" + uri)
+//                                        console.log("obj=" + rootListView.itemAtIndex(i))
+//                                        if(initialSelected[uri]){
+//                                            rootListView.itemAtIndex(i).checked = true
+//                                        }else{
+//                                            rootListView.itemAtIndex(i).checked = false
+//                                        }
+//                                    }
+//                                }
+//                            }
+                            function setInitialSelected(uri){
+                                initialSelected[uri] = true
+                            }
                         }
                         onMovementEnded: {
                             if(atYEnd){
-                                rootListView.model.getNext()
+                                listsListModel.getNext()
                             }
                         }
 
@@ -143,7 +165,7 @@ Dialog {
                                 id: busyIndicator
                                 anchors.centerIn: parent
                                 height: AdjustedValues.i32
-                                visible: rootListView.model ? rootListView.model.running : false
+                                visible: listsListModel ? listsListModel.running : false
                             }
                         }
                         delegate: CheckBox {
@@ -152,6 +174,14 @@ Dialog {
                             font.pointSize: AdjustedValues.f10
                             text: qsTr("Users in \"%1\"").replace("%1", model.name)
                             property string value: model.uri
+                            Component.onCompleted: {
+                                if(listsListModel.initialSelected[model.uri]){
+                                    checked = true
+                                }else{
+                                    checked = false
+                                }
+                                delete listsListModel.initialSelected[model.uri]
+                            }
                         }
                     }
                 }

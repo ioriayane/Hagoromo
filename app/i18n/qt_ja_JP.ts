@@ -9,22 +9,27 @@
         <translation>アカウント管理</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="112"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="122"/>
         <source>Set as main</source>
         <translation>メインに設定</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="117"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="127"/>
         <source>Content filter</source>
         <translation>コンテンツフィルター</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="132"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="142"/>
+        <source>Who can reply</source>
+        <translation>リプライできるユーザー</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="160"/>
         <source>Remove account</source>
         <translation>アカウントを削除</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="142"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="170"/>
         <source>Close</source>
         <translation>閉じる</translation>
     </message>
@@ -2101,42 +2106,47 @@
         <translation>リプライできるユーザー</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SelectThreadGateDialog.qml" line="74"/>
+        <location filename="../qml/dialogs/SelectThreadGateDialog.qml" line="18"/>
+        <source>(default value)</source>
+        <translation>（既定値）</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/SelectThreadGateDialog.qml" line="75"/>
         <source>Everybody</source>
         <translation>誰でも</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SelectThreadGateDialog.qml" line="81"/>
+        <location filename="../qml/dialogs/SelectThreadGateDialog.qml" line="82"/>
         <source>Nobody</source>
         <translation>自分のみ</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SelectThreadGateDialog.qml" line="91"/>
+        <location filename="../qml/dialogs/SelectThreadGateDialog.qml" line="92"/>
         <source>Combine these options</source>
         <translation>以下の組み合わせ</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SelectThreadGateDialog.qml" line="105"/>
+        <location filename="../qml/dialogs/SelectThreadGateDialog.qml" line="106"/>
         <source>Mentioned users</source>
         <translation>メンションするユーザー</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SelectThreadGateDialog.qml" line="114"/>
+        <location filename="../qml/dialogs/SelectThreadGateDialog.qml" line="115"/>
         <source>Followed users</source>
         <translation>フォローしているユーザー</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SelectThreadGateDialog.qml" line="153"/>
+        <location filename="../qml/dialogs/SelectThreadGateDialog.qml" line="175"/>
         <source>Users in &quot;%1&quot;</source>
         <translation>&quot;%1&quot;のユーザー</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SelectThreadGateDialog.qml" line="164"/>
+        <location filename="../qml/dialogs/SelectThreadGateDialog.qml" line="194"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SelectThreadGateDialog.qml" line="177"/>
+        <location filename="../qml/dialogs/SelectThreadGateDialog.qml" line="207"/>
         <source>Apply</source>
         <translation>適用</translation>
     </message>

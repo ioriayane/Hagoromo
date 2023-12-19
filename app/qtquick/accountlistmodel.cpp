@@ -77,6 +77,10 @@ QVariant AccountListModel::item(int row, AccountListModelRoles role) const
 
     else if (role == PostLanguagesRole)
         return m_accountList[row].post_languages;
+    else if (role == ThreadGateTypeRole)
+        return m_accountList[row].thread_gate_type;
+    else if (role == ThreadGateOptionsRole)
+        return m_accountList[row].thread_gate_options;
 
     else if (role == StatusRole)
         return static_cast<int>(m_accountList.at(row).status);
@@ -117,6 +121,12 @@ void AccountListModel::update(int row, AccountListModelRoles role, const QVarian
 
     else if (role == PostLanguagesRole) {
         m_accountList[row].post_languages = value.toStringList();
+        save();
+    } else if (role == ThreadGateTypeRole) {
+        m_accountList[row].thread_gate_type = value.toString();
+        save();
+    } else if (role == ThreadGateOptionsRole) {
+        m_accountList[row].thread_gate_options = value.toStringList();
         save();
     }
 
@@ -284,6 +294,16 @@ void AccountListModel::save() const
             }
             account_item["post_languages"] = post_langs;
         }
+
+        account_item["thread_gate_type"] = item.thread_gate_type;
+        if (!item.thread_gate_options.isEmpty()) {
+            QJsonArray thread_gate_options;
+            for (const auto &option : item.thread_gate_options) {
+                thread_gate_options.append(option);
+            }
+            account_item["thread_gate_options"] = thread_gate_options;
+        }
+
         account_array.append(account_item);
     }
 
@@ -317,6 +337,16 @@ void AccountListModel::load()
                 for (const auto &value :
                      doc.array().at(i).toObject().value("post_languages").toArray()) {
                     item.post_languages.append(value.toString());
+                }
+
+                item.thread_gate_type = doc.array()
+                                                .at(i)
+                                                .toObject()
+                                                .value("thread_gate_type")
+                                                .toString("everybody");
+                for (const auto &value :
+                     doc.array().at(i).toObject().value("thread_gate_options").toArray()) {
+                    item.thread_gate_options.append(value.toString());
                 }
 
                 beginInsertRows(QModelIndex(), count(), count());
@@ -367,6 +397,8 @@ QHash<int, QByteArray> AccountListModel::roleNames() const
     roles[DescriptionRole] = "description";
     roles[AvatarRole] = "avatar";
     roles[PostLanguagesRole] = "postLanguages";
+    roles[ThreadGateTypeRole] = "threadGateType";
+    roles[ThreadGateOptionsRole] = "threadGateOptions";
     roles[StatusRole] = "status";
 
     return roles;
