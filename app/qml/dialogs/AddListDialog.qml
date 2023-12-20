@@ -180,7 +180,7 @@ Dialog {
                         recordOperator.updateList(addListDialog.listUri, avatarImage.source,
                                                   descriptionText.text, nameText.text)
                     }else{
-                        if(avatarImage.status === Image.Ready){
+                        if(avatarImage.status === Image.Ready && (avatarImage.source + "").indexOf("qrc:") !== 0){
                             recordOperator.setImages([avatarImage.source], [])
                         }
                         recordOperator.list(nameText.text, RecordOperator.Curation, descriptionText.text)
