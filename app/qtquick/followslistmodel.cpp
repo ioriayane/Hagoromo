@@ -55,6 +55,8 @@ QVariant FollowsListModel::item(int row, FollowsListModelRoles role) const
     else if (role == LabelsRole) {
         QStringList labels;
         for (const auto &label : profile.labels) {
+            if (label.val == QStringLiteral("!no-unauthenticated"))
+                continue;
             labels.append(label.val);
         }
         return labels;

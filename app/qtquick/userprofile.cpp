@@ -66,12 +66,25 @@ void UserProfile::getProfile(const QString &did)
                 setUserFilterMatched(false);
                 setUserFilterTitle(QString());
             } else {
-                QString title = m_contentFilterLabels.title(detail.labels.at(0).val, false);
-                setUserFilterMatched(true);
-                if (title.isEmpty()) {
-                    setUserFilterTitle(detail.labels.at(0).val);
+                QString title;
+                QString val;
+                for (const auto &label : detail.labels) {
+                    if (label.val == QStringLiteral("!no-unauthenticated"))
+                        continue;
+                    val = label.val;
+                    title = m_contentFilterLabels.title(label.val, false);
+                    break;
+                }
+                if (val.isEmpty()) {
+                    setUserFilterMatched(false);
+                    setUserFilterTitle(QString());
                 } else {
-                    setUserFilterTitle(title);
+                    setUserFilterMatched(true);
+                    if (title.isEmpty()) {
+                        setUserFilterTitle(val);
+                    } else {
+                        setUserFilterTitle(title);
+                    }
                 }
             }
         } else {
