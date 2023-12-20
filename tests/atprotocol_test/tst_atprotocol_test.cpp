@@ -35,6 +35,7 @@ private slots:
     void test_ConfigurableLabels_copy();
     void test_ConfigurableLabels_save();
     void test_ComAtprotoRepoCreateRecord_post();
+    void test_ComAtprotoRepoCreateRecord_threadgate();
     void test_AppBskyFeedGetFeedGenerator();
     void test_ServiceUrl();
     void test_ComAtprotoRepoGetRecord_profile();
@@ -43,7 +44,9 @@ private slots:
 private:
     void test_putPreferences(const QString &path, const QByteArray &body);
     void test_putRecord(const QString &path, const QByteArray &body);
+    void test_createRecord(const QString &path, const QByteArray &body);
     QJsonDocument loadJson(const QString &path);
+    void updateCreatedAt(QJsonObject &json_obj);
 
     WebServer m_mockServer;
     quint16 m_listenPort;
@@ -75,6 +78,10 @@ atprotocol_test::atprotocol_test()
                     json = "{}";
                     result = true;
                 } else if (request.url().path() == "/response/xrpc/com.atproto.repo.createRecord") {
+                    json = "{ \"uri\": \"return uri\", \"cid\": \"return cid\" }";
+                    result = true;
+                } else if (request.url().path().endsWith("com.atproto.repo.createRecord")) {
+                    test_createRecord(request.url().path(), request.body());
                     json = "{ \"uri\": \"return uri\", \"cid\": \"return cid\" }";
                     result = true;
                 } else {
@@ -759,6 +766,102 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_post()
     QVERIFY(arguments.at(0).toBool());
 }
 
+void atprotocol_test::test_ComAtprotoRepoCreateRecord_threadgate()
+{
+    QString temp_did = m_account.did;
+    m_account.did = "did:plc:mqxsuw5b5rhpwo4lw6iwlid5";
+    AtProtocolInterface::ComAtprotoRepoCreateRecord createrecord;
+    createrecord.setAccount(m_account);
+
+    QVERIFY(createrecord.threadGate("at://uri", AtProtocolType::ThreadGateType::Everybody,
+                                    QList<AtProtocolType::ThreadGateAllow>()));
+
+    {
+        createrecord.setService(
+                QString("http://localhost:%1/response/threadgate/1").arg(m_listenPort));
+        QSignalSpy spy(&createrecord, SIGNAL(finished(bool)));
+        QVERIFY(createrecord.threadGate(
+                "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kggopmh3kd2s",
+                AtProtocolType::ThreadGateType::Nobody, QList<AtProtocolType::ThreadGateAllow>()));
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+
+    QList<AtProtocolType::ThreadGateAllow> rules;
+    AtProtocolType::ThreadGateAllow rule;
+
+    rule.type = AtProtocolType::ThreadGateAllowType::Mentioned;
+    rules.append(rule);
+    {
+        createrecord.setService(
+                QString("http://localhost:%2/response/threadgate/2").arg(m_listenPort));
+        QSignalSpy spy(&createrecord, SIGNAL(finished(bool)));
+        QVERIFY(createrecord.threadGate(
+                "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kggopmh3kd2s",
+                AtProtocolType::ThreadGateType::Choice, rules));
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+
+    rules.clear();
+    rule.type = AtProtocolType::ThreadGateAllowType::Followed;
+    rules.append(rule);
+    {
+        createrecord.setService(
+                QString("http://localhost:%2/response/threadgate/3").arg(m_listenPort));
+        QSignalSpy spy(&createrecord, SIGNAL(finished(bool)));
+        createrecord.threadGate(
+                "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kggopmh3kd2s",
+                AtProtocolType::ThreadGateType::Choice, rules);
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+
+    rules.clear();
+    rule.type = AtProtocolType::ThreadGateAllowType::List;
+    rule.uri = "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/3kflf2r3lwg2x";
+    rules.append(rule);
+    {
+        createrecord.setService(
+                QString("http://localhost:%2/response/threadgate/4").arg(m_listenPort));
+        QSignalSpy spy(&createrecord, SIGNAL(finished(bool)));
+        createrecord.threadGate(
+                "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kggopmh3kd2s",
+                AtProtocolType::ThreadGateType::Choice, rules);
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+
+    rules.clear();
+    rule.type = AtProtocolType::ThreadGateAllowType::Mentioned;
+    rules.append(rule);
+    rule.type = AtProtocolType::ThreadGateAllowType::Followed;
+    rules.append(rule);
+    rule.type = AtProtocolType::ThreadGateAllowType::List;
+    rule.uri = "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/3kflf2r3lwg2x";
+    rules.append(rule);
+    {
+        createrecord.setService(
+                QString("http://localhost:%2/response/threadgate/5").arg(m_listenPort));
+        QSignalSpy spy(&createrecord, SIGNAL(finished(bool)));
+        createrecord.threadGate(
+                "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kggopmh3kd2s",
+                AtProtocolType::ThreadGateType::Choice, rules);
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+}
+
 void atprotocol_test::test_AppBskyFeedGetFeedGenerator()
 {
     AtProtocolInterface::AppBskyFeedGetFeedGenerator generator;
@@ -917,6 +1020,28 @@ void atprotocol_test::test_putRecord(const QString &path, const QByteArray &body
     QVERIFY(json_doc_expect.object() == json_doc.object());
 }
 
+void atprotocol_test::test_createRecord(const QString &path, const QByteArray &body)
+{
+    QString data_path = path;
+    data_path.replace("/response/", ":/data/");
+    QVERIFY(QFile::exists(data_path));
+
+    QJsonDocument json_doc_expect = loadJson(data_path);
+    QJsonObject json_expect = json_doc_expect.object();
+    updateCreatedAt(json_expect);
+
+    QJsonDocument json_doc = QJsonDocument::fromJson(body);
+    QJsonObject json_actual = json_doc.object();
+    updateCreatedAt(json_actual);
+
+    if (json_expect != json_actual) {
+        qDebug().noquote().nospace() << QString("\nexpect:%1\nactual:%2\n")
+                                                .arg(QJsonDocument(json_expect).toJson(),
+                                                     QJsonDocument(json_actual).toJson());
+    }
+    QVERIFY(json_expect == json_actual);
+}
+
 QJsonDocument atprotocol_test::loadJson(const QString &path)
 {
     QFile file(path);
@@ -924,6 +1049,30 @@ QJsonDocument atprotocol_test::loadJson(const QString &path)
         return QJsonDocument::fromJson(file.readAll());
     } else {
         return QJsonDocument();
+    }
+}
+
+void atprotocol_test::updateCreatedAt(QJsonObject &json_obj)
+{
+    if (json_obj.contains("createdAt")) {
+        json_obj["createdAt"] = "2023-12-13T14:15:16.000Z";
+    }
+    for (auto it = json_obj.begin(); it != json_obj.end(); ++it) {
+        if (it.value().isObject()) {
+            QJsonObject temp = it.value().toObject();
+            updateCreatedAt(temp);
+            it.value() = temp;
+        } else if (it.value().isArray()) {
+            QJsonArray array = it.value().toArray();
+            for (int i = 0; i < array.size(); ++i) {
+                if (array[i].isObject()) {
+                    QJsonObject temp = array[i].toObject();
+                    updateCreatedAt(temp);
+                    it.value() = temp;
+                }
+            }
+            it.value() = array;
+        }
     }
 }
 

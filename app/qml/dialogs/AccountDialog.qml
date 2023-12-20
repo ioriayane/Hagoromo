@@ -34,6 +34,15 @@ Dialog {
     ContentFilterSettingDialog {
         id: contentFilter
     }
+    SelectThreadGateDialog {
+        id: selectThreadGateDialog
+        defaultSettingMode: true
+        property int accountIndex: -1
+        onAccepted: {
+            accountList.model.update(accountIndex, AccountListModel.ThreadGateTypeRole, selectedType)
+            accountList.model.update(accountIndex, AccountListModel.ThreadGateOptionsRole, selectedOptions)
+        }
+    }
 
     ColumnLayout {
 
@@ -107,6 +116,7 @@ Dialog {
                         onClicked: moreMenu.open()
                         Menu {
                             id: moreMenu
+                            width: 250
                             MenuItem {
                                 icon.source: "../images/account_icon.png"
                                 text: qsTr("Set as main")
@@ -125,6 +135,24 @@ Dialog {
                                     contentFilter.account.refreshJwt = accountList.model.item(i, AccountListModel.RefreshJwtRole)
                                     contentFilter.account.avatar = accountList.model.item(i, AccountListModel.AvatarRole)
                                     contentFilter.open()
+                                }
+                            }
+                            MenuItem {
+                                icon.source: "../images/thread.png"
+                                text: qsTr("Who can reply")
+                                onTriggered: {
+                                    var i = model.index
+                                    selectThreadGateDialog.account.service = accountList.model.item(i, AccountListModel.ServiceRole)
+                                    selectThreadGateDialog.account.did = accountList.model.item(i, AccountListModel.DidRole)
+                                    selectThreadGateDialog.account.handle = accountList.model.item(i, AccountListModel.HandleRole)
+                                    selectThreadGateDialog.account.email = accountList.model.item(i, AccountListModel.EmailRole)
+                                    selectThreadGateDialog.account.accessJwt = accountList.model.item(i, AccountListModel.AccessJwtRole)
+                                    selectThreadGateDialog.account.refreshJwt = accountList.model.item(i, AccountListModel.RefreshJwtRole)
+                                    selectThreadGateDialog.account.avatar = accountList.model.item(i, AccountListModel.AvatarRole)
+                                    selectThreadGateDialog.initialType = accountList.model.item(i, AccountListModel.ThreadGateTypeRole)
+                                    selectThreadGateDialog.initialOptions = accountList.model.item(i, AccountListModel.ThreadGateOptionsRole)
+                                    selectThreadGateDialog.accountIndex = i
+                                    selectThreadGateDialog.open()
                                 }
                             }
                             MenuItem {

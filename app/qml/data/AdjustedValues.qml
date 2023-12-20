@@ -18,6 +18,7 @@ QtObject {
     property real i36: 36 * ratio
     property real i32: 32 * ratio
     property real i24: 24 * ratio
+    property real i20: 20 * ratio
     property real i18: 18 * ratio
     property real i16: 16 * ratio
     property real i12: 12 * ratio
@@ -33,6 +34,8 @@ QtObject {
     property real h24: 24 * ratio
 
     // for spacing
+    property real s20: 20 * ratio
+    property real s15: 15 * ratio
     property real s10: 10 * ratio
     property real s5: 5 * ratio
 

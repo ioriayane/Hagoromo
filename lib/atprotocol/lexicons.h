@@ -17,6 +17,22 @@ struct Blob
     QString alt;
     int size = 0;
 };
+enum ThreadGateType : int {
+    Everybody,
+    Nobody,
+    Choice,
+};
+enum ThreadGateAllowType : int {
+    Mentioned,
+    Followed,
+    List,
+};
+struct ThreadGateAllow
+{
+    ThreadGateAllowType type = ThreadGateAllowType::Mentioned;
+    QString uri;
+};
+
 namespace AppBskyActorDefs {
 struct ProfileView;
 }

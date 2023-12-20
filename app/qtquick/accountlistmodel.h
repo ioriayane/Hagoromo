@@ -33,6 +33,8 @@ public:
         DescriptionRole,
         AvatarRole,
         PostLanguagesRole,
+        ThreadGateTypeRole,
+        ThreadGateOptionsRole,
         StatusRole,
     };
     Q_ENUM(AccountListModelRoles)

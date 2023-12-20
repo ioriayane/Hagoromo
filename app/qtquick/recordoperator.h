@@ -41,6 +41,7 @@ public:
                                      const QString &description, const QString &image_path);
     Q_INVOKABLE void setFeedGeneratorLink(const QString &uri, const QString &cid);
     Q_INVOKABLE void setSelfLabels(const QStringList &labels);
+    Q_INVOKABLE void setThreadGate(const QString &type, const QStringList &rules);
 
     Q_INVOKABLE void clear();
 
@@ -66,8 +67,8 @@ public:
 
     Q_INVOKABLE void updateProfile(const QString &avatar_url, const QString &banner_url,
                                    const QString &description, const QString &display_name);
-    Q_INVOKABLE void updateList(const QString &uri, const QString &avatar_url, const QString &description,
-                                const QString &name);
+    Q_INVOKABLE void updateList(const QString &uri, const QString &avatar_url,
+                                const QString &description, const QString &name);
 
     bool running() const;
     void setRunning(bool newRunning);
@@ -82,6 +83,7 @@ private:
     void uploadBlob(std::function<void(bool)> callback);
     bool getAllListItems(const QString &list_uri, std::function<void(bool)> callback);
     bool deleteAllListItems(std::function<void(bool)> callback);
+    bool threadGate(const QString &uri, std::function<void(bool)> callback);
 
     QRegularExpression m_rxFacet;
     AtProtocolInterface::AccountData m_account;
@@ -102,6 +104,8 @@ private:
     QStringList m_selfLabels;
     QString m_listItemCursor;
     QStringList m_listItems;
+    QString m_threadGateType;
+    QStringList m_threadGateRules;
 
     bool m_running;
 };

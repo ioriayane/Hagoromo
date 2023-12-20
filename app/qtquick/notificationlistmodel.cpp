@@ -101,6 +101,11 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             return m_postHash[current.cid].likeCount;
         else
             return 0;
+    } else if (role == ReplyDisabledRole) {
+        if (m_postHash.contains(current.cid))
+            return m_postHash[current.cid].viewer.replyDisabled;
+        else
+            return false;
     } else if (role == IsRepostedRole) {
         if (m_postHash.contains(current.cid))
             return m_postHash[current.cid].viewer.repost.contains(account().did);
@@ -418,10 +423,10 @@ bool NotificationListModel::getLatest()
                     } else if (item->reason == "repost") {
                         appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(item->record);
                     } else if (item->reason == "quote") {
-                        AtProtocolType::AppBskyFeedPost::Main post =
+                        AtProtocolType::AppBskyFeedPost::Main quote_post =
                                 AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                                         AtProtocolType::AppBskyFeedPost::Main>(item->record);
-                        switch (post.embed_type) {
+                        switch (quote_post.embed_type) {
                         case AtProtocolType::AppBskyFeedPost::MainEmbedType::
                                 embed_AppBskyEmbedImages_Main:
                             break;
@@ -430,10 +435,11 @@ bool NotificationListModel::getLatest()
                             break;
                         case AtProtocolType::AppBskyFeedPost::MainEmbedType::
                                 embed_AppBskyEmbedRecord_Main:
-                            if (!post.embed_AppBskyEmbedRecord_Main.record.cid.isEmpty()
+                            if (!quote_post.embed_AppBskyEmbedRecord_Main.record.cid.isEmpty()
                                 && !m_cueGetPost.contains(
-                                        post.embed_AppBskyEmbedRecord_Main.record.uri)) {
-                                m_cueGetPost.append(post.embed_AppBskyEmbedRecord_Main.record.uri);
+                                        quote_post.embed_AppBskyEmbedRecord_Main.record.uri)) {
+                                m_cueGetPost.append(
+                                        quote_post.embed_AppBskyEmbedRecord_Main.record.uri);
                             }
                             // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
                             if (!m_cueGetPost.contains(item->uri)) {
@@ -442,14 +448,15 @@ bool NotificationListModel::getLatest()
                             break;
                         case AtProtocolType::AppBskyFeedPost::MainEmbedType::
                                 embed_AppBskyEmbedRecordWithMedia_Main:
-                            if (!post.embed_AppBskyEmbedRecordWithMedia_Main.record.isNull()
-                                && !post.embed_AppBskyEmbedRecordWithMedia_Main.record->record.uri
-                                            .isEmpty()
+                            if (!quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record.isNull()
+                                && !quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record->record
+                                            .uri.isEmpty()
                                 && !m_cueGetPost.contains(
-                                        post.embed_AppBskyEmbedRecordWithMedia_Main.record->record
-                                                .uri)) {
-                                m_cueGetPost.append(post.embed_AppBskyEmbedRecordWithMedia_Main
-                                                            .record->record.uri);
+                                        quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record
+                                                ->record.uri)) {
+                                m_cueGetPost.append(
+                                        quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record
+                                                ->record.uri);
                             }
                             // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
                             if (!m_cueGetPost.contains(item->uri)) {
@@ -526,10 +533,10 @@ bool NotificationListModel::getNext()
                     } else if (item->reason == "repost") {
                         appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(item->record);
                     } else if (item->reason == "quote") {
-                        AtProtocolType::AppBskyFeedPost::Main post =
+                        AtProtocolType::AppBskyFeedPost::Main quote_post =
                                 AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                                         AtProtocolType::AppBskyFeedPost::Main>(item->record);
-                        switch (post.embed_type) {
+                        switch (quote_post.embed_type) {
                         case AtProtocolType::AppBskyFeedPost::MainEmbedType::
                                 embed_AppBskyEmbedImages_Main:
                             break;
@@ -538,10 +545,11 @@ bool NotificationListModel::getNext()
                             break;
                         case AtProtocolType::AppBskyFeedPost::MainEmbedType::
                                 embed_AppBskyEmbedRecord_Main:
-                            if (!post.embed_AppBskyEmbedRecord_Main.record.cid.isEmpty()
+                            if (!quote_post.embed_AppBskyEmbedRecord_Main.record.cid.isEmpty()
                                 && !m_cueGetPost.contains(
-                                        post.embed_AppBskyEmbedRecord_Main.record.uri)) {
-                                m_cueGetPost.append(post.embed_AppBskyEmbedRecord_Main.record.uri);
+                                        quote_post.embed_AppBskyEmbedRecord_Main.record.uri)) {
+                                m_cueGetPost.append(
+                                        quote_post.embed_AppBskyEmbedRecord_Main.record.uri);
                             }
                             // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
                             if (!m_cueGetPost.contains(item->uri)) {
@@ -550,14 +558,15 @@ bool NotificationListModel::getNext()
                             break;
                         case AtProtocolType::AppBskyFeedPost::MainEmbedType::
                                 embed_AppBskyEmbedRecordWithMedia_Main:
-                            if (!post.embed_AppBskyEmbedRecordWithMedia_Main.record.isNull()
-                                && !post.embed_AppBskyEmbedRecordWithMedia_Main.record->record.uri
-                                            .isEmpty()
+                            if (!quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record.isNull()
+                                && !quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record->record
+                                            .uri.isEmpty()
                                 && !m_cueGetPost.contains(
-                                        post.embed_AppBskyEmbedRecordWithMedia_Main.record->record
-                                                .uri)) {
-                                m_cueGetPost.append(post.embed_AppBskyEmbedRecordWithMedia_Main
-                                                            .record->record.uri);
+                                        quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record
+                                                ->record.uri)) {
+                                m_cueGetPost.append(
+                                        quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record
+                                                ->record.uri);
                             }
                             // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
                             if (!m_cueGetPost.contains(item->uri)) {
@@ -667,6 +676,7 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[ReplyCountRole] = "replyCount";
     roles[RepostCountRole] = "repostCount";
     roles[LikeCountRole] = "likeCount";
+    roles[ReplyDisabledRole] = "replyDisabled";
     roles[IndexedAtRole] = "indexedAt";
     roles[EmbedImagesRole] = "embedImages";
     roles[EmbedImagesFullRole] = "embedImagesFull";

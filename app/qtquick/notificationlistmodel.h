@@ -41,6 +41,7 @@ public:
         ReplyCountRole,
         RepostCountRole,
         LikeCountRole,
+        ReplyDisabledRole,
         IndexedAtRole,
         EmbedImagesRole,
         EmbedImagesFullRole,

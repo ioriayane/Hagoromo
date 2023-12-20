@@ -37,6 +37,8 @@ struct AccountData
     QString banner;
 
     QStringList post_languages; // BCP47形式で3つまで
+    QString thread_gate_type; // everybody, nobody, choice
+    QStringList thread_gate_options; // mentioned, followed, at://uri
 
     AccountStatus status = AccountStatus::Unknown;
 };
