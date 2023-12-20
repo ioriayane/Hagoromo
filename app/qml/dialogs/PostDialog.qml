@@ -196,7 +196,7 @@ Dialog {
                 }
                 IconButton {
                     id: threadGateButton
-                    enabled: !createRecord.running
+                    enabled: !createRecord.running && (postType !== "reply")
                     iconSource: "../images/thread.png"
                     iconSize: AdjustedValues.i18
                     flat: true
@@ -513,7 +513,10 @@ Dialog {
                         createRecord.clear()
                         createRecord.setText(postText.text)
                         createRecord.setPostLanguages(postDialog.accountModel.item(row, AccountListModel.PostLanguagesRole))
-                        createRecord.setThreadGate(selectThreadGateDialog.selectedType, selectThreadGateDialog.selectedOptions)
+                        if(postType !== "reply"){
+                            // replyのときは制限の設定はできない
+                            createRecord.setThreadGate(selectThreadGateDialog.selectedType, selectThreadGateDialog.selectedOptions)
+                        }
                         if(postType === "reply"){
                             createRecord.setReply(replyCid, replyUri, replyRootCid, replyRootUri)
                         }else if(postType === "quote"){
