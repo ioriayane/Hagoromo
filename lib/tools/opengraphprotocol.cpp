@@ -4,6 +4,7 @@
 #include <QDomDocument>
 #include <QDomElement>
 #include <QFile>
+#include <QUrl>
 
 // https://ogp.me/
 
@@ -14,6 +15,8 @@ OpenGraphProtocol::OpenGraphProtocol(QObject *parent) : QObject { parent }
                     .arg("<meta (?:[ \\t]*?[a-zA-Z-_]+[ \\t]*?=[ \\t]*?\"?[^\"]*?\"?)+[ \\t]*?/?>",
                          "<title.+?</title[ \\t]*>"),
             QRegularExpression::CaseInsensitiveOption);
+
+    m_listOfRedirectAllowed["youtu.be"] = "www.youtube.com";
 }
 
 void OpenGraphProtocol::getData(const QString &url)
@@ -30,7 +33,7 @@ void OpenGraphProtocol::getData(const QString &url)
         qDebug() << "OpenGraphProtocol reply" << reply->error() << reply->url();
         bool ret = (reply->error() == QNetworkReply::NoError);
         if (!ret) {
-            qCritical() << QString::fromUtf8(reply->readAll());
+            qCritical().noquote().nospace() << QString::fromUtf8(reply->readAll());
         } else {
             ret = parse(reply->readAll(), reply->url().toString());
         }
@@ -38,8 +41,18 @@ void OpenGraphProtocol::getData(const QString &url)
         reply->deleteLater();
         manager->deleteLater();
     });
-    manager->setRedirectPolicy(QNetworkRequest::SameOriginRedirectPolicy);
-    manager->get(request);
+
+    manager->setRedirectPolicy(QNetworkRequest::UserVerifiedRedirectPolicy);
+    QNetworkReply *reply = manager->get(request);
+    connect(reply, &QNetworkReply::redirected, [=](const QUrl &r_url) {
+        QUrl b_url = url;
+        qDebug() << "REDIRECT" << b_url.host() << r_url.host();
+        if (b_url.host() == r_url.host()) {
+            emit reply->redirectAllowed();
+        } else if (m_listOfRedirectAllowed.value(b_url.host()) == r_url.host()) {
+            emit reply->redirectAllowed();
+        }
+    });
 }
 
 void OpenGraphProtocol::downloadThumb(const QString &path)
