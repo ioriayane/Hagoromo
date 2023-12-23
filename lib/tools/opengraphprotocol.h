@@ -35,6 +35,7 @@ private:
     bool rebuildTag(QString text, QDomElement &element) const;
 
     QRegularExpression m_rxMeta;
+    QHash<QString, QString> m_listOfRedirectAllowed; // QHash<元URL, 先URL>
 
     QString m_uri;
     QString m_title;

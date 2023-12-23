@@ -26,5 +26,10 @@
         <file>response/profile/xrpc/com.atproto.repo.getRecord</file>
         <file>data/profile/1/com.atproto.repo.putRecord</file>
         <file>data/profile/2/com.atproto.repo.putRecord</file>
+        <file>data/threadgate/1/xrpc/com.atproto.repo.createRecord</file>
+        <file>data/threadgate/2/xrpc/com.atproto.repo.createRecord</file>
+        <file>data/threadgate/3/xrpc/com.atproto.repo.createRecord</file>
+        <file>data/threadgate/4/xrpc/com.atproto.repo.createRecord</file>
+        <file>data/threadgate/5/xrpc/com.atproto.repo.createRecord</file>
     </qresource>
 </RCC>

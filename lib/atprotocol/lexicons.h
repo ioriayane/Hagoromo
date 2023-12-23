@@ -17,6 +17,22 @@ struct Blob
     QString alt;
     int size = 0;
 };
+enum ThreadGateType : int {
+    Everybody,
+    Nobody,
+    Choice,
+};
+enum ThreadGateAllowType : int {
+    Mentioned,
+    Followed,
+    List,
+};
+struct ThreadGateAllow
+{
+    ThreadGateAllowType type = ThreadGateAllowType::Mentioned;
+    QString uri;
+};
+
 namespace AppBskyActorDefs {
 struct ProfileView;
 }
@@ -64,6 +80,7 @@ struct ListView
 };
 struct ListItemView
 {
+    QString uri; // at-uri
     QSharedPointer<AppBskyActorDefs::ProfileView> subject;
 };
 }
@@ -192,7 +209,7 @@ struct Main
 
 // app.bsky.embed.external
 namespace AppBskyEmbedExternal {
-// A representation of some externally linked content, embedded in another form of content
+// A representation of some externally linked content, embedded in another form of content.
 struct External
 {
     QString uri; // uri
@@ -219,7 +236,7 @@ struct View
 
 // app.bsky.embed.images
 namespace AppBskyEmbedImages {
-// A set of images embedded in some other form of content
+// A set of images embedded in some other form of content.
 struct AspectRatio
 {
     int width = 0;
@@ -280,7 +297,7 @@ struct View
     // union end : media
 };
 // A representation of a record embedded in another form of content, alongside other compatible
-// embeds
+// embeds.
 struct Main
 {
     QSharedPointer<AppBskyEmbedRecord::Main> record;
@@ -397,6 +414,7 @@ struct ViewerState
 {
     QString repost; // at-uri
     QString like; // at-uri
+    bool replyDisabled = false;
 };
 struct ThreadgateView
 {
@@ -466,10 +484,6 @@ struct FeedViewPost
     ReasonRepost reason_ReasonRepost;
     // union end : reason
 };
-struct ViewerThreadState
-{
-    bool canReply = false;
-};
 struct ThreadViewPost
 {
     PostView post;
@@ -485,7 +499,6 @@ struct ThreadViewPost
     QList<NotFoundPost> replies_NotFoundPost;
     QList<BlockedPost> replies_BlockedPost;
     // union end : replies
-    ViewerThreadState viewer;
 };
 struct SkeletonReasonRepost
 {
@@ -518,7 +531,7 @@ enum class ViewRecordEmbedsType : int {
     embeds_AppBskyEmbedRecord_View,
     embeds_AppBskyEmbedRecordWithMedia_View,
 };
-// A representation of a record embedded in another form of content
+// A representation of a record embedded in another form of content.
 struct Main
 {
     ComAtprotoRepoStrongRef::Main record;
@@ -795,6 +808,11 @@ struct SkeletonSearchActor
 };
 }
 
+// com.atproto.moderation.defs
+namespace ComAtprotoModerationDefs {
+typedef QString ReasonType;
+}
+
 // com.atproto.server.defs
 namespace ComAtprotoServerDefs {
 struct InviteCodeUse
@@ -814,21 +832,9 @@ struct InviteCode
 };
 }
 
-// com.atproto.moderation.defs
-namespace ComAtprotoModerationDefs {
-typedef QString ReasonType;
-}
-
 // com.atproto.admin.defs
 namespace ComAtprotoAdminDefs {
 enum class ReportViewDetailSubjectType : int {
-    none,
-    subject_RepoView,
-    subject_RepoViewNotFound,
-    subject_RecordView,
-    subject_RecordViewNotFound,
-};
-enum class ActionViewDetailSubjectType : int {
     none,
     subject_RepoView,
     subject_RepoViewNotFound,
@@ -840,55 +846,153 @@ enum class ReportViewSubjectType : int {
     subject_RepoRef,
     subject_ComAtprotoRepoStrongRef_Main,
 };
+enum class ModEventViewDetailEventType : int {
+    none,
+    event_ModEventTakedown,
+    event_ModEventReverseTakedown,
+    event_ModEventComment,
+    event_ModEventReport,
+    event_ModEventLabel,
+    event_ModEventAcknowledge,
+    event_ModEventEscalate,
+    event_ModEventMute,
+};
+enum class ModEventViewDetailSubjectType : int {
+    none,
+    subject_RepoView,
+    subject_RepoViewNotFound,
+    subject_RecordView,
+    subject_RecordViewNotFound,
+};
 enum class BlobViewDetailsType : int {
     none,
     details_ImageDetails,
     details_VideoDetails,
 };
-enum class ActionViewSubjectType : int {
+enum class SubjectStatusViewSubjectType : int {
     none,
     subject_RepoRef,
     subject_ComAtprotoRepoStrongRef_Main,
 };
-typedef QString ActionType;
+enum class ModEventViewEventType : int {
+    none,
+    event_ModEventTakedown,
+    event_ModEventReverseTakedown,
+    event_ModEventComment,
+    event_ModEventReport,
+    event_ModEventLabel,
+    event_ModEventAcknowledge,
+    event_ModEventEscalate,
+    event_ModEventMute,
+    event_ModEventEmail,
+};
+enum class ModEventViewSubjectType : int {
+    none,
+    subject_RepoRef,
+    subject_ComAtprotoRepoStrongRef_Main,
+};
+struct StatusAttr
+{
+    bool applied = false;
+    QString ref;
+};
+struct ModEventTakedown
+{
+    QString comment;
+    int durationInHours = 0;
+};
+struct ModEventReverseTakedown
+{
+    QString comment;
+};
+struct ModEventComment
+{
+    QString comment;
+    bool sticky = false;
+};
+struct ModEventReport
+{
+    QString comment;
+    ComAtprotoModerationDefs::ReasonType reportType;
+};
+struct ModEventLabel
+{
+    QString comment;
+    QList<QString> createLabelVals;
+    QList<QString> negateLabelVals;
+};
+struct ModEventAcknowledge
+{
+    QString comment;
+};
+struct ModEventEscalate
+{
+    QString comment;
+};
+struct ModEventMute
+{
+    QString comment;
+    int durationInHours = 0;
+};
+struct ModEventEmail
+{
+    QString subjectLine;
+};
 struct RepoRef
 {
     QString did; // did
 };
-struct ActionReversal
-{
-    QString reason;
-    QString createdBy; // did
-    QString createdAt; // datetime
-};
-struct ActionView
+struct ModEventView
 {
     int id = 0;
-    ActionType action;
-    int durationInHours = 0;
+    // union start : event
+    ModEventViewEventType event_type = ModEventViewEventType::none;
+    ModEventTakedown event_ModEventTakedown;
+    ModEventReverseTakedown event_ModEventReverseTakedown;
+    ModEventComment event_ModEventComment;
+    ModEventReport event_ModEventReport;
+    ModEventLabel event_ModEventLabel;
+    ModEventAcknowledge event_ModEventAcknowledge;
+    ModEventEscalate event_ModEventEscalate;
+    ModEventMute event_ModEventMute;
+    ModEventEmail event_ModEventEmail;
+    // union end : event
     // union start : subject
-    ActionViewSubjectType subject_type = ActionViewSubjectType::none;
+    ModEventViewSubjectType subject_type = ModEventViewSubjectType::none;
     RepoRef subject_RepoRef;
     ComAtprotoRepoStrongRef::Main subject_ComAtprotoRepoStrongRef_Main;
     // union end : subject
     QList<QString> subjectBlobCids;
-    QList<QString> createLabelVals;
-    QList<QString> negateLabelVals;
-    QString reason;
     QString createdBy; // did
     QString createdAt; // datetime
-    ActionReversal reversal;
-    QList<int> resolvedReportIds;
+    QString creatorHandle;
+    QString subjectHandle;
 };
-struct ActionViewCurrent
+typedef QString SubjectReviewState;
+struct SubjectStatusView
 {
     int id = 0;
-    ActionType action;
-    int durationInHours = 0;
+    // union start : subject
+    SubjectStatusViewSubjectType subject_type = SubjectStatusViewSubjectType::none;
+    RepoRef subject_RepoRef;
+    ComAtprotoRepoStrongRef::Main subject_ComAtprotoRepoStrongRef_Main;
+    // union end : subject
+    QList<QString> subjectBlobCids;
+    QString subjectRepoHandle;
+    QString updatedAt; // datetime
+    QString createdAt; // datetime
+    SubjectReviewState reviewState;
+    QString comment;
+    QString muteUntil; // datetime
+    QString lastReviewedBy; // did
+    QString lastReviewedAt; // datetime
+    QString lastReportedAt; // datetime
+    bool takendown = false;
+    QString suspendUntil; // datetime
 };
 struct Moderation
 {
-    ActionViewCurrent currentAction;
+    SubjectStatusView subjectStatus;
 };
 struct RepoView
 {
@@ -943,11 +1047,36 @@ struct BlobView
     // union end : details
     Moderation moderation;
 };
+struct ModEventViewDetail
+{
+    int id = 0;
+    // union start : event
+    ModEventViewDetailEventType event_type = ModEventViewDetailEventType::none;
+    ModEventTakedown event_ModEventTakedown;
+    ModEventReverseTakedown event_ModEventReverseTakedown;
+    ModEventComment event_ModEventComment;
+    ModEventReport event_ModEventReport;
+    ModEventLabel event_ModEventLabel;
+    ModEventAcknowledge event_ModEventAcknowledge;
+    ModEventEscalate event_ModEventEscalate;
+    ModEventMute event_ModEventMute;
+    // union end : event
+    // union start : subject
+    ModEventViewDetailSubjectType subject_type = ModEventViewDetailSubjectType::none;
+    RepoView subject_RepoView;
+    RepoViewNotFound subject_RepoViewNotFound;
+    RecordView subject_RecordView;
+    RecordViewNotFound subject_RecordViewNotFound;
+    // union end : subject
+    QList<BlobView> subjectBlobs;
+    QString createdBy; // did
+    QString createdAt; // datetime
+};
 struct ReportView
 {
     int id = 0;
     ComAtprotoModerationDefs::ReasonType reasonType;
-    QString reason;
+    QString comment;
     QString subjectRepoHandle;
     // union start : subject
     ReportViewSubjectType subject_type = ReportViewSubjectType::none;
@@ -958,32 +1087,11 @@ struct ReportView
     QString createdAt; // datetime
     QList<int> resolvedByActionIds;
 };
-struct ActionViewDetail
-{
-    int id = 0;
-    ActionType action;
-    int durationInHours = 0;
-    // union start : subject
-    ActionViewDetailSubjectType subject_type = ActionViewDetailSubjectType::none;
-    RepoView subject_RepoView;
-    RepoViewNotFound subject_RepoViewNotFound;
-    RecordView subject_RecordView;
-    RecordViewNotFound subject_RecordViewNotFound;
-    // union end : subject
-    QList<BlobView> subjectBlobs;
-    QList<QString> createLabelVals;
-    QList<QString> negateLabelVals;
-    QString reason;
-    QString createdBy; // did
-    QString createdAt; // datetime
-    ActionReversal reversal;
-    QList<ReportView> resolvedReports;
-};
 struct ReportViewDetail
 {
     int id = 0;
     ComAtprotoModerationDefs::ReasonType reasonType;
-    QString reason;
+    QString comment;
     // union start : subject
     ReportViewDetailSubjectType subject_type = ReportViewDetailSubjectType::none;
     RepoView subject_RepoView;
@@ -991,15 +1099,14 @@ struct ReportViewDetail
     RecordView subject_RecordView;
     RecordViewNotFound subject_RecordViewNotFound;
     // union end : subject
+    ComAtprotoAdminDefs::SubjectStatusView subjectStatus;
     QString reportedBy; // did
     QString createdAt; // datetime
-    QList<ComAtprotoAdminDefs::ActionView> resolvedByActions;
+    QList<ComAtprotoAdminDefs::ModEventView> resolvedByActions;
 };
 struct ModerationDetail
 {
-    ActionViewCurrent currentAction;
-    QList<ActionView> actions;
-    QList<ReportView> reports;
+    SubjectStatusView subjectStatus;
 };
 struct RepoViewDetail
 {
@@ -1013,6 +1120,25 @@ struct RepoViewDetail
     QList<ComAtprotoServerDefs::InviteCode> invites;
     bool invitesDisabled = false;
     QString inviteNote;
+    QString emailConfirmedAt; // datetime
+};
+struct AccountView
+{
+    QString did; // did
+    QString handle; // handle
+    QString email;
+    QString indexedAt; // datetime
+    ComAtprotoServerDefs::InviteCode invitedBy;
+    QList<ComAtprotoServerDefs::InviteCode> invites;
+    bool invitesDisabled = false;
+    QString emailConfirmedAt; // datetime
+    QString inviteNote;
+};
+struct RepoBlobRef
+{
+    QString did; // did
+    QString cid; // cid
+    QString recordUri; // at-uri
 };
 struct RecordViewDetail
 {
@@ -1024,6 +1150,10 @@ struct RecordViewDetail
     QString indexedAt; // datetime
     ModerationDetail moderation;
     RepoView repo;
+};
+struct ModEventUnmute
+{
+    QString comment;
 };
 }
 

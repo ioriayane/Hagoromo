@@ -149,6 +149,7 @@ ScrollView {
             postControls.replyButton.iconText: model.replyCount
             postControls.repostButton.iconText: model.repostCount
             postControls.likeButton.iconText: model.likeCount
+            postControls.replyButton.enabled: !model.replyDisabled
             postControls.replyButton.onClicked: requestReply(model.cid, model.uri,
                                                              model.replyRootCid, model.replyRootUri,
                                                              model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)

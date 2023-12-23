@@ -82,6 +82,7 @@ ApplicationWindow {
     PostDialog {
         id: postDialog
         accountModel: accountListModel
+        onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
     }
 
     SearchDialog {

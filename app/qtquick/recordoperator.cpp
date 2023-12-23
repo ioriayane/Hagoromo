@@ -107,6 +107,14 @@ void RecordOperator::setSelfLabels(const QStringList &labels)
     m_selfLabels = labels;
 }
 
+// type = everybody || nobody || choice
+// rules = mentioned || followed || at://uri
+void RecordOperator::setThreadGate(const QString &type, const QStringList &rules)
+{
+    m_threadGateType = type;
+    m_threadGateRules = rules;
+}
+
 void RecordOperator::clear()
 {
     m_text.clear();
@@ -121,6 +129,10 @@ void RecordOperator::clear()
     m_externalLinkDescription.clear();
     m_feedGeneratorLinkUri.clear();
     m_feedGeneratorLinkCid.clear();
+    m_selfLabels.clear();
+
+    m_threadGateType = "everybody";
+    m_threadGateRules.clear();
 }
 
 void RecordOperator::post()
@@ -133,11 +145,23 @@ void RecordOperator::post()
     makeFacets(m_text, [=]() {
         ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord(this);
         connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
-            emit finished(success, QString(), QString());
-            if (!success) {
+            if (success) {
+                bool ret = threadGate(create_record->replyUri(), [=](bool success2) {
+                    emit finished(success2, QString(), QString());
+                    setRunning(false);
+                });
+                if (!ret) {
+                    emit errorOccured("InvalidThreadGateSetting",
+                                      QString("Invalid thread gate setting.\ntype:%1\nrules:%2")
+                                              .arg(m_threadGateType, m_threadGateRules.join(", ")));
+                    emit finished(ret, QString(), QString());
+                    setRunning(false);
+                }
+            } else {
                 emit errorOccured(create_record->errorCode(), create_record->errorMessage());
+                emit finished(success, QString(), QString());
+                setRunning(false);
             }
-            setRunning(false);
             create_record->deleteLater();
         });
         create_record->setAccount(m_account);
@@ -898,4 +922,51 @@ bool RecordOperator::deleteAllListItems(std::function<void(bool)> callback)
     });
     delete_record->setAccount(m_account);
     return delete_record->deleteListItem(r_key);
+}
+
+bool RecordOperator::threadGate(const QString &uri, std::function<void(bool)> callback)
+{
+    AtProtocolType::ThreadGateType type = AtProtocolType::ThreadGateType::Everybody;
+    QList<AtProtocolType::ThreadGateAllow> rules;
+    AtProtocolType::ThreadGateAllow rule;
+
+    if (m_threadGateType == "everybody") {
+        callback(true);
+        return true;
+    } else if (m_threadGateType == "nobody") {
+        type = AtProtocolType::ThreadGateType::Nobody;
+    } else {
+        for (const auto &cmd : m_threadGateRules) {
+            if (cmd == "mentioned") {
+                type = AtProtocolType::ThreadGateType::Choice;
+                rule.type = AtProtocolType::ThreadGateAllowType::Mentioned;
+                rule.uri.clear();
+                rules.append(rule);
+            } else if (cmd == "followed") {
+                type = AtProtocolType::ThreadGateType::Choice;
+                rule.type = AtProtocolType::ThreadGateAllowType::Followed;
+                rule.uri.clear();
+                rules.append(rule);
+            } else if (cmd.startsWith("at://")) {
+                type = AtProtocolType::ThreadGateType::Choice;
+                rule.type = AtProtocolType::ThreadGateAllowType::List;
+                rule.uri = cmd;
+                rules.append(rule);
+            }
+        }
+        if (m_threadGateRules.isEmpty()) {
+            return false;
+        }
+    }
+
+    ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord(this);
+    connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
+        if (!success) {
+            emit errorOccured(create_record->errorCode(), create_record->errorMessage());
+        }
+        callback(success);
+        create_record->deleteLater();
+    });
+    create_record->setAccount(m_account);
+    return create_record->threadGate(uri, type, rules);
 }

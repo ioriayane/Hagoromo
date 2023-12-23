@@ -33,6 +33,7 @@ QML_FILES = \
     qml/dialogs/ReportAccountDialog.qml \
     qml/dialogs/ReportPostDialog.qml \
     qml/dialogs/SearchDialog.qml \
+    qml/dialogs/SelectThreadGateDialog.qml \
     qml/dialogs/SettingDialog.qml \
     qml/parts/AccountList.qml \
     qml/parts/ApplicationShortcut.qml \
@@ -112,6 +113,7 @@ IMAGE_FILES += \
     qml/images/settings.png \
     qml/images/tag.png \
     qml/images/terminal.png \
+    qml/images/thread.png \
     qml/images/translate.png \
     qml/images/visibility_off.png \
     qml/images/visibility_on.png

@@ -59,6 +59,7 @@ void copyListView(const QJsonObject &src, AppBskyGraphDefs::ListView &dest)
 void copyListItemView(const QJsonObject &src, AppBskyGraphDefs::ListItemView &dest)
 {
     if (!src.isEmpty()) {
+        dest.uri = src.value("uri").toString();
         if (dest.subject.isNull())
             dest.subject = QSharedPointer<AppBskyActorDefs::ProfileView>(
                     new AppBskyActorDefs::ProfileView());
@@ -512,6 +513,7 @@ void copyViewerState(const QJsonObject &src, AppBskyFeedDefs::ViewerState &dest)
     if (!src.isEmpty()) {
         dest.repost = src.value("repost").toString();
         dest.like = src.value("like").toString();
+        dest.replyDisabled = src.value("replyDisabled").toBool();
     }
 }
 void copyThreadgateView(const QJsonObject &src, AppBskyFeedDefs::ThreadgateView &dest)
@@ -641,12 +643,6 @@ void copyFeedViewPost(const QJsonObject &src, AppBskyFeedDefs::FeedViewPost &des
         }
     }
 }
-void copyViewerThreadState(const QJsonObject &src, AppBskyFeedDefs::ViewerThreadState &dest)
-{
-    if (!src.isEmpty()) {
-        dest.canReply = src.value("canReply").toBool();
-    }
-}
 void copyThreadViewPost(const QJsonObject &src, AppBskyFeedDefs::ThreadViewPost &dest)
 {
     if (!src.isEmpty()) {
@@ -698,7 +694,6 @@ void copyThreadViewPost(const QJsonObject &src, AppBskyFeedDefs::ThreadViewPost 
                 dest.replies_BlockedPost.append(child);
             }
         }
-        copyViewerThreadState(src.value("viewer").toObject(), dest.viewer);
     }
 }
 void copySkeletonReasonRepost(const QJsonObject &src, AppBskyFeedDefs::SkeletonReasonRepost &dest)
@@ -1086,9 +1081,77 @@ void copySkeletonSearchActor(const QJsonObject &src,
 }
 // com.atproto.admin.defs
 namespace ComAtprotoAdminDefs {
-void copyActionType(const QJsonValue &src, ComAtprotoAdminDefs::ActionType &dest)
+void copyStatusAttr(const QJsonObject &src, ComAtprotoAdminDefs::StatusAttr &dest)
 {
-    dest = src.toString();
+    if (!src.isEmpty()) {
+        dest.applied = src.value("applied").toBool();
+        dest.ref = src.value("ref").toString();
+    }
+}
+void copyModEventTakedown(const QJsonObject &src, ComAtprotoAdminDefs::ModEventTakedown &dest)
+{
+    if (!src.isEmpty()) {
+        dest.comment = src.value("comment").toString();
+        dest.durationInHours = src.value("durationInHours").toInt();
+    }
+}
+void copyModEventReverseTakedown(const QJsonObject &src,
+                                 ComAtprotoAdminDefs::ModEventReverseTakedown &dest)
+{
+    if (!src.isEmpty()) {
+        dest.comment = src.value("comment").toString();
+    }
+}
+void copyModEventComment(const QJsonObject &src, ComAtprotoAdminDefs::ModEventComment &dest)
+{
+    if (!src.isEmpty()) {
+        dest.comment = src.value("comment").toString();
+        dest.sticky = src.value("sticky").toBool();
+    }
+}
+void copyModEventReport(const QJsonObject &src, ComAtprotoAdminDefs::ModEventReport &dest)
+{
+    if (!src.isEmpty()) {
+        dest.comment = src.value("comment").toString();
+        ComAtprotoModerationDefs::copyReasonType(src.value("reportType"), dest.reportType);
+    }
+}
+void copyModEventLabel(const QJsonObject &src, ComAtprotoAdminDefs::ModEventLabel &dest)
+{
+    if (!src.isEmpty()) {
+        dest.comment = src.value("comment").toString();
+        for (const auto &value : src.value("createLabelVals").toArray()) {
+            dest.createLabelVals.append(value.toString());
+        }
+        for (const auto &value : src.value("negateLabelVals").toArray()) {
+            dest.negateLabelVals.append(value.toString());
+        }
+    }
+}
+void copyModEventAcknowledge(const QJsonObject &src, ComAtprotoAdminDefs::ModEventAcknowledge &dest)
+{
+    if (!src.isEmpty()) {
+        dest.comment = src.value("comment").toString();
+    }
+}
+void copyModEventEscalate(const QJsonObject &src, ComAtprotoAdminDefs::ModEventEscalate &dest)
+{
+    if (!src.isEmpty()) {
+        dest.comment = src.value("comment").toString();
+    }
+}
+void copyModEventMute(const QJsonObject &src, ComAtprotoAdminDefs::ModEventMute &dest)
+{
+    if (!src.isEmpty()) {
+        dest.comment = src.value("comment").toString();
+        dest.durationInHours = src.value("durationInHours").toInt();
+    }
+}
+void copyModEventEmail(const QJsonObject &src, ComAtprotoAdminDefs::ModEventEmail &dest)
+{
+    if (!src.isEmpty()) {
+        dest.subjectLine = src.value("subjectLine").toString();
+    }
 }
 void copyRepoRef(const QJsonObject &src, ComAtprotoAdminDefs::RepoRef &dest)
 {
@@ -1096,27 +1159,64 @@ void copyRepoRef(const QJsonObject &src, ComAtprotoAdminDefs::RepoRef &dest)
         dest.did = src.value("did").toString();
     }
 }
-void copyActionReversal(const QJsonObject &src, ComAtprotoAdminDefs::ActionReversal &dest)
-{
-    if (!src.isEmpty()) {
-        dest.reason = src.value("reason").toString();
-        dest.createdBy = src.value("createdBy").toString();
-        dest.createdAt = src.value("createdAt").toString();
-    }
-}
-void copyActionView(const QJsonObject &src, ComAtprotoAdminDefs::ActionView &dest)
+void copyModEventView(const QJsonObject &src, ComAtprotoAdminDefs::ModEventView &dest)
 {
     if (!src.isEmpty()) {
         dest.id = src.value("id").toInt();
-        copyActionType(src.value("action"), dest.action);
-        dest.durationInHours = src.value("durationInHours").toInt();
+        QString event_type = src.value("event").toObject().value("$type").toString();
+        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventTakedown")) {
+            dest.event_type = ComAtprotoAdminDefs::ModEventViewEventType::event_ModEventTakedown;
+            ComAtprotoAdminDefs::copyModEventTakedown(src.value("event").toObject(),
+                                                      dest.event_ModEventTakedown);
+        }
+        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventReverseTakedown")) {
+            dest.event_type =
+                    ComAtprotoAdminDefs::ModEventViewEventType::event_ModEventReverseTakedown;
+            ComAtprotoAdminDefs::copyModEventReverseTakedown(src.value("event").toObject(),
+                                                             dest.event_ModEventReverseTakedown);
+        }
+        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventComment")) {
+            dest.event_type = ComAtprotoAdminDefs::ModEventViewEventType::event_ModEventComment;
+            ComAtprotoAdminDefs::copyModEventComment(src.value("event").toObject(),
+                                                     dest.event_ModEventComment);
+        }
+        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventReport")) {
+            dest.event_type = ComAtprotoAdminDefs::ModEventViewEventType::event_ModEventReport;
+            ComAtprotoAdminDefs::copyModEventReport(src.value("event").toObject(),
+                                                    dest.event_ModEventReport);
+        }
+        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventLabel")) {
+            dest.event_type = ComAtprotoAdminDefs::ModEventViewEventType::event_ModEventLabel;
+            ComAtprotoAdminDefs::copyModEventLabel(src.value("event").toObject(),
+                                                   dest.event_ModEventLabel);
+        }
+        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventAcknowledge")) {
+            dest.event_type = ComAtprotoAdminDefs::ModEventViewEventType::event_ModEventAcknowledge;
+            ComAtprotoAdminDefs::copyModEventAcknowledge(src.value("event").toObject(),
+                                                         dest.event_ModEventAcknowledge);
+        }
+        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventEscalate")) {
+            dest.event_type = ComAtprotoAdminDefs::ModEventViewEventType::event_ModEventEscalate;
+            ComAtprotoAdminDefs::copyModEventEscalate(src.value("event").toObject(),
+                                                      dest.event_ModEventEscalate);
+        }
+        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventMute")) {
+            dest.event_type = ComAtprotoAdminDefs::ModEventViewEventType::event_ModEventMute;
+            ComAtprotoAdminDefs::copyModEventMute(src.value("event").toObject(),
+                                                  dest.event_ModEventMute);
+        }
+        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventEmail")) {
+            dest.event_type = ComAtprotoAdminDefs::ModEventViewEventType::event_ModEventEmail;
+            ComAtprotoAdminDefs::copyModEventEmail(src.value("event").toObject(),
+                                                   dest.event_ModEventEmail);
+        }
         QString subject_type = src.value("subject").toObject().value("$type").toString();
         if (subject_type == QStringLiteral("com.atproto.admin.defs#repoRef")) {
-            dest.subject_type = ComAtprotoAdminDefs::ActionViewSubjectType::subject_RepoRef;
+            dest.subject_type = ComAtprotoAdminDefs::ModEventViewSubjectType::subject_RepoRef;
             ComAtprotoAdminDefs::copyRepoRef(src.value("subject").toObject(), dest.subject_RepoRef);
         }
         if (subject_type == QStringLiteral("com.atproto.repo.strongRef")) {
-            dest.subject_type = ComAtprotoAdminDefs::ActionViewSubjectType::
+            dest.subject_type = ComAtprotoAdminDefs::ModEventViewSubjectType::
                     subject_ComAtprotoRepoStrongRef_Main;
             ComAtprotoRepoStrongRef::copyMain(src.value("subject").toObject(),
                                               dest.subject_ComAtprotoRepoStrongRef_Main);
@@ -1124,33 +1224,51 @@ void copyActionView(const QJsonObject &src, ComAtprotoAdminDefs::ActionView &des
         for (const auto &value : src.value("subjectBlobCids").toArray()) {
             dest.subjectBlobCids.append(value.toString());
         }
-        for (const auto &value : src.value("createLabelVals").toArray()) {
-            dest.createLabelVals.append(value.toString());
-        }
-        for (const auto &value : src.value("negateLabelVals").toArray()) {
-            dest.negateLabelVals.append(value.toString());
-        }
-        dest.reason = src.value("reason").toString();
         dest.createdBy = src.value("createdBy").toString();
         dest.createdAt = src.value("createdAt").toString();
-        copyActionReversal(src.value("reversal").toObject(), dest.reversal);
-        for (const auto &value : src.value("resolvedReportIds").toArray()) {
-            dest.resolvedReportIds.append(value.toInt());
-        }
+        dest.creatorHandle = src.value("creatorHandle").toString();
+        dest.subjectHandle = src.value("subjectHandle").toString();
     }
 }
-void copyActionViewCurrent(const QJsonObject &src, ComAtprotoAdminDefs::ActionViewCurrent &dest)
+void copySubjectReviewState(const QJsonValue &src, ComAtprotoAdminDefs::SubjectReviewState &dest)
+{
+    dest = src.toString();
+}
+void copySubjectStatusView(const QJsonObject &src, ComAtprotoAdminDefs::SubjectStatusView &dest)
 {
     if (!src.isEmpty()) {
         dest.id = src.value("id").toInt();
-        copyActionType(src.value("action"), dest.action);
-        dest.durationInHours = src.value("durationInHours").toInt();
+        QString subject_type = src.value("subject").toObject().value("$type").toString();
+        if (subject_type == QStringLiteral("com.atproto.admin.defs#repoRef")) {
+            dest.subject_type = ComAtprotoAdminDefs::SubjectStatusViewSubjectType::subject_RepoRef;
+            ComAtprotoAdminDefs::copyRepoRef(src.value("subject").toObject(), dest.subject_RepoRef);
+        }
+        if (subject_type == QStringLiteral("com.atproto.repo.strongRef")) {
+            dest.subject_type = ComAtprotoAdminDefs::SubjectStatusViewSubjectType::
+                    subject_ComAtprotoRepoStrongRef_Main;
+            ComAtprotoRepoStrongRef::copyMain(src.value("subject").toObject(),
+                                              dest.subject_ComAtprotoRepoStrongRef_Main);
+        }
+        for (const auto &value : src.value("subjectBlobCids").toArray()) {
+            dest.subjectBlobCids.append(value.toString());
+        }
+        dest.subjectRepoHandle = src.value("subjectRepoHandle").toString();
+        dest.updatedAt = src.value("updatedAt").toString();
+        dest.createdAt = src.value("createdAt").toString();
+        copySubjectReviewState(src.value("reviewState"), dest.reviewState);
+        dest.comment = src.value("comment").toString();
+        dest.muteUntil = src.value("muteUntil").toString();
+        dest.lastReviewedBy = src.value("lastReviewedBy").toString();
+        dest.lastReviewedAt = src.value("lastReviewedAt").toString();
+        dest.lastReportedAt = src.value("lastReportedAt").toString();
+        dest.takendown = src.value("takendown").toBool();
+        dest.suspendUntil = src.value("suspendUntil").toString();
     }
 }
 void copyModeration(const QJsonObject &src, ComAtprotoAdminDefs::Moderation &dest)
 {
     if (!src.isEmpty()) {
-        copyActionViewCurrent(src.value("currentAction").toObject(), dest.currentAction);
+        copySubjectStatusView(src.value("subjectStatus").toObject(), dest.subjectStatus);
     }
 }
 void copyRepoView(const QJsonObject &src, ComAtprotoAdminDefs::RepoView &dest)
@@ -1228,12 +1346,97 @@ void copyBlobView(const QJsonObject &src, ComAtprotoAdminDefs::BlobView &dest)
         copyModeration(src.value("moderation").toObject(), dest.moderation);
     }
 }
+void copyModEventViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::ModEventViewDetail &dest)
+{
+    if (!src.isEmpty()) {
+        dest.id = src.value("id").toInt();
+        QString event_type = src.value("event").toObject().value("$type").toString();
+        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventTakedown")) {
+            dest.event_type =
+                    ComAtprotoAdminDefs::ModEventViewDetailEventType::event_ModEventTakedown;
+            ComAtprotoAdminDefs::copyModEventTakedown(src.value("event").toObject(),
+                                                      dest.event_ModEventTakedown);
+        }
+        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventReverseTakedown")) {
+            dest.event_type =
+                    ComAtprotoAdminDefs::ModEventViewDetailEventType::event_ModEventReverseTakedown;
+            ComAtprotoAdminDefs::copyModEventReverseTakedown(src.value("event").toObject(),
+                                                             dest.event_ModEventReverseTakedown);
+        }
+        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventComment")) {
+            dest.event_type =
+                    ComAtprotoAdminDefs::ModEventViewDetailEventType::event_ModEventComment;
+            ComAtprotoAdminDefs::copyModEventComment(src.value("event").toObject(),
+                                                     dest.event_ModEventComment);
+        }
+        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventReport")) {
+            dest.event_type =
+                    ComAtprotoAdminDefs::ModEventViewDetailEventType::event_ModEventReport;
+            ComAtprotoAdminDefs::copyModEventReport(src.value("event").toObject(),
+                                                    dest.event_ModEventReport);
+        }
+        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventLabel")) {
+            dest.event_type = ComAtprotoAdminDefs::ModEventViewDetailEventType::event_ModEventLabel;
+            ComAtprotoAdminDefs::copyModEventLabel(src.value("event").toObject(),
+                                                   dest.event_ModEventLabel);
+        }
+        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventAcknowledge")) {
+            dest.event_type =
+                    ComAtprotoAdminDefs::ModEventViewDetailEventType::event_ModEventAcknowledge;
+            ComAtprotoAdminDefs::copyModEventAcknowledge(src.value("event").toObject(),
+                                                         dest.event_ModEventAcknowledge);
+        }
+        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventEscalate")) {
+            dest.event_type =
+                    ComAtprotoAdminDefs::ModEventViewDetailEventType::event_ModEventEscalate;
+            ComAtprotoAdminDefs::copyModEventEscalate(src.value("event").toObject(),
+                                                      dest.event_ModEventEscalate);
+        }
+        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventMute")) {
+            dest.event_type = ComAtprotoAdminDefs::ModEventViewDetailEventType::event_ModEventMute;
+            ComAtprotoAdminDefs::copyModEventMute(src.value("event").toObject(),
+                                                  dest.event_ModEventMute);
+        }
+        QString subject_type = src.value("subject").toObject().value("$type").toString();
+        if (subject_type == QStringLiteral("com.atproto.admin.defs#repoView")) {
+            dest.subject_type =
+                    ComAtprotoAdminDefs::ModEventViewDetailSubjectType::subject_RepoView;
+            ComAtprotoAdminDefs::copyRepoView(src.value("subject").toObject(),
+                                              dest.subject_RepoView);
+        }
+        if (subject_type == QStringLiteral("com.atproto.admin.defs#repoViewNotFound")) {
+            dest.subject_type =
+                    ComAtprotoAdminDefs::ModEventViewDetailSubjectType::subject_RepoViewNotFound;
+            ComAtprotoAdminDefs::copyRepoViewNotFound(src.value("subject").toObject(),
+                                                      dest.subject_RepoViewNotFound);
+        }
+        if (subject_type == QStringLiteral("com.atproto.admin.defs#recordView")) {
+            dest.subject_type =
+                    ComAtprotoAdminDefs::ModEventViewDetailSubjectType::subject_RecordView;
+            ComAtprotoAdminDefs::copyRecordView(src.value("subject").toObject(),
+                                                dest.subject_RecordView);
+        }
+        if (subject_type == QStringLiteral("com.atproto.admin.defs#recordViewNotFound")) {
+            dest.subject_type =
+                    ComAtprotoAdminDefs::ModEventViewDetailSubjectType::subject_RecordViewNotFound;
+            ComAtprotoAdminDefs::copyRecordViewNotFound(src.value("subject").toObject(),
+                                                        dest.subject_RecordViewNotFound);
+        }
+        for (const auto &s : src.value("subjectBlobs").toArray()) {
+            BlobView child;
+            copyBlobView(s.toObject(), child);
+            dest.subjectBlobs.append(child);
+        }
+        dest.createdBy = src.value("createdBy").toString();
+        dest.createdAt = src.value("createdAt").toString();
+    }
+}
 void copyReportView(const QJsonObject &src, ComAtprotoAdminDefs::ReportView &dest)
 {
     if (!src.isEmpty()) {
         dest.id = src.value("id").toInt();
         ComAtprotoModerationDefs::copyReasonType(src.value("reasonType"), dest.reasonType);
-        dest.reason = src.value("reason").toString();
+        dest.comment = src.value("comment").toString();
         dest.subjectRepoHandle = src.value("subjectRepoHandle").toString();
         QString subject_type = src.value("subject").toObject().value("$type").toString();
         if (subject_type == QStringLiteral("com.atproto.admin.defs#repoRef")) {
@@ -1253,64 +1456,12 @@ void copyReportView(const QJsonObject &src, ComAtprotoAdminDefs::ReportView &des
         }
     }
 }
-void copyActionViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::ActionViewDetail &dest)
-{
-    if (!src.isEmpty()) {
-        dest.id = src.value("id").toInt();
-        copyActionType(src.value("action"), dest.action);
-        dest.durationInHours = src.value("durationInHours").toInt();
-        QString subject_type = src.value("subject").toObject().value("$type").toString();
-        if (subject_type == QStringLiteral("com.atproto.admin.defs#repoView")) {
-            dest.subject_type = ComAtprotoAdminDefs::ActionViewDetailSubjectType::subject_RepoView;
-            ComAtprotoAdminDefs::copyRepoView(src.value("subject").toObject(),
-                                              dest.subject_RepoView);
-        }
-        if (subject_type == QStringLiteral("com.atproto.admin.defs#repoViewNotFound")) {
-            dest.subject_type =
-                    ComAtprotoAdminDefs::ActionViewDetailSubjectType::subject_RepoViewNotFound;
-            ComAtprotoAdminDefs::copyRepoViewNotFound(src.value("subject").toObject(),
-                                                      dest.subject_RepoViewNotFound);
-        }
-        if (subject_type == QStringLiteral("com.atproto.admin.defs#recordView")) {
-            dest.subject_type =
-                    ComAtprotoAdminDefs::ActionViewDetailSubjectType::subject_RecordView;
-            ComAtprotoAdminDefs::copyRecordView(src.value("subject").toObject(),
-                                                dest.subject_RecordView);
-        }
-        if (subject_type == QStringLiteral("com.atproto.admin.defs#recordViewNotFound")) {
-            dest.subject_type =
-                    ComAtprotoAdminDefs::ActionViewDetailSubjectType::subject_RecordViewNotFound;
-            ComAtprotoAdminDefs::copyRecordViewNotFound(src.value("subject").toObject(),
-                                                        dest.subject_RecordViewNotFound);
-        }
-        for (const auto &s : src.value("subjectBlobs").toArray()) {
-            BlobView child;
-            copyBlobView(s.toObject(), child);
-            dest.subjectBlobs.append(child);
-        }
-        for (const auto &value : src.value("createLabelVals").toArray()) {
-            dest.createLabelVals.append(value.toString());
-        }
-        for (const auto &value : src.value("negateLabelVals").toArray()) {
-            dest.negateLabelVals.append(value.toString());
-        }
-        dest.reason = src.value("reason").toString();
-        dest.createdBy = src.value("createdBy").toString();
-        dest.createdAt = src.value("createdAt").toString();
-        copyActionReversal(src.value("reversal").toObject(), dest.reversal);
-        for (const auto &s : src.value("resolvedReports").toArray()) {
-            ReportView child;
-            copyReportView(s.toObject(), child);
-            dest.resolvedReports.append(child);
-        }
-    }
-}
 void copyReportViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::ReportViewDetail &dest)
 {
     if (!src.isEmpty()) {
         dest.id = src.value("id").toInt();
         ComAtprotoModerationDefs::copyReasonType(src.value("reasonType"), dest.reasonType);
-        dest.reason = src.value("reason").toString();
+        dest.comment = src.value("comment").toString();
         QString subject_type = src.value("subject").toObject().value("$type").toString();
         if (subject_type == QStringLiteral("com.atproto.admin.defs#repoView")) {
             dest.subject_type = ComAtprotoAdminDefs::ReportViewDetailSubjectType::subject_RepoView;
@@ -1335,11 +1486,13 @@ void copyReportViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::ReportVie
             ComAtprotoAdminDefs::copyRecordViewNotFound(src.value("subject").toObject(),
                                                         dest.subject_RecordViewNotFound);
         }
+        ComAtprotoAdminDefs::copySubjectStatusView(src.value("subjectStatus").toObject(),
+                                                   dest.subjectStatus);
         dest.reportedBy = src.value("reportedBy").toString();
         dest.createdAt = src.value("createdAt").toString();
         for (const auto &s : src.value("resolvedByActions").toArray()) {
-            ComAtprotoAdminDefs::ActionView child;
-            ComAtprotoAdminDefs::copyActionView(s.toObject(), child);
+            ComAtprotoAdminDefs::ModEventView child;
+            ComAtprotoAdminDefs::copyModEventView(s.toObject(), child);
             dest.resolvedByActions.append(child);
         }
     }
@@ -1347,17 +1500,7 @@ void copyReportViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::ReportVie
 void copyModerationDetail(const QJsonObject &src, ComAtprotoAdminDefs::ModerationDetail &dest)
 {
     if (!src.isEmpty()) {
-        copyActionViewCurrent(src.value("currentAction").toObject(), dest.currentAction);
-        for (const auto &s : src.value("actions").toArray()) {
-            ActionView child;
-            copyActionView(s.toObject(), child);
-            dest.actions.append(child);
-        }
-        for (const auto &s : src.value("reports").toArray()) {
-            ReportView child;
-            copyReportView(s.toObject(), child);
-            dest.reports.append(child);
-        }
+        copySubjectStatusView(src.value("subjectStatus").toObject(), dest.subjectStatus);
     }
 }
 void copyRepoViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::RepoViewDetail &dest)
@@ -1381,6 +1524,33 @@ void copyRepoViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::RepoViewDet
         }
         dest.invitesDisabled = src.value("invitesDisabled").toBool();
         dest.inviteNote = src.value("inviteNote").toString();
+        dest.emailConfirmedAt = src.value("emailConfirmedAt").toString();
+    }
+}
+void copyAccountView(const QJsonObject &src, ComAtprotoAdminDefs::AccountView &dest)
+{
+    if (!src.isEmpty()) {
+        dest.did = src.value("did").toString();
+        dest.handle = src.value("handle").toString();
+        dest.email = src.value("email").toString();
+        dest.indexedAt = src.value("indexedAt").toString();
+        ComAtprotoServerDefs::copyInviteCode(src.value("invitedBy").toObject(), dest.invitedBy);
+        for (const auto &s : src.value("invites").toArray()) {
+            ComAtprotoServerDefs::InviteCode child;
+            ComAtprotoServerDefs::copyInviteCode(s.toObject(), child);
+            dest.invites.append(child);
+        }
+        dest.invitesDisabled = src.value("invitesDisabled").toBool();
+        dest.emailConfirmedAt = src.value("emailConfirmedAt").toString();
+        dest.inviteNote = src.value("inviteNote").toString();
+    }
+}
+void copyRepoBlobRef(const QJsonObject &src, ComAtprotoAdminDefs::RepoBlobRef &dest)
+{
+    if (!src.isEmpty()) {
+        dest.did = src.value("did").toString();
+        dest.cid = src.value("cid").toString();
+        dest.recordUri = src.value("recordUri").toString();
     }
 }
 void copyRecordViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::RecordViewDetail &dest)
@@ -1403,6 +1573,19 @@ void copyRecordViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::RecordVie
         copyModerationDetail(src.value("moderation").toObject(), dest.moderation);
         copyRepoView(src.value("repo").toObject(), dest.repo);
     }
+}
+void copyModEventUnmute(const QJsonObject &src, ComAtprotoAdminDefs::ModEventUnmute &dest)
+{
+    if (!src.isEmpty()) {
+        dest.comment = src.value("comment").toString();
+    }
+}
+}
+// com.atproto.moderation.defs
+namespace ComAtprotoModerationDefs {
+void copyReasonType(const QJsonValue &src, ComAtprotoModerationDefs::ReasonType &dest)
+{
+    dest = src.toString();
 }
 }
 // com.atproto.server.defs
@@ -1429,13 +1612,6 @@ void copyInviteCode(const QJsonObject &src, ComAtprotoServerDefs::InviteCode &de
             dest.uses.append(child);
         }
     }
-}
-}
-// com.atproto.moderation.defs
-namespace ComAtprotoModerationDefs {
-void copyReasonType(const QJsonValue &src, ComAtprotoModerationDefs::ReasonType &dest)
-{
-    dest = src.toString();
 }
 }
 // com.atproto.label.subscribeLabels
