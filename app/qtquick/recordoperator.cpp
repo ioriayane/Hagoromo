@@ -131,7 +131,7 @@ void RecordOperator::clear()
     m_feedGeneratorLinkCid.clear();
     m_selfLabels.clear();
 
-    m_threadGateType.clear();
+    m_threadGateType = "everybody";
     m_threadGateRules.clear();
 }
 
@@ -151,6 +151,9 @@ void RecordOperator::post()
                     setRunning(false);
                 });
                 if (!ret) {
+                    emit errorOccured("InvalidThreadGateSetting",
+                                      QString("Invalid thread gate setting.\ntype:%1\nrules:%2")
+                                              .arg(m_threadGateType, m_threadGateRules.join(", ")));
                     emit finished(ret, QString(), QString());
                     setRunning(false);
                 }
@@ -950,6 +953,9 @@ bool RecordOperator::threadGate(const QString &uri, std::function<void(bool)> ca
                 rule.uri = cmd;
                 rules.append(rule);
             }
+        }
+        if (m_threadGateRules.isEmpty()) {
+            return false;
         }
     }
 

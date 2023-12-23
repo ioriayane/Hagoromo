@@ -44,6 +44,8 @@ Dialog {
 
     property alias postText: postText
 
+    signal errorOccured(string account_uuid, string code, string message)
+
     onOpened: {
         var i = accountModel.indexAt(defaultAccountUuid)
         accountCombo.currentIndex = -1
@@ -101,6 +103,10 @@ Dialog {
                             postDialog.close()
                         }
                     }
+        onErrorOccured: (code, message) => {
+                            var row = accountCombo.currentIndex;
+                            postDialog.errorOccured(postDialog.accountModel.item(row, AccountListModel.UuidRole), code, message)
+                        }
     }
     LanguageListModel {
         id: languageListModel
