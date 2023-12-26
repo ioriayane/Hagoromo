@@ -37,18 +37,25 @@ Dialog {
         property real fontSizeRatio: 1.0
         property string fontFamily: ""
 
+        property bool displayVersionInfoInMainArea: true
+
 
         Component.onCompleted: load()
 
         function load() {
+            // Common
+            AdjustedValues.ratio = fontSizeRatio
+            // General
             setRadioButton(themeButtonGroup.buttons, settings.theme)
             setRadioButton(accentButtonGroup.buttons, settings.accent)
+            fontSizeRatioSlider.value = fontSizeRatio
+            setFontFamily(fontFamilyComboBox, settings.fontFamily)
+            // Translate
             translateApiUrlText.text = settings.translateApiUrl
             translateApiKeyText.text = encryption.decrypt(settings.translateApiKey)
             translateTargetLanguageCombo.currentIndex = translateTargetLanguageCombo.indexOfValue(settings.translateTargetLanguage)
-            fontSizeRatioSlider.value = fontSizeRatio
-            setFontFamily(fontFamilyComboBox, settings.fontFamily)
-            AdjustedValues.ratio = fontSizeRatio
+            // About
+            displayVersionInfoInMainAreaCheckBox.checked = settings.displayVersionInfoInMainArea
         }
 
         function setRadioButton(buttons, value){
@@ -322,7 +329,9 @@ Dialog {
             // About page
             Frame {
                 GridLayout {
-                    Layout.alignment: Qt.AlignCenter
+                    anchors.left: parent.left
+                    anchors.top: parent.top
+                    anchors.margins: 10 * AdjustedValues.ratio
                     columns: 2
                     columnSpacing: 10 * AdjustedValues.ratio
                     rowSpacing: 5 * AdjustedValues.ratio
@@ -349,11 +358,14 @@ Dialog {
                         font.pointSize: AdjustedValues.f10
                         text: "© 2023 Iori Ayane"
                     }
-                    //                    Item {
-                    //                        Layout.fillWidth: true
-                    //                        Layout.fillHeight: true
-                    //                        Layout.rightMargin: 5
-                    //                    }
+                }
+                CheckBox {
+                    id: displayVersionInfoInMainAreaCheckBox
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    font.pointSize: AdjustedValues.f8
+                    bottomPadding: 1
+                    text: qsTr("Display version info in main area")
                 }
             }
         }
@@ -388,17 +400,22 @@ Dialog {
                 font.pointSize: AdjustedValues.f10
                 text: qsTr("OK")
                 onClicked: {
+                    // Common
+                    AdjustedValues.ratio = fontSizeRatioSlider.value
+                    // General
                     settings.theme = themeButtonGroup.checkedButton.value
                     settings.accent = accentButtonGroup.checkedButton.value
-                    settings.translateApiUrl = translateApiUrlText.text
-                    settings.translateApiKey = encryption.encrypt(translateApiKeyText.text)
-                    settings.translateTargetLanguage = translateTargetLanguageCombo.currentValue
                     settings.fontSizeRatio = fontSizeRatioSlider.value
-                    AdjustedValues.ratio = fontSizeRatioSlider.value
                     if(settings.fontFamily !== fontFamilyComboBox.currentText){
                         settings.fontFamily = fontFamilyComboBox.currentText
                         systemTool.updateFont(settings.fontFamily)
                     }
+                    // Translate
+                    settings.translateApiUrl = translateApiUrlText.text
+                    settings.translateApiKey = encryption.encrypt(translateApiKeyText.text)
+                    settings.translateTargetLanguage = translateTargetLanguageCombo.currentValue
+                    // About
+                    settings.displayVersionInfoInMainArea = displayVersionInfoInMainAreaCheckBox.checked
 
                     settingDialog.accept()
                 }

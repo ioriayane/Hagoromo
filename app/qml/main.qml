@@ -429,6 +429,7 @@ ApplicationWindow {
         anchors.bottom: rootLayout.bottom
         anchors.rightMargin: 5
         anchors.bottomMargin: scrollView.ScrollBar.horizontal.height + 5
+        visible: ((scrollView.contentWidth + sideBarItem.width) < x) && settingDialog.settings.displayVersionInfoInMainArea
     }
 
     RowLayout {
@@ -436,6 +437,7 @@ ApplicationWindow {
         anchors.fill: parent
         spacing: 0
         Item {
+            id: sideBarItem
             Layout.fillHeight: true
             Layout.minimumWidth: 48
             Layout.preferredWidth: AdjustedValues.v48
