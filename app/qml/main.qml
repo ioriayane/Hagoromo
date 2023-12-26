@@ -77,6 +77,7 @@ ApplicationWindow {
 
     SettingDialog {
         id: settingDialog
+        onAccepted: repeater.updateSetting()
     }
 
     PostDialog {
@@ -618,6 +619,8 @@ ApplicationWindow {
                         item.settings.visibleReply = model.visibleReply
                         item.settings.visibleQuote = model.visibleQuote
                         item.settings.visibleReplyToUnfollowedUsers = model.visibleReplyToUnfollowedUsers
+
+                        item.settings.sequentialDisplayOfPosts = (settingDialog.settings.displayOfPosts === "sequential")
                     }
 
                     function setAccount(row) {

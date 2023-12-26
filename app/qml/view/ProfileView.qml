@@ -432,6 +432,7 @@ ColumnLayout {
             model: AuthorFeedListModel {
                 id: authorFeedListModel
                 autoLoading: false
+                displayInterval: 0
                 authorDid: profileView.userDid
                 filter: AuthorFeedListModel.PostsWithReplies
 
@@ -464,6 +465,7 @@ ColumnLayout {
             model: AnyFeedListModel {
                 id: repostFeedListModel
                 autoLoading: false
+                displayInterval: 0
                 targetDid: profileView.userDid
                 feedType: AnyFeedListModel.RepostFeedType
 
@@ -496,6 +498,7 @@ ColumnLayout {
             model: AnyFeedListModel {
                 id: likesFeedListModel
                 autoLoading: false
+                displayInterval: 0
                 targetDid: profileView.userDid
                 feedType: AnyFeedListModel.LikeFeedType
 
@@ -528,6 +531,7 @@ ColumnLayout {
             model: AuthorFeedListModel {
                 id: authorMediaFeedListModel
                 autoLoading: false
+                displayInterval: 0
                 authorDid: profileView.userDid
                 filter: AuthorFeedListModel.PostsWithMedia
 
@@ -561,6 +565,7 @@ ColumnLayout {
             selectable: false
             model: ActorFeedGeneratorListModel {
                 id: actorFeedGeneratorListModel
+                displayInterval: 0
                 actor: profileView.userDid
             }
             onClicked: (display_name, uri) => profileView.requestViewFeedGenerator(display_name, uri)
@@ -573,6 +578,7 @@ ColumnLayout {
             Layout.fillWidth: true
             model: ListsListModel {
                 id: listsListModel
+                displayInterval: 0
                 actor: profileView.userDid
                 visibilityType: ListsListModel.VisibilityTypeCuration
             }
@@ -587,6 +593,7 @@ ColumnLayout {
             model: FollowsListModel {
                 id: followsListModel
                 autoLoading: false
+                displayInterval: 0
                 targetDid: profileView.userDid
 
                 onErrorOccured: (code, message) => profileView.errorOccured(code, message)
@@ -608,6 +615,7 @@ ColumnLayout {
             model: FollowersListModel {
                 id: followersListModel
                 autoLoading: false
+                displayInterval: 0
                 targetDid: profileView.userDid
 
                 onErrorOccured: (code, message) => profileView.errorOccured(code, message)
