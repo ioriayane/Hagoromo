@@ -137,6 +137,7 @@ ScrollView {
             postControls.postUri: model.uri
             postControls.handle: model.handle
             postControls.onTriggeredCopyToClipboard: systemTool.copyToClipboard(model.recordTextPlain)
+            postControls.onTriggeredCopyPostUrlToClipboard: systemTool.copyToClipboard(rootListView.model.getItemOfficialUrl(model.index))
             postControls.onTriggeredRequestViewLikedBy: notificationListView.requestViewLikedBy(model.uri)
             postControls.onTriggeredRequestViewRepostedBy: notificationListView.requestViewRepostedBy(model.uri)
             postControls.onTriggeredRequestReport: notificationListView.requestReportPost(model.uri, model.cid)

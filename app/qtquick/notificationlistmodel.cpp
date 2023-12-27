@@ -392,6 +392,11 @@ QString NotificationListModel::getRecordText(const QString &cid)
             .text;
 }
 
+QString NotificationListModel::getItemOfficialUrl(int row) const
+{
+    return atUriToOfficialUrl(item(row, UriRole).toString(), QStringLiteral("post"));
+}
+
 bool NotificationListModel::getLatest()
 {
     if (running())
