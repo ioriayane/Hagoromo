@@ -113,6 +113,7 @@ public:
                             const QVariant &value);
     virtual Q_INVOKABLE int indexOf(const QString &cid) const;
     virtual Q_INVOKABLE QString getRecordText(const QString &cid);
+    virtual Q_INVOKABLE QString getOfficialUrl() const { return QString(); }
 
     Q_INVOKABLE bool getLatest();
     Q_INVOKABLE bool getNext();

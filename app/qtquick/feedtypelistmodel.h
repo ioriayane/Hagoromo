@@ -38,6 +38,7 @@ public:
 
     virtual Q_INVOKABLE int indexOf(const QString &cid) const;
     virtual Q_INVOKABLE QString getRecordText(const QString &cid);
+    virtual Q_INVOKABLE QString getOfficialUrl() const { return QString(); }
 
     Q_INVOKABLE void clear();
     Q_INVOKABLE bool getLatest();

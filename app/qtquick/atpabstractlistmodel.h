@@ -63,6 +63,7 @@ public:
                                 const QString &refreshJwt);
     virtual Q_INVOKABLE int indexOf(const QString &cid) const = 0;
     virtual Q_INVOKABLE QString getRecordText(const QString &cid) = 0;
+    virtual Q_INVOKABLE QString getOfficialUrl() const = 0;
     Q_INVOKABLE void translate(const QString &cid);
     Q_INVOKABLE void reflectVisibility();
 

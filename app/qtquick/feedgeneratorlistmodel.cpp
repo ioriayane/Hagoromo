@@ -71,6 +71,11 @@ QString FeedGeneratorListModel::getRecordText(const QString &cid)
     return QString();
 }
 
+QString FeedGeneratorListModel::getOfficialUrl() const
+{
+    return QString();
+}
+
 void FeedGeneratorListModel::clear()
 {
     if (!m_cidList.isEmpty()) {
