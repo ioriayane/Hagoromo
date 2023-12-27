@@ -73,6 +73,7 @@ ColumnLayout {
             model: TimelineListModel {
                 autoLoading: settings.autoLoading
                 loadingInterval: settings.loadingInterval
+                displayInterval: settings.displayInterval
                 visibleReplyToUnfollowedUsers: settings.visibleReplyToUnfollowedUsers
 
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
@@ -108,6 +109,7 @@ ColumnLayout {
             model: NotificationListModel {
                 autoLoading: settings.autoLoading
                 loadingInterval: settings.loadingInterval
+                displayInterval: settings.displayInterval
                 visibleLike: settings.visibleLike
                 visibleRepost: settings.visibleRepost
                 visibleFollow: settings.visibleFollow
@@ -215,6 +217,7 @@ ColumnLayout {
             model: SearchPostListModel {
                 autoLoading: settings.autoLoading
                 loadingInterval: settings.loadingInterval
+                displayInterval: settings.displayInterval
                 text: settings.columnValue
 
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
@@ -264,6 +267,7 @@ ColumnLayout {
             model: CustomFeedListModel {
                 autoLoading: settings.autoLoading
                 loadingInterval: settings.loadingInterval
+                displayInterval: settings.displayInterval
                 uri: settings.columnValue
                 onSavingChanged: {
                     saveFeedMenuItem.saving = saving
@@ -301,6 +305,7 @@ ColumnLayout {
             model: AuthorFeedListModel {
                 autoLoading: settings.autoLoading
                 loadingInterval: settings.loadingInterval
+                displayInterval: 0
                 authorDid: settings.columnValue
 
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)

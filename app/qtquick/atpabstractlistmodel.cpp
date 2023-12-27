@@ -195,7 +195,7 @@ QString AtpAbstractListModel::copyRecordText(const QVariant &value) const
 void AtpAbstractListModel::displayQueuedPosts()
 {
     int interval = m_displayInterval;
-    bool batch_mode = m_originalCidList.isEmpty();
+    bool batch_mode = (m_originalCidList.isEmpty() || interval == 0);
 
     while (!m_cuePost.isEmpty()) {
         const PostCueItem &post = m_cuePost.front();

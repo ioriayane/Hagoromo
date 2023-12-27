@@ -27,18 +27,19 @@ Dialog {
 
     Settings {
         id: settings
+        // General
         property int theme: Material.Light
         property color accent: Material.color(Material.Pink)
-
+        property real fontSizeRatio: 1.0
+        property string fontFamily: ""
+        // Feed
+        property string displayOfPosts: "sequential"
+        // Translate
         property string translateApiUrl: "https://api-free.deepl.com/v2/translate"
         property string translateApiKey: ""
         property string translateTargetLanguage: "JA"
-
-        property real fontSizeRatio: 1.0
-        property string fontFamily: ""
-
+        // About
         property bool displayVersionInfoInMainArea: true
-
 
         Component.onCompleted: load()
 
@@ -50,6 +51,8 @@ Dialog {
             setRadioButton(accentButtonGroup.buttons, settings.accent)
             fontSizeRatioSlider.value = fontSizeRatio
             setFontFamily(fontFamilyComboBox, settings.fontFamily)
+            // Feed
+            setRadioButton(displayOfPostsGroup.buttons, settings.displayOfPosts)
             // Translate
             translateApiUrlText.text = settings.translateApiUrl
             translateApiKeyText.text = encryption.decrypt(settings.translateApiKey)
@@ -87,6 +90,10 @@ Dialog {
         id: accentButtonGroup
         buttons: accentGridLayout.children
     }
+    ButtonGroup {
+        id: displayOfPostsGroup
+        buttons: displayOfPostsRowLayout.children
+    }
 
     ColumnLayout {
         TabBar {
@@ -96,6 +103,11 @@ Dialog {
                 font.pointSize: AdjustedValues.f10
                 font.capitalization: Font.MixedCase
                 text: qsTr("General")
+            }
+            TabButton {
+                font.pointSize: AdjustedValues.f10
+                font.capitalization: Font.MixedCase
+                text: qsTr("Feed")
             }
             TabButton {
                 font.pointSize: AdjustedValues.f10
@@ -242,6 +254,40 @@ Dialog {
                                 highlighted: fontFamilyComboBox.highlightedIndex === index
                             }
                         }
+                    }
+                }
+            }
+
+            // Feed
+            Frame {
+                GridLayout {
+                    anchors.fill: parent
+                    columnSpacing: 5 * AdjustedValues.ratio
+                    columns: 2
+
+                    Label {
+                        text: qsTr("Display of posts")
+                    }
+                    RowLayout {
+                        id: displayOfPostsRowLayout
+                        RadioButton {
+                            property string value: "sequential"
+                            font.pointSize: AdjustedValues.f10
+                            font.family: fontFamilyComboBox.currentText
+                            text: qsTr("Sequential")
+                        }
+                        RadioButton {
+                            property string value: "at_once"
+                            font.pointSize: AdjustedValues.f10
+                            font.family: fontFamilyComboBox.currentText
+                            text: qsTr("At once")
+                        }
+                    }
+
+                    Item {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        Layout.columnSpan: 2
                     }
                 }
             }
@@ -410,6 +456,8 @@ Dialog {
                         settings.fontFamily = fontFamilyComboBox.currentText
                         systemTool.updateFont(settings.fontFamily)
                     }
+                    // Feed
+                    settings.displayOfPosts = displayOfPostsGroup.checkedButton.value
                     // Translate
                     settings.translateApiUrl = translateApiUrlText.text
                     settings.translateApiKey = encryption.encrypt(translateApiKeyText.text)
