@@ -2269,7 +2269,7 @@
     <message>
         <location filename="../qml/dialogs/SettingDialog.qml" line="277"/>
         <source>Sequential</source>
-        <translation>逐次</translation>
+        <translation>ひとつずつ</translation>
     </message>
     <message>
         <location filename="../qml/dialogs/SettingDialog.qml" line="283"/>
