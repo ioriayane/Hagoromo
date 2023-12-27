@@ -570,6 +570,16 @@ void AtpAbstractListModel::copyImagesFromPostViewToCue(
     }
 }
 
+QString AtpAbstractListModel::atUriToOfficialUrl(const QString &uri, const QString &name) const
+{
+    QStringList items = uri.split("/");
+    if (items.length() == 5) {
+        return QString("https://bsky.app/profile/%1/%2/%3").arg(items.at(2), name, items.at(4));
+    } else {
+        return QString();
+    }
+}
+
 QString AtpAbstractListModel::cursor() const
 {
     return m_cursor;
