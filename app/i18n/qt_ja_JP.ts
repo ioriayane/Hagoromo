@@ -1678,53 +1678,59 @@
 <context>
     <name>PostControls</name>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="63"/>
+        <location filename="../qml/parts/PostControls.qml" line="64"/>
         <source>Repost</source>
         <translation>リポスト</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="68"/>
+        <location filename="../qml/parts/PostControls.qml" line="69"/>
         <source>Quote</source>
         <translation>引用</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="103"/>
-        <location filename="../qml/parts/PostControls.qml" line="149"/>
+        <location filename="../qml/parts/PostControls.qml" line="104"/>
+        <location filename="../qml/parts/PostControls.qml" line="155"/>
         <source>Translate</source>
         <translation>翻訳</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="108"/>
-        <location filename="../qml/parts/PostControls.qml" line="154"/>
+        <location filename="../qml/parts/PostControls.qml" line="109"/>
+        <location filename="../qml/parts/PostControls.qml" line="160"/>
         <source>Copy post text</source>
         <translation>ポストをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="112"/>
-        <location filename="../qml/parts/PostControls.qml" line="158"/>
+        <location filename="../qml/parts/PostControls.qml" line="113"/>
+        <location filename="../qml/parts/PostControls.qml" line="164"/>
+        <source>Copy url</source>
+        <translation>URLをコピー</translation>
+    </message>
+    <message>
+        <location filename="../qml/parts/PostControls.qml" line="118"/>
+        <location filename="../qml/parts/PostControls.qml" line="169"/>
         <source>Open in Official</source>
         <translation>公式で開く</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="119"/>
-        <location filename="../qml/parts/PostControls.qml" line="165"/>
+        <location filename="../qml/parts/PostControls.qml" line="125"/>
+        <location filename="../qml/parts/PostControls.qml" line="176"/>
         <source>Reposted by</source>
         <translation>リポストしたアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="125"/>
-        <location filename="../qml/parts/PostControls.qml" line="171"/>
+        <location filename="../qml/parts/PostControls.qml" line="131"/>
+        <location filename="../qml/parts/PostControls.qml" line="182"/>
         <source>Liked by</source>
         <translation>いいねしたアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="132"/>
+        <location filename="../qml/parts/PostControls.qml" line="138"/>
         <source>Delete post</source>
         <translation>ポストを削除</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="139"/>
-        <location filename="../qml/parts/PostControls.qml" line="178"/>
+        <location filename="../qml/parts/PostControls.qml" line="145"/>
+        <location filename="../qml/parts/PostControls.qml" line="189"/>
         <source>Report post</source>
         <translation>ポストを通報</translation>
     </message>

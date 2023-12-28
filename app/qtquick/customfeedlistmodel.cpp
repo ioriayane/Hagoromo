@@ -88,12 +88,7 @@ void CustomFeedListModel::removeGenerator()
 
 QString CustomFeedListModel::getOfficialUrl() const
 {
-    QStringList items = uri().split("/");
-    if (items.length() == 5) {
-        return QString("https://bsky.app/profile/%1/feed/%2").arg(items.at(2), items.at(4));
-    } else {
-        return QString();
-    }
+    return atUriToOfficialUrl(uri(), QStringLiteral("feed"));
 }
 
 QString CustomFeedListModel::uri() const

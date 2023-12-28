@@ -200,6 +200,7 @@ ColumnLayout {
                 postControls.handle: model.handle
                 postControls.mine: model.did === postThreadView.accountDid
                 postControls.onTriggeredCopyToClipboard: systemTool.copyToClipboard(model.recordTextPlain)
+                postControls.onTriggeredCopyPostUrlToClipboard: systemTool.copyToClipboard(rootListView.model.getItemOfficialUrl(model.index))
                 postControls.onTriggeredDeletePost: rootListView.model.deletePost(model.index)
                 postControls.onTriggeredRequestReport: postThreadView.requestReportPost(model.uri, model.cid)
                 postControls.onTriggeredRequestViewLikedBy: postThreadView.requestViewLikedBy(model.uri)
