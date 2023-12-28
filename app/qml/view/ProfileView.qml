@@ -163,18 +163,39 @@ ColumnLayout {
     }
 
     ColumnLayout {
+        id: userProfileColumnLayout
         Layout.fillWidth: true
         Layout.topMargin: 0
         Layout.leftMargin: 0
         Layout.rightMargin: 0
         Layout.bottomMargin: 5
+        clip: true
+
+        function viewChange(top){
+            console.log("view change : " + top +
+                        ", d_h=" + bannerImage.height +
+                        "," + bannerImage.paintedHeight +
+                        "," + bannerImage.Layout.preferredHeight)
+            if(top){
+                bannerImage.Layout.preferredHeight = bannerImage.isReady ? 80 : 0
+                descriptionLabel.Layout.preferredHeight = descriptionLabel.contentHeight
+            }else{
+                bannerImage.Layout.preferredHeight = 0
+                descriptionLabel.Layout.preferredHeight = 0
+            }
+        }
 
         ImageWithIndicator {
             id: bannerImage
             Layout.preferredWidth: profileView.width
-            Layout.preferredHeight: 80
+            Layout.preferredHeight: 0
             fillMode: Image.PreserveAspectCrop
             source: userProfile.banner
+
+            onIsReadyChanged: Layout.preferredHeight = isReady ? 80 : 0
+            Behavior on Layout.preferredHeight {
+                NumberAnimation { duration: 500 }
+            }
 
             RowLayout {
                 anchors.top: bannerImage.bottom
@@ -259,7 +280,9 @@ ColumnLayout {
             }
         }
         Label {
+            id: descriptionLabel
             Layout.preferredWidth: profileView.width
+            Layout.preferredHeight: 0
             wrapMode: Text.Wrap
             lineHeight: 1.1
             font.pointSize: AdjustedValues.f10
@@ -268,6 +291,11 @@ ColumnLayout {
 
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
             onLinkActivated: (url) => Qt.openUrlExternally(url)
+
+            onContentHeightChanged: Layout.preferredHeight = contentHeight
+            Behavior on Layout.preferredHeight {
+                NumberAnimation { duration: 500 }
+            }
 
             IconButton {
                 id: moreButton
@@ -458,6 +486,7 @@ ColumnLayout {
             onRequestViewSearchPosts: (text) => profileView.requestViewSearchPosts(text)
             onRequestReportPost: (uri, cid) => profileView.requestReportPost(uri, cid)
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
+            onScrollPositionChanged: (top) => userProfileColumnLayout.viewChange(top)
         }
 
         TimelineView {
@@ -491,6 +520,7 @@ ColumnLayout {
             onRequestViewSearchPosts: (text) => profileView.requestViewSearchPosts(text)
             onRequestReportPost: (uri, cid) => profileView.requestReportPost(uri, cid)
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
+            onScrollPositionChanged: (top) => userProfileColumnLayout.viewChange(top)
         }
 
         TimelineView {
@@ -524,6 +554,7 @@ ColumnLayout {
             onRequestViewSearchPosts: (text) => profileView.requestViewSearchPosts(text)
             onRequestReportPost: (uri, cid) => profileView.requestReportPost(uri, cid)
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
+            onScrollPositionChanged: (top) => userProfileColumnLayout.viewChange(top)
         }
 
         TimelineView {
@@ -557,6 +588,7 @@ ColumnLayout {
             onRequestViewSearchPosts: (text) => profileView.requestViewSearchPosts(text)
             onRequestReportPost: (uri, cid) => profileView.requestReportPost(uri, cid)
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
+            onScrollPositionChanged: (top) => userProfileColumnLayout.viewChange(top)
         }
 
         FeedGeneratorListView {
@@ -571,6 +603,7 @@ ColumnLayout {
             onClicked: (display_name, uri) => profileView.requestViewFeedGenerator(display_name, uri)
             onRequestRemoveGenerator: (uri) => actorFeedGeneratorListModel.removeGenerator(uri)
             onRequestSaveGenerator: (uri) => actorFeedGeneratorListModel.saveGenerator(uri)
+            onScrollPositionChanged: (top) => userProfileColumnLayout.viewChange(top)
         }
 
         ListsListView {
@@ -583,6 +616,7 @@ ColumnLayout {
                 visibilityType: ListsListModel.VisibilityTypeCuration
             }
             onRequestViewListDetail: (uri) => profileView.requestViewListDetail(uri)
+            onScrollPositionChanged: (top) => userProfileColumnLayout.viewChange(top)
         }
 
         ProfileListView {
@@ -604,6 +638,7 @@ ColumnLayout {
                                       }
                                   }
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
+            onScrollPositionChanged: (top) => userProfileColumnLayout.viewChange(top)
         }
 
         ProfileListView {
@@ -626,6 +661,7 @@ ColumnLayout {
                                       }
                                   }
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
+            onScrollPositionChanged: (top) => userProfileColumnLayout.viewChange(top)
         }
     }
 }

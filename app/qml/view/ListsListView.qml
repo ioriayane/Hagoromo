@@ -20,6 +20,7 @@ ScrollView {
 
     signal requestViewListDetail(string uri)
 
+    signal scrollPositionChanged(bool top)
 
     ListView {
         id: rootListView
@@ -27,6 +28,8 @@ ScrollView {
         anchors.rightMargin: parent.ScrollBar.vertical.width
         spacing: 5
 
+        onAtYBeginningChanged: scrollPositionChanged(atYBeginning)
+        onMovementStarted: scrollPositionChanged(atYBeginning)
         onMovementEnded: {
             if(atYEnd){
                 listsListView.model.getNext()

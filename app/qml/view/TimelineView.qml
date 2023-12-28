@@ -35,6 +35,7 @@ ScrollView {
     signal requestViewSearchPosts(string text)
     signal requestReportPost(string uri, string cid)
 
+    signal scrollPositionChanged(bool top)
 
     ListView {
         id: rootListView
@@ -42,6 +43,8 @@ ScrollView {
         anchors.rightMargin: parent.ScrollBar.vertical.width
         spacing: 5
 
+        onAtYBeginningChanged: scrollPositionChanged(atYBeginning)
+        onMovementStarted: scrollPositionChanged(atYBeginning)
         onMovementEnded: {
             if(atYEnd){
                 rootListView.model.getNext()

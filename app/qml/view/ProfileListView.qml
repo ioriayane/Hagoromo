@@ -26,6 +26,8 @@ ScrollView {
 
     signal requestViewProfile(string did)
 
+    signal scrollPositionChanged(bool top)
+
     ListView {
         id: rootListView
         anchors.fill: parent
@@ -49,6 +51,8 @@ ScrollView {
             }
         }
 
+        onAtYBeginningChanged: scrollPositionChanged(atYBeginning)
+        onMovementStarted: scrollPositionChanged(atYBeginning)
         onMovementEnded: {
             if(atYEnd){
                 profileListView.model.getNext()

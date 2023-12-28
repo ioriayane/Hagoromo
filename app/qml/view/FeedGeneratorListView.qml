@@ -23,9 +23,13 @@ ScrollView {
     signal requestRemoveGenerator(string uri)
     signal requestSaveGenerator(string uri)
 
+    signal scrollPositionChanged(bool top)
+
     ListView {
         id: generatorListView
         clip: true
+        onAtYBeginningChanged: scrollPositionChanged(atYBeginning)
+        onMovementStarted: scrollPositionChanged(atYBeginning)
         onMovementEnded: {
             if(atYEnd){
                 generatorListView.model.getNext()
