@@ -6,6 +6,8 @@
 
 マルチカラム対応の[Bluesky](https://blueskyweb.xyz/)クライアントです。
 
+![Main window](./doc/screenshot.png)
+
 ## 動作確認環境
 
 - Windows 11 Profesional
@@ -106,6 +108,8 @@ $ make && make install
 ## Overview
 
 This is a multi-column [Bluesky](https://blueskyweb.xyz/) client.
+
+![Main window](./doc/screenshot.png)
 
 ## System Requirements
 
