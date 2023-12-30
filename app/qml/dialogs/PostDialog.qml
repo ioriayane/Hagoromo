@@ -262,6 +262,59 @@ Dialog {
                     selectByMouse: true
                     font.pointSize: AdjustedValues.f10
                     property int realTextLength: systemTool.countText(text)
+                    onTextChanged: {
+                        console.log("\n" + text +
+                                    "\n---\n" + text.substring(0, cursorPosition) +
+                                    "\n---\n" + getText(0, cursorPosition) +
+                                    "\npos=" + cursorPosition)
+                    }
+
+
+                    ListView {
+                        id: mentionSuggetionListView
+                        anchors.top: parent.bottom
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        height: 100
+                        clip: true
+                        model: ListModel {
+                            ListElement {
+                                displayName: "Name1"
+                                handle: "handle1.bsky.social"
+                            }
+                            ListElement {
+                                displayName: "Name2"
+                                handle: "handle2.bsky.social"
+                            }
+                            ListElement {
+                                displayName: "Name3"
+                                handle: "handle3.bsky.social"
+                            }
+                        }
+                        delegate: ItemDelegate {
+                            width: mentionSuggetionListView.width
+                            height: AdjustedValues.i12 + 3
+                            RowLayout {
+                                AvatarImage {
+                                    Layout.preferredWidth: AdjustedValues.i12
+                                    Layout.preferredHeight: AdjustedValues.i12
+                                }
+                                Label {
+                                    font.pointSize: AdjustedValues.f8
+                                    text: model.displayName
+                                }
+                                Item {
+                                    Layout.fillWidth: true
+                                    Layout.preferredHeight: 1
+                                }
+                                Label {
+                                    font.pointSize: AdjustedValues.f8
+                                    text: model.handle
+                                }
+                            }
+                        }
+                    }
+
                 }
             }
 
