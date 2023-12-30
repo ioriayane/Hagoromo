@@ -163,18 +163,39 @@ ColumnLayout {
     }
 
     ColumnLayout {
+        id: userProfileColumnLayout
         Layout.fillWidth: true
         Layout.topMargin: 0
         Layout.leftMargin: 0
         Layout.rightMargin: 0
         Layout.bottomMargin: 5
+        clip: true
+
+        function viewChange(top){
+            console.log("view change : " + top +
+                        ", d_h=" + bannerImage.height +
+                        "," + bannerImage.paintedHeight +
+                        "," + bannerImage.Layout.preferredHeight)
+            if(top){
+                bannerImage.Layout.preferredHeight = bannerImage.isReady ? 80 : 0
+                descriptionLabel.Layout.preferredHeight = descriptionLabel.contentHeight
+            }else{
+                bannerImage.Layout.preferredHeight = 0
+                descriptionLabel.Layout.preferredHeight = 0
+            }
+        }
 
         ImageWithIndicator {
             id: bannerImage
             Layout.preferredWidth: profileView.width
-            Layout.preferredHeight: 80
+            Layout.preferredHeight: 0
             fillMode: Image.PreserveAspectCrop
             source: userProfile.banner
+
+            onIsReadyChanged: Layout.preferredHeight = isReady ? 80 : 0
+            Behavior on Layout.preferredHeight {
+                NumberAnimation { duration: 500 }
+            }
 
             RowLayout {
                 anchors.top: bannerImage.bottom
@@ -259,7 +280,9 @@ ColumnLayout {
             }
         }
         Label {
+            id: descriptionLabel
             Layout.preferredWidth: profileView.width
+            Layout.preferredHeight: 0
             wrapMode: Text.Wrap
             lineHeight: 1.1
             font.pointSize: AdjustedValues.f10
@@ -268,6 +291,11 @@ ColumnLayout {
 
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
             onLinkActivated: (url) => Qt.openUrlExternally(url)
+
+            onContentHeightChanged: Layout.preferredHeight = contentHeight
+            Behavior on Layout.preferredHeight {
+                NumberAnimation { duration: 500 }
+            }
 
             IconButton {
                 id: moreButton
@@ -432,6 +460,7 @@ ColumnLayout {
             model: AuthorFeedListModel {
                 id: authorFeedListModel
                 autoLoading: false
+                displayInterval: 0
                 authorDid: profileView.userDid
                 filter: AuthorFeedListModel.PostsWithReplies
 
@@ -457,6 +486,7 @@ ColumnLayout {
             onRequestViewSearchPosts: (text) => profileView.requestViewSearchPosts(text)
             onRequestReportPost: (uri, cid) => profileView.requestReportPost(uri, cid)
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
+            onScrollPositionChanged: (top) => userProfileColumnLayout.viewChange(top)
         }
 
         TimelineView {
@@ -464,6 +494,7 @@ ColumnLayout {
             model: AnyFeedListModel {
                 id: repostFeedListModel
                 autoLoading: false
+                displayInterval: 0
                 targetDid: profileView.userDid
                 feedType: AnyFeedListModel.RepostFeedType
 
@@ -489,6 +520,7 @@ ColumnLayout {
             onRequestViewSearchPosts: (text) => profileView.requestViewSearchPosts(text)
             onRequestReportPost: (uri, cid) => profileView.requestReportPost(uri, cid)
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
+            onScrollPositionChanged: (top) => userProfileColumnLayout.viewChange(top)
         }
 
         TimelineView {
@@ -496,6 +528,7 @@ ColumnLayout {
             model: AnyFeedListModel {
                 id: likesFeedListModel
                 autoLoading: false
+                displayInterval: 0
                 targetDid: profileView.userDid
                 feedType: AnyFeedListModel.LikeFeedType
 
@@ -521,6 +554,7 @@ ColumnLayout {
             onRequestViewSearchPosts: (text) => profileView.requestViewSearchPosts(text)
             onRequestReportPost: (uri, cid) => profileView.requestReportPost(uri, cid)
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
+            onScrollPositionChanged: (top) => userProfileColumnLayout.viewChange(top)
         }
 
         TimelineView {
@@ -528,6 +562,7 @@ ColumnLayout {
             model: AuthorFeedListModel {
                 id: authorMediaFeedListModel
                 autoLoading: false
+                displayInterval: 0
                 authorDid: profileView.userDid
                 filter: AuthorFeedListModel.PostsWithMedia
 
@@ -553,6 +588,7 @@ ColumnLayout {
             onRequestViewSearchPosts: (text) => profileView.requestViewSearchPosts(text)
             onRequestReportPost: (uri, cid) => profileView.requestReportPost(uri, cid)
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
+            onScrollPositionChanged: (top) => userProfileColumnLayout.viewChange(top)
         }
 
         FeedGeneratorListView {
@@ -561,11 +597,13 @@ ColumnLayout {
             selectable: false
             model: ActorFeedGeneratorListModel {
                 id: actorFeedGeneratorListModel
+                displayInterval: 0
                 actor: profileView.userDid
             }
             onClicked: (display_name, uri) => profileView.requestViewFeedGenerator(display_name, uri)
             onRequestRemoveGenerator: (uri) => actorFeedGeneratorListModel.removeGenerator(uri)
             onRequestSaveGenerator: (uri) => actorFeedGeneratorListModel.saveGenerator(uri)
+            onScrollPositionChanged: (top) => userProfileColumnLayout.viewChange(top)
         }
 
         ListsListView {
@@ -573,10 +611,12 @@ ColumnLayout {
             Layout.fillWidth: true
             model: ListsListModel {
                 id: listsListModel
+                displayInterval: 0
                 actor: profileView.userDid
                 visibilityType: ListsListModel.VisibilityTypeCuration
             }
             onRequestViewListDetail: (uri) => profileView.requestViewListDetail(uri)
+            onScrollPositionChanged: (top) => userProfileColumnLayout.viewChange(top)
         }
 
         ProfileListView {
@@ -587,6 +627,7 @@ ColumnLayout {
             model: FollowsListModel {
                 id: followsListModel
                 autoLoading: false
+                displayInterval: 0
                 targetDid: profileView.userDid
 
                 onErrorOccured: (code, message) => profileView.errorOccured(code, message)
@@ -597,6 +638,7 @@ ColumnLayout {
                                       }
                                   }
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
+            onScrollPositionChanged: (top) => userProfileColumnLayout.viewChange(top)
         }
 
         ProfileListView {
@@ -608,6 +650,7 @@ ColumnLayout {
             model: FollowersListModel {
                 id: followersListModel
                 autoLoading: false
+                displayInterval: 0
                 targetDid: profileView.userDid
 
                 onErrorOccured: (code, message) => profileView.errorOccured(code, message)
@@ -618,6 +661,7 @@ ColumnLayout {
                                       }
                                   }
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
+            onScrollPositionChanged: (top) => userProfileColumnLayout.viewChange(top)
         }
     }
 }

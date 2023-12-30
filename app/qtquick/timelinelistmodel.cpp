@@ -274,6 +274,11 @@ QString TimelineListModel::getRecordText(const QString &cid)
             .text;
 }
 
+QString TimelineListModel::getItemOfficialUrl(int row) const
+{
+    return atUriToOfficialUrl(item(row, UriRole).toString(), QStringLiteral("post"));
+}
+
 bool TimelineListModel::getLatest()
 {
     if (running())

@@ -63,6 +63,9 @@ public:
                                 const QString &refreshJwt);
     virtual Q_INVOKABLE int indexOf(const QString &cid) const = 0;
     virtual Q_INVOKABLE QString getRecordText(const QString &cid) = 0;
+    virtual Q_INVOKABLE QString getOfficialUrl() const = 0;
+    virtual Q_INVOKABLE QString getItemOfficialUrl(int row) const = 0;
+
     Q_INVOKABLE void translate(const QString &cid);
     Q_INVOKABLE void reflectVisibility();
 
@@ -126,6 +129,8 @@ protected:
     copyImagesFromPostView(const AtProtocolType::AppBskyFeedDefs::PostView &post,
                            const AtProtocolType::LexiconsTypeUnknown::CopyImageType type) const;
     void copyImagesFromPostViewToCue(const AtProtocolType::AppBskyFeedDefs::PostView &post);
+
+    QString atUriToOfficialUrl(const QString &uri, const QString &name) const;
 
     // これで取得したポストの順番を管理して実態はm_viewPostHashで管理
     // checkVisibility(cid)の結果次第で間引かれる

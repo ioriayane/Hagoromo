@@ -3,7 +3,9 @@ import QtQuick.Controls 2.15
 
 AnimatedImage {
     id: imageWithIndicator
-    onStatusChanged: playing = (status == AnimatedImage.Ready)
+    playing: isReady
+    property bool isReady: false
+    onStatusChanged: isReady = (status == AnimatedImage.Ready)
 
     BusyIndicator {
         anchors.centerIn: parent

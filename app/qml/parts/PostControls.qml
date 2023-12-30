@@ -23,6 +23,7 @@ RowLayout {
 
     signal triggeredTranslate()
     signal triggeredCopyToClipboard()
+    signal triggeredCopyPostUrlToClipboard()
     signal triggeredDeletePost()
     signal triggeredRequestReport()
     signal triggeredRequestViewLikedBy()
@@ -109,6 +110,11 @@ RowLayout {
                 onTriggered: triggeredCopyToClipboard()
             }
             MenuItem {
+                text: qsTr("Copy url")
+                icon.source: "../images/copy.png"
+                onTriggered: triggeredCopyPostUrlToClipboard()
+            }
+            MenuItem {
                 text: qsTr("Open in Official")
                 enabled: postUri.length > 0 && handle.length > 0
                 icon.source: "../images/open_in_other.png"
@@ -153,6 +159,11 @@ RowLayout {
                 icon.source: "../images/copy.png"
                 text: qsTr("Copy post text")
                 onTriggered: triggeredCopyToClipboard()
+            }
+            MenuItem {
+                text: qsTr("Copy url")
+                icon.source: "../images/copy.png"
+                onTriggered: triggeredCopyPostUrlToClipboard()
             }
             MenuItem {
                 text: qsTr("Open in Official")

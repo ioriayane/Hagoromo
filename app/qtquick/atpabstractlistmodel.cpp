@@ -195,7 +195,7 @@ QString AtpAbstractListModel::copyRecordText(const QVariant &value) const
 void AtpAbstractListModel::displayQueuedPosts()
 {
     int interval = m_displayInterval;
-    bool batch_mode = m_originalCidList.isEmpty();
+    bool batch_mode = (m_originalCidList.isEmpty() || interval == 0);
 
     while (!m_cuePost.isEmpty()) {
         const PostCueItem &post = m_cuePost.front();
@@ -567,6 +567,16 @@ void AtpAbstractListModel::copyImagesFromPostViewToCue(
         if (!QFile::exists(path)) {
             appendExtendMediaFileToClue(post.author.did, image.image.cid, post.cid);
         }
+    }
+}
+
+QString AtpAbstractListModel::atUriToOfficialUrl(const QString &uri, const QString &name) const
+{
+    QStringList items = uri.split("/");
+    if (items.length() == 5) {
+        return QString("https://bsky.app/profile/%1/%2/%3").arg(items.at(2), name, items.at(4));
+    } else {
+        return QString();
     }
 }
 

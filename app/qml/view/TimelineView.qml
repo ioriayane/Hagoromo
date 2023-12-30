@@ -35,6 +35,7 @@ ScrollView {
     signal requestViewSearchPosts(string text)
     signal requestReportPost(string uri, string cid)
 
+    signal scrollPositionChanged(bool top)
 
     ListView {
         id: rootListView
@@ -42,6 +43,8 @@ ScrollView {
         anchors.rightMargin: parent.ScrollBar.vertical.width
         spacing: 5
 
+        onAtYBeginningChanged: scrollPositionChanged(atYBeginning)
+        onMovementStarted: scrollPositionChanged(atYBeginning)
         onMovementEnded: {
             if(atYEnd){
                 rootListView.model.getNext()
@@ -164,6 +167,7 @@ ScrollView {
             postControls.handle: model.handle
             postControls.mine: model.did === timelineView.accountDid
             postControls.onTriggeredCopyToClipboard: systemTool.copyToClipboard(model.recordTextPlain)
+            postControls.onTriggeredCopyPostUrlToClipboard: systemTool.copyToClipboard(rootListView.model.getItemOfficialUrl(model.index))
             postControls.onTriggeredDeletePost: rootListView.model.deletePost(model.index)
             postControls.onTriggeredRequestReport: timelineView.requestReportPost(model.uri, model.cid)
             postControls.onTriggeredRequestViewLikedBy: timelineView.requestViewLikedBy(model.uri)
