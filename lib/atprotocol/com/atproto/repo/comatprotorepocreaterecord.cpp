@@ -60,8 +60,8 @@ void ComAtprotoRepoCreateRecord::post(const QString &text)
         // リンクカードと画像添付は排他
         QJsonObject json_external;
         json_external.insert("uri", m_externalLinkUri);
-        json_external.insert("title", m_externalLinkTitle);
-        json_external.insert("description", m_externalLinkDescription);
+        json_external.insert("title", m_externalLinkTitle.left(300));
+        json_external.insert("description", m_externalLinkDescription.left(1000));
         if (!m_embedImageBlobs.isEmpty()) {
             QJsonObject json_external_thumb;
             setJsonBlob(m_embedImageBlobs.at(0), json_external_thumb);
