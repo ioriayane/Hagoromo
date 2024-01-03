@@ -3,6 +3,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 
+import tech.relog.hagoromo.systemtool 1.0
 import tech.relog.hagoromo.singleton 1.0
 
 Dialog {
@@ -18,6 +19,10 @@ Dialog {
     onOpened: {
         altTextArea.text = altEditDialog.embedAlt
         altTextArea.forceActiveFocus()
+    }
+
+    SystemTool {
+        id: systemTool
     }
 
     ColumnLayout {
@@ -39,6 +44,7 @@ Dialog {
                 wrapMode: TextInput.WordWrap
                 selectByMouse: true
                 font.pointSize: AdjustedValues.f10
+                property int realTextLength: systemTool.countText(text)
             }
         }
         RowLayout {
@@ -57,7 +63,15 @@ Dialog {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 1
             }
+            Label {
+                Layout.alignment: Qt.AlignVCenter
+                font.pointSize: AdjustedValues.f8
+                text: 5000 - altTextArea.realTextLength
+            }
+
             Button {
+                enabled: altTextArea.realTextLength > 0 &&
+                         altTextArea.realTextLength <= 5000
                 font.pointSize: AdjustedValues.f10
                 text: qsTr("Add")
                 onClicked: {
