@@ -124,10 +124,16 @@ Dialog {
         }
         TextField  {
             id: nameText
-            Layout.preferredWidth: 300 * AdjustedValues.ratio
+            Layout.preferredWidth: 400 * AdjustedValues.ratio
             enabled: !recordOperator.running
             selectByMouse: true
             font.pointSize: AdjustedValues.f10
+            property int realTextLength: systemTool.countText(text)
+        }
+        Label {
+            Layout.alignment: Qt.AlignRight
+            font.pointSize: AdjustedValues.f8
+            text: 64 - nameText.realTextLength
         }
 
         Label {
@@ -172,7 +178,10 @@ Dialog {
                 id: addButton
                 Layout.alignment: Qt.AlignRight
                 font.pointSize: AdjustedValues.f10
-                enabled: nameText.text.length > 0 && descriptionText.realTextLength <= 300 && !recordOperator.running
+                enabled: nameText.text.length > 0 &&
+                         nameText.realTextLength <= 64 &&
+                         descriptionText.realTextLength <= 300 &&
+                         !recordOperator.running
                 text: addListDialog.editMode ? qsTr("Update") : qsTr("Add")
                 onClicked: {
                     recordOperator.clear()
