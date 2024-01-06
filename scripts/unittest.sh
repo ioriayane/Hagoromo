@@ -17,7 +17,7 @@ build_hagoromo(){
     cd $work_dir
 
     ${QT_BIN_FOLDER}/qmake ../tests/tests.pro CONFIG+=debug
-    make -j2
+    make -j4
     if [ $? -ne 0 ]; then
         exit 1
     fi
@@ -55,5 +55,6 @@ export LD_LIBRARY_PATH
 
 do_test ./build-hagoromo/atprotocol_test/atprotocol_test 
 do_test ./build-hagoromo/hagoromo_test/hagoromo_test 
+do_test ./build-hagoromo/hagoromo_test2/hagoromo_test2
 do_test ./build-hagoromo/http_test/http_test 
 do_test ./build-hagoromo/search_test/search_test 
