@@ -26,7 +26,6 @@
         <file>response/lists/search/xrpc/com.atproto.repo.listRecords_2</file>
         <file>response/lists/search/xrpc/com.atproto.repo.listRecords_3</file>
         <file>response/lists/search/xrpc/app.bsky.graph.getLists_2</file>
-        <file>data/images/sample.jpg</file>
         <file>data/profile/1/com.atproto.repo.putRecord</file>
         <file>response/profile/1/xrpc/com.atproto.repo.getRecord</file>
     </qresource>

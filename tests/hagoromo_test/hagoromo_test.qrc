@@ -2,14 +2,6 @@
     <qresource prefix="/">
         <file>response/facet/xrpc/app.bsky.feed.getTimeline</file>
         <file>response/facet/xrpc/app.bsky.feed.getTimeline.expect</file>
-        <file>data/com.atproto.repo.createRecord_post.expect</file>
-        <file>response/facet/xrpc/app.bsky.actor.getProfiles</file>
-        <file>response/generator/xrpc/app.bsky.unspecced.getPopularFeedGenerators</file>
-        <file>response/generator/xrpc/app.bsky.actor.getPreferences</file>
-        <file>response/generator/save/xrpc/app.bsky.actor.getPreferences</file>
-        <file>data/generator/save/app.bsky.actor.putPreferences</file>
-        <file>data/generator/remove/app.bsky.actor.putPreferences</file>
-        <file>response/generator/remove/xrpc/app.bsky.actor.getPreferences</file>
         <file>response/notifications/visible/xrpc/app.bsky.notification.listNotifications</file>
         <file>response/notifications/visible/xrpc/app.bsky.feed.getPosts</file>
         <file>string/length.txt</file>
@@ -25,13 +17,8 @@
         <file>response/timeline/next/xrpc/app.bsky.actor.getPreferences</file>
         <file>response/timeline/next/xrpc/app.bsky.feed.getTimeline</file>
         <file>response/timeline/next/xrpc/app.bsky.feed.getTimeline_1</file>
-        <file>response/generator/xrpc/app.bsky.feed.getFeedGenerator</file>
         <file>response/anyprofile/xrpc/app.bsky.feed.getLikes</file>
         <file>response/anyprofile/xrpc/app.bsky.feed.getRepostedBy</file>
-        <file>response/account/account1/xrpc/com.atproto.server.refreshSession</file>
-        <file>response/account/account2/xrpc/com.atproto.server.refreshSession</file>
-        <file>response/account/account1/xrpc/app.bsky.actor.getProfile</file>
-        <file>response/account/account2/xrpc/app.bsky.actor.getProfile</file>
         <file>response/timeline/text/xrpc/app.bsky.actor.getPreferences</file>
         <file>response/timeline/text/xrpc/app.bsky.feed.getTimeline</file>
         <file>response/postthread/1/xrpc/app.bsky.feed.getPostThread</file>
@@ -43,23 +30,8 @@
         <file>response/notifications/visible/xrpc/app.bsky.actor.getPreferences</file>
         <file>response/timeline/reply/xrpc/app.bsky.actor.getPreferences</file>
         <file>response/timeline/reply/xrpc/app.bsky.feed.getTimeline</file>
-        <file>response/lists/lists/xrpc/app.bsky.graph.getLists</file>
-        <file>response/lists/lists/xrpc/app.bsky.graph.getLists_1</file>
-        <file>response/lists/list/xrpc/app.bsky.graph.getList_3k7igyxfizg27</file>
-        <file>response/lists/list/xrpc/app.bsky.graph.getList_3k7igyxfizg27_1</file>
-        <file>response/lists/feed/0/xrpc/app.bsky.actor.getPreferences</file>
-        <file>response/lists/feed/0/xrpc/app.bsky.feed.getListFeed</file>
-        <file>response/lists/search/xrpc/app.bsky.graph.getLists</file>
-        <file>response/lists/search/xrpc/app.bsky.graph.getLists_1</file>
-        <file>response/lists/search/xrpc/com.atproto.repo.listRecords</file>
-        <file>response/lists/search/xrpc/com.atproto.repo.listRecords_1</file>
-        <file>response/lists/search/xrpc/com.atproto.repo.listRecords_2</file>
-        <file>response/lists/search/xrpc/com.atproto.repo.listRecords_3</file>
-        <file>response/lists/search/xrpc/app.bsky.graph.getLists_2</file>
         <file>data/images/sample.jpg</file>
         <file>response/timeline/animated/xrpc/app.bsky.actor.getPreferences</file>
         <file>response/timeline/animated/xrpc/app.bsky.feed.getTimeline</file>
-        <file>data/profile/1/com.atproto.repo.putRecord</file>
-        <file>response/profile/1/xrpc/com.atproto.repo.getRecord</file>
     </qresource>
 </RCC>
