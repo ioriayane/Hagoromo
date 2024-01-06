@@ -1,0 +1,6 @@
+{
+    "did": "did:plc:account2_refresh",
+    "handle": "account2_refresh.relog.tech",
+    "accessJwt": "accessJwt_account2_refresh",
+    "refreshJwt": "refreshJwt_account2_refresh"
+}

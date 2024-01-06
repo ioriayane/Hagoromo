@@ -1,0 +1,225 @@
+{
+    "records": [
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.listitem/201",
+            "cid": "cid_201",
+            "value": {
+                "list": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list_6",
+                "$type": "app.bsky.graph.listitem",
+                "subject": "did:plc:user_111",
+                "createdAt": "2023-10-21T18:23:21.625Z"
+            }
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.listitem/202",
+            "cid": "cid_202",
+            "value": {
+                "list": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list_6",
+                "$type": "app.bsky.graph.listitem",
+                "subject": "did:plc:user_112",
+                "createdAt": "2023-10-21T18:23:21.625Z"
+            }
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.listitem/203",
+            "cid": "cid_203",
+            "value": {
+                "list": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list_6",
+                "$type": "app.bsky.graph.listitem",
+                "subject": "did:plc:user_113",
+                "createdAt": "2023-10-21T18:23:21.625Z"
+            }
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.listitem/204",
+            "cid": "cid_204",
+            "value": {
+                "list": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list_6",
+                "$type": "app.bsky.graph.listitem",
+                "subject": "did:plc:user_114",
+                "createdAt": "2023-10-21T18:23:21.625Z"
+            }
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.listitem/205",
+            "cid": "cid_205",
+            "value": {
+                "list": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list_6",
+                "$type": "app.bsky.graph.listitem",
+                "subject": "did:plc:user_115",
+                "createdAt": "2023-10-21T18:23:21.625Z"
+            }
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.listitem/206",
+            "cid": "cid_206",
+            "value": {
+                "list": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list_6",
+                "$type": "app.bsky.graph.listitem",
+                "subject": "did:plc:user_116",
+                "createdAt": "2023-10-21T18:23:21.625Z"
+            }
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.listitem/207",
+            "cid": "cid_207",
+            "value": {
+                "list": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list_6",
+                "$type": "app.bsky.graph.listitem",
+                "subject": "did:plc:user_117",
+                "createdAt": "2023-10-21T18:23:21.625Z"
+            }
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.listitem/208",
+            "cid": "cid_208",
+            "value": {
+                "list": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list_6",
+                "$type": "app.bsky.graph.listitem",
+                "subject": "did:plc:user_118",
+                "createdAt": "2023-10-21T18:23:21.625Z"
+            }
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.listitem/209",
+            "cid": "cid_209",
+            "value": {
+                "list": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list_6",
+                "$type": "app.bsky.graph.listitem",
+                "subject": "did:plc:user_119",
+                "createdAt": "2023-10-21T18:23:21.625Z"
+            }
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.listitem/210",
+            "cid": "cid_210",
+            "value": {
+                "list": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list_6",
+                "$type": "app.bsky.graph.listitem",
+                "subject": "did:plc:user_120",
+                "createdAt": "2023-10-21T18:23:21.625Z"
+            }
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.listitem/211",
+            "cid": "cid_211",
+            "value": {
+                "list": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list_6",
+                "$type": "app.bsky.graph.listitem",
+                "subject": "did:plc:user_121",
+                "createdAt": "2023-10-21T18:23:21.625Z"
+            }
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.listitem/212",
+            "cid": "cid_212",
+            "value": {
+                "list": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list_6",
+                "$type": "app.bsky.graph.listitem",
+                "subject": "did:plc:user_122",
+                "createdAt": "2023-10-21T18:23:21.625Z"
+            }
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.listitem/213",
+            "cid": "cid_213",
+            "value": {
+                "list": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list_6",
+                "$type": "app.bsky.graph.listitem",
+                "subject": "did:plc:user_123",
+                "createdAt": "2023-10-21T18:23:21.625Z"
+            }
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.listitem/214",
+            "cid": "cid_214",
+            "value": {
+                "list": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list_6",
+                "$type": "app.bsky.graph.listitem",
+                "subject": "did:plc:user_124",
+                "createdAt": "2023-10-21T18:23:21.625Z"
+            }
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.listitem/215",
+            "cid": "cid_215",
+            "value": {
+                "list": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list_6",
+                "$type": "app.bsky.graph.listitem",
+                "subject": "did:plc:user_125",
+                "createdAt": "2023-10-21T18:23:21.625Z"
+            }
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.listitem/216",
+            "cid": "cid_216",
+            "value": {
+                "list": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list_6",
+                "$type": "app.bsky.graph.listitem",
+                "subject": "did:plc:user_126",
+                "createdAt": "2023-10-21T18:23:21.625Z"
+            }
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.listitem/217",
+            "cid": "cid_217",
+            "value": {
+                "list": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list_6",
+                "$type": "app.bsky.graph.listitem",
+                "subject": "did:plc:user_127",
+                "createdAt": "2023-10-21T18:23:21.625Z"
+            }
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.listitem/218",
+            "cid": "cid_218",
+            "value": {
+                "list": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list_6",
+                "$type": "app.bsky.graph.listitem",
+                "subject": "did:plc:user_128",
+                "createdAt": "2023-10-21T18:23:21.625Z"
+            }
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.listitem/219",
+            "cid": "cid_219",
+            "value": {
+                "list": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list_6",
+                "$type": "app.bsky.graph.listitem",
+                "subject": "did:plc:user_129",
+                "createdAt": "2023-10-21T18:23:21.625Z"
+            }
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.listitem/220",
+            "cid": "cid_220",
+            "value": {
+                "list": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list_6",
+                "$type": "app.bsky.graph.listitem",
+                "subject": "did:plc:user_130",
+                "createdAt": "2023-10-21T18:23:21.625Z"
+            }
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.listitem/221",
+            "cid": "cid_221",
+            "value": {
+                "list": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list_6",
+                "$type": "app.bsky.graph.listitem",
+                "subject": "did:plc:user_131",
+                "createdAt": "2023-10-21T18:23:21.625Z"
+            }
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.listitem/222",
+            "cid": "cid_222",
+            "value": {
+                "list": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list_6",
+                "$type": "app.bsky.graph.listitem",
+                "subject": "did:plc:user_132",
+                "createdAt": "2023-10-21T18:23:21.625Z"
+            }
+        }
+    ],
+    "cursor": "3"
+}

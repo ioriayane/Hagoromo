@@ -5,6 +5,7 @@
 #include <QFile>
 
 #include "webserver.h"
+#include "unittest_common.h"
 #include "timelinelistmodel.h"
 #include "recordoperator.h"
 #include "feedgeneratorlistmodel.h"
@@ -74,9 +75,6 @@ private:
     void test_putPreferences(const QString &path, const QByteArray &body);
     void test_putRecord(const QString &path, const QByteArray &body);
     void verifyStr(const QString &expect, const QString &actual);
-    QJsonDocument loadJson(const QString &path);
-    QHash<QString, QString> loadPostHash(const QString &path);
-    QHash<QString, QJsonObject> loadPostExpectHash(const QString &path);
 };
 
 hagoromo_test::hagoromo_test()
@@ -180,7 +178,8 @@ void hagoromo_test::test_RecordOperator()
 {
     RecordOperator ope;
     ope.setAccount(m_service + "/facet", QString(), QString(), QString(), "dummy", QString());
-    QHash<QString, QString> hash = loadPostHash(":/data/com.atproto.repo.createRecord_post.expect");
+    QHash<QString, QString> hash =
+            UnitTestCommon::loadPostHash(":/data/com.atproto.repo.createRecord_post.expect");
 
     QHashIterator<QString, QString> i(hash);
     while (i.hasNext()) {
@@ -2089,8 +2088,8 @@ void hagoromo_test::test_RecordOperatorCreateRecord(const QByteArray &body)
         QString did = json_doc.object().value("repo").toString();
         QString record = json_doc.object().value("record").toObject().value("text").toString();
 
-        QHash<QString, QJsonObject> hash =
-                loadPostExpectHash(":/data/com.atproto.repo.createRecord_post.expect");
+        QHash<QString, QJsonObject> hash = UnitTestCommon::loadPostExpectHash(
+                ":/data/com.atproto.repo.createRecord_post.expect");
 
         QVERIFY2(hash.contains(did), QString("Unknown test pattern: %1").arg(did).toLocal8Bit());
         verifyStr(hash[did].value("record").toObject().value("text").toString(), record);
@@ -2106,9 +2105,11 @@ void hagoromo_test::test_putPreferences(const QString &path, const QByteArray &b
 {
     QJsonDocument json_doc_expect;
     if (path.contains("/save/")) {
-        json_doc_expect = loadJson(":/data/generator/save/app.bsky.actor.putPreferences");
+        json_doc_expect =
+                UnitTestCommon::loadJson(":/data/generator/save/app.bsky.actor.putPreferences");
     } else {
-        json_doc_expect = loadJson(":/data/generator/remove/app.bsky.actor.putPreferences");
+        json_doc_expect =
+                UnitTestCommon::loadJson(":/data/generator/remove/app.bsky.actor.putPreferences");
     }
 
     QJsonDocument json_doc = QJsonDocument::fromJson(body);
@@ -2124,7 +2125,7 @@ void hagoromo_test::test_putRecord(const QString &path, const QByteArray &body)
 {
     QJsonDocument json_doc_expect;
     if (path.contains("/profile/1/")) {
-        json_doc_expect = loadJson(":/data/profile/1/com.atproto.repo.putRecord");
+        json_doc_expect = UnitTestCommon::loadJson(":/data/profile/1/com.atproto.repo.putRecord");
     } else {
         QVERIFY(false);
     }
@@ -2142,36 +2143,6 @@ void hagoromo_test::verifyStr(const QString &expect, const QString &actual)
 {
     QVERIFY2(expect == actual,
              QString("\nexpect:%1\nactual:%2\n").arg(expect, actual).toLocal8Bit());
-}
-
-QJsonDocument hagoromo_test::loadJson(const QString &path)
-{
-    QFile file(path);
-    if (file.open(QFile::ReadOnly)) {
-        return QJsonDocument::fromJson(file.readAll());
-    } else {
-        return QJsonDocument();
-    }
-}
-
-QHash<QString, QString> hagoromo_test::loadPostHash(const QString &path)
-{
-    QHash<QString, QString> hash;
-    QJsonDocument json_doc = loadJson(path);
-    for (const auto &key : json_doc.object().keys()) {
-        hash[key] = json_doc.object().value(key).toObject().value("text").toString();
-    }
-    return hash;
-}
-
-QHash<QString, QJsonObject> hagoromo_test::loadPostExpectHash(const QString &path)
-{
-    QHash<QString, QJsonObject> hash;
-    QJsonDocument json_doc = loadJson(path);
-    for (const auto &key : json_doc.object().keys()) {
-        hash[key] = json_doc.object().value(key).toObject().value("expect").toObject();
-    }
-    return hash;
 }
 
 QTEST_MAIN(hagoromo_test)

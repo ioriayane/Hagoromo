@@ -1,0 +1,72 @@
+{
+    "list": {
+        "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/list2",
+        "cid": "bafyreieyd765syuilkovwe3ms3cpegt7wo3xksistzy2v4xmazrwbzlwtm",
+        "name": "list2",
+        "purpose": "app.bsky.graph.defs#curatelist",
+        "indexedAt": "2023-09-16T05:32:56.207Z",
+        "viewer": {
+            "muted": false
+        },
+        "creator": {
+            "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+            "handle": "ioriayane.relog.tech",
+            "displayName": "IoriAYANE",
+            "indexedAt": "2023-07-25T07:56:00.861Z",
+            "viewer": {
+                "muted": false,
+                "blockedBy": false
+            },
+            "labels": []
+        },
+        "description": "list2"
+    },
+    "items": [
+        {
+            "subject": {
+                "did": "did:plc:ipj5qejfoqu6eukvt72uhyit_2",
+                "handle": "ioriayane.relog.tech_2",
+                "displayName": "IoriAYANE",
+                "description": "epubを作るソフトのLeMEを作ってます。\nhttps://leme.style\nBlueskyクライアントの羽衣を作ってます。\nhttps://github.com/ioriayane/Hagoromo\nX:@ioriayane\nアイコンは X:@keikawagutiさん",
+                "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy@jpeg",
+                "indexedAt": "2023-07-25T07:56:00.861Z",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false
+                },
+                "labels": []
+            }
+        },
+        {
+            "subject": {
+                "did": "did:plc:l4fsx4ujos7uw7n4ijq2ulgs_2",
+                "handle": "ioriayane.bsky.social_2",
+                "description": "@ioriayane.relog.tech のテスト用のサブアカウントです。\nhttps://github.com/ioriayane/Hagoromo/blob/main/README.md#%E6%A6%82%E8%A6%81",
+                "indexedAt": "2023-07-16T04:47:24.927Z",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false,
+                    "following": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3jwielvxo622v",
+                    "followedBy": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.graph.follow/3jxtb56ycoc2w"
+                },
+                "labels": []
+            }
+        },
+        {
+            "subject": {
+                "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5_2",
+                "handle": "ioriayane2.bsky.social_2",
+                "description": "ioriayane.relog.techのテスト用アカウントの2つ目\n\nThis account is used to test the report function.\nIt reports from @ioriayane.relog.tech and @ioriayane.bsky.social.",
+                "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreiayv34bulrnm5gsnx73b46s2plh76k7fvwcewqrdur7eelf7u6c3u@jpeg",
+                "indexedAt": "2023-07-15T10:59:28.547Z",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false,
+                    "following": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3k4odyt4qk42g"
+                },
+                "labels": []
+            }
+        }
+    ],
+    "cursor": "1"
+}
