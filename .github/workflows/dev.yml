@@ -8,7 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install dependencies (linux)
-        # if: matrix.os == 'ubuntu-latest'
         run: sudo apt install ninja-build
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
@@ -16,9 +15,15 @@ jobs:
           version: '5.15.2'
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Unit test
+        with:
+          submodules: true
+      - name: Build
         run: |
           qmake --version
           qmake_dir=$(dirname $(which qmake))
           echo "qmake_dir=$qmake_dir"
+          scripts/build.sh linux $qmake_dir
+      - name: Unit test
+        run: |
+          qmake_dir=$(dirname $(which qmake))
           scripts/unittest.sh linux $qmake_dir
