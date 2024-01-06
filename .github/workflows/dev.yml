@@ -16,13 +16,9 @@ jobs:
           version: '5.15.2'
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Test
+      - name: Unit test
         run: |
-          pwd
-          ls -l
-          ls -l ..
-          which qmake
           qmake --version
-
-      # - name: Unit test
-      #   run: scripts/unittest.sh linux /usr/local/bin
+          qmake_dir=$(dirname $(which qmake))
+          echo "qmake_dir=$qmake_dir"
+          scripts/unittest.sh linux $qmake_dir
