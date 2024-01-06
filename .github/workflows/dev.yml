@@ -23,6 +23,12 @@ jobs:
           qmake_dir=$(dirname $(which qmake))
           echo "qmake_dir=$qmake_dir"
           scripts/build.sh linux $qmake_dir
+      - name: Build httpserver
+        run: |
+          mkdir 3rdparty/build-qthttpserver
+          cd 3rdparty/build-qthttpserver
+          qmake CONFIG+=debug_and_release ../qthttpserver/qthttpserver.pro
+          make -j4 && make install
       - name: Unit test
         run: |
           qmake_dir=$(dirname $(which qmake))
