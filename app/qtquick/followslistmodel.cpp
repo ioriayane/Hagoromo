@@ -264,6 +264,7 @@ void FollowsListModel::copyProfiles(const AtProtocolInterface::AppBskyGraphGetFo
             beginInsertRows(QModelIndex(), m_didList.count(), m_didList.count());
             m_didList.append(profile.did);
             endInsertRows();
+            emit countChanged();
         }
     }
 }
@@ -279,4 +280,9 @@ void FollowsListModel::setTargetDid(const QString &newTargetDid)
         return;
     m_targetDid = newTargetDid;
     emit targetDidChanged();
+}
+
+int FollowsListModel::count() const
+{
+    return rowCount();
 }

@@ -11,7 +11,6 @@ public:
     explicit AppBskyActorSearchActors(QObject *parent = nullptr);
 
     bool getFollows(const QString &actor, const int limit, const QString &cursor) = delete;
-    bool getFollowers(const QString &actor, const int limit, const QString &cursor) = delete;
     bool searchActors(const QString &q, const int limit, const QString &cursor);
 };
 

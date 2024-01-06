@@ -1,10 +1,48 @@
 #include "searchprofilelistmodel.h"
 
 #include "atprotocol/app/bsky/actor/appbskyactorsearchactors.h"
+#include "atprotocol/app/bsky/actor/appbskyactorsearchactorstypeahead.h"
 
 using AtProtocolInterface::AppBskyActorSearchActors;
+using AtProtocolInterface::AppBskyActorSearchActorsTypeahead;
 
-SearchProfileListModel::SearchProfileListModel(QObject *parent) : FollowsListModel { parent } { }
+SearchProfileListModel::SearchProfileListModel(QObject *parent) : FollowsListModel { parent }
+{
+    m_regMentionHandle = QRegularExpression(REG_EXP_MENTION_PART);
+}
+
+bool SearchProfileListModel::getSuggestion(const QString &q, int limit)
+{
+    if (q.isEmpty())
+        return false;
+
+    AppBskyActorSearchActorsTypeahead *profiles = new AppBskyActorSearchActorsTypeahead(this);
+    connect(profiles, &AppBskyActorSearchActorsTypeahead::finished, [=](bool success) {
+        if (success) {
+            clear();
+            copyProfiles(profiles);
+        } else {
+            emit errorOccured(profiles->errorCode(), profiles->errorMessage());
+        }
+        setRunning(false);
+        profiles->deleteLater();
+    });
+    profiles->setAccount(account());
+    setRunning(profiles->searchActorsTypeahead(QString(), q, limit));
+    if (!running()) {
+        emit errorOccured(profiles->errorCode(), profiles->errorMessage());
+    }
+    return running();
+}
+
+QString SearchProfileListModel::extractHandleBlock(const QString &text)
+{
+    int pos = text.lastIndexOf("@");
+    if (pos >= 0) {
+        return m_regMentionHandle.match(text, pos + 1).captured();
+    }
+    return QString();
+}
 
 bool SearchProfileListModel::getLatest()
 {

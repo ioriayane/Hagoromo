@@ -193,6 +193,11 @@ Dialog {
                             // リプライ制限のダイアログを開かずにポストするときのため選択済みにも設定する
                             selectThreadGateDialog.selectedType = selectThreadGateDialog.initialType
                             selectThreadGateDialog.selectedOptions = selectThreadGateDialog.initialOptions
+                            // 入力中にアカウントを切り替えるかもなので選んだ時に設定する
+                            mentionSuggestionView.setAccount(postDialog.accountModel.item(row, AccountListModel.ServiceRole),
+                                                             postDialog.accountModel.item(row, AccountListModel.DidRole),
+                                                             postDialog.accountModel.item(row, AccountListModel.HandleRole),
+                                                             postDialog.accountModel.item(row, AccountListModel.AccessJwtRole))
                         }
                     }
                 }
@@ -252,6 +257,7 @@ Dialog {
             }
 
             ScrollView {
+                z: 99   // MentionSuggetionViewを最前に表示するため
                 Layout.preferredWidth: 400 * AdjustedValues.ratio
                 Layout.preferredHeight: 100 * AdjustedValues.ratio
                 TextArea {
@@ -262,59 +268,34 @@ Dialog {
                     selectByMouse: true
                     font.pointSize: AdjustedValues.f10
                     property int realTextLength: systemTool.countText(text)
-                    onTextChanged: {
-                        console.log("\n" + text +
-                                    "\n---\n" + text.substring(0, cursorPosition) +
-                                    "\n---\n" + getText(0, cursorPosition) +
-                                    "\npos=" + cursorPosition)
-                    }
-
-
-                    ListView {
-                        id: mentionSuggetionListView
+                    onTextChanged: mentionSuggestionView.reload(getText(0, cursorPosition))
+                    Keys.onPressed: (event) => {
+                                        event.accepted = true
+                                        if(mentionSuggestionView.visible){
+                                            if(event.key === Qt.Key_Up){
+                                                mentionSuggestionView.up()
+                                            }else if(event.key === Qt.Key_Down){
+                                                mentionSuggestionView.down()
+                                            }else if(event.key === Qt.Key_Enter ||
+                                                     event.key === Qt.Key_Return){
+                                                mentionSuggestionView.accept()
+                                            }else{
+                                                event.accepted = false
+                                            }
+                                        }else{
+                                            if(event.key === Qt.Key_Space && (event.modifiers & Qt.ControlModifier)){
+                                                mentionSuggestionView.visible = true
+                                            }
+                                            event.accepted = false
+                                        }
+                                    }
+                    MentionSuggestionView {
+                        id: mentionSuggestionView
                         anchors.top: parent.bottom
                         anchors.left: parent.left
                         anchors.right: parent.right
-                        height: 100
-                        clip: true
-                        model: ListModel {
-                            ListElement {
-                                displayName: "Name1"
-                                handle: "handle1.bsky.social"
-                            }
-                            ListElement {
-                                displayName: "Name2"
-                                handle: "handle2.bsky.social"
-                            }
-                            ListElement {
-                                displayName: "Name3"
-                                handle: "handle3.bsky.social"
-                            }
-                        }
-                        delegate: ItemDelegate {
-                            width: mentionSuggetionListView.width
-                            height: AdjustedValues.i12 + 3
-                            RowLayout {
-                                AvatarImage {
-                                    Layout.preferredWidth: AdjustedValues.i12
-                                    Layout.preferredHeight: AdjustedValues.i12
-                                }
-                                Label {
-                                    font.pointSize: AdjustedValues.f8
-                                    text: model.displayName
-                                }
-                                Item {
-                                    Layout.fillWidth: true
-                                    Layout.preferredHeight: 1
-                                }
-                                Label {
-                                    font.pointSize: AdjustedValues.f8
-                                    text: model.handle
-                                }
-                            }
-                        }
+                        onSelected: (handle) => console.log(handle)
                     }
-
                 }
             }
 
