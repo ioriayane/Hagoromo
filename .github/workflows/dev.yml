@@ -13,6 +13,10 @@ jobs:
         uses: jurplel/install-qt-action@v3
         with:
           version: '5.15.2'
+          host: 'linux'
+          target: 'desktop'
+          arch: 'gcc_64'
+          modules: 'qtwebglplugin'
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -22,9 +26,7 @@ jobs:
           qmake --version
           cp app/qtquick/encryption_seed_template.h app/qtquick/encryption_seed.h
       - name: Build
-        run: |
-          qmake_dir=$(dirname $(which qmake))
-          scripts/build.sh linux $qmake_dir
+        run: scripts/build.sh linux ${Qt5_DIR}/bin
       - name: Build httpserver
         run: |
           mkdir 3rdparty/build-qthttpserver
@@ -32,6 +34,4 @@ jobs:
           qmake CONFIG+=debug_and_release ../qthttpserver/qthttpserver.pro
           make -j4 && make install
       - name: Unit test
-        run: |
-          qmake_dir=$(dirname $(which qmake))
-          scripts/unittest.sh linux $qmake_dir
+        run: scripts/unittest.sh linux ${Qt5_DIR}/bin
