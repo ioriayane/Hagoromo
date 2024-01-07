@@ -12,6 +12,7 @@
 #include "tools/opengraphprotocol.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "tools/configurablelabels.h"
+#include "unittest_common.h"
 
 using namespace AtProtocolType;
 using namespace AtProtocolType::LexiconsTypeUnknown;
@@ -45,7 +46,6 @@ private:
     void test_putPreferences(const QString &path, const QByteArray &body);
     void test_putRecord(const QString &path, const QByteArray &body);
     void test_createRecord(const QString &path, const QByteArray &body);
-    QJsonDocument loadJson(const QString &path);
     void updateCreatedAt(QJsonObject &json_obj);
 
     WebServer m_mockServer;
@@ -984,11 +984,14 @@ void atprotocol_test::test_putPreferences(const QString &path, const QByteArray 
 {
     QJsonDocument json_doc_expect;
     if (path.contains("/save/1/")) {
-        json_doc_expect = loadJson(":/data/labels/save/1/app.bsky.actor.putPreferences");
+        json_doc_expect =
+                UnitTestCommon::loadJson(":/data/labels/save/1/app.bsky.actor.putPreferences");
     } else if (path.contains("/save/2/")) {
-        json_doc_expect = loadJson(":/data/labels/save/2/app.bsky.actor.putPreferences");
+        json_doc_expect =
+                UnitTestCommon::loadJson(":/data/labels/save/2/app.bsky.actor.putPreferences");
     } else {
-        json_doc_expect = loadJson(":/data/labels/save/3/app.bsky.actor.putPreferences");
+        json_doc_expect =
+                UnitTestCommon::loadJson(":/data/labels/save/3/app.bsky.actor.putPreferences");
     }
 
     QJsonDocument json_doc = QJsonDocument::fromJson(body);
@@ -1004,9 +1007,9 @@ void atprotocol_test::test_putRecord(const QString &path, const QByteArray &body
 {
     QJsonDocument json_doc_expect;
     if (path.contains("/profile/1/")) {
-        json_doc_expect = loadJson(":/data/profile/1/com.atproto.repo.putRecord");
+        json_doc_expect = UnitTestCommon::loadJson(":/data/profile/1/com.atproto.repo.putRecord");
     } else if (path.contains("/profile/2/")) {
-        json_doc_expect = loadJson(":/data/profile/2/com.atproto.repo.putRecord");
+        json_doc_expect = UnitTestCommon::loadJson(":/data/profile/2/com.atproto.repo.putRecord");
     } else {
         qDebug() << path;
         QVERIFY(false);
@@ -1026,7 +1029,7 @@ void atprotocol_test::test_createRecord(const QString &path, const QByteArray &b
     data_path.replace("/response/", ":/data/");
     QVERIFY(QFile::exists(data_path));
 
-    QJsonDocument json_doc_expect = loadJson(data_path);
+    QJsonDocument json_doc_expect = UnitTestCommon::loadJson(data_path);
     QJsonObject json_expect = json_doc_expect.object();
     updateCreatedAt(json_expect);
 
@@ -1040,16 +1043,6 @@ void atprotocol_test::test_createRecord(const QString &path, const QByteArray &b
                                                      QJsonDocument(json_actual).toJson());
     }
     QVERIFY(json_expect == json_actual);
-}
-
-QJsonDocument atprotocol_test::loadJson(const QString &path)
-{
-    QFile file(path);
-    if (file.open(QFile::ReadOnly)) {
-        return QJsonDocument::fromJson(file.readAll());
-    } else {
-        return QJsonDocument();
-    }
 }
 
 void atprotocol_test::updateCreatedAt(QJsonObject &json_obj)

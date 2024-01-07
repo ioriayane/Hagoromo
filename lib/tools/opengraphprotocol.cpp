@@ -197,7 +197,7 @@ QString OpenGraphProtocol::extractCharset(const QString &data) const
         QDomElement element = doc.createElement("meta");
         if (rebuildTag(match.captured(), element)) {
             if (element.tagName().toLower() == "meta") {
-                if (element.attribute("http-equiv") == "content-type") {
+                if (element.attribute("http-equiv").toLower().trimmed() == "content-type") {
                     QString content = element.attribute("content");
                     QStringList items = content.split(";");
                     bool exist = false;
@@ -205,7 +205,7 @@ QString OpenGraphProtocol::extractCharset(const QString &data) const
                         QStringList parts = item.trimmed().split("=");
                         if (parts.length() != 2)
                             continue;
-                        if (parts[0] == "charset") {
+                        if (parts[0].toLower().trimmed() == "charset") {
                             charset = parts[1].trimmed();
                             exist = true;
                             break;

@@ -3,7 +3,7 @@
 	url = https://github.com/openssl/openssl.git
 [submodule "3rdparty/qthttpserver"]
 	path = 3rdparty/qthttpserver
-	url = https://code.qt.io/qt-extensions/qthttpserver.git
+	url = https://github.com/qt/qthttpserver.git
 [submodule "3rdparty/cpp-httplib"]
 	path = 3rdparty/cpp-httplib
 	url = https://github.com/ioriayane/cpp-httplib.git
