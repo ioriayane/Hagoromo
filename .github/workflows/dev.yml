@@ -1,0 +1,39 @@
+name: Unit test
+on:
+  pull_request:
+    branches:    
+      - dev
+jobs:
+  unit_test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install dependencies (linux)
+        run: sudo apt install ninja-build
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: '5.15.2'
+          host: 'linux'
+          target: 'desktop'
+          arch: 'gcc_64'
+          modules: 'qtwebglplugin'
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Setup
+        run: |
+          qmake --version
+          cp app/qtquick/encryption_seed_template.h app/qtquick/encryption_seed.h
+      - name: Build
+        run: scripts/build.sh linux ${Qt5_DIR}/bin
+      - name: Build httpserver
+        run: |
+          mkdir 3rdparty/build-qthttpserver
+          cd 3rdparty/build-qthttpserver
+          qmake CONFIG+=debug_and_release ../qthttpserver/qthttpserver.pro
+          make -j4 && make install
+      - name: Unit test
+        env: 
+          TZ: "Asia/Tokyo"       
+        run: scripts/unittest.sh linux ${Qt5_DIR}/bin

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 make_dir(){
     if [ -e $1 ]; then
@@ -15,7 +15,7 @@ build_openssl(){
     cd "build-openssl"
 
     ../openssl/config --prefix="${ROOT_FOLDER}/openssl" --openssldir="${ROOT_FOLDER}/openssl"
-    make -j2
+    make -j4
     make install
 
     popd
@@ -30,7 +30,7 @@ build_hagoromo(){
     cd $work_dir
 
     ${QT_BIN_FOLDER}/qmake ../app/app.pro CONFIG+=HAGOROMO_RELEASE_BUILD
-    make -j2
+    make -j4
 
     popd
 }
