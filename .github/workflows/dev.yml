@@ -17,12 +17,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-      - name: Build
+      - name: Setup
         run: |
           qmake --version
-          qmake_dir=$(dirname $(which qmake))
-          echo "qmake_dir=$qmake_dir"
-          scripts/build.sh linux $qmake_dir
+          cp app/qtquick/encryption_seed_template.h app/qtquick/encryption_seed.h
+      - name: Build
+        run: scripts/build.sh linux ${Qt5_DIR}/bin
       - name: Build httpserver
         run: |
           mkdir 3rdparty/build-qthttpserver
@@ -32,4 +32,4 @@ jobs:
       - name: Unit test
         run: |
           qmake_dir=$(dirname $(which qmake))
-          scripts/unittest.sh linux $qmake_dir
+          scripts/unittest.sh linux ${Qt5_DIR}/bin

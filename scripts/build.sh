@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 make_dir(){
     if [ -e $1 ]; then
