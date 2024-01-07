@@ -26,7 +26,7 @@ build_hagoromo(){
 }
 
 do_test(){
-    $1
+    $1 --platform offscreen
     if [ $? -ne 0 ]; then
         exit 1
     fi
