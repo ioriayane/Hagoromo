@@ -22,7 +22,9 @@ jobs:
           qmake --version
           cp app/qtquick/encryption_seed_template.h app/qtquick/encryption_seed.h
       - name: Build
-        run: scripts/build.sh linux ${Qt5_DIR}/bin
+        run: |
+          qmake_dir=$(dirname $(which qmake))
+          scripts/build.sh linux $qmake_dir
       - name: Build httpserver
         run: |
           mkdir 3rdparty/build-qthttpserver
@@ -32,4 +34,4 @@ jobs:
       - name: Unit test
         run: |
           qmake_dir=$(dirname $(which qmake))
-          scripts/unittest.sh linux ${Qt5_DIR}/bin
+          scripts/unittest.sh linux $qmake_dir
