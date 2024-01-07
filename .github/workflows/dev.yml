@@ -34,4 +34,6 @@ jobs:
           qmake CONFIG+=debug_and_release ../qthttpserver/qthttpserver.pro
           make -j4 && make install
       - name: Unit test
+        env: 
+          TZ: "Asia/Tokyo"       
         run: scripts/unittest.sh linux ${Qt5_DIR}/bin
