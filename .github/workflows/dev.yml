@@ -14,9 +14,9 @@ jobs:
         with:
           version: '5.15.2'
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          submodules: true
+          submodules: recursive
       - name: Build
         run: |
           qmake --version
