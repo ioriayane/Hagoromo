@@ -270,23 +270,25 @@ Dialog {
                     property int realTextLength: systemTool.countText(text)
                     onTextChanged: mentionSuggestionView.reload(getText(0, cursorPosition))
                     Keys.onPressed: (event) => {
-                                        event.accepted = true
                                         if(mentionSuggestionView.visible){
+                                            console.log("Key(v):" + event.key)
                                             if(event.key === Qt.Key_Up){
                                                 mentionSuggestionView.up()
+                                                event.accepted = true
                                             }else if(event.key === Qt.Key_Down){
                                                 mentionSuggestionView.down()
+                                                event.accepted = true
                                             }else if(event.key === Qt.Key_Enter ||
                                                      event.key === Qt.Key_Return){
                                                 mentionSuggestionView.accept()
-                                            }else{
-                                                event.accepted = false
+                                                event.accepted = true
                                             }
                                         }else{
+                                            console.log("Key(n):" + event.key)
                                             if(event.key === Qt.Key_Space && (event.modifiers & Qt.ControlModifier)){
-                                                mentionSuggestionView.visible = true
+                                                mentionSuggestionView.reload(getText(0, cursorPosition))
+                                                event.accepted = true
                                             }
-                                            event.accepted = false
                                         }
                                     }
                     MentionSuggestionView {
@@ -294,7 +296,13 @@ Dialog {
                         anchors.top: parent.bottom
                         anchors.left: parent.left
                         anchors.right: parent.right
-                        onSelected: (handle) => console.log(handle)
+                        onSelected: (handle) => {
+                                        var after = replaceText(postText.text, postText.cursorPosition, handle)
+                                        if(after !== postText.text){
+                                            postText.text = after
+                                            postText.cursorPosition = postText.text.length
+                                        }
+                                    }
                     }
                 }
             }

@@ -74,6 +74,8 @@ void FollowsListModel::remove(const QString &did)
     m_didList.removeAt(row);
     m_profileHash.remove(did);
     endRemoveRows();
+
+    emit countChanged();
 }
 
 void FollowsListModel::clear()
@@ -87,6 +89,8 @@ void FollowsListModel::clear()
     m_formattedDescriptionHash.clear();
     m_cursor.clear();
     endRemoveRows();
+
+    emit countChanged();
 }
 
 int FollowsListModel::indexOf(const QString &cid) const

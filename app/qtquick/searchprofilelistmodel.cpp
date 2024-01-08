@@ -35,13 +35,32 @@ bool SearchProfileListModel::getSuggestion(const QString &q, int limit)
     return running();
 }
 
-QString SearchProfileListModel::extractHandleBlock(const QString &text)
+QString SearchProfileListModel::extractHandleBlock(const QString &text) const
 {
-    int pos = text.lastIndexOf("@");
-    if (pos >= 0) {
-        return m_regMentionHandle.match(text, pos + 1).captured();
+    QString part = text.split("\n").last();
+    QString result = m_regMentionHandle.match(part).captured();
+    if (!result.isEmpty()) {
+        return result.remove(0, 1);
     }
-    return QString();
+    return result;
+}
+
+QString SearchProfileListModel::replaceText(const QString &text, const int current_position,
+                                            const QString &handle) const
+{
+    if (current_position < 0 || handle.isEmpty())
+        return text;
+
+    QString left = text.left(current_position);
+    QString right = text.right(text.count() - current_position);
+    QString extract = extractHandleBlock(left);
+
+    if (extract.isEmpty() || !handle.startsWith(extract)) {
+        // 入力状況が候補を検索したときと変わっている
+        return text;
+    }
+
+    return QString("%1%2%3").arg(left.left(left.count() - extract.length()), handle, right);
 }
 
 bool SearchProfileListModel::getLatest()

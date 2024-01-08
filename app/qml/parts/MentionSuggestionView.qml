@@ -21,10 +21,14 @@ ListView {
     function reload(text){
         var handle_part = searchProfileListModel.extractHandleBlock(text)
         if(handle_part.length === 0){
-            return
+            searchProfileListModel.clear()
+        }else{
+            console.log(handle_part)
+            searchProfileListModel.getSuggestion(handle_part, 6)
         }
-        console.log(handle_part)
-        searchProfileListModel.getSuggestion(handle_part, 6)
+    }
+    function replaceText(text, current_position, handle){
+        return searchProfileListModel.replaceText(text, current_position, handle)
     }
 
     function accept(){
@@ -80,7 +84,7 @@ ListView {
                 id: handleLabel
                 Layout.alignment: Qt.AlignVCenter
                 font.pointSize: AdjustedValues.f8
-                text: model.handle
+                text: "@" + model.handle
             }
         }
         onClicked: {
