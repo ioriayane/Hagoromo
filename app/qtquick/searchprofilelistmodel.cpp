@@ -60,7 +60,7 @@ QString SearchProfileListModel::replaceText(const QString &text, const int curre
         return text;
     }
 
-    return QString("%1%2%3").arg(left.left(left.count() - extract.length()), handle, right);
+    return QString("%1%2 %3").arg(left.left(left.count() - extract.length()), handle, right);
 }
 
 bool SearchProfileListModel::getLatest()

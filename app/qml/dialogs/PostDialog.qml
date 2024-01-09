@@ -293,9 +293,12 @@ Dialog {
                                     }
                     MentionSuggestionView {
                         id: mentionSuggestionView
-                        anchors.top: parent.bottom
                         anchors.left: parent.left
                         anchors.right: parent.right
+                        onVisibleChanged: {
+                            var rect = postText.positionToRectangle(postText.cursorPosition)
+                            y = rect.y + rect.height + 2
+                        }
                         onSelected: (handle) => {
                                         var after = replaceText(postText.text, postText.cursorPosition, handle)
                                         if(after !== postText.text){
