@@ -54,13 +54,21 @@ QString SearchProfileListModel::replaceText(const QString &text, const int curre
     QString left = text.left(current_position);
     QString right = text.right(text.count() - current_position);
     QString extract = extractHandleBlock(left);
+    QString space;
+    if (right.isEmpty()) {
+        space = QString(" ");
+    } else if (!right.front().isSpace()) {
+        space = QString(" ");
+    }
 
-    if (extract.isEmpty() || !handle.startsWith(extract)) {
+    if (extract.isEmpty()) {
         // 入力状況が候補を検索したときと変わっている
+        // ただし空の時だけ、ハンドルのインクリメンタルサーチではないので抽出候補とハンドルは一致するとは限らない
         return text;
     }
 
-    return QString("%1%2 %3").arg(left.left(left.count() - extract.length()), handle, right);
+    return QString("%1%2%3%4")
+            .arg(left.left(left.count() - extract.length()), handle, space, right);
 }
 
 bool SearchProfileListModel::getLatest()

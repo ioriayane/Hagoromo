@@ -1684,7 +1684,8 @@ void hagoromo_test::test_SearchProfileListModel_suggestion()
     QVERIFY2(actual == "", actual.toLocal8Bit());
 
     // 見つかったところを入力済みデータの中で置換
-    // 探すときの候補文字列より入力が先にいってしまってずれたときは置き換えないようにする
+    // 探すときの候補文字列より入力が先にいってしまってずれたときは置き換えないようにする?
+    // ↑ハンドルのインクリメンタルサーチではないので変な入力しても一致するとは限らない
 
     // 1. user input text
     // 2. text to be extracted
@@ -1697,29 +1698,57 @@ void hagoromo_test::test_SearchProfileListModel_suggestion()
     // 3. handle.bsky.social
     // 4. hoge @handle.bsky.social
     actual = model.replaceText("hoge @handl", 11, "handle.bsky.social");
-    QVERIFY2(actual == "hoge @handle.bsky.social", actual.toLocal8Bit());
+    QVERIFY2(actual == "hoge @handle.bsky.social ", actual.toLocal8Bit());
 
     // 1. hoge @handl[] fuga
     // 2. handl
     // 3. handle.bsky.social
-    // 4. hoge @handle.bsky.social fuga
+    // 4. hoge @handle.bsky.social  fuga
     actual = model.replaceText("hoge @handl fuga", 11, "handle.bsky.social");
     QVERIFY2(actual == "hoge @handle.bsky.social fuga", actual.toLocal8Bit());
+
+    // 1. hoge @handl[]  fuga
+    // 2. handl
+    // 3. handle.bsky.social
+    // 4. hoge @handle.bsky.social  fuga
+    actual = model.replaceText("hoge @handl  fuga", 11, "handle.bsky.social");
+    QVERIFY2(actual == "hoge @handle.bsky.social  fuga", actual.toLocal8Bit());
+
+    // 1. hoge @handl[]\tfuga
+    // 2. handl
+    // 3. handle.bsky.social
+    // 4. hoge @handle.bsky.social\tfuga
+    actual = model.replaceText("hoge @handl\tfuga", 11, "handle.bsky.social");
+    QVERIFY2(actual == "hoge @handle.bsky.social\tfuga", actual.toLocal8Bit());
+
+    // 1. hoge @handl[]\nfuga
+    // 2. handl
+    // 3. handle.bsky.social
+    // 4. hoge @handle.bsky.social\nfuga
+    actual = model.replaceText("hoge @handl\nfuga", 11, "handle.bsky.social");
+    QVERIFY2(actual == "hoge @handle.bsky.social\nfuga", actual.toLocal8Bit());
+
+    // 1. hoge @handl[] fuga
+    // 2. handl
+    // 3. another.handle.bsky.social
+    // 4. hoge @another.handle.bsky.social fuga
+    actual = model.replaceText("hoge @handl fuga", 11, "another.handle.bsky.social");
+    QVERIFY2(actual == "hoge @another.handle.bsky.social fuga", actual.toLocal8Bit());
 
     // 1. hoge @handl[]fuga
     // 2. handl
     // 3. handle.bsky.social
     // 4. hoge @handle.bsky.socialfuga
     actual = model.replaceText("hoge @handlfuga", 11, "handle.bsky.social");
-    QVERIFY2(actual == "hoge @handle.bsky.socialfuga", actual.toLocal8Bit());
+    QVERIFY2(actual == "hoge @handle.bsky.social fuga", actual.toLocal8Bit());
 
     // 1.  hoge @handl[] fuga
     // 1'. hoge @hande[] fuga
     // 2. handl
     // 3. handle.bsky.social
-    // 4. hoge @hande fuga
+    // 4. hoge @handle.bsky.social[] fuga
     actual = model.replaceText("hoge @hande fuga", 11, "handle.bsky.social");
-    QVERIFY2(actual == "hoge @hande fuga", actual.toLocal8Bit());
+    QVERIFY2(actual == "hoge @handle.bsky.social fuga", actual.toLocal8Bit());
 
     // 1. ho\nge @handl[] fuga
     // 2. handl
