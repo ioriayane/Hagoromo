@@ -42,11 +42,7 @@ ClickableFrame {
     property alias postImagePreview: postImagePreview
     property alias quoteRecordFrame: quoteRecordFrame
     property alias quoteRecordImagePreview: quoteRecordImagePreview
-    //    property alias generatorViewFrame: feedGeneratorFrame
-    //    property alias generatorAvatarImage: feedGeneratorAvatarImage
-    //    property alias generatorDisplayNameLabel: feedGeneratorDisplayNameLabel
-    //    property alias generatorCreatorHandleLabel: feedGeneratorCreatorHandleLabel
-    //    property alias generatorLikeCountLabel: feedGeneratorLikeCountLabel
+    property alias feedGeneratorFrame: feedGeneratorFrame
     property alias postControls: postControls
 
     signal requestViewProfile(string did)
@@ -71,9 +67,19 @@ ClickableFrame {
     }
     states: [
         State {
-            when: notificationFrame.reason === NotificationListModel.ReasonLike
+            when: notificationFrame.reason === NotificationListModel.ReasonLike &&
+                  feedGeneratorFrame.visible === false
             PropertyChanges { target: reasonImage; source: "../images/like.png" }
             PropertyChanges { target: recordTextLabel; visible: true }
+            PropertyChanges { target: recordTextLabel; color: Material.color(Material.Grey) }
+            PropertyChanges { target: recordTextLabel; text: notificationFrame.quoteRecordRecordText }
+            PropertyChanges { target: notificationFrame; bottomPadding: 5 }
+        },
+        State {
+            when: notificationFrame.reason === NotificationListModel.ReasonLike &&
+                  feedGeneratorFrame.visible === true
+            PropertyChanges { target: reasonImage; source: "../images/like.png" }
+            PropertyChanges { target: recordTextLabel; visible: false }
             PropertyChanges { target: recordTextLabel; color: Material.color(Material.Grey) }
             PropertyChanges { target: recordTextLabel; text: notificationFrame.quoteRecordRecordText }
             PropertyChanges { target: notificationFrame; bottomPadding: 5 }
@@ -286,54 +292,11 @@ ClickableFrame {
                         }
                     }
 
-                    //            ClickableFrame {
-                    //                id: feedGeneratorFrame
-                    //                Layout.preferredWidth: parent.width
-                    //                Layout.topMargin: 5
-
-                    //                ColumnLayout {
-                    //                    GridLayout {
-                    //                        columns: 2
-                    //                        rowSpacing: 3
-                    //                        AvatarImage {
-                    //                            id: feedGeneratorAvatarImage
-                    //                            Layout.preferredWidth: 24
-                    //                            Layout.preferredHeight: 24
-                    //                            Layout.rowSpan: 2
-                    //                            altSource: "../images/account_icon.png"
-                    //                        }
-                    //                        Label {
-                    //                            id: feedGeneratorDisplayNameLabel
-                    //                            Layout.fillWidth: true
-                    //                            font.pointSize: 10
-                    //                        }
-                    //                        Label {
-                    //                            id: feedGeneratorCreatorHandleLabel
-                    //                            color: Material.color(Material.Grey)
-                    //                            font.pointSize: 8
-                    //                        }
-                    //                    }
-                    //                    RowLayout {
-                    //                        Layout.leftMargin: 3
-                    //                        spacing: 3
-                    //                        Image {
-                    //                            Layout.preferredWidth: 16
-                    //                            Layout.preferredHeight: 16
-                    //                            source: "../images/like.png"
-                    //                            layer.enabled: true
-                    //                            layer.effect: ColorOverlay {
-                    //                                color: Material.color(Material.Pink)
-                    //                            }
-                    //                        }
-                    //                        Label {
-                    //                            id: feedGeneratorLikeCountLabel
-                    //                            Layout.alignment: Qt.AlignVCenter
-                    //                            Layout.fillWidth: true
-                    //                            font.pointSize: 8
-                    //                        }
-                    //                    }
-                    //                }
-                    //            }
+                    FeedGeneratorLinkCard {
+                        id: feedGeneratorFrame
+                        Layout.preferredWidth: parent.width
+                        visible: false
+                    }
 
                     PostControls {
                         id: postControls

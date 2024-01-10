@@ -2,10 +2,12 @@
 #include "atprotocol/app/bsky/notification/appbskynotificationlistnotifications.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "atprotocol/app/bsky/feed/appbskyfeedgetposts.h"
+#include "atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerators.h"
 #include "recordoperator.h"
 
 #include <QTimer>
 
+using AtProtocolInterface::AppBskyFeedGetFeedGenerators;
 using AtProtocolInterface::AppBskyFeedGetPosts;
 using AtProtocolInterface::AppBskyNotificationListNotifications;
 using namespace AtProtocolType::AppBskyFeedDefs;
@@ -284,6 +286,8 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
                         && m_postHash[record_cid].embed_AppBskyEmbedRecord_View->record_type
                         == AtProtocolType::AppBskyEmbedRecord::ViewRecordType::
                                 record_AppBskyFeedDefs_GeneratorView;
+            } else if (m_feedGeneratorHash.contains(record_cid)) {
+                return true;
             } else {
                 return false;
             }
@@ -292,6 +296,8 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
                 && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
                 return m_postHash[record_cid]
                         .embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView.uri;
+            } else if (m_feedGeneratorHash.contains(record_cid)) {
+                return m_feedGeneratorHash[record_cid].uri;
             } else {
                 return QString();
             }
@@ -301,6 +307,8 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
                 return m_postHash[record_cid]
                         .embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView.creator
                         .handle;
+            } else if (m_feedGeneratorHash.contains(record_cid)) {
+                return m_feedGeneratorHash[record_cid].creator.handle;
             } else {
                 return QString();
             }
@@ -310,6 +318,8 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
                 return m_postHash[record_cid]
                         .embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView
                         .displayName;
+            } else if (m_feedGeneratorHash.contains(record_cid)) {
+                return m_feedGeneratorHash[record_cid].displayName;
             } else {
                 return QString();
             }
@@ -319,6 +329,8 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
                 return m_postHash[record_cid]
                         .embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView
                         .likeCount;
+            } else if (m_feedGeneratorHash.contains(record_cid)) {
+                return m_feedGeneratorHash[record_cid].likeCount;
             } else {
                 return QString();
             }
@@ -327,6 +339,8 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
                 && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
                 return m_postHash[record_cid]
                         .embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView.avatar;
+            } else if (m_feedGeneratorHash.contains(record_cid)) {
+                return m_feedGeneratorHash[record_cid].avatar;
             } else {
                 return QString();
             }
@@ -424,7 +438,12 @@ bool NotificationListModel::getLatest()
                     m_cuePost.append(post);
 
                     if (item->reason == "like") {
-                        appendGetPostCue<AtProtocolType::AppBskyFeedLike::Main>(item->record);
+                        if (item->reasonSubject.contains("/app.bsky.feed.generator/")) {
+                            appendGetFeedGeneratorCue<AtProtocolType::AppBskyFeedLike::Main>(
+                                    item->record);
+                        } else {
+                            appendGetPostCue<AtProtocolType::AppBskyFeedLike::Main>(item->record);
+                        }
                     } else if (item->reason == "repost") {
                         appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(item->record);
                     } else if (item->reason == "quote") {
@@ -500,7 +519,7 @@ bool NotificationListModel::getLatest()
             } else {
                 emit errorOccured(notification->errorCode(), notification->errorMessage());
             }
-            QTimer::singleShot(100, this, &NotificationListModel::displayQueuedPosts);
+            QTimer::singleShot(10, this, &NotificationListModel::displayQueuedPosts);
             notification->deleteLater();
         });
         notification->setAccount(account());
@@ -534,7 +553,12 @@ bool NotificationListModel::getNext()
                     m_cuePost.append(post);
 
                     if (item->reason == "like") {
-                        appendGetPostCue<AtProtocolType::AppBskyFeedLike::Main>(item->record);
+                        if (item->reasonSubject.contains("/app.bsky.feed.generator/")) {
+                            appendGetFeedGeneratorCue<AtProtocolType::AppBskyFeedLike::Main>(
+                                    item->record);
+                        } else {
+                            appendGetPostCue<AtProtocolType::AppBskyFeedLike::Main>(item->record);
+                        }
                     } else if (item->reason == "repost") {
                         appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(item->record);
                     } else if (item->reason == "quote") {
@@ -761,7 +785,7 @@ bool NotificationListModel::checkVisibility(const QString &cid)
 void NotificationListModel::getPosts()
 {
     if (m_cueGetPost.isEmpty()) {
-        setRunning(false);
+        getFeedGenerators();
         return;
     }
 
@@ -848,11 +872,56 @@ void NotificationListModel::getPosts()
             emit errorOccured(posts->errorCode(), posts->errorMessage());
         }
         // 残ってたらもう1回
-        QTimer::singleShot(100, this, &NotificationListModel::getPosts);
+        QTimer::singleShot(10, this, &NotificationListModel::getPosts);
         posts->deleteLater();
     });
     posts->setAccount(account());
     posts->getPosts(uris);
+}
+
+void NotificationListModel::getFeedGenerators()
+{
+    if (m_cueGetFeedGenerator.isEmpty()) {
+        setRunning(false);
+        return;
+    }
+
+    // 最大25個までいっきに取得できる
+    QStringList uris;
+    for (int i = 0; i < 25; i++) {
+        if (m_cueGetFeedGenerator.isEmpty())
+            break;
+        uris.append(m_cueGetFeedGenerator.first());
+        m_cueGetFeedGenerator.removeFirst();
+    }
+
+    AppBskyFeedGetFeedGenerators *generators = new AppBskyFeedGetFeedGenerators(this);
+    connect(generators, &AppBskyFeedGetFeedGenerators::finished, [=](bool success) {
+        if (success) {
+            QStringList new_cid;
+            for (const auto &generator : *generators->generatorViewList()) {
+                m_feedGeneratorHash[generator.cid] = generator;
+                new_cid.append(generator.cid);
+            }
+            // 取得した個別のポストデータを表示用のcidリストのどの分か探して紐付ける
+            for (int i = 0; i < m_cidList.count(); i++) {
+                if (!m_notificationHash.contains(m_cidList.at(i)))
+                    continue;
+
+                if (m_notificationHash[m_cidList.at(i)].reason == "like") {
+                    emitRecordDataChanged<AtProtocolType::AppBskyFeedLike::Main>(
+                            i, new_cid, m_notificationHash[m_cidList.at(i)].record);
+                }
+            }
+        } else {
+            emit errorOccured(generators->errorCode(), generators->errorMessage());
+        }
+        // 残ってたらもう1回
+        QTimer::singleShot(10, this, &NotificationListModel::getFeedGenerators);
+        generators->deleteLater();
+    });
+    generators->setAccount(account());
+    generators->getFeedGenerators(uris);
 }
 
 bool NotificationListModel::enableReason(const QString &reason) const
@@ -879,6 +948,15 @@ void NotificationListModel::appendGetPostCue(const QVariant &record)
     T data = AtProtocolType::LexiconsTypeUnknown::fromQVariant<T>(record);
     if (!data.subject.cid.isEmpty() && !m_cueGetPost.contains(data.subject.uri)) {
         m_cueGetPost.append(data.subject.uri);
+    }
+}
+
+template<typename T>
+void NotificationListModel::appendGetFeedGeneratorCue(const QVariant &record)
+{
+    T data = AtProtocolType::LexiconsTypeUnknown::fromQVariant<T>(record);
+    if (!data.subject.cid.isEmpty() && !m_cueGetFeedGenerator.contains(data.subject.uri)) {
+        m_cueGetFeedGenerator.append(data.subject.uri);
     }
 }
 
