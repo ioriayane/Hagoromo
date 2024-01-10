@@ -1,16 +1,17 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import QtQuick.Controls.Material 2.15
 
 import tech.relog.hagoromo.followslistmodel 1.0
 import tech.relog.hagoromo.searchprofilelistmodel 1.0
 import tech.relog.hagoromo.singleton 1.0
 
-ListView {
+Rectangle {
     id: mentionSuggestionView
-    height: count * (AdjustedValues.i12 + 5)
-    clip: true
-    visible: searchProfileListModel.count > 0
+    height: listView.count * (AdjustedValues.i12 + 5) + listView.anchors.margins * 2
+    visible: listView.count > 0
+    color: Material.backgroundColor
 
     signal selected(string handle)
 
@@ -21,71 +22,85 @@ ListView {
     function reload(text){
         var handle_part = searchProfileListModel.extractHandleBlock(text)
         if(handle_part.length === 0){
-            return
+            searchProfileListModel.clear()
+        }else{
+            console.log(handle_part)
+            searchProfileListModel.getSuggestion(handle_part, 6)
         }
-        console.log(handle_part)
-        searchProfileListModel.getSuggestion(handle_part, 6)
+    }
+    function replaceText(text, current_position, handle){
+        return searchProfileListModel.replaceText(text, current_position, handle)
     }
 
     function accept(){
-        if(currentIndex >= 0){
-            selected(searchProfileListModel.item(currentIndex, FollowsListModel.HandleRole))
+        if(listView.currentIndex >= 0){
+            selected(searchProfileListModel.item(listView.currentIndex, FollowsListModel.HandleRole))
         }
         searchProfileListModel.clear()
     }
     function up(){
-        if(currentIndex > 0){
-            currentIndex -= 1
+        if(listView.currentIndex > 0){
+            listView.currentIndex -= 1
         }
     }
     function down(){
-        if(currentIndex < (count - 1)){
-            currentIndex += 1
+        if(listView.currentIndex < (listView.count - 1)){
+            listView.currentIndex += 1
         }
     }
 
-    model: SearchProfileListModel {
-        id: searchProfileListModel
-        autoLoading: false
-        onErrorOccured: (code, message) => console.log(code + " : " + message)
-    }
-    delegate: ItemDelegate {
-        width: mentionSuggestionView.width
-        height: AdjustedValues.i12 + 5
-        highlighted: ListView.isCurrentItem
-        RowLayout {
-            id: userLayout
-            width: parent.width
-            height: parent.height
-            AvatarImage {
-                id: avatarImage
-                Layout.preferredWidth: AdjustedValues.i12
-                Layout.preferredHeight: AdjustedValues.i12
-                Layout.alignment: Qt.AlignVCenter
-            }
-            Label {
-                Layout.alignment: Qt.AlignVCenter
-                Layout.maximumWidth: mentionSuggestionView.width - (
-                                         avatarImage.width + handleLabel.width + userLayout.spacing * 3
-                                         )
-                font.pointSize: AdjustedValues.f8
-                text: model.displayName
-                elide: Text.ElideRight
-            }
-            Item {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 1
-            }
-            Label {
-                id: handleLabel
-                Layout.alignment: Qt.AlignVCenter
-                font.pointSize: AdjustedValues.f8
-                text: model.handle
-            }
+    ListView {
+        id: listView
+        anchors.fill: parent
+        anchors.margins: 2
+        clip: true
+
+        model: SearchProfileListModel {
+            id: searchProfileListModel
+            autoLoading: false
+            onErrorOccured: (code, message) => console.log(code + " : " + message)
         }
-        onClicked: {
-            mentionSuggestionView.selected(model.handle)
-            searchProfileListModel.clear()
+        delegate: ItemDelegate {
+            width: mentionSuggestionView.width
+            height: AdjustedValues.i12 + 5
+            highlighted: ListView.isCurrentItem
+
+            RowLayout {
+                id: userLayout
+                anchors.fill: parent
+                anchors.leftMargin: 5
+                anchors.rightMargin: 5
+                AvatarImage {
+                    id: avatarImage
+                    Layout.preferredWidth: AdjustedValues.i12
+                    Layout.preferredHeight: AdjustedValues.i12
+                    Layout.alignment: Qt.AlignVCenter
+                    source: model.avatar
+                }
+                Label {
+                    Layout.alignment: Qt.AlignVCenter
+                    Layout.maximumWidth: mentionSuggestionView.width - (
+                                             avatarImage.width + handleLabel.width + userLayout.spacing * 3
+                                             )
+                    font.pointSize: AdjustedValues.f8
+                    text: model.displayName
+                    elide: Text.ElideRight
+                }
+                Item {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 1
+                }
+                Label {
+                    id: handleLabel
+                    Layout.alignment: Qt.AlignVCenter
+                    font.pointSize: AdjustedValues.f8
+                    text: "@" + model.handle
+                }
+            }
+            onClicked: {
+                mentionSuggestionView.selected(model.handle)
+                searchProfileListModel.clear()
+            }
         }
     }
 }

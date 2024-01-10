@@ -11,6 +11,7 @@ class FollowsListModel : public AtpAbstractListModel
     Q_OBJECT
 
     Q_PROPERTY(QString targetDid READ targetDid WRITE setTargetDid NOTIFY targetDidChanged)
+    Q_PROPERTY(int count READ count NOTIFY countChanged)
 
 public:
     explicit FollowsListModel(QObject *parent = nullptr);
@@ -31,6 +32,7 @@ public:
         FollowingUriRole,
         LabelsRole,
     };
+    Q_ENUM(FollowsListModelRoles)
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
@@ -48,6 +50,8 @@ public:
     QString targetDid() const;
     void setTargetDid(const QString &newTargetDid);
 
+    int count() const;
+
 public slots:
     Q_INVOKABLE bool getLatest();
     Q_INVOKABLE bool getNext();
@@ -55,6 +59,7 @@ public slots:
 signals:
     void profileTypeChanged();
     void targetDidChanged();
+    void countChanged();
 
 protected:
     QHash<int, QByteArray> roleNames() const;
