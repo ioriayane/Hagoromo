@@ -22,6 +22,9 @@ class NotificationListModel : public AtpAbstractListModel
                        visibleMentionChanged)
     Q_PROPERTY(bool visibleReply READ visibleReply WRITE setVisibleReply NOTIFY visibleReplyChanged)
     Q_PROPERTY(bool visibleQuote READ visibleQuote WRITE setVisibleQuote NOTIFY visibleQuoteChanged)
+
+    Q_PROPERTY(bool updateSeenNotification READ updateSeenNotification WRITE
+                       setUpdateSeenNotification NOTIFY updateSeenNotificationChanged)
 public:
     explicit NotificationListModel(QObject *parent = nullptr);
 
@@ -127,6 +130,8 @@ public:
     void setVisibleReply(bool newVisibleReply);
     bool visibleQuote() const;
     void setVisibleQuote(bool newVisibleQuote);
+    bool updateSeenNotification() const;
+    void setUpdateSeenNotification(bool newUpdateSeenNotification);
 
 signals:
     void visibleLikeChanged();
@@ -135,6 +140,7 @@ signals:
     void visibleMentionChanged();
     void visibleReplyChanged();
     void visibleQuoteChanged();
+    void updateSeenNotificationChanged();
 
 protected:
     QHash<int, QByteArray> roleNames() const;
@@ -152,8 +158,11 @@ private:
     QStringList m_cueGetPost;
     QStringList m_cueGetFeedGenerator;
 
+    bool m_hasUnread; // 今回の読み込みで未読がある
+
     void getPosts();
     void getFeedGenerators();
+    void updateSeen();
 
     template<typename T>
     void appendGetPostCue(const QVariant &record);
@@ -170,6 +179,7 @@ private:
     bool m_visibleMention;
     bool m_visibleReply;
     bool m_visibleQuote;
+    bool m_updateSeenNotification;
 };
 
 #endif // NOTIFICATIONLISTMODEL_H

@@ -15,6 +15,7 @@ QtObject {
     property bool visibleReplyToUnfollowedUsers: true
 
     // 保存しない全体からの反映
+    property bool updateSeenNotification: true
     property bool sequentialDisplayOfPosts: true
     property int displayInterval: sequentialDisplayOfPosts ? 400 : 0
 }

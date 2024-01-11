@@ -116,6 +116,7 @@ ColumnLayout {
                 visibleMention: settings.visibleMention
                 visibleReply: settings.visibleReply
                 visibleQuote: settings.visibleQuote
+                updateSeenNotification: settings.updateSeenNotification
 
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }

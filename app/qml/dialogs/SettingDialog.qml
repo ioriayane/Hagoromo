@@ -34,6 +34,7 @@ Dialog {
         property string fontFamily: ""
         // Feed
         property string displayOfPosts: "sequential"
+        property bool updateSeenNotification: true
         // Translate
         property string translateApiUrl: "https://api-free.deepl.com/v2/translate"
         property string translateApiKey: ""
@@ -53,6 +54,7 @@ Dialog {
             setFontFamily(fontFamilyComboBox, settings.fontFamily)
             // Feed
             setRadioButton(displayOfPostsGroup.buttons, settings.displayOfPosts)
+            setRadioButton(updateSeenNotificationGroup.buttons, settings.updateSeenNotification)
             // Translate
             translateApiUrlText.text = settings.translateApiUrl
             translateApiKeyText.text = encryption.decrypt(settings.translateApiKey)
@@ -93,6 +95,10 @@ Dialog {
     ButtonGroup {
         id: displayOfPostsGroup
         buttons: displayOfPostsRowLayout.children
+    }
+    ButtonGroup {
+        id: updateSeenNotificationGroup
+        buttons: updateSeenNotificationRowLayout.children
     }
 
     ColumnLayout {
@@ -266,6 +272,7 @@ Dialog {
                     columns: 2
 
                     Label {
+                        font.pointSize: AdjustedValues.f10
                         text: qsTr("Display of posts")
                     }
                     RowLayout {
@@ -273,14 +280,30 @@ Dialog {
                         RadioButton {
                             property string value: "sequential"
                             font.pointSize: AdjustedValues.f10
-                            font.family: fontFamilyComboBox.currentText
                             text: qsTr("Sequential")
                         }
                         RadioButton {
                             property string value: "at_once"
                             font.pointSize: AdjustedValues.f10
-                            font.family: fontFamilyComboBox.currentText
                             text: qsTr("At once")
+                        }
+                    }
+
+                    Label {
+                        font.pointSize: AdjustedValues.f10
+                        text: qsTr("Handling notifications")
+                    }
+                    RowLayout {
+                        id: updateSeenNotificationRowLayout
+                        RadioButton {
+                            property bool value: true
+                            font.pointSize: AdjustedValues.f10
+                            text: qsTr("Read")
+                        }
+                        RadioButton {
+                            property bool value: false
+                            font.pointSize: AdjustedValues.f10
+                            text: qsTr("Do nothing")
                         }
                     }
 
@@ -458,6 +481,7 @@ Dialog {
                     }
                     // Feed
                     settings.displayOfPosts = displayOfPostsGroup.checkedButton.value
+                    settings.updateSeenNotification = updateSeenNotificationGroup.checkedButton.value
                     // Translate
                     settings.translateApiUrl = translateApiUrlText.text
                     settings.translateApiKey = encryption.encrypt(translateApiKeyText.text)
