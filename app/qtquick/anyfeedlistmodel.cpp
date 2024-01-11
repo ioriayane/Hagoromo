@@ -227,8 +227,10 @@ QString AnyFeedListModel::appendGetPostCue(const QVariant &record)
     QString cid;
     T data = AtProtocolType::LexiconsTypeUnknown::fromQVariant<T>(record);
     if (!data.subject.cid.isEmpty() && !m_cueGetPost.contains(data.subject.uri)) {
-        m_cueGetPost.append(data.subject.uri);
-        cid = data.subject.cid;
+        if (!data.subject.uri.contains("/app.bsky.feed.generator/")) {
+            m_cueGetPost.append(data.subject.uri);
+            cid = data.subject.cid;
+        }
     }
     return cid;
 }

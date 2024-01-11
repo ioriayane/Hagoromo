@@ -148,12 +148,17 @@ private:
             m_notificationHash;
 
     QHash<QString, AtProtocolType::AppBskyFeedDefs::PostView> m_postHash;
+    QHash<QString, AtProtocolType::AppBskyFeedDefs::GeneratorView> m_feedGeneratorHash;
     QStringList m_cueGetPost;
+    QStringList m_cueGetFeedGenerator;
 
     void getPosts();
+    void getFeedGenerators();
 
     template<typename T>
     void appendGetPostCue(const QVariant &record);
+    template<typename T>
+    void appendGetFeedGeneratorCue(const QVariant &record);
     template<typename T>
     void emitRecordDataChanged(const int i, const QStringList &new_cid, const QVariant &record);
 
