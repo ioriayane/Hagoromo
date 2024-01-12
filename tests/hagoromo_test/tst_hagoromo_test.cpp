@@ -80,6 +80,10 @@ hagoromo_test::hagoromo_test()
                         json = "{}";
                         result = false;
                     }
+                } else if (request.url().path().endsWith(
+                                   "/xrpc/app.bsky.notification.updateSeen")) {
+                    json = "{}";
+                    result = true;
                 } else {
                     json = "{}";
                     result = false;
