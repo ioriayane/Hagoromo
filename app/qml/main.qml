@@ -620,6 +620,7 @@ ApplicationWindow {
                         item.settings.visibleQuote = model.visibleQuote
                         item.settings.visibleReplyToUnfollowedUsers = model.visibleReplyToUnfollowedUsers
 
+                        item.settings.updateSeenNotification = settingDialog.settings.updateSeenNotification
                         item.settings.sequentialDisplayOfPosts = (settingDialog.settings.displayOfPosts === "sequential")
                     }
 

@@ -31,6 +31,7 @@ SOURCES += \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphmuteactor.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphunmuteactor.cpp \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationlistnotifications.cpp \
+    $$PWD/atprotocol/app/bsky/notification/appbskynotificationupdateseen.cpp \
     $$PWD/atprotocol/app/bsky/unspecced/appbskyunspeccedgetpopularfeedgenerators.cpp \
     $$PWD/atprotocol/com/atproto/moderation/comatprotomoderationcreatereport.cpp \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepocreaterecord.cpp \
@@ -79,6 +80,7 @@ HEADERS += \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphmuteactor.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphunmuteactor.h \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationlistnotifications.h \
+    $$PWD/atprotocol/app/bsky/notification/appbskynotificationupdateseen.h \
     $$PWD/atprotocol/app/bsky/unspecced/appbskyunspeccedgetpopularfeedgenerators.h \
     $$PWD/atprotocol/com/atproto/moderation/comatprotomoderationcreatereport.h \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepocreaterecord.h \

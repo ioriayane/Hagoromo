@@ -3,6 +3,7 @@
 #include "atprotocol/lexicons_func_unknown.h"
 #include "atprotocol/app/bsky/feed/appbskyfeedgetposts.h"
 #include "atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerators.h"
+#include "atprotocol/app/bsky/notification/appbskynotificationupdateseen.h"
 #include "recordoperator.h"
 
 #include <QTimer>
@@ -10,16 +11,19 @@
 using AtProtocolInterface::AppBskyFeedGetFeedGenerators;
 using AtProtocolInterface::AppBskyFeedGetPosts;
 using AtProtocolInterface::AppBskyNotificationListNotifications;
+using AtProtocolInterface::AppBskyNotificationUpdateSeen;
 using namespace AtProtocolType::AppBskyFeedDefs;
 
 NotificationListModel::NotificationListModel(QObject *parent)
     : AtpAbstractListModel { parent },
+      m_hasUnread(false),
       m_visibleLike(true),
       m_visibleRepost(true),
       m_visibleFollow(true),
       m_visibleMention(true),
       m_visibleReply(true),
-      m_visibleQuote(true)
+      m_visibleQuote(true),
+      m_updateSeenNotification(true)
 {
 }
 
@@ -421,6 +425,7 @@ bool NotificationListModel::getLatest()
         AppBskyNotificationListNotifications *notification =
                 new AppBskyNotificationListNotifications(this);
         connect(notification, &AppBskyNotificationListNotifications::finished, [=](bool success) {
+            m_hasUnread = false;
             if (success) {
                 QDateTime reference_time = QDateTime::currentDateTimeUtc();
 
@@ -436,6 +441,10 @@ bool NotificationListModel::getLatest()
                     post.indexed_at = item->indexedAt;
                     post.reference_time = reference_time;
                     m_cuePost.append(post);
+
+                    if (!item->isRead) {
+                        m_hasUnread = true;
+                    }
 
                     if (item->reason == "like") {
                         if (item->reasonSubject.contains("/app.bsky.feed.generator/")) {
@@ -537,6 +546,7 @@ bool NotificationListModel::getNext()
         AppBskyNotificationListNotifications *notification =
                 new AppBskyNotificationListNotifications(this);
         connect(notification, &AppBskyNotificationListNotifications::finished, [=](bool success) {
+            m_hasUnread = false;
             if (success) {
                 QDateTime reference_time = QDateTime::currentDateTimeUtc();
 
@@ -551,6 +561,10 @@ bool NotificationListModel::getNext()
                     post.indexed_at = item->indexedAt;
                     post.reference_time = reference_time;
                     m_cuePost.append(post);
+
+                    if (!item->isRead) {
+                        m_hasUnread = true;
+                    }
 
                     if (item->reason == "like") {
                         if (item->reasonSubject.contains("/app.bsky.feed.generator/")) {
@@ -882,7 +896,7 @@ void NotificationListModel::getPosts()
 void NotificationListModel::getFeedGenerators()
 {
     if (m_cueGetFeedGenerator.isEmpty()) {
-        setRunning(false);
+        updateSeen();
         return;
     }
 
@@ -922,6 +936,30 @@ void NotificationListModel::getFeedGenerators()
     });
     generators->setAccount(account());
     generators->getFeedGenerators(uris);
+}
+
+void NotificationListModel::updateSeen()
+{
+    if (!updateSeenNotification()) {
+        setRunning(false);
+        return;
+    }
+    if (!m_hasUnread) {
+        qDebug() << "All notifications are read.";
+        setRunning(false);
+        return;
+    }
+
+    AppBskyNotificationUpdateSeen *seen = new AppBskyNotificationUpdateSeen(this);
+    connect(seen, &AppBskyNotificationUpdateSeen::finished, [=](bool success) {
+        if (!success) {
+            emit errorOccured(seen->errorCode(), seen->errorMessage());
+        }
+        setRunning(false);
+        seen->deleteLater();
+    });
+    seen->setAccount(account());
+    seen->updateSeen(QString());
 }
 
 bool NotificationListModel::enableReason(const QString &reason) const
@@ -1053,4 +1091,17 @@ void NotificationListModel::setVisibleQuote(bool newVisibleQuote)
     m_visibleQuote = newVisibleQuote;
     emit visibleQuoteChanged();
     reflectVisibility();
+}
+
+bool NotificationListModel::updateSeenNotification() const
+{
+    return m_updateSeenNotification;
+}
+
+void NotificationListModel::setUpdateSeenNotification(bool newUpdateSeenNotification)
+{
+    if (m_updateSeenNotification == newUpdateSeenNotification)
+        return;
+    m_updateSeenNotification = newUpdateSeenNotification;
+    emit updateSeenNotificationChanged();
 }
