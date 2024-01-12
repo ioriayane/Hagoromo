@@ -116,7 +116,6 @@ Dialog {
                     enabled: checked || choiceLayout.checkedCount < 5
                     text: qsTr("Mentioned users")
                     property string value: "mentioned"
-//                    onCheckedChanged: choiceLayout.updateCheckedCount()
                 }
                 CheckBox {
                     id: followedCheckBox
@@ -127,7 +126,6 @@ Dialog {
                     enabled: checked || choiceLayout.checkedCount < 5
                     text: qsTr("Followed users")
                     property string value: "followed"
-//                    onCheckedChanged: choiceLayout.updateCheckedCount()
                 }
 
                 ScrollView {
