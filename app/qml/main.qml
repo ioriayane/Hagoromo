@@ -591,8 +591,42 @@ ApplicationWindow {
 
                 Loader {
                     id: loader
-                    y: row * height
-                    height: scrollView.childHeight / scrollView.rows
+                    y: {
+                        // row * height
+                        if(scrollView.rows === 1){
+                            return 0
+                        }else if(scrollView.rows === 2){
+                            return row * scrollView.childHeight * settingDialog.settings.rowHeightRatio2 / 100
+                        }else{
+                            if(row === 0){
+                                return 0
+                            }else if(row === 1){
+                                return scrollView.childHeight * settingDialog.settings.rowHeightRatio31 / 100
+                            }else{
+                                return scrollView.childHeight * settingDialog.settings.rowHeightRatio32 / 100
+                            }
+                        }
+                    }
+                    height: {
+                        // scrollView.childHeight / scrollView.rows
+                        if(scrollView.rows === 1){
+                            return scrollView.childHeight
+                        }else if(scrollView.rows === 2){
+                            if(row === 0){
+                                return scrollView.childHeight * settingDialog.settings.rowHeightRatio2 / 100
+                            }else{
+                                return scrollView.childHeight * (100 - settingDialog.settings.rowHeightRatio2) / 100
+                            }
+                        }else{
+                            if(row === 0){
+                                return scrollView.childHeight * settingDialog.settings.rowHeightRatio31 / 100
+                            }else if(row === 1){
+                                return scrollView.childHeight * (settingDialog.settings.rowHeightRatio32 - settingDialog.settings.rowHeightRatio31) / 100
+                            }else{
+                                return scrollView.childHeight * (100 - settingDialog.settings.rowHeightRatio32) / 100
+                            }
+                        }
+                    }
                     width: model.width * AdjustedValues.ratio
                     sourceComponent: columnView
                     property int row: 0
@@ -622,8 +656,8 @@ ApplicationWindow {
                     function setLayout() {
                         var cur_pos = columnManageModel.getPosition(model.index)
                         var left_index = columnManageModel.getPreviousRow(model.index)
-                        var count_in_row = repeater.count / scrollView.rows
-                        var index_in_row = cur_pos % Math.ceil(count_in_row)
+                        var count_in_row = Math.ceil(repeater.count / scrollView.rows)
+                        var index_in_row = cur_pos % count_in_row
                         loader.row = Math.trunc(cur_pos / count_in_row)
                         console.log("setLayout(1)   :" + model.index + ": row=" + loader.row + ", index_in_row=" + index_in_row + ", count_in_row=" + count_in_row)
                         if(index_in_row === 0){
