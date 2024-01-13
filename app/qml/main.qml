@@ -77,7 +77,7 @@ ApplicationWindow {
 
     SettingDialog {
         id: settingDialog
-        onAccepted: repeater.updateSetting()
+        onAccepted: repeater.updateSettings(2)
     }
 
     PostDialog {
@@ -188,7 +188,7 @@ ApplicationWindow {
                 columnManageModel.update(i, ColumnListModel.VisibleQuoteRole, visibleQuoteCheckBox.checked)
                 columnManageModel.update(i, ColumnListModel.VisibleReplyToUnfollowedUsersRole, visibleReplyToUnfollowedUsersCheckBox.checked)
 
-                repeater.updateSetting()
+                repeater.updateSettings(0)
             }
         }
     }
@@ -311,7 +311,7 @@ ApplicationWindow {
                                           console.log("Search:" + account_uuid + ", " + text + ", " + current_column_key)
                                           var pos = columnManageModel.insertNext(current_column_key, account_uuid, 2, false, 300000, 350,
                                                                                  qsTr("Search posts"), text)
-                                          repeater.updatePosition()
+                                          repeater.updateSettings(1)
                                           scrollView.showColumn(pos)
                                       }
             onRequestViewListFeed: (account_uuid, uri, name) => {
@@ -407,17 +407,17 @@ ApplicationWindow {
             onRequestMoveToLeft: (key) => {
                                      console.log("move to left:" + key)
                                      columnManageModel.move(key, ColumnListModel.MoveLeft)
-                                     repeater.updatePosition()
+                                     repeater.updateSettings(1)
                                  }
             onRequestMoveToRight: (key) => {
                                       console.log("move to right:" + key)
                                       columnManageModel.move(key, ColumnListModel.MoveRight)
-                                      repeater.updatePosition()
+                                      repeater.updateSettings(1)
                                   }
             onRequestRemove: (key) => {
                                  console.log("remove column:" + key)
                                  columnManageModel.removeByKey(key)
-                                 repeater.updatePosition()
+                                 repeater.updateSettings(1)
                              }
             onRequestDisplayOfColumnSetting: (key) => columnsettingDialog.openWithKey(key)
             onHoveredLinkChanged: hoveredLinkFrame.text = hoveredLink
@@ -470,54 +470,40 @@ ApplicationWindow {
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOn
             clip: true
 
+            property int rows: settingDialog.settings.rowCount
             property int childHeight: scrollView.height - scrollView.ScrollBar.horizontal.height
             contentHeight: childHeight
 
             function showLeftMost() {
-                // scrollView.contentItem.contentX = 0
                 showColumn(0)
             }
 
             function showRightMost() {
                 // scrollView.contentItemはFlickable
                 // Flickableの幅が全カラムの幅より小さくなったら移動させる
-                //if(scrollView.contentWidth > scrollView.contentItem.width){
-                //    scrollView.contentItem.contentX = scrollView.contentWidth - scrollView.contentItem.width
-                //}
                 showColumn(repeater.count - 1)
             }
 
             function showColumn(index){
-                var w = 0
-                var last_w = 0
-                var margin = 0
                 var row_list = columnManageModel.getRowListInOrderOfPosition()
                 var item = undefined
                 if(row_list.length <= index){
                     return
                 }
-                for(var i=0; i<row_list.length; i++){
-                    if(i < index){
-                        item = repeater.itemAt(row_list[i])   //ここのitemはloader自身
-                        w += item.width + item.anchors.leftMargin
-                    }else if(i === index){
-                        item = repeater.itemAt(row_list[i])   //ここのitemはloader自身
-                        last_w = item.width + item.anchors.leftMargin
-                        margin = item.anchors.leftMargin
+                item = repeater.itemAt(row_list[index])   //ここのitemはloader自身
+                if(item){
+                    if((item.x + item.width) > scrollView.contentItem.width){
+                        scrollView.contentItem.contentX = (item.x + item.width) - scrollView.contentItem.width
+                    }else if(item.x < scrollView.contentItem.contentX){
+                        scrollView.contentItem.contentX = item.x
                     }
+                    columnCursor.width = item.width
+                    columnCursor.height = item.height
+                    columnCursor.x = item.x
+                    columnCursor.y = item.y
+                    columnCursorAnimation.stop()
+                    columnCursorAnimation.start()
                 }
-                if((w + last_w) > scrollView.contentItem.width){
-                    scrollView.contentItem.contentX = (w + last_w) - scrollView.contentItem.width
-                }else if(w < scrollView.contentItem.contentX){
-                    scrollView.contentItem.contentX = w
-                }
-
-                columnCursor.width = last_w - margin
-                columnCursor.height = scrollView.height - scrollView.ScrollBar.horizontal.height - 1
-                columnCursor.x = scrollView.x + w + margin - scrollView.contentItem.contentX
-                columnCursor.y = 1
-                columnCursorAnimation.stop()
-                columnCursorAnimation.start()
             }
 
             Repeater {
@@ -528,27 +514,65 @@ ApplicationWindow {
                 }
 
                 function updateSetting() {
-                    var w = 0
                     for(var i=0; i<repeater.count; i++){
                         var item = repeater.itemAt(i)   //ここのitemはloader自身
                         item.setSettings()
-                        w += item.width + item.anchors.leftMargin
                     }
-                    scrollView.contentWidth = w
+                    updateContentWidth()
                 }
 
                 function updatePosition() {
                     // モデルの順番を入れ替えるとLoader側が対応できないのと
                     // 最左にくるものから処理しないとレイアウトが循環して矛盾するため
                     // カラムの管理順ではなくポジションの順番で処理する
-                    var w = 0
                     var row_list = columnManageModel.getRowListInOrderOfPosition()
                     for(var i=0; i<row_list.length; i++){
                         var item = repeater.itemAt(row_list[i])   //ここのitemはloader自身
                         item.setLayout()
-                        w += item.width + item.anchors.leftMargin
                     }
-                    scrollView.contentWidth = w
+                    updateContentWidth()
+                }
+
+                // target
+                //  0:setting only
+                //  1:layout only
+                //  2:both
+                function updateSettings(target) {
+                    // モデルの順番を入れ替えるとLoader側が対応できないのと
+                    // 最左にくるものから処理しないとレイアウトが循環して矛盾するため
+                    // カラムの管理順ではなくポジションの順番で処理する
+                    var row_list = columnManageModel.getRowListInOrderOfPosition()
+                    for(var i=0; i<row_list.length; i++){
+                        var item = repeater.itemAt(row_list[i])   //ここのitemはloader自身
+                        if(target === 0){
+                            item.setSettings()
+                        }else if(target === 1){
+                            item.setLayout()
+                        }else{
+                            item.setSettings()
+                            item.setLayout()
+                        }
+                    }
+                    updateContentWidth()
+                }
+
+                function updateContentWidth() {
+                    var w = []
+                    var prev_row = -1
+                    var row_list = columnManageModel.getRowListInOrderOfPosition()
+                    for(var i=0; i<row_list.length; i++){
+                        var item = repeater.itemAt(row_list[i])   //ここのitemはloader自身
+                        if(prev_row !== item.row){
+                            w[item.row] = 0
+                            prev_row = item.row
+                        }
+                        w[item.row] += item.width + item.anchors.leftMargin
+                    }
+                    var max_w = 0
+                    for(i=0; i<w.length; i++){
+                        max_w = (max_w < w[i]) ? w[i] : max_w
+                    }
+                    scrollView.contentWidth = max_w
                 }
 
                 function updateAccount(account_uuid){
@@ -567,9 +591,11 @@ ApplicationWindow {
 
                 Loader {
                     id: loader
-                    height: scrollView.childHeight
+                    y: row * height
+                    height: scrollView.childHeight / scrollView.rows
                     width: model.width * AdjustedValues.ratio
                     sourceComponent: columnView
+                    property int row: 0
 
                     onLoaded: {
                         // Loaderで読み込んだComponentにアカウント情報など設定する
@@ -589,19 +615,24 @@ ApplicationWindow {
                         if(model.index === columnManageModel.rowCount() - 1){
                             // 最後の時にレイアウトを設定する
                             // 読み込んでいる過程では左がいない場合がある
-                            repeater.updatePosition()
+                            repeater.updateSettings(1)
                         }
                     }
 
                     function setLayout() {
-                        var left_pos = columnManageModel.getPreviousRow(model.index)
-                        if(left_pos < 0){
-                            console.log("setLayout() :" + model.index + ": left_pos=" + left_pos + ", left is " + loader.parent)
+                        var cur_pos = columnManageModel.getPosition(model.index)
+                        var left_index = columnManageModel.getPreviousRow(model.index)
+                        var count_in_row = repeater.count / scrollView.rows
+                        var index_in_row = cur_pos % Math.ceil(count_in_row)
+                        loader.row = Math.trunc(cur_pos / count_in_row)
+                        console.log("setLayout(1)   :" + model.index + ": row=" + loader.row + ", index_in_row=" + index_in_row + ", count_in_row=" + count_in_row)
+                        if(index_in_row === 0){
+                            console.log("setLayout(2.1) :" + model.index + ": left_pos=" + left_index + ", left is " + loader.parent)
                             loader.anchors.left = loader.parent.left
                             loader.anchors.leftMargin = 0
                         }else{
-                            console.log("setLayout() :" + model.index + ": left_pos=" + left_pos + ", left name=" + repeater.itemAt(left_pos).item.settings.columnName)
-                            loader.anchors.left = repeater.itemAt(left_pos).right
+                            console.log("setLayout(2.2) :" + model.index + ": left_pos=" + left_index + ", left name=" + repeater.itemAt(left_index).item.settings.columnName)
+                            loader.anchors.left = repeater.itemAt(left_index).right
                             loader.anchors.leftMargin = 3
                         }
                     }
@@ -635,31 +666,30 @@ ApplicationWindow {
                     }
                 }
             }
-        }
-    }
+            Rectangle {
+                id: columnCursor
+                radius: 3
+                color: "transparent"
+                opacity: 0
+                border.width: 1
+                border.color: Material.color(Material.LightBlue)
+                layer.enabled: true
+                layer.effect: Glow {
+                    radius: 8
+                    samples: 17
+                    color: Material.color(Material.LightBlue)
+                }
 
-    Rectangle {
-        id: columnCursor
-        radius: 3
-        color: "transparent"
-        opacity: 0
-        border.width: 1
-        border.color: Material.color(Material.LightBlue)
-        layer.enabled: true
-        layer.effect: Glow {
-            radius: 8
-            samples: 17
-            color: Material.color(Material.LightBlue)
-        }
-
-        NumberAnimation {
-            id: columnCursorAnimation
-            target: columnCursor
-            property: "opacity"
-            duration: 500
-            from: 1.0
-            to: 0.0
-            easing.type: Easing.Linear
+                NumberAnimation {
+                    id: columnCursorAnimation
+                    target: columnCursor
+                    property: "opacity"
+                    duration: 500
+                    from: 1.0
+                    to: 0.0
+                    easing.type: Easing.Linear
+                }
+            }
         }
     }
 

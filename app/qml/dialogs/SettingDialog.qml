@@ -35,6 +35,11 @@ Dialog {
         // Feed
         property string displayOfPosts: "sequential"
         property bool updateSeenNotification: true
+        // Window
+        property int rowCount: 0
+        property int rowHeightRatio2: 50
+        property int rowHeightRatio31: 35
+        property int rowHeightRatio32: 70
         // Translate
         property string translateApiUrl: "https://api-free.deepl.com/v2/translate"
         property string translateApiKey: ""
@@ -55,6 +60,10 @@ Dialog {
             // Feed
             setRadioButton(displayOfPostsGroup.buttons, settings.displayOfPosts)
             setRadioButton(updateSeenNotificationGroup.buttons, settings.updateSeenNotification)
+            // Window
+            rowCountComboBox.currentIndex = -1
+            rowCountComboBox.currentIndex = rowCountComboBox.indexOfValue(settings.rowCount)
+            // sliderへの値の設定はcurrentValueの変更イベントで!
             // Translate
             translateApiUrlText.text = settings.translateApiUrl
             translateApiKeyText.text = encryption.decrypt(settings.translateApiKey)
@@ -114,6 +123,11 @@ Dialog {
                 font.pointSize: AdjustedValues.f10
                 font.capitalization: Font.MixedCase
                 text: qsTr("Feed")
+            }
+            TabButton {
+                font.pointSize: AdjustedValues.f10
+                font.capitalization: Font.MixedCase
+                text: qsTr("Window")
             }
             TabButton {
                 font.pointSize: AdjustedValues.f10
@@ -315,6 +329,82 @@ Dialog {
                 }
             }
 
+            // Window
+            Frame {
+                GridLayout {
+                    anchors.fill: parent
+                    columnSpacing: 5 * AdjustedValues.ratio
+                    columns: 2
+
+                    Label {
+                        font.pointSize: AdjustedValues.f10
+                        text: qsTr("Row count")
+                    }
+                    ComboBox {
+                        id: rowCountComboBox
+                        Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
+                        font.pointSize: AdjustedValues.f10
+                        model: [1, 2, 3]
+                        onCurrentValueChanged: {
+                            console.log("onCurrentValueChanged=" + currentValue)
+                            if(currentValue === 2){
+                                rowHeightRatioSlider.value = settings.rowHeightRatio2
+                            }else if(currentValue === 3){
+                                rowHeightRatioRangeSlider.first.value = settings.rowHeightRatio31
+                                rowHeightRatioRangeSlider.second.value = settings.rowHeightRatio32
+                            }
+                        }
+                    }
+                    Label {
+                        font.pointSize: AdjustedValues.f10
+                        text: qsTr("Row height ratio")
+                    }
+                    Item {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: rowHeightRatioSlider.height
+                        RowLayout {
+                            Slider {
+                                id: rowHeightRatioSlider
+                                visible: rowCountComboBox.currentValue === 2
+                                from: 0
+                                to: 100
+                                stepSize: 5
+                                snapMode: Slider.SnapAlways
+                            }
+                            Label {
+                                visible: rowHeightRatioSlider.visible
+                                font.pointSize: AdjustedValues.f8
+                                text: rowHeightRatioSlider.value + ":" + (100 - rowHeightRatioSlider.value)
+                            }
+                        }
+                        RowLayout {
+                            RangeSlider {
+                                id: rowHeightRatioRangeSlider
+                                visible: rowCountComboBox.currentValue === 3
+                                from: 0
+                                to: 100
+                                stepSize: 5
+                                snapMode: Slider.SnapAlways
+                                first.value: 36
+                                second.value: 71
+                            }
+                            Label {
+                                visible: rowHeightRatioRangeSlider.visible
+                                font.pointSize: AdjustedValues.f8
+                                text: rowHeightRatioRangeSlider.first.value + ":" +
+                                      rowHeightRatioRangeSlider.second.value + ":" +
+                                      (100 - rowHeightRatioRangeSlider.second.value)
+                            }
+                        }
+                    }
+                    Item {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        Layout.columnSpan: 2
+                    }
+                }
+            }
+
             // Translate Page
             Frame {
                 GridLayout {
@@ -439,21 +529,6 @@ Dialog {
             }
         }
 
-
-        //        Label {
-        //            text: qsTr("Font")
-        //        }
-        //        ComboBox {
-        //            id: fontCombo
-        //            Layout.preferredWidth: 300
-        //            model: Qt.fontFamilies()
-        //            delegate: ItemDelegate {
-        //                text: modelData
-        //                width: fontCombo.width
-        //            }
-        //        }
-
-
         RowLayout {
             Button {
                 flat: true
@@ -482,6 +557,11 @@ Dialog {
                     // Feed
                     settings.displayOfPosts = displayOfPostsGroup.checkedButton.value
                     settings.updateSeenNotification = updateSeenNotificationGroup.checkedButton.value
+                    // window
+                    settings.rowCount = rowCountComboBox.currentValue
+                    settings.rowHeightRatio2 = rowHeightRatioSlider.value
+                    settings.rowHeightRatio31 = rowHeightRatioRangeSlider.first.value
+                    settings.rowHeightRatio32 = rowHeightRatioRangeSlider.second.value
                     // Translate
                     settings.translateApiUrl = translateApiUrlText.text
                     settings.translateApiKey = encryption.encrypt(translateApiKeyText.text)

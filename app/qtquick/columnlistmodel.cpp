@@ -265,6 +265,13 @@ int ColumnListModel::getPreviousRow(const int row)
     return -1;
 }
 
+int ColumnListModel::getPosition(const int row) const
+{
+    if (row < 0 || row >= m_columnList.count())
+        return -1;
+    return m_columnList.at(row).position;
+}
+
 QList<int> ColumnListModel::getRowListInOrderOfPosition() const
 {
     QList<int> row_list;
