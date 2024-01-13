@@ -14,7 +14,7 @@ class ListsListModel : public AtpAbstractListModel
     // 取得したリストそれぞれの中に登録されているか確認するユーザーのdid
     Q_PROPERTY(
             QString searchTarget READ searchTarget WRITE setSearchTarget NOTIFY searchTargetChanged)
-
+    Q_PROPERTY(int checkedCount READ checkedCount WRITE setCheckedCount NOTIFY checkedCountChanged)
 public:
     explicit ListsListModel(QObject *parent = nullptr);
 
@@ -32,6 +32,7 @@ public:
         CreatoravatarRole,
         SearchStatusRole,
         ListItemUriRole, // searchTargetで登録しているか確認したユーザーのListItemのレコードURI
+        CheckedRole,
     };
     Q_ENUM(ListsListModelRoles);
     enum VisibilityType {
@@ -67,6 +68,8 @@ public:
     void setVisibilityType(const VisibilityType &newVisibilityType);
     QString searchTarget() const;
     void setSearchTarget(const QString &newSearchTarget);
+    int checkedCount() const;
+    void setCheckedCount(int newCheckedCount);
 
 public slots:
     Q_INVOKABLE bool getLatest();
@@ -76,6 +79,7 @@ signals:
     void actorChanged();
     void visibilityTypeChanged();
     void searchTargetChanged();
+    void checkedCountChanged();
 
 protected:
     QHash<int, QByteArray> roleNames() const;
@@ -91,11 +95,13 @@ private:
     QHash<QString, AtProtocolType::AppBskyGraphDefs::ListView> m_listViewHash;
     QHash<QString, SearchStatusType> m_searchStatusHash;
     QHash<QString, QString> m_listItemUriHash;
+    QHash<QString, bool> m_checkedHash;
     QStringList m_searchCidQue;
     QString m_listItemCursor;
     QString m_actor;
     VisibilityType m_visibilityType;
     QString m_searchTarget;
+    int m_checkedCount;
 };
 
 #endif // LISTSLISTMODEL_H
