@@ -35,7 +35,7 @@ Dialog {
         // Feed
         property string displayOfPosts: "sequential"
         property bool updateSeenNotification: true
-        // Window
+        // Layout
         property int rowCount: 1
         property int rowHeightRatio2: 50
         property int rowHeightRatio31: 35
@@ -60,7 +60,7 @@ Dialog {
             // Feed
             setRadioButton(displayOfPostsGroup.buttons, settings.displayOfPosts)
             setRadioButton(updateSeenNotificationGroup.buttons, settings.updateSeenNotification)
-            // Window
+            // Layout
             rowCountComboBox.currentIndex = -1
             rowCountComboBox.currentIndex = rowCountComboBox.indexOfValue(settings.rowCount)
             rowHeightRatioSlider.value = settings.rowHeightRatio2
@@ -129,7 +129,7 @@ Dialog {
             TabButton {
                 font.pointSize: AdjustedValues.f10
                 font.capitalization: Font.MixedCase
-                text: qsTr("Window")
+                text: qsTr("Layout")
             }
             TabButton {
                 font.pointSize: AdjustedValues.f10
@@ -331,7 +331,7 @@ Dialog {
                 }
             }
 
-            // Window
+            // Layout
             Frame {
                 GridLayout {
                     anchors.fill: parent
@@ -363,6 +363,13 @@ Dialog {
                                 to: 100
                                 stepSize: 5
                                 snapMode: Slider.SnapAlways
+                                onMoved: {
+                                    if(value < 10){
+                                        value = 10
+                                    }else if(value > 90){
+                                        value = 90
+                                    }
+                                }
                             }
                             Label {
                                 visible: rowHeightRatioSlider.visible
@@ -381,6 +388,20 @@ Dialog {
                                 snapMode: Slider.SnapAlways
                                 first.value: 35
                                 second.value: 70
+                                first.onMoved: {
+                                    if(first.value < 10){
+                                        first.value = 10
+                                    }else if(first.value > (second.value - 10)){
+                                        first.value = second.value - 10
+                                    }
+                                }
+                                second.onMoved: {
+                                    if(second.value < (first.value + 10)){
+                                        second.value = first.value + 10
+                                    }else if(second.value > 90){
+                                        second.value = 90
+                                    }
+                                }
                             }
                             Label {
                                 visible: rowHeightRatioRangeSlider.visible
@@ -551,7 +572,7 @@ Dialog {
                     // Feed
                     settings.displayOfPosts = displayOfPostsGroup.checkedButton.value
                     settings.updateSeenNotification = updateSeenNotificationGroup.checkedButton.value
-                    // window
+                    // Layout
                     settings.rowCount = rowCountComboBox.currentValue
                     settings.rowHeightRatio2 = rowHeightRatioSlider.value
                     settings.rowHeightRatio31 = rowHeightRatioRangeSlider.first.value
