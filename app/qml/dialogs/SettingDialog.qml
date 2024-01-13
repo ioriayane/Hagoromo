@@ -36,7 +36,7 @@ Dialog {
         property string displayOfPosts: "sequential"
         property bool updateSeenNotification: true
         // Window
-        property int rowCount: 0
+        property int rowCount: 1
         property int rowHeightRatio2: 50
         property int rowHeightRatio31: 35
         property int rowHeightRatio32: 70
@@ -63,7 +63,9 @@ Dialog {
             // Window
             rowCountComboBox.currentIndex = -1
             rowCountComboBox.currentIndex = rowCountComboBox.indexOfValue(settings.rowCount)
-            // sliderへの値の設定はcurrentValueの変更イベントで!
+            rowHeightRatioSlider.value = settings.rowHeightRatio2
+            rowHeightRatioRangeSlider.first.value = settings.rowHeightRatio31
+            rowHeightRatioRangeSlider.second.value = settings.rowHeightRatio32
             // Translate
             translateApiUrlText.text = settings.translateApiUrl
             translateApiKeyText.text = encryption.decrypt(settings.translateApiKey)
@@ -345,15 +347,6 @@ Dialog {
                         Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
                         font.pointSize: AdjustedValues.f10
                         model: [1, 2, 3]
-                        onCurrentValueChanged: {
-                            console.log("onCurrentValueChanged=" + currentValue)
-                            if(currentValue === 2){
-                                rowHeightRatioSlider.value = settings.rowHeightRatio2
-                            }else if(currentValue === 3){
-                                rowHeightRatioRangeSlider.first.value = settings.rowHeightRatio31
-                                rowHeightRatioRangeSlider.second.value = settings.rowHeightRatio32
-                            }
-                        }
                     }
                     Label {
                         font.pointSize: AdjustedValues.f10
@@ -374,7 +367,8 @@ Dialog {
                             Label {
                                 visible: rowHeightRatioSlider.visible
                                 font.pointSize: AdjustedValues.f8
-                                text: rowHeightRatioSlider.value + ":" + (100 - rowHeightRatioSlider.value)
+                                text: Math.round(rowHeightRatioSlider.value) + ":"
+                                      + Math.round(100 - rowHeightRatioSlider.value)
                             }
                         }
                         RowLayout {
@@ -385,15 +379,15 @@ Dialog {
                                 to: 100
                                 stepSize: 5
                                 snapMode: Slider.SnapAlways
-                                first.value: 36
-                                second.value: 71
+                                first.value: 35
+                                second.value: 70
                             }
                             Label {
                                 visible: rowHeightRatioRangeSlider.visible
                                 font.pointSize: AdjustedValues.f8
-                                text: rowHeightRatioRangeSlider.first.value + ":" +
-                                      rowHeightRatioRangeSlider.second.value + ":" +
-                                      (100 - rowHeightRatioRangeSlider.second.value)
+                                text: Math.round(rowHeightRatioRangeSlider.first.value) + ":" +
+                                      Math.round(rowHeightRatioRangeSlider.second.value - rowHeightRatioRangeSlider.first.value) + ":" +
+                                      Math.round(100 - rowHeightRatioRangeSlider.second.value)
                             }
                         }
                     }
