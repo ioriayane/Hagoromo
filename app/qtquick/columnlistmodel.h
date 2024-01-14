@@ -104,6 +104,7 @@ public:
     Q_INVOKABLE int indexOf(const QString &key) const;
 
     Q_INVOKABLE int getPreviousRow(const int row);
+    Q_INVOKABLE int getPosition(const int row) const;
     Q_INVOKABLE QList<int> getRowListInOrderOfPosition() const;
 
     Q_INVOKABLE void save() const;
