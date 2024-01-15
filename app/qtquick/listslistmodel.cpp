@@ -61,17 +61,11 @@ QVariant ListsListModel::item(int row, ListsListModelRoles role) const
         else
             return current.creator->avatar;
     } else if (role == SearchStatusRole) {
-        if (m_searchStatusHash.contains(current.cid)) {
-            return m_searchStatusHash[current.cid];
-        } else {
-            return SearchStatusTypeUnknown;
-        }
+        return m_searchStatusHash.value(current.cid, SearchStatusTypeUnknown);
     } else if (role == ListItemUriRole) {
-        if (m_listItemUriHash.contains(current.cid)) {
-            return m_listItemUriHash[current.cid];
-        } else {
-            return QString();
-        }
+        return m_listItemUriHash.value(current.cid, QString());
+    } else if (role == CheckedRole) {
+        return m_checkedHash.value(current.cid, false);
     }
 
     return QVariant();
@@ -97,6 +91,15 @@ void ListsListModel::update(int row, ListsListModelRoles role, const QVariant &v
             m_listItemUriHash[current.cid] = new_uri;
             emit dataChanged(index(row), index(row));
         }
+    } else if (role == CheckedRole) {
+        m_checkedHash[current.cid] = value.toBool();
+        emit dataChanged(index(row), index(row));
+
+        int count = 0;
+        for (const auto &cid : m_cidList) {
+            count += m_checkedHash.value(cid, false) ? 1 : 0;
+        }
+        setCheckedCount(count);
     }
 }
 
@@ -117,6 +120,7 @@ void ListsListModel::clear()
     m_searchStatusHash.clear();
     m_listItemUriHash.clear();
     m_listItemCursor.clear();
+    m_checkedHash.clear();
     AtpAbstractListModel::clear();
 }
 
@@ -235,6 +239,7 @@ QHash<int, QByteArray> ListsListModel::roleNames() const
     roles[CreatoravatarRole] = "creatoravatar";
     roles[SearchStatusRole] = "searchStatus";
     roles[ListItemUriRole] = "listItemUri";
+    roles[CheckedRole] = "checked";
 
     return roles;
 }
@@ -402,4 +407,17 @@ void ListsListModel::setSearchTarget(const QString &newSearchTarget)
         return;
     m_searchTarget = newSearchTarget;
     emit searchTargetChanged();
+}
+
+int ListsListModel::checkedCount() const
+{
+    return m_checkedCount;
+}
+
+void ListsListModel::setCheckedCount(int newCheckedCount)
+{
+    if (m_checkedCount == newCheckedCount)
+        return;
+    m_checkedCount = newCheckedCount;
+    emit checkedCountChanged();
 }

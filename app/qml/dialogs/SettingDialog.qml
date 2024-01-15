@@ -34,6 +34,12 @@ Dialog {
         property string fontFamily: ""
         // Feed
         property string displayOfPosts: "sequential"
+        property bool updateSeenNotification: true
+        // Layout
+        property int rowCount: 1
+        property int rowHeightRatio2: 50
+        property int rowHeightRatio31: 35
+        property int rowHeightRatio32: 70
         // Translate
         property string translateApiUrl: "https://api-free.deepl.com/v2/translate"
         property string translateApiKey: ""
@@ -53,6 +59,13 @@ Dialog {
             setFontFamily(fontFamilyComboBox, settings.fontFamily)
             // Feed
             setRadioButton(displayOfPostsGroup.buttons, settings.displayOfPosts)
+            setRadioButton(updateSeenNotificationGroup.buttons, settings.updateSeenNotification)
+            // Layout
+            rowCountComboBox.currentIndex = -1
+            rowCountComboBox.currentIndex = rowCountComboBox.indexOfValue(settings.rowCount)
+            rowHeightRatioSlider.value = settings.rowHeightRatio2
+            rowHeightRatioRangeSlider.first.value = settings.rowHeightRatio31
+            rowHeightRatioRangeSlider.second.value = settings.rowHeightRatio32
             // Translate
             translateApiUrlText.text = settings.translateApiUrl
             translateApiKeyText.text = encryption.decrypt(settings.translateApiKey)
@@ -94,6 +107,10 @@ Dialog {
         id: displayOfPostsGroup
         buttons: displayOfPostsRowLayout.children
     }
+    ButtonGroup {
+        id: updateSeenNotificationGroup
+        buttons: updateSeenNotificationRowLayout.children
+    }
 
     ColumnLayout {
         TabBar {
@@ -108,6 +125,11 @@ Dialog {
                 font.pointSize: AdjustedValues.f10
                 font.capitalization: Font.MixedCase
                 text: qsTr("Feed")
+            }
+            TabButton {
+                font.pointSize: AdjustedValues.f10
+                font.capitalization: Font.MixedCase
+                text: qsTr("Layout")
             }
             TabButton {
                 font.pointSize: AdjustedValues.f10
@@ -266,6 +288,7 @@ Dialog {
                     columns: 2
 
                     Label {
+                        font.pointSize: AdjustedValues.f10
                         text: qsTr("Display of posts")
                     }
                     RowLayout {
@@ -273,17 +296,122 @@ Dialog {
                         RadioButton {
                             property string value: "sequential"
                             font.pointSize: AdjustedValues.f10
-                            font.family: fontFamilyComboBox.currentText
                             text: qsTr("Sequential")
                         }
                         RadioButton {
                             property string value: "at_once"
                             font.pointSize: AdjustedValues.f10
-                            font.family: fontFamilyComboBox.currentText
                             text: qsTr("At once")
                         }
                     }
 
+                    Label {
+                        font.pointSize: AdjustedValues.f10
+                        text: qsTr("Handling notifications")
+                    }
+                    RowLayout {
+                        id: updateSeenNotificationRowLayout
+                        RadioButton {
+                            property bool value: true
+                            font.pointSize: AdjustedValues.f10
+                            text: qsTr("Read")
+                        }
+                        RadioButton {
+                            property bool value: false
+                            font.pointSize: AdjustedValues.f10
+                            text: qsTr("Do nothing")
+                        }
+                    }
+
+                    Item {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        Layout.columnSpan: 2
+                    }
+                }
+            }
+
+            // Layout
+            Frame {
+                GridLayout {
+                    anchors.fill: parent
+                    columnSpacing: 5 * AdjustedValues.ratio
+                    columns: 2
+
+                    Label {
+                        font.pointSize: AdjustedValues.f10
+                        text: qsTr("Row count")
+                    }
+                    ComboBox {
+                        id: rowCountComboBox
+                        Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
+                        font.pointSize: AdjustedValues.f10
+                        model: [1, 2, 3]
+                    }
+                    Label {
+                        font.pointSize: AdjustedValues.f10
+                        text: qsTr("Row height ratio")
+                    }
+                    Item {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: rowHeightRatioSlider.height
+                        RowLayout {
+                            Slider {
+                                id: rowHeightRatioSlider
+                                visible: rowCountComboBox.currentValue === 2
+                                from: 0
+                                to: 100
+                                stepSize: 5
+                                snapMode: Slider.SnapAlways
+                                onMoved: {
+                                    if(value < 10){
+                                        value = 10
+                                    }else if(value > 90){
+                                        value = 90
+                                    }
+                                }
+                            }
+                            Label {
+                                visible: rowHeightRatioSlider.visible
+                                font.pointSize: AdjustedValues.f8
+                                text: Math.round(rowHeightRatioSlider.value) + ":"
+                                      + Math.round(100 - rowHeightRatioSlider.value)
+                            }
+                        }
+                        RowLayout {
+                            RangeSlider {
+                                id: rowHeightRatioRangeSlider
+                                visible: rowCountComboBox.currentValue === 3
+                                from: 0
+                                to: 100
+                                stepSize: 5
+                                snapMode: Slider.SnapAlways
+                                first.value: 35
+                                second.value: 70
+                                first.onMoved: {
+                                    if(first.value < 10){
+                                        first.value = 10
+                                    }else if(first.value > (second.value - 10)){
+                                        first.value = second.value - 10
+                                    }
+                                }
+                                second.onMoved: {
+                                    if(second.value < (first.value + 10)){
+                                        second.value = first.value + 10
+                                    }else if(second.value > 90){
+                                        second.value = 90
+                                    }
+                                }
+                            }
+                            Label {
+                                visible: rowHeightRatioRangeSlider.visible
+                                font.pointSize: AdjustedValues.f8
+                                text: Math.round(rowHeightRatioRangeSlider.first.value) + ":" +
+                                      Math.round(rowHeightRatioRangeSlider.second.value - rowHeightRatioRangeSlider.first.value) + ":" +
+                                      Math.round(100 - rowHeightRatioRangeSlider.second.value)
+                            }
+                        }
+                    }
                     Item {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
@@ -416,21 +544,6 @@ Dialog {
             }
         }
 
-
-        //        Label {
-        //            text: qsTr("Font")
-        //        }
-        //        ComboBox {
-        //            id: fontCombo
-        //            Layout.preferredWidth: 300
-        //            model: Qt.fontFamilies()
-        //            delegate: ItemDelegate {
-        //                text: modelData
-        //                width: fontCombo.width
-        //            }
-        //        }
-
-
         RowLayout {
             Button {
                 flat: true
@@ -458,6 +571,12 @@ Dialog {
                     }
                     // Feed
                     settings.displayOfPosts = displayOfPostsGroup.checkedButton.value
+                    settings.updateSeenNotification = updateSeenNotificationGroup.checkedButton.value
+                    // Layout
+                    settings.rowCount = rowCountComboBox.currentValue
+                    settings.rowHeightRatio2 = rowHeightRatioSlider.value
+                    settings.rowHeightRatio31 = rowHeightRatioRangeSlider.first.value
+                    settings.rowHeightRatio32 = rowHeightRatioRangeSlider.second.value
                     // Translate
                     settings.translateApiUrl = translateApiUrlText.text
                     settings.translateApiKey = encryption.encrypt(translateApiKeyText.text)

@@ -94,15 +94,26 @@ Dialog {
             }
 
             ColumnLayout {
+                id: choiceLayout
                 anchors.fill: parent
                 enabled: choiceRadioButton.checked
                 spacing: 0 //AdjustedValues.s20
+
+                property int checkedCount: {
+                    var count = 0
+                    count += mentionedCheckBox.checked ? 1 : 0
+                    count += followedCheckBox.checked ? 1 : 0
+                    count += listsListModel.checkedCount
+                    return count
+                }
+
                 CheckBox {
                     id: mentionedCheckBox
                     leftPadding: 15
                     topPadding: 3
                     bottomPadding: AdjustedValues.s10
                     font.pointSize: AdjustedValues.f10
+                    enabled: checked || choiceLayout.checkedCount < 5
                     text: qsTr("Mentioned users")
                     property string value: "mentioned"
                 }
@@ -112,6 +123,7 @@ Dialog {
                     topPadding: AdjustedValues.s10
                     bottomPadding: AdjustedValues.s10
                     font.pointSize: AdjustedValues.f10
+                    enabled: checked || choiceLayout.checkedCount < 5
                     text: qsTr("Followed users")
                     property string value: "followed"
                 }
@@ -133,21 +145,6 @@ Dialog {
                             visibilityType: ListsListModel.VisibilityTypeCuration
                             property variant initialSelected: []
 
-//                            onRunningChanged: {
-//                                if(!running){
-//                                    var uri = ""
-//                                    for(var i=0; i<rootListView.count; i++){
-//                                        uri = listsListModel.item(i, ListsListModel.UriRole)
-//                                        console.log("uri=" + uri)
-//                                        console.log("obj=" + rootListView.itemAtIndex(i))
-//                                        if(initialSelected[uri]){
-//                                            rootListView.itemAtIndex(i).checked = true
-//                                        }else{
-//                                            rootListView.itemAtIndex(i).checked = false
-//                                        }
-//                                    }
-//                                }
-//                            }
                             function setInitialSelected(uri){
                                 initialSelected[uri] = true
                             }
@@ -172,6 +169,7 @@ Dialog {
                             verticalPadding: AdjustedValues.s10
                             leftPadding: 15
                             font.pointSize: AdjustedValues.f10
+                            enabled: checked || choiceLayout.checkedCount < 5
                             text: qsTr("Users in \"%1\"").replace("%1", model.name)
                             property string value: model.uri
                             Component.onCompleted: {
@@ -182,6 +180,7 @@ Dialog {
                                 }
                                 delete listsListModel.initialSelected[model.uri]
                             }
+                            onCheckedChanged: listsListModel.update(model.index, ListsListModel.CheckedRole, checked)
                         }
                     }
                 }

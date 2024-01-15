@@ -74,6 +74,8 @@ void FollowsListModel::remove(const QString &did)
     m_didList.removeAt(row);
     m_profileHash.remove(did);
     endRemoveRows();
+
+    emit countChanged();
 }
 
 void FollowsListModel::clear()
@@ -87,6 +89,8 @@ void FollowsListModel::clear()
     m_formattedDescriptionHash.clear();
     m_cursor.clear();
     endRemoveRows();
+
+    emit countChanged();
 }
 
 int FollowsListModel::indexOf(const QString &cid) const
@@ -264,6 +268,7 @@ void FollowsListModel::copyProfiles(const AtProtocolInterface::AppBskyGraphGetFo
             beginInsertRows(QModelIndex(), m_didList.count(), m_didList.count());
             m_didList.append(profile.did);
             endInsertRows();
+            emit countChanged();
         }
     }
 }
@@ -279,4 +284,9 @@ void FollowsListModel::setTargetDid(const QString &newTargetDid)
         return;
     m_targetDid = newTargetDid;
     emit targetDidChanged();
+}
+
+int FollowsListModel::count() const
+{
+    return rowCount();
 }

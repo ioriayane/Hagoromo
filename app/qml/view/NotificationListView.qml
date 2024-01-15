@@ -113,12 +113,12 @@ ScrollView {
             quoteRecordImagePreview.embedAlts: model.quoteRecordEmbedImagesAlt
             quoteRecordImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.quoteRecordEmbedImagesFull, model.quoteRecordEmbedImagesAlt)
 
-//            generatorViewFrame.visible: model.hasFeedGenerator
-//            generatorViewFrame.onClicked: notificationListView.requestViewFeedGenerator(model.feedGeneratorDisplayName, model.feedGeneratorUri)
-//            generatorAvatarImage.source: model.feedGeneratorAvatar
-//            generatorDisplayNameLabel.text: model.feedGeneratorDisplayName
-//            generatorCreatorHandleLabel.text: model.feedGeneratorCreatorHandle
-//            generatorLikeCountLabel.text: model.feedGeneratorLikeCount
+            feedGeneratorFrame.visible: model.hasFeedGenerator
+            feedGeneratorFrame.onClicked: requestViewFeedGenerator(model.feedGeneratorDisplayName, model.feedGeneratorUri)
+            feedGeneratorFrame.avatarImage.source: model.feedGeneratorAvatar
+            feedGeneratorFrame.displayNameLabel.text: model.feedGeneratorDisplayName
+            feedGeneratorFrame.creatorHandleLabel.text: model.feedGeneratorCreatorHandle
+            feedGeneratorFrame.likeCountLabel.text: model.feedGeneratorLikeCount
 
             postControls.replyButton.iconText: model.replyCount
             postControls.repostButton.iconText: model.repostCount

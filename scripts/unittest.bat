@@ -57,6 +57,8 @@ REM --- run -------
 if ERRORLEVEL 1 goto TEST_FAIL
 %BUILD_FOLDER%\hagoromo_test\debug\hagoromo_test.exe
 if ERRORLEVEL 1 goto TEST_FAIL
+%BUILD_FOLDER%\hagoromo_test2\debug\hagoromo_test2.exe
+if ERRORLEVEL 1 goto TEST_FAIL
 %BUILD_FOLDER%\http_test\debug\http_test.exe
 if ERRORLEVEL 1 goto TEST_FAIL
 %BUILD_FOLDER%\search_test\debug\search_test.exe

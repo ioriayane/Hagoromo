@@ -193,6 +193,11 @@ Dialog {
                             // リプライ制限のダイアログを開かずにポストするときのため選択済みにも設定する
                             selectThreadGateDialog.selectedType = selectThreadGateDialog.initialType
                             selectThreadGateDialog.selectedOptions = selectThreadGateDialog.initialOptions
+                            // 入力中にアカウントを切り替えるかもなので選んだ時に設定する
+                            mentionSuggestionView.setAccount(postDialog.accountModel.item(row, AccountListModel.ServiceRole),
+                                                             postDialog.accountModel.item(row, AccountListModel.DidRole),
+                                                             postDialog.accountModel.item(row, AccountListModel.HandleRole),
+                                                             postDialog.accountModel.item(row, AccountListModel.AccessJwtRole))
                         }
                     }
                 }
@@ -252,6 +257,7 @@ Dialog {
             }
 
             ScrollView {
+                z: 99   // MentionSuggetionViewを最前に表示するため
                 Layout.preferredWidth: 400 * AdjustedValues.ratio
                 Layout.preferredHeight: 100 * AdjustedValues.ratio
                 TextArea {
@@ -262,6 +268,45 @@ Dialog {
                     selectByMouse: true
                     font.pointSize: AdjustedValues.f10
                     property int realTextLength: systemTool.countText(text)
+                    onTextChanged: mentionSuggestionView.reload(getText(0, cursorPosition))
+                    Keys.onPressed: (event) => {
+                                        if(mentionSuggestionView.visible){
+                                            console.log("Key(v):" + event.key)
+                                            if(event.key === Qt.Key_Up){
+                                                mentionSuggestionView.up()
+                                                event.accepted = true
+                                            }else if(event.key === Qt.Key_Down){
+                                                mentionSuggestionView.down()
+                                                event.accepted = true
+                                            }else if(event.key === Qt.Key_Enter ||
+                                                     event.key === Qt.Key_Return){
+                                                mentionSuggestionView.accept()
+                                                event.accepted = true
+                                            }
+                                        }else{
+                                            console.log("Key(n):" + event.key)
+                                            if(event.key === Qt.Key_Space && (event.modifiers & Qt.ControlModifier)){
+                                                mentionSuggestionView.reload(getText(0, cursorPosition))
+                                                event.accepted = true
+                                            }
+                                        }
+                                    }
+                    MentionSuggestionView {
+                        id: mentionSuggestionView
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        onVisibleChanged: {
+                            var rect = postText.positionToRectangle(postText.cursorPosition)
+                            y = rect.y + rect.height + 2
+                        }
+                        onSelected: (handle) => {
+                                        var after = replaceText(postText.text, postText.cursorPosition, handle)
+                                        if(after !== postText.text){
+                                            postText.text = after
+                                            postText.cursorPosition = postText.text.length
+                                        }
+                                    }
+                    }
                 }
             }
 

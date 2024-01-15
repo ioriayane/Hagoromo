@@ -116,6 +116,7 @@ ColumnLayout {
                 visibleMention: settings.visibleMention
                 visibleReply: settings.visibleReply
                 visibleQuote: settings.visibleQuote
+                updateSeenNotification: settings.updateSeenNotification
 
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }
@@ -131,6 +132,7 @@ ColumnLayout {
                                  }
             onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+            onRequestViewFeedGenerator: (name, uri) => columnView.requestViewFeedGenerator(account.uuid, name, uri)
             onRequestViewLikedBy: (uri) => columnStackView.push(likesProfilesComponent, { "targetUri": uri })
             onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
             onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
