@@ -29,6 +29,10 @@
 
 アーカイブを解凍して任意のフォルダに保存してください。
 
+## 使用方法
+
+[ユーザーマニュアル](./users_manual_ja.md)を参照してください。
+
 ## ビルド方法
 
 ### 共通
@@ -131,6 +135,11 @@ Please download the pre-built executable from [Releases](https://github.com/iori
 ## Installation
 
 Unzip the archive and save it in any folder.
+
+## How to Use
+
+Please refer to [the User's Manual](./users_manual_en.md).
+
 
 ## How to Build
 
