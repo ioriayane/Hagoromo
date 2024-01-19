@@ -1,0 +1,4 @@
+baseURL = 'http://example.org/'
+languageCode = 'ja-JP'
+title = '羽衣 -Hagoromo-'
+theme = 'hugo-book'
