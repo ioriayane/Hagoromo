@@ -6,7 +6,7 @@
 
 マルチカラム対応の[Bluesky](https://blueskyweb.xyz/)クライアントです。
 
-![Main window](./doc/screenshot.png)
+![Main window](./docs/screenshot.jpg)
 
 ## 動作確認環境
 
@@ -113,7 +113,7 @@ $ make && make install
 
 This is a multi-column [Bluesky](https://blueskyweb.xyz/) client.
 
-![Main window](./doc/screenshot.png)
+![Main window](./docs/screenshot.jpg)
 
 ## System Requirements
 
