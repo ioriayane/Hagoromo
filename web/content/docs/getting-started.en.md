@@ -27,35 +27,30 @@ For Mac, please refer to [Open a Mac app from an unidentified developer](https:/
 
 ## Add Accounts
 
-```
-サイドバーからダイアログのスクショ
-```
+{{< figure src="../images/add_account.en.png" >}}
 
 1. Open the Manage Accounts dialog from the sidebar.
 2. Press the Add button.
 
+{{< figure src="../images/login.en.png" >}}
 
-```
-ログインダイアログのスクショ
-```
-
-1. Service  
-   Input `https://bsky.social`
-2. ID  
-   Input oen of the following:
+1. Input the following:
+   - Service  
+     Input `https://bsky.social`.  
+     Basically no change is required, but other PDS can be used.
+   - ID  
+     Input oen of the following:
      - Handle
      - E-mail
      - DID
-4. Password  
-   Input the application password you created on the [official site](https://bsky.app/settings/app-passwords).  
-   Do not use real passwords.
- 
+   - Password  
+     Input the application password you created on the [official site](https://bsky.app/settings/app-passwords).  
+     Do not use real passwords.
+2. Press the `Login` button.
 
 ## Add columns
 
-```
-カラムの追加ダイアログのスクショ
-```
+{{< figure src="../images/add_column.en.png" >}}
 
 1. Select the account
 2. Choose the item you want to add from the column types
