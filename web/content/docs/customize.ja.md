@@ -1,7 +1,7 @@
 ---
 title: カスタムする
 weight: 100
-buildDrafts: true
+draft: true
 ---
 
 # カスタムする

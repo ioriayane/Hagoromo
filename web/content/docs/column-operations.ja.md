@@ -1,7 +1,7 @@
 ---
 title: カラムの操作
 weight: 80
-buildDrafts: true
+draft: true
 ---
 
 # カラムの操作

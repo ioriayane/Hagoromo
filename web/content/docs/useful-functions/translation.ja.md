@@ -1,7 +1,7 @@
 ---
 title: 翻訳
 weight: 20
-buildDrafts: true
+draft: true
 ---
 
 # 翻訳
