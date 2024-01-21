@@ -1,17 +1,31 @@
 ---
 title: はじめかた
 weight: 10
+bookFlatSection: true
 ---
 
 # はじめかた
 
 ## 入手
 
-ダウンロード
+[リリースページ](https://github.com/ioriayane/Hagoromo/releases)よりzipファイルをダウンロードします。
 
-## インストール
+使用する環境に合わせて選択してください。ファイル名は下記のとおりです。
 
-Zipの解凍
+- Windows用 : `hagoromo_x.y.z_windows.zip`
+- Linux用 : `hagoromo_x.y.z_linux.zip`
+- Mac用 : `hagoromo_x.y.z_mac.zip`
+
+
+## インストールと起動
+
+ダウンロードしたzipファイルを任意のフォルダに解凍して下記のファイルを実行してください。
+
+- Windows : `Hagoromo.exe`
+- Linux : `Hagoromo.sh`
+- Mac : `Hagoromo.app`
+
+Macの場合は[開発元が未確認のMacアプリを開く](https://support.apple.com/ja-jp/guide/mac-help/mh40616/mac)を参考にしてください。
 
 ## アカウントの追加
 
@@ -27,15 +41,8 @@ Zipの解凍
 ログインダイアログのスクショ
 ```
 
-
-|No|項目|説明|
-|---|---|---|
-|1|サービス|https://bsky.social を入力<br />基本的に変更不要|
-|2|ID|下記のいずれかを入力<br />- ハンドル<br />- Eメール<br />- DID|
-|3|パスワード|[公式サイト](https://bsky.app/settings/app-passwords)で作成したアプリパスワード|
-
 1. サービス  
-   https://bsky.social を入力します。基本的に変更不要です。
+   `https://bsky.social`を入力します。基本的に変更不要です。
 2. ID  
    下記のいずれかを入力します。
      - ハンドル
@@ -44,7 +51,7 @@ Zipの解凍
 4. パスワード  
    [公式サイト](https://bsky.app/settings/app-passwords)で作成したアプリパスワードを入力してください。  
    本物のパスワードは使用しないでください。
- 
+
 
 ## カラムの追加
 
@@ -56,13 +63,6 @@ Zipの解凍
 
 カラムタイプには下記が表示されます。
 
-|項目|説明|
-|---|---|
-|標準フィード|タイムライン（Following）と通知が表示されます。|
-|カスタムフィード|保存したカスタムフィードが表示されます（Pin to Homeではありません）。|
-|リスト|自身のリストが表示されます（ミュートやブロックをするリストではありません）。|
-
-
 - 標準フィード
   - タイムライン（Following）と通知が表示されます。
 - カスタムフィード
@@ -72,6 +72,8 @@ Zipの解凍
 
 ## 投稿
 
-```
-投稿ダイアログ
-```
+{{< figure src="../images/post.ja.png" >}}
+
+1. 鉛筆マークのボタンを押します（または`n`キー）
+2. 素敵な出来事を入力します（300文字まで）
+3. ポストボタンを押します

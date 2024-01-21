@@ -1,4 +1,16 @@
 baseURL = 'http://example.org/'
-languageCode = 'ja-JP'
-title = '羽衣 -Hagoromo-'
 theme = 'hugo-book'
+
+DefaultContentLanguage = "en"
+
+[languages]
+  [languages.en]
+    languageName = "English"
+    languageCode = 'en-US'
+    weight = 10
+    title = '羽衣 -Hagoromo-'
+  [languages.ja]
+    languageName = "日本語"
+    languageCode = 'ja-JP'
+    weight = 20
+    title = '羽衣 -Hagoromo-'

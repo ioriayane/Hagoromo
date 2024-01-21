@@ -1,6 +1,7 @@
 ---
 title: カスタムする
 weight: 100
+buildDrafts: true
 ---
 
 # カスタムする
@@ -15,8 +16,3 @@ weight: 100
 ## フィードの動きを変更する
 
 ## レイアウトを変更する
-
-{{ $image := resources.Get "images/screenshot.jpg" }}
-<img src="{{ $image.RelPermalink }}" width="{{ $image.Width }}" height="{{ $image.Height }}">
-
-{{< figure src="$image.RelPermalink" title="Steve Francia" >}}
