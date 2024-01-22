@@ -1,6 +1,7 @@
 ---
 title: キーボードショートカット
 weight: 10
+description: マルチカラム対応Blueskyクライアント
 ---
 
 # キーボードショートカット

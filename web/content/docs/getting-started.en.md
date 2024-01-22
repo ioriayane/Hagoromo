@@ -1,6 +1,7 @@
 ---
 title: Getting started
 weight: 10
+description: This is a multi-column Bluesky client.
 ---
 
 # Getting started

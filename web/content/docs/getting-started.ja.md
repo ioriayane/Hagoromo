@@ -1,7 +1,7 @@
 ---
 title: はじめかた
 weight: 10
-bookFlatSection: true
+description: マルチカラム対応Blueskyクライアント
 ---
 
 # はじめかた

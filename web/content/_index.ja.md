@@ -1,5 +1,5 @@
 ---
-title: Introduction
+title: 羽衣 -Hagoromo-
 type: docs
 ---
 

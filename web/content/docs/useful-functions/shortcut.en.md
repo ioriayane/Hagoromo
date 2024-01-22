@@ -1,6 +1,7 @@
 ---
 title: Keyboard shortcuts
 weight: 10
+description: This is a multi-column Bluesky client.
 ---
 
 # Keyboard shortcuts

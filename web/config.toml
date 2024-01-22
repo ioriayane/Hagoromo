@@ -9,8 +9,12 @@ DefaultContentLanguage = "en"
     languageCode = 'en-US'
     weight = 10
     title = '羽衣 -Hagoromo-'
+    description = 'This is a multi-column Bluesky client.'
+    images = ['images/cover.png']
   [languages.ja]
     languageName = "日本語"
     languageCode = 'ja-JP'
     weight = 20
     title = '羽衣 -Hagoromo-'
+    description = 'This is a multi-column Bluesky client.'
+    images = ['images/cover.png']
