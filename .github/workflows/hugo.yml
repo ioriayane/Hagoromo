@@ -1,4 +1,4 @@
-name: Deploy Hugo site to Pages
+name: Deploy web site
 on:
   push:
     branches:
@@ -46,6 +46,4 @@ jobs:
             --gc \
             --minify
           ls -lR .
-        with:
-          path: ./web
-
+        working-directory: ./web
