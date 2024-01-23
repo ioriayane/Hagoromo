@@ -35,7 +35,7 @@ For Mac, please refer to [Open a Mac app from an unidentified developer](https:/
 
 {{< figure src="../images/login.en.png" >}}
 
-1. Input the following:
+1. Set the following:
    - Service  
      Input `https://bsky.social`.  
      Basically no change is required, but other PDS can be used.
