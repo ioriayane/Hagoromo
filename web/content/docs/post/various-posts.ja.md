@@ -1,6 +1,7 @@
 ---
 title: いろいろな投稿
 weight: 20
+draft: true
 ---
 
 # いろいろな投稿
