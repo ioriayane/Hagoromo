@@ -282,6 +282,8 @@ Dialog {
                                                      event.key === Qt.Key_Return){
                                                 mentionSuggestionView.accept()
                                                 event.accepted = true
+                                            }else if(event.key === Qt.Key_Escape){
+                                                mentionSuggestionView.clear()
                                             }
                                         }else{
                                             console.log("Key(n):" + event.key)
