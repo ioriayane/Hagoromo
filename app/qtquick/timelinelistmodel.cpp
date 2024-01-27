@@ -89,17 +89,10 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
              || role == QuoteRecordBlockedRole)
         return getQuoteItem(current.post, role);
 
-    else if (role == HasExternalLinkRole)
-        return current.post.embed_type
-                == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedExternal_View;
-    else if (role == ExternalLinkUriRole)
-        return current.post.embed_AppBskyEmbedExternal_View.external.uri;
-    else if (role == ExternalLinkTitleRole)
-        return current.post.embed_AppBskyEmbedExternal_View.external.title;
-    else if (role == ExternalLinkDescriptionRole)
-        return current.post.embed_AppBskyEmbedExternal_View.external.description;
-    else if (role == ExternalLinkThumbRole)
-        return current.post.embed_AppBskyEmbedExternal_View.external.thumb;
+    else if (role == HasExternalLinkRole || role == ExternalLinkUriRole
+             || role == ExternalLinkTitleRole || role == ExternalLinkDescriptionRole
+             || role == ExternalLinkThumbRole)
+        return getExternalLinkItem(current.post, role);
 
     else if (role == HasFeedGeneratorRole) {
         if (current.post.embed_AppBskyEmbedRecord_View.isNull())
@@ -756,6 +749,64 @@ QVariant TimelineListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDefs::
             }
         }
         return false;
+    }
+
+    return QVariant();
+}
+
+QVariant
+TimelineListModel::getExternalLinkItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
+                                       const TimelineListModelRoles role) const
+{
+    bool is_external =
+            post.embed_type == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedExternal_View;
+    bool with_image = post.embed_AppBskyEmbedRecordWithMedia_View.media_type
+            == AppBskyEmbedRecordWithMedia::ViewMediaType::media_AppBskyEmbedExternal_View;
+
+    if (role == HasExternalLinkRole) {
+        if (is_external) {
+            return true;
+        } else if (with_image) {
+            return true;
+        } else {
+            return false;
+        }
+    } else if (role == ExternalLinkUriRole) {
+        if (is_external) {
+            return post.embed_AppBskyEmbedExternal_View.external.uri;
+        } else if (with_image) {
+            return post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedExternal_View
+                    .external.uri;
+        } else {
+            return QString();
+        }
+    } else if (role == ExternalLinkTitleRole) {
+        if (is_external) {
+            return post.embed_AppBskyEmbedExternal_View.external.title;
+        } else if (with_image) {
+            return post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedExternal_View
+                    .external.title;
+        } else {
+            return QString();
+        }
+    } else if (role == ExternalLinkDescriptionRole) {
+        if (is_external) {
+            return post.embed_AppBskyEmbedExternal_View.external.description;
+        } else if (with_image) {
+            return post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedExternal_View
+                    .external.description;
+        } else {
+            return QString();
+        }
+    } else if (role == ExternalLinkThumbRole) {
+        if (is_external) {
+            return post.embed_AppBskyEmbedExternal_View.external.thumb;
+        } else if (with_image) {
+            return post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedExternal_View
+                    .external.thumb;
+        } else {
+            return QString();
+        }
     }
 
     return QVariant();

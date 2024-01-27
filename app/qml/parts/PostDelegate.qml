@@ -190,6 +190,26 @@ ClickableFrame {
                         visible: contentMediaFilterFrame.showContent
                     }
 
+                    ExternalLinkCard {
+                        id: externalLinkFrame
+                        Layout.preferredWidth: parent.width
+                        Layout.topMargin: 5
+                        hoverEnabled: true
+                        onHoveredChanged:{
+                            if(hovered){
+                                displayLink(uriLabel.text)
+                            }else{
+                                displayLink("")
+                            }
+                        }
+                    }
+
+                    FeedGeneratorLinkCard {
+                        id: feedGeneratorFrame
+                        Layout.preferredWidth: parent.width
+                        Layout.topMargin: 5
+                    }
+
                     CoverFrame {
                         id: quoteFilterFrame
                         Layout.preferredWidth: parent.width
@@ -249,25 +269,6 @@ ClickableFrame {
                         }
                     }
 
-                    ExternalLinkCard {
-                        id: externalLinkFrame
-                        Layout.preferredWidth: parent.width
-                        Layout.topMargin: 5
-                        hoverEnabled: true
-                        onHoveredChanged:{
-                            if(hovered){
-                                displayLink(uriLabel.text)
-                            }else{
-                                displayLink("")
-                            }
-                        }
-                    }
-
-                    FeedGeneratorLinkCard {
-                        id: feedGeneratorFrame
-                        Layout.preferredWidth: parent.width
-                        Layout.topMargin: 5
-                    }
 
                     PostInformation {
                         id: postInformation
