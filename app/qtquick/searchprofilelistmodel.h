@@ -8,6 +8,9 @@ class SearchProfileListModel : public FollowsListModel
     Q_OBJECT
 
     Q_PROPERTY(QString text READ text WRITE setText NOTIFY textChanged)
+    Q_PROPERTY(bool enabledSuggestion READ enabledSuggestion WRITE setEnabledSuggestion NOTIFY
+                       enabledSuggestionChanged)
+
 public:
     explicit SearchProfileListModel(QObject *parent = nullptr);
 
@@ -18,6 +21,8 @@ public:
 
     QString text() const;
     void setText(const QString &newText);
+    bool enabledSuggestion() const;
+    void setEnabledSuggestion(bool newEnabledSuggestion);
 
 public slots:
     Q_INVOKABLE bool getLatest();
@@ -25,10 +30,12 @@ public slots:
 
 signals:
     void textChanged();
+    void enabledSuggestionChanged();
 
 private:
     QString m_text;
     QRegularExpression m_regMentionHandle;
+    bool m_enabledSuggestion;
 };
 
 #endif // SEARCHPROFILELISTMODEL_H

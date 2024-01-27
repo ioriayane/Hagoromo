@@ -6,7 +6,8 @@
 using AtProtocolInterface::AppBskyActorSearchActors;
 using AtProtocolInterface::AppBskyActorSearchActorsTypeahead;
 
-SearchProfileListModel::SearchProfileListModel(QObject *parent) : FollowsListModel { parent }
+SearchProfileListModel::SearchProfileListModel(QObject *parent)
+    : FollowsListModel { parent }, m_enabledSuggestion(false)
 {
     m_regMentionHandle = QRegularExpression(REG_EXP_MENTION_PART);
 }
@@ -20,7 +21,9 @@ bool SearchProfileListModel::getSuggestion(const QString &q, int limit)
     connect(profiles, &AppBskyActorSearchActorsTypeahead::finished, [=](bool success) {
         if (success) {
             clear();
-            copyProfiles(profiles);
+            if (enabledSuggestion()) {
+                copyProfiles(profiles);
+            }
         } else {
             emit errorOccured(profiles->errorCode(), profiles->errorMessage());
         }
@@ -136,4 +139,17 @@ void SearchProfileListModel::setText(const QString &newText)
         return;
     m_text = newText;
     emit textChanged();
+}
+
+bool SearchProfileListModel::enabledSuggestion() const
+{
+    return m_enabledSuggestion;
+}
+
+void SearchProfileListModel::setEnabledSuggestion(bool newEnabledSuggestion)
+{
+    if (m_enabledSuggestion == newEnabledSuggestion)
+        return;
+    m_enabledSuggestion = newEnabledSuggestion;
+    emit enabledSuggestionChanged();
 }
