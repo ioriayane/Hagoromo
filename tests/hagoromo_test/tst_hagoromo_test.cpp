@@ -108,10 +108,6 @@ void hagoromo_test::test_test_TimelineListModelError()
     model.setRunning(true);
     QVERIFY(model.getLatest() == false);
     QVERIFY(model.getNext() == false);
-
-    model.setRunning(false);
-    QVERIFY(model.getLatest() == false);
-    QVERIFY(model.getNext() == false);
 }
 
 void hagoromo_test::test_TimelineListModelFacet()

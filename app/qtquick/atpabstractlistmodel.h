@@ -105,7 +105,7 @@ protected:
     void displayQueuedPostsNext();
     virtual void finishedDisplayingQueuedPosts() = 0;
     virtual bool checkVisibility(const QString &cid) = 0;
-    bool updateContentFilterLabels(std::function<void()> callback);
+    void updateContentFilterLabels(std::function<void()> callback);
     ConfigurableLabelStatus
     getContentFilterStatus(const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels,
                            const bool for_media) const;

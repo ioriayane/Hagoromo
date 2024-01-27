@@ -11,11 +11,11 @@ class ComAtprotoRepoGetRecord : public AccessAtProtocol
 public:
     explicit ComAtprotoRepoGetRecord(QObject *parent = nullptr);
 
-    bool getRecord(const QString &repo, const QString &collection, const QString &rkey,
+    void getRecord(const QString &repo, const QString &collection, const QString &rkey,
                    const QString &cid);
 
-    bool profile(const QString &did);
-    bool list(const QString &did, const QString &rkey);
+    void profile(const QString &did);
+    void list(const QString &did, const QString &rkey);
 
     QString cid() const;
     QString uri() const;

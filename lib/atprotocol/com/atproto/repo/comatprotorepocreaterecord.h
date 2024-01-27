@@ -22,9 +22,9 @@ public:
     void like(const QString &cid, const QString &uri);
     void follow(const QString &did);
     void block(const QString &did);
-    bool list(const QString &name, const ListPurpose purpose, const QString &description);
-    bool listItem(const QString &uri, const QString &did);
-    bool threadGate(const QString &uri, const AtProtocolType::ThreadGateType type,
+    void list(const QString &name, const ListPurpose purpose, const QString &description);
+    void listItem(const QString &uri, const QString &did);
+    void threadGate(const QString &uri, const AtProtocolType::ThreadGateType type,
                     const QList<AtProtocolType::ThreadGateAllow> &allow_rules);
 
     void setReply(const QString &parent_cid, const QString &parent_uri, const QString &root_cid,

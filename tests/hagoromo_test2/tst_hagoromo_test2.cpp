@@ -405,11 +405,6 @@ void hagoromo_test::test_ListsListModel_error()
     model.setRunning(true);
     QVERIFY(model.getLatest() == false);
     QVERIFY(model.getNext() == false);
-
-    model.setRunning(false);
-    model.setCursor("hoge");
-    QVERIFY(model.getLatest() == false);
-    QVERIFY(model.getNext() == false);
 }
 
 void hagoromo_test::test_ListItemListModel()
@@ -477,11 +472,6 @@ void hagoromo_test::test_ListItemListModel_error()
     ListItemListModel model;
 
     model.setRunning(true);
-    QVERIFY(model.getLatest() == false);
-    QVERIFY(model.getNext() == false);
-
-    model.setRunning(false);
-    model.setCursor("hoge");
     QVERIFY(model.getLatest() == false);
     QVERIFY(model.getNext() == false);
 }

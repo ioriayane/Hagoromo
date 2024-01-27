@@ -63,9 +63,7 @@ int ComAtprotoRepoUploadBlob::size() const
 
 void ComAtprotoRepoUploadBlob::compressed(const QString &path)
 {
-    if (!postWithImage(QStringLiteral("xrpc/com.atproto.repo.uploadBlob"), path)) {
-        emit finished(false);
-    }
+    postWithImage(QStringLiteral("xrpc/com.atproto.repo.uploadBlob"), path);
 }
 
 QString ComAtprotoRepoUploadBlob::mimeType() const

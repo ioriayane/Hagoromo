@@ -11,9 +11,9 @@ AppBskyActorPutPreferences::AppBskyActorPutPreferences(QObject *parent)
 {
 }
 
-bool AppBskyActorPutPreferences::putPreferences(const QString &json)
+void AppBskyActorPutPreferences::putPreferences(const QString &json)
 {
-    return post(QStringLiteral("xrpc/app.bsky.actor.putPreferences"), json.toUtf8(), true);
+    post(QStringLiteral("xrpc/app.bsky.actor.putPreferences"), json.toUtf8(), true);
 }
 
 bool AppBskyActorPutPreferences::parseJson(bool success, const QString reply_json)

@@ -15,7 +15,7 @@ bool AuthorFeedListModel::getLatest()
         return false;
     setRunning(true);
 
-    return updateContentFilterLabels([=]() {
+    updateContentFilterLabels([=]() {
         AppBskyFeedGetAuthorFeed *timeline = new AppBskyFeedGetAuthorFeed(this);
         connect(timeline, &AppBskyFeedGetAuthorFeed::finished, [=](bool success) {
             if (success) {
@@ -41,6 +41,7 @@ bool AuthorFeedListModel::getLatest()
         timeline->setAccount(account());
         timeline->getAuthorFeed(authorDid(), -1, QString(), filter_type);
     });
+    return true;
 }
 
 bool AuthorFeedListModel::getNext()
@@ -49,7 +50,7 @@ bool AuthorFeedListModel::getNext()
         return false;
     setRunning(true);
 
-    return updateContentFilterLabels([=]() {
+    updateContentFilterLabels([=]() {
         AppBskyFeedGetAuthorFeed *timeline = new AppBskyFeedGetAuthorFeed(this);
         connect(timeline, &AppBskyFeedGetAuthorFeed::finished, [=](bool success) {
             if (success) {
@@ -73,6 +74,7 @@ bool AuthorFeedListModel::getNext()
         timeline->setAccount(account());
         timeline->getAuthorFeed(authorDid(), -1, m_cursor, filter_type);
     });
+    return true;
 }
 
 QString AuthorFeedListModel::authorDid() const

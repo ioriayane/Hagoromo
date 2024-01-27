@@ -11,7 +11,7 @@ ComAtprotoRepoDeleteRecord::ComAtprotoRepoDeleteRecord(QObject *parent)
 {
 }
 
-bool ComAtprotoRepoDeleteRecord::deleteRecord(const QString &repo, const QString &collection,
+void ComAtprotoRepoDeleteRecord::deleteRecord(const QString &repo, const QString &collection,
                                               const QString &rkey, const QString &swapRecord,
                                               const QString &swapCommit)
 {
@@ -21,8 +21,8 @@ bool ComAtprotoRepoDeleteRecord::deleteRecord(const QString &repo, const QString
     json_obj.insert("rkey", rkey);
     QJsonDocument json_doc(json_obj);
 
-    return post(QStringLiteral("xrpc/com.atproto.repo.deleteRecord"),
-                json_doc.toJson(QJsonDocument::Compact));
+    post(QStringLiteral("xrpc/com.atproto.repo.deleteRecord"),
+         json_doc.toJson(QJsonDocument::Compact));
 }
 
 void ComAtprotoRepoDeleteRecord::deletePost(const QString &rkey)
@@ -50,16 +50,15 @@ void ComAtprotoRepoDeleteRecord::deleteBlock(const QString &rkey)
     deleteRecord(this->did(), QStringLiteral("app.bsky.graph.block"), rkey, QString(), QString());
 }
 
-bool ComAtprotoRepoDeleteRecord::deleteList(const QString &rkey)
+void ComAtprotoRepoDeleteRecord::deleteList(const QString &rkey)
 {
-    return deleteRecord(this->did(), QStringLiteral("app.bsky.graph.list"), rkey, QString(),
-                        QString());
+    deleteRecord(this->did(), QStringLiteral("app.bsky.graph.list"), rkey, QString(), QString());
 }
 
-bool ComAtprotoRepoDeleteRecord::deleteListItem(const QString &rkey)
+void ComAtprotoRepoDeleteRecord::deleteListItem(const QString &rkey)
 {
-    return deleteRecord(this->did(), QStringLiteral("app.bsky.graph.listitem"), rkey, QString(),
-                        QString());
+    deleteRecord(this->did(), QStringLiteral("app.bsky.graph.listitem"), rkey, QString(),
+                 QString());
 }
 
 bool ComAtprotoRepoDeleteRecord::parseJson(bool success, const QString reply_json)

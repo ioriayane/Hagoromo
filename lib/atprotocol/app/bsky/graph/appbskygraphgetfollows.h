@@ -11,7 +11,7 @@ class AppBskyGraphGetFollows : public AccessAtProtocol
 public:
     explicit AppBskyGraphGetFollows(QObject *parent = nullptr);
 
-    bool getFollows(const QString &actor, const int limit, const QString &cursor);
+    void getFollows(const QString &actor, const int limit, const QString &cursor);
 
     const QList<AtProtocolType::AppBskyActorDefs::ProfileView> *profileList() const;
 
