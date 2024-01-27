@@ -10,3 +10,6 @@
 [submodule "1stparty/atproto"]
 	path = 1stparty/atproto
 	url = https://github.com/bluesky-social/atproto.git
+[submodule "web/themes/hugo-book"]
+	path = web/themes/hugo-book
+	url = https://github.com/alex-shpak/hugo-book
