@@ -6,7 +6,7 @@
 
 マルチカラム対応の[Bluesky](https://blueskyweb.xyz/)クライアントです。
 
-![Main window](./doc/screenshot.png)
+![Main window](./docs/screenshot.jpg)
 
 ## 動作確認環境
 
@@ -28,6 +28,10 @@
 ## インストール
 
 アーカイブを解凍して任意のフォルダに保存してください。
+
+## 使用方法
+
+[ユーザーマニュアル](./users_manual_ja.md)を参照してください。
 
 ## ビルド方法
 
@@ -109,7 +113,7 @@ $ make && make install
 
 This is a multi-column [Bluesky](https://blueskyweb.xyz/) client.
 
-![Main window](./doc/screenshot.png)
+![Main window](./docs/screenshot.jpg)
 
 ## System Requirements
 
@@ -131,6 +135,11 @@ Please download the pre-built executable from [Releases](https://github.com/iori
 ## Installation
 
 Unzip the archive and save it in any folder.
+
+## How to Use
+
+Please refer to [the User's Manual](./users_manual_en.md).
+
 
 ## How to Build
 
