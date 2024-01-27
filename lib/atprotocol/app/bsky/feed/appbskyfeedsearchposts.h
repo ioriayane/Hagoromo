@@ -10,7 +10,7 @@ class AppBskyFeedSearchPosts : public AppBskyFeedGetTimeline
 public:
     explicit AppBskyFeedSearchPosts(QObject *parent = nullptr);
 
-    bool searchPosts(const QString &q, const int limit, const QString &cursor);
+    void searchPosts(const QString &q, const int limit, const QString &cursor);
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);

@@ -22,7 +22,7 @@ bool AnyFeedListModel::getLatest()
         return false;
     setRunning(true);
 
-    return updateContentFilterLabels([=]() {
+    updateContentFilterLabels([=]() {
         ComAtprotoRepoListRecords *records = new ComAtprotoRepoListRecords(this);
         connect(records, &ComAtprotoRepoListRecords::finished, [=](bool success) {
             if (success) {
@@ -79,6 +79,7 @@ bool AnyFeedListModel::getLatest()
             break;
         }
     });
+    return true;
 }
 
 bool AnyFeedListModel::getNext()
@@ -87,7 +88,7 @@ bool AnyFeedListModel::getNext()
         return false;
     setRunning(true);
 
-    return updateContentFilterLabels([=]() {
+    updateContentFilterLabels([=]() {
         ComAtprotoRepoListRecords *records = new ComAtprotoRepoListRecords(this);
         connect(records, &ComAtprotoRepoListRecords::finished, [=](bool success) {
             if (success) {
@@ -143,6 +144,7 @@ bool AnyFeedListModel::getNext()
             break;
         }
     });
+    return true;
 }
 
 QString AnyFeedListModel::targetDid() const

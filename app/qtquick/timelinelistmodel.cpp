@@ -285,7 +285,7 @@ bool TimelineListModel::getLatest()
         return false;
     setRunning(true);
 
-    return updateContentFilterLabels([=]() {
+    updateContentFilterLabels([=]() {
         AppBskyFeedGetTimeline *timeline = new AppBskyFeedGetTimeline(this);
         connect(timeline, &AppBskyFeedGetTimeline::finished, [=](bool success) {
             if (success) {
@@ -300,11 +300,9 @@ bool TimelineListModel::getLatest()
             timeline->deleteLater();
         });
         timeline->setAccount(account());
-        if (!timeline->getTimeline()) {
-            emit errorOccured(timeline->errorCode(), timeline->errorMessage());
-            setRunning(false);
-        }
+        timeline->getTimeline();
     });
+    return true;
 }
 
 bool TimelineListModel::getNext()
@@ -313,7 +311,7 @@ bool TimelineListModel::getNext()
         return false;
     setRunning(true);
 
-    return updateContentFilterLabels([=]() {
+    updateContentFilterLabels([=]() {
         AppBskyFeedGetTimeline *timeline = new AppBskyFeedGetTimeline(this);
         connect(timeline, &AppBskyFeedGetTimeline::finished, [=](bool success) {
             if (success) {
@@ -327,11 +325,9 @@ bool TimelineListModel::getNext()
             timeline->deleteLater();
         });
         timeline->setAccount(account());
-        if (!timeline->getTimeline(m_cursor)) {
-            emit errorOccured(timeline->errorCode(), timeline->errorMessage());
-            setRunning(false);
-        }
+        timeline->getTimeline(m_cursor);
     });
+    return true;
 }
 
 bool TimelineListModel::deletePost(int row)

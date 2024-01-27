@@ -123,7 +123,7 @@ bool FollowsListModel::getLatest()
         return false;
     setRunning(true);
 
-    return updateContentFilterLabels([=]() {
+    updateContentFilterLabels([=]() {
         AppBskyGraphGetFollows *profiles = new AppBskyGraphGetFollows(this);
         connect(profiles, &AppBskyGraphGetFollows::finished, [=](bool success) {
             if (success) {
@@ -138,11 +138,9 @@ bool FollowsListModel::getLatest()
             profiles->deleteLater();
         });
         profiles->setAccount(account());
-        if (!profiles->getFollows(targetDid(), 50, QString())) {
-            emit errorOccured(profiles->errorCode(), profiles->errorMessage());
-            setRunning(false);
-        }
+        profiles->getFollows(targetDid(), 50, QString());
     });
+    return true;
 }
 
 bool FollowsListModel::getNext()
@@ -151,7 +149,7 @@ bool FollowsListModel::getNext()
         return false;
     setRunning(true);
 
-    return updateContentFilterLabels([=]() {
+    updateContentFilterLabels([=]() {
         AppBskyGraphGetFollows *profiles = new AppBskyGraphGetFollows(this);
         connect(profiles, &AppBskyGraphGetFollows::finished, [=](bool success) {
             if (success) {
@@ -164,11 +162,9 @@ bool FollowsListModel::getNext()
             profiles->deleteLater();
         });
         profiles->setAccount(account());
-        if (!profiles->getFollows(targetDid(), 50, m_cursor)) {
-            emit errorOccured(profiles->errorCode(), profiles->errorMessage());
-            setRunning(false);
-        }
+        profiles->getFollows(targetDid(), 50, m_cursor);
     });
+    return true;
 }
 
 QHash<int, QByteArray> FollowsListModel::roleNames() const

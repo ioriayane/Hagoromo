@@ -12,7 +12,7 @@ bool FollowersListModel::getLatest()
         return false;
     setRunning(true);
 
-    return updateContentFilterLabels([=]() {
+    updateContentFilterLabels([=]() {
         AppBskyGraphGetFollowers *profiles = new AppBskyGraphGetFollowers(this);
         connect(profiles, &AppBskyGraphGetFollowers::finished, [=](bool success) {
             if (success) {
@@ -27,11 +27,9 @@ bool FollowersListModel::getLatest()
             profiles->deleteLater();
         });
         profiles->setAccount(account());
-        if (!profiles->getFollowers(targetDid(), 50, QString())) {
-            emit errorOccured(profiles->errorCode(), profiles->errorMessage());
-            setRunning(false);
-        }
+        profiles->getFollowers(targetDid(), 50, QString());
     });
+    return true;
 }
 
 bool FollowersListModel::getNext()
@@ -40,7 +38,7 @@ bool FollowersListModel::getNext()
         return false;
     setRunning(true);
 
-    return updateContentFilterLabels([=]() {
+    updateContentFilterLabels([=]() {
         AppBskyGraphGetFollowers *profiles = new AppBskyGraphGetFollowers(this);
         connect(profiles, &AppBskyGraphGetFollowers::finished, [=](bool success) {
             if (success) {
@@ -53,9 +51,7 @@ bool FollowersListModel::getNext()
             profiles->deleteLater();
         });
         profiles->setAccount(account());
-        if (!profiles->getFollowers(targetDid(), 50, m_cursor)) {
-            emit errorOccured(profiles->errorCode(), profiles->errorMessage());
-            setRunning(false);
-        }
+        profiles->getFollowers(targetDid(), 50, m_cursor);
     });
+    return true;
 }

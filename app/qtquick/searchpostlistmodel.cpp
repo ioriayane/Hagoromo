@@ -12,7 +12,7 @@ bool SearchPostListModel::getLatest()
         return false;
     setRunning(true);
 
-    return updateContentFilterLabels([=]() {
+    updateContentFilterLabels([=]() {
         AppBskyFeedSearchPosts *posts = new AppBskyFeedSearchPosts(this);
         connect(posts, &AppBskyFeedSearchPosts::finished, [=](bool success) {
             if (success) {
@@ -27,11 +27,9 @@ bool SearchPostListModel::getLatest()
             posts->deleteLater();
         });
         posts->setAccount(account());
-        if (!posts->searchPosts(text(), 10, QString())) {
-            emit errorOccured(posts->errorCode(), posts->errorMessage());
-            setRunning(false);
-        }
+        posts->searchPosts(text(), 10, QString());
     });
+    return true;
 }
 
 bool SearchPostListModel::getNext()
@@ -40,7 +38,7 @@ bool SearchPostListModel::getNext()
         return false;
     setRunning(true);
 
-    return updateContentFilterLabels([=]() {
+    updateContentFilterLabels([=]() {
         AppBskyFeedSearchPosts *posts = new AppBskyFeedSearchPosts(this);
         connect(posts, &AppBskyFeedSearchPosts::finished, [=](bool success) {
             if (success) {
@@ -54,11 +52,9 @@ bool SearchPostListModel::getNext()
         });
 
         posts->setAccount(account());
-        if (!posts->searchPosts(text(), 10, m_cursor)) {
-            emit errorOccured(posts->errorCode(), posts->errorMessage());
-            setRunning(false);
-        }
+        posts->searchPosts(text(), 10, m_cursor);
     });
+    return true;
 }
 
 QString SearchPostListModel::text() const

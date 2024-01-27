@@ -14,11 +14,11 @@ AppBskyActorGetPreferences::AppBskyActorGetPreferences(QObject *parent)
     m_adultContentPref.enabled = true;
 }
 
-bool AppBskyActorGetPreferences::getPreferences()
+void AppBskyActorGetPreferences::getPreferences()
 {
     QUrlQuery query;
 
-    return get(QStringLiteral("xrpc/app.bsky.actor.getPreferences"), query);
+    get(QStringLiteral("xrpc/app.bsky.actor.getPreferences"), query);
 }
 
 const QList<AtProtocolType::AppBskyActorDefs::SavedFeedsPref> *

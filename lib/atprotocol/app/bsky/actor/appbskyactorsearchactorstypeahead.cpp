@@ -10,7 +10,7 @@ AppBskyActorSearchActorsTypeahead::AppBskyActorSearchActorsTypeahead(QObject *pa
     m_listKey = QStringLiteral("actors");
 }
 
-bool AppBskyActorSearchActorsTypeahead::searchActorsTypeahead(const QString &term, const QString &q,
+void AppBskyActorSearchActorsTypeahead::searchActorsTypeahead(const QString &term, const QString &q,
                                                               const int limit)
 {
     // term : DEPRECATED: use 'q' instead.
@@ -22,7 +22,7 @@ bool AppBskyActorSearchActorsTypeahead::searchActorsTypeahead(const QString &ter
         query.addQueryItem(QStringLiteral("limit"), QString::number(limit));
     }
 
-    return get(QStringLiteral("xrpc/app.bsky.actor.searchActorsTypeahead"), query);
+    get(QStringLiteral("xrpc/app.bsky.actor.searchActorsTypeahead"), query);
 }
 
 // 本当はcopyProfileViewBasicで取得するべきだけど、ProfileViewBasicはProfileViewの

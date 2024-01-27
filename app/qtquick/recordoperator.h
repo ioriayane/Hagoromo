@@ -82,7 +82,7 @@ private:
     void makeFacets(const QString &text, std::function<void()> callback);
     void uploadBlob(std::function<void(bool)> callback);
     bool getAllListItems(const QString &list_uri, std::function<void(bool)> callback);
-    bool deleteAllListItems(std::function<void(bool)> callback);
+    void deleteAllListItems(std::function<void(bool)> callback);
     bool threadGate(const QString &uri, std::function<void(bool)> callback);
 
     QRegularExpression m_rxFacet;

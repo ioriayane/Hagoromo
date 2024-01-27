@@ -773,16 +773,16 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_threadgate()
     AtProtocolInterface::ComAtprotoRepoCreateRecord createrecord;
     createrecord.setAccount(m_account);
 
-    QVERIFY(createrecord.threadGate("at://uri", AtProtocolType::ThreadGateType::Everybody,
-                                    QList<AtProtocolType::ThreadGateAllow>()));
+    //    QVERIFY(createrecord.threadGate("at://uri", AtProtocolType::ThreadGateType::Everybody,
+    //                                    QList<AtProtocolType::ThreadGateAllow>()));
 
     {
         createrecord.setService(
                 QString("http://localhost:%1/response/threadgate/1").arg(m_listenPort));
         QSignalSpy spy(&createrecord, SIGNAL(finished(bool)));
-        QVERIFY(createrecord.threadGate(
+        createrecord.threadGate(
                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kggopmh3kd2s",
-                AtProtocolType::ThreadGateType::Nobody, QList<AtProtocolType::ThreadGateAllow>()));
+                AtProtocolType::ThreadGateType::Nobody, QList<AtProtocolType::ThreadGateAllow>());
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
         QList<QVariant> arguments = spy.takeFirst();
@@ -798,9 +798,9 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_threadgate()
         createrecord.setService(
                 QString("http://localhost:%2/response/threadgate/2").arg(m_listenPort));
         QSignalSpy spy(&createrecord, SIGNAL(finished(bool)));
-        QVERIFY(createrecord.threadGate(
+        createrecord.threadGate(
                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kggopmh3kd2s",
-                AtProtocolType::ThreadGateType::Choice, rules));
+                AtProtocolType::ThreadGateType::Choice, rules);
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
         QList<QVariant> arguments = spy.takeFirst();

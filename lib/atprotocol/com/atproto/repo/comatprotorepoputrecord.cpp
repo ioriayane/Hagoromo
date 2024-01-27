@@ -8,7 +8,7 @@ namespace AtProtocolInterface {
 
 ComAtprotoRepoPutRecord::ComAtprotoRepoPutRecord(QObject *parent) : AccessAtProtocol { parent } { }
 
-bool ComAtprotoRepoPutRecord::putRecord(const QString &repo, const QString &collection,
+void ComAtprotoRepoPutRecord::putRecord(const QString &repo, const QString &collection,
                                         const QString &rkey, const bool validate,
                                         const QString &swapRecord, const QString &swapCommit,
                                         const QJsonObject &record)
@@ -30,11 +30,11 @@ bool ComAtprotoRepoPutRecord::putRecord(const QString &repo, const QString &coll
 
     QJsonDocument json_doc(json_obj);
 
-    return post(QStringLiteral("xrpc/com.atproto.repo.putRecord"),
-                json_doc.toJson(QJsonDocument::Compact), true);
+    post(QStringLiteral("xrpc/com.atproto.repo.putRecord"), json_doc.toJson(QJsonDocument::Compact),
+         true);
 }
 
-bool ComAtprotoRepoPutRecord::profile(const AtProtocolType::Blob &avatar,
+void ComAtprotoRepoPutRecord::profile(const AtProtocolType::Blob &avatar,
                                       const AtProtocolType::Blob &banner,
                                       const QString &description, const QString &display_name,
                                       const QString &cid)
@@ -59,10 +59,10 @@ bool ComAtprotoRepoPutRecord::profile(const AtProtocolType::Blob &avatar,
         json_record.insert("banner", json_banner);
     }
 
-    return putRecord(this->did(), type, QStringLiteral("self"), true, cid, QString(), json_record);
+    putRecord(this->did(), type, QStringLiteral("self"), true, cid, QString(), json_record);
 }
 
-bool ComAtprotoRepoPutRecord::list(const AtProtocolType::Blob &avatar, const QString &purpose,
+void ComAtprotoRepoPutRecord::list(const AtProtocolType::Blob &avatar, const QString &purpose,
                                    const QString &description, const QString &name,
                                    const QString &rkey)
 {
@@ -83,7 +83,7 @@ bool ComAtprotoRepoPutRecord::list(const AtProtocolType::Blob &avatar, const QSt
         json_record.insert("avatar", json_avatar);
     }
 
-    return putRecord(this->did(), type, rkey, true, QString(), QString(), json_record);
+    putRecord(this->did(), type, rkey, true, QString(), QString(), json_record);
 }
 
 bool ComAtprotoRepoPutRecord::parseJson(bool success, const QString reply_json)

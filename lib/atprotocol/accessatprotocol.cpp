@@ -98,7 +98,7 @@ AccessAtProtocol::AccessAtProtocol(QObject *parent) : AtProtocolAccount { parent
     }
 }
 
-bool AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
+void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
                            const bool with_auth_header)
 {
     if (accessJwt().isEmpty() && with_auth_header) {
@@ -106,7 +106,8 @@ bool AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
                               << "Empty accessJwt!";
         m_errorCode = QStringLiteral("IncompleteAuthenticationInformation");
         m_errorMessage = "AccessJwt is empty.";
-        return false;
+        emit finished(false);
+        return;
     }
 
     qDebug().noquote() << LOG_DATETIME << "AccessAtProtocol::get()" << this;
@@ -153,10 +154,10 @@ bool AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
         }
         reply->deleteLater();
     });
-    return true;
+    return;
 }
 
-bool AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
+void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
                             const bool with_auth_header)
 {
     qDebug().noquote() << LOG_DATETIME << "AccessAtProtocol::post()" << this;
@@ -173,7 +174,8 @@ bool AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
                         << "Empty accessJwt!";
             m_errorCode = QStringLiteral("IncompleteAuthenticationInformation");
             m_errorMessage = "AccessJwt is empty.";
-            return false;
+            emit finished(false);
+            return;
         }
 
         request.setRawHeader(QByteArray("Authorization"),
@@ -195,20 +197,22 @@ bool AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
         }
         reply->deleteLater();
     });
-    return true;
+    return;
 }
 
-bool AccessAtProtocol::postWithImage(const QString &endpoint, const QString &path)
+void AccessAtProtocol::postWithImage(const QString &endpoint, const QString &path)
 {
     if (accessJwt().isEmpty()) {
         qCritical().noquote() << LOG_DATETIME << "AccessAtProtocol::postWithImage()"
                               << "Empty accessJwt!";
-        return false;
+        emit finished(false);
+        return;
     }
     if (!QFile::exists(path)) {
         qCritical().noquote() << LOG_DATETIME << "AccessAtProtocol::postWithImage()"
                               << "Not found" << path;
-        return false;
+        emit finished(false);
+        return;
     }
     qDebug().noquote() << LOG_DATETIME << "AccessAtProtocol::postWithImage()" << this << endpoint
                        << path;
@@ -225,7 +229,8 @@ bool AccessAtProtocol::postWithImage(const QString &endpoint, const QString &pat
         qCritical().noquote() << LOG_DATETIME << LOG_DATETIME << "AccessAtProtocol::postWithImage()"
                               << "Not open" << path;
         delete file;
-        return false;
+        emit finished(false);
+        return;
     }
     request.setHeader(QNetworkRequest::ContentLengthHeader, file->size());
 
@@ -245,7 +250,7 @@ bool AccessAtProtocol::postWithImage(const QString &endpoint, const QString &pat
         }
         reply->deleteLater();
     });
-    return true;
+    return;
 }
 
 bool AccessAtProtocol::recvImage(const QByteArray &data, const QString &content_type)

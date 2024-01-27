@@ -65,7 +65,8 @@ bool ConfigurableLabels::load()
         pref->deleteLater();
     });
     pref->setAccount(account());
-    return pref->getPreferences();
+    pref->getPreferences();
+    return true;
 }
 
 bool ConfigurableLabels::save()
@@ -87,7 +88,8 @@ bool ConfigurableLabels::save()
         pref->deleteLater();
     });
     pref->setAccount(account());
-    return pref->getPreferences();
+    pref->getPreferences();
+    return true;
 }
 
 int ConfigurableLabels::indexOf(const QString &id) const
@@ -369,7 +371,8 @@ bool ConfigurableLabels::putPreferences(const QString &json)
         pref->deleteLater();
     });
     pref->setAccount(account());
-    return pref->putPreferences(json);
+    pref->putPreferences(json);
+    return true;
 }
 
 QString ConfigurableLabels::updatePreferencesJson(const QString &src_json)
