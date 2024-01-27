@@ -117,7 +117,7 @@ ClickableFrame {
             PropertyChanges { target: reasonImage; source: "../images/quote.png" }
             PropertyChanges { target: recordTextLabel; visible: true }
             PropertyChanges { target: recordTextLabel; text: notificationFrame.recordText }
-            PropertyChanges { target: quoteRecordFrame; visible: true }
+            // PropertyChanges { target: quoteRecordFrame; visible: true } ラベルフィルタの都合で使う側で調整する
 
             PropertyChanges { target: quoteRecordAvatarImage; source: notificationFrame.quoteRecordAvatar }
             PropertyChanges { target: quoteRecordAuthor; displayName: notificationFrame.quoteRecordDisplayName }

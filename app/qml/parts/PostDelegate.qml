@@ -220,7 +220,9 @@ ClickableFrame {
                         id: quoteRecordFrame
                         Layout.preferredWidth: parent.width
                         Layout.topMargin: 5
-                        visible: postFrame.hasQuote && quoteFilterFrame.showContent
+                        visible: postFrame.hasQuote &&
+                                 quoteFilterFrame.showContent &&
+                                 contentMediaFilterFrame.showContent
                         RowLayout {
                             id: quoteRecordLayout
                             spacing: 10

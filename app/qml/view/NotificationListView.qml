@@ -113,7 +113,7 @@ ScrollView {
             quoteRecordImagePreview.embedAlts: model.quoteRecordEmbedImagesAlt
             quoteRecordImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.quoteRecordEmbedImagesFull, model.quoteRecordEmbedImagesAlt)
 
-            feedGeneratorFrame.visible: model.hasFeedGenerator
+            feedGeneratorFrame.visible: model.hasFeedGenerator && contentMediaFilterFrame.showContent
             feedGeneratorFrame.onClicked: requestViewFeedGenerator(model.feedGeneratorDisplayName, model.feedGeneratorUri)
             feedGeneratorFrame.avatarImage.source: model.feedGeneratorAvatar
             feedGeneratorFrame.displayNameLabel.text: model.feedGeneratorDisplayName
@@ -155,6 +155,7 @@ ScrollView {
                 }
             }
 
+            quoteRecordFrame.visible: (model.reason === NotificationListModel.ReasonQuote) && contentMediaFilterFrame.showContent
             quoteRecordFrame.onClicked: {
                 if(model.reason === NotificationListModel.ReasonQuote){
                     requestViewThread(model.quoteRecordUri)
