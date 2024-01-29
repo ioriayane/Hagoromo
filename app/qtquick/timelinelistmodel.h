@@ -137,8 +137,6 @@ protected:
     QString getReferenceTime(const AtProtocolType::AppBskyFeedDefs::FeedViewPost &view_post);
     QVariant getQuoteItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
                           const TimelineListModel::TimelineListModelRoles role) const;
-    QVariant getExternalLinkItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
-                                 const TimelineListModel::TimelineListModelRoles role) const;
 
     virtual void updateExtendMediaFile(const QString &parent_cid);
 
@@ -147,6 +145,9 @@ protected:
 
 private:
     bool m_visibleReplyToUnfollowedUsers;
+
+    QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::ExternalLinkRoles>
+            m_toExternalLinkRoles;
 };
 
 #endif // TIMELINELISTMODEL_H

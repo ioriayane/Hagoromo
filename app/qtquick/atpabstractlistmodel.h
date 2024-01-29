@@ -55,6 +55,15 @@ class AtpAbstractListModel : public QAbstractListModel
 public:
     explicit AtpAbstractListModel(QObject *parent = nullptr);
 
+    enum ExternalLinkRoles {
+        HasExternalLinkRole,
+        ExternalLinkUriRole,
+        ExternalLinkTitleRole,
+        ExternalLinkDescriptionRole,
+        ExternalLinkThumbRole,
+        ExternalLinkUnknownRole,
+    };
+
     Q_INVOKABLE void clear();
 
     AtProtocolInterface::AccountData account() const;
@@ -117,6 +126,8 @@ protected:
     QStringList getLabels(const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels) const;
     QStringList getLaunguages(const QVariant &record) const;
     QString getVia(const QVariant &record) const;
+    QVariant getExternalLinkItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
+                                 const AtpAbstractListModel::ExternalLinkRoles role) const;
 
     void appendExtendMediaFileToClue(const QString &did, const QString &cid,
                                      const QString &parent_cid);

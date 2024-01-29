@@ -25,6 +25,16 @@ NotificationListModel::NotificationListModel(QObject *parent)
       m_visibleQuote(true),
       m_updateSeenNotification(true)
 {
+    m_toExternalLinkRoles[HasExternalLinkRole] =
+            AtpAbstractListModel::ExternalLinkRoles::HasExternalLinkRole;
+    m_toExternalLinkRoles[ExternalLinkUriRole] =
+            AtpAbstractListModel::ExternalLinkRoles::ExternalLinkUriRole;
+    m_toExternalLinkRoles[ExternalLinkTitleRole] =
+            AtpAbstractListModel::ExternalLinkRoles::ExternalLinkTitleRole;
+    m_toExternalLinkRoles[ExternalLinkDescriptionRole] =
+            AtpAbstractListModel::ExternalLinkRoles::ExternalLinkDescriptionRole;
+    m_toExternalLinkRoles[ExternalLinkThumbRole] =
+            AtpAbstractListModel::ExternalLinkRoles::ExternalLinkThumbRole;
 }
 
 int NotificationListModel::rowCount(const QModelIndex &parent) const
@@ -172,6 +182,14 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
         } else {
             return NotificationListModelReason::ReasonUnknown;
         }
+
+    } else if (role == HasExternalLinkRole || role == ExternalLinkUriRole
+               || role == ExternalLinkTitleRole || role == ExternalLinkDescriptionRole
+               || role == ExternalLinkThumbRole) {
+        return AtpAbstractListModel::getExternalLinkItem(
+                m_postHash.value(current.cid),
+                m_toExternalLinkRoles.value(
+                        role, AtpAbstractListModel::ExternalLinkRoles::ExternalLinkUnknownRole));
     } else {
         QString record_cid;
         if (current.reason == "like") {
@@ -746,6 +764,12 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[QuoteRecordEmbedImagesAltRole] = "quoteRecordEmbedImagesAlt";
     roles[QuoteRecordIsRepostedRole] = "quoteRecordIsReposted";
     roles[QuoteRecordIsLikedRole] = "quoteRecordIsLiked";
+
+    roles[HasExternalLinkRole] = "hasExternalLink";
+    roles[ExternalLinkUriRole] = "externalLinkUri";
+    roles[ExternalLinkTitleRole] = "externalLinkTitle";
+    roles[ExternalLinkDescriptionRole] = "externalLinkDescription";
+    roles[ExternalLinkThumbRole] = "externalLinkThumb";
 
     roles[HasFeedGeneratorRole] = "hasFeedGenerator";
     roles[FeedGeneratorUriRole] = "feedGeneratorUri";
