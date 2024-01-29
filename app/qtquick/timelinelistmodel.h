@@ -148,6 +148,8 @@ private:
 
     QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::ExternalLinkRoles>
             m_toExternalLinkRoles;
+    QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::FeedGeneratorRoles>
+            m_toFeedGeneratorRoles;
 };
 
 #endif // TIMELINELISTMODEL_H

@@ -35,6 +35,19 @@ NotificationListModel::NotificationListModel(QObject *parent)
             AtpAbstractListModel::ExternalLinkRoles::ExternalLinkDescriptionRole;
     m_toExternalLinkRoles[ExternalLinkThumbRole] =
             AtpAbstractListModel::ExternalLinkRoles::ExternalLinkThumbRole;
+
+    m_toFeedGeneratorRoles[HasFeedGeneratorRole] =
+            AtpAbstractListModel::FeedGeneratorRoles::HasFeedGeneratorRole;
+    m_toFeedGeneratorRoles[FeedGeneratorUriRole] =
+            AtpAbstractListModel::FeedGeneratorRoles::FeedGeneratorUriRole;
+    m_toFeedGeneratorRoles[FeedGeneratorCreatorHandleRole] =
+            AtpAbstractListModel::FeedGeneratorRoles::FeedGeneratorCreatorHandleRole;
+    m_toFeedGeneratorRoles[FeedGeneratorDisplayNameRole] =
+            AtpAbstractListModel::FeedGeneratorRoles::FeedGeneratorDisplayNameRole;
+    m_toFeedGeneratorRoles[FeedGeneratorLikeCountRole] =
+            AtpAbstractListModel::FeedGeneratorRoles::FeedGeneratorLikeCountRole;
+    m_toFeedGeneratorRoles[FeedGeneratorAvatarRole] =
+            AtpAbstractListModel::FeedGeneratorRoles::FeedGeneratorAvatarRole;
 }
 
 int NotificationListModel::rowCount(const QModelIndex &parent) const
@@ -190,6 +203,16 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
                 m_postHash.value(current.cid),
                 m_toExternalLinkRoles.value(
                         role, AtpAbstractListModel::ExternalLinkRoles::ExternalLinkUnknownRole));
+
+    } else if ((role == HasFeedGeneratorRole || role == FeedGeneratorUriRole
+                || role == FeedGeneratorCreatorHandleRole || role == FeedGeneratorDisplayNameRole
+                || role == FeedGeneratorLikeCountRole || role == FeedGeneratorAvatarRole)
+               && (current.reason == "mention" || current.reason == "reply")) {
+        return getFeedGeneratorItem(
+                m_postHash.value(current.cid),
+                m_toFeedGeneratorRoles.value(
+                        role, AtpAbstractListModel::FeedGeneratorRoles::FeedGeneratorUnknownRole));
+
     } else {
         QString record_cid;
         if (current.reason == "like") {

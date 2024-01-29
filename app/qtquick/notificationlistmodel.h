@@ -168,6 +168,9 @@ private:
     QHash<NotificationListModel::NotificationListModelRoles,
           AtpAbstractListModel::ExternalLinkRoles>
             m_toExternalLinkRoles;
+    QHash<NotificationListModel::NotificationListModelRoles,
+          AtpAbstractListModel::FeedGeneratorRoles>
+            m_toFeedGeneratorRoles;
 
     void getPosts();
     void getFeedGenerators();
