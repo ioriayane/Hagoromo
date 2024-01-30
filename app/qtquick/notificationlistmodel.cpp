@@ -322,69 +322,38 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             else
                 return false;
 
-        } else if (role == HasFeedGeneratorRole) {
-            if (m_postHash.contains(record_cid)
-                && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
-                return m_postHash[record_cid].embed_type
-                        == AtProtocolType::AppBskyFeedDefs::PostViewEmbedType::
-                                embed_AppBskyEmbedRecord_View
-                        && m_postHash[record_cid].embed_AppBskyEmbedRecord_View->record_type
-                        == AtProtocolType::AppBskyEmbedRecord::ViewRecordType::
-                                record_AppBskyFeedDefs_GeneratorView;
-            } else if (m_feedGeneratorHash.contains(record_cid)) {
+        } else if (role == HasFeedGeneratorRole) { // カスタムフィードに対するいいね
+            if (m_feedGeneratorHash.contains(record_cid)) {
                 return true;
             } else {
                 return false;
             }
         } else if (role == FeedGeneratorUriRole) {
-            if (m_postHash.contains(record_cid)
-                && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
-                return m_postHash[record_cid]
-                        .embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView.uri;
-            } else if (m_feedGeneratorHash.contains(record_cid)) {
+            if (m_feedGeneratorHash.contains(record_cid)) {
                 return m_feedGeneratorHash[record_cid].uri;
             } else {
                 return QString();
             }
         } else if (role == FeedGeneratorCreatorHandleRole) {
-            if (m_postHash.contains(record_cid)
-                && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
-                return m_postHash[record_cid]
-                        .embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView.creator
-                        .handle;
-            } else if (m_feedGeneratorHash.contains(record_cid)) {
+            if (m_feedGeneratorHash.contains(record_cid)) {
                 return m_feedGeneratorHash[record_cid].creator.handle;
             } else {
                 return QString();
             }
         } else if (role == FeedGeneratorDisplayNameRole) {
-            if (m_postHash.contains(record_cid)
-                && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
-                return m_postHash[record_cid]
-                        .embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView
-                        .displayName;
-            } else if (m_feedGeneratorHash.contains(record_cid)) {
+            if (m_feedGeneratorHash.contains(record_cid)) {
                 return m_feedGeneratorHash[record_cid].displayName;
             } else {
                 return QString();
             }
         } else if (role == FeedGeneratorLikeCountRole) {
-            if (m_postHash.contains(record_cid)
-                && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
-                return m_postHash[record_cid]
-                        .embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView
-                        .likeCount;
-            } else if (m_feedGeneratorHash.contains(record_cid)) {
+            if (m_feedGeneratorHash.contains(record_cid)) {
                 return m_feedGeneratorHash[record_cid].likeCount;
             } else {
                 return QString();
             }
         } else if (role == FeedGeneratorAvatarRole) {
-            if (m_postHash.contains(record_cid)
-                && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
-                return m_postHash[record_cid]
-                        .embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView.avatar;
-            } else if (m_feedGeneratorHash.contains(record_cid)) {
+            if (m_feedGeneratorHash.contains(record_cid)) {
                 return m_feedGeneratorHash[record_cid].avatar;
             } else {
                 return QString();
