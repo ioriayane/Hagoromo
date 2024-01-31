@@ -25,6 +25,29 @@ NotificationListModel::NotificationListModel(QObject *parent)
       m_visibleQuote(true),
       m_updateSeenNotification(true)
 {
+    m_toExternalLinkRoles[HasExternalLinkRole] =
+            AtpAbstractListModel::ExternalLinkRoles::HasExternalLinkRole;
+    m_toExternalLinkRoles[ExternalLinkUriRole] =
+            AtpAbstractListModel::ExternalLinkRoles::ExternalLinkUriRole;
+    m_toExternalLinkRoles[ExternalLinkTitleRole] =
+            AtpAbstractListModel::ExternalLinkRoles::ExternalLinkTitleRole;
+    m_toExternalLinkRoles[ExternalLinkDescriptionRole] =
+            AtpAbstractListModel::ExternalLinkRoles::ExternalLinkDescriptionRole;
+    m_toExternalLinkRoles[ExternalLinkThumbRole] =
+            AtpAbstractListModel::ExternalLinkRoles::ExternalLinkThumbRole;
+
+    m_toFeedGeneratorRoles[HasFeedGeneratorRole] =
+            AtpAbstractListModel::FeedGeneratorRoles::HasFeedGeneratorRole;
+    m_toFeedGeneratorRoles[FeedGeneratorUriRole] =
+            AtpAbstractListModel::FeedGeneratorRoles::FeedGeneratorUriRole;
+    m_toFeedGeneratorRoles[FeedGeneratorCreatorHandleRole] =
+            AtpAbstractListModel::FeedGeneratorRoles::FeedGeneratorCreatorHandleRole;
+    m_toFeedGeneratorRoles[FeedGeneratorDisplayNameRole] =
+            AtpAbstractListModel::FeedGeneratorRoles::FeedGeneratorDisplayNameRole;
+    m_toFeedGeneratorRoles[FeedGeneratorLikeCountRole] =
+            AtpAbstractListModel::FeedGeneratorRoles::FeedGeneratorLikeCountRole;
+    m_toFeedGeneratorRoles[FeedGeneratorAvatarRole] =
+            AtpAbstractListModel::FeedGeneratorRoles::FeedGeneratorAvatarRole;
 }
 
 int NotificationListModel::rowCount(const QModelIndex &parent) const
@@ -172,6 +195,24 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
         } else {
             return NotificationListModelReason::ReasonUnknown;
         }
+
+    } else if (role == HasExternalLinkRole || role == ExternalLinkUriRole
+               || role == ExternalLinkTitleRole || role == ExternalLinkDescriptionRole
+               || role == ExternalLinkThumbRole) {
+        return AtpAbstractListModel::getExternalLinkItem(
+                m_postHash.value(current.cid),
+                m_toExternalLinkRoles.value(
+                        role, AtpAbstractListModel::ExternalLinkRoles::ExternalLinkUnknownRole));
+
+    } else if ((role == HasFeedGeneratorRole || role == FeedGeneratorUriRole
+                || role == FeedGeneratorCreatorHandleRole || role == FeedGeneratorDisplayNameRole
+                || role == FeedGeneratorLikeCountRole || role == FeedGeneratorAvatarRole)
+               && (current.reason == "mention" || current.reason == "reply")) {
+        return getFeedGeneratorItem(
+                m_postHash.value(current.cid),
+                m_toFeedGeneratorRoles.value(
+                        role, AtpAbstractListModel::FeedGeneratorRoles::FeedGeneratorUnknownRole));
+
     } else {
         QString record_cid;
         if (current.reason == "like") {
@@ -281,69 +322,38 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             else
                 return false;
 
-        } else if (role == HasFeedGeneratorRole) {
-            if (m_postHash.contains(record_cid)
-                && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
-                return m_postHash[record_cid].embed_type
-                        == AtProtocolType::AppBskyFeedDefs::PostViewEmbedType::
-                                embed_AppBskyEmbedRecord_View
-                        && m_postHash[record_cid].embed_AppBskyEmbedRecord_View->record_type
-                        == AtProtocolType::AppBskyEmbedRecord::ViewRecordType::
-                                record_AppBskyFeedDefs_GeneratorView;
-            } else if (m_feedGeneratorHash.contains(record_cid)) {
+        } else if (role == HasFeedGeneratorRole) { // カスタムフィードに対するいいね
+            if (m_feedGeneratorHash.contains(record_cid)) {
                 return true;
             } else {
                 return false;
             }
         } else if (role == FeedGeneratorUriRole) {
-            if (m_postHash.contains(record_cid)
-                && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
-                return m_postHash[record_cid]
-                        .embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView.uri;
-            } else if (m_feedGeneratorHash.contains(record_cid)) {
+            if (m_feedGeneratorHash.contains(record_cid)) {
                 return m_feedGeneratorHash[record_cid].uri;
             } else {
                 return QString();
             }
         } else if (role == FeedGeneratorCreatorHandleRole) {
-            if (m_postHash.contains(record_cid)
-                && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
-                return m_postHash[record_cid]
-                        .embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView.creator
-                        .handle;
-            } else if (m_feedGeneratorHash.contains(record_cid)) {
+            if (m_feedGeneratorHash.contains(record_cid)) {
                 return m_feedGeneratorHash[record_cid].creator.handle;
             } else {
                 return QString();
             }
         } else if (role == FeedGeneratorDisplayNameRole) {
-            if (m_postHash.contains(record_cid)
-                && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
-                return m_postHash[record_cid]
-                        .embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView
-                        .displayName;
-            } else if (m_feedGeneratorHash.contains(record_cid)) {
+            if (m_feedGeneratorHash.contains(record_cid)) {
                 return m_feedGeneratorHash[record_cid].displayName;
             } else {
                 return QString();
             }
         } else if (role == FeedGeneratorLikeCountRole) {
-            if (m_postHash.contains(record_cid)
-                && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
-                return m_postHash[record_cid]
-                        .embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView
-                        .likeCount;
-            } else if (m_feedGeneratorHash.contains(record_cid)) {
+            if (m_feedGeneratorHash.contains(record_cid)) {
                 return m_feedGeneratorHash[record_cid].likeCount;
             } else {
                 return QString();
             }
         } else if (role == FeedGeneratorAvatarRole) {
-            if (m_postHash.contains(record_cid)
-                && !m_postHash[record_cid].embed_AppBskyEmbedRecord_View.isNull()) {
-                return m_postHash[record_cid]
-                        .embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView.avatar;
-            } else if (m_feedGeneratorHash.contains(record_cid)) {
+            if (m_feedGeneratorHash.contains(record_cid)) {
                 return m_feedGeneratorHash[record_cid].avatar;
             } else {
                 return QString();
@@ -454,7 +464,12 @@ bool NotificationListModel::getLatest()
                             appendGetPostCue<AtProtocolType::AppBskyFeedLike::Main>(item->record);
                         }
                     } else if (item->reason == "repost") {
-                        appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(item->record);
+                        if (item->reasonSubject.contains("/app.bsky.feed.generator/")) {
+                            appendGetFeedGeneratorCue<AtProtocolType::AppBskyFeedRepost::Main>(
+                                    item->record);
+                        } else {
+                            appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(item->record);
+                        }
                     } else if (item->reason == "quote") {
                         AtProtocolType::AppBskyFeedPost::Main quote_post =
                                 AtProtocolType::LexiconsTypeUnknown::fromQVariant<
@@ -468,9 +483,18 @@ bool NotificationListModel::getLatest()
                             break;
                         case AtProtocolType::AppBskyFeedPost::MainEmbedType::
                                 embed_AppBskyEmbedRecord_Main:
-                            if (!quote_post.embed_AppBskyEmbedRecord_Main.record.cid.isEmpty()
-                                && !m_cueGetPost.contains(
-                                        quote_post.embed_AppBskyEmbedRecord_Main.record.uri)) {
+                            if (quote_post.embed_AppBskyEmbedRecord_Main.record.uri.contains(
+                                        "/app.bsky.feed.generator/")) {
+                                if (!m_cueGetFeedGenerator.contains(
+                                            quote_post.embed_AppBskyEmbedRecord_Main.record.uri)) {
+                                    m_cueGetFeedGenerator.append(
+                                            quote_post.embed_AppBskyEmbedRecord_Main.record.uri);
+                                }
+                            } else if (!quote_post.embed_AppBskyEmbedRecord_Main.record.cid
+                                                .isEmpty()
+                                       && !m_cueGetPost.contains(
+                                               quote_post.embed_AppBskyEmbedRecord_Main.record
+                                                       .uri)) {
                                 m_cueGetPost.append(
                                         quote_post.embed_AppBskyEmbedRecord_Main.record.uri);
                             }
@@ -481,12 +505,21 @@ bool NotificationListModel::getLatest()
                             break;
                         case AtProtocolType::AppBskyFeedPost::MainEmbedType::
                                 embed_AppBskyEmbedRecordWithMedia_Main:
-                            if (!quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record.isNull()
-                                && !quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record->record
-                                            .uri.isEmpty()
-                                && !m_cueGetPost.contains(
-                                        quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record
-                                                ->record.uri)) {
+                            if (quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record.isNull()) {
+                            } else if (quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record
+                                               ->record.uri.contains("/app.bsky.feed.generator/")) {
+                                if (!m_cueGetFeedGenerator.contains(
+                                            quote_post.embed_AppBskyEmbedRecordWithMedia_Main
+                                                    .record->record.uri)) {
+                                    m_cueGetFeedGenerator.append(
+                                            quote_post.embed_AppBskyEmbedRecordWithMedia_Main
+                                                    .record->record.uri);
+                                }
+                            } else if (!quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record
+                                                ->record.uri.isEmpty()
+                                       && !m_cueGetPost.contains(
+                                               quote_post.embed_AppBskyEmbedRecordWithMedia_Main
+                                                       .record->record.uri)) {
                                 m_cueGetPost.append(
                                         quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record
                                                 ->record.uri);
@@ -575,7 +608,12 @@ bool NotificationListModel::getNext()
                             appendGetPostCue<AtProtocolType::AppBskyFeedLike::Main>(item->record);
                         }
                     } else if (item->reason == "repost") {
-                        appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(item->record);
+                        if (item->reasonSubject.contains("/app.bsky.feed.generator/")) {
+                            appendGetFeedGeneratorCue<AtProtocolType::AppBskyFeedRepost::Main>(
+                                    item->record);
+                        } else {
+                            appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(item->record);
+                        }
                     } else if (item->reason == "quote") {
                         AtProtocolType::AppBskyFeedPost::Main quote_post =
                                 AtProtocolType::LexiconsTypeUnknown::fromQVariant<
@@ -589,9 +627,18 @@ bool NotificationListModel::getNext()
                             break;
                         case AtProtocolType::AppBskyFeedPost::MainEmbedType::
                                 embed_AppBskyEmbedRecord_Main:
-                            if (!quote_post.embed_AppBskyEmbedRecord_Main.record.cid.isEmpty()
-                                && !m_cueGetPost.contains(
-                                        quote_post.embed_AppBskyEmbedRecord_Main.record.uri)) {
+                            if (quote_post.embed_AppBskyEmbedRecord_Main.record.uri.contains(
+                                        "/app.bsky.feed.generator/")) {
+                                if (!m_cueGetFeedGenerator.contains(
+                                            quote_post.embed_AppBskyEmbedRecord_Main.record.uri)) {
+                                    m_cueGetFeedGenerator.append(
+                                            quote_post.embed_AppBskyEmbedRecord_Main.record.uri);
+                                }
+                            } else if (!quote_post.embed_AppBskyEmbedRecord_Main.record.cid
+                                                .isEmpty()
+                                       && !m_cueGetPost.contains(
+                                               quote_post.embed_AppBskyEmbedRecord_Main.record
+                                                       .uri)) {
                                 m_cueGetPost.append(
                                         quote_post.embed_AppBskyEmbedRecord_Main.record.uri);
                             }
@@ -602,12 +649,21 @@ bool NotificationListModel::getNext()
                             break;
                         case AtProtocolType::AppBskyFeedPost::MainEmbedType::
                                 embed_AppBskyEmbedRecordWithMedia_Main:
-                            if (!quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record.isNull()
-                                && !quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record->record
-                                            .uri.isEmpty()
-                                && !m_cueGetPost.contains(
-                                        quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record
-                                                ->record.uri)) {
+                            if (quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record.isNull()) {
+                            } else if (quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record
+                                               ->record.uri.contains("/app.bsky.feed.generator/")) {
+                                if (!m_cueGetFeedGenerator.contains(
+                                            quote_post.embed_AppBskyEmbedRecordWithMedia_Main
+                                                    .record->record.uri)) {
+                                    m_cueGetFeedGenerator.append(
+                                            quote_post.embed_AppBskyEmbedRecordWithMedia_Main
+                                                    .record->record.uri);
+                                }
+                            } else if (!quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record
+                                                ->record.uri.isEmpty()
+                                       && !m_cueGetPost.contains(
+                                               quote_post.embed_AppBskyEmbedRecordWithMedia_Main
+                                                       .record->record.uri)) {
                                 m_cueGetPost.append(
                                         quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record
                                                 ->record.uri);
@@ -746,6 +802,12 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[QuoteRecordEmbedImagesAltRole] = "quoteRecordEmbedImagesAlt";
     roles[QuoteRecordIsRepostedRole] = "quoteRecordIsReposted";
     roles[QuoteRecordIsLikedRole] = "quoteRecordIsLiked";
+
+    roles[HasExternalLinkRole] = "hasExternalLink";
+    roles[ExternalLinkUriRole] = "externalLinkUri";
+    roles[ExternalLinkTitleRole] = "externalLinkTitle";
+    roles[ExternalLinkDescriptionRole] = "externalLinkDescription";
+    roles[ExternalLinkThumbRole] = "externalLinkThumb";
 
     roles[HasFeedGeneratorRole] = "hasFeedGenerator";
     roles[FeedGeneratorUriRole] = "feedGeneratorUri";

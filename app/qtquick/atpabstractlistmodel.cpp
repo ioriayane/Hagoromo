@@ -432,6 +432,110 @@ QString AtpAbstractListModel::getVia(const QVariant &record) const
     return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(record).via;
 }
 
+QVariant
+AtpAbstractListModel::getExternalLinkItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
+                                          const ExternalLinkRoles role) const
+{
+    bool is_external =
+            post.embed_type == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedExternal_View;
+    bool with_image = post.embed_AppBskyEmbedRecordWithMedia_View.media_type
+            == AppBskyEmbedRecordWithMedia::ViewMediaType::media_AppBskyEmbedExternal_View;
+
+    if (role == HasExternalLinkRole) {
+        if (is_external) {
+            return true;
+        } else if (with_image) {
+            return true;
+        } else {
+            return false;
+        }
+    } else if (role == ExternalLinkUriRole) {
+        if (is_external) {
+            return post.embed_AppBskyEmbedExternal_View.external.uri;
+        } else if (with_image) {
+            return post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedExternal_View
+                    .external.uri;
+        } else {
+            return QString();
+        }
+    } else if (role == ExternalLinkTitleRole) {
+        if (is_external) {
+            return post.embed_AppBskyEmbedExternal_View.external.title;
+        } else if (with_image) {
+            return post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedExternal_View
+                    .external.title;
+        } else {
+            return QString();
+        }
+    } else if (role == ExternalLinkDescriptionRole) {
+        if (is_external) {
+            return post.embed_AppBskyEmbedExternal_View.external.description;
+        } else if (with_image) {
+            return post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedExternal_View
+                    .external.description;
+        } else {
+            return QString();
+        }
+    } else if (role == ExternalLinkThumbRole) {
+        if (is_external) {
+            return post.embed_AppBskyEmbedExternal_View.external.thumb;
+        } else if (with_image) {
+            return post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedExternal_View
+                    .external.thumb;
+        } else {
+            return QString();
+        }
+    }
+
+    return QVariant();
+}
+
+QVariant
+AtpAbstractListModel::getFeedGeneratorItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
+                                           const FeedGeneratorRoles role) const
+{
+    bool has_record = !post.embed_AppBskyEmbedRecord_View.isNull();
+
+    if (role == HasFeedGeneratorRole) {
+        if (has_record)
+            return post.embed_type
+                    == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecord_View
+                    && post.embed_AppBskyEmbedRecord_View->record_type
+                    == AppBskyEmbedRecord::ViewRecordType::record_AppBskyFeedDefs_GeneratorView;
+        else
+            return false;
+    } else if (role == FeedGeneratorUriRole) {
+        if (has_record)
+            return post.embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView.uri;
+        else
+            return QString();
+    } else if (role == FeedGeneratorCreatorHandleRole) {
+        if (has_record)
+            return post.embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView.creator
+                    .handle;
+        else
+            return QString();
+    } else if (role == FeedGeneratorDisplayNameRole) {
+        if (has_record)
+            return post.embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView
+                    .displayName;
+        else
+            return QString();
+    } else if (role == FeedGeneratorLikeCountRole) {
+        if (has_record)
+            return post.embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView
+                    .likeCount;
+        else
+            return QString();
+    } else if (role == FeedGeneratorAvatarRole) {
+        if (has_record)
+            return post.embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView.avatar;
+        else
+            return QString();
+    }
+    return QVariant();
+}
+
 void AtpAbstractListModel::appendExtendMediaFileToClue(const QString &did, const QString &cid,
                                                        const QString &parent_cid)
 {
