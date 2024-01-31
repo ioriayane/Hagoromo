@@ -162,7 +162,9 @@ ScrollView {
                 }
             }
 
-            quoteRecordFrame.visible: (model.reason === NotificationListModel.ReasonQuote) && contentMediaFilterFrame.showContent
+            quoteRecordFrame.visible: (model.reason === NotificationListModel.ReasonQuote) &&
+                                      model.quoteRecordCid.length > 0 &&
+                                      contentMediaFilterFrame.showContent
             quoteRecordFrame.onClicked: {
                 if(model.reason === NotificationListModel.ReasonQuote){
                     requestViewThread(model.quoteRecordUri)

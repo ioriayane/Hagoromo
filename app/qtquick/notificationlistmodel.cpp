@@ -464,7 +464,12 @@ bool NotificationListModel::getLatest()
                             appendGetPostCue<AtProtocolType::AppBskyFeedLike::Main>(item->record);
                         }
                     } else if (item->reason == "repost") {
-                        appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(item->record);
+                        if (item->reasonSubject.contains("/app.bsky.feed.generator/")) {
+                            appendGetFeedGeneratorCue<AtProtocolType::AppBskyFeedRepost::Main>(
+                                    item->record);
+                        } else {
+                            appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(item->record);
+                        }
                     } else if (item->reason == "quote") {
                         AtProtocolType::AppBskyFeedPost::Main quote_post =
                                 AtProtocolType::LexiconsTypeUnknown::fromQVariant<
@@ -478,9 +483,18 @@ bool NotificationListModel::getLatest()
                             break;
                         case AtProtocolType::AppBskyFeedPost::MainEmbedType::
                                 embed_AppBskyEmbedRecord_Main:
-                            if (!quote_post.embed_AppBskyEmbedRecord_Main.record.cid.isEmpty()
-                                && !m_cueGetPost.contains(
-                                        quote_post.embed_AppBskyEmbedRecord_Main.record.uri)) {
+                            if (quote_post.embed_AppBskyEmbedRecord_Main.record.uri.contains(
+                                        "/app.bsky.feed.generator/")) {
+                                if (!m_cueGetFeedGenerator.contains(
+                                            quote_post.embed_AppBskyEmbedRecord_Main.record.uri)) {
+                                    m_cueGetFeedGenerator.append(
+                                            quote_post.embed_AppBskyEmbedRecord_Main.record.uri);
+                                }
+                            } else if (!quote_post.embed_AppBskyEmbedRecord_Main.record.cid
+                                                .isEmpty()
+                                       && !m_cueGetPost.contains(
+                                               quote_post.embed_AppBskyEmbedRecord_Main.record
+                                                       .uri)) {
                                 m_cueGetPost.append(
                                         quote_post.embed_AppBskyEmbedRecord_Main.record.uri);
                             }
@@ -491,12 +505,21 @@ bool NotificationListModel::getLatest()
                             break;
                         case AtProtocolType::AppBskyFeedPost::MainEmbedType::
                                 embed_AppBskyEmbedRecordWithMedia_Main:
-                            if (!quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record.isNull()
-                                && !quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record->record
-                                            .uri.isEmpty()
-                                && !m_cueGetPost.contains(
-                                        quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record
-                                                ->record.uri)) {
+                            if (quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record.isNull()) {
+                            } else if (quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record
+                                               ->record.uri.contains("/app.bsky.feed.generator/")) {
+                                if (!m_cueGetFeedGenerator.contains(
+                                            quote_post.embed_AppBskyEmbedRecordWithMedia_Main
+                                                    .record->record.uri)) {
+                                    m_cueGetFeedGenerator.append(
+                                            quote_post.embed_AppBskyEmbedRecordWithMedia_Main
+                                                    .record->record.uri);
+                                }
+                            } else if (!quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record
+                                                ->record.uri.isEmpty()
+                                       && !m_cueGetPost.contains(
+                                               quote_post.embed_AppBskyEmbedRecordWithMedia_Main
+                                                       .record->record.uri)) {
                                 m_cueGetPost.append(
                                         quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record
                                                 ->record.uri);
@@ -585,7 +608,12 @@ bool NotificationListModel::getNext()
                             appendGetPostCue<AtProtocolType::AppBskyFeedLike::Main>(item->record);
                         }
                     } else if (item->reason == "repost") {
-                        appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(item->record);
+                        if (item->reasonSubject.contains("/app.bsky.feed.generator/")) {
+                            appendGetFeedGeneratorCue<AtProtocolType::AppBskyFeedRepost::Main>(
+                                    item->record);
+                        } else {
+                            appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(item->record);
+                        }
                     } else if (item->reason == "quote") {
                         AtProtocolType::AppBskyFeedPost::Main quote_post =
                                 AtProtocolType::LexiconsTypeUnknown::fromQVariant<
@@ -599,9 +627,18 @@ bool NotificationListModel::getNext()
                             break;
                         case AtProtocolType::AppBskyFeedPost::MainEmbedType::
                                 embed_AppBskyEmbedRecord_Main:
-                            if (!quote_post.embed_AppBskyEmbedRecord_Main.record.cid.isEmpty()
-                                && !m_cueGetPost.contains(
-                                        quote_post.embed_AppBskyEmbedRecord_Main.record.uri)) {
+                            if (quote_post.embed_AppBskyEmbedRecord_Main.record.uri.contains(
+                                        "/app.bsky.feed.generator/")) {
+                                if (!m_cueGetFeedGenerator.contains(
+                                            quote_post.embed_AppBskyEmbedRecord_Main.record.uri)) {
+                                    m_cueGetFeedGenerator.append(
+                                            quote_post.embed_AppBskyEmbedRecord_Main.record.uri);
+                                }
+                            } else if (!quote_post.embed_AppBskyEmbedRecord_Main.record.cid
+                                                .isEmpty()
+                                       && !m_cueGetPost.contains(
+                                               quote_post.embed_AppBskyEmbedRecord_Main.record
+                                                       .uri)) {
                                 m_cueGetPost.append(
                                         quote_post.embed_AppBskyEmbedRecord_Main.record.uri);
                             }
@@ -612,12 +649,21 @@ bool NotificationListModel::getNext()
                             break;
                         case AtProtocolType::AppBskyFeedPost::MainEmbedType::
                                 embed_AppBskyEmbedRecordWithMedia_Main:
-                            if (!quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record.isNull()
-                                && !quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record->record
-                                            .uri.isEmpty()
-                                && !m_cueGetPost.contains(
-                                        quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record
-                                                ->record.uri)) {
+                            if (quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record.isNull()) {
+                            } else if (quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record
+                                               ->record.uri.contains("/app.bsky.feed.generator/")) {
+                                if (!m_cueGetFeedGenerator.contains(
+                                            quote_post.embed_AppBskyEmbedRecordWithMedia_Main
+                                                    .record->record.uri)) {
+                                    m_cueGetFeedGenerator.append(
+                                            quote_post.embed_AppBskyEmbedRecordWithMedia_Main
+                                                    .record->record.uri);
+                                }
+                            } else if (!quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record
+                                                ->record.uri.isEmpty()
+                                       && !m_cueGetPost.contains(
+                                               quote_post.embed_AppBskyEmbedRecordWithMedia_Main
+                                                       .record->record.uri)) {
                                 m_cueGetPost.append(
                                         quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record
                                                 ->record.uri);
