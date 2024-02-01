@@ -358,7 +358,8 @@ Dialog {
                         RowLayout {
                             Slider {
                                 id: rowHeightRatioSlider
-                                visible: rowCountComboBox.currentValue === 2
+                                visible: rowCountComboBox.currentValue !== 3
+                                enabled: rowCountComboBox.currentValue === 2
                                 from: 0
                                 to: 100
                                 stepSize: 5
