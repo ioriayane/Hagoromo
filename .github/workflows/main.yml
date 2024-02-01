@@ -7,6 +7,14 @@ jobs:
   release_check:
     runs-on: ubuntu-latest
     steps:
+      - name : Check download link of web
+        env: 
+          TZ: "Asia/Tokyo"       
+        run: |
+          VERSION_NO=$(cat app/main.cpp | grep "app.setApplicationVersion" | grep -oE "[0-9]+.[0-9]+.[0-9]+")
+          python3 scripts/updateweb.py temp.html $VERSION_NO
+
+          diff -u temp.html web/layouts/shortcodes/download_link.html
       - name : Check pullrequest title
         run: |
           name="${{ github.event.pull_request.title }}"

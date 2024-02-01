@@ -72,3 +72,4 @@ openssl/*.cnf.dist
 # Hugo
 web/public/*
 web/.hugo_build.lock
+temp.html
