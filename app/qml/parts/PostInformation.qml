@@ -24,6 +24,7 @@ ColumnLayout {
     TagLabelLayout {
         id: labelsLayout
         Layout.preferredWidth: parent.width
+        Layout.topMargin: 5
         visible: count > 0
         tagSpacing: 2
     }

@@ -13,6 +13,8 @@ Rectangle {
     visible: listView.count > 0
     color: Material.backgroundColor
 
+    property string handlePart: ""
+
     signal selected(string handle)
 
     function setAccount(service, did, handle, accessJwt){
@@ -20,16 +22,20 @@ Rectangle {
     }
 
     function reload(text){
-        var handle_part = searchProfileListModel.extractHandleBlock(text)
-        if(handle_part.length === 0){
+        handlePart = searchProfileListModel.extractHandleBlock(text)
+        if(handlePart.length === 0){
             searchProfileListModel.clear()
         }else{
-            console.log(handle_part)
-            searchProfileListModel.getSuggestion(handle_part, 6)
+            console.log(handlePart)
+            searchProfileListModel.getSuggestion(handlePart, 6)
         }
     }
     function replaceText(text, current_position, handle){
         return searchProfileListModel.replaceText(text, current_position, handle)
+    }
+
+    function clear(){
+        searchProfileListModel.clear()
     }
 
     function accept(){
@@ -58,6 +64,7 @@ Rectangle {
         model: SearchProfileListModel {
             id: searchProfileListModel
             autoLoading: false
+            enabledSuggestion: mentionSuggestionView.handlePart.length > 0
             onErrorOccured: (code, message) => console.log(code + " : " + message)
         }
         delegate: ItemDelegate {

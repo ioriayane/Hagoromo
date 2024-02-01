@@ -11,7 +11,7 @@ namespace AtProtocolInterface {
 
 ComAtprotoRepoGetRecord::ComAtprotoRepoGetRecord(QObject *parent) : AccessAtProtocol { parent } { }
 
-bool ComAtprotoRepoGetRecord::getRecord(const QString &repo, const QString &collection,
+void ComAtprotoRepoGetRecord::getRecord(const QString &repo, const QString &collection,
                                         const QString &rkey, const QString &cid)
 {
     QUrlQuery query;
@@ -28,18 +28,17 @@ bool ComAtprotoRepoGetRecord::getRecord(const QString &repo, const QString &coll
         query.addQueryItem(QStringLiteral("cid"), cid);
     }
 
-    return get(QStringLiteral("xrpc/com.atproto.repo.getRecord"), query);
+    get(QStringLiteral("xrpc/com.atproto.repo.getRecord"), query);
 }
 
-bool ComAtprotoRepoGetRecord::profile(const QString &did)
+void ComAtprotoRepoGetRecord::profile(const QString &did)
 {
-    return getRecord(did, QStringLiteral("app.bsky.actor.profile"), QStringLiteral("self"),
-                     QString());
+    getRecord(did, QStringLiteral("app.bsky.actor.profile"), QStringLiteral("self"), QString());
 }
 
-bool ComAtprotoRepoGetRecord::list(const QString &did, const QString &rkey)
+void ComAtprotoRepoGetRecord::list(const QString &did, const QString &rkey)
 {
-    return getRecord(did, QStringLiteral("app.bsky.graph.list"), rkey, QString());
+    getRecord(did, QStringLiteral("app.bsky.graph.list"), rkey, QString());
 }
 
 bool ComAtprotoRepoGetRecord::parseJson(bool success, const QString reply_json)

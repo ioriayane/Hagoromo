@@ -113,7 +113,14 @@ ScrollView {
             quoteRecordImagePreview.embedAlts: model.quoteRecordEmbedImagesAlt
             quoteRecordImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.quoteRecordEmbedImagesFull, model.quoteRecordEmbedImagesAlt)
 
-            feedGeneratorFrame.visible: model.hasFeedGenerator
+            externalLinkFrame.visible: model.hasExternalLink && contentMediaFilterFrame.showContent
+            externalLinkFrame.onClicked: Qt.openUrlExternally(model.externalLinkUri)
+            externalLinkFrame.thumbImage.source: model.externalLinkThumb
+            externalLinkFrame.titleLabel.text: model.externalLinkTitle
+            externalLinkFrame.uriLabel.text: model.externalLinkUri
+            externalLinkFrame.descriptionLabel.text: model.externalLinkDescription
+
+            feedGeneratorFrame.visible: model.hasFeedGenerator && contentMediaFilterFrame.showContent
             feedGeneratorFrame.onClicked: requestViewFeedGenerator(model.feedGeneratorDisplayName, model.feedGeneratorUri)
             feedGeneratorFrame.avatarImage.source: model.feedGeneratorAvatar
             feedGeneratorFrame.displayNameLabel.text: model.feedGeneratorDisplayName
@@ -155,6 +162,9 @@ ScrollView {
                 }
             }
 
+            quoteRecordFrame.visible: (model.reason === NotificationListModel.ReasonQuote) &&
+                                      model.quoteRecordCid.length > 0 &&
+                                      contentMediaFilterFrame.showContent
             quoteRecordFrame.onClicked: {
                 if(model.reason === NotificationListModel.ReasonQuote){
                     requestViewThread(model.quoteRecordUri)

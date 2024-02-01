@@ -241,7 +241,7 @@ void ComAtprotoRepoCreateRecord::block(const QString &did)
                            json_doc.toJson(QJsonDocument::Compact));
 }
 
-bool ComAtprotoRepoCreateRecord::list(const QString &name, const ListPurpose purpose,
+void ComAtprotoRepoCreateRecord::list(const QString &name, const ListPurpose purpose,
                                       const QString &description)
 {
     QString p;
@@ -273,11 +273,11 @@ bool ComAtprotoRepoCreateRecord::list(const QString &name, const ListPurpose pur
     json_obj.insert("record", json_record);
     QJsonDocument json_doc(json_obj);
 
-    return AccessAtProtocol::post(QStringLiteral("xrpc/com.atproto.repo.createRecord"),
-                                  json_doc.toJson(QJsonDocument::Compact));
+    AccessAtProtocol::post(QStringLiteral("xrpc/com.atproto.repo.createRecord"),
+                           json_doc.toJson(QJsonDocument::Compact));
 }
 
-bool ComAtprotoRepoCreateRecord::listItem(const QString &uri, const QString &did)
+void ComAtprotoRepoCreateRecord::listItem(const QString &uri, const QString &did)
 {
     QJsonObject json_record;
     json_record.insert("subject", did);
@@ -290,19 +290,23 @@ bool ComAtprotoRepoCreateRecord::listItem(const QString &uri, const QString &did
     json_obj.insert("record", json_record);
     QJsonDocument json_doc(json_obj);
 
-    return AccessAtProtocol::post(QStringLiteral("xrpc/com.atproto.repo.createRecord"),
-                                  json_doc.toJson(QJsonDocument::Compact));
+    AccessAtProtocol::post(QStringLiteral("xrpc/com.atproto.repo.createRecord"),
+                           json_doc.toJson(QJsonDocument::Compact));
 }
 
-bool ComAtprotoRepoCreateRecord::threadGate(
+void ComAtprotoRepoCreateRecord::threadGate(
         const QString &uri, const AtProtocolType::ThreadGateType type,
         const QList<AtProtocolType::ThreadGateAllow> &allow_rules)
 {
-    if (!uri.startsWith("at://"))
-        return false;
+    if (!uri.startsWith("at://")) {
+        emit finished(false);
+        return;
+    }
 
-    if (type == ThreadGateType::Everybody)
-        return true;
+    if (type == ThreadGateType::Everybody) {
+        emit finished(false);
+        return;
+    }
 
     QString rkey = uri.split("/").last();
 
@@ -336,8 +340,8 @@ bool ComAtprotoRepoCreateRecord::threadGate(
 
     QJsonDocument json_doc(json_obj);
 
-    return AccessAtProtocol::post(QStringLiteral("xrpc/com.atproto.repo.createRecord"),
-                                  json_doc.toJson(QJsonDocument::Compact));
+    AccessAtProtocol::post(QStringLiteral("xrpc/com.atproto.repo.createRecord"),
+                           json_doc.toJson(QJsonDocument::Compact));
 }
 
 void ComAtprotoRepoCreateRecord::setReply(const QString &parent_cid, const QString &parent_uri,

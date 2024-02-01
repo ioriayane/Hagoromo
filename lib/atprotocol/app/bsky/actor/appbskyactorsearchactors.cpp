@@ -12,7 +12,7 @@ AppBskyActorSearchActors::AppBskyActorSearchActors(QObject *parent)
     m_listKey = QStringLiteral("actors");
 }
 
-bool AppBskyActorSearchActors::searchActors(const QString &q, const int limit,
+void AppBskyActorSearchActors::searchActors(const QString &q, const int limit,
                                             const QString &cursor)
 {
     QUrlQuery query;
@@ -24,7 +24,7 @@ bool AppBskyActorSearchActors::searchActors(const QString &q, const int limit,
         query.addQueryItem(QStringLiteral("cursor"), cursor);
     }
 
-    return get(QStringLiteral("xrpc/app.bsky.actor.searchActors"), query);
+    get(QStringLiteral("xrpc/app.bsky.actor.searchActors"), query);
 }
 
 }

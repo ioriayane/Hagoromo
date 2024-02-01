@@ -1,5 +1,5 @@
 #include "listslistmodel.h"
-//#include "listitemlistmodel.h"
+// #include "listitemlistmodel.h"
 #include "recordoperator.h"
 
 #include "atprotocol/app/bsky/graph/appbskygraphgetlists.h"
@@ -173,6 +173,7 @@ bool ListsListModel::getLatest()
 {
     if (running())
         return false;
+    setRunning(true);
 
     m_searchCidQue.clear();
     m_listItemCursor.clear();
@@ -192,15 +193,16 @@ bool ListsListModel::getLatest()
         lists->deleteLater();
     });
     lists->setAccount(account());
-    setRunning(lists->getLists(actor(), 0, QString()));
+    lists->getLists(actor(), 0, QString());
 
-    return running();
+    return true;
 }
 
 bool ListsListModel::getNext()
 {
     if (running() || m_cursor.isEmpty())
         return false;
+    setRunning(true);
 
     m_searchCidQue.clear();
     AppBskyGraphGetLists *lists = new AppBskyGraphGetLists(this);
@@ -208,7 +210,7 @@ bool ListsListModel::getNext()
         if (success) {
             m_cursor = lists->cursor(); // 続きの読み込みの時は必ず上書き
             if (lists->listViewList()->isEmpty())
-                m_cursor.clear(); //すべて読み切って空になったときはカーソルこないので空になるはずだけど念のため
+                m_cursor.clear(); // すべて読み切って空になったときはカーソルこないので空になるはずだけど念のため
             copyFrom(lists);
             QTimer::singleShot(10, this, &ListsListModel::displayQueuedPostsNext);
         } else {
@@ -219,9 +221,9 @@ bool ListsListModel::getNext()
         lists->deleteLater();
     });
     lists->setAccount(account());
-    setRunning(lists->getLists(actor(), 0, m_cursor));
+    lists->getLists(actor(), 0, m_cursor);
 
-    return running();
+    return true;
 }
 
 QHash<int, QByteArray> ListsListModel::roleNames() const
@@ -339,10 +341,7 @@ void ListsListModel::searchActorInEachLists()
         list->deleteLater();
     });
     list->setAccount(account());
-    if (!list->listListItems(account().did, cursor)) {
-        setListItemStatus(SearchStatusTypeNotContains);
-        setRunning(false);
-    }
+    list->listListItems(account().did, cursor);
 }
 
 QString ListsListModel::getListCidByUri(const QString &uri) const

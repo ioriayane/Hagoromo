@@ -13,7 +13,7 @@ AppBskyFeedSearchPosts::AppBskyFeedSearchPosts(QObject *parent) : AppBskyFeedGet
 {
 }
 
-bool AppBskyFeedSearchPosts::searchPosts(const QString &q, const int limit, const QString &cursor)
+void AppBskyFeedSearchPosts::searchPosts(const QString &q, const int limit, const QString &cursor)
 {
     QUrlQuery query;
     query.addQueryItem(QStringLiteral("q"), q);
@@ -24,7 +24,7 @@ bool AppBskyFeedSearchPosts::searchPosts(const QString &q, const int limit, cons
         query.addQueryItem(QStringLiteral("cursor"), cursor);
     }
 
-    return get(QStringLiteral("xrpc/app.bsky.feed.searchPosts"), query);
+    get(QStringLiteral("xrpc/app.bsky.feed.searchPosts"), query);
 }
 
 bool AppBskyFeedSearchPosts::parseJson(bool success, const QString reply_json)

@@ -11,13 +11,13 @@ class ComAtprotoRepoPutRecord : public AccessAtProtocol
 public:
     explicit ComAtprotoRepoPutRecord(QObject *parent = nullptr);
 
-    bool putRecord(const QString &repo, const QString &collection, const QString &rkey,
+    void putRecord(const QString &repo, const QString &collection, const QString &rkey,
                    const bool validate, const QString &swapRecord, const QString &swapCommit,
                    const QJsonObject &record);
 
-    bool profile(const AtProtocolType::Blob &avatar, const AtProtocolType::Blob &banner,
+    void profile(const AtProtocolType::Blob &avatar, const AtProtocolType::Blob &banner,
                  const QString &description, const QString &display_name, const QString &cid);
-    bool list(const AtProtocolType::Blob &avatar, const QString &purpose,
+    void list(const AtProtocolType::Blob &avatar, const QString &purpose,
               const QString &description, const QString &name, const QString &rkey);
 
 private:

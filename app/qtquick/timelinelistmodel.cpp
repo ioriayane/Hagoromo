@@ -11,6 +11,29 @@ using namespace AtProtocolType;
 TimelineListModel::TimelineListModel(QObject *parent)
     : AtpAbstractListModel { parent }, m_visibleReplyToUnfollowedUsers(true)
 {
+    m_toExternalLinkRoles[HasExternalLinkRole] =
+            AtpAbstractListModel::ExternalLinkRoles::HasExternalLinkRole;
+    m_toExternalLinkRoles[ExternalLinkUriRole] =
+            AtpAbstractListModel::ExternalLinkRoles::ExternalLinkUriRole;
+    m_toExternalLinkRoles[ExternalLinkTitleRole] =
+            AtpAbstractListModel::ExternalLinkRoles::ExternalLinkTitleRole;
+    m_toExternalLinkRoles[ExternalLinkDescriptionRole] =
+            AtpAbstractListModel::ExternalLinkRoles::ExternalLinkDescriptionRole;
+    m_toExternalLinkRoles[ExternalLinkThumbRole] =
+            AtpAbstractListModel::ExternalLinkRoles::ExternalLinkThumbRole;
+
+    m_toFeedGeneratorRoles[HasFeedGeneratorRole] =
+            AtpAbstractListModel::FeedGeneratorRoles::HasFeedGeneratorRole;
+    m_toFeedGeneratorRoles[FeedGeneratorUriRole] =
+            AtpAbstractListModel::FeedGeneratorRoles::FeedGeneratorUriRole;
+    m_toFeedGeneratorRoles[FeedGeneratorCreatorHandleRole] =
+            AtpAbstractListModel::FeedGeneratorRoles::FeedGeneratorCreatorHandleRole;
+    m_toFeedGeneratorRoles[FeedGeneratorDisplayNameRole] =
+            AtpAbstractListModel::FeedGeneratorRoles::FeedGeneratorDisplayNameRole;
+    m_toFeedGeneratorRoles[FeedGeneratorLikeCountRole] =
+            AtpAbstractListModel::FeedGeneratorRoles::FeedGeneratorLikeCountRole;
+    m_toFeedGeneratorRoles[FeedGeneratorAvatarRole] =
+            AtpAbstractListModel::FeedGeneratorRoles::FeedGeneratorAvatarRole;
 }
 
 int TimelineListModel::rowCount(const QModelIndex &parent) const
@@ -89,57 +112,21 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
              || role == QuoteRecordBlockedRole)
         return getQuoteItem(current.post, role);
 
-    else if (role == HasExternalLinkRole)
-        return current.post.embed_type
-                == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedExternal_View;
-    else if (role == ExternalLinkUriRole)
-        return current.post.embed_AppBskyEmbedExternal_View.external.uri;
-    else if (role == ExternalLinkTitleRole)
-        return current.post.embed_AppBskyEmbedExternal_View.external.title;
-    else if (role == ExternalLinkDescriptionRole)
-        return current.post.embed_AppBskyEmbedExternal_View.external.description;
-    else if (role == ExternalLinkThumbRole)
-        return current.post.embed_AppBskyEmbedExternal_View.external.thumb;
+    else if (role == HasExternalLinkRole || role == ExternalLinkUriRole
+             || role == ExternalLinkTitleRole || role == ExternalLinkDescriptionRole
+             || role == ExternalLinkThumbRole)
+        return getExternalLinkItem(
+                current.post,
+                m_toExternalLinkRoles.value(
+                        role, AtpAbstractListModel::ExternalLinkRoles::ExternalLinkUnknownRole));
 
-    else if (role == HasFeedGeneratorRole) {
-        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
-            return false;
-        else
-            return current.post.embed_type
-                    == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecord_View
-                    && current.post.embed_AppBskyEmbedRecord_View->record_type
-                    == AppBskyEmbedRecord::ViewRecordType::record_AppBskyFeedDefs_GeneratorView;
-    } else if (role == FeedGeneratorUriRole) {
-        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
-            return QString();
-        else
-            return current.post.embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView
-                    .uri;
-    } else if (role == FeedGeneratorCreatorHandleRole) {
-        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
-            return QString();
-        else
-            return current.post.embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView
-                    .creator.handle;
-    } else if (role == FeedGeneratorDisplayNameRole) {
-        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
-            return QString();
-        else
-            return current.post.embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView
-                    .displayName;
-    } else if (role == FeedGeneratorLikeCountRole) {
-        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
-            return QString();
-        else
-            return current.post.embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView
-                    .likeCount;
-    } else if (role == FeedGeneratorAvatarRole) {
-        if (current.post.embed_AppBskyEmbedRecord_View.isNull())
-            return QString();
-        else
-            return current.post.embed_AppBskyEmbedRecord_View->record_AppBskyFeedDefs_GeneratorView
-                    .avatar;
-    }
+    else if (role == HasFeedGeneratorRole || role == FeedGeneratorUriRole
+             || role == FeedGeneratorCreatorHandleRole || role == FeedGeneratorDisplayNameRole
+             || role == FeedGeneratorLikeCountRole || role == FeedGeneratorAvatarRole)
+        return getFeedGeneratorItem(
+                current.post,
+                m_toFeedGeneratorRoles.value(
+                        role, AtpAbstractListModel::FeedGeneratorRoles::FeedGeneratorUnknownRole));
 
     else if (role == HasReplyRole) {
         if (current.reply.parent_type == AppBskyFeedDefs::ReplyRefParentType::parent_PostView)
@@ -285,7 +272,7 @@ bool TimelineListModel::getLatest()
         return false;
     setRunning(true);
 
-    return updateContentFilterLabels([=]() {
+    updateContentFilterLabels([=]() {
         AppBskyFeedGetTimeline *timeline = new AppBskyFeedGetTimeline(this);
         connect(timeline, &AppBskyFeedGetTimeline::finished, [=](bool success) {
             if (success) {
@@ -300,11 +287,9 @@ bool TimelineListModel::getLatest()
             timeline->deleteLater();
         });
         timeline->setAccount(account());
-        if (!timeline->getTimeline()) {
-            emit errorOccured(timeline->errorCode(), timeline->errorMessage());
-            setRunning(false);
-        }
+        timeline->getTimeline();
     });
+    return true;
 }
 
 bool TimelineListModel::getNext()
@@ -313,7 +298,7 @@ bool TimelineListModel::getNext()
         return false;
     setRunning(true);
 
-    return updateContentFilterLabels([=]() {
+    updateContentFilterLabels([=]() {
         AppBskyFeedGetTimeline *timeline = new AppBskyFeedGetTimeline(this);
         connect(timeline, &AppBskyFeedGetTimeline::finished, [=](bool success) {
             if (success) {
@@ -327,11 +312,9 @@ bool TimelineListModel::getNext()
             timeline->deleteLater();
         });
         timeline->setAccount(account());
-        if (!timeline->getTimeline(m_cursor)) {
-            emit errorOccured(timeline->errorCode(), timeline->errorMessage());
-            setRunning(false);
-        }
+        timeline->getTimeline(m_cursor);
     });
+    return true;
 }
 
 bool TimelineListModel::deletePost(int row)

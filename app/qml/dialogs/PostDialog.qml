@@ -282,6 +282,8 @@ Dialog {
                                                      event.key === Qt.Key_Return){
                                                 mentionSuggestionView.accept()
                                                 event.accepted = true
+                                            }else if(event.key === Qt.Key_Escape){
+                                                mentionSuggestionView.clear()
                                             }
                                         }else{
                                             console.log("Key(n):" + event.key)
@@ -312,7 +314,7 @@ Dialog {
 
             RowLayout {
                 Layout.maximumWidth: 400 * AdjustedValues.ratio
-                visible: postType !== "quote" && embedImagePreview.embedImages.length === 0
+                visible: embedImagePreview.embedImages.length === 0
                 ScrollView {
                     Layout.fillWidth: true
                     clip: true
@@ -320,7 +322,9 @@ Dialog {
                         id: addingExternalLinkUrlText
                         selectByMouse: true
                         font.pointSize: AdjustedValues.f10
-                        placeholderText: qsTr("Link card URL or custom feed URL")
+                        placeholderText: (postType !== "quote") ?
+                                             qsTr("Link card URL or custom feed URL") :
+                                             qsTr("Link card URL")
                     }
                 }
                 IconButton {
@@ -333,7 +337,7 @@ Dialog {
                     onClicked: {
                         var uri = addingExternalLinkUrlText.text
                         var at_uri = feedGeneratorLink.convertToAtUri(uri)
-                        if(at_uri.length > 0){
+                        if(at_uri.length > 0 && postType !== "quote"){
                             var row = accountCombo.currentIndex;
                             feedGeneratorLink.setAccount(postDialog.accountModel.item(row, AccountListModel.ServiceRole),
                                                          postDialog.accountModel.item(row, AccountListModel.DidRole),

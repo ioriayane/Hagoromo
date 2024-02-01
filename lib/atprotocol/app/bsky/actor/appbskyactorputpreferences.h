@@ -11,7 +11,7 @@ class AppBskyActorPutPreferences : public AccessAtProtocol
 public:
     explicit AppBskyActorPutPreferences(QObject *parent = nullptr);
 
-    bool putPreferences(const QString &json);
+    void putPreferences(const QString &json);
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);

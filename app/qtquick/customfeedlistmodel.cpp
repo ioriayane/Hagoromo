@@ -28,7 +28,7 @@ bool CustomFeedListModel::getLatest()
         updateFeedSaveStatus();
     }
 
-    return updateContentFilterLabels([=]() {
+    updateContentFilterLabels([=]() {
         AppBskyFeedGetFeed *feed = new AppBskyFeedGetFeed(this);
         connect(feed, &AppBskyFeedGetFeed::finished, [=](bool success) {
             if (success) {
@@ -42,6 +42,7 @@ bool CustomFeedListModel::getLatest()
         feed->setAccount(account());
         feed->getFeed(uri(), 50, QString());
     });
+    return true;
 }
 
 void CustomFeedListModel::updateFeedSaveStatus()

@@ -371,128 +371,128 @@
 <context>
     <name>ConfigurableLabels</name>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="232"/>
         <location filename="../../lib/tools/configurablelabels.cpp" line="234"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="236"/>
         <source>Content hidden</source>
         <translation>閲覧不可</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="233"/>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="244"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="235"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="246"/>
         <source>Moderator overrides for special cases.</source>
         <translation>特別な場合のためのモデレーターによるオーバーライド。</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="243"/>
         <location filename="../../lib/tools/configurablelabels.cpp" line="245"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="247"/>
         <source>Content warning</source>
         <translation>閲覧警告</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="254"/>
         <location filename="../../lib/tools/configurablelabels.cpp" line="256"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="258"/>
         <source>Legal</source>
         <translation>法的</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="255"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="257"/>
         <source>Content removed for legal reasons.</source>
         <translation>法的な理由で削除されたコンテンツ。</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="266"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="268"/>
         <source>Explicit Sexual Images</source>
         <translation>露骨な性的な画像</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="267"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="269"/>
         <source>i.e. pornography</source>
         <translation>例えばポルノ</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="268"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="270"/>
         <source>Sexually Explicit</source>
         <translation>露骨な性的表現</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="278"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="280"/>
         <source>Other Nudity</source>
         <translation>その他ヌード</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="279"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="281"/>
         <source>Including non-sexual and artistic</source>
         <translation>ノンセクシャルや芸術的なものも含む</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="280"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="282"/>
         <source>Nudity</source>
         <translation>ヌード</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="289"/>
         <location filename="../../lib/tools/configurablelabels.cpp" line="291"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="293"/>
         <source>Sexually Suggestive</source>
         <translation>性的な示唆</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="290"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="292"/>
         <source>Does not include nudity</source>
         <translation>ヌードは含まない</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="300"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="302"/>
         <source>Violent / Bloody</source>
         <translation>暴力 / 流血</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="301"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="303"/>
         <source>Gore, self-harm, torture</source>
         <translation>血糊、自傷行為、拷問</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="302"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="304"/>
         <source>Violence</source>
         <translation>暴力</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="315"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="317"/>
         <source>Hate Group Iconography</source>
         <translation>ヘイトグループの象徴</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="316"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="318"/>
         <source>Images of terror groups, articles covering events, etc.</source>
         <translation>テロ集団の画像、事件を取り上げた記事など</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="317"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="319"/>
         <source>Hate Groups</source>
         <translation>ヘイトグループ</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="335"/>
         <location filename="../../lib/tools/configurablelabels.cpp" line="337"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="339"/>
         <source>Spam</source>
         <translation>スパム</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="336"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="338"/>
         <source>Excessive unwanted interactions</source>
         <translation>過剰な不要な干渉</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="347"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="349"/>
         <source>Impersonation / Scam</source>
         <translation>なりすまし / 詐欺</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="349"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="351"/>
         <source>Impersonation</source>
         <translation>なりすまし</translation>
     </message>
     <message>
-        <location filename="../../lib/tools/configurablelabels.cpp" line="348"/>
+        <location filename="../../lib/tools/configurablelabels.cpp" line="350"/>
         <source>Accounts falsely claiming to be people or orgs</source>
         <translation>個人や団体を偽ったアカウント</translation>
     </message>
@@ -1670,7 +1670,7 @@
 <context>
     <name>NotificationDelegate</name>
     <message>
-        <location filename="../qml/parts/NotificationDelegate.qml" line="142"/>
+        <location filename="../qml/parts/NotificationDelegate.qml" line="143"/>
         <source>Post from an account you muted.</source>
         <translation>ミュートしているアカウントのポスト</translation>
     </message>
@@ -1743,7 +1743,7 @@
         <translation>ミュートしているアカウントのポスト</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostDelegate.qml" line="248"/>
+        <location filename="../qml/parts/PostDelegate.qml" line="270"/>
         <source>blocked</source>
         <translation>ブロック済み</translation>
     </message>
@@ -1763,26 +1763,27 @@
         <translation type="vanished">リンクカード</translation>
     </message>
     <message>
+        <location filename="../qml/dialogs/PostDialog.qml" line="327"/>
         <source>Link card URL</source>
-        <translation type="vanished">リンクカードのURL</translation>
+        <translation>リンクカードのURL</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/PostDialog.qml" line="323"/>
+        <location filename="../qml/dialogs/PostDialog.qml" line="326"/>
         <source>Link card URL or custom feed URL</source>
         <translation>リンクカードかフィードカードのURL</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/PostDialog.qml" line="488"/>
+        <location filename="../qml/dialogs/PostDialog.qml" line="492"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/PostDialog.qml" line="555"/>
+        <location filename="../qml/dialogs/PostDialog.qml" line="559"/>
         <source>Post</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/PostDialog.qml" line="604"/>
+        <location filename="../qml/dialogs/PostDialog.qml" line="608"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
     </message>
@@ -2317,187 +2318,187 @@
         <translation>段の高さの比率</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="410"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="431"/>
         <source>Api Url</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="420"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="441"/>
         <source>Api Key</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="431"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="452"/>
         <source>Target language</source>
         <translation>翻訳後の言語</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="441"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="462"/>
         <source>Bulgarian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="442"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="463"/>
         <source>Chinese (simplified)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="443"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="464"/>
         <source>Czech</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="444"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="465"/>
         <source>Danish</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="445"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="466"/>
         <source>Dutch</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="446"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="467"/>
         <source>English (American)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="447"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="468"/>
         <source>English (British)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="448"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="469"/>
         <source>Estonian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="449"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="470"/>
         <source>Finnish</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="450"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="471"/>
         <source>French</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="451"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="472"/>
         <source>German</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="452"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="473"/>
         <source>Greek</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="453"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="474"/>
         <source>Hungarian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="454"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="475"/>
         <source>Indonesian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="455"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="476"/>
         <source>Italian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="456"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="477"/>
         <source>Japanese</source>
         <translation>日本語</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="457"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="478"/>
         <source>Korean</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="458"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="479"/>
         <source>Latvian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="459"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="480"/>
         <source>Lithuanian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="460"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="481"/>
         <source>Norwegian (Bokmål)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="461"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="482"/>
         <source>Polish</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="462"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="483"/>
         <source>Portuguese (Brazilian)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="463"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="484"/>
         <source>Portuguese (excluding Brazilian)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="464"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="485"/>
         <source>Romanian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="465"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="486"/>
         <source>Russian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="466"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="487"/>
         <source>Slovak</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="467"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="488"/>
         <source>Slovenian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="468"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="489"/>
         <source>Spanish</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="469"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="490"/>
         <source>Swedish</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="470"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="491"/>
         <source>Turkish</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="471"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="492"/>
         <source>Ukrainian</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="521"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="542"/>
         <source>Display version info in main area</source>
         <translation>メインエリアにバージョン情報を表示</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="530"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="551"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SettingDialog.qml" line="539"/>
+        <location filename="../qml/dialogs/SettingDialog.qml" line="560"/>
         <source>OK</source>
         <translation></translation>
     </message>

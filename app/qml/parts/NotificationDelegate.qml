@@ -43,6 +43,7 @@ ClickableFrame {
     property alias quoteRecordFrame: quoteRecordFrame
     property alias quoteRecordImagePreview: quoteRecordImagePreview
     property alias feedGeneratorFrame: feedGeneratorFrame
+    property alias externalLinkFrame: externalLinkFrame
     property alias postControls: postControls
 
     signal requestViewProfile(string did)
@@ -117,7 +118,7 @@ ClickableFrame {
             PropertyChanges { target: reasonImage; source: "../images/quote.png" }
             PropertyChanges { target: recordTextLabel; visible: true }
             PropertyChanges { target: recordTextLabel; text: notificationFrame.recordText }
-            PropertyChanges { target: quoteRecordFrame; visible: true }
+            // PropertyChanges { target: quoteRecordFrame; visible: true } ラベルフィルタの都合で使う側で調整する
 
             PropertyChanges { target: quoteRecordAvatarImage; source: notificationFrame.quoteRecordAvatar }
             PropertyChanges { target: quoteRecordAuthor; displayName: notificationFrame.quoteRecordDisplayName }
@@ -253,6 +254,27 @@ ClickableFrame {
                         visible: contentMediaFilterFrame.showContent
                     }
 
+                    ExternalLinkCard {
+                        id: externalLinkFrame
+                        Layout.preferredWidth: parent.width
+                        Layout.topMargin: 5
+                        visible: false
+                        hoverEnabled: true
+                        onHoveredChanged:{
+                            if(hovered){
+                                displayLink(uriLabel.text)
+                            }else{
+                                displayLink("")
+                            }
+                        }
+                    }
+
+                    FeedGeneratorLinkCard {
+                        id: feedGeneratorFrame
+                        Layout.preferredWidth: parent.width
+                        visible: false
+                    }
+
                     ClickableFrame {
                         id: quoteRecordFrame
                         Layout.preferredWidth: parent.width
@@ -290,12 +312,6 @@ ClickableFrame {
                                 Layout.topMargin: 5
                             }
                         }
-                    }
-
-                    FeedGeneratorLinkCard {
-                        id: feedGeneratorFrame
-                        Layout.preferredWidth: parent.width
-                        visible: false
                     }
 
                     PostControls {

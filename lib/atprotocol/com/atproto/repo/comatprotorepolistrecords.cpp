@@ -11,7 +11,7 @@ ComAtprotoRepoListRecords::ComAtprotoRepoListRecords(QObject *parent) : AccessAt
 {
 }
 
-bool ComAtprotoRepoListRecords::listRecords(const QString &repo, const QString &collection,
+void ComAtprotoRepoListRecords::listRecords(const QString &repo, const QString &collection,
                                             const int limit, const QString &cursor,
                                             const QString &rkeyStart, const QString &rkeyEnd)
 {
@@ -25,22 +25,22 @@ bool ComAtprotoRepoListRecords::listRecords(const QString &repo, const QString &
         query.addQueryItem(QStringLiteral("cursor"), cursor);
     }
 
-    return get(QStringLiteral("xrpc/com.atproto.repo.listRecords"), query);
+    get(QStringLiteral("xrpc/com.atproto.repo.listRecords"), query);
 }
 
-bool ComAtprotoRepoListRecords::listLikes(const QString &repo, const QString &cursor)
+void ComAtprotoRepoListRecords::listLikes(const QString &repo, const QString &cursor)
 {
-    return listRecords(repo, "app.bsky.feed.like", 50, cursor, QString(), QString());
+    listRecords(repo, "app.bsky.feed.like", 50, cursor, QString(), QString());
 }
 
-bool ComAtprotoRepoListRecords::listReposts(const QString &repo, const QString &cursor)
+void ComAtprotoRepoListRecords::listReposts(const QString &repo, const QString &cursor)
 {
-    return listRecords(repo, "app.bsky.feed.repost", 50, cursor, QString(), QString());
+    listRecords(repo, "app.bsky.feed.repost", 50, cursor, QString(), QString());
 }
 
-bool ComAtprotoRepoListRecords::listListItems(const QString &repo, const QString &cursor)
+void ComAtprotoRepoListRecords::listListItems(const QString &repo, const QString &cursor)
 {
-    return listRecords(repo, "app.bsky.graph.listitem", 100, cursor, QString(), QString());
+    listRecords(repo, "app.bsky.graph.listitem", 100, cursor, QString(), QString());
 }
 
 const QList<AtProtocolType::ComAtprotoRepoListRecords::Record> *

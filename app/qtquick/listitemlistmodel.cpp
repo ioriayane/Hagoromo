@@ -65,6 +65,7 @@ bool ListItemListModel::getLatest()
 {
     if (running())
         return false;
+    setRunning(true);
 
     AppBskyGraphGetList *list = new AppBskyGraphGetList(this);
     connect(list, &AppBskyGraphGetList::finished, [=](bool success) {
@@ -82,15 +83,15 @@ bool ListItemListModel::getLatest()
         list->deleteLater();
     });
     list->setAccount(account());
-    setRunning(list->getList(uri(), 100, QString()));
-
-    return running();
+    list->getList(uri(), 100, QString());
+    return true;
 }
 
 bool ListItemListModel::getNext()
 {
     if (running() || m_cursor.isEmpty())
         return false;
+    setRunning(true);
 
     AppBskyGraphGetList *list = new AppBskyGraphGetList(this);
     connect(list, &AppBskyGraphGetList::finished, [=](bool success) {
@@ -106,9 +107,9 @@ bool ListItemListModel::getNext()
         list->deleteLater();
     });
     list->setAccount(account());
-    setRunning(list->getList(uri(), 100, m_cursor));
+    list->getList(uri(), 100, m_cursor);
 
-    return running();
+    return true;
 }
 
 QHash<int, QByteArray> ListItemListModel::roleNames() const

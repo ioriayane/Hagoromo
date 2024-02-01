@@ -315,13 +315,11 @@ bool RecordOperator::list(const QString &name, const RecordOperator::ListPurpose
             });
             create_record->setImageBlobs(m_embedImageBlogs);
             create_record->setAccount(m_account);
-            if (!create_record->list(
-                        name,
-                        static_cast<AtProtocolInterface::ComAtprotoRepoCreateRecord::ListPurpose>(
-                                purpose),
-                        description)) {
-                setRunning(false);
-            }
+            create_record->list(
+                    name,
+                    static_cast<AtProtocolInterface::ComAtprotoRepoCreateRecord::ListPurpose>(
+                            purpose),
+                    description);
         } else {
             emit finished(success, QString(), QString());
             setRunning(false);
@@ -336,6 +334,7 @@ bool RecordOperator::listItem(const QString &uri, const QString &did)
 {
     if (running())
         return false;
+    setRunning(true);
 
     ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord(this);
     connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
@@ -347,8 +346,8 @@ bool RecordOperator::listItem(const QString &uri, const QString &did)
         create_record->deleteLater();
     });
     create_record->setAccount(m_account);
-    setRunning(create_record->listItem(uri, did));
-    return running();
+    create_record->listItem(uri, did);
+    return true;
 }
 
 void RecordOperator::deletePost(const QString &uri)
@@ -485,7 +484,7 @@ bool RecordOperator::deleteList(const QString &uri)
     m_listItems.clear();
     bool res = getAllListItems(uri, [=](bool success3) {
         if (success3) {
-            bool res2 = deleteAllListItems([=](bool success2) {
+            deleteAllListItems([=](bool success2) {
                 if (success2) {
                     QString r_key = uri.split("/").last();
 
@@ -502,12 +501,7 @@ bool RecordOperator::deleteList(const QString &uri)
                                 delete_record->deleteLater();
                             });
                     delete_record->setAccount(m_account);
-                    if (!delete_record->deleteList(r_key)) {
-                        emit errorOccured(delete_record->errorCode(),
-                                          delete_record->errorMessage());
-                        emit finished(false, QString(), QString());
-                        setRunning(false);
-                    }
+                    delete_record->deleteList(r_key);
                 } else {
                     emit errorOccured(
                             QStringLiteral("FailDeleteList"),
@@ -517,13 +511,6 @@ bool RecordOperator::deleteList(const QString &uri)
                     setRunning(false);
                 }
             });
-            if (!res2) {
-                emit errorOccured(
-                        QStringLiteral("FailDeleteList"),
-                        QStringLiteral("An error occurred while deleting a user in the list.(1)"));
-                emit finished(false, QString(), QString());
-                setRunning(false);
-            }
         } else {
             emit errorOccured(QStringLiteral("FailDeleteList"),
                               QStringLiteral("An error occurred while retrieving user information "
@@ -545,6 +532,7 @@ bool RecordOperator::deleteListItem(const QString &uri)
 {
     if (running() || !uri.startsWith("at://"))
         return false;
+    setRunning(true);
 
     QString r_key = uri.split("/").last();
 
@@ -558,8 +546,8 @@ bool RecordOperator::deleteListItem(const QString &uri)
         delete_record->deleteLater();
     });
     delete_record->setAccount(m_account);
-    setRunning(delete_record->deleteListItem(r_key));
-    return running();
+    delete_record->deleteListItem(r_key);
+    return true;
 }
 
 void RecordOperator::updateProfile(const QString &avatar_url, const QString &banner_url,
@@ -567,6 +555,7 @@ void RecordOperator::updateProfile(const QString &avatar_url, const QString &ban
 {
     if (running())
         return;
+    setRunning(true);
 
     QStringList images;
     QStringList alts;
@@ -611,11 +600,7 @@ void RecordOperator::updateProfile(const QString &avatar_url, const QString &ban
                         new_profile->deleteLater();
                     });
                     new_profile->setAccount(m_account);
-                    if (!new_profile->profile(avatar, banner, description, display_name, old_cid)) {
-                        emit errorOccured(new_profile->errorCode(), new_profile->errorMessage());
-                        emit finished(false, QString(), QString());
-                        setRunning(false);
-                    }
+                    new_profile->profile(avatar, banner, description, display_name, old_cid);
                 } else {
                     emit finished(false, QString(), QString());
                     setRunning(false);
@@ -629,10 +614,7 @@ void RecordOperator::updateProfile(const QString &avatar_url, const QString &ban
         old_profile->deleteLater();
     });
     old_profile->setAccount(m_account);
-    setRunning(old_profile->profile(m_account.did));
-    if (!running()) {
-        emit errorOccured(old_profile->errorCode(), old_profile->errorMessage());
-    }
+    old_profile->profile(m_account.did);
 }
 
 void RecordOperator::updateList(const QString &uri, const QString &avatar_url,
@@ -640,6 +622,7 @@ void RecordOperator::updateList(const QString &uri, const QString &avatar_url,
 {
     if (running() || !uri.startsWith("at://"))
         return;
+    setRunning(true);
 
     QString r_key = uri.split("/").last();
 
@@ -675,11 +658,7 @@ void RecordOperator::updateList(const QString &uri, const QString &avatar_url,
                         new_list->deleteLater();
                     });
                     new_list->setAccount(m_account);
-                    if (!new_list->list(avatar, old_record.purpose, description, name, r_key)) {
-                        emit errorOccured(new_list->errorCode(), new_list->errorMessage());
-                        emit finished(false, QString(), QString());
-                        setRunning(false);
-                    }
+                    new_list->list(avatar, old_record.purpose, description, name, r_key);
                 } else {
                     emit finished(false, QString(), QString());
                     setRunning(false);
@@ -693,10 +672,7 @@ void RecordOperator::updateList(const QString &uri, const QString &avatar_url,
         old_list->deleteLater();
     });
     old_list->setAccount(m_account);
-    setRunning(old_list->list(m_account.did, r_key));
-    if (!running()) {
-        emit errorOccured(old_list->errorCode(), old_list->errorMessage());
-    }
+    old_list->list(m_account.did, r_key);
 }
 
 bool RecordOperator::running() const
@@ -896,14 +872,14 @@ bool RecordOperator::getAllListItems(const QString &list_uri, std::function<void
         list->deleteLater();
     });
     list->setAccount(m_account);
-    return list->listListItems(m_account.did, cursor);
+    list->listListItems(m_account.did, cursor);
 }
 
-bool RecordOperator::deleteAllListItems(std::function<void(bool)> callback)
+void RecordOperator::deleteAllListItems(std::function<void(bool)> callback)
 {
     if (m_listItems.isEmpty()) {
         callback(true);
-        return true;
+        return;
     }
 
     QString r_key = m_listItems.front().split("/").last();
@@ -912,16 +888,14 @@ bool RecordOperator::deleteAllListItems(std::function<void(bool)> callback)
     ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord(this);
     connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
         if (success) {
-            if (!deleteAllListItems(callback)) {
-                callback(false);
-            }
+            deleteAllListItems(callback);
         } else {
             callback(false);
         }
         delete_record->deleteLater();
     });
     delete_record->setAccount(m_account);
-    return delete_record->deleteListItem(r_key);
+    delete_record->deleteListItem(r_key);
 }
 
 bool RecordOperator::threadGate(const QString &uri, std::function<void(bool)> callback)
@@ -968,5 +942,6 @@ bool RecordOperator::threadGate(const QString &uri, std::function<void(bool)> ca
         create_record->deleteLater();
     });
     create_record->setAccount(m_account);
-    return create_record->threadGate(uri, type, rules);
+    create_record->threadGate(uri, type, rules);
+    return true;
 }

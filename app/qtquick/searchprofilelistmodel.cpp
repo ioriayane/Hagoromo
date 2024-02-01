@@ -6,7 +6,8 @@
 using AtProtocolInterface::AppBskyActorSearchActors;
 using AtProtocolInterface::AppBskyActorSearchActorsTypeahead;
 
-SearchProfileListModel::SearchProfileListModel(QObject *parent) : FollowsListModel { parent }
+SearchProfileListModel::SearchProfileListModel(QObject *parent)
+    : FollowsListModel { parent }, m_enabledSuggestion(false)
 {
     m_regMentionHandle = QRegularExpression(REG_EXP_MENTION_PART);
 }
@@ -15,12 +16,15 @@ bool SearchProfileListModel::getSuggestion(const QString &q, int limit)
 {
     if (q.isEmpty())
         return false;
+    setRunning(true);
 
     AppBskyActorSearchActorsTypeahead *profiles = new AppBskyActorSearchActorsTypeahead(this);
     connect(profiles, &AppBskyActorSearchActorsTypeahead::finished, [=](bool success) {
         if (success) {
             clear();
-            copyProfiles(profiles);
+            if (enabledSuggestion()) {
+                copyProfiles(profiles);
+            }
         } else {
             emit errorOccured(profiles->errorCode(), profiles->errorMessage());
         }
@@ -28,11 +32,8 @@ bool SearchProfileListModel::getSuggestion(const QString &q, int limit)
         profiles->deleteLater();
     });
     profiles->setAccount(account());
-    setRunning(profiles->searchActorsTypeahead(QString(), q, limit));
-    if (!running()) {
-        emit errorOccured(profiles->errorCode(), profiles->errorMessage());
-    }
-    return running();
+    profiles->searchActorsTypeahead(QString(), q, limit);
+    return true;
 }
 
 QString SearchProfileListModel::extractHandleBlock(const QString &text) const
@@ -77,7 +78,7 @@ bool SearchProfileListModel::getLatest()
         return false;
     setRunning(true);
 
-    return updateContentFilterLabels([=]() {
+    updateContentFilterLabels([=]() {
         AppBskyActorSearchActors *profiles = new AppBskyActorSearchActors(this);
         connect(profiles, &AppBskyActorSearchActors::finished, [=](bool success) {
             if (success) {
@@ -92,11 +93,9 @@ bool SearchProfileListModel::getLatest()
             profiles->deleteLater();
         });
         profiles->setAccount(account());
-        if (!profiles->searchActors(text(), 50, QString())) {
-            emit errorOccured(profiles->errorCode(), profiles->errorMessage());
-            setRunning(false);
-        }
+        profiles->searchActors(text(), 50, QString());
     });
+    return true;
 }
 
 bool SearchProfileListModel::getNext()
@@ -105,7 +104,7 @@ bool SearchProfileListModel::getNext()
         return false;
     setRunning(true);
 
-    return updateContentFilterLabels([=]() {
+    updateContentFilterLabels([=]() {
         AppBskyActorSearchActors *profiles = new AppBskyActorSearchActors(this);
         connect(profiles, &AppBskyActorSearchActors::finished, [=](bool success) {
             if (success) {
@@ -118,11 +117,9 @@ bool SearchProfileListModel::getNext()
             profiles->deleteLater();
         });
         profiles->setAccount(account());
-        if (!profiles->searchActors(text(), 50, m_cursor)) {
-            emit errorOccured(profiles->errorCode(), profiles->errorMessage());
-            setRunning(false);
-        }
+        profiles->searchActors(text(), 50, m_cursor);
     });
+    return true;
 }
 
 QString SearchProfileListModel::text() const
@@ -136,4 +133,17 @@ void SearchProfileListModel::setText(const QString &newText)
         return;
     m_text = newText;
     emit textChanged();
+}
+
+bool SearchProfileListModel::enabledSuggestion() const
+{
+    return m_enabledSuggestion;
+}
+
+void SearchProfileListModel::setEnabledSuggestion(bool newEnabledSuggestion)
+{
+    if (m_enabledSuggestion == newEnabledSuggestion)
+        return;
+    m_enabledSuggestion = newEnabledSuggestion;
+    emit enabledSuggestionChanged();
 }

@@ -69,6 +69,12 @@ public:
         QuoteRecordIsRepostedRole,
         QuoteRecordIsLikedRole,
 
+        HasExternalLinkRole,
+        ExternalLinkUriRole,
+        ExternalLinkTitleRole,
+        ExternalLinkDescriptionRole,
+        ExternalLinkThumbRole,
+
         HasFeedGeneratorRole,
         FeedGeneratorUriRole,
         FeedGeneratorCreatorHandleRole,
@@ -159,6 +165,12 @@ private:
     QStringList m_cueGetFeedGenerator;
 
     bool m_hasUnread; // 今回の読み込みで未読がある
+    QHash<NotificationListModel::NotificationListModelRoles,
+          AtpAbstractListModel::ExternalLinkRoles>
+            m_toExternalLinkRoles;
+    QHash<NotificationListModel::NotificationListModelRoles,
+          AtpAbstractListModel::FeedGeneratorRoles>
+            m_toFeedGeneratorRoles;
 
     void getPosts();
     void getFeedGenerators();
