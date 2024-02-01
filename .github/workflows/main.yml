@@ -14,7 +14,7 @@ jobs:
           TZ: "Asia/Tokyo"       
         run: |
           VERSION_NO=$(cat app/main.cpp | grep "app.setApplicationVersion" | grep -oE "[0-9]+.[0-9]+.[0-9]+")
-          python3 scripts/updateweb.py temp.html $VERSION_NO
+          python3 scripts/updateweb.py temp.html 1$VERSION_NO
 
           diff -u temp.html web/layouts/shortcodes/download_link.html
       - name : Check pullrequest title
