@@ -29,3 +29,6 @@ type: docs
 - Ubuntu 22.04
 - MacOS 10.13
 
+## ダウンロード
+
+{{< download_link >}}
