@@ -8,7 +8,7 @@ description: マルチカラム対応Blueskyクライアント
 
 ## 入手
 
-[リリースページ](https://github.com/ioriayane/Hagoromo/releases)よりzipファイルをダウンロードします。
+[トップページ](/)よりzipファイルをダウンロードします。
 
 使用する環境に合わせて選択してください。ファイル名は下記のとおりです。
 

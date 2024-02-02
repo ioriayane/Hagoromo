@@ -8,7 +8,7 @@ description: This is a multi-column Bluesky client.
 
 ## Download
 
-Download the zip file from the [release page](https://github.com/ioriayane/Hagoromo/releases).
+Download the zip file from the [top page](/).
 
 Please select the one that best fits the environment in which you will use it. The file name is as follows:
 
