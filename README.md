@@ -31,7 +31,7 @@
 
 ## 使用方法
 
-[ユーザーマニュアル](./users_manual_ja.md)を参照してください。
+[ユーザーマニュアル](https://hagoromo.relog.tech/ja/)を参照してください。
 
 ## ビルド方法
 
@@ -138,7 +138,7 @@ Unzip the archive and save it in any folder.
 
 ## How to Use
 
-Please refer to [the User's Manual](./users_manual_en.md).
+Please refer to [the User's Manual](https://hagoromo.relog.tech/).
 
 
 ## How to Build

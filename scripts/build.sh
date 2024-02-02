@@ -80,6 +80,12 @@ deploy_hagoromo(){
     popd
 }
 
+update_web(){
+    echo ""
+    echo "Update web..."
+    python3 $SCRIPT_FOLDER/updateweb.py web/layouts/shortcodes/download_link.html $VERSION_NO
+    echo "ok"
+}
 
 SCRIPT_FOLDER=$(cd $(dirname $0); pwd)
 cd $SCRIPT_FOLDER/..
@@ -100,3 +106,4 @@ VERSION_NO=$(cat app/main.cpp | grep "app.setApplicationVersion" | grep -oE "[0-
 build_openssl
 build_hagoromo
 deploy_hagoromo
+update_web
