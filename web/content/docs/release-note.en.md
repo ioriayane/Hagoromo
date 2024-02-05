@@ -8,7 +8,13 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
-### Ver 0.21.0 - 2024/2/1
+### Unrelease - yyyy/m/d
+
+- Add
+- Update
+- Fix
+
+### v0.21.0 - 2024/2/1
 
 - Add
   - Post display and posting support for posts containing quotes and link cards
@@ -18,7 +24,7 @@ description: This is a multi-column Bluesky client.
   - Support for posts that cannot be displayed in notifications
   - Fixed layout of settings dialog
 
-### Ver 0.20.0 - 2024/1/15
+### v0.20.0 - 2024/1/15
 
 - Add
   - Add indication of character limit (list name, Alt text)
