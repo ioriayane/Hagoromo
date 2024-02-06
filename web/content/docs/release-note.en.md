@@ -12,6 +12,7 @@ description: This is a multi-column Bluesky client.
 
 - Add
 - Update
+  - Move the account icon in the post dialog into the combo box
 - Fix
 
 ### v0.21.0 - 2024/2/1
