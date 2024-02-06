@@ -1,7 +1,7 @@
 import os
 import sys
 import datetime
-import requests
+from jinja2 import Template, Environment, FileSystemLoader
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
@@ -15,17 +15,12 @@ if __name__ == "__main__":
     version_no: str = sys.argv[2]
     date_time: str = datetime.datetime.now().strftime('%Y/%m/%d')
 
-    release_paage: str = 'https://github.com/ioriayane/Hagoromo/releases/tag/v%s' % (version_no, )
-
-    res = requests.get(release_paage)
-    if res.status_code != 200:
-        print('Not found : %s' % (release_paage, ))
-        exit(1)
-
-    data = '<ul><li>'
-    data += '<a href="%s">Version %s</a> (%s)' % (release_paage, version_no, date_time)
-    data += '</li></ul>'
+    environment = Environment(loader=FileSystemLoader(os.path.dirname(__file__), encoding='utf8'))
+    template = environment.get_template('template/download_link.html.j2')
+    params = {}
+    params['version_no'] = version_no
+    params['date_time'] = date_time
 
     with open(output_file, 'w', encoding='utf-8') as fp:
-        fp.write(data)
- 
+        fp.write(template.render(params))
+
