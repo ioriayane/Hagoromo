@@ -158,16 +158,9 @@ Dialog {
             }
 
             RowLayout {
-                AvatarImage {
-                    id: accountAvatarImage
-                    Layout.preferredWidth: AdjustedValues.i24
-                    Layout.preferredHeight: AdjustedValues.i24
-                    //                source:
-                }
-
                 ComboBox {
                     id: accountCombo
-                    Layout.preferredWidth: 200 * AdjustedValues.ratio
+                    Layout.preferredWidth: 200 * AdjustedValues.ratio + AdjustedValues.i24
                     Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
                     enabled: !createRecord.running
                     font.pointSize: AdjustedValues.f10
@@ -177,13 +170,26 @@ Dialog {
                         width: parent.width
                         height: implicitHeight * AdjustedValues.ratio
                         font.pointSize: AdjustedValues.f10
-                        text: model.handle
                         onClicked: accountCombo.currentIndex = model.index
+                        AccountLayout {
+                            anchors.fill: parent
+                            anchors.margins: 10
+                            source: model.avatar
+                            handle: model.handle
+                        }
                     }
+                    contentItem: AccountLayout {
+                        id: accountAvatarLayout
+                        width: parent.width
+                        height: parent.height
+                        leftMargin: 10
+                        handle: accountCombo.displayText
+                    }
+
                     onCurrentIndexChanged: {
                         var row = accountCombo.currentIndex
                         if(row >= 0){
-                            accountAvatarImage.source =
+                            accountAvatarLayout.source =
                                     postDialog.accountModel.item(row, AccountListModel.AvatarRole)
                             postLanguagesButton.setLanguageText(
                                         postDialog.accountModel.item(row, AccountListModel.PostLanguagesRole)
