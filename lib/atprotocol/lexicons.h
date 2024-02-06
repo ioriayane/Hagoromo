@@ -83,6 +83,17 @@ struct ListItemView
     QString uri; // at-uri
     QSharedPointer<AppBskyActorDefs::ProfileView> subject;
 };
+struct NotFoundActor
+{
+    QString actor; // at-identifier
+    bool notFound = false;
+};
+struct Relationship
+{
+    QString did; // did
+    QString following; // at-uri
+    QString followedBy; // at-uri
+};
 }
 
 // com.atproto.label.defs
@@ -185,6 +196,10 @@ struct ThreadViewPref
 {
     QString sort;
     bool prioritizeFollowedUsers = false;
+};
+struct InterestsPref
+{
+    QList<QString> tags;
 };
 }
 
@@ -808,6 +823,16 @@ struct SkeletonSearchActor
 };
 }
 
+// app.bsky.unspecced.getTaggedSuggestions
+namespace AppBskyUnspeccedGetTaggedSuggestions {
+struct Suggestion
+{
+    QString tag;
+    QString subjectType;
+    QString subject; // uri
+};
+}
+
 // com.atproto.moderation.defs
 namespace ComAtprotoModerationDefs {
 typedef QString ReasonType;
@@ -856,6 +881,8 @@ enum class ModEventViewDetailEventType : int {
     event_ModEventAcknowledge,
     event_ModEventEscalate,
     event_ModEventMute,
+    event_ModEventEmail,
+    event_ModEventResolveAppeal,
 };
 enum class ModEventViewDetailSubjectType : int {
     none,
@@ -885,6 +912,7 @@ enum class ModEventViewEventType : int {
     event_ModEventEscalate,
     event_ModEventMute,
     event_ModEventEmail,
+    event_ModEventResolveAppeal,
 };
 enum class ModEventViewSubjectType : int {
     none,
@@ -937,6 +965,11 @@ struct ModEventMute
 struct ModEventEmail
 {
     QString subjectLine;
+    QString comment;
+};
+struct ModEventResolveAppeal
+{
+    QString comment;
 };
 struct RepoRef
 {
@@ -956,6 +989,7 @@ struct ModEventView
     ModEventEscalate event_ModEventEscalate;
     ModEventMute event_ModEventMute;
     ModEventEmail event_ModEventEmail;
+    ModEventResolveAppeal event_ModEventResolveAppeal;
     // union end : event
     // union start : subject
     ModEventViewSubjectType subject_type = ModEventViewSubjectType::none;
@@ -987,7 +1021,9 @@ struct SubjectStatusView
     QString lastReviewedBy; // did
     QString lastReviewedAt; // datetime
     QString lastReportedAt; // datetime
+    QString lastAppealedAt; // datetime
     bool takendown = false;
+    bool appealed = false;
     QString suspendUntil; // datetime
 };
 struct Moderation
@@ -1060,6 +1096,8 @@ struct ModEventViewDetail
     ModEventAcknowledge event_ModEventAcknowledge;
     ModEventEscalate event_ModEventEscalate;
     ModEventMute event_ModEventMute;
+    ModEventEmail event_ModEventEmail;
+    ModEventResolveAppeal event_ModEventResolveAppeal;
     // union end : event
     // union start : subject
     ModEventViewDetailSubjectType subject_type = ModEventViewDetailSubjectType::none;
@@ -1154,6 +1192,17 @@ struct RecordViewDetail
 struct ModEventUnmute
 {
     QString comment;
+};
+struct CommunicationTemplateView
+{
+    QString id;
+    QString name;
+    QString subject;
+    QString contentMarkdown;
+    bool disabled = false;
+    QString lastUpdatedBy; // did
+    QString createdAt; // datetime
+    QString updatedAt; // datetime
 };
 }
 

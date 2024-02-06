@@ -21,6 +21,8 @@ void copyListViewerState(const QJsonObject &src, AppBskyGraphDefs::ListViewerSta
 void copyListViewBasic(const QJsonObject &src, AppBskyGraphDefs::ListViewBasic &dest);
 void copyListView(const QJsonObject &src, AppBskyGraphDefs::ListView &dest);
 void copyListItemView(const QJsonObject &src, AppBskyGraphDefs::ListItemView &dest);
+void copyNotFoundActor(const QJsonObject &src, AppBskyGraphDefs::NotFoundActor &dest);
+void copyRelationship(const QJsonObject &src, AppBskyGraphDefs::Relationship &dest);
 }
 // app.bsky.actor.defs
 namespace AppBskyActorDefs {
@@ -34,6 +36,7 @@ void copySavedFeedsPref(const QJsonObject &src, AppBskyActorDefs::SavedFeedsPref
 void copyPersonalDetailsPref(const QJsonObject &src, AppBskyActorDefs::PersonalDetailsPref &dest);
 void copyFeedViewPref(const QJsonObject &src, AppBskyActorDefs::FeedViewPref &dest);
 void copyThreadViewPref(const QJsonObject &src, AppBskyActorDefs::ThreadViewPref &dest);
+void copyInterestsPref(const QJsonObject &src, AppBskyActorDefs::InterestsPref &dest);
 }
 // com.atproto.label.defs
 namespace ComAtprotoLabelDefs {
@@ -168,6 +171,10 @@ void copySkeletonSearchPost(const QJsonObject &src, AppBskyUnspeccedDefs::Skelet
 void copySkeletonSearchActor(const QJsonObject &src,
                              AppBskyUnspeccedDefs::SkeletonSearchActor &dest);
 }
+// app.bsky.unspecced.getTaggedSuggestions
+namespace AppBskyUnspeccedGetTaggedSuggestions {
+void copySuggestion(const QJsonObject &src, AppBskyUnspeccedGetTaggedSuggestions::Suggestion &dest);
+}
 // com.atproto.admin.defs
 namespace ComAtprotoAdminDefs {
 void copyStatusAttr(const QJsonObject &src, ComAtprotoAdminDefs::StatusAttr &dest);
@@ -182,6 +189,8 @@ void copyModEventAcknowledge(const QJsonObject &src,
 void copyModEventEscalate(const QJsonObject &src, ComAtprotoAdminDefs::ModEventEscalate &dest);
 void copyModEventMute(const QJsonObject &src, ComAtprotoAdminDefs::ModEventMute &dest);
 void copyModEventEmail(const QJsonObject &src, ComAtprotoAdminDefs::ModEventEmail &dest);
+void copyModEventResolveAppeal(const QJsonObject &src,
+                               ComAtprotoAdminDefs::ModEventResolveAppeal &dest);
 void copyRepoRef(const QJsonObject &src, ComAtprotoAdminDefs::RepoRef &dest);
 void copyModEventView(const QJsonObject &src, ComAtprotoAdminDefs::ModEventView &dest);
 void copySubjectReviewState(const QJsonValue &src, ComAtprotoAdminDefs::SubjectReviewState &dest);
@@ -203,6 +212,8 @@ void copyAccountView(const QJsonObject &src, ComAtprotoAdminDefs::AccountView &d
 void copyRepoBlobRef(const QJsonObject &src, ComAtprotoAdminDefs::RepoBlobRef &dest);
 void copyRecordViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::RecordViewDetail &dest);
 void copyModEventUnmute(const QJsonObject &src, ComAtprotoAdminDefs::ModEventUnmute &dest);
+void copyCommunicationTemplateView(const QJsonObject &src,
+                                   ComAtprotoAdminDefs::CommunicationTemplateView &dest);
 }
 // com.atproto.moderation.defs
 namespace ComAtprotoModerationDefs {

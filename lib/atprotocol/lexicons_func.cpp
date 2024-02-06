@@ -66,6 +66,21 @@ void copyListItemView(const QJsonObject &src, AppBskyGraphDefs::ListItemView &de
         AppBskyActorDefs::copyProfileView(src.value("subject").toObject(), *dest.subject);
     }
 }
+void copyNotFoundActor(const QJsonObject &src, AppBskyGraphDefs::NotFoundActor &dest)
+{
+    if (!src.isEmpty()) {
+        dest.actor = src.value("actor").toString();
+        dest.notFound = src.value("notFound").toBool();
+    }
+}
+void copyRelationship(const QJsonObject &src, AppBskyGraphDefs::Relationship &dest)
+{
+    if (!src.isEmpty()) {
+        dest.did = src.value("did").toString();
+        dest.following = src.value("following").toString();
+        dest.followedBy = src.value("followedBy").toString();
+    }
+}
 }
 // app.bsky.actor.defs
 namespace AppBskyActorDefs {
@@ -181,6 +196,14 @@ void copyThreadViewPref(const QJsonObject &src, AppBskyActorDefs::ThreadViewPref
     if (!src.isEmpty()) {
         dest.sort = src.value("sort").toString();
         dest.prioritizeFollowedUsers = src.value("prioritizeFollowedUsers").toBool();
+    }
+}
+void copyInterestsPref(const QJsonObject &src, AppBskyActorDefs::InterestsPref &dest)
+{
+    if (!src.isEmpty()) {
+        for (const auto &value : src.value("tags").toArray()) {
+            dest.tags.append(value.toString());
+        }
     }
 }
 }
@@ -1079,6 +1102,17 @@ void copySkeletonSearchActor(const QJsonObject &src,
     }
 }
 }
+// app.bsky.unspecced.getTaggedSuggestions
+namespace AppBskyUnspeccedGetTaggedSuggestions {
+void copySuggestion(const QJsonObject &src, AppBskyUnspeccedGetTaggedSuggestions::Suggestion &dest)
+{
+    if (!src.isEmpty()) {
+        dest.tag = src.value("tag").toString();
+        dest.subjectType = src.value("subjectType").toString();
+        dest.subject = src.value("subject").toString();
+    }
+}
+}
 // com.atproto.admin.defs
 namespace ComAtprotoAdminDefs {
 void copyStatusAttr(const QJsonObject &src, ComAtprotoAdminDefs::StatusAttr &dest)
@@ -1151,6 +1185,14 @@ void copyModEventEmail(const QJsonObject &src, ComAtprotoAdminDefs::ModEventEmai
 {
     if (!src.isEmpty()) {
         dest.subjectLine = src.value("subjectLine").toString();
+        dest.comment = src.value("comment").toString();
+    }
+}
+void copyModEventResolveAppeal(const QJsonObject &src,
+                               ComAtprotoAdminDefs::ModEventResolveAppeal &dest)
+{
+    if (!src.isEmpty()) {
+        dest.comment = src.value("comment").toString();
     }
 }
 void copyRepoRef(const QJsonObject &src, ComAtprotoAdminDefs::RepoRef &dest)
@@ -1210,6 +1252,12 @@ void copyModEventView(const QJsonObject &src, ComAtprotoAdminDefs::ModEventView 
             ComAtprotoAdminDefs::copyModEventEmail(src.value("event").toObject(),
                                                    dest.event_ModEventEmail);
         }
+        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventResolveAppeal")) {
+            dest.event_type =
+                    ComAtprotoAdminDefs::ModEventViewEventType::event_ModEventResolveAppeal;
+            ComAtprotoAdminDefs::copyModEventResolveAppeal(src.value("event").toObject(),
+                                                           dest.event_ModEventResolveAppeal);
+        }
         QString subject_type = src.value("subject").toObject().value("$type").toString();
         if (subject_type == QStringLiteral("com.atproto.admin.defs#repoRef")) {
             dest.subject_type = ComAtprotoAdminDefs::ModEventViewSubjectType::subject_RepoRef;
@@ -1261,7 +1309,9 @@ void copySubjectStatusView(const QJsonObject &src, ComAtprotoAdminDefs::SubjectS
         dest.lastReviewedBy = src.value("lastReviewedBy").toString();
         dest.lastReviewedAt = src.value("lastReviewedAt").toString();
         dest.lastReportedAt = src.value("lastReportedAt").toString();
+        dest.lastAppealedAt = src.value("lastAppealedAt").toString();
         dest.takendown = src.value("takendown").toBool();
+        dest.appealed = src.value("appealed").toBool();
         dest.suspendUntil = src.value("suspendUntil").toString();
     }
 }
@@ -1396,6 +1446,17 @@ void copyModEventViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::ModEven
             dest.event_type = ComAtprotoAdminDefs::ModEventViewDetailEventType::event_ModEventMute;
             ComAtprotoAdminDefs::copyModEventMute(src.value("event").toObject(),
                                                   dest.event_ModEventMute);
+        }
+        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventEmail")) {
+            dest.event_type = ComAtprotoAdminDefs::ModEventViewDetailEventType::event_ModEventEmail;
+            ComAtprotoAdminDefs::copyModEventEmail(src.value("event").toObject(),
+                                                   dest.event_ModEventEmail);
+        }
+        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventResolveAppeal")) {
+            dest.event_type =
+                    ComAtprotoAdminDefs::ModEventViewDetailEventType::event_ModEventResolveAppeal;
+            ComAtprotoAdminDefs::copyModEventResolveAppeal(src.value("event").toObject(),
+                                                           dest.event_ModEventResolveAppeal);
         }
         QString subject_type = src.value("subject").toObject().value("$type").toString();
         if (subject_type == QStringLiteral("com.atproto.admin.defs#repoView")) {
@@ -1578,6 +1639,20 @@ void copyModEventUnmute(const QJsonObject &src, ComAtprotoAdminDefs::ModEventUnm
 {
     if (!src.isEmpty()) {
         dest.comment = src.value("comment").toString();
+    }
+}
+void copyCommunicationTemplateView(const QJsonObject &src,
+                                   ComAtprotoAdminDefs::CommunicationTemplateView &dest)
+{
+    if (!src.isEmpty()) {
+        dest.id = src.value("id").toString();
+        dest.name = src.value("name").toString();
+        dest.subject = src.value("subject").toString();
+        dest.contentMarkdown = src.value("contentMarkdown").toString();
+        dest.disabled = src.value("disabled").toBool();
+        dest.lastUpdatedBy = src.value("lastUpdatedBy").toString();
+        dest.createdAt = src.value("createdAt").toString();
+        dest.updatedAt = src.value("updatedAt").toString();
     }
 }
 }
