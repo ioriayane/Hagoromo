@@ -10,9 +10,10 @@ description: マルチカラム対応Blueskyクライアント
 
 ### Unrelease - yyyy/m/d
 
-- Add
-- Update
-- Fix
+- 追加
+- 更新
+  - ポストダイアログのアカウントアイコンをコンボボックスの中に移動
+- 修正
 
 ### v0.21.0 - 2024/2/1
 
