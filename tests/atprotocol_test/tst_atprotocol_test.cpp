@@ -12,6 +12,7 @@
 #include "tools/opengraphprotocol.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "tools/configurablelabels.h"
+#include "tools/listitemscache.h"
 #include "unittest_common.h"
 
 using namespace AtProtocolType;
@@ -41,6 +42,7 @@ private slots:
     void test_ServiceUrl();
     void test_ComAtprotoRepoGetRecord_profile();
     void test_ComAtprotoRepoPutRecord_profile();
+    void test_ListItemsCache();
 
 private:
     void test_putPreferences(const QString &path, const QByteArray &body);
@@ -978,6 +980,55 @@ void atprotocol_test::test_ComAtprotoRepoPutRecord_profile()
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
+}
+
+void atprotocol_test::test_ListItemsCache()
+{
+    ListItemsCache *cache = ListItemsCache::getInstance();
+
+    QVERIFY(cache->getListNames("hoge", "hoge") == QStringList());
+
+    cache->addItem("account1", "user1", "list1", "list1_cid");
+    QVERIFY(cache->getListNames("account1", "user1") == QStringList() << "list1");
+    QVERIFY(cache->getListCids("account1", "user1") == QStringList() << "list1_cid");
+
+    cache->addItem("account1", "user1", "list1", "list1_cid");
+    QVERIFY(cache->getListNames("account1", "user1") == QStringList() << "list1");
+    QVERIFY(cache->getListCids("account1", "user1") == QStringList() << "list1_cid");
+
+    cache->addItem("account1", "user1", "list2", "list2_cid");
+    QVERIFY(cache->getListNames("account1", "user1")
+            == QStringList() << "list1"
+                             << "list2");
+    QVERIFY(cache->getListCids("account1", "user1")
+            == QStringList() << "list1_cid"
+                             << "list2_cid");
+
+    cache->addItem("account1", "user1", "list3", "list3_cid");
+    QVERIFY(cache->getListNames("account1", "user1")
+            == QStringList() << "list1"
+                             << "list2"
+                             << "list3");
+    QVERIFY(cache->getListCids("account1", "user1")
+            == QStringList() << "list1_cid"
+                             << "list2_cid"
+                             << "list3_cid");
+
+    cache->addItem("account2", "user1", "a2list1", "a2list1_cid");
+    QVERIFY(cache->getListNames("account2", "user1") == QStringList() << "a2list1");
+    QVERIFY(cache->getListCids("account2", "user1") == QStringList() << "a2list1_cid");
+
+    cache->addItem("account2", "user1", "a2list2", "a2list2_cid");
+    QVERIFY(cache->getListNames("account2", "user1")
+            == QStringList() << "a2list1"
+                             << "a2list2");
+    QVERIFY(cache->getListCids("account2", "user1")
+            == QStringList() << "a2list1_cid"
+                             << "a2list2_cid");
+
+    cache->addItem("account2", "user2", "a2list2", "a2list2_cid");
+    QVERIFY(cache->getListNames("account2", "user2") == QStringList() << "a2list2");
+    QVERIFY(cache->getListCids("account2", "user2") == QStringList() << "a2list2_cid");
 }
 
 void atprotocol_test::test_putPreferences(const QString &path, const QByteArray &body)
