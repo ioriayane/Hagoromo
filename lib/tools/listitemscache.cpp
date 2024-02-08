@@ -7,37 +7,59 @@ ListItemsCache *ListItemsCache::getInstance()
 }
 
 void ListItemsCache::addItem(const QString &account_did, const QString &user_did,
-                             const QString &list_name, const QString &list_cid)
+                             const QString &list_name, const QString &list_uri)
 {
     if (m_listsHash.contains(account_did)) {
         if (m_listsHash[account_did].contains(user_did)) {
             bool exist = false;
-            foreach (const auto &info, m_listsHash[account_did][user_did]) {
-                if (info.cid == list_cid) {
+            foreach (const ListInfo &info, m_listsHash[account_did][user_did]) {
+                if (info.uri == list_uri) {
                     exist = true;
                     break;
                 }
             }
             if (!exist) {
-                m_listsHash[account_did][user_did].append(ListInfo(list_name, list_cid));
+                m_listsHash[account_did][user_did].append(ListInfo(list_name, list_uri));
             }
         } else {
             QList<ListInfo> info_list;
-            info_list.append(ListInfo(list_name, list_cid));
+            info_list.append(ListInfo(list_name, list_uri));
             m_listsHash[account_did][user_did] = info_list;
         }
     } else {
         QHash<QString, QList<ListInfo>> list_hash;
         QList<ListInfo> info_list;
-        info_list.append(ListInfo(list_name, list_cid));
+        info_list.append(ListInfo(list_name, list_uri));
         list_hash[user_did] = info_list;
         m_listsHash[account_did] = list_hash;
+    }
+}
+
+void ListItemsCache::removeItem(const QString &account_did, const QString &user_did,
+                                const QString &list_uri)
+{
+    if (m_listsHash.contains(account_did)) {
+        if (m_listsHash[account_did].contains(user_did)) {
+            for (int i = 0; i < m_listsHash[account_did][user_did].count(); i++) {
+                if (m_listsHash[account_did][user_did].at(i).uri == list_uri) {
+                    m_listsHash[account_did][user_did].removeAt(i);
+                    break;
+                }
+            }
+        }
     }
 }
 
 void ListItemsCache::clear()
 {
     m_listsHash.clear();
+}
+
+void ListItemsCache::clear(const QString &account_did)
+{
+    if (m_listsHash.contains(account_did)) {
+        m_listsHash[account_did] = QHash<QString, QList<ListInfo>>();
+    }
 }
 
 QStringList ListItemsCache::getListNames(const QString &account_did, const QString &user_did)
@@ -51,12 +73,12 @@ QStringList ListItemsCache::getListNames(const QString &account_did, const QStri
     return ret;
 }
 
-QStringList ListItemsCache::getListCids(const QString &account_did, const QString &user_did)
+QStringList ListItemsCache::getListUris(const QString &account_did, const QString &user_did)
 {
     QStringList ret;
     if (m_listsHash.contains(account_did) && m_listsHash[account_did].contains(user_did)) {
         foreach (const auto &info, m_listsHash[account_did][user_did]) {
-            ret.append(info.cid);
+            ret.append(info.uri);
         }
     }
     return ret;

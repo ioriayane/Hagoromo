@@ -7,13 +7,13 @@
 struct ListInfo
 {
     ListInfo() { }
-    ListInfo(const QString &name, const QString &cid)
+    ListInfo(const QString &name, const QString &uri)
     {
         this->name = name;
-        this->cid = cid;
+        this->uri = uri;
     }
     QString name;
-    QString cid;
+    QString uri;
 };
 
 class ListItemsCache
@@ -31,10 +31,12 @@ public:
     static ListItemsCache *getInstance();
 
     void addItem(const QString &account_did, const QString &user_did, const QString &list_name,
-                 const QString &list_cid);
+                 const QString &list_uri);
+    void removeItem(const QString &account_did, const QString &user_did, const QString &list_uri);
     void clear();
+    void clear(const QString &account_did);
     QStringList getListNames(const QString &account_did, const QString &user_did);
-    QStringList getListCids(const QString &account_did, const QString &user_did);
+    QStringList getListUris(const QString &account_did, const QString &user_did);
 
 private:
     // Hash<account_did, Hash<user_did, List<list_info>>>
