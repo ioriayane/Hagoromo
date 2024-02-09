@@ -1,6 +1,7 @@
 #include "listslistmodel.h"
 // #include "listitemlistmodel.h"
 #include "recordoperator.h"
+#include "tools/listitemscache.h"
 
 #include "atprotocol/app/bsky/graph/appbskygraphgetlists.h"
 #include "atprotocol/com/atproto/repo/comatprotorepolistrecords.h"
@@ -126,7 +127,9 @@ void ListsListModel::clear()
 
 bool ListsListModel::addRemoveFromList(const int row, const QString &did)
 {
-    QString target_uri = item(row, ListsListModel::UriRole).toString();
+    QString list_name = item(row, ListsListModel::NameRole).toString();
+    QString list_uri = item(row, ListsListModel::UriRole).toString();
+    QString target_uri = list_uri;
     SearchStatusType status =
             static_cast<SearchStatusType>(item(row, ListsListModel::SearchStatusRole).toInt());
     if (status == SearchStatusTypeContains) {
@@ -141,13 +144,20 @@ bool ListsListModel::addRemoveFromList(const int row, const QString &did)
                 Q_UNUSED(cid)
                 if (success) {
                     if (status == SearchStatusTypeContains) {
+                        // Deleted
                         update(row, ListsListModel::SearchStatusRole,
                                SearchStatusType::SearchStatusTypeNotContains);
                         update(row, ListsListModel::ListItemUriRole, QString());
+                        // delete from cache
+                        ListItemsCache::getInstance()->removeItem(account().did, did, list_uri);
                     } else {
+                        // Added
                         update(row, ListsListModel::SearchStatusRole,
                                SearchStatusType::SearchStatusTypeContains);
                         update(row, ListsListModel::ListItemUriRole, uri);
+                        // add to cache
+                        ListItemsCache::getInstance()->addItem(account().did, did, list_name,
+                                                               list_uri);
                     }
                 }
                 setRunning(false);
@@ -332,6 +342,9 @@ void ListsListModel::searchActorInEachLists()
                                SearchStatusType::SearchStatusTypeContains);
                         // Listを横断してListItemを探索するのでbreakはできない
                     }
+                    // キャッシュに登録
+                    ListItemsCache::getInstance()->addItem(account().did, record.subject,
+                                                           current.name, current.uri);
                 }
             }
             QTimer::singleShot(0, this, &ListsListModel::searchActorInEachLists);

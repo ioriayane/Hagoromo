@@ -279,6 +279,16 @@ ColumnLayout {
                 }
             }
         }
+        TagLabelLayout {
+            id: belongingListsLayout
+            Layout.preferredWidth: profileView.width
+            Layout.leftMargin: 5
+            Layout.rightMargin: 5
+            visible: count > 0
+            iconSource: "../images/list.png"
+            tagSpacing: 5
+            model: userProfile.belongingLists
+        }
         Label {
             id: descriptionLabel
             Layout.preferredWidth: profileView.width
@@ -288,6 +298,7 @@ ColumnLayout {
             font.pointSize: AdjustedValues.f10
             textFormat: Text.StyledText
             text: userProfile.formattedDescription
+            clip: true
 
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
             onLinkActivated: (url) => Qt.openUrlExternally(url)
