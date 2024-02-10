@@ -287,12 +287,16 @@ ColumnLayout {
             visible: count > 0
             iconSource: "../images/list.png"
             tagSpacing: 5
+            tagColor: Material.background
+            tagBorderWidth: 1
             model: userProfile.belongingLists
         }
         Label {
             id: descriptionLabel
             Layout.preferredWidth: profileView.width
             Layout.preferredHeight: 0
+            Layout.leftMargin: 5
+            Layout.rightMargin: 5
             wrapMode: Text.Wrap
             lineHeight: 1.1
             font.pointSize: AdjustedValues.f10

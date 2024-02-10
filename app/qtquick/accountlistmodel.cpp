@@ -26,10 +26,6 @@ AccountListModel::AccountListModel(QObject *parent) : QAbstractListModel { paren
         }
     });
     m_timer.start(60 * 60 * 1000);
-
-#ifndef HAGOROMO_UNIT_TEST
-    load();
-#endif
 }
 
 int AccountListModel::rowCount(const QModelIndex &parent) const

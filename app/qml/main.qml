@@ -258,6 +258,7 @@ ApplicationWindow {
         }
     }
     ListsListModel {
+        // リストのキャッシュ用
         id: listsListModel
         visibilityType: ListsListModel.VisibilityTypeCuration
 
@@ -287,7 +288,7 @@ ApplicationWindow {
             searchTarget = "#cache"
             if(listsListModel.getLatest()){
                 globalProgressFrame.text = qsTr("Caching lists") +
-                        " (" + handle + ") ..." + (row+1) + "/" + accountListModel.count
+                        " (" + handle + ") ... " + (row+1) + "/" + accountListModel.count
             }else{
                 globalProgressFrame.text = ""
             }
@@ -831,5 +832,10 @@ ApplicationWindow {
         id: imageFullView
         anchors.fill: parent
         visible: false
+    }
+
+    Component.onCompleted: {
+        globalProgressFrame.text = qsTr("Loading account(s) ...")
+        accountListModel.load()
     }
 }
