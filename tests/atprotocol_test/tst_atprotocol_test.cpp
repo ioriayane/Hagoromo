@@ -988,6 +988,10 @@ void atprotocol_test::test_ListItemsCache()
 
     QVERIFY(cache->getListNames("hoge", "hoge") == QStringList());
 
+    QVERIFY(cache->has("account1") == false);
+    QVERIFY(cache->has("account2") == false);
+    QVERIFY(cache->has("account3") == false);
+
     cache->addItem("account1", "user1", "list1", "list1_uri");
     QVERIFY(cache->getListNames("account1", "user1") == QStringList() << "list1");
     QVERIFY(cache->getListUris("account1", "user1") == QStringList() << "list1_uri");
@@ -1085,6 +1089,9 @@ void atprotocol_test::test_ListItemsCache()
     // //////////////
 
     cache->clear("account2");
+    QVERIFY(cache->has("account1") == true);
+    QVERIFY(cache->has("account2") == false);
+    QVERIFY(cache->has("account3") == true);
     QVERIFY(cache->getListNames("account1", "user1")
             == QStringList() << "list1"
                              << "list2");
@@ -1106,6 +1113,10 @@ void atprotocol_test::test_ListItemsCache()
     QVERIFY(cache->getListUris("account2", "user2") == QStringList());
     QVERIFY(cache->getListNames("account3", "user2") == QStringList());
     QVERIFY(cache->getListUris("account3", "user2") == QStringList());
+
+    QVERIFY(cache->has("account1") == false);
+    QVERIFY(cache->has("account2") == false);
+    QVERIFY(cache->has("account3") == false);
 
     QVERIFY(cache->getListNames("hoge", "hoge") == QStringList());
 }

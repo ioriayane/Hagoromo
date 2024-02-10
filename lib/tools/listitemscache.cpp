@@ -62,7 +62,7 @@ void ListItemsCache::clear(const QString &account_did)
     }
 }
 
-QStringList ListItemsCache::getListNames(const QString &account_did, const QString &user_did)
+QStringList ListItemsCache::getListNames(const QString &account_did, const QString &user_did) const
 {
     QStringList ret;
     if (m_listsHash.contains(account_did) && m_listsHash[account_did].contains(user_did)) {
@@ -73,7 +73,7 @@ QStringList ListItemsCache::getListNames(const QString &account_did, const QStri
     return ret;
 }
 
-QStringList ListItemsCache::getListUris(const QString &account_did, const QString &user_did)
+QStringList ListItemsCache::getListUris(const QString &account_did, const QString &user_did) const
 {
     QStringList ret;
     if (m_listsHash.contains(account_did) && m_listsHash[account_did].contains(user_did)) {
@@ -82,4 +82,10 @@ QStringList ListItemsCache::getListUris(const QString &account_did, const QStrin
         }
     }
     return ret;
+}
+
+bool ListItemsCache::has(const QString &account_did) const
+{
+    // 該当アカウントのデータが1つでもあるか
+    return m_listsHash.contains(account_did) && !m_listsHash[account_did].empty();
 }
