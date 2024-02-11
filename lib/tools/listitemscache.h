@@ -1,6 +1,7 @@
 #ifndef LISTITEMSCACHE_H
 #define LISTITEMSCACHE_H
 
+#include <QObject>
 #include <QHash>
 #include <QString>
 
@@ -18,11 +19,13 @@ struct ListInfo
     QString item_uri;
 };
 
-class ListItemsCache
+class ListItemsCache : public QObject
 {
+    Q_OBJECT
+
 private:
-    ListItemsCache() = default;
-    ~ListItemsCache() = default;
+    ListItemsCache(QObject *parent = nullptr);
+    ~ListItemsCache();
 
 public:
     ListItemsCache(const ListItemsCache &) = delete;
@@ -43,6 +46,9 @@ public:
                          const QString &list_uri) const;
 
     bool has(const QString &account_did) const;
+
+signals:
+    void updated(const QString &account_did, const QString &user_did);
 
 private:
     // Hash<account_did, Hash<user_did, List<list_info>>>

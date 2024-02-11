@@ -17,6 +17,13 @@ UserProfile::UserProfile(QObject *parent)
       m_blocking(false),
       m_userFilterMatched(false)
 {
+    connect(ListItemsCache::getInstance(), &ListItemsCache::updated,
+            [=](const QString &account_did, const QString &user_did) {
+                if (m_account.did == account_did && did() == user_did) {
+                    setBelongingLists(
+                            ListItemsCache::getInstance()->getListNames(account_did, user_did));
+                }
+            });
 }
 
 void UserProfile::setAccount(const QString &service, const QString &did, const QString &handle,

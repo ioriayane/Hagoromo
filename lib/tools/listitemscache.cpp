@@ -1,4 +1,15 @@
 #include "listitemscache.h"
+#include <QDebug>
+
+ListItemsCache::ListItemsCache(QObject *parent) : QObject { parent }
+{
+    qDebug() << "ListItemsCache()" << this << parent;
+}
+
+ListItemsCache::~ListItemsCache()
+{
+    qDebug() << "~ListItemsCache()" << this;
+}
 
 ListItemsCache *ListItemsCache::getInstance()
 {
@@ -21,11 +32,13 @@ void ListItemsCache::addItem(const QString &account_did, const QString &user_did
             }
             if (!exist) {
                 m_listsHash[account_did][user_did].append(ListInfo(list_name, list_uri, item_uri));
+                emit updated(account_did, user_did);
             }
         } else {
             QList<ListInfo> info_list;
             info_list.append(ListInfo(list_name, list_uri, item_uri));
             m_listsHash[account_did][user_did] = info_list;
+            emit updated(account_did, user_did);
         }
     } else {
         QHash<QString, QList<ListInfo>> list_hash;
@@ -33,6 +46,7 @@ void ListItemsCache::addItem(const QString &account_did, const QString &user_did
         info_list.append(ListInfo(list_name, list_uri, item_uri));
         list_hash[user_did] = info_list;
         m_listsHash[account_did] = list_hash;
+        emit updated(account_did, user_did);
     }
 }
 
@@ -44,6 +58,7 @@ void ListItemsCache::removeItem(const QString &account_did, const QString &user_
             for (int i = 0; i < m_listsHash[account_did][user_did].count(); i++) {
                 if (m_listsHash[account_did][user_did].at(i).uri == list_uri) {
                     m_listsHash[account_did][user_did].removeAt(i);
+                    emit updated(account_did, user_did);
                     break;
                 }
             }
@@ -54,12 +69,14 @@ void ListItemsCache::removeItem(const QString &account_did, const QString &user_
 void ListItemsCache::clear()
 {
     m_listsHash.clear();
+    emit updated(QString(), QString());
 }
 
 void ListItemsCache::clear(const QString &account_did)
 {
     if (m_listsHash.contains(account_did)) {
         m_listsHash[account_did] = QHash<QString, QList<ListInfo>>();
+        emit updated(account_did, QString());
     }
 }
 
