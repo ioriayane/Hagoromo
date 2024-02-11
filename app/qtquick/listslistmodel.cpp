@@ -125,6 +125,11 @@ void ListsListModel::clear()
     AtpAbstractListModel::clear();
 }
 
+void ListsListModel::clearListItemCache()
+{
+    ListItemsCache::getInstance()->clear(account().did);
+}
+
 bool ListsListModel::addRemoveFromList(const int row, const QString &did)
 {
     QString list_name = item(row, ListsListModel::NameRole).toString();

@@ -287,7 +287,7 @@ ApplicationWindow {
             actor = did
             searchTarget = "#cache"
             if(listsListModel.getLatest()){
-                globalProgressFrame.text = qsTr("Caching lists") +
+                globalProgressFrame.text = qsTr("Loading lists") +
                         " (" + handle + ") ... " + (row+1) + "/" + accountListModel.count
             }else{
                 globalProgressFrame.text = ""

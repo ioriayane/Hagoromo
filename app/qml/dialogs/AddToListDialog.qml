@@ -56,13 +56,20 @@ Dialog {
                 source: account.avatar
             }
             Label {
+                Layout.fillWidth: true
                 font.pointSize: AdjustedValues.f10
                 text: account.handle
                 elide: Text.ElideRight
             }
-            Item {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 1
+            IconButton {
+                Layout.preferredWidth: AdjustedValues.b30
+                Layout.preferredHeight: AdjustedValues.b24
+                iconSource: "../images/refresh.png"
+                iconSize: AdjustedValues.i16
+                onClicked: {
+                    listsListModel.clearListItemCache()
+                    listsListModel.getLatest()
+                }
             }
         }
         ScrollView {
