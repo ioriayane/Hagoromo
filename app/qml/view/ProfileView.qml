@@ -295,14 +295,13 @@ ColumnLayout {
             id: descriptionLabel
             Layout.preferredWidth: profileView.width
             Layout.preferredHeight: 0
-            Layout.leftMargin: 5
-            Layout.rightMargin: 5
             wrapMode: Text.Wrap
             lineHeight: 1.1
             font.pointSize: AdjustedValues.f10
             textFormat: Text.StyledText
             text: userProfile.formattedDescription
-            clip: true
+            leftPadding: 5
+            rightPadding: 5
 
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
             onLinkActivated: (url) => Qt.openUrlExternally(url)

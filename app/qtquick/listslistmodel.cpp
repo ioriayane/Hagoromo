@@ -264,6 +264,8 @@ void ListsListModel::finishedDisplayingQueuedPosts()
         if (!m_cursor.isEmpty()) {
             setRunning(false);
             QTimer::singleShot(0, this, &ListsListModel::getNext);
+        } else if (ListItemsCache::getInstance()->has(account().did)) {
+            searchActorInEachListsFromCache();
         } else {
             m_listItemCursor = QStringLiteral("__start__");
             setListItemStatus(SearchStatusTypeRunning);
@@ -355,6 +357,31 @@ void ListsListModel::searchActorInEachLists()
     });
     list->setAccount(account());
     list->listListItems(account().did, cursor);
+}
+
+void ListsListModel::searchActorInEachListsFromCache()
+{
+    setListItemStatus(SearchStatusTypeRunning);
+
+    QStringList belonging_uris =
+            ListItemsCache::getInstance()->getListUris(account().did, searchTarget());
+    if (belonging_uris.isEmpty()) {
+        setListItemStatus(SearchStatusTypeNotContains);
+        setRunning(false);
+        return;
+    }
+
+    for (const QString &cid : m_cidList) {
+        const AppBskyGraphDefs::ListView &item = m_listViewHash.value(cid);
+        if (belonging_uris.contains(item.uri)) {
+            update(indexOf(cid), ListsListModel::ListItemUriRole, item.uri);
+            update(indexOf(cid), ListsListModel::SearchStatusRole,
+                   SearchStatusType::SearchStatusTypeContains);
+        }
+    }
+
+    setListItemStatus(SearchStatusTypeNotContains);
+    setRunning(false);
 }
 
 QString ListsListModel::getListCidByUri(const QString &uri) const

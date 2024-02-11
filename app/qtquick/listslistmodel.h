@@ -89,6 +89,7 @@ protected:
 private:
     void copyFrom(AtProtocolInterface::AppBskyGraphGetLists *lists);
     void searchActorInEachLists();
+    void searchActorInEachListsFromCache();
     QString getListCidByUri(const QString &uri) const;
     void setListItemStatus(const SearchStatusType status);
 
