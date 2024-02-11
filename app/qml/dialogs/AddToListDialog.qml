@@ -84,7 +84,7 @@ Dialog {
                     searchTarget: addToListDialog.targetDid
                 }
                 footer:  ItemDelegate {
-                    width: listsListView.width - listsListScroll.ScrollBar.vertical.width
+                    width: listsListView.width// - listsListScroll.ScrollBar.vertical.width
                     height: implicitHeight * AdjustedValues.ratio
                     BusyIndicator {
                         id: busyIndicator
@@ -115,7 +115,7 @@ Dialog {
                     }
                 }
                 delegate: ItemDelegate {
-                    width: listsListView.width - listsListScroll.ScrollBar.vertical.width
+                    width: listsListView.width// - listsListScroll.ScrollBar.vertical.width
                     height: implicitHeight * AdjustedValues.ratio
                     states: [
                         State {
