@@ -835,7 +835,9 @@ ApplicationWindow {
     }
 
     Component.onCompleted: {
-        globalProgressFrame.text = qsTr("Loading account(s) ...")
+        if(accountListModel.count > 0){
+            globalProgressFrame.text = qsTr("Loading account(s) ...")
+        }
         accountListModel.load()
     }
 }

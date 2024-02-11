@@ -282,6 +282,7 @@ ColumnLayout {
         TagLabelLayout {
             id: belongingListsLayout
             Layout.preferredWidth: profileView.width
+            Layout.maximumWidth: profileView.width
             Layout.leftMargin: 5
             Layout.rightMargin: 5
             visible: count > 0
