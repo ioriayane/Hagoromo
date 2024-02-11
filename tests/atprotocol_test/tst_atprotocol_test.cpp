@@ -992,15 +992,18 @@ void atprotocol_test::test_ListItemsCache()
     QVERIFY(cache->has("account2") == false);
     QVERIFY(cache->has("account3") == false);
 
-    cache->addItem("account1", "user1", "list1", "list1_uri");
+    cache->addItem("account1", "user1", "list1", "list1_uri", "list1_item1_uri");
     QVERIFY(cache->getListNames("account1", "user1") == QStringList() << "list1");
     QVERIFY(cache->getListUris("account1", "user1") == QStringList() << "list1_uri");
 
-    cache->addItem("account1", "user1", "list1", "list1_uri");
+    cache->addItem("account1", "user1", "list1", "list1_uri", "list1_itemX_uri");
     QVERIFY(cache->getListNames("account1", "user1") == QStringList() << "list1");
     QVERIFY(cache->getListUris("account1", "user1") == QStringList() << "list1_uri");
 
-    cache->addItem("account1", "user1", "list2", "list2_uri");
+    ListInfo info = cache->getListInfo("account1", "user1", "list1_uri");
+    QVERIFY2(info.item_uri == "list1_item1_uri", info.item_uri.toLocal8Bit());
+
+    cache->addItem("account1", "user1", "list2", "list2_uri", "list2_item1_uri");
     QVERIFY(cache->getListNames("account1", "user1")
             == QStringList() << "list1"
                              << "list2");
@@ -1008,7 +1011,7 @@ void atprotocol_test::test_ListItemsCache()
             == QStringList() << "list1_uri"
                              << "list2_uri");
 
-    cache->addItem("account1", "user1", "list3", "list3_uri");
+    cache->addItem("account1", "user1", "list3", "list3_uri", "list3_item1_uri");
     QVERIFY(cache->getListNames("account1", "user1")
             == QStringList() << "list1"
                              << "list2"
@@ -1018,11 +1021,13 @@ void atprotocol_test::test_ListItemsCache()
                              << "list2_uri"
                              << "list3_uri");
 
-    cache->addItem("account3", "user1", "account3list1", "account3list1_uri");
+    cache->addItem("account3", "user1", "account3list1", "account3list1_uri",
+                   "account3list1_item1_uri");
     QVERIFY(cache->getListNames("account3", "user1") == QStringList() << "account3list1");
     QVERIFY(cache->getListUris("account3", "user1") == QStringList() << "account3list1_uri");
 
-    cache->addItem("account3", "user1", "account3list2", "account3list2_uri");
+    cache->addItem("account3", "user1", "account3list2", "account3list2_uri",
+                   "account3list2_item1_uri");
     QVERIFY(cache->getListNames("account3", "user1")
             == QStringList() << "account3list1"
                              << "account3list2");
@@ -1030,11 +1035,13 @@ void atprotocol_test::test_ListItemsCache()
             == QStringList() << "account3list1_uri"
                              << "account3list2_uri");
 
-    cache->addItem("account3", "user2", "account3list1", "account3list1_uri");
+    cache->addItem("account3", "user2", "account3list1", "account3list1_uri",
+                   "account3list1_item1_uri");
     QVERIFY(cache->getListNames("account3", "user2") == QStringList() << "account3list1");
     QVERIFY(cache->getListUris("account3", "user2") == QStringList() << "account3list1_uri");
 
-    cache->addItem("account3", "user1", "account3list3", "account3list3_uri");
+    cache->addItem("account3", "user1", "account3list3", "account3list3_uri",
+                   "account3list3_item1_uri");
     QVERIFY(cache->getListNames("account3", "user1")
             == QStringList() << "account3list1"
                              << "account3list2"
@@ -1044,11 +1051,11 @@ void atprotocol_test::test_ListItemsCache()
                              << "account3list2_uri"
                              << "account3list3_uri");
 
-    cache->addItem("account2", "user1", "a2list1", "a2list1_uri");
+    cache->addItem("account2", "user1", "a2list1", "a2list1_uri", "a2list1_item1_uri");
     QVERIFY(cache->getListNames("account2", "user1") == QStringList() << "a2list1");
     QVERIFY(cache->getListUris("account2", "user1") == QStringList() << "a2list1_uri");
 
-    cache->addItem("account2", "user1", "a2list2", "a2list2_uri");
+    cache->addItem("account2", "user1", "a2list2", "a2list2_uri", "a2list2_item1_uri");
     QVERIFY(cache->getListNames("account2", "user1")
             == QStringList() << "a2list1"
                              << "a2list2");
@@ -1056,13 +1063,13 @@ void atprotocol_test::test_ListItemsCache()
             == QStringList() << "a2list1_uri"
                              << "a2list2_uri");
 
-    cache->addItem("account2", "user2", "a2list2", "a2list2_uri");
+    cache->addItem("account2", "user2", "a2list2", "a2list2_uri", "a2list2_item1_uri");
     QVERIFY(cache->getListNames("account2", "user2") == QStringList() << "a2list2");
     QVERIFY(cache->getListUris("account2", "user2") == QStringList() << "a2list2_uri");
 
     cache = ListItemsCache::getInstance();
 
-    cache->addItem("account2", "user1", "a2list2", "a2list2_uri");
+    cache->addItem("account2", "user1", "a2list2", "a2list2_uri", "a2list2_item1_uri");
     QVERIFY(cache->getListNames("account2", "user1")
             == QStringList() << "a2list1"
                              << "a2list2");

@@ -157,7 +157,7 @@ bool ListsListModel::addRemoveFromList(const int row, const QString &did)
                         update(row, ListsListModel::ListItemUriRole, uri);
                         // add to cache
                         ListItemsCache::getInstance()->addItem(account().did, did, list_name,
-                                                               list_uri);
+                                                               list_uri, uri);
                     }
                 }
                 setRunning(false);
@@ -346,7 +346,7 @@ void ListsListModel::searchActorInEachLists()
                     }
                     // キャッシュに登録
                     ListItemsCache::getInstance()->addItem(account().did, record.subject,
-                                                           current.name, current.uri);
+                                                           current.name, current.uri, item.uri);
                 }
             }
             QTimer::singleShot(0, this, &ListsListModel::searchActorInEachLists);
@@ -372,11 +372,18 @@ void ListsListModel::searchActorInEachListsFromCache()
     }
 
     for (const QString &cid : m_cidList) {
-        const AppBskyGraphDefs::ListView &item = m_listViewHash.value(cid);
-        if (belonging_uris.contains(item.uri)) {
-            update(indexOf(cid), ListsListModel::ListItemUriRole, item.uri);
-            update(indexOf(cid), ListsListModel::SearchStatusRole,
-                   SearchStatusType::SearchStatusTypeContains);
+        const AppBskyGraphDefs::ListView &current = m_listViewHash.value(cid);
+        if (belonging_uris.contains(current.uri)) {
+            ListInfo info = ListItemsCache::getInstance()->getListInfo(account().did,
+                                                                       searchTarget(), current.uri);
+            if (!info.item_uri.isEmpty()) {
+                update(indexOf(cid), ListsListModel::ListItemUriRole, info.item_uri);
+                update(indexOf(cid), ListsListModel::SearchStatusRole,
+                       SearchStatusType::SearchStatusTypeContains);
+            } else {
+                update(indexOf(cid), ListsListModel::SearchStatusRole,
+                       SearchStatusType::SearchStatusTypeNotContains);
+            }
         }
     }
 

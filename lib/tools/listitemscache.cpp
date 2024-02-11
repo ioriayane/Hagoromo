@@ -7,7 +7,8 @@ ListItemsCache *ListItemsCache::getInstance()
 }
 
 void ListItemsCache::addItem(const QString &account_did, const QString &user_did,
-                             const QString &list_name, const QString &list_uri)
+                             const QString &list_name, const QString &list_uri,
+                             const QString &item_uri)
 {
     if (m_listsHash.contains(account_did)) {
         if (m_listsHash[account_did].contains(user_did)) {
@@ -19,17 +20,17 @@ void ListItemsCache::addItem(const QString &account_did, const QString &user_did
                 }
             }
             if (!exist) {
-                m_listsHash[account_did][user_did].append(ListInfo(list_name, list_uri));
+                m_listsHash[account_did][user_did].append(ListInfo(list_name, list_uri, item_uri));
             }
         } else {
             QList<ListInfo> info_list;
-            info_list.append(ListInfo(list_name, list_uri));
+            info_list.append(ListInfo(list_name, list_uri, item_uri));
             m_listsHash[account_did][user_did] = info_list;
         }
     } else {
         QHash<QString, QList<ListInfo>> list_hash;
         QList<ListInfo> info_list;
-        info_list.append(ListInfo(list_name, list_uri));
+        info_list.append(ListInfo(list_name, list_uri, item_uri));
         list_hash[user_did] = info_list;
         m_listsHash[account_did] = list_hash;
     }
@@ -82,6 +83,21 @@ QStringList ListItemsCache::getListUris(const QString &account_did, const QStrin
         }
     }
     return ret;
+}
+
+ListInfo ListItemsCache::getListInfo(const QString &account_did, const QString &user_did,
+                                     const QString &list_uri) const
+{
+    if (m_listsHash.contains(account_did)) {
+        if (m_listsHash[account_did].contains(user_did)) {
+            for (int i = 0; i < m_listsHash[account_did][user_did].count(); i++) {
+                if (m_listsHash[account_did][user_did].at(i).uri == list_uri) {
+                    return m_listsHash[account_did][user_did].at(i);
+                }
+            }
+        }
+    }
+    return ListInfo();
 }
 
 bool ListItemsCache::has(const QString &account_did) const
