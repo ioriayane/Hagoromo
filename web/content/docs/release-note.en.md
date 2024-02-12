@@ -8,7 +8,7 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
-### Unrelease - yyyy/m/d
+### v0.22.0 - 2024/2/12
 
 - Add
   - Display of registered lists in the profile view
@@ -20,7 +20,6 @@ description: This is a multi-column Bluesky client.
   - Function to copy the official URL into the profile menu
 - Update
   - Move the account icon in the post dialog into the combo box
-- Fix
 
 ### v0.21.0 - 2024/2/1
 

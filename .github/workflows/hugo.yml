@@ -1,8 +1,8 @@
 name: Deploy web site
 on:
   push:
-    branches:
-      - main
+    tags:
+      - "v*"
   workflow_dispatch:
 
 permissions:
@@ -44,7 +44,7 @@ jobs:
             --minify
         working-directory: ./web
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v2
         with:
           path: ./web/public
 
