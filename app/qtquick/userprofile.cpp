@@ -2,6 +2,8 @@
 #include "tools/listitemscache.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofile.h"
 
+#include <QPointer>
+
 using AtProtocolInterface::AppBskyActorGetProfile;
 
 UserProfile::UserProfile(QObject *parent)
@@ -17,13 +19,15 @@ UserProfile::UserProfile(QObject *parent)
       m_blocking(false),
       m_userFilterMatched(false)
 {
-    connect(ListItemsCache::getInstance(), &ListItemsCache::updated,
-            [=](const QString &account_did, const QString &user_did) {
-                if (m_account.did == account_did && did() == user_did) {
-                    setBelongingLists(
-                            ListItemsCache::getInstance()->getListNames(account_did, user_did));
-                }
-            });
+    QPointer<UserProfile> alive = this;
+    connect(ListItemsCache::getInstance(), &ListItemsCache::updated, this,
+            &UserProfile::updatedBelongingLists);
+}
+
+UserProfile::~UserProfile()
+{
+    disconnect(ListItemsCache::getInstance(), &ListItemsCache::updated, this,
+               &UserProfile::updatedBelongingLists);
 }
 
 void UserProfile::setAccount(const QString &service, const QString &did, const QString &handle,
@@ -372,6 +376,13 @@ void UserProfile::setUserFilterTitle(const QString &newUserFilterTitle)
 QString UserProfile::formattedDescription() const
 {
     return m_formattedDescription;
+}
+
+void UserProfile::updatedBelongingLists(const QString &account_did, const QString &user_did)
+{
+    if (m_account.did == account_did && did() == user_did) {
+        setBelongingLists(ListItemsCache::getInstance()->getListNames(account_did, user_did));
+    }
 }
 
 QStringList UserProfile::belongingLists() const
