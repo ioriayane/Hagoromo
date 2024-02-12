@@ -47,6 +47,7 @@ class UserProfile : public QObject
 
 public:
     explicit UserProfile(QObject *parent = nullptr);
+    ~UserProfile();
 
     Q_INVOKABLE void setAccount(const QString &service, const QString &did, const QString &handle,
                                 const QString &email, const QString &accessJwt,
@@ -123,6 +124,9 @@ signals:
     void belongingListsChanged();
 
     void formattedDescriptionChanged();
+
+public slots:
+    void updatedBelongingLists(const QString &account_did, const QString &user_did);
 
 private:
     SystemTool m_systemTool;
