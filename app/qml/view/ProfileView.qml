@@ -94,11 +94,18 @@ ColumnLayout {
         }
     ]
 
+    function getOfficialUrl(did) {
+        if(did.length === 0){
+            return ""
+        }
+        return "https://bsky.app/profile/" + did
+    }
+
     function openInOhters(handle) {
         if(handle.length === 0){
             return
         }
-        Qt.openUrlExternally("https://bsky.app/profile/" + handle)
+        Qt.openUrlExternally(getOfficialUrl(handle))
     }
 
     QtObject {
@@ -343,6 +350,12 @@ ColumnLayout {
                         enabled: userProfile.did.length > 0
                         onTriggered: systemTool.copyToClipboard(userProfile.did)
                     }
+                    MenuItem {
+                        text: qsTr("Copy Official Url")
+                        icon.source: "../images/copy.png"
+                        enabled: userProfile.did.length > 0
+                        onTriggered: systemTool.copyToClipboard(getOfficialUrl(userProfile.did))
+                    }
                     MenuSeparator {}
                     MenuItem {
                         text: qsTr("Open in new col")
@@ -353,8 +366,8 @@ ColumnLayout {
                     MenuItem {
                         text: qsTr("Open in Official")
                         icon.source: "../images/open_in_other.png"
-                        enabled: userProfile.handle.length > 0
-                        onTriggered: openInOhters(userProfile.handle)
+                        enabled: userProfile.did.length > 0
+                        onTriggered: openInOhters(userProfile.did)
                     }
                     MenuSeparator {}
                     MenuItem {

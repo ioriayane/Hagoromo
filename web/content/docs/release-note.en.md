@@ -14,9 +14,10 @@ description: This is a multi-column Bluesky client.
   - Display of registered lists in the profile view
   - Function to cache list entries
     - Display of loading and progress at the bottom right of the window at startup
-  - Faster loading of the Add/Remove Lists dialog.
+  - Faster loading of the Add/Remove Lists dialog
   - Reload button in add/delete list dialog
   - Display account loading on startup at the bottom right corner of the window
+  - Function to copy the official URL into the profile menu
 - Update
   - Move the account icon in the post dialog into the combo box
 - Fix
