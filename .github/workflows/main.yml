@@ -7,6 +7,19 @@ jobs:
   release_check:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name : Check documents
+        env: 
+          TZ: "Asia/Tokyo"       
+        run: |
+          VERSION_NO=$(cat app/main.cpp | grep "app.setApplicationVersion" | grep -oE "[0-9]+.[0-9]+.[0-9]+")
+          # Check download link
+          python3 scripts/updateweb.py temp.html $VERSION_NO
+          diff -u temp.html web/layouts/shortcodes/download_link.html
+          # Check release not
+          python3 scripts/validate_releasenote.py web/content/docs/release-note.en.md $VERSION_NO
+          python3 scripts/validate_releasenote.py web/content/docs/release-note.ja.md $VERSION_NO
       - name : Check pullrequest title
         run: |
           name="${{ github.event.pull_request.title }}"

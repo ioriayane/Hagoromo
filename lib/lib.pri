@@ -50,6 +50,7 @@ SOURCES += \
     $$PWD/http/httpreply.cpp \
     $$PWD/tools/configurablelabels.cpp \
     $$PWD/tools/imagecompressor.cpp \
+    $$PWD/tools/listitemscache.cpp \
     $$PWD/tools/opengraphprotocol.cpp
 
 HEADERS += \
@@ -101,5 +102,6 @@ HEADERS += \
     $$PWD/search/search.h \
     $$PWD/tools/configurablelabels.h \
     $$PWD/tools/imagecompressor.h \
+    $$PWD/tools/listitemscache.h \
     $$PWD/tools/opengraphprotocol.h \
     $$PWD/tools/qstringex.h

@@ -6,8 +6,8 @@ import tech.relog.hagoromo.singleton 1.0
 
 ScrollView {
     id: parts
-//    Layout.preferredWidth: 200
-//    Layout.preferredHeight: 300
+    //    Layout.preferredWidth: 200
+    //    Layout.preferredHeight: 300
     //ScrollBar.vertical.policy: ScrollBar.AlwaysOn
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     clip: true
@@ -27,24 +27,11 @@ ScrollView {
                 parts.clicked(model.index)
             }
 
-            RowLayout {
+            AccountLayout {
                 anchors.fill: parent
                 anchors.margins: 10
-                spacing: 5
-                AvatarImage {
-                    Layout.preferredWidth: AdjustedValues.i24
-                    Layout.preferredHeight: AdjustedValues.i24
-                    source: model.avatar
-                }
-                Label {
-                    text: model.handle
-                    elide: Text.ElideRight
-                    font.pointSize: AdjustedValues.f10
-                }
-                Item {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 1
-                }
+                source: model.avatar
+                handle: model.handle
             }
         }
     }

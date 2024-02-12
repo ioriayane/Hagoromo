@@ -28,3 +28,7 @@ The following environments have been tested.
 - Windows 11
 - Ubuntu 22.04
 - MacOS 10.13
+
+## Download
+
+{{< download_link >}}

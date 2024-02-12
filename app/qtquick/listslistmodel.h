@@ -60,6 +60,7 @@ public:
     virtual Q_INVOKABLE QString getOfficialUrl() const { return QString(); }
     virtual Q_INVOKABLE QString getItemOfficialUrl(int row) const { return QString(); }
     Q_INVOKABLE void clear();
+    Q_INVOKABLE void clearListItemCache();
     Q_INVOKABLE bool addRemoveFromList(const int row, const QString &did);
 
     QString actor() const;
@@ -89,6 +90,7 @@ protected:
 private:
     void copyFrom(AtProtocolInterface::AppBskyGraphGetLists *lists);
     void searchActorInEachLists();
+    void searchActorInEachListsFromCache();
     QString getListCidByUri(const QString &uri) const;
     void setListItemStatus(const SearchStatusType status);
 

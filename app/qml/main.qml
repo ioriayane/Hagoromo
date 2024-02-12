@@ -7,6 +7,7 @@ import Qt.labs.settings 1.1
 
 import tech.relog.hagoromo.accountlistmodel 1.0
 import tech.relog.hagoromo.columnlistmodel 1.0
+import tech.relog.hagoromo.listslistmodel 1.0
 import tech.relog.hagoromo.systemtool 1.0
 import tech.relog.hagoromo.singleton 1.0
 
@@ -230,6 +231,7 @@ ApplicationWindow {
                                   // すべてのアカウント情報の認証が終わったのでカラムを復元
                                   console.log("start loading columns")
                                   columnManageModel.load()
+                                  listsListModel.load()
                               }
                           }
         onUpdatedAccount: (row, uuid) => {
@@ -253,6 +255,52 @@ ApplicationWindow {
                     columnManageModel.remove(i)
                 }
             }
+        }
+    }
+    ListsListModel {
+        // リストのキャッシュ用
+        id: listsListModel
+        visibilityType: ListsListModel.VisibilityTypeCuration
+
+        property int currentAccountIndex: -1
+        function load(next){
+            if(!next){
+                currentAccountIndex = accountListModel.count - 1
+            }
+            if(currentAccountIndex < 0){
+                globalProgressFrame.text = ""
+                return
+            }
+            var row = accountListModel.count - currentAccountIndex - 1
+            if(row < 0){
+                globalProgressFrame.text = ""
+                return
+            }
+            var handle = accountListModel.item(currentAccountIndex, AccountListModel.HandleRole)
+            setAccount(accountListModel.item(currentAccountIndex, AccountListModel.ServiceRole),
+                       accountListModel.item(currentAccountIndex, AccountListModel.DidRole),
+                       handle,
+                       "email",
+                       accountListModel.item(currentAccountIndex, AccountListModel.AccessJwtRole),
+                       accountListModel.item(currentAccountIndex, AccountListModel.RefreshJwtRole)
+                    )
+            actor = did
+            searchTarget = "#cache"
+            if(listsListModel.getLatest()){
+                globalProgressFrame.text = qsTr("Loading lists") +
+                        " (" + handle + ") ... " + (row+1) + "/" + accountListModel.count
+            }else{
+                globalProgressFrame.text = ""
+            }
+        }
+
+        onRunningChanged: {
+            console.log("listsListModel:" + running)
+            if(running){
+                return
+            }
+            currentAccountIndex -= 1
+            load(true)
         }
     }
 
@@ -730,8 +778,10 @@ ApplicationWindow {
     Frame {
         // ハイパーリンクの内容を表示する
         id: hoveredLinkFrame
-        x: scrollView.x
-        y: scrollView.height - scrollView.ScrollBar.horizontal.height - height
+        anchors.left: rootLayout.left
+        anchors.bottom: rootLayout.bottom
+        anchors.leftMargin: scrollView.x
+        anchors.bottomMargin: scrollView.ScrollBar.horizontal.height + 5
         visible: hoveredLinkFrame.text.length > 0
         leftInset: 5
         rightInset: 5
@@ -750,9 +800,44 @@ ApplicationWindow {
         }
     }
 
+    Frame {
+        // 何かの読み込み中の表示
+        id: globalProgressFrame
+        anchors.right: rootLayout.right
+        anchors.bottom: rootLayout.bottom
+        anchors.rightMargin: 5
+        anchors.bottomMargin: scrollView.ScrollBar.horizontal.height + 5
+        visible: globalProgressFrame.text.length > 0
+        background: Rectangle {
+            radius: 3
+            border.width: 1
+            border.color: Material.frameColor
+            color: Material.backgroundColor
+        }
+        property string text: ""
+        RowLayout {
+            BusyIndicator {
+                Layout.preferredWidth: AdjustedValues.i24
+                Layout.preferredHeight: AdjustedValues.i24
+                running: globalProgressFrame.visible
+            }
+            Label {
+                font.pointSize: AdjustedValues.f10
+                text: globalProgressFrame.text
+            }
+        }
+    }
+
     ImageFullView {
         id: imageFullView
         anchors.fill: parent
         visible: false
+    }
+
+    Component.onCompleted: {
+        if(accountListModel.count > 0){
+            globalProgressFrame.text = qsTr("Loading account(s) ...")
+        }
+        accountListModel.load()
     }
 }

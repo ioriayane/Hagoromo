@@ -42,8 +42,12 @@ class UserProfile : public QObject
     Q_PROPERTY(QString userFilterTitle READ userFilterTitle WRITE setUserFilterTitle NOTIFY
                        userFilterTitleChanged)
 
+    Q_PROPERTY(QStringList belongingLists READ belongingLists WRITE setBelongingLists NOTIFY
+                       belongingListsChanged)
+
 public:
     explicit UserProfile(QObject *parent = nullptr);
+    ~UserProfile();
 
     Q_INVOKABLE void setAccount(const QString &service, const QString &did, const QString &handle,
                                 const QString &email, const QString &accessJwt,
@@ -90,6 +94,8 @@ public:
     void setUserFilterMatched(bool newUserFilterMatched);
     QString userFilterTitle() const;
     void setUserFilterTitle(const QString &newUserFilterTitle);
+    QStringList belongingLists() const;
+    void setBelongingLists(const QStringList &newBelongingLists);
 
     QString formattedDescription() const;
 
@@ -115,8 +121,12 @@ signals:
     void blockingUriChanged();
     void userFilterMatchedChanged();
     void userFilterTitleChanged();
+    void belongingListsChanged();
 
     void formattedDescriptionChanged();
+
+public slots:
+    void updatedBelongingLists(const QString &account_did, const QString &user_did);
 
 private:
     SystemTool m_systemTool;
@@ -145,6 +155,7 @@ private:
     QString m_blockingUri;
     bool m_userFilterMatched;
     QString m_userFilterTitle;
+    QStringList m_belongingLists;
 };
 
 #endif // USERPROFILE_H

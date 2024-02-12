@@ -94,11 +94,18 @@ ColumnLayout {
         }
     ]
 
+    function getOfficialUrl(did) {
+        if(did.length === 0){
+            return ""
+        }
+        return "https://bsky.app/profile/" + did
+    }
+
     function openInOhters(handle) {
         if(handle.length === 0){
             return
         }
-        Qt.openUrlExternally("https://bsky.app/profile/" + handle)
+        Qt.openUrlExternally(getOfficialUrl(handle))
     }
 
     QtObject {
@@ -279,6 +286,19 @@ ColumnLayout {
                 }
             }
         }
+        TagLabelLayout {
+            id: belongingListsLayout
+            Layout.preferredWidth: profileView.width
+            Layout.maximumWidth: profileView.width
+            Layout.leftMargin: 5
+            Layout.rightMargin: 5
+            visible: count > 0
+            iconSource: "../images/list.png"
+            tagSpacing: 5
+            tagColor: Material.background
+            tagBorderWidth: 1
+            model: userProfile.belongingLists
+        }
         Label {
             id: descriptionLabel
             Layout.preferredWidth: profileView.width
@@ -288,6 +308,8 @@ ColumnLayout {
             font.pointSize: AdjustedValues.f10
             textFormat: Text.StyledText
             text: userProfile.formattedDescription
+            leftPadding: 5
+            rightPadding: 5
 
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
             onLinkActivated: (url) => Qt.openUrlExternally(url)
@@ -328,6 +350,12 @@ ColumnLayout {
                         enabled: userProfile.did.length > 0
                         onTriggered: systemTool.copyToClipboard(userProfile.did)
                     }
+                    MenuItem {
+                        text: qsTr("Copy Official Url")
+                        icon.source: "../images/copy.png"
+                        enabled: userProfile.did.length > 0
+                        onTriggered: systemTool.copyToClipboard(getOfficialUrl(userProfile.did))
+                    }
                     MenuSeparator {}
                     MenuItem {
                         text: qsTr("Open in new col")
@@ -338,8 +366,8 @@ ColumnLayout {
                     MenuItem {
                         text: qsTr("Open in Official")
                         icon.source: "../images/open_in_other.png"
-                        enabled: userProfile.handle.length > 0
-                        onTriggered: openInOhters(userProfile.handle)
+                        enabled: userProfile.did.length > 0
+                        onTriggered: openInOhters(userProfile.did)
                     }
                     MenuSeparator {}
                     MenuItem {
