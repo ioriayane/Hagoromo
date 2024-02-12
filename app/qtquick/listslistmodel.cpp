@@ -1,6 +1,7 @@
 #include "listslistmodel.h"
 // #include "listitemlistmodel.h"
 #include "recordoperator.h"
+#include "tools/listitemscache.h"
 
 #include "atprotocol/app/bsky/graph/appbskygraphgetlists.h"
 #include "atprotocol/com/atproto/repo/comatprotorepolistrecords.h"
@@ -124,9 +125,16 @@ void ListsListModel::clear()
     AtpAbstractListModel::clear();
 }
 
+void ListsListModel::clearListItemCache()
+{
+    ListItemsCache::getInstance()->clear(account().did);
+}
+
 bool ListsListModel::addRemoveFromList(const int row, const QString &did)
 {
-    QString target_uri = item(row, ListsListModel::UriRole).toString();
+    QString list_name = item(row, ListsListModel::NameRole).toString();
+    QString list_uri = item(row, ListsListModel::UriRole).toString();
+    QString target_uri = list_uri;
     SearchStatusType status =
             static_cast<SearchStatusType>(item(row, ListsListModel::SearchStatusRole).toInt());
     if (status == SearchStatusTypeContains) {
@@ -141,13 +149,20 @@ bool ListsListModel::addRemoveFromList(const int row, const QString &did)
                 Q_UNUSED(cid)
                 if (success) {
                     if (status == SearchStatusTypeContains) {
+                        // Deleted
                         update(row, ListsListModel::SearchStatusRole,
                                SearchStatusType::SearchStatusTypeNotContains);
                         update(row, ListsListModel::ListItemUriRole, QString());
+                        // delete from cache
+                        ListItemsCache::getInstance()->removeItem(account().did, did, list_uri);
                     } else {
+                        // Added
                         update(row, ListsListModel::SearchStatusRole,
                                SearchStatusType::SearchStatusTypeContains);
                         update(row, ListsListModel::ListItemUriRole, uri);
+                        // add to cache
+                        ListItemsCache::getInstance()->addItem(account().did, did, list_name,
+                                                               list_uri, uri);
                     }
                 }
                 setRunning(false);
@@ -254,6 +269,8 @@ void ListsListModel::finishedDisplayingQueuedPosts()
         if (!m_cursor.isEmpty()) {
             setRunning(false);
             QTimer::singleShot(0, this, &ListsListModel::getNext);
+        } else if (ListItemsCache::getInstance()->has(account().did)) {
+            searchActorInEachListsFromCache();
         } else {
             m_listItemCursor = QStringLiteral("__start__");
             setListItemStatus(SearchStatusTypeRunning);
@@ -332,6 +349,9 @@ void ListsListModel::searchActorInEachLists()
                                SearchStatusType::SearchStatusTypeContains);
                         // Listを横断してListItemを探索するのでbreakはできない
                     }
+                    // キャッシュに登録
+                    ListItemsCache::getInstance()->addItem(account().did, record.subject,
+                                                           current.name, current.uri, item.uri);
                 }
             }
             QTimer::singleShot(0, this, &ListsListModel::searchActorInEachLists);
@@ -342,6 +362,38 @@ void ListsListModel::searchActorInEachLists()
     });
     list->setAccount(account());
     list->listListItems(account().did, cursor);
+}
+
+void ListsListModel::searchActorInEachListsFromCache()
+{
+    setListItemStatus(SearchStatusTypeRunning);
+
+    QStringList belonging_uris =
+            ListItemsCache::getInstance()->getListUris(account().did, searchTarget());
+    if (belonging_uris.isEmpty()) {
+        setListItemStatus(SearchStatusTypeNotContains);
+        setRunning(false);
+        return;
+    }
+
+    for (const QString &cid : m_cidList) {
+        const AppBskyGraphDefs::ListView &current = m_listViewHash.value(cid);
+        if (belonging_uris.contains(current.uri)) {
+            ListInfo info = ListItemsCache::getInstance()->getListInfo(account().did,
+                                                                       searchTarget(), current.uri);
+            if (!info.item_uri.isEmpty()) {
+                update(indexOf(cid), ListsListModel::ListItemUriRole, info.item_uri);
+                update(indexOf(cid), ListsListModel::SearchStatusRole,
+                       SearchStatusType::SearchStatusTypeContains);
+            } else {
+                update(indexOf(cid), ListsListModel::SearchStatusRole,
+                       SearchStatusType::SearchStatusTypeNotContains);
+            }
+        }
+    }
+
+    setListItemStatus(SearchStatusTypeNotContains);
+    setRunning(false);
 }
 
 QString ListsListModel::getListCidByUri(const QString &uri) const

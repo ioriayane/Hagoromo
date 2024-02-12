@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import QtQuick.Controls.Material 2.15
 
 Item {
     clip: true
@@ -15,6 +16,10 @@ Item {
     property int columnSpacing: 5
     property int rowSpacing: 5
     property int tagSpacing: 0
+    property color tagColor: Material.color(Material.BlueGrey,
+                                            Material.theme === Material.Light ? Material.Shade100 : Material.Shade800)
+    property int tagBorderWidth: 0
+    property color tagBorderColor: Material.frameColor
     property alias model: repeater.model
     property alias count: repeater.count
     property string iconSource: "../images/label.png"
@@ -22,6 +27,9 @@ Item {
     Repeater {
         id: repeater
         TagLabel {
+            color: tagColor
+            border.width: tagBorderWidth
+            border.color: tagBorderColor
             anchors.left: {
                 if(lineStatus === 0){
                     return repeater.parent.left

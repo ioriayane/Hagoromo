@@ -10,12 +10,12 @@ ColumnLayout {
     id: tabBar
     spacing: 0
 
-    onWidthChanged: tabBar.moveIndicator(group.checkedButton)
     onCurrentIndexChanged: {
-        if(currentIndex < 0 || currentIndex >= group.buttons.length){
-            return
+        for(var i=0; i<group.buttons.length; i++){
+            if(group.buttons[i].value === currentIndex){
+                group.buttons[i].checked = true
+            }
         }
-        group.buttons[currentIndex].checked = true
     }
 
     property int currentIndex: -1
@@ -41,6 +41,7 @@ ColumnLayout {
     RowLayout {
         spacing: 0
         ProfileTabButton {
+            id: postButton
             Layout.fillWidth: true
             ButtonGroup.group: group
             value: 0
@@ -64,44 +65,80 @@ ColumnLayout {
                     NumberAnimation { duration: 100 }
                 }
             }
+            onWidthChanged: {
+                if(checked){
+                    moveIndicator(postButton)
+                }
+            }
         }
         ProfileTabButton {
+            id: repostButton
             Layout.fillWidth: true
             ButtonGroup.group: group
             value: 1
             source: "../images/repost.png"
             iconColor: Material.color(Material.Green)
+            onWidthChanged: {
+                if(checked){
+                    moveIndicator(repostButton)
+                }
+            }
         }
         ProfileTabButton {
+            id: likeButton
             Layout.fillWidth: true
             ButtonGroup.group: group
             value: 2
             source: "../images/like.png"
             iconColor: Material.color(Material.Pink)
+            onWidthChanged: {
+                if(checked){
+                    moveIndicator(likeButton)
+                }
+            }
         }
         ProfileTabButton {
+            id: mediaButton
             Layout.fillWidth: true
             ButtonGroup.group: group
             value: 3
             source: "../images/media.png"
             iconColor: Material.color(Material.Blue)
+            onWidthChanged: {
+                if(checked){
+                    moveIndicator(mediaButton)
+                }
+            }
         }
         ProfileTabButton {
+            id: feedButton
             Layout.fillWidth: true
             ButtonGroup.group: group
             value: 4
             source: "../images/feed.png"
+            onWidthChanged: {
+                if(checked){
+                    moveIndicator(feedButton)
+                }
+            }
         }
         ProfileTabButton {
+            id: listButton
             Layout.fillWidth: true
             ButtonGroup.group: group
             value: 5
             source: "../images/list.png"
+            onWidthChanged: {
+                if(checked){
+                    moveIndicator(listButton)
+                }
+            }
         }
     }
     RowLayout {
         spacing: 0
         ProfileTabButton {
+            id: followButton
             Layout.fillWidth: true
             ButtonGroup.group: group
             value: 6
@@ -131,8 +168,14 @@ ColumnLayout {
                     Layout.preferredHeight: 1
                 }
             }
+            onWidthChanged: {
+                if(checked){
+                    moveIndicator(followButton)
+                }
+            }
         }
         ProfileTabButton {
+            id: followedButton
             Layout.fillWidth: true
             ButtonGroup.group: group
             value: 7
@@ -160,6 +203,11 @@ ColumnLayout {
                 Item {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 1
+                }
+            }
+            onWidthChanged: {
+                if(checked){
+                    moveIndicator(followedButton)
                 }
             }
         }

@@ -1,4 +1,5 @@
 #include "userprofile.h"
+#include "tools/listitemscache.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofile.h"
 
 using AtProtocolInterface::AppBskyActorGetProfile;
@@ -16,6 +17,13 @@ UserProfile::UserProfile(QObject *parent)
       m_blocking(false),
       m_userFilterMatched(false)
 {
+    connect(ListItemsCache::getInstance(), &ListItemsCache::updated,
+            [=](const QString &account_did, const QString &user_did) {
+                if (m_account.did == account_did && did() == user_did) {
+                    setBelongingLists(
+                            ListItemsCache::getInstance()->getListNames(account_did, user_did));
+                }
+            });
 }
 
 void UserProfile::setAccount(const QString &service, const QString &did, const QString &handle,
@@ -87,6 +95,8 @@ void UserProfile::getProfile(const QString &did)
                     }
                 }
             }
+            setBelongingLists(
+                    ListItemsCache::getInstance()->getListNames(m_account.did, detail.did));
         } else {
             emit errorOccured(profile->errorCode(), profile->errorMessage());
         }
@@ -362,4 +372,17 @@ void UserProfile::setUserFilterTitle(const QString &newUserFilterTitle)
 QString UserProfile::formattedDescription() const
 {
     return m_formattedDescription;
+}
+
+QStringList UserProfile::belongingLists() const
+{
+    return m_belongingLists;
+}
+
+void UserProfile::setBelongingLists(const QStringList &newBelongingLists)
+{
+    if (m_belongingLists == newBelongingLists)
+        return;
+    m_belongingLists = newBelongingLists;
+    emit belongingListsChanged();
 }
