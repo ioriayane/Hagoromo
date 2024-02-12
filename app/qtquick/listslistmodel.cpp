@@ -173,10 +173,12 @@ bool ListsListModel::addRemoveFromList(const int row, const QString &did)
     if (status == SearchStatusTypeContains) {
         // delete
         // uriのレコードを消す（リストに登録しているユーザーの情報）
+        update(row, ListsListModel::SearchStatusRole, SearchStatusType::SearchStatusTypeRunning);
         setRunning(ope->deleteListItem(target_uri));
     } else if (status == SearchStatusTypeNotContains) {
         // Add
         // uriのリストにdidのユーザーを追加する
+        update(row, ListsListModel::SearchStatusRole, SearchStatusType::SearchStatusTypeRunning);
         setRunning(ope->listItem(target_uri, did));
     } else {
         ope->deleteLater();
