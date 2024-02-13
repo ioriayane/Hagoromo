@@ -164,6 +164,7 @@ void AccountListModel::updateAccount(const QString &service, const QString &iden
         item.email = email;
         item.accessJwt = accessJwt;
         item.refreshJwt = refreshJwt;
+        item.thread_gate_type = "everybody";
         item.status = authorized ? AccountStatus::Authorized : AccountStatus::Unauthorized;
 
         beginInsertRows(QModelIndex(), count(), count());
@@ -291,7 +292,11 @@ void AccountListModel::save() const
             account_item["post_languages"] = post_langs;
         }
 
-        account_item["thread_gate_type"] = item.thread_gate_type;
+        if (item.thread_gate_type.isEmpty()) {
+            account_item["thread_gate_type"] = "everybody";
+        } else {
+            account_item["thread_gate_type"] = item.thread_gate_type;
+        }
         if (!item.thread_gate_options.isEmpty()) {
             QJsonArray thread_gate_options;
             for (const auto &option : item.thread_gate_options) {
@@ -340,6 +345,9 @@ void AccountListModel::load()
                                                 .toObject()
                                                 .value("thread_gate_type")
                                                 .toString("everybody");
+                if (item.thread_gate_type.isEmpty()) {
+                    item.thread_gate_type = "everybody";
+                }
                 for (const auto &value :
                      doc.array().at(i).toObject().value("thread_gate_options").toArray()) {
                     item.thread_gate_options.append(value.toString());

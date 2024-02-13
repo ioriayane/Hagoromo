@@ -8,6 +8,14 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+### v0.22.1 - 2024/2/14
+
+- Add
+- Update
+  - Target item also displays busy indicator when adding/deleting listings
+- Fix
+  - Fixed a bug that caused the reply limit setting to be empty when adding a new account
+
 ### v0.22.0 - 2024/2/12
 
 - Add
