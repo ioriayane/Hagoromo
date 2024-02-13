@@ -37,6 +37,8 @@ QVariant ColumnListModel::item(int row, ColumnListModelRoles role) const
         return m_columnList.at(row).loading_interval;
     else if (role == WidthRole)
         return m_columnList.at(row).width;
+    else if (role == ImageLayoutTypeRole)
+        return static_cast<int>(m_columnList.at(row).image_layout_type);
     else if (role == NameRole)
         return m_columnList.at(row).name;
     else if (role == ValueRole)
@@ -77,6 +79,8 @@ void ColumnListModel::update(int row, ColumnListModelRoles role, const QVariant 
         m_columnList[row].loading_interval = value.toInt();
     else if (role == WidthRole)
         m_columnList[row].width = value.toInt();
+    else if (role == ImageLayoutTypeRole)
+        m_columnList[row].image_layout_type = static_cast<ImageLayoutType>(value.toInt());
     else if (role == NameRole)
         m_columnList[row].name = value.toString();
     else if (role == ValueRole)
@@ -103,14 +107,16 @@ void ColumnListModel::update(int row, ColumnListModelRoles role, const QVariant 
 }
 
 void ColumnListModel::append(const QString &account_uuid, int component_type, bool auto_loading,
-                             int interval, int width, const QString &name, const QString &value)
+                             int interval, int width, int image_layout_type, const QString &name,
+                             const QString &value)
 {
-    insert(rowCount(), account_uuid, component_type, auto_loading, interval, width, name, value);
+    insert(rowCount(), account_uuid, component_type, auto_loading, interval, width,
+           image_layout_type, name, value);
 }
 
 void ColumnListModel::insert(int row, const QString &account_uuid, int component_type,
-                             bool auto_loading, int interval, int width, const QString &name,
-                             const QString &value)
+                             bool auto_loading, int interval, int width, int image_layout_type,
+                             const QString &name, const QString &value)
 {
     if (row < 0 || row > m_columnList.count())
         return;
@@ -123,6 +129,7 @@ void ColumnListModel::insert(int row, const QString &account_uuid, int component
     item.auto_loading = auto_loading;
     item.loading_interval = interval;
     item.width = width;
+    item.image_layout_type = static_cast<ImageLayoutType>(image_layout_type);
     item.name = name;
     item.value = value;
 
@@ -134,10 +141,11 @@ void ColumnListModel::insert(int row, const QString &account_uuid, int component
 }
 
 int ColumnListModel::insertNext(const QString &key, const QString &account_uuid, int component_type,
-                                bool auto_loading, int interval, int width, const QString &name,
-                                const QString &value)
+                                bool auto_loading, int interval, int width, int image_layout_type,
+                                const QString &name, const QString &value)
 {
-    insert(rowCount(), account_uuid, component_type, auto_loading, interval, width, name, value);
+    insert(rowCount(), account_uuid, component_type, auto_loading, interval, width,
+           image_layout_type, name, value);
 
     int to_position = -1;
     int from_index = -1;
@@ -303,6 +311,7 @@ void ColumnListModel::save() const
         column_item["auto_loading"] = item.auto_loading;
         column_item["interval"] = item.loading_interval;
         column_item["width"] = item.width;
+        column_item["image_layout_type"] = static_cast<int>(item.image_layout_type);
         column_item["name"] = item.name;
         column_item["value"] = item.value;
 
@@ -346,6 +355,8 @@ void ColumnListModel::load()
                 item.auto_loading = obj.value("auto_loading").toBool(false);
                 item.loading_interval = obj.value("interval").toInt(300000);
                 item.width = obj.value("width").toInt(400);
+                item.image_layout_type =
+                        static_cast<ImageLayoutType>(obj.value("image_layout_type").toInt(1));
                 item.name = obj.value("name").toString();
                 item.value = obj.value("value").toString();
 
@@ -404,6 +415,7 @@ QHash<int, QByteArray> ColumnListModel::roleNames() const
     roles[AutoLoadingRole] = "autoLoading";
     roles[LoadingIntervalRole] = "loadingInterval";
     roles[WidthRole] = "width";
+    roles[ImageLayoutTypeRole] = "imageLayoutType";
     roles[NameRole] = "name";
     roles[ValueRole] = "value";
 

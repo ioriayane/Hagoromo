@@ -8,6 +8,7 @@ SOURCES += \
 QML_FILES = \
     qml/main.qml \
     qml/controls/ClickableFrame.qml \
+    qml/controls/ComboBoxEx.qml \
     qml/controls/ProgressCircle.qml \
     qml/controls/IconButton.qml \
     qml/controls/IconLabelFrame.qml \

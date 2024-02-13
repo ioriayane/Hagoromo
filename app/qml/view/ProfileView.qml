@@ -25,6 +25,7 @@ ColumnLayout {
     spacing: 0
 
     property string hoveredLink: ""
+    property int imageLayoutType: 1
 
     property alias model: relayObject
 
@@ -495,6 +496,7 @@ ColumnLayout {
                 onErrorOccured: (code, message) => profileView.errorOccured(code, message)
             }
             accountDid: profileView.accountDid
+            imageLayoutType: settings.imageLayoutType
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -529,6 +531,7 @@ ColumnLayout {
                 onErrorOccured: (code, message) => profileView.errorOccured(code, message)
             }
             accountDid: profileView.accountDid
+            imageLayoutType: settings.imageLayoutType
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -563,6 +566,7 @@ ColumnLayout {
                 onErrorOccured: (code, message) => profileView.errorOccured(code, message)
             }
             accountDid: profileView.accountDid
+            imageLayoutType: settings.imageLayoutType
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -597,6 +601,7 @@ ColumnLayout {
                 onErrorOccured: (code, message) => profileView.errorOccured(code, message)
             }
             accountDid: profileView.accountDid
+            imageLayoutType: settings.imageLayoutType
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)

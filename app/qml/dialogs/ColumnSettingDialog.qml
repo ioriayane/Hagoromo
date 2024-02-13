@@ -6,6 +6,8 @@ import Qt.labs.settings 1.0
 
 import tech.relog.hagoromo.singleton 1.0
 
+import "../controls"
+
 Dialog {
     id: columnSettingDialog
     modal: true
@@ -21,6 +23,7 @@ Dialog {
     property alias autoLoadingCheckbox: autoLoadingCheckbox
     property alias autoLoadingIntervalCombo: autoLoadingIntervalCombo
     property alias columnWidthSlider: columnWidthSlider
+    property alias imageLayoutCombobox: imageLayoutCombobox
     property alias visibleLikeCheckBox: visibleLikeCheckBox
     property alias visibleRepostCheckBox: visibleRepostCheckBox
     property alias visibleFollowCheckBox: visibleFollowCheckBox
@@ -49,13 +52,10 @@ Dialog {
                         font.pointSize: AdjustedValues.f10
                         text: qsTr("Interval")
                     }
-                    ComboBox {
+                    ComboBoxEx {
                         id: autoLoadingIntervalCombo
                         Layout.fillWidth: true
                         Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
-                        font.pointSize: AdjustedValues.f10
-                        textRole: "text"
-                        valueRole: "value"
                         model: ListModel {
                             ListElement { value: 60000; text: qsTr("1 min.") }
                             ListElement { value: 180000; text: qsTr("3 min.") }
@@ -63,21 +63,6 @@ Dialog {
                             ListElement { value: 600000; text: qsTr("10 min.") }
                             ListElement { value: 900000; text: qsTr("15 min.") }
                             ListElement { value: 1200000; text: qsTr("20 min.") }
-                        }
-                        delegate: ItemDelegate {
-                            width: parent.width
-                            height: implicitHeight * AdjustedValues.ratio
-                            font.pointSize: AdjustedValues.f10
-                            text: model.text
-                            onClicked: autoLoadingIntervalCombo.currentIndex = model.index
-                        }
-                        function setByValue(value){
-                            for(var i=0; i<model.count; i++){
-                                if(model.get(i).value === value){
-                                    currentIndex = i
-                                    break
-                                }
-                            }
                         }
                     }
                 }
@@ -100,6 +85,24 @@ Dialog {
                     Label {
                         font.pointSize: AdjustedValues.f10
                         text: columnWidthSlider.value
+                    }
+                }
+
+
+                Label {
+                    Layout.topMargin: 15
+                    font.pointSize: AdjustedValues.f10
+                    text: qsTr("Image layout")
+                }
+                ComboBoxEx {
+                    id: imageLayoutCombobox
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
+                    model: ListModel {
+                        ListElement { value: 0; text: qsTr("Compact") }
+                        ListElement { value: 1; text: qsTr("Normal") }
+                        ListElement { value: 2; text: qsTr("When one is whole") }
+                        ListElement { value: 3; text: qsTr("All whole") }
                     }
                 }
             }

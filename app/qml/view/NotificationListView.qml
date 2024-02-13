@@ -18,6 +18,8 @@ ScrollView {
     clip: true
 
     property string hoveredLink: ""
+    property int imageLayoutType: 1
+
     property alias listView: rootListView
     property alias model: rootListView.model
 
@@ -100,6 +102,7 @@ ScrollView {
             contentFilterFrame.labelText: model.contentFilterMessage
             contentMediaFilterFrame.visible: model.contentMediaFilterMatched
             contentMediaFilterFrame.labelText: model.contentMediaFilterMessage
+            postImagePreview.layoutType: notificationListView.imageLayoutType
             postImagePreview.embedImages: model.embedImages
             postImagePreview.embedAlts: model.embedImagesAlt
             postImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.embedImagesFull, model.embedImagesAlt)

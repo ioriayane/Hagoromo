@@ -99,7 +99,7 @@ ApplicationWindow {
                 column_name = qsTr("Search users")
             }
             columnManageModel.append(accountListModel.item(selectedAccountIndex, AccountListModel.UuidRole),
-                                     component_type, false, 300000, 350, column_name, searchDialog.searchText)
+                                     component_type, false, 300000, 350, 1, column_name, searchDialog.searchText)
             scrollView.showRightMost()
         }
     }
@@ -113,7 +113,7 @@ ApplicationWindow {
                         "\n  selectedName=" + selectedName +
                         "\n  selectedUri=" + selectedUri)
             columnManageModel.append(accountListModel.item(selectedAccountIndex, AccountListModel.UuidRole),
-                                     selectedType, false, 300000, 400, selectedName, selectedUri)
+                                     selectedType, false, 300000, 400, 1, selectedName, selectedUri)
             scrollView.showRightMost()
         }
         onOpenDiscoverFeeds: (account_index) => {
@@ -143,7 +143,7 @@ ApplicationWindow {
         id: discoverFeedsDialog
         onAccepted: {
             columnManageModel.append(discoverFeedsDialog.account.uuid,
-                                     4, false, 300000, 400, selectedName, selectedUri)
+                                     4, false, 300000, 400, 1, selectedName, selectedUri)
             scrollView.showRightMost()
         }
         onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
@@ -161,6 +161,7 @@ ApplicationWindow {
                 autoLoadingIntervalCombo.setByValue(columnManageModel.item(i, ColumnListModel.LoadingIntervalRole))
                 columnWidthSlider.value = columnManageModel.item(i, ColumnListModel.WidthRole)
                 componentType = columnManageModel.item(i, ColumnListModel.ComponentTypeRole)
+                imageLayoutCombobox.setByValue(columnManageModel.item(i, ColumnListModel.ImageLayoutTypeRole))
 
                 visibleLikeCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleLikeRole)
                 visibleRepostCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleRepostRole)
@@ -180,6 +181,7 @@ ApplicationWindow {
                 columnManageModel.update(i, ColumnListModel.AutoLoadingRole, autoLoadingCheckbox.checked)
                 columnManageModel.update(i, ColumnListModel.LoadingIntervalRole, autoLoadingIntervalCombo.currentValue)
                 columnManageModel.update(i, ColumnListModel.WidthRole, columnWidthSlider.value)
+                columnManageModel.update(i, ColumnListModel.ImageLayoutTypeRole, imageLayoutCombobox.currentValue)
 
                 columnManageModel.update(i, ColumnListModel.VisibleLikeRole, visibleLikeCheckBox.checked)
                 columnManageModel.update(i, ColumnListModel.VisibleRepostRole, visibleRepostCheckBox.checked)
@@ -347,24 +349,24 @@ ApplicationWindow {
                                   postDialog.open()
                               }
             onRequestViewAuthorFeed: (account_uuid, did, handle) => {
-                                         columnManageModel.append(account_uuid, 5, false, 300000, 350, handle, did)
+                                         columnManageModel.append(account_uuid, 5, false, 300000, 350, 1, handle, did)
                                          scrollView.showRightMost()
                                      }
             onRequestViewImages: (index, paths, alts) => imageFullView.open(index, paths, alts)
             onRequestViewFeedGenerator: (account_uuid, name, uri) => {
-                                            columnManageModel.append(account_uuid, 4, false, 300000, 400, name, uri)
+                                            columnManageModel.append(account_uuid, 4, false, 300000, 400, 1, name, uri)
                                             scrollView.showRightMost()
                                         }
             onRequestViewSearchPosts: (account_uuid, text, current_column_key) => {
                                           console.log("Search:" + account_uuid + ", " + text + ", " + current_column_key)
-                                          var pos = columnManageModel.insertNext(current_column_key, account_uuid, 2, false, 300000, 350,
+                                          var pos = columnManageModel.insertNext(current_column_key, account_uuid, 2, false, 300000, 350, 1,
                                                                                  qsTr("Search posts"), text)
                                           repeater.updateSettings(1)
                                           scrollView.showColumn(pos)
                                       }
             onRequestViewListFeed: (account_uuid, uri, name) => {
                                        console.log("uuid=" + account_uuid + "\nuri=" + uri + "\nname=" + name)
-                                       columnManageModel.append(account_uuid, 6, false, 300000, 400, name, uri)
+                                       columnManageModel.append(account_uuid, 6, false, 300000, 400, 1, name, uri)
                                        scrollView.showRightMost()
                                    }
 
@@ -724,6 +726,7 @@ ApplicationWindow {
                         item.settings.loadingInterval = model.loadingInterval
                         item.settings.columnName = model.name
                         item.settings.columnValue = model.value
+                        item.settings.imageLayoutType = model.imageLayoutType
 
                         item.settings.visibleLike = model.visibleLike
                         item.settings.visibleRepost = model.visibleRepost
