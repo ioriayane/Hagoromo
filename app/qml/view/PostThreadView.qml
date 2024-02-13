@@ -140,7 +140,7 @@ ColumnLayout {
                 contentFilterFrame.labelText: model.contentFilterMessage
                 contentMediaFilterFrame.visible: model.contentMediaFilterMatched
                 contentMediaFilterFrame.labelText: model.contentMediaFilterMessage
-                postImagePreview.layoutType: timelineView.imageLayoutType
+                postImagePreview.layoutType: postThreadView.imageLayoutType
                 postImagePreview.embedImages: model.embedImages
                 postImagePreview.embedAlts: model.embedImagesAlt
                 postImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.embedImagesFull, model.embedImagesAlt)
@@ -159,6 +159,7 @@ ColumnLayout {
                 quoteRecordAuthor.handle: model.quoteRecordHandle
                 quoteRecordAuthor.indexedAt: model.quoteRecordIndexedAt
                 quoteRecordRecordText.text: model.quoteRecordRecordText
+                quoteRecordImagePreview.layoutType: postThreadView.imageLayoutType
                 quoteRecordImagePreview.embedImages: model.quoteRecordEmbedImages
                 quoteRecordImagePreview.embedAlts: model.quoteRecordEmbedImagesAlt
                 quoteRecordImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.quoteRecordEmbedImagesFull, model.quoteRecordEmbedImagesAlt)

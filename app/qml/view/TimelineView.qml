@@ -133,6 +133,7 @@ ScrollView {
             quoteRecordAuthor.handle: model.quoteRecordHandle
             quoteRecordAuthor.indexedAt: model.quoteRecordIndexedAt
             quoteRecordRecordText.text: model.quoteRecordRecordText
+            quoteRecordImagePreview.layoutType: timelineView.imageLayoutType
             quoteRecordImagePreview.embedImages: model.quoteRecordEmbedImages
             quoteRecordImagePreview.embedAlts: model.quoteRecordEmbedImagesAlt
             quoteRecordImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.quoteRecordEmbedImagesFull, model.quoteRecordEmbedImagesAlt)

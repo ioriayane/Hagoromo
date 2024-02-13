@@ -112,6 +112,7 @@ ScrollView {
             quoteRecordAvatar: model.quoteRecordAvatar
             quoteRecordIndexedAt: model.quoteRecordIndexedAt
             quoteRecordRecordText: model.quoteRecordRecordText
+            quoteRecordImagePreview.layoutType: notificationListView.imageLayoutType
             quoteRecordImagePreview.embedImages: model.quoteRecordEmbedImages
             quoteRecordImagePreview.embedAlts: model.quoteRecordEmbedImagesAlt
             quoteRecordImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.quoteRecordEmbedImagesFull, model.quoteRecordEmbedImagesAlt)
