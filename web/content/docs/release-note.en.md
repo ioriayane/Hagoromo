@@ -8,9 +8,14 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
-### v0.22.1 - 2024/2/14
+### Unrelease - yyyy/m/d
 
 - Add
+- Update
+- Fix
+
+### v0.22.1 - 2024/2/14
+
 - Update
   - Target item also displays busy indicator when adding/deleting listings
 - Fix
