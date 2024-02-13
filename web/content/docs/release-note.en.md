@@ -8,7 +8,7 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
-### Unrelease - yyyy/m/d
+### v0.22.1 - 2024/2/14
 
 - Add
 - Update

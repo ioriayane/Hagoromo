@@ -8,7 +8,7 @@ description: マルチカラム対応Blueskyクライアント
 
 ## 2024
 
-### Unrelease - yyyy/m/d
+### v0.22.1 - 2024/2/14
 
 - 追加
 - 更新
