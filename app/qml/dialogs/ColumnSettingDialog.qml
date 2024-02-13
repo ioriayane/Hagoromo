@@ -32,8 +32,57 @@ Dialog {
     property alias visibleQuoteCheckBox: visibleQuoteCheckBox
     property alias visibleReplyToUnfollowedUsersCheckBox: visibleReplyToUnfollowedUsersCheckBox
 
+    onComponentTypeChanged: console.log("componentType=" + componentType)
+
     ColumnLayout {
         spacing: AdjustedValues.s5
+        states: [
+            State {
+                when: columnSettingDialog.componentType === 0
+                PropertyChanges { target: displayFrame; visible: true }
+                PropertyChanges { target: visibleReplyToUnfollowedUsersCheckBox; visible: true }
+                PropertyChanges { target: imageLayoutLabel; visible: true }
+                PropertyChanges { target: imageLayoutCombobox; visible: true }
+            },
+            State {
+                when: columnSettingDialog.componentType === 1
+                PropertyChanges { target: displayFrame; visible: true }
+                PropertyChanges { target: visibleLikeCheckBox; visible: true }
+                PropertyChanges { target: visibleRepostCheckBox; visible: true }
+                PropertyChanges { target: visibleFollowCheckBox; visible: true }
+                PropertyChanges { target: visibleMentionCheckBox; visible: true }
+                PropertyChanges { target: visibleReplyCheckBox; visible: true }
+                PropertyChanges { target: visibleQuoteCheckBox; visible: true }
+                PropertyChanges { target: imageLayoutLabel; visible: true }
+                PropertyChanges { target: imageLayoutCombobox; visible: true }
+            },
+            State {
+                when: columnSettingDialog.componentType === 2
+                PropertyChanges { target: imageLayoutLabel; visible: true }
+                PropertyChanges { target: imageLayoutCombobox; visible: true }
+            },
+            State {
+                when: columnSettingDialog.componentType === 3
+                PropertyChanges { target: imageLayoutLabel; visible: false }
+                PropertyChanges { target: imageLayoutCombobox; visible: false }
+            },
+            State {
+                when: columnSettingDialog.componentType === 4
+                PropertyChanges { target: imageLayoutLabel; visible: true }
+                PropertyChanges { target: imageLayoutCombobox; visible: true }
+            },
+            State {
+                when: columnSettingDialog.componentType === 5
+                PropertyChanges { target: imageLayoutLabel; visible: true }
+                PropertyChanges { target: imageLayoutCombobox; visible: true }
+            },
+            State {
+                when: columnSettingDialog.componentType === 6
+                PropertyChanges { target: imageLayoutLabel; visible: true }
+                PropertyChanges { target: imageLayoutCombobox; visible: true }
+            }
+        ]
+
         RowLayout {
             ColumnLayout {
                 Layout.alignment: Qt.AlignTop
@@ -90,14 +139,17 @@ Dialog {
 
 
                 Label {
+                    id: imageLayoutLabel
                     Layout.topMargin: 15
                     font.pointSize: AdjustedValues.f10
+                    visible: false
                     text: qsTr("Image layout")
                 }
                 ComboBoxEx {
                     id: imageLayoutCombobox
                     Layout.fillWidth: true
                     Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
+                    visible: false
                     model: ListModel {
                         ListElement { value: 0; text: qsTr("Compact") }
                         ListElement { value: 1; text: qsTr("Normal") }
@@ -111,24 +163,6 @@ Dialog {
                 Layout.leftMargin: 10
                 Layout.fillHeight: true
                 visible: false
-
-                states: [
-                    State {
-                        when: columnSettingDialog.componentType === 0
-                        PropertyChanges { target: displayFrame; visible: true }
-                        PropertyChanges { target: visibleReplyToUnfollowedUsersCheckBox; visible: true }
-                    },
-                    State {
-                        when: columnSettingDialog.componentType === 1
-                        PropertyChanges { target: displayFrame; visible: true }
-                        PropertyChanges { target: visibleLikeCheckBox; visible: true }
-                        PropertyChanges { target: visibleRepostCheckBox; visible: true }
-                        PropertyChanges { target: visibleFollowCheckBox; visible: true }
-                        PropertyChanges { target: visibleMentionCheckBox; visible: true }
-                        PropertyChanges { target: visibleReplyCheckBox; visible: true }
-                        PropertyChanges { target: visibleQuoteCheckBox; visible: true }
-                    }
-                ]
 
                 background: Item {
                     Rectangle {
