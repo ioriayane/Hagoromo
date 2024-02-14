@@ -130,6 +130,7 @@ Dialog {
 
                             ListView {
                                 id: typeList
+                                maximumFlickVelocity: AdjustedValues.maximumFlickVelocity
                                 model: FeedTypeListModel {
                                     onErrorOccured: (code, message) => {
                                                         var uuid = accountModel.item(accountList.currentIndex, AccountListModel.UuidRole)

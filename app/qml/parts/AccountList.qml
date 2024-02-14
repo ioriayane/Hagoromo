@@ -18,6 +18,7 @@ ScrollView {
 
     ListView {
         id: accountList
+        maximumFlickVelocity: AdjustedValues.maximumFlickVelocity
         delegate: ItemDelegate {
             width: accountList.width
             height: implicitHeight * AdjustedValues.ratio

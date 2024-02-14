@@ -34,6 +34,7 @@ Dialog {
         property color accent: Material.color(Material.Pink)
         property real fontSizeRatio: 1.0
         property string fontFamily: ""
+        property real maximumFlickVelocity: 2500
         // Feed
         property string displayOfPosts: "sequential"
         property bool updateSeenNotification: true
@@ -54,12 +55,14 @@ Dialog {
 
         function load() {
             // Common
-            AdjustedValues.ratio = fontSizeRatio
+            AdjustedValues.ratio = settings.fontSizeRatio
+            AdjustedValues.maximumFlickVelocity = settings.maximumFlickVelocity
             // General
             setRadioButton(themeButtonGroup.buttons, settings.theme)
             setRadioButton(accentButtonGroup.buttons, settings.accent)
             fontSizeRatioSlider.value = fontSizeRatio
             setFontFamily(fontFamilyComboBox, settings.fontFamily)
+            maximumFlickVelocitySlider.value = settings.maximumFlickVelocity
             // Feed
             setRadioButton(displayOfPostsGroup.buttons, settings.displayOfPosts)
             setRadioButton(updateSeenNotificationGroup.buttons, settings.updateSeenNotification)
@@ -252,6 +255,35 @@ Dialog {
                             font.family: fontFamilyComboBox.currentText
                             text: qsTr("A")
                             font.pointSize: AdjustedValues.f10 * parent.to
+                        }
+                    }
+
+                    Label {
+                        font.pointSize: AdjustedValues.f10
+                        font.family: fontFamilyComboBox.currentText
+                        text: qsTr("Scroll velocity")
+                    }
+                    RowLayout {
+                        Slider {
+                            id: maximumFlickVelocitySlider
+                            Layout.fillWidth: true
+                            from: 1000
+                            to: 5000
+                            stepSize: 100
+                            snapMode: Slider.SnapOnRelease
+                            Rectangle {
+                                x: parent.background.x + parent.handle.width / 2 + (parent.background.width - parent.handle.width) * (2500 - parent.from) / (parent.to - parent.from) - width / 2
+                                y: parent.topPadding + parent.availableHeight / 2 - parent.handle.height / 2 - height
+                                width: 10
+                                height: 10
+                                radius: 5
+                                color: Material.foreground
+                            }
+                        }
+                        Label {
+                            font.family: fontFamilyComboBox.currentText
+                            text: maximumFlickVelocitySlider.value
+                            font.pointSize: AdjustedValues.f10
                         }
                     }
 
@@ -591,6 +623,7 @@ Dialog {
                 onClicked: {
                     // Common
                     AdjustedValues.ratio = fontSizeRatioSlider.value
+                    AdjustedValues.maximumFlickVelocity = maximumFlickVelocitySlider.value
                     // General
                     settings.theme = themeButtonGroup.checkedButton.value
                     settings.accent = accentButtonGroup.checkedButton.value
@@ -599,6 +632,7 @@ Dialog {
                         settings.fontFamily = fontFamilyComboBox.currentText
                         systemTool.updateFont(settings.fontFamily)
                     }
+                    settings.maximumFlickVelocity = maximumFlickVelocitySlider.value
                     // Feed
                     settings.displayOfPosts = displayOfPostsGroup.checkedButton.value
                     settings.updateSeenNotification = updateSeenNotificationGroup.checkedButton.value

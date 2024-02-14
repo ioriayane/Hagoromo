@@ -182,6 +182,7 @@ ColumnLayout {
             id: rootListView
             anchors.fill: parent
             anchors.rightMargin: parent.ScrollBar.vertical.width
+            maximumFlickVelocity: AdjustedValues.maximumFlickVelocity
 
             model: ListItemListModel {
                 id: listItemListModel

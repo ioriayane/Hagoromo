@@ -33,6 +33,7 @@ ScrollView {
         anchors.fill: parent
         anchors.rightMargin: parent.ScrollBar.vertical.width
         spacing: 5
+        maximumFlickVelocity: AdjustedValues.maximumFlickVelocity
 
         RecordOperator {
             id: recordOperator

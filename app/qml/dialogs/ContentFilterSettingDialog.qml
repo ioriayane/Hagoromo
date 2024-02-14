@@ -77,6 +77,7 @@ Dialog {
             ListView {
                 id: settingListView
                 clip: true
+                maximumFlickVelocity: AdjustedValues.maximumFlickVelocity
                 model: ContentFilterSettingListModel {
                     id: contentFilterSettingListModel
                     enableAdultContent: enableAdultContentCheckbox.checked

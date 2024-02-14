@@ -44,4 +44,6 @@ QtObject {
     property real v96: 96 * ratio
     property real v48: 48 * ratio
     property real v24: 24 * ratio
+
+    property real maximumFlickVelocity: 2500
 }

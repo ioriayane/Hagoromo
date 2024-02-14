@@ -48,6 +48,7 @@ Rectangle {
         orientation: ListView.Horizontal
         highlightMoveDuration: 500
         interactive: false
+        maximumFlickVelocity: AdjustedValues.maximumFlickVelocity
 
         model: imageFullView.sources
         delegate: ColumnLayout {

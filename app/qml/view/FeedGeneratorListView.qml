@@ -28,6 +28,8 @@ ScrollView {
     ListView {
         id: generatorListView
         clip: true
+        maximumFlickVelocity: AdjustedValues.maximumFlickVelocity
+
         onAtYBeginningChanged: scrollPositionChanged(atYBeginning)
         onMovementStarted: scrollPositionChanged(atYBeginning)
         onMovementEnded: {

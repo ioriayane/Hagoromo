@@ -48,9 +48,9 @@ Dialog {
 
         ListView {
             id: accountList
-
             Layout.preferredWidth: 400 * AdjustedValues.ratio
             Layout.preferredHeight: 300 * AdjustedValues.ratio
+            maximumFlickVelocity: AdjustedValues.maximumFlickVelocity
 
             footer: ItemDelegate {
                 width: accountList.width
