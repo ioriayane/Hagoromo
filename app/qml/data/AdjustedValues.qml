@@ -28,6 +28,7 @@ QtObject {
     property real f12: 12 * ratio
     property real f10: 10 * ratio
     property real f8: 8 * ratio
+    property real f6: 6 * ratio
 
     // for header
     property real h32: 32 * ratio

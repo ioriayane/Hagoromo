@@ -8,6 +8,8 @@ import tech.relog.hagoromo.encryption 1.0
 import tech.relog.hagoromo.systemtool 1.0
 import tech.relog.hagoromo.singleton 1.0
 
+import "../controls"
+
 Dialog {
     id: settingDialog
     modal: true
@@ -40,6 +42,7 @@ Dialog {
         property int rowHeightRatio2: 50
         property int rowHeightRatio31: 35
         property int rowHeightRatio32: 70
+        property int imageLayoutType: 1
         // Translate
         property string translateApiUrl: "https://api-free.deepl.com/v2/translate"
         property string translateApiKey: ""
@@ -66,10 +69,11 @@ Dialog {
             rowHeightRatioSlider.value = settings.rowHeightRatio2
             rowHeightRatioRangeSlider.first.value = settings.rowHeightRatio31
             rowHeightRatioRangeSlider.second.value = settings.rowHeightRatio32
+            imageLayoutCombobox.setByValue(settings.imageLayoutType)
             // Translate
             translateApiUrlText.text = settings.translateApiUrl
             translateApiKeyText.text = encryption.decrypt(settings.translateApiKey)
-            translateTargetLanguageCombo.currentIndex = translateTargetLanguageCombo.indexOfValue(settings.translateTargetLanguage)
+            translateTargetLanguageCombo.setByValue(settings.translateTargetLanguage)
             // About
             displayVersionInfoInMainAreaCheckBox.checked = settings.displayVersionInfoInMainArea
         }
@@ -413,6 +417,34 @@ Dialog {
                             }
                         }
                     }
+
+                    Label {
+                        id: imageLayoutLabel
+                        font.pointSize: AdjustedValues.f10
+                        text: qsTr("Image layout")
+                    }
+                    ComboBoxEx {
+                        id: imageLayoutCombobox
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
+                        model: ListModel {
+                            ListElement { value: 0; text: qsTr("Compact") }
+                            ListElement { value: 1; text: qsTr("Normal") }
+                            ListElement { value: 2; text: qsTr("When one is whole") }
+                            ListElement { value: 3; text: qsTr("All whole") }
+                        }
+                    }
+                    Item {
+                        Layout.preferredWidth: 1
+                        Layout.preferredHeight: 1
+                    }
+                    Label {
+                        Layout.topMargin: 0
+                        Layout.leftMargin: 2
+                        font.pointSize: AdjustedValues.f8
+                        text: qsTr("Default value when adding columns.")
+                    }
+
                     Item {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
@@ -452,13 +484,10 @@ Dialog {
                         font.pointSize: AdjustedValues.f10
                         text: qsTr("Target language")
                     }
-                    ComboBox {
+                    ComboBoxEx {
                         id: translateTargetLanguageCombo
                         Layout.fillWidth: true
                         Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
-                        textRole: "text"
-                        valueRole: "value"
-                        font.pointSize: AdjustedValues.f10
                         model: ListModel {
                             ListElement { value: "BG"; text: qsTr("Bulgarian") }
                             ListElement { value: "ZH"; text: qsTr("Chinese (simplified)") }
@@ -578,6 +607,7 @@ Dialog {
                     settings.rowHeightRatio2 = rowHeightRatioSlider.value
                     settings.rowHeightRatio31 = rowHeightRatioRangeSlider.first.value
                     settings.rowHeightRatio32 = rowHeightRatioRangeSlider.second.value
+                    settings.imageLayoutType = imageLayoutCombobox.currentValue
                     // Translate
                     settings.translateApiUrl = translateApiUrlText.text
                     settings.translateApiKey = encryption.encrypt(translateApiKeyText.text)

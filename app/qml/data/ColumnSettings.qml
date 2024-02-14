@@ -3,6 +3,7 @@ import QtQuick 2.15
 QtObject {
     property bool autoLoading: false
     property int loadingInterval: 300000
+    property int imageLayoutType: 1
     property string columnName: ""
     property string columnValue: ""
 

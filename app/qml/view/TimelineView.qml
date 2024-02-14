@@ -18,6 +18,7 @@ ScrollView {
 
     property string hoveredLink: ""
     property string accountDid: ""   // 取得するユーザー
+    property int imageLayoutType: 1
 
     property alias listView: rootListView
     property alias model: rootListView.model
@@ -113,6 +114,7 @@ ScrollView {
             contentFilterFrame.labelText: model.contentFilterMessage
             contentMediaFilterFrame.visible: model.contentMediaFilterMatched
             contentMediaFilterFrame.labelText: model.contentMediaFilterMessage
+            postImagePreview.layoutType: timelineView.imageLayoutType
             postImagePreview.embedImages: model.embedImages
             postImagePreview.embedAlts: model.embedImagesAlt
             postImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.embedImagesFull, model.embedImagesAlt)
@@ -131,6 +133,7 @@ ScrollView {
             quoteRecordAuthor.handle: model.quoteRecordHandle
             quoteRecordAuthor.indexedAt: model.quoteRecordIndexedAt
             quoteRecordRecordText.text: model.quoteRecordRecordText
+            quoteRecordImagePreview.layoutType: timelineView.imageLayoutType
             quoteRecordImagePreview.embedImages: model.quoteRecordEmbedImages
             quoteRecordImagePreview.embedAlts: model.quoteRecordEmbedImagesAlt
             quoteRecordImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.quoteRecordEmbedImagesFull, model.quoteRecordEmbedImagesAlt)

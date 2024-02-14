@@ -15,6 +15,7 @@ ColumnLayout {
 
     property string hoveredLink: ""
     property string accountDid: ""   // 取得するユーザー
+    property int imageLayoutType: 1
 
     property alias postThreadUri: postThreadListModel.postThreadUri
     property alias listView: rootListView
@@ -139,6 +140,7 @@ ColumnLayout {
                 contentFilterFrame.labelText: model.contentFilterMessage
                 contentMediaFilterFrame.visible: model.contentMediaFilterMatched
                 contentMediaFilterFrame.labelText: model.contentMediaFilterMessage
+                postImagePreview.layoutType: postThreadView.imageLayoutType
                 postImagePreview.embedImages: model.embedImages
                 postImagePreview.embedAlts: model.embedImagesAlt
                 postImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.embedImagesFull, model.embedImagesAlt)
@@ -157,6 +159,7 @@ ColumnLayout {
                 quoteRecordAuthor.handle: model.quoteRecordHandle
                 quoteRecordAuthor.indexedAt: model.quoteRecordIndexedAt
                 quoteRecordRecordText.text: model.quoteRecordRecordText
+                quoteRecordImagePreview.layoutType: postThreadView.imageLayoutType
                 quoteRecordImagePreview.embedImages: model.quoteRecordEmbedImages
                 quoteRecordImagePreview.embedAlts: model.quoteRecordEmbedImagesAlt
                 quoteRecordImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.quoteRecordEmbedImagesFull, model.quoteRecordEmbedImagesAlt)

@@ -6,6 +6,8 @@ import Qt.labs.settings 1.0
 
 import tech.relog.hagoromo.singleton 1.0
 
+import "../controls"
+
 Dialog {
     id: columnSettingDialog
     modal: true
@@ -21,6 +23,7 @@ Dialog {
     property alias autoLoadingCheckbox: autoLoadingCheckbox
     property alias autoLoadingIntervalCombo: autoLoadingIntervalCombo
     property alias columnWidthSlider: columnWidthSlider
+    property alias imageLayoutCombobox: imageLayoutCombobox
     property alias visibleLikeCheckBox: visibleLikeCheckBox
     property alias visibleRepostCheckBox: visibleRepostCheckBox
     property alias visibleFollowCheckBox: visibleFollowCheckBox
@@ -31,6 +34,53 @@ Dialog {
 
     ColumnLayout {
         spacing: AdjustedValues.s5
+        states: [
+            State {
+                when: columnSettingDialog.componentType === 0
+                PropertyChanges { target: displayFrame; visible: true }
+                PropertyChanges { target: visibleReplyToUnfollowedUsersCheckBox; visible: true }
+                PropertyChanges { target: imageLayoutLabel; visible: true }
+                PropertyChanges { target: imageLayoutCombobox; visible: true }
+            },
+            State {
+                when: columnSettingDialog.componentType === 1
+                PropertyChanges { target: displayFrame; visible: true }
+                PropertyChanges { target: visibleLikeCheckBox; visible: true }
+                PropertyChanges { target: visibleRepostCheckBox; visible: true }
+                PropertyChanges { target: visibleFollowCheckBox; visible: true }
+                PropertyChanges { target: visibleMentionCheckBox; visible: true }
+                PropertyChanges { target: visibleReplyCheckBox; visible: true }
+                PropertyChanges { target: visibleQuoteCheckBox; visible: true }
+                PropertyChanges { target: imageLayoutLabel; visible: true }
+                PropertyChanges { target: imageLayoutCombobox; visible: true }
+            },
+            State {
+                when: columnSettingDialog.componentType === 2
+                PropertyChanges { target: imageLayoutLabel; visible: true }
+                PropertyChanges { target: imageLayoutCombobox; visible: true }
+            },
+            State {
+                when: columnSettingDialog.componentType === 3
+                PropertyChanges { target: imageLayoutLabel; visible: false }
+                PropertyChanges { target: imageLayoutCombobox; visible: false }
+            },
+            State {
+                when: columnSettingDialog.componentType === 4
+                PropertyChanges { target: imageLayoutLabel; visible: true }
+                PropertyChanges { target: imageLayoutCombobox; visible: true }
+            },
+            State {
+                when: columnSettingDialog.componentType === 5
+                PropertyChanges { target: imageLayoutLabel; visible: true }
+                PropertyChanges { target: imageLayoutCombobox; visible: true }
+            },
+            State {
+                when: columnSettingDialog.componentType === 6
+                PropertyChanges { target: imageLayoutLabel; visible: true }
+                PropertyChanges { target: imageLayoutCombobox; visible: true }
+            }
+        ]
+
         RowLayout {
             ColumnLayout {
                 Layout.alignment: Qt.AlignTop
@@ -49,13 +99,10 @@ Dialog {
                         font.pointSize: AdjustedValues.f10
                         text: qsTr("Interval")
                     }
-                    ComboBox {
+                    ComboBoxEx {
                         id: autoLoadingIntervalCombo
                         Layout.fillWidth: true
                         Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
-                        font.pointSize: AdjustedValues.f10
-                        textRole: "text"
-                        valueRole: "value"
                         model: ListModel {
                             ListElement { value: 60000; text: qsTr("1 min.") }
                             ListElement { value: 180000; text: qsTr("3 min.") }
@@ -63,21 +110,6 @@ Dialog {
                             ListElement { value: 600000; text: qsTr("10 min.") }
                             ListElement { value: 900000; text: qsTr("15 min.") }
                             ListElement { value: 1200000; text: qsTr("20 min.") }
-                        }
-                        delegate: ItemDelegate {
-                            width: parent.width
-                            height: implicitHeight * AdjustedValues.ratio
-                            font.pointSize: AdjustedValues.f10
-                            text: model.text
-                            onClicked: autoLoadingIntervalCombo.currentIndex = model.index
-                        }
-                        function setByValue(value){
-                            for(var i=0; i<model.count; i++){
-                                if(model.get(i).value === value){
-                                    currentIndex = i
-                                    break
-                                }
-                            }
                         }
                     }
                 }
@@ -102,30 +134,33 @@ Dialog {
                         text: columnWidthSlider.value
                     }
                 }
+
+
+                Label {
+                    id: imageLayoutLabel
+                    Layout.topMargin: 15
+                    font.pointSize: AdjustedValues.f10
+                    visible: false
+                    text: qsTr("Image layout")
+                }
+                ComboBoxEx {
+                    id: imageLayoutCombobox
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
+                    visible: false
+                    model: ListModel {
+                        ListElement { value: 0; text: qsTr("Compact") }
+                        ListElement { value: 1; text: qsTr("Normal") }
+                        ListElement { value: 2; text: qsTr("When one is whole") }
+                        ListElement { value: 3; text: qsTr("All whole") }
+                    }
+                }
             }
             Frame {
                 id: displayFrame
                 Layout.leftMargin: 10
                 Layout.fillHeight: true
                 visible: false
-
-                states: [
-                    State {
-                        when: columnSettingDialog.componentType === 0
-                        PropertyChanges { target: displayFrame; visible: true }
-                        PropertyChanges { target: visibleReplyToUnfollowedUsersCheckBox; visible: true }
-                    },
-                    State {
-                        when: columnSettingDialog.componentType === 1
-                        PropertyChanges { target: displayFrame; visible: true }
-                        PropertyChanges { target: visibleLikeCheckBox; visible: true }
-                        PropertyChanges { target: visibleRepostCheckBox; visible: true }
-                        PropertyChanges { target: visibleFollowCheckBox; visible: true }
-                        PropertyChanges { target: visibleMentionCheckBox; visible: true }
-                        PropertyChanges { target: visibleReplyCheckBox; visible: true }
-                        PropertyChanges { target: visibleQuoteCheckBox; visible: true }
-                    }
-                ]
 
                 background: Item {
                     Rectangle {

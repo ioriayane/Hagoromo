@@ -12,6 +12,7 @@ description: This is a multi-column Bluesky client.
 
 - Add
 - Update
+  - Changed the image layout to be able to choose from four different layouts
 - Fix
 
 ### v0.22.1 - 2024/2/14
