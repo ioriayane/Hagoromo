@@ -32,8 +32,6 @@ Dialog {
     property alias visibleQuoteCheckBox: visibleQuoteCheckBox
     property alias visibleReplyToUnfollowedUsersCheckBox: visibleReplyToUnfollowedUsersCheckBox
 
-    onComponentTypeChanged: console.log("componentType=" + componentType)
-
     ColumnLayout {
         spacing: AdjustedValues.s5
         states: [

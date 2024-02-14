@@ -21,7 +21,6 @@ GridLayout {
 
     property int cellWidthAdjust: 3
     property int cellWidth: imagePreviewLayout.layoutWidth / columns - cellWidthAdjust
-    onCellWidthChanged: console.log("layoutWidth=" + layoutWidth + ", cellWidth = " + cellWidth + ", columns=" + columns)
 
     signal requestViewImages(int index)
 
