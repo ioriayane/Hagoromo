@@ -11,6 +11,7 @@ description: This is a multi-column Bluesky client.
 ### Unrelease - yyyy/m/d
 
 - Add
+  - Function to adjust scroll velocity
 - Update
   - Changed the image layout to be able to choose from four different layouts
 - Fix
