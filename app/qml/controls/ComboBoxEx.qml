@@ -10,18 +10,13 @@ ComboBox {
     textRole: "text"
     valueRole: "value"
     delegate: ItemDelegate {
-        width: parent.width
+        width: control.width
         height: implicitHeight * AdjustedValues.ratio
         font.pointSize: AdjustedValues.f10
         text: model.text
         onClicked: control.currentIndex = model.index
     }
     function setByValue(value){
-        for(var i=0; i<model.count; i++){
-            if(model.get(i).value === value){
-                currentIndex = i
-                break
-            }
-        }
+        currentIndex = indexOfValue(value)
     }
 }
