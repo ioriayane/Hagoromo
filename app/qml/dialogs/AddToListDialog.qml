@@ -83,6 +83,7 @@ Dialog {
                 id: listsListView
                 anchors.fill: parent
                 anchors.rightMargin: parent.ScrollBar.vertical.width
+                maximumFlickVelocity: AdjustedValues.maximumFlickVelocity
 
                 model: ListsListModel {
                     id: listsListModel

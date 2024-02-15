@@ -29,6 +29,7 @@ Dialog {
 
             ListView {
                 id: languageList
+                maximumFlickVelocity: AdjustedValues.maximumFlickVelocity
 
                 model: LanguageListModel {
                     id: languageListModel

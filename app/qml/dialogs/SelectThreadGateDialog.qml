@@ -139,6 +139,7 @@ Dialog {
                     ListView {
                         id: rootListView
                         anchors.fill: parent
+                        maximumFlickVelocity: AdjustedValues.maximumFlickVelocity
                         model: ListsListModel {
                             id: listsListModel
                             actor: account.did

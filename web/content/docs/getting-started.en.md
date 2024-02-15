@@ -73,3 +73,14 @@ Display the following column types:
 1. Press the button marked with a pencil (or `n` key).
 2. Please input your wonderful event (up to 300 charactors).
 3. Press the `POST` button.
+
+## Adjust scroll velocity
+
+The scrolling velocity of the columns may be too fast or too slow for your environment, but an adjustment function is provided.
+
+{{< figure src="../images/scroll_velocity.en.png" width="90%" >}}
+
+- If too fast: Adjust to the left
+- If too slow: Adjust to the right
+
+The default value is 2500.

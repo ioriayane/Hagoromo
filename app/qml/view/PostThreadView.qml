@@ -73,6 +73,7 @@ ColumnLayout {
             id: rootListView
             anchors.fill: parent
             anchors.rightMargin: parent.ScrollBar.vertical.width
+            maximumFlickVelocity: AdjustedValues.maximumFlickVelocity
 
             SystemTool {
                 id: systemTool
