@@ -58,8 +58,10 @@ signals:
 
     void cidChanged();
 
-private:
+protected:
     AtProtocolInterface::AccountData m_account;
+
+private:
     bool m_running;
     bool m_valid;
     QString m_avatar;

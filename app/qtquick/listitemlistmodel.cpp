@@ -55,6 +55,11 @@ QString ListItemListModel::getRecordText(const QString &cid)
     return QString();
 }
 
+QString ListItemListModel::getOfficialUrl() const
+{
+    return QString("https://bsky.app/profile/%1/lists/%2").arg(did(), rkey());
+}
+
 void ListItemListModel::clear()
 {
     m_listItemViewHash.clear();
