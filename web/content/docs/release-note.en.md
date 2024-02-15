@@ -15,6 +15,7 @@ description: This is a multi-column Bluesky client.
 - Update
   - Changed the image layout to be able to choose from four different layouts
 - Fix
+  - Failure to play animated GIFs of a PDS different from the account
 
 ### v0.22.1 - 2024/2/14
 
