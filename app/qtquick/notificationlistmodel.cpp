@@ -211,7 +211,8 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
                                                          m_toExternalLinkRoles[role]);
 
     } else if (m_toFeedGeneratorRoles.contains(role)
-               && (current.reason == "mention" || current.reason == "reply")) {
+               && (current.reason == "mention" || current.reason == "reply"
+                   || current.reason == "quote")) {
         return getFeedGeneratorItem(m_postHash.value(current.cid), m_toFeedGeneratorRoles[role]);
 
     } else if (m_toListLinkRoles.contains(role)) {
@@ -487,18 +488,9 @@ bool NotificationListModel::getLatest()
                             break;
                         case AtProtocolType::AppBskyFeedPost::MainEmbedType::
                                 embed_AppBskyEmbedRecord_Main:
-                            if (quote_post.embed_AppBskyEmbedRecord_Main.record.uri.contains(
-                                        "/app.bsky.feed.generator/")) {
-                                if (!m_cueGetFeedGenerator.contains(
-                                            quote_post.embed_AppBskyEmbedRecord_Main.record.uri)) {
-                                    m_cueGetFeedGenerator.append(
-                                            quote_post.embed_AppBskyEmbedRecord_Main.record.uri);
-                                }
-                            } else if (!quote_post.embed_AppBskyEmbedRecord_Main.record.cid
-                                                .isEmpty()
-                                       && !m_cueGetPost.contains(
-                                               quote_post.embed_AppBskyEmbedRecord_Main.record
-                                                       .uri)) {
+                            if (!quote_post.embed_AppBskyEmbedRecord_Main.record.cid.isEmpty()
+                                && !m_cueGetPost.contains(
+                                        quote_post.embed_AppBskyEmbedRecord_Main.record.uri)) {
                                 m_cueGetPost.append(
                                         quote_post.embed_AppBskyEmbedRecord_Main.record.uri);
                             }
