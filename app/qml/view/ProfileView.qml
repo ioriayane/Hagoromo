@@ -41,6 +41,7 @@ ColumnLayout {
     signal requestViewImages(int index, var paths, var alts)
     signal requestViewProfile(string did)
     signal requestViewFeedGenerator(string name, string uri)
+    signal requestViewListFeed(string uri, string name)
     signal requestViewAuthorFeed(string did, string handle)
     signal requestViewLikedBy(string uri)
     signal requestViewRepostedBy(string uri)
@@ -511,6 +512,7 @@ ColumnLayout {
                                       }
                                   }
             onRequestViewFeedGenerator: (name, uri) => profileView.requestViewFeedGenerator(name, uri)
+            onRequestViewListFeed: (uri, name) => profileView.requestViewListFeed(uri, name)
             onRequestViewLikedBy: (uri) => profileView.requestViewLikedBy(uri)
             onRequestViewRepostedBy: (uri) => profileView.requestViewRepostedBy(uri)
             onRequestViewSearchPosts: (text) => profileView.requestViewSearchPosts(text)
@@ -546,6 +548,7 @@ ColumnLayout {
                                       }
                                   }
             onRequestViewFeedGenerator: (name, uri) => profileView.requestViewFeedGenerator(name, uri)
+            onRequestViewListFeed: (uri, name) => profileView.requestViewListFeed(uri, name)
             onRequestViewLikedBy: (uri) => profileView.requestViewLikedBy(uri)
             onRequestViewRepostedBy: (uri) => profileView.requestViewRepostedBy(uri)
             onRequestViewSearchPosts: (text) => profileView.requestViewSearchPosts(text)
@@ -581,6 +584,7 @@ ColumnLayout {
                                       }
                                   }
             onRequestViewFeedGenerator: (name, uri) => profileView.requestViewFeedGenerator(name, uri)
+            onRequestViewListFeed: (uri, name) => profileView.requestViewListFeed(uri, name)
             onRequestViewLikedBy: (uri) => profileView.requestViewLikedBy(uri)
             onRequestViewRepostedBy: (uri) => profileView.requestViewRepostedBy(uri)
             onRequestViewSearchPosts: (text) => profileView.requestViewSearchPosts(text)
@@ -616,6 +620,7 @@ ColumnLayout {
                                       }
                                   }
             onRequestViewFeedGenerator: (name, uri) => profileView.requestViewFeedGenerator(name, uri)
+            onRequestViewListFeed: (uri, name) => profileView.requestViewListFeed(uri, name)
             onRequestViewLikedBy: (uri) => profileView.requestViewLikedBy(uri)
             onRequestViewRepostedBy: (uri) => profileView.requestViewRepostedBy(uri)
             onRequestViewSearchPosts: (text) => profileView.requestViewSearchPosts(text)
