@@ -132,6 +132,13 @@ ScrollView {
             feedGeneratorFrame.creatorHandleLabel.text: model.feedGeneratorCreatorHandle
             feedGeneratorFrame.likeCountLabel.text: model.feedGeneratorLikeCount
 
+            listLinkCardFrame.visible: model.hasListLink && contentMediaFilterFrame.showContent
+            listLinkCardFrame.onClicked: console.log("click the list card")
+            listLinkCardFrame.avatarImage.source: model.listLinkAvatar
+            listLinkCardFrame.displayNameLabel.text: model.listLinkDisplayName
+            listLinkCardFrame.creatorHandleLabel.text: model.listLinkCreatorHandle
+            listLinkCardFrame.descriptionLabel.text: model.listLinkDescription
+
             postControls.replyButton.iconText: model.replyCount
             postControls.repostButton.iconText: model.repostCount
             postControls.likeButton.iconText: model.likeCount

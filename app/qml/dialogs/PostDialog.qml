@@ -76,6 +76,7 @@ Dialog {
         embedImagePreview.embedAlts = []
         externalLink.clear()
         feedGeneratorLink.clear()
+        listLink.clear()
         addingExternalLinkUrlText.text = ""
         selectThreadGateDialog.clear()
     }

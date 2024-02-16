@@ -82,6 +82,13 @@ public:
         FeedGeneratorLikeCountRole,
         FeedGeneratorAvatarRole,
 
+        HasListLinkRole,
+        ListLinkUriRole,
+        ListLinkCreatorHandleRole,
+        ListLinkDisplayNameRole,
+        ListLinkDescriptionRole,
+        ListLinkAvatarRole,
+
         ReplyRootCidRole,
         ReplyRootUriRole,
 
@@ -171,6 +178,8 @@ private:
     QHash<NotificationListModel::NotificationListModelRoles,
           AtpAbstractListModel::FeedGeneratorRoles>
             m_toFeedGeneratorRoles;
+    QHash<NotificationListModel::NotificationListModelRoles, AtpAbstractListModel::ListLinkRoles>
+            m_toListLinkRoles;
 
     void getPosts();
     void getFeedGenerators();

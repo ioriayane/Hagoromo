@@ -41,6 +41,7 @@ ClickableFrame {
     property alias blockedQuoteFrame: blockedQuoteFrame
     property alias externalLinkFrame: externalLinkFrame
     property alias feedGeneratorFrame: feedGeneratorFrame
+    property alias listLinkCardFrame: listLinkCardFrame
     property alias postInformation: postInformation
     property alias postControls: postControls
     property alias threadConnectorTop: threadConnectorTop
@@ -206,6 +207,11 @@ ClickableFrame {
 
                     FeedGeneratorLinkCard {
                         id: feedGeneratorFrame
+                        Layout.preferredWidth: parent.width
+                        Layout.topMargin: 5
+                    }
+                    ListLinkCard {
+                        id: listLinkCardFrame
                         Layout.preferredWidth: parent.width
                         Layout.topMargin: 5
                     }

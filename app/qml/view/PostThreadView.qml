@@ -179,6 +179,13 @@ ColumnLayout {
                 feedGeneratorFrame.creatorHandleLabel.text: model.feedGeneratorCreatorHandle
                 feedGeneratorFrame.likeCountLabel.text: model.feedGeneratorLikeCount
 
+                listLinkCardFrame.visible: model.hasListLink && contentMediaFilterFrame.showContent
+                listLinkCardFrame.onClicked: console.log("Click the list card")
+                listLinkCardFrame.avatarImage.source: model.listLinkAvatar
+                listLinkCardFrame.displayNameLabel.text: model.listLinkDisplayName
+                listLinkCardFrame.creatorHandleLabel.text: model.listLinkCreatorHandle
+                listLinkCardFrame.descriptionLabel.text: model.listLinkDescription
+
                 postInformation.visible: (postThreadUri === model.uri)
                 postInformation.tagsLayout.model: postInformation.visible ? model.tags : []
                 postInformation.labelsLayout.model: postInformation.visible ? model.labels : []
