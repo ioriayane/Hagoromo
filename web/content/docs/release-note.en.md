@@ -12,6 +12,7 @@ description: This is a multi-column Bluesky client.
 
 - Add
   - Function to adjust scroll velocity
+  - Support for the list card (post and display)
 - Update
   - Changed the image layout to be able to choose from four different layouts
 - Fix
