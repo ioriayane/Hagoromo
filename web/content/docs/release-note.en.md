@@ -8,7 +8,7 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
-### Unrelease - yyyy/m/d
+### v0.23.0 - 2024/2/17
 
 - Add
   - Function to adjust scroll velocity

@@ -8,7 +8,7 @@ description: マルチカラム対応Blueskyクライアント
 
 ## 2024
 
-### Unrelease - yyyy/m/d
+### v0.23.0 - 2024/2/17
 
 - 追加
   - スクロール速度を調整する機能
