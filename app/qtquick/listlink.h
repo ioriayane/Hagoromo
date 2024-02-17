@@ -12,8 +12,6 @@ class ListLink : public FeedGeneratorLink
 public:
     explicit ListLink(QObject *parent = nullptr);
 
-    Q_INVOKABLE bool checkUri(const QString &uri) const;
-    Q_INVOKABLE QString convertToAtUri(const QString &uri);
     Q_INVOKABLE void getList(const QString &uri);
     Q_INVOKABLE void clear();
     void getFeedGenerator(const QString &uri) = delete;

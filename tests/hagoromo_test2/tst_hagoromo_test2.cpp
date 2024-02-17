@@ -199,15 +199,15 @@ void hagoromo_test::test_FeedGeneratorLink()
 {
     FeedGeneratorLink link;
 
-    QVERIFY(link.checkUri("https://bsky.app/profile/did:plc:hoge/feed/aaaaaaaa") == true);
-    QVERIFY(link.checkUri("https://staging.bsky.app/profile/did:plc:hoge/feed/aaaaaaaa") == false);
-    QVERIFY(link.checkUri("https://bsky.app/feeds/did:plc:hoge/feed/aaaaaaaa") == false);
-    QVERIFY(link.checkUri("https://bsky.app/profile/did:plc:hoge/feeds/aaaaaaaa") == false);
-    QVERIFY(link.checkUri("https://bsky.app/profile/did:plc:hoge/feed/") == false);
-    QVERIFY(link.checkUri("https://bsky.app/profile/handle/feed/aaaaaaaa") == false);
-
-    QVERIFY(link.convertToAtUri("https://bsky.app/profile/did:plc:hoge/feed/aaaaaaaa")
-            == "at://did:plc:hoge/app.bsky.feed.generator/aaaaaaaa");
+    QVERIFY(link.checkUri("https://bsky.app/profile/did:plc:hoge/feed/aaaaaaaa", "feed") == true);
+    QVERIFY(link.checkUri("https://staging.bsky.app/profile/did:plc:hoge/feed/aaaaaaaa", "feed")
+            == false);
+    QVERIFY(link.checkUri("https://bsky.app/feeds/did:plc:hoge/feed/aaaaaaaa", "feed") == false);
+    QVERIFY(link.checkUri("https://bsky.app/profile/did:plc:hoge/feeds/aaaaaaaa", "feed") == false);
+    QVERIFY(link.checkUri("https://bsky.app/profile/did:plc:hoge/feed/", "feed") == false);
+    QVERIFY(link.checkUri("https://bsky.app/profile/handle/feed/aaaaaaaa", "feed") == false);
+    QVERIFY(link.checkUri("https://bsky.app/profile/handle.com/feed/aaaaaaaa", "feed") == true);
+    QVERIFY(link.checkUri("https://bsky.app/profile/@handle.com/feed/aaaaaaaa", "feed") == false);
 
     link.setAccount(m_service + "/generator", QString(), QString(), QString(), "dummy", QString());
     {

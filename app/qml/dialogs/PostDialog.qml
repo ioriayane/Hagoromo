@@ -348,29 +348,26 @@ Dialog {
                              !createRecord.running
                     onClicked: {
                         var uri = addingExternalLinkUrlText.text
-                        var at_uri = feedGeneratorLink.convertToAtUri(uri)
                         var row = accountCombo.currentIndex
-                        if(at_uri.length > 0 && postType !== "quote"){
+                        if(feedGeneratorLink.checkUri(uri, "feed") && postType !== "quote"){
                             feedGeneratorLink.setAccount(postDialog.accountModel.item(row, AccountListModel.ServiceRole),
                                                          postDialog.accountModel.item(row, AccountListModel.DidRole),
                                                          postDialog.accountModel.item(row, AccountListModel.HandleRole),
                                                          postDialog.accountModel.item(row, AccountListModel.EmailRole),
                                                          postDialog.accountModel.item(row, AccountListModel.AccessJwtRole),
                                                          postDialog.accountModel.item(row, AccountListModel.RefreshJwtRole))
-                            feedGeneratorLink.getFeedGenerator(at_uri)
+                            feedGeneratorLink.getFeedGenerator(uri)
+                        }else if(feedGeneratorLink.checkUri(uri, "lists") && postType !== "quote"){
+                            listLink.setAccount(postDialog.accountModel.item(row, AccountListModel.ServiceRole),
+                                                postDialog.accountModel.item(row, AccountListModel.DidRole),
+                                                postDialog.accountModel.item(row, AccountListModel.HandleRole),
+                                                postDialog.accountModel.item(row, AccountListModel.EmailRole),
+                                                postDialog.accountModel.item(row, AccountListModel.AccessJwtRole),
+                                                postDialog.accountModel.item(row, AccountListModel.RefreshJwtRole))
+                            listLink.getList(uri)
                         }else{
-                            at_uri = listLink.convertToAtUri(uri)
-                            if(at_uri.length > 0 && postType !== "quote"){
-                                listLink.setAccount(postDialog.accountModel.item(row, AccountListModel.ServiceRole),
-                                                    postDialog.accountModel.item(row, AccountListModel.DidRole),
-                                                    postDialog.accountModel.item(row, AccountListModel.HandleRole),
-                                                    postDialog.accountModel.item(row, AccountListModel.EmailRole),
-                                                    postDialog.accountModel.item(row, AccountListModel.AccessJwtRole),
-                                                    postDialog.accountModel.item(row, AccountListModel.RefreshJwtRole))
-                                listLink.getList(at_uri)
-                            }else{
-                                externalLink.getExternalLink(uri)
-                            }
+                            externalLink.getExternalLink(uri)
+
                         }
                     }
                     BusyIndicator {
