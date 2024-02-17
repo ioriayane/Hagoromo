@@ -119,7 +119,6 @@ struct SelfLabels
 
 // app.bsky.actor.defs
 namespace AppBskyActorDefs {
-// A reference to an actor in the network.
 struct ViewerState
 {
     bool muted = false;
@@ -178,6 +177,7 @@ struct SavedFeedsPref
 {
     QList<QString> pinned;
     QList<QString> saved;
+    int timelineIndex = 0;
 };
 struct PersonalDetailsPref
 {
@@ -224,7 +224,6 @@ struct Main
 
 // app.bsky.embed.external
 namespace AppBskyEmbedExternal {
-// A representation of some externally linked content, embedded in another form of content.
 struct External
 {
     QString uri; // uri
@@ -251,7 +250,7 @@ struct View
 
 // app.bsky.embed.images
 namespace AppBskyEmbedImages {
-// A set of images embedded in some other form of content.
+// A set of images embedded in a Bluesky record (eg, a post).
 struct AspectRatio
 {
     int width = 0;
@@ -311,8 +310,8 @@ struct View
     AppBskyEmbedExternal::View media_AppBskyEmbedExternal_View;
     // union end : media
 };
-// A representation of a record embedded in another form of content, alongside other compatible
-// embeds.
+// A representation of a record embedded in a Bluesky record (eg, a post), alongside other
+// compatible embeds. For example, a quote post and image, or a quote post and external URL card.
 struct Main
 {
     QSharedPointer<AppBskyEmbedRecord::Main> record;
@@ -546,7 +545,8 @@ enum class ViewRecordEmbedsType : int {
     embeds_AppBskyEmbedRecord_View,
     embeds_AppBskyEmbedRecordWithMedia_View,
 };
-// A representation of a record embedded in another form of content.
+// A representation of a record embedded in a Bluesky record (eg, a post). For example, a
+// quote-post, or sharing a feed generator record.
 struct Main
 {
     ComAtprotoRepoStrongRef::Main record;

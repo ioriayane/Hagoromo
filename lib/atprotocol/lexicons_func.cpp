@@ -172,6 +172,7 @@ void copySavedFeedsPref(const QJsonObject &src, AppBskyActorDefs::SavedFeedsPref
         for (const auto &value : src.value("saved").toArray()) {
             dest.saved.append(value.toString());
         }
+        dest.timelineIndex = src.value("timelineIndex").toInt();
     }
 }
 void copyPersonalDetailsPref(const QJsonObject &src, AppBskyActorDefs::PersonalDetailsPref &dest)
