@@ -1,7 +1,9 @@
 #include "feedgeneratorlink.h"
 #include "atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerator.h"
+#include "atprotocol/app/bsky/actor/appbskyactorgetprofile.h"
 #include "systemtool.h"
 
+using AtProtocolInterface::AppBskyActorGetProfile;
 using AtProtocolInterface::AppBskyFeedGetFeedGenerator;
 
 FeedGeneratorLink::FeedGeneratorLink(QObject *parent)
@@ -53,7 +55,18 @@ void FeedGeneratorLink::convertToAtUri(const QString &base_at_uri, const QString
     QString user_id = items.at(4);
     if (m_rxHandle.match(user_id).hasMatch()) {
         // handle
-        callback(QString());
+        AppBskyActorGetProfile *profile = new AppBskyActorGetProfile(this);
+        connect(profile, &AppBskyActorGetProfile::finished, [=](bool success) {
+            if (success) {
+                // handle -> did
+                callback(QString(base_at_uri).arg(profile->profileViewDetailed().did, items.at(6)));
+            } else {
+                callback(QString());
+            }
+            profile->deleteLater();
+        });
+        profile->setAccount(m_account);
+        profile->getProfile(user_id);
     } else {
         // did
         callback(QString(base_at_uri).arg(user_id, items.at(6)));
