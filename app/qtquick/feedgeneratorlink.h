@@ -24,8 +24,9 @@ public:
     Q_INVOKABLE void setAccount(const QString &service, const QString &did, const QString &handle,
                                 const QString &email, const QString &accessJwt,
                                 const QString &refreshJwt);
-    Q_INVOKABLE bool checkUri(const QString &uri) const;
-    Q_INVOKABLE QString convertToAtUri(const QString &uri);
+    Q_INVOKABLE bool checkUri(const QString &uri, const QString &type) const;
+    void convertToAtUri(const QString &base_at_uri, const QString &uri,
+                        std::function<void(const QString &)> callback);
     Q_INVOKABLE void getFeedGenerator(const QString &uri);
     Q_INVOKABLE void clear();
 
@@ -58,8 +59,12 @@ signals:
 
     void cidChanged();
 
-private:
+protected:
     AtProtocolInterface::AccountData m_account;
+
+private:
+    QRegularExpression m_rxHandle;
+
     bool m_running;
     bool m_valid;
     QString m_avatar;

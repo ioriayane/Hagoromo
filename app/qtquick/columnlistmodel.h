@@ -18,6 +18,14 @@ enum class FeedComponentType : int {
     DiscoverFeeds = 101,
 };
 
+// QMLではマジックナンバーになるので変更しないこと
+enum class ImageLayoutType : int {
+    Compact = 0,
+    Normal = 1,
+    WhenOneIsWhole = 2,
+    AllWhole = 3,
+};
+
 struct ColumnPostType
 {
     bool like = true;
@@ -38,6 +46,8 @@ struct ColumnItem
     bool auto_loading = false;
     int loading_interval = 300000; // msec
     int width = 400;
+    ImageLayoutType image_layout_type = ImageLayoutType::Normal;
+
     QString name; // カラム名
     // component_type
     //  == SearchPosts or SearchProfiles : 検索文字列
@@ -63,6 +73,7 @@ public:
         AutoLoadingRole,
         LoadingIntervalRole,
         WidthRole,
+        ImageLayoutTypeRole,
         NameRole,
         ValueRole,
 
@@ -90,12 +101,13 @@ public:
                             const QVariant &value);
 
     Q_INVOKABLE void append(const QString &account_uuid, int component_type, bool auto_loading,
-                            int interval, int width, const QString &name, const QString &value);
-    Q_INVOKABLE void insert(int row, const QString &account_uuid, int component_type,
-                            bool auto_loading, int interval, int width, const QString &name,
+                            int interval, int width, int image_layout_type, const QString &name,
                             const QString &value);
+    Q_INVOKABLE void insert(int row, const QString &account_uuid, int component_type,
+                            bool auto_loading, int interval, int width, int image_layout_type,
+                            const QString &name, const QString &value);
     Q_INVOKABLE int insertNext(const QString &key, const QString &account_uuid, int component_type,
-                               bool auto_loading, int interval, int width, const QString &name,
+                               bool auto_loading, int interval, int width, int image_layout_type, const QString &name,
                                const QString &value);
     Q_INVOKABLE void move(const QString &key, const ColumnListModel::MoveDirection direction);
     Q_INVOKABLE void remove(int row);

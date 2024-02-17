@@ -38,6 +38,7 @@
 #include "qtquick/externallink.h"
 #include "qtquick/reporter.h"
 #include "qtquick/feedgeneratorlink.h"
+#include "qtquick/listlink.h"
 
 void setAppFont(QGuiApplication &app)
 {
@@ -68,7 +69,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName(QStringLiteral("relog"));
     app.setOrganizationDomain(QStringLiteral("hagoromo.relog.tech"));
     app.setApplicationName(QStringLiteral("Hagoromo"));
-    app.setApplicationVersion(QStringLiteral("0.22.1"));
+    app.setApplicationVersion(QStringLiteral("0.23.0"));
 #ifndef HAGOROMO_RELEASE_BUILD
     app.setApplicationVersion(app.applicationVersion() + "d");
 #endif
@@ -126,6 +127,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<Reporter>("tech.relog.hagoromo.reporter", 1, 0, "Reporter");
     qmlRegisterType<FeedGeneratorLink>("tech.relog.hagoromo.feedgeneratorlink", 1, 0,
                                        "FeedGeneratorLink");
+    qmlRegisterType<ListLink>("tech.relog.hagoromo.listlink", 1, 0, "ListLink");
 
     qmlRegisterSingletonType(QUrl("qrc:/Hagoromo/qml/data/AdjustedValues.qml"),
                              "tech.relog.hagoromo.singleton", 1, 0, "AdjustedValues");

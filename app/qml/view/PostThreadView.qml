@@ -15,6 +15,7 @@ ColumnLayout {
 
     property string hoveredLink: ""
     property string accountDid: ""   // 取得するユーザー
+    property int imageLayoutType: 1
 
     property alias postThreadUri: postThreadListModel.postThreadUri
     property alias listView: rootListView
@@ -28,6 +29,7 @@ ColumnLayout {
     signal requestViewImages(int index, var paths, var alts)
     signal requestViewProfile(string did)
     signal requestViewFeedGenerator(string name, string uri)
+    signal requestViewListFeed(string uri, string name)
     signal requestViewLikedBy(string uri)
     signal requestViewRepostedBy(string uri)
     signal requestViewSearchPosts(string text)
@@ -72,6 +74,7 @@ ColumnLayout {
             id: rootListView
             anchors.fill: parent
             anchors.rightMargin: parent.ScrollBar.vertical.width
+            maximumFlickVelocity: AdjustedValues.maximumFlickVelocity
 
             SystemTool {
                 id: systemTool
@@ -139,6 +142,7 @@ ColumnLayout {
                 contentFilterFrame.labelText: model.contentFilterMessage
                 contentMediaFilterFrame.visible: model.contentMediaFilterMatched
                 contentMediaFilterFrame.labelText: model.contentMediaFilterMessage
+                postImagePreview.layoutType: postThreadView.imageLayoutType
                 postImagePreview.embedImages: model.embedImages
                 postImagePreview.embedAlts: model.embedImagesAlt
                 postImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.embedImagesFull, model.embedImagesAlt)
@@ -157,6 +161,7 @@ ColumnLayout {
                 quoteRecordAuthor.handle: model.quoteRecordHandle
                 quoteRecordAuthor.indexedAt: model.quoteRecordIndexedAt
                 quoteRecordRecordText.text: model.quoteRecordRecordText
+                quoteRecordImagePreview.layoutType: postThreadView.imageLayoutType
                 quoteRecordImagePreview.embedImages: model.quoteRecordEmbedImages
                 quoteRecordImagePreview.embedAlts: model.quoteRecordEmbedImagesAlt
                 quoteRecordImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.quoteRecordEmbedImagesFull, model.quoteRecordEmbedImagesAlt)
@@ -174,6 +179,13 @@ ColumnLayout {
                 feedGeneratorFrame.displayNameLabel.text: model.feedGeneratorDisplayName
                 feedGeneratorFrame.creatorHandleLabel.text: model.feedGeneratorCreatorHandle
                 feedGeneratorFrame.likeCountLabel.text: model.feedGeneratorLikeCount
+
+                listLinkCardFrame.visible: model.hasListLink && contentMediaFilterFrame.showContent
+                listLinkCardFrame.onClicked: requestViewListFeed(model.listLinkUri, model.listLinkDisplayName)
+                listLinkCardFrame.avatarImage.source: model.listLinkAvatar
+                listLinkCardFrame.displayNameLabel.text: model.listLinkDisplayName
+                listLinkCardFrame.creatorHandleLabel.text: model.listLinkCreatorHandle
+                listLinkCardFrame.descriptionLabel.text: model.listLinkDescription
 
                 postInformation.visible: (postThreadUri === model.uri)
                 postInformation.tagsLayout.model: postInformation.visible ? model.tags : []

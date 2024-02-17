@@ -77,6 +77,13 @@ public:
         FeedGeneratorLikeCountRole,
         FeedGeneratorAvatarRole,
 
+        HasListLinkRole,
+        ListLinkUriRole,
+        ListLinkCreatorHandleRole,
+        ListLinkDisplayNameRole,
+        ListLinkDescriptionRole,
+        ListLinkAvatarRole,
+
         HasReplyRole,
         ReplyRootCidRole,
         ReplyRootUriRole,
@@ -150,6 +157,8 @@ private:
             m_toExternalLinkRoles;
     QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::FeedGeneratorRoles>
             m_toFeedGeneratorRoles;
+    QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::ListLinkRoles>
+            m_toListLinkRoles;
 };
 
 #endif // TIMELINELISTMODEL_H

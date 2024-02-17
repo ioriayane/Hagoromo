@@ -71,7 +71,7 @@ void ComAtprotoRepoCreateRecord::post(const QString &text)
         json_embed_images.insert("external", json_external);
 
     } else if (!m_feedGeneratorLinkUri.isEmpty()) {
-        // カスタムフィードカード
+        // カスタムフィードカードとリンクカード
         QJsonObject json_generator;
         json_generator.insert("uri", m_feedGeneratorLinkUri);
         json_generator.insert("cid", m_feedGeneratorLinkCid);

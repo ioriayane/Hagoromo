@@ -79,6 +79,7 @@ ColumnLayout {
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }
             accountDid: account.did
+            imageLayoutType: settings.imageLayoutType
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(columnView.account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -95,6 +96,7 @@ ColumnLayout {
 
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onRequestViewFeedGenerator: (name, uri) => columnView.requestViewFeedGenerator(account.uuid, name, uri)
+            onRequestViewListFeed: (uri, name) => columnView.requestViewListFeed(account.uuid, uri, name)
             onRequestViewLikedBy: (uri) => columnStackView.push(likesProfilesComponent, { "targetUri": uri })
             onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
             onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
@@ -120,6 +122,7 @@ ColumnLayout {
 
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }
+            imageLayoutType: settings.imageLayoutType
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -133,6 +136,7 @@ ColumnLayout {
             onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onRequestViewFeedGenerator: (name, uri) => columnView.requestViewFeedGenerator(account.uuid, name, uri)
+            onRequestViewListFeed: (uri, name) => columnView.requestViewListFeed(account.uuid, uri, name)
             onRequestViewLikedBy: (uri) => columnStackView.push(likesProfilesComponent, { "targetUri": uri })
             onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
             onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
@@ -145,6 +149,7 @@ ColumnLayout {
         id: postThreadComponent
         PostThreadView {
             accountDid: account.did
+            imageLayoutType: settings.imageLayoutType
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -159,6 +164,7 @@ ColumnLayout {
             onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onRequestViewFeedGenerator: (name, uri) => columnView.requestViewFeedGenerator(account.uuid, name, uri)
+            onRequestViewListFeed: (uri, name) => columnView.requestViewListFeed(account.uuid, uri, name)
             onRequestViewLikedBy: (uri) => columnStackView.push(likesProfilesComponent, { "targetUri": uri })
             onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
             onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
@@ -176,6 +182,8 @@ ColumnLayout {
     Component {
         id: profileComponent
         ProfileView {
+            imageLayoutType: settings.imageLayoutType
+
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
             onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
@@ -193,6 +201,7 @@ ColumnLayout {
             onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onRequestViewFeedGenerator: (name, uri) => columnView.requestViewFeedGenerator(account.uuid, name, uri)
+            onRequestViewListFeed: (uri, name) => columnView.requestViewListFeed(account.uuid, uri, name)
             onRequestViewLikedBy: (uri) => columnStackView.push(likesProfilesComponent, { "targetUri": uri })
             onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
             onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
@@ -225,6 +234,7 @@ ColumnLayout {
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }
             accountDid: account.did
+            imageLayoutType: settings.imageLayoutType
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -240,6 +250,7 @@ ColumnLayout {
             onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onRequestViewFeedGenerator: (name, uri) => columnView.requestViewFeedGenerator(account.uuid, name, uri)
+            onRequestViewListFeed: (uri, name) => columnView.requestViewListFeed(account.uuid, uri, name)
             onRequestViewLikedBy: (uri) => columnStackView.push(likesProfilesComponent, { "targetUri": uri })
             onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
             onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
@@ -277,6 +288,7 @@ ColumnLayout {
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }
             accountDid: account.did
+            imageLayoutType: settings.imageLayoutType
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -292,6 +304,7 @@ ColumnLayout {
             onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onRequestViewFeedGenerator: (name, uri) => columnView.requestViewFeedGenerator(account.uuid, name, uri)
+            onRequestViewListFeed: (uri, name) => columnView.requestViewListFeed(account.uuid, uri, name)
             onRequestViewLikedBy: (uri) => columnStackView.push(likesProfilesComponent, { "targetUri": uri })
             onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
             onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
@@ -313,6 +326,7 @@ ColumnLayout {
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }
             accountDid: account.did
+            imageLayoutType: settings.imageLayoutType
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -328,6 +342,7 @@ ColumnLayout {
             onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onRequestViewFeedGenerator: (name, uri) => columnView.requestViewFeedGenerator(account.uuid, name, uri)
+            onRequestViewListFeed: (uri, name) => columnView.requestViewListFeed(account.uuid, uri, name)
             onRequestViewLikedBy: (uri) => columnStackView.push(likesProfilesComponent, { "targetUri": uri })
             onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
             onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
@@ -398,6 +413,7 @@ ColumnLayout {
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }
             accountDid: account.did
+            imageLayoutType: settings.imageLayoutType
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(columnView.account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)

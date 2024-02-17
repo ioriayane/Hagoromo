@@ -536,6 +536,52 @@ AtpAbstractListModel::getFeedGeneratorItem(const AtProtocolType::AppBskyFeedDefs
     return QVariant();
 }
 
+QVariant
+AtpAbstractListModel::getListLinkItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
+                                      const ListLinkRoles role) const
+{
+    bool has_record = !post.embed_AppBskyEmbedRecord_View.isNull();
+
+    if (role == HasListLinkRole) {
+        if (has_record)
+            return post.embed_type
+                    == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecord_View
+                    && post.embed_AppBskyEmbedRecord_View->record_type
+                    == AppBskyEmbedRecord::ViewRecordType::record_AppBskyGraphDefs_ListView;
+        else
+            return false;
+    } else if (role == ListLinkUriRole) {
+        if (has_record)
+            return post.embed_AppBskyEmbedRecord_View->record_AppBskyGraphDefs_ListView.uri;
+        else
+            return QString();
+    } else if (role == ListLinkCreatorHandleRole) {
+        if (has_record
+            && !post.embed_AppBskyEmbedRecord_View->record_AppBskyGraphDefs_ListView.creator
+                        .isNull())
+            return post.embed_AppBskyEmbedRecord_View->record_AppBskyGraphDefs_ListView.creator
+                    ->handle;
+        else
+            return QString();
+    } else if (role == ListLinkDisplayNameRole) {
+        if (has_record)
+            return post.embed_AppBskyEmbedRecord_View->record_AppBskyGraphDefs_ListView.name;
+        else
+            return QString();
+    } else if (role == ListLinkDescriptionRole) {
+        if (has_record)
+            return post.embed_AppBskyEmbedRecord_View->record_AppBskyGraphDefs_ListView.description;
+        else
+            return QString();
+    } else if (role == ListLinkAvatarRole) {
+        if (has_record)
+            return post.embed_AppBskyEmbedRecord_View->record_AppBskyGraphDefs_ListView.avatar;
+        else
+            return QString();
+    }
+    return QVariant();
+}
+
 void AtpAbstractListModel::appendExtendMediaFileToClue(const QString &did, const QString &cid,
                                                        const QString &parent_cid)
 {

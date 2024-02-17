@@ -12,7 +12,7 @@ void ComAtprotoSyncGetBlob::getBlob(const QString &did, const QString &cid)
     query.addQueryItem(QStringLiteral("did"), did);
     query.addQueryItem(QStringLiteral("cid"), cid);
 
-    get(QStringLiteral("xrpc/com.atproto.sync.getBlob"), query);
+    get(QStringLiteral("xrpc/com.atproto.sync.getBlob"), query, false);
 }
 
 bool ComAtprotoSyncGetBlob::parseJson(bool success, const QString reply_json)

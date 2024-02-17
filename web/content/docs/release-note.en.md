@@ -8,9 +8,19 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
-### v0.22.1 - 2024/2/14
+### v0.23.0 - 2024/2/17
 
 - Add
+  - Function to adjust scroll velocity
+  - Support for the list card (post and display)
+- Update
+  - Change the image layout to be able to choose from four different layouts
+- Fix
+  - Failure to play animated GIFs of a PDS different from the account
+  - Failure to create a card when a handle was used in the feed URL
+
+### v0.22.1 - 2024/2/14
+
 - Update
   - Target item also displays busy indicator when adding/deleting listings
 - Fix

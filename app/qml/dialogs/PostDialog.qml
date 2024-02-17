@@ -9,6 +9,7 @@ import tech.relog.hagoromo.accountlistmodel 1.0
 import tech.relog.hagoromo.languagelistmodel 1.0
 import tech.relog.hagoromo.externallink 1.0
 import tech.relog.hagoromo.feedgeneratorlink 1.0
+import tech.relog.hagoromo.listlink 1.0
 import tech.relog.hagoromo.systemtool 1.0
 import tech.relog.hagoromo.singleton 1.0
 
@@ -75,6 +76,7 @@ Dialog {
         embedImagePreview.embedAlts = []
         externalLink.clear()
         feedGeneratorLink.clear()
+        listLink.clear()
         addingExternalLinkUrlText.text = ""
         selectThreadGateDialog.clear()
     }
@@ -116,6 +118,9 @@ Dialog {
     }
     FeedGeneratorLink {
         id: feedGeneratorLink
+    }
+    ListLink {
+        id: listLink
     }
 
     ScrollView {
@@ -329,7 +334,7 @@ Dialog {
                         selectByMouse: true
                         font.pointSize: AdjustedValues.f10
                         placeholderText: (postType !== "quote") ?
-                                             qsTr("Link card URL or custom feed URL") :
+                                             qsTr("Link card URL or custom feed URL or list URL") :
                                              qsTr("Link card URL")
                     }
                 }
@@ -339,37 +344,51 @@ Dialog {
                     enabled: addingExternalLinkUrlText.text.length > 0 &&
                              !externalLink.running &&
                              !feedGeneratorLink.running &&
+                             !listLink.running &&
                              !createRecord.running
                     onClicked: {
                         var uri = addingExternalLinkUrlText.text
-                        var at_uri = feedGeneratorLink.convertToAtUri(uri)
-                        if(at_uri.length > 0 && postType !== "quote"){
-                            var row = accountCombo.currentIndex;
+                        var row = accountCombo.currentIndex
+                        if(feedGeneratorLink.checkUri(uri, "feed") && postType !== "quote"){
                             feedGeneratorLink.setAccount(postDialog.accountModel.item(row, AccountListModel.ServiceRole),
                                                          postDialog.accountModel.item(row, AccountListModel.DidRole),
                                                          postDialog.accountModel.item(row, AccountListModel.HandleRole),
                                                          postDialog.accountModel.item(row, AccountListModel.EmailRole),
                                                          postDialog.accountModel.item(row, AccountListModel.AccessJwtRole),
                                                          postDialog.accountModel.item(row, AccountListModel.RefreshJwtRole))
-                            feedGeneratorLink.getFeedGenerator(at_uri)
+                            feedGeneratorLink.getFeedGenerator(uri)
+                        }else if(feedGeneratorLink.checkUri(uri, "lists") && postType !== "quote"){
+                            listLink.setAccount(postDialog.accountModel.item(row, AccountListModel.ServiceRole),
+                                                postDialog.accountModel.item(row, AccountListModel.DidRole),
+                                                postDialog.accountModel.item(row, AccountListModel.HandleRole),
+                                                postDialog.accountModel.item(row, AccountListModel.EmailRole),
+                                                postDialog.accountModel.item(row, AccountListModel.AccessJwtRole),
+                                                postDialog.accountModel.item(row, AccountListModel.RefreshJwtRole))
+                            listLink.getList(uri)
                         }else{
                             externalLink.getExternalLink(uri)
+
                         }
                     }
                     BusyIndicator {
                         anchors.fill: parent
                         anchors.margins: 3
-                        visible: externalLink.running || feedGeneratorLink.running
+                        visible: externalLink.running ||
+                                 feedGeneratorLink.running ||
+                                 listLink.running
                     }
                     states: [
                         State {
-                            when: externalLink.valid || feedGeneratorLink.valid
+                            when: externalLink.valid ||
+                                  feedGeneratorLink.valid ||
+                                  listLink.valid
                             PropertyChanges {
                                 target: externalLinkButton
                                 iconSource: "../images/delete.png"
                                 onClicked: {
                                     externalLink.clear()
                                     feedGeneratorLink.clear()
+                                    listLink.clear()
                                 }
                             }
                         }
@@ -394,6 +413,14 @@ Dialog {
                 displayNameLabel.text: feedGeneratorLink.displayName
                 creatorHandleLabel.text: feedGeneratorLink.creatorHandle
                 likeCountLabel.text: feedGeneratorLink.likeCount
+            }
+            ListLinkCard {
+                Layout.preferredWidth: 400 * AdjustedValues.ratio
+                visible: listLink.valid
+                avatarImage.source: listLink.avatar
+                displayNameLabel.text: listLink.displayName
+                creatorHandleLabel.text: listLink.creatorHandle
+                descriptionLabel.text: listLink.description
             }
 
             RowLayout {
@@ -526,7 +553,10 @@ Dialog {
                     }
                 }
                 IconButton {
-                    enabled: !createRecord.running && !externalLink.valid && !feedGeneratorLink.valid
+                    enabled: !createRecord.running &&
+                             !externalLink.valid &&
+                             !feedGeneratorLink.valid &&
+                             !listLink.valid
                     iconSource: "../images/add_image.png"
                     iconSize: AdjustedValues.i18
                     flat: true
@@ -560,7 +590,8 @@ Dialog {
                              postText.realTextLength <= 300 &&
                              !createRecord.running &&
                              !externalLink.running &&
-                             !feedGeneratorLink.running
+                             !feedGeneratorLink.running &&
+                             !listLink.running
                     font.pointSize: AdjustedValues.f10
                     text: qsTr("Post")
                     onClicked: {
@@ -591,6 +622,9 @@ Dialog {
                             createRecord.postWithImages()
                         }else if(feedGeneratorLink.valid){
                             createRecord.setFeedGeneratorLink(feedGeneratorLink.uri, feedGeneratorLink.cid)
+                            createRecord.post()
+                        }else if(listLink.valid){
+                            createRecord.setFeedGeneratorLink(listLink.uri, listLink.cid)
                             createRecord.post()
                         }else if(embedImagePreview.embedImages.length > 0){
                             createRecord.setImages(embedImagePreview.embedImages, embedImagePreview.embedAlts)

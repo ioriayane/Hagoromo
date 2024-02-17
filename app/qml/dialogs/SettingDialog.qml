@@ -8,6 +8,8 @@ import tech.relog.hagoromo.encryption 1.0
 import tech.relog.hagoromo.systemtool 1.0
 import tech.relog.hagoromo.singleton 1.0
 
+import "../controls"
+
 Dialog {
     id: settingDialog
     modal: true
@@ -32,6 +34,7 @@ Dialog {
         property color accent: Material.color(Material.Pink)
         property real fontSizeRatio: 1.0
         property string fontFamily: ""
+        property real maximumFlickVelocity: 2500
         // Feed
         property string displayOfPosts: "sequential"
         property bool updateSeenNotification: true
@@ -40,6 +43,7 @@ Dialog {
         property int rowHeightRatio2: 50
         property int rowHeightRatio31: 35
         property int rowHeightRatio32: 70
+        property int imageLayoutType: 1
         // Translate
         property string translateApiUrl: "https://api-free.deepl.com/v2/translate"
         property string translateApiKey: ""
@@ -51,12 +55,14 @@ Dialog {
 
         function load() {
             // Common
-            AdjustedValues.ratio = fontSizeRatio
+            AdjustedValues.ratio = settings.fontSizeRatio
+            AdjustedValues.maximumFlickVelocity = settings.maximumFlickVelocity
             // General
             setRadioButton(themeButtonGroup.buttons, settings.theme)
             setRadioButton(accentButtonGroup.buttons, settings.accent)
             fontSizeRatioSlider.value = fontSizeRatio
             setFontFamily(fontFamilyComboBox, settings.fontFamily)
+            maximumFlickVelocitySlider.value = settings.maximumFlickVelocity
             // Feed
             setRadioButton(displayOfPostsGroup.buttons, settings.displayOfPosts)
             setRadioButton(updateSeenNotificationGroup.buttons, settings.updateSeenNotification)
@@ -66,10 +72,11 @@ Dialog {
             rowHeightRatioSlider.value = settings.rowHeightRatio2
             rowHeightRatioRangeSlider.first.value = settings.rowHeightRatio31
             rowHeightRatioRangeSlider.second.value = settings.rowHeightRatio32
+            imageLayoutCombobox.setByValue(settings.imageLayoutType)
             // Translate
             translateApiUrlText.text = settings.translateApiUrl
             translateApiKeyText.text = encryption.decrypt(settings.translateApiKey)
-            translateTargetLanguageCombo.currentIndex = translateTargetLanguageCombo.indexOfValue(settings.translateTargetLanguage)
+            translateTargetLanguageCombo.setByValue(settings.translateTargetLanguage)
             // About
             displayVersionInfoInMainAreaCheckBox.checked = settings.displayVersionInfoInMainArea
         }
@@ -254,6 +261,35 @@ Dialog {
                     Label {
                         font.pointSize: AdjustedValues.f10
                         font.family: fontFamilyComboBox.currentText
+                        text: qsTr("Scroll velocity")
+                    }
+                    RowLayout {
+                        Slider {
+                            id: maximumFlickVelocitySlider
+                            Layout.fillWidth: true
+                            from: 1000
+                            to: 5000
+                            stepSize: 100
+                            snapMode: Slider.SnapOnRelease
+                            Rectangle {
+                                x: parent.background.x + parent.handle.width / 2 + (parent.background.width - parent.handle.width) * (2500 - parent.from) / (parent.to - parent.from) - width / 2
+                                y: parent.topPadding + parent.availableHeight / 2 - parent.handle.height / 2 - height
+                                width: 10
+                                height: 10
+                                radius: 5
+                                color: Material.foreground
+                            }
+                        }
+                        Label {
+                            font.family: fontFamilyComboBox.currentText
+                            text: maximumFlickVelocitySlider.value
+                            font.pointSize: AdjustedValues.f10
+                        }
+                    }
+
+                    Label {
+                        font.pointSize: AdjustedValues.f10
+                        font.family: fontFamilyComboBox.currentText
                         text: qsTr("Font family")
                     }
                     ColumnLayout {
@@ -413,6 +449,34 @@ Dialog {
                             }
                         }
                     }
+
+                    Label {
+                        id: imageLayoutLabel
+                        font.pointSize: AdjustedValues.f10
+                        text: qsTr("Image layout")
+                    }
+                    ComboBoxEx {
+                        id: imageLayoutCombobox
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
+                        model: ListModel {
+                            ListElement { value: 0; text: qsTr("Compact") }
+                            ListElement { value: 1; text: qsTr("Normal") }
+                            ListElement { value: 2; text: qsTr("When one is whole") }
+                            ListElement { value: 3; text: qsTr("All whole") }
+                        }
+                    }
+                    Item {
+                        Layout.preferredWidth: 1
+                        Layout.preferredHeight: 1
+                    }
+                    Label {
+                        Layout.topMargin: 0
+                        Layout.leftMargin: 2
+                        font.pointSize: AdjustedValues.f8
+                        text: qsTr("Default value when adding columns.")
+                    }
+
                     Item {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
@@ -452,13 +516,10 @@ Dialog {
                         font.pointSize: AdjustedValues.f10
                         text: qsTr("Target language")
                     }
-                    ComboBox {
+                    ComboBoxEx {
                         id: translateTargetLanguageCombo
                         Layout.fillWidth: true
                         Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
-                        textRole: "text"
-                        valueRole: "value"
-                        font.pointSize: AdjustedValues.f10
                         model: ListModel {
                             ListElement { value: "BG"; text: qsTr("Bulgarian") }
                             ListElement { value: "ZH"; text: qsTr("Chinese (simplified)") }
@@ -562,6 +623,7 @@ Dialog {
                 onClicked: {
                     // Common
                     AdjustedValues.ratio = fontSizeRatioSlider.value
+                    AdjustedValues.maximumFlickVelocity = maximumFlickVelocitySlider.value
                     // General
                     settings.theme = themeButtonGroup.checkedButton.value
                     settings.accent = accentButtonGroup.checkedButton.value
@@ -570,6 +632,7 @@ Dialog {
                         settings.fontFamily = fontFamilyComboBox.currentText
                         systemTool.updateFont(settings.fontFamily)
                     }
+                    settings.maximumFlickVelocity = maximumFlickVelocitySlider.value
                     // Feed
                     settings.displayOfPosts = displayOfPostsGroup.checkedButton.value
                     settings.updateSeenNotification = updateSeenNotificationGroup.checkedButton.value
@@ -578,6 +641,7 @@ Dialog {
                     settings.rowHeightRatio2 = rowHeightRatioSlider.value
                     settings.rowHeightRatio31 = rowHeightRatioRangeSlider.first.value
                     settings.rowHeightRatio32 = rowHeightRatioRangeSlider.second.value
+                    settings.imageLayoutType = imageLayoutCombobox.currentValue
                     // Translate
                     settings.translateApiUrl = translateApiUrlText.text
                     settings.translateApiKey = encryption.encrypt(translateApiKeyText.text)

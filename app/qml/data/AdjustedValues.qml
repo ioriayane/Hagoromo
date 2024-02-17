@@ -28,6 +28,7 @@ QtObject {
     property real f12: 12 * ratio
     property real f10: 10 * ratio
     property real f8: 8 * ratio
+    property real f6: 6 * ratio
 
     // for header
     property real h32: 32 * ratio
@@ -43,4 +44,6 @@ QtObject {
     property real v96: 96 * ratio
     property real v48: 48 * ratio
     property real v24: 24 * ratio
+
+    property real maximumFlickVelocity: 2500
 }

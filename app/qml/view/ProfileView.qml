@@ -25,6 +25,7 @@ ColumnLayout {
     spacing: 0
 
     property string hoveredLink: ""
+    property int imageLayoutType: 1
 
     property alias model: relayObject
 
@@ -40,6 +41,7 @@ ColumnLayout {
     signal requestViewImages(int index, var paths, var alts)
     signal requestViewProfile(string did)
     signal requestViewFeedGenerator(string name, string uri)
+    signal requestViewListFeed(string uri, string name)
     signal requestViewAuthorFeed(string did, string handle)
     signal requestViewLikedBy(string uri)
     signal requestViewRepostedBy(string uri)
@@ -495,6 +497,7 @@ ColumnLayout {
                 onErrorOccured: (code, message) => profileView.errorOccured(code, message)
             }
             accountDid: profileView.accountDid
+            imageLayoutType: settings.imageLayoutType
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -509,6 +512,7 @@ ColumnLayout {
                                       }
                                   }
             onRequestViewFeedGenerator: (name, uri) => profileView.requestViewFeedGenerator(name, uri)
+            onRequestViewListFeed: (uri, name) => profileView.requestViewListFeed(uri, name)
             onRequestViewLikedBy: (uri) => profileView.requestViewLikedBy(uri)
             onRequestViewRepostedBy: (uri) => profileView.requestViewRepostedBy(uri)
             onRequestViewSearchPosts: (text) => profileView.requestViewSearchPosts(text)
@@ -529,6 +533,7 @@ ColumnLayout {
                 onErrorOccured: (code, message) => profileView.errorOccured(code, message)
             }
             accountDid: profileView.accountDid
+            imageLayoutType: settings.imageLayoutType
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -543,6 +548,7 @@ ColumnLayout {
                                       }
                                   }
             onRequestViewFeedGenerator: (name, uri) => profileView.requestViewFeedGenerator(name, uri)
+            onRequestViewListFeed: (uri, name) => profileView.requestViewListFeed(uri, name)
             onRequestViewLikedBy: (uri) => profileView.requestViewLikedBy(uri)
             onRequestViewRepostedBy: (uri) => profileView.requestViewRepostedBy(uri)
             onRequestViewSearchPosts: (text) => profileView.requestViewSearchPosts(text)
@@ -563,6 +569,7 @@ ColumnLayout {
                 onErrorOccured: (code, message) => profileView.errorOccured(code, message)
             }
             accountDid: profileView.accountDid
+            imageLayoutType: settings.imageLayoutType
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -577,6 +584,7 @@ ColumnLayout {
                                       }
                                   }
             onRequestViewFeedGenerator: (name, uri) => profileView.requestViewFeedGenerator(name, uri)
+            onRequestViewListFeed: (uri, name) => profileView.requestViewListFeed(uri, name)
             onRequestViewLikedBy: (uri) => profileView.requestViewLikedBy(uri)
             onRequestViewRepostedBy: (uri) => profileView.requestViewRepostedBy(uri)
             onRequestViewSearchPosts: (text) => profileView.requestViewSearchPosts(text)
@@ -597,6 +605,7 @@ ColumnLayout {
                 onErrorOccured: (code, message) => profileView.errorOccured(code, message)
             }
             accountDid: profileView.accountDid
+            imageLayoutType: settings.imageLayoutType
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -611,6 +620,7 @@ ColumnLayout {
                                       }
                                   }
             onRequestViewFeedGenerator: (name, uri) => profileView.requestViewFeedGenerator(name, uri)
+            onRequestViewListFeed: (uri, name) => profileView.requestViewListFeed(uri, name)
             onRequestViewLikedBy: (uri) => profileView.requestViewLikedBy(uri)
             onRequestViewRepostedBy: (uri) => profileView.requestViewRepostedBy(uri)
             onRequestViewSearchPosts: (text) => profileView.requestViewSearchPosts(text)

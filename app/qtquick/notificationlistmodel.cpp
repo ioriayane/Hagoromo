@@ -48,6 +48,16 @@ NotificationListModel::NotificationListModel(QObject *parent)
             AtpAbstractListModel::FeedGeneratorRoles::FeedGeneratorLikeCountRole;
     m_toFeedGeneratorRoles[FeedGeneratorAvatarRole] =
             AtpAbstractListModel::FeedGeneratorRoles::FeedGeneratorAvatarRole;
+
+    m_toListLinkRoles[HasListLinkRole] = AtpAbstractListModel::ListLinkRoles::HasListLinkRole;
+    m_toListLinkRoles[ListLinkUriRole] = AtpAbstractListModel::ListLinkRoles::ListLinkUriRole;
+    m_toListLinkRoles[ListLinkCreatorHandleRole] =
+            AtpAbstractListModel::ListLinkRoles::ListLinkCreatorHandleRole;
+    m_toListLinkRoles[ListLinkDisplayNameRole] =
+            AtpAbstractListModel::ListLinkRoles::ListLinkDisplayNameRole;
+    m_toListLinkRoles[ListLinkDescriptionRole] =
+            AtpAbstractListModel::ListLinkRoles::ListLinkDescriptionRole;
+    m_toListLinkRoles[ListLinkAvatarRole] = AtpAbstractListModel::ListLinkRoles::ListLinkAvatarRole;
 }
 
 int NotificationListModel::rowCount(const QModelIndex &parent) const
@@ -196,22 +206,17 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             return NotificationListModelReason::ReasonUnknown;
         }
 
-    } else if (role == HasExternalLinkRole || role == ExternalLinkUriRole
-               || role == ExternalLinkTitleRole || role == ExternalLinkDescriptionRole
-               || role == ExternalLinkThumbRole) {
-        return AtpAbstractListModel::getExternalLinkItem(
-                m_postHash.value(current.cid),
-                m_toExternalLinkRoles.value(
-                        role, AtpAbstractListModel::ExternalLinkRoles::ExternalLinkUnknownRole));
+    } else if (m_toExternalLinkRoles.contains(role)) {
+        return AtpAbstractListModel::getExternalLinkItem(m_postHash.value(current.cid),
+                                                         m_toExternalLinkRoles[role]);
 
-    } else if ((role == HasFeedGeneratorRole || role == FeedGeneratorUriRole
-                || role == FeedGeneratorCreatorHandleRole || role == FeedGeneratorDisplayNameRole
-                || role == FeedGeneratorLikeCountRole || role == FeedGeneratorAvatarRole)
-               && (current.reason == "mention" || current.reason == "reply")) {
-        return getFeedGeneratorItem(
-                m_postHash.value(current.cid),
-                m_toFeedGeneratorRoles.value(
-                        role, AtpAbstractListModel::FeedGeneratorRoles::FeedGeneratorUnknownRole));
+    } else if (m_toFeedGeneratorRoles.contains(role)
+               && (current.reason == "mention" || current.reason == "reply"
+                   || current.reason == "quote")) {
+        return getFeedGeneratorItem(m_postHash.value(current.cid), m_toFeedGeneratorRoles[role]);
+
+    } else if (m_toListLinkRoles.contains(role)) {
+        return getListLinkItem(m_postHash.value(current.cid), m_toListLinkRoles[role]);
 
     } else {
         QString record_cid;
@@ -483,18 +488,9 @@ bool NotificationListModel::getLatest()
                             break;
                         case AtProtocolType::AppBskyFeedPost::MainEmbedType::
                                 embed_AppBskyEmbedRecord_Main:
-                            if (quote_post.embed_AppBskyEmbedRecord_Main.record.uri.contains(
-                                        "/app.bsky.feed.generator/")) {
-                                if (!m_cueGetFeedGenerator.contains(
-                                            quote_post.embed_AppBskyEmbedRecord_Main.record.uri)) {
-                                    m_cueGetFeedGenerator.append(
-                                            quote_post.embed_AppBskyEmbedRecord_Main.record.uri);
-                                }
-                            } else if (!quote_post.embed_AppBskyEmbedRecord_Main.record.cid
-                                                .isEmpty()
-                                       && !m_cueGetPost.contains(
-                                               quote_post.embed_AppBskyEmbedRecord_Main.record
-                                                       .uri)) {
+                            if (!quote_post.embed_AppBskyEmbedRecord_Main.record.cid.isEmpty()
+                                && !m_cueGetPost.contains(
+                                        quote_post.embed_AppBskyEmbedRecord_Main.record.uri)) {
                                 m_cueGetPost.append(
                                         quote_post.embed_AppBskyEmbedRecord_Main.record.uri);
                             }
@@ -815,6 +811,13 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[FeedGeneratorDisplayNameRole] = "feedGeneratorDisplayName";
     roles[FeedGeneratorLikeCountRole] = "feedGeneratorLikeCount";
     roles[FeedGeneratorAvatarRole] = "feedGeneratorAvatar";
+
+    roles[HasListLinkRole] = "hasListLink";
+    roles[ListLinkUriRole] = "listLinkUri";
+    roles[ListLinkCreatorHandleRole] = "listLinkCreatorHandle";
+    roles[ListLinkDisplayNameRole] = "listLinkDisplayName";
+    roles[ListLinkDescriptionRole] = "listLinkDescription";
+    roles[ListLinkAvatarRole] = "listLinkAvatar";
 
     roles[ReplyRootCidRole] = "replyRootCid";
     roles[ReplyRootUriRole] = "replyRootUri";

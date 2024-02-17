@@ -8,6 +8,7 @@ SOURCES += \
 QML_FILES = \
     qml/main.qml \
     qml/controls/ClickableFrame.qml \
+    qml/controls/ComboBoxEx.qml \
     qml/controls/ProgressCircle.qml \
     qml/controls/IconButton.qml \
     qml/controls/IconLabelFrame.qml \
@@ -46,6 +47,7 @@ QML_FILES = \
     qml/parts/ImagePreview.qml \
     qml/parts/ExternalLinkCard.qml \
     qml/parts/FeedGeneratorLinkCard.qml \
+    qml/parts/ListLinkCard.qml \
     qml/parts/MentionSuggestionView.qml \
     qml/parts/NotificationDelegate.qml \
     qml/parts/PostControls.qml \

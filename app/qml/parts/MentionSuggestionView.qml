@@ -60,6 +60,7 @@ Rectangle {
         anchors.fill: parent
         anchors.margins: 2
         clip: true
+        maximumFlickVelocity: AdjustedValues.maximumFlickVelocity
 
         model: SearchProfileListModel {
             id: searchProfileListModel
