@@ -29,6 +29,7 @@ ColumnLayout {
     signal requestViewImages(int index, var paths, var alts)
     signal requestViewProfile(string did)
     signal requestViewFeedGenerator(string name, string uri)
+    signal requestViewListFeed(string uri, string name)
     signal requestViewLikedBy(string uri)
     signal requestViewRepostedBy(string uri)
     signal requestViewSearchPosts(string text)
@@ -178,6 +179,13 @@ ColumnLayout {
                 feedGeneratorFrame.displayNameLabel.text: model.feedGeneratorDisplayName
                 feedGeneratorFrame.creatorHandleLabel.text: model.feedGeneratorCreatorHandle
                 feedGeneratorFrame.likeCountLabel.text: model.feedGeneratorLikeCount
+
+                listLinkCardFrame.visible: model.hasListLink && contentMediaFilterFrame.showContent
+                listLinkCardFrame.onClicked: requestViewListFeed(model.listLinkUri, model.listLinkDisplayName)
+                listLinkCardFrame.avatarImage.source: model.listLinkAvatar
+                listLinkCardFrame.displayNameLabel.text: model.listLinkDisplayName
+                listLinkCardFrame.creatorHandleLabel.text: model.listLinkCreatorHandle
+                listLinkCardFrame.descriptionLabel.text: model.listLinkDescription
 
                 postInformation.visible: (postThreadUri === model.uri)
                 postInformation.tagsLayout.model: postInformation.visible ? model.tags : []

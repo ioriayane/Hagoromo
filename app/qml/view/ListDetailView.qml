@@ -6,6 +6,7 @@ import QtGraphicalEffects 1.15
 
 import tech.relog.hagoromo.recordoperator 1.0
 import tech.relog.hagoromo.listitemlistmodel 1.0
+import tech.relog.hagoromo.systemtool 1.0
 import tech.relog.hagoromo.singleton 1.0
 
 import "../parts"
@@ -29,9 +30,6 @@ ColumnLayout {
     signal errorOccured(string code, string message)
     signal back()
 
-    function openInOhters(handle, rkey) {
-        Qt.openUrlExternally("https://bsky.app/profile/" + handle + "/lists/" + rkey)
-    }
 
     RecordOperator {
         id: recordOperator
@@ -42,6 +40,10 @@ ColumnLayout {
                         }
                     }
         onErrorOccured: (code, message) => listDetailView.errorOccured(code, message)
+    }
+
+    SystemTool {
+        id: systemTool
     }
 
     QtObject {
@@ -149,6 +151,11 @@ ColumnLayout {
                     Menu {
                         id: morePopup
                         MenuItem {
+                            text: qsTr("Copy Official Url")
+                            icon.source: "../images/copy.png"
+                            onTriggered: systemTool.copyToClipboard(listItemListModel.getOfficialUrl())
+                        }
+                        MenuItem {
                             text: qsTr("Open in new col")
                             icon.source: "../images/add.png"
                             onTriggered: listDetailView.requestViewListFeed(listDetailView.listUri, listItemListModel.name)
@@ -156,7 +163,7 @@ ColumnLayout {
                         MenuItem {
                             text: qsTr("Open in Official")
                             icon.source: "../images/open_in_other.png"
-                            onTriggered: listDetailView.openInOhters(listItemListModel.handle, listItemListModel.rkey)
+                            onTriggered: Qt.openUrlExternally(listItemListModel.getOfficialUrl())
                         }
                         MenuSeparator {}
                         MenuItem {

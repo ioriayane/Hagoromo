@@ -23,6 +23,7 @@ SOURCES += \
     $$PWD/languagelistmodel.cpp \
     $$PWD/listfeedlistmodel.cpp \
     $$PWD/listitemlistmodel.cpp \
+    $$PWD/listlink.cpp \
     $$PWD/listslistmodel.cpp \
     $$PWD/notificationlistmodel.cpp \
     $$PWD/postthreadlistmodel.cpp \
@@ -59,6 +60,7 @@ HEADERS += \
     $$PWD/languagelistmodel.h \
     $$PWD/listfeedlistmodel.h \
     $$PWD/listitemlistmodel.h \
+    $$PWD/listlink.h \
     $$PWD/listslistmodel.h \
     $$PWD/notificationlistmodel.h \
     $$PWD/postthreadlistmodel.h \

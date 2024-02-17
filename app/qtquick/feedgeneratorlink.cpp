@@ -1,11 +1,15 @@
 #include "feedgeneratorlink.h"
 #include "atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerator.h"
+#include "atprotocol/app/bsky/actor/appbskyactorgetprofile.h"
+#include "systemtool.h"
 
+using AtProtocolInterface::AppBskyActorGetProfile;
 using AtProtocolInterface::AppBskyFeedGetFeedGenerator;
 
 FeedGeneratorLink::FeedGeneratorLink(QObject *parent)
     : QObject { parent }, m_running(false), m_valid(false), m_likeCount(0)
 {
+    m_rxHandle.setPattern(QString("^%1$").arg(REG_EXP_HANDLE));
 }
 
 void FeedGeneratorLink::setAccount(const QString &service, const QString &did,
@@ -20,7 +24,7 @@ void FeedGeneratorLink::setAccount(const QString &service, const QString &did,
     m_account.refreshJwt = refreshJwt;
 }
 
-bool FeedGeneratorLink::checkUri(const QString &uri) const
+bool FeedGeneratorLink::checkUri(const QString &uri, const QString &type) const
 {
     // https://bsky.app/profile/did:plc:hoge/feed/aaaaaaaaaa
     if (uri.isEmpty())
@@ -30,9 +34,9 @@ bool FeedGeneratorLink::checkUri(const QString &uri) const
     QStringList items = uri.split("/");
     if (items.length() != 7)
         return false;
-    if (!items.at(4).startsWith("did:plc:"))
+    if (!(items.at(4).startsWith("did:plc:") || m_rxHandle.match(items.at(4)).hasMatch()))
         return false;
-    if (items.at(5) != "feed")
+    if (items.at(5) != type)
         return false;
     if (items.at(6).isEmpty())
         return false;
@@ -40,14 +44,33 @@ bool FeedGeneratorLink::checkUri(const QString &uri) const
     return true;
 }
 
-QString FeedGeneratorLink::convertToAtUri(const QString &uri)
+void FeedGeneratorLink::convertToAtUri(const QString &base_at_uri, const QString &uri,
+                                       std::function<void(const QString &)> callback)
 {
-    if (!checkUri(uri))
-        return QString();
-
     QStringList items = uri.split("/");
-
-    return QString("at://%1/app.bsky.feed.generator/%2").arg(items.at(4), items.at(6));
+    if (items.length() != 7) {
+        callback(QString());
+        return;
+    }
+    QString user_id = items.at(4);
+    if (m_rxHandle.match(user_id).hasMatch()) {
+        // handle
+        AppBskyActorGetProfile *profile = new AppBskyActorGetProfile(this);
+        connect(profile, &AppBskyActorGetProfile::finished, [=](bool success) {
+            if (success) {
+                // handle -> did
+                callback(QString(base_at_uri).arg(profile->profileViewDetailed().did, items.at(6)));
+            } else {
+                callback(QString());
+            }
+            profile->deleteLater();
+        });
+        profile->setAccount(m_account);
+        profile->getProfile(user_id);
+    } else {
+        // did
+        callback(QString(base_at_uri).arg(user_id, items.at(6)));
+    }
 }
 
 void FeedGeneratorLink::getFeedGenerator(const QString &uri)
@@ -58,22 +81,28 @@ void FeedGeneratorLink::getFeedGenerator(const QString &uri)
 
     clear();
 
-    AppBskyFeedGetFeedGenerator *generator = new AppBskyFeedGetFeedGenerator(this);
-    connect(generator, &AppBskyFeedGetFeedGenerator::finished, [=](bool success) {
-        if (success) {
-            setAvatar(generator->generatorView().avatar);
-            setDisplayName(generator->generatorView().displayName);
-            setCreatorHandle(generator->generatorView().creator.handle);
-            setLikeCount(generator->generatorView().likeCount);
-            setUri(generator->generatorView().uri);
-            setCid(generator->generatorView().cid);
-            setValid(true);
+    convertToAtUri("at://%1/app.bsky.feed.generator/%2", uri, [=](const QString &at_uri) {
+        if (at_uri.isEmpty()) {
+            setRunning(false);
+            return;
         }
-        setRunning(false);
-        generator->deleteLater();
+        AppBskyFeedGetFeedGenerator *generator = new AppBskyFeedGetFeedGenerator(this);
+        connect(generator, &AppBskyFeedGetFeedGenerator::finished, [=](bool success) {
+            if (success) {
+                setAvatar(generator->generatorView().avatar);
+                setDisplayName(generator->generatorView().displayName);
+                setCreatorHandle(generator->generatorView().creator.handle);
+                setLikeCount(generator->generatorView().likeCount);
+                setUri(generator->generatorView().uri);
+                setCid(generator->generatorView().cid);
+                setValid(true);
+            }
+            setRunning(false);
+            generator->deleteLater();
+        });
+        generator->setAccount(m_account);
+        generator->getFeedGenerator(at_uri);
     });
-    generator->setAccount(m_account);
-    generator->getFeedGenerator(uri);
 }
 
 void FeedGeneratorLink::clear()

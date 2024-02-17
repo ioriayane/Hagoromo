@@ -12,10 +12,12 @@ description: This is a multi-column Bluesky client.
 
 - Add
   - Function to adjust scroll velocity
+  - Support for the list card (post and display)
 - Update
-  - Changed the image layout to be able to choose from four different layouts
+  - Change the image layout to be able to choose from four different layouts
 - Fix
   - Failure to play animated GIFs of a PDS different from the account
+  - Failure to create a card when a handle was used in the feed URL
 
 ### v0.22.1 - 2024/2/14
 

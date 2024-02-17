@@ -72,6 +72,14 @@ public:
         FeedGeneratorAvatarRole,
         FeedGeneratorUnknownRole,
     };
+    enum ListLinkRoles {
+        HasListLinkRole,
+        ListLinkUriRole,
+        ListLinkCreatorHandleRole,
+        ListLinkDisplayNameRole,
+        ListLinkDescriptionRole,
+        ListLinkAvatarRole,
+    };
 
     Q_INVOKABLE void clear();
 
@@ -139,6 +147,8 @@ protected:
                                  const AtpAbstractListModel::ExternalLinkRoles role) const;
     QVariant getFeedGeneratorItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
                                   const AtpAbstractListModel::FeedGeneratorRoles role) const;
+    QVariant getListLinkItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
+                             const AtpAbstractListModel::ListLinkRoles role) const;
 
     void appendExtendMediaFileToClue(const QString &did, const QString &cid,
                                      const QString &parent_cid);

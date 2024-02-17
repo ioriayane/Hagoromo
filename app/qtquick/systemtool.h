@@ -12,6 +12,9 @@
 #define REG_EXP_MENTION                                                                            \
     "@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-" \
     "zA-Z0-9])?)"
+#define REG_EXP_HANDLE                                                                             \
+    "(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-"  \
+    "zA-Z0-9])?)"
 #define REG_EXP_MENTION_PART "@[a-zA-Z0-9][a-zA-Z0-9.-]*$"
 #define REG_EXP_HASH_TAG                                                                           \
     QStringLiteral("(?:^|"                                                                         \

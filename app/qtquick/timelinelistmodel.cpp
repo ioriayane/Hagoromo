@@ -34,6 +34,16 @@ TimelineListModel::TimelineListModel(QObject *parent)
             AtpAbstractListModel::FeedGeneratorRoles::FeedGeneratorLikeCountRole;
     m_toFeedGeneratorRoles[FeedGeneratorAvatarRole] =
             AtpAbstractListModel::FeedGeneratorRoles::FeedGeneratorAvatarRole;
+
+    m_toListLinkRoles[HasListLinkRole] = AtpAbstractListModel::ListLinkRoles::HasListLinkRole;
+    m_toListLinkRoles[ListLinkUriRole] = AtpAbstractListModel::ListLinkRoles::ListLinkUriRole;
+    m_toListLinkRoles[ListLinkCreatorHandleRole] =
+            AtpAbstractListModel::ListLinkRoles::ListLinkCreatorHandleRole;
+    m_toListLinkRoles[ListLinkDisplayNameRole] =
+            AtpAbstractListModel::ListLinkRoles::ListLinkDisplayNameRole;
+    m_toListLinkRoles[ListLinkDescriptionRole] =
+            AtpAbstractListModel::ListLinkRoles::ListLinkDescriptionRole;
+    m_toListLinkRoles[ListLinkAvatarRole] = AtpAbstractListModel::ListLinkRoles::ListLinkAvatarRole;
 }
 
 int TimelineListModel::rowCount(const QModelIndex &parent) const
@@ -112,21 +122,14 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
              || role == QuoteRecordBlockedRole)
         return getQuoteItem(current.post, role);
 
-    else if (role == HasExternalLinkRole || role == ExternalLinkUriRole
-             || role == ExternalLinkTitleRole || role == ExternalLinkDescriptionRole
-             || role == ExternalLinkThumbRole)
-        return getExternalLinkItem(
-                current.post,
-                m_toExternalLinkRoles.value(
-                        role, AtpAbstractListModel::ExternalLinkRoles::ExternalLinkUnknownRole));
+    else if (m_toExternalLinkRoles.contains(role))
+        return getExternalLinkItem(current.post, m_toExternalLinkRoles[role]);
 
-    else if (role == HasFeedGeneratorRole || role == FeedGeneratorUriRole
-             || role == FeedGeneratorCreatorHandleRole || role == FeedGeneratorDisplayNameRole
-             || role == FeedGeneratorLikeCountRole || role == FeedGeneratorAvatarRole)
-        return getFeedGeneratorItem(
-                current.post,
-                m_toFeedGeneratorRoles.value(
-                        role, AtpAbstractListModel::FeedGeneratorRoles::FeedGeneratorUnknownRole));
+    else if (m_toFeedGeneratorRoles.contains(role))
+        return getFeedGeneratorItem(current.post, m_toFeedGeneratorRoles[role]);
+
+    else if (m_toListLinkRoles.contains(role))
+        return getListLinkItem(current.post, m_toListLinkRoles[role]);
 
     else if (role == HasReplyRole) {
         if (current.reply.parent_type == AppBskyFeedDefs::ReplyRefParentType::parent_PostView)
@@ -466,6 +469,13 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[FeedGeneratorDisplayNameRole] = "feedGeneratorDisplayName";
     roles[FeedGeneratorLikeCountRole] = "feedGeneratorLikeCount";
     roles[FeedGeneratorAvatarRole] = "feedGeneratorAvatar";
+
+    roles[HasListLinkRole] = "hasListLink";
+    roles[ListLinkUriRole] = "listLinkUri";
+    roles[ListLinkCreatorHandleRole] = "listLinkCreatorHandle";
+    roles[ListLinkDisplayNameRole] = "listLinkDisplayName";
+    roles[ListLinkDescriptionRole] = "listLinkDescription";
+    roles[ListLinkAvatarRole] = "listLinkAvatar";
 
     roles[HasReplyRole] = "hasReply";
     roles[ReplyRootCidRole] = "replyRootCid";
