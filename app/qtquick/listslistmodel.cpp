@@ -11,7 +11,9 @@ using AtProtocolInterface::ComAtprotoRepoListRecords;
 using namespace AtProtocolType;
 
 ListsListModel::ListsListModel(QObject *parent)
-    : AtpAbstractListModel { parent }, m_visibilityType(ListsListModel::VisibilityTypeAll)
+    : AtpAbstractListModel { parent },
+      m_visibilityType(ListsListModel::VisibilityTypeAll),
+      m_checkedCount(0)
 {
     setDisplayInterval(0);
 }
