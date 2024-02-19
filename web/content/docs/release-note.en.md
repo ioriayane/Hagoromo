@@ -8,6 +8,13 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+### Unrelease - yyyy/M/d
+
+- Add
+  - Support for "from:me" in post search
+- Update
+- Fix
+
 ### v0.23.0 - 2024/2/17
 
 - Add

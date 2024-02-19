@@ -27,7 +27,7 @@ bool SearchPostListModel::getLatest()
             posts->deleteLater();
         });
         posts->setAccount(account());
-        posts->searchPosts(text(), 10, QString());
+        posts->searchPosts(replaceSearchCommand(text()), 10, QString());
     });
     return true;
 }
@@ -52,9 +52,23 @@ bool SearchPostListModel::getNext()
         });
 
         posts->setAccount(account());
-        posts->searchPosts(text(), 10, m_cursor);
+        posts->searchPosts(replaceSearchCommand(text()), 10, m_cursor);
     });
     return true;
+}
+
+QString SearchPostListModel::replaceSearchCommand(const QString &command)
+{
+    QStringList items = command.split(QRegularExpression(QString("[ \t%1]").arg(QChar(0x3000))));
+    QStringList replaced_items;
+    for (const auto &item : qAsConst(items)) {
+        if (item == "from:me") {
+            replaced_items.append("from:" + account().handle);
+        } else {
+            replaced_items.append(item);
+        }
+    }
+    return replaced_items.join(' ');
 }
 
 QString SearchPostListModel::text() const

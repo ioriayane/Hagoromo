@@ -15,6 +15,7 @@
 #include "common.h"
 #include "postthreadlistmodel.h"
 #include "searchprofilelistmodel.h"
+#include "searchpostlistmodel.h"
 
 class hagoromo_test : public QObject
 {
@@ -49,6 +50,7 @@ private slots:
     void test_PostThreadListModel();
     void test_SystemTool_ImageClip();
     void test_SearchProfileListModel_suggestion();
+    void test_SearchPostListModel_text();
 
 private:
     WebServer m_mockServer;
@@ -1763,6 +1765,27 @@ void hagoromo_test::test_SearchProfileListModel_suggestion()
     // 4. ho\nge @handle.bsky.social f\nuga
     actual = model.replaceText("ho\nge @handl f\nuga", 12, "handle.bsky.social");
     QVERIFY2(actual == "ho\nge @handle.bsky.social f\nuga", actual.toLocal8Bit());
+}
+
+void hagoromo_test::test_SearchPostListModel_text()
+{
+    SearchPostListModel model;
+    model.setAccount("", "did:plc:hogehoge", "hogehoge.bsky.sockal", "", "", "");
+
+    QVERIFY2(model.replaceSearchCommand("from:me") == "from:hogehoge.bsky.sockal",
+             model.text().toLocal8Bit());
+
+    QVERIFY2(model.replaceSearchCommand("fuga  from:me hoge")
+                     == "fuga  from:hogehoge.bsky.sockal hoge",
+             model.text().toLocal8Bit());
+
+    QVERIFY2(model.replaceSearchCommand("fuga\tfrom:me\thoge")
+                     == "fuga from:hogehoge.bsky.sockal hoge",
+             model.text().toLocal8Bit());
+
+    QVERIFY2(model.replaceSearchCommand(QString("fuga%1from:me%1hoge").arg(QChar(0x3000)))
+                     == "fuga from:hogehoge.bsky.sockal hoge",
+             model.text().toLocal8Bit());
 }
 
 void hagoromo_test::verifyStr(const QString &expect, const QString &actual)

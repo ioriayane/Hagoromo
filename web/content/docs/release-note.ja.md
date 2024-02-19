@@ -8,6 +8,13 @@ description: マルチカラム対応Blueskyクライアント
 
 ## 2024
 
+### Unrelease - yyyy/M/d
+
+- 追加
+  - ポストの検索で「from:me」に対応
+- 更新
+- 修正
+
 ### v0.23.0 - 2024/2/17
 
 - 追加
