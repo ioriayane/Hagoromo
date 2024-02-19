@@ -35,6 +35,7 @@ ScrollView {
     signal requestViewLikedBy(string uri)
     signal requestViewRepostedBy(string uri)
     signal requestViewSearchPosts(string text)
+    signal requestUpdateThreadGate(string uri, string type, var rules)
     signal requestReportPost(string uri, string cid)
 
     signal scrollPositionChanged(bool top)
@@ -184,6 +185,7 @@ ScrollView {
             postControls.onTriggeredRequestReport: timelineView.requestReportPost(model.uri, model.cid)
             postControls.onTriggeredRequestViewLikedBy: timelineView.requestViewLikedBy(model.uri)
             postControls.onTriggeredRequestViewRepostedBy: timelineView.requestViewRepostedBy(model.uri)
+            postControls.onTriggeredRequestUpdateThreadGate: timelineView.requestUpdateThreadGate(model.uri, "everybody", [""])
             onHoveredLinkChanged: timelineView.hoveredLink = hoveredLink
         }
     }

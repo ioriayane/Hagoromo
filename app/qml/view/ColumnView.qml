@@ -49,6 +49,7 @@ ColumnLayout {
     signal requestAddRemoveFromLists(string account_uuid, string did)
     signal requestEditProfile(string account_uuid, string did, string avatar, string banner, string display_name, string description)
     signal requestEditList(string account_uuid, string uri, string avatar, string name, string description)
+    signal requestUpdateThreadGate(string account_uuid, string uri, string type, var rules)
 
     signal requestMoveToLeft(string key)
     signal requestMoveToRight(string key)
@@ -101,7 +102,7 @@ ColumnLayout {
             onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
             onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
-
+            onRequestUpdateThreadGate: (uri, type, rules) => columnView.requestUpdateThreadGate(account.uuid, uri, type, rules)
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
         }
     }

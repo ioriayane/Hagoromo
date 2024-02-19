@@ -220,6 +220,13 @@ ApplicationWindow {
         onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
         onAccepted: accountListModel.refreshAccountProfile(editProfileDialog.account.uuid)
     }
+    SelectThreadGateDialog {
+        id: selectThreadGateDialog
+        onAccepted: {
+//            accountList.model.update(accountIndex, AccountListModel.ThreadGateTypeRole, selectedType)
+//            accountList.model.update(accountIndex, AccountListModel.ThreadGateOptionsRole, selectedOptions)
+        }
+    }
 
     MessageDialog {
         id: messageDialog
@@ -288,7 +295,7 @@ ApplicationWindow {
                        "email",
                        accountListModel.item(currentAccountIndex, AccountListModel.AccessJwtRole),
                        accountListModel.item(currentAccountIndex, AccountListModel.RefreshJwtRole)
-                    )
+                       )
             actor = did
             searchTarget = "#cache"
             if(listsListModel.getLatest()){
@@ -460,6 +467,21 @@ ApplicationWindow {
                                        addListDialog.open()
                                    }
                                }
+            onRequestUpdateThreadGate: (account_uuid, uri, type, rules) => {
+                                           var row = accountListModel.indexAt(account_uuid)
+                                           if(row >= 0){
+                                               selectThreadGateDialog.account.service = accountListModel.item(row, AccountListModel.ServiceRole)
+                                               selectThreadGateDialog.account.did = accountListModel.item(row, AccountListModel.DidRole)
+                                               selectThreadGateDialog.account.handle = accountListModel.item(row, AccountListModel.HandleRole)
+                                               selectThreadGateDialog.account.email = accountListModel.item(row, AccountListModel.EmailRole)
+                                               selectThreadGateDialog.account.accessJwt = accountListModel.item(row, AccountListModel.AccessJwtRole)
+                                               selectThreadGateDialog.account.refreshJwt = accountListModel.item(row, AccountListModel.RefreshJwtRole)
+                                               selectThreadGateDialog.account.avatar = accountListModel.item(row, AccountListModel.AvatarRole)
+                                               selectThreadGateDialog.initialType = type
+                                               selectThreadGateDialog.initialOptions = rules
+                                               selectThreadGateDialog.open()
+                                           }
+                                       }
 
             onRequestMoveToLeft: (key) => {
                                      console.log("move to left:" + key)
