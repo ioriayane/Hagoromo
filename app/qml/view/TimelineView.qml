@@ -185,7 +185,7 @@ ScrollView {
             postControls.onTriggeredRequestReport: timelineView.requestReportPost(model.uri, model.cid)
             postControls.onTriggeredRequestViewLikedBy: timelineView.requestViewLikedBy(model.uri)
             postControls.onTriggeredRequestViewRepostedBy: timelineView.requestViewRepostedBy(model.uri)
-            postControls.onTriggeredRequestUpdateThreadGate: timelineView.requestUpdateThreadGate(model.uri, "everybody", [""])
+            postControls.onTriggeredRequestUpdateThreadGate: timelineView.requestUpdateThreadGate(model.uri, model.threadGateType, model.threadGateRules)
             onHoveredLinkChanged: timelineView.hoveredLink = hoveredLink
         }
     }

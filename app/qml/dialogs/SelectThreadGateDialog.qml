@@ -54,6 +54,13 @@ Dialog {
     }
     onClosed: {
         listsListModel.clear()
+        var i
+        for(i=0; i<group.buttons.length; i++){
+            group.buttons[i].checked = false
+        }
+        choiceRadioButton.checked = false
+        mentionedCheckBox.checked = false
+        followedCheckBox.checked = false
     }
 
     function clear(){
