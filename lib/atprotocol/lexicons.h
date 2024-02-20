@@ -1350,5 +1350,6 @@ Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedRepost::Main)
 Q_DECLARE_METATYPE(AtProtocolType::AppBskyGraphListitem::Main)
 Q_DECLARE_METATYPE(AtProtocolType::AppBskyActorProfile::Main)
 Q_DECLARE_METATYPE(AtProtocolType::AppBskyGraphList::Main)
+Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedThreadgate::Main)
 
 #endif // LEXICONS_H

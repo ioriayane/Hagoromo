@@ -101,6 +101,9 @@ public:
         ContentMediaFilterMessageRole,
         QuoteFilterMatchedRole,
 
+        ThreadGateTypeRole,
+        ThreadGateRulesRole,
+
         LabelsRole,
         LanguagesRole,
         TagsRole,
@@ -159,6 +162,8 @@ private:
             m_toFeedGeneratorRoles;
     QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::ListLinkRoles>
             m_toListLinkRoles;
+    QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::ThreadGateRoles>
+            m_toThreadGateRoles;
 };
 
 #endif // TIMELINELISTMODEL_H

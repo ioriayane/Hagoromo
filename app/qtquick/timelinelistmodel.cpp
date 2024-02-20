@@ -44,6 +44,11 @@ TimelineListModel::TimelineListModel(QObject *parent)
     m_toListLinkRoles[ListLinkDescriptionRole] =
             AtpAbstractListModel::ListLinkRoles::ListLinkDescriptionRole;
     m_toListLinkRoles[ListLinkAvatarRole] = AtpAbstractListModel::ListLinkRoles::ListLinkAvatarRole;
+
+    m_toThreadGateRoles[ThreadGateTypeRole] =
+            AtpAbstractListModel::ThreadGateRoles::ThreadGateTypeRole;
+    m_toThreadGateRoles[ThreadGateRulesRole] =
+            AtpAbstractListModel::ThreadGateRoles::ThreadGateRulesRole;
 }
 
 int TimelineListModel::rowCount(const QModelIndex &parent) const
@@ -185,6 +190,10 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
             return getQuoteFilterMatched(current.post);
         else
             return false;
+
+    } else if (m_toThreadGateRoles.contains(role)) {
+        return getThreadGateItem(current.post, m_toThreadGateRoles[role]);
+
     } else if (role == LabelsRole)
         return getLabels(current.post.labels);
     else if (role == LanguagesRole)
@@ -493,6 +502,10 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[ContentMediaFilterMatchedRole] = "contentMediaFilterMatched";
     roles[ContentMediaFilterMessageRole] = "contentMediaFilterMessage";
     roles[QuoteFilterMatchedRole] = "quoteFilterMatched";
+
+    roles[ThreadGateTypeRole] = "threadGateType";
+    roles[ThreadGateRulesRole] = "threadGateRules";
+
     roles[LabelsRole] = "labels";
     roles[LanguagesRole] = "languages";
     roles[TagsRole] = "tags";

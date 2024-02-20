@@ -1,8 +1,8 @@
 #include "atpabstractlistmodel.h"
 #include "atprotocol/com/atproto/sync/comatprotosyncgetblob.h"
 #include "atprotocol/lexicons_func_unknown.h"
-#include "translator.h"
 #include "common.h"
+#include "translator.h"
 
 #include <QDesktopServices>
 #include <QUrlQuery>
@@ -578,6 +578,42 @@ AtpAbstractListModel::getListLinkItem(const AtProtocolType::AppBskyFeedDefs::Pos
             return post.embed_AppBskyEmbedRecord_View->record_AppBskyGraphDefs_ListView.avatar;
         else
             return QString();
+    }
+    return QVariant();
+}
+
+QVariant
+AtpAbstractListModel::getThreadGateItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
+                                        const ThreadGateRoles role) const
+{
+    AppBskyFeedThreadgate::Main record =
+            LexiconsTypeUnknown::fromQVariant<AppBskyFeedThreadgate::Main>(post.threadgate.record);
+
+    QString type;
+    QStringList rules;
+    if (post.threadgate.uri.isEmpty()) {
+        type = "everybody";
+    } else {
+        if (!record.allow_MentionRule.isEmpty()) {
+            rules.append("mentioned");
+        }
+        if (!record.allow_FollowingRule.isEmpty()) {
+            rules.append("followed");
+        }
+        for (const auto &item : record.allow_ListRule) {
+            rules.append(item.list);
+        }
+        if (rules.isEmpty()) {
+            type = "nobody";
+        } else {
+            type = "choice";
+        }
+    }
+
+    if (role == ThreadGateTypeRole) {
+        return type;
+    } else if (role == ThreadGateRulesRole) {
+        return rules;
     }
     return QVariant();
 }

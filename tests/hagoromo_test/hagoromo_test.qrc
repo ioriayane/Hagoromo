@@ -33,5 +33,7 @@
         <file>data/images/sample.jpg</file>
         <file>response/timeline/animated/xrpc/app.bsky.actor.getPreferences</file>
         <file>response/timeline/animated/xrpc/app.bsky.feed.getTimeline</file>
+        <file>response/timeline/threadgate/xrpc/app.bsky.actor.getPreferences</file>
+        <file>response/timeline/threadgate/xrpc/app.bsky.feed.getTimeline</file>
     </qresource>
 </RCC>

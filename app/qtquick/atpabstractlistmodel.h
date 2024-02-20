@@ -80,6 +80,10 @@ public:
         ListLinkDescriptionRole,
         ListLinkAvatarRole,
     };
+    enum ThreadGateRoles {
+        ThreadGateTypeRole,
+        ThreadGateRulesRole,
+    };
 
     Q_INVOKABLE void clear();
 
@@ -149,6 +153,8 @@ protected:
                                   const AtpAbstractListModel::FeedGeneratorRoles role) const;
     QVariant getListLinkItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
                              const AtpAbstractListModel::ListLinkRoles role) const;
+    QVariant getThreadGateItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
+                               const AtpAbstractListModel::ThreadGateRoles role) const;
 
     void appendExtendMediaFileToClue(const QString &did, const QString &cid,
                                      const QString &parent_cid);

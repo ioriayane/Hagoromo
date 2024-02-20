@@ -42,6 +42,7 @@ private slots:
     void test_TimelineListModel_quote_hide2();
     void test_TimelineListModel_quote_label();
     void test_TimelineListModel_animated_image();
+    void test_TimelineListModel_threadgate();
     void test_NotificationListModel_warn();
     void test_TimelineListModel_next();
     void test_AnyProfileListModel();
@@ -1293,6 +1294,82 @@ void hagoromo_test::test_TimelineListModel_animated_image()
         QFile::setPermissions(image_path, QFile::WriteOwner | QFile::ReadOwner);
         QFile::remove(image_path);
     }
+}
+
+void hagoromo_test::test_TimelineListModel_threadgate()
+{
+    int row = 0;
+    TimelineListModel model;
+    model.setAccount(m_service + "/timeline/threadgate", QString(), QString(), QString(), "dummy",
+                     QString());
+    model.setDisplayInterval(0);
+
+    QSignalSpy spy(&model, SIGNAL(runningChanged()));
+    QVERIFY(model.getLatest());
+    spy.wait(10 * 1000);
+    QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+    row = 0;
+    QVERIFY2(model.item(row, TimelineListModel::ThreadGateTypeRole) == "choice",
+             model.item(row, TimelineListModel::ThreadGateTypeRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(row, TimelineListModel::ThreadGateRulesRole)
+                     == QStringList() << "followed"
+                                      << "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
+                                         "app.bsky.graph.list/3kflf2r3lwg2x"
+                                      << "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
+                                         "app.bsky.graph.list/3kflbnc4c4o2x",
+             model.item(row, TimelineListModel::ThreadGateRulesRole)
+                     .toStringList()
+                     .join(",")
+                     .toLocal8Bit());
+
+    row = 1;
+    QVERIFY2(model.item(row, TimelineListModel::ThreadGateTypeRole) == "everybody",
+             model.item(row, TimelineListModel::ThreadGateTypeRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(row, TimelineListModel::ThreadGateRulesRole) == QStringList(),
+             model.item(row, TimelineListModel::ThreadGateRulesRole)
+                     .toStringList()
+                     .join(",")
+                     .toLocal8Bit());
+
+    row = 2;
+    QVERIFY2(model.item(row, TimelineListModel::ThreadGateTypeRole) == "nobody",
+             model.item(row, TimelineListModel::ThreadGateTypeRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(row, TimelineListModel::ThreadGateRulesRole) == QStringList(),
+             model.item(row, TimelineListModel::ThreadGateRulesRole)
+                     .toStringList()
+                     .join(",")
+                     .toLocal8Bit());
+
+    row = 3;
+    QVERIFY2(model.item(row, TimelineListModel::ThreadGateTypeRole) == "choice",
+             model.item(row, TimelineListModel::ThreadGateTypeRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(row, TimelineListModel::ThreadGateRulesRole)
+                     == QStringList() << "at://did:plc:ipj5qejfoqu6eukvt72uhyit/"
+                                         "app.bsky.graph.list/3kdoiwxqcjv2v",
+             model.item(row, TimelineListModel::ThreadGateRulesRole)
+                     .toStringList()
+                     .join(",")
+                     .toLocal8Bit());
+
+    row = 4;
+    QVERIFY2(model.item(row, TimelineListModel::ThreadGateTypeRole) == "choice",
+             model.item(row, TimelineListModel::ThreadGateTypeRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(row, TimelineListModel::ThreadGateRulesRole) == QStringList() << "followed",
+             model.item(row, TimelineListModel::ThreadGateRulesRole)
+                     .toStringList()
+                     .join(",")
+                     .toLocal8Bit());
+
+    row = 5;
+    QVERIFY2(model.item(row, TimelineListModel::ThreadGateTypeRole) == "choice",
+             model.item(row, TimelineListModel::ThreadGateTypeRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(row, TimelineListModel::ThreadGateRulesRole)
+                     == QStringList() << "mentioned",
+             model.item(row, TimelineListModel::ThreadGateRulesRole)
+                     .toStringList()
+                     .join(",")
+                     .toLocal8Bit());
 }
 
 void hagoromo_test::test_NotificationListModel_warn()
