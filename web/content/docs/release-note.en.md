@@ -12,6 +12,7 @@ description: This is a multi-column Bluesky client.
 
 - Add
   - Support for "from:me" in post search
+  - Function to change reply limits later
 - Update
 - Fix
   - Fixed a bug in reply restrictions that prevented the selection of combinations of mentions, etc.
