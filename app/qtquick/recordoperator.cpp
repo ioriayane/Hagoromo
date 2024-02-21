@@ -146,10 +146,11 @@ void RecordOperator::post()
         ComAtprotoRepoCreateRecord *create_record = new ComAtprotoRepoCreateRecord(this);
         connect(create_record, &ComAtprotoRepoCreateRecord::finished, [=](bool success) {
             if (success) {
-                bool ret = threadGate(create_record->replyUri(), [=](bool success2) {
-                    emit finished(success2, QString(), QString());
-                    setRunning(false);
-                });
+                bool ret = threadGate(create_record->replyUri(),
+                                      [=](bool success2, const QString &uri, const QString &cid) {
+                                          emit finished(success2, uri, cid);
+                                          setRunning(false);
+                                      });
                 if (!ret) {
                     emit errorOccured("InvalidThreadGateSetting",
                                       QString("Invalid thread gate setting.\ntype:%1\nrules:%2")
@@ -697,8 +698,8 @@ void RecordOperator::updateThreadGate(const QString &uri, const QString &threadg
         } else {
             // update
             setThreadGate(type, rules);
-            bool ret = threadGate(uri, [=](bool success) {
-                emit finished(success, QString(), QString());
+            bool ret = threadGate(uri, [=](bool success, const QString &uri, const QString &cid) {
+                emit finished(success, uri, cid);
                 setRunning(false);
             });
             if (!ret) {
@@ -938,14 +939,15 @@ void RecordOperator::deleteAllListItems(std::function<void(bool)> callback)
     delete_record->deleteListItem(r_key);
 }
 
-bool RecordOperator::threadGate(const QString &uri, std::function<void(bool)> callback)
+bool RecordOperator::threadGate(
+        const QString &uri, std::function<void(bool, const QString &, const QString &)> callback)
 {
     AtProtocolType::ThreadGateType type = AtProtocolType::ThreadGateType::Everybody;
     QList<AtProtocolType::ThreadGateAllow> rules;
     AtProtocolType::ThreadGateAllow rule;
 
     if (m_threadGateType == "everybody") {
-        callback(true);
+        callback(true, QString(), QString());
         return true;
     } else if (m_threadGateType == "nobody") {
         type = AtProtocolType::ThreadGateType::Nobody;
@@ -978,7 +980,7 @@ bool RecordOperator::threadGate(const QString &uri, std::function<void(bool)> ca
         if (!success) {
             emit errorOccured(create_record->errorCode(), create_record->errorMessage());
         }
-        callback(success);
+        callback(success, create_record->replyUri(), create_record->replyCid());
         create_record->deleteLater();
     });
     create_record->setAccount(m_account);

@@ -255,6 +255,9 @@ void TimelineListModel::update(int row, TimelineListModelRoles role, const QVari
         else
             current.post.likeCount++;
         emit dataChanged(index(row), index(row));
+    } else if (m_toThreadGateRoles.contains(role)) {
+        updateThreadGateItem(current.post, m_toThreadGateRoles[role], value);
+        emit dataChanged(index(row), index(row));
     }
 
     return;

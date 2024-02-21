@@ -620,6 +620,35 @@ AtpAbstractListModel::getThreadGateItem(const AtProtocolType::AppBskyFeedDefs::P
     return QVariant();
 }
 
+void AtpAbstractListModel::updateThreadGateItem(AtProtocolType::AppBskyFeedDefs::PostView &post,
+                                                const ThreadGateRoles role, const QVariant &value)
+{
+    if (role == ThreadGateUriRole) {
+        post.threadgate.uri = value.toString();
+    } else if (role == ThreadGateTypeRole) {
+    } else if (role == ThreadGateRulesRole) {
+        AppBskyFeedThreadgate::Main record =
+                LexiconsTypeUnknown::fromQVariant<AppBskyFeedThreadgate::Main>(
+                        post.threadgate.record);
+        QStringList rules = value.toStringList();
+        record.allow_MentionRule.clear();
+        record.allow_FollowingRule.clear();
+        record.allow_ListRule.clear();
+        for (const auto &rule : rules) {
+            if (rule == "mentioned") {
+                record.allow_MentionRule.append(AppBskyFeedThreadgate::MentionRule());
+            } else if (rule == "followed") {
+                record.allow_FollowingRule.append(AppBskyFeedThreadgate::FollowingRule());
+            } else if (rule.startsWith("at://")) {
+                AppBskyFeedThreadgate::ListRule list;
+                list.list = rule;
+                record.allow_ListRule.append(list);
+            }
+        }
+        post.threadgate.record.setValue(record);
+    }
+}
+
 void AtpAbstractListModel::appendExtendMediaFileToClue(const QString &did, const QString &cid,
                                                        const QString &parent_cid)
 {

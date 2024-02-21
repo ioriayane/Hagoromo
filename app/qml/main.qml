@@ -224,6 +224,7 @@ ApplicationWindow {
         id: selectThreadGateDialog
         property string postUri: ""
         property string threadgateUri: ""
+        property var callback
         onAccepted: {
             console.log("Update threadgate\n  uri=" + postUri + "\n  tg_uri=" + threadgateUri +
                         "\n  type=" + selectedType + "\n  options=" + selectedOptions)
@@ -242,12 +243,15 @@ ApplicationWindow {
         }
         Connections {
             target: postDialog.recordOperator
-            function onRunningChanged() {
-                if(!postDialog.recordOperator.running &&
-                        selectThreadGateDialog.postUri.length > 0){
+            function onFinished(success, uri, cid) {
+                if(success && selectThreadGateDialog.postUri.length > 0){
                     globalProgressFrame.text = ""
                     selectThreadGateDialog.postUri = ""
                     selectThreadGateDialog.threadgateUri = ""
+                    if(selectThreadGateDialog.callback){
+                        selectThreadGateDialog.callback(uri, selectThreadGateDialog.selectedType, selectThreadGateDialog.selectedOptions)
+                    }
+                    selectThreadGateDialog.clear()
                 }
             }
         }
@@ -492,7 +496,7 @@ ApplicationWindow {
                                        addListDialog.open()
                                    }
                                }
-            onRequestUpdateThreadGate: (account_uuid, uri, threadgate_uri, type, rules) => {
+            onRequestUpdateThreadGate: (account_uuid, uri, threadgate_uri, type, rules, callback) => {
                                            var row = accountListModel.indexAt(account_uuid)
                                            if(row >= 0){
                                                selectThreadGateDialog.account.service = accountListModel.item(row, AccountListModel.ServiceRole)
@@ -506,6 +510,7 @@ ApplicationWindow {
                                                selectThreadGateDialog.threadgateUri = threadgate_uri
                                                selectThreadGateDialog.initialType = type
                                                selectThreadGateDialog.initialOptions = rules
+                                               selectThreadGateDialog.callback = callback
                                                selectThreadGateDialog.open()
                                            }
                                        }

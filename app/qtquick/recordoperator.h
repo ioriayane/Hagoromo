@@ -84,7 +84,8 @@ private:
     void uploadBlob(std::function<void(bool)> callback);
     bool getAllListItems(const QString &list_uri, std::function<void(bool)> callback);
     void deleteAllListItems(std::function<void(bool)> callback);
-    bool threadGate(const QString &uri, std::function<void(bool)> callback);
+    bool threadGate(const QString &uri,
+                    std::function<void(bool, const QString &, const QString &)> callback);
 
     QRegularExpression m_rxFacet;
     AtProtocolInterface::AccountData m_account;

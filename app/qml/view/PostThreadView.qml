@@ -3,6 +3,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 
+import tech.relog.hagoromo.timelinelistmodel 1.0
 import tech.relog.hagoromo.postthreadlistmodel 1.0
 import tech.relog.hagoromo.systemtool 1.0
 import tech.relog.hagoromo.singleton 1.0
@@ -33,7 +34,7 @@ ColumnLayout {
     signal requestViewLikedBy(string uri)
     signal requestViewRepostedBy(string uri)
     signal requestViewSearchPosts(string text)
-    signal requestUpdateThreadGate(string uri, string threadgate_uri, string type, var rules)
+    signal requestUpdateThreadGate(string uri, string threadgate_uri, string type, var rules, var callback)
     signal requestReportPost(string uri, string cid)
 
     signal errorOccured(string code, string message)
@@ -218,13 +219,19 @@ ColumnLayout {
                 postControls.onTriggeredRequestReport: postThreadView.requestReportPost(model.uri, model.cid)
                 postControls.onTriggeredRequestViewLikedBy: postThreadView.requestViewLikedBy(model.uri)
                 postControls.onTriggeredRequestViewRepostedBy: postThreadView.requestViewRepostedBy(model.uri)
-                postControls.onTriggeredRequestUpdateThreadGate: postThreadView.requestUpdateThreadGate(model.uri, model.threadGateUri, model.threadGateType, model.threadGateRules)
+                postControls.onTriggeredRequestUpdateThreadGate: postThreadView.requestUpdateThreadGate(model.uri, model.threadGateUri, model.threadGateType, model.threadGateRules, updatedThreadGate)
 
                 threadConnected: model.threadConnected
                 threadConnectorTop.visible:  model.threadConnectorTop
                 threadConnectorBottom.visible: model.threadConnectorBottom
 
                 onHoveredLinkChanged: postThreadView.hoveredLink = hoveredLink
+
+                function updatedThreadGate(threadgate_uri, type, rules){
+                    console.log("updatedThreadGate:" + model.index + ", " + model.threadGateUri + ", threadgate_uri=" + threadgate_uri + ", " + type + ", rules=" + rules)
+                    rootListView.model.update(model.index, TimelineListModel.ThreadGateUriRole, threadgate_uri)
+                    rootListView.model.update(model.index, TimelineListModel.ThreadGateRulesRole, rules)
+                }
             }
         }
     }

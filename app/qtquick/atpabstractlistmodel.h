@@ -156,6 +156,9 @@ protected:
                              const AtpAbstractListModel::ListLinkRoles role) const;
     QVariant getThreadGateItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
                                const AtpAbstractListModel::ThreadGateRoles role) const;
+    void updateThreadGateItem(AtProtocolType::AppBskyFeedDefs::PostView &post,
+                              const AtpAbstractListModel::ThreadGateRoles role,
+                              const QVariant &value);
 
     void appendExtendMediaFileToClue(const QString &did, const QString &cid,
                                      const QString &parent_cid);

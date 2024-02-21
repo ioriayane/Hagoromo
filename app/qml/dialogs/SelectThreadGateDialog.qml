@@ -49,7 +49,7 @@ Dialog {
         }
         listsListModel.clear()
         listsListModel.setAccount(account.service, account.did, account.handle,
-                                       account.email, account.accessJwt, account.refreshJwt)
+                                  account.email, account.accessJwt, account.refreshJwt)
         listsListModel.getLatest()
     }
     onClosed: {
@@ -222,19 +222,20 @@ Dialog {
                             break
                         }
                     }
-                    var o_i = 0
-                    if(mentionedCheckBox.checked){
-                        selectThreadGateDialog.selectedOptions[o_i++] = "mentioned"
-                    }
-                    if(followedCheckBox.checked){
-                        selectThreadGateDialog.selectedOptions[o_i++] = "followed"
-                    }
-                    for(i=0; i<rootListView.count; i++){
-                        if(rootListView.itemAtIndex(i).checked){
-                            selectThreadGateDialog.selectedOptions[o_i++] = rootListView.itemAtIndex(i).value
+                    if(selectThreadGateDialog.selectedType === "choice"){
+                        var o_i = 0
+                        if(mentionedCheckBox.checked){
+                            selectThreadGateDialog.selectedOptions[o_i++] = "mentioned"
+                        }
+                        if(followedCheckBox.checked){
+                            selectThreadGateDialog.selectedOptions[o_i++] = "followed"
+                        }
+                        for(i=0; i<rootListView.count; i++){
+                            if(rootListView.itemAtIndex(i).checked){
+                                selectThreadGateDialog.selectedOptions[o_i++] = rootListView.itemAtIndex(i).value
+                            }
                         }
                     }
-
                     selectThreadGateDialog.accept()
                 }
             }
