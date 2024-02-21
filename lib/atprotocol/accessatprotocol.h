@@ -93,6 +93,9 @@ protected:
 
     void setJsonBlob(const AtProtocolType::Blob &blob, QJsonObject &json_blob);
 
+    QJsonObject makeThreadGateJsonObject(const QString &uri, const AtProtocolType::ThreadGateType type,
+                                      const QList<AtProtocolType::ThreadGateAllow> &allow_rules);
+
 private:
     static HttpAccessManager *m_manager;
 

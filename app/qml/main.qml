@@ -222,9 +222,34 @@ ApplicationWindow {
     }
     SelectThreadGateDialog {
         id: selectThreadGateDialog
+        property string postUri: ""
+        property string threadgateUri: ""
         onAccepted: {
-//            accountList.model.update(accountIndex, AccountListModel.ThreadGateTypeRole, selectedType)
-//            accountList.model.update(accountIndex, AccountListModel.ThreadGateOptionsRole, selectedOptions)
+            console.log("Update threadgate\n  uri=" + postUri + "\n  tg_uri=" + threadgateUri +
+                        "\n  type=" + selectedType + "\n  options=" + selectedOptions)
+            postDialog.recordOperator.setAccount(selectThreadGateDialog.account.service,
+                                                 selectThreadGateDialog.account.did,
+                                                 selectThreadGateDialog.account.handle,
+                                                 selectThreadGateDialog.account.email,
+                                                 selectThreadGateDialog.account.accessJwt,
+                                                 selectThreadGateDialog.account.refreshJwt)
+            postDialog.recordOperator.clear()
+            postDialog.recordOperator.updateThreadGate(postUri,
+                                                       threadgateUri,
+                                                       selectedType,
+                                                       selectedOptions)
+            globalProgressFrame.text = qsTr("Updating 'Who can reply' ...")
+        }
+        Connections {
+            target: postDialog.recordOperator
+            function onRunningChanged() {
+                if(!postDialog.recordOperator.running &&
+                        selectThreadGateDialog.postUri.length > 0){
+                    globalProgressFrame.text = ""
+                    selectThreadGateDialog.postUri = ""
+                    selectThreadGateDialog.threadgateUri = ""
+                }
+            }
         }
     }
 
@@ -467,7 +492,7 @@ ApplicationWindow {
                                        addListDialog.open()
                                    }
                                }
-            onRequestUpdateThreadGate: (account_uuid, uri, type, rules) => {
+            onRequestUpdateThreadGate: (account_uuid, uri, threadgate_uri, type, rules) => {
                                            var row = accountListModel.indexAt(account_uuid)
                                            if(row >= 0){
                                                selectThreadGateDialog.account.service = accountListModel.item(row, AccountListModel.ServiceRole)
@@ -477,6 +502,8 @@ ApplicationWindow {
                                                selectThreadGateDialog.account.accessJwt = accountListModel.item(row, AccountListModel.AccessJwtRole)
                                                selectThreadGateDialog.account.refreshJwt = accountListModel.item(row, AccountListModel.RefreshJwtRole)
                                                selectThreadGateDialog.account.avatar = accountListModel.item(row, AccountListModel.AvatarRole)
+                                               selectThreadGateDialog.postUri = uri
+                                               selectThreadGateDialog.threadgateUri = threadgate_uri
                                                selectThreadGateDialog.initialType = type
                                                selectThreadGateDialog.initialOptions = rules
                                                selectThreadGateDialog.open()

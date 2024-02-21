@@ -101,6 +101,7 @@ public:
         ContentMediaFilterMessageRole,
         QuoteFilterMatchedRole,
 
+        ThreadGateUriRole,
         ThreadGateTypeRole,
         ThreadGateRulesRole,
 

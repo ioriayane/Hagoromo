@@ -81,6 +81,7 @@ public:
         ListLinkAvatarRole,
     };
     enum ThreadGateRoles {
+        ThreadGateUriRole,
         ThreadGateTypeRole,
         ThreadGateRulesRole,
     };

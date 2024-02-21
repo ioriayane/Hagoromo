@@ -610,7 +610,9 @@ AtpAbstractListModel::getThreadGateItem(const AtProtocolType::AppBskyFeedDefs::P
         }
     }
 
-    if (role == ThreadGateTypeRole) {
+    if (role == ThreadGateUriRole) {
+        return post.threadgate.uri;
+    } else if (role == ThreadGateTypeRole) {
         return type;
     } else if (role == ThreadGateRulesRole) {
         return rules;

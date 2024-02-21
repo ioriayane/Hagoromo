@@ -45,6 +45,8 @@ TimelineListModel::TimelineListModel(QObject *parent)
             AtpAbstractListModel::ListLinkRoles::ListLinkDescriptionRole;
     m_toListLinkRoles[ListLinkAvatarRole] = AtpAbstractListModel::ListLinkRoles::ListLinkAvatarRole;
 
+    m_toThreadGateRoles[ThreadGateUriRole] =
+            AtpAbstractListModel::ThreadGateRoles::ThreadGateUriRole;
     m_toThreadGateRoles[ThreadGateTypeRole] =
             AtpAbstractListModel::ThreadGateRoles::ThreadGateTypeRole;
     m_toThreadGateRoles[ThreadGateRulesRole] =
@@ -503,6 +505,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[ContentMediaFilterMessageRole] = "contentMediaFilterMessage";
     roles[QuoteFilterMatchedRole] = "quoteFilterMatched";
 
+    roles[ThreadGateUriRole] = "threadGateUri";
     roles[ThreadGateTypeRole] = "threadGateType";
     roles[ThreadGateRulesRole] = "threadGateRules";
 

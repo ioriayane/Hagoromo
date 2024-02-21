@@ -33,7 +33,7 @@ ColumnLayout {
     signal requestViewLikedBy(string uri)
     signal requestViewRepostedBy(string uri)
     signal requestViewSearchPosts(string text)
-    signal requestUpdateThreadGate(string uri, string type, var rules)
+    signal requestUpdateThreadGate(string uri, string threadgate_uri, string type, var rules)
     signal requestReportPost(string uri, string cid)
 
     signal errorOccured(string code, string message)
@@ -218,7 +218,7 @@ ColumnLayout {
                 postControls.onTriggeredRequestReport: postThreadView.requestReportPost(model.uri, model.cid)
                 postControls.onTriggeredRequestViewLikedBy: postThreadView.requestViewLikedBy(model.uri)
                 postControls.onTriggeredRequestViewRepostedBy: postThreadView.requestViewRepostedBy(model.uri)
-                postControls.onTriggeredRequestUpdateThreadGate: postThreadView.requestUpdateThreadGate(model.uri, model.threadGateType, model.threadGateRules)
+                postControls.onTriggeredRequestUpdateThreadGate: postThreadView.requestUpdateThreadGate(model.uri, model.threadGateUri, model.threadGateType, model.threadGateRules)
 
                 threadConnected: model.threadConnected
                 threadConnectorTop.visible:  model.threadConnectorTop
