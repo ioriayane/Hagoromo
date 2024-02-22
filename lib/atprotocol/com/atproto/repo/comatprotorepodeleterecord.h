@@ -20,6 +20,7 @@ public:
     void deleteBlock(const QString &rkey);
     void deleteList(const QString &rkey);
     void deleteListItem(const QString &rkey);
+    void deleteThreadGate(const QString &rkey);
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);

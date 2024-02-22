@@ -38,6 +38,7 @@ class Defs2Struct:
                          'AppBskyGraphListitem::Main',
                          'AppBskyActorProfile::Main',
                          'AppBskyGraphList::Main',
+                         'AppBskyFeedThreadgate::Main',
                         )
 
     def to_struct_style(self, name: str) -> str:

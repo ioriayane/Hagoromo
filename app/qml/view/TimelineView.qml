@@ -35,6 +35,7 @@ ScrollView {
     signal requestViewLikedBy(string uri)
     signal requestViewRepostedBy(string uri)
     signal requestViewSearchPosts(string text)
+    signal requestUpdateThreadGate(string uri, string threadgate_uri, string type, var rules, var callback)
     signal requestReportPost(string uri, string cid)
 
     signal scrollPositionChanged(bool top)
@@ -184,7 +185,14 @@ ScrollView {
             postControls.onTriggeredRequestReport: timelineView.requestReportPost(model.uri, model.cid)
             postControls.onTriggeredRequestViewLikedBy: timelineView.requestViewLikedBy(model.uri)
             postControls.onTriggeredRequestViewRepostedBy: timelineView.requestViewRepostedBy(model.uri)
+            postControls.onTriggeredRequestUpdateThreadGate: timelineView.requestUpdateThreadGate(model.uri, model.threadGateUri, model.threadGateType, model.threadGateRules, updatedThreadGate)
             onHoveredLinkChanged: timelineView.hoveredLink = hoveredLink
+
+            function updatedThreadGate(threadgate_uri, type, rules){
+                console.log("updatedThreadGate:" + model.index + ", " + model.threadGateUri + ", threadgate_uri=" + threadgate_uri + ", " + type + ", rules=" + rules)
+                rootListView.model.update(model.index, TimelineListModel.ThreadGateUriRole, threadgate_uri)
+                rootListView.model.update(model.index, TimelineListModel.ThreadGateRulesRole, rules)
+            }
         }
     }
 }

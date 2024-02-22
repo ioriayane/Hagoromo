@@ -61,6 +61,12 @@ void ComAtprotoRepoDeleteRecord::deleteListItem(const QString &rkey)
                  QString());
 }
 
+void ComAtprotoRepoDeleteRecord::deleteThreadGate(const QString &rkey)
+{
+    deleteRecord(this->did(), QStringLiteral("app.bsky.feed.threadgate"), rkey, QString(),
+                 QString());
+}
+
 bool ComAtprotoRepoDeleteRecord::parseJson(bool success, const QString reply_json)
 {
     Q_UNUSED(reply_json)

@@ -47,6 +47,7 @@ ColumnLayout {
     signal requestViewRepostedBy(string uri)
     signal requestViewSearchPosts(string text)
     signal requestViewListDetail(string uri)
+    signal requestUpdateThreadGate(string uri, string threadgate_uri, string type, var rules, var callback)
     signal requestReportPost(string uri, string cid)
     signal requestReportAccount(string did)
     signal requestAddRemoveFromLists(string did)
@@ -517,6 +518,7 @@ ColumnLayout {
             onRequestViewRepostedBy: (uri) => profileView.requestViewRepostedBy(uri)
             onRequestViewSearchPosts: (text) => profileView.requestViewSearchPosts(text)
             onRequestReportPost: (uri, cid) => profileView.requestReportPost(uri, cid)
+            onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) => profileView.requestUpdateThreadGate(uri, threadgate_uri, type, rules, callback)
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
             onScrollPositionChanged: (top) => userProfileColumnLayout.viewChange(top)
         }
@@ -553,6 +555,7 @@ ColumnLayout {
             onRequestViewRepostedBy: (uri) => profileView.requestViewRepostedBy(uri)
             onRequestViewSearchPosts: (text) => profileView.requestViewSearchPosts(text)
             onRequestReportPost: (uri, cid) => profileView.requestReportPost(uri, cid)
+            onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) => profileView.requestUpdateThreadGate(uri, threadgate_uri, type, rules, callback)
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
             onScrollPositionChanged: (top) => userProfileColumnLayout.viewChange(top)
         }
@@ -589,6 +592,7 @@ ColumnLayout {
             onRequestViewRepostedBy: (uri) => profileView.requestViewRepostedBy(uri)
             onRequestViewSearchPosts: (text) => profileView.requestViewSearchPosts(text)
             onRequestReportPost: (uri, cid) => profileView.requestReportPost(uri, cid)
+            onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) => profileView.requestUpdateThreadGate(uri, threadgate_uri, type, rules, callback)
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
             onScrollPositionChanged: (top) => userProfileColumnLayout.viewChange(top)
         }
@@ -625,6 +629,7 @@ ColumnLayout {
             onRequestViewRepostedBy: (uri) => profileView.requestViewRepostedBy(uri)
             onRequestViewSearchPosts: (text) => profileView.requestViewSearchPosts(text)
             onRequestReportPost: (uri, cid) => profileView.requestReportPost(uri, cid)
+            onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) => profileView.requestUpdateThreadGate(uri, threadgate_uri, type, rules, callback)
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
             onScrollPositionChanged: (top) => userProfileColumnLayout.viewChange(top)
         }

@@ -62,6 +62,10 @@ void copyUnknown(const QJsonObject &src, QVariant &dest)
 #else
         dest.setValue(record);
 #endif
+    } else if (type == QStringLiteral("app.bsky.feed.threadgate")) {
+        AppBskyFeedThreadgate::Main record;
+        AppBskyFeedThreadgate::copyMain(src, record);
+        dest.setValue(record);
     }
 }
 

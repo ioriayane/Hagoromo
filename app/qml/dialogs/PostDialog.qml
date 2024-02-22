@@ -44,6 +44,7 @@ Dialog {
     property string replyText: ""
 
     property alias postText: postText
+    property alias recordOperator: createRecord
 
     signal errorOccured(string account_uuid, string code, string message)
 

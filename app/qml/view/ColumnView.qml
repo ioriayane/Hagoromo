@@ -49,6 +49,7 @@ ColumnLayout {
     signal requestAddRemoveFromLists(string account_uuid, string did)
     signal requestEditProfile(string account_uuid, string did, string avatar, string banner, string display_name, string description)
     signal requestEditList(string account_uuid, string uri, string avatar, string name, string description)
+    signal requestUpdateThreadGate(string account_uuid, string uri, string threadgate_uri, string type, var rules, var callback)
 
     signal requestMoveToLeft(string key)
     signal requestMoveToRight(string key)
@@ -101,7 +102,7 @@ ColumnLayout {
             onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
             onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
-
+            onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) => columnView.requestUpdateThreadGate(account.uuid, uri, threadgate_uri, type, rules, callback)
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
         }
     }
@@ -169,6 +170,7 @@ ColumnLayout {
             onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
             onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
+            onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) => columnView.requestUpdateThreadGate(account.uuid, uri, threadgate_uri, type, rules, callback)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
             onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
@@ -208,6 +210,7 @@ ColumnLayout {
             onRequestViewListDetail: (uri) => columnStackView.push(listDetailComponent, { "listUri": uri })
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
             onRequestReportAccount: (did) => columnView.requestReportAccount(account.uuid, did)
+            onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) => columnView.requestUpdateThreadGate(account.uuid, uri, threadgate_uri, type, rules, callback)
             onRequestAddRemoveFromLists: (did) => columnView.requestAddRemoveFromLists(account.uuid, did)
             onRequestEditProfile: (did, avatar, banner, display_name, description) => {
                                       columnView.requestEditProfile(account.uuid, did, avatar, banner, display_name, description)
@@ -255,6 +258,7 @@ ColumnLayout {
             onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
             onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
+            onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) => columnView.requestUpdateThreadGate(account.uuid, uri, threadgate_uri, type, rules, callback)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
         }
@@ -309,6 +313,7 @@ ColumnLayout {
             onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
             onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
+            onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) => columnView.requestUpdateThreadGate(account.uuid, uri, threadgate_uri, type, rules, callback)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
         }
@@ -347,6 +352,7 @@ ColumnLayout {
             onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
             onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
+            onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) => columnView.requestUpdateThreadGate(account.uuid, uri, threadgate_uri, type, rules, callback)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
         }
@@ -434,6 +440,7 @@ ColumnLayout {
             onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
             onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
+            onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) => columnView.requestUpdateThreadGate(account.uuid, uri, threadgate_uri, type, rules, callback)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
         }
