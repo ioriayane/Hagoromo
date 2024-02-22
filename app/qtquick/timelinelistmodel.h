@@ -20,6 +20,13 @@ class TimelineListModel : public AtpAbstractListModel
 
     Q_PROPERTY(bool visibleReplyToUnfollowedUsers READ visibleReplyToUnfollowedUsers WRITE
                        setVisibleReplyToUnfollowedUsers NOTIFY visibleReplyToUnfollowedUsersChanged)
+    Q_PROPERTY(bool visibleRepostOfOwn READ visibleRepostOfOwn WRITE setVisibleRepostOfOwn NOTIFY
+                       visibleRepostOfOwnChanged)
+    Q_PROPERTY(bool visibleRepostOfFollowingUsers READ visibleRepostOfFollowingUsers WRITE
+                       setVisibleRepostOfFollowingUsers NOTIFY visibleRepostOfFollowingUsersChanged)
+    Q_PROPERTY(bool visibleRepostOfUnfollowingUsers READ visibleRepostOfUnfollowingUsers WRITE
+                       setVisibleRepostOfUnfollowingUsers NOTIFY
+                               visibleRepostOfUnfollowingUsersChanged)
 public:
     explicit TimelineListModel(QObject *parent = nullptr);
 
@@ -135,9 +142,18 @@ public:
 
     bool visibleReplyToUnfollowedUsers() const;
     void setVisibleReplyToUnfollowedUsers(bool newVisibleReplyToUnfollowedUser);
+    bool visibleRepostOfOwn() const;
+    void setVisibleRepostOfOwn(bool newVisibleRepostOfOwn);
+    bool visibleRepostOfFollowingUsers() const;
+    void setVisibleRepostOfFollowingUsers(bool newVisibleRepostOfFollowingUsers);
+    bool visibleRepostOfUnfollowingUsers() const;
+    void setVisibleRepostOfUnfollowingUsers(bool newVisibleRepostOfUnfollowingUsers);
 
 signals:
     void visibleReplyToUnfollowedUsersChanged();
+    void visibleRepostOfOwnChanged();
+    void visibleRepostOfFollowingUsersChanged();
+    void visibleRepostOfUnfollowingUsersChanged();
 
 protected:
     QHash<int, QByteArray> roleNames() const;
@@ -155,8 +171,6 @@ protected:
     QHash<QString, ThreadConnector> m_threadConnectorHash;
 
 private:
-    bool m_visibleReplyToUnfollowedUsers;
-
     QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::ExternalLinkRoles>
             m_toExternalLinkRoles;
     QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::FeedGeneratorRoles>
@@ -165,6 +179,11 @@ private:
             m_toListLinkRoles;
     QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::ThreadGateRoles>
             m_toThreadGateRoles;
+
+    bool m_visibleReplyToUnfollowedUsers;
+    bool m_visibleRepostOfOwn;
+    bool m_visibleRepostOfFollowingUsers;
+    bool m_visibleRepostOfUnfollowingUsers;
 };
 
 #endif // TIMELINELISTMODEL_H

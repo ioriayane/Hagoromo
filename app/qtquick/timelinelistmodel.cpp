@@ -9,7 +9,11 @@ using AtProtocolInterface::AppBskyFeedGetTimeline;
 using namespace AtProtocolType;
 
 TimelineListModel::TimelineListModel(QObject *parent)
-    : AtpAbstractListModel { parent }, m_visibleReplyToUnfollowedUsers(true)
+    : AtpAbstractListModel { parent },
+      m_visibleReplyToUnfollowedUsers(true),
+      m_visibleRepostOfOwn(true),
+      m_visibleRepostOfFollowingUsers(true),
+      m_visibleRepostOfUnfollowingUsers(true)
 {
     m_toExternalLinkRoles[HasExternalLinkRole] =
             AtpAbstractListModel::ExternalLinkRoles::HasExternalLinkRole;
@@ -560,6 +564,33 @@ bool TimelineListModel::checkVisibility(const QString &cid)
             }
         }
     }
+    if (!visibleRepostOfOwn()) {
+        // セルフリポスト
+        if (current.reason_type == AppBskyFeedDefs::FeedViewPostReasonType::reason_ReasonRepost
+            && current.reason_ReasonRepost.by.did == current.post.author.did) {
+            qDebug() << "Hide reposts of user's own post." << current.post.author.handle << cid;
+            return false;
+        }
+    }
+    if (!visibleRepostOfFollowingUsers()) {
+        // フォローしている人のリポスト
+        if (current.reason_type == AppBskyFeedDefs::FeedViewPostReasonType::reason_ReasonRepost
+            && current.post.author.viewer.following.contains(account().did)) {
+            qDebug() << "Hide reposts of posts by users you follow." << current.post.author.handle
+                     << cid;
+            return false;
+        }
+    }
+    if (!visibleRepostOfUnfollowingUsers()) {
+        // フォローしていない人のリポスト
+        if (current.reason_type == AppBskyFeedDefs::FeedViewPostReasonType::reason_ReasonRepost
+            && !current.post.author.viewer.following.contains(account().did)) {
+            qDebug() << "Hide reposts of posts by users you unfollow." << current.post.author.handle
+                     << cid;
+            return false;
+        }
+    }
+
     return true;
 }
 
@@ -799,4 +830,43 @@ void TimelineListModel::setVisibleReplyToUnfollowedUsers(bool newVisibleReplyToU
     m_visibleReplyToUnfollowedUsers = newVisibleReplyToUnfollowedUser;
     emit visibleReplyToUnfollowedUsersChanged();
     reflectVisibility();
+}
+
+bool TimelineListModel::visibleRepostOfOwn() const
+{
+    return m_visibleRepostOfOwn;
+}
+
+void TimelineListModel::setVisibleRepostOfOwn(bool newVisibleRepostOfOwn)
+{
+    if (m_visibleRepostOfOwn == newVisibleRepostOfOwn)
+        return;
+    m_visibleRepostOfOwn = newVisibleRepostOfOwn;
+    emit visibleRepostOfOwnChanged();
+}
+
+bool TimelineListModel::visibleRepostOfFollowingUsers() const
+{
+    return m_visibleRepostOfFollowingUsers;
+}
+
+void TimelineListModel::setVisibleRepostOfFollowingUsers(bool newVisibleRepostOfFollowingUsers)
+{
+    if (m_visibleRepostOfFollowingUsers == newVisibleRepostOfFollowingUsers)
+        return;
+    m_visibleRepostOfFollowingUsers = newVisibleRepostOfFollowingUsers;
+    emit visibleRepostOfFollowingUsersChanged();
+}
+
+bool TimelineListModel::visibleRepostOfUnfollowingUsers() const
+{
+    return m_visibleRepostOfUnfollowingUsers;
+}
+
+void TimelineListModel::setVisibleRepostOfUnfollowingUsers(bool newVisibleRepostOfUnfollowingUsers)
+{
+    if (m_visibleRepostOfUnfollowingUsers == newVisibleRepostOfUnfollowingUsers)
+        return;
+    m_visibleRepostOfUnfollowingUsers = newVisibleRepostOfUnfollowingUsers;
+    emit visibleRepostOfUnfollowingUsersChanged();
 }
