@@ -308,40 +308,9 @@ void ComAtprotoRepoCreateRecord::threadGate(
         return;
     }
 
-    QString rkey = uri.split("/").last();
-
-    QJsonArray json_allow;
-    if (type == ThreadGateType::Choice) {
-        for (const auto &allow : allow_rules) {
-            QJsonObject json_rule;
-            if (allow.type == ThreadGateAllowType::Mentioned) {
-                json_rule.insert("$type", "app.bsky.feed.threadgate#mentionRule");
-            } else if (allow.type == ThreadGateAllowType::Followed) {
-                json_rule.insert("$type", "app.bsky.feed.threadgate#followingRule");
-            } else if (allow.type == ThreadGateAllowType::List && allow.uri.startsWith("at://")) {
-                json_rule.insert("$type", "app.bsky.feed.threadgate#listRule");
-                json_rule.insert("list", allow.uri);
-            }
-            json_allow.append(json_rule);
-        }
-    }
-
-    QJsonObject json_record;
-    json_record.insert("$type", "app.bsky.feed.threadgate");
-    json_record.insert("post", uri);
-    json_record.insert("createdAt", QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
-    json_record.insert("allow", json_allow);
-
-    QJsonObject json_obj;
-    json_obj.insert("collection", "app.bsky.feed.threadgate");
-    json_obj.insert("repo", this->did());
-    json_obj.insert("rkey", rkey);
-    json_obj.insert("record", json_record);
-
-    QJsonDocument json_doc(json_obj);
-
     AccessAtProtocol::post(QStringLiteral("xrpc/com.atproto.repo.createRecord"),
-                           json_doc.toJson(QJsonDocument::Compact));
+                           QJsonDocument(makeThreadGateJsonObject(uri, type, allow_rules))
+                                   .toJson(QJsonDocument::Compact));
 }
 
 void ComAtprotoRepoCreateRecord::setReply(const QString &parent_cid, const QString &parent_uri,

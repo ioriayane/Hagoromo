@@ -1,8 +1,8 @@
 #include "atpabstractlistmodel.h"
 #include "atprotocol/com/atproto/sync/comatprotosyncgetblob.h"
 #include "atprotocol/lexicons_func_unknown.h"
-#include "translator.h"
 #include "common.h"
+#include "translator.h"
 
 #include <QDesktopServices>
 #include <QUrlQuery>
@@ -580,6 +580,73 @@ AtpAbstractListModel::getListLinkItem(const AtProtocolType::AppBskyFeedDefs::Pos
             return QString();
     }
     return QVariant();
+}
+
+QVariant
+AtpAbstractListModel::getThreadGateItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
+                                        const ThreadGateRoles role) const
+{
+    AppBskyFeedThreadgate::Main record =
+            LexiconsTypeUnknown::fromQVariant<AppBskyFeedThreadgate::Main>(post.threadgate.record);
+
+    QString type;
+    QStringList rules;
+    if (post.threadgate.uri.isEmpty()) {
+        type = "everybody";
+    } else {
+        if (!record.allow_MentionRule.isEmpty()) {
+            rules.append("mentioned");
+        }
+        if (!record.allow_FollowingRule.isEmpty()) {
+            rules.append("followed");
+        }
+        for (const auto &item : record.allow_ListRule) {
+            rules.append(item.list);
+        }
+        if (rules.isEmpty()) {
+            type = "nobody";
+        } else {
+            type = "choice";
+        }
+    }
+
+    if (role == ThreadGateUriRole) {
+        return post.threadgate.uri;
+    } else if (role == ThreadGateTypeRole) {
+        return type;
+    } else if (role == ThreadGateRulesRole) {
+        return rules;
+    }
+    return QVariant();
+}
+
+void AtpAbstractListModel::updateThreadGateItem(AtProtocolType::AppBskyFeedDefs::PostView &post,
+                                                const ThreadGateRoles role, const QVariant &value)
+{
+    if (role == ThreadGateUriRole) {
+        post.threadgate.uri = value.toString();
+    } else if (role == ThreadGateTypeRole) {
+    } else if (role == ThreadGateRulesRole) {
+        AppBskyFeedThreadgate::Main record =
+                LexiconsTypeUnknown::fromQVariant<AppBskyFeedThreadgate::Main>(
+                        post.threadgate.record);
+        QStringList rules = value.toStringList();
+        record.allow_MentionRule.clear();
+        record.allow_FollowingRule.clear();
+        record.allow_ListRule.clear();
+        for (const auto &rule : rules) {
+            if (rule == "mentioned") {
+                record.allow_MentionRule.append(AppBskyFeedThreadgate::MentionRule());
+            } else if (rule == "followed") {
+                record.allow_FollowingRule.append(AppBskyFeedThreadgate::FollowingRule());
+            } else if (rule.startsWith("at://")) {
+                AppBskyFeedThreadgate::ListRule list;
+                list.list = rule;
+                record.allow_ListRule.append(list);
+            }
+        }
+        post.threadgate.record.setValue(record);
+    }
 }
 
 void AtpAbstractListModel::appendExtendMediaFileToClue(const QString &did, const QString &cid,

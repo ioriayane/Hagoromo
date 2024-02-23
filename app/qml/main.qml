@@ -173,6 +173,9 @@ ApplicationWindow {
                 visibleReplyCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleReplyRole)
                 visibleQuoteCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleQuoteRole)
                 visibleReplyToUnfollowedUsersCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleReplyToUnfollowedUsersRole)
+                visibleRepostOfOwnCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleRepostOfOwnRole)
+                visibleRepostOfFollowingUsersCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleRepostOfFollowingUsersRole)
+                visibleRepostOfUnfollowingUsersCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleRepostOfUnfollowingUsersRole)
 
                 open()
             }
@@ -193,6 +196,9 @@ ApplicationWindow {
                 columnManageModel.update(i, ColumnListModel.VisibleReplyRole, visibleReplyCheckBox.checked)
                 columnManageModel.update(i, ColumnListModel.VisibleQuoteRole, visibleQuoteCheckBox.checked)
                 columnManageModel.update(i, ColumnListModel.VisibleReplyToUnfollowedUsersRole, visibleReplyToUnfollowedUsersCheckBox.checked)
+                columnManageModel.update(i, ColumnListModel.VisibleRepostOfOwnRole, visibleRepostOfOwnCheckBox.checked)
+                columnManageModel.update(i, ColumnListModel.VisibleRepostOfFollowingUsersRole, visibleRepostOfFollowingUsersCheckBox.checked)
+                columnManageModel.update(i, ColumnListModel.VisibleRepostOfUnfollowingUsersRole, visibleRepostOfUnfollowingUsersCheckBox.checked)
 
                 repeater.updateSettings(0)
             }
@@ -219,6 +225,42 @@ ApplicationWindow {
         id: editProfileDialog
         onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
         onAccepted: accountListModel.refreshAccountProfile(editProfileDialog.account.uuid)
+    }
+    SelectThreadGateDialog {
+        id: selectThreadGateDialog
+        property string postUri: ""
+        property string threadgateUri: ""
+        property var callback
+        onAccepted: {
+            console.log("Update threadgate\n  uri=" + postUri + "\n  tg_uri=" + threadgateUri +
+                        "\n  type=" + selectedType + "\n  options=" + selectedOptions)
+            postDialog.recordOperator.setAccount(selectThreadGateDialog.account.service,
+                                                 selectThreadGateDialog.account.did,
+                                                 selectThreadGateDialog.account.handle,
+                                                 selectThreadGateDialog.account.email,
+                                                 selectThreadGateDialog.account.accessJwt,
+                                                 selectThreadGateDialog.account.refreshJwt)
+            postDialog.recordOperator.clear()
+            postDialog.recordOperator.updateThreadGate(postUri,
+                                                       threadgateUri,
+                                                       selectedType,
+                                                       selectedOptions)
+            globalProgressFrame.text = qsTr("Updating 'Who can reply' ...")
+        }
+        Connections {
+            target: postDialog.recordOperator
+            function onFinished(success, uri, cid) {
+                if(success && selectThreadGateDialog.postUri.length > 0){
+                    globalProgressFrame.text = ""
+                    selectThreadGateDialog.postUri = ""
+                    selectThreadGateDialog.threadgateUri = ""
+                    if(selectThreadGateDialog.callback){
+                        selectThreadGateDialog.callback(uri, selectThreadGateDialog.selectedType, selectThreadGateDialog.selectedOptions)
+                    }
+                    selectThreadGateDialog.clear()
+                }
+            }
+        }
     }
 
     MessageDialog {
@@ -288,7 +330,7 @@ ApplicationWindow {
                        "email",
                        accountListModel.item(currentAccountIndex, AccountListModel.AccessJwtRole),
                        accountListModel.item(currentAccountIndex, AccountListModel.RefreshJwtRole)
-                    )
+                       )
             actor = did
             searchTarget = "#cache"
             if(listsListModel.getLatest()){
@@ -460,6 +502,24 @@ ApplicationWindow {
                                        addListDialog.open()
                                    }
                                }
+            onRequestUpdateThreadGate: (account_uuid, uri, threadgate_uri, type, rules, callback) => {
+                                           var row = accountListModel.indexAt(account_uuid)
+                                           if(row >= 0){
+                                               selectThreadGateDialog.account.service = accountListModel.item(row, AccountListModel.ServiceRole)
+                                               selectThreadGateDialog.account.did = accountListModel.item(row, AccountListModel.DidRole)
+                                               selectThreadGateDialog.account.handle = accountListModel.item(row, AccountListModel.HandleRole)
+                                               selectThreadGateDialog.account.email = accountListModel.item(row, AccountListModel.EmailRole)
+                                               selectThreadGateDialog.account.accessJwt = accountListModel.item(row, AccountListModel.AccessJwtRole)
+                                               selectThreadGateDialog.account.refreshJwt = accountListModel.item(row, AccountListModel.RefreshJwtRole)
+                                               selectThreadGateDialog.account.avatar = accountListModel.item(row, AccountListModel.AvatarRole)
+                                               selectThreadGateDialog.postUri = uri
+                                               selectThreadGateDialog.threadgateUri = threadgate_uri
+                                               selectThreadGateDialog.initialType = type
+                                               selectThreadGateDialog.initialOptions = rules
+                                               selectThreadGateDialog.callback = callback
+                                               selectThreadGateDialog.open()
+                                           }
+                                       }
 
             onRequestMoveToLeft: (key) => {
                                      console.log("move to left:" + key)
@@ -742,6 +802,9 @@ ApplicationWindow {
                         item.settings.visibleReply = model.visibleReply
                         item.settings.visibleQuote = model.visibleQuote
                         item.settings.visibleReplyToUnfollowedUsers = model.visibleReplyToUnfollowedUsers
+                        item.settings.visibleRepostOfOwn = model.visibleRepostOfOwn
+                        item.settings.visibleRepostOfFollowingUsers = model.visibleRepostOfFollowingUsers
+                        item.settings.visibleRepostOfUnfollowingUsers = model.visibleRepostOfUnfollowingUsers
 
                         item.settings.updateSeenNotification = settingDialog.settings.updateSeenNotification
                         item.settings.sequentialDisplayOfPosts = (settingDialog.settings.displayOfPosts === "sequential")

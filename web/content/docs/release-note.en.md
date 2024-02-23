@@ -8,6 +8,18 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+### v0.24.0 - 2024/2/23
+
+- Add
+  - Support for "from:me" in post search
+  - Function to change reply limits later
+  - Function to hide reposts (the following can be set individually)
+    - Reposts by the user
+    - Reposts of users followed
+    - Reposts of users you do not follow
+- Fix
+  - Fixed a bug in reply restrictions that prevented the selection of combinations of mentions, etc.
+
 ### v0.23.0 - 2024/2/17
 
 - Add

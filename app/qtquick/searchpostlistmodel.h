@@ -15,6 +15,8 @@ public:
     Q_INVOKABLE bool getLatest();
     Q_INVOKABLE bool getNext();
 
+    QString replaceSearchCommand(const QString &command);
+
     QString text() const;
     void setText(const QString &newText);
 

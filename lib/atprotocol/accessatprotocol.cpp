@@ -11,8 +11,11 @@
 #include <QUrlQuery>
 #include <QMimeDatabase>
 #include <QPointer>
+#include <QJsonArray>
 
 #define LOG_DATETIME QDateTime::currentDateTime().toString("yyyy/MM/dd hh:mm:ss.zzz")
+
+using namespace AtProtocolType;
 
 namespace AtProtocolInterface {
 
@@ -328,6 +331,44 @@ void AccessAtProtocol::setJsonBlob(const AtProtocolType::Blob &blob, QJsonObject
     json_blob.insert("ref", json_link);
     json_blob.insert("mimeType", blob.mimeType);
     json_blob.insert("size", blob.size);
+}
+
+QJsonObject
+AccessAtProtocol::makeThreadGateJsonObject(const QString &uri,
+                                        const AtProtocolType::ThreadGateType type,
+                                        const QList<AtProtocolType::ThreadGateAllow> &allow_rules)
+{
+    QString rkey = uri.split("/").last();
+
+    QJsonArray json_allow;
+    if (type == ThreadGateType::Choice) {
+        for (const auto &allow : allow_rules) {
+            QJsonObject json_rule;
+            if (allow.type == ThreadGateAllowType::Mentioned) {
+                json_rule.insert("$type", "app.bsky.feed.threadgate#mentionRule");
+            } else if (allow.type == ThreadGateAllowType::Followed) {
+                json_rule.insert("$type", "app.bsky.feed.threadgate#followingRule");
+            } else if (allow.type == ThreadGateAllowType::List && allow.uri.startsWith("at://")) {
+                json_rule.insert("$type", "app.bsky.feed.threadgate#listRule");
+                json_rule.insert("list", allow.uri);
+            }
+            json_allow.append(json_rule);
+        }
+    }
+
+    QJsonObject json_record;
+    json_record.insert("$type", "app.bsky.feed.threadgate");
+    json_record.insert("post", uri);
+    json_record.insert("createdAt", QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
+    json_record.insert("allow", json_allow);
+
+    QJsonObject json_obj;
+    json_obj.insert("collection", "app.bsky.feed.threadgate");
+    json_obj.insert("repo", this->did());
+    json_obj.insert("rkey", rkey);
+    json_obj.insert("record", json_record);
+
+    return json_obj;
 }
 
 QString AccessAtProtocol::cursor() const

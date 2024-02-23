@@ -9,7 +9,11 @@ using AtProtocolInterface::AppBskyFeedGetTimeline;
 using namespace AtProtocolType;
 
 TimelineListModel::TimelineListModel(QObject *parent)
-    : AtpAbstractListModel { parent }, m_visibleReplyToUnfollowedUsers(true)
+    : AtpAbstractListModel { parent },
+      m_visibleReplyToUnfollowedUsers(true),
+      m_visibleRepostOfOwn(true),
+      m_visibleRepostOfFollowingUsers(true),
+      m_visibleRepostOfUnfollowingUsers(true)
 {
     m_toExternalLinkRoles[HasExternalLinkRole] =
             AtpAbstractListModel::ExternalLinkRoles::HasExternalLinkRole;
@@ -44,6 +48,13 @@ TimelineListModel::TimelineListModel(QObject *parent)
     m_toListLinkRoles[ListLinkDescriptionRole] =
             AtpAbstractListModel::ListLinkRoles::ListLinkDescriptionRole;
     m_toListLinkRoles[ListLinkAvatarRole] = AtpAbstractListModel::ListLinkRoles::ListLinkAvatarRole;
+
+    m_toThreadGateRoles[ThreadGateUriRole] =
+            AtpAbstractListModel::ThreadGateRoles::ThreadGateUriRole;
+    m_toThreadGateRoles[ThreadGateTypeRole] =
+            AtpAbstractListModel::ThreadGateRoles::ThreadGateTypeRole;
+    m_toThreadGateRoles[ThreadGateRulesRole] =
+            AtpAbstractListModel::ThreadGateRoles::ThreadGateRulesRole;
 }
 
 int TimelineListModel::rowCount(const QModelIndex &parent) const
@@ -185,6 +196,10 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
             return getQuoteFilterMatched(current.post);
         else
             return false;
+
+    } else if (m_toThreadGateRoles.contains(role)) {
+        return getThreadGateItem(current.post, m_toThreadGateRoles[role]);
+
     } else if (role == LabelsRole)
         return getLabels(current.post.labels);
     else if (role == LanguagesRole)
@@ -243,6 +258,9 @@ void TimelineListModel::update(int row, TimelineListModelRoles role, const QVari
             current.post.likeCount--;
         else
             current.post.likeCount++;
+        emit dataChanged(index(row), index(row));
+    } else if (m_toThreadGateRoles.contains(role)) {
+        updateThreadGateItem(current.post, m_toThreadGateRoles[role], value);
         emit dataChanged(index(row), index(row));
     }
 
@@ -493,6 +511,11 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[ContentMediaFilterMatchedRole] = "contentMediaFilterMatched";
     roles[ContentMediaFilterMessageRole] = "contentMediaFilterMessage";
     roles[QuoteFilterMatchedRole] = "quoteFilterMatched";
+
+    roles[ThreadGateUriRole] = "threadGateUri";
+    roles[ThreadGateTypeRole] = "threadGateType";
+    roles[ThreadGateRulesRole] = "threadGateRules";
+
     roles[LabelsRole] = "labels";
     roles[LanguagesRole] = "languages";
     roles[TagsRole] = "tags";
@@ -541,6 +564,33 @@ bool TimelineListModel::checkVisibility(const QString &cid)
             }
         }
     }
+    if (!visibleRepostOfOwn()) {
+        // セルフリポスト
+        if (current.reason_type == AppBskyFeedDefs::FeedViewPostReasonType::reason_ReasonRepost
+            && current.reason_ReasonRepost.by.did == current.post.author.did) {
+            qDebug() << "Hide reposts of user's own post." << current.post.author.handle << cid;
+            return false;
+        }
+    }
+    if (!visibleRepostOfFollowingUsers()) {
+        // フォローしている人のリポスト
+        if (current.reason_type == AppBskyFeedDefs::FeedViewPostReasonType::reason_ReasonRepost
+            && current.post.author.viewer.following.contains(account().did)) {
+            qDebug() << "Hide reposts of posts by users you follow." << current.post.author.handle
+                     << cid;
+            return false;
+        }
+    }
+    if (!visibleRepostOfUnfollowingUsers()) {
+        // フォローしていない人のリポスト
+        if (current.reason_type == AppBskyFeedDefs::FeedViewPostReasonType::reason_ReasonRepost
+            && !current.post.author.viewer.following.contains(account().did)) {
+            qDebug() << "Hide reposts of posts by users you unfollow." << current.post.author.handle
+                     << cid;
+            return false;
+        }
+    }
+
     return true;
 }
 
@@ -779,5 +829,51 @@ void TimelineListModel::setVisibleReplyToUnfollowedUsers(bool newVisibleReplyToU
         return;
     m_visibleReplyToUnfollowedUsers = newVisibleReplyToUnfollowedUser;
     emit visibleReplyToUnfollowedUsersChanged();
+
+    reflectVisibility();
+}
+
+bool TimelineListModel::visibleRepostOfOwn() const
+{
+    return m_visibleRepostOfOwn;
+}
+
+void TimelineListModel::setVisibleRepostOfOwn(bool newVisibleRepostOfOwn)
+{
+    if (m_visibleRepostOfOwn == newVisibleRepostOfOwn)
+        return;
+    m_visibleRepostOfOwn = newVisibleRepostOfOwn;
+    emit visibleRepostOfOwnChanged();
+
+    reflectVisibility();
+}
+
+bool TimelineListModel::visibleRepostOfFollowingUsers() const
+{
+    return m_visibleRepostOfFollowingUsers;
+}
+
+void TimelineListModel::setVisibleRepostOfFollowingUsers(bool newVisibleRepostOfFollowingUsers)
+{
+    if (m_visibleRepostOfFollowingUsers == newVisibleRepostOfFollowingUsers)
+        return;
+    m_visibleRepostOfFollowingUsers = newVisibleRepostOfFollowingUsers;
+    emit visibleRepostOfFollowingUsersChanged();
+
+    reflectVisibility();
+}
+
+bool TimelineListModel::visibleRepostOfUnfollowingUsers() const
+{
+    return m_visibleRepostOfUnfollowingUsers;
+}
+
+void TimelineListModel::setVisibleRepostOfUnfollowingUsers(bool newVisibleRepostOfUnfollowingUsers)
+{
+    if (m_visibleRepostOfUnfollowingUsers == newVisibleRepostOfUnfollowingUsers)
+        return;
+    m_visibleRepostOfUnfollowingUsers = newVisibleRepostOfUnfollowingUsers;
+    emit visibleRepostOfUnfollowingUsersChanged();
+
     reflectVisibility();
 }

@@ -28,6 +28,7 @@ RowLayout {
     signal triggeredRequestReport()
     signal triggeredRequestViewLikedBy()
     signal triggeredRequestViewRepostedBy()
+    signal triggeredRequestUpdateThreadGate()
 
 
     function openInOhters(uri, handle){
@@ -134,6 +135,12 @@ RowLayout {
                 onTriggered: triggeredRequestViewLikedBy()
             }
             MenuSeparator {}
+            MenuItem {
+                text: qsTr("Who can reply")
+                enabled: mine
+                icon.source: "../images/thread.png"
+                onTriggered: triggeredRequestUpdateThreadGate()
+            }
             MenuItem {
                 text: qsTr("Delete post")
                 enabled: mine

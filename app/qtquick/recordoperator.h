@@ -69,7 +69,8 @@ public:
                                    const QString &description, const QString &display_name);
     Q_INVOKABLE void updateList(const QString &uri, const QString &avatar_url,
                                 const QString &description, const QString &name);
-
+    Q_INVOKABLE void updateThreadGate(const QString &uri, const QString &threadgate_uri,
+                                      const QString &type, const QStringList &rules);
     bool running() const;
     void setRunning(bool newRunning);
 
@@ -83,7 +84,8 @@ private:
     void uploadBlob(std::function<void(bool)> callback);
     bool getAllListItems(const QString &list_uri, std::function<void(bool)> callback);
     void deleteAllListItems(std::function<void(bool)> callback);
-    bool threadGate(const QString &uri, std::function<void(bool)> callback);
+    bool threadGate(const QString &uri,
+                    std::function<void(bool, const QString &, const QString &)> callback);
 
     QRegularExpression m_rxFacet;
     AtProtocolInterface::AccountData m_account;
