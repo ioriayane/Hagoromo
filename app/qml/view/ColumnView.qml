@@ -76,6 +76,9 @@ ColumnLayout {
                 loadingInterval: settings.loadingInterval
                 displayInterval: settings.displayInterval
                 visibleReplyToUnfollowedUsers: settings.visibleReplyToUnfollowedUsers
+                visibleRepostOfOwn: settings.visibleRepostOfOwn
+                visibleRepostOfFollowingUsers: settings.visibleRepostOfFollowingUsers
+                visibleRepostOfUnfollowingUsers: settings.visibleRepostOfUnfollowingUsers
 
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }

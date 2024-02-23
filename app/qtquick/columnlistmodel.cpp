@@ -58,6 +58,12 @@ QVariant ColumnListModel::item(int row, ColumnListModelRoles role) const
         return m_columnList.at(row).type_visibility.quote;
     else if (role == VisibleReplyToUnfollowedUsersRole)
         return m_columnList.at(row).type_visibility.reply_to_unfollowed_users;
+    else if (role == VisibleRepostOfOwnRole)
+        return m_columnList.at(row).type_visibility.repost_of_own;
+    else if (role == VisibleRepostOfFollowingUsersRole)
+        return m_columnList.at(row).type_visibility.repost_of_following_users;
+    else if (role == VisibleRepostOfUnfollowingUsersRole)
+        return m_columnList.at(row).type_visibility.repost_of_unfollowing_users;
 
     return QVariant();
 }
@@ -100,6 +106,12 @@ void ColumnListModel::update(int row, ColumnListModelRoles role, const QVariant 
         m_columnList[row].type_visibility.quote = value.toBool();
     else if (role == VisibleReplyToUnfollowedUsersRole)
         m_columnList[row].type_visibility.reply_to_unfollowed_users = value.toBool();
+    else if (role == VisibleRepostOfOwnRole)
+        m_columnList[row].type_visibility.repost_of_own = value.toBool();
+    else if (role == VisibleRepostOfFollowingUsersRole)
+        m_columnList[row].type_visibility.repost_of_following_users = value.toBool();
+    else if (role == VisibleRepostOfUnfollowingUsersRole)
+        m_columnList[row].type_visibility.repost_of_unfollowing_users = value.toBool();
 
     emit dataChanged(index(row), index(row));
 
@@ -323,6 +335,10 @@ void ColumnListModel::save() const
         notification["reply"] = item.type_visibility.reply;
         notification["quote"] = item.type_visibility.quote;
         notification["reply_to_unfollowed_users"] = item.type_visibility.reply_to_unfollowed_users;
+        notification["repost_of_own"] = item.type_visibility.repost_of_own;
+        notification["repost_of_following_users"] = item.type_visibility.repost_of_following_users;
+        notification["repost_of_unfollowing_users"] =
+                item.type_visibility.repost_of_unfollowing_users;
         column_item["type_visibility"] = notification;
 
         column_array.append(column_item);
@@ -378,6 +394,19 @@ void ColumnListModel::load()
                                 .value("reply_to_unfollowed_users")
                                 .toBool(true);
 
+                item.type_visibility.repost_of_own =
+                        obj.value("type_visibility").toObject().value("repost_of_own").toBool(true);
+                item.type_visibility.repost_of_following_users =
+                        obj.value("type_visibility")
+                                .toObject()
+                                .value("repost_of_following_users")
+                                .toBool(true);
+                item.type_visibility.repost_of_unfollowing_users =
+                        obj.value("type_visibility")
+                                .toObject()
+                                .value("repost_of_unfollowing_users")
+                                .toBool(true);
+
                 if (item.name.isEmpty()) {
                     // version 0.2.0以前との互換性のため
                     switch (item.component_type) {
@@ -426,6 +455,9 @@ QHash<int, QByteArray> ColumnListModel::roleNames() const
     roles[VisibleReplyRole] = "visibleReply";
     roles[VisibleQuoteRole] = "visibleQuote";
     roles[VisibleReplyToUnfollowedUsersRole] = "visibleReplyToUnfollowedUsers";
+    roles[VisibleRepostOfOwnRole] = "visibleRepostOfOwn";
+    roles[VisibleRepostOfFollowingUsersRole] = "visibleRepostOfFollowingUsers";
+    roles[VisibleRepostOfUnfollowingUsersRole] = "visibleRepostOfUnfollowingUsers";
 
     return roles;
 }

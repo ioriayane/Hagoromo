@@ -829,6 +829,7 @@ void TimelineListModel::setVisibleReplyToUnfollowedUsers(bool newVisibleReplyToU
         return;
     m_visibleReplyToUnfollowedUsers = newVisibleReplyToUnfollowedUser;
     emit visibleReplyToUnfollowedUsersChanged();
+
     reflectVisibility();
 }
 
@@ -843,6 +844,8 @@ void TimelineListModel::setVisibleRepostOfOwn(bool newVisibleRepostOfOwn)
         return;
     m_visibleRepostOfOwn = newVisibleRepostOfOwn;
     emit visibleRepostOfOwnChanged();
+
+    reflectVisibility();
 }
 
 bool TimelineListModel::visibleRepostOfFollowingUsers() const
@@ -856,6 +859,8 @@ void TimelineListModel::setVisibleRepostOfFollowingUsers(bool newVisibleRepostOf
         return;
     m_visibleRepostOfFollowingUsers = newVisibleRepostOfFollowingUsers;
     emit visibleRepostOfFollowingUsersChanged();
+
+    reflectVisibility();
 }
 
 bool TimelineListModel::visibleRepostOfUnfollowingUsers() const
@@ -869,4 +874,6 @@ void TimelineListModel::setVisibleRepostOfUnfollowingUsers(bool newVisibleRepost
         return;
     m_visibleRepostOfUnfollowingUsers = newVisibleRepostOfUnfollowingUsers;
     emit visibleRepostOfUnfollowingUsersChanged();
+
+    reflectVisibility();
 }

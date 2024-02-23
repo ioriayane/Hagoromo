@@ -31,18 +31,24 @@ Dialog {
     property alias visibleReplyCheckBox: visibleReplyCheckBox
     property alias visibleQuoteCheckBox: visibleQuoteCheckBox
     property alias visibleReplyToUnfollowedUsersCheckBox: visibleReplyToUnfollowedUsersCheckBox
+    property alias visibleRepostOfOwnCheckBox: visibleRepostOfOwnCheckBox
+    property alias visibleRepostOfFollowingUsersCheckBox: visibleRepostOfFollowingUsersCheckBox
+    property alias visibleRepostOfUnfollowingUsersCheckBox: visibleRepostOfUnfollowingUsersCheckBox
 
     ColumnLayout {
         spacing: AdjustedValues.s5
         states: [
-            State {
+            State { // Timeline
                 when: columnSettingDialog.componentType === 0
                 PropertyChanges { target: displayFrame; visible: true }
                 PropertyChanges { target: visibleReplyToUnfollowedUsersCheckBox; visible: true }
+                PropertyChanges { target: visibleRepostOfOwnCheckBox; visible: true }
+                PropertyChanges { target: visibleRepostOfFollowingUsersCheckBox; visible: true }
+                PropertyChanges { target: visibleRepostOfUnfollowingUsersCheckBox; visible: true }
                 PropertyChanges { target: imageLayoutLabel; visible: true }
                 PropertyChanges { target: imageLayoutCombobox; visible: true }
             },
-            State {
+            State { // Notification
                 when: columnSettingDialog.componentType === 1
                 PropertyChanges { target: displayFrame; visible: true }
                 PropertyChanges { target: visibleLikeCheckBox; visible: true }
@@ -54,27 +60,27 @@ Dialog {
                 PropertyChanges { target: imageLayoutLabel; visible: true }
                 PropertyChanges { target: imageLayoutCombobox; visible: true }
             },
-            State {
+            State { // SearchPosts
                 when: columnSettingDialog.componentType === 2
                 PropertyChanges { target: imageLayoutLabel; visible: true }
                 PropertyChanges { target: imageLayoutCombobox; visible: true }
             },
-            State {
+            State { // SearchProfiles
                 when: columnSettingDialog.componentType === 3
                 PropertyChanges { target: imageLayoutLabel; visible: false }
                 PropertyChanges { target: imageLayoutCombobox; visible: false }
             },
-            State {
+            State { // CustomFeed
                 when: columnSettingDialog.componentType === 4
                 PropertyChanges { target: imageLayoutLabel; visible: true }
                 PropertyChanges { target: imageLayoutCombobox; visible: true }
             },
-            State {
+            State { // AuthorFeed
                 when: columnSettingDialog.componentType === 5
                 PropertyChanges { target: imageLayoutLabel; visible: true }
                 PropertyChanges { target: imageLayoutCombobox; visible: true }
             },
-            State {
+            State { // ListFeed
                 when: columnSettingDialog.componentType === 6
                 PropertyChanges { target: imageLayoutLabel; visible: true }
                 PropertyChanges { target: imageLayoutCombobox; visible: true }
@@ -238,6 +244,30 @@ Dialog {
                         visible: false
                         font.pointSize: AdjustedValues.f10
                         text: qsTr("Reply to unfollowed users")
+                    }
+                    CheckBox {
+                        id: visibleRepostOfOwnCheckBox
+                        topPadding: 5
+                        bottomPadding: 5
+                        visible: false
+                        font.pointSize: AdjustedValues.f10
+                        text: qsTr("Repost of own")
+                    }
+                    CheckBox {
+                        id: visibleRepostOfFollowingUsersCheckBox
+                        topPadding: 5
+                        bottomPadding: 5
+                        visible: false
+                        font.pointSize: AdjustedValues.f10
+                        text: qsTr("Repost of users followed")
+                    }
+                    CheckBox {
+                        id: visibleRepostOfUnfollowingUsersCheckBox
+                        topPadding: 5
+                        bottomPadding: 5
+                        visible: false
+                        font.pointSize: AdjustedValues.f10
+                        text: qsTr("Repost of users unfollowed")
                     }
                 }
             }

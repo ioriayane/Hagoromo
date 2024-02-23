@@ -173,6 +173,9 @@ ApplicationWindow {
                 visibleReplyCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleReplyRole)
                 visibleQuoteCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleQuoteRole)
                 visibleReplyToUnfollowedUsersCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleReplyToUnfollowedUsersRole)
+                visibleRepostOfOwnCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleRepostOfOwnRole)
+                visibleRepostOfFollowingUsersCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleRepostOfFollowingUsersRole)
+                visibleRepostOfUnfollowingUsersCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleRepostOfUnfollowingUsersRole)
 
                 open()
             }
@@ -193,6 +196,9 @@ ApplicationWindow {
                 columnManageModel.update(i, ColumnListModel.VisibleReplyRole, visibleReplyCheckBox.checked)
                 columnManageModel.update(i, ColumnListModel.VisibleQuoteRole, visibleQuoteCheckBox.checked)
                 columnManageModel.update(i, ColumnListModel.VisibleReplyToUnfollowedUsersRole, visibleReplyToUnfollowedUsersCheckBox.checked)
+                columnManageModel.update(i, ColumnListModel.VisibleRepostOfOwnRole, visibleRepostOfOwnCheckBox.checked)
+                columnManageModel.update(i, ColumnListModel.VisibleRepostOfFollowingUsersRole, visibleRepostOfFollowingUsersCheckBox.checked)
+                columnManageModel.update(i, ColumnListModel.VisibleRepostOfUnfollowingUsersRole, visibleRepostOfUnfollowingUsersCheckBox.checked)
 
                 repeater.updateSettings(0)
             }
@@ -796,6 +802,9 @@ ApplicationWindow {
                         item.settings.visibleReply = model.visibleReply
                         item.settings.visibleQuote = model.visibleQuote
                         item.settings.visibleReplyToUnfollowedUsers = model.visibleReplyToUnfollowedUsers
+                        item.settings.visibleRepostOfOwn = model.visibleRepostOfOwn
+                        item.settings.visibleRepostOfFollowingUsers = model.visibleRepostOfFollowingUsers
+                        item.settings.visibleRepostOfUnfollowingUsers = model.visibleRepostOfUnfollowingUsers
 
                         item.settings.updateSeenNotification = settingDialog.settings.updateSeenNotification
                         item.settings.sequentialDisplayOfPosts = (settingDialog.settings.displayOfPosts === "sequential")
