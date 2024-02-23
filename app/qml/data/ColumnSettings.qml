@@ -14,6 +14,9 @@ QtObject {
     property bool visibleReply: true
     property bool visibleQuote: true
     property bool visibleReplyToUnfollowedUsers: true
+    property bool visibleRepostOfOwn: true
+    property bool visibleRepostOfFollowingUsers: true
+    property bool visibleRepostOfUnfollowingUsers: true
 
     // 保存しない全体からの反映
     property bool updateSeenNotification: true

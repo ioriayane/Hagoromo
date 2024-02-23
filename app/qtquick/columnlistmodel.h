@@ -35,6 +35,9 @@ struct ColumnPostType
     bool reply = true;
     bool quote = true;
     bool reply_to_unfollowed_users = true;
+    bool repost_of_own = true;
+    bool repost_of_following_users = true;
+    bool repost_of_unfollowing_users = true;
 };
 
 struct ColumnItem
@@ -84,6 +87,10 @@ public:
         VisibleReplyRole,
         VisibleQuoteRole,
         VisibleReplyToUnfollowedUsersRole,
+        VisibleRepostOfOwnRole,
+        VisibleRepostOfFollowingUsersRole,
+        VisibleRepostOfUnfollowingUsersRole,
+
     };
     Q_ENUM(ColumnListModelRoles)
     Q_ENUM(FeedComponentType)
@@ -107,8 +114,8 @@ public:
                             bool auto_loading, int interval, int width, int image_layout_type,
                             const QString &name, const QString &value);
     Q_INVOKABLE int insertNext(const QString &key, const QString &account_uuid, int component_type,
-                               bool auto_loading, int interval, int width, int image_layout_type, const QString &name,
-                               const QString &value);
+                               bool auto_loading, int interval, int width, int image_layout_type,
+                               const QString &name, const QString &value);
     Q_INVOKABLE void move(const QString &key, const ColumnListModel::MoveDirection direction);
     Q_INVOKABLE void remove(int row);
     Q_INVOKABLE void removeByKey(const QString &key);
