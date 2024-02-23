@@ -8,7 +8,7 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
-### Unrelease - yyyy/M/d
+### v0.24.0 - 2024/2/23
 
 - Add
   - Support for "from:me" in post search
@@ -17,7 +17,6 @@ description: This is a multi-column Bluesky client.
     - Reposts by the user
     - Reposts of users followed
     - Reposts of users you do not follow
-- Update
 - Fix
   - Fixed a bug in reply restrictions that prevented the selection of combinations of mentions, etc.
 
