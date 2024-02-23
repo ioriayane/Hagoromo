@@ -34,6 +34,8 @@ Dialog {
     property alias visibleRepostOfOwnCheckBox: visibleRepostOfOwnCheckBox
     property alias visibleRepostOfFollowingUsersCheckBox: visibleRepostOfFollowingUsersCheckBox
     property alias visibleRepostOfUnfollowingUsersCheckBox: visibleRepostOfUnfollowingUsersCheckBox
+    property alias visibleRepostOfMineCheckBox: visibleRepostOfMineCheckBox
+    property alias visibleRepostByMeCheckBox: visibleRepostByMeCheckBox
 
     ColumnLayout {
         spacing: AdjustedValues.s5
@@ -45,6 +47,8 @@ Dialog {
                 PropertyChanges { target: visibleRepostOfOwnCheckBox; visible: true }
                 PropertyChanges { target: visibleRepostOfFollowingUsersCheckBox; visible: true }
                 PropertyChanges { target: visibleRepostOfUnfollowingUsersCheckBox; visible: true }
+                PropertyChanges { target: visibleRepostOfMineCheckBox; visible: true }
+                PropertyChanges { target: visibleRepostByMeCheckBox; visible: true }
                 PropertyChanges { target: imageLayoutLabel; visible: true }
                 PropertyChanges { target: imageLayoutCombobox; visible: true }
             },
@@ -268,6 +272,22 @@ Dialog {
                         visible: false
                         font.pointSize: AdjustedValues.f10
                         text: qsTr("Reposts of users you do not follow")
+                    }
+                    CheckBox {
+                        id: visibleRepostOfMineCheckBox
+                        topPadding: 5
+                        bottomPadding: 5
+                        visible: false
+                        font.pointSize: AdjustedValues.f10
+                        text: qsTr("Reposts of your posts")
+                    }
+                    CheckBox {
+                        id: visibleRepostByMeCheckBox
+                        topPadding: 5
+                        bottomPadding: 5
+                        visible: false
+                        font.pointSize: AdjustedValues.f10
+                        text: qsTr("Reposts by you")
                     }
                 }
             }

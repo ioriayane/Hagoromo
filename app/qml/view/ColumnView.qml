@@ -79,6 +79,8 @@ ColumnLayout {
                 visibleRepostOfOwn: settings.visibleRepostOfOwn
                 visibleRepostOfFollowingUsers: settings.visibleRepostOfFollowingUsers
                 visibleRepostOfUnfollowingUsers: settings.visibleRepostOfUnfollowingUsers
+                visibleRepostOfMine: settings.visibleRepostOfMine
+                visibleRepostByMe: settings.visibleRepostByMe
 
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }

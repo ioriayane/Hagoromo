@@ -13,7 +13,9 @@ TimelineListModel::TimelineListModel(QObject *parent)
       m_visibleReplyToUnfollowedUsers(true),
       m_visibleRepostOfOwn(true),
       m_visibleRepostOfFollowingUsers(true),
-      m_visibleRepostOfUnfollowingUsers(true)
+      m_visibleRepostOfUnfollowingUsers(true),
+      m_visibleRepostOfMine(true),
+      m_visibleRepostByMe(true)
 {
     m_toExternalLinkRoles[HasExternalLinkRole] =
             AtpAbstractListModel::ExternalLinkRoles::HasExternalLinkRole;
@@ -590,7 +592,23 @@ bool TimelineListModel::checkVisibility(const QString &cid)
             return false;
         }
     }
-
+    if (!visibleRepostOfMine()) {
+        // 自分のポストのリポスト
+        if (current.reason_type == AppBskyFeedDefs::FeedViewPostReasonType::reason_ReasonRepost
+            && current.post.author.did == account().did) {
+            qDebug() << "Hide reposts of posts by users you unfollow." << current.post.author.handle
+                     << cid;
+            return false;
+        }
+    }
+    if (!visibleRepostByMe()) {
+        // 自分がしたリポスト
+        if (current.reason_type == AppBskyFeedDefs::FeedViewPostReasonType::reason_ReasonRepost
+            && current.reason_ReasonRepost.by.did == account().did) {
+            qDebug() << "Hide reposts by me." << current.post.author.handle << cid;
+            return false;
+        }
+    }
     return true;
 }
 
@@ -874,6 +892,36 @@ void TimelineListModel::setVisibleRepostOfUnfollowingUsers(bool newVisibleRepost
         return;
     m_visibleRepostOfUnfollowingUsers = newVisibleRepostOfUnfollowingUsers;
     emit visibleRepostOfUnfollowingUsersChanged();
+
+    reflectVisibility();
+}
+
+bool TimelineListModel::visibleRepostOfMine() const
+{
+    return m_visibleRepostOfMine;
+}
+
+void TimelineListModel::setVisibleRepostOfMine(bool newVisibleRepostOfMine)
+{
+    if (m_visibleRepostOfMine == newVisibleRepostOfMine)
+        return;
+    m_visibleRepostOfMine = newVisibleRepostOfMine;
+    emit visibleRepostOfMineChanged();
+
+    reflectVisibility();
+}
+
+bool TimelineListModel::visibleRepostByMe() const
+{
+    return m_visibleRepostByMe;
+}
+
+void TimelineListModel::setVisibleRepostByMe(bool newVisibleRepostByMe)
+{
+    if (m_visibleRepostByMe == newVisibleRepostByMe)
+        return;
+    m_visibleRepostByMe = newVisibleRepostByMe;
+    emit visibleRepostByMeChanged();
 
     reflectVisibility();
 }
