@@ -101,8 +101,24 @@ class Defs2Struct:
         else:
             return other_pos < me_pos
 
+    def make_comment_string(self, properties: dict) -> str:
+        formatting = properties.get('format', '').strip()
+        description = properties.get('description', '').strip()
+        comment = ''
+        if len(formatting) > 0:
+            comment += ' // ' + formatting
+        if len(description) > 0:
+            if len(comment) > 0:
+                comment += ' , '
+            else:
+                comment += ' // '
+            comment += description
+        return comment
 
-    def output_ref(self, namespace: str, type_name: str, property_name: str, ref_obj: dict, is_array: bool = False):
+    def check_deprecated(self, properties: dict) -> bool:
+        return ('deprecated' in properties.get('description', '').strip().lower())
+
+    def output_ref(self, namespace: str, type_name: str, property_name: str, ref_obj: dict, comment: str, is_array: bool = False):
         (ref_namespace, ref_struct_name) = self.split_ref(ref_obj)
         if len(ref_struct_name) == 0:
             ref_struct_name = 'main'
@@ -112,23 +128,23 @@ class Defs2Struct:
                 if (namespace + '#' + ref_struct_name) in self.namespace_stack:
                     self.append_pre_define(namespace, ref_struct_name)
                     self.history_pointer.append(namespace + '#' + type_name + '#' + property_name + '#' + namespace + '#' + ref_struct_name)
-                    self.output_text[namespace].append('    QSharedPointer<%s> %s;' % (
-                        self.to_struct_style(ref_struct_name), property_name
+                    self.output_text[namespace].append('    QSharedPointer<%s> %s;%s' % (
+                        self.to_struct_style(ref_struct_name), property_name, comment,
                         ))
                 else:
-                    self.output_text[namespace].append('    %s %s;' % (
-                        self.to_struct_style(ref_struct_name), property_name
+                    self.output_text[namespace].append('    %s %s;%s' % (
+                        self.to_struct_style(ref_struct_name), property_name, comment,
                         ))
             else:
                 if (namespace + '#' + ref_struct_name) in self.namespace_stack:
                     self.append_pre_define(namespace, ref_struct_name)
                     self.history_pointer.append(namespace + '#' + type_name + '#' + property_name + '#' + namespace + '#' + ref_struct_name)
-                    self.output_text[namespace].append('    QList<QSharedPointer<%s>> %s;' % (
-                        self.to_struct_style(ref_struct_name), property_name
+                    self.output_text[namespace].append('    QList<QSharedPointer<%s>> %s;%s' % (
+                        self.to_struct_style(ref_struct_name), property_name, comment,
                         ))
                 else:
-                    self.output_text[namespace].append('    QList<%s> %s;' % (
-                        self.to_struct_style(ref_struct_name), property_name
+                    self.output_text[namespace].append('    QList<%s> %s;%s' % (
+                        self.to_struct_style(ref_struct_name), property_name, comment,
                         ))
         else:
             # 履歴で自分の方が前にいるということは宣言が後ろなのでポインタにする
@@ -159,7 +175,7 @@ class Defs2Struct:
                         ))
 
 
-    def output_union(self, namespace: str, type_name: str, property_name: str, refs_obj: dict, is_array: bool = False):
+    def output_union(self, namespace: str, type_name: str, property_name: str, refs_obj: dict, comment: str, is_array: bool = False):
         pointer_list = []
         list_pointer_list = []
         enum_text = []
@@ -182,21 +198,21 @@ class Defs2Struct:
                     self.append_pre_define(namespace, ref_struct_name)
                     self.history_pointer.append(namespace + '#' + type_name + '#' + property_name + '#' + namespace + '#' + ref_struct_name)
                     if not is_array:
-                        self.output_text[namespace].append('    QSharedPointer<%s> %s;' % (
-                            self.to_struct_style(ref_struct_name), union_name,
+                        self.output_text[namespace].append('    QSharedPointer<%s> %s;%s' % (
+                            self.to_struct_style(ref_struct_name), union_name, comment,
                             ))
                     else:
-                        self.output_text[namespace].append('    QList<QSharedPointer<%s>> %s;' % (
-                            self.to_struct_style(ref_struct_name), union_name
+                        self.output_text[namespace].append('    QList<QSharedPointer<%s>> %s;%s' % (
+                            self.to_struct_style(ref_struct_name), union_name, comment,
                             ))
                 else:
                     if not is_array:
-                        self.output_text[namespace].append('    %s %s;' % (
-                            self.to_struct_style(ref_struct_name), union_name,
+                        self.output_text[namespace].append('    %s %s;%s' % (
+                            self.to_struct_style(ref_struct_name), union_name, comment,
                             ))
                     else:
-                        self.output_text[namespace].append('    QList<%s> %s;' % (
-                            self.to_struct_style(ref_struct_name), union_name,
+                        self.output_text[namespace].append('    QList<%s> %s;%s' % (
+                            self.to_struct_style(ref_struct_name), union_name, comment,
                             ))
             else:
                 union_name = '%s_%s_%s' % (property_name, self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name))
@@ -208,24 +224,24 @@ class Defs2Struct:
                         pointer_list.append(union_name)
                         self.append_pre_define(ref_namespace, ref_struct_name)
                         self.history_pointer.append(namespace + '#' + type_name + '#' + property_name + '#' + ref_namespace + '#' + ref_struct_name)
-                        self.output_text[namespace].append('    QSharedPointer<%s::%s> %s;' % (
-                            self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), union_name,
+                        self.output_text[namespace].append('    QSharedPointer<%s::%s> %s;%s' % (
+                            self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), union_name, comment,
                             ))
                     else:
-                        self.output_text[namespace].append('    %s::%s %s;' % (
-                            self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), union_name,
+                        self.output_text[namespace].append('    %s::%s %s;%s' % (
+                            self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), union_name, comment,
                             ))
                 else:
                     if (ref_namespace + '#' + ref_struct_name) in self.namespace_stack:
                         pointer_list.append(union_name)
                         self.append_pre_define(ref_namespace, ref_struct_name)
                         self.history_pointer.append(namespace + '#' + type_name + '#' + property_name + '#' + ref_namespace + '#' + ref_struct_name)
-                        self.output_text[namespace].append('    QList<QSharedPointer<%s::%s>> %s;' % (
-                            self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), union_name
+                        self.output_text[namespace].append('    QList<QSharedPointer<%s::%s>> %s;%s' % (
+                            self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), union_name, comment,
                             ))
                     else:
-                        self.output_text[namespace].append('    QList<%s::%s> %s;' % (
-                            self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), union_name
+                        self.output_text[namespace].append('    QList<%s::%s> %s;%s' % (
+                            self.to_namespace_style(ref_namespace), self.to_struct_style(ref_struct_name), union_name, comment,
                             ))
         self.output_text[namespace].append('    // union end : %s' % (property_name, ))
 
@@ -279,6 +295,7 @@ class Defs2Struct:
             self.output_text[namespace] = []
 
         self.history_type[namespace + '#' + type_name] = obj.get('type')
+        obj_comment = self.make_comment_string(obj)
 
         if obj.get('type') == 'object':
             # 構造体
@@ -307,43 +324,38 @@ class Defs2Struct:
             self.output_text[namespace].append('struct %s' % (styled_type_name, ))
             self.output_text[namespace].append('{')
             for property_name in properties.keys():
+                if self.check_deprecated(properties[property_name]):
+                    continue
                 p_type = properties[property_name].get('type')
+                p_comment = self.make_comment_string(properties[property_name])
                 if p_type == 'ref':
-                    self.output_ref(namespace, type_name, property_name, properties[property_name].get('ref', {}))
+                    self.output_ref(namespace, type_name, property_name, properties[property_name].get('ref', {}), p_comment)
                 elif p_type == 'union':
-                    (temp_pointer, temp_list_pointer, temp_enum) = self.output_union(namespace, type_name, property_name, properties[property_name].get('refs', []))
+                    (temp_pointer, temp_list_pointer, temp_enum) = self.output_union(namespace, type_name, property_name, properties[property_name].get('refs', []), p_comment)
                     enum_text.extend(temp_enum)
                 elif p_type == 'unknown':
-                    self.output_text[namespace].append('    QVariant %s;' % (property_name, ))
+                    self.output_text[namespace].append('    QVariant %s;%s' % (property_name, p_comment, ))
                 elif p_type == 'integer':
-                    self.output_text[namespace].append('    int %s = 0;' % (property_name, ))
+                    self.output_text[namespace].append('    int %s = 0;%s' % (property_name, p_comment, ))
                 elif p_type == 'boolean':
-                    self.output_text[namespace].append('    bool %s = false;' % (property_name, ))
+                    self.output_text[namespace].append('    bool %s = false;%s' % (property_name, p_comment, ))
                 elif p_type == 'string':
-                    comment = properties[property_name].get('format', '')
-                    if len(comment.strip()) > 0:
-                        self.output_text[namespace].append('    QString %s; // %s' % (property_name, comment))
-                    else:
-                        self.output_text[namespace].append('    QString %s;' % (property_name, ))
+                    self.output_text[namespace].append('    QString %s;%s' % (property_name, p_comment, ))
                 elif p_type == 'array':
                     items_type = properties[property_name].get('items', {}).get('type', '')
                     if items_type == 'ref':
-                        self.output_ref(namespace, type_name, property_name, properties[property_name].get('items', {}).get('ref', {}), True)
+                        self.output_ref(namespace, type_name, property_name, properties[property_name].get('items', {}).get('ref', {}), p_comment, True)
                     elif items_type == 'union':
-                        (temp_pointer, temp_list_pointer, temp_enum) = self.output_union(namespace, type_name, property_name, properties[property_name].get('items', {}).get('refs', []), True)
+                        (temp_pointer, temp_list_pointer, temp_enum) = self.output_union(namespace, type_name, property_name, properties[property_name].get('items', {}).get('refs', []), p_comment, True)
                         enum_text.extend(temp_enum)
                     elif items_type == 'integer':
-                        self.output_text[namespace].append('    QList<int> %s;' % (property_name, ))
+                        self.output_text[namespace].append('    QList<int> %s;%s' % (property_name, p_comment, ))
                     elif items_type == 'boolean':
-                        self.output_text[namespace].append('    QList<bool> %s;' % (property_name, ))
+                        self.output_text[namespace].append('    QList<bool> %s;%s' % (property_name, p_comment, ))
                     elif items_type == 'string':
-                        comment = properties[property_name].get('format', '')
-                        if len(comment.strip()) > 0:
-                            self.output_text[namespace].append('    QList<QString> %s; // %s' % (property_name, comment))
-                        else:
-                            self.output_text[namespace].append('    QList<QString> %s;' % (property_name, ))
+                        self.output_text[namespace].append('    QList<QString> %s;%s' % (property_name, p_comment, ))
                 elif p_type == 'blob':
-                    self.output_text[namespace].append('    Blob %s;' % (property_name, ))
+                    self.output_text[namespace].append('    Blob %s;%s' % (property_name, p_comment, ))
 
             self.output_text[namespace].append('};')
 
@@ -359,17 +371,17 @@ class Defs2Struct:
 
         elif obj.get('type') == 'string':
             # 文字列は型定義にする
-            self.output_text[namespace].append('typedef QString %s;' % (self.to_struct_style(type_name), ))
+            self.output_text[namespace].append('typedef QString %s;%s' % (self.to_struct_style(type_name), obj_comment,))
             self.append_history(namespace, type_name)
 
         elif obj.get('type') == 'integer':
             # 数値は型定義にする
-            self.output_text[namespace].append('typedef int %s;' % (self.to_struct_style(type_name), ))
+            self.output_text[namespace].append('typedef int %s;%s' % (self.to_struct_style(type_name), obj_comment,))
             self.append_history(namespace, type_name)
 
         elif obj.get('type') == 'boolean':
             # boolは型定義にする
-            self.output_text[namespace].append('typedef bool %s;' % (self.to_struct_style(type_name), ))
+            self.output_text[namespace].append('typedef bool %s;%s' % (self.to_struct_style(type_name), obj_comment,))
             self.append_history(namespace, type_name)
 
         else:
@@ -407,6 +419,8 @@ class Defs2Struct:
 
             properties = obj.get('properties', {})
             for property_name in properties.keys():
+                if self.check_deprecated(properties[property_name]):
+                    continue
                 p_type = properties[property_name].get('type')
                 if p_type == 'ref':
                     ref_path = properties[property_name].get('ref', {})
@@ -621,6 +635,8 @@ class Defs2Struct:
             if properties is not None:
                 data['access_type'] = 'get'
                 for pro_name, pro_value in properties.items():
+                    if self.check_deprecated(pro_value):
+                        continue
                     pro_type = pro_value.get('type', '')
                     if pro_type == 'string':
                         if len(args) > 0:
@@ -653,6 +669,8 @@ class Defs2Struct:
             if properties is not None:
                 data['access_type'] = 'post'
                 for pro_name, pro_value in properties.items():
+                    if self.check_deprecated(pro_value):
+                        continue
                     pro_type = pro_value.get('type', '')
                     if pro_type == 'string':
                         if len(args) > 0:
