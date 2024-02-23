@@ -251,7 +251,7 @@ Dialog {
                         bottomPadding: 5
                         visible: false
                         font.pointSize: AdjustedValues.f10
-                        text: qsTr("Repost of own")
+                        text: qsTr("Reposts by the user")
                     }
                     CheckBox {
                         id: visibleRepostOfFollowingUsersCheckBox
@@ -259,7 +259,7 @@ Dialog {
                         bottomPadding: 5
                         visible: false
                         font.pointSize: AdjustedValues.f10
-                        text: qsTr("Repost of users followed")
+                        text: qsTr("Reposts of users followed")
                     }
                     CheckBox {
                         id: visibleRepostOfUnfollowingUsersCheckBox
@@ -267,7 +267,7 @@ Dialog {
                         bottomPadding: 5
                         visible: false
                         font.pointSize: AdjustedValues.f10
-                        text: qsTr("Repost of users unfollowed")
+                        text: qsTr("Reposts of users you do not follow")
                     }
                 }
             }

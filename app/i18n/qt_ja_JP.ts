@@ -300,18 +300,30 @@
     </message>
     <message>
         <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="254"/>
-        <source>Repost of own</source>
-        <translation>セリフリポスト</translation>
+        <source>Reposts by the user</source>
+        <translation>本人によるリポスト</translation>
     </message>
     <message>
         <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="262"/>
-        <source>Repost of users followed</source>
-        <translation>フォローしているユーザーのリポスト</translation>
+        <source>Reposts of users followed</source>
+        <translation>フォローしているユーザーのポストのリポスト</translation>
     </message>
     <message>
         <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="270"/>
+        <source>Reposts of users you do not follow</source>
+        <translation>フォローしていないユーザーのポストのリポスト</translation>
+    </message>
+    <message>
+        <source>Repost of own</source>
+        <translation type="vanished">セリフリポスト</translation>
+    </message>
+    <message>
+        <source>Repost of users followed</source>
+        <translation type="vanished">フォローしているユーザーのポストのリポスト</translation>
+    </message>
+    <message>
         <source>Repost of users unfollowed</source>
-        <translation>フォローしていないユーザーのリポスト</translation>
+        <translation type="vanished">フォローしていないユーザーのリポスト</translation>
     </message>
     <message>
         <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="281"/>
