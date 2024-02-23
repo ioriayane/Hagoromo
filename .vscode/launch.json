@@ -12,8 +12,6 @@
             "console": "integratedTerminal",
             "justMyCode": true,
             "args": [
-                "./1stparty/atproto/lexicons",
-                "./lib/atprotocol"
             ]
         }
     ]
