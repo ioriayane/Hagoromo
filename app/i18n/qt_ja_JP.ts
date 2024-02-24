@@ -316,12 +316,12 @@
     <message>
         <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="282"/>
         <source>Reposts of your posts</source>
-        <translation>自身のポストのリポスト</translation>
+        <translation>カラムのアカウントのポストのリポスト</translation>
     </message>
     <message>
         <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="290"/>
         <source>Reposts by you</source>
-        <translation>自身によるリポスト</translation>
+        <translation>カラムのアカウントによるリポスト</translation>
     </message>
     <message>
         <source>Repost of own</source>

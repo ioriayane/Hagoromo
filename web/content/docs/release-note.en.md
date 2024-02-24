@@ -10,8 +10,8 @@ description: This is a multi-column Bluesky client.
 
 - Add
   - Function to hide reposts (the following can be set individually)
-    - Reposts of my posts
-    - Reposts by me
+    - Reposts of your posts
+    - Reposts by you
 - Update
 - Fix
 
