@@ -586,7 +586,8 @@ bool TimelineListModel::checkVisibility(const QString &cid)
     if (!visibleRepostOfUnfollowingUsers()) {
         // フォローしていない人のリポスト
         if (current.reason_type == AppBskyFeedDefs::FeedViewPostReasonType::reason_ReasonRepost
-            && !current.post.author.viewer.following.contains(account().did)) {
+            && !current.post.author.viewer.following.contains(account().did)
+            && current.post.author.did != account().did) {
             qDebug() << "Hide reposts of posts by users you unfollow." << current.post.author.handle
                      << cid;
             return false;
