@@ -1,4 +1,4 @@
 ---
-title: 見る
+title: See
 weight: 20
 ---

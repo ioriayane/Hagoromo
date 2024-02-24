@@ -27,6 +27,11 @@ class TimelineListModel : public AtpAbstractListModel
     Q_PROPERTY(bool visibleRepostOfUnfollowingUsers READ visibleRepostOfUnfollowingUsers WRITE
                        setVisibleRepostOfUnfollowingUsers NOTIFY
                                visibleRepostOfUnfollowingUsersChanged)
+    Q_PROPERTY(bool visibleRepostOfMine READ visibleRepostOfMine WRITE setVisibleRepostOfMine NOTIFY
+                       visibleRepostOfMineChanged)
+    Q_PROPERTY(bool visibleRepostByMe READ visibleRepostByMe WRITE setVisibleRepostByMe NOTIFY
+                       visibleRepostByMeChanged)
+
 public:
     explicit TimelineListModel(QObject *parent = nullptr);
 
@@ -148,12 +153,18 @@ public:
     void setVisibleRepostOfFollowingUsers(bool newVisibleRepostOfFollowingUsers);
     bool visibleRepostOfUnfollowingUsers() const;
     void setVisibleRepostOfUnfollowingUsers(bool newVisibleRepostOfUnfollowingUsers);
+    bool visibleRepostOfMine() const;
+    void setVisibleRepostOfMine(bool newVisibleRepostOfMine);
+    bool visibleRepostByMe() const;
+    void setVisibleRepostByMe(bool newVisibleRepostByMe);
 
 signals:
     void visibleReplyToUnfollowedUsersChanged();
     void visibleRepostOfOwnChanged();
     void visibleRepostOfFollowingUsersChanged();
     void visibleRepostOfUnfollowingUsersChanged();
+    void visibleRepostOfMineChanged();
+    void visibleRepostByMeChanged();
 
 protected:
     QHash<int, QByteArray> roleNames() const;
@@ -184,6 +195,8 @@ private:
     bool m_visibleRepostOfOwn;
     bool m_visibleRepostOfFollowingUsers;
     bool m_visibleRepostOfUnfollowingUsers;
+    bool m_visibleRepostOfMine;
+    bool m_visibleRepostByMe;
 };
 
 #endif // TIMELINELISTMODEL_H

@@ -38,6 +38,8 @@ struct ColumnPostType
     bool repost_of_own = true;
     bool repost_of_following_users = true;
     bool repost_of_unfollowing_users = true;
+    bool repost_of_mine = true;
+    bool repost_by_me = false;
 };
 
 struct ColumnItem
@@ -90,7 +92,8 @@ public:
         VisibleRepostOfOwnRole,
         VisibleRepostOfFollowingUsersRole,
         VisibleRepostOfUnfollowingUsersRole,
-
+        VisibleRepostOfMineRole,
+        VisibleRepostByMeRole,
     };
     Q_ENUM(ColumnListModelRoles)
     Q_ENUM(FeedComponentType)
