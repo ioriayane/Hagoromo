@@ -56,15 +56,22 @@ You can choose to display or not display the following
 - Repost
   - When set to off, it will be hidden as shown in the table below.
 
-|Reposted by→|Me|Me|Me|Following|Following(A)|Following(A)|Following|
+|Reposted by→|You|You|You|Following|Following(A)|Following(A)|Following|
 |---|---|---|---|---|---|---|---|
-|Was reposted→|Me|Following|Not following|Me|Following(A)|Following(B)|Not following|
-|Reposts by the user|Hide|-|-|-|Hide|-|-|
-|Reposts of users followed|-|Hide|-|-|Hide|Hide|-|
-|Reposts of users you do not follow|-|-|Hide|-|-|-|Hide|
-|Reposts of your posts|Hide|-|-|Hide|-|-|-|
-|Reposts by you|Hide|Hide|Hide|-|-|-|-|
+|Was reposted→|You|Following|Not following|You|Following(A)|Following(B)|Not following|
+|Reposts by the user|✔|-|-|-|✔|-|-|
+|Reposts of users followed|-|✔|-|-|✔|✔|-|
+|Reposts of users you do not follow|-|-|✔|-|-|-|✔|
+|Reposts of your posts|✔|-|-|✔|-|-|-|
+|Reposts by you|✔|✔|✔|-|-|-|-|
 
+|Item|Supplemental explanation of selection criteria|
+|---|---|
+|Reposts by the user|Who is reposting who?|
+|Reposts of users followed|Who you are reposting|
+|Reposts of users you do not follow|Who you are reposting|
+|Reposts of your posts|Who you are reposting|
+|Reposts by you|Who is reposting|
 
 ## Combination of column type and display content
 
