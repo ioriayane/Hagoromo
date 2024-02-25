@@ -33,6 +33,7 @@ private slots:
     void test_ColumnListModelMove();
     void test_ColumnListModelRemove();
     void test_ColumnListModelInsertNext();
+    void test_ColumnListModelSelected();
     void test_NotificationListModel();
     void test_NotificationListModel2();
     void test_UserProfile();
@@ -337,6 +338,105 @@ void hagoromo_test::test_ColumnListModelInsertNext()
     QVERIFY2(model.getPreviousRow(6) == 3,
              QString("left pos=%1").arg(model.getPreviousRow(6)).toLocal8Bit());
     QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 0 << 5 << 4 << 1 << 2 << 3 << 6);
+}
+
+void hagoromo_test::test_ColumnListModelSelected()
+{
+    int row = 0;
+    ColumnListModel model;
+
+    model.append("uuid_1", 0, false, 10000, 400, 1, "column 1", "value 1");
+    model.append("uuid_2", 1, false, 20000, 500, 1, "column 2", "value 2");
+    model.append("uuid_3", 2, false, 30000, 600, 1, "column 3", "value 3");
+    model.append("uuid_4", 3, false, 40000, 700, 1, "column 4", "value 4");
+
+    model.move(model.item(1, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveLeft);
+    model.move(model.item(2, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveLeft);
+    model.move(model.item(2, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveLeft);
+    QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 2 << 1 << 0 << 3);
+
+    row = 0;
+    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == false,
+             QString("row(%1)=%2")
+                     .arg(row)
+                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
+                     .toLocal8Bit());
+    row++;
+    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == false,
+             QString("row(%1)=%2")
+                     .arg(row)
+                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
+                     .toLocal8Bit());
+    row++;
+    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == true,
+             QString("row(%1)=%2")
+                     .arg(row)
+                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
+                     .toLocal8Bit());
+    row++;
+    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == false,
+             QString("row(%1)=%2")
+                     .arg(row)
+                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
+                     .toLocal8Bit());
+
+    model.moveSelectionToRight();
+    row = 1;
+    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == true,
+             QString("row(%1)=%2")
+                     .arg(row)
+                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
+                     .toLocal8Bit());
+    model.moveSelectionToRight();
+    row = 0;
+    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == true,
+             QString("row(%1)=%2")
+                     .arg(row)
+                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
+                     .toLocal8Bit());
+    model.moveSelectionToRight();
+    row = 3;
+    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == true,
+             QString("row(%1)=%2")
+                     .arg(row)
+                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
+                     .toLocal8Bit());
+    model.moveSelectionToRight();
+    row = 3;
+    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == true,
+             QString("row(%1)=%2")
+                     .arg(row)
+                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
+                     .toLocal8Bit());
+
+    model.moveSelectionToLeft();
+    row = 0;
+    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == true,
+             QString("row(%1)=%2")
+                     .arg(row)
+                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
+                     .toLocal8Bit());
+    model.moveSelectionToLeft();
+    row = 1;
+    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == true,
+             QString("row(%1)=%2")
+                     .arg(row)
+                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
+                     .toLocal8Bit());
+    model.moveSelectionToLeft();
+    row = 2;
+    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == true,
+             QString("row(%1)=%2")
+                     .arg(row)
+                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
+                     .toLocal8Bit());
+    model.moveSelectionToLeft();
+    row = 2;
+    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == true,
+             QString("row(%1)=%2")
+                     .arg(row)
+                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
+                     .toLocal8Bit());
 }
 
 void hagoromo_test::test_NotificationListModel()

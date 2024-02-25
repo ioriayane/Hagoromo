@@ -10,6 +10,7 @@ Frame {
     signal clicked(var mouse)
 
     property string style: "Normal"
+    property color borderColor: Material.color(Material.Grey, Material.Shade600)
 
     background: MouseArea {
         Rectangle {
@@ -23,7 +24,7 @@ Frame {
                         anchors.rightMargin: 5
                         border.width: 0
                         height: 1
-                        color: Material.color(Material.Grey, Material.Shade600)
+                        color: clickableFrame.borderColor
                         radius: 0
                     }
                     AnchorChanges {
@@ -42,7 +43,7 @@ Frame {
                         anchors.rightMargin: 5
                         border.width: 0
                         height: 1
-                        color: Material.color(Material.Grey, Material.Shade600)
+                        color: clickableFrame.borderColor
                         opacity: 0.3
                         radius: 0
                     }
@@ -60,7 +61,7 @@ Frame {
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             border.width: 1
-            border.color: Material.color(Material.Grey, Material.Shade600)
+            border.color: clickableFrame.borderColor
             color: "transparent"
             radius: 2
         }
