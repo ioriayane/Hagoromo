@@ -13,6 +13,7 @@ description: This is a multi-column Bluesky client.
     - Reposts of your posts
     - Reposts by you
 - Update
+  - Change to allow selection of search method when clicking on a hashtag
 - Fix
 
 ### v0.24.0 - 2024/2/23
