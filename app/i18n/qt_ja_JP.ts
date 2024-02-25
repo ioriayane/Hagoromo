@@ -1810,12 +1810,22 @@
 <context>
     <name>PostDelegate</name>
     <message>
-        <location filename="../qml/parts/PostDelegate.qml" line="87"/>
+        <location filename="../qml/parts/PostDelegate.qml" line="90"/>
         <source>Post from an account you muted.</source>
         <translation>ミュートしているアカウントのポスト</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostDelegate.qml" line="276"/>
+        <location filename="../qml/parts/PostDelegate.qml" line="196"/>
+        <source>Search #%s posts</source>
+        <translation>#%s のポストを検索</translation>
+    </message>
+    <message>
+        <location filename="../qml/parts/PostDelegate.qml" line="202"/>
+        <source>Search #%s posts by this user</source>
+        <translation>このユーザーの #%s のポストを検索</translation>
+    </message>
+    <message>
+        <location filename="../qml/parts/PostDelegate.qml" line="303"/>
         <source>blocked</source>
         <translation>ブロック済み</translation>
     </message>
