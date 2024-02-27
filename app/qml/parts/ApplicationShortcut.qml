@@ -6,6 +6,8 @@ Item {
     property alias searchDialogShortcut: searchDialogShortcut
 
     signal showColumn(int index)  // -1:一番右、1~9
+    signal showLeftColumn()
+    signal showRightColumn()
 
     // Post
     Shortcut {
@@ -31,6 +33,20 @@ Item {
     Shortcut { enabled: item.enabled; context: Qt.ApplicationShortcut; sequence: "7"; onActivated: showColumn(7) }
     Shortcut { enabled: item.enabled; context: Qt.ApplicationShortcut; sequence: "8"; onActivated: showColumn(8) }
     Shortcut { enabled: item.enabled; context: Qt.ApplicationShortcut; sequence: "9"; onActivated: showColumn(9) }
+    // 左へ移動
+    Shortcut {
+        enabled: item.enabled
+        context: Qt.ApplicationShortcut
+        sequence: "left"
+        onActivated: showLeftColumn()
+    }
+    // 右へ移動
+    Shortcut {
+        enabled: item.enabled
+        context: Qt.ApplicationShortcut
+        sequence: "right"
+        onActivated: showRightColumn()
+    }
     // 一番左
     Shortcut {
         enabled: item.enabled

@@ -7,7 +7,10 @@
 #include <QSettings>
 #include <QUuid>
 
-ColumnListModel::ColumnListModel(QObject *parent) : QAbstractListModel { parent } { }
+ColumnListModel::ColumnListModel(QObject *parent)
+    : QAbstractListModel { parent }, m_selectedPosition(-1)
+{
+}
 
 int ColumnListModel::rowCount(const QModelIndex &parent) const
 {
@@ -43,6 +46,9 @@ QVariant ColumnListModel::item(int row, ColumnListModelRoles role) const
         return m_columnList.at(row).name;
     else if (role == ValueRole)
         return m_columnList.at(row).value;
+
+    else if (role == SelectedRole)
+        return (m_columnList.at(row).position == m_selectedPosition);
 
     else if (role == VisibleLikeRole)
         return m_columnList.at(row).type_visibility.like;
@@ -153,6 +159,10 @@ void ColumnListModel::insert(int row, const QString &account_uuid, int component
     item.name = name;
     item.value = value;
 
+    if (m_columnList.isEmpty()) {
+        m_selectedPosition = 0;
+    }
+
     beginInsertRows(QModelIndex(), row, row);
     m_columnList.insert(row, item);
     endInsertRows();
@@ -228,6 +238,48 @@ void ColumnListModel::move(const QString &key, const MoveDirection direction)
     save();
 }
 
+int ColumnListModel::moveSelectionToLeft()
+{
+    if (m_selectedPosition > 0) {
+        m_selectedPosition--;
+        for (int i = 0; i < m_columnList.length(); i++) {
+            if (m_columnList.at(i).position == m_selectedPosition) {
+                emit dataChanged(index(i), index(i));
+                break;
+            }
+        }
+    }
+    return m_selectedPosition;
+}
+int ColumnListModel::moveSelectionToRight()
+{
+    if (m_selectedPosition < (rowCount() - 1)) {
+        m_selectedPosition++;
+        for (int i = 0; i < m_columnList.length(); i++) {
+            if (m_columnList.at(i).position == m_selectedPosition) {
+                emit dataChanged(index(i), index(i));
+                break;
+            }
+        }
+    }
+    return m_selectedPosition;
+}
+
+void ColumnListModel::moveSelection(int position)
+{
+    if (m_selectedPosition == position)
+        return;
+    if (position < 0 || position >= m_columnList.length())
+        return;
+    m_selectedPosition = position;
+    for (int i = 0; i < m_columnList.length(); i++) {
+        if (m_columnList.at(i).position == m_selectedPosition) {
+            emit dataChanged(index(i), index(i));
+            break;
+        }
+    }
+}
+
 void ColumnListModel::remove(int row)
 {
     if (row < 0 || row >= m_columnList.count())
@@ -239,8 +291,15 @@ void ColumnListModel::remove(int row)
     // 消したカラムよりも位置が大きいものをひとつ詰める
     for (int i = 0; i < m_columnList.length(); i++) {
         if (m_columnList.at(i).position > remove_pos) {
+            if (m_columnList.at(i).position == m_selectedPosition) {
+                m_selectedPosition--;
+            }
             m_columnList[i].position--;
         }
+    }
+    // 選択位置が範囲外の場合は移動する
+    if (m_selectedPosition >= m_columnList.length()) {
+        m_selectedPosition = m_columnList.length() - 1;
     }
     endRemoveRows();
 
@@ -445,6 +504,7 @@ void ColumnListModel::load()
                 m_columnList.append(item);
             }
         }
+        m_selectedPosition = 0;
         validateIndex();
         endInsertRows();
     }
@@ -463,6 +523,8 @@ QHash<int, QByteArray> ColumnListModel::roleNames() const
     roles[ImageLayoutTypeRole] = "imageLayoutType";
     roles[NameRole] = "name";
     roles[ValueRole] = "value";
+
+    roles[SelectedRole] = "selected";
 
     roles[VisibleLikeRole] = "visibleLike";
     roles[VisibleRepostRole] = "visibleRepost";

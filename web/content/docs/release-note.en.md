@@ -12,6 +12,7 @@ description: This is a multi-column Bluesky client.
   - Function to hide reposts (the following can be set individually)
     - Reposts of your posts
     - Reposts by you
+  - Move columns with the cursor keys
 - Update
   - Change to allow selection of search method when clicking on a hashtag
 - Fix
