@@ -45,7 +45,8 @@ ApplicationWindow {
                                   addListDialog.visible ||
                                   editProfileDialog.visible ||
                                   selectThreadGateDialog.visible ||
-                                  messageDialog.visible
+                                  messageDialog.visible ||
+                                  imageFullView.visible
 
     function errorHandler(account_uuid, code, message) {
         if(code === "ExpiredToken" && account_uuid.length > 0){
