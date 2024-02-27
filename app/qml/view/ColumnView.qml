@@ -62,14 +62,38 @@ ColumnLayout {
     Shortcut {
         enabled: columnView.selected
         context: Qt.ApplicationShortcut
+        sequence: StandardKey.MoveToStartOfDocument
+        onActivated: {
+            console.log("MoveToStartOfDocument:" + columnView.columnKey)
+            columnStackView.positionViewAtBeginning()
+        }
+    }
+    Shortcut {
+        enabled: columnView.selected
+        context: Qt.ApplicationShortcut
+        sequence: StandardKey.MoveToEndOfDocument
+        onActivated: {
+            console.log("MoveToEndOfDocument:" + columnView.columnKey)
+            columnStackView.positionViewAtEnd()
+        }
+    }
+    Shortcut {
+        enabled: columnView.selected
+        context: Qt.ApplicationShortcut
         sequence: StandardKey.MoveToPreviousPage
-        onActivated: console.log("PageUp:" + columnView.columnKey)
+        onActivated: {
+            console.log("pageUp:" + columnView.columnKey)
+            columnStackView.pageUp()
+        }
     }
     Shortcut {
         enabled: columnView.selected
         context: Qt.ApplicationShortcut
         sequence: StandardKey.MoveToNextPage
-        onActivated: console.log("PageDown:" + columnView.columnKey)
+        onActivated: {
+            console.log("PageDown:" + columnView.columnKey)
+            columnStackView.pageDown()
+        }
     }
 
     ColumnSettings {
@@ -517,13 +541,9 @@ ColumnLayout {
         rightPadding: 10
         bottomPadding: 0
 
-        borderColor: columnView.selected ? Material.color(Material.BlueGrey) : Material.color(Material.Grey, Material.Shade600)
+        borderColor: columnView.selected ? Material.color(Material.LightBlue, Material.Shade800) : Material.color(Material.Grey, Material.Shade600)
 
-        onClicked: (mouse) => {
-                       if(columnStackView.currentItem.listView){
-                           columnStackView.currentItem.listView.positionViewAtBeginning()
-                       }
-                   }
+        onClicked: (mouse) => columnStackView.positionViewAtBeginning()
 
         RowLayout {
             id: headerLayout
@@ -682,6 +702,46 @@ ColumnLayout {
                                          account.accessJwt,
                                          account.refreshJwt)
             currentItem.model.getLatest()
+        }
+
+        function positionViewAtBeginning(){
+            if(columnStackView.currentItem.listView){
+                columnStackView.currentItem.listView.positionViewAtBeginning()
+                currentItem.listView.currentIndex = 0
+            }
+        }
+        function positionViewAtEnd(){
+            if(columnStackView.currentItem.listView){
+                columnStackView.currentItem.listView.positionViewAtEnd()
+            }
+        }
+        function pageUp(){
+            // var diff = Math.floor(currentItem.contentItem.height * 0.9)
+            // if(currentItem.contentItem.contentY - diff < 0){
+            //     currentItem.contentItem.contentY = 0
+            // }else{
+            //     currentItem.contentItem.contentY -= diff
+            // }
+            if(currentItem.listView){
+                currentItem.moveManual = true
+                currentItem.listView.decrementCurrentIndex()
+                currentItem.moveManual = false
+                console.log("decrementCurrentIndex()=" + currentItem.listView.currentIndex)
+            }
+        }
+        function pageDown(){
+            // var diff = Math.floor(currentItem.contentItem.height * 0.9)
+            // if(currentItem.contentItem.contentY + diff > currentItem.contentItem.contentHeight){
+            //     currentItem.contentItem.contentY = currentItem.contentItem.contentHeight - diff
+            // }else{
+            //     currentItem.contentItem.contentY += diff
+            // }
+            if(currentItem.listView){
+                currentItem.moveManual = true
+                currentItem.listView.incrementCurrentIndex()
+                currentItem.moveManual = false
+                console.log("incrementCurrentIndex()=" + currentItem.listView.currentIndex)
+            }
         }
     }
 }

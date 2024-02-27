@@ -19,6 +19,8 @@ ScrollView {
     property string hoveredLink: ""
     property string accountDid: ""   // 取得するユーザー
     property int imageLayoutType: 1
+    property bool moveManual: false
+
 
     property alias listView: rootListView
     property alias model: rootListView.model
@@ -40,12 +42,33 @@ ScrollView {
 
     signal scrollPositionChanged(bool top)
 
+
     ListView {
         id: rootListView
         anchors.fill: parent
         anchors.rightMargin: parent.ScrollBar.vertical.width
         spacing: 5
         maximumFlickVelocity: AdjustedValues.maximumFlickVelocity
+        highlight: Rectangle {
+            y: rootListView.currentItem.y + 1
+            width: rootListView.currentItem.width
+            height: rootListView.currentItem.height + rootListView.spacing - 1
+            color: "transparent"
+            border.width: 1
+            border.color: Material.color(Material.Blue)
+            Behavior on y {
+                SmoothedAnimation {
+                    duration: 100
+                }
+            }
+        }
+        highlightFollowsCurrentItem: false
+
+        onCurrentIndexChanged: {
+            if(atYBeginning && currentIndex > 0 && !moveManual){
+                currentIndex = 0
+            }
+        }
 
         onAtYBeginningChanged: scrollPositionChanged(atYBeginning)
         onMovementStarted: scrollPositionChanged(atYBeginning)
