@@ -608,6 +608,7 @@ ApplicationWindow {
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOn
             clip: true
 
+            property int prevShowPosition: 0
             property int rows: settingDialog.settings.rowCount
             property int childHeight: scrollView.height - scrollView.ScrollBar.horizontal.height
             contentHeight: childHeight
@@ -636,9 +637,15 @@ ApplicationWindow {
                 if(row_list.length <= position){
                     return
                 }
+                var direction = "left"
+                if(prevShowPosition < position){
+                    direction = "right"
+                }
+                prevShowPosition = position
+
                 item = repeater.itemAt(row_list[position])   //ここのitemはloader自身
                 if(item){
-                    if((item.x + item.width) > scrollView.contentItem.width){
+                    if((item.x + item.width) > scrollView.contentItem.width && direction === "right"){
                         scrollView.contentItem.contentX = (item.x + item.width) - scrollView.contentItem.width
                     }else if(item.x < scrollView.contentItem.contentX){
                         scrollView.contentItem.contentX = item.x
