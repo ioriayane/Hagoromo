@@ -208,6 +208,20 @@ struct InterestsPref
     QList<QString> tags; // A list of tags which describe the account owner's interests gathered
                          // during onboarding.
 };
+typedef QString MutedWordTarget;
+struct MutedWord
+{
+    QString value; // The muted word itself.
+    QList<AppBskyActorDefs::MutedWordTarget> targets;
+};
+struct MutedWordsPref
+{
+    QList<AppBskyActorDefs::MutedWord> items;
+};
+struct HiddenPostsPref
+{
+    QList<QString> items; // A list of URIs of posts the account owner has hidden.
+};
 }
 
 // app.bsky.actor.profile
@@ -1047,6 +1061,7 @@ struct SubjectStatusView
                            // appealed against, by the author of the content. False indicates last
                            // appeal was resolved by moderators.
     QString suspendUntil; // datetime
+    QList<QString> tags;
 };
 struct Moderation
 {
@@ -1215,6 +1230,13 @@ struct ModEventUnmute
 {
     QString comment; // Describe reasoning behind the reversal.
 };
+struct ModEventTag
+{
+    QList<QString> add; // Tags to be added to the subject. If already exists, won't be duplicated.
+    QList<QString> remove; // Tags to be removed to the subject. Ignores a tag If it doesn't exist,
+                           // won't be duplicated.
+    QString comment; // Additional comment about added/removed tags.
+};
 struct CommunicationTemplateView
 {
     QString id;
@@ -1260,6 +1282,15 @@ struct Delete
 {
     QString collection; // nsid
     QString rkey;
+};
+}
+
+// com.atproto.repo.listMissingBlobs
+namespace ComAtprotoRepoListMissingBlobs {
+struct RecordBlob
+{
+    QString cid; // cid
+    QString recordUri; // at-uri
 };
 }
 
@@ -1339,6 +1370,12 @@ struct Commit
     QString since; // The rev of the last emitted commit from this repo (if any).
     QList<RepoOp> ops;
     QString time; // datetime , Timestamp of when this message was originally broadcast.
+};
+struct Identity
+{
+    int seq = 0;
+    QString did; // did
+    QString time; // datetime
 };
 struct Handle
 {
