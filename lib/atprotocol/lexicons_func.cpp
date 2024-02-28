@@ -217,7 +217,7 @@ void copyMutedWord(const QJsonObject &src, AppBskyActorDefs::MutedWord &dest)
         dest.value = src.value("value").toString();
         for (const auto &s : src.value("targets").toArray()) {
             AppBskyActorDefs::MutedWordTarget child;
-            AppBskyActorDefs::copyMutedWordTarget(s.toObject(), child);
+            AppBskyActorDefs::copyMutedWordTarget(s, child);
             dest.targets.append(child);
         }
     }
