@@ -41,6 +41,8 @@ bool ConfigurableLabels::load()
         return false;
     setRunning(true);
 
+    m_mutedWords.clear();
+
     AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
     connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
         if (success) {
@@ -58,6 +60,22 @@ bool ConfigurableLabels::load()
                     }
                     setStatus(index, status);
                 }
+            }
+            int group = 0;
+            for (const auto &pref : *pref->mutedWordsPrefList()) {
+                for (const auto &item : pref.items) {
+                    MutedWordItem mute;
+                    mute.group = group;
+                    mute.value = item.value;
+                    if (item.targets.contains("content")) {
+                        mute.targets.append(MutedWordTarget::Content);
+                    }
+                    if (item.targets.contains("tag")) {
+                        mute.targets.append(MutedWordTarget::Tag);
+                    }
+                    m_mutedWords.append(mute);
+                }
+                group++;
             }
         }
         setRunning(false);
@@ -208,6 +226,19 @@ bool ConfigurableLabels::configurable(const int index) const
         return false;
 
     return m_labels.at(index).configurable;
+}
+
+int ConfigurableLabels::mutedWordCount()
+{
+    return m_mutedWords.count();
+}
+
+MutedWordItem ConfigurableLabels::getMutedWordItem(const int index)
+{
+    if (index < 0 || index >= mutedWordCount())
+        return MutedWordItem();
+
+    return m_mutedWords.at(index);
 }
 
 bool ConfigurableLabels::enableAdultContent() const

@@ -21,6 +21,18 @@ struct ConfigurableLabelItem
     bool configurable = true;
 };
 
+enum class MutedWordTarget : int {
+    Content,
+    Tag,
+};
+
+struct MutedWordItem
+{
+    int group = 0; // app.bsky.actor.defs#mutedWordsPrefが複数入れられるので区別する番号
+    QString value;
+    QList<MutedWordTarget> targets;
+};
+
 class ConfigurableLabels : public AtProtocolInterface::AtProtocolAccount
 {
     Q_OBJECT
@@ -46,6 +58,9 @@ public:
     bool isAdultImagery(const int index) const;
     bool configurable(const int index) const;
 
+    int mutedWordCount();
+    MutedWordItem getMutedWordItem(const int index);
+
     bool enableAdultContent() const;
     void setEnableAdultContent(bool newEnableAdultContent);
     bool running() const;
@@ -69,6 +84,9 @@ private:
     QString updatePreferencesJson(const QString &src_json);
 
     QList<ConfigurableLabelItem> m_labels;
+    // ポストをスペース区切りするときはこれとは別にワードをハッシュで保存しておく
+    // 日本語のときは逆向きで部分一致させる
+    QList<MutedWordItem> m_mutedWords;
     bool m_enableAdultContent;
     bool m_running;
 };
