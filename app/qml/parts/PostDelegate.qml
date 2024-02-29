@@ -167,40 +167,43 @@ ClickableFrame {
                     spacing: 0
                     visible: contentFilterFrame.showContent
 
-                    Label {
-                        id: recordText
+                    MouseArea {
+                        id: recrdTextMouseArea
                         Layout.preferredWidth: parent.width
+                        Layout.preferredHeight: recordText.contentHeight
                         Layout.topMargin: 5
                         Layout.bottomMargin: -5
-                        visible: text.length > 0
-                        textFormat: Text.StyledText
-                        wrapMode: Text.WrapAnywhere
-                        font.pointSize: AdjustedValues.f10
-                        lineHeight: 1.3
-                        onLinkActivated: (url) => openLink(url)
-                        onHoveredLinkChanged: displayLink(hoveredLink)
+                        acceptedButtons: Qt.MiddleButton
+                        hoverEnabled: true
+                        visible: recordText.text.length > 0
+                        Label {
+                            id: recordText
+                            anchors.top: parent.top
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            textFormat: Text.StyledText
+                            wrapMode: Text.WrapAnywhere
+                            font.pointSize: AdjustedValues.f10
+                            lineHeight: 1.3
+                            onLinkActivated: (url) => openLink(url)
+                            onHoveredLinkChanged: displayLink(hoveredLink)
 
-                        MouseArea {
-                            id: recrdTextMouseArea
-                            anchors.fill: parent
-                            acceptedButtons: Qt.RightButton
-                            hoverEnabled: true
-                        }
 
-                        Menu {
-                            id: tagMenu
-                            width: tagMenuItem.implicitWidth
-                            property string tagText: ""
-                            MenuItem {
-                                icon.source: "../images/search.png"
-                                text: qsTr("Search #%s posts").replace("%s", tagMenu.tagText)
-                                onTriggered: requestViewSearchPosts(tagMenu.tagText)
-                            }
-                            MenuItem {
-                                id: tagMenuItem
-                                icon.source: "../images/account.png"
-                                text: qsTr("Search #%s posts by this user").replace("%s", tagMenu.tagText)
-                                onTriggered: requestViewSearchPosts(tagMenu.tagText + " from:" + postAuthor.handle)
+                            Menu {
+                                id: tagMenu
+                                width: tagMenuItem.implicitWidth
+                                property string tagText: ""
+                                MenuItem {
+                                    icon.source: "../images/search.png"
+                                    text: qsTr("Search #%s posts").replace("%s", tagMenu.tagText)
+                                    onTriggered: requestViewSearchPosts(tagMenu.tagText)
+                                }
+                                MenuItem {
+                                    id: tagMenuItem
+                                    icon.source: "../images/account.png"
+                                    text: qsTr("Search #%s posts by this user").replace("%s", tagMenu.tagText)
+                                    onTriggered: requestViewSearchPosts(tagMenu.tagText + " from:" + postAuthor.handle)
+                                }
                             }
                         }
                     }
