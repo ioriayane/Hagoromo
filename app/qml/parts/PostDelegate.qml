@@ -57,6 +57,9 @@ ClickableFrame {
             tagMenu.x = recrdTextMouseArea.mouseX
             tagMenu.y =recrdTextMouseArea.mouseY
             tagMenu.tagText = url.substring(9)
+            if(tagMenu.tagText.charAt(0) !== "#"){
+                tagMenu.tagText = "#" + tagMenu.tagText
+            }
             tagMenu.open()
         }else{
             Qt.openUrlExternally(url)
@@ -195,13 +198,13 @@ ClickableFrame {
                                 property string tagText: ""
                                 MenuItem {
                                     icon.source: "../images/search.png"
-                                    text: qsTr("Search #%s posts").replace("%s", tagMenu.tagText)
+                                    text: qsTr("Search %s posts").replace("%s", tagMenu.tagText)
                                     onTriggered: requestViewSearchPosts(tagMenu.tagText)
                                 }
                                 MenuItem {
                                     id: tagMenuItem
                                     icon.source: "../images/account.png"
-                                    text: qsTr("Search #%s posts by this user").replace("%s", tagMenu.tagText)
+                                    text: qsTr("Search %s posts by this user").replace("%s", tagMenu.tagText)
                                     onTriggered: requestViewSearchPosts(tagMenu.tagText + " from:" + postAuthor.handle)
                                 }
                             }
