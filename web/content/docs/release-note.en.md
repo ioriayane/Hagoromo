@@ -15,7 +15,9 @@ description: This is a multi-column Bluesky client.
   - Move columns with the cursor keys
 - Update
   - Change to allow selection of search method when clicking on a hashtag
+  - Change to add # when searching for hashtags
 - Fix
+  - Fix a bug that caused display corruption with unexpected facets
 
 ### v0.24.0 - 2024/2/23
 
