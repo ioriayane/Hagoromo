@@ -158,7 +158,6 @@ QString AtpAbstractListModel::copyRecordText(const QVariant &value) const
                 }
             }
         }
-        int last_byte_end = -1;
         for (const auto &part : facets) {
             pos_start = part.index.byteStart;
             pos_end = part.index.byteEnd;
@@ -177,9 +176,10 @@ QString AtpAbstractListModel::copyRecordText(const QVariant &value) const
                     // 3 : [a(b)c]
                 } else {
                     // 4 : [a(b]c)
-                    text += QString(text_ba.mid(pos_prev_end, pos_prev_end - pos_start))
+                    text += QString(text_ba.mid(pos_prev_end, pos_end - pos_prev_end))
                                     .toHtmlEscaped()
                                     .replace("\n", "<br/>");
+                    pos_prev_end = pos_end;
                 }
             } else {
                 // 0 : [a]b(c)
@@ -204,8 +204,8 @@ QString AtpAbstractListModel::copyRecordText(const QVariant &value) const
                                     .toHtmlEscaped()
                                     .replace("\n", "<br/>");
                 }
+                pos_prev_end = pos_end;
             }
-            pos_prev_end = pos_end;
         }
         if (pos_prev_end < (text_ba.length() - 1)) {
             text += QString(text_ba.mid(pos_prev_end)).toHtmlEscaped().replace("\n", "<br/>");
