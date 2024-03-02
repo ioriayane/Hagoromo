@@ -91,8 +91,10 @@ struct NotFoundActor
 struct Relationship
 {
     QString did; // did
-    QString following; // at-uri
-    QString followedBy; // at-uri
+    QString following; // at-uri , if the actor follows this DID, this is the AT-URI of the follow
+                       // record
+    QString followedBy; // at-uri , if the actor is followed by this DID, contains the AT-URI of the
+                        // follow record
 };
 }
 
@@ -100,16 +102,18 @@ struct Relationship
 namespace ComAtprotoLabelDefs {
 struct Label
 {
-    QString src; // did
-    QString uri; // uri
-    QString cid; // cid
-    QString val;
-    bool neg = false;
-    QString cts; // datetime
+    QString src; // did , DID of the actor who created this label.
+    QString uri; // uri , AT URI of the record, repository (account), or other resource that this
+                 // label applies to.
+    QString cid; // cid , Optionally, CID specifying the specific version of 'uri' resource this
+                 // label applies to.
+    QString val; // The short string name of the value or type of this label.
+    bool neg = false; // If true, this is a negation label, overwriting a previous label.
+    QString cts; // datetime , Timestamp when this label was created.
 };
 struct SelfLabel
 {
-    QString val;
+    QString val; // The short string name of the value or type of this label.
 };
 struct SelfLabels
 {
@@ -181,25 +185,28 @@ struct SavedFeedsPref
 };
 struct PersonalDetailsPref
 {
-    QString birthDate; // datetime
+    QString birthDate; // datetime , The birth date of account owner.
 };
 struct FeedViewPref
 {
-    QString feed;
-    bool hideReplies = false;
-    bool hideRepliesByUnfollowed = false;
-    int hideRepliesByLikeCount = 0;
-    bool hideReposts = false;
-    bool hideQuotePosts = false;
+    QString feed; // The URI of the feed, or an identifier which describes the feed.
+    bool hideReplies = false; // Hide replies in the feed.
+    bool hideRepliesByUnfollowed =
+            false; // Hide replies in the feed if they are not by followed users.
+    int hideRepliesByLikeCount =
+            0; // Hide replies in the feed if they do not have this number of likes.
+    bool hideReposts = false; // Hide reposts in the feed.
+    bool hideQuotePosts = false; // Hide quote posts in the feed.
 };
 struct ThreadViewPref
 {
-    QString sort;
-    bool prioritizeFollowedUsers = false;
+    QString sort; // Sorting mode for threads.
+    bool prioritizeFollowedUsers = false; // Show followed users at the top of all replies.
 };
 struct InterestsPref
 {
-    QList<QString> tags;
+    QList<QString> tags; // A list of tags which describe the account owner's interests gathered
+                         // during onboarding.
 };
 }
 
@@ -212,12 +219,14 @@ enum class MainLabelsType : int {
 struct Main
 {
     QString displayName;
-    QString description;
-    Blob avatar;
-    Blob banner;
+    QString description; // Free-form profile description text.
+    Blob avatar; // Small image to be displayed next to posts from account. AKA, 'profile picture'
+    Blob banner; // Larger horizontal image to display behind profile view.
     // union start : labels
     MainLabelsType labels_type = MainLabelsType::none;
-    ComAtprotoLabelDefs::SelfLabels labels_ComAtprotoLabelDefs_SelfLabels;
+    ComAtprotoLabelDefs::SelfLabels
+            labels_ComAtprotoLabelDefs_SelfLabels; // Self-label values, specific to the Bluesky
+                                                   // application, on the overall account.
     // union end : labels
 };
 }
@@ -259,7 +268,7 @@ struct AspectRatio
 struct Image
 {
     Blob image;
-    QString alt;
+    QString alt; // Alt text description of the image, for accessibility.
     AspectRatio aspectRatio;
 };
 struct Main
@@ -268,9 +277,12 @@ struct Main
 };
 struct ViewImage
 {
-    QString thumb;
-    QString fullsize;
-    QString alt;
+    QString thumb; // Fully-qualified URL where a thumbnail of the image can be fetched. For
+                   // example, CDN location provided by the App View.
+    QString fullsize; // Fully-qualified URL where a large version of the image can be fetched. May
+                      // or may not be the exact original blob. For example, CDN location provided
+                      // by the App View.
+    QString alt; // Alt text description of the image, for accessibility.
     AspectRatio aspectRatio;
 };
 struct View
@@ -556,7 +568,7 @@ struct ViewRecord
     QString uri; // at-uri
     QString cid; // cid
     AppBskyActorDefs::ProfileViewBasic author;
-    QVariant value;
+    QVariant value; // The record data itself.
     QList<ComAtprotoLabelDefs::Label> labels;
     // union start : embeds
     ViewRecordEmbedsType embeds_type = ViewRecordEmbedsType::none;
@@ -619,7 +631,7 @@ struct Main
     Blob avatar;
     // union start : labels
     MainLabelsType labels_type = MainLabelsType::none;
-    ComAtprotoLabelDefs::SelfLabels labels_ComAtprotoLabelDefs_SelfLabels;
+    ComAtprotoLabelDefs::SelfLabels labels_ComAtprotoLabelDefs_SelfLabels; // Self-label values
     // union end : labels
     QString createdAt; // datetime
 };
@@ -665,7 +677,7 @@ struct TextSlice
 struct Entity
 {
     TextSlice index;
-    QString type;
+    QString type; // Expected values are 'mention' and 'link'.
     QString value;
 };
 struct ReplyRef
@@ -675,8 +687,7 @@ struct ReplyRef
 };
 struct Main
 {
-    QString text;
-    QList<Entity> entities;
+    QString text; // The primary post content. May be an empty string, if there are embeds.
     QList<AppBskyRichtextFacet::Main> facets;
     ReplyRef reply;
     // union start : embed
@@ -686,13 +697,17 @@ struct Main
     AppBskyEmbedRecord::Main embed_AppBskyEmbedRecord_Main;
     AppBskyEmbedRecordWithMedia::Main embed_AppBskyEmbedRecordWithMedia_Main;
     // union end : embed
-    QList<QString> langs;
+    QList<QString> langs; // Indicates human language of post primary text content.
     // union start : labels
     MainLabelsType labels_type = MainLabelsType::none;
-    ComAtprotoLabelDefs::SelfLabels labels_ComAtprotoLabelDefs_SelfLabels;
+    ComAtprotoLabelDefs::SelfLabels
+            labels_ComAtprotoLabelDefs_SelfLabels; // Self-label values for this post. Effectively
+                                                   // content warnings.
     // union end : labels
-    QList<QString> tags;
-    QString createdAt; // datetime
+    QList<QString>
+            tags; // Additional hashtags, in addition to any included in post text and facets.
+    QString createdAt; // datetime , Client-declared timestamp when this post was originally
+                       // created.
     QString via; // client name(Unofficial field)
 };
 }
@@ -726,7 +741,7 @@ struct ListRule
 };
 struct Main
 {
-    QString post; // at-uri
+    QString post; // at-uri , Reference (AT-URI) to the post record.
     // union start : allow
     MainAllowType allow_type = MainAllowType::none;
     QList<MentionRule> allow_MentionRule;
@@ -741,7 +756,7 @@ struct Main
 namespace AppBskyGraphBlock {
 struct Main
 {
-    QString subject; // did
+    QString subject; // did , DID of the account to be blocked.
     QString createdAt; // datetime
 };
 }
@@ -764,7 +779,7 @@ enum class MainLabelsType : int {
 struct Main
 {
     AppBskyGraphDefs::ListPurpose purpose;
-    QString name;
+    QString name; // Display name for list; can not be empty.
     QString description;
     QList<AppBskyRichtextFacet::Main> descriptionFacets;
     Blob avatar;
@@ -780,7 +795,7 @@ struct Main
 namespace AppBskyGraphListblock {
 struct Main
 {
-    QString subject; // at-uri
+    QString subject; // at-uri , Reference (AT-URI) to the mod list record.
     QString createdAt; // datetime
 };
 }
@@ -789,8 +804,8 @@ struct Main
 namespace AppBskyGraphListitem {
 struct Main
 {
-    QString subject; // did
-    QString list; // at-uri
+    QString subject; // did , The account which is included on the list.
+    QString list; // at-uri , Reference (AT-URI) to the list record (app.bsky.graph.list).
     QString createdAt; // datetime
 };
 }
@@ -802,7 +817,8 @@ struct Notification
     QString uri; // at-uri
     QString cid; // cid
     AppBskyActorDefs::ProfileView author;
-    QString reason;
+    QString reason; // Expected values are 'like', 'repost', 'follow', 'mention', 'reply', and
+                    // 'quote'.
     QString reasonSubject; // at-uri
     QVariant record;
     bool isRead = false;
@@ -927,16 +943,17 @@ struct StatusAttr
 struct ModEventTakedown
 {
     QString comment;
-    int durationInHours = 0;
+    int durationInHours =
+            0; // Indicates how long the takedown should be in effect before automatically expiring.
 };
 struct ModEventReverseTakedown
 {
-    QString comment;
+    QString comment; // Describe reasoning behind the reversal.
 };
 struct ModEventComment
 {
     QString comment;
-    bool sticky = false;
+    bool sticky = false; // Make the comment persistent on the subject
 };
 struct ModEventReport
 {
@@ -960,16 +977,16 @@ struct ModEventEscalate
 struct ModEventMute
 {
     QString comment;
-    int durationInHours = 0;
+    int durationInHours = 0; // Indicates how long the subject should remain muted.
 };
 struct ModEventEmail
 {
-    QString subjectLine;
-    QString comment;
+    QString subjectLine; // The subject line of the email sent to the user.
+    QString comment; // Additional comment about the outgoing comm.
 };
 struct ModEventResolveAppeal
 {
-    QString comment;
+    QString comment; // Describe resolution.
 };
 struct RepoRef
 {
@@ -1013,17 +1030,22 @@ struct SubjectStatusView
     // union end : subject
     QList<QString> subjectBlobCids;
     QString subjectRepoHandle;
-    QString updatedAt; // datetime
-    QString createdAt; // datetime
+    QString updatedAt; // datetime , Timestamp referencing when the last update was made to the
+                       // moderation status of the subject
+    QString createdAt; // datetime , Timestamp referencing the first moderation status impacting
+                       // event was emitted on the subject
     SubjectReviewState reviewState;
-    QString comment;
+    QString comment; // Sticky comment on the subject.
     QString muteUntil; // datetime
     QString lastReviewedBy; // did
     QString lastReviewedAt; // datetime
     QString lastReportedAt; // datetime
-    QString lastAppealedAt; // datetime
+    QString lastAppealedAt; // datetime , Timestamp referencing when the author of the subject
+                            // appealed a moderation action
     bool takendown = false;
-    bool appealed = false;
+    bool appealed = false; // True indicates that the a previously taken moderator action was
+                           // appealed against, by the author of the content. False indicates last
+                           // appeal was resolved by moderators.
     QString suspendUntil; // datetime
 };
 struct Moderation
@@ -1191,16 +1213,16 @@ struct RecordViewDetail
 };
 struct ModEventUnmute
 {
-    QString comment;
+    QString comment; // Describe reasoning behind the reversal.
 };
 struct CommunicationTemplateView
 {
     QString id;
-    QString name;
-    QString subject;
-    QString contentMarkdown;
+    QString name; // Name of the template.
+    QString subject; // Content of the template, can contain markdown and variable placeholders.
+    QString contentMarkdown; // Subject of the message, used in emails.
     bool disabled = false;
-    QString lastUpdatedBy; // did
+    QString lastUpdatedBy; // did , DID of the user who last updated the template.
     QString createdAt; // datetime
     QString updatedAt; // datetime
 };
@@ -1293,7 +1315,7 @@ namespace ComAtprotoSyncListRepos {
 struct Repo
 {
     QString did; // did
-    QString head; // cid
+    QString head; // cid , Current repo commit CID
     QString rev;
 };
 }
@@ -1307,14 +1329,16 @@ struct RepoOp
 };
 struct Commit
 {
-    int seq = 0;
-    bool rebase = false;
-    bool tooBig = false;
-    QString repo; // did
-    QString rev;
-    QString since;
+    int seq = 0; // The stream sequence number of this message.
+    bool tooBig =
+            false; // Indicates that this commit contained too many ops, or data size was too large.
+                   // Consumers will need to make a separate request to get missing data.
+    QString repo; // did , The repo this event comes from.
+    QString rev; // The rev of the emitted commit. Note that this information is also in the commit
+                 // object included in blocks, unless this is a tooBig event.
+    QString since; // The rev of the last emitted commit from this repo (if any).
     QList<RepoOp> ops;
-    QString time; // datetime
+    QString time; // datetime , Timestamp of when this message was originally broadcast.
 };
 struct Handle
 {

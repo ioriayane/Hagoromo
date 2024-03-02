@@ -1,6 +1,7 @@
 ---
 title: リスト
 weight: 50
+draft: true
 ---
 
 # リスト

@@ -1,6 +1,7 @@
 ---
 title: プロフィール
 weight: 30
+draft: true
 ---
 
 # プロフィール

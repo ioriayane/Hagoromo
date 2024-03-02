@@ -7,7 +7,10 @@
 #include <QSettings>
 #include <QUuid>
 
-ColumnListModel::ColumnListModel(QObject *parent) : QAbstractListModel { parent } { }
+ColumnListModel::ColumnListModel(QObject *parent)
+    : QAbstractListModel { parent }, m_selectedPosition(-1)
+{
+}
 
 int ColumnListModel::rowCount(const QModelIndex &parent) const
 {
@@ -44,6 +47,9 @@ QVariant ColumnListModel::item(int row, ColumnListModelRoles role) const
     else if (role == ValueRole)
         return m_columnList.at(row).value;
 
+    else if (role == SelectedRole)
+        return (m_columnList.at(row).position == m_selectedPosition);
+
     else if (role == VisibleLikeRole)
         return m_columnList.at(row).type_visibility.like;
     else if (role == VisibleRepostRole)
@@ -64,6 +70,10 @@ QVariant ColumnListModel::item(int row, ColumnListModelRoles role) const
         return m_columnList.at(row).type_visibility.repost_of_following_users;
     else if (role == VisibleRepostOfUnfollowingUsersRole)
         return m_columnList.at(row).type_visibility.repost_of_unfollowing_users;
+    else if (role == VisibleRepostOfMineRole)
+        return m_columnList.at(row).type_visibility.repost_of_mine;
+    else if (role == VisibleRepostByMeRole)
+        return m_columnList.at(row).type_visibility.repost_by_me;
 
     return QVariant();
 }
@@ -112,6 +122,10 @@ void ColumnListModel::update(int row, ColumnListModelRoles role, const QVariant 
         m_columnList[row].type_visibility.repost_of_following_users = value.toBool();
     else if (role == VisibleRepostOfUnfollowingUsersRole)
         m_columnList[row].type_visibility.repost_of_unfollowing_users = value.toBool();
+    else if (role == VisibleRepostOfMineRole)
+        m_columnList[row].type_visibility.repost_of_mine = value.toBool();
+    else if (role == VisibleRepostByMeRole)
+        m_columnList[row].type_visibility.repost_by_me = value.toBool();
 
     emit dataChanged(index(row), index(row));
 
@@ -144,6 +158,10 @@ void ColumnListModel::insert(int row, const QString &account_uuid, int component
     item.image_layout_type = static_cast<ImageLayoutType>(image_layout_type);
     item.name = name;
     item.value = value;
+
+    if (m_columnList.isEmpty()) {
+        m_selectedPosition = 0;
+    }
 
     beginInsertRows(QModelIndex(), row, row);
     m_columnList.insert(row, item);
@@ -220,6 +238,48 @@ void ColumnListModel::move(const QString &key, const MoveDirection direction)
     save();
 }
 
+int ColumnListModel::moveSelectionToLeft()
+{
+    if (m_selectedPosition > 0) {
+        m_selectedPosition--;
+        for (int i = 0; i < m_columnList.length(); i++) {
+            if (m_columnList.at(i).position == m_selectedPosition) {
+                emit dataChanged(index(i), index(i));
+                break;
+            }
+        }
+    }
+    return m_selectedPosition;
+}
+int ColumnListModel::moveSelectionToRight()
+{
+    if (m_selectedPosition < (rowCount() - 1)) {
+        m_selectedPosition++;
+        for (int i = 0; i < m_columnList.length(); i++) {
+            if (m_columnList.at(i).position == m_selectedPosition) {
+                emit dataChanged(index(i), index(i));
+                break;
+            }
+        }
+    }
+    return m_selectedPosition;
+}
+
+void ColumnListModel::moveSelection(int position)
+{
+    if (m_selectedPosition == position)
+        return;
+    if (position < 0 || position >= m_columnList.length())
+        return;
+    m_selectedPosition = position;
+    for (int i = 0; i < m_columnList.length(); i++) {
+        if (m_columnList.at(i).position == m_selectedPosition) {
+            emit dataChanged(index(i), index(i));
+            break;
+        }
+    }
+}
+
 void ColumnListModel::remove(int row)
 {
     if (row < 0 || row >= m_columnList.count())
@@ -231,8 +291,15 @@ void ColumnListModel::remove(int row)
     // 消したカラムよりも位置が大きいものをひとつ詰める
     for (int i = 0; i < m_columnList.length(); i++) {
         if (m_columnList.at(i).position > remove_pos) {
+            if (m_columnList.at(i).position == m_selectedPosition) {
+                m_selectedPosition--;
+            }
             m_columnList[i].position--;
         }
+    }
+    // 選択位置が範囲外の場合は移動する
+    if (m_selectedPosition >= m_columnList.length()) {
+        m_selectedPosition = m_columnList.length() - 1;
     }
     endRemoveRows();
 
@@ -339,6 +406,8 @@ void ColumnListModel::save() const
         notification["repost_of_following_users"] = item.type_visibility.repost_of_following_users;
         notification["repost_of_unfollowing_users"] =
                 item.type_visibility.repost_of_unfollowing_users;
+        notification["repost_of_mine"] = item.type_visibility.repost_of_mine;
+        notification["repost_by_me"] = item.type_visibility.repost_by_me;
         column_item["type_visibility"] = notification;
 
         column_array.append(column_item);
@@ -406,6 +475,12 @@ void ColumnListModel::load()
                                 .toObject()
                                 .value("repost_of_unfollowing_users")
                                 .toBool(true);
+                item.type_visibility.repost_of_mine = obj.value("type_visibility")
+                                                              .toObject()
+                                                              .value("repost_of_mine")
+                                                              .toBool(true);
+                item.type_visibility.repost_by_me =
+                        obj.value("type_visibility").toObject().value("repost_by_me").toBool(true);
 
                 if (item.name.isEmpty()) {
                     // version 0.2.0以前との互換性のため
@@ -429,6 +504,7 @@ void ColumnListModel::load()
                 m_columnList.append(item);
             }
         }
+        m_selectedPosition = 0;
         validateIndex();
         endInsertRows();
     }
@@ -448,6 +524,8 @@ QHash<int, QByteArray> ColumnListModel::roleNames() const
     roles[NameRole] = "name";
     roles[ValueRole] = "value";
 
+    roles[SelectedRole] = "selected";
+
     roles[VisibleLikeRole] = "visibleLike";
     roles[VisibleRepostRole] = "visibleRepost";
     roles[VisibleFollowRole] = "visibleFollow";
@@ -458,6 +536,8 @@ QHash<int, QByteArray> ColumnListModel::roleNames() const
     roles[VisibleRepostOfOwnRole] = "visibleRepostOfOwn";
     roles[VisibleRepostOfFollowingUsersRole] = "visibleRepostOfFollowingUsers";
     roles[VisibleRepostOfUnfollowingUsersRole] = "visibleRepostOfUnfollowingUsers";
+    roles[VisibleRepostOfMineRole] = "visibleRepostOfMine";
+    roles[VisibleRepostByMeRole] = "visibleRepostByMe";
 
     return roles;
 }

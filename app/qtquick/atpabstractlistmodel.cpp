@@ -162,27 +162,50 @@ QString AtpAbstractListModel::copyRecordText(const QVariant &value) const
             pos_start = part.index.byteStart;
             pos_end = part.index.byteEnd;
 
-            if (pos_start > pos_prev_end) {
-                text += QString(text_ba.mid(pos_prev_end, pos_start - pos_prev_end))
-                                .toHtmlEscaped()
-                                .replace("\n", "<br/>");
-            }
-            QString display_url = QString::fromUtf8(text_ba.mid(pos_start, pos_end - pos_start));
-            if (!part.features_Link.isEmpty()) {
-                text += QString("<a href=\"%1\">%2</a>")
-                                .arg(part.features_Link.first().uri, display_url);
-            } else if (!part.features_Mention.isEmpty()) {
-                text += QString("<a href=\"%1\">%2</a>")
-                                .arg(part.features_Mention.first().did, display_url);
-            } else if (!part.features_Tag.isEmpty()) {
-                text += QString("<a href=\"search://%1\">%2</a>")
-                                .arg(part.features_Tag.first().tag, display_url);
+            // 0 : [a]b(c)
+            // 1 : [(abc)]
+            // 2 : [a(bc)]
+            // 3 : [a(b)c]
+            // 4 : [a(b]c)
+
+            if (pos_start < pos_prev_end) {
+                // 前回の終了位置より開始が前（つまり、互い違いになっている -> [あ(い]う)の状態）
+                if (pos_end <= pos_prev_end) {
+                    // 1 : [(abc)]
+                    // 2 : [a(bc)]
+                    // 3 : [a(b)c]
+                } else {
+                    // 4 : [a(b]c)
+                    text += QString(text_ba.mid(pos_prev_end, pos_end - pos_prev_end))
+                                    .toHtmlEscaped()
+                                    .replace("\n", "<br/>");
+                    pos_prev_end = pos_end;
+                }
             } else {
-                text += QString(text_ba.mid(pos_start, pos_end - pos_start))
-                                .toHtmlEscaped()
-                                .replace("\n", "<br/>");
+                // 0 : [a]b(c)
+                if (pos_start > pos_prev_end) {
+                    text += QString(text_ba.mid(pos_prev_end, pos_start - pos_prev_end))
+                                    .toHtmlEscaped()
+                                    .replace("\n", "<br/>");
+                }
+                QString display_url =
+                        QString::fromUtf8(text_ba.mid(pos_start, pos_end - pos_start));
+                if (!part.features_Link.isEmpty()) {
+                    text += QString("<a href=\"%1\">%2</a>")
+                                    .arg(part.features_Link.first().uri, display_url);
+                } else if (!part.features_Mention.isEmpty()) {
+                    text += QString("<a href=\"%1\">%2</a>")
+                                    .arg(part.features_Mention.first().did, display_url);
+                } else if (!part.features_Tag.isEmpty()) {
+                    text += QString("<a href=\"search://%1\">%2</a>")
+                                    .arg(part.features_Tag.first().tag, display_url);
+                } else {
+                    text += QString(text_ba.mid(pos_start, pos_end - pos_start))
+                                    .toHtmlEscaped()
+                                    .replace("\n", "<br/>");
+                }
+                pos_prev_end = pos_end;
             }
-            pos_prev_end = pos_end;
         }
         if (pos_prev_end < (text_ba.length() - 1)) {
             text += QString(text_ba.mid(pos_prev_end)).toHtmlEscaped().replace("\n", "<br/>");

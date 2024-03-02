@@ -33,6 +33,7 @@ private slots:
     void test_ColumnListModelMove();
     void test_ColumnListModelRemove();
     void test_ColumnListModelInsertNext();
+    void test_ColumnListModelSelected();
     void test_NotificationListModel();
     void test_NotificationListModel2();
     void test_UserProfile();
@@ -43,6 +44,7 @@ private slots:
     void test_TimelineListModel_quote_label();
     void test_TimelineListModel_animated_image();
     void test_TimelineListModel_threadgate();
+    void test_TimelineListModel_hide_repost();
     void test_NotificationListModel_warn();
     void test_TimelineListModel_next();
     void test_AnyProfileListModel();
@@ -132,7 +134,8 @@ void hagoromo_test::test_TimelineListModelFacet()
     QJsonDocument json_doc = QJsonDocument::fromJson(file.readAll());
     QVERIFY(json_doc.isArray());
 
-    QVERIFY(json_doc.array().count() == model.rowCount());
+    QVERIFY2(json_doc.array().count() == model.rowCount(),
+             QString("%1 == %2").arg(json_doc.array().count()).arg(model.rowCount()).toLocal8Bit());
 
     for (int i = 0; i < model.rowCount(); i++) {
         verifyStr(json_doc.array().at(i).toObject().value("recordText").toString(),
@@ -336,6 +339,105 @@ void hagoromo_test::test_ColumnListModelInsertNext()
     QVERIFY2(model.getPreviousRow(6) == 3,
              QString("left pos=%1").arg(model.getPreviousRow(6)).toLocal8Bit());
     QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 0 << 5 << 4 << 1 << 2 << 3 << 6);
+}
+
+void hagoromo_test::test_ColumnListModelSelected()
+{
+    int row = 0;
+    ColumnListModel model;
+
+    model.append("uuid_1", 0, false, 10000, 400, 1, "column 1", "value 1");
+    model.append("uuid_2", 1, false, 20000, 500, 1, "column 2", "value 2");
+    model.append("uuid_3", 2, false, 30000, 600, 1, "column 3", "value 3");
+    model.append("uuid_4", 3, false, 40000, 700, 1, "column 4", "value 4");
+
+    model.move(model.item(1, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveLeft);
+    model.move(model.item(2, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveLeft);
+    model.move(model.item(2, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveLeft);
+    QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 2 << 1 << 0 << 3);
+
+    row = 0;
+    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == false,
+             QString("row(%1)=%2")
+                     .arg(row)
+                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
+                     .toLocal8Bit());
+    row++;
+    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == false,
+             QString("row(%1)=%2")
+                     .arg(row)
+                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
+                     .toLocal8Bit());
+    row++;
+    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == true,
+             QString("row(%1)=%2")
+                     .arg(row)
+                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
+                     .toLocal8Bit());
+    row++;
+    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == false,
+             QString("row(%1)=%2")
+                     .arg(row)
+                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
+                     .toLocal8Bit());
+
+    model.moveSelectionToRight();
+    row = 1;
+    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == true,
+             QString("row(%1)=%2")
+                     .arg(row)
+                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
+                     .toLocal8Bit());
+    model.moveSelectionToRight();
+    row = 0;
+    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == true,
+             QString("row(%1)=%2")
+                     .arg(row)
+                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
+                     .toLocal8Bit());
+    model.moveSelectionToRight();
+    row = 3;
+    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == true,
+             QString("row(%1)=%2")
+                     .arg(row)
+                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
+                     .toLocal8Bit());
+    model.moveSelectionToRight();
+    row = 3;
+    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == true,
+             QString("row(%1)=%2")
+                     .arg(row)
+                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
+                     .toLocal8Bit());
+
+    model.moveSelectionToLeft();
+    row = 0;
+    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == true,
+             QString("row(%1)=%2")
+                     .arg(row)
+                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
+                     .toLocal8Bit());
+    model.moveSelectionToLeft();
+    row = 1;
+    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == true,
+             QString("row(%1)=%2")
+                     .arg(row)
+                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
+                     .toLocal8Bit());
+    model.moveSelectionToLeft();
+    row = 2;
+    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == true,
+             QString("row(%1)=%2")
+                     .arg(row)
+                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
+                     .toLocal8Bit());
+    model.moveSelectionToLeft();
+    row = 2;
+    QVERIFY2(model.item(row, ColumnListModel::SelectedRole).toBool() == true,
+             QString("row(%1)=%2")
+                     .arg(row)
+                     .arg(model.item(row, ColumnListModel::SelectedRole).toBool())
+                     .toLocal8Bit());
 }
 
 void hagoromo_test::test_NotificationListModel()
@@ -1370,6 +1472,332 @@ void hagoromo_test::test_TimelineListModel_threadgate()
                      .toStringList()
                      .join(",")
                      .toLocal8Bit());
+}
+
+void hagoromo_test::test_TimelineListModel_hide_repost()
+{
+    int row = 0;
+    TimelineListModel model;
+    model.setAccount(m_service + "/timeline/hide2", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                     "ioriayane2.bsky.social", QString(), "dummy", QString());
+    model.setDisplayInterval(0);
+
+    QSignalSpy spy(&model, SIGNAL(runningChanged()));
+    QVERIFY(model.getLatest());
+    spy.wait(10 * 1000);
+    QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+    //
+    {
+        QVERIFY2(model.rowCount() == 7, QString::number(model.rowCount()).toLocal8Bit());
+        row = 0;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreifvecqlsp36t7wzs2owv5r2fdpb2tq3mwmocpwkxopyocdnvhip3u",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        row = 1;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreidrtozxt3boj6ftbuoacfpu5wjc3hapx4zum6ijmlhakqyfykugja",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        row = 2;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreif5g26rkg42hqigvscvwitm46hwa43v35p5hu7iteycntirquzj7e",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        row = 3;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreiasmg6ks4c4voo6tsiqx4klq6mfjjdloijf4ewp35nj7dnpkpvpc4",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        row = 4;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreicdfgdzc445denxvuzsklv4q4cw5dlm4kishkrqbv6ssfhbn3lfqy",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        row = 5;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreiaaysocrjeueqgaxyhk2r4ov34havbiup4ovbf7p4am7wycv6qvwy",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        row = 6;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreih77ppn7ykiharfjkqlyq5q6rqzatq5sxj2koomqv22s2z56dk5fe",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+    }
+    //
+    {
+        model.setVisibleRepostOfOwn(false);
+        model.setVisibleRepostOfFollowingUsers(true);
+        model.setVisibleRepostOfUnfollowingUsers(true);
+        model.setVisibleRepostOfMine(true);
+        model.setVisibleRepostByMe(true);
+
+        QVERIFY2(model.rowCount() == 5, QString::number(model.rowCount()).toLocal8Bit());
+        row = 0;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreifvecqlsp36t7wzs2owv5r2fdpb2tq3mwmocpwkxopyocdnvhip3u",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        row++;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreidrtozxt3boj6ftbuoacfpu5wjc3hapx4zum6ijmlhakqyfykugja",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        //    row++;
+        //    QVERIFY2(model.item(row, TimelineListModel::CidRole)
+        //                     == "bafyreif5g26rkg42hqigvscvwitm46hwa43v35p5hu7iteycntirquzj7e",
+        //             model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        //    QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+        //             model.item(row,
+        //             TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        row++;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreiasmg6ks4c4voo6tsiqx4klq6mfjjdloijf4ewp35nj7dnpkpvpc4",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        row++;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreicdfgdzc445denxvuzsklv4q4cw5dlm4kishkrqbv6ssfhbn3lfqy",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        row++;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreiaaysocrjeueqgaxyhk2r4ov34havbiup4ovbf7p4am7wycv6qvwy",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        //    row++;
+        //    QVERIFY2(model.item(row, TimelineListModel::CidRole)
+        //                     == "bafyreih77ppn7ykiharfjkqlyq5q6rqzatq5sxj2koomqv22s2z56dk5fe",
+        //             model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        //    QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+        //             model.item(row,
+        //             TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+    }
+    //
+    {
+        model.setVisibleRepostOfOwn(true);
+        model.setVisibleRepostOfFollowingUsers(false);
+        model.setVisibleRepostOfUnfollowingUsers(true);
+        model.setVisibleRepostOfMine(true);
+        model.setVisibleRepostByMe(true);
+
+        QVERIFY2(model.rowCount() == 4, QString("%1").arg(model.rowCount()).toLocal8Bit());
+        row = 0;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreifvecqlsp36t7wzs2owv5r2fdpb2tq3mwmocpwkxopyocdnvhip3u",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        //    row++;
+        //    QVERIFY2(model.item(row, TimelineListModel::CidRole)
+        //                     == "bafyreidrtozxt3boj6ftbuoacfpu5wjc3hapx4zum6ijmlhakqyfykugja",
+        //             model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        //    QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+        //             model.item(row,
+        //             TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        //    row++;
+        //    QVERIFY2(model.item(row, TimelineListModel::CidRole)
+        //                     == "bafyreif5g26rkg42hqigvscvwitm46hwa43v35p5hu7iteycntirquzj7e",
+        //             model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        //    QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+        //             model.item(row,
+        //             TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        row++;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreiasmg6ks4c4voo6tsiqx4klq6mfjjdloijf4ewp35nj7dnpkpvpc4",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        row++;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreicdfgdzc445denxvuzsklv4q4cw5dlm4kishkrqbv6ssfhbn3lfqy",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        //    row++;
+        //    QVERIFY2(model.item(row, TimelineListModel::CidRole)
+        //                     == "bafyreiaaysocrjeueqgaxyhk2r4ov34havbiup4ovbf7p4am7wycv6qvwy",
+        //             model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        //    QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+        //             model.item(row,
+        //             TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        row++;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreih77ppn7ykiharfjkqlyq5q6rqzatq5sxj2koomqv22s2z56dk5fe",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+    }
+    //
+    {
+        model.setVisibleRepostOfOwn(true);
+        model.setVisibleRepostOfFollowingUsers(true);
+        model.setVisibleRepostOfUnfollowingUsers(false);
+        model.setVisibleRepostOfMine(true);
+        model.setVisibleRepostByMe(true);
+
+        QVERIFY2(model.rowCount() == 5, QString("%1").arg(model.rowCount()).toLocal8Bit());
+        row = 0;
+        // QVERIFY2(model.item(row, TimelineListModel::CidRole)
+        //              == "bafyreifvecqlsp36t7wzs2owv5r2fdpb2tq3mwmocpwkxopyocdnvhip3u",
+        //          model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        // QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+        //          model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        //    row++;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreidrtozxt3boj6ftbuoacfpu5wjc3hapx4zum6ijmlhakqyfykugja",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        row++;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreif5g26rkg42hqigvscvwitm46hwa43v35p5hu7iteycntirquzj7e",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        row++;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreiasmg6ks4c4voo6tsiqx4klq6mfjjdloijf4ewp35nj7dnpkpvpc4",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        row++;
+        // QVERIFY2(model.item(row, TimelineListModel::CidRole)
+        //              == "bafyreicdfgdzc445denxvuzsklv4q4cw5dlm4kishkrqbv6ssfhbn3lfqy",
+        //          model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        // QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+        //          model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        // row++;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreiaaysocrjeueqgaxyhk2r4ov34havbiup4ovbf7p4am7wycv6qvwy",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        row++;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreih77ppn7ykiharfjkqlyq5q6rqzatq5sxj2koomqv22s2z56dk5fe",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+    }
+    //
+    {
+        model.setVisibleRepostOfOwn(true);
+        model.setVisibleRepostOfFollowingUsers(true);
+        model.setVisibleRepostOfUnfollowingUsers(true);
+        model.setVisibleRepostOfMine(false);
+        model.setVisibleRepostByMe(true);
+
+        QVERIFY2(model.rowCount() == 5, QString("%1").arg(model.rowCount()).toLocal8Bit());
+        row = 0;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreifvecqlsp36t7wzs2owv5r2fdpb2tq3mwmocpwkxopyocdnvhip3u",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        row++;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreidrtozxt3boj6ftbuoacfpu5wjc3hapx4zum6ijmlhakqyfykugja",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        row++;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreif5g26rkg42hqigvscvwitm46hwa43v35p5hu7iteycntirquzj7e",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        row++;
+        // QVERIFY2(model.item(row, TimelineListModel::CidRole)
+        //                  == "bafyreiasmg6ks4c4voo6tsiqx4klq6mfjjdloijf4ewp35nj7dnpkpvpc4",
+        //          model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        // QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+        //          model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        // row++;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreicdfgdzc445denxvuzsklv4q4cw5dlm4kishkrqbv6ssfhbn3lfqy",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        row++;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreiaaysocrjeueqgaxyhk2r4ov34havbiup4ovbf7p4am7wycv6qvwy",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        row++;
+        // QVERIFY2(model.item(row, TimelineListModel::CidRole)
+        //                  == "bafyreih77ppn7ykiharfjkqlyq5q6rqzatq5sxj2koomqv22s2z56dk5fe",
+        //          model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        // QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+        //          model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+    }
+    //
+    {
+        model.setVisibleRepostOfOwn(true);
+        model.setVisibleRepostOfFollowingUsers(true);
+        model.setVisibleRepostOfUnfollowingUsers(true);
+        model.setVisibleRepostOfMine(true);
+        model.setVisibleRepostByMe(false);
+
+        QVERIFY2(model.rowCount() == 4, QString("%1").arg(model.rowCount()).toLocal8Bit());
+        row = 0;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreifvecqlsp36t7wzs2owv5r2fdpb2tq3mwmocpwkxopyocdnvhip3u",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        row++;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreidrtozxt3boj6ftbuoacfpu5wjc3hapx4zum6ijmlhakqyfykugja",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        row++;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreif5g26rkg42hqigvscvwitm46hwa43v35p5hu7iteycntirquzj7e",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        row++;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreiasmg6ks4c4voo6tsiqx4klq6mfjjdloijf4ewp35nj7dnpkpvpc4",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+                 model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        row++;
+        // QVERIFY2(model.item(row, TimelineListModel::CidRole)
+        //              == "bafyreicdfgdzc445denxvuzsklv4q4cw5dlm4kishkrqbv6ssfhbn3lfqy",
+        //          model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        // QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+        //          model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        // row++;
+        // QVERIFY2(model.item(row, TimelineListModel::CidRole)
+        //              == "bafyreiaaysocrjeueqgaxyhk2r4ov34havbiup4ovbf7p4am7wycv6qvwy",
+        //          model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        // QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+        //          model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        // row++;
+        // QVERIFY2(model.item(row, TimelineListModel::CidRole)
+        //                  == "bafyreih77ppn7ykiharfjkqlyq5q6rqzatq5sxj2koomqv22s2z56dk5fe",
+        //          model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        // QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+        //          model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+    }
 }
 
 void hagoromo_test::test_NotificationListModel_warn()

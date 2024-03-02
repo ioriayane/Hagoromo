@@ -8,6 +8,19 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+### v0.25.0 - 2024/3/2
+
+- Add
+  - Function to hide reposts (the following can be set individually)
+    - Reposts of your posts
+    - Reposts by you
+  - Move columns with the cursor keys
+- Update
+  - Change to allow selection of search method when clicking on a hashtag
+  - Change to add # when searching for hashtags
+- Fix
+  - Fix a bug that caused display corruption with unexpected facets
+
 ### v0.24.0 - 2024/2/23
 
 - Add

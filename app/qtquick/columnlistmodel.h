@@ -38,6 +38,8 @@ struct ColumnPostType
     bool repost_of_own = true;
     bool repost_of_following_users = true;
     bool repost_of_unfollowing_users = true;
+    bool repost_of_mine = true;
+    bool repost_by_me = false;
 };
 
 struct ColumnItem
@@ -80,6 +82,8 @@ public:
         NameRole,
         ValueRole,
 
+        SelectedRole,
+
         VisibleLikeRole,
         VisibleRepostRole,
         VisibleFollowRole,
@@ -90,7 +94,8 @@ public:
         VisibleRepostOfOwnRole,
         VisibleRepostOfFollowingUsersRole,
         VisibleRepostOfUnfollowingUsersRole,
-
+        VisibleRepostOfMineRole,
+        VisibleRepostByMeRole,
     };
     Q_ENUM(ColumnListModelRoles)
     Q_ENUM(FeedComponentType)
@@ -117,6 +122,9 @@ public:
                                bool auto_loading, int interval, int width, int image_layout_type,
                                const QString &name, const QString &value);
     Q_INVOKABLE void move(const QString &key, const ColumnListModel::MoveDirection direction);
+    Q_INVOKABLE int moveSelectionToLeft();
+    Q_INVOKABLE int moveSelectionToRight();
+    Q_INVOKABLE void moveSelection(int position);
     Q_INVOKABLE void remove(int row);
     Q_INVOKABLE void removeByKey(const QString &key);
     Q_INVOKABLE bool containsKey(const QString &key) const;
@@ -134,6 +142,7 @@ protected:
     void validateIndex();
 
     QList<ColumnItem> m_columnList;
+    int m_selectedPosition;
 };
 
 #endif // COLUMNLISTMODEL_H

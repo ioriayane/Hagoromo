@@ -32,6 +32,22 @@ ApplicationWindow {
     // 逆にこの設定はListViewの内容へ反映されない
     font.family: settingDialog.settings.fontFamily.length > 0 ? settingDialog.settings.fontFamily : font.family
 
+    property bool visibleDialogs: settingDialog.visible ||
+                                  postDialog.visible ||
+                                  searchDialog.visible ||
+                                  addColumnDialog.visible ||
+                                  accountDialog.visible ||
+                                  discoverFeedsDialog.visible ||
+                                  columnsettingDialog.visible ||
+                                  reportDialog.visible ||
+                                  reportAccountDialog.visible ||
+                                  addToListDialog.visible ||
+                                  addListDialog.visible ||
+                                  editProfileDialog.visible ||
+                                  selectThreadGateDialog.visible ||
+                                  messageDialog.visible ||
+                                  imageFullView.visible
+
     function errorHandler(account_uuid, code, message) {
         if(code === "ExpiredToken" && account_uuid.length > 0){
             accountListModel.refreshAccountSession(account_uuid)
@@ -60,9 +76,11 @@ ApplicationWindow {
     }
 
     ApplicationShortcut {
-        enabled: !postDialog.visible && !searchDialog.visible
+        enabled: !appWindow.visibleDialogs
         postDialogShortcut.onActivated: postDialog.open()
         searchDialogShortcut.onActivated: searchDialog.open()
+        onShowLeftColumn: scrollView.showLeft()
+        onShowRightColumn: scrollView.showRight()
         onShowColumn: (index) => {
                           if(index === -1){
                               //一番右
@@ -176,6 +194,8 @@ ApplicationWindow {
                 visibleRepostOfOwnCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleRepostOfOwnRole)
                 visibleRepostOfFollowingUsersCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleRepostOfFollowingUsersRole)
                 visibleRepostOfUnfollowingUsersCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleRepostOfUnfollowingUsersRole)
+                visibleRepostOfMineCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleRepostOfMineRole)
+                visibleRepostByMeCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleRepostByMeRole)
 
                 open()
             }
@@ -199,6 +219,8 @@ ApplicationWindow {
                 columnManageModel.update(i, ColumnListModel.VisibleRepostOfOwnRole, visibleRepostOfOwnCheckBox.checked)
                 columnManageModel.update(i, ColumnListModel.VisibleRepostOfFollowingUsersRole, visibleRepostOfFollowingUsersCheckBox.checked)
                 columnManageModel.update(i, ColumnListModel.VisibleRepostOfUnfollowingUsersRole, visibleRepostOfUnfollowingUsersCheckBox.checked)
+                columnManageModel.update(i, ColumnListModel.VisibleRepostOfMineRole, visibleRepostOfMineCheckBox.checked)
+                columnManageModel.update(i, ColumnListModel.VisibleRepostByMeRole, visibleRepostByMeCheckBox.checked)
 
                 repeater.updateSettings(0)
             }
@@ -587,6 +609,7 @@ ApplicationWindow {
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOn
             clip: true
 
+            property int prevShowPosition: 0
             property int rows: settingDialog.settings.rowCount
             property int childHeight: scrollView.height - scrollView.ScrollBar.horizontal.height
             contentHeight: childHeight
@@ -601,15 +624,29 @@ ApplicationWindow {
                 showColumn(repeater.count - 1)
             }
 
-            function showColumn(index){
+            function showLeft() {
+                showColumn(columnManageModel.moveSelectionToLeft())
+            }
+
+            function showRight() {
+                showColumn(columnManageModel.moveSelectionToRight())
+            }
+
+            function showColumn(position){
                 var row_list = columnManageModel.getRowListInOrderOfPosition()
                 var item = undefined
-                if(row_list.length <= index){
+                if(row_list.length <= position){
                     return
                 }
-                item = repeater.itemAt(row_list[index])   //ここのitemはloader自身
+                var direction = "left"
+                if(prevShowPosition < position){
+                    direction = "right"
+                }
+                prevShowPosition = position
+
+                item = repeater.itemAt(row_list[position])   //ここのitemはloader自身
                 if(item){
-                    if((item.x + item.width) > scrollView.contentItem.width){
+                    if((item.x + item.width) > scrollView.contentItem.width && direction === "right"){
                         scrollView.contentItem.contentX = (item.x + item.width) - scrollView.contentItem.width
                     }else if(item.x < scrollView.contentItem.contentX){
                         scrollView.contentItem.contentX = item.x
@@ -620,6 +657,9 @@ ApplicationWindow {
                     columnCursor.y = item.y
                     columnCursorAnimation.stop()
                     columnCursorAnimation.start()
+                    // 選択位置の更新
+                    columnManageModel.moveSelection(position)
+                    repeater.updateSelection()
                 }
             }
 
@@ -638,16 +678,11 @@ ApplicationWindow {
                     updateContentWidth()
                 }
 
-                function updatePosition() {
-                    // モデルの順番を入れ替えるとLoader側が対応できないのと
-                    // 最左にくるものから処理しないとレイアウトが循環して矛盾するため
-                    // カラムの管理順ではなくポジションの順番で処理する
-                    var row_list = columnManageModel.getRowListInOrderOfPosition()
-                    for(var i=0; i<row_list.length; i++){
-                        var item = repeater.itemAt(row_list[i])   //ここのitemはloader自身
-                        item.setLayout()
+                function updateSelection() {
+                    for(var i=0; i<repeater.count; i++){
+                        var item = repeater.itemAt(i)   //ここのitemはloader自身
+                        item.updateSelection()
                     }
-                    updateContentWidth()
                 }
 
                 // target
@@ -665,9 +700,11 @@ ApplicationWindow {
                             item.setSettings()
                         }else if(target === 1){
                             item.setLayout()
+                            item.updateSelection()
                         }else{
                             item.setSettings()
                             item.setLayout()
+                            item.updateSelection()
                         }
                     }
                     updateContentWidth()
@@ -758,6 +795,7 @@ ApplicationWindow {
 
                         item.columnKey = model.key
                         item.componentType = model.componentType
+                        item.selected = model.selected
                         item.account.uuid = model.accountUuid
                         setSettings()
                         setAccount(row)
@@ -805,6 +843,8 @@ ApplicationWindow {
                         item.settings.visibleRepostOfOwn = model.visibleRepostOfOwn
                         item.settings.visibleRepostOfFollowingUsers = model.visibleRepostOfFollowingUsers
                         item.settings.visibleRepostOfUnfollowingUsers = model.visibleRepostOfUnfollowingUsers
+                        item.settings.visibleRepostOfMine = model.visibleRepostOfMine
+                        item.settings.visibleRepostByMe = model.visibleRepostByMe
 
                         item.settings.updateSeenNotification = settingDialog.settings.updateSeenNotification
                         item.settings.sequentialDisplayOfPosts = (settingDialog.settings.displayOfPosts === "sequential")
@@ -818,6 +858,10 @@ ApplicationWindow {
                         item.account.accessJwt = accountListModel.item(row, AccountListModel.AccessJwtRole)
                         item.account.refreshJwt = accountListModel.item(row, AccountListModel.RefreshJwtRole)
                         item.account.avatar = accountListModel.item(row, AccountListModel.AvatarRole)
+                    }
+
+                    function updateSelection() {
+                        item.selected = model.selected
                     }
                 }
             }

@@ -889,11 +889,6 @@ void copyMain(const QJsonObject &src, AppBskyFeedPost::Main &dest)
 {
     if (!src.isEmpty()) {
         dest.text = src.value("text").toString();
-        for (const auto &s : src.value("entities").toArray()) {
-            Entity child;
-            copyEntity(s.toObject(), child);
-            dest.entities.append(child);
-        }
         for (const auto &s : src.value("facets").toArray()) {
             AppBskyRichtextFacet::Main child;
             AppBskyRichtextFacet::copyMain(s.toObject(), child);
@@ -1815,7 +1810,6 @@ void copyCommit(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Commit &de
 {
     if (!src.isEmpty()) {
         dest.seq = src.value("seq").toInt();
-        dest.rebase = src.value("rebase").toBool();
         dest.tooBig = src.value("tooBig").toBool();
         dest.repo = src.value("repo").toString();
         dest.rev = src.value("rev").toString();

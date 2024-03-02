@@ -26,6 +26,7 @@ ColumnLayout {
 
     property string columnKey: ""
     property int componentType: 0
+    property bool selected: false
 
     property alias settings: settings
     property alias account: account
@@ -58,6 +59,19 @@ ColumnLayout {
 
     signal errorOccured(string account_uuid, string code, string message)
 
+    Shortcut {
+        enabled: columnView.selected
+        context: Qt.ApplicationShortcut
+        sequence: StandardKey.MoveToPreviousPage
+        onActivated: console.log("PageUp:" + columnView.columnKey)
+    }
+    Shortcut {
+        enabled: columnView.selected
+        context: Qt.ApplicationShortcut
+        sequence: StandardKey.MoveToNextPage
+        onActivated: console.log("PageDown:" + columnView.columnKey)
+    }
+
     ColumnSettings {
         id: settings
     }
@@ -79,6 +93,8 @@ ColumnLayout {
                 visibleRepostOfOwn: settings.visibleRepostOfOwn
                 visibleRepostOfFollowingUsers: settings.visibleRepostOfFollowingUsers
                 visibleRepostOfUnfollowingUsers: settings.visibleRepostOfUnfollowingUsers
+                visibleRepostOfMine: settings.visibleRepostOfMine
+                visibleRepostByMe: settings.visibleRepostByMe
 
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }
@@ -500,6 +516,8 @@ ColumnLayout {
         topPadding: 0
         rightPadding: 10
         bottomPadding: 0
+
+        borderColor: columnView.selected ? Material.color(Material.BlueGrey) : Material.color(Material.Grey, Material.Shade600)
 
         onClicked: (mouse) => {
                        if(columnStackView.currentItem.listView){
