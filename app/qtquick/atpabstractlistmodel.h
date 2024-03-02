@@ -34,6 +34,12 @@ struct BlobCueItem
     QString parent_cid;
 };
 
+struct RecordTextCacheItem
+{
+    QString html;
+    QString plain;
+};
+
 class AtpAbstractListModel : public QAbstractListModel
 {
     Q_OBJECT
@@ -183,6 +189,7 @@ protected:
     QList<PostCueItem> m_cuePost;
     QString m_cursor;
 
+    QHash<QString, RecordTextCacheItem> m_recordTextCache; // QHash<cid, html text>
     QHash<QString, QString> m_translations; // QHash<cid, translation>
 
     QList<BlobCueItem> m_cueExtendMedia;

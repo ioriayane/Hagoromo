@@ -99,7 +99,7 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
                        AtProtocolType::AppBskyFeedPost::Main>(current.record)
                 .text;
     else if (role == RecordTextTranslationRole)
-        return m_translations.contains(current.cid) ? m_translations[current.cid] : QString();
+        return m_translations.value(current.cid, QString());
     else if (role == IndexedAtRole)
         return formatDateTime(current.indexedAt);
     else if (role == EmbedImagesRole) {

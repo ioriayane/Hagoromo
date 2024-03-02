@@ -205,6 +205,8 @@ void AnyFeedListModel::getPosts()
                 view_post.post = *item;
                 m_viewPostHash[item->cid] = view_post;
 
+                cacheRecordText(*item); // キャッシュ(dataChangedの前に実施する必要あり
+
                 if (m_cidList.contains(item->cid)) {
                     int r = m_cidList.indexOf(item->cid);
                     if (r >= 0) {

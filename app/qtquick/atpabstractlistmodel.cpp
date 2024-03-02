@@ -27,6 +27,7 @@ void AtpAbstractListModel::clear()
         endRemoveRows();
     }
     m_originalCidList.clear();
+    m_recordTextCache.clear();
     m_translations.clear();
     m_cursor.clear();
 }

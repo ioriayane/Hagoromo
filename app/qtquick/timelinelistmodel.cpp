@@ -92,12 +92,12 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     else if (role == MutedRole)
         return current.post.author.viewer.muted;
     else if (role == RecordTextRole)
-        return copyRecordText(current.post.record);
+        return m_recordTextCache.value(current.post.cid, RecordTextCacheItem()).html;
     else if (role == RecordTextPlainRole)
-        return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(current.post.record).text;
+        return m_recordTextCache.value(current.post.cid, RecordTextCacheItem()).plain;
     else if (role == RecordTextTranslationRole)
-        return m_translations.contains(current.post.cid) ? m_translations[current.post.cid]
-                                                         : QString();
+        return m_translations.value(current.post.cid, QString());
+
     else if (role == ReplyCountRole)
         return current.post.replyCount;
     else if (role == RepostCountRole)
@@ -636,6 +636,8 @@ void TimelineListModel::copyFrom(AppBskyFeedGetTimeline *timeline)
         post.reason_type = item->reason_type;
         m_cuePost.append(post);
 
+        // テキストのキャッシュ
+        cacheRecordText(item->post);
         // emebed画像の取得のキューに入れる
         copyImagesFromPostViewToCue(item->post);
     }
@@ -658,6 +660,8 @@ void TimelineListModel::copyFromNext(AtProtocolInterface::AppBskyFeedGetTimeline
         post.reason_type = item->reason_type;
         m_cuePost.append(post);
 
+        // キャッシュ
+        cacheRecordText(item->post);
         // emebed画像の取得のキューに入れる
         copyImagesFromPostViewToCue(item->post);
     }
@@ -825,6 +829,17 @@ QVariant TimelineListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDefs::
     }
 
     return QVariant();
+}
+
+void TimelineListModel::cacheRecordText(const AppBskyFeedDefs::PostView &post)
+{
+    if (!m_recordTextCache.contains(post.cid)) {
+        RecordTextCacheItem cache_item;
+        cache_item.html = copyRecordText(post.record);
+        cache_item.plain =
+                LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(post.record).text;
+        m_recordTextCache[post.cid] = cache_item;
+    }
 }
 
 void TimelineListModel::updateExtendMediaFile(const QString &parent_cid)

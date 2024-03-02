@@ -175,6 +175,7 @@ protected:
     QString getReferenceTime(const AtProtocolType::AppBskyFeedDefs::FeedViewPost &view_post);
     QVariant getQuoteItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
                           const TimelineListModel::TimelineListModelRoles role) const;
+    void cacheRecordText(const AtProtocolType::AppBskyFeedDefs::PostView &post);
 
     virtual void updateExtendMediaFile(const QString &parent_cid);
 
