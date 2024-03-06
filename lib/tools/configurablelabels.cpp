@@ -7,6 +7,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QJsonValue>
+#include <QHash>
 
 using AtProtocolInterface::AppBskyActorGetPreferences;
 using AtProtocolInterface::AppBskyActorPutPreferences;
@@ -426,6 +427,10 @@ QString ConfigurableLabels::updatePreferencesJson(const QString &src_json)
                 } else if (value.value("$type")
                            == QStringLiteral("app.bsky.actor.defs#contentLabelPref")) {
                     // ここで更新するデータはいったん消す（順番を守るため）
+                } else if (value.value("$type")
+                                   == QStringLiteral("app.bsky.actor.defs#mutedWordsPref")
+                           && !m_mutedWords.isEmpty()) {
+                    // ここで更新するデータはいったん消す
                 } else {
                     // その他のデータはそのまま引き継ぐ
                     dest_preferences.append(value);
@@ -451,6 +456,30 @@ QString ConfigurableLabels::updatePreferencesJson(const QString &src_json)
                     value.insert("visibility", QJsonValue("ignore"));
                 }
                 dest_preferences.append(value);
+            }
+            {
+                QHash<int, QJsonArray> muted_items;
+                for (const auto &muted_word : m_mutedWords) {
+                    QJsonObject item;
+                    item.insert("value", muted_word.value);
+                    QJsonArray targets;
+                    if (muted_word.targets.contains(MutedWordTarget::Content)) {
+                        targets.append(QJsonValue("content"));
+                    }
+                    if (muted_word.targets.contains(MutedWordTarget::Tag)) {
+                        targets.append(QJsonValue("tag"));
+                    }
+                    item.insert("targets", targets);
+                    muted_items[muted_word.group].append(item);
+                }
+                QHashIterator<int, QJsonArray> ii(muted_items);
+                while (ii.hasNext()) {
+                    ii.next();
+                    QJsonObject value;
+                    value.insert("$type", QStringLiteral("app.bsky.actor.defs#mutedWordsPref"));
+                    value.insert("items", ii.value());
+                    dest_preferences.append(value);
+                }
             }
             root_object.insert("preferences", dest_preferences);
         }

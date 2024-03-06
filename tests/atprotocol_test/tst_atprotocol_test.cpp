@@ -66,12 +66,7 @@ atprotocol_test::atprotocol_test()
 
     connect(&m_mockServer, &WebServer::receivedPost,
             [=](const QHttpServerRequest &request, bool &result, QString &json) {
-                if (request.url().path()
-                            == "/response/labels/save/1/xrpc/app.bsky.actor.putPreferences"
-                    || request.url().path()
-                            == "/response/labels/save/2/xrpc/app.bsky.actor.putPreferences"
-                    || request.url().path()
-                            == "/response/labels/save/3/xrpc/app.bsky.actor.putPreferences") {
+                if (request.url().path().endsWith("/app.bsky.actor.putPreferences")) {
                     test_putPreferences(request.url().path(), request.body());
                     json = "{}";
                     result = true;
@@ -876,6 +871,46 @@ void atprotocol_test::test_ConfigurableLabels_save()
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
+    {
+        labels.setEnableAdultContent(false);
+        for (int i = 0; i < labels.count(); i++) {
+            labels.setStatus(i, ConfigurableLabelStatus::Warning);
+        }
+        labels.setService(QString("http://localhost:%1/response/labels/save/4").arg(m_listenPort));
+        QVERIFY2(labels.mutedWordCount() == 0,
+                 QString("mutedWordCount=%1").arg(labels.mutedWordCount()).toLocal8Bit());
+        QSignalSpy spy(&labels, SIGNAL(finished(bool)));
+        labels.save();
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+    {
+        {
+            labels.setService(
+                    QString("http://localhost:%1/response/labels/save/5.1").arg(m_listenPort));
+            QSignalSpy spy(&labels, SIGNAL(finished(bool)));
+            labels.load();
+            spy.wait();
+            QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+            QList<QVariant> arguments = spy.takeFirst();
+            QVERIFY(arguments.at(0).toBool());
+            QVERIFY2(labels.mutedWordCount() == 8,
+                     QString("mutedWordCount=%1").arg(labels.mutedWordCount()).toLocal8Bit());
+        }
+        labels.setEnableAdultContent(false);
+        for (int i = 0; i < labels.count(); i++) {
+            labels.setStatus(i, ConfigurableLabelStatus::Warning);
+        }
+        labels.setService(QString("http://localhost:%1/response/labels/save/5").arg(m_listenPort));
+        QSignalSpy spy(&labels, SIGNAL(finished(bool)));
+        labels.save();
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
 }
 
 void atprotocol_test::test_ComAtprotoRepoCreateRecord_post()
@@ -1261,9 +1296,21 @@ void atprotocol_test::test_putPreferences(const QString &path, const QByteArray 
     } else if (path.contains("/save/2/")) {
         json_doc_expect =
                 UnitTestCommon::loadJson(":/data/labels/save/2/app.bsky.actor.putPreferences");
-    } else {
+    } else if (path.contains("/save/3/")) {
         json_doc_expect =
                 UnitTestCommon::loadJson(":/data/labels/save/3/app.bsky.actor.putPreferences");
+    } else if (path.contains("/save/4/")) {
+        json_doc_expect =
+                UnitTestCommon::loadJson(":/data/labels/save/4/app.bsky.actor.putPreferences");
+    } else if (path.contains("/save/5/")) {
+        json_doc_expect =
+                UnitTestCommon::loadJson(":/data/labels/save/5/app.bsky.actor.putPreferences");
+    } else if (path.contains("/save/5.1/")) {
+        json_doc_expect =
+                UnitTestCommon::loadJson(":/data/labels/save/5.1/app.bsky.actor.putPreferences");
+    } else {
+        qDebug() << path;
+        QVERIFY(false);
     }
 
     QJsonDocument json_doc = QJsonDocument::fromJson(body);
