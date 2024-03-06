@@ -737,13 +737,7 @@ QVariant TimelineListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDefs::
         else
             return QString();
     } else if (role == QuoteRecordRecordTextRole) {
-        if (has_record)
-            return copyRecordText(post.embed_AppBskyEmbedRecord_View->record_ViewRecord.value);
-        else if (has_with_image)
-            return copyRecordText(
-                    post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.value);
-        else
-            return QString();
+        return m_recordTextCache.value(post.cid, RecordTextCacheItem()).quote_html;
     } else if (role == QuoteRecordIndexedAtRole) {
         if (has_record)
             return formatDateTime(post.embed_AppBskyEmbedRecord_View->record_ViewRecord.indexedAt);
@@ -838,6 +832,18 @@ void TimelineListModel::cacheRecordText(const AppBskyFeedDefs::PostView &post)
         cache_item.html = copyRecordText(post.record);
         cache_item.plain =
                 LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(post.record).text;
+
+        bool has_record = !post.embed_AppBskyEmbedRecord_View.isNull();
+        bool has_with_image = !post.embed_AppBskyEmbedRecordWithMedia_View.record.isNull();
+        if (has_record) {
+            cache_item.quote_html =
+                    copyRecordText(post.embed_AppBskyEmbedRecord_View->record_ViewRecord.value);
+        } else if (has_with_image) {
+            cache_item.quote_html = copyRecordText(
+                    post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.value);
+        } else {
+            cache_item.quote_html.clear();
+        }
         m_recordTextCache[post.cid] = cache_item;
     }
 }

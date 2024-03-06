@@ -38,6 +38,7 @@ struct RecordTextCacheItem
 {
     QString html;
     QString plain;
+    QString quote_html;
 };
 
 class AtpAbstractListModel : public QAbstractListModel
