@@ -58,8 +58,12 @@ public:
     bool isAdultImagery(const int index) const;
     bool configurable(const int index) const;
 
-    int mutedWordCount();
-    MutedWordItem getMutedWordItem(const int index);
+    int mutedWordCount() const;
+    MutedWordItem getMutedWordItem(const int index) const;
+    void insertMutedWord(const int index, const QString &value,
+                         const QList<MutedWordTarget> &targets);
+    void removeMutedWordItem(const int index);
+    void moveMutedWordItem(const int from, const int to);
 
     bool enableAdultContent() const;
     void setEnableAdultContent(bool newEnableAdultContent);

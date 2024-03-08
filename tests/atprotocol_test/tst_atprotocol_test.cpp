@@ -36,6 +36,7 @@ private slots:
     void test_ConfigurableLabels_load();
     void test_ConfigurableLabels_copy();
     void test_ConfigurableLabels_save();
+    void test_ConfigurableLabels_mutedword();
     void test_ComAtprotoRepoCreateRecord_post();
     void test_ComAtprotoRepoCreateRecord_threadgate();
     void test_AppBskyFeedGetFeedGenerator();
@@ -911,6 +912,42 @@ void atprotocol_test::test_ConfigurableLabels_save()
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
+}
+
+void atprotocol_test::test_ConfigurableLabels_mutedword()
+{
+    ConfigurableLabels labels;
+
+    labels.insertMutedWord(0, "word3", QList<MutedWordTarget>() << MutedWordTarget::Content);
+    labels.insertMutedWord(0, "word1", QList<MutedWordTarget>() << MutedWordTarget::Tag);
+    labels.insertMutedWord(1, "word2",
+                           QList<MutedWordTarget>()
+                                   << MutedWordTarget::Content << MutedWordTarget::Tag);
+
+    QVERIFY(labels.getMutedWordItem(0).value == "word1");
+    QVERIFY(labels.getMutedWordItem(0).group == 0);
+    QVERIFY(labels.getMutedWordItem(0).targets == QList<MutedWordTarget>() << MutedWordTarget::Tag);
+    QVERIFY(labels.getMutedWordItem(1).value == "word2");
+    QVERIFY(labels.getMutedWordItem(1).group == 0);
+    QVERIFY(labels.getMutedWordItem(1).targets
+            == QList<MutedWordTarget>() << MutedWordTarget::Content << MutedWordTarget::Tag);
+    QVERIFY(labels.getMutedWordItem(2).value == "word3");
+    QVERIFY(labels.getMutedWordItem(2).group == 0);
+    QVERIFY(labels.getMutedWordItem(2).targets
+            == QList<MutedWordTarget>() << MutedWordTarget::Content);
+
+    labels.moveMutedWordItem(2, 0);
+    QVERIFY(labels.getMutedWordItem(1).value == "word1");
+    QVERIFY(labels.getMutedWordItem(1).group == 0);
+    QVERIFY(labels.getMutedWordItem(1).targets == QList<MutedWordTarget>() << MutedWordTarget::Tag);
+    QVERIFY(labels.getMutedWordItem(2).value == "word2");
+    QVERIFY(labels.getMutedWordItem(2).group == 0);
+    QVERIFY(labels.getMutedWordItem(2).targets
+            == QList<MutedWordTarget>() << MutedWordTarget::Content << MutedWordTarget::Tag);
+    QVERIFY(labels.getMutedWordItem(0).value == "word3");
+    QVERIFY(labels.getMutedWordItem(0).group == 0);
+    QVERIFY(labels.getMutedWordItem(0).targets
+            == QList<MutedWordTarget>() << MutedWordTarget::Content);
 }
 
 void atprotocol_test::test_ComAtprotoRepoCreateRecord_post()

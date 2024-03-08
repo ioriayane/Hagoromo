@@ -66,8 +66,9 @@ signals:
 protected:
     QHash<int, QByteArray> roleNames() const;
 
-private:
     ConfigurableLabels m_contentFilterLabels;
+
+private:
     bool m_enableAdultContent;
     bool m_running;
     QString m_service;

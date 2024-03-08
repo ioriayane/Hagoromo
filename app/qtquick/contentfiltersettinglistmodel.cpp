@@ -7,8 +7,16 @@ ContentFilterSettingListModel::ContentFilterSettingListModel(QObject *parent)
             &ContentFilterSettingListModel::setRunning);
     connect(&m_contentFilterLabels, &ConfigurableLabels::finished, this, [=](bool success) {
         if (success) {
-            emit enableAdultContentChanged();
-            emit dataChanged(index(0), index(rowCount() - 1));
+            if (strcmp(this->metaObject()->className(), "MutedWordListModel") == 0) {
+                // ミュートワードは0個スタートなのでinsert
+                // 再読み込み時もリセットされる
+                beginInsertRows(QModelIndex(), 0, m_contentFilterLabels.mutedWordCount() - 1);
+                endInsertRows();
+            } else {
+                emit enableAdultContentChanged();
+                // コンテンツフィルターのデータは最初から存在しているからdataChangedでOK
+                emit dataChanged(index(0), index(rowCount() - 1));
+            }
         }
         emit finished();
     });
@@ -75,6 +83,12 @@ void ContentFilterSettingListModel::load()
 {
     if (running())
         return;
+
+    if (strcmp(this->metaObject()->className(), "MutedWordListModel") == 0
+        && m_contentFilterLabels.mutedWordCount() > 0) {
+        beginRemoveRows(QModelIndex(), 0, m_contentFilterLabels.mutedWordCount() - 1);
+        endRemoveRows();
+    }
 
     m_contentFilterLabels.setService(service());
     m_contentFilterLabels.setSession(QString(), handle(), QString(), accessJwt(), QString());

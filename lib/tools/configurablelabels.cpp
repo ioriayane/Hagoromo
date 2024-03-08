@@ -229,17 +229,49 @@ bool ConfigurableLabels::configurable(const int index) const
     return m_labels.at(index).configurable;
 }
 
-int ConfigurableLabels::mutedWordCount()
+int ConfigurableLabels::mutedWordCount() const
 {
     return m_mutedWords.count();
 }
 
-MutedWordItem ConfigurableLabels::getMutedWordItem(const int index)
+MutedWordItem ConfigurableLabels::getMutedWordItem(const int index) const
 {
     if (index < 0 || index >= mutedWordCount())
         return MutedWordItem();
 
     return m_mutedWords.at(index);
+}
+
+void ConfigurableLabels::insertMutedWord(const int index, const QString &value,
+                                         const QList<MutedWordTarget> &targets)
+{
+    if (index < 0)
+        return;
+    MutedWordItem item;
+    item.group = 0;
+    item.value = value;
+    item.targets = targets;
+    if (index >= mutedWordCount()) {
+        m_mutedWords.append(item);
+    } else {
+        m_mutedWords.insert(index, item);
+    }
+}
+
+void ConfigurableLabels::removeMutedWordItem(const int index)
+{
+    if (index < 0 || index >= mutedWordCount())
+        return;
+    m_mutedWords.removeAt(index);
+}
+
+void ConfigurableLabels::moveMutedWordItem(const int from, const int to)
+{
+    if (from < 0 || from >= mutedWordCount())
+        return;
+    if (to < 0 || to >= mutedWordCount())
+        return;
+    m_mutedWords.move(from, to);
 }
 
 bool ConfigurableLabels::enableAdultContent() const
