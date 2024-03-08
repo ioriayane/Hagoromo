@@ -157,6 +157,16 @@ ApplicationWindow {
         accountModel: accountListModel
         onClosed: accountListModel.syncColumn()
         onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
+        onRequestAddMutedWords: (account_index) => {
+                                    addMutedWordDialog.account.service = accountListModel.item(account_index, AccountListModel.ServiceRole)
+                                    addMutedWordDialog.account.did = accountListModel.item(account_index, AccountListModel.DidRole)
+                                    addMutedWordDialog.account.handle = accountListModel.item(account_index, AccountListModel.HandleRole)
+                                    addMutedWordDialog.account.email = accountListModel.item(account_index, AccountListModel.EmailRole)
+                                    addMutedWordDialog.account.accessJwt = accountListModel.item(account_index, AccountListModel.AccessJwtRole)
+                                    addMutedWordDialog.account.refreshJwt = accountListModel.item(account_index, AccountListModel.RefreshJwtRole)
+                                    addMutedWordDialog.account.avatar = accountListModel.item(account_index, AccountListModel.AvatarRole)
+                                    addMutedWordDialog.open()
+                                }
     }
 
     DiscoverFeedsDialog {
@@ -247,6 +257,9 @@ ApplicationWindow {
         id: editProfileDialog
         onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
         onAccepted: accountListModel.refreshAccountProfile(editProfileDialog.account.uuid)
+    }
+    AddMutedWordDialog {
+        id: addMutedWordDialog
     }
     SelectThreadGateDialog {
         id: selectThreadGateDialog

@@ -20,6 +20,8 @@ Dialog {
     property alias accountModel: accountList.model
     signal errorOccured(string account_uuid, string code, string message)
 
+    signal requestAddMutedWords(int account_index)
+
     LoginDialog {
         id: login
         onAccepted: {
@@ -116,12 +118,13 @@ Dialog {
                         onClicked: moreMenu.open()
                         Menu {
                             id: moreMenu
-                            width: 250
+                            width: mutedWordMenuItem.implicitWidth
                             MenuItem {
                                 icon.source: "../images/account_icon.png"
                                 text: qsTr("Set as main")
                                 onTriggered: accountList.model.setMainAccount(model.index)
                             }
+                            MenuSeparator {}
                             MenuItem {
                                 icon.source: "../images/visibility_on.png"
                                 text: qsTr("Content filter")
@@ -136,6 +139,12 @@ Dialog {
                                     contentFilter.account.avatar = accountList.model.item(i, AccountListModel.AvatarRole)
                                     contentFilter.open()
                                 }
+                            }
+                            MenuItem {
+                                id: mutedWordMenuItem
+                                icon.source: "../images/mute.png"
+                                text: qsTr("Muted words and tags")
+                                onTriggered: accountDialog.requestAddMutedWords(model.index)
                             }
                             MenuItem {
                                 icon.source: "../images/thread.png"
@@ -155,6 +164,7 @@ Dialog {
                                     selectThreadGateDialog.open()
                                 }
                             }
+                            MenuSeparator {}
                             MenuItem {
                                 icon.source: "../images/delete.png"
                                 text: qsTr("Remove account")
