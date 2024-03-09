@@ -69,6 +69,7 @@ protected:
     ConfigurableLabels m_contentFilterLabels;
 
 private:
+    bool m_saving;
     bool m_enableAdultContent;
     bool m_running;
     QString m_service;

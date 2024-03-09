@@ -62,8 +62,11 @@ public:
     MutedWordItem getMutedWordItem(const int index) const;
     void insertMutedWord(const int index, const QString &value,
                          const QList<MutedWordTarget> &targets);
+    void updateMutedWord(const int index, const QString &value,
+                         const QList<MutedWordTarget> &targets);
     void removeMutedWordItem(const int index);
     void moveMutedWordItem(const int from, const int to);
+    int indexOfMutedWordItem(const QString &value) const;
 
     bool enableAdultContent() const;
     void setEnableAdultContent(bool newEnableAdultContent);

@@ -22,8 +22,12 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     Q_INVOKABLE QVariant item(int row, MutedWordListModel::MutedWordListModelRoles role) const;
 
+    Q_INVOKABLE void append(const QString &value, bool tag_only);
+    Q_INVOKABLE void remove(int row);
+
     bool enableAdultContent() const = delete;
     void setEnableAdultContent(bool newEnableAdultContent) = delete;
+
 public slots:
 
 signals:

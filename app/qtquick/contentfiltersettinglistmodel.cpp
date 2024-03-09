@@ -1,23 +1,29 @@
 #include "contentfiltersettinglistmodel.h"
 
 ContentFilterSettingListModel::ContentFilterSettingListModel(QObject *parent)
-    : QAbstractListModel { parent }, m_running(false)
+    : QAbstractListModel { parent }, m_saving(false), m_running(false)
 {
     connect(&m_contentFilterLabels, &ConfigurableLabels::runningChanged, this,
             &ContentFilterSettingListModel::setRunning);
     connect(&m_contentFilterLabels, &ConfigurableLabels::finished, this, [=](bool success) {
         if (success) {
             if (strcmp(this->metaObject()->className(), "MutedWordListModel") == 0) {
-                // ミュートワードは0個スタートなのでinsert
-                // 再読み込み時もリセットされる
-                beginInsertRows(QModelIndex(), 0, m_contentFilterLabels.mutedWordCount() - 1);
-                endInsertRows();
+                if (m_contentFilterLabels.mutedWordCount() == 0) {
+                } else if (m_saving) {
+                    emit dataChanged(index(0), index(m_contentFilterLabels.mutedWordCount() - 1));
+                } else {
+                    // ミュートワードは0個スタートなのでinsert
+                    // 再読み込み時もリセットされる
+                    beginInsertRows(QModelIndex(), 0, m_contentFilterLabels.mutedWordCount() - 1);
+                    endInsertRows();
+                }
             } else {
                 emit enableAdultContentChanged();
                 // コンテンツフィルターのデータは最初から存在しているからdataChangedでOK
                 emit dataChanged(index(0), index(rowCount() - 1));
             }
         }
+        m_saving = false;
         emit finished();
     });
 }
@@ -84,8 +90,8 @@ void ContentFilterSettingListModel::load()
     if (running())
         return;
 
-    if (strcmp(this->metaObject()->className(), "MutedWordListModel") == 0
-        && m_contentFilterLabels.mutedWordCount() > 0) {
+    m_saving = false;
+    if (m_contentFilterLabels.mutedWordCount() > 0) {
         beginRemoveRows(QModelIndex(), 0, m_contentFilterLabels.mutedWordCount() - 1);
         endRemoveRows();
     }
@@ -99,6 +105,7 @@ void ContentFilterSettingListModel::save()
 {
     if (running())
         return;
+    m_saving = true;
     m_contentFilterLabels.setService(service());
     m_contentFilterLabels.setSession(QString(), handle(), QString(), accessJwt(), QString());
     m_contentFilterLabels.save();

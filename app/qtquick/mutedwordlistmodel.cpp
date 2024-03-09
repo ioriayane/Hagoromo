@@ -24,16 +24,45 @@ QVariant MutedWordListModel::item(int row, MutedWordListModelRoles role) const
         return item.value;
     else if (role == TargetsRole) {
         QStringList targets;
-        if (item.targets.contains(MutedWordTarget::Content)) {
-            targets.append("content");
-        }
         if (item.targets.contains(MutedWordTarget::Tag)) {
             targets.append("tag");
+        }
+        if (item.targets.contains(MutedWordTarget::Content)) {
+            targets.append("text");
         }
         return targets;
     }
 
     return QVariant();
+}
+
+void MutedWordListModel::append(const QString &value, bool tag_only)
+{
+    QList<MutedWordTarget> targets;
+    if (!tag_only) {
+        targets.append(MutedWordTarget::Content);
+    }
+    targets.append(MutedWordTarget::Tag);
+
+    int row = m_contentFilterLabels.indexOfMutedWordItem(value);
+    if (row >= 0) {
+        m_contentFilterLabels.updateMutedWord(row, value, targets);
+        emit dataChanged(index(row), index(row));
+    } else {
+        beginInsertRows(QModelIndex(), rowCount(), rowCount());
+        m_contentFilterLabels.insertMutedWord(rowCount(), value, targets);
+        endInsertRows();
+    }
+}
+
+void MutedWordListModel::remove(int row)
+{
+    if (row < 0 || row >= rowCount())
+        return;
+
+    beginRemoveRows(QModelIndex(), row, row);
+    m_contentFilterLabels.removeMutedWordItem(row);
+    endRemoveRows();
 }
 
 QHash<int, QByteArray> MutedWordListModel::roleNames() const
