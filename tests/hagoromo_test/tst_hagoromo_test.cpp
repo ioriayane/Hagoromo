@@ -134,7 +134,8 @@ void hagoromo_test::test_TimelineListModelFacet()
     QJsonDocument json_doc = QJsonDocument::fromJson(file.readAll());
     QVERIFY(json_doc.isArray());
 
-    QVERIFY(json_doc.array().count() == model.rowCount());
+    QVERIFY2(json_doc.array().count() == model.rowCount(),
+             QString("%1 == %2").arg(json_doc.array().count()).arg(model.rowCount()).toLocal8Bit());
 
     for (int i = 0; i < model.rowCount(); i++) {
         verifyStr(json_doc.array().at(i).toObject().value("recordText").toString(),

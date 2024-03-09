@@ -16,5 +16,17 @@
     },
     {
         "recordText": "<a href=\"did:plc:ipj5qejfoqu6eukvt72uhyit\">@ioriayane.relog.tech</a> <a href=\"did:plc:l4fsx4ujos7uw7n4ijq2ulgs\">@ioriayane.bsky.social</a> <a href=\"did:plc:ipj5qejfoqu6eukvt72uhyit\">@ioriayane.relog.tech</a> てすてす"
+    },
+    {
+        "recordText": "<a href=\"https://leme.style/\">https://leme.style/</a><br/>2つめ<br/>https://blueskyweb.xyz/<br/>終わり"
+    },
+    {
+        "recordText": "<a href=\"search://test_tag1\">https://leme.style/</a><br/>2つめ<br/>https://blueskyweb.xyz/<br/>終わり"
+    },
+    {
+        "recordText": "<a href=\"search://test_tag2\">https://leme.style/</a><br/>2つめ<br/>https://blueskyweb.xyz/<br/>終わり"
+    },
+    {
+        "recordText": "<a href=\"search://test_tag3\">https://leme.style/</a><br/>2つめ<br/>https://blueskyweb.xyz/<br/>終わり"
     }
 ]
