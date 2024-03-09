@@ -56,7 +56,7 @@ ClickableFrame {
             requestViewProfile(url)
         }else if(url.indexOf("search://") === 0){
             tagMenu.x = recrdTextMouseArea.mouseX
-            tagMenu.y =recrdTextMouseArea.mouseY
+            tagMenu.y = recrdTextMouseArea.mouseY
             tagMenu.tagText = url.substring(9)
             if(tagMenu.tagText.charAt(0) !== "#"){
                 tagMenu.tagText = "#" + tagMenu.tagText
@@ -192,34 +192,10 @@ ClickableFrame {
                             onLinkActivated: (url) => openLink(url)
                             onHoveredLinkChanged: displayLink(hoveredLink)
 
-
-                            Menu {
+                            HashTagMenu {
                                 id: tagMenu
-                                width: tagMenuItem.implicitWidth
-                                property string tagText: ""
-                                MenuItem {
-                                    icon.source: "../images/search.png"
-                                    text: qsTr("Search %s posts").replace("%s", tagMenu.tagText)
-                                    onTriggered: requestViewSearchPosts(tagMenu.tagText)
-                                }
-                                MenuItem {
-                                    id: tagMenuItem
-                                    icon.source: "../images/account.png"
-                                    text: qsTr("Search %s posts by this user").replace("%s", tagMenu.tagText)
-                                    onTriggered: requestViewSearchPosts(tagMenu.tagText + " from:" + postAuthor.handle)
-                                }
-                                MenuSeparator {}
-                                MenuItem {
-                                    icon.source: "../images/mute.png"
-                                    text: qsTr("Mute %s posts").replace("%s", tagMenu.tagText)
-                                    onTriggered: {
-                                        var temp = tagMenu.tagText
-                                        if(temp.charAt(0) === "#"){
-                                            temp = temp.substring(1)
-                                        }
-                                        requestAddMutedWord(temp)
-                                    }
-                                }
+                                onRequestViewSearchPosts: (text) => postFrame.requestViewSearchPosts(text)
+                                onRequestAddMutedWord: (text) => postFrame.requestAddMutedWord(text)
                             }
                         }
                     }

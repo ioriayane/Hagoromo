@@ -48,6 +48,7 @@ QML_FILES = \
     qml/parts/ImagePreview.qml \
     qml/parts/ExternalLinkCard.qml \
     qml/parts/FeedGeneratorLinkCard.qml \
+    qml/parts/HashTagMenu.qml \
     qml/parts/ListLinkCard.qml \
     qml/parts/MentionSuggestionView.qml \
     qml/parts/NotificationDelegate.qml \
