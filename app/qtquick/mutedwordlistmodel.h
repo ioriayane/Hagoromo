@@ -7,6 +7,7 @@ class MutedWordListModel : public ContentFilterSettingListModel
 {
     Q_OBJECT
 
+    Q_PROPERTY(bool modified READ modified WRITE setModified NOTIFY modifiedChanged FINAL)
 public:
     explicit MutedWordListModel(QObject *parent = nullptr);
 
@@ -22,20 +23,26 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     Q_INVOKABLE QVariant item(int row, MutedWordListModel::MutedWordListModelRoles role) const;
 
-    Q_INVOKABLE void append(const QString &value, bool tag_only);
+    Q_INVOKABLE int append(const QString &value, bool tag_only);
     Q_INVOKABLE void remove(int row);
 
     bool enableAdultContent() const = delete;
     void setEnableAdultContent(bool newEnableAdultContent) = delete;
 
+    bool modified() const;
+    void setModified(bool newModified);
+
 public slots:
 
 signals:
+
+    void modifiedChanged();
 
 protected:
     QHash<int, QByteArray> roleNames() const;
 
 private:
+    bool m_modified;
 };
 
 #endif // MUTEDWORDLISTMODEL_H

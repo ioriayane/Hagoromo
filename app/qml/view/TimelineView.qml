@@ -35,6 +35,7 @@ ScrollView {
     signal requestViewLikedBy(string uri)
     signal requestViewRepostedBy(string uri)
     signal requestViewSearchPosts(string text)
+    signal requestAddMutedWord(string text)
     signal requestUpdateThreadGate(string uri, string threadgate_uri, string type, var rules, var callback)
     signal requestReportPost(string uri, string cid)
 
@@ -89,6 +90,7 @@ ScrollView {
             onClicked: (mouse) => requestViewThread(model.uri)
             onRequestViewProfile: (did) => timelineView.requestViewProfile(did)
             onRequestViewSearchPosts: (text) => timelineView.requestViewSearchPosts(text)
+            onRequestAddMutedWord: (text) => timelineView.requestAddMutedWord(text)
 
             moderationFrame.visible: model.muted
             userFilterMatched: model.userFilterMatched

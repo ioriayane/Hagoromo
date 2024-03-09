@@ -36,7 +36,7 @@ QVariant MutedWordListModel::item(int row, MutedWordListModelRoles role) const
     return QVariant();
 }
 
-void MutedWordListModel::append(const QString &value, bool tag_only)
+int MutedWordListModel::append(const QString &value, bool tag_only)
 {
     QList<MutedWordTarget> targets;
     if (!tag_only) {
@@ -49,10 +49,15 @@ void MutedWordListModel::append(const QString &value, bool tag_only)
         m_contentFilterLabels.updateMutedWord(row, value, targets);
         emit dataChanged(index(row), index(row));
     } else {
-        beginInsertRows(QModelIndex(), rowCount(), rowCount());
-        m_contentFilterLabels.insertMutedWord(rowCount(), value, targets);
+        row = rowCount();
+        beginInsertRows(QModelIndex(), row, row);
+        m_contentFilterLabels.insertMutedWord(row, value, targets);
         endInsertRows();
     }
+
+    setModified(true);
+
+    return row;
 }
 
 void MutedWordListModel::remove(int row)
@@ -63,6 +68,8 @@ void MutedWordListModel::remove(int row)
     beginRemoveRows(QModelIndex(), row, row);
     m_contentFilterLabels.removeMutedWordItem(row);
     endRemoveRows();
+
+    setModified(true);
 }
 
 QHash<int, QByteArray> MutedWordListModel::roleNames() const
@@ -73,4 +80,17 @@ QHash<int, QByteArray> MutedWordListModel::roleNames() const
     roles[TargetsRole] = "targets";
 
     return roles;
+}
+
+bool MutedWordListModel::modified() const
+{
+    return m_modified;
+}
+
+void MutedWordListModel::setModified(bool newModified)
+{
+    if (m_modified == newModified)
+        return;
+    m_modified = newModified;
+    emit modifiedChanged();
 }

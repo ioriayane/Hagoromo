@@ -18,6 +18,7 @@ Dialog {
     y: (parent.height - height) * 0.5
     title: qsTr("Update muted words")
 
+    property string initialValue: ""
     property alias account: account
     Account {
         id: account
@@ -25,10 +26,15 @@ Dialog {
     signal errorOccured(string account_uuid, string code, string message)
 
     onOpened: {
+        if(initialValue.length > 0){
+            valueText.text = initialValue
+        }
+        initialValue = ""
         muteTextAndTagRadioButton.checked = true
         if(account.service.length === 0){
             return
         }
+        mutedWordListModel.modified = false
         mutedWordListModel.load()
     }
     onClosed: {
@@ -72,8 +78,9 @@ Dialog {
                     font.pointSize: AdjustedValues.f10
                     text: qsTr("Add/Update")
                     onClicked: {
-                        mutedWordListModel.append(valueText.text.trim(), muteTagOnlyRadioButton.checked)
+                        var row = mutedWordListModel.append(valueText.text.trim(), muteTagOnlyRadioButton.checked)
                         valueText.text = ""
+                        mutedWordListView.positionViewAtIndex(row, ListView.End)
                     }
                 }
             }
@@ -110,6 +117,7 @@ Dialog {
                     service: addMutedWordDialog.account.service
                     handle: addMutedWordDialog.account.handle
                     accessJwt: addMutedWordDialog.account.accessJwt
+                    onFinished: modified = false
                 }
                 footer: BusyIndicator {
                     width: mutedWordListView.width
@@ -127,9 +135,11 @@ Dialog {
                         anchors.rightMargin: 10
                         property var targets: model.targets
                         Label {
+                            Layout.preferredWidth: 270 * AdjustedValues.ratio
                             Layout.alignment: Qt.AlignVCenter
                             font.pointSize: AdjustedValues.f10
                             text: model.value
+                            elide: Text.ElideRight
                         }
                         Item {
                             Layout.preferredHeight: 1
@@ -158,7 +168,14 @@ Dialog {
                             onClicked: mutedWordListModel.remove(model.index)
                         }
                     }
-                    onClicked: valueText.text = model.value
+                    onClicked: {
+                        if(model.targets.includes("text")){
+                            muteTextAndTagRadioButton.checked = true
+                        }else{
+                            muteTagOnlyRadioButton.checked = true
+                        }
+                        valueText.text = model.value
+                    }
                 }
             }
         }
@@ -175,7 +192,7 @@ Dialog {
             Button {
                 font.pointSize: AdjustedValues.f10
                 enabled: !mutedWordListModel.running
-                text: qsTr("Save")
+                text: qsTr("Save") + (mutedWordListModel.modified ? "(*)" : "")
                 flat: true
                 onClicked: mutedWordListModel.save()
             }

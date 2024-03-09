@@ -500,6 +500,23 @@ ApplicationWindow {
                                                  addToListDialog.open()
                                              }
                                          }
+            onRequestAddMutedWord: (account_uuid, text) => {
+                                       var row = accountListModel.indexAt(account_uuid)
+                                       console.log(account_uuid + ", " + text + ", " + row)
+                                       if(row >= 0){
+                                           addMutedWordDialog.initialValue = text
+                                           addMutedWordDialog.account.uuid = account_uuid
+                                           addMutedWordDialog.account.service = accountListModel.item(row, AccountListModel.ServiceRole)
+                                           addMutedWordDialog.account.did = accountListModel.item(row, AccountListModel.DidRole)
+                                           addMutedWordDialog.account.handle = accountListModel.item(row, AccountListModel.HandleRole)
+                                           addMutedWordDialog.account.email = accountListModel.item(row, AccountListModel.EmailRole)
+                                           addMutedWordDialog.account.accessJwt = accountListModel.item(row, AccountListModel.AccessJwtRole)
+                                           addMutedWordDialog.account.refreshJwt = accountListModel.item(row, AccountListModel.RefreshJwtRole)
+                                           addMutedWordDialog.account.avatar = accountListModel.item(row, AccountListModel.AvatarRole)
+                                           addMutedWordDialog.open()
+                                       }
+                                   }
+
             onRequestEditProfile: (account_uuid, did, avatar, banner, display_name, description) => {
                                       var row = accountListModel.indexAt(account_uuid)
                                       if(row >= 0){
