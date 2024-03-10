@@ -45,6 +45,7 @@ private slots:
     void test_ComAtprotoRepoGetRecord_profile();
     void test_ComAtprotoRepoPutRecord_profile();
     void test_ListItemsCache();
+    void test_checkPartialMatchLanguage();
 
 private:
     void test_putPreferences(const QString &path, const QByteArray &body);
@@ -774,10 +775,17 @@ void atprotocol_test::test_ConfigurableLabels_copy()
     for (int i = 0; i < src.count(); i++) {
         src.setStatus(i, ConfigurableLabelStatus::Show);
     }
+    src.insertMutedWord(0, "word3", QList<MutedWordTarget>() << MutedWordTarget::Content);
+    src.insertMutedWord(0, "word1", QList<MutedWordTarget>() << MutedWordTarget::Tag);
+    src.insertMutedWord(1, "word2",
+                        QList<MutedWordTarget>()
+                                << MutedWordTarget::Content << MutedWordTarget::Tag);
+
     dest.setEnableAdultContent(false);
     for (int i = 0; i < dest.count(); i++) {
         dest.setStatus(i, ConfigurableLabelStatus::Hide);
     }
+
     QVERIFY(dest.enableAdultContent() == false);
     QVERIFY(dest.visibility("porn", true) == ConfigurableLabelStatus::Hide);
     QVERIFY(dest.visibility("nsfl", true) == ConfigurableLabelStatus::Hide);
@@ -793,6 +801,8 @@ void atprotocol_test::test_ConfigurableLabels_copy()
     QVERIFY(dest.visibility("behavior-intolerant", false) == ConfigurableLabelStatus::Hide);
     QVERIFY(dest.visibility("spam", false) == ConfigurableLabelStatus::Hide);
     QVERIFY(dest.visibility("impersonation", false) == ConfigurableLabelStatus::Hide);
+
+    QVERIFY(dest.mutedWordCount() == 0);
 
     dest = src;
     QVERIFY(dest.enableAdultContent() == true);
@@ -811,10 +821,32 @@ void atprotocol_test::test_ConfigurableLabels_copy()
     QVERIFY(dest.visibility("spam", false) == ConfigurableLabelStatus::Show);
     QVERIFY(dest.visibility("impersonation", false) == ConfigurableLabelStatus::Show);
 
+    QVERIFY(dest.mutedWordCount() == 3);
+    QVERIFY(dest.getMutedWordItem(0).value == "word1");
+    QVERIFY(dest.getMutedWordItem(0).group == 0);
+    QVERIFY(dest.getMutedWordItem(0).targets == QList<MutedWordTarget>() << MutedWordTarget::Tag);
+    QVERIFY(dest.getMutedWordItem(1).value == "word2");
+    QVERIFY(dest.getMutedWordItem(1).group == 0);
+    QVERIFY(dest.getMutedWordItem(1).targets
+            == QList<MutedWordTarget>() << MutedWordTarget::Content << MutedWordTarget::Tag);
+    QVERIFY(dest.getMutedWordItem(2).value == "word3");
+    QVERIFY(dest.getMutedWordItem(2).group == 0);
+    QVERIFY(dest.getMutedWordItem(2).targets
+            == QList<MutedWordTarget>() << MutedWordTarget::Content);
+
     src.setEnableAdultContent(false);
     for (int i = 0; i < src.count(); i++) {
         src.setStatus(i, ConfigurableLabelStatus::Warning);
     }
+    src.removeMutedWordItem(2);
+    src.removeMutedWordItem(1);
+    src.removeMutedWordItem(0);
+    src.insertMutedWord(0, "word3-2",
+                        QList<MutedWordTarget>()
+                                << MutedWordTarget::Content << MutedWordTarget::Tag);
+    src.insertMutedWord(0, "word1-2", QList<MutedWordTarget>() << MutedWordTarget::Content);
+    src.insertMutedWord(1, "word2-2", QList<MutedWordTarget>() << MutedWordTarget::Tag);
+
     dest = src;
     QVERIFY(dest.enableAdultContent() == false);
     QVERIFY(dest.visibility("porn", true) == ConfigurableLabelStatus::Hide);
@@ -831,6 +863,19 @@ void atprotocol_test::test_ConfigurableLabels_copy()
     QVERIFY(dest.visibility("behavior-intolerant", false) == ConfigurableLabelStatus::Warning);
     QVERIFY(dest.visibility("spam", false) == ConfigurableLabelStatus::Warning);
     QVERIFY(dest.visibility("impersonation", false) == ConfigurableLabelStatus::Warning);
+
+    QVERIFY(dest.mutedWordCount() == 3);
+    QVERIFY(dest.getMutedWordItem(0).value == "word1-2");
+    QVERIFY(dest.getMutedWordItem(0).group == 0);
+    QVERIFY(dest.getMutedWordItem(0).targets
+            == QList<MutedWordTarget>() << MutedWordTarget::Content);
+    QVERIFY(dest.getMutedWordItem(1).value == "word2-2");
+    QVERIFY(dest.getMutedWordItem(1).group == 0);
+    QVERIFY(dest.getMutedWordItem(1).targets == QList<MutedWordTarget>() << MutedWordTarget::Tag);
+    QVERIFY(dest.getMutedWordItem(2).value == "word3-2");
+    QVERIFY(dest.getMutedWordItem(2).group == 0);
+    QVERIFY(dest.getMutedWordItem(2).targets
+            == QList<MutedWordTarget>() << MutedWordTarget::Content << MutedWordTarget::Tag);
 }
 
 void atprotocol_test::test_ConfigurableLabels_save()
@@ -1383,6 +1428,25 @@ void atprotocol_test::test_ListItemsCache()
     QVERIFY(cache->has("account3") == false);
 
     QVERIFY(cache->getListNames("hoge", "hoge") == QStringList());
+}
+
+void atprotocol_test::test_checkPartialMatchLanguage()
+{
+    QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "ja") == true);
+    QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "ja_JP") == true);
+    QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "ja"
+                                                                         << "en")
+            == true);
+    QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "de"
+                                                                         << "ja"
+                                                                         << "en")
+            == true);
+    QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "de"
+                                                                         << "en")
+            == false);
+    QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "de") == false);
+    QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "") == false);
+    QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList()) == false);
 }
 
 void atprotocol_test::test_putPreferences(const QString &path, const QByteArray &body)

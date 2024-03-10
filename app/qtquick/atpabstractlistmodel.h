@@ -159,6 +159,7 @@ protected:
     void updateThreadGateItem(AtProtocolType::AppBskyFeedDefs::PostView &post,
                               const AtpAbstractListModel::ThreadGateRoles role,
                               const QVariant &value);
+    void checkMutedWords(const QString &cid, const AtProtocolType::AppBskyFeedPost::Main &record);
 
     void appendExtendMediaFileToClue(const QString &did, const QString &cid,
                                      const QString &parent_cid);
@@ -184,6 +185,7 @@ protected:
     QString m_cursor;
 
     QHash<QString, QString> m_translations; // QHash<cid, translation>
+    QHash<QString, QString> m_mutedPosts; // QHash<cid, cid>
 
     QList<BlobCueItem> m_cueExtendMedia;
 

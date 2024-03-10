@@ -17,6 +17,7 @@ ConfigurableLabels::ConfigurableLabels(QObject *parent)
       m_enableAdultContent(true),
       m_running(false)
 {
+    m_regSpace.setPattern("\\s");
     initializeLabels();
 }
 
@@ -28,6 +29,13 @@ ConfigurableLabels &ConfigurableLabels::operator=(ConfigurableLabels &other)
             m_labels[i].status = other.m_labels.at(i).status;
         }
     }
+    m_mutedWords.clear();
+    m_mutedWordsHash.clear();
+    for (const auto &word : qAsConst(other.m_mutedWords)) {
+        m_mutedWords.append(word);
+        m_mutedWordsHash[word.value] = word;
+    }
+
     return *this;
 }
 
@@ -317,7 +325,7 @@ bool ConfigurableLabels::containsMutedWords(const QString &text, const QStringLi
         }
     } else {
         // 単語が空白で区切られる言語向け
-        QStringList words = text.split(QRegularExpression("\\s"));
+        QStringList words = text.split(m_regSpace);
         for (const auto &word : qAsConst(words)) {
             if (m_mutedWordsHash.contains(word)) {
                 if (m_mutedWordsHash[word].targets.contains(MutedWordTarget::Content)) {

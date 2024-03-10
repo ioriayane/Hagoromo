@@ -28,6 +28,7 @@ void AtpAbstractListModel::clear()
     }
     m_originalCidList.clear();
     m_translations.clear();
+    m_mutedPosts.clear();
     m_cursor.clear();
 }
 
@@ -669,6 +670,29 @@ void AtpAbstractListModel::updateThreadGateItem(AtProtocolType::AppBskyFeedDefs:
             }
         }
         post.threadgate.record.setValue(record);
+    }
+}
+
+void AtpAbstractListModel::checkMutedWords(const QString &cid,
+                                           const AtProtocolType::AppBskyFeedPost::Main &record)
+{
+    if (cid.isEmpty())
+        return;
+
+    QStringList targets = LexiconsTypeUnknown::copyTagsFromFacets(record.facets);
+    targets.append(record.tags);
+
+    qDebug() << cid << record.text << targets << record.langs;
+    if (m_contentFilterLabels.containsMutedWords(
+                record.text, targets,
+                LexiconsTypeUnknown::checkPartialMatchLanguage(record.langs))) {
+        qDebug() << "  Hit";
+        m_mutedPosts[cid] = cid;
+    } else {
+        qDebug() << "  Remove";
+        if (m_mutedPosts.contains(cid)) {
+            m_mutedPosts.remove(cid);
+        }
     }
 }
 

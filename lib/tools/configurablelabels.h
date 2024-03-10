@@ -92,6 +92,7 @@ private:
     bool putPreferences(const QString &json);
     QString updatePreferencesJson(const QString &src_json);
 
+    QRegularExpression m_regSpace;
     QList<ConfigurableLabelItem> m_labels;
     // ポストをスペース区切りするときはこれとは別にワードをハッシュで保存しておく
     // 日本語のときは逆向きで部分一致させる

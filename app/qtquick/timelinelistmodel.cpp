@@ -181,19 +181,27 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     else if (role == RepostedByHandleRole)
         return current.reason_ReasonRepost.by.handle;
 
-    else if (role == UserFilterMatchedRole)
+    else if (role == UserFilterMatchedRole) {
         return getContentFilterMatched(current.post.author.labels, false);
-    else if (role == UserFilterMessageRole)
+    } else if (role == UserFilterMessageRole) {
         return getContentFilterMessage(current.post.author.labels, false);
-    else if (role == ContentFilterMatchedRole)
-        return getContentFilterMatched(current.post.labels, false);
-    else if (role == ContentFilterMessageRole)
-        return getContentFilterMessage(current.post.labels, false);
-    else if (role == ContentMediaFilterMatchedRole)
+    } else if (role == ContentFilterMatchedRole) {
+        if (m_mutedPosts.contains(current.post.cid)) {
+            return true;
+        } else {
+            return getContentFilterMatched(current.post.labels, false);
+        }
+    } else if (role == ContentFilterMessageRole) {
+        if (m_mutedPosts.contains(current.post.cid)) {
+            return tr("Post hidden by muted word");
+        } else {
+            return getContentFilterMessage(current.post.labels, false);
+        }
+    } else if (role == ContentMediaFilterMatchedRole) {
         return getContentFilterMatched(current.post.labels, true);
-    else if (role == ContentMediaFilterMessageRole)
+    } else if (role == ContentMediaFilterMessageRole) {
         return getContentFilterMessage(current.post.labels, true);
-    else if (role == QuoteFilterMatchedRole) {
+    } else if (role == QuoteFilterMatchedRole) {
         if (getQuoteItem(current.post, HasQuoteRecordRole).toBool())
             return getQuoteFilterMatched(current.post);
         else
@@ -542,6 +550,10 @@ bool TimelineListModel::checkVisibility(const QString &cid)
 
     const AppBskyFeedDefs::FeedViewPost &current = m_viewPostHash.value(cid);
 
+    // ミュートワードの判定
+    checkMutedWords(current.post.cid,
+                    LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(current.post.record));
+
     for (const auto &label : current.post.author.labels) {
         if (m_contentFilterLabels.visibility(label.val, false) == ConfigurableLabelStatus::Hide) {
             qDebug() << "Hide post by user's label. " << current.post.author.handle << cid;
@@ -610,6 +622,7 @@ bool TimelineListModel::checkVisibility(const QString &cid)
             return false;
         }
     }
+
     return true;
 }
 
