@@ -67,6 +67,8 @@ public:
     void removeMutedWordItem(const int index);
     void moveMutedWordItem(const int from, const int to);
     int indexOfMutedWordItem(const QString &value) const;
+    bool containsMutedWords(const QString &text, const QStringList &tags,
+                            const bool partial_match) const;
 
     bool enableAdultContent() const;
     void setEnableAdultContent(bool newEnableAdultContent);
@@ -94,6 +96,7 @@ private:
     // ポストをスペース区切りするときはこれとは別にワードをハッシュで保存しておく
     // 日本語のときは逆向きで部分一致させる
     QList<MutedWordItem> m_mutedWords;
+    QHash<QString, MutedWordItem> m_mutedWordsHash;
     bool m_enableAdultContent;
     bool m_running;
 };

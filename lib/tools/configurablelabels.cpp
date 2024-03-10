@@ -43,6 +43,7 @@ bool ConfigurableLabels::load()
     setRunning(true);
 
     m_mutedWords.clear();
+    m_mutedWordsHash.clear();
 
     AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
     connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
@@ -256,6 +257,7 @@ void ConfigurableLabels::insertMutedWord(const int index, const QString &value,
     } else {
         m_mutedWords.insert(index, item);
     }
+    m_mutedWordsHash[value] = item;
 }
 
 void ConfigurableLabels::updateMutedWord(const int index, const QString &value,
@@ -265,12 +267,20 @@ void ConfigurableLabels::updateMutedWord(const int index, const QString &value,
         return;
     m_mutedWords[index].value = value;
     m_mutedWords[index].targets = targets;
+    if (m_mutedWordsHash.contains(value)) {
+        m_mutedWordsHash[value].value = value;
+        m_mutedWordsHash[value].targets = targets;
+    }
 }
 
 void ConfigurableLabels::removeMutedWordItem(const int index)
 {
     if (index < 0 || index >= mutedWordCount())
         return;
+    QString value = m_mutedWords.at(index).value;
+    if (m_mutedWordsHash.contains(value)) {
+        m_mutedWordsHash.remove(value);
+    }
     m_mutedWords.removeAt(index);
 }
 
@@ -291,6 +301,40 @@ int ConfigurableLabels::indexOfMutedWordItem(const QString &value) const
         }
     }
     return -1;
+}
+
+bool ConfigurableLabels::containsMutedWords(const QString &text, const QStringList &tags,
+                                            const bool partial_match) const
+{
+    if (partial_match) {
+        // 主に日本語向けの部分一致
+        for (const auto &word : m_mutedWords) {
+            if (word.targets.contains(MutedWordTarget::Content)) {
+                if (text.contains(word.value)) {
+                    return true;
+                }
+            }
+        }
+    } else {
+        // 単語が空白で区切られる言語向け
+        QStringList words = text.split(QRegularExpression("\\s"));
+        for (const auto &word : qAsConst(words)) {
+            if (m_mutedWordsHash.contains(word)) {
+                if (m_mutedWordsHash[word].targets.contains(MutedWordTarget::Content)) {
+                    return true;
+                }
+            }
+        }
+    }
+    // タグは共通
+    for (const auto &tag : tags) {
+        if (m_mutedWordsHash.contains(tag)) {
+            if (m_mutedWordsHash[tag].targets.contains(MutedWordTarget::Tag)) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 bool ConfigurableLabels::enableAdultContent() const

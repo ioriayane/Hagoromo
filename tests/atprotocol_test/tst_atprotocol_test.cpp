@@ -37,6 +37,7 @@ private slots:
     void test_ConfigurableLabels_copy();
     void test_ConfigurableLabels_save();
     void test_ConfigurableLabels_mutedword();
+    void test_ConfigurableLabels_contains_mutedword();
     void test_ComAtprotoRepoCreateRecord_post();
     void test_ComAtprotoRepoCreateRecord_threadgate();
     void test_AppBskyFeedGetFeedGenerator();
@@ -948,6 +949,66 @@ void atprotocol_test::test_ConfigurableLabels_mutedword()
     QVERIFY(labels.getMutedWordItem(0).group == 0);
     QVERIFY(labels.getMutedWordItem(0).targets
             == QList<MutedWordTarget>() << MutedWordTarget::Content);
+}
+
+void atprotocol_test::test_ConfigurableLabels_contains_mutedword()
+{
+    ConfigurableLabels labels;
+
+    labels.insertMutedWord(0, "word3", QList<MutedWordTarget>() << MutedWordTarget::Content);
+    labels.insertMutedWord(0, "word1", QList<MutedWordTarget>() << MutedWordTarget::Tag);
+    labels.insertMutedWord(1, "word2",
+                           QList<MutedWordTarget>()
+                                   << MutedWordTarget::Content << MutedWordTarget::Tag);
+
+    QVERIFY(labels.containsMutedWords("hoge\nfuga\tpiyo foooo", QStringList(), false) == false);
+    // word1
+    QVERIFY(labels.containsMutedWords("hoge\nword1 fuga\tpiyo foooo", QStringList() << "hoge",
+                                      false)
+            == false);
+    QVERIFY(labels.containsMutedWords("hoge\nword fuga\tpiyo foooo", QStringList() << "word1",
+                                      false)
+            == true);
+    // word2
+    QVERIFY(labels.containsMutedWords("hoge\nword2 fuga\tpiyo foooo",
+                                      QStringList() << "HOGE"
+                                                    << "word1",
+                                      false)
+            == true);
+    QVERIFY(labels.containsMutedWords("hoge\nword1 fuga\tpiyo foooo",
+                                      QStringList() << "FUGA"
+                                                    << "word2",
+                                      false)
+            == true);
+    // word3
+    QVERIFY(labels.containsMutedWords("hoge\nword3 fuga\tpiyo foooo", QStringList() << "hoge",
+                                      false)
+            == true);
+    QVERIFY(labels.containsMutedWords("hoge\nword fuga\tpiyo foooo", QStringList() << "word3",
+                                      false)
+            == false);
+    // word1
+    QVERIFY(labels.containsMutedWords("hogeword1fuga\tpiyo foooo", QStringList() << "hoge", true)
+            == false);
+    QVERIFY(labels.containsMutedWords("hoge\nwordfuga\tpiyo foooo", QStringList() << "word1", true)
+            == true);
+    // word2
+    QVERIFY(labels.containsMutedWords("hogeword2fuga\tpiyo foooo",
+                                      QStringList() << "HOGE"
+                                                    << "word1",
+                                      false)
+            == true);
+    QVERIFY(labels.containsMutedWords("hoge\nword1 fuga\tpiyo foooo",
+                                      QStringList() << "FUGA"
+                                                    << "word2",
+                                      false)
+            == true);
+    // word3
+    QVERIFY(labels.containsMutedWords("hogeword3fuga\tpiyo foooo", QStringList() << "hoge", true)
+            == true);
+    QVERIFY(labels.containsMutedWords("hoge\nword fuga\tpiyo foooo", QStringList() << "word3",
+                                      false)
+            == false);
 }
 
 void atprotocol_test::test_ComAtprotoRepoCreateRecord_post()
