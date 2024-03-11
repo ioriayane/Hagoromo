@@ -159,7 +159,7 @@ protected:
     void updateThreadGateItem(AtProtocolType::AppBskyFeedDefs::PostView &post,
                               const AtpAbstractListModel::ThreadGateRoles role,
                               const QVariant &value);
-    void checkMutedWords(const QString &cid, const AtProtocolType::AppBskyFeedPost::Main &record);
+    void cachePostsContainingMutedWords(const QString &cid, const AtProtocolType::AppBskyFeedPost::Main &record);
 
     void appendExtendMediaFileToClue(const QString &did, const QString &cid,
                                      const QString &parent_cid);

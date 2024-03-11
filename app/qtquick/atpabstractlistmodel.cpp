@@ -658,7 +658,7 @@ void AtpAbstractListModel::updateThreadGateItem(AtProtocolType::AppBskyFeedDefs:
         record.allow_MentionRule.clear();
         record.allow_FollowingRule.clear();
         record.allow_ListRule.clear();
-        for (const auto &rule : rules) {
+        for (const auto &rule : qAsConst(rules)) {
             if (rule == "mentioned") {
                 record.allow_MentionRule.append(AppBskyFeedThreadgate::MentionRule());
             } else if (rule == "followed") {
@@ -673,8 +673,8 @@ void AtpAbstractListModel::updateThreadGateItem(AtProtocolType::AppBskyFeedDefs:
     }
 }
 
-void AtpAbstractListModel::checkMutedWords(const QString &cid,
-                                           const AtProtocolType::AppBskyFeedPost::Main &record)
+void AtpAbstractListModel::cachePostsContainingMutedWords(
+        const QString &cid, const AtProtocolType::AppBskyFeedPost::Main &record)
 {
     if (cid.isEmpty())
         return;

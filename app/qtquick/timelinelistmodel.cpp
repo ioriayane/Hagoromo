@@ -556,7 +556,7 @@ bool TimelineListModel::checkVisibility(const QString &cid)
     const AppBskyFeedDefs::FeedViewPost &current = m_viewPostHash.value(cid);
 
     // ミュートワードの判定
-    checkMutedWords(current.post.cid,
+    cachePostsContainingMutedWords(current.post.cid,
                     LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(current.post.record));
 
     for (const auto &label : current.post.author.labels) {
