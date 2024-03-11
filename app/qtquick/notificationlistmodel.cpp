@@ -180,13 +180,13 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
     } else if (role == UserFilterMessageRole) {
         return getContentFilterMessage(current.author.labels, false);
     } else if (role == ContentFilterMatchedRole) {
-        if (m_mutedPosts.contains(current.cid)) {
+        if (hideByMutedWords(current.cid, current.author.did)) {
             return true;
         } else {
             return getContentFilterMatched(current.labels, false);
         }
     } else if (role == ContentFilterMessageRole) {
-        if (m_mutedPosts.contains(current.cid)) {
+        if (hideByMutedWords(current.cid, current.author.did)) {
             return tr("Post hidden by muted word");
         } else {
             return getContentFilterMessage(current.labels, false);
@@ -853,9 +853,14 @@ bool NotificationListModel::checkVisibility(const QString &cid)
     const auto &current = m_notificationHash.value(cid);
 
     // ミュートワードの判定
-    cachePostsContainingMutedWords(current.cid,
-                    AtProtocolType::LexiconsTypeUnknown::fromQVariant<
-                            AtProtocolType::AppBskyFeedPost::Main>(current.record));
+    if (cachePostsContainingMutedWords(
+                current.cid,
+                AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                        AtProtocolType::AppBskyFeedPost::Main>(current.record))) {
+        if (current.author.did != account().did && !visibleContainingMutedWord()) {
+            return false;
+        }
+    }
 
     if (!enableReason(current.reason))
         return false;

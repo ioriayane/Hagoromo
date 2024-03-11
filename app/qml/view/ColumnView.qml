@@ -96,6 +96,7 @@ ColumnLayout {
                 visibleRepostOfUnfollowingUsers: settings.visibleRepostOfUnfollowingUsers
                 visibleRepostOfMine: settings.visibleRepostOfMine
                 visibleRepostByMe: settings.visibleRepostByMe
+                visibleContainingMutedWord: false   // ミュートワードを含むときは完全非表示
 
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }
@@ -140,6 +141,7 @@ ColumnLayout {
                 visibleMention: settings.visibleMention
                 visibleReply: settings.visibleReply
                 visibleQuote: settings.visibleQuote
+                visibleContainingMutedWord: false   // ミュートワードを含むときは完全非表示
                 updateSeenNotification: settings.updateSeenNotification
 
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
@@ -310,6 +312,7 @@ ColumnLayout {
                 loadingInterval: settings.loadingInterval
                 displayInterval: settings.displayInterval
                 uri: settings.columnValue
+                visibleContainingMutedWord: false   // ミュートワードを含むときは完全非表示
                 onSavingChanged: {
                     saveFeedMenuItem.saving = saving
                 }
@@ -441,6 +444,7 @@ ColumnLayout {
                 autoLoading: settings.autoLoading
                 loadingInterval: settings.loadingInterval
                 uri: settings.columnValue
+                visibleContainingMutedWord: false   // ミュートワードを含むときは完全非表示
 
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }

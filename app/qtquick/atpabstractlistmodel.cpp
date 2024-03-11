@@ -14,7 +14,8 @@ AtpAbstractListModel::AtpAbstractListModel(QObject *parent)
     : QAbstractListModel { parent },
       m_running(false),
       m_loadingInterval(5 * 60 * 1000),
-      m_displayInterval(400)
+      m_displayInterval(400),
+      m_visibleContainingMutedWord(true)
 {
     connect(&m_timer, &QTimer::timeout, this, &AtpAbstractListModel::getLatest);
 }
@@ -673,27 +674,35 @@ void AtpAbstractListModel::updateThreadGateItem(AtProtocolType::AppBskyFeedDefs:
     }
 }
 
-void AtpAbstractListModel::cachePostsContainingMutedWords(
+bool AtpAbstractListModel::hideByMutedWords(const QString &cid, const QString &author_did) const
+{
+    if (author_did == account().did)
+        return false;
+
+    return m_mutedPosts.contains(cid);
+}
+
+bool AtpAbstractListModel::cachePostsContainingMutedWords(
         const QString &cid, const AtProtocolType::AppBskyFeedPost::Main &record)
 {
     if (cid.isEmpty())
-        return;
+        return false;
 
     QStringList targets = LexiconsTypeUnknown::copyTagsFromFacets(record.facets);
     targets.append(record.tags);
 
-    qDebug() << cid << record.text << targets << record.langs;
-    if (m_contentFilterLabels.containsMutedWords(
-                record.text, targets,
-                LexiconsTypeUnknown::checkPartialMatchLanguage(record.langs))) {
-        qDebug() << "  Hit";
+    bool contains = m_contentFilterLabels.containsMutedWords(
+            record.text, targets, LexiconsTypeUnknown::checkPartialMatchLanguage(record.langs));
+    if (contains) {
+        qDebug() << "Contains muted words" << cid << record.text << targets << record.langs;
         m_mutedPosts[cid] = cid;
     } else {
-        qDebug() << "  Remove";
         if (m_mutedPosts.contains(cid)) {
             m_mutedPosts.remove(cid);
         }
+        return contains;
     }
+    return contains;
 }
 
 void AtpAbstractListModel::appendExtendMediaFileToClue(const QString &did, const QString &cid,
@@ -943,4 +952,17 @@ QString AtpAbstractListModel::accessJwt() const
 QString AtpAbstractListModel::refreshJwt() const
 {
     return account().refreshJwt;
+}
+
+bool AtpAbstractListModel::visibleContainingMutedWord() const
+{
+    return m_visibleContainingMutedWord;
+}
+
+void AtpAbstractListModel::setVisibleContainingMutedWord(bool newVisibleContainingMutedWord)
+{
+    if (m_visibleContainingMutedWord == newVisibleContainingMutedWord)
+        return;
+    m_visibleContainingMutedWord = newVisibleContainingMutedWord;
+    emit visibleContainingMutedWordChanged();
 }

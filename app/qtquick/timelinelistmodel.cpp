@@ -186,13 +186,13 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     } else if (role == UserFilterMessageRole) {
         return getContentFilterMessage(current.post.author.labels, false);
     } else if (role == ContentFilterMatchedRole) {
-        if (m_mutedPosts.contains(current.post.cid)) {
+        if (hideByMutedWords(current.post.cid, current.post.author.did)) {
             return true;
         } else {
             return getContentFilterMatched(current.post.labels, false);
         }
     } else if (role == ContentFilterMessageRole) {
-        if (m_mutedPosts.contains(current.post.cid)) {
+        if (hideByMutedWords(current.post.cid, current.post.author.did)) {
             return tr("Post hidden by muted word");
         } else {
             return getContentFilterMessage(current.post.labels, false);
@@ -556,8 +556,13 @@ bool TimelineListModel::checkVisibility(const QString &cid)
     const AppBskyFeedDefs::FeedViewPost &current = m_viewPostHash.value(cid);
 
     // ミュートワードの判定
-    cachePostsContainingMutedWords(current.post.cid,
-                    LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(current.post.record));
+    if (cachePostsContainingMutedWords(
+                current.post.cid,
+                LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(current.post.record))) {
+        if (current.post.author.did != account().did && !visibleContainingMutedWord()) {
+            return false;
+        }
+    }
 
     for (const auto &label : current.post.author.labels) {
         if (m_contentFilterLabels.visibility(label.val, false) == ConfigurableLabelStatus::Hide) {

@@ -44,6 +44,8 @@ class AtpAbstractListModel : public QAbstractListModel
                        loadingIntervalChanged)
     Q_PROPERTY(int displayInterval READ displayInterval WRITE setDisplayInterval NOTIFY
                        displayIntervalChanged)
+    Q_PROPERTY(bool visibleContainingMutedWord READ visibleContainingMutedWord WRITE
+                       setVisibleContainingMutedWord NOTIFY visibleContainingMutedWordChanged)
 
     Q_PROPERTY(QString service READ service CONSTANT)
     Q_PROPERTY(QString did READ did CONSTANT)
@@ -108,6 +110,8 @@ public:
     void setLoadingInterval(int newLoadingInterval);
     int displayInterval() const;
     void setDisplayInterval(int newDisplayInterval);
+    bool visibleContainingMutedWord() const;
+    void setVisibleContainingMutedWord(bool newVisibleContainingMutedWord);
     QString service() const;
     QString did() const;
     QString handle() const;
@@ -124,6 +128,7 @@ signals:
     void autoLoadingChanged();
     void loadingIntervalChanged();
     void displayIntervalChanged();
+    void visibleContainingMutedWordChanged();
 
 public slots:
     virtual Q_INVOKABLE bool getLatest() = 0;
@@ -159,7 +164,9 @@ protected:
     void updateThreadGateItem(AtProtocolType::AppBskyFeedDefs::PostView &post,
                               const AtpAbstractListModel::ThreadGateRoles role,
                               const QVariant &value);
-    void cachePostsContainingMutedWords(const QString &cid, const AtProtocolType::AppBskyFeedPost::Main &record);
+    bool hideByMutedWords(const QString &cid, const QString &author_did) const;
+    bool cachePostsContainingMutedWords(const QString &cid,
+                                        const AtProtocolType::AppBskyFeedPost::Main &record);
 
     void appendExtendMediaFileToClue(const QString &did, const QString &cid,
                                      const QString &parent_cid);
@@ -200,6 +207,7 @@ private:
     bool m_running;
     int m_loadingInterval;
     int m_displayInterval;
+    bool m_visibleContainingMutedWord;
 };
 
 #endif // ATPABSTRACTLISTMODEL_H
