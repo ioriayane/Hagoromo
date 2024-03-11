@@ -202,6 +202,11 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     } else if (role == ContentMediaFilterMessageRole) {
         return getContentFilterMessage(current.post.labels, true);
     } else if (role == QuoteFilterMatchedRole) {
+        // quoteのレコードにはlangがないので保留（現状、公式と同じ）
+        // QString quote_cid = getQuoteItem(current.post, QuoteRecordCidRole).toString();
+        // if (!quote_cid.isEmpty() && m_mutedPosts.contains(quote_cid)) {
+        //     return true;
+        // } else
         if (getQuoteItem(current.post, HasQuoteRecordRole).toBool())
             return getQuoteFilterMatched(current.post);
         else
