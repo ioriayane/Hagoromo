@@ -235,6 +235,7 @@ ColumnLayout {
             onRequestViewListDetail: (uri) => columnStackView.push(listDetailComponent, { "listUri": uri })
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
             onRequestReportAccount: (did) => columnView.requestReportAccount(account.uuid, did)
+            onRequestAddMutedWord: (text) => columnView.requestAddMutedWord(account.uuid, text)
             onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) => columnView.requestUpdateThreadGate(account.uuid, uri, threadgate_uri, type, rules, callback)
             onRequestAddRemoveFromLists: (did) => columnView.requestAddRemoveFromLists(account.uuid, did)
             onRequestEditProfile: (did, avatar, banner, display_name, description) => {
