@@ -88,7 +88,11 @@ Dialog {
                     font.pointSize: AdjustedValues.f10
                     text: qsTr("Add/Update")
                     onClicked: {
-                        var row = mutedWordListModel.append(valueText.text.trim(), muteTagOnlyRadioButton.checked)
+                        var value = valueText.text.trim()
+                        if(value.charAt(0) === "#"){
+                            value = value.substring(1)
+                        }
+                        var row = mutedWordListModel.append(value, muteTagOnlyRadioButton.checked)
                         valueText.text = ""
                         mutedWordListView.positionViewAtIndex(row, ListView.End)
                     }
