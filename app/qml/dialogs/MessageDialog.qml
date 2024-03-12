@@ -18,6 +18,7 @@ Dialog {
     property alias text: messageTextArea.text
 
     property string status: "normal"
+    property bool useCancel: false
 
     function show(status, title, message){
         messageDialog.status = status
@@ -33,6 +34,7 @@ Dialog {
             id: titleLabel
             Layout.topMargin: 15
             font.pointSize: AdjustedValues.f10
+            visible: text.length > 0
             text: "Title"
         }
         Frame {
@@ -65,12 +67,22 @@ Dialog {
                 font.pointSize: AdjustedValues.f10
             }
         }
-        Button {
+        RowLayout {
             Layout.alignment: Qt.AlignHCenter
-            font.pointSize: AdjustedValues.f10
-            flat: true
-            text: qsTr("OK")
-            onClicked: messageDialog.close()
+            spacing: 10
+            Button {
+                visible: messageDialog.useCancel
+                font.pointSize: AdjustedValues.f10
+                flat: true
+                text: qsTr("Cancel")
+                onClicked: messageDialog.reject()
+            }
+            Button {
+                font.pointSize: AdjustedValues.f10
+                flat: true
+                text: qsTr("OK")
+                onClicked: messageDialog.accept()
+            }
         }
     }
 }

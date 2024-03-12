@@ -16,6 +16,7 @@ Dialog {
     modal: true
     x: (parent.width - width) * 0.5
     y: (parent.height - height) * 0.5
+    closePolicy: Popup.NoAutoClose
     title: qsTr("Update muted words")
 
     property string initialValue: ""
@@ -38,6 +39,14 @@ Dialog {
         mutedWordListModel.load()
     }
     onClosed: {
+        valueText.clear()
+        mutedWordListModel.clear()
+    }
+
+    Shortcut {  // Close
+        enabled: !mutedWordListModel.modified
+        sequence: "Esc"
+        onActivated: postDialog.close()
     }
 
     ColumnLayout {
@@ -74,6 +83,7 @@ Dialog {
                     placeholderText: qsTr("Enter a word or tag")
                 }
                 Button {
+                    id: addButton
                     enabled: valueText.text.length > 0
                     font.pointSize: AdjustedValues.f10
                     text: qsTr("Add/Update")
@@ -184,7 +194,13 @@ Dialog {
                 font.pointSize: AdjustedValues.f10
                 text: qsTr("Close")
                 flat: true
-                onClicked: addMutedWordDialog.reject()
+                onClicked: {
+                    if(mutedWordListModel.modified){
+                        msgDialog.show("normal", "", qsTr("Close without saving?"))
+                    }else{
+                        addMutedWordDialog.reject()
+                    }
+                }
             }
             Item {
                 Layout.fillWidth: true
@@ -193,9 +209,14 @@ Dialog {
                 font.pointSize: AdjustedValues.f10
                 enabled: !mutedWordListModel.running
                 text: qsTr("Save") + (mutedWordListModel.modified ? "(*)" : "")
-                flat: true
                 onClicked: mutedWordListModel.save()
             }
         }
+    }
+
+    MessageDialog {
+        id: msgDialog
+        useCancel: true
+        onAccepted: addMutedWordDialog.close()
     }
 }

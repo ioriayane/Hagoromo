@@ -69,6 +69,7 @@ public:
     int indexOfMutedWordItem(const QString &value) const;
     bool containsMutedWords(const QString &text, const QStringList &tags,
                             const bool partial_match) const;
+    void clearMutedWord();
 
     bool enableAdultContent() const;
     void setEnableAdultContent(bool newEnableAdultContent);

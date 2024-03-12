@@ -25,6 +25,7 @@ public:
 
     Q_INVOKABLE int append(const QString &value, bool tag_only);
     Q_INVOKABLE void remove(int row);
+    Q_INVOKABLE void clear();
 
     bool enableAdultContent() const = delete;
     void setEnableAdultContent(bool newEnableAdultContent) = delete;

@@ -345,6 +345,11 @@ bool ConfigurableLabels::containsMutedWords(const QString &text, const QStringLi
     return false;
 }
 
+void ConfigurableLabels::clearMutedWord()
+{
+    m_mutedWords.clear();
+}
+
 bool ConfigurableLabels::enableAdultContent() const
 {
     return m_enableAdultContent;

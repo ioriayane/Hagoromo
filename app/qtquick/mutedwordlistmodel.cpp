@@ -24,11 +24,11 @@ QVariant MutedWordListModel::item(int row, MutedWordListModelRoles role) const
         return item.value;
     else if (role == TargetsRole) {
         QStringList targets;
-        if (item.targets.contains(MutedWordTarget::Tag)) {
-            targets.append("tag");
-        }
         if (item.targets.contains(MutedWordTarget::Content)) {
             targets.append("text");
+        }
+        if (item.targets.contains(MutedWordTarget::Tag)) {
+            targets.append("tag");
         }
         return targets;
     }
@@ -70,6 +70,15 @@ void MutedWordListModel::remove(int row)
     endRemoveRows();
 
     setModified(true);
+}
+
+void MutedWordListModel::clear()
+{
+    if (m_contentFilterLabels.mutedWordCount() > 0) {
+        beginRemoveRows(QModelIndex(), 0, m_contentFilterLabels.mutedWordCount() - 1);
+        m_contentFilterLabels.clearMutedWord();
+        endRemoveRows();
+    }
 }
 
 QHash<int, QByteArray> MutedWordListModel::roleNames() const

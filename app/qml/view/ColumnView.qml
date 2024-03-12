@@ -141,7 +141,7 @@ ColumnLayout {
                 visibleMention: settings.visibleMention
                 visibleReply: settings.visibleReply
                 visibleQuote: settings.visibleQuote
-                visibleContainingMutedWord: false   // ミュートワードを含むときは完全非表示
+                visibleContainingMutedWord: true   // 通知はミュートワードを含んでらたたんで表示
                 updateSeenNotification: settings.updateSeenNotification
 
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
