@@ -118,7 +118,8 @@ Dialog {
                         onClicked: moreMenu.open()
                         Menu {
                             id: moreMenu
-                            width: mutedWordMenuItem.implicitWidth
+                            width: mutedWordMenuItem.implicitWidth > threadGateMenuItem.implicitWidth ?
+                                       mutedWordMenuItem.implicitWidth : threadGateMenuItem.implicitWidth
                             MenuItem {
                                 icon.source: "../images/account_icon.png"
                                 text: qsTr("Set as main")
@@ -147,6 +148,7 @@ Dialog {
                                 onTriggered: accountDialog.requestAddMutedWords(model.index)
                             }
                             MenuItem {
+                                id: threadGateMenuItem
                                 icon.source: "../images/thread.png"
                                 text: qsTr("Who can reply")
                                 onTriggered: {
