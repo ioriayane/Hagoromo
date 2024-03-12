@@ -31,9 +31,11 @@ ConfigurableLabels &ConfigurableLabels::operator=(ConfigurableLabels &other)
     }
     m_mutedWords.clear();
     m_mutedWordsHash.clear();
+    m_mutedWordsTagHash.clear();
     for (const auto &word : qAsConst(other.m_mutedWords)) {
         m_mutedWords.append(word);
         m_mutedWordsHash[word.value] = word;
+        m_mutedWordsTagHash[removeSharp(word.value)] = word;
     }
 
     return *this;
@@ -52,6 +54,7 @@ bool ConfigurableLabels::load()
 
     m_mutedWords.clear();
     m_mutedWordsHash.clear();
+    m_mutedWordsTagHash.clear();
 
     AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
     connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
@@ -84,6 +87,8 @@ bool ConfigurableLabels::load()
                         mute.targets.append(MutedWordTarget::Tag);
                     }
                     m_mutedWords.append(mute);
+                    m_mutedWordsHash[mute.value] = mute;
+                    m_mutedWordsTagHash[removeSharp(mute.value)] = mute;
                 }
                 group++;
             }
@@ -254,7 +259,7 @@ MutedWordItem ConfigurableLabels::getMutedWordItem(const int index) const
 void ConfigurableLabels::insertMutedWord(const int index, const QString &value,
                                          const QList<MutedWordTarget> &targets)
 {
-    if (index < 0)
+    if (index < 0 || value.isEmpty())
         return;
     MutedWordItem item;
     item.group = 0;
@@ -266,18 +271,25 @@ void ConfigurableLabels::insertMutedWord(const int index, const QString &value,
         m_mutedWords.insert(index, item);
     }
     m_mutedWordsHash[value] = item;
+    QString key = removeSharp(value);
+    m_mutedWordsTagHash[key] = item;
 }
 
 void ConfigurableLabels::updateMutedWord(const int index, const QString &value,
                                          const QList<MutedWordTarget> &targets)
 {
-    if (index < 0 || index >= mutedWordCount())
+    if (index < 0 || index >= mutedWordCount() || value.isEmpty())
         return;
     m_mutedWords[index].value = value;
     m_mutedWords[index].targets = targets;
     if (m_mutedWordsHash.contains(value)) {
         m_mutedWordsHash[value].value = value;
         m_mutedWordsHash[value].targets = targets;
+    }
+    QString key = removeSharp(value);
+    if (m_mutedWordsTagHash.contains(key)) {
+        m_mutedWordsTagHash[key].value = value;
+        m_mutedWordsTagHash[key].targets = targets;
     }
 }
 
@@ -288,6 +300,10 @@ void ConfigurableLabels::removeMutedWordItem(const int index)
     QString value = m_mutedWords.at(index).value;
     if (m_mutedWordsHash.contains(value)) {
         m_mutedWordsHash.remove(value);
+    }
+    QString key = removeSharp(value);
+    if (m_mutedWordsTagHash.contains(key)) {
+        m_mutedWordsTagHash.remove(key);
     }
     m_mutedWords.removeAt(index);
 }
@@ -336,8 +352,8 @@ bool ConfigurableLabels::containsMutedWords(const QString &text, const QStringLi
     }
     // タグは共通
     for (const auto &tag : tags) {
-        if (m_mutedWordsHash.contains(tag)) {
-            if (m_mutedWordsHash[tag].targets.contains(MutedWordTarget::Tag)) {
+        if (m_mutedWordsTagHash.contains(tag)) {
+            if (m_mutedWordsTagHash[tag].targets.contains(MutedWordTarget::Tag)) {
                 return true;
             }
         }
@@ -598,6 +614,11 @@ QString ConfigurableLabels::updatePreferencesJson(const QString &src_json)
 #else
     return json_doc.toJson(QJsonDocument::Compact);
 #endif
+}
+
+inline QString ConfigurableLabels::removeSharp(const QString &value) const
+{
+    return value.at(0) == "#" ? value.right(value.length() - 1) : value;
 }
 
 bool ConfigurableLabels::running() const

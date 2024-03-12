@@ -92,6 +92,7 @@ private:
     void initializeLabels();
     bool putPreferences(const QString &json);
     QString updatePreferencesJson(const QString &src_json);
+    QString removeSharp(const QString &value) const;
 
     QRegularExpression m_regSpace;
     QList<ConfigurableLabelItem> m_labels;
@@ -99,6 +100,7 @@ private:
     // 日本語のときは逆向きで部分一致させる
     QList<MutedWordItem> m_mutedWords;
     QHash<QString, MutedWordItem> m_mutedWordsHash;
+    QHash<QString, MutedWordItem> m_mutedWordsTagHash;
     bool m_enableAdultContent;
     bool m_running;
 };

@@ -998,13 +998,17 @@ void atprotocol_test::test_ConfigurableLabels_mutedword()
 
 void atprotocol_test::test_ConfigurableLabels_contains_mutedword()
 {
-    ConfigurableLabels labels;
+    ConfigurableLabels labels, labels2;
 
     labels.insertMutedWord(0, "word3", QList<MutedWordTarget>() << MutedWordTarget::Content);
     labels.insertMutedWord(0, "word1", QList<MutedWordTarget>() << MutedWordTarget::Tag);
     labels.insertMutedWord(1, "word2",
                            QList<MutedWordTarget>()
                                    << MutedWordTarget::Content << MutedWordTarget::Tag);
+    labels.insertMutedWord(1, "#word4",
+                           QList<MutedWordTarget>()
+                                   << MutedWordTarget::Content << MutedWordTarget::Tag);
+    labels2 = labels;
 
     QVERIFY(labels.containsMutedWords("hoge\nfuga\tpiyo foooo", QStringList(), false) == false);
     // word1
@@ -1054,6 +1058,110 @@ void atprotocol_test::test_ConfigurableLabels_contains_mutedword()
     QVERIFY(labels.containsMutedWords("hoge\nword fuga\tpiyo foooo", QStringList() << "word3",
                                       false)
             == false);
+
+    // #word4
+    QVERIFY(labels.containsMutedWords("hoge\nword4 fuga\tpiyo foooo",
+                                      QStringList() << "HOGE"
+                                                    << "word",
+                                      false)
+            == false);
+    QVERIFY(labels.containsMutedWords("hoge\n#word4 fuga\tpiyo foooo",
+                                      QStringList() << "HOGE"
+                                                    << "word",
+                                      false)
+            == true);
+    QVERIFY(labels.containsMutedWords("hoge\nword fuga\tpiyo foooo",
+                                      QStringList() << "FUGA"
+                                                    << "#word4",
+                                      false)
+            == false);
+    QVERIFY(labels.containsMutedWords("hoge\nword1 fuga\tpiyo foooo",
+                                      QStringList() << "FUGA"
+                                                    << "word4",
+                                      false)
+            == true);
+    // #word4
+    QVERIFY(labels2.containsMutedWords("hoge\nword4 fuga\tpiyo foooo",
+                                       QStringList() << "HOGE"
+                                                     << "word",
+                                       false)
+            == false);
+    QVERIFY(labels2.containsMutedWords("hoge\n#word4 fuga\tpiyo foooo",
+                                       QStringList() << "HOGE"
+                                                     << "word",
+                                       false)
+            == true);
+    QVERIFY(labels2.containsMutedWords("hoge\nword fuga\tpiyo foooo",
+                                       QStringList() << "FUGA"
+                                                     << "#word4",
+                                       false)
+            == false);
+    QVERIFY(labels2.containsMutedWords("hoge\nword1 fuga\tpiyo foooo",
+                                       QStringList() << "FUGA"
+                                                     << "word4",
+                                       false)
+            == true);
+
+    labels.removeMutedWordItem(1);
+    // #word4
+    QVERIFY(labels.containsMutedWords("hoge\nword4 fuga\tpiyo foooo",
+                                      QStringList() << "HOGE"
+                                                    << "word",
+                                      false)
+            == false);
+    QVERIFY(labels.containsMutedWords("hoge\n#word4 fuga\tpiyo foooo",
+                                      QStringList() << "HOGE"
+                                                    << "word",
+                                      false)
+            == false);
+    QVERIFY(labels.containsMutedWords("hoge\nword fuga\tpiyo foooo",
+                                      QStringList() << "FUGA"
+                                                    << "#word4",
+                                      false)
+            == false);
+    QVERIFY(labels.containsMutedWords("hoge\nword1 fuga\tpiyo foooo",
+                                      QStringList() << "FUGA"
+                                                    << "word4",
+                                      false)
+            == false);
+
+    labels.clearMutedWord();
+    QVERIFY(labels.mutedWordCount() == 0);
+    {
+
+        m_account.accessJwt = "aaaa";
+        labels.setAccount(m_account);
+        labels.setService(
+                QString("http://localhost:%1/response/labels/mutedword/3").arg(m_listenPort));
+        QSignalSpy spy(&labels, SIGNAL(finished(bool)));
+        labels.load();
+        spy.wait(10 * 1000);
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+
+    // #word4
+    QVERIFY(labels.containsMutedWords("hoge\nword4 fuga\tpiyo foooo",
+                                      QStringList() << "HOGE"
+                                                    << "word",
+                                      false)
+            == false);
+    QVERIFY(labels.containsMutedWords("hoge\n#word4 fuga\tpiyo foooo",
+                                      QStringList() << "HOGE"
+                                                    << "word",
+                                      false)
+            == true);
+    QVERIFY(labels.containsMutedWords("hoge\nword fuga\tpiyo foooo",
+                                      QStringList() << "FUGA"
+                                                    << "#word4",
+                                      false)
+            == false);
+    QVERIFY(labels.containsMutedWords("hoge\nword1 fuga\tpiyo foooo",
+                                      QStringList() << "FUGA"
+                                                    << "word4",
+                                      false)
+            == true);
 }
 
 void atprotocol_test::test_ComAtprotoRepoCreateRecord_post()
