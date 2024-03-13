@@ -27,6 +27,7 @@
 #include "qtquick/actorfeedgeneratorlistmodel.h"
 #include "qtquick/languagelistmodel.h"
 #include "qtquick/contentfiltersettinglistmodel.h"
+#include "qtquick/mutedwordlistmodel.h"
 #include "qtquick/anyprofilelistmodel.h"
 #include "qtquick/listslistmodel.h"
 #include "qtquick/listitemlistmodel.h"
@@ -113,6 +114,8 @@ int main(int argc, char *argv[])
     qmlRegisterType<ContentFilterSettingListModel>(
             "tech.relog.hagoromo.contentfiltersettinglistmodel", 1, 0,
             "ContentFilterSettingListModel");
+    qmlRegisterType<MutedWordListModel>("tech.relog.hagoromo.mutedwordlistmodel", 1, 0,
+                                        "MutedWordListModel");
     qmlRegisterType<AnyProfileListModel>("tech.relog.hagoromo.anyprofilelistmodel", 1, 0,
                                          "AnyProfileListModel");
     qmlRegisterType<ListsListModel>("tech.relog.hagoromo.listslistmodel", 1, 0, "ListsListModel");

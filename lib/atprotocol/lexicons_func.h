@@ -37,6 +37,10 @@ void copyPersonalDetailsPref(const QJsonObject &src, AppBskyActorDefs::PersonalD
 void copyFeedViewPref(const QJsonObject &src, AppBskyActorDefs::FeedViewPref &dest);
 void copyThreadViewPref(const QJsonObject &src, AppBskyActorDefs::ThreadViewPref &dest);
 void copyInterestsPref(const QJsonObject &src, AppBskyActorDefs::InterestsPref &dest);
+void copyMutedWordTarget(const QJsonValue &src, AppBskyActorDefs::MutedWordTarget &dest);
+void copyMutedWord(const QJsonObject &src, AppBskyActorDefs::MutedWord &dest);
+void copyMutedWordsPref(const QJsonObject &src, AppBskyActorDefs::MutedWordsPref &dest);
+void copyHiddenPostsPref(const QJsonObject &src, AppBskyActorDefs::HiddenPostsPref &dest);
 }
 // com.atproto.label.defs
 namespace ComAtprotoLabelDefs {
@@ -212,6 +216,7 @@ void copyAccountView(const QJsonObject &src, ComAtprotoAdminDefs::AccountView &d
 void copyRepoBlobRef(const QJsonObject &src, ComAtprotoAdminDefs::RepoBlobRef &dest);
 void copyRecordViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::RecordViewDetail &dest);
 void copyModEventUnmute(const QJsonObject &src, ComAtprotoAdminDefs::ModEventUnmute &dest);
+void copyModEventTag(const QJsonObject &src, ComAtprotoAdminDefs::ModEventTag &dest);
 void copyCommunicationTemplateView(const QJsonObject &src,
                                    ComAtprotoAdminDefs::CommunicationTemplateView &dest);
 }
@@ -234,6 +239,10 @@ namespace ComAtprotoRepoApplyWrites {
 void copyCreate(const QJsonObject &src, ComAtprotoRepoApplyWrites::Create &dest);
 void copyUpdate(const QJsonObject &src, ComAtprotoRepoApplyWrites::Update &dest);
 void copyDelete(const QJsonObject &src, ComAtprotoRepoApplyWrites::Delete &dest);
+}
+// com.atproto.repo.listMissingBlobs
+namespace ComAtprotoRepoListMissingBlobs {
+void copyRecordBlob(const QJsonObject &src, ComAtprotoRepoListMissingBlobs::RecordBlob &dest);
 }
 // com.atproto.repo.listRecords
 namespace ComAtprotoRepoListRecords {
@@ -264,6 +273,7 @@ void copyRepo(const QJsonObject &src, ComAtprotoSyncListRepos::Repo &dest);
 namespace ComAtprotoSyncSubscribeRepos {
 void copyRepoOp(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::RepoOp &dest);
 void copyCommit(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Commit &dest);
+void copyIdentity(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Identity &dest);
 void copyHandle(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Handle &dest);
 void copyMigrate(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Migrate &dest);
 void copyTombstone(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Tombstone &dest);

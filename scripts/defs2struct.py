@@ -400,6 +400,17 @@ class Defs2Struct:
         else:
             return (namespace + '#' + type_name + '#' + property_name + '#' + ref_namespace + '#' + ref_type_name in self.history_pointer)
 
+    def check_object(self, ref_namespace: str, name: str) -> bool:
+        func_defs = self.history_func.get(ref_namespace)
+        if func_defs is None:
+            return True
+        temp_name = 'void %s(' % (name, )
+        for func_def in func_defs:
+            if temp_name in func_def:
+                if 'const QJsonValue &src' in func_def:
+                    return False
+        return True
+    
     def output_function(self, namespace: str, type_name: str, obj: dict):
         
         if obj.get('type') == 'object':
@@ -501,14 +512,18 @@ class Defs2Struct:
                     else:
                         extend_ns = '%s::' % (self.to_namespace_style(ref_namespace), )
                     if items_type == 'ref':
+                        func_name = '%scopy%s' % (extend_ns, self.to_struct_style(ref_type_name), )
                         self.output_func_text[namespace].append('        for (const auto &s : src.value("%s").toArray()) {' % (property_name, ))
                         if self.check_pointer(namespace, type_name, property_name, ref_namespace, ref_type_name):
                             self.output_func_text[namespace].append('            QSharedPointer<%s%s> child = QSharedPointer<%s%s>(new %s%s());' % (extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), ))
-                            self.output_func_text[namespace].append('            %scopy%s(s.toObject(), *child);' % (extend_ns, self.to_struct_style(ref_type_name), ))
+                            self.output_func_text[namespace].append('            %s(s.toObject(), *child);' % (func_name, ))
                             self.output_func_text[namespace].append('            dest.%s.append(child);' % (property_name, )) 
                         else:
                             self.output_func_text[namespace].append('            %s%s child;' % (extend_ns, self.to_struct_style(ref_type_name), ))
-                            self.output_func_text[namespace].append('            %scopy%s(s.toObject(), child);' % (extend_ns, self.to_struct_style(ref_type_name), ))
+                            if self.check_object(ref_namespace, 'copy%s' % (self.to_struct_style(ref_type_name), )):
+                                self.output_func_text[namespace].append('            %s(s.toObject(), child);' % (func_name, ))
+                            else:
+                                self.output_func_text[namespace].append('            %s(s, child);' % (func_name, ))
                             self.output_func_text[namespace].append('            dest.%s.append(child);' % (property_name, )) 
                         self.output_func_text[namespace].append('        }')
 

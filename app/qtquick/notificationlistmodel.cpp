@@ -180,9 +180,17 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
     } else if (role == UserFilterMessageRole) {
         return getContentFilterMessage(current.author.labels, false);
     } else if (role == ContentFilterMatchedRole) {
-        return getContentFilterMatched(current.labels, false);
+        if (hideByMutedWords(current.cid, current.author.did)) {
+            return true;
+        } else {
+            return getContentFilterMatched(current.labels, false);
+        }
     } else if (role == ContentFilterMessageRole) {
-        return getContentFilterMessage(current.labels, false);
+        if (hideByMutedWords(current.cid, current.author.did)) {
+            return tr("Post hidden by muted word");
+        } else {
+            return getContentFilterMessage(current.labels, false);
+        }
     } else if (role == ContentMediaFilterMatchedRole) {
         return getContentFilterMatched(current.labels, true);
     } else if (role == ContentMediaFilterMessageRole) {
@@ -839,13 +847,23 @@ void NotificationListModel::finishedDisplayingQueuedPosts()
 
 bool NotificationListModel::checkVisibility(const QString &cid)
 {
-    if (!enableReason(m_notificationHash.value(cid).reason))
-        return false;
-
     if (!m_notificationHash.contains(cid))
         return true;
 
     const auto &current = m_notificationHash.value(cid);
+
+    // ミュートワードの判定
+    if (cachePostsContainingMutedWords(
+                current.cid,
+                AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                        AtProtocolType::AppBskyFeedPost::Main>(current.record))) {
+        if (current.author.did != account().did && !visibleContainingMutedWord()) {
+            return false;
+        }
+    }
+
+    if (!enableReason(current.reason))
+        return false;
 
     for (const auto &label : current.author.labels) {
         if (m_contentFilterLabels.visibility(label.val, false) == ConfigurableLabelStatus::Hide) {

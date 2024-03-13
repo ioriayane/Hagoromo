@@ -207,6 +207,39 @@ void copyInterestsPref(const QJsonObject &src, AppBskyActorDefs::InterestsPref &
         }
     }
 }
+void copyMutedWordTarget(const QJsonValue &src, AppBskyActorDefs::MutedWordTarget &dest)
+{
+    dest = src.toString();
+}
+void copyMutedWord(const QJsonObject &src, AppBskyActorDefs::MutedWord &dest)
+{
+    if (!src.isEmpty()) {
+        dest.value = src.value("value").toString();
+        for (const auto &s : src.value("targets").toArray()) {
+            AppBskyActorDefs::MutedWordTarget child;
+            AppBskyActorDefs::copyMutedWordTarget(s, child);
+            dest.targets.append(child);
+        }
+    }
+}
+void copyMutedWordsPref(const QJsonObject &src, AppBskyActorDefs::MutedWordsPref &dest)
+{
+    if (!src.isEmpty()) {
+        for (const auto &s : src.value("items").toArray()) {
+            AppBskyActorDefs::MutedWord child;
+            AppBskyActorDefs::copyMutedWord(s.toObject(), child);
+            dest.items.append(child);
+        }
+    }
+}
+void copyHiddenPostsPref(const QJsonObject &src, AppBskyActorDefs::HiddenPostsPref &dest)
+{
+    if (!src.isEmpty()) {
+        for (const auto &value : src.value("items").toArray()) {
+            dest.items.append(value.toString());
+        }
+    }
+}
 }
 // com.atproto.label.defs
 namespace ComAtprotoLabelDefs {
@@ -1309,6 +1342,9 @@ void copySubjectStatusView(const QJsonObject &src, ComAtprotoAdminDefs::SubjectS
         dest.takendown = src.value("takendown").toBool();
         dest.appealed = src.value("appealed").toBool();
         dest.suspendUntil = src.value("suspendUntil").toString();
+        for (const auto &value : src.value("tags").toArray()) {
+            dest.tags.append(value.toString());
+        }
     }
 }
 void copyModeration(const QJsonObject &src, ComAtprotoAdminDefs::Moderation &dest)
@@ -1637,6 +1673,18 @@ void copyModEventUnmute(const QJsonObject &src, ComAtprotoAdminDefs::ModEventUnm
         dest.comment = src.value("comment").toString();
     }
 }
+void copyModEventTag(const QJsonObject &src, ComAtprotoAdminDefs::ModEventTag &dest)
+{
+    if (!src.isEmpty()) {
+        for (const auto &value : src.value("add").toArray()) {
+            dest.add.append(value.toString());
+        }
+        for (const auto &value : src.value("remove").toArray()) {
+            dest.remove.append(value.toString());
+        }
+        dest.comment = src.value("comment").toString();
+    }
+}
 void copyCommunicationTemplateView(const QJsonObject &src,
                                    ComAtprotoAdminDefs::CommunicationTemplateView &dest)
 {
@@ -1732,6 +1780,16 @@ void copyDelete(const QJsonObject &src, ComAtprotoRepoApplyWrites::Delete &dest)
     }
 }
 }
+// com.atproto.repo.listMissingBlobs
+namespace ComAtprotoRepoListMissingBlobs {
+void copyRecordBlob(const QJsonObject &src, ComAtprotoRepoListMissingBlobs::RecordBlob &dest)
+{
+    if (!src.isEmpty()) {
+        dest.cid = src.value("cid").toString();
+        dest.recordUri = src.value("recordUri").toString();
+    }
+}
+}
 // com.atproto.repo.listRecords
 namespace ComAtprotoRepoListRecords {
 void copyRecord(const QJsonObject &src, ComAtprotoRepoListRecords::Record &dest)
@@ -1819,6 +1877,14 @@ void copyCommit(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Commit &de
             copyRepoOp(s.toObject(), child);
             dest.ops.append(child);
         }
+        dest.time = src.value("time").toString();
+    }
+}
+void copyIdentity(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Identity &dest)
+{
+    if (!src.isEmpty()) {
+        dest.seq = src.value("seq").toInt();
+        dest.did = src.value("did").toString();
         dest.time = src.value("time").toString();
     }
 }

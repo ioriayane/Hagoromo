@@ -181,19 +181,32 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     else if (role == RepostedByHandleRole)
         return current.reason_ReasonRepost.by.handle;
 
-    else if (role == UserFilterMatchedRole)
+    else if (role == UserFilterMatchedRole) {
         return getContentFilterMatched(current.post.author.labels, false);
-    else if (role == UserFilterMessageRole)
+    } else if (role == UserFilterMessageRole) {
         return getContentFilterMessage(current.post.author.labels, false);
-    else if (role == ContentFilterMatchedRole)
-        return getContentFilterMatched(current.post.labels, false);
-    else if (role == ContentFilterMessageRole)
-        return getContentFilterMessage(current.post.labels, false);
-    else if (role == ContentMediaFilterMatchedRole)
+    } else if (role == ContentFilterMatchedRole) {
+        if (hideByMutedWords(current.post.cid, current.post.author.did)) {
+            return true;
+        } else {
+            return getContentFilterMatched(current.post.labels, false);
+        }
+    } else if (role == ContentFilterMessageRole) {
+        if (hideByMutedWords(current.post.cid, current.post.author.did)) {
+            return tr("Post hidden by muted word");
+        } else {
+            return getContentFilterMessage(current.post.labels, false);
+        }
+    } else if (role == ContentMediaFilterMatchedRole) {
         return getContentFilterMatched(current.post.labels, true);
-    else if (role == ContentMediaFilterMessageRole)
+    } else if (role == ContentMediaFilterMessageRole) {
         return getContentFilterMessage(current.post.labels, true);
-    else if (role == QuoteFilterMatchedRole) {
+    } else if (role == QuoteFilterMatchedRole) {
+        // quoteのレコードにはlangがないので保留（現状、公式と同じ）
+        // QString quote_cid = getQuoteItem(current.post, QuoteRecordCidRole).toString();
+        // if (!quote_cid.isEmpty() && m_mutedPosts.contains(quote_cid)) {
+        //     return true;
+        // } else
         if (getQuoteItem(current.post, HasQuoteRecordRole).toBool())
             return getQuoteFilterMatched(current.post);
         else
@@ -542,6 +555,15 @@ bool TimelineListModel::checkVisibility(const QString &cid)
 
     const AppBskyFeedDefs::FeedViewPost &current = m_viewPostHash.value(cid);
 
+    // ミュートワードの判定
+    if (cachePostsContainingMutedWords(
+                current.post.cid,
+                LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(current.post.record))) {
+        if (current.post.author.did != account().did && !visibleContainingMutedWord()) {
+            return false;
+        }
+    }
+
     for (const auto &label : current.post.author.labels) {
         if (m_contentFilterLabels.visibility(label.val, false) == ConfigurableLabelStatus::Hide) {
             qDebug() << "Hide post by user's label. " << current.post.author.handle << cid;
@@ -610,6 +632,7 @@ bool TimelineListModel::checkVisibility(const QString &cid)
             return false;
         }
     }
+
     return true;
 }
 

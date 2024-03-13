@@ -39,6 +39,12 @@ AppBskyActorGetPreferences::adultContentPref() const
     return m_adultContentPref;
 }
 
+const QList<AtProtocolType::AppBskyActorDefs::MutedWordsPref> *
+AppBskyActorGetPreferences::mutedWordsPrefList() const
+{
+    return &m_mutedWordsPrefList;
+}
+
 bool AppBskyActorGetPreferences::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
@@ -59,6 +65,10 @@ bool AppBskyActorGetPreferences::parseJson(bool success, const QString reply_jso
                 AtProtocolType::AppBskyActorDefs::copyContentLabelPref(value.toObject(),
                                                                        content_label);
                 m_contentLabelPrefList.append(content_label);
+            } else if (type == "app.bsky.actor.defs#mutedWordsPref") {
+                AtProtocolType::AppBskyActorDefs::MutedWordsPref muted_words;
+                AtProtocolType::AppBskyActorDefs::copyMutedWordsPref(value.toObject(), muted_words);
+                m_mutedWordsPrefList.append(muted_words);
             }
         }
     }

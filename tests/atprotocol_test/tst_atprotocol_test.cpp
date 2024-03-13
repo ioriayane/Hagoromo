@@ -36,6 +36,8 @@ private slots:
     void test_ConfigurableLabels_load();
     void test_ConfigurableLabels_copy();
     void test_ConfigurableLabels_save();
+    void test_ConfigurableLabels_mutedword();
+    void test_ConfigurableLabels_contains_mutedword();
     void test_ComAtprotoRepoCreateRecord_post();
     void test_ComAtprotoRepoCreateRecord_threadgate();
     void test_AppBskyFeedGetFeedGenerator();
@@ -43,6 +45,7 @@ private slots:
     void test_ComAtprotoRepoGetRecord_profile();
     void test_ComAtprotoRepoPutRecord_profile();
     void test_ListItemsCache();
+    void test_checkPartialMatchLanguage();
 
 private:
     void test_putPreferences(const QString &path, const QByteArray &body);
@@ -66,12 +69,7 @@ atprotocol_test::atprotocol_test()
 
     connect(&m_mockServer, &WebServer::receivedPost,
             [=](const QHttpServerRequest &request, bool &result, QString &json) {
-                if (request.url().path()
-                            == "/response/labels/save/1/xrpc/app.bsky.actor.putPreferences"
-                    || request.url().path()
-                            == "/response/labels/save/2/xrpc/app.bsky.actor.putPreferences"
-                    || request.url().path()
-                            == "/response/labels/save/3/xrpc/app.bsky.actor.putPreferences") {
+                if (request.url().path().endsWith("/app.bsky.actor.putPreferences")) {
                     test_putPreferences(request.url().path(), request.body());
                     json = "{}";
                     result = true;
@@ -567,6 +565,7 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QVERIFY(labels.visibility("spam", false) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("impersonation", false) == ConfigurableLabelStatus::Hide);
     }
+    //
     {
         labels.setService(QString("http://localhost:%1/response/labels/show").arg(m_listenPort));
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
@@ -592,6 +591,7 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QVERIFY(labels.visibility("spam", false) == ConfigurableLabelStatus::Show);
         QVERIFY(labels.visibility("impersonation", false) == ConfigurableLabelStatus::Show);
     }
+    //
     {
         labels.setService(
                 QString("http://localhost:%1/response/labels/show_adult_false").arg(m_listenPort));
@@ -618,6 +618,7 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QVERIFY(labels.visibility("spam", false) == ConfigurableLabelStatus::Show);
         QVERIFY(labels.visibility("impersonation", false) == ConfigurableLabelStatus::Show);
     }
+    //
     {
         labels.setService(QString("http://localhost:%1/response/labels/warn").arg(m_listenPort));
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
@@ -644,6 +645,127 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QVERIFY(labels.visibility("spam", false) == ConfigurableLabelStatus::Warning);
         QVERIFY(labels.visibility("impersonation", false) == ConfigurableLabelStatus::Warning);
     }
+    //
+    {
+        int i = 0;
+        labels.setService(
+                QString("http://localhost:%1/response/labels/mutedword/1").arg(m_listenPort));
+        QSignalSpy spy(&labels, SIGNAL(finished(bool)));
+        labels.load();
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+
+        QVERIFY2(labels.mutedWordCount() == 4,
+                 QString::number(labels.mutedWordCount()).toLocal8Bit());
+
+        i = 0;
+        QVERIFY2(labels.getMutedWordItem(i).group == 0,
+                 QString("%1").arg(labels.getMutedWordItem(i).group).toLocal8Bit());
+        QVERIFY2(labels.getMutedWordItem(i).value == "test1-1",
+                 QString("%1").arg(labels.getMutedWordItem(i).value).toLocal8Bit());
+        QVERIFY2(labels.getMutedWordItem(i).targets.length() == 2,
+                 QString("%1").arg(labels.getMutedWordItem(i).targets.length()).toLocal8Bit());
+        QVERIFY2(labels.getMutedWordItem(i).targets
+                         == QList<MutedWordTarget>()
+                                 << MutedWordTarget::Content << MutedWordTarget::Tag,
+                 QString("%1,%2")
+                         .arg(int(labels.getMutedWordItem(i).targets.at(0)),
+                              int(labels.getMutedWordItem(i).targets.at(1)))
+                         .toLocal8Bit());
+        i = 1;
+        QVERIFY2(labels.getMutedWordItem(i).group == 0,
+                 QString("%1").arg(labels.getMutedWordItem(i).group).toLocal8Bit());
+        QVERIFY2(labels.getMutedWordItem(i).value == "test1-2",
+                 QString("%1").arg(labels.getMutedWordItem(i).value).toLocal8Bit());
+        QVERIFY2(labels.getMutedWordItem(i).targets.length() == 1,
+                 QString("%1").arg(labels.getMutedWordItem(i).targets.length()).toLocal8Bit());
+        QVERIFY2(labels.getMutedWordItem(i).targets
+                         == QList<MutedWordTarget>() << MutedWordTarget::Tag,
+                 QString("%1").arg(int(labels.getMutedWordItem(i).targets.at(0))).toLocal8Bit());
+        i = 2;
+        QVERIFY2(labels.getMutedWordItem(i).group == 0,
+                 QString("%1").arg(labels.getMutedWordItem(i).group).toLocal8Bit());
+        QVERIFY2(labels.getMutedWordItem(i).value == "test1-3",
+                 QString("%1").arg(labels.getMutedWordItem(i).value).toLocal8Bit());
+        QVERIFY2(labels.getMutedWordItem(i).targets.length() == 0,
+                 QString("%1").arg(labels.getMutedWordItem(i).targets.length()).toLocal8Bit());
+        QVERIFY(labels.getMutedWordItem(i).targets == QList<MutedWordTarget>());
+        i = 3;
+        QVERIFY2(labels.getMutedWordItem(i).group == 0,
+                 QString("%1").arg(labels.getMutedWordItem(i).group).toLocal8Bit());
+        QVERIFY2(labels.getMutedWordItem(i).value == "test1-4",
+                 QString("%1").arg(labels.getMutedWordItem(i).value).toLocal8Bit());
+        QVERIFY2(labels.getMutedWordItem(i).targets.length() == 1,
+                 QString("%1").arg(labels.getMutedWordItem(i).targets.length()).toLocal8Bit());
+        QVERIFY2(labels.getMutedWordItem(i).targets
+                         == QList<MutedWordTarget>() << MutedWordTarget::Content,
+                 QString("%1").arg(int(labels.getMutedWordItem(i).targets.at(0))).toLocal8Bit());
+    }
+    //
+    {
+        int i = 0;
+        labels.setService(
+                QString("http://localhost:%1/response/labels/mutedword/2").arg(m_listenPort));
+        QSignalSpy spy(&labels, SIGNAL(finished(bool)));
+        labels.load();
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+
+        QVERIFY2(labels.mutedWordCount() == 8,
+                 QString::number(labels.mutedWordCount()).toLocal8Bit());
+
+        i = 0;
+        QVERIFY(labels.getMutedWordItem(i).group == 0);
+        QVERIFY(labels.getMutedWordItem(i).value == "test1-1");
+        QVERIFY(labels.getMutedWordItem(i).targets.length() == 2);
+        QVERIFY(labels.getMutedWordItem(i).targets
+                == QList<MutedWordTarget>() << MutedWordTarget::Content << MutedWordTarget::Tag);
+        i = 1;
+        QVERIFY(labels.getMutedWordItem(i).group == 0);
+        QVERIFY(labels.getMutedWordItem(i).value == "test1-2");
+        QVERIFY(labels.getMutedWordItem(i).targets.length() == 1);
+        QVERIFY(labels.getMutedWordItem(i).targets
+                == QList<MutedWordTarget>() << MutedWordTarget::Tag);
+        i = 2;
+        QVERIFY(labels.getMutedWordItem(i).group == 0);
+        QVERIFY(labels.getMutedWordItem(i).value == "test1-3");
+        QVERIFY(labels.getMutedWordItem(i).targets.length() == 0);
+        QVERIFY(labels.getMutedWordItem(i).targets == QList<MutedWordTarget>());
+        i = 3;
+        QVERIFY(labels.getMutedWordItem(i).group == 0);
+        QVERIFY(labels.getMutedWordItem(i).value == "test1-4");
+        QVERIFY(labels.getMutedWordItem(i).targets.length() == 1);
+        QVERIFY(labels.getMutedWordItem(i).targets
+                == QList<MutedWordTarget>() << MutedWordTarget::Content);
+
+        i = 4;
+        QVERIFY(labels.getMutedWordItem(i).group == 1);
+        QVERIFY(labels.getMutedWordItem(i).value == "test2-1");
+        QVERIFY(labels.getMutedWordItem(i).targets.length() == 1);
+        QVERIFY(labels.getMutedWordItem(i).targets
+                == QList<MutedWordTarget>() << MutedWordTarget::Content);
+        i = 5;
+        QVERIFY(labels.getMutedWordItem(i).group == 1);
+        QVERIFY(labels.getMutedWordItem(i).value == "test2-2");
+        QVERIFY(labels.getMutedWordItem(i).targets.length() == 2);
+        QVERIFY(labels.getMutedWordItem(i).targets
+                == QList<MutedWordTarget>() << MutedWordTarget::Content << MutedWordTarget::Tag);
+        i = 6;
+        QVERIFY(labels.getMutedWordItem(i).group == 1);
+        QVERIFY(labels.getMutedWordItem(i).value == "test2-3");
+        QVERIFY(labels.getMutedWordItem(i).targets.length() == 1);
+        QVERIFY(labels.getMutedWordItem(i).targets
+                == QList<MutedWordTarget>() << MutedWordTarget::Tag);
+        i = 7;
+        QVERIFY(labels.getMutedWordItem(i).group == 1);
+        QVERIFY(labels.getMutedWordItem(i).value == "test2-4");
+        QVERIFY(labels.getMutedWordItem(i).targets.length() == 0);
+        QVERIFY(labels.getMutedWordItem(i).targets == QList<MutedWordTarget>());
+    }
 }
 
 void atprotocol_test::test_ConfigurableLabels_copy()
@@ -653,10 +775,17 @@ void atprotocol_test::test_ConfigurableLabels_copy()
     for (int i = 0; i < src.count(); i++) {
         src.setStatus(i, ConfigurableLabelStatus::Show);
     }
+    src.insertMutedWord(0, "word3", QList<MutedWordTarget>() << MutedWordTarget::Content);
+    src.insertMutedWord(0, "word1", QList<MutedWordTarget>() << MutedWordTarget::Tag);
+    src.insertMutedWord(1, "word2",
+                        QList<MutedWordTarget>()
+                                << MutedWordTarget::Content << MutedWordTarget::Tag);
+
     dest.setEnableAdultContent(false);
     for (int i = 0; i < dest.count(); i++) {
         dest.setStatus(i, ConfigurableLabelStatus::Hide);
     }
+
     QVERIFY(dest.enableAdultContent() == false);
     QVERIFY(dest.visibility("porn", true) == ConfigurableLabelStatus::Hide);
     QVERIFY(dest.visibility("nsfl", true) == ConfigurableLabelStatus::Hide);
@@ -672,6 +801,8 @@ void atprotocol_test::test_ConfigurableLabels_copy()
     QVERIFY(dest.visibility("behavior-intolerant", false) == ConfigurableLabelStatus::Hide);
     QVERIFY(dest.visibility("spam", false) == ConfigurableLabelStatus::Hide);
     QVERIFY(dest.visibility("impersonation", false) == ConfigurableLabelStatus::Hide);
+
+    QVERIFY(dest.mutedWordCount() == 0);
 
     dest = src;
     QVERIFY(dest.enableAdultContent() == true);
@@ -690,10 +821,32 @@ void atprotocol_test::test_ConfigurableLabels_copy()
     QVERIFY(dest.visibility("spam", false) == ConfigurableLabelStatus::Show);
     QVERIFY(dest.visibility("impersonation", false) == ConfigurableLabelStatus::Show);
 
+    QVERIFY(dest.mutedWordCount() == 3);
+    QVERIFY(dest.getMutedWordItem(0).value == "word1");
+    QVERIFY(dest.getMutedWordItem(0).group == 0);
+    QVERIFY(dest.getMutedWordItem(0).targets == QList<MutedWordTarget>() << MutedWordTarget::Tag);
+    QVERIFY(dest.getMutedWordItem(1).value == "word2");
+    QVERIFY(dest.getMutedWordItem(1).group == 0);
+    QVERIFY(dest.getMutedWordItem(1).targets
+            == QList<MutedWordTarget>() << MutedWordTarget::Content << MutedWordTarget::Tag);
+    QVERIFY(dest.getMutedWordItem(2).value == "word3");
+    QVERIFY(dest.getMutedWordItem(2).group == 0);
+    QVERIFY(dest.getMutedWordItem(2).targets
+            == QList<MutedWordTarget>() << MutedWordTarget::Content);
+
     src.setEnableAdultContent(false);
     for (int i = 0; i < src.count(); i++) {
         src.setStatus(i, ConfigurableLabelStatus::Warning);
     }
+    src.removeMutedWordItem(2);
+    src.removeMutedWordItem(1);
+    src.removeMutedWordItem(0);
+    src.insertMutedWord(0, "word3-2",
+                        QList<MutedWordTarget>()
+                                << MutedWordTarget::Content << MutedWordTarget::Tag);
+    src.insertMutedWord(0, "word1-2", QList<MutedWordTarget>() << MutedWordTarget::Content);
+    src.insertMutedWord(1, "word2-2", QList<MutedWordTarget>() << MutedWordTarget::Tag);
+
     dest = src;
     QVERIFY(dest.enableAdultContent() == false);
     QVERIFY(dest.visibility("porn", true) == ConfigurableLabelStatus::Hide);
@@ -710,6 +863,19 @@ void atprotocol_test::test_ConfigurableLabels_copy()
     QVERIFY(dest.visibility("behavior-intolerant", false) == ConfigurableLabelStatus::Warning);
     QVERIFY(dest.visibility("spam", false) == ConfigurableLabelStatus::Warning);
     QVERIFY(dest.visibility("impersonation", false) == ConfigurableLabelStatus::Warning);
+
+    QVERIFY(dest.mutedWordCount() == 3);
+    QVERIFY(dest.getMutedWordItem(0).value == "word1-2");
+    QVERIFY(dest.getMutedWordItem(0).group == 0);
+    QVERIFY(dest.getMutedWordItem(0).targets
+            == QList<MutedWordTarget>() << MutedWordTarget::Content);
+    QVERIFY(dest.getMutedWordItem(1).value == "word2-2");
+    QVERIFY(dest.getMutedWordItem(1).group == 0);
+    QVERIFY(dest.getMutedWordItem(1).targets == QList<MutedWordTarget>() << MutedWordTarget::Tag);
+    QVERIFY(dest.getMutedWordItem(2).value == "word3-2");
+    QVERIFY(dest.getMutedWordItem(2).group == 0);
+    QVERIFY(dest.getMutedWordItem(2).targets
+            == QList<MutedWordTarget>() << MutedWordTarget::Content << MutedWordTarget::Tag);
 }
 
 void atprotocol_test::test_ConfigurableLabels_save()
@@ -752,6 +918,250 @@ void atprotocol_test::test_ConfigurableLabels_save()
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
+    {
+        labels.setEnableAdultContent(false);
+        for (int i = 0; i < labels.count(); i++) {
+            labels.setStatus(i, ConfigurableLabelStatus::Warning);
+        }
+        labels.setService(QString("http://localhost:%1/response/labels/save/4").arg(m_listenPort));
+        QVERIFY2(labels.mutedWordCount() == 0,
+                 QString("mutedWordCount=%1").arg(labels.mutedWordCount()).toLocal8Bit());
+        QSignalSpy spy(&labels, SIGNAL(finished(bool)));
+        labels.save();
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+    {
+        {
+            labels.setService(
+                    QString("http://localhost:%1/response/labels/save/5.1").arg(m_listenPort));
+            QSignalSpy spy(&labels, SIGNAL(finished(bool)));
+            labels.load();
+            spy.wait();
+            QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+            QList<QVariant> arguments = spy.takeFirst();
+            QVERIFY(arguments.at(0).toBool());
+            QVERIFY2(labels.mutedWordCount() == 8,
+                     QString("mutedWordCount=%1").arg(labels.mutedWordCount()).toLocal8Bit());
+        }
+        labels.setEnableAdultContent(false);
+        for (int i = 0; i < labels.count(); i++) {
+            labels.setStatus(i, ConfigurableLabelStatus::Warning);
+        }
+        labels.setService(QString("http://localhost:%1/response/labels/save/5").arg(m_listenPort));
+        QSignalSpy spy(&labels, SIGNAL(finished(bool)));
+        labels.save();
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+}
+
+void atprotocol_test::test_ConfigurableLabels_mutedword()
+{
+    ConfigurableLabels labels;
+
+    labels.insertMutedWord(0, "word3", QList<MutedWordTarget>() << MutedWordTarget::Content);
+    labels.insertMutedWord(0, "word1", QList<MutedWordTarget>() << MutedWordTarget::Tag);
+    labels.insertMutedWord(1, "word2",
+                           QList<MutedWordTarget>()
+                                   << MutedWordTarget::Content << MutedWordTarget::Tag);
+
+    QVERIFY(labels.getMutedWordItem(0).value == "word1");
+    QVERIFY(labels.getMutedWordItem(0).group == 0);
+    QVERIFY(labels.getMutedWordItem(0).targets == QList<MutedWordTarget>() << MutedWordTarget::Tag);
+    QVERIFY(labels.getMutedWordItem(1).value == "word2");
+    QVERIFY(labels.getMutedWordItem(1).group == 0);
+    QVERIFY(labels.getMutedWordItem(1).targets
+            == QList<MutedWordTarget>() << MutedWordTarget::Content << MutedWordTarget::Tag);
+    QVERIFY(labels.getMutedWordItem(2).value == "word3");
+    QVERIFY(labels.getMutedWordItem(2).group == 0);
+    QVERIFY(labels.getMutedWordItem(2).targets
+            == QList<MutedWordTarget>() << MutedWordTarget::Content);
+
+    labels.moveMutedWordItem(2, 0);
+    QVERIFY(labels.getMutedWordItem(1).value == "word1");
+    QVERIFY(labels.getMutedWordItem(1).group == 0);
+    QVERIFY(labels.getMutedWordItem(1).targets == QList<MutedWordTarget>() << MutedWordTarget::Tag);
+    QVERIFY(labels.getMutedWordItem(2).value == "word2");
+    QVERIFY(labels.getMutedWordItem(2).group == 0);
+    QVERIFY(labels.getMutedWordItem(2).targets
+            == QList<MutedWordTarget>() << MutedWordTarget::Content << MutedWordTarget::Tag);
+    QVERIFY(labels.getMutedWordItem(0).value == "word3");
+    QVERIFY(labels.getMutedWordItem(0).group == 0);
+    QVERIFY(labels.getMutedWordItem(0).targets
+            == QList<MutedWordTarget>() << MutedWordTarget::Content);
+}
+
+void atprotocol_test::test_ConfigurableLabels_contains_mutedword()
+{
+    ConfigurableLabels labels, labels2;
+
+    labels.insertMutedWord(0, "word3", QList<MutedWordTarget>() << MutedWordTarget::Content);
+    labels.insertMutedWord(0, "word1", QList<MutedWordTarget>() << MutedWordTarget::Tag);
+    labels.insertMutedWord(1, "word2",
+                           QList<MutedWordTarget>()
+                                   << MutedWordTarget::Content << MutedWordTarget::Tag);
+    labels.insertMutedWord(1, "#word4",
+                           QList<MutedWordTarget>()
+                                   << MutedWordTarget::Content << MutedWordTarget::Tag);
+    labels2 = labels;
+
+    QVERIFY(labels.containsMutedWords("hoge\nfuga\tpiyo foooo", QStringList(), false) == false);
+    // word1
+    QVERIFY(labels.containsMutedWords("hoge\nword1 fuga\tpiyo foooo", QStringList() << "hoge",
+                                      false)
+            == false);
+    QVERIFY(labels.containsMutedWords("hoge\nword fuga\tpiyo foooo", QStringList() << "word1",
+                                      false)
+            == true);
+    // word2
+    QVERIFY(labels.containsMutedWords("hoge\nword2 fuga\tpiyo foooo",
+                                      QStringList() << "HOGE"
+                                                    << "word1",
+                                      false)
+            == true);
+    QVERIFY(labels.containsMutedWords("hoge\nword1 fuga\tpiyo foooo",
+                                      QStringList() << "FUGA"
+                                                    << "word2",
+                                      false)
+            == true);
+    // word3
+    QVERIFY(labels.containsMutedWords("hoge\nword3 fuga\tpiyo foooo", QStringList() << "hoge",
+                                      false)
+            == true);
+    QVERIFY(labels.containsMutedWords("hoge\nword fuga\tpiyo foooo", QStringList() << "word3",
+                                      false)
+            == false);
+    // word1
+    QVERIFY(labels.containsMutedWords("hogeword1fuga\tpiyo foooo", QStringList() << "hoge", true)
+            == false);
+    QVERIFY(labels.containsMutedWords("hoge\nwordfuga\tpiyo foooo", QStringList() << "word1", true)
+            == true);
+    // word2
+    QVERIFY(labels.containsMutedWords("hogeword2fuga\tpiyo foooo",
+                                      QStringList() << "HOGE"
+                                                    << "word1",
+                                      false)
+            == true);
+    QVERIFY(labels.containsMutedWords("hoge\nword1 fuga\tpiyo foooo",
+                                      QStringList() << "FUGA"
+                                                    << "word2",
+                                      false)
+            == true);
+    // word3
+    QVERIFY(labels.containsMutedWords("hogeword3fuga\tpiyo foooo", QStringList() << "hoge", true)
+            == true);
+    QVERIFY(labels.containsMutedWords("hoge\nword fuga\tpiyo foooo", QStringList() << "word3",
+                                      false)
+            == false);
+
+    // #word4
+    QVERIFY(labels.containsMutedWords("hoge\nword4 fuga\tpiyo foooo",
+                                      QStringList() << "HOGE"
+                                                    << "word",
+                                      false)
+            == false);
+    QVERIFY(labels.containsMutedWords("hoge\n#word4 fuga\tpiyo foooo",
+                                      QStringList() << "HOGE"
+                                                    << "word",
+                                      false)
+            == true);
+    QVERIFY(labels.containsMutedWords("hoge\nword fuga\tpiyo foooo",
+                                      QStringList() << "FUGA"
+                                                    << "#word4",
+                                      false)
+            == false);
+    QVERIFY(labels.containsMutedWords("hoge\nword1 fuga\tpiyo foooo",
+                                      QStringList() << "FUGA"
+                                                    << "word4",
+                                      false)
+            == true);
+    // #word4
+    QVERIFY(labels2.containsMutedWords("hoge\nword4 fuga\tpiyo foooo",
+                                       QStringList() << "HOGE"
+                                                     << "word",
+                                       false)
+            == false);
+    QVERIFY(labels2.containsMutedWords("hoge\n#word4 fuga\tpiyo foooo",
+                                       QStringList() << "HOGE"
+                                                     << "word",
+                                       false)
+            == true);
+    QVERIFY(labels2.containsMutedWords("hoge\nword fuga\tpiyo foooo",
+                                       QStringList() << "FUGA"
+                                                     << "#word4",
+                                       false)
+            == false);
+    QVERIFY(labels2.containsMutedWords("hoge\nword1 fuga\tpiyo foooo",
+                                       QStringList() << "FUGA"
+                                                     << "word4",
+                                       false)
+            == true);
+
+    labels.removeMutedWordItem(1);
+    // #word4
+    QVERIFY(labels.containsMutedWords("hoge\nword4 fuga\tpiyo foooo",
+                                      QStringList() << "HOGE"
+                                                    << "word",
+                                      false)
+            == false);
+    QVERIFY(labels.containsMutedWords("hoge\n#word4 fuga\tpiyo foooo",
+                                      QStringList() << "HOGE"
+                                                    << "word",
+                                      false)
+            == false);
+    QVERIFY(labels.containsMutedWords("hoge\nword fuga\tpiyo foooo",
+                                      QStringList() << "FUGA"
+                                                    << "#word4",
+                                      false)
+            == false);
+    QVERIFY(labels.containsMutedWords("hoge\nword1 fuga\tpiyo foooo",
+                                      QStringList() << "FUGA"
+                                                    << "word4",
+                                      false)
+            == false);
+
+    labels.clearMutedWord();
+    QVERIFY(labels.mutedWordCount() == 0);
+    {
+
+        m_account.accessJwt = "aaaa";
+        labels.setAccount(m_account);
+        labels.setService(
+                QString("http://localhost:%1/response/labels/mutedword/3").arg(m_listenPort));
+        QSignalSpy spy(&labels, SIGNAL(finished(bool)));
+        labels.load();
+        spy.wait(10 * 1000);
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+
+    // #word4
+    QVERIFY(labels.containsMutedWords("hoge\nword4 fuga\tpiyo foooo",
+                                      QStringList() << "HOGE"
+                                                    << "word",
+                                      false)
+            == false);
+    QVERIFY(labels.containsMutedWords("hoge\n#word4 fuga\tpiyo foooo",
+                                      QStringList() << "HOGE"
+                                                    << "word",
+                                      false)
+            == true);
+    QVERIFY(labels.containsMutedWords("hoge\nword fuga\tpiyo foooo",
+                                      QStringList() << "FUGA"
+                                                    << "#word4",
+                                      false)
+            == false);
+    QVERIFY(labels.containsMutedWords("hoge\nword1 fuga\tpiyo foooo",
+                                      QStringList() << "FUGA"
+                                                    << "word4",
+                                      false)
+            == true);
 }
 
 void atprotocol_test::test_ComAtprotoRepoCreateRecord_post()
@@ -1128,6 +1538,25 @@ void atprotocol_test::test_ListItemsCache()
     QVERIFY(cache->getListNames("hoge", "hoge") == QStringList());
 }
 
+void atprotocol_test::test_checkPartialMatchLanguage()
+{
+    QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "ja") == true);
+    QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "ja_JP") == true);
+    QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "ja"
+                                                                         << "en")
+            == true);
+    QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "de"
+                                                                         << "ja"
+                                                                         << "en")
+            == true);
+    QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "de"
+                                                                         << "en")
+            == false);
+    QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "de") == false);
+    QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "") == false);
+    QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList()) == false);
+}
+
 void atprotocol_test::test_putPreferences(const QString &path, const QByteArray &body)
 {
     QJsonDocument json_doc_expect;
@@ -1137,9 +1566,21 @@ void atprotocol_test::test_putPreferences(const QString &path, const QByteArray 
     } else if (path.contains("/save/2/")) {
         json_doc_expect =
                 UnitTestCommon::loadJson(":/data/labels/save/2/app.bsky.actor.putPreferences");
-    } else {
+    } else if (path.contains("/save/3/")) {
         json_doc_expect =
                 UnitTestCommon::loadJson(":/data/labels/save/3/app.bsky.actor.putPreferences");
+    } else if (path.contains("/save/4/")) {
+        json_doc_expect =
+                UnitTestCommon::loadJson(":/data/labels/save/4/app.bsky.actor.putPreferences");
+    } else if (path.contains("/save/5/")) {
+        json_doc_expect =
+                UnitTestCommon::loadJson(":/data/labels/save/5/app.bsky.actor.putPreferences");
+    } else if (path.contains("/save/5.1/")) {
+        json_doc_expect =
+                UnitTestCommon::loadJson(":/data/labels/save/5.1/app.bsky.actor.putPreferences");
+    } else {
+        qDebug() << path;
+        QVERIFY(false);
     }
 
     QJsonDocument json_doc = QJsonDocument::fromJson(body);

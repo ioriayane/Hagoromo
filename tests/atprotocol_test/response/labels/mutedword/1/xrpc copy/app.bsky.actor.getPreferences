@@ -1,0 +1,68 @@
+{
+    "preferences": [
+        {
+            "$type": "dummy",
+            "saved": [
+                "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/bsky-team"
+            ],
+            "pinned": [
+                "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/whats-hot",
+                "at://did:plc:hiptcrt4k63szzz4ty3dhwcp/app.bsky.feed.generator/ja-images"
+            ]
+        },
+        {
+            "$type": "app.bsky.actor.defs#savedFeedsPref",
+            "saved": [
+                "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/bsky-team",
+                "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/with-friends",
+                "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/whats-hot"
+            ],
+            "pinned": [
+                "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/whats-hot",
+                "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/with-friends",
+                "at://did:plc:vpkhqolt662uhesyj6nxm7ys/app.bsky.feed.generator/cats",
+                "at://did:plc:hiptcrt4k63szzz4ty3dhwcp/app.bsky.feed.generator/ja-images"
+            ]
+        },
+        {
+            "$type": "app.bsky.actor.defs#mutedWordsPref",
+            "items": [
+                {
+                    "value": "test1-1",
+                    "targets": [
+                        "content",
+                        "tag"
+                    ]
+                },
+                {
+                    "value": "test1-2",
+                    "targets": [
+                        "tag"
+                    ]
+                },
+                {
+                    "value": "test1-3",
+                    "targets": []
+                },
+                {
+                    "value": "test1-4",
+                    "targets": [
+                        "content"
+                    ]
+                }
+            ]
+        },
+        {
+            "$type": "dummy",
+            "saved": [
+                "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/bsky-team",
+                "at://did:plc:hiptcrt4k63szzz4ty3dhwcp/app.bsky.feed.generator/ja-images"
+            ],
+            "pinned": [
+                "at://did:plc:vpkhqolt662uhesyj6nxm7ys/app.bsky.feed.generator/cats",
+                "at://did:plc:q6gjnaw2blty4crticxkmujt/app.bsky.feed.generator/cl-japanese",
+                "at://did:plc:hiptcrt4k63szzz4ty3dhwcp/app.bsky.feed.generator/ja-images"
+            ]
+        }
+    ]
+}

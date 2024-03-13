@@ -36,6 +36,7 @@ ScrollView {
     signal requestViewRepostedBy(string uri)
     signal requestViewSearchPosts(string text)
     signal requestReportPost(string uri, string cid)
+    signal requestAddMutedWord(string text)
 
     ListView {
         id: rootListView
@@ -82,6 +83,7 @@ ScrollView {
 
             onRequestViewProfile: (did) => notificationListView.requestViewProfile(did)
             onRequestViewSearchPosts: (text) => notificationListView.requestViewSearchPosts(text)
+            onRequestAddMutedWord: (text) => notificationListView.requestAddMutedWord(text)
 
             moderationFrame.visible: model.muted
             userFilterMatched: model.userFilterMatched
