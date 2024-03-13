@@ -582,7 +582,7 @@ QString ConfigurableLabels::updatePreferencesJson(const QString &src_json)
                 dest_preferences.append(value);
             }
             {
-                QHash<int, QJsonArray> muted_items;
+                QMap<int, QJsonArray> muted_items;
                 for (const auto &muted_word : m_mutedWords) {
                     QJsonObject item;
                     item.insert("value", muted_word.value);
@@ -596,7 +596,7 @@ QString ConfigurableLabels::updatePreferencesJson(const QString &src_json)
                     item.insert("targets", targets);
                     muted_items[muted_word.group].append(item);
                 }
-                QHashIterator<int, QJsonArray> ii(muted_items);
+                QMapIterator<int, QJsonArray> ii(muted_items);
                 while (ii.hasNext()) {
                     ii.next();
                     QJsonObject value;

@@ -80,34 +80,6 @@
             "items": [
                 {
                     "targets": [
-                        "content"
-                    ],
-                    "value": "test6-1"
-                },
-                {
-                    "targets": [
-                        "content",
-                        "tag"
-                    ],
-                    "value": "test6-2"
-                },
-                {
-                    "targets": [
-                        "tag"
-                    ],
-                    "value": "test6-3"
-                },
-                {
-                    "targets": [],
-                    "value": "test6-4"
-                }
-            ]
-        },
-        {
-            "$type": "app.bsky.actor.defs#mutedWordsPref",
-            "items": [
-                {
-                    "targets": [
                         "content",
                         "tag"
                     ],
@@ -128,6 +100,34 @@
                         "content"
                     ],
                     "value": "test5-4"
+                }
+            ]
+        },
+        {
+            "$type": "app.bsky.actor.defs#mutedWordsPref",
+            "items": [
+                {
+                    "targets": [
+                        "content"
+                    ],
+                    "value": "test6-1"
+                },
+                {
+                    "targets": [
+                        "content",
+                        "tag"
+                    ],
+                    "value": "test6-2"
+                },
+                {
+                    "targets": [
+                        "tag"
+                    ],
+                    "value": "test6-3"
+                },
+                {
+                    "targets": [],
+                    "value": "test6-4"
                 }
             ]
         }
