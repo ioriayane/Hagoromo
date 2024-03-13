@@ -1029,6 +1029,14 @@ void atprotocol_test::test_ConfigurableLabels_contains_mutedword()
                                                     << "word2",
                                       false)
             == true);
+    QVERIFY(labels.containsMutedWords("hoge #word2 fuga\tpiyo foooo", QStringList() << "hoge",
+                                      false)
+            == false);
+    QVERIFY(labels.containsMutedWords("hoge #word2 fuga\tpiyo foooo",
+                                      QStringList() << "hoge"
+                                                    << "word2",
+                                      false)
+            == true);
     // word3
     QVERIFY(labels.containsMutedWords("hoge\nword3 fuga\tpiyo foooo", QStringList() << "hoge",
                                       false)

@@ -8,6 +8,11 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+- Add
+  - Support muted word
+- Update
+- Fix
+
 ### v0.25.0 - 2024/3/2
 
 - Add
