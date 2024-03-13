@@ -80,34 +80,6 @@
             "items": [
                 {
                     "targets": [
-                        "content",
-                        "tag"
-                    ],
-                    "value": "test5-1"
-                },
-                {
-                    "targets": [
-                        "tag"
-                    ],
-                    "value": "test5-2"
-                },
-                {
-                    "targets": [],
-                    "value": "test5-3"
-                },
-                {
-                    "targets": [
-                        "content"
-                    ],
-                    "value": "test5-4"
-                }
-            ]
-        },
-        {
-            "$type": "app.bsky.actor.defs#mutedWordsPref",
-            "items": [
-                {
-                    "targets": [
                         "content"
                     ],
                     "value": "test6-1"
@@ -128,6 +100,34 @@
                 {
                     "targets": [],
                     "value": "test6-4"
+                }
+            ]
+        },
+        {
+            "$type": "app.bsky.actor.defs#mutedWordsPref",
+            "items": [
+                {
+                    "targets": [
+                        "content",
+                        "tag"
+                    ],
+                    "value": "test5-1"
+                },
+                {
+                    "targets": [
+                        "tag"
+                    ],
+                    "value": "test5-2"
+                },
+                {
+                    "targets": [],
+                    "value": "test5-3"
+                },
+                {
+                    "targets": [
+                        "content"
+                    ],
+                    "value": "test5-4"
                 }
             ]
         }
