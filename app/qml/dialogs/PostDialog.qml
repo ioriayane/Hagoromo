@@ -83,7 +83,7 @@ Dialog {
     }
 
     Shortcut {  // Post
-        enabled: postButton.enabled && postText.focus
+        enabled: postDialog.visible && postButton.enabled && postText.focus
         sequence: "Ctrl+Return"
         onActivated: postButton.clicked()
     }

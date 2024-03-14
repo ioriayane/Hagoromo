@@ -42,7 +42,7 @@ Dialog {
     }
 
     Shortcut {  // Post
-        enabled: postButton.enabled && searchText.focus
+        enabled: searchDialog.visible && postButton.enabled && searchText.focus
         sequence: "Ctrl+Return"
         onActivated: postButton.clicked()
     }

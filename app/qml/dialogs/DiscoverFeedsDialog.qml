@@ -43,7 +43,7 @@ Dialog {
     }
 
     Shortcut {  // Search
-        enabled: searchButton.enabled && searchText.focus
+        enabled: discoverFeedsDialog.visible && searchButton.enabled && searchText.focus
         sequence: "Ctrl+Return"
         onActivated: searchButton.clicked()
     }

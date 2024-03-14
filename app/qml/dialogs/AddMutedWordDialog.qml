@@ -44,9 +44,9 @@ Dialog {
     }
 
     Shortcut {  // Close
-        enabled: !mutedWordListModel.modified
+        enabled: addMutedWordDialog.visible && !mutedWordListModel.modified && !addButton.enabled
         sequence: "Esc"
-        onActivated: postDialog.close()
+        onActivated: addMutedWordDialog.close()
     }
 
     ColumnLayout {
