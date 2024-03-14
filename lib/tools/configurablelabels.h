@@ -11,6 +11,7 @@ enum class ConfigurableLabelStatus : int {
 
 struct ConfigurableLabelItem
 {
+    QString labeler_did;
     QString id;
     QString title;
     QString subtitle;

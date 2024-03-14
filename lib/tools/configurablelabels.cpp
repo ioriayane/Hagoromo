@@ -549,7 +549,8 @@ QString ConfigurableLabels::updatePreferencesJson(const QString &src_json)
                     == QStringLiteral("app.bsky.actor.defs#adultContentPref")) {
                     // ここで更新するデータはいったん消す
                 } else if (value.value("$type")
-                           == QStringLiteral("app.bsky.actor.defs#contentLabelPref")) {
+                                   == QStringLiteral("app.bsky.actor.defs#contentLabelPref")
+                           && !value.contains("labelerDid")) {
                     // ここで更新するデータはいったん消す（順番を守るため）
                 } else if (value.value("$type")
                                    == QStringLiteral("app.bsky.actor.defs#mutedWordsPref")
