@@ -556,6 +556,7 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QVERIFY(labels.visibility("nudity", true) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("sexual", true) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("gore", true) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("graphic-media", true) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("self-harm", true) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("torture", true) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("corpse", true) == ConfigurableLabelStatus::Hide);
@@ -589,6 +590,7 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QVERIFY(labels.visibility("nudity", true) == ConfigurableLabelStatus::Show);
         QVERIFY(labels.visibility("sexual", true) == ConfigurableLabelStatus::Show);
         QVERIFY(labels.visibility("gore", true) == ConfigurableLabelStatus::Show);
+        QVERIFY(labels.visibility("graphic-media", true) == ConfigurableLabelStatus::Show);
         QVERIFY(labels.visibility("self-harm", true) == ConfigurableLabelStatus::Show);
         QVERIFY(labels.visibility("torture", true) == ConfigurableLabelStatus::Show);
         QVERIFY(labels.visibility("corpse", true) == ConfigurableLabelStatus::Show);
@@ -623,6 +625,7 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QVERIFY(labels.visibility("nudity", true) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("sexual", true) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("gore", true) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("graphic-media", true) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("self-harm", true) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("torture", true) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("corpse", true) == ConfigurableLabelStatus::Hide);
@@ -656,6 +659,7 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QVERIFY(labels.visibility("nudity", true) == ConfigurableLabelStatus::Warning);
         QVERIFY(labels.visibility("sexual", true) == ConfigurableLabelStatus::Warning);
         QVERIFY(labels.visibility("gore", true) == ConfigurableLabelStatus::Warning);
+        QVERIFY(labels.visibility("graphic-media", true) == ConfigurableLabelStatus::Warning);
         QVERIFY(labels.visibility("self-harm", true) == ConfigurableLabelStatus::Warning);
         QVERIFY(labels.visibility("torture", true) == ConfigurableLabelStatus::Warning);
         QVERIFY(labels.visibility("corpse", true) == ConfigurableLabelStatus::Warning);

@@ -27,24 +27,8 @@ Menu {
         onTriggered: selfLabelPopup.triggered(value, text)
     }
     MenuItem {
-        text: qsTr("NSFL")
-        property string value: "nsfl"
-        onTriggered: selfLabelPopup.triggered(value, text)
-    }
-    MenuItem {
         text: qsTr("Gore")
-        property string value: "gore"
-        onTriggered: selfLabelPopup.triggered(value, text)
-    }
-    MenuSeparator { }
-    MenuItem {
-        text: qsTr("Spoiler")
-        property string value: "spoiler"
-        onTriggered: selfLabelPopup.triggered(value, text)
-    }
-    MenuItem {
-        text: qsTr("Content warning")
-        property string value: "!warn"
+        property string value: "graphic-media"
         onTriggered: selfLabelPopup.triggered(value, text)
     }
     MenuSeparator { }

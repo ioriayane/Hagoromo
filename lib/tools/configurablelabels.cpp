@@ -514,7 +514,8 @@ void ConfigurableLabels::initializeLabels()
                 << "self-harm"
                 << "torture"
                 << "nsfl"
-                << "corpse";
+                << "corpse"
+                << "graphic-media";
     item.is_adult_imagery = true;
     item.status = ConfigurableLabelStatus::Hide;
     item.configurable = true;
