@@ -538,6 +538,7 @@ void atprotocol_test::test_ConfigurableLabels()
 
 void atprotocol_test::test_ConfigurableLabels_load()
 {
+    QString labeler_did;
     ConfigurableLabels labels;
     labels.setAccount(m_account);
     {
@@ -564,6 +565,13 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QVERIFY(labels.visibility("behavior-intolerant", false) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("spam", false) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("impersonation", false) == ConfigurableLabelStatus::Hide);
+
+        labeler_did = "did:plc:ar7c4by46qjdydhdevvrndac";
+        QVERIFY(labels.visibility("inauthentic", false, labeler_did)
+                == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("misleading", false, labeler_did)
+                == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("rumor", false, labeler_did) == ConfigurableLabelStatus::Hide);
     }
     //
     {
@@ -590,6 +598,13 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QVERIFY(labels.visibility("behavior-intolerant", false) == ConfigurableLabelStatus::Show);
         QVERIFY(labels.visibility("spam", false) == ConfigurableLabelStatus::Show);
         QVERIFY(labels.visibility("impersonation", false) == ConfigurableLabelStatus::Show);
+
+        labeler_did = "did:plc:ar7c4by46qjdydhdevvrndac";
+        QVERIFY(labels.visibility("inauthentic", false, labeler_did)
+                == ConfigurableLabelStatus::Show);
+        QVERIFY(labels.visibility("misleading", false, labeler_did)
+                == ConfigurableLabelStatus::Show);
+        QVERIFY(labels.visibility("rumor", false, labeler_did) == ConfigurableLabelStatus::Show);
     }
     //
     {
@@ -617,6 +632,13 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QVERIFY(labels.visibility("behavior-intolerant", false) == ConfigurableLabelStatus::Show);
         QVERIFY(labels.visibility("spam", false) == ConfigurableLabelStatus::Show);
         QVERIFY(labels.visibility("impersonation", false) == ConfigurableLabelStatus::Show);
+
+        labeler_did = "did:plc:ar7c4by46qjdydhdevvrndac";
+        QVERIFY(labels.visibility("inauthentic", false, labeler_did)
+                == ConfigurableLabelStatus::Show);
+        QVERIFY(labels.visibility("misleading", false, labeler_did)
+                == ConfigurableLabelStatus::Show);
+        QVERIFY(labels.visibility("rumor", false, labeler_did) == ConfigurableLabelStatus::Show);
     }
     //
     {
@@ -644,6 +666,13 @@ void atprotocol_test::test_ConfigurableLabels_load()
                 == ConfigurableLabelStatus::Warning);
         QVERIFY(labels.visibility("spam", false) == ConfigurableLabelStatus::Warning);
         QVERIFY(labels.visibility("impersonation", false) == ConfigurableLabelStatus::Warning);
+
+        labeler_did = "did:plc:ar7c4by46qjdydhdevvrndac";
+        QVERIFY(labels.visibility("inauthentic", false, labeler_did)
+                == ConfigurableLabelStatus::Warning);
+        QVERIFY(labels.visibility("misleading", false, labeler_did)
+                == ConfigurableLabelStatus::Warning);
+        QVERIFY(labels.visibility("rumor", false, labeler_did) == ConfigurableLabelStatus::Warning);
     }
     //
     {

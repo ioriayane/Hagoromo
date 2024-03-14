@@ -45,19 +45,23 @@ public:
 
     ConfigurableLabels &operator=(ConfigurableLabels &other);
 
-    int count() const;
+    int count(const QString &labeler_did = QString()) const;
     bool load();
     bool save();
-    int indexOf(const QString &id) const;
-    ConfigurableLabelStatus visibility(const QString &label, const bool for_image) const;
-    QString message(const QString &label, const bool for_image) const;
-    QString title(const int index) const;
-    QString title(const QString &label, const bool for_image) const;
-    QString description(const int index) const;
-    ConfigurableLabelStatus status(const int index) const;
-    void setStatus(const int index, const ConfigurableLabelStatus status);
-    bool isAdultImagery(const int index) const;
-    bool configurable(const int index) const;
+    int indexOf(const QString &id, const QString &labeler_did = QString()) const;
+    ConfigurableLabelStatus visibility(const QString &label, const bool for_image,
+                                       const QString &labeler_did = QString()) const;
+    QString message(const QString &label, const bool for_image,
+                    const QString &labeler_did = QString()) const;
+    QString title(const int index, const QString &labeler_did = QString()) const;
+    QString title(const QString &label, const bool for_image,
+                  const QString &labeler_did = QString()) const;
+    QString description(const int index, const QString &labeler_did = QString()) const;
+    ConfigurableLabelStatus status(const int index, const QString &labeler_did = QString()) const;
+    void setStatus(const int index, const ConfigurableLabelStatus status,
+                   const QString &labeler_did = QString());
+    bool isAdultImagery(const int index, const QString &labeler_did = QString()) const;
+    bool configurable(const int index, const QString &labeler_did = QString()) const;
 
     int mutedWordCount() const;
     MutedWordItem getMutedWordItem(const int index) const;
@@ -94,9 +98,10 @@ private:
     bool putPreferences(const QString &json);
     QString updatePreferencesJson(const QString &src_json);
     QString removeSharp(const QString &value) const;
+    ConfigurableLabelStatus toLabelStatus(const QString &visibility) const;
 
     QRegularExpression m_regSpace;
-    QList<ConfigurableLabelItem> m_labels;
+    QMap<QString, QList<ConfigurableLabelItem>> m_labels; // QMap<labeler_did, labels>
     // ポストをスペース区切りするときはこれとは別にワードをハッシュで保存しておく
     // 日本語のときは逆向きで部分一致させる
     QList<MutedWordItem> m_mutedWords;

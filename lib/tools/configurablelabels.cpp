@@ -9,6 +9,8 @@
 #include <QJsonValue>
 #include <QHash>
 
+#define GLOBAL_LABELER_KEY QStringLiteral("__globally__")
+
 using AtProtocolInterface::AppBskyActorGetPreferences;
 using AtProtocolInterface::AppBskyActorPutPreferences;
 
@@ -24,9 +26,12 @@ ConfigurableLabels::ConfigurableLabels(QObject *parent)
 ConfigurableLabels &ConfigurableLabels::operator=(ConfigurableLabels &other)
 {
     m_enableAdultContent = other.m_enableAdultContent;
-    if (m_labels.count() == other.m_labels.count()) {
-        for (int i = 0; i < m_labels.count(); i++) {
-            m_labels[i].status = other.m_labels.at(i).status;
+    QMapIterator<QString, QList<ConfigurableLabelItem>> i(other.m_labels);
+    while (i.hasNext()) {
+        i.next();
+        m_labels[i.key()].clear();
+        for (const auto &label : i.value()) {
+            m_labels[i.key()].append(label);
         }
     }
     m_mutedWords.clear();
@@ -41,9 +46,12 @@ ConfigurableLabels &ConfigurableLabels::operator=(ConfigurableLabels &other)
     return *this;
 }
 
-int ConfigurableLabels::count() const
+int ConfigurableLabels::count(const QString &labeler_did) const
 {
-    return m_labels.count();
+    QString key = labeler_did.isEmpty() ? GLOBAL_LABELER_KEY : labeler_did;
+    if (!m_labels.contains(key))
+        return 0;
+    return m_labels.value(key).count();
 }
 
 bool ConfigurableLabels::load()
@@ -61,17 +69,24 @@ bool ConfigurableLabels::load()
         if (success) {
             m_enableAdultContent = pref->adultContentPref().enabled;
             for (const auto &item : *pref->contentLabelPrefList()) {
-                int index = indexOf(item.label);
+                int index = indexOf(item.label, item.labelerDid);
+                ConfigurableLabelStatus status = toLabelStatus(item.visibility);
                 if (index >= 0) {
-                    ConfigurableLabelStatus status = ConfigurableLabelStatus::Hide;
-                    if (item.visibility == "show" || item.visibility == "ignore") {
-                        status = ConfigurableLabelStatus::Show;
-                    } else if (item.visibility == "warn") {
-                        status = ConfigurableLabelStatus::Warning;
-                    } else if (item.visibility == "hide") {
-                        status = ConfigurableLabelStatus::Hide;
-                    }
-                    setStatus(index, status);
+                    // labelerDid.isEmptyのときもこっち
+                    setStatus(index, status, item.labelerDid);
+                } else {
+                    ConfigurableLabelItem label;
+                    label.id = item.label;
+                    label.labeler_did = item.labelerDid;
+                    label.status = status;
+                    label.values << item.label;
+                    // app.bsky.labeler.getServicesで取得するデータ
+                    label.title = item.label.toCaseFolded();
+                    label.subtitle = label.title;
+                    label.warning = label.title;
+                    label.is_adult_imagery = false;
+                    label.configurable = true;
+                    m_labels[label.labeler_did].append(label);
                 }
             }
             int group = 0;
@@ -125,13 +140,14 @@ bool ConfigurableLabels::save()
     return true;
 }
 
-int ConfigurableLabels::indexOf(const QString &id) const
+int ConfigurableLabels::indexOf(const QString &id, const QString &labeler_did) const
 {
     if (id.isEmpty())
         return -1;
 
+    QString key = labeler_did.isEmpty() ? GLOBAL_LABELER_KEY : labeler_did;
     int index = 0;
-    for (const auto &label : m_labels) {
+    for (const auto &label : m_labels[key]) {
         if (label.id == id)
             return index;
         index++;
@@ -139,11 +155,15 @@ int ConfigurableLabels::indexOf(const QString &id) const
     return -1;
 }
 
-ConfigurableLabelStatus ConfigurableLabels::visibility(const QString &label,
-                                                       const bool for_image) const
+ConfigurableLabelStatus ConfigurableLabels::visibility(const QString &label, const bool for_image,
+                                                       const QString &labeler_did) const
 {
+    QString key = labeler_did.isEmpty() ? GLOBAL_LABELER_KEY : labeler_did;
+    if (!m_labels.contains(key))
+        return ConfigurableLabelStatus::Show;
+
     ConfigurableLabelStatus result = ConfigurableLabelStatus::Show;
-    for (const auto &item : m_labels) {
+    for (const auto &item : m_labels.value(key)) {
         if (item.values.contains(label) && item.is_adult_imagery == for_image) {
             // 画像用のラベルの検索か、それ以外か。どちらか一方のみ。つまり、一致しているときだけ。
             if (item.is_adult_imagery) {
@@ -161,10 +181,15 @@ ConfigurableLabelStatus ConfigurableLabels::visibility(const QString &label,
     return result;
 }
 
-QString ConfigurableLabels::message(const QString &label, const bool for_image) const
+QString ConfigurableLabels::message(const QString &label, const bool for_image,
+                                    const QString &labeler_did) const
 {
+    QString key = labeler_did.isEmpty() ? GLOBAL_LABELER_KEY : labeler_did;
+    if (!m_labels.contains(key))
+        return QString();
+
     QString result;
-    for (const auto &item : m_labels) {
+    for (const auto &item : m_labels.value(key)) {
         if (item.values.contains(label) && item.is_adult_imagery == for_image) {
             result = item.warning;
             break;
@@ -173,18 +198,26 @@ QString ConfigurableLabels::message(const QString &label, const bool for_image) 
     return result;
 }
 
-QString ConfigurableLabels::title(const int index) const
+QString ConfigurableLabels::title(const int index, const QString &labeler_did) const
 {
-    if (index < 0 || index >= m_labels.length())
+    QString key = labeler_did.isEmpty() ? GLOBAL_LABELER_KEY : labeler_did;
+    if (!m_labels.contains(key))
+        return QString();
+    if (index < 0 || index >= m_labels.value(key).length())
         return QString();
 
-    return m_labels.at(index).title;
+    return m_labels.value(key).at(index).title;
 }
 
-QString ConfigurableLabels::title(const QString &label, const bool for_image) const
+QString ConfigurableLabels::title(const QString &label, const bool for_image,
+                                  const QString &labeler_did) const
 {
+    QString key = labeler_did.isEmpty() ? GLOBAL_LABELER_KEY : labeler_did;
+    if (!m_labels.contains(key))
+        return QString();
+
     QString result;
-    for (const auto &item : m_labels) {
+    for (const auto &item : m_labels.value(key)) {
         if (item.values.contains(label) && item.is_adult_imagery == for_image) {
             // 画像用のラベルの検索か、それ以外か。どちらか一方のみ。つまり、一致しているときだけ。
             if (item.is_adult_imagery) {
@@ -202,45 +235,62 @@ QString ConfigurableLabels::title(const QString &label, const bool for_image) co
     return result;
 }
 
-QString ConfigurableLabels::description(const int index) const
+QString ConfigurableLabels::description(const int index, const QString &labeler_did) const
 {
-    if (index < 0 || index >= m_labels.length())
+    QString key = labeler_did.isEmpty() ? GLOBAL_LABELER_KEY : labeler_did;
+    if (!m_labels.contains(key))
         return QString();
-    return m_labels.at(index).subtitle;
+    if (index < 0 || index >= m_labels.value(key).length())
+        return QString();
+    return m_labels.value(key).at(index).subtitle;
 }
 
-ConfigurableLabelStatus ConfigurableLabels::status(const int index) const
+ConfigurableLabelStatus ConfigurableLabels::status(const int index,
+                                                   const QString &labeler_did) const
 {
-    if (index < 0 || index >= m_labels.length())
+    QString key = labeler_did.isEmpty() ? GLOBAL_LABELER_KEY : labeler_did;
+    if (!m_labels.contains(key))
+        return ConfigurableLabelStatus::Show;
+    if (index < 0 || index >= m_labels.value(key).length())
         return ConfigurableLabelStatus::Show;
 
-    return m_labels.at(index).status;
+    return m_labels.value(key).at(index).status;
 }
 
-void ConfigurableLabels::setStatus(const int index, const ConfigurableLabelStatus status)
+void ConfigurableLabels::setStatus(const int index, const ConfigurableLabelStatus status,
+                                   const QString &labeler_did)
 {
-    if (index < 0 || index >= m_labels.length())
+    QString key = labeler_did.isEmpty() ? GLOBAL_LABELER_KEY : labeler_did;
+    if (!m_labels.contains(key))
         return;
-    if (m_labels[index].configurable == false)
+    if (index < 0 || index >= m_labels.value(key).length())
+        return;
+    if (m_labels.value(key).at(index).configurable == false)
         return;
 
-    m_labels[index].status = status;
+    m_labels[key][index].status = status;
 }
 
-bool ConfigurableLabels::isAdultImagery(const int index) const
+bool ConfigurableLabels::isAdultImagery(const int index, const QString &labeler_did) const
 {
-    if (index < 0 || index >= m_labels.length())
+    QString key = labeler_did.isEmpty() ? GLOBAL_LABELER_KEY : labeler_did;
+    if (!m_labels.contains(key))
+        return false;
+    if (index < 0 || index >= m_labels.value(key).length())
         return false;
 
-    return m_labels.at(index).is_adult_imagery;
+    return m_labels.value(key).at(index).is_adult_imagery;
 }
 
-bool ConfigurableLabels::configurable(const int index) const
+bool ConfigurableLabels::configurable(const int index, const QString &labeler_did) const
 {
-    if (index < 0 || index >= m_labels.length())
+    QString key = labeler_did.isEmpty() ? GLOBAL_LABELER_KEY : labeler_did;
+    if (!m_labels.contains(key))
+        return false;
+    if (index < 0 || index >= m_labels.value(key).length())
         return false;
 
-    return m_labels.at(index).configurable;
+    return m_labels.value(key).at(index).configurable;
 }
 
 int ConfigurableLabels::mutedWordCount() const
@@ -385,6 +435,8 @@ void ConfigurableLabels::initializeLabels()
     // idはpreferenceの項目とのマッチングに使うのでconfigurable==trueの
     // もので重複させないこと
 
+    m_labels[GLOBAL_LABELER_KEY].clear();
+
     item.values.clear();
     item.id = "system";
     item.title = tr("Content hidden");
@@ -394,7 +446,7 @@ void ConfigurableLabels::initializeLabels()
     item.is_adult_imagery = false;
     item.status = ConfigurableLabelStatus::Hide;
     item.configurable = false;
-    m_labels.append(item);
+    m_labels[GLOBAL_LABELER_KEY].append(item);
 
     item.values.clear();
     item.id = "system";
@@ -405,7 +457,7 @@ void ConfigurableLabels::initializeLabels()
     item.is_adult_imagery = false;
     item.status = ConfigurableLabelStatus::Warning;
     item.configurable = false;
-    m_labels.append(item);
+    m_labels[GLOBAL_LABELER_KEY].append(item);
 
     item.values.clear();
     item.id = "legal";
@@ -417,7 +469,7 @@ void ConfigurableLabels::initializeLabels()
     item.is_adult_imagery = false;
     item.status = ConfigurableLabelStatus::Hide;
     item.configurable = false;
-    m_labels.append(item);
+    m_labels[GLOBAL_LABELER_KEY].append(item);
 
     item.values.clear();
     item.id = "nsfw";
@@ -429,7 +481,7 @@ void ConfigurableLabels::initializeLabels()
     item.is_adult_imagery = true;
     item.status = ConfigurableLabelStatus::Hide;
     item.configurable = true;
-    m_labels.append(item);
+    m_labels[GLOBAL_LABELER_KEY].append(item);
 
     item.values.clear();
     item.id = "nudity";
@@ -440,7 +492,7 @@ void ConfigurableLabels::initializeLabels()
     item.is_adult_imagery = true;
     item.status = ConfigurableLabelStatus::Hide;
     item.configurable = true;
-    m_labels.append(item);
+    m_labels[GLOBAL_LABELER_KEY].append(item);
 
     item.values.clear();
     item.id = "suggestive";
@@ -451,7 +503,7 @@ void ConfigurableLabels::initializeLabels()
     item.is_adult_imagery = true;
     item.status = ConfigurableLabelStatus::Warning;
     item.configurable = true;
-    m_labels.append(item);
+    m_labels[GLOBAL_LABELER_KEY].append(item);
 
     item.values.clear();
     item.id = "gore";
@@ -466,7 +518,7 @@ void ConfigurableLabels::initializeLabels()
     item.is_adult_imagery = true;
     item.status = ConfigurableLabelStatus::Hide;
     item.configurable = true;
-    m_labels.append(item);
+    m_labels[GLOBAL_LABELER_KEY].append(item);
 
     item.values.clear();
     item.id = "hate";
@@ -486,7 +538,7 @@ void ConfigurableLabels::initializeLabels()
     item.is_adult_imagery = false;
     item.status = ConfigurableLabelStatus::Hide;
     item.configurable = true;
-    m_labels.append(item);
+    m_labels[GLOBAL_LABELER_KEY].append(item);
 
     item.values.clear();
     item.id = "spam";
@@ -498,7 +550,7 @@ void ConfigurableLabels::initializeLabels()
     item.is_adult_imagery = false;
     item.status = ConfigurableLabelStatus::Hide;
     item.configurable = true;
-    m_labels.append(item);
+    m_labels[GLOBAL_LABELER_KEY].append(item);
 
     item.values.clear();
     item.id = "impersonation";
@@ -512,7 +564,7 @@ void ConfigurableLabels::initializeLabels()
     item.is_adult_imagery = false;
     item.status = ConfigurableLabelStatus::Hide;
     item.configurable = true;
-    m_labels.append(item);
+    m_labels[GLOBAL_LABELER_KEY].append(item);
 }
 
 bool ConfigurableLabels::putPreferences(const QString &json)
@@ -567,20 +619,27 @@ QString ConfigurableLabels::updatePreferencesJson(const QString &src_json)
                 value.insert("enabled", QJsonValue(enableAdultContent()));
                 dest_preferences.append(value);
             }
-            for (const auto &label : qAsConst(m_labels)) {
-                if (!label.configurable)
-                    continue;
-                QJsonObject value;
-                value.insert("$type", QStringLiteral("app.bsky.actor.defs#contentLabelPref"));
-                value.insert("label", QJsonValue(label.id));
-                if (label.status == ConfigurableLabelStatus::Hide) {
-                    value.insert("visibility", QJsonValue("hide"));
-                } else if (label.status == ConfigurableLabelStatus::Warning) {
-                    value.insert("visibility", QJsonValue("warn"));
-                } else if (label.status == ConfigurableLabelStatus::Show) {
-                    value.insert("visibility", QJsonValue("ignore"));
+            QMapIterator<QString, QList<ConfigurableLabelItem>> i(m_labels);
+            while (i.hasNext()) {
+                i.next();
+                for (const auto &label : i.value()) {
+                    if (!label.configurable)
+                        continue;
+                    QJsonObject value;
+                    value.insert("$type", QStringLiteral("app.bsky.actor.defs#contentLabelPref"));
+                    value.insert("label", QJsonValue(label.id));
+                    if (!label.labeler_did.isEmpty()) {
+                        value.insert("labelerDid", label.labeler_did);
+                    }
+                    if (label.status == ConfigurableLabelStatus::Hide) {
+                        value.insert("visibility", QJsonValue("hide"));
+                    } else if (label.status == ConfigurableLabelStatus::Warning) {
+                        value.insert("visibility", QJsonValue("warn"));
+                    } else if (label.status == ConfigurableLabelStatus::Show) {
+                        value.insert("visibility", QJsonValue("ignore"));
+                    }
+                    dest_preferences.append(value);
                 }
-                dest_preferences.append(value);
             }
             {
                 QMap<int, QJsonArray> muted_items;
@@ -620,6 +679,19 @@ QString ConfigurableLabels::updatePreferencesJson(const QString &src_json)
 inline QString ConfigurableLabels::removeSharp(const QString &value) const
 {
     return value.at(0) == "#" ? value.right(value.length() - 1) : value;
+}
+
+ConfigurableLabelStatus ConfigurableLabels::toLabelStatus(const QString &visibility) const
+{
+    ConfigurableLabelStatus status = ConfigurableLabelStatus::Hide;
+    if (visibility == "show" || visibility == "ignore") {
+        status = ConfigurableLabelStatus::Show;
+    } else if (visibility == "warn") {
+        status = ConfigurableLabelStatus::Warning;
+    } else if (visibility == "hide") {
+        status = ConfigurableLabelStatus::Hide;
+    }
+    return status;
 }
 
 bool ConfigurableLabels::running() const
