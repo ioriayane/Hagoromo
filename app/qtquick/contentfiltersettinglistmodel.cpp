@@ -97,12 +97,16 @@ void ContentFilterSettingListModel::load()
 
     m_saving = false;
     if (m_contentFilterLabels.mutedWordCount() > 0) {
-        beginRemoveRows(QModelIndex(), 0, m_contentFilterLabels.mutedWordCount() - 1);
-        endRemoveRows();
+        if (strcmp(this->metaObject()->className(), "MutedWordListModel") == 0) {
+            beginRemoveRows(QModelIndex(), 0, m_contentFilterLabels.mutedWordCount() - 1);
+            endRemoveRows();
+        }
     }
-    if (m_contentFilterLabels.count()) {
-        beginRemoveRows(QModelIndex(), 0, m_contentFilterLabels.count() - 1);
-        endRemoveRows();
+    if (m_contentFilterLabels.count() > 0) {
+        if (strcmp(this->metaObject()->className(), "MutedWordListModel") != 0) {
+            beginRemoveRows(QModelIndex(), 0, m_contentFilterLabels.count() - 1);
+            endRemoveRows();
+        }
     }
 
     m_contentFilterLabels.setService(service());

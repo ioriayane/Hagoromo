@@ -30,6 +30,7 @@ SOURCES += \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlists.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphmuteactor.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphunmuteactor.cpp \
+    $$PWD/atprotocol/app/bsky/labeler/appbskylabelergetservices.cpp \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationlistnotifications.cpp \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationupdateseen.cpp \
     $$PWD/atprotocol/app/bsky/unspecced/appbskyunspeccedgetpopularfeedgenerators.cpp \
@@ -80,6 +81,7 @@ HEADERS += \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlists.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphmuteactor.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphunmuteactor.h \
+    $$PWD/atprotocol/app/bsky/labeler/appbskylabelergetservices.h \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationlistnotifications.h \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationupdateseen.h \
     $$PWD/atprotocol/app/bsky/unspecced/appbskyunspeccedgetpopularfeedgenerators.h \

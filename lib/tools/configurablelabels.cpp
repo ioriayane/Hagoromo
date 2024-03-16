@@ -2,6 +2,7 @@
 
 #include "atprotocol/app/bsky/actor/appbskyactorgetpreferences.h"
 #include "atprotocol/app/bsky/actor/appbskyactorputpreferences.h"
+#include "atprotocol/app/bsky/labeler/appbskylabelergetservices.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -10,12 +11,16 @@
 #include <QHash>
 
 #define GLOBAL_LABELER_KEY QStringLiteral("__globally__")
+#define BSKY_OFFICIAL_LABELER_DID QStringLiteral("did:plc:ar7c4by46qjdydhdevvrndac")
 
 using AtProtocolInterface::AppBskyActorGetPreferences;
 using AtProtocolInterface::AppBskyActorPutPreferences;
+using AtProtocolInterface::AppBskyLabelerGetServices;
+using namespace AtProtocolType;
 
 ConfigurableLabels::ConfigurableLabels(QObject *parent)
     : AtProtocolInterface::AtProtocolAccount { parent },
+      m_refreshLabelers(false),
       m_enableAdultContent(true),
       m_running(false)
 {
@@ -26,14 +31,20 @@ ConfigurableLabels::ConfigurableLabels(QObject *parent)
 ConfigurableLabels &ConfigurableLabels::operator=(ConfigurableLabels &other)
 {
     m_enableAdultContent = other.m_enableAdultContent;
-    QMapIterator<QString, QList<ConfigurableLabelItem>> i(other.m_labels);
-    while (i.hasNext()) {
-        i.next();
-        m_labels[i.key()].clear();
-        for (const auto &label : i.value()) {
-            m_labels[i.key()].append(label);
+    QMapIterator<QString, QList<ConfigurableLabelItem>> labels_i(other.m_labels);
+    while (labels_i.hasNext()) {
+        labels_i.next();
+        m_labels[labels_i.key()].clear();
+        for (const auto &label : labels_i.value()) {
+            m_labels[labels_i.key()].append(label);
         }
     }
+    QMapIterator<QString, LabelerItem> labelers_i(other.m_labelers);
+    while (labelers_i.hasNext()) {
+        labelers_i.next();
+        m_labelers[labelers_i.key()] = labelers_i.value();
+    }
+
     m_mutedWords.clear();
     m_mutedWordsHash.clear();
     m_mutedWordsTagHash.clear();
@@ -64,57 +75,122 @@ bool ConfigurableLabels::load()
     m_mutedWordsHash.clear();
     m_mutedWordsTagHash.clear();
 
-    AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
-    connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
+    loadLabelers(QStringList(), [=](bool load_sevices_success) {
+        if (!load_sevices_success) {
+            setRunning(false);
+            emit finished(false);
+        } else {
+            AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
+            connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
+                if (success) {
+                    m_enableAdultContent = pref->adultContentPref().enabled;
+                    for (const auto &item : *pref->contentLabelPrefList()) {
+                        int index = indexOf(item.label, item.labelerDid);
+                        ConfigurableLabelStatus status = toLabelStatus(item.visibility);
+                        if (index >= 0) {
+                            // labelerDid.isEmptyのときもこっち
+                            setStatus(index, status, item.labelerDid);
+                        } else {
+                            ConfigurableLabelItem label;
+                            label.id = item.label;
+                            label.labeler_did = item.labelerDid;
+                            label.status = status;
+                            label.values << item.label;
+                            // app.bsky.labeler.getServicesで取得するデータ
+                            label.title = item.label.toCaseFolded();
+                            label.subtitle = label.title;
+                            label.warning = label.title;
+                            label.is_adult_imagery = false;
+                            label.configurable = true;
+                            m_labels[label.labeler_did].append(label);
+                        }
+                    }
+                    int group = 0;
+                    for (const auto &pref : *pref->mutedWordsPrefList()) {
+                        for (const auto &item : pref.items) {
+                            MutedWordItem mute;
+                            mute.group = group;
+                            mute.value = item.value;
+                            if (item.targets.contains("content")) {
+                                mute.targets.append(MutedWordTarget::Content);
+                            }
+                            if (item.targets.contains("tag")) {
+                                mute.targets.append(MutedWordTarget::Tag);
+                            }
+                            m_mutedWords.append(mute);
+                            m_mutedWordsHash[mute.value] = mute;
+                            m_mutedWordsTagHash[removeSharp(mute.value)] = mute;
+                        }
+                        group++;
+                    }
+                }
+                setRunning(false);
+                emit finished(success);
+                pref->deleteLater();
+            });
+            pref->setAccount(account());
+            pref->getPreferences();
+        }
+    });
+    return true;
+}
+
+void ConfigurableLabels::loadLabelers(const QStringList &dids, std::function<void(bool)> callback)
+{
+    if (!m_labelers.isEmpty() && !refreshLabelers()) {
+        // すでに持っている場合はリフレッシュ指示がなければ空振りする
+        callback(true);
+        return;
+    }
+
+    QStringList t_dids = dids;
+    if (!t_dids.contains(BSKY_OFFICIAL_LABELER_DID)) {
+        t_dids.append(BSKY_OFFICIAL_LABELER_DID);
+    }
+
+    AppBskyLabelerGetServices *services = new AppBskyLabelerGetServices(this);
+    connect(services, &AppBskyLabelerGetServices::finished, [=](bool success) {
         if (success) {
-            m_enableAdultContent = pref->adultContentPref().enabled;
-            for (const auto &item : *pref->contentLabelPrefList()) {
-                int index = indexOf(item.label, item.labelerDid);
-                ConfigurableLabelStatus status = toLabelStatus(item.visibility);
-                if (index >= 0) {
-                    // labelerDid.isEmptyのときもこっち
-                    setStatus(index, status, item.labelerDid);
-                } else {
-                    ConfigurableLabelItem label;
-                    label.id = item.label;
-                    label.labeler_did = item.labelerDid;
-                    label.status = status;
-                    label.values << item.label;
-                    // app.bsky.labeler.getServicesで取得するデータ
-                    label.title = item.label.toCaseFolded();
-                    label.subtitle = label.title;
-                    label.warning = label.title;
-                    label.is_adult_imagery = false;
-                    label.configurable = true;
-                    m_labels[label.labeler_did].append(label);
-                }
-            }
-            int group = 0;
-            for (const auto &pref : *pref->mutedWordsPrefList()) {
-                for (const auto &item : pref.items) {
-                    MutedWordItem mute;
-                    mute.group = group;
-                    mute.value = item.value;
-                    if (item.targets.contains("content")) {
-                        mute.targets.append(MutedWordTarget::Content);
+            for (const auto &labeler : *services->labelerViewDetails()) {
+                LabelerItem labeler_item;
+                labeler_item.did = labeler.creator.did;
+                labeler_item.handle = labeler.creator.handle;
+                labeler_item.display_name = labeler.creator.displayName;
+                labeler_item.description = labeler.creator.description;
+                m_labelers[labeler.creator.did] = labeler_item;
+                // クリア（内容に増減があるかもなので）
+                m_labels[labeler_item.did].clear();
+                for (const auto &policy : labeler.policies.labelValueDefinitions) {
+                    ComAtprotoLabelDefs::LabelValueDefinitionStrings label_value_def;
+                    for (const auto &locale : policy.locales) {
+                        if (QLocale(locale.lang).language() == QLocale::system().language()) {
+                            label_value_def = locale;
+                            break;
+                        }
                     }
-                    if (item.targets.contains("tag")) {
-                        mute.targets.append(MutedWordTarget::Tag);
+                    if (label_value_def.lang.isEmpty() && !policy.locales.isEmpty()) {
+                        label_value_def = policy.locales.at(0);
                     }
-                    m_mutedWords.append(mute);
-                    m_mutedWordsHash[mute.value] = mute;
-                    m_mutedWordsTagHash[removeSharp(mute.value)] = mute;
+                    ConfigurableLabelItem label_item;
+                    label_item.labeler_did = labeler_item.did;
+                    label_item.id = policy.identifier;
+                    label_item.title = label_value_def.name;
+                    label_item.subtitle = label_value_def.description;
+                    label_item.warning = label_item.title;
+                    label_item.values << policy.identifier;
+                    label_item.is_adult_imagery = (policy.blurs.toLower() == "media");
+                    label_item.level = toLabelLevel(policy.severity);
+                    label_item.default_status = toLabelStatus(policy.defaultSetting);
+                    label_item.status = label_item.default_status;
+                    m_labels[labeler_item.did].append(label_item);
                 }
-                group++;
             }
         }
-        setRunning(false);
-        emit finished(success);
-        pref->deleteLater();
+        callback(success);
+        services->deleteLater();
     });
-    pref->setAccount(account());
-    pref->getPreferences();
-    return true;
+    services->setAccount(account());
+    services->getServices(t_dids, true);
 }
 
 bool ConfigurableLabels::save()
@@ -145,7 +221,7 @@ int ConfigurableLabels::indexOf(const QString &id, const QString &labeler_did) c
     if (id.isEmpty())
         return -1;
 
-    QString key = labeler_did.isEmpty() ? GLOBAL_LABELER_KEY : labeler_did;
+    QString key = labeler_did.startsWith("did:") ? labeler_did : GLOBAL_LABELER_KEY;
     int index = 0;
     for (const auto &label : m_labels[key]) {
         if (label.id == id)
@@ -291,6 +367,43 @@ bool ConfigurableLabels::configurable(const int index, const QString &labeler_di
         return false;
 
     return m_labels.value(key).at(index).configurable;
+}
+
+int ConfigurableLabels::labelerCount() const
+{
+    return m_labelers.count();
+}
+
+QStringList ConfigurableLabels::labelerDids() const
+{
+    return m_labelers.keys();
+}
+
+QString ConfigurableLabels::labelerHandle(const QString &did) const
+{
+    if (m_labelers.contains(did)) {
+        return m_labelers.value(did).handle;
+    } else {
+        return QString();
+    }
+}
+
+QString ConfigurableLabels::labelerDisplayName(const QString &did) const
+{
+    if (m_labelers.contains(did)) {
+        return m_labelers.value(did).display_name;
+    } else {
+        return QString();
+    }
+}
+
+QString ConfigurableLabels::labelerDescription(const QString &did) const
+{
+    if (m_labelers.contains(did)) {
+        return m_labelers.value(did).description;
+    } else {
+        return QString();
+    }
 }
 
 int ConfigurableLabels::mutedWordCount() const
@@ -602,8 +715,7 @@ QString ConfigurableLabels::updatePreferencesJson(const QString &src_json)
                     == QStringLiteral("app.bsky.actor.defs#adultContentPref")) {
                     // ここで更新するデータはいったん消す
                 } else if (value.value("$type")
-                                   == QStringLiteral("app.bsky.actor.defs#contentLabelPref")
-                           && !value.contains("labelerDid")) {
+                           == QStringLiteral("app.bsky.actor.defs#contentLabelPref")) {
                     // ここで更新するデータはいったん消す（順番を守るため）
                 } else if (value.value("$type")
                                    == QStringLiteral("app.bsky.actor.defs#mutedWordsPref")
@@ -624,7 +736,7 @@ QString ConfigurableLabels::updatePreferencesJson(const QString &src_json)
             while (i.hasNext()) {
                 i.next();
                 for (const auto &label : i.value()) {
-                    if (!label.configurable)
+                    if (!label.configurable || label.status == label.default_status)
                         continue;
                     QJsonObject value;
                     value.insert("$type", QStringLiteral("app.bsky.actor.defs#contentLabelPref"));
@@ -644,7 +756,7 @@ QString ConfigurableLabels::updatePreferencesJson(const QString &src_json)
             }
             {
                 QMap<int, QJsonArray> muted_items;
-                for (const auto &muted_word : m_mutedWords) {
+                for (const auto &muted_word : qAsConst(m_mutedWords)) {
                     QJsonObject item;
                     item.insert("value", muted_word.value);
                     QJsonArray targets;
@@ -693,6 +805,29 @@ ConfigurableLabelStatus ConfigurableLabels::toLabelStatus(const QString &visibil
         status = ConfigurableLabelStatus::Hide;
     }
     return status;
+}
+
+ConfigurableLabelLevel ConfigurableLabels::toLabelLevel(const QString &severity) const
+{
+    ConfigurableLabelLevel level = ConfigurableLabelLevel::Alert;
+    if (severity == "alert") {
+        level = ConfigurableLabelLevel::Alert;
+    } else if (severity == "inform") {
+        level = ConfigurableLabelLevel::Inform;
+    } else if (severity == "none") {
+        level = ConfigurableLabelLevel::None;
+    }
+    return level;
+}
+
+bool ConfigurableLabels::refreshLabelers() const
+{
+    return m_refreshLabelers;
+}
+
+void ConfigurableLabels::setRefreshLabelers(bool newRefreshLabelers)
+{
+    m_refreshLabelers = newRefreshLabelers;
 }
 
 bool ConfigurableLabels::running() const

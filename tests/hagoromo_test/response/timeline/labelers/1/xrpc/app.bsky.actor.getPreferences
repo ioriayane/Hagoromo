@@ -40,42 +40,37 @@
             "$type": "app.bsky.actor.defs#mutedWordsPref",
             "items": [
                 {
+                    "value": "test3-1",
                     "targets": [
                         "content",
                         "tag"
-                    ],
-                    "value": "test3-1"
+                    ]
                 },
                 {
+                    "value": "test3-2",
                     "targets": [
                         "tag"
-                    ],
-                    "value": "test3-2"
+                    ]
                 },
                 {
-                    "targets": [],
-                    "value": "test3-3"
+                    "value": "test3-3",
+                    "targets": []
                 },
                 {
+                    "value": "test3-4",
                     "targets": [
                         "content"
-                    ],
-                    "value": "test3-4"
+                    ]
                 }
             ]
         },
         {
             "$type": "app.bsky.actor.defs#adultContentPref",
-            "enabled": false
+            "enabled": true
         },
         {
             "$type": "app.bsky.actor.defs#contentLabelPref",
             "label": "nsfw",
-            "visibility": "warn"
-        },
-        {
-            "$type": "app.bsky.actor.defs#contentLabelPref",
-            "label": "nudity",
             "visibility": "warn"
         },
         {
@@ -95,11 +90,6 @@
         },
         {
             "$type": "app.bsky.actor.defs#contentLabelPref",
-            "label": "spam",
-            "visibility": "warn"
-        },
-        {
-            "$type": "app.bsky.actor.defs#contentLabelPref",
             "label": "impersonation",
             "visibility": "warn"
         },
@@ -108,6 +98,14 @@
             "label": "inauthentic",
             "labelerDid": "did:plc:ar7c4by46qjdydhdevvrndac",
             "visibility": "warn"
+        },
+        {
+            "$type": "app.bsky.actor.defs#labelersPref",
+            "labelers": [
+                {
+                    "did": "did:plc:ar7c4by46qjdydhdevvrndac"
+                }
+            ]
         }
     ]
 }

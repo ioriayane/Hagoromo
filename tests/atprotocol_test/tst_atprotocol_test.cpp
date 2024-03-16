@@ -534,6 +534,10 @@ void atprotocol_test::test_ConfigurableLabels()
     QVERIFY(labels.visibility("!warn", true) == ConfigurableLabelStatus::Show);
     QVERIFY(labels.message("!warn", false) == "Content warning");
     QVERIFY(labels.message("!warn", true) == QString());
+
+    QVERIFY(labels.indexOf("suggestive", "") >= 0);
+    QVERIFY(labels.indexOf("suggestive", "did:plc:hoge") == -1);
+    QVERIFY(labels.indexOf("suggestive", "unkown") >= 0);
 }
 
 void atprotocol_test::test_ConfigurableLabels_load()
@@ -573,6 +577,12 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QVERIFY(labels.visibility("misleading", false, labeler_did)
                 == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("rumor", false, labeler_did) == ConfigurableLabelStatus::Hide);
+        // 以下デフォルト設定
+        QVERIFY(labels.visibility("spam", false, labeler_did) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("self-harm", false, labeler_did)
+                == ConfigurableLabelStatus::Warning);
+        QVERIFY(labels.visibility("sexual-figurative", false, labeler_did)
+                == ConfigurableLabelStatus::Show);
     }
     //
     {
@@ -799,6 +809,20 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QVERIFY(labels.getMutedWordItem(i).targets.length() == 0);
         QVERIFY(labels.getMutedWordItem(i).targets == QList<MutedWordTarget>());
     }
+
+    {
+        // loadしないとラベラー情報無いのでコピーテスト
+        ConfigurableLabels dest;
+        QString did = "did:plc:ar7c4by46qjdydhdevvrndac";
+        QVERIFY(dest.labelerCount() == 0);
+        dest = labels;
+        QVERIFY(dest.labelerCount() == 1);
+        QVERIFY(dest.labelerDids() == QStringList() << "did:plc:ar7c4by46qjdydhdevvrndac");
+        QVERIFY(dest.labelerHandle(did) == "moderation.bsky.app");
+        QVERIFY(dest.labelerDescription(did)
+                == "Official Bluesky Moderation Service. Required part of the Bluesky Social app.");
+        QVERIFY(dest.labelerDisplayName(did) == "Bluesky Moderation Service");
+    }
 }
 
 void atprotocol_test::test_ConfigurableLabels_copy()
@@ -835,6 +859,7 @@ void atprotocol_test::test_ConfigurableLabels_copy()
     QVERIFY(dest.visibility("spam", false) == ConfigurableLabelStatus::Hide);
     QVERIFY(dest.visibility("impersonation", false) == ConfigurableLabelStatus::Hide);
 
+    QVERIFY(dest.labelerCount() == 0);
     QVERIFY(dest.mutedWordCount() == 0);
 
     dest = src;
@@ -854,6 +879,7 @@ void atprotocol_test::test_ConfigurableLabels_copy()
     QVERIFY(dest.visibility("spam", false) == ConfigurableLabelStatus::Show);
     QVERIFY(dest.visibility("impersonation", false) == ConfigurableLabelStatus::Show);
 
+    QVERIFY(dest.labelerCount() == 0);
     QVERIFY(dest.mutedWordCount() == 3);
     QVERIFY(dest.getMutedWordItem(0).value == "word1");
     QVERIFY(dest.getMutedWordItem(0).group == 0);
@@ -897,6 +923,7 @@ void atprotocol_test::test_ConfigurableLabels_copy()
     QVERIFY(dest.visibility("spam", false) == ConfigurableLabelStatus::Warning);
     QVERIFY(dest.visibility("impersonation", false) == ConfigurableLabelStatus::Warning);
 
+    QVERIFY(dest.labelerCount() == 0);
     QVERIFY(dest.mutedWordCount() == 3);
     QVERIFY(dest.getMutedWordItem(0).value == "word1-2");
     QVERIFY(dest.getMutedWordItem(0).group == 0);

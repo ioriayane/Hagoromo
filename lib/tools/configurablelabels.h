@@ -7,19 +7,38 @@ enum class ConfigurableLabelStatus : int {
     Hide,
     Warning,
     Show,
+    Unknown, // デフォルトでしか使用しないこと
+};
+
+enum class ConfigurableLabelLevel : int {
+    Alert,
+    Inform,
+    None,
+};
+
+struct LabelerItem
+{
+    QString did;
+    QString handle;
+    QString display_name;
+    QString description;
 };
 
 struct ConfigurableLabelItem
 {
-    QString labeler_did;
-    QString id;
-    QString title;
-    QString subtitle;
-    QString warning;
-    QStringList values;
-    bool is_adult_imagery = false;
-    ConfigurableLabelStatus status = ConfigurableLabelStatus::Hide;
-    bool configurable = true;
+    QString labeler_did; // ラベルの持ち主のラベラーのDID
+    QString id; // プリファレンスとかと一致させるID
+    QString title; // ラベル一覧に表示するタイトル
+    QString subtitle; // ラベル一覧に表示する説明文
+    QString warning; // 隠すときに表示するメッセージ
+    QStringList values; // プロフィールやポストに設定されているラベルとマッチングさせる値
+    bool is_adult_imagery = false; // 画像を隠すかどうか
+    ConfigurableLabelLevel level =
+            ConfigurableLabelLevel::Alert; // ユーザーへの通知レベル(今のところ表現上の差はなし)
+    ConfigurableLabelStatus status =
+            ConfigurableLabelStatus::Hide; // プロフィールやポストをどうするか
+    ConfigurableLabelStatus default_status = ConfigurableLabelStatus::Unknown;
+    bool configurable = true; // ラベルの設定を上書きできるか
 };
 
 enum class MutedWordTarget : int {
@@ -47,6 +66,7 @@ public:
 
     int count(const QString &labeler_did = QString()) const;
     bool load();
+    void loadLabelers(const QStringList &dids, std::function<void(bool)> callback);
     bool save();
     int indexOf(const QString &id, const QString &labeler_did = QString()) const;
     ConfigurableLabelStatus visibility(const QString &label, const bool for_image,
@@ -63,6 +83,12 @@ public:
     bool isAdultImagery(const int index, const QString &labeler_did = QString()) const;
     bool configurable(const int index, const QString &labeler_did = QString()) const;
 
+    int labelerCount() const;
+    QStringList labelerDids() const;
+    QString labelerHandle(const QString &did) const;
+    QString labelerDisplayName(const QString &did) const;
+    QString labelerDescription(const QString &did) const;
+
     int mutedWordCount() const;
     MutedWordItem getMutedWordItem(const int index) const;
     void insertMutedWord(const int index, const QString &value,
@@ -76,6 +102,8 @@ public:
                             const bool partial_match) const;
     void clearMutedWord();
 
+    bool refreshLabelers() const;
+    void setRefreshLabelers(bool newRefreshLabelers);
     bool enableAdultContent() const;
     void setEnableAdultContent(bool newEnableAdultContent);
     bool running() const;
@@ -99,14 +127,17 @@ private:
     QString updatePreferencesJson(const QString &src_json);
     QString removeSharp(const QString &value) const;
     ConfigurableLabelStatus toLabelStatus(const QString &visibility) const;
+    ConfigurableLabelLevel toLabelLevel(const QString &severity) const;
 
     QRegularExpression m_regSpace;
+    QMap<QString, LabelerItem> m_labelers; // QMap<labeler_did, labeler>
     QMap<QString, QList<ConfigurableLabelItem>> m_labels; // QMap<labeler_did, labels>
     // ポストをスペース区切りするときはこれとは別にワードをハッシュで保存しておく
     // 日本語のときは逆向きで部分一致させる
     QList<MutedWordItem> m_mutedWords;
     QHash<QString, MutedWordItem> m_mutedWordsHash;
     QHash<QString, MutedWordItem> m_mutedWordsTagHash;
+    bool m_refreshLabelers;
     bool m_enableAdultContent;
     bool m_running;
 };

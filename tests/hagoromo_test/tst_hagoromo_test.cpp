@@ -45,6 +45,7 @@ private slots:
     void test_TimelineListModel_animated_image();
     void test_TimelineListModel_threadgate();
     void test_TimelineListModel_hide_repost();
+    void test_TimelineListModel_labelers();
     void test_NotificationListModel_warn();
     void test_TimelineListModel_next();
     void test_AnyProfileListModel();
@@ -1794,6 +1795,85 @@ void hagoromo_test::test_TimelineListModel_hide_repost()
         // row++;
         // QVERIFY2(model.item(row, TimelineListModel::CidRole)
         //                  == "bafyreih77ppn7ykiharfjkqlyq5q6rqzatq5sxj2koomqv22s2z56dk5fe",
+        //          model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        // QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+        //          model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+    }
+}
+
+void hagoromo_test::test_TimelineListModel_labelers()
+{
+    int row = 0;
+    TimelineListModel model;
+    model.setAccount(m_service + "/timeline/labelers/1", "did:plc:l4fsx4ujos7uw7n4ijq2ulgs",
+                     "ioriayane.bsky.social", QString(), "dummy", QString());
+    model.setDisplayInterval(0);
+
+    QSignalSpy spy(&model, SIGNAL(runningChanged()));
+    QVERIFY(model.getLatest());
+    spy.wait(10 * 1000);
+    QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+    //
+    {
+        QVERIFY2(model.rowCount() == 3, QString::number(model.rowCount()).toLocal8Bit());
+        row = 0;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreihhe3chrtye3fnzozazoutwevgjtjats7jjhasgqmyzm5eag3kjcm_1",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMatchedRole) == true,
+                 model.item(row, TimelineListModel::ContentFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMatchedRole) == false,
+                 model.item(row, TimelineListModel::ContentMediaFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        row = 1;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreihhe3chrtye3fnzozazoutwevgjtjats7jjhasgqmyzm5eag3kjcm_2",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMatchedRole) == true,
+                 model.item(row, TimelineListModel::ContentFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMatchedRole) == false,
+                 model.item(row, TimelineListModel::ContentMediaFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        row = 2;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreihhe3chrtye3fnzozazoutwevgjtjats7jjhasgqmyzm5eag3kjcm_3",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMatchedRole) == true,
+                 model.item(row, TimelineListModel::ContentFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMatchedRole) == true,
+                 model.item(row, TimelineListModel::ContentMediaFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        // row = 3;
+        // QVERIFY2(model.item(row, TimelineListModel::CidRole)
+        //              == "bafyreiasmg6ks4c4voo6tsiqx4klq6mfjjdloijf4ewp35nj7dnpkpvpc4",
+        //          model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        // QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+        //          model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        // row = 4;
+        // QVERIFY2(model.item(row, TimelineListModel::CidRole)
+        //              == "bafyreicdfgdzc445denxvuzsklv4q4cw5dlm4kishkrqbv6ssfhbn3lfqy",
+        //          model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        // QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+        //          model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        // row = 5;
+        // QVERIFY2(model.item(row, TimelineListModel::CidRole)
+        //              == "bafyreiaaysocrjeueqgaxyhk2r4ov34havbiup4ovbf7p4am7wycv6qvwy",
+        //          model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        // QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
+        //          model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        // row = 6;
+        // QVERIFY2(model.item(row, TimelineListModel::CidRole)
+        //              == "bafyreih77ppn7ykiharfjkqlyq5q6rqzatq5sxj2koomqv22s2z56dk5fe",
         //          model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
         // QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
         //          model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());

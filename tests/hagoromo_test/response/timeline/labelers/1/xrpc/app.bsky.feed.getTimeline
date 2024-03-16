@@ -1,0 +1,122 @@
+{
+    "feed": [
+        {
+            "post": {
+                "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3jxdn7bcsk32s_1",
+                "cid": "bafyreihhe3chrtye3fnzozazoutwevgjtjats7jjhasgqmyzm5eag3kjcm_1",
+                "author": {
+                    "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+                    "handle": "ioriayane.relog.tech",
+                    "displayName": "IoriAYANE",
+                    "avatar": "https://cdn.bsky.social/imgproxy/KgEwaLIGxtw6NXBsgrmHbgegjorIwcpG4xgNLZjkOm8/rs:fill:1000:1000:1:0/plain/bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy@jpeg",
+                    "viewer": {
+                        "muted": false,
+                        "blockedBy": false,
+                        "following": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.graph.follow/3jwn752grz32g",
+                        "followedBy": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3jwielvxo622v"
+                    },
+                    "labels": []
+                },
+                "record": {
+                    "text": "ラベルテスト",
+                    "$type": "app.bsky.feed.post",
+                    "createdAt": "2023-06-04T12:18:57.009Z"
+                },
+                "replyCount": 0,
+                "repostCount": 0,
+                "likeCount": 0,
+                "indexedAt": "2023-06-04T12:18:59.546Z",
+                "viewer": {},
+                "labels": [
+                    {
+                        "cid": "bafyreihhe3chrtye3fnzozazoutwevgjtjats7jjhasgqmyzm5eag3kjcm_1",
+                        "cts": "2024-03-14T09:16:37.516Z",
+                        "neg": false,
+                        "src": "did:plc:ar7c4by46qjdydhdevvrndac",
+                        "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3jxdn7bcsk32s_1",
+                        "val": "!warn",
+                        "ver": 1
+                    }
+                ]
+            }
+        },
+        {
+            "post": {
+                "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3jxdn7bcsk32s_2",
+                "cid": "bafyreihhe3chrtye3fnzozazoutwevgjtjats7jjhasgqmyzm5eag3kjcm_2",
+                "author": {
+                    "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+                    "handle": "ioriayane.relog.tech",
+                    "displayName": "IoriAYANE",
+                    "avatar": "https://cdn.bsky.social/imgproxy/KgEwaLIGxtw6NXBsgrmHbgegjorIwcpG4xgNLZjkOm8/rs:fill:1000:1000:1:0/plain/bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy@jpeg",
+                    "viewer": {
+                        "muted": false,
+                        "blockedBy": false,
+                        "following": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.graph.follow/3jwn752grz32g",
+                        "followedBy": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3jwielvxo622v"
+                    },
+                    "labels": []
+                },
+                "record": {
+                    "text": "ラベルテスト_2",
+                    "$type": "app.bsky.feed.post",
+                    "createdAt": "2023-06-04T12:18:57.009Z"
+                },
+                "replyCount": 0,
+                "repostCount": 0,
+                "likeCount": 0,
+                "indexedAt": "2023-06-04T12:18:59.546Z",
+                "viewer": {},
+                "labels": [
+                    {
+                        "cid": "bafyreihhe3chrtye3fnzozazoutwevgjtjats7jjhasgqmyzm5eag3kjcm_2",
+                        "cts": "2024-03-14T08:47:47.088Z",
+                        "neg": false,
+                        "src": "did:plc:ar7c4by46qjdydhdevvrndac",
+                        "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3jxdn7bcsk32s_2",
+                        "val": "inauthentic",
+                        "ver": 1
+                    }
+                ]
+            }
+        },
+        {
+            "post": {
+                "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3jxdn7bcsk32s_3",
+                "cid": "bafyreihhe3chrtye3fnzozazoutwevgjtjats7jjhasgqmyzm5eag3kjcm_3",
+                "author": {
+                    "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+                    "handle": "ioriayane.relog.tech",
+                    "displayName": "IoriAYANE",
+                    "avatar": "https://cdn.bsky.social/imgproxy/KgEwaLIGxtw6NXBsgrmHbgegjorIwcpG4xgNLZjkOm8/rs:fill:1000:1000:1:0/plain/bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy@jpeg",
+                    "viewer": {
+                        "muted": false,
+                        "blockedBy": false,
+                        "following": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.graph.follow/3jwn752grz32g",
+                        "followedBy": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3jwielvxo622v"
+                    },
+                    "labels": []
+                },
+                "record": {
+                    "text": "従来ラベル（セルフラベル）",
+                    "$type": "app.bsky.feed.post",
+                    "createdAt": "2023-06-04T12:18:57.009Z"
+                },
+                "replyCount": 0,
+                "repostCount": 0,
+                "likeCount": 0,
+                "indexedAt": "2023-06-04T12:18:59.546Z",
+                "viewer": {},
+                "labels": [
+                    {
+                        "src": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+                        "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3jxdn7bcsk32s_3",
+                        "cid": "bafyreihhe3chrtye3fnzozazoutwevgjtjats7jjhasgqmyzm5eag3kjcm_3",
+                        "val": "graphic-media",
+                        "cts": "2024-03-14T17:43:08.165Z"
+                    }
+                ]
+            }
+        }
+    ]
+}

@@ -76,6 +76,12 @@
             "visibility": "warn"
         },
         {
+            "$type": "app.bsky.actor.defs#contentLabelPref",
+            "label": "inauthentic",
+            "labelerDid": "did:plc:ar7c4by46qjdydhdevvrndac-5555555555",
+            "visibility": "warn"
+        },
+        {
             "$type": "app.bsky.actor.defs#mutedWordsPref",
             "items": [
                 {

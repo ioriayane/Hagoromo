@@ -37,5 +37,8 @@
         <file>response/timeline/threadgate/xrpc/app.bsky.feed.getTimeline</file>
         <file>response/timeline/hide2/xrpc/app.bsky.actor.getPreferences</file>
         <file>response/timeline/hide2/xrpc/app.bsky.feed.getTimeline</file>
+        <file>response/timeline/labelers/1/xrpc/app.bsky.actor.getPreferences</file>
+        <file>response/timeline/labelers/1/xrpc/app.bsky.feed.getTimeline</file>
+        <file>response/timeline/labelers/1/xrpc/app.bsky.labeler.getServices</file>
     </qresource>
 </RCC>
