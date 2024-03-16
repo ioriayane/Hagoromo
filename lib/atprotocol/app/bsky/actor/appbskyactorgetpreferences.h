@@ -15,6 +15,7 @@ public:
 
     const QList<AtProtocolType::AppBskyActorDefs::SavedFeedsPref> *savedFeedsPrefList() const;
     const QList<AtProtocolType::AppBskyActorDefs::ContentLabelPref> *contentLabelPrefList() const;
+    const QList<AtProtocolType::AppBskyActorDefs::LabelersPref> *labelersPrefList() const;
     const AtProtocolType::AppBskyActorDefs::AdultContentPref adultContentPref() const;
     const QList<AtProtocolType::AppBskyActorDefs::MutedWordsPref> *mutedWordsPrefList() const;
 
@@ -23,6 +24,7 @@ private:
 
     QList<AtProtocolType::AppBskyActorDefs::SavedFeedsPref> m_savedFeedsPrefList;
     QList<AtProtocolType::AppBskyActorDefs::ContentLabelPref> m_contentLabelPrefList;
+    QList<AtProtocolType::AppBskyActorDefs::LabelersPref> m_labelersPrefList;
     AtProtocolType::AppBskyActorDefs::AdultContentPref m_adultContentPref;
     QList<AtProtocolType::AppBskyActorDefs::MutedWordsPref> m_mutedWordsPrefList;
 };

@@ -302,6 +302,30 @@
                     "inauthentic"
                 ]
             }
+        },
+        {
+            "$type": "app.bsky.labeler.defs#labelerViewDetailed",
+            "uri": "at://did:plc:original_labeler_did/app.bsky.labeler.service/self",
+            "cid": "bafyreifunvpooxmpf7li54gal2dk3fceq6aga3gmnfnnsmbaaaaaaaaaaa",
+            "creator": {
+                "did": "did:plc:original_labeler_did",
+                "handle": "original_labeler_did.bsky.social",
+                "displayName": "Original Labeler Test",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false
+                },
+                "labels": [],
+                "description": "ラベラーのテスト用",
+                "indexedAt": "2024-03-14T07:47:08.042Z"
+            },
+            "likeCount": 2,
+            "viewer": {},
+            "indexedAt": "2024-03-14T07:46:11.999Z",
+            "labels": [],
+            "policies": {
+                "labelValues": []
+            }
         }
     ]
 }

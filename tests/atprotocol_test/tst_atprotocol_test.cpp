@@ -814,8 +814,12 @@ void atprotocol_test::test_ConfigurableLabels_load()
         // loadしないとラベラー情報無いのでコピーテスト
         ConfigurableLabels dest;
         QString did = "did:plc:ar7c4by46qjdydhdevvrndac";
+        QVERIFY(dest.targetLabelerCount() == 0);
         QVERIFY(dest.labelerCount() == 0);
         dest = labels;
+        QVERIFY(dest.targetLabelerCount() == 2);
+        QVERIFY(dest.targetLabelerDid(0) == "did:plc:ar7c4by46qjdydhdevvrndac");
+        QVERIFY(dest.targetLabelerDid(1) == "did:plc:original_labeler_did");
         QVERIFY(dest.labelerCount() == 1);
         QVERIFY(dest.labelerDids() == QStringList() << "did:plc:ar7c4by46qjdydhdevvrndac");
         QVERIFY(dest.labelerHandle(did) == "moderation.bsky.app");

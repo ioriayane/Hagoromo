@@ -78,7 +78,7 @@
         {
             "$type": "app.bsky.actor.defs#contentLabelPref",
             "label": "inauthentic",
-            "labelerDid": "did:plc:ar7c4by46qjdydhdevvrndac-5555555555",
+            "labelerDid": "did:plc:ar7c4by46qjdydhdevvrndac",
             "visibility": "warn"
         },
         {

@@ -91,6 +91,14 @@
                     "targets": []
                 }
             ]
+        },
+        {
+            "$type": "app.bsky.actor.defs#labelersPref",
+            "labelers": [
+                {
+                    "did": "did:plc:original_labeler_did"
+                }
+            ]
        }
     ]
 }

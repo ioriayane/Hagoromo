@@ -83,6 +83,8 @@ public:
     bool isAdultImagery(const int index, const QString &labeler_did = QString()) const;
     bool configurable(const int index, const QString &labeler_did = QString()) const;
 
+    int targetLabelerCount() const;
+    QString targetLabelerDid(const int index) const;
     int labelerCount() const;
     QStringList labelerDids() const;
     QString labelerHandle(const QString &did) const;
@@ -130,6 +132,7 @@ private:
     ConfigurableLabelLevel toLabelLevel(const QString &severity) const;
 
     QRegularExpression m_regSpace;
+    QStringList m_targetLabelerDids; // Preferencesから取得した管理したいDIDの一覧
     QMap<QString, LabelerItem> m_labelers; // QMap<labeler_did, labeler>
     QMap<QString, QList<ConfigurableLabelItem>> m_labels; // QMap<labeler_did, labels>
     // ポストをスペース区切りするときはこれとは別にワードをハッシュで保存しておく

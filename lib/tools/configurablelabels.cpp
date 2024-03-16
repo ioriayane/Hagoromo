@@ -31,6 +31,7 @@ ConfigurableLabels::ConfigurableLabels(QObject *parent)
 ConfigurableLabels &ConfigurableLabels::operator=(ConfigurableLabels &other)
 {
     m_enableAdultContent = other.m_enableAdultContent;
+    m_labels.clear();
     QMapIterator<QString, QList<ConfigurableLabelItem>> labels_i(other.m_labels);
     while (labels_i.hasNext()) {
         labels_i.next();
@@ -39,6 +40,8 @@ ConfigurableLabels &ConfigurableLabels::operator=(ConfigurableLabels &other)
             m_labels[labels_i.key()].append(label);
         }
     }
+    m_targetLabelerDids = other.m_targetLabelerDids;
+    m_labelers.clear();
     QMapIterator<QString, LabelerItem> labelers_i(other.m_labelers);
     while (labelers_i.hasNext()) {
         labelers_i.next();
@@ -75,14 +78,20 @@ bool ConfigurableLabels::load()
     m_mutedWordsHash.clear();
     m_mutedWordsTagHash.clear();
 
-    loadLabelers(QStringList(), [=](bool load_sevices_success) {
-        if (!load_sevices_success) {
-            setRunning(false);
-            emit finished(false);
-        } else {
-            AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
-            connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
-                if (success) {
+    AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
+    connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
+        if (success) {
+            m_targetLabelerDids.clear();
+            for (const auto &labelers_pref : *pref->labelersPrefList()) {
+                for (const auto &labeler : labelers_pref.labelers) {
+                    m_targetLabelerDids.append(labeler.did);
+                }
+            }
+            if (!m_targetLabelerDids.contains(BSKY_OFFICIAL_LABELER_DID)) {
+                m_targetLabelerDids.insert(0, BSKY_OFFICIAL_LABELER_DID);
+            }
+            loadLabelers(m_targetLabelerDids, [=](bool load_labelers_success) {
+                if (load_labelers_success) {
                     m_enableAdultContent = pref->adultContentPref().enabled;
                     for (const auto &item : *pref->contentLabelPrefList()) {
                         int index = indexOf(item.label, item.labelerDid);
@@ -128,10 +137,10 @@ bool ConfigurableLabels::load()
                 emit finished(success);
                 pref->deleteLater();
             });
-            pref->setAccount(account());
-            pref->getPreferences();
         }
     });
+    pref->setAccount(account());
+    pref->getPreferences();
     return true;
 }
 
@@ -367,6 +376,18 @@ bool ConfigurableLabels::configurable(const int index, const QString &labeler_di
         return false;
 
     return m_labels.value(key).at(index).configurable;
+}
+
+int ConfigurableLabels::targetLabelerCount() const
+{
+    return m_targetLabelerDids.count();
+}
+
+QString ConfigurableLabels::targetLabelerDid(const int index) const
+{
+    if (index < 0 || index >= m_targetLabelerDids.count())
+        return QString();
+    return m_targetLabelerDids.at(index);
 }
 
 int ConfigurableLabels::labelerCount() const
