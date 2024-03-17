@@ -146,6 +146,12 @@ bool ConfigurableLabels::load()
 
 void ConfigurableLabels::loadLabelers(const QStringList &dids, std::function<void(bool)> callback)
 {
+#ifdef QT_NO_DEBUG
+    // 当面、bsky.socialでgetServicesが使えないので止める
+    callback(true);
+    return;
+#endif
+
     if (!m_labelers.isEmpty() && !refreshLabelers()) {
         // すでに持っている場合はリフレッシュ指示がなければ空振りする
         callback(true);

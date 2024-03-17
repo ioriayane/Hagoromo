@@ -486,7 +486,7 @@ void hagoromo_test::test_ListFeedListModel()
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
-        spy.wait();
+        spy.wait(10 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
 

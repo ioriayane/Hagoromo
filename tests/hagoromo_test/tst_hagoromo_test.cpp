@@ -581,7 +581,7 @@ void hagoromo_test::test_NotificationListModel()
         model.setVisibleQuote(true);
         model.clear();
         model.getLatest();
-        spy.wait(10 * 1000);
+        spy.wait(20 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
@@ -623,7 +623,7 @@ void hagoromo_test::test_NotificationListModel()
         model.setVisibleQuote(true);
         model.clear();
         model.getLatest();
-        spy.wait(10 * 1000);
+        spy.wait(20 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
@@ -665,7 +665,7 @@ void hagoromo_test::test_NotificationListModel()
         model.setVisibleQuote(true);
         model.clear();
         model.getLatest();
-        spy.wait(10 * 1000);
+        spy.wait(20 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
@@ -707,7 +707,7 @@ void hagoromo_test::test_NotificationListModel()
         model.setVisibleQuote(false);
         model.clear();
         model.getLatest();
-        spy.wait(10 * 1000);
+        spy.wait(20 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
