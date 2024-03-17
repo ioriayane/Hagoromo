@@ -6,5 +6,7 @@
         <file>response/xrpc/app.bsky.actor.getProfiles</file>
         <file>response/xrpc/app.bsky.actor.searchActors</file>
         <file>response/xrpc/app.bsky.feed.searchPosts</file>
+        <file>response/xrpc/app.bsky.actor.getPreferences</file>
+        <file>response/xrpc/app.bsky.labeler.getServices</file>
     </qresource>
 </RCC>
