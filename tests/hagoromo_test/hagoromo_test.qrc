@@ -56,5 +56,6 @@
         <file>response/notifications/visible/xrpc/app.bsky.labeler.getServices</file>
         <file>response/facet/xrpc/app.bsky.labeler.getServices</file>
         <file>response/anyprofile/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/facet/xrpc/app.bsky.actor.getPreferences</file>
     </qresource>
 </RCC>

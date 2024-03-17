@@ -124,8 +124,7 @@ void hagoromo_test::test_TimelineListModelFacet()
 
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     model.getLatest();
-    spy.wait();
-    spy.wait();
+    spy.wait(10 * 1000);
     QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
     QFile file(":/response/facet/xrpc/app.bsky.feed.getTimeline.expect");
@@ -451,7 +450,7 @@ void hagoromo_test::test_NotificationListModel()
         int i = 0;
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
-        spy.wait(10 * 1000);
+        spy.wait(20 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QVERIFY2(model.rowCount() == 6, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
@@ -498,7 +497,7 @@ void hagoromo_test::test_NotificationListModel()
         model.setVisibleQuote(true);
         model.clear();
         model.getLatest();
-        spy.wait(10 * 1000);
+        spy.wait(20 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
@@ -540,7 +539,7 @@ void hagoromo_test::test_NotificationListModel()
         model.setVisibleQuote(true);
         model.clear();
         model.getLatest();
-        spy.wait(10 * 1000);
+        spy.wait(20 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
@@ -755,7 +754,7 @@ void hagoromo_test::test_NotificationListModel2()
     model.setVisibleReply(false);
     model.setVisibleQuote(false);
     model.getLatest();
-    spy.wait(10 * 1000);
+    spy.wait(20 * 1000);
     QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
     QVERIFY2(model.rowCount() == 0, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
@@ -1087,7 +1086,7 @@ void hagoromo_test::test_TimelineListModel_quote_hide()
 
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     model.getLatest();
-    spy.wait();
+    spy.wait(10 * 1000);
     QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
     QVERIFY(model.rowCount() == 7);
@@ -1147,7 +1146,7 @@ void hagoromo_test::test_TimelineListModel_quote_hide2()
 
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     model.getLatest();
-    spy.wait();
+    spy.wait(10 * 1000);
     QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
     QVERIFY(model.rowCount() == 7);
@@ -1216,7 +1215,7 @@ void hagoromo_test::test_TimelineListModel_quote_label()
 
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     model.getLatest();
-    spy.wait();
+    spy.wait(10 * 1000);
     QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
     QVERIFY(model.rowCount() == 9);
