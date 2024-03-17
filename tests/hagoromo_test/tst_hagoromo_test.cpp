@@ -1816,7 +1816,7 @@ void hagoromo_test::test_TimelineListModel_labelers()
 
     //
     {
-        QVERIFY2(model.rowCount() == 3, QString::number(model.rowCount()).toLocal8Bit());
+        QVERIFY2(model.rowCount() == 7, QString::number(model.rowCount()).toLocal8Bit());
         row = 0;
         QVERIFY2(model.item(row, TimelineListModel::CidRole)
                          == "bafyreihhe3chrtye3fnzozazoutwevgjtjats7jjhasgqmyzm5eag3kjcm_1",
@@ -1874,34 +1874,103 @@ void hagoromo_test::test_TimelineListModel_labelers()
                  model.item(row, TimelineListModel::ContentFilterMessageRole)
                          .toString()
                          .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMessageRole)
+                         == "Sexually Suggestive (Cartoon)",
+                 model.item(row, TimelineListModel::ContentMediaFilterMessageRole)
+                         .toString()
+                         .toLocal8Bit());
+        row = 3;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreihhe3chrtye3fnzozazoutwevgjtjats7jjhasgqmyzm5eag3kjcm_4",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMatchedRole) == false,
+                 model.item(row, TimelineListModel::ContentFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMatchedRole) == true,
+                 model.item(row, TimelineListModel::ContentMediaFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMessageRole) == "",
+                 model.item(row, TimelineListModel::ContentFilterMessageRole)
+                         .toString()
+                         .toLocal8Bit());
         QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMessageRole) == "Violence",
                  model.item(row, TimelineListModel::ContentMediaFilterMessageRole)
                          .toString()
                          .toLocal8Bit());
-        // row = 3;
-        // QVERIFY2(model.item(row, TimelineListModel::CidRole)
-        //              == "bafyreiasmg6ks4c4voo6tsiqx4klq6mfjjdloijf4ewp35nj7dnpkpvpc4",
-        //          model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        // QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-        //          model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
-        // row = 4;
-        // QVERIFY2(model.item(row, TimelineListModel::CidRole)
-        //              == "bafyreicdfgdzc445denxvuzsklv4q4cw5dlm4kishkrqbv6ssfhbn3lfqy",
-        //          model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        // QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-        //          model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
-        // row = 5;
-        // QVERIFY2(model.item(row, TimelineListModel::CidRole)
-        //              == "bafyreiaaysocrjeueqgaxyhk2r4ov34havbiup4ovbf7p4am7wycv6qvwy",
-        //          model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        // QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-        //          model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
-        // row = 6;
-        // QVERIFY2(model.item(row, TimelineListModel::CidRole)
-        //              == "bafyreih77ppn7ykiharfjkqlyq5q6rqzatq5sxj2koomqv22s2z56dk5fe",
-        //          model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
-        // QVERIFY2(model.item(row, TimelineListModel::IsRepostedByRole) == true,
-        //          model.item(row, TimelineListModel::IsRepostedByRole).toString().toLocal8Bit());
+        row = 4;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreialfbse4o4ccllwz42n5xhpautvv46oxwonwfwp5fxiwl3a4cyl4a_5",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMatchedRole) == false,
+                 model.item(row, TimelineListModel::ContentFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMatchedRole) == false,
+                 model.item(row, TimelineListModel::ContentMediaFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMessageRole) == "",
+                 model.item(row, TimelineListModel::ContentFilterMessageRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMessageRole) == "",
+                 model.item(row, TimelineListModel::ContentMediaFilterMessageRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::QuoteFilterMatchedRole) == true,
+                 model.item(row, TimelineListModel::QuoteFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        row = 5;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreialfbse4o4ccllwz42n5xhpautvv46oxwonwfwp5fxiwl3a4cyl4a_6",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMatchedRole) == false,
+                 model.item(row, TimelineListModel::ContentFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMatchedRole) == false,
+                 model.item(row, TimelineListModel::ContentMediaFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMessageRole) == "",
+                 model.item(row, TimelineListModel::ContentFilterMessageRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMessageRole) == "",
+                 model.item(row, TimelineListModel::ContentMediaFilterMessageRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::QuoteFilterMatchedRole) == true,
+                 model.item(row, TimelineListModel::QuoteFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        row = 6;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreialfbse4o4ccllwz42n5xhpautvv46oxwonwfwp5fxiwl3a4cyl4a_7",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMatchedRole) == false,
+                 model.item(row, TimelineListModel::ContentFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMatchedRole) == false,
+                 model.item(row, TimelineListModel::ContentMediaFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMessageRole) == "",
+                 model.item(row, TimelineListModel::ContentFilterMessageRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMessageRole) == "",
+                 model.item(row, TimelineListModel::ContentMediaFilterMessageRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::QuoteFilterMatchedRole) == true,
+                 model.item(row, TimelineListModel::QuoteFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
     }
 }
 

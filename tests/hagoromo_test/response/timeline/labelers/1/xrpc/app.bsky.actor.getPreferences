@@ -100,6 +100,12 @@
             "visibility": "warn"
         },
         {
+            "$type": "app.bsky.actor.defs#contentLabelPref",
+            "label": "sexual-figurative",
+            "labelerDid": "did:plc:ar7c4by46qjdydhdevvrndac",
+            "visibility": "warn"
+        },
+        {
             "$type": "app.bsky.actor.defs#labelersPref",
             "labelers": [
                 {

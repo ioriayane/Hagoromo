@@ -18,7 +18,7 @@
                     "labels": []
                 },
                 "record": {
-                    "text": "ラベルテスト",
+                    "text": "グローバルのラベル（コンテンツ） by 公式ラベラー",
                     "$type": "app.bsky.feed.post",
                     "createdAt": "2023-06-04T12:18:57.009Z"
                 },
@@ -58,7 +58,7 @@
                     "labels": []
                 },
                 "record": {
-                    "text": "ラベルテスト_2",
+                    "text": "ラベラーのラベル（コンテンツ） by 公式ラベラー",
                     "$type": "app.bsky.feed.post",
                     "createdAt": "2023-06-04T12:18:57.009Z"
                 },
@@ -98,7 +98,45 @@
                     "labels": []
                 },
                 "record": {
-                    "text": "従来ラベル（セルフラベル）",
+                    "text": "ラベラーのラベル（画像） by 公式ラベラー",
+                    "$type": "app.bsky.feed.post",
+                    "createdAt": "2023-06-04T12:18:57.009Z"
+                },
+                "replyCount": 0,
+                "repostCount": 0,
+                "likeCount": 0,
+                "indexedAt": "2023-06-04T12:18:59.546Z",
+                "viewer": {},
+                "labels": [
+                    {
+                        "src": "did:plc:ar7c4by46qjdydhdevvrndac",
+                        "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3jxdn7bcsk32s_3",
+                        "cid": "bafyreihhe3chrtye3fnzozazoutwevgjtjats7jjhasgqmyzm5eag3kjcm_3",
+                        "val": "sexual-figurative",
+                        "cts": "2024-03-14T17:43:08.165Z"
+                    }
+                ]
+            }
+        },
+        {
+            "post": {
+                "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3jxdn7bcsk32s_4",
+                "cid": "bafyreihhe3chrtye3fnzozazoutwevgjtjats7jjhasgqmyzm5eag3kjcm_4",
+                "author": {
+                    "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+                    "handle": "ioriayane.relog.tech",
+                    "displayName": "IoriAYANE",
+                    "avatar": "https://cdn.bsky.social/imgproxy/KgEwaLIGxtw6NXBsgrmHbgegjorIwcpG4xgNLZjkOm8/rs:fill:1000:1000:1:0/plain/bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy@jpeg",
+                    "viewer": {
+                        "muted": false,
+                        "blockedBy": false,
+                        "following": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.graph.follow/3jwn752grz32g",
+                        "followedBy": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3jwielvxo622v"
+                    },
+                    "labels": []
+                },
+                "record": {
+                    "text": "セルフラベル（画像）",
                     "$type": "app.bsky.feed.post",
                     "createdAt": "2023-06-04T12:18:57.009Z"
                 },
@@ -110,12 +148,252 @@
                 "labels": [
                     {
                         "src": "did:plc:ipj5qejfoqu6eukvt72uhyit",
-                        "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3jxdn7bcsk32s_3",
-                        "cid": "bafyreihhe3chrtye3fnzozazoutwevgjtjats7jjhasgqmyzm5eag3kjcm_3",
+                        "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3jxdn7bcsk32s_4",
+                        "cid": "bafyreihhe3chrtye3fnzozazoutwevgjtjats7jjhasgqmyzm5eag3kjcm_4",
                         "val": "graphic-media",
                         "cts": "2024-03-14T17:43:08.165Z"
                     }
                 ]
+            }
+        },
+        {
+            "post": {
+                "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3knu7khw7nr2h_5",
+                "cid": "bafyreialfbse4o4ccllwz42n5xhpautvv46oxwonwfwp5fxiwl3a4cyl4a_5",
+                "author": {
+                    "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                    "handle": "ioriayane2.bsky.social",
+                    "displayName": "iori2",
+                    "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg",
+                    "viewer": {
+                        "muted": false,
+                        "blockedBy": false,
+                        "following": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3k4odyt4qk42g",
+                        "followedBy": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.follow/3kep33eowkk2c"
+                    },
+                    "labels": []
+                },
+                "record": {
+                    "$type": "app.bsky.feed.post",
+                    "createdAt": "2024-03-17T01:44:12.497Z",
+                    "embed": {
+                        "$type": "app.bsky.embed.record",
+                        "record": {
+                            "cid": "bafyreig443fx43tvbi66bqhu7f3bk7u2vpxslrafu6olcdtyqavwzxgkwm",
+                            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3kntqqvz72c2s"
+                        }
+                    },
+                    "text": "test",
+                    "via": "Hagoromo"
+                },
+                "embed": {
+                    "$type": "app.bsky.embed.record#view",
+                    "record": {
+                        "$type": "app.bsky.embed.record#viewRecord",
+                        "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3kntqqvz72c2s_5_1",
+                        "cid": "bafyreig443fx43tvbi66bqhu7f3bk7u2vpxslrafu6olcdtyqavwzxgkwm_5_1",
+                        "author": {
+                            "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+                            "handle": "ioriayane.relog.tech",
+                            "displayName": "IoriAYANE",
+                            "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy@jpeg",
+                            "viewer": {
+                                "muted": false,
+                                "blockedBy": false
+                            },
+                            "labels": []
+                        },
+                        "value": {
+                            "$type": "app.bsky.feed.post",
+                            "createdAt": "2024-03-16T21:19:25.085Z",
+                            "langs": [
+                                "ja"
+                            ],
+                            "text": "グローバルのラベル（コンテンツ） by 公式ラベラー"
+                        },
+                        "labels": [
+                            {
+                                "cid": "bafyreig443fx43tvbi66bqhu7f3bk7u2vpxslrafu6olcdtyqavwzxgkwm_5_1",
+                                "cts": "2024-03-14T08:47:47.088Z",
+                                "neg": false,
+                                "src": "did:plc:ar7c4by46qjdydhdevvrndac",
+                                "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3kntqqvz72c2s_5_1",
+                                "val": "!warn",
+                                "ver": 1
+                            }
+                        ],
+                        "indexedAt": "2024-03-16T21:19:24.755Z",
+                        "embeds": []
+                    }
+                },
+                "replyCount": 0,
+                "repostCount": 0,
+                "likeCount": 0,
+                "indexedAt": "2024-03-17T01:44:12.497Z",
+                "viewer": {
+                    "replyDisabled": false
+                },
+                "labels": []
+            }
+        },
+        {
+            "post": {
+                "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3knu7khw7nr2h_6",
+                "cid": "bafyreialfbse4o4ccllwz42n5xhpautvv46oxwonwfwp5fxiwl3a4cyl4a_6",
+                "author": {
+                    "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                    "handle": "ioriayane2.bsky.social",
+                    "displayName": "iori2",
+                    "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg",
+                    "viewer": {
+                        "muted": false,
+                        "blockedBy": false,
+                        "following": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3k4odyt4qk42g",
+                        "followedBy": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.follow/3kep33eowkk2c"
+                    },
+                    "labels": []
+                },
+                "record": {
+                    "$type": "app.bsky.feed.post",
+                    "createdAt": "2024-03-17T01:44:12.497Z",
+                    "embed": {
+                        "$type": "app.bsky.embed.record",
+                        "record": {
+                            "cid": "bafyreig443fx43tvbi66bqhu7f3bk7u2vpxslrafu6olcdtyqavwzxgkwm",
+                            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3kntqqvz72c2s"
+                        }
+                    },
+                    "text": "test",
+                    "via": "Hagoromo"
+                },
+                "embed": {
+                    "$type": "app.bsky.embed.record#view",
+                    "record": {
+                        "$type": "app.bsky.embed.record#viewRecord",
+                        "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3kntqqvz72c2s_6_1",
+                        "cid": "bafyreig443fx43tvbi66bqhu7f3bk7u2vpxslrafu6olcdtyqavwzxgkwm_6_1",
+                        "author": {
+                            "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+                            "handle": "ioriayane.relog.tech",
+                            "displayName": "IoriAYANE",
+                            "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy@jpeg",
+                            "viewer": {
+                                "muted": false,
+                                "blockedBy": false
+                            },
+                            "labels": []
+                        },
+                        "value": {
+                            "$type": "app.bsky.feed.post",
+                            "createdAt": "2024-03-16T21:19:25.085Z",
+                            "langs": [
+                                "ja"
+                            ],
+                            "text": "ラベラーのラベル（コンテンツ） by 公式ラベラー"
+                        },
+                        "labels": [
+                            {
+                                "cid": "bafyreig443fx43tvbi66bqhu7f3bk7u2vpxslrafu6olcdtyqavwzxgkwm_6_1",
+                                "cts": "2024-03-14T08:47:47.088Z",
+                                "neg": false,
+                                "src": "did:plc:ar7c4by46qjdydhdevvrndac",
+                                "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3kntqqvz72c2s_6_1",
+                                "val": "sensitive",
+                                "ver": 1
+                            }
+                        ],
+                        "indexedAt": "2024-03-16T21:19:24.755Z",
+                        "embeds": []
+                    }
+                },
+                "replyCount": 0,
+                "repostCount": 0,
+                "likeCount": 0,
+                "indexedAt": "2024-03-17T01:44:12.497Z",
+                "viewer": {
+                    "replyDisabled": false
+                },
+                "labels": []
+            }
+        },
+        {
+            "post": {
+                "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3knu7khw7nr2h_7",
+                "cid": "bafyreialfbse4o4ccllwz42n5xhpautvv46oxwonwfwp5fxiwl3a4cyl4a_7",
+                "author": {
+                    "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                    "handle": "ioriayane2.bsky.social",
+                    "displayName": "iori2",
+                    "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg",
+                    "viewer": {
+                        "muted": false,
+                        "blockedBy": false,
+                        "following": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3k4odyt4qk42g",
+                        "followedBy": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.follow/3kep33eowkk2c"
+                    },
+                    "labels": []
+                },
+                "record": {
+                    "$type": "app.bsky.feed.post",
+                    "createdAt": "2024-03-17T01:44:12.497Z",
+                    "embed": {
+                        "$type": "app.bsky.embed.record",
+                        "record": {
+                            "cid": "bafyreig443fx43tvbi66bqhu7f3bk7u2vpxslrafu6olcdtyqavwzxgkwm",
+                            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3kntqqvz72c2s"
+                        }
+                    },
+                    "text": "test",
+                    "via": "Hagoromo"
+                },
+                "embed": {
+                    "$type": "app.bsky.embed.record#view",
+                    "record": {
+                        "$type": "app.bsky.embed.record#viewRecord",
+                        "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3kntqqvz72c2s_7_1",
+                        "cid": "bafyreig443fx43tvbi66bqhu7f3bk7u2vpxslrafu6olcdtyqavwzxgkwm_7_1",
+                        "author": {
+                            "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+                            "handle": "ioriayane.relog.tech",
+                            "displayName": "IoriAYANE",
+                            "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy@jpeg",
+                            "viewer": {
+                                "muted": false,
+                                "blockedBy": false
+                            },
+                            "labels": []
+                        },
+                        "value": {
+                            "$type": "app.bsky.feed.post",
+                            "createdAt": "2024-03-16T21:19:25.085Z",
+                            "langs": [
+                                "ja"
+                            ],
+                            "text": "ラベラーのラベル（画像） by 公式ラベラー"
+                        },
+                        "labels": [
+                            {
+                                "cid": "bafyreig443fx43tvbi66bqhu7f3bk7u2vpxslrafu6olcdtyqavwzxgkwm_7_1",
+                                "cts": "2024-03-14T08:47:47.088Z",
+                                "neg": false,
+                                "src": "did:plc:ar7c4by46qjdydhdevvrndac",
+                                "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3kntqqvz72c2s_7_1",
+                                "val": "sexual-figurative",
+                                "ver": 1
+                            }
+                        ],
+                        "indexedAt": "2024-03-16T21:19:24.755Z",
+                        "embeds": []
+                    }
+                },
+                "replyCount": 0,
+                "repostCount": 0,
+                "likeCount": 0,
+                "indexedAt": "2024-03-17T01:44:12.497Z",
+                "viewer": {
+                    "replyDisabled": false
+                },
+                "labels": []
             }
         }
     ]
