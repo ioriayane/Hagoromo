@@ -569,6 +569,7 @@ bool NotificationListModel::getLatest()
             notification->deleteLater();
         });
         notification->setAccount(account());
+        notification->setLabelers(m_contentFilterLabels.labelerDids());
         notification->listNotifications(QString());
     });
     return true;
@@ -694,6 +695,7 @@ bool NotificationListModel::getNext()
             notification->deleteLater();
         });
         notification->setAccount(account());
+        notification->setLabelers(m_contentFilterLabels.labelerDids());
         notification->listNotifications(m_cursor);
     });
     return true;
@@ -977,6 +979,7 @@ void NotificationListModel::getPosts()
         posts->deleteLater();
     });
     posts->setAccount(account());
+    posts->setLabelers(m_contentFilterLabels.labelerDids());
     posts->getPosts(uris);
 }
 

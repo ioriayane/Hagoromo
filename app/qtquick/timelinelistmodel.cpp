@@ -323,6 +323,7 @@ bool TimelineListModel::getLatest()
             timeline->deleteLater();
         });
         timeline->setAccount(account());
+        timeline->setLabelers(m_contentFilterLabels.labelerDids());
         timeline->getTimeline();
     });
     return true;
@@ -348,6 +349,7 @@ bool TimelineListModel::getNext()
             timeline->deleteLater();
         });
         timeline->setAccount(account());
+        timeline->setLabelers(m_contentFilterLabels.labelerDids());
         timeline->getTimeline(m_cursor);
     });
     return true;

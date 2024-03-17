@@ -21,10 +21,10 @@ void AppBskyLabelerGetServices::getServices(const QList<QString> &dids, const bo
 {
     QUrlQuery query;
     for (const auto &did : dids) {
-        query.addQueryItem(QStringLiteral("detailed"), did);
+        query.addQueryItem(QStringLiteral("dids"), did);
     }
     if (detailed) {
-        query.addQueryItem(QStringLiteral("dids"), QString(detailed));
+        query.addQueryItem(QStringLiteral("detailed"), "true");
     }
 
     get(QStringLiteral("xrpc/app.bsky.labeler.getServices"), query);

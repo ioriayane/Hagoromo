@@ -27,6 +27,7 @@ bool ListFeedListModel::getLatest()
             list->deleteLater();
         });
         list->setAccount(account());
+        list->setLabelers(m_contentFilterLabels.labelerDids());
         list->getListFeed(uri(), 0, QString());
     });
     return true;
@@ -52,6 +53,7 @@ bool ListFeedListModel::getNext()
             list->deleteLater();
         });
         list->setAccount(account());
+        list->setLabelers(m_contentFilterLabels.labelerDids());
         list->getListFeed(uri(), 0, m_cursor);
     });
     return true;
