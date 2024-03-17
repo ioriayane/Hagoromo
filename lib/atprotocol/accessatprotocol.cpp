@@ -347,6 +347,14 @@ void AccessAtProtocol::setJsonBlob(const AtProtocolType::Blob &blob, QJsonObject
     json_blob.insert("size", blob.size);
 }
 
+void AccessAtProtocol::setJsonAspectRatio(const QSize &aspect_ratio, QJsonObject &json_aspect_ratio)
+{
+    if (!aspect_ratio.isEmpty()) {
+        json_aspect_ratio.insert("width", aspect_ratio.width());
+        json_aspect_ratio.insert("height", aspect_ratio.height());
+    }
+}
+
 QJsonObject AccessAtProtocol::makeThreadGateJsonObject(
         const QString &uri, const AtProtocolType::ThreadGateType type,
         const QList<AtProtocolType::ThreadGateAllow> &allow_rules)

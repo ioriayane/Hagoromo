@@ -61,8 +61,14 @@ int ComAtprotoRepoUploadBlob::size() const
     return m_size;
 }
 
-void ComAtprotoRepoUploadBlob::compressed(const QString &path)
+QSize ComAtprotoRepoUploadBlob::aspectRatio() const
 {
+    return m_aspectRatio;
+}
+
+void ComAtprotoRepoUploadBlob::compressed(const QString &path, const QSize &aspect_ratio)
+{
+    m_aspectRatio = aspect_ratio;
     postWithImage(QStringLiteral("xrpc/com.atproto.repo.uploadBlob"), path);
 }
 

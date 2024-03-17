@@ -13,6 +13,7 @@ description: This is a multi-column Bluesky client.
 - Update
   - Remove self-labels that should not be set from the selection candidates when posting
   - Internal updates to maintain compatibility with the new label system
+  - Added aspect ratio to attached images
 - Fix
 
 ### v0.25.0 - 2024/3/2

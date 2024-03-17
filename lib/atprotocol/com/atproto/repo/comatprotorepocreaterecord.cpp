@@ -83,6 +83,11 @@ void ComAtprotoRepoCreateRecord::post(const QString &text)
         for (const auto &blob : qAsConst(m_embedImageBlobs)) {
             QJsonObject json_blob;
             QJsonObject json_image;
+            QJsonObject json_aspect_ratio;
+            setJsonAspectRatio(blob.aspect_ratio, json_aspect_ratio);
+            if (!json_aspect_ratio.isEmpty()) {
+                json_blob.insert("aspectRatio", json_aspect_ratio);
+            }
             setJsonBlob(blob, json_image);
             json_blob.insert("image", json_image);
             json_blob.insert("alt", blob.alt);

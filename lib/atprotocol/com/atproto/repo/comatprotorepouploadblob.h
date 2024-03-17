@@ -4,6 +4,7 @@
 #include "atprotocol/accessatprotocol.h"
 #include "tools/imagecompressor.h"
 
+#include <QSize>
 #include <QThread>
 
 namespace AtProtocolInterface {
@@ -21,9 +22,10 @@ public:
     QString cid() const;
     QString mimeType() const;
     int size() const;
+    QSize aspectRatio() const;
 
 public slots:
-    void compressed(const QString &path);
+    void compressed(const QString &path, const QSize &aspect_ratio);
 
 signals:
     void compress(const QString &path);
@@ -37,6 +39,7 @@ private:
     QString m_cid;
     QString m_mimeType;
     int m_size;
+    QSize m_aspectRatio;
 };
 
 }

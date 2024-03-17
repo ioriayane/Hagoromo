@@ -13,7 +13,7 @@ public slots:
     void compress(const QString &path);
 
 signals:
-    void compressed(const QString &path);
+    void compressed(const QString &path, const QSize &aspect_ratio);
 };
 
 #endif // IMAGECOMPRESSOR_H

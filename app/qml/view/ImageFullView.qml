@@ -27,14 +27,22 @@ Rectangle {
         onActivated: imageFullView.visible = false
     }
     Shortcut {
-        enabled: imageFullView.visible && leftMoveButton.enabled
+        enabled: imageFullView.visible
         sequence: "left"
-        onActivated: leftMoveButton.clicked()
+        onActivated: {
+            if(leftMoveButton.enabled){
+                leftMoveButton.clicked()
+            }
+        }
     }
     Shortcut {
-        enabled: imageFullView.visible && righttMoveButton.enabled
+        enabled: imageFullView.visible
         sequence: "right"
-        onActivated: righttMoveButton.clicked()
+        onActivated: {
+            if(righttMoveButton.enabled){
+                righttMoveButton.clicked()
+            }
+        }
     }
 
     MouseArea {
