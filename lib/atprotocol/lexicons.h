@@ -6,6 +6,7 @@
 
 #include <QList>
 #include <QSharedPointer>
+#include <QSize>
 #include <QString>
 #include <QVariant>
 
@@ -16,6 +17,7 @@ struct Blob
     QString mimeType;
     QString alt;
     int size = 0;
+    QSize aspect_ratio;
 };
 enum ThreadGateType : int {
     Everybody,

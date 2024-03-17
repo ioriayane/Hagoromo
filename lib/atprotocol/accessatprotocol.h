@@ -95,6 +95,7 @@ protected:
     bool checkReply(HttpReply *reply);
 
     void setJsonBlob(const AtProtocolType::Blob &blob, QJsonObject &json_blob);
+    void setJsonAspectRatio(const QSize &aspect_ratio, QJsonObject &json_aspect_ratio);
 
     QJsonObject makeThreadGateJsonObject(const QString &uri,
                                          const AtProtocolType::ThreadGateType type,
