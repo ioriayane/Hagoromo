@@ -39,6 +39,7 @@ struct AccountData
     QStringList post_languages; // BCP47形式で3つまで
     QString thread_gate_type; // everybody, nobody, choice
     QStringList thread_gate_options; // mentioned, followed, at://uri
+    QStringList labeler_dids; // ラベラーのdid
 
     AccountStatus status = AccountStatus::Unknown;
 };
@@ -53,6 +54,8 @@ public:
     void setAccount(const AccountData &account);
     void setSession(const QString &did, const QString &handle, const QString &email,
                     const QString &access_jwt, const QString &refresh_jwt);
+    const QStringList &labelers() const;
+    void setLabelers(const QStringList &dids);
     QString service() const;
     void setService(const QString &newService);
     QString did() const;
@@ -93,8 +96,9 @@ protected:
 
     void setJsonBlob(const AtProtocolType::Blob &blob, QJsonObject &json_blob);
 
-    QJsonObject makeThreadGateJsonObject(const QString &uri, const AtProtocolType::ThreadGateType type,
-                                      const QList<AtProtocolType::ThreadGateAllow> &allow_rules);
+    QJsonObject makeThreadGateJsonObject(const QString &uri,
+                                         const AtProtocolType::ThreadGateType type,
+                                         const QList<AtProtocolType::ThreadGateAllow> &allow_rules);
 
 private:
     static HttpAccessManager *m_manager;

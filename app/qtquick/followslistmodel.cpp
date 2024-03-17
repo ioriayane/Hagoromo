@@ -138,6 +138,7 @@ bool FollowsListModel::getLatest()
             profiles->deleteLater();
         });
         profiles->setAccount(account());
+        profiles->setLabelers(m_contentFilterLabels.labelerDids());
         profiles->getFollows(targetDid(), 50, QString());
     });
     return true;
@@ -162,6 +163,7 @@ bool FollowsListModel::getNext()
             profiles->deleteLater();
         });
         profiles->setAccount(account());
+        profiles->setLabelers(m_contentFilterLabels.labelerDids());
         profiles->getFollows(targetDid(), 50, m_cursor);
     });
     return true;
@@ -246,6 +248,7 @@ void FollowsListModel::getProfiles()
         posts->deleteLater();
     });
     posts->setAccount(account());
+    posts->setLabelers(m_contentFilterLabels.labelerDids());
     posts->getProfiles(dids);
 }
 

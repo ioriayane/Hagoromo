@@ -534,10 +534,15 @@ void atprotocol_test::test_ConfigurableLabels()
     QVERIFY(labels.visibility("!warn", true) == ConfigurableLabelStatus::Show);
     QVERIFY(labels.message("!warn", false) == "Content warning");
     QVERIFY(labels.message("!warn", true) == QString());
+
+    QVERIFY(labels.indexOf("suggestive", "") >= 0);
+    QVERIFY(labels.indexOf("suggestive", "did:plc:hoge") == -1);
+    QVERIFY(labels.indexOf("suggestive", "unkown") >= 0);
 }
 
 void atprotocol_test::test_ConfigurableLabels_load()
 {
+    QString labeler_did;
     ConfigurableLabels labels;
     labels.setAccount(m_account);
     {
@@ -555,6 +560,7 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QVERIFY(labels.visibility("nudity", true) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("sexual", true) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("gore", true) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("graphic-media", true) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("self-harm", true) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("torture", true) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("corpse", true) == ConfigurableLabelStatus::Hide);
@@ -564,6 +570,19 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QVERIFY(labels.visibility("behavior-intolerant", false) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("spam", false) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("impersonation", false) == ConfigurableLabelStatus::Hide);
+
+        labeler_did = "did:plc:ar7c4by46qjdydhdevvrndac";
+        QVERIFY(labels.visibility("inauthentic", false, labeler_did)
+                == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("misleading", false, labeler_did)
+                == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("rumor", false, labeler_did) == ConfigurableLabelStatus::Hide);
+        // 以下デフォルト設定
+        QVERIFY(labels.visibility("spam", false, labeler_did) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("self-harm", false, labeler_did)
+                == ConfigurableLabelStatus::Warning);
+        QVERIFY(labels.visibility("sexual-figurative", false, labeler_did)
+                == ConfigurableLabelStatus::Show);
     }
     //
     {
@@ -581,6 +600,7 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QVERIFY(labels.visibility("nudity", true) == ConfigurableLabelStatus::Show);
         QVERIFY(labels.visibility("sexual", true) == ConfigurableLabelStatus::Show);
         QVERIFY(labels.visibility("gore", true) == ConfigurableLabelStatus::Show);
+        QVERIFY(labels.visibility("graphic-media", true) == ConfigurableLabelStatus::Show);
         QVERIFY(labels.visibility("self-harm", true) == ConfigurableLabelStatus::Show);
         QVERIFY(labels.visibility("torture", true) == ConfigurableLabelStatus::Show);
         QVERIFY(labels.visibility("corpse", true) == ConfigurableLabelStatus::Show);
@@ -590,6 +610,13 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QVERIFY(labels.visibility("behavior-intolerant", false) == ConfigurableLabelStatus::Show);
         QVERIFY(labels.visibility("spam", false) == ConfigurableLabelStatus::Show);
         QVERIFY(labels.visibility("impersonation", false) == ConfigurableLabelStatus::Show);
+
+        labeler_did = "did:plc:ar7c4by46qjdydhdevvrndac";
+        QVERIFY(labels.visibility("inauthentic", false, labeler_did)
+                == ConfigurableLabelStatus::Show);
+        QVERIFY(labels.visibility("misleading", false, labeler_did)
+                == ConfigurableLabelStatus::Show);
+        QVERIFY(labels.visibility("rumor", false, labeler_did) == ConfigurableLabelStatus::Show);
     }
     //
     {
@@ -608,6 +635,7 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QVERIFY(labels.visibility("nudity", true) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("sexual", true) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("gore", true) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("graphic-media", true) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("self-harm", true) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("torture", true) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("corpse", true) == ConfigurableLabelStatus::Hide);
@@ -617,6 +645,13 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QVERIFY(labels.visibility("behavior-intolerant", false) == ConfigurableLabelStatus::Show);
         QVERIFY(labels.visibility("spam", false) == ConfigurableLabelStatus::Show);
         QVERIFY(labels.visibility("impersonation", false) == ConfigurableLabelStatus::Show);
+
+        labeler_did = "did:plc:ar7c4by46qjdydhdevvrndac";
+        QVERIFY(labels.visibility("inauthentic", false, labeler_did)
+                == ConfigurableLabelStatus::Show);
+        QVERIFY(labels.visibility("misleading", false, labeler_did)
+                == ConfigurableLabelStatus::Show);
+        QVERIFY(labels.visibility("rumor", false, labeler_did) == ConfigurableLabelStatus::Show);
     }
     //
     {
@@ -634,6 +669,7 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QVERIFY(labels.visibility("nudity", true) == ConfigurableLabelStatus::Warning);
         QVERIFY(labels.visibility("sexual", true) == ConfigurableLabelStatus::Warning);
         QVERIFY(labels.visibility("gore", true) == ConfigurableLabelStatus::Warning);
+        QVERIFY(labels.visibility("graphic-media", true) == ConfigurableLabelStatus::Warning);
         QVERIFY(labels.visibility("self-harm", true) == ConfigurableLabelStatus::Warning);
         QVERIFY(labels.visibility("torture", true) == ConfigurableLabelStatus::Warning);
         QVERIFY(labels.visibility("corpse", true) == ConfigurableLabelStatus::Warning);
@@ -644,6 +680,13 @@ void atprotocol_test::test_ConfigurableLabels_load()
                 == ConfigurableLabelStatus::Warning);
         QVERIFY(labels.visibility("spam", false) == ConfigurableLabelStatus::Warning);
         QVERIFY(labels.visibility("impersonation", false) == ConfigurableLabelStatus::Warning);
+
+        labeler_did = "did:plc:ar7c4by46qjdydhdevvrndac";
+        QVERIFY(labels.visibility("inauthentic", false, labeler_did)
+                == ConfigurableLabelStatus::Warning);
+        QVERIFY(labels.visibility("misleading", false, labeler_did)
+                == ConfigurableLabelStatus::Warning);
+        QVERIFY(labels.visibility("rumor", false, labeler_did) == ConfigurableLabelStatus::Warning);
     }
     //
     {
@@ -766,6 +809,24 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QVERIFY(labels.getMutedWordItem(i).targets.length() == 0);
         QVERIFY(labels.getMutedWordItem(i).targets == QList<MutedWordTarget>());
     }
+
+    {
+        // loadしないとラベラー情報無いのでコピーテスト
+        ConfigurableLabels dest;
+        QString did = "did:plc:ar7c4by46qjdydhdevvrndac";
+        QVERIFY(dest.targetLabelerCount() == 0);
+        QVERIFY(dest.labelerCount() == 0);
+        dest = labels;
+        QVERIFY(dest.targetLabelerCount() == 2);
+        QVERIFY(dest.targetLabelerDid(0) == "did:plc:ar7c4by46qjdydhdevvrndac");
+        QVERIFY(dest.targetLabelerDid(1) == "did:plc:original_labeler_did");
+        QVERIFY(dest.labelerCount() == 1);
+        QVERIFY(dest.labelerDids() == QStringList() << "did:plc:ar7c4by46qjdydhdevvrndac");
+        QVERIFY(dest.labelerHandle(did) == "moderation.bsky.app");
+        QVERIFY(dest.labelerDescription(did)
+                == "Official Bluesky Moderation Service. Required part of the Bluesky Social app.");
+        QVERIFY(dest.labelerDisplayName(did) == "Bluesky Moderation Service");
+    }
 }
 
 void atprotocol_test::test_ConfigurableLabels_copy()
@@ -802,6 +863,7 @@ void atprotocol_test::test_ConfigurableLabels_copy()
     QVERIFY(dest.visibility("spam", false) == ConfigurableLabelStatus::Hide);
     QVERIFY(dest.visibility("impersonation", false) == ConfigurableLabelStatus::Hide);
 
+    QVERIFY(dest.labelerCount() == 0);
     QVERIFY(dest.mutedWordCount() == 0);
 
     dest = src;
@@ -821,6 +883,7 @@ void atprotocol_test::test_ConfigurableLabels_copy()
     QVERIFY(dest.visibility("spam", false) == ConfigurableLabelStatus::Show);
     QVERIFY(dest.visibility("impersonation", false) == ConfigurableLabelStatus::Show);
 
+    QVERIFY(dest.labelerCount() == 0);
     QVERIFY(dest.mutedWordCount() == 3);
     QVERIFY(dest.getMutedWordItem(0).value == "word1");
     QVERIFY(dest.getMutedWordItem(0).group == 0);
@@ -864,6 +927,7 @@ void atprotocol_test::test_ConfigurableLabels_copy()
     QVERIFY(dest.visibility("spam", false) == ConfigurableLabelStatus::Warning);
     QVERIFY(dest.visibility("impersonation", false) == ConfigurableLabelStatus::Warning);
 
+    QVERIFY(dest.labelerCount() == 0);
     QVERIFY(dest.mutedWordCount() == 3);
     QVERIFY(dest.getMutedWordItem(0).value == "word1-2");
     QVERIFY(dest.getMutedWordItem(0).group == 0);
@@ -951,6 +1015,22 @@ void atprotocol_test::test_ConfigurableLabels_save()
             labels.setStatus(i, ConfigurableLabelStatus::Warning);
         }
         labels.setService(QString("http://localhost:%1/response/labels/save/5").arg(m_listenPort));
+        QSignalSpy spy(&labels, SIGNAL(finished(bool)));
+        labels.save();
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+    {
+        labels.setEnableAdultContent(false);
+        for (int i = 0; i < labels.count(); i++) {
+            labels.setStatus(i, ConfigurableLabelStatus::Warning);
+        }
+        labels.clearMutedWord();
+        labels.setService(QString("http://localhost:%1/response/labels/save/6").arg(m_listenPort));
+        QVERIFY2(labels.mutedWordCount() == 0,
+                 QString("mutedWordCount=%1").arg(labels.mutedWordCount()).toLocal8Bit());
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
         labels.save();
         spy.wait();
@@ -1586,6 +1666,9 @@ void atprotocol_test::test_putPreferences(const QString &path, const QByteArray 
     } else if (path.contains("/save/5.1/")) {
         json_doc_expect =
                 UnitTestCommon::loadJson(":/data/labels/save/5.1/app.bsky.actor.putPreferences");
+    } else if (path.contains("/save/6/")) {
+        json_doc_expect =
+                UnitTestCommon::loadJson(":/data/labels/save/6/app.bsky.actor.putPreferences");
     } else {
         qDebug() << path;
         QVERIFY(false);

@@ -48,67 +48,70 @@ void UserProfile::getProfile(const QString &did)
         return;
     setRunning(true);
 
-    AppBskyActorGetProfile *profile = new AppBskyActorGetProfile(this);
-    connect(profile, &AppBskyActorGetProfile::finished, [=](bool success) {
-        if (success) {
-            AtProtocolType::AppBskyActorDefs::ProfileViewDetailed detail =
-                    profile->profileViewDetailed();
-            qDebug() << "Get user profile detailed" << detail.displayName << detail.description;
-            setDid(detail.did);
-            setHandle(detail.handle);
-            setDisplayName(detail.displayName);
-            setDescription(detail.description);
-            setAvatar(detail.avatar);
-            setBanner(detail.banner);
-            setFollowersCount(detail.followersCount);
-            setFollowsCount(detail.followsCount);
-            setPostsCount(detail.postsCount);
-            setIndexedAt(QDateTime::fromString(detail.indexedAt, Qt::ISODateWithMs)
-                                 .toLocalTime()
-                                 .toString("yyyy/MM/dd"));
+    updateContentFilterLabels([=]() {
+        AppBskyActorGetProfile *profile = new AppBskyActorGetProfile(this);
+        connect(profile, &AppBskyActorGetProfile::finished, [=](bool success) {
+            if (success) {
+                AtProtocolType::AppBskyActorDefs::ProfileViewDetailed detail =
+                        profile->profileViewDetailed();
+                qDebug() << "Get user profile detailed" << detail.displayName << detail.description;
+                setDid(detail.did);
+                setHandle(detail.handle);
+                setDisplayName(detail.displayName);
+                setDescription(detail.description);
+                setAvatar(detail.avatar);
+                setBanner(detail.banner);
+                setFollowersCount(detail.followersCount);
+                setFollowsCount(detail.followsCount);
+                setPostsCount(detail.postsCount);
+                setIndexedAt(QDateTime::fromString(detail.indexedAt, Qt::ISODateWithMs)
+                                     .toLocalTime()
+                                     .toString("yyyy/MM/dd"));
 
-            setFollowing(detail.viewer.following.contains(m_account.did));
-            setFollowedBy(detail.viewer.followedBy.contains(did));
-            setFollowingUri(detail.viewer.following);
-            setMuted(detail.viewer.muted);
-            setBlockedBy(detail.viewer.blockedBy);
-            setBlocking(detail.viewer.blocking.contains(m_account.did));
-            setBlockingUri(detail.viewer.blocking);
-            if (detail.labels.isEmpty()) {
-                setUserFilterMatched(false);
-                setUserFilterTitle(QString());
-            } else {
-                QString title;
-                QString val;
-                for (const auto &label : detail.labels) {
-                    if (label.val == QStringLiteral("!no-unauthenticated"))
-                        continue;
-                    val = label.val;
-                    title = m_contentFilterLabels.title(label.val, false);
-                    break;
-                }
-                if (val.isEmpty()) {
+                setFollowing(detail.viewer.following.contains(m_account.did));
+                setFollowedBy(detail.viewer.followedBy.contains(did));
+                setFollowingUri(detail.viewer.following);
+                setMuted(detail.viewer.muted);
+                setBlockedBy(detail.viewer.blockedBy);
+                setBlocking(detail.viewer.blocking.contains(m_account.did));
+                setBlockingUri(detail.viewer.blocking);
+                if (detail.labels.isEmpty()) {
                     setUserFilterMatched(false);
                     setUserFilterTitle(QString());
                 } else {
-                    setUserFilterMatched(true);
-                    if (title.isEmpty()) {
-                        setUserFilterTitle(val);
+                    QString title;
+                    QString val;
+                    for (const auto &label : detail.labels) {
+                        if (label.val == QStringLiteral("!no-unauthenticated"))
+                            continue;
+                        val = label.val;
+                        title = m_contentFilterLabels.title(label.val, false);
+                        break;
+                    }
+                    if (val.isEmpty()) {
+                        setUserFilterMatched(false);
+                        setUserFilterTitle(QString());
                     } else {
-                        setUserFilterTitle(title);
+                        setUserFilterMatched(true);
+                        if (title.isEmpty()) {
+                            setUserFilterTitle(val);
+                        } else {
+                            setUserFilterTitle(title);
+                        }
                     }
                 }
+                setBelongingLists(
+                        ListItemsCache::getInstance()->getListNames(m_account.did, detail.did));
+            } else {
+                emit errorOccured(profile->errorCode(), profile->errorMessage());
             }
-            setBelongingLists(
-                    ListItemsCache::getInstance()->getListNames(m_account.did, detail.did));
-        } else {
-            emit errorOccured(profile->errorCode(), profile->errorMessage());
-        }
-        setRunning(false);
-        profile->deleteLater();
+            setRunning(false);
+            profile->deleteLater();
+        });
+        profile->setAccount(m_account);
+        profile->setLabelers(m_contentFilterLabels.labelerDids());
+        profile->getProfile(did);
     });
-    profile->setAccount(m_account);
-    profile->getProfile(did);
 }
 
 QString UserProfile::did() const
@@ -383,6 +386,20 @@ void UserProfile::updatedBelongingLists(const QString &account_did, const QStrin
     if (m_account.did == account_did && did() == user_did) {
         setBelongingLists(ListItemsCache::getInstance()->getListNames(account_did, user_did));
     }
+}
+
+void UserProfile::updateContentFilterLabels(std::function<void()> callback)
+{
+    ConfigurableLabels *labels = new ConfigurableLabels(this);
+    connect(labels, &ConfigurableLabels::finished, this, [=](bool success) {
+        if (success) {
+            m_contentFilterLabels = *labels;
+        }
+        callback();
+        labels->deleteLater();
+    });
+    labels->setAccount(m_account);
+    labels->load();
 }
 
 QStringList UserProfile::belongingLists() const

@@ -2,6 +2,7 @@
 
 #include "atprotocol/app/bsky/actor/appbskyactorgetpreferences.h"
 #include "atprotocol/app/bsky/actor/appbskyactorputpreferences.h"
+#include "atprotocol/app/bsky/labeler/appbskylabelergetservices.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -9,11 +10,17 @@
 #include <QJsonValue>
 #include <QHash>
 
+#define GLOBAL_LABELER_KEY QStringLiteral("__globally__")
+#define BSKY_OFFICIAL_LABELER_DID QStringLiteral("did:plc:ar7c4by46qjdydhdevvrndac")
+
 using AtProtocolInterface::AppBskyActorGetPreferences;
 using AtProtocolInterface::AppBskyActorPutPreferences;
+using AtProtocolInterface::AppBskyLabelerGetServices;
+using namespace AtProtocolType;
 
 ConfigurableLabels::ConfigurableLabels(QObject *parent)
     : AtProtocolInterface::AtProtocolAccount { parent },
+      m_refreshLabelers(false),
       m_enableAdultContent(true),
       m_running(false)
 {
@@ -24,11 +31,23 @@ ConfigurableLabels::ConfigurableLabels(QObject *parent)
 ConfigurableLabels &ConfigurableLabels::operator=(ConfigurableLabels &other)
 {
     m_enableAdultContent = other.m_enableAdultContent;
-    if (m_labels.count() == other.m_labels.count()) {
-        for (int i = 0; i < m_labels.count(); i++) {
-            m_labels[i].status = other.m_labels.at(i).status;
+    m_labels.clear();
+    QMapIterator<QString, QList<ConfigurableLabelItem>> labels_i(other.m_labels);
+    while (labels_i.hasNext()) {
+        labels_i.next();
+        m_labels[labels_i.key()].clear();
+        for (const auto &label : labels_i.value()) {
+            m_labels[labels_i.key()].append(label);
         }
     }
+    m_targetLabelerDids = other.m_targetLabelerDids;
+    m_labelers.clear();
+    QMapIterator<QString, LabelerItem> labelers_i(other.m_labelers);
+    while (labelers_i.hasNext()) {
+        labelers_i.next();
+        m_labelers[labelers_i.key()] = labelers_i.value();
+    }
+
     m_mutedWords.clear();
     m_mutedWordsHash.clear();
     m_mutedWordsTagHash.clear();
@@ -41,9 +60,12 @@ ConfigurableLabels &ConfigurableLabels::operator=(ConfigurableLabels &other)
     return *this;
 }
 
-int ConfigurableLabels::count() const
+int ConfigurableLabels::count(const QString &labeler_did) const
 {
-    return m_labels.count();
+    QString key = labeler_did.isEmpty() ? GLOBAL_LABELER_KEY : labeler_did;
+    if (!m_labels.contains(key))
+        return 0;
+    return m_labels.value(key).count();
 }
 
 bool ConfigurableLabels::load()
@@ -59,47 +81,131 @@ bool ConfigurableLabels::load()
     AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
     connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
         if (success) {
-            m_enableAdultContent = pref->adultContentPref().enabled;
-            for (const auto &item : *pref->contentLabelPrefList()) {
-                int index = indexOf(item.label);
-                if (index >= 0) {
-                    ConfigurableLabelStatus status = ConfigurableLabelStatus::Hide;
-                    if (item.visibility == "show" || item.visibility == "ignore") {
-                        status = ConfigurableLabelStatus::Show;
-                    } else if (item.visibility == "warn") {
-                        status = ConfigurableLabelStatus::Warning;
-                    } else if (item.visibility == "hide") {
-                        status = ConfigurableLabelStatus::Hide;
-                    }
-                    setStatus(index, status);
+            m_targetLabelerDids.clear();
+            for (const auto &labelers_pref : *pref->labelersPrefList()) {
+                for (const auto &labeler : labelers_pref.labelers) {
+                    m_targetLabelerDids.append(labeler.did);
                 }
             }
-            int group = 0;
-            for (const auto &pref : *pref->mutedWordsPrefList()) {
-                for (const auto &item : pref.items) {
-                    MutedWordItem mute;
-                    mute.group = group;
-                    mute.value = item.value;
-                    if (item.targets.contains("content")) {
-                        mute.targets.append(MutedWordTarget::Content);
-                    }
-                    if (item.targets.contains("tag")) {
-                        mute.targets.append(MutedWordTarget::Tag);
-                    }
-                    m_mutedWords.append(mute);
-                    m_mutedWordsHash[mute.value] = mute;
-                    m_mutedWordsTagHash[removeSharp(mute.value)] = mute;
-                }
-                group++;
+            if (!m_targetLabelerDids.contains(BSKY_OFFICIAL_LABELER_DID)) {
+                m_targetLabelerDids.insert(0, BSKY_OFFICIAL_LABELER_DID);
             }
+            loadLabelers(m_targetLabelerDids, [=](bool load_labelers_success) {
+                if (load_labelers_success) {
+                    m_enableAdultContent = pref->adultContentPref().enabled;
+                    for (const auto &item : *pref->contentLabelPrefList()) {
+                        int index = indexOf(item.label, item.labelerDid);
+                        ConfigurableLabelStatus status = toLabelStatus(item.visibility);
+                        if (index >= 0) {
+                            // labelerDid.isEmptyのときもこっち
+                            setStatus(index, status, item.labelerDid);
+                        } else {
+                            ConfigurableLabelItem label;
+                            label.id = item.label;
+                            label.labeler_did = item.labelerDid;
+                            label.status = status;
+                            label.values << item.label;
+                            // app.bsky.labeler.getServicesで取得するデータ
+                            label.title = item.label.toCaseFolded();
+                            label.subtitle = label.title;
+                            label.warning = label.title;
+                            label.is_adult_imagery = false;
+                            label.configurable = true;
+                            m_labels[label.labeler_did].append(label);
+                        }
+                    }
+                    int group = 0;
+                    for (const auto &pref : *pref->mutedWordsPrefList()) {
+                        for (const auto &item : pref.items) {
+                            MutedWordItem mute;
+                            mute.group = group;
+                            mute.value = item.value;
+                            if (item.targets.contains("content")) {
+                                mute.targets.append(MutedWordTarget::Content);
+                            }
+                            if (item.targets.contains("tag")) {
+                                mute.targets.append(MutedWordTarget::Tag);
+                            }
+                            m_mutedWords.append(mute);
+                            m_mutedWordsHash[mute.value] = mute;
+                            m_mutedWordsTagHash[removeSharp(mute.value)] = mute;
+                        }
+                        group++;
+                    }
+                }
+                setRunning(false);
+                emit finished(success);
+                pref->deleteLater();
+            });
         }
-        setRunning(false);
-        emit finished(success);
-        pref->deleteLater();
     });
     pref->setAccount(account());
     pref->getPreferences();
     return true;
+}
+
+void ConfigurableLabels::loadLabelers(const QStringList &dids, std::function<void(bool)> callback)
+{
+#ifdef QT_NO_DEBUG
+    // 当面、bsky.socialでgetServicesが使えないので止める
+    callback(true);
+    return;
+#endif
+
+    if (!m_labelers.isEmpty() && !refreshLabelers()) {
+        // すでに持っている場合はリフレッシュ指示がなければ空振りする
+        callback(true);
+        return;
+    }
+
+    QStringList t_dids = dids;
+    if (!t_dids.contains(BSKY_OFFICIAL_LABELER_DID)) {
+        t_dids.append(BSKY_OFFICIAL_LABELER_DID);
+    }
+
+    AppBskyLabelerGetServices *services = new AppBskyLabelerGetServices(this);
+    connect(services, &AppBskyLabelerGetServices::finished, [=](bool success) {
+        if (success) {
+            for (const auto &labeler : *services->labelerViewDetails()) {
+                LabelerItem labeler_item;
+                labeler_item.did = labeler.creator.did;
+                labeler_item.handle = labeler.creator.handle;
+                labeler_item.display_name = labeler.creator.displayName;
+                labeler_item.description = labeler.creator.description;
+                m_labelers[labeler.creator.did] = labeler_item;
+                // クリア（内容に増減があるかもなので）
+                m_labels[labeler_item.did].clear();
+                for (const auto &policy : labeler.policies.labelValueDefinitions) {
+                    ComAtprotoLabelDefs::LabelValueDefinitionStrings label_value_def;
+                    for (const auto &locale : policy.locales) {
+                        if (QLocale(locale.lang).language() == QLocale::system().language()) {
+                            label_value_def = locale;
+                            break;
+                        }
+                    }
+                    if (label_value_def.lang.isEmpty() && !policy.locales.isEmpty()) {
+                        label_value_def = policy.locales.at(0);
+                    }
+                    ConfigurableLabelItem label_item;
+                    label_item.labeler_did = labeler_item.did;
+                    label_item.id = policy.identifier;
+                    label_item.title = label_value_def.name;
+                    label_item.subtitle = label_value_def.description;
+                    label_item.warning = label_item.title;
+                    label_item.values << policy.identifier;
+                    label_item.is_adult_imagery = (policy.blurs.toLower() == "media");
+                    label_item.level = toLabelLevel(policy.severity);
+                    label_item.default_status = toLabelStatus(policy.defaultSetting);
+                    label_item.status = label_item.default_status;
+                    m_labels[labeler_item.did].append(label_item);
+                }
+            }
+        }
+        callback(success);
+        services->deleteLater();
+    });
+    services->setAccount(account());
+    services->getServices(t_dids, true);
 }
 
 bool ConfigurableLabels::save()
@@ -125,13 +231,14 @@ bool ConfigurableLabels::save()
     return true;
 }
 
-int ConfigurableLabels::indexOf(const QString &id) const
+int ConfigurableLabels::indexOf(const QString &id, const QString &labeler_did) const
 {
     if (id.isEmpty())
         return -1;
 
+    QString key = labeler_did.startsWith("did:") ? labeler_did : GLOBAL_LABELER_KEY;
     int index = 0;
-    for (const auto &label : m_labels) {
+    for (const auto &label : m_labels[key]) {
         if (label.id == id)
             return index;
         index++;
@@ -139,52 +246,84 @@ int ConfigurableLabels::indexOf(const QString &id) const
     return -1;
 }
 
-ConfigurableLabelStatus ConfigurableLabels::visibility(const QString &label,
-                                                       const bool for_image) const
+ConfigurableLabelStatus ConfigurableLabels::visibility(const QString &label, const bool for_image,
+                                                       const QString &labeler_did) const
 {
-    ConfigurableLabelStatus result = ConfigurableLabelStatus::Show;
-    for (const auto &item : m_labels) {
-        if (item.values.contains(label) && item.is_adult_imagery == for_image) {
-            // 画像用のラベルの検索か、それ以外か。どちらか一方のみ。つまり、一致しているときだけ。
-            if (item.is_adult_imagery) {
-                if (m_enableAdultContent) {
-                    result = item.status;
+    QString key = labeler_did.isEmpty() ? GLOBAL_LABELER_KEY : labeler_did;
+
+    ConfigurableLabelStatus result = ConfigurableLabelStatus::Unknown;
+    if (m_labels.contains(key)) {
+        for (const auto &item : m_labels.value(key)) {
+            if (item.values.contains(label) && item.is_adult_imagery == for_image) {
+                // 画像用のラベルの検索か、それ以外か。どちらか一方のみ。つまり、一致しているときだけ。
+                if (item.is_adult_imagery) {
+                    if (m_enableAdultContent) {
+                        result = item.status;
+                    } else {
+                        result = ConfigurableLabelStatus::Hide;
+                    }
                 } else {
-                    result = ConfigurableLabelStatus::Hide;
+                    result = item.status;
                 }
-            } else {
-                result = item.status;
+                break;
             }
-            break;
         }
     }
-    return result;
+    if (result != ConfigurableLabelStatus::Unknown) {
+        // 見つかった
+        return result;
+    } else if (labeler_did.isEmpty()) {
+        // グローバルを検索しても見つからないときは表示
+        return ConfigurableLabelStatus::Show;
+    } else {
+        // ラベラー指定で見つからないときはグローバルを検索
+        return visibility(label, for_image, QString());
+    }
 }
 
-QString ConfigurableLabels::message(const QString &label, const bool for_image) const
+QString ConfigurableLabels::message(const QString &label, const bool for_image,
+                                    const QString &labeler_did) const
 {
+    QString key = labeler_did.isEmpty() ? GLOBAL_LABELER_KEY : labeler_did;
+
     QString result;
-    for (const auto &item : m_labels) {
-        if (item.values.contains(label) && item.is_adult_imagery == for_image) {
-            result = item.warning;
-            break;
+    if (m_labels.contains(key)) {
+        for (const auto &item : m_labels.value(key)) {
+            if (item.values.contains(label) && item.is_adult_imagery == for_image) {
+                result = item.warning;
+                break;
+            }
         }
     }
-    return result;
+    if (!result.isEmpty()) {
+        return result;
+    } else if (labeler_did.isEmpty()) {
+        return QString();
+    } else {
+        return message(label, for_image, QString());
+    }
 }
 
-QString ConfigurableLabels::title(const int index) const
+QString ConfigurableLabels::title(const int index, const QString &labeler_did) const
 {
-    if (index < 0 || index >= m_labels.length())
+    QString key = labeler_did.isEmpty() ? GLOBAL_LABELER_KEY : labeler_did;
+    if (!m_labels.contains(key))
+        return QString();
+    if (index < 0 || index >= m_labels.value(key).length())
         return QString();
 
-    return m_labels.at(index).title;
+    return m_labels.value(key).at(index).title;
 }
 
-QString ConfigurableLabels::title(const QString &label, const bool for_image) const
+QString ConfigurableLabels::title(const QString &label, const bool for_image,
+                                  const QString &labeler_did) const
 {
+    QString key = labeler_did.isEmpty() ? GLOBAL_LABELER_KEY : labeler_did;
+    if (!m_labels.contains(key))
+        return QString();
+
     QString result;
-    for (const auto &item : m_labels) {
+    for (const auto &item : m_labels.value(key)) {
         if (item.values.contains(label) && item.is_adult_imagery == for_image) {
             // 画像用のラベルの検索か、それ以外か。どちらか一方のみ。つまり、一致しているときだけ。
             if (item.is_adult_imagery) {
@@ -202,45 +341,111 @@ QString ConfigurableLabels::title(const QString &label, const bool for_image) co
     return result;
 }
 
-QString ConfigurableLabels::description(const int index) const
+QString ConfigurableLabels::description(const int index, const QString &labeler_did) const
 {
-    if (index < 0 || index >= m_labels.length())
+    QString key = labeler_did.isEmpty() ? GLOBAL_LABELER_KEY : labeler_did;
+    if (!m_labels.contains(key))
         return QString();
-    return m_labels.at(index).subtitle;
+    if (index < 0 || index >= m_labels.value(key).length())
+        return QString();
+    return m_labels.value(key).at(index).subtitle;
 }
 
-ConfigurableLabelStatus ConfigurableLabels::status(const int index) const
+ConfigurableLabelStatus ConfigurableLabels::status(const int index,
+                                                   const QString &labeler_did) const
 {
-    if (index < 0 || index >= m_labels.length())
+    QString key = labeler_did.isEmpty() ? GLOBAL_LABELER_KEY : labeler_did;
+    if (!m_labels.contains(key))
+        return ConfigurableLabelStatus::Show;
+    if (index < 0 || index >= m_labels.value(key).length())
         return ConfigurableLabelStatus::Show;
 
-    return m_labels.at(index).status;
+    return m_labels.value(key).at(index).status;
 }
 
-void ConfigurableLabels::setStatus(const int index, const ConfigurableLabelStatus status)
+void ConfigurableLabels::setStatus(const int index, const ConfigurableLabelStatus status,
+                                   const QString &labeler_did)
 {
-    if (index < 0 || index >= m_labels.length())
+    QString key = labeler_did.isEmpty() ? GLOBAL_LABELER_KEY : labeler_did;
+    if (!m_labels.contains(key))
         return;
-    if (m_labels[index].configurable == false)
+    if (index < 0 || index >= m_labels.value(key).length())
+        return;
+    if (m_labels.value(key).at(index).configurable == false)
         return;
 
-    m_labels[index].status = status;
+    m_labels[key][index].status = status;
 }
 
-bool ConfigurableLabels::isAdultImagery(const int index) const
+bool ConfigurableLabels::isAdultImagery(const int index, const QString &labeler_did) const
 {
-    if (index < 0 || index >= m_labels.length())
+    QString key = labeler_did.isEmpty() ? GLOBAL_LABELER_KEY : labeler_did;
+    if (!m_labels.contains(key))
+        return false;
+    if (index < 0 || index >= m_labels.value(key).length())
         return false;
 
-    return m_labels.at(index).is_adult_imagery;
+    return m_labels.value(key).at(index).is_adult_imagery;
 }
 
-bool ConfigurableLabels::configurable(const int index) const
+bool ConfigurableLabels::configurable(const int index, const QString &labeler_did) const
 {
-    if (index < 0 || index >= m_labels.length())
+    QString key = labeler_did.isEmpty() ? GLOBAL_LABELER_KEY : labeler_did;
+    if (!m_labels.contains(key))
+        return false;
+    if (index < 0 || index >= m_labels.value(key).length())
         return false;
 
-    return m_labels.at(index).configurable;
+    return m_labels.value(key).at(index).configurable;
+}
+
+int ConfigurableLabels::targetLabelerCount() const
+{
+    return m_targetLabelerDids.count();
+}
+
+QString ConfigurableLabels::targetLabelerDid(const int index) const
+{
+    if (index < 0 || index >= m_targetLabelerDids.count())
+        return QString();
+    return m_targetLabelerDids.at(index);
+}
+
+int ConfigurableLabels::labelerCount() const
+{
+    return m_labelers.count();
+}
+
+QStringList ConfigurableLabels::labelerDids() const
+{
+    return m_labelers.keys();
+}
+
+QString ConfigurableLabels::labelerHandle(const QString &did) const
+{
+    if (m_labelers.contains(did)) {
+        return m_labelers.value(did).handle;
+    } else {
+        return QString();
+    }
+}
+
+QString ConfigurableLabels::labelerDisplayName(const QString &did) const
+{
+    if (m_labelers.contains(did)) {
+        return m_labelers.value(did).display_name;
+    } else {
+        return QString();
+    }
+}
+
+QString ConfigurableLabels::labelerDescription(const QString &did) const
+{
+    if (m_labelers.contains(did)) {
+        return m_labelers.value(did).description;
+    } else {
+        return QString();
+    }
 }
 
 int ConfigurableLabels::mutedWordCount() const
@@ -385,6 +590,8 @@ void ConfigurableLabels::initializeLabels()
     // idはpreferenceの項目とのマッチングに使うのでconfigurable==trueの
     // もので重複させないこと
 
+    m_labels[GLOBAL_LABELER_KEY].clear();
+
     item.values.clear();
     item.id = "system";
     item.title = tr("Content hidden");
@@ -394,7 +601,7 @@ void ConfigurableLabels::initializeLabels()
     item.is_adult_imagery = false;
     item.status = ConfigurableLabelStatus::Hide;
     item.configurable = false;
-    m_labels.append(item);
+    m_labels[GLOBAL_LABELER_KEY].append(item);
 
     item.values.clear();
     item.id = "system";
@@ -405,7 +612,7 @@ void ConfigurableLabels::initializeLabels()
     item.is_adult_imagery = false;
     item.status = ConfigurableLabelStatus::Warning;
     item.configurable = false;
-    m_labels.append(item);
+    m_labels[GLOBAL_LABELER_KEY].append(item);
 
     item.values.clear();
     item.id = "legal";
@@ -417,7 +624,7 @@ void ConfigurableLabels::initializeLabels()
     item.is_adult_imagery = false;
     item.status = ConfigurableLabelStatus::Hide;
     item.configurable = false;
-    m_labels.append(item);
+    m_labels[GLOBAL_LABELER_KEY].append(item);
 
     item.values.clear();
     item.id = "nsfw";
@@ -429,7 +636,7 @@ void ConfigurableLabels::initializeLabels()
     item.is_adult_imagery = true;
     item.status = ConfigurableLabelStatus::Hide;
     item.configurable = true;
-    m_labels.append(item);
+    m_labels[GLOBAL_LABELER_KEY].append(item);
 
     item.values.clear();
     item.id = "nudity";
@@ -440,7 +647,7 @@ void ConfigurableLabels::initializeLabels()
     item.is_adult_imagery = true;
     item.status = ConfigurableLabelStatus::Hide;
     item.configurable = true;
-    m_labels.append(item);
+    m_labels[GLOBAL_LABELER_KEY].append(item);
 
     item.values.clear();
     item.id = "suggestive";
@@ -451,7 +658,7 @@ void ConfigurableLabels::initializeLabels()
     item.is_adult_imagery = true;
     item.status = ConfigurableLabelStatus::Warning;
     item.configurable = true;
-    m_labels.append(item);
+    m_labels[GLOBAL_LABELER_KEY].append(item);
 
     item.values.clear();
     item.id = "gore";
@@ -462,11 +669,12 @@ void ConfigurableLabels::initializeLabels()
                 << "self-harm"
                 << "torture"
                 << "nsfl"
-                << "corpse";
+                << "corpse"
+                << "graphic-media";
     item.is_adult_imagery = true;
     item.status = ConfigurableLabelStatus::Hide;
     item.configurable = true;
-    m_labels.append(item);
+    m_labels[GLOBAL_LABELER_KEY].append(item);
 
     item.values.clear();
     item.id = "hate";
@@ -486,7 +694,7 @@ void ConfigurableLabels::initializeLabels()
     item.is_adult_imagery = false;
     item.status = ConfigurableLabelStatus::Hide;
     item.configurable = true;
-    m_labels.append(item);
+    m_labels[GLOBAL_LABELER_KEY].append(item);
 
     item.values.clear();
     item.id = "spam";
@@ -498,7 +706,7 @@ void ConfigurableLabels::initializeLabels()
     item.is_adult_imagery = false;
     item.status = ConfigurableLabelStatus::Hide;
     item.configurable = true;
-    m_labels.append(item);
+    m_labels[GLOBAL_LABELER_KEY].append(item);
 
     item.values.clear();
     item.id = "impersonation";
@@ -512,7 +720,7 @@ void ConfigurableLabels::initializeLabels()
     item.is_adult_imagery = false;
     item.status = ConfigurableLabelStatus::Hide;
     item.configurable = true;
-    m_labels.append(item);
+    m_labels[GLOBAL_LABELER_KEY].append(item);
 }
 
 bool ConfigurableLabels::putPreferences(const QString &json)
@@ -566,24 +774,31 @@ QString ConfigurableLabels::updatePreferencesJson(const QString &src_json)
                 value.insert("enabled", QJsonValue(enableAdultContent()));
                 dest_preferences.append(value);
             }
-            for (const auto &label : qAsConst(m_labels)) {
-                if (!label.configurable)
-                    continue;
-                QJsonObject value;
-                value.insert("$type", QStringLiteral("app.bsky.actor.defs#contentLabelPref"));
-                value.insert("label", QJsonValue(label.id));
-                if (label.status == ConfigurableLabelStatus::Hide) {
-                    value.insert("visibility", QJsonValue("hide"));
-                } else if (label.status == ConfigurableLabelStatus::Warning) {
-                    value.insert("visibility", QJsonValue("warn"));
-                } else if (label.status == ConfigurableLabelStatus::Show) {
-                    value.insert("visibility", QJsonValue("ignore"));
+            QMapIterator<QString, QList<ConfigurableLabelItem>> i(m_labels);
+            while (i.hasNext()) {
+                i.next();
+                for (const auto &label : i.value()) {
+                    if (!label.configurable || label.status == label.default_status)
+                        continue;
+                    QJsonObject value;
+                    value.insert("$type", QStringLiteral("app.bsky.actor.defs#contentLabelPref"));
+                    value.insert("label", QJsonValue(label.id));
+                    if (!label.labeler_did.isEmpty()) {
+                        value.insert("labelerDid", label.labeler_did);
+                    }
+                    if (label.status == ConfigurableLabelStatus::Hide) {
+                        value.insert("visibility", QJsonValue("hide"));
+                    } else if (label.status == ConfigurableLabelStatus::Warning) {
+                        value.insert("visibility", QJsonValue("warn"));
+                    } else if (label.status == ConfigurableLabelStatus::Show) {
+                        value.insert("visibility", QJsonValue("ignore"));
+                    }
+                    dest_preferences.append(value);
                 }
-                dest_preferences.append(value);
             }
             {
                 QMap<int, QJsonArray> muted_items;
-                for (const auto &muted_word : m_mutedWords) {
+                for (const auto &muted_word : qAsConst(m_mutedWords)) {
                     QJsonObject item;
                     item.insert("value", muted_word.value);
                     QJsonArray targets;
@@ -619,6 +834,42 @@ QString ConfigurableLabels::updatePreferencesJson(const QString &src_json)
 inline QString ConfigurableLabels::removeSharp(const QString &value) const
 {
     return value.at(0) == "#" ? value.right(value.length() - 1) : value;
+}
+
+ConfigurableLabelStatus ConfigurableLabels::toLabelStatus(const QString &visibility) const
+{
+    ConfigurableLabelStatus status = ConfigurableLabelStatus::Hide;
+    if (visibility == "show" || visibility == "ignore") {
+        status = ConfigurableLabelStatus::Show;
+    } else if (visibility == "warn") {
+        status = ConfigurableLabelStatus::Warning;
+    } else if (visibility == "hide") {
+        status = ConfigurableLabelStatus::Hide;
+    }
+    return status;
+}
+
+ConfigurableLabelLevel ConfigurableLabels::toLabelLevel(const QString &severity) const
+{
+    ConfigurableLabelLevel level = ConfigurableLabelLevel::Alert;
+    if (severity == "alert") {
+        level = ConfigurableLabelLevel::Alert;
+    } else if (severity == "inform") {
+        level = ConfigurableLabelLevel::Inform;
+    } else if (severity == "none") {
+        level = ConfigurableLabelLevel::None;
+    }
+    return level;
+}
+
+bool ConfigurableLabels::refreshLabelers() const
+{
+    return m_refreshLabelers;
+}
+
+void ConfigurableLabels::setRefreshLabelers(bool newRefreshLabelers)
+{
+    m_refreshLabelers = newRefreshLabelers;
 }
 
 bool ConfigurableLabels::running() const

@@ -129,6 +129,8 @@ public slots:
     void updatedBelongingLists(const QString &account_did, const QString &user_did);
 
 private:
+    void updateContentFilterLabels(std::function<void()> callback);
+
     SystemTool m_systemTool;
     AtProtocolInterface::AccountData m_account;
     ConfigurableLabels m_contentFilterLabels;

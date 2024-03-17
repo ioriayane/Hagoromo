@@ -25,6 +25,7 @@ bool PostThreadListModel::getLatest()
             thread->deleteLater();
         });
         thread->setAccount(account());
+        thread->setLabelers(m_contentFilterLabels.labelerDids());
         thread->getPostThread(postThreadUri());
     });
     return true;

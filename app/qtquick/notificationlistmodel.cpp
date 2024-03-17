@@ -569,6 +569,7 @@ bool NotificationListModel::getLatest()
             notification->deleteLater();
         });
         notification->setAccount(account());
+        notification->setLabelers(m_contentFilterLabels.labelerDids());
         notification->listNotifications(QString());
     });
     return true;
@@ -694,6 +695,7 @@ bool NotificationListModel::getNext()
             notification->deleteLater();
         });
         notification->setAccount(account());
+        notification->setLabelers(m_contentFilterLabels.labelerDids());
         notification->listNotifications(m_cursor);
     });
     return true;
@@ -866,13 +868,15 @@ bool NotificationListModel::checkVisibility(const QString &cid)
         return false;
 
     for (const auto &label : current.author.labels) {
-        if (m_contentFilterLabels.visibility(label.val, false) == ConfigurableLabelStatus::Hide) {
+        if (m_contentFilterLabels.visibility(label.val, false, label.src)
+            == ConfigurableLabelStatus::Hide) {
             qDebug() << "Hide notification by user's label. " << current.author.handle << cid;
             return false;
         }
     }
     for (const auto &label : current.labels) {
-        if (m_contentFilterLabels.visibility(label.val, true) == ConfigurableLabelStatus::Hide) {
+        if (m_contentFilterLabels.visibility(label.val, true, label.src)
+            == ConfigurableLabelStatus::Hide) {
             qDebug() << "Hide notification by post's label. " << current.author.handle << cid;
             return false;
         }
@@ -975,6 +979,7 @@ void NotificationListModel::getPosts()
         posts->deleteLater();
     });
     posts->setAccount(account());
+    posts->setLabelers(m_contentFilterLabels.labelerDids());
     posts->getPosts(uris);
 }
 

@@ -33,6 +33,12 @@ AppBskyActorGetPreferences::contentLabelPrefList() const
     return &m_contentLabelPrefList;
 }
 
+const QList<AtProtocolType::AppBskyActorDefs::LabelersPref> *
+AppBskyActorGetPreferences::labelersPrefList() const
+{
+    return &m_labelersPrefList;
+}
+
 const AtProtocolType::AppBskyActorDefs::AdultContentPref
 AppBskyActorGetPreferences::adultContentPref() const
 {
@@ -65,6 +71,10 @@ bool AppBskyActorGetPreferences::parseJson(bool success, const QString reply_jso
                 AtProtocolType::AppBskyActorDefs::copyContentLabelPref(value.toObject(),
                                                                        content_label);
                 m_contentLabelPrefList.append(content_label);
+            } else if (type == "app.bsky.actor.defs#labelersPref") {
+                AtProtocolType::AppBskyActorDefs::LabelersPref labeler;
+                AtProtocolType::AppBskyActorDefs::copyLabelersPref(value.toObject(), labeler);
+                m_labelersPrefList.append(labeler);
             } else if (type == "app.bsky.actor.defs#mutedWordsPref") {
                 AtProtocolType::AppBskyActorDefs::MutedWordsPref muted_words;
                 AtProtocolType::AppBskyActorDefs::copyMutedWordsPref(value.toObject(), muted_words);

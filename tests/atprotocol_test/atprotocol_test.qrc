@@ -39,5 +39,21 @@
         <file>response/labels/save/5/xrpc/app.bsky.actor.getPreferences</file>
         <file>response/labels/save/5.1/xrpc/app.bsky.actor.getPreferences</file>
         <file>response/labels/mutedword/3/xrpc/app.bsky.actor.getPreferences</file>
+        <file>response/labels/save/6/xrpc/app.bsky.actor.getPreferences</file>
+        <file>data/labels/save/6/app.bsky.actor.putPreferences</file>
+        <file>response/labels/hide/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/labels/mutedword/1/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/labels/mutedword/2/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/labels/mutedword/3/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/labels/show_adult_false/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/labels/show/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/labels/warn/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/labels/save/6/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/labels/save/5/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/labels/save/5.1/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/labels/save/4/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/labels/save/3/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/labels/save/2/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/labels/save/1/xrpc/app.bsky.labeler.getServices</file>
     </qresource>
 </RCC>

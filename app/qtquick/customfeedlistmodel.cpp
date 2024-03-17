@@ -40,6 +40,7 @@ bool CustomFeedListModel::getLatest()
             feed->deleteLater();
         });
         feed->setAccount(account());
+        feed->setLabelers(m_contentFilterLabels.labelerDids());
         feed->getFeed(uri(), 50, QString());
     });
     return true;

@@ -358,7 +358,8 @@ ConfigurableLabelStatus AtpAbstractListModel::getContentFilterStatus(
         const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels, const bool for_media) const
 {
     for (const auto &label : labels) {
-        ConfigurableLabelStatus status = m_contentFilterLabels.visibility(label.val, for_media);
+        ConfigurableLabelStatus status =
+                m_contentFilterLabels.visibility(label.val, for_media, label.src);
         if (status != ConfigurableLabelStatus::Show) {
             return status;
         }
@@ -369,13 +370,7 @@ ConfigurableLabelStatus AtpAbstractListModel::getContentFilterStatus(
 bool AtpAbstractListModel::getContentFilterMatched(
         const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels, const bool for_media) const
 {
-    for (const auto &label : labels) {
-        if (m_contentFilterLabels.visibility(label.val, for_media)
-            != ConfigurableLabelStatus::Show) {
-            return true;
-        }
-    }
-    return false;
+    return (getContentFilterStatus(labels, for_media) != ConfigurableLabelStatus::Show);
 }
 
 QString AtpAbstractListModel::getContentFilterMessage(
@@ -383,7 +378,7 @@ QString AtpAbstractListModel::getContentFilterMessage(
 {
     QString message;
     for (const auto &label : labels) {
-        message = m_contentFilterLabels.message(label.val, for_media);
+        message = m_contentFilterLabels.message(label.val, for_media, label.src);
         if (!message.isEmpty()) {
             break;
         }

@@ -18,9 +18,14 @@ ContentFilterSettingListModel::ContentFilterSettingListModel(QObject *parent)
                     endInsertRows();
                 }
             } else {
+                if (m_contentFilterLabels.count() == 0) {
+                } else if (m_saving) {
+                    emit dataChanged(index(0), index(rowCount() - 1));
+                } else {
+                    beginInsertRows(QModelIndex(), 0, m_contentFilterLabels.count() - 1);
+                    endInsertRows();
+                }
                 emit enableAdultContentChanged();
-                // コンテンツフィルターのデータは最初から存在しているからdataChangedでOK
-                emit dataChanged(index(0), index(rowCount() - 1));
             }
         }
         m_saving = false;
@@ -92,8 +97,16 @@ void ContentFilterSettingListModel::load()
 
     m_saving = false;
     if (m_contentFilterLabels.mutedWordCount() > 0) {
-        beginRemoveRows(QModelIndex(), 0, m_contentFilterLabels.mutedWordCount() - 1);
-        endRemoveRows();
+        if (strcmp(this->metaObject()->className(), "MutedWordListModel") == 0) {
+            beginRemoveRows(QModelIndex(), 0, m_contentFilterLabels.mutedWordCount() - 1);
+            endRemoveRows();
+        }
+    }
+    if (m_contentFilterLabels.count() > 0) {
+        if (strcmp(this->metaObject()->className(), "MutedWordListModel") != 0) {
+            beginRemoveRows(QModelIndex(), 0, m_contentFilterLabels.count() - 1);
+            endRemoveRows();
+        }
     }
 
     m_contentFilterLabels.setService(service());

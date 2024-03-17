@@ -39,6 +39,7 @@ bool AuthorFeedListModel::getLatest()
             filter_type = AppBskyFeedGetAuthorFeed::FilterType::PostsWithReplies;
         }
         timeline->setAccount(account());
+        timeline->setLabelers(m_contentFilterLabels.labelerDids());
         timeline->getAuthorFeed(authorDid(), -1, QString(), filter_type);
     });
     return true;
@@ -72,6 +73,7 @@ bool AuthorFeedListModel::getNext()
             filter_type = AppBskyFeedGetAuthorFeed::FilterType::PostsWithReplies;
         }
         timeline->setAccount(account());
+        timeline->setLabelers(m_contentFilterLabels.labelerDids());
         timeline->getAuthorFeed(authorDid(), -1, m_cursor, filter_type);
     });
     return true;

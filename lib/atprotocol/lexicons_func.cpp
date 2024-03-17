@@ -29,6 +29,11 @@ void copyListViewBasic(const QJsonObject &src, AppBskyGraphDefs::ListViewBasic &
         dest.name = src.value("name").toString();
         copyListPurpose(src.value("purpose"), dest.purpose);
         dest.avatar = src.value("avatar").toString();
+        for (const auto &s : src.value("labels").toArray()) {
+            ComAtprotoLabelDefs::Label child;
+            ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
+            dest.labels.append(child);
+        }
         copyListViewerState(src.value("viewer").toObject(), dest.viewer);
         dest.indexedAt = src.value("indexedAt").toString();
     }
@@ -52,6 +57,11 @@ void copyListView(const QJsonObject &src, AppBskyGraphDefs::ListView &dest)
             dest.descriptionFacets.append(child);
         }
         dest.avatar = src.value("avatar").toString();
+        for (const auto &s : src.value("labels").toArray()) {
+            ComAtprotoLabelDefs::Label child;
+            ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
+            dest.labels.append(child);
+        }
         copyListViewerState(src.value("viewer").toObject(), dest.viewer);
         dest.indexedAt = src.value("indexedAt").toString();
     }
@@ -79,6 +89,67 @@ void copyRelationship(const QJsonObject &src, AppBskyGraphDefs::Relationship &de
         dest.did = src.value("did").toString();
         dest.following = src.value("following").toString();
         dest.followedBy = src.value("followedBy").toString();
+    }
+}
+}
+// com.atproto.label.defs
+namespace ComAtprotoLabelDefs {
+void copyLabel(const QJsonObject &src, ComAtprotoLabelDefs::Label &dest)
+{
+    if (!src.isEmpty()) {
+        dest.ver = src.value("ver").toInt();
+        dest.src = src.value("src").toString();
+        dest.uri = src.value("uri").toString();
+        dest.cid = src.value("cid").toString();
+        dest.val = src.value("val").toString();
+        dest.neg = src.value("neg").toBool();
+        dest.cts = src.value("cts").toString();
+        dest.exp = src.value("exp").toString();
+    }
+}
+void copySelfLabel(const QJsonObject &src, ComAtprotoLabelDefs::SelfLabel &dest)
+{
+    if (!src.isEmpty()) {
+        dest.val = src.value("val").toString();
+    }
+}
+void copySelfLabels(const QJsonObject &src, ComAtprotoLabelDefs::SelfLabels &dest)
+{
+    if (!src.isEmpty()) {
+        for (const auto &s : src.value("values").toArray()) {
+            SelfLabel child;
+            copySelfLabel(s.toObject(), child);
+            dest.values.append(child);
+        }
+    }
+}
+void copyLabelValue(const QJsonValue &src, ComAtprotoLabelDefs::LabelValue &dest)
+{
+    dest = src.toString();
+}
+void copyLabelValueDefinitionStrings(const QJsonObject &src,
+                                     ComAtprotoLabelDefs::LabelValueDefinitionStrings &dest)
+{
+    if (!src.isEmpty()) {
+        dest.lang = src.value("lang").toString();
+        dest.name = src.value("name").toString();
+        dest.description = src.value("description").toString();
+    }
+}
+void copyLabelValueDefinition(const QJsonObject &src,
+                              ComAtprotoLabelDefs::LabelValueDefinition &dest)
+{
+    if (!src.isEmpty()) {
+        dest.identifier = src.value("identifier").toString();
+        dest.severity = src.value("severity").toString();
+        dest.blurs = src.value("blurs").toString();
+        dest.defaultSetting = src.value("defaultSetting").toString();
+        dest.adultOnly = src.value("adultOnly").toBool();
+        for (const auto &s : src.value("locales").toArray()) {
+            LabelValueDefinitionStrings child;
+            copyLabelValueDefinitionStrings(s.toObject(), child);
+            dest.locales.append(child);
+        }
     }
 }
 }
@@ -129,6 +200,14 @@ void copyProfileView(const QJsonObject &src, AppBskyActorDefs::ProfileView &dest
         }
     }
 }
+void copyProfileAssociated(const QJsonObject &src, AppBskyActorDefs::ProfileAssociated &dest)
+{
+    if (!src.isEmpty()) {
+        dest.lists = src.value("lists").toInt();
+        dest.feedgens = src.value("feedgens").toInt();
+        dest.labeler = src.value("labeler").toBool();
+    }
+}
 void copyProfileViewDetailed(const QJsonObject &src, AppBskyActorDefs::ProfileViewDetailed &dest)
 {
     if (!src.isEmpty()) {
@@ -141,6 +220,7 @@ void copyProfileViewDetailed(const QJsonObject &src, AppBskyActorDefs::ProfileVi
         dest.followersCount = src.value("followersCount").toInt();
         dest.followsCount = src.value("followsCount").toInt();
         dest.postsCount = src.value("postsCount").toInt();
+        copyProfileAssociated(src.value("associated").toObject(), dest.associated);
         dest.indexedAt = src.value("indexedAt").toString();
         copyViewerState(src.value("viewer").toObject(), dest.viewer);
         for (const auto &s : src.value("labels").toArray()) {
@@ -159,6 +239,7 @@ void copyAdultContentPref(const QJsonObject &src, AppBskyActorDefs::AdultContent
 void copyContentLabelPref(const QJsonObject &src, AppBskyActorDefs::ContentLabelPref &dest)
 {
     if (!src.isEmpty()) {
+        dest.labelerDid = src.value("labelerDid").toString();
         dest.label = src.value("label").toString();
         dest.visibility = src.value("visibility").toString();
     }
@@ -240,33 +321,19 @@ void copyHiddenPostsPref(const QJsonObject &src, AppBskyActorDefs::HiddenPostsPr
         }
     }
 }
-}
-// com.atproto.label.defs
-namespace ComAtprotoLabelDefs {
-void copyLabel(const QJsonObject &src, ComAtprotoLabelDefs::Label &dest)
+void copyLabelerPrefItem(const QJsonObject &src, AppBskyActorDefs::LabelerPrefItem &dest)
 {
     if (!src.isEmpty()) {
-        dest.src = src.value("src").toString();
-        dest.uri = src.value("uri").toString();
-        dest.cid = src.value("cid").toString();
-        dest.val = src.value("val").toString();
-        dest.neg = src.value("neg").toBool();
-        dest.cts = src.value("cts").toString();
+        dest.did = src.value("did").toString();
     }
 }
-void copySelfLabel(const QJsonObject &src, ComAtprotoLabelDefs::SelfLabel &dest)
+void copyLabelersPref(const QJsonObject &src, AppBskyActorDefs::LabelersPref &dest)
 {
     if (!src.isEmpty()) {
-        dest.val = src.value("val").toString();
-    }
-}
-void copySelfLabels(const QJsonObject &src, ComAtprotoLabelDefs::SelfLabels &dest)
-{
-    if (!src.isEmpty()) {
-        for (const auto &s : src.value("values").toArray()) {
-            SelfLabel child;
-            copySelfLabel(s.toObject(), child);
-            dest.values.append(child);
+        for (const auto &s : src.value("labelers").toArray()) {
+            LabelerPrefItem child;
+            copyLabelerPrefItem(s.toObject(), child);
+            dest.labelers.append(child);
         }
     }
 }
@@ -482,6 +549,12 @@ void copyView(const QJsonObject &src, AppBskyEmbedRecord::View &dest)
             AppBskyGraphDefs::copyListView(src.value("record").toObject(),
                                            dest.record_AppBskyGraphDefs_ListView);
         }
+        if (record_type == QStringLiteral("app.bsky.labeler.defs#labelerView")) {
+            dest.record_type =
+                    AppBskyEmbedRecord::ViewRecordType::record_AppBskyLabelerDefs_LabelerView;
+            AppBskyLabelerDefs::copyLabelerView(src.value("record").toObject(),
+                                                dest.record_AppBskyLabelerDefs_LabelerView);
+        }
     }
 }
 }
@@ -561,6 +634,11 @@ void copyGeneratorView(const QJsonObject &src, AppBskyFeedDefs::GeneratorView &d
         }
         dest.avatar = src.value("avatar").toString();
         dest.likeCount = src.value("likeCount").toInt();
+        for (const auto &s : src.value("labels").toArray()) {
+            ComAtprotoLabelDefs::Label child;
+            ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
+            dest.labels.append(child);
+        }
         copyGeneratorViewerState(src.value("viewer").toObject(), dest.viewer);
         dest.indexedAt = src.value("indexedAt").toString();
     }
@@ -832,6 +910,63 @@ void copyMain(const QJsonObject &src, AppBskyRichtextFacet::Main &dest)
     }
 }
 }
+// app.bsky.labeler.defs
+namespace AppBskyLabelerDefs {
+void copyLabelerViewerState(const QJsonObject &src, AppBskyLabelerDefs::LabelerViewerState &dest)
+{
+    if (!src.isEmpty()) {
+        dest.like = src.value("like").toString();
+    }
+}
+void copyLabelerView(const QJsonObject &src, AppBskyLabelerDefs::LabelerView &dest)
+{
+    if (!src.isEmpty()) {
+        dest.uri = src.value("uri").toString();
+        dest.cid = src.value("cid").toString();
+        AppBskyActorDefs::copyProfileView(src.value("creator").toObject(), dest.creator);
+        dest.likeCount = src.value("likeCount").toInt();
+        copyLabelerViewerState(src.value("viewer").toObject(), dest.viewer);
+        dest.indexedAt = src.value("indexedAt").toString();
+        for (const auto &s : src.value("labels").toArray()) {
+            ComAtprotoLabelDefs::Label child;
+            ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
+            dest.labels.append(child);
+        }
+    }
+}
+void copyLabelerPolicies(const QJsonObject &src, AppBskyLabelerDefs::LabelerPolicies &dest)
+{
+    if (!src.isEmpty()) {
+        for (const auto &s : src.value("labelValues").toArray()) {
+            ComAtprotoLabelDefs::LabelValue child;
+            ComAtprotoLabelDefs::copyLabelValue(s, child);
+            dest.labelValues.append(child);
+        }
+        for (const auto &s : src.value("labelValueDefinitions").toArray()) {
+            ComAtprotoLabelDefs::LabelValueDefinition child;
+            ComAtprotoLabelDefs::copyLabelValueDefinition(s.toObject(), child);
+            dest.labelValueDefinitions.append(child);
+        }
+    }
+}
+void copyLabelerViewDetailed(const QJsonObject &src, AppBskyLabelerDefs::LabelerViewDetailed &dest)
+{
+    if (!src.isEmpty()) {
+        dest.uri = src.value("uri").toString();
+        dest.cid = src.value("cid").toString();
+        AppBskyActorDefs::copyProfileView(src.value("creator").toObject(), dest.creator);
+        AppBskyLabelerDefs::copyLabelerPolicies(src.value("policies").toObject(), dest.policies);
+        dest.likeCount = src.value("likeCount").toInt();
+        copyLabelerViewerState(src.value("viewer").toObject(), dest.viewer);
+        dest.indexedAt = src.value("indexedAt").toString();
+        for (const auto &s : src.value("labels").toArray()) {
+            ComAtprotoLabelDefs::Label child;
+            ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
+            dest.labels.append(child);
+        }
+    }
+}
+}
 // app.bsky.feed.describeFeedGenerator
 namespace AppBskyFeedDescribeFeedGenerator {
 void copyFeed(const QJsonObject &src, AppBskyFeedDescribeFeedGenerator::Feed &dest)
@@ -1093,6 +1228,23 @@ void copyMain(const QJsonObject &src, AppBskyGraphListitem::Main &dest)
     }
 }
 }
+// app.bsky.labeler.service
+namespace AppBskyLabelerService {
+void copyMain(const QJsonObject &src, AppBskyLabelerService::Main &dest)
+{
+    if (!src.isEmpty()) {
+        AppBskyLabelerDefs::copyLabelerPolicies(src.value("policies").toObject(), dest.policies);
+        QString labels_type = src.value("labels").toObject().value("$type").toString();
+        if (labels_type == QStringLiteral("com.atproto.label.defs#selfLabels")) {
+            dest.labels_type =
+                    AppBskyLabelerService::MainLabelsType::labels_ComAtprotoLabelDefs_SelfLabels;
+            ComAtprotoLabelDefs::copySelfLabels(src.value("labels").toObject(),
+                                                dest.labels_ComAtprotoLabelDefs_SelfLabels);
+        }
+        dest.createdAt = src.value("createdAt").toString();
+    }
+}
+}
 // app.bsky.notification.listNotifications
 namespace AppBskyNotificationListNotifications {
 void copyNotification(const QJsonObject &src,
@@ -1151,475 +1303,6 @@ void copyStatusAttr(const QJsonObject &src, ComAtprotoAdminDefs::StatusAttr &des
         dest.ref = src.value("ref").toString();
     }
 }
-void copyModEventTakedown(const QJsonObject &src, ComAtprotoAdminDefs::ModEventTakedown &dest)
-{
-    if (!src.isEmpty()) {
-        dest.comment = src.value("comment").toString();
-        dest.durationInHours = src.value("durationInHours").toInt();
-    }
-}
-void copyModEventReverseTakedown(const QJsonObject &src,
-                                 ComAtprotoAdminDefs::ModEventReverseTakedown &dest)
-{
-    if (!src.isEmpty()) {
-        dest.comment = src.value("comment").toString();
-    }
-}
-void copyModEventComment(const QJsonObject &src, ComAtprotoAdminDefs::ModEventComment &dest)
-{
-    if (!src.isEmpty()) {
-        dest.comment = src.value("comment").toString();
-        dest.sticky = src.value("sticky").toBool();
-    }
-}
-void copyModEventReport(const QJsonObject &src, ComAtprotoAdminDefs::ModEventReport &dest)
-{
-    if (!src.isEmpty()) {
-        dest.comment = src.value("comment").toString();
-        ComAtprotoModerationDefs::copyReasonType(src.value("reportType"), dest.reportType);
-    }
-}
-void copyModEventLabel(const QJsonObject &src, ComAtprotoAdminDefs::ModEventLabel &dest)
-{
-    if (!src.isEmpty()) {
-        dest.comment = src.value("comment").toString();
-        for (const auto &value : src.value("createLabelVals").toArray()) {
-            dest.createLabelVals.append(value.toString());
-        }
-        for (const auto &value : src.value("negateLabelVals").toArray()) {
-            dest.negateLabelVals.append(value.toString());
-        }
-    }
-}
-void copyModEventAcknowledge(const QJsonObject &src, ComAtprotoAdminDefs::ModEventAcknowledge &dest)
-{
-    if (!src.isEmpty()) {
-        dest.comment = src.value("comment").toString();
-    }
-}
-void copyModEventEscalate(const QJsonObject &src, ComAtprotoAdminDefs::ModEventEscalate &dest)
-{
-    if (!src.isEmpty()) {
-        dest.comment = src.value("comment").toString();
-    }
-}
-void copyModEventMute(const QJsonObject &src, ComAtprotoAdminDefs::ModEventMute &dest)
-{
-    if (!src.isEmpty()) {
-        dest.comment = src.value("comment").toString();
-        dest.durationInHours = src.value("durationInHours").toInt();
-    }
-}
-void copyModEventEmail(const QJsonObject &src, ComAtprotoAdminDefs::ModEventEmail &dest)
-{
-    if (!src.isEmpty()) {
-        dest.subjectLine = src.value("subjectLine").toString();
-        dest.comment = src.value("comment").toString();
-    }
-}
-void copyModEventResolveAppeal(const QJsonObject &src,
-                               ComAtprotoAdminDefs::ModEventResolveAppeal &dest)
-{
-    if (!src.isEmpty()) {
-        dest.comment = src.value("comment").toString();
-    }
-}
-void copyRepoRef(const QJsonObject &src, ComAtprotoAdminDefs::RepoRef &dest)
-{
-    if (!src.isEmpty()) {
-        dest.did = src.value("did").toString();
-    }
-}
-void copyModEventView(const QJsonObject &src, ComAtprotoAdminDefs::ModEventView &dest)
-{
-    if (!src.isEmpty()) {
-        dest.id = src.value("id").toInt();
-        QString event_type = src.value("event").toObject().value("$type").toString();
-        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventTakedown")) {
-            dest.event_type = ComAtprotoAdminDefs::ModEventViewEventType::event_ModEventTakedown;
-            ComAtprotoAdminDefs::copyModEventTakedown(src.value("event").toObject(),
-                                                      dest.event_ModEventTakedown);
-        }
-        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventReverseTakedown")) {
-            dest.event_type =
-                    ComAtprotoAdminDefs::ModEventViewEventType::event_ModEventReverseTakedown;
-            ComAtprotoAdminDefs::copyModEventReverseTakedown(src.value("event").toObject(),
-                                                             dest.event_ModEventReverseTakedown);
-        }
-        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventComment")) {
-            dest.event_type = ComAtprotoAdminDefs::ModEventViewEventType::event_ModEventComment;
-            ComAtprotoAdminDefs::copyModEventComment(src.value("event").toObject(),
-                                                     dest.event_ModEventComment);
-        }
-        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventReport")) {
-            dest.event_type = ComAtprotoAdminDefs::ModEventViewEventType::event_ModEventReport;
-            ComAtprotoAdminDefs::copyModEventReport(src.value("event").toObject(),
-                                                    dest.event_ModEventReport);
-        }
-        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventLabel")) {
-            dest.event_type = ComAtprotoAdminDefs::ModEventViewEventType::event_ModEventLabel;
-            ComAtprotoAdminDefs::copyModEventLabel(src.value("event").toObject(),
-                                                   dest.event_ModEventLabel);
-        }
-        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventAcknowledge")) {
-            dest.event_type = ComAtprotoAdminDefs::ModEventViewEventType::event_ModEventAcknowledge;
-            ComAtprotoAdminDefs::copyModEventAcknowledge(src.value("event").toObject(),
-                                                         dest.event_ModEventAcknowledge);
-        }
-        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventEscalate")) {
-            dest.event_type = ComAtprotoAdminDefs::ModEventViewEventType::event_ModEventEscalate;
-            ComAtprotoAdminDefs::copyModEventEscalate(src.value("event").toObject(),
-                                                      dest.event_ModEventEscalate);
-        }
-        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventMute")) {
-            dest.event_type = ComAtprotoAdminDefs::ModEventViewEventType::event_ModEventMute;
-            ComAtprotoAdminDefs::copyModEventMute(src.value("event").toObject(),
-                                                  dest.event_ModEventMute);
-        }
-        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventEmail")) {
-            dest.event_type = ComAtprotoAdminDefs::ModEventViewEventType::event_ModEventEmail;
-            ComAtprotoAdminDefs::copyModEventEmail(src.value("event").toObject(),
-                                                   dest.event_ModEventEmail);
-        }
-        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventResolveAppeal")) {
-            dest.event_type =
-                    ComAtprotoAdminDefs::ModEventViewEventType::event_ModEventResolveAppeal;
-            ComAtprotoAdminDefs::copyModEventResolveAppeal(src.value("event").toObject(),
-                                                           dest.event_ModEventResolveAppeal);
-        }
-        QString subject_type = src.value("subject").toObject().value("$type").toString();
-        if (subject_type == QStringLiteral("com.atproto.admin.defs#repoRef")) {
-            dest.subject_type = ComAtprotoAdminDefs::ModEventViewSubjectType::subject_RepoRef;
-            ComAtprotoAdminDefs::copyRepoRef(src.value("subject").toObject(), dest.subject_RepoRef);
-        }
-        if (subject_type == QStringLiteral("com.atproto.repo.strongRef")) {
-            dest.subject_type = ComAtprotoAdminDefs::ModEventViewSubjectType::
-                    subject_ComAtprotoRepoStrongRef_Main;
-            ComAtprotoRepoStrongRef::copyMain(src.value("subject").toObject(),
-                                              dest.subject_ComAtprotoRepoStrongRef_Main);
-        }
-        for (const auto &value : src.value("subjectBlobCids").toArray()) {
-            dest.subjectBlobCids.append(value.toString());
-        }
-        dest.createdBy = src.value("createdBy").toString();
-        dest.createdAt = src.value("createdAt").toString();
-        dest.creatorHandle = src.value("creatorHandle").toString();
-        dest.subjectHandle = src.value("subjectHandle").toString();
-    }
-}
-void copySubjectReviewState(const QJsonValue &src, ComAtprotoAdminDefs::SubjectReviewState &dest)
-{
-    dest = src.toString();
-}
-void copySubjectStatusView(const QJsonObject &src, ComAtprotoAdminDefs::SubjectStatusView &dest)
-{
-    if (!src.isEmpty()) {
-        dest.id = src.value("id").toInt();
-        QString subject_type = src.value("subject").toObject().value("$type").toString();
-        if (subject_type == QStringLiteral("com.atproto.admin.defs#repoRef")) {
-            dest.subject_type = ComAtprotoAdminDefs::SubjectStatusViewSubjectType::subject_RepoRef;
-            ComAtprotoAdminDefs::copyRepoRef(src.value("subject").toObject(), dest.subject_RepoRef);
-        }
-        if (subject_type == QStringLiteral("com.atproto.repo.strongRef")) {
-            dest.subject_type = ComAtprotoAdminDefs::SubjectStatusViewSubjectType::
-                    subject_ComAtprotoRepoStrongRef_Main;
-            ComAtprotoRepoStrongRef::copyMain(src.value("subject").toObject(),
-                                              dest.subject_ComAtprotoRepoStrongRef_Main);
-        }
-        for (const auto &value : src.value("subjectBlobCids").toArray()) {
-            dest.subjectBlobCids.append(value.toString());
-        }
-        dest.subjectRepoHandle = src.value("subjectRepoHandle").toString();
-        dest.updatedAt = src.value("updatedAt").toString();
-        dest.createdAt = src.value("createdAt").toString();
-        copySubjectReviewState(src.value("reviewState"), dest.reviewState);
-        dest.comment = src.value("comment").toString();
-        dest.muteUntil = src.value("muteUntil").toString();
-        dest.lastReviewedBy = src.value("lastReviewedBy").toString();
-        dest.lastReviewedAt = src.value("lastReviewedAt").toString();
-        dest.lastReportedAt = src.value("lastReportedAt").toString();
-        dest.lastAppealedAt = src.value("lastAppealedAt").toString();
-        dest.takendown = src.value("takendown").toBool();
-        dest.appealed = src.value("appealed").toBool();
-        dest.suspendUntil = src.value("suspendUntil").toString();
-        for (const auto &value : src.value("tags").toArray()) {
-            dest.tags.append(value.toString());
-        }
-    }
-}
-void copyModeration(const QJsonObject &src, ComAtprotoAdminDefs::Moderation &dest)
-{
-    if (!src.isEmpty()) {
-        copySubjectStatusView(src.value("subjectStatus").toObject(), dest.subjectStatus);
-    }
-}
-void copyRepoView(const QJsonObject &src, ComAtprotoAdminDefs::RepoView &dest)
-{
-    if (!src.isEmpty()) {
-        dest.did = src.value("did").toString();
-        dest.handle = src.value("handle").toString();
-        dest.email = src.value("email").toString();
-        dest.indexedAt = src.value("indexedAt").toString();
-        copyModeration(src.value("moderation").toObject(), dest.moderation);
-        ComAtprotoServerDefs::copyInviteCode(src.value("invitedBy").toObject(), dest.invitedBy);
-        dest.invitesDisabled = src.value("invitesDisabled").toBool();
-        dest.inviteNote = src.value("inviteNote").toString();
-    }
-}
-void copyRepoViewNotFound(const QJsonObject &src, ComAtprotoAdminDefs::RepoViewNotFound &dest)
-{
-    if (!src.isEmpty()) {
-        dest.did = src.value("did").toString();
-    }
-}
-void copyRecordView(const QJsonObject &src, ComAtprotoAdminDefs::RecordView &dest)
-{
-    if (!src.isEmpty()) {
-        dest.uri = src.value("uri").toString();
-        dest.cid = src.value("cid").toString();
-        LexiconsTypeUnknown::copyUnknown(src.value("value").toObject(), dest.value);
-        for (const auto &value : src.value("blobCids").toArray()) {
-            dest.blobCids.append(value.toString());
-        }
-        dest.indexedAt = src.value("indexedAt").toString();
-        copyModeration(src.value("moderation").toObject(), dest.moderation);
-        copyRepoView(src.value("repo").toObject(), dest.repo);
-    }
-}
-void copyRecordViewNotFound(const QJsonObject &src, ComAtprotoAdminDefs::RecordViewNotFound &dest)
-{
-    if (!src.isEmpty()) {
-        dest.uri = src.value("uri").toString();
-    }
-}
-void copyImageDetails(const QJsonObject &src, ComAtprotoAdminDefs::ImageDetails &dest)
-{
-    if (!src.isEmpty()) {
-        dest.width = src.value("width").toInt();
-        dest.height = src.value("height").toInt();
-    }
-}
-void copyVideoDetails(const QJsonObject &src, ComAtprotoAdminDefs::VideoDetails &dest)
-{
-    if (!src.isEmpty()) {
-        dest.width = src.value("width").toInt();
-        dest.height = src.value("height").toInt();
-        dest.length = src.value("length").toInt();
-    }
-}
-void copyBlobView(const QJsonObject &src, ComAtprotoAdminDefs::BlobView &dest)
-{
-    if (!src.isEmpty()) {
-        dest.cid = src.value("cid").toString();
-        dest.mimeType = src.value("mimeType").toString();
-        dest.size = src.value("size").toInt();
-        dest.createdAt = src.value("createdAt").toString();
-        QString details_type = src.value("details").toObject().value("$type").toString();
-        if (details_type == QStringLiteral("com.atproto.admin.defs#imageDetails")) {
-            dest.details_type = ComAtprotoAdminDefs::BlobViewDetailsType::details_ImageDetails;
-            ComAtprotoAdminDefs::copyImageDetails(src.value("details").toObject(),
-                                                  dest.details_ImageDetails);
-        }
-        if (details_type == QStringLiteral("com.atproto.admin.defs#videoDetails")) {
-            dest.details_type = ComAtprotoAdminDefs::BlobViewDetailsType::details_VideoDetails;
-            ComAtprotoAdminDefs::copyVideoDetails(src.value("details").toObject(),
-                                                  dest.details_VideoDetails);
-        }
-        copyModeration(src.value("moderation").toObject(), dest.moderation);
-    }
-}
-void copyModEventViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::ModEventViewDetail &dest)
-{
-    if (!src.isEmpty()) {
-        dest.id = src.value("id").toInt();
-        QString event_type = src.value("event").toObject().value("$type").toString();
-        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventTakedown")) {
-            dest.event_type =
-                    ComAtprotoAdminDefs::ModEventViewDetailEventType::event_ModEventTakedown;
-            ComAtprotoAdminDefs::copyModEventTakedown(src.value("event").toObject(),
-                                                      dest.event_ModEventTakedown);
-        }
-        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventReverseTakedown")) {
-            dest.event_type =
-                    ComAtprotoAdminDefs::ModEventViewDetailEventType::event_ModEventReverseTakedown;
-            ComAtprotoAdminDefs::copyModEventReverseTakedown(src.value("event").toObject(),
-                                                             dest.event_ModEventReverseTakedown);
-        }
-        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventComment")) {
-            dest.event_type =
-                    ComAtprotoAdminDefs::ModEventViewDetailEventType::event_ModEventComment;
-            ComAtprotoAdminDefs::copyModEventComment(src.value("event").toObject(),
-                                                     dest.event_ModEventComment);
-        }
-        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventReport")) {
-            dest.event_type =
-                    ComAtprotoAdminDefs::ModEventViewDetailEventType::event_ModEventReport;
-            ComAtprotoAdminDefs::copyModEventReport(src.value("event").toObject(),
-                                                    dest.event_ModEventReport);
-        }
-        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventLabel")) {
-            dest.event_type = ComAtprotoAdminDefs::ModEventViewDetailEventType::event_ModEventLabel;
-            ComAtprotoAdminDefs::copyModEventLabel(src.value("event").toObject(),
-                                                   dest.event_ModEventLabel);
-        }
-        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventAcknowledge")) {
-            dest.event_type =
-                    ComAtprotoAdminDefs::ModEventViewDetailEventType::event_ModEventAcknowledge;
-            ComAtprotoAdminDefs::copyModEventAcknowledge(src.value("event").toObject(),
-                                                         dest.event_ModEventAcknowledge);
-        }
-        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventEscalate")) {
-            dest.event_type =
-                    ComAtprotoAdminDefs::ModEventViewDetailEventType::event_ModEventEscalate;
-            ComAtprotoAdminDefs::copyModEventEscalate(src.value("event").toObject(),
-                                                      dest.event_ModEventEscalate);
-        }
-        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventMute")) {
-            dest.event_type = ComAtprotoAdminDefs::ModEventViewDetailEventType::event_ModEventMute;
-            ComAtprotoAdminDefs::copyModEventMute(src.value("event").toObject(),
-                                                  dest.event_ModEventMute);
-        }
-        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventEmail")) {
-            dest.event_type = ComAtprotoAdminDefs::ModEventViewDetailEventType::event_ModEventEmail;
-            ComAtprotoAdminDefs::copyModEventEmail(src.value("event").toObject(),
-                                                   dest.event_ModEventEmail);
-        }
-        if (event_type == QStringLiteral("com.atproto.admin.defs#modEventResolveAppeal")) {
-            dest.event_type =
-                    ComAtprotoAdminDefs::ModEventViewDetailEventType::event_ModEventResolveAppeal;
-            ComAtprotoAdminDefs::copyModEventResolveAppeal(src.value("event").toObject(),
-                                                           dest.event_ModEventResolveAppeal);
-        }
-        QString subject_type = src.value("subject").toObject().value("$type").toString();
-        if (subject_type == QStringLiteral("com.atproto.admin.defs#repoView")) {
-            dest.subject_type =
-                    ComAtprotoAdminDefs::ModEventViewDetailSubjectType::subject_RepoView;
-            ComAtprotoAdminDefs::copyRepoView(src.value("subject").toObject(),
-                                              dest.subject_RepoView);
-        }
-        if (subject_type == QStringLiteral("com.atproto.admin.defs#repoViewNotFound")) {
-            dest.subject_type =
-                    ComAtprotoAdminDefs::ModEventViewDetailSubjectType::subject_RepoViewNotFound;
-            ComAtprotoAdminDefs::copyRepoViewNotFound(src.value("subject").toObject(),
-                                                      dest.subject_RepoViewNotFound);
-        }
-        if (subject_type == QStringLiteral("com.atproto.admin.defs#recordView")) {
-            dest.subject_type =
-                    ComAtprotoAdminDefs::ModEventViewDetailSubjectType::subject_RecordView;
-            ComAtprotoAdminDefs::copyRecordView(src.value("subject").toObject(),
-                                                dest.subject_RecordView);
-        }
-        if (subject_type == QStringLiteral("com.atproto.admin.defs#recordViewNotFound")) {
-            dest.subject_type =
-                    ComAtprotoAdminDefs::ModEventViewDetailSubjectType::subject_RecordViewNotFound;
-            ComAtprotoAdminDefs::copyRecordViewNotFound(src.value("subject").toObject(),
-                                                        dest.subject_RecordViewNotFound);
-        }
-        for (const auto &s : src.value("subjectBlobs").toArray()) {
-            BlobView child;
-            copyBlobView(s.toObject(), child);
-            dest.subjectBlobs.append(child);
-        }
-        dest.createdBy = src.value("createdBy").toString();
-        dest.createdAt = src.value("createdAt").toString();
-    }
-}
-void copyReportView(const QJsonObject &src, ComAtprotoAdminDefs::ReportView &dest)
-{
-    if (!src.isEmpty()) {
-        dest.id = src.value("id").toInt();
-        ComAtprotoModerationDefs::copyReasonType(src.value("reasonType"), dest.reasonType);
-        dest.comment = src.value("comment").toString();
-        dest.subjectRepoHandle = src.value("subjectRepoHandle").toString();
-        QString subject_type = src.value("subject").toObject().value("$type").toString();
-        if (subject_type == QStringLiteral("com.atproto.admin.defs#repoRef")) {
-            dest.subject_type = ComAtprotoAdminDefs::ReportViewSubjectType::subject_RepoRef;
-            ComAtprotoAdminDefs::copyRepoRef(src.value("subject").toObject(), dest.subject_RepoRef);
-        }
-        if (subject_type == QStringLiteral("com.atproto.repo.strongRef")) {
-            dest.subject_type = ComAtprotoAdminDefs::ReportViewSubjectType::
-                    subject_ComAtprotoRepoStrongRef_Main;
-            ComAtprotoRepoStrongRef::copyMain(src.value("subject").toObject(),
-                                              dest.subject_ComAtprotoRepoStrongRef_Main);
-        }
-        dest.reportedBy = src.value("reportedBy").toString();
-        dest.createdAt = src.value("createdAt").toString();
-        for (const auto &value : src.value("resolvedByActionIds").toArray()) {
-            dest.resolvedByActionIds.append(value.toInt());
-        }
-    }
-}
-void copyReportViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::ReportViewDetail &dest)
-{
-    if (!src.isEmpty()) {
-        dest.id = src.value("id").toInt();
-        ComAtprotoModerationDefs::copyReasonType(src.value("reasonType"), dest.reasonType);
-        dest.comment = src.value("comment").toString();
-        QString subject_type = src.value("subject").toObject().value("$type").toString();
-        if (subject_type == QStringLiteral("com.atproto.admin.defs#repoView")) {
-            dest.subject_type = ComAtprotoAdminDefs::ReportViewDetailSubjectType::subject_RepoView;
-            ComAtprotoAdminDefs::copyRepoView(src.value("subject").toObject(),
-                                              dest.subject_RepoView);
-        }
-        if (subject_type == QStringLiteral("com.atproto.admin.defs#repoViewNotFound")) {
-            dest.subject_type =
-                    ComAtprotoAdminDefs::ReportViewDetailSubjectType::subject_RepoViewNotFound;
-            ComAtprotoAdminDefs::copyRepoViewNotFound(src.value("subject").toObject(),
-                                                      dest.subject_RepoViewNotFound);
-        }
-        if (subject_type == QStringLiteral("com.atproto.admin.defs#recordView")) {
-            dest.subject_type =
-                    ComAtprotoAdminDefs::ReportViewDetailSubjectType::subject_RecordView;
-            ComAtprotoAdminDefs::copyRecordView(src.value("subject").toObject(),
-                                                dest.subject_RecordView);
-        }
-        if (subject_type == QStringLiteral("com.atproto.admin.defs#recordViewNotFound")) {
-            dest.subject_type =
-                    ComAtprotoAdminDefs::ReportViewDetailSubjectType::subject_RecordViewNotFound;
-            ComAtprotoAdminDefs::copyRecordViewNotFound(src.value("subject").toObject(),
-                                                        dest.subject_RecordViewNotFound);
-        }
-        ComAtprotoAdminDefs::copySubjectStatusView(src.value("subjectStatus").toObject(),
-                                                   dest.subjectStatus);
-        dest.reportedBy = src.value("reportedBy").toString();
-        dest.createdAt = src.value("createdAt").toString();
-        for (const auto &s : src.value("resolvedByActions").toArray()) {
-            ComAtprotoAdminDefs::ModEventView child;
-            ComAtprotoAdminDefs::copyModEventView(s.toObject(), child);
-            dest.resolvedByActions.append(child);
-        }
-    }
-}
-void copyModerationDetail(const QJsonObject &src, ComAtprotoAdminDefs::ModerationDetail &dest)
-{
-    if (!src.isEmpty()) {
-        copySubjectStatusView(src.value("subjectStatus").toObject(), dest.subjectStatus);
-    }
-}
-void copyRepoViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::RepoViewDetail &dest)
-{
-    if (!src.isEmpty()) {
-        dest.did = src.value("did").toString();
-        dest.handle = src.value("handle").toString();
-        dest.email = src.value("email").toString();
-        dest.indexedAt = src.value("indexedAt").toString();
-        copyModerationDetail(src.value("moderation").toObject(), dest.moderation);
-        for (const auto &s : src.value("labels").toArray()) {
-            ComAtprotoLabelDefs::Label child;
-            ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
-            dest.labels.append(child);
-        }
-        ComAtprotoServerDefs::copyInviteCode(src.value("invitedBy").toObject(), dest.invitedBy);
-        for (const auto &s : src.value("invites").toArray()) {
-            ComAtprotoServerDefs::InviteCode child;
-            ComAtprotoServerDefs::copyInviteCode(s.toObject(), child);
-            dest.invites.append(child);
-        }
-        dest.invitesDisabled = src.value("invitesDisabled").toBool();
-        dest.inviteNote = src.value("inviteNote").toString();
-        dest.emailConfirmedAt = src.value("emailConfirmedAt").toString();
-    }
-}
 void copyAccountView(const QJsonObject &src, ComAtprotoAdminDefs::AccountView &dest)
 {
     if (!src.isEmpty()) {
@@ -1638,6 +1321,12 @@ void copyAccountView(const QJsonObject &src, ComAtprotoAdminDefs::AccountView &d
         dest.inviteNote = src.value("inviteNote").toString();
     }
 }
+void copyRepoRef(const QJsonObject &src, ComAtprotoAdminDefs::RepoRef &dest)
+{
+    if (!src.isEmpty()) {
+        dest.did = src.value("did").toString();
+    }
+}
 void copyRepoBlobRef(const QJsonObject &src, ComAtprotoAdminDefs::RepoBlobRef &dest)
 {
     if (!src.isEmpty()) {
@@ -1645,66 +1334,6 @@ void copyRepoBlobRef(const QJsonObject &src, ComAtprotoAdminDefs::RepoBlobRef &d
         dest.cid = src.value("cid").toString();
         dest.recordUri = src.value("recordUri").toString();
     }
-}
-void copyRecordViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::RecordViewDetail &dest)
-{
-    if (!src.isEmpty()) {
-        dest.uri = src.value("uri").toString();
-        dest.cid = src.value("cid").toString();
-        LexiconsTypeUnknown::copyUnknown(src.value("value").toObject(), dest.value);
-        for (const auto &s : src.value("blobs").toArray()) {
-            BlobView child;
-            copyBlobView(s.toObject(), child);
-            dest.blobs.append(child);
-        }
-        for (const auto &s : src.value("labels").toArray()) {
-            ComAtprotoLabelDefs::Label child;
-            ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
-            dest.labels.append(child);
-        }
-        dest.indexedAt = src.value("indexedAt").toString();
-        copyModerationDetail(src.value("moderation").toObject(), dest.moderation);
-        copyRepoView(src.value("repo").toObject(), dest.repo);
-    }
-}
-void copyModEventUnmute(const QJsonObject &src, ComAtprotoAdminDefs::ModEventUnmute &dest)
-{
-    if (!src.isEmpty()) {
-        dest.comment = src.value("comment").toString();
-    }
-}
-void copyModEventTag(const QJsonObject &src, ComAtprotoAdminDefs::ModEventTag &dest)
-{
-    if (!src.isEmpty()) {
-        for (const auto &value : src.value("add").toArray()) {
-            dest.add.append(value.toString());
-        }
-        for (const auto &value : src.value("remove").toArray()) {
-            dest.remove.append(value.toString());
-        }
-        dest.comment = src.value("comment").toString();
-    }
-}
-void copyCommunicationTemplateView(const QJsonObject &src,
-                                   ComAtprotoAdminDefs::CommunicationTemplateView &dest)
-{
-    if (!src.isEmpty()) {
-        dest.id = src.value("id").toString();
-        dest.name = src.value("name").toString();
-        dest.subject = src.value("subject").toString();
-        dest.contentMarkdown = src.value("contentMarkdown").toString();
-        dest.disabled = src.value("disabled").toBool();
-        dest.lastUpdatedBy = src.value("lastUpdatedBy").toString();
-        dest.createdAt = src.value("createdAt").toString();
-        dest.updatedAt = src.value("updatedAt").toString();
-    }
-}
-}
-// com.atproto.moderation.defs
-namespace ComAtprotoModerationDefs {
-void copyReasonType(const QJsonValue &src, ComAtprotoModerationDefs::ReasonType &dest)
-{
-    dest = src.toString();
 }
 }
 // com.atproto.server.defs
@@ -1752,6 +1381,13 @@ void copyInfo(const QJsonObject &src, ComAtprotoLabelSubscribeLabels::Info &dest
         dest.name = src.value("name").toString();
         dest.message = src.value("message").toString();
     }
+}
+}
+// com.atproto.moderation.defs
+namespace ComAtprotoModerationDefs {
+void copyReasonType(const QJsonValue &src, ComAtprotoModerationDefs::ReasonType &dest)
+{
+    dest = src.toString();
 }
 }
 // com.atproto.repo.applyWrites
@@ -1831,6 +1467,12 @@ void copyLinks(const QJsonObject &src, ComAtprotoServerDescribeServer::Links &de
     if (!src.isEmpty()) {
         dest.privacyPolicy = src.value("privacyPolicy").toString();
         dest.termsOfService = src.value("termsOfService").toString();
+    }
+}
+void copyContact(const QJsonObject &src, ComAtprotoServerDescribeServer::Contact &dest)
+{
+    if (!src.isEmpty()) {
+        dest.email = src.value("email").toString();
     }
 }
 }
@@ -1919,6 +1561,495 @@ void copyInfo(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Info &dest)
     if (!src.isEmpty()) {
         dest.name = src.value("name").toString();
         dest.message = src.value("message").toString();
+    }
+}
+}
+// tools.ozone.communication.defs
+namespace ToolsOzoneCommunicationDefs {
+void copyTemplateView(const QJsonObject &src, ToolsOzoneCommunicationDefs::TemplateView &dest)
+{
+    if (!src.isEmpty()) {
+        dest.id = src.value("id").toString();
+        dest.name = src.value("name").toString();
+        dest.subject = src.value("subject").toString();
+        dest.contentMarkdown = src.value("contentMarkdown").toString();
+        dest.disabled = src.value("disabled").toBool();
+        dest.lastUpdatedBy = src.value("lastUpdatedBy").toString();
+        dest.createdAt = src.value("createdAt").toString();
+        dest.updatedAt = src.value("updatedAt").toString();
+    }
+}
+}
+// tools.ozone.moderation.defs
+namespace ToolsOzoneModerationDefs {
+void copyModEventTakedown(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventTakedown &dest)
+{
+    if (!src.isEmpty()) {
+        dest.comment = src.value("comment").toString();
+        dest.durationInHours = src.value("durationInHours").toInt();
+    }
+}
+void copyModEventReverseTakedown(const QJsonObject &src,
+                                 ToolsOzoneModerationDefs::ModEventReverseTakedown &dest)
+{
+    if (!src.isEmpty()) {
+        dest.comment = src.value("comment").toString();
+    }
+}
+void copyModEventComment(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventComment &dest)
+{
+    if (!src.isEmpty()) {
+        dest.comment = src.value("comment").toString();
+        dest.sticky = src.value("sticky").toBool();
+    }
+}
+void copyModEventReport(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventReport &dest)
+{
+    if (!src.isEmpty()) {
+        dest.comment = src.value("comment").toString();
+        ComAtprotoModerationDefs::copyReasonType(src.value("reportType"), dest.reportType);
+    }
+}
+void copyModEventLabel(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventLabel &dest)
+{
+    if (!src.isEmpty()) {
+        dest.comment = src.value("comment").toString();
+        for (const auto &value : src.value("createLabelVals").toArray()) {
+            dest.createLabelVals.append(value.toString());
+        }
+        for (const auto &value : src.value("negateLabelVals").toArray()) {
+            dest.negateLabelVals.append(value.toString());
+        }
+    }
+}
+void copyModEventAcknowledge(const QJsonObject &src,
+                             ToolsOzoneModerationDefs::ModEventAcknowledge &dest)
+{
+    if (!src.isEmpty()) {
+        dest.comment = src.value("comment").toString();
+    }
+}
+void copyModEventEscalate(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventEscalate &dest)
+{
+    if (!src.isEmpty()) {
+        dest.comment = src.value("comment").toString();
+    }
+}
+void copyModEventMute(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventMute &dest)
+{
+    if (!src.isEmpty()) {
+        dest.comment = src.value("comment").toString();
+        dest.durationInHours = src.value("durationInHours").toInt();
+    }
+}
+void copyModEventEmail(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventEmail &dest)
+{
+    if (!src.isEmpty()) {
+        dest.subjectLine = src.value("subjectLine").toString();
+        dest.content = src.value("content").toString();
+        dest.comment = src.value("comment").toString();
+    }
+}
+void copyModEventResolveAppeal(const QJsonObject &src,
+                               ToolsOzoneModerationDefs::ModEventResolveAppeal &dest)
+{
+    if (!src.isEmpty()) {
+        dest.comment = src.value("comment").toString();
+    }
+}
+void copyModEventDivert(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventDivert &dest)
+{
+    if (!src.isEmpty()) {
+        dest.comment = src.value("comment").toString();
+    }
+}
+void copyModEventView(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventView &dest)
+{
+    if (!src.isEmpty()) {
+        dest.id = src.value("id").toInt();
+        QString event_type = src.value("event").toObject().value("$type").toString();
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#modEventTakedown")) {
+            dest.event_type =
+                    ToolsOzoneModerationDefs::ModEventViewEventType::event_ModEventTakedown;
+            ToolsOzoneModerationDefs::copyModEventTakedown(src.value("event").toObject(),
+                                                           dest.event_ModEventTakedown);
+        }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#modEventReverseTakedown")) {
+            dest.event_type =
+                    ToolsOzoneModerationDefs::ModEventViewEventType::event_ModEventReverseTakedown;
+            ToolsOzoneModerationDefs::copyModEventReverseTakedown(
+                    src.value("event").toObject(), dest.event_ModEventReverseTakedown);
+        }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#modEventComment")) {
+            dest.event_type =
+                    ToolsOzoneModerationDefs::ModEventViewEventType::event_ModEventComment;
+            ToolsOzoneModerationDefs::copyModEventComment(src.value("event").toObject(),
+                                                          dest.event_ModEventComment);
+        }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#modEventReport")) {
+            dest.event_type = ToolsOzoneModerationDefs::ModEventViewEventType::event_ModEventReport;
+            ToolsOzoneModerationDefs::copyModEventReport(src.value("event").toObject(),
+                                                         dest.event_ModEventReport);
+        }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#modEventLabel")) {
+            dest.event_type = ToolsOzoneModerationDefs::ModEventViewEventType::event_ModEventLabel;
+            ToolsOzoneModerationDefs::copyModEventLabel(src.value("event").toObject(),
+                                                        dest.event_ModEventLabel);
+        }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#modEventAcknowledge")) {
+            dest.event_type =
+                    ToolsOzoneModerationDefs::ModEventViewEventType::event_ModEventAcknowledge;
+            ToolsOzoneModerationDefs::copyModEventAcknowledge(src.value("event").toObject(),
+                                                              dest.event_ModEventAcknowledge);
+        }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#modEventEscalate")) {
+            dest.event_type =
+                    ToolsOzoneModerationDefs::ModEventViewEventType::event_ModEventEscalate;
+            ToolsOzoneModerationDefs::copyModEventEscalate(src.value("event").toObject(),
+                                                           dest.event_ModEventEscalate);
+        }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#modEventMute")) {
+            dest.event_type = ToolsOzoneModerationDefs::ModEventViewEventType::event_ModEventMute;
+            ToolsOzoneModerationDefs::copyModEventMute(src.value("event").toObject(),
+                                                       dest.event_ModEventMute);
+        }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#modEventEmail")) {
+            dest.event_type = ToolsOzoneModerationDefs::ModEventViewEventType::event_ModEventEmail;
+            ToolsOzoneModerationDefs::copyModEventEmail(src.value("event").toObject(),
+                                                        dest.event_ModEventEmail);
+        }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#modEventResolveAppeal")) {
+            dest.event_type =
+                    ToolsOzoneModerationDefs::ModEventViewEventType::event_ModEventResolveAppeal;
+            ToolsOzoneModerationDefs::copyModEventResolveAppeal(src.value("event").toObject(),
+                                                                dest.event_ModEventResolveAppeal);
+        }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#modEventDivert")) {
+            dest.event_type = ToolsOzoneModerationDefs::ModEventViewEventType::event_ModEventDivert;
+            ToolsOzoneModerationDefs::copyModEventDivert(src.value("event").toObject(),
+                                                         dest.event_ModEventDivert);
+        }
+        QString subject_type = src.value("subject").toObject().value("$type").toString();
+        if (subject_type == QStringLiteral("com.atproto.admin.defs#repoRef")) {
+            dest.subject_type = ToolsOzoneModerationDefs::ModEventViewSubjectType::
+                    subject_ComAtprotoAdminDefs_RepoRef;
+            ComAtprotoAdminDefs::copyRepoRef(src.value("subject").toObject(),
+                                             dest.subject_ComAtprotoAdminDefs_RepoRef);
+        }
+        if (subject_type == QStringLiteral("com.atproto.repo.strongRef")) {
+            dest.subject_type = ToolsOzoneModerationDefs::ModEventViewSubjectType::
+                    subject_ComAtprotoRepoStrongRef_Main;
+            ComAtprotoRepoStrongRef::copyMain(src.value("subject").toObject(),
+                                              dest.subject_ComAtprotoRepoStrongRef_Main);
+        }
+        for (const auto &value : src.value("subjectBlobCids").toArray()) {
+            dest.subjectBlobCids.append(value.toString());
+        }
+        dest.createdBy = src.value("createdBy").toString();
+        dest.createdAt = src.value("createdAt").toString();
+        dest.creatorHandle = src.value("creatorHandle").toString();
+        dest.subjectHandle = src.value("subjectHandle").toString();
+    }
+}
+void copySubjectReviewState(const QJsonValue &src,
+                            ToolsOzoneModerationDefs::SubjectReviewState &dest)
+{
+    dest = src.toString();
+}
+void copySubjectStatusView(const QJsonObject &src,
+                           ToolsOzoneModerationDefs::SubjectStatusView &dest)
+{
+    if (!src.isEmpty()) {
+        dest.id = src.value("id").toInt();
+        QString subject_type = src.value("subject").toObject().value("$type").toString();
+        if (subject_type == QStringLiteral("com.atproto.admin.defs#repoRef")) {
+            dest.subject_type = ToolsOzoneModerationDefs::SubjectStatusViewSubjectType::
+                    subject_ComAtprotoAdminDefs_RepoRef;
+            ComAtprotoAdminDefs::copyRepoRef(src.value("subject").toObject(),
+                                             dest.subject_ComAtprotoAdminDefs_RepoRef);
+        }
+        if (subject_type == QStringLiteral("com.atproto.repo.strongRef")) {
+            dest.subject_type = ToolsOzoneModerationDefs::SubjectStatusViewSubjectType::
+                    subject_ComAtprotoRepoStrongRef_Main;
+            ComAtprotoRepoStrongRef::copyMain(src.value("subject").toObject(),
+                                              dest.subject_ComAtprotoRepoStrongRef_Main);
+        }
+        for (const auto &value : src.value("subjectBlobCids").toArray()) {
+            dest.subjectBlobCids.append(value.toString());
+        }
+        dest.subjectRepoHandle = src.value("subjectRepoHandle").toString();
+        dest.updatedAt = src.value("updatedAt").toString();
+        dest.createdAt = src.value("createdAt").toString();
+        copySubjectReviewState(src.value("reviewState"), dest.reviewState);
+        dest.comment = src.value("comment").toString();
+        dest.muteUntil = src.value("muteUntil").toString();
+        dest.lastReviewedBy = src.value("lastReviewedBy").toString();
+        dest.lastReviewedAt = src.value("lastReviewedAt").toString();
+        dest.lastReportedAt = src.value("lastReportedAt").toString();
+        dest.lastAppealedAt = src.value("lastAppealedAt").toString();
+        dest.takendown = src.value("takendown").toBool();
+        dest.appealed = src.value("appealed").toBool();
+        dest.suspendUntil = src.value("suspendUntil").toString();
+        for (const auto &value : src.value("tags").toArray()) {
+            dest.tags.append(value.toString());
+        }
+    }
+}
+void copyModeration(const QJsonObject &src, ToolsOzoneModerationDefs::Moderation &dest)
+{
+    if (!src.isEmpty()) {
+        copySubjectStatusView(src.value("subjectStatus").toObject(), dest.subjectStatus);
+    }
+}
+void copyRepoView(const QJsonObject &src, ToolsOzoneModerationDefs::RepoView &dest)
+{
+    if (!src.isEmpty()) {
+        dest.did = src.value("did").toString();
+        dest.handle = src.value("handle").toString();
+        dest.email = src.value("email").toString();
+        dest.indexedAt = src.value("indexedAt").toString();
+        copyModeration(src.value("moderation").toObject(), dest.moderation);
+        ComAtprotoServerDefs::copyInviteCode(src.value("invitedBy").toObject(), dest.invitedBy);
+        dest.invitesDisabled = src.value("invitesDisabled").toBool();
+        dest.inviteNote = src.value("inviteNote").toString();
+    }
+}
+void copyRepoViewNotFound(const QJsonObject &src, ToolsOzoneModerationDefs::RepoViewNotFound &dest)
+{
+    if (!src.isEmpty()) {
+        dest.did = src.value("did").toString();
+    }
+}
+void copyRecordView(const QJsonObject &src, ToolsOzoneModerationDefs::RecordView &dest)
+{
+    if (!src.isEmpty()) {
+        dest.uri = src.value("uri").toString();
+        dest.cid = src.value("cid").toString();
+        LexiconsTypeUnknown::copyUnknown(src.value("value").toObject(), dest.value);
+        for (const auto &value : src.value("blobCids").toArray()) {
+            dest.blobCids.append(value.toString());
+        }
+        dest.indexedAt = src.value("indexedAt").toString();
+        copyModeration(src.value("moderation").toObject(), dest.moderation);
+        copyRepoView(src.value("repo").toObject(), dest.repo);
+    }
+}
+void copyRecordViewNotFound(const QJsonObject &src,
+                            ToolsOzoneModerationDefs::RecordViewNotFound &dest)
+{
+    if (!src.isEmpty()) {
+        dest.uri = src.value("uri").toString();
+    }
+}
+void copyImageDetails(const QJsonObject &src, ToolsOzoneModerationDefs::ImageDetails &dest)
+{
+    if (!src.isEmpty()) {
+        dest.width = src.value("width").toInt();
+        dest.height = src.value("height").toInt();
+    }
+}
+void copyVideoDetails(const QJsonObject &src, ToolsOzoneModerationDefs::VideoDetails &dest)
+{
+    if (!src.isEmpty()) {
+        dest.width = src.value("width").toInt();
+        dest.height = src.value("height").toInt();
+        dest.length = src.value("length").toInt();
+    }
+}
+void copyBlobView(const QJsonObject &src, ToolsOzoneModerationDefs::BlobView &dest)
+{
+    if (!src.isEmpty()) {
+        dest.cid = src.value("cid").toString();
+        dest.mimeType = src.value("mimeType").toString();
+        dest.size = src.value("size").toInt();
+        dest.createdAt = src.value("createdAt").toString();
+        QString details_type = src.value("details").toObject().value("$type").toString();
+        if (details_type == QStringLiteral("tools.ozone.moderation.defs#imageDetails")) {
+            dest.details_type = ToolsOzoneModerationDefs::BlobViewDetailsType::details_ImageDetails;
+            ToolsOzoneModerationDefs::copyImageDetails(src.value("details").toObject(),
+                                                       dest.details_ImageDetails);
+        }
+        if (details_type == QStringLiteral("tools.ozone.moderation.defs#videoDetails")) {
+            dest.details_type = ToolsOzoneModerationDefs::BlobViewDetailsType::details_VideoDetails;
+            ToolsOzoneModerationDefs::copyVideoDetails(src.value("details").toObject(),
+                                                       dest.details_VideoDetails);
+        }
+        copyModeration(src.value("moderation").toObject(), dest.moderation);
+    }
+}
+void copyModEventViewDetail(const QJsonObject &src,
+                            ToolsOzoneModerationDefs::ModEventViewDetail &dest)
+{
+    if (!src.isEmpty()) {
+        dest.id = src.value("id").toInt();
+        QString event_type = src.value("event").toObject().value("$type").toString();
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#modEventTakedown")) {
+            dest.event_type =
+                    ToolsOzoneModerationDefs::ModEventViewDetailEventType::event_ModEventTakedown;
+            ToolsOzoneModerationDefs::copyModEventTakedown(src.value("event").toObject(),
+                                                           dest.event_ModEventTakedown);
+        }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#modEventReverseTakedown")) {
+            dest.event_type = ToolsOzoneModerationDefs::ModEventViewDetailEventType::
+                    event_ModEventReverseTakedown;
+            ToolsOzoneModerationDefs::copyModEventReverseTakedown(
+                    src.value("event").toObject(), dest.event_ModEventReverseTakedown);
+        }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#modEventComment")) {
+            dest.event_type =
+                    ToolsOzoneModerationDefs::ModEventViewDetailEventType::event_ModEventComment;
+            ToolsOzoneModerationDefs::copyModEventComment(src.value("event").toObject(),
+                                                          dest.event_ModEventComment);
+        }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#modEventReport")) {
+            dest.event_type =
+                    ToolsOzoneModerationDefs::ModEventViewDetailEventType::event_ModEventReport;
+            ToolsOzoneModerationDefs::copyModEventReport(src.value("event").toObject(),
+                                                         dest.event_ModEventReport);
+        }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#modEventLabel")) {
+            dest.event_type =
+                    ToolsOzoneModerationDefs::ModEventViewDetailEventType::event_ModEventLabel;
+            ToolsOzoneModerationDefs::copyModEventLabel(src.value("event").toObject(),
+                                                        dest.event_ModEventLabel);
+        }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#modEventAcknowledge")) {
+            dest.event_type = ToolsOzoneModerationDefs::ModEventViewDetailEventType::
+                    event_ModEventAcknowledge;
+            ToolsOzoneModerationDefs::copyModEventAcknowledge(src.value("event").toObject(),
+                                                              dest.event_ModEventAcknowledge);
+        }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#modEventEscalate")) {
+            dest.event_type =
+                    ToolsOzoneModerationDefs::ModEventViewDetailEventType::event_ModEventEscalate;
+            ToolsOzoneModerationDefs::copyModEventEscalate(src.value("event").toObject(),
+                                                           dest.event_ModEventEscalate);
+        }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#modEventMute")) {
+            dest.event_type =
+                    ToolsOzoneModerationDefs::ModEventViewDetailEventType::event_ModEventMute;
+            ToolsOzoneModerationDefs::copyModEventMute(src.value("event").toObject(),
+                                                       dest.event_ModEventMute);
+        }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#modEventEmail")) {
+            dest.event_type =
+                    ToolsOzoneModerationDefs::ModEventViewDetailEventType::event_ModEventEmail;
+            ToolsOzoneModerationDefs::copyModEventEmail(src.value("event").toObject(),
+                                                        dest.event_ModEventEmail);
+        }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#modEventResolveAppeal")) {
+            dest.event_type = ToolsOzoneModerationDefs::ModEventViewDetailEventType::
+                    event_ModEventResolveAppeal;
+            ToolsOzoneModerationDefs::copyModEventResolveAppeal(src.value("event").toObject(),
+                                                                dest.event_ModEventResolveAppeal);
+        }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#modEventDivert")) {
+            dest.event_type =
+                    ToolsOzoneModerationDefs::ModEventViewDetailEventType::event_ModEventDivert;
+            ToolsOzoneModerationDefs::copyModEventDivert(src.value("event").toObject(),
+                                                         dest.event_ModEventDivert);
+        }
+        QString subject_type = src.value("subject").toObject().value("$type").toString();
+        if (subject_type == QStringLiteral("tools.ozone.moderation.defs#repoView")) {
+            dest.subject_type =
+                    ToolsOzoneModerationDefs::ModEventViewDetailSubjectType::subject_RepoView;
+            ToolsOzoneModerationDefs::copyRepoView(src.value("subject").toObject(),
+                                                   dest.subject_RepoView);
+        }
+        if (subject_type == QStringLiteral("tools.ozone.moderation.defs#repoViewNotFound")) {
+            dest.subject_type = ToolsOzoneModerationDefs::ModEventViewDetailSubjectType::
+                    subject_RepoViewNotFound;
+            ToolsOzoneModerationDefs::copyRepoViewNotFound(src.value("subject").toObject(),
+                                                           dest.subject_RepoViewNotFound);
+        }
+        if (subject_type == QStringLiteral("tools.ozone.moderation.defs#recordView")) {
+            dest.subject_type =
+                    ToolsOzoneModerationDefs::ModEventViewDetailSubjectType::subject_RecordView;
+            ToolsOzoneModerationDefs::copyRecordView(src.value("subject").toObject(),
+                                                     dest.subject_RecordView);
+        }
+        if (subject_type == QStringLiteral("tools.ozone.moderation.defs#recordViewNotFound")) {
+            dest.subject_type = ToolsOzoneModerationDefs::ModEventViewDetailSubjectType::
+                    subject_RecordViewNotFound;
+            ToolsOzoneModerationDefs::copyRecordViewNotFound(src.value("subject").toObject(),
+                                                             dest.subject_RecordViewNotFound);
+        }
+        for (const auto &s : src.value("subjectBlobs").toArray()) {
+            BlobView child;
+            copyBlobView(s.toObject(), child);
+            dest.subjectBlobs.append(child);
+        }
+        dest.createdBy = src.value("createdBy").toString();
+        dest.createdAt = src.value("createdAt").toString();
+    }
+}
+void copyModEventUnmute(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventUnmute &dest)
+{
+    if (!src.isEmpty()) {
+        dest.comment = src.value("comment").toString();
+    }
+}
+void copyModEventTag(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventTag &dest)
+{
+    if (!src.isEmpty()) {
+        for (const auto &value : src.value("add").toArray()) {
+            dest.add.append(value.toString());
+        }
+        for (const auto &value : src.value("remove").toArray()) {
+            dest.remove.append(value.toString());
+        }
+        dest.comment = src.value("comment").toString();
+    }
+}
+void copyModerationDetail(const QJsonObject &src, ToolsOzoneModerationDefs::ModerationDetail &dest)
+{
+    if (!src.isEmpty()) {
+        copySubjectStatusView(src.value("subjectStatus").toObject(), dest.subjectStatus);
+    }
+}
+void copyRepoViewDetail(const QJsonObject &src, ToolsOzoneModerationDefs::RepoViewDetail &dest)
+{
+    if (!src.isEmpty()) {
+        dest.did = src.value("did").toString();
+        dest.handle = src.value("handle").toString();
+        dest.email = src.value("email").toString();
+        dest.indexedAt = src.value("indexedAt").toString();
+        copyModerationDetail(src.value("moderation").toObject(), dest.moderation);
+        for (const auto &s : src.value("labels").toArray()) {
+            ComAtprotoLabelDefs::Label child;
+            ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
+            dest.labels.append(child);
+        }
+        ComAtprotoServerDefs::copyInviteCode(src.value("invitedBy").toObject(), dest.invitedBy);
+        for (const auto &s : src.value("invites").toArray()) {
+            ComAtprotoServerDefs::InviteCode child;
+            ComAtprotoServerDefs::copyInviteCode(s.toObject(), child);
+            dest.invites.append(child);
+        }
+        dest.invitesDisabled = src.value("invitesDisabled").toBool();
+        dest.inviteNote = src.value("inviteNote").toString();
+        dest.emailConfirmedAt = src.value("emailConfirmedAt").toString();
+    }
+}
+void copyRecordViewDetail(const QJsonObject &src, ToolsOzoneModerationDefs::RecordViewDetail &dest)
+{
+    if (!src.isEmpty()) {
+        dest.uri = src.value("uri").toString();
+        dest.cid = src.value("cid").toString();
+        LexiconsTypeUnknown::copyUnknown(src.value("value").toObject(), dest.value);
+        for (const auto &s : src.value("blobs").toArray()) {
+            BlobView child;
+            copyBlobView(s.toObject(), child);
+            dest.blobs.append(child);
+        }
+        for (const auto &s : src.value("labels").toArray()) {
+            ComAtprotoLabelDefs::Label child;
+            ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
+            dest.labels.append(child);
+        }
+        dest.indexedAt = src.value("indexedAt").toString();
+        copyModerationDetail(src.value("moderation").toObject(), dest.moderation);
+        copyRepoView(src.value("repo").toObject(), dest.repo);
     }
 }
 }

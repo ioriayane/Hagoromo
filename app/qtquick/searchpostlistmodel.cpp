@@ -27,6 +27,7 @@ bool SearchPostListModel::getLatest()
             posts->deleteLater();
         });
         posts->setAccount(account());
+        posts->setLabelers(m_contentFilterLabels.labelerDids());
         posts->searchPosts(replaceSearchCommand(text()), 10, QString());
     });
     return true;
@@ -52,6 +53,7 @@ bool SearchPostListModel::getNext()
         });
 
         posts->setAccount(account());
+        posts->setLabelers(m_contentFilterLabels.labelerDids());
         posts->searchPosts(replaceSearchCommand(text()), 10, m_cursor);
     });
     return true;
