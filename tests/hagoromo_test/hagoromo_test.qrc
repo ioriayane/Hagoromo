@@ -40,5 +40,21 @@
         <file>response/timeline/labelers/1/xrpc/app.bsky.actor.getPreferences</file>
         <file>response/timeline/labelers/1/xrpc/app.bsky.feed.getTimeline</file>
         <file>response/timeline/labelers/1/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/timeline/warn/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/timeline/threadgate/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/timeline/text/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/timeline/reply/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/timeline/next/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/timeline/labels/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/timeline/hide2/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/timeline/hide/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/timeline/animated/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/postthread/3/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/postthread/2/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/postthread/1/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/notifications/warn/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/notifications/visible/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/facet/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/anyprofile/xrpc/app.bsky.labeler.getServices</file>
     </qresource>
 </RCC>

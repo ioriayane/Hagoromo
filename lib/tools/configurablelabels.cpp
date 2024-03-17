@@ -244,43 +244,58 @@ ConfigurableLabelStatus ConfigurableLabels::visibility(const QString &label, con
                                                        const QString &labeler_did) const
 {
     QString key = labeler_did.isEmpty() ? GLOBAL_LABELER_KEY : labeler_did;
-    if (!m_labels.contains(key))
-        return ConfigurableLabelStatus::Show;
 
-    ConfigurableLabelStatus result = ConfigurableLabelStatus::Show;
-    for (const auto &item : m_labels.value(key)) {
-        if (item.values.contains(label) && item.is_adult_imagery == for_image) {
-            // 画像用のラベルの検索か、それ以外か。どちらか一方のみ。つまり、一致しているときだけ。
-            if (item.is_adult_imagery) {
-                if (m_enableAdultContent) {
-                    result = item.status;
+    ConfigurableLabelStatus result = ConfigurableLabelStatus::Unknown;
+    if (m_labels.contains(key)) {
+        for (const auto &item : m_labels.value(key)) {
+            if (item.values.contains(label) && item.is_adult_imagery == for_image) {
+                // 画像用のラベルの検索か、それ以外か。どちらか一方のみ。つまり、一致しているときだけ。
+                if (item.is_adult_imagery) {
+                    if (m_enableAdultContent) {
+                        result = item.status;
+                    } else {
+                        result = ConfigurableLabelStatus::Hide;
+                    }
                 } else {
-                    result = ConfigurableLabelStatus::Hide;
+                    result = item.status;
                 }
-            } else {
-                result = item.status;
+                break;
             }
-            break;
         }
     }
-    return result;
+    if (result != ConfigurableLabelStatus::Unknown) {
+        // 見つかった
+        return result;
+    } else if (labeler_did.isEmpty()) {
+        // グローバルを検索しても見つからないときは表示
+        return ConfigurableLabelStatus::Show;
+    } else {
+        // ラベラー指定で見つからないときはグローバルを検索
+        return visibility(label, for_image, QString());
+    }
 }
 
 QString ConfigurableLabels::message(const QString &label, const bool for_image,
                                     const QString &labeler_did) const
 {
     QString key = labeler_did.isEmpty() ? GLOBAL_LABELER_KEY : labeler_did;
-    if (!m_labels.contains(key))
-        return QString();
 
     QString result;
-    for (const auto &item : m_labels.value(key)) {
-        if (item.values.contains(label) && item.is_adult_imagery == for_image) {
-            result = item.warning;
-            break;
+    if (m_labels.contains(key)) {
+        for (const auto &item : m_labels.value(key)) {
+            if (item.values.contains(label) && item.is_adult_imagery == for_image) {
+                result = item.warning;
+                break;
+            }
         }
     }
-    return result;
+    if (!result.isEmpty()) {
+        return result;
+    } else if (labeler_did.isEmpty()) {
+        return QString();
+    } else {
+        return message(label, for_image, QString());
+    }
 }
 
 QString ConfigurableLabels::title(const int index, const QString &labeler_did) const
