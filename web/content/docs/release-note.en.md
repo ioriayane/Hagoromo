@@ -15,6 +15,7 @@ description: This is a multi-column Bluesky client.
   - Internal updates to maintain compatibility with the new label system
   - Added aspect ratio to attached images
 - Fix
+  - Fixed a situation where the tab button in the profile was sticking out.
 
 ### v0.25.0 - 2024/3/2
 
