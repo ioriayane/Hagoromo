@@ -12,6 +12,7 @@ using AtProtocolInterface::ComAtprotoSyncGetBlob;
 
 AtpAbstractListModel::AtpAbstractListModel(QObject *parent)
     : QAbstractListModel { parent },
+      m_contentFilterRefreshCounter(0),
       m_running(false),
       m_loadingInterval(5 * 60 * 1000),
       m_displayInterval(400),
@@ -343,6 +344,16 @@ void AtpAbstractListModel::displayQueuedPostsNext()
 void AtpAbstractListModel::updateContentFilterLabels(std::function<void()> callback)
 {
     ConfigurableLabels *labels = new ConfigurableLabels(this);
+    *labels = m_contentFilterLabels;
+    if (m_contentFilterRefreshCounter == 0) {
+        labels->setRefreshLabelers(true);
+    }
+    m_contentFilterRefreshCounter++;
+    if (m_contentFilterRefreshCounter > 10) {
+        m_contentFilterRefreshCounter = 0;
+    }
+    qDebug().nospace() << "m_contentFilterRefreshCounter=" << m_contentFilterRefreshCounter;
+
     connect(labels, &ConfigurableLabels::finished, this, [=](bool success) {
         if (success) {
             m_contentFilterLabels = *labels;

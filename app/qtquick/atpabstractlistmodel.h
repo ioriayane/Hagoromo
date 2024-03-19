@@ -203,6 +203,7 @@ private:
 
     QTimer m_timer;
     AtProtocolInterface::AccountData m_account;
+    int m_contentFilterRefreshCounter;
 
     bool m_running;
     int m_loadingInterval;
