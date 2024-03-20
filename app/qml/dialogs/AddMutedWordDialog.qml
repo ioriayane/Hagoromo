@@ -214,6 +214,11 @@ Dialog {
                 enabled: !mutedWordListModel.running
                 text: qsTr("Save") + (mutedWordListModel.modified ? "(*)" : "")
                 onClicked: mutedWordListModel.save()
+                BusyIndicator {
+                    anchors.fill: parent
+                    anchors.margins: 3
+                    visible: mutedWordListModel.running
+                }
             }
         }
     }
