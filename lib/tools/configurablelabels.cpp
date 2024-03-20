@@ -134,9 +134,14 @@ bool ConfigurableLabels::load()
                     }
                 }
                 setRunning(false);
-                emit finished(success);
+                emit finished(load_labelers_success);
                 pref->deleteLater();
             });
+        } else {
+            qDebug() << "Fail load preferences for " << account().handle;
+            setRunning(false);
+            emit finished(success);
+            pref->deleteLater();
         }
     });
     pref->setAccount(account());
