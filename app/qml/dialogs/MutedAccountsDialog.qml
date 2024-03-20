@@ -3,7 +3,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 
-import tech.relog.hagoromo.blockslistmodel 1.0
+import tech.relog.hagoromo.muteslistmodel 1.0
 import tech.relog.hagoromo.singleton 1.0
 
 import "../controls"
@@ -12,12 +12,12 @@ import "../parts"
 import "../view"
 
 Dialog {
-    id: blockListDialog
+    id: mutedAccountsDialog
     modal: true
     x: (parent.width - width) * 0.5
     y: (parent.height - height) * 0.5
     closePolicy: Popup.NoAutoClose
-    title: qsTr("Blocked accounts")
+    title: qsTr("Muted accounts")
 
     property alias account: account
     Account {
@@ -29,15 +29,14 @@ Dialog {
         if(account.service.length === 0){
             return
         }
-
-        blocksListModel.setAccount(account.service, account.did, account.handle,
-                                          account.email, account.accessJwt, account.refreshJwt)
-        blocksListModel.getLatest()
+        mutesListModel.setAccount(account.service, account.did, account.handle,
+                                  account.email, account.accessJwt, account.refreshJwt)
+        mutesListModel.getLatest()
 
         profileListScrollView.currentIndex = -1
     }
     onClosed: {
-        blocksListModel.clear()
+        mutesListModel.clear()
     }
 
     ColumnLayout {
@@ -59,10 +58,10 @@ Dialog {
             id: profileListScrollView
             Layout.preferredWidth: 400 * AdjustedValues.ratio
             Layout.preferredHeight: 350 * AdjustedValues.ratioHalf
-            viewMode: 1
-            model: BlocksListModel {
-                id: blocksListModel
-                onErrorOccured: (code, message) => blockListDialog.errorOccured(blockListDialog.account.uuid, code, message)
+            viewMode: 2
+            model: MutesListModel {
+                id: mutesListModel
+                onErrorOccured: (code, message) => mutedAccountsDialog.errorOccured(mutedAccountsDialog.account.uuid, code, message)
             }
         }
         RowLayout {
@@ -70,7 +69,7 @@ Dialog {
                 font.pointSize: AdjustedValues.f10
                 text: qsTr("Close")
                 flat: true
-                onClicked: blockListDialog.close()
+                onClicked: mutedAccountsDialog.close()
             }
             Item {
                 Layout.fillWidth: true

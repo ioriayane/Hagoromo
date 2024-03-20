@@ -36,11 +36,11 @@ Dialog {
     ContentFilterSettingDialog {
         id: contentFilter
     }
-    BlockListDialog {
-        id: blockListDialog
+    BlockedAccountsDialog {
+        id: blockedAccountsDialog
     }
-    MutesListDialog {
-        id: mutesListDialog
+    MutedAccountsDialog {
+        id: mutedAccountsDialog
     }
 
     SelectThreadGateDialog {
@@ -153,8 +153,8 @@ Dialog {
                                 icon.source: "../images/mute.png"
                                 text: qsTr("Muted accounts")
                                 onTriggered: {
-                                    if(mutesListDialog.account.set(accountList.model, model.uuid)){
-                                        mutesListDialog.open()
+                                    if(mutedAccountsDialog.account.set(accountList.model, model.uuid)){
+                                        mutedAccountsDialog.open()
                                     }
                                 }
                             }
@@ -163,8 +163,8 @@ Dialog {
                                 icon.source: "../images/block.png"
                                 text: qsTr("Blocked accounts")
                                 onTriggered: {
-                                    if(blockListDialog.account.set(accountList.model, model.uuid)){
-                                        blockListDialog.open()
+                                    if(blockedAccountsDialog.account.set(accountList.model, model.uuid)){
+                                        blockedAccountsDialog.open()
                                     }
                                 }
                             }
