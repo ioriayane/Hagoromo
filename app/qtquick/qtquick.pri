@@ -9,6 +9,7 @@ SOURCES += \
     $$PWD/anyprofilelistmodel.cpp \
     $$PWD/atpabstractlistmodel.cpp \
     $$PWD/authorfeedlistmodel.cpp \
+    $$PWD/blockslistmodel.cpp \
     $$PWD/columnlistmodel.cpp \
     $$PWD/contentfiltersettinglistmodel.cpp \
     $$PWD/createsession.cpp \
@@ -45,6 +46,7 @@ HEADERS += \
     $$PWD/anyprofilelistmodel.h \
     $$PWD/atpabstractlistmodel.h \
     $$PWD/authorfeedlistmodel.h \
+    $$PWD/blockslistmodel.h \
     $$PWD/columnlistmodel.h \
     $$PWD/common.h \
     $$PWD/contentfiltersettinglistmodel.h \

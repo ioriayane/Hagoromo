@@ -19,6 +19,7 @@
 #include "qtquick/actorlikelistmodel.h"
 #include "qtquick/followslistmodel.h"
 #include "qtquick/followerslistmodel.h"
+#include "qtquick/blockslistmodel.h"
 #include "qtquick/searchpostlistmodel.h"
 #include "qtquick/searchprofilelistmodel.h"
 #include "qtquick/feedtypelistmodel.h"
@@ -97,6 +98,8 @@ int main(int argc, char *argv[])
                                       "FollowsListModel");
     qmlRegisterType<FollowersListModel>("tech.relog.hagoromo.followerslistmodel", 1, 0,
                                         "FollowersListModel");
+    qmlRegisterType<BlocksListModel>("tech.relog.hagoromo.blockslistmodel", 1, 0,
+                                     "BlocksListModel");
     qmlRegisterType<SearchPostListModel>("tech.relog.hagoromo.searchpostlistmodel", 1, 0,
                                          "SearchPostListModel");
     qmlRegisterType<SearchProfileListModel>("tech.relog.hagoromo.searchprofilelistmodel", 1, 0,

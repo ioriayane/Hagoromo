@@ -23,6 +23,7 @@ QML_FILES = \
     qml/dialogs/AddMutedWordDialog.qml \
     qml/dialogs/AddToListDialog.qml \
     qml/dialogs/AltEditDialog.qml \
+    qml/dialogs/BlockListDialog.qml \
     qml/dialogs/ColumnSettingDialog.qml \
     qml/dialogs/ContentFilterSettingDialog.qml \
     qml/dialogs/DiscoverFeedsDialog.qml \

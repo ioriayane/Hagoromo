@@ -44,12 +44,14 @@ QVariant FollowsListModel::item(int row, FollowsListModelRoles role) const
         return formatDateTime(profile.indexedAt);
     else if (role == MutedRole)
         return profile.viewer.muted;
-    else if (role == BlockedByRole)
-        return profile.viewer.blocking;
+    else if (role == BlockingRole)
+        return profile.viewer.blocking.contains(account().did);
     else if (role == FollowingRole)
         return profile.viewer.following.contains(account().did);
     else if (role == FollowedByRole)
         return profile.viewer.followedBy.contains(profile.did);
+    else if (role == BlockingUriRole)
+        return profile.viewer.blocking;
     else if (role == FollowingUriRole)
         return profile.viewer.following;
     else if (role == LabelsRole) {
@@ -180,9 +182,10 @@ QHash<int, QByteArray> FollowsListModel::roleNames() const
     roles[AvatarRole] = "avatar";
     roles[IndexedAtRole] = "indexedAt";
     roles[MutedRole] = "muted";
-    roles[BlockedByRole] = "blockedBy";
+    roles[BlockingRole] = "blocking";
     roles[FollowingRole] = "following";
     roles[FollowedByRole] = "followedBy";
+    roles[BlockingUriRole] = "blockingUri";
     roles[FollowingUriRole] = "followingUri";
     roles[LabelsRole] = "labels";
 

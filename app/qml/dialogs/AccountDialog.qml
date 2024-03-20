@@ -36,6 +36,9 @@ Dialog {
     ContentFilterSettingDialog {
         id: contentFilter
     }
+    BlockListDialog {
+        id: blockListDialog
+    }
     SelectThreadGateDialog {
         id: selectThreadGateDialog
         defaultSettingMode: true
@@ -130,15 +133,9 @@ Dialog {
                                 icon.source: "../images/visibility_on.png"
                                 text: qsTr("Content filter")
                                 onTriggered: {
-                                    var i = model.index
-                                    contentFilter.account.service = accountList.model.item(i, AccountListModel.ServiceRole)
-                                    contentFilter.account.did = accountList.model.item(i, AccountListModel.DidRole)
-                                    contentFilter.account.handle = accountList.model.item(i, AccountListModel.HandleRole)
-                                    contentFilter.account.email = accountList.model.item(i, AccountListModel.EmailRole)
-                                    contentFilter.account.accessJwt = accountList.model.item(i, AccountListModel.AccessJwtRole)
-                                    contentFilter.account.refreshJwt = accountList.model.item(i, AccountListModel.RefreshJwtRole)
-                                    contentFilter.account.avatar = accountList.model.item(i, AccountListModel.AvatarRole)
-                                    contentFilter.open()
+                                    if(contentFilter.account.set(accountList.model, model.uuid)){
+                                        contentFilter.open()
+                                    }
                                 }
                             }
                             MenuItem {
@@ -147,6 +144,17 @@ Dialog {
                                 text: qsTr("Muted words and tags")
                                 onTriggered: accountDialog.requestAddMutedWords(model.index)
                             }
+                            MenuItem {
+                                id: blockedAccountsMenuItem
+                                icon.source: "../images/block.png"
+                                text: qsTr("Blocked accounts")
+                                onTriggered: {
+                                    if(blockListDialog.account.set(accountList.model, model.uuid)){
+                                        blockListDialog.open()
+                                    }
+                                }
+                            }
+                            MenuSeparator {}
                             MenuItem {
                                 id: threadGateMenuItem
                                 icon.source: "../images/thread.png"
