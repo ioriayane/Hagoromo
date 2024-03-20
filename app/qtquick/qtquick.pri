@@ -27,6 +27,7 @@ SOURCES += \
     $$PWD/listlink.cpp \
     $$PWD/listslistmodel.cpp \
     $$PWD/mutedwordlistmodel.cpp \
+    $$PWD/muteslistmodel.cpp \
     $$PWD/notificationlistmodel.cpp \
     $$PWD/postthreadlistmodel.cpp \
     $$PWD/recordoperator.cpp \
@@ -66,6 +67,7 @@ HEADERS += \
     $$PWD/listlink.h \
     $$PWD/listslistmodel.h \
     $$PWD/mutedwordlistmodel.h \
+    $$PWD/muteslistmodel.h \
     $$PWD/notificationlistmodel.h \
     $$PWD/postthreadlistmodel.h \
     $$PWD/recordoperator.h \

@@ -1,35 +1,25 @@
 #include "appbskygraphgetmutes.h"
-#include "atprotocol/lexicons_func.h"
 
-#include <QJsonDocument>
-#include <QJsonObject>
 #include <QUrlQuery>
 
 namespace AtProtocolInterface {
 
-AppBskyGraphGetMutes::AppBskyGraphGetMutes(QObject *parent)
-    : AccessAtProtocol { parent }
+AppBskyGraphGetMutes::AppBskyGraphGetMutes(QObject *parent) : AppBskyGraphGetFollows { parent }
 {
+    m_listKey = QStringLiteral("mutes");
 }
 
 void AppBskyGraphGetMutes::getMutes(const int limit, const QString &cursor)
 {
     QUrlQuery query;
-    //    query.addQueryItem(QStringLiteral("name"), name);
-
-    get(QStringLiteral("xrpc/app.bsky.graph.getMutes"), query);
-}
-
-bool AppBskyGraphGetMutes::parseJson(bool success, const QString reply_json)
-{
-    QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
-    if (json_doc.isEmpty()) {
-        success = false;
-    } else {
-        //setCursor(json_doc.object().value("cursor").toString());
+    if (limit > 0) {
+        query.addQueryItem(QStringLiteral("limit"), QString::number(limit));
+    }
+    if (!cursor.isEmpty()) {
+        query.addQueryItem(QStringLiteral("cursor"), cursor);
     }
 
-    return success;
+    get(QStringLiteral("xrpc/app.bsky.graph.getMutes"), query);
 }
 
 }

@@ -32,6 +32,7 @@ QML_FILES = \
     qml/dialogs/LanguageSelectionDialog.qml \
     qml/dialogs/LoginDialog.qml \
     qml/dialogs/MessageDialog.qml \
+    qml/dialogs/MutesListDialog.qml \
     qml/dialogs/PostDialog.qml \
     qml/dialogs/ReportAccountDialog.qml \
     qml/dialogs/ReportPostDialog.qml \

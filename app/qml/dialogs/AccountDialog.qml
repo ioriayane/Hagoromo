@@ -39,6 +39,10 @@ Dialog {
     BlockListDialog {
         id: blockListDialog
     }
+    MutesListDialog {
+        id: mutesListDialog
+    }
+
     SelectThreadGateDialog {
         id: selectThreadGateDialog
         defaultSettingMode: true
@@ -143,6 +147,16 @@ Dialog {
                                 icon.source: "../images/mute.png"
                                 text: qsTr("Muted words and tags")
                                 onTriggered: accountDialog.requestAddMutedWords(model.index)
+                            }
+                            MenuItem {
+                                id: mutedAccountsMenuItem
+                                icon.source: "../images/mute.png"
+                                text: qsTr("Muted accounts")
+                                onTriggered: {
+                                    if(mutesListDialog.account.set(accountList.model, model.uuid)){
+                                        mutesListDialog.open()
+                                    }
+                                }
                             }
                             MenuItem {
                                 id: blockedAccountsMenuItem

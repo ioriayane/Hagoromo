@@ -1,8 +1,5 @@
 #include "appbskygraphgetblocks.h"
-#include "atprotocol/lexicons_func.h"
 
-#include <QJsonDocument>
-#include <QJsonObject>
 #include <QUrlQuery>
 
 namespace AtProtocolInterface {

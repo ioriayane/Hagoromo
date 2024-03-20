@@ -151,6 +151,20 @@ ScrollView {
                             }
                         }
                     }
+                },
+                State {
+                    // ミュートしている
+                    when: model.muted && profileListView.viewMode === 2
+                    PropertyChanges { target: editButton; iconText: qsTr("Muted") }
+                    PropertyChanges { target: editButton; onClicked: {
+                            console.log("Unmute " + model.handle + ", " + model.did)
+                            recordOperator.reflectAccount()
+                            recordOperator.deleteMute(model.did)
+                            if(unfollowAndRemove){
+                                rootListView.model.remove(model.did)
+                            }
+                        }
+                    }
                 }
             ]
 
@@ -197,7 +211,7 @@ ScrollView {
                             text: qsTr("Follows you")
                         }
                         TagLabel {
-                            visible: model.muted
+                            visible: model.muted && profileListView.viewMode !== 2
                             source: ""
                             fontPointSize: AdjustedValues.f8
                             text: qsTr("Muted user")
