@@ -26,9 +26,10 @@ public:
         AvatarRole,
         IndexedAtRole,
         MutedRole,
-        BlockedByRole,
+        BlockingRole,
         FollowingRole,
         FollowedByRole,
+        BlockingUriRole,
         FollowingUriRole,
         LabelsRole,
     };

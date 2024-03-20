@@ -455,115 +455,53 @@ ApplicationWindow {
                                    }
 
             onRequestReportPost: (account_uuid, uri, cid) => {
-                                     var row = accountListModel.indexAt(account_uuid)
-                                     if(row >= 0){
+                                     if(reportDialog.account.set(accountListModel, account_uuid)){
                                          reportDialog.targetUri = uri
                                          reportDialog.targetCid = cid
-                                         reportDialog.account.uuid = account_uuid
-                                         reportDialog.account.service = accountListModel.item(row, AccountListModel.ServiceRole)
-                                         reportDialog.account.did = accountListModel.item(row, AccountListModel.DidRole)
-                                         reportDialog.account.handle = accountListModel.item(row, AccountListModel.HandleRole)
-                                         reportDialog.account.email = accountListModel.item(row, AccountListModel.EmailRole)
-                                         reportDialog.account.accessJwt = accountListModel.item(row, AccountListModel.AccessJwtRole)
-                                         reportDialog.account.refreshJwt = accountListModel.item(row, AccountListModel.RefreshJwtRole)
-                                         reportDialog.account.avatar = accountListModel.item(row, AccountListModel.AvatarRole)
                                          reportDialog.open()
                                      }
                                  }
             onRequestReportAccount: (account_uuid, did) => {
-                                        var row = accountListModel.indexAt(account_uuid)
-                                        if(row >= 0){
+                                        if(reportAccountDialog.account.set(accountListModel, account_uuid)){
                                             reportAccountDialog.targetDid = did
-                                            reportAccountDialog.account.uuid = account_uuid
-                                            reportAccountDialog.account.service = accountListModel.item(row, AccountListModel.ServiceRole)
-                                            reportAccountDialog.account.did = accountListModel.item(row, AccountListModel.DidRole)
-                                            reportAccountDialog.account.handle = accountListModel.item(row, AccountListModel.HandleRole)
-                                            reportAccountDialog.account.email = accountListModel.item(row, AccountListModel.EmailRole)
-                                            reportAccountDialog.account.accessJwt = accountListModel.item(row, AccountListModel.AccessJwtRole)
-                                            reportAccountDialog.account.refreshJwt = accountListModel.item(row, AccountListModel.RefreshJwtRole)
-                                            reportAccountDialog.account.avatar = accountListModel.item(row, AccountListModel.AvatarRole)
                                             reportAccountDialog.open()
                                         }
                                     }
             onRequestAddRemoveFromLists: (account_uuid, did) => {
-                                             var row = accountListModel.indexAt(account_uuid)
-                                             if(row >= 0){
+                                             if(addToListDialog.account.set(accountListModel, account_uuid)){
                                                  addToListDialog.targetDid = did
-                                                 addToListDialog.account.uuid = account_uuid
-                                                 addToListDialog.account.service = accountListModel.item(row, AccountListModel.ServiceRole)
-                                                 addToListDialog.account.did = accountListModel.item(row, AccountListModel.DidRole)
-                                                 addToListDialog.account.handle = accountListModel.item(row, AccountListModel.HandleRole)
-                                                 addToListDialog.account.email = accountListModel.item(row, AccountListModel.EmailRole)
-                                                 addToListDialog.account.accessJwt = accountListModel.item(row, AccountListModel.AccessJwtRole)
-                                                 addToListDialog.account.refreshJwt = accountListModel.item(row, AccountListModel.RefreshJwtRole)
-                                                 addToListDialog.account.avatar = accountListModel.item(row, AccountListModel.AvatarRole)
                                                  addToListDialog.open()
                                              }
                                          }
             onRequestAddMutedWord: (account_uuid, text) => {
-                                       var row = accountListModel.indexAt(account_uuid)
-                                       console.log(account_uuid + ", " + text + ", " + row)
-                                       if(row >= 0){
+                                       console.log(account_uuid + ", " + text)
+                                       if(addMutedWordDialog.account.set(accountListModel, account_uuid)){
                                            addMutedWordDialog.initialValue = text
-                                           addMutedWordDialog.account.uuid = account_uuid
-                                           addMutedWordDialog.account.service = accountListModel.item(row, AccountListModel.ServiceRole)
-                                           addMutedWordDialog.account.did = accountListModel.item(row, AccountListModel.DidRole)
-                                           addMutedWordDialog.account.handle = accountListModel.item(row, AccountListModel.HandleRole)
-                                           addMutedWordDialog.account.email = accountListModel.item(row, AccountListModel.EmailRole)
-                                           addMutedWordDialog.account.accessJwt = accountListModel.item(row, AccountListModel.AccessJwtRole)
-                                           addMutedWordDialog.account.refreshJwt = accountListModel.item(row, AccountListModel.RefreshJwtRole)
-                                           addMutedWordDialog.account.avatar = accountListModel.item(row, AccountListModel.AvatarRole)
                                            addMutedWordDialog.open()
                                        }
                                    }
 
             onRequestEditProfile: (account_uuid, did, avatar, banner, display_name, description) => {
-                                      var row = accountListModel.indexAt(account_uuid)
-                                      if(row >= 0){
+                                      if(editProfileDialog.account.set(accountListModel, account_uuid)){
                                           editProfileDialog.avatar = avatar
                                           editProfileDialog.banner = banner
                                           editProfileDialog.displayName = display_name
                                           editProfileDialog.description = description
-                                          editProfileDialog.account.uuid = account_uuid
-                                          editProfileDialog.account.service = accountListModel.item(row, AccountListModel.ServiceRole)
-                                          editProfileDialog.account.did = accountListModel.item(row, AccountListModel.DidRole)
-                                          editProfileDialog.account.handle = accountListModel.item(row, AccountListModel.HandleRole)
-                                          editProfileDialog.account.email = accountListModel.item(row, AccountListModel.EmailRole)
-                                          editProfileDialog.account.accessJwt = accountListModel.item(row, AccountListModel.AccessJwtRole)
-                                          editProfileDialog.account.refreshJwt = accountListModel.item(row, AccountListModel.RefreshJwtRole)
-                                          editProfileDialog.account.avatar = accountListModel.item(row, AccountListModel.AvatarRole)
                                           editProfileDialog.open()
                                       }
                                   }
             onRequestEditList: (account_uuid, uri, avatar, name, description) => {
-                                   var row = accountListModel.indexAt(account_uuid)
-                                   if(row >= 0){
+                                   if(addListDialog.account.set(accountListModel, account_uuid)){
                                        addListDialog.editMode = true
                                        addListDialog.listUri = uri
                                        addListDialog.avatar = avatar
                                        addListDialog.displayName = name
                                        addListDialog.description = description
-                                       addListDialog.account.uuid = account_uuid
-                                       addListDialog.account.service = accountListModel.item(row, AccountListModel.ServiceRole)
-                                       addListDialog.account.did = accountListModel.item(row, AccountListModel.DidRole)
-                                       addListDialog.account.handle = accountListModel.item(row, AccountListModel.HandleRole)
-                                       addListDialog.account.email = accountListModel.item(row, AccountListModel.EmailRole)
-                                       addListDialog.account.accessJwt = accountListModel.item(row, AccountListModel.AccessJwtRole)
-                                       addListDialog.account.refreshJwt = accountListModel.item(row, AccountListModel.RefreshJwtRole)
-                                       addListDialog.account.avatar = accountListModel.item(row, AccountListModel.AvatarRole)
                                        addListDialog.open()
                                    }
                                }
             onRequestUpdateThreadGate: (account_uuid, uri, threadgate_uri, type, rules, callback) => {
-                                           var row = accountListModel.indexAt(account_uuid)
-                                           if(row >= 0){
-                                               selectThreadGateDialog.account.service = accountListModel.item(row, AccountListModel.ServiceRole)
-                                               selectThreadGateDialog.account.did = accountListModel.item(row, AccountListModel.DidRole)
-                                               selectThreadGateDialog.account.handle = accountListModel.item(row, AccountListModel.HandleRole)
-                                               selectThreadGateDialog.account.email = accountListModel.item(row, AccountListModel.EmailRole)
-                                               selectThreadGateDialog.account.accessJwt = accountListModel.item(row, AccountListModel.AccessJwtRole)
-                                               selectThreadGateDialog.account.refreshJwt = accountListModel.item(row, AccountListModel.RefreshJwtRole)
-                                               selectThreadGateDialog.account.avatar = accountListModel.item(row, AccountListModel.AvatarRole)
+                                           if(selectThreadGateDialog.account.set(accountListModel, account_uuid)){
                                                selectThreadGateDialog.postUri = uri
                                                selectThreadGateDialog.threadgateUri = threadgate_uri
                                                selectThreadGateDialog.initialType = type
@@ -763,10 +701,8 @@ ApplicationWindow {
                     for(var i=0; i<repeater.count; i++){
                         var item = repeater.itemAt(i)   //ここのitemはloader自身
                         if(item.item.account.uuid === account_uuid){
-                            var row = accountListModel.indexAt(item.item.account.uuid)
-                            if(row >= 0){
-                                console.log("Update column : col=" + i + ", a_row=" + row)
-                                item.setAccount(row)
+                            if(item.item.account.set(accountListModel, item.item.account.uuid)){
+                                console.log("Update column : col=" + i + ", a_uuid=" + item.item.account.uuid)
                                 item.item.reflect()
                             }
                         }
@@ -819,16 +755,14 @@ ApplicationWindow {
                         // Loaderで読み込んだComponentにアカウント情報など設定する
                         var row = accountListModel.indexAt(model.accountUuid)
                         console.log("(1) loader:" + row + ", " + model.accountUuid)
-                        if(row < 0){
+                        if(!item.account.set(accountListModel, model.accountUuid)){
                             return
                         }
 
                         item.columnKey = model.key
                         item.componentType = model.componentType
                         item.selected = model.selected
-                        item.account.uuid = model.accountUuid
                         setSettings()
-                        setAccount(row)
                         item.load()
 
                         if(model.index === columnManageModel.rowCount() - 1){
@@ -878,16 +812,6 @@ ApplicationWindow {
 
                         item.settings.updateSeenNotification = settingDialog.settings.updateSeenNotification
                         item.settings.sequentialDisplayOfPosts = (settingDialog.settings.displayOfPosts === "sequential")
-                    }
-
-                    function setAccount(row) {
-                        item.account.service = accountListModel.item(row, AccountListModel.ServiceRole)
-                        item.account.did = accountListModel.item(row, AccountListModel.DidRole)
-                        item.account.handle = accountListModel.item(row, AccountListModel.HandleRole)
-                        item.account.email = accountListModel.item(row, AccountListModel.EmailRole)
-                        item.account.accessJwt = accountListModel.item(row, AccountListModel.AccessJwtRole)
-                        item.account.refreshJwt = accountListModel.item(row, AccountListModel.RefreshJwtRole)
-                        item.account.avatar = accountListModel.item(row, AccountListModel.AvatarRole)
                     }
 
                     function updateSelection() {
