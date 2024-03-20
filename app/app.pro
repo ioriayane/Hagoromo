@@ -80,6 +80,7 @@ QML_FILES = \
 IMAGE_FILES += \
     qml/images/account.png \
     qml/images/account_icon.png \
+    qml/images/account_off.png \
     qml/images/add.png \
     qml/images/add_image.png \
     qml/images/add_user.png \

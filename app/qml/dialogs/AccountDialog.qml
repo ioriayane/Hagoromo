@@ -150,7 +150,7 @@ Dialog {
                             }
                             MenuItem {
                                 id: mutedAccountsMenuItem
-                                icon.source: "../images/mute.png"
+                                icon.source: "../images/account_off.png"
                                 text: qsTr("Muted accounts")
                                 onTriggered: {
                                     if(mutedAccountsDialog.account.set(accountList.model, model.uuid)){
@@ -174,18 +174,13 @@ Dialog {
                                 icon.source: "../images/thread.png"
                                 text: qsTr("Who can reply")
                                 onTriggered: {
-                                    var i = model.index
-                                    selectThreadGateDialog.account.service = accountList.model.item(i, AccountListModel.ServiceRole)
-                                    selectThreadGateDialog.account.did = accountList.model.item(i, AccountListModel.DidRole)
-                                    selectThreadGateDialog.account.handle = accountList.model.item(i, AccountListModel.HandleRole)
-                                    selectThreadGateDialog.account.email = accountList.model.item(i, AccountListModel.EmailRole)
-                                    selectThreadGateDialog.account.accessJwt = accountList.model.item(i, AccountListModel.AccessJwtRole)
-                                    selectThreadGateDialog.account.refreshJwt = accountList.model.item(i, AccountListModel.RefreshJwtRole)
-                                    selectThreadGateDialog.account.avatar = accountList.model.item(i, AccountListModel.AvatarRole)
-                                    selectThreadGateDialog.initialType = accountList.model.item(i, AccountListModel.ThreadGateTypeRole)
-                                    selectThreadGateDialog.initialOptions = accountList.model.item(i, AccountListModel.ThreadGateOptionsRole)
-                                    selectThreadGateDialog.accountIndex = i
-                                    selectThreadGateDialog.open()
+                                    if(selectThreadGateDialog.account.set(accountList.model, model.uuid)){
+                                        var i = model.index
+                                        selectThreadGateDialog.initialType = accountList.model.item(i, AccountListModel.ThreadGateTypeRole)
+                                        selectThreadGateDialog.initialOptions = accountList.model.item(i, AccountListModel.ThreadGateOptionsRole)
+                                        selectThreadGateDialog.accountIndex = i
+                                        selectThreadGateDialog.open()
+                                    }
                                 }
                             }
                             MenuSeparator {}
