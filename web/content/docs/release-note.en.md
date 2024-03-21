@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+### v0.26.0 - 2024/3/21
+
 - Add
   - Support muted word
   - Add list of blocked and muted accounts
