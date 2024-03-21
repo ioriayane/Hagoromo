@@ -150,7 +150,9 @@ ColumnLayout {
                     onClicked: morePopup.open()
                     Menu {
                         id: morePopup
+                        width: copyOfficialUrlMenuItem.implicitWidth
                         MenuItem {
+                            id: copyOfficialUrlMenuItem
                             text: qsTr("Copy Official Url")
                             icon.source: "../images/copy.png"
                             onTriggered: systemTool.copyToClipboard(listItemListModel.getOfficialUrl())

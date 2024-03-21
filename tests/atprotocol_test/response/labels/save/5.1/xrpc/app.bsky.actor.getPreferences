@@ -1,0 +1,131 @@
+{
+    "preferences": [
+        {
+            "$type": "dummy",
+            "saved": [
+                "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/bsky-team"
+            ],
+            "pinned": [
+                "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/whats-hot",
+                "at://did:plc:hiptcrt4k63szzz4ty3dhwcp/app.bsky.feed.generator/ja-images"
+            ]
+        },
+        {
+            "$type": "app.bsky.actor.defs#savedFeedsPref",
+            "saved": [
+                "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/bsky-team",
+                "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/with-friends",
+                "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/whats-hot"
+            ],
+            "pinned": [
+                "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/whats-hot",
+                "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/with-friends",
+                "at://did:plc:vpkhqolt662uhesyj6nxm7ys/app.bsky.feed.generator/cats",
+                "at://did:plc:hiptcrt4k63szzz4ty3dhwcp/app.bsky.feed.generator/ja-images"
+            ]
+        },
+        {
+            "$type": "dummy",
+            "saved": [
+                "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/bsky-team",
+                "at://did:plc:hiptcrt4k63szzz4ty3dhwcp/app.bsky.feed.generator/ja-images"
+            ],
+            "pinned": [
+                "at://did:plc:vpkhqolt662uhesyj6nxm7ys/app.bsky.feed.generator/cats",
+                "at://did:plc:q6gjnaw2blty4crticxkmujt/app.bsky.feed.generator/cl-japanese",
+                "at://did:plc:hiptcrt4k63szzz4ty3dhwcp/app.bsky.feed.generator/ja-images"
+            ]
+        },
+        {
+            "$type": "app.bsky.actor.defs#mutedWordsPref",
+            "items": [
+                {
+                    "value": "test5-1",
+                    "targets": [
+                        "content",
+                        "tag"
+                    ]
+                },
+                {
+                    "value": "test5-2",
+                    "targets": [
+                        "tag"
+                    ]
+                },
+                {
+                    "value": "test5-3",
+                    "targets": []
+                },
+                {
+                    "value": "test5-4",
+                    "targets": [
+                        "content"
+                    ]
+                }
+            ]
+        },
+        {
+            "$type": "app.bsky.actor.defs#adultContentPref",
+            "enabled": true
+        },
+        {
+            "$type": "app.bsky.actor.defs#contentLabelPref",
+            "label": "nsfw",
+            "visibility": "show"
+        },
+        {
+            "$type": "app.bsky.actor.defs#contentLabelPref",
+            "label": "suggestive",
+            "visibility": "show"
+        },
+        {
+            "$type": "app.bsky.actor.defs#contentLabelPref",
+            "label": "gore",
+            "visibility": "show"
+        },
+        {
+            "$type": "app.bsky.actor.defs#contentLabelPref",
+            "label": "hate",
+            "visibility": "show"
+        },
+        {
+            "$type": "app.bsky.actor.defs#contentLabelPref",
+            "label": "impersonation",
+            "visibility": "show"
+        },
+        {
+            "$type": "app.bsky.actor.defs#mutedWordsPref",
+            "items": [
+                {
+                    "value": "test6-1",
+                    "targets": [
+                        "content"
+                    ]
+                },
+                {
+                    "value": "test6-2",
+                    "targets": [
+                        "content",
+                        "tag"
+                    ]
+                },
+                {
+                    "value": "test6-3",
+                    "targets": [
+                        "tag"
+                    ]
+                },
+                {
+                    "value": "test6-4",
+                    "targets": []
+                }
+            ]
+        },
+        {
+            "$type": "app.bsky.actor.defs#contentLabelPref",
+            "label": "inauthentic",
+            "labelerDid": "did:plc:ar7c4by46qjdydhdevvrndac",
+            "visibility": "warn"
+        }
+    ]
+}

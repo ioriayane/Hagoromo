@@ -52,6 +52,16 @@ void AtProtocolAccount::setSession(const QString &did, const QString &handle, co
     m_account.refreshJwt = refresh_jwt;
 }
 
+const QStringList &AtProtocolAccount::labelers() const
+{
+    return m_account.labeler_dids;
+}
+
+void AtProtocolAccount::setLabelers(const QStringList &dids)
+{
+    m_account.labeler_dids = dids;
+}
+
 QString AtProtocolAccount::service() const
 {
     if (m_account.service.endsWith("/")) {
@@ -125,6 +135,10 @@ void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
     if (with_auth_header) {
         request.setRawHeader(QByteArray("Authorization"),
                              QByteArray("Bearer ") + accessJwt().toUtf8());
+        if (!labelers().isEmpty()) {
+            request.setRawHeader(QByteArray("atproto-accept-labelers"),
+                                 labelers().join(",").toUtf8());
+        }
     }
 
     QPointer<AccessAtProtocol> alive = this;
@@ -333,10 +347,17 @@ void AccessAtProtocol::setJsonBlob(const AtProtocolType::Blob &blob, QJsonObject
     json_blob.insert("size", blob.size);
 }
 
-QJsonObject
-AccessAtProtocol::makeThreadGateJsonObject(const QString &uri,
-                                        const AtProtocolType::ThreadGateType type,
-                                        const QList<AtProtocolType::ThreadGateAllow> &allow_rules)
+void AccessAtProtocol::setJsonAspectRatio(const QSize &aspect_ratio, QJsonObject &json_aspect_ratio)
+{
+    if (!aspect_ratio.isEmpty()) {
+        json_aspect_ratio.insert("width", aspect_ratio.width());
+        json_aspect_ratio.insert("height", aspect_ratio.height());
+    }
+}
+
+QJsonObject AccessAtProtocol::makeThreadGateJsonObject(
+        const QString &uri, const AtProtocolType::ThreadGateType type,
+        const QList<AtProtocolType::ThreadGateAllow> &allow_rules)
 {
     QString rkey = uri.split("/").last();
 

@@ -24,11 +24,23 @@ void copyListItemView(const QJsonObject &src, AppBskyGraphDefs::ListItemView &de
 void copyNotFoundActor(const QJsonObject &src, AppBskyGraphDefs::NotFoundActor &dest);
 void copyRelationship(const QJsonObject &src, AppBskyGraphDefs::Relationship &dest);
 }
+// com.atproto.label.defs
+namespace ComAtprotoLabelDefs {
+void copyLabel(const QJsonObject &src, ComAtprotoLabelDefs::Label &dest);
+void copySelfLabel(const QJsonObject &src, ComAtprotoLabelDefs::SelfLabel &dest);
+void copySelfLabels(const QJsonObject &src, ComAtprotoLabelDefs::SelfLabels &dest);
+void copyLabelValue(const QJsonValue &src, ComAtprotoLabelDefs::LabelValue &dest);
+void copyLabelValueDefinitionStrings(const QJsonObject &src,
+                                     ComAtprotoLabelDefs::LabelValueDefinitionStrings &dest);
+void copyLabelValueDefinition(const QJsonObject &src,
+                              ComAtprotoLabelDefs::LabelValueDefinition &dest);
+}
 // app.bsky.actor.defs
 namespace AppBskyActorDefs {
 void copyViewerState(const QJsonObject &src, AppBskyActorDefs::ViewerState &dest);
 void copyProfileViewBasic(const QJsonObject &src, AppBskyActorDefs::ProfileViewBasic &dest);
 void copyProfileView(const QJsonObject &src, AppBskyActorDefs::ProfileView &dest);
+void copyProfileAssociated(const QJsonObject &src, AppBskyActorDefs::ProfileAssociated &dest);
 void copyProfileViewDetailed(const QJsonObject &src, AppBskyActorDefs::ProfileViewDetailed &dest);
 void copyAdultContentPref(const QJsonObject &src, AppBskyActorDefs::AdultContentPref &dest);
 void copyContentLabelPref(const QJsonObject &src, AppBskyActorDefs::ContentLabelPref &dest);
@@ -37,12 +49,12 @@ void copyPersonalDetailsPref(const QJsonObject &src, AppBskyActorDefs::PersonalD
 void copyFeedViewPref(const QJsonObject &src, AppBskyActorDefs::FeedViewPref &dest);
 void copyThreadViewPref(const QJsonObject &src, AppBskyActorDefs::ThreadViewPref &dest);
 void copyInterestsPref(const QJsonObject &src, AppBskyActorDefs::InterestsPref &dest);
-}
-// com.atproto.label.defs
-namespace ComAtprotoLabelDefs {
-void copyLabel(const QJsonObject &src, ComAtprotoLabelDefs::Label &dest);
-void copySelfLabel(const QJsonObject &src, ComAtprotoLabelDefs::SelfLabel &dest);
-void copySelfLabels(const QJsonObject &src, ComAtprotoLabelDefs::SelfLabels &dest);
+void copyMutedWordTarget(const QJsonValue &src, AppBskyActorDefs::MutedWordTarget &dest);
+void copyMutedWord(const QJsonObject &src, AppBskyActorDefs::MutedWord &dest);
+void copyMutedWordsPref(const QJsonObject &src, AppBskyActorDefs::MutedWordsPref &dest);
+void copyHiddenPostsPref(const QJsonObject &src, AppBskyActorDefs::HiddenPostsPref &dest);
+void copyLabelerPrefItem(const QJsonObject &src, AppBskyActorDefs::LabelerPrefItem &dest);
+void copyLabelersPref(const QJsonObject &src, AppBskyActorDefs::LabelersPref &dest);
 }
 // app.bsky.actor.profile
 namespace AppBskyActorProfile {
@@ -105,6 +117,13 @@ void copyLink(const QJsonObject &src, AppBskyRichtextFacet::Link &dest);
 void copyTag(const QJsonObject &src, AppBskyRichtextFacet::Tag &dest);
 void copyMain(const QJsonObject &src, AppBskyRichtextFacet::Main &dest);
 }
+// app.bsky.labeler.defs
+namespace AppBskyLabelerDefs {
+void copyLabelerViewerState(const QJsonObject &src, AppBskyLabelerDefs::LabelerViewerState &dest);
+void copyLabelerView(const QJsonObject &src, AppBskyLabelerDefs::LabelerView &dest);
+void copyLabelerPolicies(const QJsonObject &src, AppBskyLabelerDefs::LabelerPolicies &dest);
+void copyLabelerViewDetailed(const QJsonObject &src, AppBskyLabelerDefs::LabelerViewDetailed &dest);
+}
 // app.bsky.feed.describeFeedGenerator
 namespace AppBskyFeedDescribeFeedGenerator {
 void copyFeed(const QJsonObject &src, AppBskyFeedDescribeFeedGenerator::Feed &dest);
@@ -160,6 +179,10 @@ void copyMain(const QJsonObject &src, AppBskyGraphListblock::Main &dest);
 namespace AppBskyGraphListitem {
 void copyMain(const QJsonObject &src, AppBskyGraphListitem::Main &dest);
 }
+// app.bsky.labeler.service
+namespace AppBskyLabelerService {
+void copyMain(const QJsonObject &src, AppBskyLabelerService::Main &dest);
+}
 // app.bsky.notification.listNotifications
 namespace AppBskyNotificationListNotifications {
 void copyNotification(const QJsonObject &src,
@@ -178,46 +201,9 @@ void copySuggestion(const QJsonObject &src, AppBskyUnspeccedGetTaggedSuggestions
 // com.atproto.admin.defs
 namespace ComAtprotoAdminDefs {
 void copyStatusAttr(const QJsonObject &src, ComAtprotoAdminDefs::StatusAttr &dest);
-void copyModEventTakedown(const QJsonObject &src, ComAtprotoAdminDefs::ModEventTakedown &dest);
-void copyModEventReverseTakedown(const QJsonObject &src,
-                                 ComAtprotoAdminDefs::ModEventReverseTakedown &dest);
-void copyModEventComment(const QJsonObject &src, ComAtprotoAdminDefs::ModEventComment &dest);
-void copyModEventReport(const QJsonObject &src, ComAtprotoAdminDefs::ModEventReport &dest);
-void copyModEventLabel(const QJsonObject &src, ComAtprotoAdminDefs::ModEventLabel &dest);
-void copyModEventAcknowledge(const QJsonObject &src,
-                             ComAtprotoAdminDefs::ModEventAcknowledge &dest);
-void copyModEventEscalate(const QJsonObject &src, ComAtprotoAdminDefs::ModEventEscalate &dest);
-void copyModEventMute(const QJsonObject &src, ComAtprotoAdminDefs::ModEventMute &dest);
-void copyModEventEmail(const QJsonObject &src, ComAtprotoAdminDefs::ModEventEmail &dest);
-void copyModEventResolveAppeal(const QJsonObject &src,
-                               ComAtprotoAdminDefs::ModEventResolveAppeal &dest);
-void copyRepoRef(const QJsonObject &src, ComAtprotoAdminDefs::RepoRef &dest);
-void copyModEventView(const QJsonObject &src, ComAtprotoAdminDefs::ModEventView &dest);
-void copySubjectReviewState(const QJsonValue &src, ComAtprotoAdminDefs::SubjectReviewState &dest);
-void copySubjectStatusView(const QJsonObject &src, ComAtprotoAdminDefs::SubjectStatusView &dest);
-void copyModeration(const QJsonObject &src, ComAtprotoAdminDefs::Moderation &dest);
-void copyRepoView(const QJsonObject &src, ComAtprotoAdminDefs::RepoView &dest);
-void copyRepoViewNotFound(const QJsonObject &src, ComAtprotoAdminDefs::RepoViewNotFound &dest);
-void copyRecordView(const QJsonObject &src, ComAtprotoAdminDefs::RecordView &dest);
-void copyRecordViewNotFound(const QJsonObject &src, ComAtprotoAdminDefs::RecordViewNotFound &dest);
-void copyImageDetails(const QJsonObject &src, ComAtprotoAdminDefs::ImageDetails &dest);
-void copyVideoDetails(const QJsonObject &src, ComAtprotoAdminDefs::VideoDetails &dest);
-void copyBlobView(const QJsonObject &src, ComAtprotoAdminDefs::BlobView &dest);
-void copyModEventViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::ModEventViewDetail &dest);
-void copyReportView(const QJsonObject &src, ComAtprotoAdminDefs::ReportView &dest);
-void copyReportViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::ReportViewDetail &dest);
-void copyModerationDetail(const QJsonObject &src, ComAtprotoAdminDefs::ModerationDetail &dest);
-void copyRepoViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::RepoViewDetail &dest);
 void copyAccountView(const QJsonObject &src, ComAtprotoAdminDefs::AccountView &dest);
+void copyRepoRef(const QJsonObject &src, ComAtprotoAdminDefs::RepoRef &dest);
 void copyRepoBlobRef(const QJsonObject &src, ComAtprotoAdminDefs::RepoBlobRef &dest);
-void copyRecordViewDetail(const QJsonObject &src, ComAtprotoAdminDefs::RecordViewDetail &dest);
-void copyModEventUnmute(const QJsonObject &src, ComAtprotoAdminDefs::ModEventUnmute &dest);
-void copyCommunicationTemplateView(const QJsonObject &src,
-                                   ComAtprotoAdminDefs::CommunicationTemplateView &dest);
-}
-// com.atproto.moderation.defs
-namespace ComAtprotoModerationDefs {
-void copyReasonType(const QJsonValue &src, ComAtprotoModerationDefs::ReasonType &dest);
 }
 // com.atproto.server.defs
 namespace ComAtprotoServerDefs {
@@ -229,11 +215,19 @@ namespace ComAtprotoLabelSubscribeLabels {
 void copyLabels(const QJsonObject &src, ComAtprotoLabelSubscribeLabels::Labels &dest);
 void copyInfo(const QJsonObject &src, ComAtprotoLabelSubscribeLabels::Info &dest);
 }
+// com.atproto.moderation.defs
+namespace ComAtprotoModerationDefs {
+void copyReasonType(const QJsonValue &src, ComAtprotoModerationDefs::ReasonType &dest);
+}
 // com.atproto.repo.applyWrites
 namespace ComAtprotoRepoApplyWrites {
 void copyCreate(const QJsonObject &src, ComAtprotoRepoApplyWrites::Create &dest);
 void copyUpdate(const QJsonObject &src, ComAtprotoRepoApplyWrites::Update &dest);
 void copyDelete(const QJsonObject &src, ComAtprotoRepoApplyWrites::Delete &dest);
+}
+// com.atproto.repo.listMissingBlobs
+namespace ComAtprotoRepoListMissingBlobs {
+void copyRecordBlob(const QJsonObject &src, ComAtprotoRepoListMissingBlobs::RecordBlob &dest);
 }
 // com.atproto.repo.listRecords
 namespace ComAtprotoRepoListRecords {
@@ -251,6 +245,7 @@ void copyAccountCodes(const QJsonObject &src,
 // com.atproto.server.describeServer
 namespace ComAtprotoServerDescribeServer {
 void copyLinks(const QJsonObject &src, ComAtprotoServerDescribeServer::Links &dest);
+void copyContact(const QJsonObject &src, ComAtprotoServerDescribeServer::Contact &dest);
 }
 // com.atproto.server.listAppPasswords
 namespace ComAtprotoServerListAppPasswords {
@@ -264,10 +259,53 @@ void copyRepo(const QJsonObject &src, ComAtprotoSyncListRepos::Repo &dest);
 namespace ComAtprotoSyncSubscribeRepos {
 void copyRepoOp(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::RepoOp &dest);
 void copyCommit(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Commit &dest);
+void copyIdentity(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Identity &dest);
 void copyHandle(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Handle &dest);
 void copyMigrate(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Migrate &dest);
 void copyTombstone(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Tombstone &dest);
 void copyInfo(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Info &dest);
+}
+// tools.ozone.communication.defs
+namespace ToolsOzoneCommunicationDefs {
+void copyTemplateView(const QJsonObject &src, ToolsOzoneCommunicationDefs::TemplateView &dest);
+}
+// tools.ozone.moderation.defs
+namespace ToolsOzoneModerationDefs {
+void copyModEventTakedown(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventTakedown &dest);
+void copyModEventReverseTakedown(const QJsonObject &src,
+                                 ToolsOzoneModerationDefs::ModEventReverseTakedown &dest);
+void copyModEventComment(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventComment &dest);
+void copyModEventReport(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventReport &dest);
+void copyModEventLabel(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventLabel &dest);
+void copyModEventAcknowledge(const QJsonObject &src,
+                             ToolsOzoneModerationDefs::ModEventAcknowledge &dest);
+void copyModEventEscalate(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventEscalate &dest);
+void copyModEventMute(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventMute &dest);
+void copyModEventEmail(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventEmail &dest);
+void copyModEventResolveAppeal(const QJsonObject &src,
+                               ToolsOzoneModerationDefs::ModEventResolveAppeal &dest);
+void copyModEventDivert(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventDivert &dest);
+void copyModEventView(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventView &dest);
+void copySubjectReviewState(const QJsonValue &src,
+                            ToolsOzoneModerationDefs::SubjectReviewState &dest);
+void copySubjectStatusView(const QJsonObject &src,
+                           ToolsOzoneModerationDefs::SubjectStatusView &dest);
+void copyModeration(const QJsonObject &src, ToolsOzoneModerationDefs::Moderation &dest);
+void copyRepoView(const QJsonObject &src, ToolsOzoneModerationDefs::RepoView &dest);
+void copyRepoViewNotFound(const QJsonObject &src, ToolsOzoneModerationDefs::RepoViewNotFound &dest);
+void copyRecordView(const QJsonObject &src, ToolsOzoneModerationDefs::RecordView &dest);
+void copyRecordViewNotFound(const QJsonObject &src,
+                            ToolsOzoneModerationDefs::RecordViewNotFound &dest);
+void copyImageDetails(const QJsonObject &src, ToolsOzoneModerationDefs::ImageDetails &dest);
+void copyVideoDetails(const QJsonObject &src, ToolsOzoneModerationDefs::VideoDetails &dest);
+void copyBlobView(const QJsonObject &src, ToolsOzoneModerationDefs::BlobView &dest);
+void copyModEventViewDetail(const QJsonObject &src,
+                            ToolsOzoneModerationDefs::ModEventViewDetail &dest);
+void copyModEventUnmute(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventUnmute &dest);
+void copyModEventTag(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventTag &dest);
+void copyModerationDetail(const QJsonObject &src, ToolsOzoneModerationDefs::ModerationDetail &dest);
+void copyRepoViewDetail(const QJsonObject &src, ToolsOzoneModerationDefs::RepoViewDetail &dest);
+void copyRecordViewDetail(const QJsonObject &src, ToolsOzoneModerationDefs::RecordViewDetail &dest);
 }
 
 }

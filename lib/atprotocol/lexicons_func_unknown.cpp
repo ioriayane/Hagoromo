@@ -147,6 +147,30 @@ QStringList copyImagesFromRecord(const AppBskyEmbedRecord::ViewRecord &record,
     return images;
 }
 
+QStringList copyTagsFromFacets(const QList<AppBskyRichtextFacet::Main> &facets)
+{
+    QStringList tags;
+    for (const auto &facet : facets) {
+        for (const auto &tag : facet.features_Tag) {
+            if (!tag.tag.isEmpty()) {
+                tags.append(tag.tag);
+            }
+        }
+    }
+    return tags;
+}
+
+bool checkPartialMatchLanguage(const QStringList &langs)
+{
+    for (const auto &lang : langs) {
+        QLocale locale(lang);
+        if (locale.language() == QLocale::Japanese) {
+            return true;
+        }
+    }
+    return false;
+}
+
 }
 }
 

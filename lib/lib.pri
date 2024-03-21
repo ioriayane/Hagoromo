@@ -24,12 +24,15 @@ SOURCES += \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetrepostedby.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgettimeline.cpp \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedsearchposts.cpp \
+    $$PWD/atprotocol/app/bsky/graph/appbskygraphgetblocks.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollowers.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollows.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlist.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlists.cpp \
+    $$PWD/atprotocol/app/bsky/graph/appbskygraphgetmutes.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphmuteactor.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphunmuteactor.cpp \
+    $$PWD/atprotocol/app/bsky/labeler/appbskylabelergetservices.cpp \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationlistnotifications.cpp \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationupdateseen.cpp \
     $$PWD/atprotocol/app/bsky/unspecced/appbskyunspeccedgetpopularfeedgenerators.cpp \
@@ -74,12 +77,15 @@ HEADERS += \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgetrepostedby.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedgettimeline.h \
     $$PWD/atprotocol/app/bsky/feed/appbskyfeedsearchposts.h \
+    $$PWD/atprotocol/app/bsky/graph/appbskygraphgetblocks.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollowers.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollows.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlist.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlists.h \
+    $$PWD/atprotocol/app/bsky/graph/appbskygraphgetmutes.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphmuteactor.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphunmuteactor.h \
+    $$PWD/atprotocol/app/bsky/labeler/appbskylabelergetservices.h \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationlistnotifications.h \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationupdateseen.h \
     $$PWD/atprotocol/app/bsky/unspecced/appbskyunspeccedgetpopularfeedgenerators.h \

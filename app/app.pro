@@ -20,8 +20,10 @@ QML_FILES = \
     qml/dialogs/AccountDialog.qml \
     qml/dialogs/AddColumnDialog.qml \
     qml/dialogs/AddListDialog.qml \
+    qml/dialogs/AddMutedWordDialog.qml \
     qml/dialogs/AddToListDialog.qml \
     qml/dialogs/AltEditDialog.qml \
+    qml/dialogs/BlockedAccountsDialog.qml \
     qml/dialogs/ColumnSettingDialog.qml \
     qml/dialogs/ContentFilterSettingDialog.qml \
     qml/dialogs/DiscoverFeedsDialog.qml \
@@ -30,6 +32,7 @@ QML_FILES = \
     qml/dialogs/LanguageSelectionDialog.qml \
     qml/dialogs/LoginDialog.qml \
     qml/dialogs/MessageDialog.qml \
+    qml/dialogs/MutedAccountsDialog.qml \
     qml/dialogs/PostDialog.qml \
     qml/dialogs/ReportAccountDialog.qml \
     qml/dialogs/ReportPostDialog.qml \
@@ -47,6 +50,7 @@ QML_FILES = \
     qml/parts/ImagePreview.qml \
     qml/parts/ExternalLinkCard.qml \
     qml/parts/FeedGeneratorLinkCard.qml \
+    qml/parts/HashTagMenu.qml \
     qml/parts/ListLinkCard.qml \
     qml/parts/MentionSuggestionView.qml \
     qml/parts/NotificationDelegate.qml \
@@ -76,6 +80,7 @@ QML_FILES = \
 IMAGE_FILES += \
     qml/images/account.png \
     qml/images/account_icon.png \
+    qml/images/account_off.png \
     qml/images/add.png \
     qml/images/add_image.png \
     qml/images/add_user.png \
@@ -106,6 +111,7 @@ IMAGE_FILES += \
     qml/images/logo.png \
     qml/images/media.png \
     qml/images/more.png \
+    qml/images/mute.png \
     qml/images/notification.png \
     qml/images/open_in_other.png \
     qml/images/quote.png \

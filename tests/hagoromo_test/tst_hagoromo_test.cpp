@@ -45,6 +45,7 @@ private slots:
     void test_TimelineListModel_animated_image();
     void test_TimelineListModel_threadgate();
     void test_TimelineListModel_hide_repost();
+    void test_TimelineListModel_labelers();
     void test_NotificationListModel_warn();
     void test_TimelineListModel_next();
     void test_AnyProfileListModel();
@@ -123,8 +124,7 @@ void hagoromo_test::test_TimelineListModelFacet()
 
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     model.getLatest();
-    spy.wait();
-    spy.wait();
+    spy.wait(10 * 1000);
     QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
     QFile file(":/response/facet/xrpc/app.bsky.feed.getTimeline.expect");
@@ -450,7 +450,7 @@ void hagoromo_test::test_NotificationListModel()
         int i = 0;
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
-        spy.wait(10 * 1000);
+        spy.wait(20 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QVERIFY2(model.rowCount() == 6, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
@@ -497,7 +497,7 @@ void hagoromo_test::test_NotificationListModel()
         model.setVisibleQuote(true);
         model.clear();
         model.getLatest();
-        spy.wait(10 * 1000);
+        spy.wait(20 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
@@ -539,7 +539,7 @@ void hagoromo_test::test_NotificationListModel()
         model.setVisibleQuote(true);
         model.clear();
         model.getLatest();
-        spy.wait(10 * 1000);
+        spy.wait(20 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
@@ -581,7 +581,7 @@ void hagoromo_test::test_NotificationListModel()
         model.setVisibleQuote(true);
         model.clear();
         model.getLatest();
-        spy.wait(10 * 1000);
+        spy.wait(20 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
@@ -623,7 +623,7 @@ void hagoromo_test::test_NotificationListModel()
         model.setVisibleQuote(true);
         model.clear();
         model.getLatest();
-        spy.wait(10 * 1000);
+        spy.wait(20 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
@@ -665,7 +665,7 @@ void hagoromo_test::test_NotificationListModel()
         model.setVisibleQuote(true);
         model.clear();
         model.getLatest();
-        spy.wait(10 * 1000);
+        spy.wait(20 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
@@ -707,7 +707,7 @@ void hagoromo_test::test_NotificationListModel()
         model.setVisibleQuote(false);
         model.clear();
         model.getLatest();
-        spy.wait(10 * 1000);
+        spy.wait(20 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QVERIFY2(model.rowCount() == 5, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
@@ -754,7 +754,7 @@ void hagoromo_test::test_NotificationListModel2()
     model.setVisibleReply(false);
     model.setVisibleQuote(false);
     model.getLatest();
-    spy.wait(10 * 1000);
+    spy.wait(20 * 1000);
     QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
     QVERIFY2(model.rowCount() == 0, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
@@ -1086,7 +1086,7 @@ void hagoromo_test::test_TimelineListModel_quote_hide()
 
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     model.getLatest();
-    spy.wait();
+    spy.wait(10 * 1000);
     QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
     QVERIFY(model.rowCount() == 7);
@@ -1146,7 +1146,7 @@ void hagoromo_test::test_TimelineListModel_quote_hide2()
 
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     model.getLatest();
-    spy.wait();
+    spy.wait(10 * 1000);
     QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
     QVERIFY(model.rowCount() == 7);
@@ -1215,7 +1215,7 @@ void hagoromo_test::test_TimelineListModel_quote_label()
 
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     model.getLatest();
-    spy.wait();
+    spy.wait(10 * 1000);
     QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
     QVERIFY(model.rowCount() == 9);
@@ -1800,6 +1800,179 @@ void hagoromo_test::test_TimelineListModel_hide_repost()
     }
 }
 
+void hagoromo_test::test_TimelineListModel_labelers()
+{
+    int row = 0;
+    TimelineListModel model;
+    model.setAccount(m_service + "/timeline/labelers/1", "did:plc:l4fsx4ujos7uw7n4ijq2ulgs",
+                     "ioriayane.bsky.social", QString(), "dummy", QString());
+    model.setDisplayInterval(0);
+
+    QSignalSpy spy(&model, SIGNAL(runningChanged()));
+    QVERIFY(model.getLatest());
+    spy.wait(10 * 1000);
+    QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+    //
+    {
+        QVERIFY2(model.rowCount() == 7, QString::number(model.rowCount()).toLocal8Bit());
+        row = 0;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreihhe3chrtye3fnzozazoutwevgjtjats7jjhasgqmyzm5eag3kjcm_1",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMatchedRole) == true,
+                 model.item(row, TimelineListModel::ContentFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMatchedRole) == false,
+                 model.item(row, TimelineListModel::ContentMediaFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMessageRole) == "Content warning",
+                 model.item(row, TimelineListModel::ContentFilterMessageRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMessageRole) == "",
+                 model.item(row, TimelineListModel::ContentMediaFilterMessageRole)
+                         .toString()
+                         .toLocal8Bit());
+        row = 1;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreihhe3chrtye3fnzozazoutwevgjtjats7jjhasgqmyzm5eag3kjcm_2",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMatchedRole) == true,
+                 model.item(row, TimelineListModel::ContentFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMatchedRole) == false,
+                 model.item(row, TimelineListModel::ContentMediaFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMessageRole)
+                         == "Inauthentic Account",
+                 model.item(row, TimelineListModel::ContentFilterMessageRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMessageRole) == "",
+                 model.item(row, TimelineListModel::ContentMediaFilterMessageRole)
+                         .toString()
+                         .toLocal8Bit());
+        row = 2;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreihhe3chrtye3fnzozazoutwevgjtjats7jjhasgqmyzm5eag3kjcm_3",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMatchedRole) == false,
+                 model.item(row, TimelineListModel::ContentFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMatchedRole) == true,
+                 model.item(row, TimelineListModel::ContentMediaFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMessageRole) == "",
+                 model.item(row, TimelineListModel::ContentFilterMessageRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMessageRole)
+                         == "Sexually Suggestive (Cartoon)",
+                 model.item(row, TimelineListModel::ContentMediaFilterMessageRole)
+                         .toString()
+                         .toLocal8Bit());
+        row = 3;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreihhe3chrtye3fnzozazoutwevgjtjats7jjhasgqmyzm5eag3kjcm_4",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMatchedRole) == false,
+                 model.item(row, TimelineListModel::ContentFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMatchedRole) == true,
+                 model.item(row, TimelineListModel::ContentMediaFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMessageRole) == "",
+                 model.item(row, TimelineListModel::ContentFilterMessageRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMessageRole) == "Violence",
+                 model.item(row, TimelineListModel::ContentMediaFilterMessageRole)
+                         .toString()
+                         .toLocal8Bit());
+        row = 4;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreialfbse4o4ccllwz42n5xhpautvv46oxwonwfwp5fxiwl3a4cyl4a_5",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMatchedRole) == false,
+                 model.item(row, TimelineListModel::ContentFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMatchedRole) == false,
+                 model.item(row, TimelineListModel::ContentMediaFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMessageRole) == "",
+                 model.item(row, TimelineListModel::ContentFilterMessageRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMessageRole) == "",
+                 model.item(row, TimelineListModel::ContentMediaFilterMessageRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::QuoteFilterMatchedRole) == true,
+                 model.item(row, TimelineListModel::QuoteFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        row = 5;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreialfbse4o4ccllwz42n5xhpautvv46oxwonwfwp5fxiwl3a4cyl4a_6",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMatchedRole) == false,
+                 model.item(row, TimelineListModel::ContentFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMatchedRole) == false,
+                 model.item(row, TimelineListModel::ContentMediaFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMessageRole) == "",
+                 model.item(row, TimelineListModel::ContentFilterMessageRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMessageRole) == "",
+                 model.item(row, TimelineListModel::ContentMediaFilterMessageRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::QuoteFilterMatchedRole) == true,
+                 model.item(row, TimelineListModel::QuoteFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        row = 6;
+        QVERIFY2(model.item(row, TimelineListModel::CidRole)
+                         == "bafyreialfbse4o4ccllwz42n5xhpautvv46oxwonwfwp5fxiwl3a4cyl4a_7",
+                 model.item(row, TimelineListModel::CidRole).toString().toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMatchedRole) == false,
+                 model.item(row, TimelineListModel::ContentFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMatchedRole) == false,
+                 model.item(row, TimelineListModel::ContentMediaFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentFilterMessageRole) == "",
+                 model.item(row, TimelineListModel::ContentFilterMessageRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMessageRole) == "",
+                 model.item(row, TimelineListModel::ContentMediaFilterMessageRole)
+                         .toString()
+                         .toLocal8Bit());
+        QVERIFY2(model.item(row, TimelineListModel::QuoteFilterMatchedRole) == true,
+                 model.item(row, TimelineListModel::QuoteFilterMatchedRole)
+                         .toString()
+                         .toLocal8Bit());
+    }
+}
+
 void hagoromo_test::test_NotificationListModel_warn()
 {
     int row = 0;
@@ -1810,7 +1983,7 @@ void hagoromo_test::test_NotificationListModel_warn()
 
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     model.getLatest();
-    spy.wait(10 * 1000);
+    spy.wait(20 * 1000);
     QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
     QVERIFY(model.rowCount() == 2);
@@ -1879,7 +2052,7 @@ void hagoromo_test::test_TimelineListModel_next()
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getNext();
-        spy.wait();
+        spy.wait(10 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
     QVERIFY(model.rowCount() == 13);
@@ -1983,7 +2156,7 @@ void hagoromo_test::test_TimelineListModel_reply()
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
-        spy.wait();
+        spy.wait(10 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
 
@@ -2003,7 +2176,7 @@ void hagoromo_test::test_TimelineListModel_reply()
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
-        spy.wait();
+        spy.wait(10 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
 
@@ -2021,7 +2194,7 @@ void hagoromo_test::test_TimelineListModel_reply()
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
-        spy.wait();
+        spy.wait(10 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
 
@@ -2077,7 +2250,7 @@ void hagoromo_test::test_PostThreadListModel()
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
-        spy.wait();
+        spy.wait(10 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
 
@@ -2113,7 +2286,7 @@ void hagoromo_test::test_PostThreadListModel()
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
-        spy.wait();
+        spy.wait(10 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
 

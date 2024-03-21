@@ -19,6 +19,7 @@ ScrollView {
     property string userDid: ""     // 表示するアカウント
     property string accountDid: ""  // 認証しているアカウント
     property bool unfollowAndRemove: true   // アンフォローと同時にリストから消すか（検索結果は消さない）
+    property int viewMode: 0  // 0:通常のフォロー一覧, 1:ブロック一覧, 2:ミュート一覧
 
     property alias listView: rootListView
     property alias model: rootListView.model
@@ -110,7 +111,7 @@ ScrollView {
                 },
                 State {
                     // 取得したアカウントでフォローしている
-                    when: model.following
+                    when: model.following && profileListView.viewMode === 0
                     PropertyChanges { target: editButton; iconText: qsTr("Following") }
                     PropertyChanges { target: editButton; highlighted: true }
                     PropertyChanges { target: editButton; onClicked: {
@@ -129,13 +130,41 @@ ScrollView {
                 },
                 State {
                     // フォローしていない
-                    when: !model.following
+                    when: !model.following && profileListView.viewMode === 0
                     PropertyChanges { target: editButton; iconText: qsTr("Follow") }
                     PropertyChanges { target: editButton; onClicked: {
                             recordOperator.opeDid = model.did
                             recordOperator.reflectAccount()
                             recordOperator.follow(model.did)
                         } }
+                },
+                State {
+                    // ブロックしている
+                    when: model.blocking && profileListView.viewMode === 1
+                    PropertyChanges { target: editButton; iconText: qsTr("Blocked") }
+                    PropertyChanges { target: editButton; onClicked: {
+                            console.log("Unblock " + model.handle + ", " + model.did + ", " + model.blockingUri)
+                            recordOperator.reflectAccount()
+                            recordOperator.deleteBlock(model.blockingUri)
+                            if(unfollowAndRemove){
+                                rootListView.model.remove(model.did)
+                            }
+                        }
+                    }
+                },
+                State {
+                    // ミュートしている
+                    when: model.muted && profileListView.viewMode === 2
+                    PropertyChanges { target: editButton; iconText: qsTr("Muted") }
+                    PropertyChanges { target: editButton; onClicked: {
+                            console.log("Unmute " + model.handle + ", " + model.did)
+                            recordOperator.reflectAccount()
+                            recordOperator.deleteMute(model.did)
+                            if(unfollowAndRemove){
+                                rootListView.model.remove(model.did)
+                            }
+                        }
+                    }
                 }
             ]
 
@@ -182,7 +211,7 @@ ScrollView {
                             text: qsTr("Follows you")
                         }
                         TagLabel {
-                            visible: model.muted
+                            visible: model.muted && profileListView.viewMode !== 2
                             source: ""
                             fontPointSize: AdjustedValues.f8
                             text: qsTr("Muted user")

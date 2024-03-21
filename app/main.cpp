@@ -19,6 +19,8 @@
 #include "qtquick/actorlikelistmodel.h"
 #include "qtquick/followslistmodel.h"
 #include "qtquick/followerslistmodel.h"
+#include "qtquick/blockslistmodel.h"
+#include "qtquick/muteslistmodel.h"
 #include "qtquick/searchpostlistmodel.h"
 #include "qtquick/searchprofilelistmodel.h"
 #include "qtquick/feedtypelistmodel.h"
@@ -27,6 +29,7 @@
 #include "qtquick/actorfeedgeneratorlistmodel.h"
 #include "qtquick/languagelistmodel.h"
 #include "qtquick/contentfiltersettinglistmodel.h"
+#include "qtquick/mutedwordlistmodel.h"
 #include "qtquick/anyprofilelistmodel.h"
 #include "qtquick/listslistmodel.h"
 #include "qtquick/listitemlistmodel.h"
@@ -69,7 +72,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName(QStringLiteral("relog"));
     app.setOrganizationDomain(QStringLiteral("hagoromo.relog.tech"));
     app.setApplicationName(QStringLiteral("Hagoromo"));
-    app.setApplicationVersion(QStringLiteral("0.25.0"));
+    app.setApplicationVersion(QStringLiteral("0.26.0"));
 #ifndef HAGOROMO_RELEASE_BUILD
     app.setApplicationVersion(app.applicationVersion() + "d");
 #endif
@@ -96,6 +99,9 @@ int main(int argc, char *argv[])
                                       "FollowsListModel");
     qmlRegisterType<FollowersListModel>("tech.relog.hagoromo.followerslistmodel", 1, 0,
                                         "FollowersListModel");
+    qmlRegisterType<BlocksListModel>("tech.relog.hagoromo.blockslistmodel", 1, 0,
+                                     "BlocksListModel");
+    qmlRegisterType<MutesListModel>("tech.relog.hagoromo.muteslistmodel", 1, 0, "MutesListModel");
     qmlRegisterType<SearchPostListModel>("tech.relog.hagoromo.searchpostlistmodel", 1, 0,
                                          "SearchPostListModel");
     qmlRegisterType<SearchProfileListModel>("tech.relog.hagoromo.searchprofilelistmodel", 1, 0,
@@ -113,6 +119,8 @@ int main(int argc, char *argv[])
     qmlRegisterType<ContentFilterSettingListModel>(
             "tech.relog.hagoromo.contentfiltersettinglistmodel", 1, 0,
             "ContentFilterSettingListModel");
+    qmlRegisterType<MutedWordListModel>("tech.relog.hagoromo.mutedwordlistmodel", 1, 0,
+                                        "MutedWordListModel");
     qmlRegisterType<AnyProfileListModel>("tech.relog.hagoromo.anyprofilelistmodel", 1, 0,
                                          "AnyProfileListModel");
     qmlRegisterType<ListsListModel>("tech.relog.hagoromo.listslistmodel", 1, 0, "ListsListModel");

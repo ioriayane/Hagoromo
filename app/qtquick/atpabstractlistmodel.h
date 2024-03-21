@@ -44,6 +44,8 @@ class AtpAbstractListModel : public QAbstractListModel
                        loadingIntervalChanged)
     Q_PROPERTY(int displayInterval READ displayInterval WRITE setDisplayInterval NOTIFY
                        displayIntervalChanged)
+    Q_PROPERTY(bool visibleContainingMutedWord READ visibleContainingMutedWord WRITE
+                       setVisibleContainingMutedWord NOTIFY visibleContainingMutedWordChanged)
 
     Q_PROPERTY(QString service READ service CONSTANT)
     Q_PROPERTY(QString did READ did CONSTANT)
@@ -108,6 +110,8 @@ public:
     void setLoadingInterval(int newLoadingInterval);
     int displayInterval() const;
     void setDisplayInterval(int newDisplayInterval);
+    bool visibleContainingMutedWord() const;
+    void setVisibleContainingMutedWord(bool newVisibleContainingMutedWord);
     QString service() const;
     QString did() const;
     QString handle() const;
@@ -124,6 +128,7 @@ signals:
     void autoLoadingChanged();
     void loadingIntervalChanged();
     void displayIntervalChanged();
+    void visibleContainingMutedWordChanged();
 
 public slots:
     virtual Q_INVOKABLE bool getLatest() = 0;
@@ -159,6 +164,9 @@ protected:
     void updateThreadGateItem(AtProtocolType::AppBskyFeedDefs::PostView &post,
                               const AtpAbstractListModel::ThreadGateRoles role,
                               const QVariant &value);
+    bool hideByMutedWords(const QString &cid, const QString &author_did) const;
+    bool cachePostsContainingMutedWords(const QString &cid,
+                                        const AtProtocolType::AppBskyFeedPost::Main &record);
 
     void appendExtendMediaFileToClue(const QString &did, const QString &cid,
                                      const QString &parent_cid);
@@ -184,6 +192,7 @@ protected:
     QString m_cursor;
 
     QHash<QString, QString> m_translations; // QHash<cid, translation>
+    QHash<QString, QString> m_mutedPosts; // QHash<cid, cid>
 
     QList<BlobCueItem> m_cueExtendMedia;
 
@@ -194,10 +203,12 @@ private:
 
     QTimer m_timer;
     AtProtocolInterface::AccountData m_account;
+    int m_contentFilterRefreshCounter;
 
     bool m_running;
     int m_loadingInterval;
     int m_displayInterval;
+    bool m_visibleContainingMutedWord;
 };
 
 #endif // ATPABSTRACTLISTMODEL_H

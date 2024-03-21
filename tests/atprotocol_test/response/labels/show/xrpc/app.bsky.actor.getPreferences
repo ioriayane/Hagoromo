@@ -50,7 +50,25 @@
         {
             "$type": "app.bsky.actor.defs#contentLabelPref",
             "label": "impersonation",
-            "visibility": "show"
+            "visibility": "ignore"
+        },
+        {
+            "$type": "app.bsky.actor.defs#contentLabelPref",
+            "label": "inauthentic",
+            "labelerDid": "did:plc:ar7c4by46qjdydhdevvrndac",
+            "visibility": "ignore"
+        },
+        {
+            "$type": "app.bsky.actor.defs#contentLabelPref",
+            "label": "misleading",
+            "labelerDid": "did:plc:ar7c4by46qjdydhdevvrndac",
+            "visibility": "ignore"
+        },
+        {
+            "$type": "app.bsky.actor.defs#contentLabelPref",
+            "label": "rumor",
+            "labelerDid": "did:plc:ar7c4by46qjdydhdevvrndac",
+            "visibility": "ignore"
         }
     ]
 }

@@ -856,6 +856,7 @@ void RecordOperator::uploadBlob(std::function<void(bool)> callback)
             blob.mimeType = upload_blob->mimeType();
             blob.size = upload_blob->size();
             blob.alt = alt;
+            blob.aspect_ratio = upload_blob->aspectRatio();
             m_embedImageBlogs.append(blob);
 
             if (m_embedImages.isEmpty()) {

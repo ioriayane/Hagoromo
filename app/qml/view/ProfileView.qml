@@ -51,6 +51,7 @@ ColumnLayout {
     signal requestReportPost(string uri, string cid)
     signal requestReportAccount(string did)
     signal requestAddRemoveFromLists(string did)
+    signal requestAddMutedWord(string text)
     signal requestEditProfile(string did, string avatar, string banner, string display_name, string description)
 
     signal errorOccured(string code, string message)
@@ -291,7 +292,7 @@ ColumnLayout {
         }
         TagLabelLayout {
             id: belongingListsLayout
-            Layout.preferredWidth: profileView.width
+            Layout.preferredWidth: profileView.width - 10
             Layout.maximumWidth: profileView.width
             Layout.leftMargin: 5
             Layout.rightMargin: 5
@@ -518,6 +519,7 @@ ColumnLayout {
             onRequestViewRepostedBy: (uri) => profileView.requestViewRepostedBy(uri)
             onRequestViewSearchPosts: (text) => profileView.requestViewSearchPosts(text)
             onRequestReportPost: (uri, cid) => profileView.requestReportPost(uri, cid)
+            onRequestAddMutedWord: (text) => profileView.requestAddMutedWord(text)
             onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) => profileView.requestUpdateThreadGate(uri, threadgate_uri, type, rules, callback)
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
             onScrollPositionChanged: (top) => userProfileColumnLayout.viewChange(top)
@@ -555,6 +557,7 @@ ColumnLayout {
             onRequestViewRepostedBy: (uri) => profileView.requestViewRepostedBy(uri)
             onRequestViewSearchPosts: (text) => profileView.requestViewSearchPosts(text)
             onRequestReportPost: (uri, cid) => profileView.requestReportPost(uri, cid)
+            onRequestAddMutedWord: (text) => profileView.requestAddMutedWord(text)
             onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) => profileView.requestUpdateThreadGate(uri, threadgate_uri, type, rules, callback)
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
             onScrollPositionChanged: (top) => userProfileColumnLayout.viewChange(top)
@@ -592,6 +595,7 @@ ColumnLayout {
             onRequestViewRepostedBy: (uri) => profileView.requestViewRepostedBy(uri)
             onRequestViewSearchPosts: (text) => profileView.requestViewSearchPosts(text)
             onRequestReportPost: (uri, cid) => profileView.requestReportPost(uri, cid)
+            onRequestAddMutedWord: (text) => profileView.requestAddMutedWord(text)
             onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) => profileView.requestUpdateThreadGate(uri, threadgate_uri, type, rules, callback)
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
             onScrollPositionChanged: (top) => userProfileColumnLayout.viewChange(top)
@@ -629,6 +633,7 @@ ColumnLayout {
             onRequestViewRepostedBy: (uri) => profileView.requestViewRepostedBy(uri)
             onRequestViewSearchPosts: (text) => profileView.requestViewSearchPosts(text)
             onRequestReportPost: (uri, cid) => profileView.requestReportPost(uri, cid)
+            onRequestAddMutedWord: (text) => profileView.requestAddMutedWord(text)
             onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) => profileView.requestUpdateThreadGate(uri, threadgate_uri, type, rules, callback)
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
             onScrollPositionChanged: (top) => userProfileColumnLayout.viewChange(top)

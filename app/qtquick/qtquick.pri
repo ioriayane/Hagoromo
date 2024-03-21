@@ -9,6 +9,7 @@ SOURCES += \
     $$PWD/anyprofilelistmodel.cpp \
     $$PWD/atpabstractlistmodel.cpp \
     $$PWD/authorfeedlistmodel.cpp \
+    $$PWD/blockslistmodel.cpp \
     $$PWD/columnlistmodel.cpp \
     $$PWD/contentfiltersettinglistmodel.cpp \
     $$PWD/createsession.cpp \
@@ -25,6 +26,8 @@ SOURCES += \
     $$PWD/listitemlistmodel.cpp \
     $$PWD/listlink.cpp \
     $$PWD/listslistmodel.cpp \
+    $$PWD/mutedwordlistmodel.cpp \
+    $$PWD/muteslistmodel.cpp \
     $$PWD/notificationlistmodel.cpp \
     $$PWD/postthreadlistmodel.cpp \
     $$PWD/recordoperator.cpp \
@@ -44,6 +47,7 @@ HEADERS += \
     $$PWD/anyprofilelistmodel.h \
     $$PWD/atpabstractlistmodel.h \
     $$PWD/authorfeedlistmodel.h \
+    $$PWD/blockslistmodel.h \
     $$PWD/columnlistmodel.h \
     $$PWD/common.h \
     $$PWD/contentfiltersettinglistmodel.h \
@@ -62,6 +66,8 @@ HEADERS += \
     $$PWD/listitemlistmodel.h \
     $$PWD/listlink.h \
     $$PWD/listslistmodel.h \
+    $$PWD/mutedwordlistmodel.h \
+    $$PWD/muteslistmodel.h \
     $$PWD/notificationlistmodel.h \
     $$PWD/postthreadlistmodel.h \
     $$PWD/recordoperator.h \

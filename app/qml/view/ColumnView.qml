@@ -48,6 +48,7 @@ ColumnLayout {
     signal requestReportPost(string account_uuid, string uri, string cid)
     signal requestReportAccount(string account_uuid, string did)
     signal requestAddRemoveFromLists(string account_uuid, string did)
+    signal requestAddMutedWord(string account_uuid, string text)
     signal requestEditProfile(string account_uuid, string did, string avatar, string banner, string display_name, string description)
     signal requestEditList(string account_uuid, string uri, string avatar, string name, string description)
     signal requestUpdateThreadGate(string account_uuid, string uri, string threadgate_uri, string type, var rules, var callback)
@@ -95,6 +96,7 @@ ColumnLayout {
                 visibleRepostOfUnfollowingUsers: settings.visibleRepostOfUnfollowingUsers
                 visibleRepostOfMine: settings.visibleRepostOfMine
                 visibleRepostByMe: settings.visibleRepostByMe
+                visibleContainingMutedWord: false   // ミュートワードを含むときは完全非表示
 
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }
@@ -121,6 +123,7 @@ ColumnLayout {
             onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
             onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
+            onRequestAddMutedWord: (text) => columnView.requestAddMutedWord(account.uuid, text)
             onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) => columnView.requestUpdateThreadGate(account.uuid, uri, threadgate_uri, type, rules, callback)
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
         }
@@ -138,6 +141,7 @@ ColumnLayout {
                 visibleMention: settings.visibleMention
                 visibleReply: settings.visibleReply
                 visibleQuote: settings.visibleQuote
+                visibleContainingMutedWord: true   // 通知はミュートワードを含んでらたたんで表示
                 updateSeenNotification: settings.updateSeenNotification
 
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
@@ -161,6 +165,7 @@ ColumnLayout {
             onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
             onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
+            onRequestAddMutedWord: (text) => columnView.requestAddMutedWord(account.uuid, text)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
         }
@@ -189,6 +194,7 @@ ColumnLayout {
             onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
             onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
+            onRequestAddMutedWord: (text) => columnView.requestAddMutedWord(account.uuid, text)
             onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) => columnView.requestUpdateThreadGate(account.uuid, uri, threadgate_uri, type, rules, callback)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
@@ -229,6 +235,7 @@ ColumnLayout {
             onRequestViewListDetail: (uri) => columnStackView.push(listDetailComponent, { "listUri": uri })
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
             onRequestReportAccount: (did) => columnView.requestReportAccount(account.uuid, did)
+            onRequestAddMutedWord: (text) => columnView.requestAddMutedWord(account.uuid, text)
             onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) => columnView.requestUpdateThreadGate(account.uuid, uri, threadgate_uri, type, rules, callback)
             onRequestAddRemoveFromLists: (did) => columnView.requestAddRemoveFromLists(account.uuid, did)
             onRequestEditProfile: (did, avatar, banner, display_name, description) => {
@@ -277,6 +284,7 @@ ColumnLayout {
             onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
             onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
+            onRequestAddMutedWord: (text) => columnView.requestAddMutedWord(account.uuid, text)
             onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) => columnView.requestUpdateThreadGate(account.uuid, uri, threadgate_uri, type, rules, callback)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
@@ -305,6 +313,7 @@ ColumnLayout {
                 loadingInterval: settings.loadingInterval
                 displayInterval: settings.displayInterval
                 uri: settings.columnValue
+                visibleContainingMutedWord: false   // ミュートワードを含むときは完全非表示
                 onSavingChanged: {
                     saveFeedMenuItem.saving = saving
                 }
@@ -332,6 +341,7 @@ ColumnLayout {
             onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
             onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
+            onRequestAddMutedWord: (text) => columnView.requestAddMutedWord(account.uuid, text)
             onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) => columnView.requestUpdateThreadGate(account.uuid, uri, threadgate_uri, type, rules, callback)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
@@ -371,6 +381,7 @@ ColumnLayout {
             onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
             onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
+            onRequestAddMutedWord: (text) => columnView.requestAddMutedWord(account.uuid, text)
             onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) => columnView.requestUpdateThreadGate(account.uuid, uri, threadgate_uri, type, rules, callback)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
@@ -434,6 +445,7 @@ ColumnLayout {
                 autoLoading: settings.autoLoading
                 loadingInterval: settings.loadingInterval
                 uri: settings.columnValue
+                visibleContainingMutedWord: false   // ミュートワードを含むときは完全非表示
 
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }
@@ -459,6 +471,7 @@ ColumnLayout {
             onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
             onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
             onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
+            onRequestAddMutedWord: (text) => columnView.requestAddMutedWord(account.uuid, text)
             onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) => columnView.requestUpdateThreadGate(account.uuid, uri, threadgate_uri, type, rules, callback)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink

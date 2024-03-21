@@ -6,6 +6,7 @@
 
 #include <QList>
 #include <QSharedPointer>
+#include <QSize>
 #include <QString>
 #include <QVariant>
 
@@ -16,6 +17,7 @@ struct Blob
     QString mimeType;
     QString alt;
     int size = 0;
+    QSize aspect_ratio;
 };
 enum ThreadGateType : int {
     Everybody,
@@ -47,6 +49,53 @@ namespace AppBskyRichtextFacet {
 struct Main;
 }
 
+// com.atproto.label.defs
+namespace ComAtprotoLabelDefs {
+struct Label
+{
+    int ver = 0; // The AT Protocol version of the label object.
+    QString src; // did , DID of the actor who created this label.
+    QString uri; // uri , AT URI of the record, repository (account), or other resource that this
+                 // label applies to.
+    QString cid; // cid , Optionally, CID specifying the specific version of 'uri' resource this
+                 // label applies to.
+    QString val; // The short string name of the value or type of this label.
+    bool neg = false; // If true, this is a negation label, overwriting a previous label.
+    QString cts; // datetime , Timestamp when this label was created.
+    QString exp; // datetime , Timestamp at which this label expires (no longer applies).
+};
+struct SelfLabel
+{
+    QString val; // The short string name of the value or type of this label.
+};
+struct SelfLabels
+{
+    QList<SelfLabel> values;
+};
+typedef QString LabelValue;
+struct LabelValueDefinitionStrings
+{
+    QString lang; // language , The code of the language these strings are written in.
+    QString name; // A short human-readable name for the label.
+    QString description; // A longer description of what the label means and why it might be
+                         // applied.
+};
+struct LabelValueDefinition
+{
+    QString identifier; // The value of the label being defined. Must only include lowercase ascii
+                        // and the '-' character ([a-z-]+).
+    QString severity; // How should a client visually convey this label? 'inform' means neutral and
+                      // informational; 'alert' means negative and warning; 'none' means show
+                      // nothing.
+    QString blurs; // What should this label hide in the UI, if applied? 'content' hides all of the
+                   // target; 'media' hides the images/video/audio; 'none' hides nothing.
+    QString defaultSetting; // The default setting for this label.
+    bool adultOnly = false; // Does the user need to have adult content enabled in order to
+                            // configure this label?
+    QList<LabelValueDefinitionStrings> locales;
+};
+}
+
 // app.bsky.graph.defs
 namespace AppBskyGraphDefs {
 typedef QString ListPurpose;
@@ -62,6 +111,7 @@ struct ListViewBasic
     QString name;
     ListPurpose purpose;
     QString avatar;
+    QList<ComAtprotoLabelDefs::Label> labels;
     ListViewerState viewer;
     QString indexedAt; // datetime
 };
@@ -75,6 +125,7 @@ struct ListView
     QString description;
     QList<QSharedPointer<AppBskyRichtextFacet::Main>> descriptionFacets;
     QString avatar;
+    QList<ComAtprotoLabelDefs::Label> labels;
     ListViewerState viewer;
     QString indexedAt; // datetime
 };
@@ -95,29 +146,6 @@ struct Relationship
                        // record
     QString followedBy; // at-uri , if the actor is followed by this DID, contains the AT-URI of the
                         // follow record
-};
-}
-
-// com.atproto.label.defs
-namespace ComAtprotoLabelDefs {
-struct Label
-{
-    QString src; // did , DID of the actor who created this label.
-    QString uri; // uri , AT URI of the record, repository (account), or other resource that this
-                 // label applies to.
-    QString cid; // cid , Optionally, CID specifying the specific version of 'uri' resource this
-                 // label applies to.
-    QString val; // The short string name of the value or type of this label.
-    bool neg = false; // If true, this is a negation label, overwriting a previous label.
-    QString cts; // datetime , Timestamp when this label was created.
-};
-struct SelfLabel
-{
-    QString val; // The short string name of the value or type of this label.
-};
-struct SelfLabels
-{
-    QList<SelfLabel> values;
 };
 }
 
@@ -153,6 +181,12 @@ struct ProfileView
     ViewerState viewer;
     QList<ComAtprotoLabelDefs::Label> labels;
 };
+struct ProfileAssociated
+{
+    int lists = 0;
+    int feedgens = 0;
+    bool labeler = false;
+};
 struct ProfileViewDetailed
 {
     QString did; // did
@@ -164,6 +198,7 @@ struct ProfileViewDetailed
     int followersCount = 0;
     int followsCount = 0;
     int postsCount = 0;
+    ProfileAssociated associated;
     QString indexedAt; // datetime
     ViewerState viewer;
     QList<ComAtprotoLabelDefs::Label> labels;
@@ -174,6 +209,8 @@ struct AdultContentPref
 };
 struct ContentLabelPref
 {
+    QString labelerDid; // did , Which labeler does this preference apply to? If undefined, applies
+                        // globally.
     QString label;
     QString visibility;
 };
@@ -207,6 +244,28 @@ struct InterestsPref
 {
     QList<QString> tags; // A list of tags which describe the account owner's interests gathered
                          // during onboarding.
+};
+typedef QString MutedWordTarget;
+struct MutedWord
+{
+    QString value; // The muted word itself.
+    QList<AppBskyActorDefs::MutedWordTarget> targets;
+};
+struct MutedWordsPref
+{
+    QList<AppBskyActorDefs::MutedWord> items;
+};
+struct HiddenPostsPref
+{
+    QList<QString> items; // A list of URIs of posts the account owner has hidden.
+};
+struct LabelerPrefItem
+{
+    QString did; // did
+};
+struct LabelersPref
+{
+    QList<LabelerPrefItem> labelers;
 };
 }
 
@@ -433,6 +492,7 @@ struct GeneratorView
     QList<AppBskyRichtextFacet::Main> descriptionFacets;
     QString avatar;
     int likeCount = 0;
+    QList<ComAtprotoLabelDefs::Label> labels;
     GeneratorViewerState viewer;
     QString indexedAt; // datetime
 };
@@ -540,6 +600,40 @@ struct SkeletonFeedPost
 };
 }
 
+// app.bsky.labeler.defs
+namespace AppBskyLabelerDefs {
+struct LabelerViewerState
+{
+    QString like; // at-uri
+};
+struct LabelerView
+{
+    QString uri; // at-uri
+    QString cid; // cid
+    AppBskyActorDefs::ProfileView creator;
+    int likeCount = 0;
+    LabelerViewerState viewer;
+    QString indexedAt; // datetime
+    QList<ComAtprotoLabelDefs::Label> labels;
+};
+struct LabelerPolicies
+{
+    QList<ComAtprotoLabelDefs::LabelValue> labelValues;
+    QList<ComAtprotoLabelDefs::LabelValueDefinition> labelValueDefinitions;
+};
+struct LabelerViewDetailed
+{
+    QString uri; // at-uri
+    QString cid; // cid
+    AppBskyActorDefs::ProfileView creator;
+    AppBskyLabelerDefs::LabelerPolicies policies;
+    int likeCount = 0;
+    LabelerViewerState viewer;
+    QString indexedAt; // datetime
+    QList<ComAtprotoLabelDefs::Label> labels;
+};
+}
+
 // app.bsky.embed.record
 namespace AppBskyEmbedRecord {
 enum class ViewRecordType : int {
@@ -549,6 +643,7 @@ enum class ViewRecordType : int {
     record_ViewBlocked,
     record_AppBskyFeedDefs_GeneratorView,
     record_AppBskyGraphDefs_ListView,
+    record_AppBskyLabelerDefs_LabelerView,
 };
 enum class ViewRecordEmbedsType : int {
     none,
@@ -599,6 +694,7 @@ struct View
     ViewBlocked record_ViewBlocked;
     AppBskyFeedDefs::GeneratorView record_AppBskyFeedDefs_GeneratorView;
     AppBskyGraphDefs::ListView record_AppBskyGraphDefs_ListView;
+    AppBskyLabelerDefs::LabelerView record_AppBskyLabelerDefs_LabelerView;
     // union end : record
 };
 }
@@ -810,6 +906,23 @@ struct Main
 };
 }
 
+// app.bsky.labeler.service
+namespace AppBskyLabelerService {
+enum class MainLabelsType : int {
+    none,
+    labels_ComAtprotoLabelDefs_SelfLabels,
+};
+struct Main
+{
+    AppBskyLabelerDefs::LabelerPolicies policies;
+    // union start : labels
+    MainLabelsType labels_type = MainLabelsType::none;
+    ComAtprotoLabelDefs::SelfLabels labels_ComAtprotoLabelDefs_SelfLabels;
+    // union end : labels
+    QString createdAt; // datetime
+};
+}
+
 // app.bsky.notification.listNotifications
 namespace AppBskyNotificationListNotifications {
 struct Notification
@@ -849,11 +962,6 @@ struct Suggestion
 };
 }
 
-// com.atproto.moderation.defs
-namespace ComAtprotoModerationDefs {
-typedef QString ReasonType;
-}
-
 // com.atproto.server.defs
 namespace ComAtprotoServerDefs {
 struct InviteCodeUse
@@ -875,18 +983,215 @@ struct InviteCode
 
 // com.atproto.admin.defs
 namespace ComAtprotoAdminDefs {
-enum class ReportViewDetailSubjectType : int {
-    none,
-    subject_RepoView,
-    subject_RepoViewNotFound,
-    subject_RecordView,
-    subject_RecordViewNotFound,
+struct StatusAttr
+{
+    bool applied = false;
+    QString ref;
 };
-enum class ReportViewSubjectType : int {
-    none,
-    subject_RepoRef,
-    subject_ComAtprotoRepoStrongRef_Main,
+struct AccountView
+{
+    QString did; // did
+    QString handle; // handle
+    QString email;
+    QString indexedAt; // datetime
+    ComAtprotoServerDefs::InviteCode invitedBy;
+    QList<ComAtprotoServerDefs::InviteCode> invites;
+    bool invitesDisabled = false;
+    QString emailConfirmedAt; // datetime
+    QString inviteNote;
 };
+struct RepoRef
+{
+    QString did; // did
+};
+struct RepoBlobRef
+{
+    QString did; // did
+    QString cid; // cid
+    QString recordUri; // at-uri
+};
+}
+
+// com.atproto.label.subscribeLabels
+namespace ComAtprotoLabelSubscribeLabels {
+struct Labels
+{
+    int seq = 0;
+    QList<ComAtprotoLabelDefs::Label> labels;
+};
+struct Info
+{
+    QString name;
+    QString message;
+};
+}
+
+// com.atproto.moderation.defs
+namespace ComAtprotoModerationDefs {
+typedef QString ReasonType;
+}
+
+// com.atproto.repo.applyWrites
+namespace ComAtprotoRepoApplyWrites {
+struct Create
+{
+    QString collection; // nsid
+    QString rkey;
+    QVariant value;
+};
+struct Update
+{
+    QString collection; // nsid
+    QString rkey;
+    QVariant value;
+};
+struct Delete
+{
+    QString collection; // nsid
+    QString rkey;
+};
+}
+
+// com.atproto.repo.listMissingBlobs
+namespace ComAtprotoRepoListMissingBlobs {
+struct RecordBlob
+{
+    QString cid; // cid
+    QString recordUri; // at-uri
+};
+}
+
+// com.atproto.repo.listRecords
+namespace ComAtprotoRepoListRecords {
+struct Record
+{
+    QString uri; // at-uri
+    QString cid; // cid
+    QVariant value;
+};
+}
+
+// com.atproto.server.createAppPassword
+namespace ComAtprotoServerCreateAppPassword {
+struct AppPassword
+{
+    QString name;
+    QString password;
+    QString createdAt; // datetime
+};
+}
+
+// com.atproto.server.createInviteCodes
+namespace ComAtprotoServerCreateInviteCodes {
+struct AccountCodes
+{
+    QString account;
+    QList<QString> codes;
+};
+}
+
+// com.atproto.server.describeServer
+namespace ComAtprotoServerDescribeServer {
+struct Links
+{
+    QString privacyPolicy;
+    QString termsOfService;
+};
+struct Contact
+{
+    QString email;
+};
+}
+
+// com.atproto.server.listAppPasswords
+namespace ComAtprotoServerListAppPasswords {
+struct AppPassword
+{
+    QString name;
+    QString createdAt; // datetime
+};
+}
+
+// com.atproto.sync.listRepos
+namespace ComAtprotoSyncListRepos {
+struct Repo
+{
+    QString did; // did
+    QString head; // cid , Current repo commit CID
+    QString rev;
+};
+}
+
+// com.atproto.sync.subscribeRepos
+namespace ComAtprotoSyncSubscribeRepos {
+struct RepoOp
+{
+    QString action;
+    QString path;
+};
+struct Commit
+{
+    int seq = 0; // The stream sequence number of this message.
+    bool tooBig =
+            false; // Indicates that this commit contained too many ops, or data size was too large.
+                   // Consumers will need to make a separate request to get missing data.
+    QString repo; // did , The repo this event comes from.
+    QString rev; // The rev of the emitted commit. Note that this information is also in the commit
+                 // object included in blocks, unless this is a tooBig event.
+    QString since; // The rev of the last emitted commit from this repo (if any).
+    QList<RepoOp> ops;
+    QString time; // datetime , Timestamp of when this message was originally broadcast.
+};
+struct Identity
+{
+    int seq = 0;
+    QString did; // did
+    QString time; // datetime
+};
+struct Handle
+{
+    int seq = 0;
+    QString did; // did
+    QString handle; // handle
+    QString time; // datetime
+};
+struct Migrate
+{
+    int seq = 0;
+    QString did; // did
+    QString migrateTo;
+    QString time; // datetime
+};
+struct Tombstone
+{
+    int seq = 0;
+    QString did; // did
+    QString time; // datetime
+};
+struct Info
+{
+    QString name;
+    QString message;
+};
+}
+
+// tools.ozone.communication.defs
+namespace ToolsOzoneCommunicationDefs {
+struct TemplateView
+{
+    QString id;
+    QString name; // Name of the template.
+    QString subject; // Content of the template, can contain markdown and variable placeholders.
+    QString contentMarkdown; // Subject of the message, used in emails.
+    bool disabled = false;
+    QString lastUpdatedBy; // did , DID of the user who last updated the template.
+    QString createdAt; // datetime
+    QString updatedAt; // datetime
+};
+}
+
+// tools.ozone.moderation.defs
+namespace ToolsOzoneModerationDefs {
 enum class ModEventViewDetailEventType : int {
     none,
     event_ModEventTakedown,
@@ -899,6 +1204,7 @@ enum class ModEventViewDetailEventType : int {
     event_ModEventMute,
     event_ModEventEmail,
     event_ModEventResolveAppeal,
+    event_ModEventDivert,
 };
 enum class ModEventViewDetailSubjectType : int {
     none,
@@ -914,7 +1220,7 @@ enum class BlobViewDetailsType : int {
 };
 enum class SubjectStatusViewSubjectType : int {
     none,
-    subject_RepoRef,
+    subject_ComAtprotoAdminDefs_RepoRef,
     subject_ComAtprotoRepoStrongRef_Main,
 };
 enum class ModEventViewEventType : int {
@@ -929,16 +1235,12 @@ enum class ModEventViewEventType : int {
     event_ModEventMute,
     event_ModEventEmail,
     event_ModEventResolveAppeal,
+    event_ModEventDivert,
 };
 enum class ModEventViewSubjectType : int {
     none,
-    subject_RepoRef,
+    subject_ComAtprotoAdminDefs_RepoRef,
     subject_ComAtprotoRepoStrongRef_Main,
-};
-struct StatusAttr
-{
-    bool applied = false;
-    QString ref;
 };
 struct ModEventTakedown
 {
@@ -982,15 +1284,16 @@ struct ModEventMute
 struct ModEventEmail
 {
     QString subjectLine; // The subject line of the email sent to the user.
+    QString content; // The content of the email sent to the user.
     QString comment; // Additional comment about the outgoing comm.
 };
 struct ModEventResolveAppeal
 {
     QString comment; // Describe resolution.
 };
-struct RepoRef
+struct ModEventDivert
 {
-    QString did; // did
+    QString comment;
 };
 struct ModEventView
 {
@@ -1007,10 +1310,11 @@ struct ModEventView
     ModEventMute event_ModEventMute;
     ModEventEmail event_ModEventEmail;
     ModEventResolveAppeal event_ModEventResolveAppeal;
+    ModEventDivert event_ModEventDivert;
     // union end : event
     // union start : subject
     ModEventViewSubjectType subject_type = ModEventViewSubjectType::none;
-    RepoRef subject_RepoRef;
+    ComAtprotoAdminDefs::RepoRef subject_ComAtprotoAdminDefs_RepoRef;
     ComAtprotoRepoStrongRef::Main subject_ComAtprotoRepoStrongRef_Main;
     // union end : subject
     QList<QString> subjectBlobCids;
@@ -1025,7 +1329,7 @@ struct SubjectStatusView
     int id = 0;
     // union start : subject
     SubjectStatusViewSubjectType subject_type = SubjectStatusViewSubjectType::none;
-    RepoRef subject_RepoRef;
+    ComAtprotoAdminDefs::RepoRef subject_ComAtprotoAdminDefs_RepoRef;
     ComAtprotoRepoStrongRef::Main subject_ComAtprotoRepoStrongRef_Main;
     // union end : subject
     QList<QString> subjectBlobCids;
@@ -1047,6 +1351,7 @@ struct SubjectStatusView
                            // appealed against, by the author of the content. False indicates last
                            // appeal was resolved by moderators.
     QString suspendUntil; // datetime
+    QList<QString> tags;
 };
 struct Moderation
 {
@@ -1120,6 +1425,7 @@ struct ModEventViewDetail
     ModEventMute event_ModEventMute;
     ModEventEmail event_ModEventEmail;
     ModEventResolveAppeal event_ModEventResolveAppeal;
+    ModEventDivert event_ModEventDivert;
     // union end : event
     // union start : subject
     ModEventViewDetailSubjectType subject_type = ModEventViewDetailSubjectType::none;
@@ -1132,37 +1438,16 @@ struct ModEventViewDetail
     QString createdBy; // did
     QString createdAt; // datetime
 };
-struct ReportView
+struct ModEventUnmute
 {
-    int id = 0;
-    ComAtprotoModerationDefs::ReasonType reasonType;
-    QString comment;
-    QString subjectRepoHandle;
-    // union start : subject
-    ReportViewSubjectType subject_type = ReportViewSubjectType::none;
-    RepoRef subject_RepoRef;
-    ComAtprotoRepoStrongRef::Main subject_ComAtprotoRepoStrongRef_Main;
-    // union end : subject
-    QString reportedBy; // did
-    QString createdAt; // datetime
-    QList<int> resolvedByActionIds;
+    QString comment; // Describe reasoning behind the reversal.
 };
-struct ReportViewDetail
+struct ModEventTag
 {
-    int id = 0;
-    ComAtprotoModerationDefs::ReasonType reasonType;
-    QString comment;
-    // union start : subject
-    ReportViewDetailSubjectType subject_type = ReportViewDetailSubjectType::none;
-    RepoView subject_RepoView;
-    RepoViewNotFound subject_RepoViewNotFound;
-    RecordView subject_RecordView;
-    RecordViewNotFound subject_RecordViewNotFound;
-    // union end : subject
-    ComAtprotoAdminDefs::SubjectStatusView subjectStatus;
-    QString reportedBy; // did
-    QString createdAt; // datetime
-    QList<ComAtprotoAdminDefs::ModEventView> resolvedByActions;
+    QList<QString> add; // Tags to be added to the subject. If already exists, won't be duplicated.
+    QList<QString> remove; // Tags to be removed to the subject. Ignores a tag If it doesn't exist,
+                           // won't be duplicated.
+    QString comment; // Additional comment about added/removed tags.
 };
 struct ModerationDetail
 {
@@ -1182,24 +1467,6 @@ struct RepoViewDetail
     QString inviteNote;
     QString emailConfirmedAt; // datetime
 };
-struct AccountView
-{
-    QString did; // did
-    QString handle; // handle
-    QString email;
-    QString indexedAt; // datetime
-    ComAtprotoServerDefs::InviteCode invitedBy;
-    QList<ComAtprotoServerDefs::InviteCode> invites;
-    bool invitesDisabled = false;
-    QString emailConfirmedAt; // datetime
-    QString inviteNote;
-};
-struct RepoBlobRef
-{
-    QString did; // did
-    QString cid; // cid
-    QString recordUri; // at-uri
-};
 struct RecordViewDetail
 {
     QString uri; // at-uri
@@ -1210,160 +1477,6 @@ struct RecordViewDetail
     QString indexedAt; // datetime
     ModerationDetail moderation;
     RepoView repo;
-};
-struct ModEventUnmute
-{
-    QString comment; // Describe reasoning behind the reversal.
-};
-struct CommunicationTemplateView
-{
-    QString id;
-    QString name; // Name of the template.
-    QString subject; // Content of the template, can contain markdown and variable placeholders.
-    QString contentMarkdown; // Subject of the message, used in emails.
-    bool disabled = false;
-    QString lastUpdatedBy; // did , DID of the user who last updated the template.
-    QString createdAt; // datetime
-    QString updatedAt; // datetime
-};
-}
-
-// com.atproto.label.subscribeLabels
-namespace ComAtprotoLabelSubscribeLabels {
-struct Labels
-{
-    int seq = 0;
-    QList<ComAtprotoLabelDefs::Label> labels;
-};
-struct Info
-{
-    QString name;
-    QString message;
-};
-}
-
-// com.atproto.repo.applyWrites
-namespace ComAtprotoRepoApplyWrites {
-struct Create
-{
-    QString collection; // nsid
-    QString rkey;
-    QVariant value;
-};
-struct Update
-{
-    QString collection; // nsid
-    QString rkey;
-    QVariant value;
-};
-struct Delete
-{
-    QString collection; // nsid
-    QString rkey;
-};
-}
-
-// com.atproto.repo.listRecords
-namespace ComAtprotoRepoListRecords {
-struct Record
-{
-    QString uri; // at-uri
-    QString cid; // cid
-    QVariant value;
-};
-}
-
-// com.atproto.server.createAppPassword
-namespace ComAtprotoServerCreateAppPassword {
-struct AppPassword
-{
-    QString name;
-    QString password;
-    QString createdAt; // datetime
-};
-}
-
-// com.atproto.server.createInviteCodes
-namespace ComAtprotoServerCreateInviteCodes {
-struct AccountCodes
-{
-    QString account;
-    QList<QString> codes;
-};
-}
-
-// com.atproto.server.describeServer
-namespace ComAtprotoServerDescribeServer {
-struct Links
-{
-    QString privacyPolicy;
-    QString termsOfService;
-};
-}
-
-// com.atproto.server.listAppPasswords
-namespace ComAtprotoServerListAppPasswords {
-struct AppPassword
-{
-    QString name;
-    QString createdAt; // datetime
-};
-}
-
-// com.atproto.sync.listRepos
-namespace ComAtprotoSyncListRepos {
-struct Repo
-{
-    QString did; // did
-    QString head; // cid , Current repo commit CID
-    QString rev;
-};
-}
-
-// com.atproto.sync.subscribeRepos
-namespace ComAtprotoSyncSubscribeRepos {
-struct RepoOp
-{
-    QString action;
-    QString path;
-};
-struct Commit
-{
-    int seq = 0; // The stream sequence number of this message.
-    bool tooBig =
-            false; // Indicates that this commit contained too many ops, or data size was too large.
-                   // Consumers will need to make a separate request to get missing data.
-    QString repo; // did , The repo this event comes from.
-    QString rev; // The rev of the emitted commit. Note that this information is also in the commit
-                 // object included in blocks, unless this is a tooBig event.
-    QString since; // The rev of the last emitted commit from this repo (if any).
-    QList<RepoOp> ops;
-    QString time; // datetime , Timestamp of when this message was originally broadcast.
-};
-struct Handle
-{
-    int seq = 0;
-    QString did; // did
-    QString handle; // handle
-    QString time; // datetime
-};
-struct Migrate
-{
-    int seq = 0;
-    QString did; // did
-    QString migrateTo;
-    QString time; // datetime
-};
-struct Tombstone
-{
-    int seq = 0;
-    QString did; // did
-    QString time; // datetime
-};
-struct Info
-{
-    QString name;
-    QString message;
 };
 }
 

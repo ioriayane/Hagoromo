@@ -49,12 +49,19 @@ ClickableFrame {
 
     signal requestViewProfile(string did)
     signal requestViewSearchPosts(string text)
+    signal requestAddMutedWord(string text)
 
     function openLink(url){
         if(url.indexOf("did:") === 0){
             requestViewProfile(url)
         }else if(url.indexOf("search://") === 0){
-            requestViewSearchPosts(url.substring(9))
+            tagMenu.x = recrdTextMouseArea.mouseX
+            tagMenu.y = recrdTextMouseArea.mouseY
+            tagMenu.tagText = url.substring(9)
+            if(tagMenu.tagText.charAt(0) !== "#"){
+                tagMenu.tagText = "#" + tagMenu.tagText
+            }
+            tagMenu.open()
         }else{
             Qt.openUrlExternally(url)
         }
@@ -72,7 +79,7 @@ ClickableFrame {
             when: notificationFrame.reason === NotificationListModel.ReasonLike &&
                   feedGeneratorFrame.visible === false
             PropertyChanges { target: reasonImage; source: "../images/like.png" }
-            PropertyChanges { target: recordTextLabel; visible: true }
+            PropertyChanges { target: recrdTextMouseArea; visible: true }
             PropertyChanges { target: recordTextLabel; color: Material.color(Material.Grey) }
             PropertyChanges { target: recordTextLabel; text: notificationFrame.quoteRecordRecordText }
             PropertyChanges { target: notificationFrame; bottomPadding: 5 }
@@ -81,7 +88,7 @@ ClickableFrame {
             when: notificationFrame.reason === NotificationListModel.ReasonLike &&
                   feedGeneratorFrame.visible === true
             PropertyChanges { target: reasonImage; source: "../images/like.png" }
-            PropertyChanges { target: recordTextLabel; visible: false }
+            PropertyChanges { target: recrdTextMouseArea; visible: false }
             PropertyChanges { target: recordTextLabel; color: Material.color(Material.Grey) }
             PropertyChanges { target: recordTextLabel; text: notificationFrame.quoteRecordRecordText }
             PropertyChanges { target: notificationFrame; bottomPadding: 5 }
@@ -89,7 +96,7 @@ ClickableFrame {
         State {
             when: notificationFrame.reason === NotificationListModel.ReasonRepost
             PropertyChanges { target: reasonImage; source: "../images/repost.png" }
-            PropertyChanges { target: recordTextLabel; visible: true }
+            PropertyChanges { target: recrdTextMouseArea; visible: true }
             PropertyChanges { target: recordTextLabel; color: Material.color(Material.Grey) }
             PropertyChanges { target: recordTextLabel; text: notificationFrame.quoteRecordRecordText }
             PropertyChanges { target: notificationFrame; bottomPadding: 5 }
@@ -101,7 +108,7 @@ ClickableFrame {
         State {
             when: notificationFrame.reason === NotificationListModel.ReasonMention
             PropertyChanges { target: reasonImage; source: "../images/reply.png" }
-            PropertyChanges { target: recordTextLabel; visible: true }
+            PropertyChanges { target: recrdTextMouseArea; visible: true }
             PropertyChanges { target: recordTextLabel; text: notificationFrame.recordText }
             PropertyChanges { target: postControls; visible: true }
             PropertyChanges { target: notificationFrame; bottomPadding: 2 }
@@ -109,7 +116,7 @@ ClickableFrame {
         State {
             when: notificationFrame.reason === NotificationListModel.ReasonReply
             PropertyChanges { target: reasonImage; source: "../images/reply.png" }
-            PropertyChanges { target: recordTextLabel; visible: true }
+            PropertyChanges { target: recrdTextMouseArea; visible: true }
             PropertyChanges { target: recordTextLabel; text: notificationFrame.recordText }
             PropertyChanges { target: postControls; visible: true }
             PropertyChanges { target: notificationFrame; bottomPadding: 2 }
@@ -117,7 +124,7 @@ ClickableFrame {
         State {
             when: notificationFrame.reason === NotificationListModel.ReasonQuote
             PropertyChanges { target: reasonImage; source: "../images/quote.png" }
-            PropertyChanges { target: recordTextLabel; visible: true }
+            PropertyChanges { target: recrdTextMouseArea; visible: true }
             PropertyChanges { target: recordTextLabel; text: notificationFrame.recordText }
             // PropertyChanges { target: quoteRecordFrame; visible: true } ラベルフィルタの都合で使う側で調整する
 
@@ -229,17 +236,33 @@ ClickableFrame {
                     spacing: 0
                     visible: contentFilterFrame.showContent
 
-                    Label {
-                        id: recordTextLabel
-                        visible: false
+                    MouseArea {
+                        id: recrdTextMouseArea
                         Layout.preferredWidth: parent.width
-                        Layout.topMargin: 8
-                        textFormat: Text.StyledText
-                        wrapMode: Text.WrapAnywhere
-                        font.pointSize: AdjustedValues.f10
-                        lineHeight: 1.3
-                        onLinkActivated: (url) => openLink(url)
-                        onHoveredLinkChanged: displayLink(hoveredLink)
+                        Layout.preferredHeight: recordTextLabel.contentHeight
+                        Layout.topMargin: 5
+                        Layout.bottomMargin: -5
+                        acceptedButtons: Qt.MiddleButton
+                        hoverEnabled: true
+                        visible: false
+                        Label {
+                            id: recordTextLabel
+                            anchors.top: parent.top
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            textFormat: Text.StyledText
+                            wrapMode: Text.WrapAnywhere
+                            font.pointSize: AdjustedValues.f10
+                            lineHeight: 1.3
+                            onLinkActivated: (url) => openLink(url)
+                            onHoveredLinkChanged: displayLink(hoveredLink)
+
+                            HashTagMenu {
+                                id: tagMenu
+                                onRequestViewSearchPosts: (text) => notificationFrame.requestViewSearchPosts(text)
+                                onRequestAddMutedWord: (text) => notificationFrame.requestAddMutedWord(text)
+                            }
+                        }
                     }
 
                     CoverFrame {

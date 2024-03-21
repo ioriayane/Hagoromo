@@ -44,12 +44,14 @@ QVariant FollowsListModel::item(int row, FollowsListModelRoles role) const
         return formatDateTime(profile.indexedAt);
     else if (role == MutedRole)
         return profile.viewer.muted;
-    else if (role == BlockedByRole)
-        return profile.viewer.blocking;
+    else if (role == BlockingRole)
+        return profile.viewer.blocking.contains(account().did);
     else if (role == FollowingRole)
         return profile.viewer.following.contains(account().did);
     else if (role == FollowedByRole)
         return profile.viewer.followedBy.contains(profile.did);
+    else if (role == BlockingUriRole)
+        return profile.viewer.blocking;
     else if (role == FollowingUriRole)
         return profile.viewer.following;
     else if (role == LabelsRole) {
@@ -138,6 +140,7 @@ bool FollowsListModel::getLatest()
             profiles->deleteLater();
         });
         profiles->setAccount(account());
+        profiles->setLabelers(m_contentFilterLabels.labelerDids());
         profiles->getFollows(targetDid(), 50, QString());
     });
     return true;
@@ -162,6 +165,7 @@ bool FollowsListModel::getNext()
             profiles->deleteLater();
         });
         profiles->setAccount(account());
+        profiles->setLabelers(m_contentFilterLabels.labelerDids());
         profiles->getFollows(targetDid(), 50, m_cursor);
     });
     return true;
@@ -178,9 +182,10 @@ QHash<int, QByteArray> FollowsListModel::roleNames() const
     roles[AvatarRole] = "avatar";
     roles[IndexedAtRole] = "indexedAt";
     roles[MutedRole] = "muted";
-    roles[BlockedByRole] = "blockedBy";
+    roles[BlockingRole] = "blocking";
     roles[FollowingRole] = "following";
     roles[FollowedByRole] = "followedBy";
+    roles[BlockingUriRole] = "blockingUri";
     roles[FollowingUriRole] = "followingUri";
     roles[LabelsRole] = "labels";
 
@@ -246,6 +251,7 @@ void FollowsListModel::getProfiles()
         posts->deleteLater();
     });
     posts->setAccount(account());
+    posts->setLabelers(m_contentFilterLabels.labelerDids());
     posts->getProfiles(dids);
 }
 

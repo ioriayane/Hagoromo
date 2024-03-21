@@ -34,6 +34,7 @@ ColumnLayout {
     signal requestViewLikedBy(string uri)
     signal requestViewRepostedBy(string uri)
     signal requestViewSearchPosts(string text)
+    signal requestAddMutedWord(string text)
     signal requestUpdateThreadGate(string uri, string threadgate_uri, string type, var rules, var callback)
     signal requestReportPost(string uri, string cid)
 
@@ -116,6 +117,7 @@ ColumnLayout {
                            }
                 onRequestViewProfile: (did) => postThreadView.requestViewProfile(did)
                 onRequestViewSearchPosts: (text) => postThreadView.requestViewSearchPosts(text)
+                onRequestAddMutedWord: (text) => postThreadView.requestAddMutedWord(text)
 
                 moderationFrame.visible: model.muted
                 userFilterMatched: model.userFilterMatched

@@ -8,6 +8,18 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+### v0.26.0 - 2024/3/21
+
+- Add
+  - Support muted word
+  - Add list of blocked and muted accounts
+- Update
+  - Remove self-labels that should not be set from the selection candidates when posting
+  - Internal updates to maintain compatibility with the new label system
+  - Added aspect ratio to attached images
+- Fix
+  - Fixed a situation where the tab button in the profile was sticking out.
+
 ### v0.25.0 - 2024/3/2
 
 - Add

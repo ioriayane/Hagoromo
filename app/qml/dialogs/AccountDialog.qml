@@ -20,6 +20,8 @@ Dialog {
     property alias accountModel: accountList.model
     signal errorOccured(string account_uuid, string code, string message)
 
+    signal requestAddMutedWords(int account_index)
+
     LoginDialog {
         id: login
         onAccepted: {
@@ -34,6 +36,13 @@ Dialog {
     ContentFilterSettingDialog {
         id: contentFilter
     }
+    BlockedAccountsDialog {
+        id: blockedAccountsDialog
+    }
+    MutedAccountsDialog {
+        id: mutedAccountsDialog
+    }
+
     SelectThreadGateDialog {
         id: selectThreadGateDialog
         defaultSettingMode: true
@@ -116,45 +125,65 @@ Dialog {
                         onClicked: moreMenu.open()
                         Menu {
                             id: moreMenu
-                            width: 250
+                            width: mutedWordMenuItem.implicitWidth > threadGateMenuItem.implicitWidth ?
+                                       mutedWordMenuItem.implicitWidth : threadGateMenuItem.implicitWidth
                             MenuItem {
                                 icon.source: "../images/account_icon.png"
                                 text: qsTr("Set as main")
                                 onTriggered: accountList.model.setMainAccount(model.index)
                             }
+                            MenuSeparator {}
                             MenuItem {
                                 icon.source: "../images/visibility_on.png"
                                 text: qsTr("Content filter")
                                 onTriggered: {
-                                    var i = model.index
-                                    contentFilter.account.service = accountList.model.item(i, AccountListModel.ServiceRole)
-                                    contentFilter.account.did = accountList.model.item(i, AccountListModel.DidRole)
-                                    contentFilter.account.handle = accountList.model.item(i, AccountListModel.HandleRole)
-                                    contentFilter.account.email = accountList.model.item(i, AccountListModel.EmailRole)
-                                    contentFilter.account.accessJwt = accountList.model.item(i, AccountListModel.AccessJwtRole)
-                                    contentFilter.account.refreshJwt = accountList.model.item(i, AccountListModel.RefreshJwtRole)
-                                    contentFilter.account.avatar = accountList.model.item(i, AccountListModel.AvatarRole)
-                                    contentFilter.open()
+                                    if(contentFilter.account.set(accountList.model, model.uuid)){
+                                        contentFilter.open()
+                                    }
                                 }
                             }
                             MenuItem {
+                                id: mutedWordMenuItem
+                                icon.source: "../images/mute.png"
+                                text: qsTr("Muted words and tags")
+                                onTriggered: accountDialog.requestAddMutedWords(model.index)
+                            }
+                            MenuItem {
+                                id: mutedAccountsMenuItem
+                                icon.source: "../images/account_off.png"
+                                text: qsTr("Muted accounts")
+                                onTriggered: {
+                                    if(mutedAccountsDialog.account.set(accountList.model, model.uuid)){
+                                        mutedAccountsDialog.open()
+                                    }
+                                }
+                            }
+                            MenuItem {
+                                id: blockedAccountsMenuItem
+                                icon.source: "../images/block.png"
+                                text: qsTr("Blocked accounts")
+                                onTriggered: {
+                                    if(blockedAccountsDialog.account.set(accountList.model, model.uuid)){
+                                        blockedAccountsDialog.open()
+                                    }
+                                }
+                            }
+                            MenuSeparator {}
+                            MenuItem {
+                                id: threadGateMenuItem
                                 icon.source: "../images/thread.png"
                                 text: qsTr("Who can reply")
                                 onTriggered: {
-                                    var i = model.index
-                                    selectThreadGateDialog.account.service = accountList.model.item(i, AccountListModel.ServiceRole)
-                                    selectThreadGateDialog.account.did = accountList.model.item(i, AccountListModel.DidRole)
-                                    selectThreadGateDialog.account.handle = accountList.model.item(i, AccountListModel.HandleRole)
-                                    selectThreadGateDialog.account.email = accountList.model.item(i, AccountListModel.EmailRole)
-                                    selectThreadGateDialog.account.accessJwt = accountList.model.item(i, AccountListModel.AccessJwtRole)
-                                    selectThreadGateDialog.account.refreshJwt = accountList.model.item(i, AccountListModel.RefreshJwtRole)
-                                    selectThreadGateDialog.account.avatar = accountList.model.item(i, AccountListModel.AvatarRole)
-                                    selectThreadGateDialog.initialType = accountList.model.item(i, AccountListModel.ThreadGateTypeRole)
-                                    selectThreadGateDialog.initialOptions = accountList.model.item(i, AccountListModel.ThreadGateOptionsRole)
-                                    selectThreadGateDialog.accountIndex = i
-                                    selectThreadGateDialog.open()
+                                    if(selectThreadGateDialog.account.set(accountList.model, model.uuid)){
+                                        var i = model.index
+                                        selectThreadGateDialog.initialType = accountList.model.item(i, AccountListModel.ThreadGateTypeRole)
+                                        selectThreadGateDialog.initialOptions = accountList.model.item(i, AccountListModel.ThreadGateOptionsRole)
+                                        selectThreadGateDialog.accountIndex = i
+                                        selectThreadGateDialog.open()
+                                    }
                                 }
                             }
+                            MenuSeparator {}
                             MenuItem {
                                 icon.source: "../images/delete.png"
                                 text: qsTr("Remove account")

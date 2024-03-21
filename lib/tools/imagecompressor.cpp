@@ -46,5 +46,7 @@ void ImageCompressor::compress(const QString &path)
             new_info.setFile(new_path);
         }
     }
-    emit compressed(new_path);
+    QImage new_img(new_path);
+
+    emit compressed(new_path, new_img.size());
 }

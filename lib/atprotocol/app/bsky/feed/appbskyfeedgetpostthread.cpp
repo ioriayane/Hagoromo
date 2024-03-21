@@ -29,6 +29,7 @@ bool AppBskyFeedGetPostThread::parseJson(bool success, const QString reply_json)
     if (json_doc.isEmpty() || !json_doc.object().contains("thread")) {
         success = false;
     } else {
+        qDebug().noquote().nospace() << reply_json;
         AtProtocolType::AppBskyFeedDefs::copyThreadViewPost(
                 json_doc.object().value("thread").toObject(), m_threadViewPost);
     }

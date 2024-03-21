@@ -220,6 +220,7 @@ void AnyFeedListModel::getPosts()
         posts->deleteLater();
     });
     posts->setAccount(account());
+    posts->setLabelers(m_contentFilterLabels.labelerDids());
     posts->getPosts(uris);
 }
 
