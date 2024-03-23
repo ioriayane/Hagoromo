@@ -212,8 +212,9 @@ Dialog {
             Button {
                 font.pointSize: AdjustedValues.f10
                 enabled: !mutedWordListModel.running
-                text: qsTr("Save") + (mutedWordListModel.modified ? "(*)" : "")
+                text: qsTr("Save")
                 onClicked: mutedWordListModel.save()
+                highlighted: mutedWordListModel.modified
                 BusyIndicator {
                     anchors.fill: parent
                     anchors.margins: 3
