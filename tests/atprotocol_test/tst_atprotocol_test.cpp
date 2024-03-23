@@ -465,64 +465,44 @@ void atprotocol_test::test_ConfigurableLabels()
     for_image = true;
     QVERIFY(labels.visibility("hoge", for_image) == ConfigurableLabelStatus::Show);
     QVERIFY(labels.visibility("porn", for_image) == ConfigurableLabelStatus::Show);
-    QVERIFY(labels.visibility("nsfl", for_image) == ConfigurableLabelStatus::Show);
-    QVERIFY(labels.visibility("nudity", for_image) == ConfigurableLabelStatus::Show);
     QVERIFY(labels.visibility("sexual", for_image) == ConfigurableLabelStatus::Show);
-    QVERIFY(labels.visibility("gore", for_image) == ConfigurableLabelStatus::Show);
-    QVERIFY(labels.visibility("self-harm", for_image) == ConfigurableLabelStatus::Show);
-    QVERIFY(labels.visibility("torture", for_image) == ConfigurableLabelStatus::Show);
-    QVERIFY(labels.visibility("corpse", for_image) == ConfigurableLabelStatus::Show);
-    QVERIFY(labels.visibility("icon-kkk", for_image) == ConfigurableLabelStatus::Show);
-    QVERIFY(labels.visibility("icon-nazi", for_image) == ConfigurableLabelStatus::Show);
-    QVERIFY(labels.visibility("icon-intolerant", for_image) == ConfigurableLabelStatus::Show);
-    QVERIFY(labels.visibility("behavior-intolerant", for_image) == ConfigurableLabelStatus::Show);
-    QVERIFY(labels.visibility("spam", for_image) == ConfigurableLabelStatus::Show);
-    QVERIFY(labels.visibility("impersonation", for_image) == ConfigurableLabelStatus::Show);
+    QVERIFY(labels.visibility("graphic-media", for_image) == ConfigurableLabelStatus::Show);
+    QVERIFY(labels.visibility("nudity", for_image) == ConfigurableLabelStatus::Show);
 
     labels.setEnableAdultContent(false);
     QVERIFY(labels.visibility("hoge", for_image) == ConfigurableLabelStatus::Show);
     QVERIFY(labels.visibility("porn", for_image) == ConfigurableLabelStatus::Hide);
-    QVERIFY(labels.visibility("nsfl", for_image) == ConfigurableLabelStatus::Hide);
-    QVERIFY(labels.visibility("nudity", for_image) == ConfigurableLabelStatus::Hide);
     QVERIFY(labels.visibility("sexual", for_image) == ConfigurableLabelStatus::Hide);
-    QVERIFY(labels.visibility("gore", for_image) == ConfigurableLabelStatus::Hide);
-    QVERIFY(labels.visibility("self-harm", for_image) == ConfigurableLabelStatus::Hide);
-    QVERIFY(labels.visibility("torture", for_image) == ConfigurableLabelStatus::Hide);
-    QVERIFY(labels.visibility("corpse", for_image) == ConfigurableLabelStatus::Hide);
-    QVERIFY(labels.visibility("icon-kkk", for_image) == ConfigurableLabelStatus::Show);
-    QVERIFY(labels.visibility("icon-nazi", for_image) == ConfigurableLabelStatus::Show);
-    QVERIFY(labels.visibility("icon-intolerant", for_image) == ConfigurableLabelStatus::Show);
-    QVERIFY(labels.visibility("behavior-intolerant", for_image) == ConfigurableLabelStatus::Show);
-    QVERIFY(labels.visibility("spam", for_image) == ConfigurableLabelStatus::Show);
-    QVERIFY(labels.visibility("impersonation", for_image) == ConfigurableLabelStatus::Show);
+    QVERIFY(labels.visibility("graphic-media", for_image) == ConfigurableLabelStatus::Hide);
+    QVERIFY(labels.visibility("nudity", for_image) == ConfigurableLabelStatus::Show);
 
     labels.setEnableAdultContent(true);
     for (int i = 0; i < labels.count(); i++) {
         labels.setStatus(i, ConfigurableLabelStatus::Hide);
     }
-    QVERIFY(labels.visibility("corpse", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(labels.visibility("icon-kkk", true) == ConfigurableLabelStatus::Show);
-    QVERIFY(labels.visibility("corpse", false) == ConfigurableLabelStatus::Show);
-    QVERIFY(labels.visibility("icon-kkk", false) == ConfigurableLabelStatus::Hide);
+    QVERIFY(labels.visibility("porn", true) == ConfigurableLabelStatus::Hide);
+    QVERIFY(labels.visibility("sexual", true) == ConfigurableLabelStatus::Hide);
+    QVERIFY(labels.visibility("graphic-media", true) == ConfigurableLabelStatus::Hide);
+    QVERIFY(labels.visibility("nudity", true) == ConfigurableLabelStatus::Hide);
 
-    QVERIFY(labels.message("corpse", true) == "Violence");
-    QVERIFY(labels.message("icon-kkk", true) == QString());
-    QVERIFY(labels.message("corpse", false) == QString());
-    QVERIFY(labels.message("icon-kkk", false) == "Hate Groups");
+    QVERIFY(labels.message("porn", true) == "Sexually Explicit");
+    QVERIFY(labels.message("sexual", true) == "Sexually Suggestive");
+    QVERIFY(labels.message("graphic-media", true) == "Graphic Media");
+    QVERIFY(labels.message("nudity", true) == "Non-sexual Nudity");
 
     labels.setEnableAdultContent(true);
     for (int i = 0; i < labels.count(); i++) {
         labels.setStatus(i, ConfigurableLabelStatus::Warning);
     }
-    QVERIFY(labels.visibility("corpse", true) == ConfigurableLabelStatus::Warning);
-    QVERIFY(labels.visibility("icon-kkk", true) == ConfigurableLabelStatus::Show);
-    QVERIFY(labels.visibility("corpse", false) == ConfigurableLabelStatus::Show);
-    QVERIFY(labels.visibility("icon-kkk", false) == ConfigurableLabelStatus::Warning);
+    QVERIFY(labels.visibility("porn", true) == ConfigurableLabelStatus::Warning);
+    QVERIFY(labels.visibility("sexual", true) == ConfigurableLabelStatus::Warning);
+    QVERIFY(labels.visibility("graphic-media", true) == ConfigurableLabelStatus::Warning);
+    QVERIFY(labels.visibility("nudity", true) == ConfigurableLabelStatus::Warning);
 
-    QVERIFY(labels.message("corpse", true) == "Violence");
-    QVERIFY(labels.message("icon-kkk", true) == QString());
-    QVERIFY(labels.message("corpse", false) == QString());
-    QVERIFY(labels.message("icon-kkk", false) == "Hate Groups");
+    QVERIFY(labels.message("porn", true) == "Sexually Explicit");
+    QVERIFY(labels.message("sexual", true) == "Sexually Suggestive");
+    QVERIFY(labels.message("graphic-media", true) == "Graphic Media");
+    QVERIFY(labels.message("nudity", true) == "Non-sexual Nudity");
 
     // 設定変更できない項目を変更していないか確認
     for (int i = 0; i < labels.count(); i++) {
@@ -535,9 +515,23 @@ void atprotocol_test::test_ConfigurableLabels()
     QVERIFY(labels.message("!warn", false) == "Content warning");
     QVERIFY(labels.message("!warn", true) == QString());
 
-    QVERIFY(labels.indexOf("suggestive", "") >= 0);
-    QVERIFY(labels.indexOf("suggestive", "did:plc:hoge") == -1);
-    QVERIFY(labels.indexOf("suggestive", "unkown") >= 0);
+    QVERIFY(labels.visibility("dmca-violation", false) == ConfigurableLabelStatus::Hide);
+    QVERIFY(labels.visibility("doxxing", false) == ConfigurableLabelStatus::Hide);
+    QVERIFY(labels.visibility("gore", true) == ConfigurableLabelStatus::Hide);
+    QVERIFY(labels.visibility("self-harm", true) == ConfigurableLabelStatus::Hide);
+    QVERIFY(labels.visibility("torture", true) == ConfigurableLabelStatus::Hide);
+    QVERIFY(labels.visibility("nsfl", true) == ConfigurableLabelStatus::Hide);
+    QVERIFY(labels.visibility("corpse", true) == ConfigurableLabelStatus::Hide);
+    QVERIFY(labels.visibility("icon-kkk", false) == ConfigurableLabelStatus::Hide);
+    QVERIFY(labels.visibility("icon-nazi", false) == ConfigurableLabelStatus::Hide);
+    QVERIFY(labels.visibility("icon-intolerant", false) == ConfigurableLabelStatus::Hide);
+    QVERIFY(labels.visibility("behavior-intolerant", false) == ConfigurableLabelStatus::Hide);
+    QVERIFY(labels.visibility("spam", false) == ConfigurableLabelStatus::Hide);
+    QVERIFY(labels.visibility("impersonation", false) == ConfigurableLabelStatus::Hide);
+
+    QVERIFY(labels.indexOf("sexual", "") >= 0);
+    QVERIFY(labels.indexOf("sexual", "did:plc:hoge") == -1);
+    QVERIFY(labels.indexOf("sexual", "unkown") >= 0);
 }
 
 void atprotocol_test::test_ConfigurableLabels_load()
@@ -556,11 +550,12 @@ void atprotocol_test::test_ConfigurableLabels_load()
 
         QVERIFY(labels.enableAdultContent() == true);
         QVERIFY(labels.visibility("porn", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("nsfl", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("nudity", true) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("sexual", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("gore", true) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("graphic-media", true) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("nudity", true) == ConfigurableLabelStatus::Hide);
+
+        QVERIFY(labels.visibility("nsfl", true) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("gore", true) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("self-harm", true) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("torture", true) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("corpse", true) == ConfigurableLabelStatus::Hide);
@@ -596,20 +591,21 @@ void atprotocol_test::test_ConfigurableLabels_load()
 
         QVERIFY(labels.enableAdultContent() == true);
         QVERIFY(labels.visibility("porn", true) == ConfigurableLabelStatus::Show);
-        QVERIFY(labels.visibility("nsfl", true) == ConfigurableLabelStatus::Show);
-        QVERIFY(labels.visibility("nudity", true) == ConfigurableLabelStatus::Show);
         QVERIFY(labels.visibility("sexual", true) == ConfigurableLabelStatus::Show);
-        QVERIFY(labels.visibility("gore", true) == ConfigurableLabelStatus::Show);
         QVERIFY(labels.visibility("graphic-media", true) == ConfigurableLabelStatus::Show);
-        QVERIFY(labels.visibility("self-harm", true) == ConfigurableLabelStatus::Show);
-        QVERIFY(labels.visibility("torture", true) == ConfigurableLabelStatus::Show);
-        QVERIFY(labels.visibility("corpse", true) == ConfigurableLabelStatus::Show);
-        QVERIFY(labels.visibility("icon-kkk", false) == ConfigurableLabelStatus::Show);
-        QVERIFY(labels.visibility("icon-nazi", false) == ConfigurableLabelStatus::Show);
-        QVERIFY(labels.visibility("icon-intolerant", false) == ConfigurableLabelStatus::Show);
-        QVERIFY(labels.visibility("behavior-intolerant", false) == ConfigurableLabelStatus::Show);
-        QVERIFY(labels.visibility("spam", false) == ConfigurableLabelStatus::Show);
-        QVERIFY(labels.visibility("impersonation", false) == ConfigurableLabelStatus::Show);
+        QVERIFY(labels.visibility("nudity", true) == ConfigurableLabelStatus::Show);
+
+        QVERIFY(labels.visibility("nsfl", true) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("gore", true) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("self-harm", true) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("torture", true) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("corpse", true) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("icon-kkk", false) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("icon-nazi", false) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("icon-intolerant", false) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("behavior-intolerant", false) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("spam", false) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("impersonation", false) == ConfigurableLabelStatus::Hide);
 
         labeler_did = "did:plc:ar7c4by46qjdydhdevvrndac";
         QVERIFY(labels.visibility("inauthentic", false, labeler_did)
@@ -631,20 +627,21 @@ void atprotocol_test::test_ConfigurableLabels_load()
 
         QVERIFY(labels.enableAdultContent() == false);
         QVERIFY(labels.visibility("porn", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("nsfl", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("nudity", true) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("sexual", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("gore", true) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("graphic-media", true) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("nudity", true) == ConfigurableLabelStatus::Show);
+
+        QVERIFY(labels.visibility("nsfl", true) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("gore", true) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("self-harm", true) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("torture", true) == ConfigurableLabelStatus::Hide);
         QVERIFY(labels.visibility("corpse", true) == ConfigurableLabelStatus::Hide);
-        QVERIFY(labels.visibility("icon-kkk", false) == ConfigurableLabelStatus::Show);
-        QVERIFY(labels.visibility("icon-nazi", false) == ConfigurableLabelStatus::Show);
-        QVERIFY(labels.visibility("icon-intolerant", false) == ConfigurableLabelStatus::Show);
-        QVERIFY(labels.visibility("behavior-intolerant", false) == ConfigurableLabelStatus::Show);
-        QVERIFY(labels.visibility("spam", false) == ConfigurableLabelStatus::Show);
-        QVERIFY(labels.visibility("impersonation", false) == ConfigurableLabelStatus::Show);
+        QVERIFY(labels.visibility("icon-kkk", false) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("icon-nazi", false) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("icon-intolerant", false) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("behavior-intolerant", false) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("spam", false) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("impersonation", false) == ConfigurableLabelStatus::Hide);
 
         labeler_did = "did:plc:ar7c4by46qjdydhdevvrndac";
         QVERIFY(labels.visibility("inauthentic", false, labeler_did)
@@ -665,21 +662,21 @@ void atprotocol_test::test_ConfigurableLabels_load()
 
         QVERIFY(labels.enableAdultContent() == true);
         QVERIFY(labels.visibility("porn", true) == ConfigurableLabelStatus::Warning);
-        QVERIFY(labels.visibility("nsfl", true) == ConfigurableLabelStatus::Warning);
-        QVERIFY(labels.visibility("nudity", true) == ConfigurableLabelStatus::Warning);
         QVERIFY(labels.visibility("sexual", true) == ConfigurableLabelStatus::Warning);
-        QVERIFY(labels.visibility("gore", true) == ConfigurableLabelStatus::Warning);
         QVERIFY(labels.visibility("graphic-media", true) == ConfigurableLabelStatus::Warning);
-        QVERIFY(labels.visibility("self-harm", true) == ConfigurableLabelStatus::Warning);
-        QVERIFY(labels.visibility("torture", true) == ConfigurableLabelStatus::Warning);
-        QVERIFY(labels.visibility("corpse", true) == ConfigurableLabelStatus::Warning);
-        QVERIFY(labels.visibility("icon-kkk", false) == ConfigurableLabelStatus::Warning);
-        QVERIFY(labels.visibility("icon-nazi", false) == ConfigurableLabelStatus::Warning);
-        QVERIFY(labels.visibility("icon-intolerant", false) == ConfigurableLabelStatus::Warning);
-        QVERIFY(labels.visibility("behavior-intolerant", false)
-                == ConfigurableLabelStatus::Warning);
-        QVERIFY(labels.visibility("spam", false) == ConfigurableLabelStatus::Warning);
-        QVERIFY(labels.visibility("impersonation", false) == ConfigurableLabelStatus::Warning);
+        QVERIFY(labels.visibility("nudity", true) == ConfigurableLabelStatus::Warning);
+
+        QVERIFY(labels.visibility("nsfl", true) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("gore", true) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("self-harm", true) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("torture", true) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("corpse", true) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("icon-kkk", false) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("icon-nazi", false) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("icon-intolerant", false) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("behavior-intolerant", false) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("spam", false) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.visibility("impersonation", false) == ConfigurableLabelStatus::Hide);
 
         labeler_did = "did:plc:ar7c4by46qjdydhdevvrndac";
         QVERIFY(labels.visibility("inauthentic", false, labeler_did)
@@ -849,9 +846,11 @@ void atprotocol_test::test_ConfigurableLabels_copy()
 
     QVERIFY(dest.enableAdultContent() == false);
     QVERIFY(dest.visibility("porn", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("nsfl", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("nudity", true) == ConfigurableLabelStatus::Hide);
     QVERIFY(dest.visibility("sexual", true) == ConfigurableLabelStatus::Hide);
+    QVERIFY(dest.visibility("graphic-media", true) == ConfigurableLabelStatus::Hide);
+    QVERIFY(dest.visibility("nudity", true) == ConfigurableLabelStatus::Hide);
+
+    QVERIFY(dest.visibility("nsfl", true) == ConfigurableLabelStatus::Hide);
     QVERIFY(dest.visibility("gore", true) == ConfigurableLabelStatus::Hide);
     QVERIFY(dest.visibility("self-harm", true) == ConfigurableLabelStatus::Hide);
     QVERIFY(dest.visibility("torture", true) == ConfigurableLabelStatus::Hide);
@@ -869,19 +868,21 @@ void atprotocol_test::test_ConfigurableLabels_copy()
     dest = src;
     QVERIFY(dest.enableAdultContent() == true);
     QVERIFY(dest.visibility("porn", true) == ConfigurableLabelStatus::Show);
-    QVERIFY(dest.visibility("nsfl", true) == ConfigurableLabelStatus::Show);
-    QVERIFY(dest.visibility("nudity", true) == ConfigurableLabelStatus::Show);
     QVERIFY(dest.visibility("sexual", true) == ConfigurableLabelStatus::Show);
-    QVERIFY(dest.visibility("gore", true) == ConfigurableLabelStatus::Show);
-    QVERIFY(dest.visibility("self-harm", true) == ConfigurableLabelStatus::Show);
-    QVERIFY(dest.visibility("torture", true) == ConfigurableLabelStatus::Show);
-    QVERIFY(dest.visibility("corpse", true) == ConfigurableLabelStatus::Show);
-    QVERIFY(dest.visibility("icon-kkk", false) == ConfigurableLabelStatus::Show);
-    QVERIFY(dest.visibility("icon-nazi", false) == ConfigurableLabelStatus::Show);
-    QVERIFY(dest.visibility("icon-intolerant", false) == ConfigurableLabelStatus::Show);
-    QVERIFY(dest.visibility("behavior-intolerant", false) == ConfigurableLabelStatus::Show);
-    QVERIFY(dest.visibility("spam", false) == ConfigurableLabelStatus::Show);
-    QVERIFY(dest.visibility("impersonation", false) == ConfigurableLabelStatus::Show);
+    QVERIFY(dest.visibility("graphic-media", true) == ConfigurableLabelStatus::Show);
+    QVERIFY(dest.visibility("nudity", true) == ConfigurableLabelStatus::Show);
+
+    QVERIFY(dest.visibility("nsfl", true) == ConfigurableLabelStatus::Hide);
+    QVERIFY(dest.visibility("gore", true) == ConfigurableLabelStatus::Hide);
+    QVERIFY(dest.visibility("self-harm", true) == ConfigurableLabelStatus::Hide);
+    QVERIFY(dest.visibility("torture", true) == ConfigurableLabelStatus::Hide);
+    QVERIFY(dest.visibility("corpse", true) == ConfigurableLabelStatus::Hide);
+    QVERIFY(dest.visibility("icon-kkk", false) == ConfigurableLabelStatus::Hide);
+    QVERIFY(dest.visibility("icon-nazi", false) == ConfigurableLabelStatus::Hide);
+    QVERIFY(dest.visibility("icon-intolerant", false) == ConfigurableLabelStatus::Hide);
+    QVERIFY(dest.visibility("behavior-intolerant", false) == ConfigurableLabelStatus::Hide);
+    QVERIFY(dest.visibility("spam", false) == ConfigurableLabelStatus::Hide);
+    QVERIFY(dest.visibility("impersonation", false) == ConfigurableLabelStatus::Hide);
 
     QVERIFY(dest.labelerCount() == 0);
     QVERIFY(dest.mutedWordCount() == 3);
@@ -913,19 +914,21 @@ void atprotocol_test::test_ConfigurableLabels_copy()
     dest = src;
     QVERIFY(dest.enableAdultContent() == false);
     QVERIFY(dest.visibility("porn", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("nsfl", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("nudity", true) == ConfigurableLabelStatus::Hide);
     QVERIFY(dest.visibility("sexual", true) == ConfigurableLabelStatus::Hide);
+    QVERIFY(dest.visibility("graphic-media", true) == ConfigurableLabelStatus::Hide);
+    QVERIFY(dest.visibility("nudity", true) == ConfigurableLabelStatus::Warning);
+
+    QVERIFY(dest.visibility("nsfl", true) == ConfigurableLabelStatus::Hide);
     QVERIFY(dest.visibility("gore", true) == ConfigurableLabelStatus::Hide);
     QVERIFY(dest.visibility("self-harm", true) == ConfigurableLabelStatus::Hide);
     QVERIFY(dest.visibility("torture", true) == ConfigurableLabelStatus::Hide);
     QVERIFY(dest.visibility("corpse", true) == ConfigurableLabelStatus::Hide);
-    QVERIFY(dest.visibility("icon-kkk", false) == ConfigurableLabelStatus::Warning);
-    QVERIFY(dest.visibility("icon-nazi", false) == ConfigurableLabelStatus::Warning);
-    QVERIFY(dest.visibility("icon-intolerant", false) == ConfigurableLabelStatus::Warning);
-    QVERIFY(dest.visibility("behavior-intolerant", false) == ConfigurableLabelStatus::Warning);
-    QVERIFY(dest.visibility("spam", false) == ConfigurableLabelStatus::Warning);
-    QVERIFY(dest.visibility("impersonation", false) == ConfigurableLabelStatus::Warning);
+    QVERIFY(dest.visibility("icon-kkk", false) == ConfigurableLabelStatus::Hide);
+    QVERIFY(dest.visibility("icon-nazi", false) == ConfigurableLabelStatus::Hide);
+    QVERIFY(dest.visibility("icon-intolerant", false) == ConfigurableLabelStatus::Hide);
+    QVERIFY(dest.visibility("behavior-intolerant", false) == ConfigurableLabelStatus::Hide);
+    QVERIFY(dest.visibility("spam", false) == ConfigurableLabelStatus::Hide);
+    QVERIFY(dest.visibility("impersonation", false) == ConfigurableLabelStatus::Hide);
 
     QVERIFY(dest.labelerCount() == 0);
     QVERIFY(dest.mutedWordCount() == 3);
@@ -970,7 +973,7 @@ void atprotocol_test::test_ConfigurableLabels_save()
         QVERIFY(arguments.at(0).toBool());
     }
     {
-        labels.setEnableAdultContent(false);
+        labels.setEnableAdultContent(true);
         for (int i = 0; i < labels.count(); i++) {
             labels.setStatus(i, ConfigurableLabelStatus::Warning);
         }

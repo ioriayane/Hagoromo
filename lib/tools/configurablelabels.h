@@ -10,6 +10,12 @@ enum class ConfigurableLabelStatus : int {
     Unknown, // デフォルトでしか使用しないこと
 };
 
+enum class ConfigurableLabelFoldableRange : int {
+    Content,
+    Media,
+    None,
+};
+
 enum class ConfigurableLabelLevel : int {
     Alert,
     Inform,
@@ -32,9 +38,11 @@ struct ConfigurableLabelItem
     QString subtitle; // ラベル一覧に表示する説明文
     QString warning; // 隠すときに表示するメッセージ
     QStringList values; // プロフィールやポストに設定されているラベルとマッチングさせる値
-    bool is_adult_imagery = false; // 画像を隠すかどうか
-    ConfigurableLabelLevel level =
-            ConfigurableLabelLevel::Alert; // ユーザーへの通知レベル(今のところ表現上の差はなし)
+    bool is_adult_imagery = false; // アダルトコンテンツの対象設定か
+    ConfigurableLabelFoldableRange foldable_range =
+            ConfigurableLabelFoldableRange::Content; // 隠す範囲（lexiconのblurs）
+    ConfigurableLabelLevel level = ConfigurableLabelLevel::
+            Alert; // ユーザーへの通知レベル(今のところ表現上の差はなし)（lexiconのseverity）
     ConfigurableLabelStatus status =
             ConfigurableLabelStatus::Hide; // プロフィールやポストをどうするか
     ConfigurableLabelStatus default_status = ConfigurableLabelStatus::Unknown;

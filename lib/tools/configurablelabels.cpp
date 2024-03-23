@@ -97,8 +97,12 @@ bool ConfigurableLabels::load()
                         int index = indexOf(item.label, item.labelerDid);
                         ConfigurableLabelStatus status = toLabelStatus(item.visibility);
                         if (index >= 0) {
-                            // labelerDid.isEmptyのときもこっち
+                            // labelerDid.isEmptyのときもこっち（global
+                            // labelや互換性用のlabelのとき）
                             setStatus(index, status, item.labelerDid);
+                        } else if (item.labelerDid.isEmpty()) {
+                            // labelerDid.isEmptyのときもこっち（未知のラベルの設定）
+                            // 読み込まない
                         } else {
                             ConfigurableLabelItem label;
                             label.id = item.label;
@@ -251,10 +255,13 @@ ConfigurableLabelStatus ConfigurableLabels::visibility(const QString &label, con
 {
     QString key = labeler_did.isEmpty() ? GLOBAL_LABELER_KEY : labeler_did;
 
+    ConfigurableLabelFoldableRange foldable_range = for_image
+            ? ConfigurableLabelFoldableRange::Media
+            : ConfigurableLabelFoldableRange::Content;
     ConfigurableLabelStatus result = ConfigurableLabelStatus::Unknown;
     if (m_labels.contains(key)) {
         for (const auto &item : m_labels.value(key)) {
-            if (item.values.contains(label) && item.is_adult_imagery == for_image) {
+            if (item.values.contains(label) && item.foldable_range == foldable_range) {
                 // 画像用のラベルの検索か、それ以外か。どちらか一方のみ。つまり、一致しているときだけ。
                 if (item.is_adult_imagery) {
                     if (m_enableAdultContent) {
@@ -286,10 +293,13 @@ QString ConfigurableLabels::message(const QString &label, const bool for_image,
 {
     QString key = labeler_did.isEmpty() ? GLOBAL_LABELER_KEY : labeler_did;
 
+    ConfigurableLabelFoldableRange foldable_range = for_image
+            ? ConfigurableLabelFoldableRange::Media
+            : ConfigurableLabelFoldableRange::Content;
     QString result;
     if (m_labels.contains(key)) {
         for (const auto &item : m_labels.value(key)) {
-            if (item.values.contains(label) && item.is_adult_imagery == for_image) {
+            if (item.values.contains(label) && item.foldable_range == foldable_range) {
                 result = item.warning;
                 break;
             }
@@ -322,9 +332,12 @@ QString ConfigurableLabels::title(const QString &label, const bool for_image,
     if (!m_labels.contains(key))
         return QString();
 
+    ConfigurableLabelFoldableRange foldable_range = for_image
+            ? ConfigurableLabelFoldableRange::Media
+            : ConfigurableLabelFoldableRange::Content;
     QString result;
     for (const auto &item : m_labels.value(key)) {
-        if (item.values.contains(label) && item.is_adult_imagery == for_image) {
+        if (item.values.contains(label) && item.foldable_range == foldable_range) {
             // 画像用のラベルの検索か、それ以外か。どちらか一方のみ。つまり、一致しているときだけ。
             if (item.is_adult_imagery) {
                 if (m_enableAdultContent) {
@@ -586,12 +599,14 @@ void ConfigurableLabels::initializeLabels()
     ConfigurableLabelItem item;
 
     // ラベルの情報
-    // https://github.com/bluesky-social/atproto/blob/main/packages/api/docs/labels.md
+    // https://docs.bsky.app/docs/advanced-guides/moderation
+    // https://atproto.com/specs/label
     // idはpreferenceの項目とのマッチングに使うのでconfigurable==trueの
     // もので重複させないこと
 
     m_labels[GLOBAL_LABELER_KEY].clear();
 
+    // global label
     item.values.clear();
     item.id = "system";
     item.title = tr("Content hidden");
@@ -599,10 +614,12 @@ void ConfigurableLabels::initializeLabels()
     item.warning = tr("Content hidden");
     item.values << "!hide";
     item.is_adult_imagery = false;
+    item.foldable_range = ConfigurableLabelFoldableRange::Content;
     item.status = ConfigurableLabelStatus::Hide;
     item.configurable = false;
     m_labels[GLOBAL_LABELER_KEY].append(item);
 
+    // global label
     item.values.clear();
     item.id = "system";
     item.title = tr("Content warning");
@@ -610,10 +627,65 @@ void ConfigurableLabels::initializeLabels()
     item.warning = tr("Content warning");
     item.values << "!warn";
     item.is_adult_imagery = false;
+    item.foldable_range = ConfigurableLabelFoldableRange::Content;
     item.status = ConfigurableLabelStatus::Warning;
     item.configurable = false;
     m_labels[GLOBAL_LABELER_KEY].append(item);
 
+    // global label
+    item.values.clear();
+    item.id = "porn";
+    item.title = tr("Pornography");
+    item.subtitle = tr("Explicit sexual images.");
+    item.warning = tr("Sexually Explicit");
+    item.values << "porn"
+                << "nsfw";
+    item.is_adult_imagery = true;
+    item.foldable_range = ConfigurableLabelFoldableRange::Media;
+    item.status = ConfigurableLabelStatus::Hide;
+    item.configurable = true;
+    m_labels[GLOBAL_LABELER_KEY].append(item);
+
+    // global label
+    item.values.clear();
+    item.id = "sexual";
+    item.title = tr("Sexually Suggestive");
+    item.subtitle = tr("Does not include nudity");
+    item.warning = tr("Sexually Suggestive");
+    item.values << "sexual";
+    item.is_adult_imagery = true;
+    item.foldable_range = ConfigurableLabelFoldableRange::Media;
+    item.status = ConfigurableLabelStatus::Warning;
+    item.configurable = true;
+    m_labels[GLOBAL_LABELER_KEY].append(item);
+
+    // global label
+    item.values.clear();
+    item.id = "graphic-media";
+    item.title = tr("Graphic Media");
+    item.subtitle = tr("Explicit or potentially disturbing media.");
+    item.warning = tr("Graphic Media");
+    item.values << "graphic-media";
+    item.is_adult_imagery = true;
+    item.foldable_range = ConfigurableLabelFoldableRange::Media;
+    item.status = ConfigurableLabelStatus::Warning;
+    item.configurable = true;
+    m_labels[GLOBAL_LABELER_KEY].append(item);
+
+    // global label
+    item.values.clear();
+    item.id = "nudity";
+    item.title = tr("Non-sexual Nudity");
+    item.subtitle = tr("E.g. artistic nudes.");
+    item.warning = tr("Non-sexual Nudity");
+    item.values << "nudity";
+    item.is_adult_imagery = false;
+    item.foldable_range = ConfigurableLabelFoldableRange::Media;
+    item.status = ConfigurableLabelStatus::Show;
+    item.configurable = true;
+    m_labels[GLOBAL_LABELER_KEY].append(item);
+
+    // old label(compatibility)
     item.values.clear();
     item.id = "legal";
     item.title = tr("Legal");
@@ -622,44 +694,12 @@ void ConfigurableLabels::initializeLabels()
     item.values << "dmca-violation"
                 << "doxxing";
     item.is_adult_imagery = false;
+    item.foldable_range = ConfigurableLabelFoldableRange::Content;
     item.status = ConfigurableLabelStatus::Hide;
     item.configurable = false;
     m_labels[GLOBAL_LABELER_KEY].append(item);
 
-    item.values.clear();
-    item.id = "nsfw";
-    item.title = tr("Explicit Sexual Images");
-    item.subtitle = tr("i.e. pornography");
-    item.warning = tr("Sexually Explicit");
-    item.values << "porn"
-                << "nsfw";
-    item.is_adult_imagery = true;
-    item.status = ConfigurableLabelStatus::Hide;
-    item.configurable = true;
-    m_labels[GLOBAL_LABELER_KEY].append(item);
-
-    item.values.clear();
-    item.id = "nudity";
-    item.title = tr("Other Nudity");
-    item.subtitle = tr("Including non-sexual and artistic");
-    item.warning = tr("Nudity");
-    item.values << "nudity";
-    item.is_adult_imagery = true;
-    item.status = ConfigurableLabelStatus::Hide;
-    item.configurable = true;
-    m_labels[GLOBAL_LABELER_KEY].append(item);
-
-    item.values.clear();
-    item.id = "suggestive";
-    item.title = tr("Sexually Suggestive");
-    item.subtitle = tr("Does not include nudity");
-    item.warning = tr("Sexually Suggestive");
-    item.values << "sexual";
-    item.is_adult_imagery = true;
-    item.status = ConfigurableLabelStatus::Warning;
-    item.configurable = true;
-    m_labels[GLOBAL_LABELER_KEY].append(item);
-
+    // old label(compatibility)
     item.values.clear();
     item.id = "gore";
     item.title = tr("Violent / Bloody");
@@ -669,13 +709,14 @@ void ConfigurableLabels::initializeLabels()
                 << "self-harm"
                 << "torture"
                 << "nsfl"
-                << "corpse"
-                << "graphic-media";
+                << "corpse";
     item.is_adult_imagery = true;
+    item.foldable_range = ConfigurableLabelFoldableRange::Media;
     item.status = ConfigurableLabelStatus::Hide;
-    item.configurable = true;
+    item.configurable = false;
     m_labels[GLOBAL_LABELER_KEY].append(item);
 
+    // old label(compatibility)
     item.values.clear();
     item.id = "hate";
     item.title = tr("Hate Group Iconography");
@@ -692,10 +733,12 @@ void ConfigurableLabels::initializeLabels()
                 << "intolerant"
                 << "threat";
     item.is_adult_imagery = false;
+    item.foldable_range = ConfigurableLabelFoldableRange::Content;
     item.status = ConfigurableLabelStatus::Hide;
-    item.configurable = true;
+    item.configurable = false;
     m_labels[GLOBAL_LABELER_KEY].append(item);
 
+    // old label(compatibility)
     item.values.clear();
     item.id = "spam";
     item.title = tr("Spam");
@@ -704,10 +747,12 @@ void ConfigurableLabels::initializeLabels()
     item.values << "spam"
                 << "spoiler";
     item.is_adult_imagery = false;
+    item.foldable_range = ConfigurableLabelFoldableRange::Content;
     item.status = ConfigurableLabelStatus::Hide;
-    item.configurable = true;
+    item.configurable = false;
     m_labels[GLOBAL_LABELER_KEY].append(item);
 
+    // old label(compatibility)
     item.values.clear();
     item.id = "impersonation";
     item.title = tr("Impersonation / Scam");
@@ -718,8 +763,9 @@ void ConfigurableLabels::initializeLabels()
                 << "net-abuse"
                 << "scam";
     item.is_adult_imagery = false;
+    item.foldable_range = ConfigurableLabelFoldableRange::Content;
     item.status = ConfigurableLabelStatus::Hide;
-    item.configurable = true;
+    item.configurable = false;
     m_labels[GLOBAL_LABELER_KEY].append(item);
 }
 
