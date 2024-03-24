@@ -17,21 +17,22 @@ Dialog {
     y: (parent.height - height) * 0.5
     title: qsTr("Content Filtering")
 
-    property bool willClose: false
     property bool ready: false
     property alias account: account
     Account {
         id: account
     }
     onOpened: {
-        contentFilterSettingDialog.willClose = false
         if(account.service.length === 0){
             return
         }
         contentFilterSettingListModel.load()
         contentFilterSettingDialog.ready = true
     }
-    onClosed: contentFilterSettingDialog.ready = false
+    onClosed: {
+        contentFilterSettingDialog.ready = false
+
+    }
 
     ColumnLayout {
         spacing: 0
@@ -58,6 +59,35 @@ Dialog {
             }
         }
 
+        ComboBoxEx {
+            id: labelerDidComboBox
+            Layout.fillWidth: true
+            model: ListModel {}
+            delegate: ItemDelegate {
+                width: parent.width
+                height: implicitHeight * AdjustedValues.ratio
+                font.pointSize: AdjustedValues.f10
+                onClicked: {
+                    labelerDidComboBox.currentIndex = model.index
+                    contentFilterSettingListModel.selectableLabelerDescription(model.value)
+                }
+                ColumnLayout {
+                    Label {
+                        font.pointSize: AdjustedValues.f10
+                        text: model.text
+                    }
+                    Label {
+                        font.pointSize: AdjustedValues.f8
+                        text: model.description
+                    }
+                }
+            }
+            onCurrentValueChanged: {
+                console.log("currentText=" + currentText + ", currentValue=" + currentValue)
+                contentFilterSettingListModel.labelerDid = currentValue
+            }
+        }
+
         CheckBox {
             id: enableAdultContentCheckbox
             Layout.bottomMargin: 0
@@ -70,7 +100,7 @@ Dialog {
             id: settingScrollView
             Layout.bottomMargin: 10
             Layout.preferredWidth: 450 * AdjustedValues.ratio
-            //            Layout.preferredHeight: 350
+            Layout.preferredHeight: 350 * AdjustedValues.ratio
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
             enabled: !contentFilterSettingListModel.running && contentFilterSettingDialog.ready
 
@@ -85,11 +115,18 @@ Dialog {
                     handle: account.handle
                     accessJwt: account.accessJwt
                     onFinished: {
-                        if(contentFilterSettingDialog.willClose){
-                            contentFilterSettingDialog.accept()
-                        }else{
-                            enableAdultContentCheckbox.checked = enableAdultContent
+                        enableAdultContentCheckbox.checked = enableAdultContent
+                        labelerDidComboBox.model.clear()
+                        var did = ""
+                        for(var i=0; i<contentFilterSettingListModel.selectableLabelerDids.length; i++){
+                            did = contentFilterSettingListModel.selectableLabelerDids[i]
+                            labelerDidComboBox.model.append({
+                                                                text: contentFilterSettingListModel.selectableLabelerName(did),
+                                                                description: contentFilterSettingListModel.selectableLabelerDescription(did),
+                                                                value: did
+                                                            })
                         }
+                        labelerDidComboBox.currentIndex = 0
                     }
                 }
                 delegate: RowLayout {
@@ -183,7 +220,6 @@ Dialog {
                 font.pointSize: AdjustedValues.f10
                 text: qsTr("Accept")
                 onClicked: {
-                    contentFilterSettingDialog.willClose = true
                     contentFilterSettingListModel.save()
                 }
             }

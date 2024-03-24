@@ -3,6 +3,8 @@
 ContentFilterSettingListModel::ContentFilterSettingListModel(QObject *parent)
     : QAbstractListModel { parent }, m_saving(false), m_running(false)
 {
+    m_contentFilterLabels.setRefreshLabelers(true);
+
     connect(&m_contentFilterLabels, &ConfigurableLabels::runningChanged, this,
             &ContentFilterSettingListModel::setRunning);
     connect(&m_contentFilterLabels, &ConfigurableLabels::finished, this, [=](bool success) {
@@ -22,9 +24,11 @@ ContentFilterSettingListModel::ContentFilterSettingListModel(QObject *parent)
                 } else if (m_saving) {
                     emit dataChanged(index(0), index(rowCount() - 1));
                 } else {
-                    beginInsertRows(QModelIndex(), 0, m_contentFilterLabels.count() - 1);
+                    beginInsertRows(QModelIndex(), 0,
+                                    m_contentFilterLabels.count(labelerDid()) - 1);
                     endInsertRows();
                 }
+                setSelectableLabelerDids(m_contentFilterLabels.labelerDids());
                 emit enableAdultContentChanged();
             }
         }
@@ -35,7 +39,7 @@ ContentFilterSettingListModel::ContentFilterSettingListModel(QObject *parent)
 
 int ContentFilterSettingListModel::rowCount(const QModelIndex &parent) const
 {
-    return m_contentFilterLabels.count();
+    return m_contentFilterLabels.count(labelerDid());
 }
 
 QVariant ContentFilterSettingListModel::data(const QModelIndex &index, int role) const
@@ -45,25 +49,26 @@ QVariant ContentFilterSettingListModel::data(const QModelIndex &index, int role)
 
 QVariant ContentFilterSettingListModel::item(int row, ContentFilterSettingListModelRoles role) const
 {
-    if (row < 0 || row >= m_contentFilterLabels.count())
+    if (row < 0 || row >= m_contentFilterLabels.count(labelerDid()))
         return QVariant();
 
     if (role == TitleRole)
-        return m_contentFilterLabels.title(row);
+        return m_contentFilterLabels.title(row, labelerDid());
     else if (role == DescriptionRole)
-        return m_contentFilterLabels.description(row);
+        return m_contentFilterLabels.description(row, labelerDid());
     else if (role == StatusRole) {
-        if (m_contentFilterLabels.status(row) == ConfigurableLabelStatus::Hide) {
+        ConfigurableLabelStatus status = m_contentFilterLabels.status(row, labelerDid());
+        if (status == ConfigurableLabelStatus::Hide) {
             return 0;
-        } else if (m_contentFilterLabels.status(row) == ConfigurableLabelStatus::Warning) {
+        } else if (status == ConfigurableLabelStatus::Warning) {
             return 1;
-        } else if (m_contentFilterLabels.status(row) == ConfigurableLabelStatus::Show) {
+        } else if (status == ConfigurableLabelStatus::Show) {
             return 2;
         }
     } else if (role == IsAdultImageryRole)
-        return m_contentFilterLabels.isAdultImagery(row);
+        return m_contentFilterLabels.isAdultImagery(row, labelerDid());
     else if (role == ConfigurableRole)
-        return m_contentFilterLabels.configurable(row);
+        return m_contentFilterLabels.configurable(row, labelerDid());
 
     return QVariant();
 }
@@ -71,20 +76,20 @@ QVariant ContentFilterSettingListModel::item(int row, ContentFilterSettingListMo
 void ContentFilterSettingListModel::update(int row, ContentFilterSettingListModelRoles role,
                                            const QVariant &value)
 {
-    if (row < 0 || row >= m_contentFilterLabels.count())
+    if (row < 0 || row >= m_contentFilterLabels.count(labelerDid()))
         return;
 
     if (role == TitleRole)
-        m_contentFilterLabels.title(row);
+        m_contentFilterLabels.title(row, labelerDid());
     else if (role == DescriptionRole)
-        m_contentFilterLabels.description(row);
+        m_contentFilterLabels.description(row, labelerDid());
     else if (role == StatusRole) {
         if (value.toInt() == 0) {
-            m_contentFilterLabels.setStatus(row, ConfigurableLabelStatus::Hide);
+            m_contentFilterLabels.setStatus(row, ConfigurableLabelStatus::Hide, labelerDid());
         } else if (value.toInt() == 1) {
-            m_contentFilterLabels.setStatus(row, ConfigurableLabelStatus::Warning);
+            m_contentFilterLabels.setStatus(row, ConfigurableLabelStatus::Warning, labelerDid());
         } else if (value.toInt() == 2) {
-            m_contentFilterLabels.setStatus(row, ConfigurableLabelStatus::Show);
+            m_contentFilterLabels.setStatus(row, ConfigurableLabelStatus::Show, labelerDid());
         }
     }
     emit dataChanged(index(row), index(row));
@@ -96,18 +101,7 @@ void ContentFilterSettingListModel::load()
         return;
 
     m_saving = false;
-    if (m_contentFilterLabels.mutedWordCount() > 0) {
-        if (strcmp(this->metaObject()->className(), "MutedWordListModel") == 0) {
-            beginRemoveRows(QModelIndex(), 0, m_contentFilterLabels.mutedWordCount() - 1);
-            endRemoveRows();
-        }
-    }
-    if (m_contentFilterLabels.count() > 0) {
-        if (strcmp(this->metaObject()->className(), "MutedWordListModel") != 0) {
-            beginRemoveRows(QModelIndex(), 0, m_contentFilterLabels.count() - 1);
-            endRemoveRows();
-        }
-    }
+    clear();
 
     m_contentFilterLabels.setService(service());
     m_contentFilterLabels.setSession(QString(), handle(), QString(), accessJwt(), QString());
@@ -122,6 +116,33 @@ void ContentFilterSettingListModel::save()
     m_contentFilterLabels.setService(service());
     m_contentFilterLabels.setSession(QString(), handle(), QString(), accessJwt(), QString());
     m_contentFilterLabels.save();
+}
+
+void ContentFilterSettingListModel::clear()
+{
+    if (m_contentFilterLabels.mutedWordCount() > 0) {
+        if (strcmp(this->metaObject()->className(), "MutedWordListModel") == 0) {
+            beginRemoveRows(QModelIndex(), 0, m_contentFilterLabels.mutedWordCount() - 1);
+            endRemoveRows();
+        }
+    }
+    if (m_contentFilterLabels.count() > 0) {
+        if (strcmp(this->metaObject()->className(), "MutedWordListModel") != 0) {
+            beginRemoveRows(QModelIndex(), 0, m_contentFilterLabels.count(labelerDid()) - 1);
+            endRemoveRows();
+        }
+    }
+}
+
+QString ContentFilterSettingListModel::selectableLabelerName(const QString &did) const
+{
+    return QString("%1(%2)").arg(m_contentFilterLabels.labelerDisplayName(did),
+                                 m_contentFilterLabels.labelerHandle(did));
+}
+
+QString ContentFilterSettingListModel::selectableLabelerDescription(const QString &did) const
+{
+    return m_contentFilterLabels.labelerDescription(did);
 }
 
 QHash<int, QByteArray> ContentFilterSettingListModel::roleNames() const
@@ -200,4 +221,61 @@ void ContentFilterSettingListModel::setAccessJwt(const QString &newAccessJwt)
         return;
     m_accessJwt = newAccessJwt;
     emit accessJwtChanged();
+}
+
+QString ContentFilterSettingListModel::labelerDid() const
+{
+    return m_labelerDid;
+}
+
+void ContentFilterSettingListModel::setLabelerDid(const QString &newLabelerDid)
+{
+    if (m_labelerDid == newLabelerDid)
+        return;
+
+    bool is = (strcmp(this->metaObject()->className(), "MutedWordListModel") != 0);
+
+    if (is) {
+        int old_count = m_contentFilterLabels.count(m_labelerDid);
+        int new_count = m_contentFilterLabels.count(newLabelerDid);
+        if (old_count == new_count) {
+            //
+            m_labelerDid = newLabelerDid;
+            emit dataChanged(index(0), index(old_count - 1));
+        } else if (old_count < new_count) {
+            // 増える
+            if (old_count > 0) {
+                emit dataChanged(index(0), index(old_count - 1));
+            }
+            beginInsertRows(QModelIndex(), old_count, new_count - 1);
+            m_labelerDid = newLabelerDid;
+            endInsertRows();
+        } else {
+            // 減る
+            if (new_count > 0) {
+                emit dataChanged(index(0), index(new_count - 1));
+            }
+            beginRemoveRows(QModelIndex(), new_count, old_count - 1);
+            m_labelerDid = newLabelerDid;
+            endRemoveRows();
+        }
+    } else {
+        m_labelerDid = newLabelerDid;
+    }
+
+    emit labelerDidChanged();
+}
+
+QStringList ContentFilterSettingListModel::selectableLabelerDids() const
+{
+    return m_selectableLabelerDids;
+}
+
+void ContentFilterSettingListModel::setSelectableLabelerDids(
+        const QStringList &newSelectableLabelerDids)
+{
+    if (m_selectableLabelerDids == newSelectableLabelerDids)
+        return;
+    m_selectableLabelerDids = newSelectableLabelerDids;
+    emit selectableLabelerDidsChanged();
 }
