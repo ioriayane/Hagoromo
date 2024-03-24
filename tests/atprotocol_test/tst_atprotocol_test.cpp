@@ -539,6 +539,7 @@ void atprotocol_test::test_ConfigurableLabels_load()
     QString labeler_did;
     ConfigurableLabels labels;
     labels.setAccount(m_account);
+    labels.setRefreshLabelers(true);
     {
         labels.setService(QString("http://localhost:%1/response/labels/hide").arg(m_listenPort));
         QSignalSpy spy(&labels, SIGNAL(finished(bool)));
@@ -805,6 +806,133 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QVERIFY(labels.getMutedWordItem(i).value == "test2-4");
         QVERIFY(labels.getMutedWordItem(i).targets.length() == 0);
         QVERIFY(labels.getMutedWordItem(i).targets == QList<MutedWordTarget>());
+
+        // ------------
+        labeler_did = "";
+        QVERIFY(labels.count(labeler_did) == 11);
+        i = 0;
+        QVERIFY(labels.title(i, labeler_did) == "Content hidden");
+        QVERIFY(labels.description(i, labeler_did) == "Moderator overrides for special cases.");
+        QVERIFY(labels.isAdultImagery(i, labeler_did) == false);
+        QVERIFY(labels.foldableRange(i, labeler_did) == ConfigurableLabelFoldableRange::Content);
+        QVERIFY(labels.status(i, labeler_did) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.configurable(i, labeler_did) == false);
+        //
+        i = 1;
+        QVERIFY(labels.title(i, labeler_did) == "Content warning");
+        QVERIFY(labels.description(i, labeler_did) == "Moderator overrides for special cases.");
+        QVERIFY(labels.isAdultImagery(i, labeler_did) == false);
+        QVERIFY(labels.foldableRange(i, labeler_did) == ConfigurableLabelFoldableRange::Content);
+        QVERIFY(labels.status(i, labeler_did) == ConfigurableLabelStatus::Warning);
+        QVERIFY(labels.configurable(i, labeler_did) == false);
+        //
+        i = 2;
+        QVERIFY(labels.title(i, labeler_did) == "Pornography");
+        QVERIFY(labels.description(i, labeler_did) == "Explicit sexual images.");
+        QVERIFY(labels.isAdultImagery(i, labeler_did) == true);
+        QVERIFY(labels.foldableRange(i, labeler_did) == ConfigurableLabelFoldableRange::Media);
+        QVERIFY(labels.status(i, labeler_did) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.configurable(i, labeler_did) == true);
+        //
+        i = 3;
+        QVERIFY(labels.title(i, labeler_did) == "Sexually Suggestive");
+        QVERIFY(labels.description(i, labeler_did) == "Does not include nudity");
+        QVERIFY(labels.isAdultImagery(i, labeler_did) == true);
+        QVERIFY(labels.foldableRange(i, labeler_did) == ConfigurableLabelFoldableRange::Media);
+        QVERIFY(labels.status(i, labeler_did) == ConfigurableLabelStatus::Warning);
+        QVERIFY(labels.configurable(i, labeler_did) == true);
+        //
+        i = 4;
+        QVERIFY(labels.title(i, labeler_did) == "Graphic Media");
+        QVERIFY(labels.description(i, labeler_did) == "Explicit or potentially disturbing media.");
+        QVERIFY(labels.isAdultImagery(i, labeler_did) == true);
+        QVERIFY(labels.foldableRange(i, labeler_did) == ConfigurableLabelFoldableRange::Media);
+        QVERIFY(labels.status(i, labeler_did) == ConfigurableLabelStatus::Warning);
+        QVERIFY(labels.configurable(i, labeler_did) == true);
+        //
+        i = 5;
+        QVERIFY(labels.title(i, labeler_did) == "Non-sexual Nudity");
+        QVERIFY(labels.description(i, labeler_did) == "E.g. artistic nudes.");
+        QVERIFY(labels.isAdultImagery(i, labeler_did) == false);
+        QVERIFY(labels.foldableRange(i, labeler_did) == ConfigurableLabelFoldableRange::Media);
+        QVERIFY(labels.status(i, labeler_did) == ConfigurableLabelStatus::Show);
+        QVERIFY(labels.configurable(i, labeler_did) == true);
+        //
+        i = 6;
+        QVERIFY(labels.title(i, labeler_did) == "Legal");
+        QVERIFY(labels.description(i, labeler_did) == "Content removed for legal reasons.");
+        QVERIFY(labels.isAdultImagery(i, labeler_did) == false);
+        QVERIFY(labels.foldableRange(i, labeler_did) == ConfigurableLabelFoldableRange::Content);
+        QVERIFY(labels.status(i, labeler_did) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.configurable(i, labeler_did) == false);
+        //
+        i = 7;
+        QVERIFY(labels.title(i, labeler_did) == "Violent / Bloody");
+        QVERIFY(labels.description(i, labeler_did) == "Gore, self-harm, torture");
+        QVERIFY(labels.isAdultImagery(i, labeler_did) == true);
+        QVERIFY(labels.foldableRange(i, labeler_did) == ConfigurableLabelFoldableRange::Media);
+        QVERIFY(labels.status(i, labeler_did) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.configurable(i, labeler_did) == false);
+        //
+        i = 8;
+        QVERIFY(labels.title(i, labeler_did) == "Hate Group Iconography");
+        QVERIFY(labels.description(i, labeler_did)
+                == "Images of terror groups, articles covering events, etc.");
+        QVERIFY(labels.isAdultImagery(i, labeler_did) == false);
+        QVERIFY(labels.foldableRange(i, labeler_did) == ConfigurableLabelFoldableRange::Content);
+        QVERIFY(labels.status(i, labeler_did) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.configurable(i, labeler_did) == false);
+        //
+        i = 9;
+        QVERIFY(labels.title(i, labeler_did) == "Spam");
+        QVERIFY(labels.description(i, labeler_did) == "Excessive unwanted interactions");
+        QVERIFY(labels.isAdultImagery(i, labeler_did) == false);
+        QVERIFY(labels.foldableRange(i, labeler_did) == ConfigurableLabelFoldableRange::Content);
+        QVERIFY(labels.status(i, labeler_did) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.configurable(i, labeler_did) == false);
+        //
+        i = 10;
+        QVERIFY(labels.title(i, labeler_did) == "Impersonation / Scam");
+        QVERIFY(labels.description(i, labeler_did)
+                == "Accounts falsely claiming to be people or orgs");
+        QVERIFY(labels.isAdultImagery(i, labeler_did) == false);
+        QVERIFY(labels.foldableRange(i, labeler_did) == ConfigurableLabelFoldableRange::Content);
+        QVERIFY(labels.status(i, labeler_did) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.configurable(i, labeler_did) == false);
+
+        // ------------
+        labeler_did = "did:plc:ar7c4by46qjdydhdevvrndac";
+        QVERIFY(labels.count(labeler_did) == 18);
+        i = 0;
+        QVERIFY(labels.title(i, labeler_did) == "Spam");
+        QVERIFY(labels.description(i, labeler_did)
+                == "Unwanted, repeated, or unrelated actions that bother users.");
+        QVERIFY(labels.isAdultImagery(i, labeler_did) == false);
+        QVERIFY(labels.foldableRange(i, labeler_did) == ConfigurableLabelFoldableRange::Content);
+        QVERIFY(labels.status(i, labeler_did) == ConfigurableLabelStatus::Hide);
+        QVERIFY(labels.configurable(i, labeler_did) == true);
+        //
+        i = 3;
+        QVERIFY(labels.title(i, labeler_did) == "Intolerance");
+        QVERIFY(labels.description(i, labeler_did) == "Discrimination against protected groups.");
+        QVERIFY(labels.isAdultImagery(i, labeler_did) == false);
+        QVERIFY(labels.foldableRange(i, labeler_did) == ConfigurableLabelFoldableRange::Content);
+        QVERIFY(labels.status(i, labeler_did) == ConfigurableLabelStatus::Warning);
+        QVERIFY(labels.configurable(i, labeler_did) == true);
+        //
+        i = 17;
+        QVERIFY(labels.title(i, labeler_did) == "Sexually Suggestive (Cartoon)");
+        QVERIFY(labels.description(i, labeler_did)
+                == "Art with explicit or suggestive sexual themes, including provocative imagery "
+                   "or partial nudity.");
+        QVERIFY(labels.isAdultImagery(i, labeler_did) == false);
+        QVERIFY(labels.foldableRange(i, labeler_did) == ConfigurableLabelFoldableRange::Media);
+        QVERIFY(labels.status(i, labeler_did) == ConfigurableLabelStatus::Show);
+        QVERIFY(labels.configurable(i, labeler_did) == true);
+
+        // ------------
+        labeler_did = "did:plc:original_labeler_did";
+        QVERIFY(labels.count(labeler_did) == 1);
     }
 
     {
@@ -812,13 +940,16 @@ void atprotocol_test::test_ConfigurableLabels_load()
         ConfigurableLabels dest;
         QString did = "did:plc:ar7c4by46qjdydhdevvrndac";
         QVERIFY(dest.targetLabelerCount() == 0);
-        QVERIFY(dest.labelerCount() == 0);
+        QVERIFY(dest.labelerCount() == 1);
         dest = labels;
         QVERIFY(dest.targetLabelerCount() == 2);
         QVERIFY(dest.targetLabelerDid(0) == "did:plc:ar7c4by46qjdydhdevvrndac");
         QVERIFY(dest.targetLabelerDid(1) == "did:plc:original_labeler_did");
-        QVERIFY(dest.labelerCount() == 1);
-        QVERIFY(dest.labelerDids() == QStringList() << "did:plc:ar7c4by46qjdydhdevvrndac");
+        QVERIFY(dest.labelerCount() == 3);
+        QVERIFY(dest.labelerDids()
+                == QStringList() << "__globally__"
+                                 << "did:plc:ar7c4by46qjdydhdevvrndac"
+                                 << "did:plc:original_labeler_did");
         QVERIFY(dest.labelerHandle(did) == "moderation.bsky.app");
         QVERIFY(dest.labelerDescription(did)
                 == "Official Bluesky Moderation Service. Required part of the Bluesky Social app.");
@@ -862,7 +993,7 @@ void atprotocol_test::test_ConfigurableLabels_copy()
     QVERIFY(dest.visibility("spam", false) == ConfigurableLabelStatus::Hide);
     QVERIFY(dest.visibility("impersonation", false) == ConfigurableLabelStatus::Hide);
 
-    QVERIFY(dest.labelerCount() == 0);
+    QVERIFY(dest.labelerCount() == 1);
     QVERIFY(dest.mutedWordCount() == 0);
 
     dest = src;
@@ -884,7 +1015,7 @@ void atprotocol_test::test_ConfigurableLabels_copy()
     QVERIFY(dest.visibility("spam", false) == ConfigurableLabelStatus::Hide);
     QVERIFY(dest.visibility("impersonation", false) == ConfigurableLabelStatus::Hide);
 
-    QVERIFY(dest.labelerCount() == 0);
+    QVERIFY(dest.labelerCount() == 1);
     QVERIFY(dest.mutedWordCount() == 3);
     QVERIFY(dest.getMutedWordItem(0).value == "word1");
     QVERIFY(dest.getMutedWordItem(0).group == 0);
@@ -930,7 +1061,7 @@ void atprotocol_test::test_ConfigurableLabels_copy()
     QVERIFY(dest.visibility("spam", false) == ConfigurableLabelStatus::Hide);
     QVERIFY(dest.visibility("impersonation", false) == ConfigurableLabelStatus::Hide);
 
-    QVERIFY(dest.labelerCount() == 0);
+    QVERIFY(dest.labelerCount() == 1);
     QVERIFY(dest.mutedWordCount() == 3);
     QVERIFY(dest.getMutedWordItem(0).value == "word1-2");
     QVERIFY(dest.getMutedWordItem(0).group == 0);

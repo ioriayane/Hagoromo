@@ -74,9 +74,8 @@ bool ConfigurableLabels::load()
         return false;
     setRunning(true);
 
-    m_mutedWords.clear();
-    m_mutedWordsHash.clear();
-    m_mutedWordsTagHash.clear();
+    clearMutedWord();
+    initializeLabels();
 
     AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
     connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
@@ -114,6 +113,7 @@ bool ConfigurableLabels::load()
                             label.subtitle = label.title;
                             label.warning = label.title;
                             label.is_adult_imagery = false;
+                            label.foldable_range = ConfigurableLabelFoldableRange::Content;
                             label.configurable = true;
                             m_labels[label.labeler_did].append(label);
                         }
@@ -167,6 +167,18 @@ void ConfigurableLabels::loadLabelers(const QStringList &dids, std::function<voi
         t_dids.append(BSKY_OFFICIAL_LABELER_DID);
     }
 
+    // グローバル以外をクリア
+    for (const auto &key : m_labels.keys()) {
+        if (key == GLOBAL_LABELER_KEY)
+            continue;
+        m_labels.remove(key);
+    }
+    for (const auto &key : m_labelers.keys()) {
+        if (key == GLOBAL_LABELER_KEY)
+            continue;
+        m_labelers.remove(key);
+    }
+
     AppBskyLabelerGetServices *services = new AppBskyLabelerGetServices(this);
     connect(services, &AppBskyLabelerGetServices::finished, [=](bool success) {
         if (success) {
@@ -177,8 +189,6 @@ void ConfigurableLabels::loadLabelers(const QStringList &dids, std::function<voi
                 labeler_item.display_name = labeler.creator.displayName;
                 labeler_item.description = labeler.creator.description;
                 m_labelers[labeler.creator.did] = labeler_item;
-                // クリア（内容に増減があるかもなので）
-                m_labels[labeler_item.did].clear();
                 for (const auto &policy : labeler.policies.labelValueDefinitions) {
                     ComAtprotoLabelDefs::LabelValueDefinitionStrings label_value_def;
                     for (const auto &locale : policy.locales) {
@@ -197,7 +207,8 @@ void ConfigurableLabels::loadLabelers(const QStringList &dids, std::function<voi
                     label_item.subtitle = label_value_def.description;
                     label_item.warning = label_item.title;
                     label_item.values << policy.identifier;
-                    label_item.is_adult_imagery = (policy.blurs.toLower() == "media");
+                    label_item.is_adult_imagery = false;
+                    label_item.foldable_range = toLabelFoldableRange(policy.blurs);
                     label_item.level = toLabelLevel(policy.severity);
                     label_item.default_status = toLabelStatus(policy.defaultSetting);
                     label_item.status = label_item.default_status;
@@ -362,6 +373,17 @@ QString ConfigurableLabels::description(const int index, const QString &labeler_
     if (index < 0 || index >= m_labels.value(key).length())
         return QString();
     return m_labels.value(key).at(index).subtitle;
+}
+
+ConfigurableLabelFoldableRange ConfigurableLabels::foldableRange(const int index,
+                                                                 const QString &labeler_did) const
+{
+    QString key = labeler_did.isEmpty() ? GLOBAL_LABELER_KEY : labeler_did;
+    if (!m_labels.contains(key))
+        return ConfigurableLabelFoldableRange::None;
+    if (index < 0 || index >= m_labels.value(key).length())
+        return ConfigurableLabelFoldableRange::None;
+    return m_labels.value(key).at(index).foldable_range;
 }
 
 ConfigurableLabelStatus ConfigurableLabels::status(const int index,
@@ -582,6 +604,8 @@ bool ConfigurableLabels::containsMutedWords(const QString &text, const QStringLi
 void ConfigurableLabels::clearMutedWord()
 {
     m_mutedWords.clear();
+    m_mutedWordsHash.clear();
+    m_mutedWordsTagHash.clear();
 }
 
 bool ConfigurableLabels::enableAdultContent() const
@@ -601,10 +625,19 @@ void ConfigurableLabels::initializeLabels()
     // ラベルの情報
     // https://docs.bsky.app/docs/advanced-guides/moderation
     // https://atproto.com/specs/label
+    // https://github.com/bluesky-social/atproto/blob/main/packages/api/definitions/labels.json
     // idはpreferenceの項目とのマッチングに使うのでconfigurable==trueの
     // もので重複させないこと
 
+    // 個別のラベラーの設定は読み込みするときにする（スキップするときは消してはいけない）
     m_labels[GLOBAL_LABELER_KEY].clear();
+
+    LabelerItem labeler_item;
+    labeler_item.did = GLOBAL_LABELER_KEY;
+    labeler_item.handle = "global_labeler";
+    labeler_item.display_name = tr("Basic Moderation");
+    labeler_item.description = tr("Basic configuration independent of moderation services.");
+    m_labelers[GLOBAL_LABELER_KEY] = labeler_item;
 
     // global label
     item.values.clear();
@@ -880,6 +913,19 @@ QString ConfigurableLabels::updatePreferencesJson(const QString &src_json)
 inline QString ConfigurableLabels::removeSharp(const QString &value) const
 {
     return value.at(0) == "#" ? value.right(value.length() - 1) : value;
+}
+
+ConfigurableLabelFoldableRange ConfigurableLabels::toLabelFoldableRange(const QString &blurs) const
+{
+    ConfigurableLabelFoldableRange foldable_range = ConfigurableLabelFoldableRange::Content;
+    if (blurs == "content") {
+        foldable_range = ConfigurableLabelFoldableRange::Content;
+    } else if (blurs == "media") {
+        foldable_range = ConfigurableLabelFoldableRange::Media;
+    } else if (blurs == "none") {
+        foldable_range = ConfigurableLabelFoldableRange::None;
+    }
+    return foldable_range;
 }
 
 ConfigurableLabelStatus ConfigurableLabels::toLabelStatus(const QString &visibility) const

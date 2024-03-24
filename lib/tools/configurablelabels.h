@@ -85,6 +85,7 @@ public:
     QString title(const QString &label, const bool for_image,
                   const QString &labeler_did = QString()) const;
     QString description(const int index, const QString &labeler_did = QString()) const;
+    ConfigurableLabelFoldableRange foldableRange(const int index, const QString &labeler_did) const;
     ConfigurableLabelStatus status(const int index, const QString &labeler_did = QString()) const;
     void setStatus(const int index, const ConfigurableLabelStatus status,
                    const QString &labeler_did = QString());
@@ -136,6 +137,7 @@ private:
     bool putPreferences(const QString &json);
     QString updatePreferencesJson(const QString &src_json);
     QString removeSharp(const QString &value) const;
+    ConfigurableLabelFoldableRange toLabelFoldableRange(const QString &blurs) const;
     ConfigurableLabelStatus toLabelStatus(const QString &visibility) const;
     ConfigurableLabelLevel toLabelLevel(const QString &severity) const;
 
