@@ -1114,8 +1114,8 @@ void hagoromo_test::test_TimelineListModel_quote_hide()
     row = 3;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
             == "quote a post with labeling image");
-    QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == false);
-    QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == true);
+    QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == true);
+    QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == false);
 
     row = 4;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
@@ -1126,8 +1126,8 @@ void hagoromo_test::test_TimelineListModel_quote_hide()
     row = 5;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
             == "quote a post with labeling image with image");
-    QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == false);
-    QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == true);
+    QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == true);
+    QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == false);
 
     row = 6;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
@@ -1896,7 +1896,8 @@ void hagoromo_test::test_TimelineListModel_labelers()
                  model.item(row, TimelineListModel::ContentFilterMessageRole)
                          .toString()
                          .toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMessageRole) == "Violence",
+        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMessageRole)
+                         == "Graphic Media",
                  model.item(row, TimelineListModel::ContentMediaFilterMessageRole)
                          .toString()
                          .toLocal8Bit());
