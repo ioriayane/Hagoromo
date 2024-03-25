@@ -579,6 +579,9 @@ void atprotocol_test::test_ConfigurableLabels_load()
                 == ConfigurableLabelStatus::Warning);
         QVERIFY(labels.visibility("sexual-figurative", false, labeler_did)
                 == ConfigurableLabelStatus::Show);
+
+        QVERIFY(labels.hasAdultOnly("") == true);
+        QVERIFY(labels.hasAdultOnly("did:plc:ar7c4by46qjdydhdevvrndac") == true);
     }
     //
     {
@@ -614,6 +617,9 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QVERIFY(labels.visibility("misleading", false, labeler_did)
                 == ConfigurableLabelStatus::Show);
         QVERIFY(labels.visibility("rumor", false, labeler_did) == ConfigurableLabelStatus::Show);
+
+        QVERIFY(labels.hasAdultOnly("") == true);
+        QVERIFY(labels.hasAdultOnly("did:plc:ar7c4by46qjdydhdevvrndac") == false);
     }
     //
     {
@@ -810,6 +816,7 @@ void atprotocol_test::test_ConfigurableLabels_load()
         // ------------
         labeler_did = "";
         QVERIFY(labels.count(labeler_did) == 11);
+        QVERIFY(labels.hasAdultOnly(labeler_did) == true);
         i = 0;
         QVERIFY(labels.title(i, labeler_did) == "Content hidden");
         QVERIFY(labels.description(i, labeler_did) == "Moderator overrides for special cases.");
@@ -903,6 +910,7 @@ void atprotocol_test::test_ConfigurableLabels_load()
         // ------------
         labeler_did = "did:plc:ar7c4by46qjdydhdevvrndac";
         QVERIFY(labels.count(labeler_did) == 18);
+        QVERIFY(labels.hasAdultOnly(labeler_did) == true);
         i = 0;
         QVERIFY(labels.title(i, labeler_did) == "Spam");
         QVERIFY(labels.description(i, labeler_did)
@@ -925,7 +933,7 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QVERIFY(labels.description(i, labeler_did)
                 == "Art with explicit or suggestive sexual themes, including provocative imagery "
                    "or partial nudity.");
-        QVERIFY(labels.isAdultImagery(i, labeler_did) == false);
+        QVERIFY(labels.isAdultImagery(i, labeler_did) == true);
         QVERIFY(labels.foldableRange(i, labeler_did) == ConfigurableLabelFoldableRange::Media);
         QVERIFY(labels.status(i, labeler_did) == ConfigurableLabelStatus::Show);
         QVERIFY(labels.configurable(i, labeler_did) == true);
@@ -933,6 +941,7 @@ void atprotocol_test::test_ConfigurableLabels_load()
         // ------------
         labeler_did = "did:plc:original_labeler_did";
         QVERIFY(labels.count(labeler_did) == 1);
+        QVERIFY(labels.hasAdultOnly(labeler_did) == false);
     }
 
     {

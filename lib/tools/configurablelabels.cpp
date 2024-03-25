@@ -207,7 +207,7 @@ void ConfigurableLabels::loadLabelers(const QStringList &dids, std::function<voi
                     label_item.subtitle = label_value_def.description;
                     label_item.warning = label_item.title;
                     label_item.values << policy.identifier;
-                    label_item.is_adult_imagery = false;
+                    label_item.is_adult_imagery = policy.adultOnly;
                     label_item.foldable_range = toLabelFoldableRange(policy.blurs);
                     label_item.level = toLabelLevel(policy.severity);
                     label_item.default_status = toLabelStatus(policy.defaultSetting);
@@ -432,6 +432,19 @@ bool ConfigurableLabels::configurable(const int index, const QString &labeler_di
         return false;
 
     return m_labels.value(key).at(index).configurable;
+}
+
+bool ConfigurableLabels::hasAdultOnly(const QString &labeler_did) const
+{
+    QString key = labeler_did.isEmpty() ? GLOBAL_LABELER_KEY : labeler_did;
+    if (!m_labels.contains(key))
+        return false;
+    for (const auto &label : m_labels.value(key)) {
+        if (label.is_adult_imagery) {
+            return true;
+        }
+    }
+    return false;
 }
 
 int ConfigurableLabels::targetLabelerCount() const

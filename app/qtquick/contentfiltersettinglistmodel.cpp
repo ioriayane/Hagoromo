@@ -136,8 +136,9 @@ void ContentFilterSettingListModel::clear()
 
 QString ContentFilterSettingListModel::selectableLabelerName(const QString &did) const
 {
-    return QString("%1(%2)").arg(m_contentFilterLabels.labelerDisplayName(did),
-                                 m_contentFilterLabels.labelerHandle(did));
+    QString display_name = m_contentFilterLabels.labelerDisplayName(did);
+    QString handle = m_contentFilterLabels.labelerHandle(did);
+    return display_name.isEmpty() ? handle : display_name;
 }
 
 QString ContentFilterSettingListModel::selectableLabelerDescription(const QString &did) const
@@ -238,28 +239,31 @@ void ContentFilterSettingListModel::setLabelerDid(const QString &newLabelerDid)
     if (is) {
         int old_count = m_contentFilterLabels.count(m_labelerDid);
         int new_count = m_contentFilterLabels.count(newLabelerDid);
+        qDebug() << "setLabelerDid" << old_count << new_count;
         if (old_count == new_count) {
             //
             m_labelerDid = newLabelerDid;
             emit dataChanged(index(0), index(old_count - 1));
         } else if (old_count < new_count) {
             // 増える
-            if (old_count > 0) {
-                emit dataChanged(index(0), index(old_count - 1));
-            }
             beginInsertRows(QModelIndex(), old_count, new_count - 1);
             m_labelerDid = newLabelerDid;
             endInsertRows();
+            if (old_count > 0) {
+                emit dataChanged(index(0), index(old_count - 1));
+            }
         } else {
             // 減る
-            if (new_count > 0) {
-                emit dataChanged(index(0), index(new_count - 1));
-            }
             beginRemoveRows(QModelIndex(), new_count, old_count - 1);
             m_labelerDid = newLabelerDid;
             endRemoveRows();
+            if (new_count > 0) {
+                emit dataChanged(index(0), index(new_count - 1));
+            }
         }
+        setLabelerHasAdultOnly(m_contentFilterLabels.hasAdultOnly(m_labelerDid));
     } else {
+        qDebug() << "setLabelerDid" << is;
         m_labelerDid = newLabelerDid;
     }
 
@@ -278,4 +282,17 @@ void ContentFilterSettingListModel::setSelectableLabelerDids(
         return;
     m_selectableLabelerDids = newSelectableLabelerDids;
     emit selectableLabelerDidsChanged();
+}
+
+bool ContentFilterSettingListModel::labelerHasAdultOnly() const
+{
+    return m_labelerHasAdultOnly;
+}
+
+void ContentFilterSettingListModel::setLabelerHasAdultOnly(bool newLabelerHasAdultOnly)
+{
+    if (m_labelerHasAdultOnly == newLabelerHasAdultOnly)
+        return;
+    m_labelerHasAdultOnly = newLabelerHasAdultOnly;
+    emit labelerHasAdultOnlyChanged();
 }

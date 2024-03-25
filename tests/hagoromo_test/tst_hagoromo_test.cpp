@@ -2529,7 +2529,7 @@ void hagoromo_test::test_ContentFilterSettingListModel()
     QVERIFY2(model.item(i, ContentFilterSettingListModel::StatusRole).toInt()
                      == static_cast<int>(ConfigurableLabelStatus::Show),
              model.item(i, ContentFilterSettingListModel::StatusRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(i, ContentFilterSettingListModel::IsAdultImageryRole).toBool() == false,
+    QVERIFY2(model.item(i, ContentFilterSettingListModel::IsAdultImageryRole).toBool() == true,
              model.item(i, ContentFilterSettingListModel::IsAdultImageryRole)
                      .toString()
                      .toLocal8Bit());

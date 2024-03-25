@@ -91,6 +91,7 @@ public:
                    const QString &labeler_did = QString());
     bool isAdultImagery(const int index, const QString &labeler_did = QString()) const;
     bool configurable(const int index, const QString &labeler_did = QString()) const;
+    bool hasAdultOnly(const QString &labeler_did) const;
 
     int targetLabelerCount() const;
     QString targetLabelerDid(const int index) const;

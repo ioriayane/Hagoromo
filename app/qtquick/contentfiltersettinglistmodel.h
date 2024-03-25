@@ -21,6 +21,8 @@ class ContentFilterSettingListModel : public QAbstractListModel
     // laberDidに設定できるDIDの一覧
     Q_PROPERTY(QStringList selectableLabelerDids READ selectableLabelerDids WRITE
                        setSelectableLabelerDids NOTIFY selectableLabelerDidsChanged FINAL)
+    Q_PROPERTY(bool labelerHasAdultOnly READ labelerHasAdultOnly WRITE setLabelerHasAdultOnly NOTIFY
+                       labelerHasAdultOnlyChanged FINAL)
 
 public:
     explicit ContentFilterSettingListModel(QObject *parent = nullptr);
@@ -67,6 +69,9 @@ public:
     QStringList selectableLabelerDids() const;
     void setSelectableLabelerDids(const QStringList &newSelectableLabelerDids);
 
+    bool labelerHasAdultOnly() const;
+    void setLabelerHasAdultOnly(bool newLabelerHasAdultOnly);
+
 public slots:
     void setRunning(bool newRunning);
 
@@ -82,6 +87,8 @@ signals:
 
     void selectableLabelerDidsChanged();
 
+    void labelerHasAdultOnlyChanged();
+
 protected:
     QHash<int, QByteArray> roleNames() const;
 
@@ -96,6 +103,7 @@ private:
     QString m_accessJwt;
     QString m_labelerDid;
     QStringList m_selectableLabelerDids;
+    bool m_labelerHasAdultOnly;
 };
 
 #endif // CONTENTFILTERSETTINGLISTMODEL_H

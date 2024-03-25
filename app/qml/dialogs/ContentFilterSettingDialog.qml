@@ -59,19 +59,22 @@ Dialog {
             }
         }
 
-        ComboBoxEx {
+        ComboBox {
             id: labelerDidComboBox
             Layout.fillWidth: true
+            textRole: "text"
+            valueRole: "value"
             model: ListModel {}
             delegate: ItemDelegate {
                 width: parent.width
                 height: implicitHeight * AdjustedValues.ratio
                 font.pointSize: AdjustedValues.f10
-                onClicked: {
-                    labelerDidComboBox.currentIndex = model.index
-                    contentFilterSettingListModel.selectableLabelerDescription(model.value)
-                }
+                onClicked: labelerDidComboBox.currentIndex = model.index
                 ColumnLayout {
+                    anchors.left: parent.left
+                    anchors.leftMargin: 5
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 3
                     Label {
                         font.pointSize: AdjustedValues.f10
                         text: model.text
@@ -91,7 +94,9 @@ Dialog {
         CheckBox {
             id: enableAdultContentCheckbox
             Layout.bottomMargin: 0
-            enabled: !contentFilterSettingListModel.running && contentFilterSettingDialog.ready
+            enabled: !contentFilterSettingListModel.running &&
+                     contentFilterSettingDialog.ready &&
+                     contentFilterSettingListModel.labelerHasAdultOnly
             font.pointSize: AdjustedValues.f10
             text: qsTr("Enable adult content")
         }
@@ -100,8 +105,9 @@ Dialog {
             id: settingScrollView
             Layout.bottomMargin: 10
             Layout.preferredWidth: 450 * AdjustedValues.ratio
-            Layout.preferredHeight: 350 * AdjustedValues.ratio
+            Layout.preferredHeight: 300 * AdjustedValues.ratio
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+            ScrollBar.vertical.policy: ScrollBar.AlwaysOn
             enabled: !contentFilterSettingListModel.running && contentFilterSettingDialog.ready
 
             ListView {
@@ -131,7 +137,7 @@ Dialog {
                 }
                 delegate: RowLayout {
                     id: listItemLayout
-                    width: 450 * AdjustedValues.ratio
+                    width: 450 * AdjustedValues.ratio - settingScrollView.ScrollBar.vertical.width
                     spacing: 0
                     clip: true
                     states: [
