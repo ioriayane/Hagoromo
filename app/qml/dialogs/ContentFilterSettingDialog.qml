@@ -129,7 +129,7 @@ Dialog {
                                                                 value: did
                                                             })
                         }
-                        labelerDidComboBox.currentIndex = 0
+                        labelerDidComboBox.currentIndex = applyButton.savingIndex
                     }
                 }
                 delegate: RowLayout {
@@ -221,11 +221,14 @@ Dialog {
                 Layout.fillWidth: true
             }
             Button {
+                id: applyButton
                 enabled: !contentFilterSettingListModel.running && contentFilterSettingDialog.ready
                 font.pointSize: AdjustedValues.f10
                 highlighted: contentFilterSettingListModel.modified
-                text: qsTr("Accept")
+                text: qsTr("Apply")
+                property int savingIndex: 0
                 onClicked: {
+                    savingIndex = labelerDidComboBox.currentIndex
                     contentFilterSettingListModel.save()
                 }
                 BusyIndicator {
