@@ -1,7 +1,7 @@
 #include "contentfiltersettinglistmodel.h"
 
 ContentFilterSettingListModel::ContentFilterSettingListModel(QObject *parent)
-    : QAbstractListModel { parent }, m_saving(false), m_running(false)
+    : QAbstractListModel { parent }, m_saving(false), m_running(false), m_modified(false)
 {
     m_contentFilterLabels.setRefreshLabelers(true);
 
@@ -31,6 +31,7 @@ ContentFilterSettingListModel::ContentFilterSettingListModel(QObject *parent)
                 setSelectableLabelerDids(m_contentFilterLabels.labelerDids());
                 emit enableAdultContentChanged();
             }
+            setModified(false);
         }
         m_saving = false;
         emit finished();
@@ -101,6 +102,7 @@ void ContentFilterSettingListModel::update(int row, ContentFilterSettingListMode
         } else if (value.toInt() == 2) {
             m_contentFilterLabels.setStatus(row, ConfigurableLabelStatus::Show, labelerDid());
         }
+        setModified(true);
     }
     emit dataChanged(index(row), index(row));
 }
@@ -122,6 +124,7 @@ void ContentFilterSettingListModel::save()
 {
     if (running())
         return;
+
     m_saving = true;
     m_contentFilterLabels.setService(service());
     m_contentFilterLabels.setSession(QString(), handle(), QString(), accessJwt(), QString());
@@ -181,6 +184,8 @@ void ContentFilterSettingListModel::setEnableAdultContent(bool newEnableAdultCon
         return;
     m_contentFilterLabels.setEnableAdultContent(newEnableAdultContent);
     emit enableAdultContentChanged();
+
+    setModified(true);
 }
 
 bool ContentFilterSettingListModel::running() const
@@ -306,4 +311,17 @@ void ContentFilterSettingListModel::setLabelerHasAdultOnly(bool newLabelerHasAdu
         return;
     m_labelerHasAdultOnly = newLabelerHasAdultOnly;
     emit labelerHasAdultOnlyChanged();
+}
+
+bool ContentFilterSettingListModel::modified() const
+{
+    return m_modified;
+}
+
+void ContentFilterSettingListModel::setModified(bool newModified)
+{
+    if (m_modified == newModified)
+        return;
+    m_modified = newModified;
+    emit modifiedChanged();
 }

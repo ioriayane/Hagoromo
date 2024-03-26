@@ -23,6 +23,7 @@ class ContentFilterSettingListModel : public QAbstractListModel
                        setSelectableLabelerDids NOTIFY selectableLabelerDidsChanged FINAL)
     Q_PROPERTY(bool labelerHasAdultOnly READ labelerHasAdultOnly WRITE setLabelerHasAdultOnly NOTIFY
                        labelerHasAdultOnlyChanged FINAL)
+    Q_PROPERTY(bool modified READ modified WRITE setModified NOTIFY modifiedChanged FINAL)
 
 public:
     explicit ContentFilterSettingListModel(QObject *parent = nullptr);
@@ -73,6 +74,9 @@ public:
     bool labelerHasAdultOnly() const;
     void setLabelerHasAdultOnly(bool newLabelerHasAdultOnly);
 
+    bool modified() const;
+    void setModified(bool newModified);
+
 public slots:
     void setRunning(bool newRunning);
 
@@ -90,6 +94,8 @@ signals:
 
     void labelerHasAdultOnlyChanged();
 
+    void modifiedChanged();
+
 protected:
     QHash<int, QByteArray> roleNames() const;
 
@@ -105,6 +111,7 @@ private:
     QString m_labelerDid;
     QStringList m_selectableLabelerDids;
     bool m_labelerHasAdultOnly;
+    bool m_modified;
 };
 
 #endif // CONTENTFILTERSETTINGLISTMODEL_H

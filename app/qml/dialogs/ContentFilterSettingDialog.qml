@@ -52,11 +52,6 @@ Dialog {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 1
             }
-            BusyIndicator {
-                Layout.preferredWidth: AdjustedValues.i24
-                Layout.preferredHeight: AdjustedValues.i24
-                visible: contentFilterSettingListModel.running
-            }
         }
 
         ComboBox {
@@ -228,9 +223,15 @@ Dialog {
             Button {
                 enabled: !contentFilterSettingListModel.running && contentFilterSettingDialog.ready
                 font.pointSize: AdjustedValues.f10
+                highlighted: contentFilterSettingListModel.modified
                 text: qsTr("Accept")
                 onClicked: {
                     contentFilterSettingListModel.save()
+                }
+                BusyIndicator {
+                    anchors.fill: parent
+                    anchors.margins: 3
+                    visible: contentFilterSettingListModel.running
                 }
             }
         }
