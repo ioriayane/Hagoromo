@@ -66,7 +66,7 @@ Dialog {
             valueRole: "value"
             model: ListModel {}
             delegate: ItemDelegate {
-                width: parent.width
+                width: labelerDidComboBox.width
                 height: implicitHeight * AdjustedValues.ratio
                 font.pointSize: AdjustedValues.f10
                 onClicked: labelerDidComboBox.currentIndex = model.index
@@ -87,7 +87,9 @@ Dialog {
             }
             onCurrentValueChanged: {
                 console.log("currentText=" + currentText + ", currentValue=" + currentValue)
-                contentFilterSettingListModel.labelerDid = currentValue
+                if(currentValue){
+                    contentFilterSettingListModel.labelerDid = currentValue
+                }
             }
         }
 
@@ -138,6 +140,7 @@ Dialog {
                 delegate: RowLayout {
                     id: listItemLayout
                     width: 450 * AdjustedValues.ratio - settingScrollView.ScrollBar.vertical.width
+                    height: 5 + (labelLayout.height > selectButtonLayout.height ? labelLayout.height : selectButtonLayout.height)
                     spacing: 0
                     clip: true
                     states: [
@@ -151,8 +154,8 @@ Dialog {
                         }
                     ]
                     ColumnLayout {
-                        Layout.topMargin: 10
-                        //                        Layout.bottomMargin: 5
+                        id: labelLayout
+                        spacing: 0
                         Label {
                             font.pointSize: AdjustedValues.f10
                             text: model.title
@@ -172,35 +175,36 @@ Dialog {
                     }
                     RowLayout {
                         id: selectButtonLayout
-                        spacing: 0
-                        IconButton {
-                            Layout.preferredWidth: AdjustedValues.b55
-                            Layout.preferredHeight: AdjustedValues.b36
-                            iconText: qsTr("Hide")
+                        Layout.alignment: Qt.AlignTop
+                        spacing: 3
+                        Button {
+                            height: AdjustedValues.b36
+                            text: qsTr("Hide")
                             enabled: !model.isAdultImagery || (model.isAdultImagery && enableAdultContentCheckbox.checked)
                             highlighted: model.status === value
+                            font.capitalization: Font.MixedCase
                             property int value: 0
                             onClicked: contentFilterSettingListModel.update(model.index,
                                                                             ContentFilterSettingListModel.StatusRole,
                                                                             value)
                         }
-                        IconButton {
-                            Layout.preferredWidth: AdjustedValues.b55
-                            Layout.preferredHeight: AdjustedValues.b36
-                            iconText: qsTr("Warn")
+                        Button {
+                            height: AdjustedValues.b36
+                            text: qsTr("Warn")
                             enabled: !model.isAdultImagery || (model.isAdultImagery && enableAdultContentCheckbox.checked)
                             highlighted: model.status === value
+                            font.capitalization: Font.MixedCase
                             property int value: 1
                             onClicked: contentFilterSettingListModel.update(model.index,
                                                                             ContentFilterSettingListModel.StatusRole,
                                                                             value)
                         }
-                        IconButton {
-                            Layout.preferredWidth: AdjustedValues.b55
-                            Layout.preferredHeight: AdjustedValues.b36
-                            iconText: qsTr("Show")
+                        Button {
+                            height: AdjustedValues.b36
+                            text: qsTr("Show")
                             enabled: !model.isAdultImagery || (model.isAdultImagery && enableAdultContentCheckbox.checked)
                             highlighted: model.status === value
+                            font.capitalization: Font.MixedCase
                             property int value: 2
                             onClicked: contentFilterSettingListModel.update(model.index,
                                                                             ContentFilterSettingListModel.StatusRole,

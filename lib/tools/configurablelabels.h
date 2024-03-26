@@ -86,6 +86,7 @@ public:
                   const QString &labeler_did = QString()) const;
     QString description(const int index, const QString &labeler_did = QString()) const;
     ConfigurableLabelFoldableRange foldableRange(const int index, const QString &labeler_did) const;
+    ConfigurableLabelLevel level(const int index, const QString &labeler_did) const;
     ConfigurableLabelStatus status(const int index, const QString &labeler_did = QString()) const;
     void setStatus(const int index, const ConfigurableLabelStatus status,
                    const QString &labeler_did = QString());

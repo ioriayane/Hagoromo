@@ -2537,6 +2537,25 @@ void hagoromo_test::test_ContentFilterSettingListModel()
              model.item(i, ContentFilterSettingListModel::ConfigurableRole)
                      .toString()
                      .toLocal8Bit());
+    i = 11;
+    QVERIFY2(model.item(i, ContentFilterSettingListModel::TitleRole).toString() == "Misinformation",
+             model.item(i, ContentFilterSettingListModel::TitleRole).toString().toLocal8Bit());
+    QVERIFY2(
+            model.item(i, ContentFilterSettingListModel::DescriptionRole).toString()
+                    == "Spreading false or misleading info, including unverified claims and "
+                       "harmful conspiracy theories.",
+            model.item(i, ContentFilterSettingListModel::DescriptionRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(i, ContentFilterSettingListModel::StatusRole).toInt()
+                     == static_cast<int>(ConfigurableLabelStatus::Warning),
+             model.item(i, ContentFilterSettingListModel::StatusRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(i, ContentFilterSettingListModel::IsAdultImageryRole).toBool() == false,
+             model.item(i, ContentFilterSettingListModel::IsAdultImageryRole)
+                     .toString()
+                     .toLocal8Bit());
+    QVERIFY2(model.item(i, ContentFilterSettingListModel::ConfigurableRole).toBool() == true,
+             model.item(i, ContentFilterSettingListModel::ConfigurableRole)
+                     .toString()
+                     .toLocal8Bit());
     i = 17;
     QVERIFY2(model.item(i, ContentFilterSettingListModel::TitleRole).toString()
                      == "Inauthentic Account",

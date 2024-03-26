@@ -33,6 +33,7 @@ public:
         TitleRole,
         DescriptionRole,
         StatusRole,
+        LevelRole,
         IsAdultImageryRole,
         ConfigurableRole,
     };

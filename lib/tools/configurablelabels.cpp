@@ -212,6 +212,7 @@ void ConfigurableLabels::loadLabelers(const QStringList &dids, std::function<voi
                     label_item.level = toLabelLevel(policy.severity);
                     label_item.default_status = toLabelStatus(policy.defaultSetting);
                     label_item.status = label_item.default_status;
+                    label_item.configurable = true;
                     m_labels[labeler_item.did].append(label_item);
                 }
             }
@@ -384,6 +385,16 @@ ConfigurableLabelFoldableRange ConfigurableLabels::foldableRange(const int index
     if (index < 0 || index >= m_labels.value(key).length())
         return ConfigurableLabelFoldableRange::None;
     return m_labels.value(key).at(index).foldable_range;
+}
+
+ConfigurableLabelLevel ConfigurableLabels::level(const int index, const QString &labeler_did) const
+{
+    QString key = labeler_did.isEmpty() ? GLOBAL_LABELER_KEY : labeler_did;
+    if (!m_labels.contains(key))
+        return ConfigurableLabelLevel::Alert;
+    if (index < 0 || index >= m_labels.value(key).length())
+        return ConfigurableLabelLevel::Alert;
+    return m_labels.value(key).at(index).level;
 }
 
 ConfigurableLabelStatus ConfigurableLabels::status(const int index,
