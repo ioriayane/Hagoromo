@@ -43,6 +43,14 @@ Dialog {
     property string replyIndexedAt: ""
     property string replyText: ""
 
+    property string quoteCid: ""
+    property string quoteUri: ""
+    property string quoteAvatar: ""
+    property string quoteDisplayName: ""
+    property string quoteHandle: ""
+    property string quoteIndexedAt: ""
+    property string quoteText: ""
+
     property alias postText: postText
     property alias recordOperator: createRecord
 
@@ -68,6 +76,13 @@ Dialog {
         replyHandle = ""
         replyIndexedAt = ""
         replyText = ""
+        quoteCid = ""
+        quoteUri = ""
+        quoteAvatar = ""
+        quoteDisplayName = ""
+        quoteHandle = ""
+        quoteIndexedAt = ""
+        quoteText = ""
         postLanguagesButton.text = ""
         selfLabelsButton.value = ""
         selfLabelsButton.iconText = ""
@@ -499,20 +514,20 @@ Dialog {
                             id: quoteAvatarImage
                             Layout.preferredWidth: AdjustedValues.i16
                             Layout.preferredHeight: AdjustedValues.i16
-                            source: replyAvatar
+                            source: quoteAvatar
                         }
                         Author {
                             layoutWidth: postText.width - quoteFrame.padding * 2 - quoteAvatarImage.width - parent.spacing
-                            displayName: replyDisplayName
-                            handle: replyHandle
-                            indexedAt: replyIndexedAt
+                            displayName: quoteDisplayName
+                            handle: quoteHandle
+                            indexedAt: quoteIndexedAt
                         }
                     }
                     Label {
                         Layout.preferredWidth: postText.width - quoteFrame.padding * 2
                         wrapMode: Text.WrapAnywhere
                         font.pointSize: AdjustedValues.f8
-                        text: replyText
+                        text: quoteText
                     }
                 }
             }
@@ -613,7 +628,7 @@ Dialog {
                         if(postType === "reply"){
                             createRecord.setReply(replyCid, replyUri, replyRootCid, replyRootUri)
                         }else if(postType === "quote"){
-                            createRecord.setQuote(replyCid, replyUri)
+                            createRecord.setQuote(quoteCid, quoteUri)
                         }
                         if(selfLabelsButton.value.length > 0){
                             createRecord.setSelfLabels([selfLabelsButton.value])

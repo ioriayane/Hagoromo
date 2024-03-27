@@ -411,15 +411,13 @@ ApplicationWindow {
             onRequestQuote: (account_uuid, cid, uri, avatar, display_name, handle, indexed_at, text) => {
                                 postDialog.postType = "quote"
                                 postDialog.defaultAccountUuid = account_uuid
-                                postDialog.replyCid = cid
-                                postDialog.replyUri = uri
-                                postDialog.replyRootCid = ""
-                                postDialog.replyRootUri = ""
-                                postDialog.replyAvatar = avatar
-                                postDialog.replyDisplayName = display_name
-                                postDialog.replyHandle = handle
-                                postDialog.replyIndexedAt = indexed_at
-                                postDialog.replyText = text
+                                postDialog.quoteCid = cid
+                                postDialog.quoteUri = uri
+                                postDialog.quoteAvatar = avatar
+                                postDialog.quoteDisplayName = display_name
+                                postDialog.quoteHandle = handle
+                                postDialog.quoteIndexedAt = indexed_at
+                                postDialog.quoteText = text
                                 postDialog.open()
                             }
             onRequestMention: (account_uuid, handle) => {
