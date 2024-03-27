@@ -881,7 +881,7 @@ QString ConfigurableLabels::updatePreferencesJson(const QString &src_json)
             while (i.hasNext()) {
                 i.next();
                 for (const auto &label : i.value()) {
-                    if (!label.configurable || label.status == label.default_status)
+                    if (!label.configurable)
                         continue;
                     QJsonObject value;
                     value.insert("$type", QStringLiteral("app.bsky.actor.defs#contentLabelPref"));
