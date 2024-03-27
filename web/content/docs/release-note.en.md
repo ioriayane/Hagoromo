@@ -8,6 +8,11 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+- Add
+- Update
+  - Content filter settings to support the new label system
+- Fix
+
 ### v0.26.0 - 2024/3/21
 
 - Add

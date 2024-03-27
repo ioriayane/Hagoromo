@@ -59,7 +59,12 @@ const QStringList &AtProtocolAccount::labelers() const
 
 void AtProtocolAccount::setLabelers(const QStringList &dids)
 {
-    m_account.labeler_dids = dids;
+    m_account.labeler_dids.clear();
+    for (const auto &did : dids) {
+        if (did.startsWith("did:")) {
+            m_account.labeler_dids.append(did);
+        }
+    }
 }
 
 QString AtProtocolAccount::service() const

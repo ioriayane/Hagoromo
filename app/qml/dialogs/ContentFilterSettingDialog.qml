@@ -17,21 +17,22 @@ Dialog {
     y: (parent.height - height) * 0.5
     title: qsTr("Content Filtering")
 
-    property bool willClose: false
     property bool ready: false
     property alias account: account
     Account {
         id: account
     }
     onOpened: {
-        contentFilterSettingDialog.willClose = false
         if(account.service.length === 0){
             return
         }
         contentFilterSettingListModel.load()
         contentFilterSettingDialog.ready = true
     }
-    onClosed: contentFilterSettingDialog.ready = false
+    onClosed: {
+        contentFilterSettingDialog.ready = false
+
+    }
 
     ColumnLayout {
         spacing: 0
@@ -51,17 +52,48 @@ Dialog {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 1
             }
-            BusyIndicator {
-                Layout.preferredWidth: AdjustedValues.i24
-                Layout.preferredHeight: AdjustedValues.i24
-                visible: contentFilterSettingListModel.running
+        }
+
+        ComboBox {
+            id: labelerDidComboBox
+            Layout.fillWidth: true
+            textRole: "text"
+            valueRole: "value"
+            model: ListModel {}
+            delegate: ItemDelegate {
+                width: labelerDidComboBox.width
+                height: implicitHeight * AdjustedValues.ratio
+                font.pointSize: AdjustedValues.f10
+                onClicked: labelerDidComboBox.currentIndex = model.index
+                ColumnLayout {
+                    anchors.left: parent.left
+                    anchors.leftMargin: 5
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 3
+                    Label {
+                        font.pointSize: AdjustedValues.f10
+                        text: model.text
+                    }
+                    Label {
+                        font.pointSize: AdjustedValues.f8
+                        text: model.description
+                    }
+                }
+            }
+            onCurrentValueChanged: {
+                console.log("currentText=" + currentText + ", currentValue=" + currentValue)
+                if(currentValue){
+                    contentFilterSettingListModel.labelerDid = currentValue
+                }
             }
         }
 
         CheckBox {
             id: enableAdultContentCheckbox
             Layout.bottomMargin: 0
-            enabled: !contentFilterSettingListModel.running && contentFilterSettingDialog.ready
+            enabled: !contentFilterSettingListModel.running &&
+                     contentFilterSettingDialog.ready &&
+                     contentFilterSettingListModel.labelerHasAdultOnly
             font.pointSize: AdjustedValues.f10
             text: qsTr("Enable adult content")
         }
@@ -70,8 +102,9 @@ Dialog {
             id: settingScrollView
             Layout.bottomMargin: 10
             Layout.preferredWidth: 450 * AdjustedValues.ratio
-            //            Layout.preferredHeight: 350
+            Layout.preferredHeight: 300 * AdjustedValues.ratio
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+            ScrollBar.vertical.policy: ScrollBar.AlwaysOn
             enabled: !contentFilterSettingListModel.running && contentFilterSettingDialog.ready
 
             ListView {
@@ -85,16 +118,24 @@ Dialog {
                     handle: account.handle
                     accessJwt: account.accessJwt
                     onFinished: {
-                        if(contentFilterSettingDialog.willClose){
-                            contentFilterSettingDialog.accept()
-                        }else{
-                            enableAdultContentCheckbox.checked = enableAdultContent
+                        enableAdultContentCheckbox.checked = enableAdultContent
+                        labelerDidComboBox.model.clear()
+                        var did = ""
+                        for(var i=0; i<contentFilterSettingListModel.selectableLabelerDids.length; i++){
+                            did = contentFilterSettingListModel.selectableLabelerDids[i]
+                            labelerDidComboBox.model.append({
+                                                                text: contentFilterSettingListModel.selectableLabelerName(did),
+                                                                description: contentFilterSettingListModel.selectableLabelerDescription(did),
+                                                                value: did
+                                                            })
                         }
+                        labelerDidComboBox.currentIndex = applyButton.savingIndex
                     }
                 }
                 delegate: RowLayout {
                     id: listItemLayout
-                    width: 450 * AdjustedValues.ratio
+                    width: 450 * AdjustedValues.ratio - settingScrollView.ScrollBar.vertical.width
+                    height: 5 + (labelLayout.height > selectButtonLayout.height ? labelLayout.height : selectButtonLayout.height)
                     spacing: 0
                     clip: true
                     states: [
@@ -108,8 +149,8 @@ Dialog {
                         }
                     ]
                     ColumnLayout {
-                        Layout.topMargin: 10
-                        //                        Layout.bottomMargin: 5
+                        id: labelLayout
+                        spacing: 0
                         Label {
                             font.pointSize: AdjustedValues.f10
                             text: model.title
@@ -129,35 +170,36 @@ Dialog {
                     }
                     RowLayout {
                         id: selectButtonLayout
-                        spacing: 0
-                        IconButton {
-                            Layout.preferredWidth: AdjustedValues.b55
-                            Layout.preferredHeight: AdjustedValues.b36
-                            iconText: qsTr("Hide")
+                        Layout.alignment: Qt.AlignTop
+                        spacing: 3
+                        Button {
+                            height: AdjustedValues.b36
+                            text: qsTr("Hide")
                             enabled: !model.isAdultImagery || (model.isAdultImagery && enableAdultContentCheckbox.checked)
                             highlighted: model.status === value
+                            font.capitalization: Font.MixedCase
                             property int value: 0
                             onClicked: contentFilterSettingListModel.update(model.index,
                                                                             ContentFilterSettingListModel.StatusRole,
                                                                             value)
                         }
-                        IconButton {
-                            Layout.preferredWidth: AdjustedValues.b55
-                            Layout.preferredHeight: AdjustedValues.b36
-                            iconText: qsTr("Warn")
+                        Button {
+                            height: AdjustedValues.b36
+                            text: qsTr("Warn")
                             enabled: !model.isAdultImagery || (model.isAdultImagery && enableAdultContentCheckbox.checked)
                             highlighted: model.status === value
+                            font.capitalization: Font.MixedCase
                             property int value: 1
                             onClicked: contentFilterSettingListModel.update(model.index,
                                                                             ContentFilterSettingListModel.StatusRole,
                                                                             value)
                         }
-                        IconButton {
-                            Layout.preferredWidth: AdjustedValues.b55
-                            Layout.preferredHeight: AdjustedValues.b36
-                            iconText: qsTr("Show")
+                        Button {
+                            height: AdjustedValues.b36
+                            text: qsTr("Show")
                             enabled: !model.isAdultImagery || (model.isAdultImagery && enableAdultContentCheckbox.checked)
                             highlighted: model.status === value
+                            font.capitalization: Font.MixedCase
                             property int value: 2
                             onClicked: contentFilterSettingListModel.update(model.index,
                                                                             ContentFilterSettingListModel.StatusRole,
@@ -179,12 +221,20 @@ Dialog {
                 Layout.fillWidth: true
             }
             Button {
+                id: applyButton
                 enabled: !contentFilterSettingListModel.running && contentFilterSettingDialog.ready
                 font.pointSize: AdjustedValues.f10
-                text: qsTr("Accept")
+                highlighted: contentFilterSettingListModel.modified
+                text: qsTr("Apply")
+                property int savingIndex: 0
                 onClicked: {
-                    contentFilterSettingDialog.willClose = true
+                    savingIndex = labelerDidComboBox.currentIndex
                     contentFilterSettingListModel.save()
+                }
+                BusyIndicator {
+                    anchors.fill: parent
+                    anchors.margins: 3
+                    visible: contentFilterSettingListModel.running
                 }
             }
         }

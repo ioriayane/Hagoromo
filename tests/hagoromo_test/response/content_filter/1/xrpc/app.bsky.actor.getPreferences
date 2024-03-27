@@ -20,60 +20,91 @@
         {
             "$type": "app.bsky.actor.defs#contentLabelPref",
             "label": "porn",
-            "visibility": "hide"
+            "visibility": "warn"
         },
         {
             "$type": "app.bsky.actor.defs#contentLabelPref",
             "label": "nudity",
-            "visibility": "hide"
+            "visibility": "warn"
         },
         {
             "$type": "app.bsky.actor.defs#contentLabelPref",
             "label": "sexual",
-            "visibility": "hide"
+            "visibility": "warn"
         },
         {
             "$type": "app.bsky.actor.defs#contentLabelPref",
             "label": "graphic-media",
-            "visibility": "hide"
+            "visibility": "warn"
         },
         {
             "$type": "app.bsky.actor.defs#contentLabelPref",
             "label": "gore",
-            "visibility": "hide"
+            "visibility": "warn"
         },
         {
             "$type": "app.bsky.actor.defs#contentLabelPref",
             "label": "hate",
-            "visibility": "hide"
+            "visibility": "warn"
         },
         {
             "$type": "app.bsky.actor.defs#contentLabelPref",
             "label": "spam",
-            "visibility": "hide"
+            "visibility": "warn"
         },
         {
             "$type": "app.bsky.actor.defs#contentLabelPref",
             "label": "impersonation",
-            "visibility": "hide"
+            "visibility": "warn"
         },
         {
             "$type": "app.bsky.actor.defs#contentLabelPref",
             "label": "inauthentic",
             "labelerDid": "did:plc:ar7c4by46qjdydhdevvrndac",
-            "visibility": "hide"
+            "visibility": "warn"
         },
         {
             "$type": "app.bsky.actor.defs#contentLabelPref",
             "label": "misleading",
             "labelerDid": "did:plc:ar7c4by46qjdydhdevvrndac",
-            "visibility": "hide"
+            "visibility": "warn"
         },
         {
             "$type": "app.bsky.actor.defs#contentLabelPref",
             "label": "rumor",
             "labelerDid": "did:plc:ar7c4by46qjdydhdevvrndac",
-            "visibility": "hide"
-        }
+            "visibility": "warn"
+        },
+        {
+            "$type": "app.bsky.actor.defs#mutedWordsPref",
+            "items": [
+                {
+                    "value": "word3",
+                    "targets": [
+                        "content"
+                    ]
+                },
+                {
+                    "value": "word2",
+                    "targets": [
+                        "content",
+                        "tag"
+                    ]
+                },
+                {
+                    "value": "word1",
+                    "targets": [
+                        "tag"
+                    ]
+                },
+                {
+                    "value": "#word4",
+                    "targets": [
+                        "content",
+                        "tag"
+                    ]
+                }
+            ]
+       }
     ]
 }

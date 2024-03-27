@@ -23,9 +23,23 @@
             "policies": {
                 "labelValueDefinitions": [
                     {
+                        "adultOnly": true,
+                        "blurs": "media",
+                        "defaultSetting": "show",
+                        "identifier": "sexual-figurative",
+                        "locales": [
+                            {
+                                "description": "Art with explicit or suggestive sexual themes, including provocative imagery or partial nudity.",
+                                "lang": "en",
+                                "name": "Sexually Suggestive (Cartoon)"
+                            }
+                        ],
+                        "severity": "none"
+                    },
+                    {
                         "adultOnly": false,
                         "blurs": "content",
-                        "defaultSetting": "hide",
+                        "defaultSetting": "warn",
                         "identifier": "spam",
                         "locales": [
                             {
@@ -259,20 +273,6 @@
                             }
                         ],
                         "severity": "alert"
-                    },
-                    {
-                        "adultOnly": true,
-                        "blurs": "media",
-                        "defaultSetting": "show",
-                        "identifier": "sexual-figurative",
-                        "locales": [
-                            {
-                                "description": "Art with explicit or suggestive sexual themes, including provocative imagery or partial nudity.",
-                                "lang": "en",
-                                "name": "Sexually Suggestive (Cartoon)"
-                            }
-                        ],
-                        "severity": "none"
                     }
                 ],
                 "labelValues": [

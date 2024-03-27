@@ -4,7 +4,9 @@ WebServer::WebServer(QObject *parent) : QAbstractHttpServer(parent) { }
 
 bool WebServer::handleRequest(const QHttpServerRequest &request, QTcpSocket *socket)
 {
-    if (request.url().path().contains("//")) {
+    if (!verifyHttpHeader(request)) {
+        makeResponder(request, socket).write(QHttpServerResponder::StatusCode::BadRequest);
+    } else if (request.url().path().contains("//")) {
         makeResponder(request, socket).write(QHttpServerResponder::StatusCode::NotFound);
     } else if (request.method() == QHttpServerRequest::Method::Post) {
         bool result = false;
@@ -86,4 +88,17 @@ bool WebServer::readFile(const QString &path, QByteArray &data)
     } else {
         return false;
     }
+}
+
+bool WebServer::verifyHttpHeader(const QHttpServerRequest &request) const
+{
+    if (request.headers().contains("atproto-accept-labelers")) {
+        QStringList dids = request.headers().value("atproto-accept-labelers").toString().split(",");
+        for (const auto &did : dids) {
+            if (!did.startsWith("did:")) {
+                return false;
+            }
+        }
+    }
+    return true;
 }
