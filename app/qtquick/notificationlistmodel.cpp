@@ -93,7 +93,7 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
     else if (role == MutedRole)
         return current.author.viewer.muted;
     else if (role == RecordTextRole)
-        return copyRecordText(current.record);
+        return AtProtocolType::LexiconsTypeUnknown::copyRecordText(current.record);
     else if (role == RecordTextPlainRole)
         return AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                        AtProtocolType::AppBskyFeedPost::Main>(current.record)
@@ -300,7 +300,8 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
                 return QString();
         } else if (role == QuoteRecordRecordTextRole) {
             if (m_postHash.contains(record_cid))
-                return copyRecordText(m_postHash[record_cid].record);
+                return AtProtocolType::LexiconsTypeUnknown::copyRecordText(
+                        m_postHash[record_cid].record);
             else
                 return QString();
         } else if (role == QuoteRecordEmbedImagesRole) {

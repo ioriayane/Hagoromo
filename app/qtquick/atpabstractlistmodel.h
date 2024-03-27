@@ -136,7 +136,6 @@ public slots:
 
 protected:
     QString formatDateTime(const QString &value, const bool is_long = false) const;
-    QString copyRecordText(const QVariant &value) const;
     void displayQueuedPosts();
     void displayQueuedPostsNext();
     virtual void finishedDisplayingQueuedPosts() = 0;

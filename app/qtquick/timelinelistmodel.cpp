@@ -92,7 +92,7 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     else if (role == MutedRole)
         return current.post.author.viewer.muted;
     else if (role == RecordTextRole)
-        return copyRecordText(current.post.record);
+        return LexiconsTypeUnknown::copyRecordText(current.post.record);
     else if (role == RecordTextPlainRole)
         return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(current.post.record).text;
     else if (role == RecordTextTranslationRole)
@@ -761,9 +761,10 @@ QVariant TimelineListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDefs::
             return QString();
     } else if (role == QuoteRecordRecordTextRole) {
         if (has_record)
-            return copyRecordText(post.embed_AppBskyEmbedRecord_View->record_ViewRecord.value);
+            return LexiconsTypeUnknown::copyRecordText(
+                    post.embed_AppBskyEmbedRecord_View->record_ViewRecord.value);
         else if (has_with_image)
-            return copyRecordText(
+            return LexiconsTypeUnknown::copyRecordText(
                     post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.value);
         else
             return QString();
