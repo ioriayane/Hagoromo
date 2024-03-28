@@ -10,6 +10,7 @@ import tech.relog.hagoromo.languagelistmodel 1.0
 import tech.relog.hagoromo.externallink 1.0
 import tech.relog.hagoromo.feedgeneratorlink 1.0
 import tech.relog.hagoromo.listlink 1.0
+import tech.relog.hagoromo.postlink 1.0
 import tech.relog.hagoromo.systemtool 1.0
 import tech.relog.hagoromo.singleton 1.0
 
@@ -43,6 +44,7 @@ Dialog {
     property string replyIndexedAt: ""
     property string replyText: ""
 
+    property bool quoteValid: (quoteUri.startsWith("at://") && quoteCid.length > 0)
     property string quoteCid: ""
     property string quoteUri: ""
     property string quoteAvatar: ""
@@ -93,6 +95,7 @@ Dialog {
         externalLink.clear()
         feedGeneratorLink.clear()
         listLink.clear()
+        postLink.clear()
         addingExternalLinkUrlText.text = ""
         selectThreadGateDialog.clear()
     }
@@ -137,6 +140,20 @@ Dialog {
     }
     ListLink {
         id: listLink
+    }
+    PostLink {
+        id: postLink
+        onValidChanged: {
+            if(valid){
+                quoteCid = postLink.cid
+                quoteUri = postLink.uri
+                quoteAvatar = postLink.avatar
+                quoteDisplayName = postLink.displayName
+                quoteHandle = postLink.creatorHandle
+                quoteIndexedAt = postLink.indexedAt
+                quoteText = postLink.text
+            }
+        }
     }
 
     ScrollView {
@@ -349,8 +366,8 @@ Dialog {
                         id: addingExternalLinkUrlText
                         selectByMouse: true
                         font.pointSize: AdjustedValues.f10
-                        placeholderText: (postType !== "quote") ?
-                                             qsTr("Link card URL or custom feed URL or list URL") :
+                        placeholderText: (quoteValid === false) ?
+                                             qsTr("Link card URL, Custom feed URL, List URL, Post URL") :
                                              qsTr("Link card URL")
                     }
                 }
@@ -365,7 +382,7 @@ Dialog {
                     onClicked: {
                         var uri = addingExternalLinkUrlText.text
                         var row = accountCombo.currentIndex
-                        if(feedGeneratorLink.checkUri(uri, "feed") && postType !== "quote"){
+                        if(feedGeneratorLink.checkUri(uri, "feed") && !quoteValid){
                             feedGeneratorLink.setAccount(postDialog.accountModel.item(row, AccountListModel.ServiceRole),
                                                          postDialog.accountModel.item(row, AccountListModel.DidRole),
                                                          postDialog.accountModel.item(row, AccountListModel.HandleRole),
@@ -373,7 +390,7 @@ Dialog {
                                                          postDialog.accountModel.item(row, AccountListModel.AccessJwtRole),
                                                          postDialog.accountModel.item(row, AccountListModel.RefreshJwtRole))
                             feedGeneratorLink.getFeedGenerator(uri)
-                        }else if(feedGeneratorLink.checkUri(uri, "lists") && postType !== "quote"){
+                        }else if(listLink.checkUri(uri, "lists") && !quoteValid){
                             listLink.setAccount(postDialog.accountModel.item(row, AccountListModel.ServiceRole),
                                                 postDialog.accountModel.item(row, AccountListModel.DidRole),
                                                 postDialog.accountModel.item(row, AccountListModel.HandleRole),
@@ -381,6 +398,14 @@ Dialog {
                                                 postDialog.accountModel.item(row, AccountListModel.AccessJwtRole),
                                                 postDialog.accountModel.item(row, AccountListModel.RefreshJwtRole))
                             listLink.getList(uri)
+                        }else if(postLink.checkUri(uri, "post") && !quoteValid && postType !== "quote"){
+                            postLink.setAccount(postDialog.accountModel.item(row, AccountListModel.ServiceRole),
+                                                postDialog.accountModel.item(row, AccountListModel.DidRole),
+                                                postDialog.accountModel.item(row, AccountListModel.HandleRole),
+                                                postDialog.accountModel.item(row, AccountListModel.EmailRole),
+                                                postDialog.accountModel.item(row, AccountListModel.AccessJwtRole),
+                                                postDialog.accountModel.item(row, AccountListModel.RefreshJwtRole))
+                            postLink.getPost(uri)
                         }else{
                             externalLink.getExternalLink(uri)
 
@@ -397,7 +422,8 @@ Dialog {
                         State {
                             when: externalLink.valid ||
                                   feedGeneratorLink.valid ||
-                                  listLink.valid
+                                  listLink.valid ||
+                                  (postLink.valid && postType !== "quote")
                             PropertyChanges {
                                 target: externalLinkButton
                                 iconSource: "../images/delete.png"
@@ -405,6 +431,16 @@ Dialog {
                                     externalLink.clear()
                                     feedGeneratorLink.clear()
                                     listLink.clear()
+                                    postLink.clear()
+                                    if(postType !== "quote"){
+                                        quoteCid = ""
+                                        quoteUri = ""
+                                        quoteAvatar = ""
+                                        quoteDisplayName = ""
+                                        quoteHandle = ""
+                                        quoteIndexedAt = ""
+                                        quoteText = ""
+                                    }
                                 }
                             }
                         }
@@ -505,7 +541,7 @@ Dialog {
                 id: quoteFrame
                 Layout.preferredWidth: postText.width
                 Layout.maximumHeight: 200 * AdjustedValues.ratio
-                visible: postType === "quote"
+                visible: quoteValid
                 clip: true
                 ColumnLayout {
                     Layout.preferredWidth: postText.width
@@ -627,7 +663,8 @@ Dialog {
                         }
                         if(postType === "reply"){
                             createRecord.setReply(replyCid, replyUri, replyRootCid, replyRootUri)
-                        }else if(postType === "quote"){
+                        }
+                        if(quoteValid){
                             createRecord.setQuote(quoteCid, quoteUri)
                         }
                         if(selfLabelsButton.value.length > 0){
