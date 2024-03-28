@@ -28,7 +28,8 @@ void PostLink::getPost(const QString &uri)
                 setLikeCount(0);
                 setUri(post->postList()->at(0).uri);
                 setCid(post->postList()->at(0).cid);
-                setIndexedAt(post->postList()->at(0).indexedAt);
+                setIndexedAt(AtProtocolType::LexiconsTypeUnknown::formatDateTime(
+                        post->postList()->at(0).indexedAt));
                 setText(AtProtocolType::LexiconsTypeUnknown::copyRecordText(
                         post->postList()->at(0).record));
                 setValid(true);

@@ -28,6 +28,7 @@ QStringList copyImagesFromRecord(const AppBskyEmbedRecord::ViewRecord &record,
 QStringList copyTagsFromFacets(const QList<AppBskyRichtextFacet::Main> &facets);
 bool checkPartialMatchLanguage(const QStringList &langs);
 QString copyRecordText(const QVariant &value);
+QString formatDateTime(const QString &value, const bool is_long = false);
 
 template<typename T>
 T fromQVariant(const QVariant &variant)

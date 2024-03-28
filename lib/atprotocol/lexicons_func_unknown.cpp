@@ -247,6 +247,19 @@ QString copyRecordText(const QVariant &value)
         return text;
     }
 }
+
+QString formatDateTime(const QString &value, const bool is_long)
+{
+    if (is_long)
+        return QDateTime::fromString(value, Qt::ISODateWithMs)
+                .toLocalTime()
+                .toString("yyyy/MM/dd hh:mm:ss");
+    else
+        return QDateTime::fromString(value, Qt::ISODateWithMs)
+                .toLocalTime()
+                .toString("MM/dd hh:mm");
+}
+
 }
 }
 

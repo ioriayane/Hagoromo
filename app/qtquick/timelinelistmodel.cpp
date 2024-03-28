@@ -107,9 +107,9 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     else if (role == ReplyDisabledRole)
         return current.post.viewer.replyDisabled;
     else if (role == IndexedAtRole)
-        return formatDateTime(current.post.indexedAt);
+        return LexiconsTypeUnknown::formatDateTime(current.post.indexedAt);
     else if (role == IndexedAtLongRole)
-        return formatDateTime(current.post.indexedAt, true);
+        return LexiconsTypeUnknown::formatDateTime(current.post.indexedAt, true);
     else if (role == EmbedImagesRole)
         return copyImagesFromPostView(current.post, LexiconsTypeUnknown::CopyImageType::Thumb);
     else if (role == EmbedImagesFullRole)
@@ -770,10 +770,12 @@ QVariant TimelineListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDefs::
             return QString();
     } else if (role == QuoteRecordIndexedAtRole) {
         if (has_record)
-            return formatDateTime(post.embed_AppBskyEmbedRecord_View->record_ViewRecord.indexedAt);
+            return LexiconsTypeUnknown::formatDateTime(
+                    post.embed_AppBskyEmbedRecord_View->record_ViewRecord.indexedAt);
         else if (has_with_image)
-            return formatDateTime(post.embed_AppBskyEmbedRecordWithMedia_View.record
-                                          ->record_ViewRecord.indexedAt);
+            return LexiconsTypeUnknown::formatDateTime(
+                    post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
+                            .indexedAt);
         else
             return QString();
     } else if (role == QuoteRecordEmbedImagesRole) {
