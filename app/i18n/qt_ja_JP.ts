@@ -2010,7 +2010,7 @@
         <translation type="vanished">リンクカード</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/PostDialog.qml" line="339"/>
+        <location filename="../qml/dialogs/PostDialog.qml" line="371"/>
         <source>Link card URL</source>
         <translation>リンクカードのURL</translation>
     </message>
@@ -2019,22 +2019,26 @@
         <translation type="vanished">リンクカードかフィードカードのURL</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/PostDialog.qml" line="338"/>
         <source>Link card URL or custom feed URL or list URL</source>
-        <translation>リンクカードかフィードカードかリストカードのURL</translation>
+        <translation type="vanished">リンクカードかフィードカードかリストカードのURL</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/PostDialog.qml" line="526"/>
+        <location filename="../qml/dialogs/PostDialog.qml" line="370"/>
+        <source>Link card URL, Custom feed URL, List URL, Post URL</source>
+        <translation>リンクカード/フィードカード/リストカード/ポストのURL</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/PostDialog.qml" line="577"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/PostDialog.qml" line="597"/>
+        <location filename="../qml/dialogs/PostDialog.qml" line="648"/>
         <source>Post</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/PostDialog.qml" line="649"/>
+        <location filename="../qml/dialogs/PostDialog.qml" line="701"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
     </message>
@@ -2821,7 +2825,7 @@
     </message>
     <message>
         <location filename="../qml/main.qml" line="114"/>
-        <location filename="../qml/main.qml" line="446"/>
+        <location filename="../qml/main.qml" line="444"/>
         <source>Search posts</source>
         <translation>検索(ポスト)</translation>
     </message>
@@ -2841,7 +2845,7 @@
         <translation>リストの読み込み中</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="910"/>
+        <location filename="../qml/main.qml" line="908"/>
         <source>Loading account(s) ...</source>
         <translation>アカウント情報の読み込み中 ...</translation>
     </message>
