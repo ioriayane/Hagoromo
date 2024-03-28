@@ -42,6 +42,7 @@
 #include "qtquick/reporter.h"
 #include "qtquick/feedgeneratorlink.h"
 #include "qtquick/listlink.h"
+#include "qtquick/postlink.h"
 
 void setAppFont(QGuiApplication &app)
 {
@@ -136,6 +137,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<FeedGeneratorLink>("tech.relog.hagoromo.feedgeneratorlink", 1, 0,
                                        "FeedGeneratorLink");
     qmlRegisterType<ListLink>("tech.relog.hagoromo.listlink", 1, 0, "ListLink");
+    qmlRegisterType<PostLink>("tech.relog.hagoromo.postlink", 1, 0, "PostLink");
 
     qmlRegisterSingletonType(QUrl("qrc:/Hagoromo/qml/data/AdjustedValues.qml"),
                              "tech.relog.hagoromo.singleton", 1, 0, "AdjustedValues");

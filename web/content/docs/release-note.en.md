@@ -11,6 +11,7 @@ description: This is a multi-column Bluesky client.
 - Add
 - Update
   - Content filter settings to support the new label system
+  - Support switching from post URL to quote in post dialog
 - Fix
 
 ### v0.26.0 - 2024/3/21

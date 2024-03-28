@@ -93,7 +93,7 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
     else if (role == MutedRole)
         return current.author.viewer.muted;
     else if (role == RecordTextRole)
-        return copyRecordText(current.record);
+        return AtProtocolType::LexiconsTypeUnknown::copyRecordText(current.record);
     else if (role == RecordTextPlainRole)
         return AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                        AtProtocolType::AppBskyFeedPost::Main>(current.record)
@@ -101,7 +101,7 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
     else if (role == RecordTextTranslationRole)
         return m_translations.contains(current.cid) ? m_translations[current.cid] : QString();
     else if (role == IndexedAtRole)
-        return formatDateTime(current.indexedAt);
+        return AtProtocolType::LexiconsTypeUnknown::formatDateTime(current.indexedAt);
     else if (role == EmbedImagesRole) {
         if (m_postHash.contains(current.cid))
             return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
@@ -295,12 +295,14 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
                 return QString();
         } else if (role == QuoteRecordIndexedAtRole) {
             if (m_postHash.contains(record_cid))
-                return formatDateTime(m_postHash[record_cid].indexedAt);
+                return AtProtocolType::LexiconsTypeUnknown::formatDateTime(
+                        m_postHash[record_cid].indexedAt);
             else
                 return QString();
         } else if (role == QuoteRecordRecordTextRole) {
             if (m_postHash.contains(record_cid))
-                return copyRecordText(m_postHash[record_cid].record);
+                return AtProtocolType::LexiconsTypeUnknown::copyRecordText(
+                        m_postHash[record_cid].record);
             else
                 return QString();
         } else if (role == QuoteRecordEmbedImagesRole) {

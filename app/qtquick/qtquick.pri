@@ -29,6 +29,7 @@ SOURCES += \
     $$PWD/mutedwordlistmodel.cpp \
     $$PWD/muteslistmodel.cpp \
     $$PWD/notificationlistmodel.cpp \
+    $$PWD/postlink.cpp \
     $$PWD/postthreadlistmodel.cpp \
     $$PWD/recordoperator.cpp \
     $$PWD/reporter.cpp \
@@ -69,6 +70,7 @@ HEADERS += \
     $$PWD/mutedwordlistmodel.h \
     $$PWD/muteslistmodel.h \
     $$PWD/notificationlistmodel.h \
+    $$PWD/postlink.h \
     $$PWD/postthreadlistmodel.h \
     $$PWD/recordoperator.h \
     $$PWD/reporter.h \
