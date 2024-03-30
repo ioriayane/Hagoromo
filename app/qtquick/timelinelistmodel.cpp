@@ -127,9 +127,9 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     else if (role == LikedUriRole)
         return current.post.viewer.like;
     else if (role == RunningRepostRole)
-        return (current.post.cid == m_runningRepostCid);
+        return !current.post.cid.isEmpty() && (current.post.cid == m_runningRepostCid);
     else if (role == RunningLikeRole)
-        return (current.post.cid == m_runningLikeCid);
+        return !current.post.cid.isEmpty() && (current.post.cid == m_runningLikeCid);
 
     else if (role == HasQuoteRecordRole || role == QuoteRecordCidRole || role == QuoteRecordUriRole
              || role == QuoteRecordDisplayNameRole || role == QuoteRecordHandleRole
