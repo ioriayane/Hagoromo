@@ -130,6 +130,8 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return !current.post.cid.isEmpty() && (current.post.cid == m_runningRepostCid);
     else if (role == RunningLikeRole)
         return !current.post.cid.isEmpty() && (current.post.cid == m_runningLikeCid);
+    else if (role == RunningdeletePostRole)
+        return !current.post.cid.isEmpty() && (current.post.cid == m_runningDeletePostCid);
 
     else if (role == HasQuoteRecordRole || role == QuoteRecordCidRole || role == QuoteRecordUriRole
              || role == QuoteRecordDisplayNameRole || role == QuoteRecordHandleRole
@@ -292,6 +294,13 @@ void TimelineListModel::update(int row, TimelineListModelRoles role, const QVari
             m_runningLikeCid.clear();
         }
         emit dataChanged(index(row), index(row));
+    } else if (role == RunningdeletePostRole) {
+        if (value.toBool()) {
+            m_runningDeletePostCid = current.post.cid;
+        } else {
+            m_runningDeletePostCid.clear();
+        }
+        emit dataChanged(index(row), index(row));
     } else if (m_toThreadGateRoles.contains(role)) {
         updateThreadGateItem(current.post, m_toThreadGateRoles[role], value);
         emit dataChanged(index(row), index(row));
@@ -378,9 +387,9 @@ bool TimelineListModel::deletePost(int row)
     if (row < 0 || row >= m_cidList.count())
         return false;
 
-    if (running())
+    if (runningdeletePost(row))
         return false;
-    setRunning(true);
+    setRunningdeletePost(row, true);
 
     RecordOperator *ope = new RecordOperator(this);
     connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
@@ -393,7 +402,7 @@ bool TimelineListModel::deletePost(int row)
                     m_cidList.removeAt(row);
                     endRemoveRows();
                 }
-                setRunning(false);
+                setRunningdeletePost(row, false);
                 ope->deleteLater();
             });
     ope->setAccount(account().service, account().did, account().handle, account().email,
@@ -498,6 +507,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[LikedUriRole] = "likedUri";
     roles[RunningRepostRole] = "runningRepost";
     roles[RunningLikeRole] = "runningLike";
+    roles[RunningdeletePostRole] = "runningdeletePost";
 
     roles[HasQuoteRecordRole] = "hasQuoteRecord";
     roles[QuoteRecordCidRole] = "quoteRecordCid";
@@ -905,6 +915,15 @@ bool TimelineListModel::runningLike(int row) const
 void TimelineListModel::setRunningLike(int row, bool running)
 {
     update(row, RunningLikeRole, running);
+}
+
+bool TimelineListModel::runningdeletePost(int row) const
+{
+    return item(row, RunningdeletePostRole).toBool();
+}
+void TimelineListModel::setRunningdeletePost(int row, bool running)
+{
+    update(row, RunningdeletePostRole, running);
 }
 
 bool TimelineListModel::visibleReplyToUnfollowedUsers() const
