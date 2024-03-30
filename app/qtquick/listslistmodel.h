@@ -29,7 +29,8 @@ public:
         SubscribedRole,
         CreatorHandleRole,
         CreatorDisplayNameRole,
-        CreatoravatarRole,
+        CreatorAvatarRole,
+        IsModerationRole,
         SearchStatusRole,
         ListItemUriRole, // searchTargetで登録しているか確認したユーザーのListItemのレコードURI
         CheckedRole,
@@ -39,6 +40,7 @@ public:
         VisibilityTypeAll,
         VisibilityTypeCuration,
         VisibilityTypeModeration,
+        VisibilityTypeUnknown,
     };
     Q_ENUM(VisibilityType);
     enum SearchStatusType {
@@ -62,6 +64,8 @@ public:
     Q_INVOKABLE void clear();
     Q_INVOKABLE void clearListItemCache();
     Q_INVOKABLE bool addRemoveFromList(const int row, const QString &did);
+
+    VisibilityType toVisibilityType(const QString &purpose) const;
 
     QString actor() const;
     void setActor(const QString &newActor);

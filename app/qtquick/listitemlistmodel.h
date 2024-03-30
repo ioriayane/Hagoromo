@@ -21,6 +21,8 @@ class ListItemListModel : public AtpAbstractListModel
                        creatorHandleChanged)
     Q_PROPERTY(QString creatorDisplayName READ creatorDisplayName WRITE setCreatorDisplayName NOTIFY
                        creatorDisplayNameChanged)
+    Q_PROPERTY(bool isModeration READ isModeration WRITE setIsModeration NOTIFY isModerationChanged
+                       FINAL)
 
 public:
     explicit ListItemListModel(QObject *parent = nullptr);
@@ -67,6 +69,8 @@ public:
     void setCreatorHandle(const QString &newCreatorHandle);
     QString creatorDisplayName() const;
     void setCreatorDisplayName(const QString &newCreatorDisplayName);
+    bool isModeration() const;
+    void setIsModeration(bool newIsModeration);
 
 public slots:
     Q_INVOKABLE bool getLatest();
@@ -84,6 +88,7 @@ signals:
     void creatorDidChanged();
     void creatorHandleChanged();
     void creatorDisplayNameChanged();
+    void isModerationChanged();
 
 protected:
     QHash<int, QByteArray> roleNames() const;
@@ -107,6 +112,7 @@ private:
     QString m_creatorDid;
     QString m_creatorHandle;
     QString m_creatorDisplayName;
+    bool m_isModeration;
 };
 
 #endif // LISTITEMLISTMODEL_H

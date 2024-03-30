@@ -133,6 +133,14 @@ ColumnLayout {
                 text: listItemListModel.creatorHandle.length == 0 ?
                           "" : "by " + listItemListModel.creatorDisplayName + " (" + listItemListModel.creatorHandle + ")"
             }
+            TagLabel {
+                fontPointSize: AdjustedValues.f8
+                color: Material.color(Material.Red,
+                                      Material.theme === Material.Light ? Material.Shade100 : Material.Shade800)
+                text: "Moderation"
+                source: "../images/list.png"
+                visible: listItemListModel.isModeration
+            }
             Label {
                 Layout.preferredWidth: parent.basisWidth
                 font.pointSize: AdjustedValues.f8

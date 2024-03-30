@@ -661,7 +661,7 @@ ColumnLayout {
                 id: listsListModel
                 displayInterval: 0
                 actor: profileView.userDid
-                visibilityType: ListsListModel.VisibilityTypeCuration
+                visibilityType: ListsListModel.VisibilityTypeAll
             }
             onRequestViewListDetail: (uri) => profileView.requestViewListDetail(uri)
             onScrollPositionChanged: (top) => userProfileColumnLayout.viewChange(top)

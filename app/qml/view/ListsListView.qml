@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 import QtGraphicalEffects 1.15
 
+import tech.relog.hagoromo.listslistmodel 1.0
 import tech.relog.hagoromo.singleton 1.0
 
 import "../parts"
@@ -98,6 +99,14 @@ ScrollView {
                         color: Material.color(Material.Grey)
                         font.pointSize: AdjustedValues.f8
                         text: "by " + model.creatorDisplayName + " (" + model.creatorHandle + ")"
+                    }
+                    TagLabel {
+                        fontPointSize: AdjustedValues.f8
+                        color: Material.color(Material.Red,
+                                              Material.theme === Material.Light ? Material.Shade100 : Material.Shade800)
+                        text: "Moderation"
+                        source: "../images/list.png"
+                        visible: model.isModeration
                     }
                     Label {
                         Layout.preferredWidth: parent.basisWidth

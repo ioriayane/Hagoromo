@@ -4,7 +4,7 @@ using AtProtocolInterface::AppBskyGraphGetList;
 using namespace AtProtocolType;
 
 ListItemListModel::ListItemListModel(QObject *parent)
-    : AtpAbstractListModel { parent }, m_subscribed(false)
+    : AtpAbstractListModel { parent }, m_subscribed(false), m_isModeration(false)
 {
 }
 
@@ -153,6 +153,7 @@ void ListItemListModel::copyFrom(AtProtocolInterface::AppBskyGraphGetList *list)
     setCreatorDid(list->listView()->creator->did);
     setCreatorHandle(list->listView()->creator->handle);
     setCreatorDisplayName(list->listView()->creator->displayName);
+    setIsModeration((list->listView()->purpose == "app.bsky.graph.defs#modlist"));
 
     for (const auto &item : *list->listItemViewList()) {
         if (!item.subject)
@@ -303,4 +304,17 @@ void ListItemListModel::setCreatorDisplayName(const QString &newCreatorDisplayNa
         return;
     m_creatorDisplayName = newCreatorDisplayName;
     emit creatorDisplayNameChanged();
+}
+
+bool ListItemListModel::isModeration() const
+{
+    return m_isModeration;
+}
+
+void ListItemListModel::setIsModeration(bool newIsModeration)
+{
+    if (m_isModeration == newIsModeration)
+        return;
+    m_isModeration = newIsModeration;
+    emit isModerationChanged();
 }

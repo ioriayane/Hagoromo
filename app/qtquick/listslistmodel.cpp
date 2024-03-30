@@ -58,11 +58,13 @@ QVariant ListsListModel::item(int row, ListsListModelRoles role) const
             return QString();
         else
             return current.creator->displayName;
-    } else if (role == CreatoravatarRole) {
+    } else if (role == CreatorAvatarRole) {
         if (!current.creator)
             return QString();
         else
             return current.creator->avatar;
+    } else if (role == IsModerationRole) {
+        return (toVisibilityType(current.purpose) == VisibilityTypeModeration);
     } else if (role == SearchStatusRole) {
         return m_searchStatusHash.value(current.cid, SearchStatusTypeUnknown);
     } else if (role == ListItemUriRole) {
@@ -188,6 +190,17 @@ bool ListsListModel::addRemoveFromList(const int row, const QString &did)
     return running();
 }
 
+ListsListModel::VisibilityType ListsListModel::toVisibilityType(const QString &purpose) const
+{
+    if (purpose == "app.bsky.graph.defs#curatelist") {
+        return VisibilityTypeCuration;
+    } else if (purpose == "app.bsky.graph.defs#modlist") {
+        return VisibilityTypeModeration;
+    } else {
+        return VisibilityTypeUnknown;
+    }
+}
+
 bool ListsListModel::getLatest()
 {
     if (running())
@@ -257,7 +270,8 @@ QHash<int, QByteArray> ListsListModel::roleNames() const
     roles[SubscribedRole] = "subscribed";
     roles[CreatorHandleRole] = "creatorHandle";
     roles[CreatorDisplayNameRole] = "creatorDisplayName";
-    roles[CreatoravatarRole] = "creatoravatar";
+    roles[CreatorAvatarRole] = "creatoravatar";
+    roles[IsModerationRole] = "isModeration";
     roles[SearchStatusRole] = "searchStatus";
     roles[ListItemUriRole] = "listItemUri";
     roles[CheckedRole] = "checked";
@@ -294,10 +308,7 @@ bool ListsListModel::checkVisibility(const QString &cid)
 
     const AppBskyGraphDefs::ListView &current = m_listViewHash.value(cid);
 
-    if ((visibilityType() == VisibilityTypeCuration
-         && current.purpose == "app.bsky.graph.defs#curatelist")
-        || (visibilityType() == VisibilityTypeModeration
-            && current.purpose == "app.bsky.graph.defs#modlist")) {
+    if (visibilityType() == toVisibilityType(current.purpose)) {
         if (searchTarget().startsWith("did:")) {
             m_searchCidQue.insert(0, cid);
         }
