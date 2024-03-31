@@ -91,9 +91,9 @@ protected:
     QHash<int, QByteArray> roleNames() const;
     virtual void finishedDisplayingQueuedPosts();
     virtual bool checkVisibility(const QString &cid);
+    void copyFrom(AtProtocolInterface::AppBskyGraphGetLists *lists);
 
 private:
-    void copyFrom(AtProtocolInterface::AppBskyGraphGetLists *lists);
     void searchActorInEachLists();
     void searchActorInEachListsFromCache();
     QString getListCidByUri(const QString &uri) const;
