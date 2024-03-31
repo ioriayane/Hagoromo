@@ -1,6 +1,10 @@
 #include "listitemlistmodel.h"
+#include "atprotocol/app/bsky/graph/appbskygraphmuteactorlist.h"
+#include "atprotocol/app/bsky/graph/appbskygraphunmuteactorlist.h"
 
 using AtProtocolInterface::AppBskyGraphGetList;
+using AtProtocolInterface::AppBskyGraphMuteActorList;
+using AtProtocolInterface::AppBskyGraphUnmuteActorList;
 using namespace AtProtocolType;
 
 ListItemListModel::ListItemListModel(QObject *parent)
@@ -68,6 +72,50 @@ void ListItemListModel::clear()
 {
     m_listItemViewHash.clear();
     AtpAbstractListModel::clear();
+}
+
+void ListItemListModel::mute()
+{
+    if (!uri().startsWith("at://"))
+        return;
+    if (running())
+        return;
+    setRunning(true);
+
+    if (muted()) {
+        // -> unmute
+        AppBskyGraphUnmuteActorList *list = new AppBskyGraphUnmuteActorList(this);
+        connect(list, &AppBskyGraphUnmuteActorList::finished, [=](bool success) {
+            if (success) {
+                setMuted(false);
+                setRunning(false);
+            }
+            list->deleteLater();
+        });
+        list->setAccount(account());
+        list->unmuteActorList(uri());
+    } else {
+        // -> mute
+        AppBskyGraphMuteActorList *list = new AppBskyGraphMuteActorList(this);
+        connect(list, &AppBskyGraphMuteActorList::finished, [=](bool success) {
+            if (success) {
+                setMuted(true);
+                setRunning(false);
+            }
+            list->deleteLater();
+        });
+        list->setAccount(account());
+        list->muteActorList(uri());
+    }
+}
+
+void ListItemListModel::block(const QString &uri)
+{
+    if (!uri.startsWith("at://"))
+        return;
+    if (running())
+        return;
+    setRunning(true);
 }
 
 bool ListItemListModel::getLatest()

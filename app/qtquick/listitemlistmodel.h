@@ -50,6 +50,9 @@ public:
     virtual Q_INVOKABLE QString getItemOfficialUrl(int row) const { return QString(); }
     Q_INVOKABLE void clear();
 
+    Q_INVOKABLE void mute();
+    Q_INVOKABLE void block(const QString &uri);
+
     QString uri() const;
     void setUri(const QString &newUri);
     QString cid() const;
