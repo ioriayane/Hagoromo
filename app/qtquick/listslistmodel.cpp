@@ -46,8 +46,10 @@ QVariant ListsListModel::item(int row, ListsListModelRoles role) const
         return current.name;
     else if (role == DescriptionRole)
         return current.description;
-    else if (role == SubscribedRole)
+    else if (role == MutedRole)
         return current.viewer.muted;
+    else if (role == BlockedRole)
+        return current.viewer.blocked.contains(did()) && !did().isEmpty();
     else if (role == CreatorHandleRole) {
         if (!current.creator)
             return QString();
@@ -267,7 +269,8 @@ QHash<int, QByteArray> ListsListModel::roleNames() const
     roles[AvatarRole] = "avatar";
     roles[NameRole] = "name";
     roles[DescriptionRole] = "description";
-    roles[SubscribedRole] = "subscribed";
+    roles[MutedRole] = "muted";
+    roles[BlockedRole] = "blocked";
     roles[CreatorHandleRole] = "creatorHandle";
     roles[CreatorDisplayNameRole] = "creatorDisplayName";
     roles[CreatorAvatarRole] = "creatoravatar";

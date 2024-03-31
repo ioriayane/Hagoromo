@@ -266,8 +266,8 @@ void hagoromo_test::test_ListsListModel()
 {
     ListsListModel model;
 
-    model.setAccount(m_service + "/lists/lists", QString(), QString(), QString(), "dummy",
-                     QString());
+    model.setAccount(m_service + "/lists/lists", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", QString(),
+                     QString(), "dummy", QString());
 
     model.setVisibilityType(ListsListModel::VisibilityTypeAll);
     {
@@ -280,13 +280,16 @@ void hagoromo_test::test_ListsListModel()
              QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
     QVERIFY(model.item(0, ListsListModel::CidRole).toString()
             == "bafyreihnheyk74x4jts23gl23icubyarggmo37xn55pop2lpystq426bqu");
-    QVERIFY(model.item(0, ListsListModel::SubscribedRole).toBool() == false);
+    QVERIFY(model.item(0, ListsListModel::MutedRole).toBool() == false);
+    QVERIFY(model.item(0, ListsListModel::BlockedRole).toBool() == false);
     QVERIFY(model.item(1, ListsListModel::CidRole).toString()
             == "bafyreieyd765syuilkovwe3ms3cpegt7wo3xksistzy2v4xmazrwbzlwtm");
-    QVERIFY(model.item(1, ListsListModel::SubscribedRole).toBool() == true);
+    QVERIFY(model.item(1, ListsListModel::MutedRole).toBool() == true);
+    QVERIFY(model.item(1, ListsListModel::BlockedRole).toBool() == false);
     QVERIFY(model.item(2, ListsListModel::CidRole).toString()
             == "bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy");
-    QVERIFY(model.item(2, ListsListModel::SubscribedRole).toBool() == false);
+    QVERIFY(model.item(2, ListsListModel::MutedRole).toBool() == false);
+    QVERIFY(model.item(2, ListsListModel::BlockedRole).toBool() == true);
 
     model.clear();
     model.setVisibilityType(ListsListModel::VisibilityTypeCuration);
@@ -300,10 +303,12 @@ void hagoromo_test::test_ListsListModel()
              QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
     QVERIFY(model.item(0, ListsListModel::CidRole).toString()
             == "bafyreihnheyk74x4jts23gl23icubyarggmo37xn55pop2lpystq426bqu");
-    QVERIFY(model.item(0, ListsListModel::SubscribedRole).toBool() == false);
+    QVERIFY(model.item(0, ListsListModel::MutedRole).toBool() == false);
+    QVERIFY(model.item(0, ListsListModel::BlockedRole).toBool() == false);
     QVERIFY(model.item(1, ListsListModel::CidRole).toString()
             == "bafyreifeiua5ltajiaad76rdfuc6c63g5xd45ysro6cjptm5enwzqpcxdy");
-    QVERIFY(model.item(1, ListsListModel::SubscribedRole).toBool() == false);
+    QVERIFY(model.item(1, ListsListModel::MutedRole).toBool() == false);
+    QVERIFY(model.item(1, ListsListModel::BlockedRole).toBool() == true);
 
     model.clear();
     model.setVisibilityType(ListsListModel::VisibilityTypeModeration);
@@ -317,7 +322,8 @@ void hagoromo_test::test_ListsListModel()
              QString("model.rowCount()=%1").arg(model.rowCount()).toLocal8Bit());
     QVERIFY(model.item(0, ListsListModel::CidRole).toString()
             == "bafyreieyd765syuilkovwe3ms3cpegt7wo3xksistzy2v4xmazrwbzlwtm");
-    QVERIFY(model.item(0, ListsListModel::SubscribedRole).toBool() == true);
+    QVERIFY(model.item(0, ListsListModel::MutedRole).toBool() == true);
+    QVERIFY(model.item(0, ListsListModel::BlockedRole).toBool() == false);
 
     model.clear();
     model.setVisibilityType(ListsListModel::VisibilityTypeAll);
