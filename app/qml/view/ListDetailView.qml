@@ -180,6 +180,7 @@ ColumnLayout {
                             text: qsTr("Delete list")
                             icon.source: "../images/delete.png"
                             onTriggered: recordOperator.deleteList(listDetailView.listUri)
+                            enabled: (listItemListModel.creatorHandle === recordOperator.accountHandle) &&  recordOperator.accountHandle.length > 0
                         }
                     }
                 }
