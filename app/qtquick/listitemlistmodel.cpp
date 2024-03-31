@@ -4,7 +4,11 @@ using AtProtocolInterface::AppBskyGraphGetList;
 using namespace AtProtocolType;
 
 ListItemListModel::ListItemListModel(QObject *parent)
-    : AtpAbstractListModel { parent }, m_subscribed(false), m_isModeration(false)
+    : AtpAbstractListModel { parent },
+      m_subscribed(false),
+      m_isModeration(false),
+      m_muted(false),
+      m_blocked(false)
 {
 }
 
@@ -149,7 +153,8 @@ void ListItemListModel::copyFrom(AtProtocolInterface::AppBskyGraphGetList *list)
     setName(list->listView()->name);
     setAvatar(list->listView()->avatar);
     setDescription(list->listView()->description);
-    setSubscribed(list->listView()->viewer.muted);
+    setMuted(list->listView()->viewer.muted);
+    setBlocked(list->listView()->viewer.blocked.contains(did()) && !did().isEmpty());
     setCreatorDid(list->listView()->creator->did);
     setCreatorHandle(list->listView()->creator->handle);
     setCreatorDisplayName(list->listView()->creator->displayName);
@@ -254,19 +259,6 @@ void ListItemListModel::setDescription(const QString &newDescription)
     emit descriptionChanged();
 }
 
-bool ListItemListModel::subscribed() const
-{
-    return m_subscribed;
-}
-
-void ListItemListModel::setSubscribed(bool newSubscribed)
-{
-    if (m_subscribed == newSubscribed)
-        return;
-    m_subscribed = newSubscribed;
-    emit subscribedChanged();
-}
-
 QString ListItemListModel::creatorDid() const
 {
     return m_creatorDid;
@@ -317,4 +309,30 @@ void ListItemListModel::setIsModeration(bool newIsModeration)
         return;
     m_isModeration = newIsModeration;
     emit isModerationChanged();
+}
+
+bool ListItemListModel::muted() const
+{
+    return m_muted;
+}
+
+void ListItemListModel::setMuted(bool newMuted)
+{
+    if (m_muted == newMuted)
+        return;
+    m_muted = newMuted;
+    emit mutedChanged();
+}
+
+bool ListItemListModel::blocked() const
+{
+    return m_blocked;
+}
+
+void ListItemListModel::setBlocked(bool newBlocked)
+{
+    if (m_blocked == newBlocked)
+        return;
+    m_blocked = newBlocked;
+    emit blockedChanged();
 }

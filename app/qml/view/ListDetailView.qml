@@ -141,6 +141,24 @@ ColumnLayout {
                 source: "../images/list.png"
                 visible: listItemListModel.isModeration
             }
+            RowLayout {
+                TagLabel {
+                    fontPointSize: AdjustedValues.f8
+                    color: Material.color(Material.BlueGrey,
+                                          Material.theme === Material.Light ? Material.Shade100 : Material.Shade800)
+                    text: qsTr("Muted")
+                    source: "../images/list.png"
+                    visible: listItemListModel.muted
+                }
+                TagLabel {
+                    fontPointSize: AdjustedValues.f8
+                    color: Material.color(Material.BlueGrey,
+                                          Material.theme === Material.Light ? Material.Shade100 : Material.Shade800)
+                    text: qsTr("Blocked")
+                    source: "../images/list.png"
+                    visible: listItemListModel.blocked
+                }
+            }
             Label {
                 Layout.preferredWidth: parent.basisWidth
                 font.pointSize: AdjustedValues.f8

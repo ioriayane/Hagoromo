@@ -441,7 +441,8 @@ void hagoromo_test::test_ListItemListModel()
     QVERIFY(model.name() == "my accounts");
     QVERIFY(model.avatar() == "");
     QVERIFY(model.description() == "my accounts list");
-    QVERIFY(model.subscribed() == false);
+    QVERIFY(model.muted() == false);
+    QVERIFY(model.blocked() == false);
 
     model.setUri("at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/3k7igyxfizg27");
     {
@@ -470,7 +471,8 @@ void hagoromo_test::test_ListItemListModel()
     QVERIFY(model.name() == "my accounts");
     QVERIFY(model.avatar() == "");
     QVERIFY(model.description() == "");
-    QVERIFY(model.subscribed() == false);
+    QVERIFY(model.muted() == false);
+    QVERIFY(model.blocked() == false);
 }
 
 void hagoromo_test::test_ListItemListModel_error()

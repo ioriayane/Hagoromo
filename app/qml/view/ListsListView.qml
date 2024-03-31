@@ -126,7 +126,6 @@ ScrollView {
                             visible: model.blocked
                         }
                     }
-
                     Label {
                         Layout.preferredWidth: parent.basisWidth
                         font.pointSize: AdjustedValues.f8
