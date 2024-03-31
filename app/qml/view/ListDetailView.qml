@@ -211,7 +211,7 @@ ColumnLayout {
                             enabled: listItemListModel.isModeration
                             text: listItemListModel.blocked ? qsTr("Unblock list") : qsTr("Block list")
                             icon.source: "../images/block.png"
-                            //onTriggered: Qt.openUrlExternally(listItemListModel.getOfficialUrl())
+                            onTriggered: listItemListModel.block()
                         }
                     }
                 }

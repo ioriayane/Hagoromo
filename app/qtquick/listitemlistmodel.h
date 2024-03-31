@@ -24,6 +24,8 @@ class ListItemListModel : public AtpAbstractListModel
                        FINAL)
     Q_PROPERTY(bool muted READ muted WRITE setMuted NOTIFY mutedChanged FINAL)
     Q_PROPERTY(bool blocked READ blocked WRITE setBlocked NOTIFY blockedChanged FINAL)
+    Q_PROPERTY(
+            QString blockedUri READ blockedUri WRITE setBlockedUri NOTIFY blockedUriChanged FINAL)
 
 public:
     explicit ListItemListModel(QObject *parent = nullptr);
@@ -51,7 +53,7 @@ public:
     Q_INVOKABLE void clear();
 
     Q_INVOKABLE void mute();
-    Q_INVOKABLE void block(const QString &uri);
+    Q_INVOKABLE void block();
 
     QString uri() const;
     void setUri(const QString &newUri);
@@ -77,6 +79,8 @@ public:
     void setMuted(bool newMuted);
     bool blocked() const;
     void setBlocked(bool newBlocked);
+    QString blockedUri() const;
+    void setBlockedUri(const QString &newBlockedUri);
 
 public slots:
     Q_INVOKABLE bool getLatest();
@@ -97,6 +101,7 @@ signals:
     void isModerationChanged();
     void mutedChanged();
     void blockedChanged();
+    void blockedUriChanged();
 
 protected:
     QHash<int, QByteArray> roleNames() const;
@@ -123,6 +128,7 @@ private:
     bool m_isModeration;
     bool m_muted;
     bool m_blocked;
+    QString m_blockedUri;
 };
 
 #endif // LISTITEMLISTMODEL_H

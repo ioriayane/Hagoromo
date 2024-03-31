@@ -22,6 +22,7 @@ public:
     void like(const QString &cid, const QString &uri);
     void follow(const QString &did);
     void block(const QString &did);
+    void blockList(const QString &uri);
     void list(const QString &name, const ListPurpose purpose, const QString &description);
     void listItem(const QString &uri, const QString &did);
     void threadGate(const QString &uri, const AtProtocolType::ThreadGateType type,

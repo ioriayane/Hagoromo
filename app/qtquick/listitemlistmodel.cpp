@@ -1,6 +1,7 @@
 #include "listitemlistmodel.h"
 #include "atprotocol/app/bsky/graph/appbskygraphmuteactorlist.h"
 #include "atprotocol/app/bsky/graph/appbskygraphunmuteactorlist.h"
+#include "recordoperator.h"
 
 using AtProtocolInterface::AppBskyGraphGetList;
 using AtProtocolInterface::AppBskyGraphMuteActorList;
@@ -109,13 +110,31 @@ void ListItemListModel::mute()
     }
 }
 
-void ListItemListModel::block(const QString &uri)
+void ListItemListModel::block()
 {
-    if (!uri.startsWith("at://"))
+    if (!uri().startsWith("at://"))
         return;
     if (running())
         return;
     setRunning(true);
+
+    RecordOperator *ope = new RecordOperator(this);
+    connect(ope, &RecordOperator::finished, [=](bool success) {
+        if (success) {
+            setBlocked(!blocked());
+            setRunning(false);
+        }
+        ope->deleteLater();
+    });
+    ope->setAccount(account().service, account().did, account().handle, account().email,
+                    account().accessJwt, account().refreshJwt);
+    if (blocked()) {
+        // -> unblock
+        ope->deleteBlockList(blockedUri());
+    } else {
+        // -> block
+        ope->blockList(uri());
+    }
 }
 
 bool ListItemListModel::getLatest()
@@ -203,6 +222,7 @@ void ListItemListModel::copyFrom(AtProtocolInterface::AppBskyGraphGetList *list)
     setDescription(list->listView()->description);
     setMuted(list->listView()->viewer.muted);
     setBlocked(list->listView()->viewer.blocked.contains(did()) && !did().isEmpty());
+    setBlockedUri(list->listView()->viewer.blocked);
     setCreatorDid(list->listView()->creator->did);
     setCreatorHandle(list->listView()->creator->handle);
     setCreatorDisplayName(list->listView()->creator->displayName);
@@ -383,4 +403,17 @@ void ListItemListModel::setBlocked(bool newBlocked)
         return;
     m_blocked = newBlocked;
     emit blockedChanged();
+}
+
+QString ListItemListModel::blockedUri() const
+{
+    return m_blockedUri;
+}
+
+void ListItemListModel::setBlockedUri(const QString &newBlockedUri)
+{
+    if (m_blockedUri == newBlockedUri)
+        return;
+    m_blockedUri = newBlockedUri;
+    emit blockedUriChanged();
 }
