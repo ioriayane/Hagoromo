@@ -102,7 +102,7 @@ ScrollView {
                     PropertyChanges {
                         target: controlButton
                         visible: true
-                        iconText: model.blocked ? qsTr("Unblock") : qsTr("block")
+                        iconText: model.blocked ? qsTr("Unblock") : qsTr("Block")
                         onClicked: {
                             console.log("block " + model.index)
                             rootListView.model.block(model.index)

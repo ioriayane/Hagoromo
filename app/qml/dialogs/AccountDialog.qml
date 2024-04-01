@@ -149,7 +149,7 @@ Dialog {
                                 }
                             }
                             Menu {
-                                title: qsTr("Muted")
+                                title: qsTr("Mute")
                                 width: mutedAccountsMenuItem.implicitWidth
                                 MenuItem {
                                     id: mutedWordMenuItem
@@ -179,7 +179,7 @@ Dialog {
                                 }
                             }
                             Menu {
-                                title: qsTr("Blocked")
+                                title: qsTr("Block")
                                 width: blockedAccountsMenuItem.implicitWidth
                                 MenuItem {
                                     id: blockedAccountsMenuItem
