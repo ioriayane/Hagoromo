@@ -28,6 +28,7 @@ public:
         DescriptionRole,
         MutedRole,
         BlockedRole,
+        BlockedUriRole,
         CreatorHandleRole,
         CreatorDisplayNameRole,
         CreatorAvatarRole,
@@ -65,6 +66,9 @@ public:
     Q_INVOKABLE void clear();
     Q_INVOKABLE void clearListItemCache();
     Q_INVOKABLE bool addRemoveFromList(const int row, const QString &did);
+
+    Q_INVOKABLE void mute(const int row);
+    Q_INVOKABLE void block(const int row);
 
     VisibilityType toVisibilityType(const QString &purpose) const;
 

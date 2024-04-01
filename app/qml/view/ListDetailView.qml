@@ -202,13 +202,11 @@ ColumnLayout {
                         }
                         MenuSeparator {}
                         MenuItem {
-                            enabled: listItemListModel.isModeration
                             text: listItemListModel.muted ? qsTr("Unmute list") : qsTr("Mute list")
                             icon.source: "../images/account_off.png"
                             onTriggered: listItemListModel.mute()
                         }
                         MenuItem {
-                            enabled: listItemListModel.isModeration
                             text: listItemListModel.blocked ? qsTr("Unblock list") : qsTr("Block list")
                             icon.source: "../images/block.png"
                             onTriggered: listItemListModel.block()

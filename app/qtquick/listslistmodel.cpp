@@ -4,8 +4,13 @@
 
 #include "atprotocol/app/bsky/graph/appbskygraphgetlists.h"
 #include "atprotocol/com/atproto/repo/comatprotorepolistrecords.h"
+#include "atprotocol/app/bsky/graph/appbskygraphmuteactorlist.h"
+#include "atprotocol/app/bsky/graph/appbskygraphunmuteactorlist.h"
+#include "recordoperator.h"
 
 using AtProtocolInterface::AppBskyGraphGetLists;
+using AtProtocolInterface::AppBskyGraphMuteActorList;
+using AtProtocolInterface::AppBskyGraphUnmuteActorList;
 using AtProtocolInterface::ComAtprotoRepoListRecords;
 using namespace AtProtocolType;
 
@@ -49,6 +54,8 @@ QVariant ListsListModel::item(int row, ListsListModelRoles role) const
         return current.viewer.muted;
     else if (role == BlockedRole)
         return current.viewer.blocked.contains(did()) && !did().isEmpty();
+    else if (role == BlockedUriRole)
+        return current.viewer.blocked;
     else if (role == CreatorHandleRole) {
         if (!current.creator)
             return QString();
@@ -97,6 +104,12 @@ void ListsListModel::update(int row, ListsListModelRoles role, const QVariant &v
             m_listItemUriHash[current.cid] = new_uri;
             emit dataChanged(index(row), index(row));
         }
+    } else if (role == MutedRole) {
+        m_listViewHash[current.cid].viewer.muted = value.toBool();
+        emit dataChanged(index(row), index(row));
+    } else if (role == BlockedUriRole) {
+        m_listViewHash[current.cid].viewer.blocked = value.toString();
+        emit dataChanged(index(row), index(row));
     } else if (role == CheckedRole) {
         m_checkedHash[current.cid] = value.toBool();
         emit dataChanged(index(row), index(row));
@@ -191,6 +204,78 @@ bool ListsListModel::addRemoveFromList(const int row, const QString &did)
     return running();
 }
 
+void ListsListModel::mute(const int row)
+{
+    QVariant uri = item(row, ListsListModel::UriRole);
+    QVariant muted = item(row, ListsListModel::MutedRole);
+    if (uri.isNull())
+        return;
+    if (!uri.toString().startsWith("at://"))
+        return;
+    if (running())
+        return;
+    setRunning(true);
+
+    if (muted.toBool()) {
+        // -> unmute
+        AppBskyGraphUnmuteActorList *list = new AppBskyGraphUnmuteActorList(this);
+        connect(list, &AppBskyGraphUnmuteActorList::finished, [=](bool success) {
+            if (success) {
+                update(row, ListsListModel::MutedRole, false);
+                setRunning(false);
+            }
+            list->deleteLater();
+        });
+        list->setAccount(account());
+        list->unmuteActorList(uri.toString());
+    } else {
+        // -> mute
+        AppBskyGraphMuteActorList *list = new AppBskyGraphMuteActorList(this);
+        connect(list, &AppBskyGraphMuteActorList::finished, [=](bool success) {
+            if (success) {
+                update(row, ListsListModel::MutedRole, true);
+                setRunning(false);
+            }
+            list->deleteLater();
+        });
+        list->setAccount(account());
+        list->muteActorList(uri.toString());
+    }
+}
+
+void ListsListModel::block(const int row)
+{
+    QVariant uri = item(row, ListsListModel::UriRole);
+    QVariant blocked = item(row, ListsListModel::BlockedRole);
+    if (uri.isNull())
+        return;
+    if (!uri.toString().startsWith("at://"))
+        return;
+    if (running())
+        return;
+    setRunning(true);
+
+    RecordOperator *ope = new RecordOperator(this);
+    connect(ope, &RecordOperator::finished,
+            [=](bool success, const QString &uri, const QString &cid) {
+                qDebug() << success << uri;
+                if (success) {
+                    update(row, ListsListModel::BlockedUriRole, uri);
+                    setRunning(false);
+                }
+                ope->deleteLater();
+            });
+    ope->setAccount(account().service, account().did, account().handle, account().email,
+                    account().accessJwt, account().refreshJwt);
+    if (blocked.toBool()) {
+        // -> unblock
+        ope->deleteBlockList(item(row, ListsListModel::BlockedUriRole).toString());
+    } else {
+        // -> block
+        ope->blockList(uri.toString());
+    }
+}
+
 ListsListModel::VisibilityType ListsListModel::toVisibilityType(const QString &purpose) const
 {
     if (purpose == "app.bsky.graph.defs#curatelist") {
@@ -270,6 +355,7 @@ QHash<int, QByteArray> ListsListModel::roleNames() const
     roles[DescriptionRole] = "description";
     roles[MutedRole] = "muted";
     roles[BlockedRole] = "blocked";
+    roles[BlockedUriRole] = "blockedUri";
     roles[CreatorHandleRole] = "creatorHandle";
     roles[CreatorDisplayNameRole] = "creatorDisplayName";
     roles[CreatorAvatarRole] = "creatoravatar";

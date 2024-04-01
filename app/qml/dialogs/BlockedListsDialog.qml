@@ -30,7 +30,7 @@ Dialog {
             return
         }
         listBlocksListModel.setAccount(account.service, account.did, account.handle,
-                                  account.email, account.accessJwt, account.refreshJwt)
+                                       account.email, account.accessJwt, account.refreshJwt)
         listBlocksListModel.getLatest()
 
         listScrollView.currentIndex = -1
@@ -58,6 +58,7 @@ Dialog {
             id: listScrollView
             Layout.preferredWidth: 400 * AdjustedValues.ratio
             Layout.preferredHeight: 350 * AdjustedValues.ratioHalf
+            mode: 2
             model: ListBlocksListModel {
                 id: listBlocksListModel
                 onErrorOccured: (code, message) => mutedListsDialog.errorOccured(mutedListsDialog.account.uuid, code, message)

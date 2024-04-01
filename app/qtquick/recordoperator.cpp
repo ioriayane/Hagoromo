@@ -250,7 +250,7 @@ void RecordOperator::follow(const QString &did)
         if (!success) {
             emit errorOccured(create_record->errorCode(), create_record->errorMessage());
         }
-        emit finished(success, QString(), QString());
+        emit finished(success, create_record->replyUri(), create_record->replyCid());
         setRunning(false);
         create_record->deleteLater();
     });
@@ -289,7 +289,7 @@ void RecordOperator::block(const QString &did)
         if (!success) {
             emit errorOccured(create_record->errorCode(), create_record->errorMessage());
         }
-        emit finished(success, QString(), QString());
+        emit finished(success, create_record->replyUri(), create_record->replyCid());
         setRunning(false);
         create_record->deleteLater();
     });
@@ -308,7 +308,7 @@ void RecordOperator::blockList(const QString &uri)
         if (!success) {
             emit errorOccured(create_record->errorCode(), create_record->errorMessage());
         }
-        emit finished(success, QString(), QString());
+        emit finished(success, create_record->replyUri(), create_record->replyCid());
         setRunning(false);
         create_record->deleteLater();
     });

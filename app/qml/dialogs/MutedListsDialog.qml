@@ -58,6 +58,7 @@ Dialog {
             id: listScrollView
             Layout.preferredWidth: 400 * AdjustedValues.ratio
             Layout.preferredHeight: 350 * AdjustedValues.ratioHalf
+            mode: 1
             model: ListMutesListModel {
                 id: listMutesListModel
                 onErrorOccured: (code, message) => mutedListsDialog.errorOccured(mutedListsDialog.account.uuid, code, message)

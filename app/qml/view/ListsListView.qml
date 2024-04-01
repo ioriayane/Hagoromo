@@ -18,6 +18,7 @@ ScrollView {
 
     property alias listView: rootListView
     property alias model: rootListView.model
+    property int mode: 0    // 0:プロフィール用, 1:ミュートリスト一覧ダイアログ用, 2:ブロックリスト一覧ダイアログ用
 
     signal requestViewListDetail(string uri)
 
@@ -75,6 +76,41 @@ ScrollView {
 
             onClicked: (mouse) => listsListView.requestViewListDetail(model.uri)
 
+            states: [
+                State {
+                    when: (listsListView.mode === 0)
+                    PropertyChanges { target: statusLabelLayout; visible: true }
+                    PropertyChanges { target: controlButton; visible: false }
+
+                },
+                State {
+                    when: (listsListView.mode === 1)
+                    PropertyChanges { target: statusLabelLayout; visible: false }
+                    PropertyChanges {
+                        target: controlButton
+                        visible: true
+                        iconText: model.muted ? qsTr("Unmute") : qsTr("Mute")
+                        onClicked: {
+                            console.log("mute " + model.index)
+                            rootListView.model.mute(model.index)
+                        }
+                    }
+                },
+                State {
+                    when: (listsListView.mode === 2)
+                    PropertyChanges { target: statusLabelLayout; visible: false }
+                    PropertyChanges {
+                        target: controlButton
+                        visible: true
+                        iconText: model.blocked ? qsTr("Unblock") : qsTr("block")
+                        onClicked: {
+                            console.log("block " + model.index)
+                            rootListView.model.block(model.index)
+                        }
+                    }
+                }
+            ]
+
             RowLayout{
                 spacing: 10
                 AvatarImage {
@@ -93,6 +129,15 @@ ScrollView {
                         Layout.preferredWidth: parent.basisWidth
                         font.pointSize: AdjustedValues.f10
                         text: model.name
+                        IconButton {
+                            id: controlButton
+                            anchors.top: parent.top
+                            anchors.right: parent.right
+                            height: AdjustedValues.b24
+                            enabled: !listsListView.model.running
+                            iconText: "   "
+                            font.pointSize: AdjustedValues.f8
+                        }
                     }
                     Label {
                         Layout.preferredWidth: parent.basisWidth
@@ -109,6 +154,8 @@ ScrollView {
                         visible: model.isModeration
                     }
                     RowLayout {
+                        id: statusLabelLayout
+                        visible: (listsListView.mode === 0)
                         TagLabel {
                             fontPointSize: AdjustedValues.f8
                             color: Material.color(Material.BlueGrey,
