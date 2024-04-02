@@ -1,10 +1,19 @@
 #include "listitemlistmodel.h"
+#include "atprotocol/app/bsky/graph/appbskygraphmuteactorlist.h"
+#include "atprotocol/app/bsky/graph/appbskygraphunmuteactorlist.h"
+#include "recordoperator.h"
 
 using AtProtocolInterface::AppBskyGraphGetList;
+using AtProtocolInterface::AppBskyGraphMuteActorList;
+using AtProtocolInterface::AppBskyGraphUnmuteActorList;
 using namespace AtProtocolType;
 
 ListItemListModel::ListItemListModel(QObject *parent)
-    : AtpAbstractListModel { parent }, m_subscribed(false)
+    : AtpAbstractListModel { parent },
+      m_subscribed(false),
+      m_isModeration(false),
+      m_muted(false),
+      m_blocked(false)
 {
 }
 
@@ -57,13 +66,75 @@ QString ListItemListModel::getRecordText(const QString &cid)
 
 QString ListItemListModel::getOfficialUrl() const
 {
-    return QString("https://bsky.app/profile/%1/lists/%2").arg(did(), rkey());
+    return atUriToOfficialUrl(uri(), QStringLiteral("lists"));
 }
 
 void ListItemListModel::clear()
 {
     m_listItemViewHash.clear();
     AtpAbstractListModel::clear();
+}
+
+void ListItemListModel::mute()
+{
+    if (!uri().startsWith("at://"))
+        return;
+    if (running())
+        return;
+    setRunning(true);
+
+    if (muted()) {
+        // -> unmute
+        AppBskyGraphUnmuteActorList *list = new AppBskyGraphUnmuteActorList(this);
+        connect(list, &AppBskyGraphUnmuteActorList::finished, [=](bool success) {
+            if (success) {
+                setMuted(false);
+                setRunning(false);
+            }
+            list->deleteLater();
+        });
+        list->setAccount(account());
+        list->unmuteActorList(uri());
+    } else {
+        // -> mute
+        AppBskyGraphMuteActorList *list = new AppBskyGraphMuteActorList(this);
+        connect(list, &AppBskyGraphMuteActorList::finished, [=](bool success) {
+            if (success) {
+                setMuted(true);
+                setRunning(false);
+            }
+            list->deleteLater();
+        });
+        list->setAccount(account());
+        list->muteActorList(uri());
+    }
+}
+
+void ListItemListModel::block()
+{
+    if (!uri().startsWith("at://"))
+        return;
+    if (running())
+        return;
+    setRunning(true);
+
+    RecordOperator *ope = new RecordOperator(this);
+    connect(ope, &RecordOperator::finished, [=](bool success) {
+        if (success) {
+            setBlocked(!blocked());
+            setRunning(false);
+        }
+        ope->deleteLater();
+    });
+    ope->setAccount(account().service, account().did, account().handle, account().email,
+                    account().accessJwt, account().refreshJwt);
+    if (blocked()) {
+        // -> unblock
+        ope->deleteBlockList(blockedUri());
+    } else {
+        // -> block
+        ope->blockList(uri());
+    }
 }
 
 bool ListItemListModel::getLatest()
@@ -149,10 +220,13 @@ void ListItemListModel::copyFrom(AtProtocolInterface::AppBskyGraphGetList *list)
     setName(list->listView()->name);
     setAvatar(list->listView()->avatar);
     setDescription(list->listView()->description);
-    setSubscribed(list->listView()->viewer.muted);
+    setMuted(list->listView()->viewer.muted);
+    setBlocked(list->listView()->viewer.blocked.contains(did()) && !did().isEmpty());
+    setBlockedUri(list->listView()->viewer.blocked);
     setCreatorDid(list->listView()->creator->did);
     setCreatorHandle(list->listView()->creator->handle);
     setCreatorDisplayName(list->listView()->creator->displayName);
+    setIsModeration((list->listView()->purpose == "app.bsky.graph.defs#modlist"));
 
     for (const auto &item : *list->listItemViewList()) {
         if (!item.subject)
@@ -253,19 +327,6 @@ void ListItemListModel::setDescription(const QString &newDescription)
     emit descriptionChanged();
 }
 
-bool ListItemListModel::subscribed() const
-{
-    return m_subscribed;
-}
-
-void ListItemListModel::setSubscribed(bool newSubscribed)
-{
-    if (m_subscribed == newSubscribed)
-        return;
-    m_subscribed = newSubscribed;
-    emit subscribedChanged();
-}
-
 QString ListItemListModel::creatorDid() const
 {
     return m_creatorDid;
@@ -303,4 +364,56 @@ void ListItemListModel::setCreatorDisplayName(const QString &newCreatorDisplayNa
         return;
     m_creatorDisplayName = newCreatorDisplayName;
     emit creatorDisplayNameChanged();
+}
+
+bool ListItemListModel::isModeration() const
+{
+    return m_isModeration;
+}
+
+void ListItemListModel::setIsModeration(bool newIsModeration)
+{
+    if (m_isModeration == newIsModeration)
+        return;
+    m_isModeration = newIsModeration;
+    emit isModerationChanged();
+}
+
+bool ListItemListModel::muted() const
+{
+    return m_muted;
+}
+
+void ListItemListModel::setMuted(bool newMuted)
+{
+    if (m_muted == newMuted)
+        return;
+    m_muted = newMuted;
+    emit mutedChanged();
+}
+
+bool ListItemListModel::blocked() const
+{
+    return m_blocked;
+}
+
+void ListItemListModel::setBlocked(bool newBlocked)
+{
+    if (m_blocked == newBlocked)
+        return;
+    m_blocked = newBlocked;
+    emit blockedChanged();
+}
+
+QString ListItemListModel::blockedUri() const
+{
+    return m_blockedUri;
+}
+
+void ListItemListModel::setBlockedUri(const QString &newBlockedUri)
+{
+    if (m_blockedUri == newBlockedUri)
+        return;
+    m_blockedUri = newBlockedUri;
+    emit blockedUriChanged();
 }

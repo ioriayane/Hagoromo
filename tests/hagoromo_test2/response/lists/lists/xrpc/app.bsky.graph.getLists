@@ -59,7 +59,8 @@
             "purpose": "app.bsky.graph.defs#curatelist",
             "indexedAt": "2023-09-16T05:32:56.207Z",
             "viewer": {
-                "muted": false
+                "muted": false,
+                "blocked": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.listblock/3koxtwxg2ey2j"
             },
             "creator": {
                 "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",

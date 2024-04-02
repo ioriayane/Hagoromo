@@ -26,10 +26,13 @@ public:
         AvatarRole,
         NameRole,
         DescriptionRole,
-        SubscribedRole,
+        MutedRole,
+        BlockedRole,
+        BlockedUriRole,
         CreatorHandleRole,
         CreatorDisplayNameRole,
-        CreatoravatarRole,
+        CreatorAvatarRole,
+        IsModerationRole,
         SearchStatusRole,
         ListItemUriRole, // searchTargetで登録しているか確認したユーザーのListItemのレコードURI
         CheckedRole,
@@ -39,6 +42,7 @@ public:
         VisibilityTypeAll,
         VisibilityTypeCuration,
         VisibilityTypeModeration,
+        VisibilityTypeUnknown,
     };
     Q_ENUM(VisibilityType);
     enum SearchStatusType {
@@ -63,6 +67,11 @@ public:
     Q_INVOKABLE void clearListItemCache();
     Q_INVOKABLE bool addRemoveFromList(const int row, const QString &did);
 
+    Q_INVOKABLE void mute(const int row);
+    Q_INVOKABLE void block(const int row);
+
+    VisibilityType toVisibilityType(const QString &purpose) const;
+
     QString actor() const;
     void setActor(const QString &newActor);
     VisibilityType visibilityType() const;
@@ -86,9 +95,9 @@ protected:
     QHash<int, QByteArray> roleNames() const;
     virtual void finishedDisplayingQueuedPosts();
     virtual bool checkVisibility(const QString &cid);
+    void copyFrom(AtProtocolInterface::AppBskyGraphGetLists *lists);
 
 private:
-    void copyFrom(AtProtocolInterface::AppBskyGraphGetLists *lists);
     void searchActorInEachLists();
     void searchActorInEachListsFromCache();
     QString getListCidByUri(const QString &uri) const;

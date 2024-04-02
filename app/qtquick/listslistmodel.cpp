@@ -1,12 +1,16 @@
 #include "listslistmodel.h"
-// #include "listitemlistmodel.h"
 #include "recordoperator.h"
 #include "tools/listitemscache.h"
 
 #include "atprotocol/app/bsky/graph/appbskygraphgetlists.h"
 #include "atprotocol/com/atproto/repo/comatprotorepolistrecords.h"
+#include "atprotocol/app/bsky/graph/appbskygraphmuteactorlist.h"
+#include "atprotocol/app/bsky/graph/appbskygraphunmuteactorlist.h"
+#include "recordoperator.h"
 
 using AtProtocolInterface::AppBskyGraphGetLists;
+using AtProtocolInterface::AppBskyGraphMuteActorList;
+using AtProtocolInterface::AppBskyGraphUnmuteActorList;
 using AtProtocolInterface::ComAtprotoRepoListRecords;
 using namespace AtProtocolType;
 
@@ -46,8 +50,12 @@ QVariant ListsListModel::item(int row, ListsListModelRoles role) const
         return current.name;
     else if (role == DescriptionRole)
         return current.description;
-    else if (role == SubscribedRole)
+    else if (role == MutedRole)
         return current.viewer.muted;
+    else if (role == BlockedRole)
+        return current.viewer.blocked.contains(did()) && !did().isEmpty();
+    else if (role == BlockedUriRole)
+        return current.viewer.blocked;
     else if (role == CreatorHandleRole) {
         if (!current.creator)
             return QString();
@@ -58,11 +66,13 @@ QVariant ListsListModel::item(int row, ListsListModelRoles role) const
             return QString();
         else
             return current.creator->displayName;
-    } else if (role == CreatoravatarRole) {
+    } else if (role == CreatorAvatarRole) {
         if (!current.creator)
             return QString();
         else
             return current.creator->avatar;
+    } else if (role == IsModerationRole) {
+        return (toVisibilityType(current.purpose) == VisibilityTypeModeration);
     } else if (role == SearchStatusRole) {
         return m_searchStatusHash.value(current.cid, SearchStatusTypeUnknown);
     } else if (role == ListItemUriRole) {
@@ -94,6 +104,12 @@ void ListsListModel::update(int row, ListsListModelRoles role, const QVariant &v
             m_listItemUriHash[current.cid] = new_uri;
             emit dataChanged(index(row), index(row));
         }
+    } else if (role == MutedRole) {
+        m_listViewHash[current.cid].viewer.muted = value.toBool();
+        emit dataChanged(index(row), index(row));
+    } else if (role == BlockedUriRole) {
+        m_listViewHash[current.cid].viewer.blocked = value.toString();
+        emit dataChanged(index(row), index(row));
     } else if (role == CheckedRole) {
         m_checkedHash[current.cid] = value.toBool();
         emit dataChanged(index(row), index(row));
@@ -188,6 +204,89 @@ bool ListsListModel::addRemoveFromList(const int row, const QString &did)
     return running();
 }
 
+void ListsListModel::mute(const int row)
+{
+    QVariant uri = item(row, ListsListModel::UriRole);
+    QVariant muted = item(row, ListsListModel::MutedRole);
+    if (uri.isNull())
+        return;
+    if (!uri.toString().startsWith("at://"))
+        return;
+    if (running())
+        return;
+    setRunning(true);
+
+    if (muted.toBool()) {
+        // -> unmute
+        AppBskyGraphUnmuteActorList *list = new AppBskyGraphUnmuteActorList(this);
+        connect(list, &AppBskyGraphUnmuteActorList::finished, [=](bool success) {
+            if (success) {
+                update(row, ListsListModel::MutedRole, false);
+                setRunning(false);
+            }
+            list->deleteLater();
+        });
+        list->setAccount(account());
+        list->unmuteActorList(uri.toString());
+    } else {
+        // -> mute
+        AppBskyGraphMuteActorList *list = new AppBskyGraphMuteActorList(this);
+        connect(list, &AppBskyGraphMuteActorList::finished, [=](bool success) {
+            if (success) {
+                update(row, ListsListModel::MutedRole, true);
+                setRunning(false);
+            }
+            list->deleteLater();
+        });
+        list->setAccount(account());
+        list->muteActorList(uri.toString());
+    }
+}
+
+void ListsListModel::block(const int row)
+{
+    QVariant uri = item(row, ListsListModel::UriRole);
+    QVariant blocked = item(row, ListsListModel::BlockedRole);
+    if (uri.isNull())
+        return;
+    if (!uri.toString().startsWith("at://"))
+        return;
+    if (running())
+        return;
+    setRunning(true);
+
+    RecordOperator *ope = new RecordOperator(this);
+    connect(ope, &RecordOperator::finished,
+            [=](bool success, const QString &uri, const QString &cid) {
+                qDebug() << success << uri;
+                if (success) {
+                    update(row, ListsListModel::BlockedUriRole, uri);
+                    setRunning(false);
+                }
+                ope->deleteLater();
+            });
+    ope->setAccount(account().service, account().did, account().handle, account().email,
+                    account().accessJwt, account().refreshJwt);
+    if (blocked.toBool()) {
+        // -> unblock
+        ope->deleteBlockList(item(row, ListsListModel::BlockedUriRole).toString());
+    } else {
+        // -> block
+        ope->blockList(uri.toString());
+    }
+}
+
+ListsListModel::VisibilityType ListsListModel::toVisibilityType(const QString &purpose) const
+{
+    if (purpose == "app.bsky.graph.defs#curatelist") {
+        return VisibilityTypeCuration;
+    } else if (purpose == "app.bsky.graph.defs#modlist") {
+        return VisibilityTypeModeration;
+    } else {
+        return VisibilityTypeUnknown;
+    }
+}
+
 bool ListsListModel::getLatest()
 {
     if (running())
@@ -254,10 +353,13 @@ QHash<int, QByteArray> ListsListModel::roleNames() const
     roles[AvatarRole] = "avatar";
     roles[NameRole] = "name";
     roles[DescriptionRole] = "description";
-    roles[SubscribedRole] = "subscribed";
+    roles[MutedRole] = "muted";
+    roles[BlockedRole] = "blocked";
+    roles[BlockedUriRole] = "blockedUri";
     roles[CreatorHandleRole] = "creatorHandle";
     roles[CreatorDisplayNameRole] = "creatorDisplayName";
-    roles[CreatoravatarRole] = "creatoravatar";
+    roles[CreatorAvatarRole] = "creatoravatar";
+    roles[IsModerationRole] = "isModeration";
     roles[SearchStatusRole] = "searchStatus";
     roles[ListItemUriRole] = "listItemUri";
     roles[CheckedRole] = "checked";
@@ -294,10 +396,7 @@ bool ListsListModel::checkVisibility(const QString &cid)
 
     const AppBskyGraphDefs::ListView &current = m_listViewHash.value(cid);
 
-    if ((visibilityType() == VisibilityTypeCuration
-         && current.purpose == "app.bsky.graph.defs#curatelist")
-        || (visibilityType() == VisibilityTypeModeration
-            && current.purpose == "app.bsky.graph.defs#modlist")) {
+    if (visibilityType() == toVisibilityType(current.purpose)) {
         if (searchTarget().startsWith("did:")) {
             m_searchCidQue.insert(0, cid);
         }

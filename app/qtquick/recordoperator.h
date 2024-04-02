@@ -52,6 +52,7 @@ public:
     Q_INVOKABLE void follow(const QString &did);
     Q_INVOKABLE void mute(const QString &did);
     Q_INVOKABLE void block(const QString &did);
+    Q_INVOKABLE void blockList(const QString &uri);
     Q_INVOKABLE bool list(const QString &name, const ListPurpose purpose,
                           const QString &description);
     Q_INVOKABLE bool listItem(const QString &uri, const QString &did);
@@ -62,6 +63,7 @@ public:
     Q_INVOKABLE void deleteFollow(const QString &uri);
     Q_INVOKABLE void deleteMute(const QString &did);
     Q_INVOKABLE void deleteBlock(const QString &uri);
+    Q_INVOKABLE void deleteBlockList(const QString &uri);
     Q_INVOKABLE bool deleteList(const QString &uri);
     Q_INVOKABLE bool deleteListItem(const QString &uri);
 

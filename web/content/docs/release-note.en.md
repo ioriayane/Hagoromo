@@ -9,6 +9,8 @@ description: This is a multi-column Bluesky client.
 ## 2024
 
 - Add
+  - Mute and Block Lists
+  - Listing of muted and blocked lists
 - Update
   - Content filter settings to support the new label system
   - Support switching from post URL to quote in post dialog

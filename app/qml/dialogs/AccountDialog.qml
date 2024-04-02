@@ -42,6 +42,12 @@ Dialog {
     MutedAccountsDialog {
         id: mutedAccountsDialog
     }
+    BlockedListsDialog {
+        id: blockedListsDialog
+    }
+    MutedListsDialog {
+        id: mutedListsDialog
+    }
 
     SelectThreadGateDialog {
         id: selectThreadGateDialog
@@ -142,29 +148,57 @@ Dialog {
                                     }
                                 }
                             }
-                            MenuItem {
-                                id: mutedWordMenuItem
-                                icon.source: "../images/mute.png"
-                                text: qsTr("Muted words and tags")
-                                onTriggered: accountDialog.requestAddMutedWords(model.index)
-                            }
-                            MenuItem {
-                                id: mutedAccountsMenuItem
-                                icon.source: "../images/account_off.png"
-                                text: qsTr("Muted accounts")
-                                onTriggered: {
-                                    if(mutedAccountsDialog.account.set(accountList.model, model.uuid)){
-                                        mutedAccountsDialog.open()
+                            Menu {
+                                title: qsTr("Mute")
+                                width: mutedAccountsMenuItem.implicitWidth
+                                MenuItem {
+                                    id: mutedWordMenuItem
+                                    icon.source: "../images/mute.png"
+                                    text: qsTr("Muted words and tags")
+                                    onTriggered: accountDialog.requestAddMutedWords(model.index)
+                                }
+                                MenuItem {
+                                    id: mutedAccountsMenuItem
+                                    icon.source: "../images/account_off.png"
+                                    text: qsTr("Muted accounts")
+                                    onTriggered: {
+                                        if(mutedAccountsDialog.account.set(accountList.model, model.uuid)){
+                                            mutedAccountsDialog.open()
+                                        }
+                                    }
+                                }
+                                MenuItem {
+                                    id: mutedlistsMenuItem
+                                    icon.source: "../images/account_off.png"
+                                    text: qsTr("Muted lists")
+                                    onTriggered: {
+                                        if(mutedListsDialog.account.set(accountList.model, model.uuid)){
+                                            mutedListsDialog.open()
+                                        }
                                     }
                                 }
                             }
-                            MenuItem {
-                                id: blockedAccountsMenuItem
-                                icon.source: "../images/block.png"
-                                text: qsTr("Blocked accounts")
-                                onTriggered: {
-                                    if(blockedAccountsDialog.account.set(accountList.model, model.uuid)){
-                                        blockedAccountsDialog.open()
+                            Menu {
+                                title: qsTr("Block")
+                                width: blockedAccountsMenuItem.implicitWidth
+                                MenuItem {
+                                    id: blockedAccountsMenuItem
+                                    icon.source: "../images/block.png"
+                                    text: qsTr("Blocked accounts")
+                                    onTriggered: {
+                                        if(blockedAccountsDialog.account.set(accountList.model, model.uuid)){
+                                            blockedAccountsDialog.open()
+                                        }
+                                    }
+                                }
+                                MenuItem {
+                                    id: blockedlistsMenuItem
+                                    icon.source: "../images/block.png"
+                                    text: qsTr("Blocked lists")
+                                    onTriggered: {
+                                        if(blockedListsDialog.account.set(accountList.model, model.uuid)){
+                                            blockedListsDialog.open()
+                                        }
                                     }
                                 }
                             }

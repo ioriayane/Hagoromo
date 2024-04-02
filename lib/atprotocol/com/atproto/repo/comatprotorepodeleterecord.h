@@ -18,6 +18,7 @@ public:
     void deleteRepost(const QString &rkey);
     void unfollow(const QString &rkey);
     void deleteBlock(const QString &rkey);
+    void deleteBlockList(const QString &rkey);
     void deleteList(const QString &rkey);
     void deleteListItem(const QString &rkey);
     void deleteThreadGate(const QString &rkey);

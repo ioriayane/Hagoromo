@@ -24,6 +24,7 @@ QML_FILES = \
     qml/dialogs/AddToListDialog.qml \
     qml/dialogs/AltEditDialog.qml \
     qml/dialogs/BlockedAccountsDialog.qml \
+    qml/dialogs/BlockedListsDialog.qml \
     qml/dialogs/ColumnSettingDialog.qml \
     qml/dialogs/ContentFilterSettingDialog.qml \
     qml/dialogs/DiscoverFeedsDialog.qml \
@@ -33,6 +34,7 @@ QML_FILES = \
     qml/dialogs/LoginDialog.qml \
     qml/dialogs/MessageDialog.qml \
     qml/dialogs/MutedAccountsDialog.qml \
+    qml/dialogs/MutedListsDialog.qml \
     qml/dialogs/PostDialog.qml \
     qml/dialogs/ReportAccountDialog.qml \
     qml/dialogs/ReportPostDialog.qml \
