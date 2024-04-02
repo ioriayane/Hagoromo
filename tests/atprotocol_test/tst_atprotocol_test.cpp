@@ -146,7 +146,7 @@ void atprotocol_test::test_ComAtprotoServerCreateSession()
                         "Exceeded\n\nratelimit-limit:30\nratelimit-policy:30;w=300\nratelimit-"
                         "remaining:10\nratelimit-reset:2023/09/17 10:31:07",
              session.errorMessage().toLocal8Bit());
-    QVERIFY2(session.replyJson()
+    QVERIFY2(session.replyJson().trimmed()
                      == "{\"error\":\"RateLimitExceeded\",\"message\":\"Rate Limit Exceeded\"}",
              session.replyJson().toLocal8Bit());
 }
@@ -956,7 +956,8 @@ void atprotocol_test::test_ConfigurableLabels_load()
         QVERIFY(dest.targetLabelerDid(1) == "did:plc:original_labeler_did");
         QVERIFY(dest.labelerCount() == 3);
         QVERIFY(dest.labelerDids()
-                == QStringList() << "__globally__" << "did:plc:ar7c4by46qjdydhdevvrndac"
+                == QStringList() << "__globally__"
+                                 << "did:plc:ar7c4by46qjdydhdevvrndac"
                                  << "did:plc:original_labeler_did");
         QVERIFY(dest.labelerHandle(did) == "moderation.bsky.app");
         QVERIFY(dest.labelerDescription(did)
@@ -1242,16 +1243,22 @@ void atprotocol_test::test_ConfigurableLabels_contains_mutedword()
             == true);
     // word2
     QVERIFY(labels.containsMutedWords("hoge\nword2 fuga\tpiyo foooo",
-                                      QStringList() << "HOGE" << "word1", false)
+                                      QStringList() << "HOGE"
+                                                    << "word1",
+                                      false)
             == true);
     QVERIFY(labels.containsMutedWords("hoge\nword1 fuga\tpiyo foooo",
-                                      QStringList() << "FUGA" << "word2", false)
+                                      QStringList() << "FUGA"
+                                                    << "word2",
+                                      false)
             == true);
     QVERIFY(labels.containsMutedWords("hoge #word2 fuga\tpiyo foooo", QStringList() << "hoge",
                                       false)
             == false);
     QVERIFY(labels.containsMutedWords("hoge #word2 fuga\tpiyo foooo",
-                                      QStringList() << "hoge" << "word2", false)
+                                      QStringList() << "hoge"
+                                                    << "word2",
+                                      false)
             == true);
     // word3
     QVERIFY(labels.containsMutedWords("hoge\nword3 fuga\tpiyo foooo", QStringList() << "hoge",
@@ -1267,10 +1274,14 @@ void atprotocol_test::test_ConfigurableLabels_contains_mutedword()
             == true);
     // word2
     QVERIFY(labels.containsMutedWords("hogeword2fuga\tpiyo foooo",
-                                      QStringList() << "HOGE" << "word1", false)
+                                      QStringList() << "HOGE"
+                                                    << "word1",
+                                      false)
             == true);
     QVERIFY(labels.containsMutedWords("hoge\nword1 fuga\tpiyo foooo",
-                                      QStringList() << "FUGA" << "word2", false)
+                                      QStringList() << "FUGA"
+                                                    << "word2",
+                                      false)
             == true);
     // word3
     QVERIFY(labels.containsMutedWords("hogeword3fuga\tpiyo foooo", QStringList() << "hoge", true)
@@ -1281,44 +1292,68 @@ void atprotocol_test::test_ConfigurableLabels_contains_mutedword()
 
     // #word4
     QVERIFY(labels.containsMutedWords("hoge\nword4 fuga\tpiyo foooo",
-                                      QStringList() << "HOGE" << "word", false)
+                                      QStringList() << "HOGE"
+                                                    << "word",
+                                      false)
             == false);
     QVERIFY(labels.containsMutedWords("hoge\n#word4 fuga\tpiyo foooo",
-                                      QStringList() << "HOGE" << "word", false)
+                                      QStringList() << "HOGE"
+                                                    << "word",
+                                      false)
             == true);
     QVERIFY(labels.containsMutedWords("hoge\nword fuga\tpiyo foooo",
-                                      QStringList() << "FUGA" << "#word4", false)
+                                      QStringList() << "FUGA"
+                                                    << "#word4",
+                                      false)
             == false);
     QVERIFY(labels.containsMutedWords("hoge\nword1 fuga\tpiyo foooo",
-                                      QStringList() << "FUGA" << "word4", false)
+                                      QStringList() << "FUGA"
+                                                    << "word4",
+                                      false)
             == true);
     // #word4
     QVERIFY(labels2.containsMutedWords("hoge\nword4 fuga\tpiyo foooo",
-                                       QStringList() << "HOGE" << "word", false)
+                                       QStringList() << "HOGE"
+                                                     << "word",
+                                       false)
             == false);
     QVERIFY(labels2.containsMutedWords("hoge\n#word4 fuga\tpiyo foooo",
-                                       QStringList() << "HOGE" << "word", false)
+                                       QStringList() << "HOGE"
+                                                     << "word",
+                                       false)
             == true);
     QVERIFY(labels2.containsMutedWords("hoge\nword fuga\tpiyo foooo",
-                                       QStringList() << "FUGA" << "#word4", false)
+                                       QStringList() << "FUGA"
+                                                     << "#word4",
+                                       false)
             == false);
     QVERIFY(labels2.containsMutedWords("hoge\nword1 fuga\tpiyo foooo",
-                                       QStringList() << "FUGA" << "word4", false)
+                                       QStringList() << "FUGA"
+                                                     << "word4",
+                                       false)
             == true);
 
     labels.removeMutedWordItem(1);
     // #word4
     QVERIFY(labels.containsMutedWords("hoge\nword4 fuga\tpiyo foooo",
-                                      QStringList() << "HOGE" << "word", false)
+                                      QStringList() << "HOGE"
+                                                    << "word",
+                                      false)
             == false);
     QVERIFY(labels.containsMutedWords("hoge\n#word4 fuga\tpiyo foooo",
-                                      QStringList() << "HOGE" << "word", false)
+                                      QStringList() << "HOGE"
+                                                    << "word",
+                                      false)
             == false);
     QVERIFY(labels.containsMutedWords("hoge\nword fuga\tpiyo foooo",
-                                      QStringList() << "FUGA" << "#word4", false)
+                                      QStringList() << "FUGA"
+                                                    << "#word4",
+                                      false)
             == false);
     QVERIFY(labels.containsMutedWords("hoge\nword1 fuga\tpiyo foooo",
-                                      QStringList() << "FUGA" << "word4", false)
+                                      QStringList() << "FUGA"
+                                                    << "word4",
+                                      false)
             == false);
 
     labels.clearMutedWord();
@@ -1339,16 +1374,24 @@ void atprotocol_test::test_ConfigurableLabels_contains_mutedword()
 
     // #word4
     QVERIFY(labels.containsMutedWords("hoge\nword4 fuga\tpiyo foooo",
-                                      QStringList() << "HOGE" << "word", false)
+                                      QStringList() << "HOGE"
+                                                    << "word",
+                                      false)
             == false);
     QVERIFY(labels.containsMutedWords("hoge\n#word4 fuga\tpiyo foooo",
-                                      QStringList() << "HOGE" << "word", false)
+                                      QStringList() << "HOGE"
+                                                    << "word",
+                                      false)
             == true);
     QVERIFY(labels.containsMutedWords("hoge\nword fuga\tpiyo foooo",
-                                      QStringList() << "FUGA" << "#word4", false)
+                                      QStringList() << "FUGA"
+                                                    << "#word4",
+                                      false)
             == false);
     QVERIFY(labels.containsMutedWords("hoge\nword1 fuga\tpiyo foooo",
-                                      QStringList() << "FUGA" << "word4", false)
+                                      QStringList() << "FUGA"
+                                                    << "word4",
+                                      false)
             == true);
 }
 
@@ -1356,7 +1399,8 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_post()
 {
     AtProtocolInterface::ComAtprotoRepoCreateRecord createrecord;
     createrecord.setAccount(m_account);
-    createrecord.setSelfLabels(QStringList() << "!warn" << "spam");
+    createrecord.setSelfLabels(QStringList() << "!warn"
+                                             << "spam");
     QSignalSpy spy(&createrecord, SIGNAL(finished(bool)));
     createrecord.post("hello world");
     spy.wait();
@@ -1601,14 +1645,22 @@ void atprotocol_test::test_ListItemsCache()
     QVERIFY2(info.item_uri == "list1_item1_uri", info.item_uri.toLocal8Bit());
 
     cache->addItem("account1", "user1", "list2", "list2_uri", "list2_item1_uri");
-    QVERIFY(cache->getListNames("account1", "user1") == QStringList() << "list1" << "list2");
-    QVERIFY(cache->getListUris("account1", "user1") == QStringList() << "list1_uri" << "list2_uri");
+    QVERIFY(cache->getListNames("account1", "user1")
+            == QStringList() << "list1"
+                             << "list2");
+    QVERIFY(cache->getListUris("account1", "user1")
+            == QStringList() << "list1_uri"
+                             << "list2_uri");
 
     cache->addItem("account1", "user1", "list3", "list3_uri", "list3_item1_uri");
     QVERIFY(cache->getListNames("account1", "user1")
-            == QStringList() << "list1" << "list2" << "list3");
+            == QStringList() << "list1"
+                             << "list2"
+                             << "list3");
     QVERIFY(cache->getListUris("account1", "user1")
-            == QStringList() << "list1_uri" << "list2_uri" << "list3_uri");
+            == QStringList() << "list1_uri"
+                             << "list2_uri"
+                             << "list3_uri");
 
     cache->addItem("account3", "user1", "account3list1", "account3list1_uri",
                    "account3list1_item1_uri");
@@ -1618,9 +1670,11 @@ void atprotocol_test::test_ListItemsCache()
     cache->addItem("account3", "user1", "account3list2", "account3list2_uri",
                    "account3list2_item1_uri");
     QVERIFY(cache->getListNames("account3", "user1")
-            == QStringList() << "account3list1" << "account3list2");
+            == QStringList() << "account3list1"
+                             << "account3list2");
     QVERIFY(cache->getListUris("account3", "user1")
-            == QStringList() << "account3list1_uri" << "account3list2_uri");
+            == QStringList() << "account3list1_uri"
+                             << "account3list2_uri");
 
     cache->addItem("account3", "user2", "account3list1", "account3list1_uri",
                    "account3list1_item1_uri");
@@ -1630,18 +1684,25 @@ void atprotocol_test::test_ListItemsCache()
     cache->addItem("account3", "user1", "account3list3", "account3list3_uri",
                    "account3list3_item1_uri");
     QVERIFY(cache->getListNames("account3", "user1")
-            == QStringList() << "account3list1" << "account3list2" << "account3list3");
+            == QStringList() << "account3list1"
+                             << "account3list2"
+                             << "account3list3");
     QVERIFY(cache->getListUris("account3", "user1")
-            == QStringList() << "account3list1_uri" << "account3list2_uri" << "account3list3_uri");
+            == QStringList() << "account3list1_uri"
+                             << "account3list2_uri"
+                             << "account3list3_uri");
 
     cache->addItem("account2", "user1", "a2list1", "a2list1_uri", "a2list1_item1_uri");
     QVERIFY(cache->getListNames("account2", "user1") == QStringList() << "a2list1");
     QVERIFY(cache->getListUris("account2", "user1") == QStringList() << "a2list1_uri");
 
     cache->addItem("account2", "user1", "a2list2", "a2list2_uri", "a2list2_item1_uri");
-    QVERIFY(cache->getListNames("account2", "user1") == QStringList() << "a2list1" << "a2list2");
+    QVERIFY(cache->getListNames("account2", "user1")
+            == QStringList() << "a2list1"
+                             << "a2list2");
     QVERIFY(cache->getListUris("account2", "user1")
-            == QStringList() << "a2list1_uri" << "a2list2_uri");
+            == QStringList() << "a2list1_uri"
+                             << "a2list2_uri");
 
     cache->addItem("account2", "user2", "a2list2", "a2list2_uri", "a2list2_item1_uri");
     QVERIFY(cache->getListNames("account2", "user2") == QStringList() << "a2list2");
@@ -1650,34 +1711,49 @@ void atprotocol_test::test_ListItemsCache()
     cache = ListItemsCache::getInstance();
 
     cache->addItem("account2", "user1", "a2list2", "a2list2_uri", "a2list2_item1_uri");
-    QVERIFY(cache->getListNames("account2", "user1") == QStringList() << "a2list1" << "a2list2");
+    QVERIFY(cache->getListNames("account2", "user1")
+            == QStringList() << "a2list1"
+                             << "a2list2");
     QVERIFY(cache->getListUris("account2", "user1")
-            == QStringList() << "a2list1_uri" << "a2list2_uri");
+            == QStringList() << "a2list1_uri"
+                             << "a2list2_uri");
 
     // //////////////
     cache->removeItem("account3", "user1", "account3list2_uri");
     QVERIFY(cache->getListNames("account3", "user1")
-            == QStringList() << "account3list1" << "account3list3");
+            == QStringList() << "account3list1"
+                             << "account3list3");
     QVERIFY(cache->getListUris("account3", "user1")
-            == QStringList() << "account3list1_uri" << "account3list3_uri");
+            == QStringList() << "account3list1_uri"
+                             << "account3list3_uri");
 
     cache->removeItem("account1", "user1", "list3_uri");
-    QVERIFY(cache->getListNames("account1", "user1") == QStringList() << "list1" << "list2");
-    QVERIFY(cache->getListUris("account1", "user1") == QStringList() << "list1_uri" << "list2_uri");
+    QVERIFY(cache->getListNames("account1", "user1")
+            == QStringList() << "list1"
+                             << "list2");
+    QVERIFY(cache->getListUris("account1", "user1")
+            == QStringList() << "list1_uri"
+                             << "list2_uri");
     // //////////////
 
     cache->clear("account2");
     QVERIFY(cache->has("account1") == true);
     QVERIFY(cache->has("account2") == false);
     QVERIFY(cache->has("account3") == true);
-    QVERIFY(cache->getListNames("account1", "user1") == QStringList() << "list1" << "list2");
-    QVERIFY(cache->getListUris("account1", "user1") == QStringList() << "list1_uri" << "list2_uri");
+    QVERIFY(cache->getListNames("account1", "user1")
+            == QStringList() << "list1"
+                             << "list2");
+    QVERIFY(cache->getListUris("account1", "user1")
+            == QStringList() << "list1_uri"
+                             << "list2_uri");
     QVERIFY(cache->getListNames("account2", "user2") == QStringList());
     QVERIFY(cache->getListUris("account2", "user2") == QStringList());
     QVERIFY(cache->getListNames("account3", "user1")
-            == QStringList() << "account3list1" << "account3list3");
+            == QStringList() << "account3list1"
+                             << "account3list3");
     QVERIFY(cache->getListUris("account3", "user1")
-            == QStringList() << "account3list1_uri" << "account3list3_uri");
+            == QStringList() << "account3list1_uri"
+                             << "account3list3_uri");
     cache->clear();
     QVERIFY(cache->getListNames("account1", "user2") == QStringList());
     QVERIFY(cache->getListUris("account1", "user2") == QStringList());
@@ -1697,10 +1773,16 @@ void atprotocol_test::test_checkPartialMatchLanguage()
 {
     QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "ja") == true);
     QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "ja_JP") == true);
-    QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "ja" << "en") == true);
-    QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "de" << "ja" << "en")
+    QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "ja"
+                                                                         << "en")
             == true);
-    QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "de" << "en") == false);
+    QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "de"
+                                                                         << "ja"
+                                                                         << "en")
+            == true);
+    QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "de"
+                                                                         << "en")
+            == false);
     QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "de") == false);
     QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "") == false);
     QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList()) == false);
