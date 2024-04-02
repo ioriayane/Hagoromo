@@ -8,8 +8,7 @@
 
 HttpReply::HttpReply(QObject *parent) : QObject { parent }, m_error(HttpReply::Unknown)
 {
-    qDebug().noquote() << LOG_DATETIME << this << "HttpReply()"
-                       << ", parent" << parent;
+    qDebug().noquote() << LOG_DATETIME << this << "HttpReply()" << ", parent" << parent;
 }
 
 HttpReply::~HttpReply()

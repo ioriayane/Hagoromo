@@ -1241,8 +1241,7 @@ void hagoromo_test::test_TimelineListModel_quote_label()
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
             == "quote a post with warn label added with image");
     QVERIFY(model.item(row, TimelineListModel::LabelsRole).toStringList()
-            == QStringList() << "sexual"
-                             << "!warn");
+            == QStringList() << "sexual" << "!warn");
 
     row = 7;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString() == "test reply full");

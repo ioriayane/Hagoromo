@@ -120,8 +120,7 @@ void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
                            const bool with_auth_header)
 {
     if (accessJwt().isEmpty() && with_auth_header) {
-        qCritical().noquote() << LOG_DATETIME << "AccessAtProtocol::get()"
-                              << "Empty accessJwt!";
+        qCritical().noquote() << LOG_DATETIME << "AccessAtProtocol::get()" << "Empty accessJwt!";
         m_errorCode = QStringLiteral("IncompleteAuthenticationInformation");
         m_errorMessage = "AccessJwt is empty.";
         emit finished(false);
@@ -192,8 +191,7 @@ void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     if (with_auth_header) {
         if (accessJwt().isEmpty()) {
-            qCritical() << LOG_DATETIME << "AccessAtProtocol::post()"
-                        << "Empty accessJwt!";
+            qCritical() << LOG_DATETIME << "AccessAtProtocol::post()" << "Empty accessJwt!";
             m_errorCode = QStringLiteral("IncompleteAuthenticationInformation");
             m_errorMessage = "AccessJwt is empty.";
             emit finished(false);
@@ -231,8 +229,8 @@ void AccessAtProtocol::postWithImage(const QString &endpoint, const QString &pat
         return;
     }
     if (!QFile::exists(path)) {
-        qCritical().noquote() << LOG_DATETIME << "AccessAtProtocol::postWithImage()"
-                              << "Not found" << path;
+        qCritical().noquote() << LOG_DATETIME << "AccessAtProtocol::postWithImage()" << "Not found"
+                              << path;
         emit finished(false);
         return;
     }

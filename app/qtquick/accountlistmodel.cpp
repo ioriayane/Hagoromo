@@ -465,7 +465,7 @@ void AccountListModel::refreshSession(int row, bool initial)
         } else {
             m_accountList[row].status = AccountStatus::Unauthorized;
             if (initial) {
-                //初期化時のみ（つまりloadから呼ばれたときだけは失敗したらcreateSessionで再スタート）
+                // 初期化時のみ（つまりloadから呼ばれたときだけは失敗したらcreateSessionで再スタート）
                 qDebug() << "Initial refresh session fail.";
                 createSession(row);
             } else {

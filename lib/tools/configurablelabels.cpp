@@ -695,8 +695,7 @@ void ConfigurableLabels::initializeLabels()
     item.title = tr("Pornography");
     item.subtitle = tr("Explicit sexual images.");
     item.warning = tr("Sexually Explicit");
-    item.values << "porn"
-                << "nsfw";
+    item.values << "porn" << "nsfw";
     item.is_adult_imagery = true;
     item.foldable_range = ConfigurableLabelFoldableRange::Media;
     item.status = ConfigurableLabelStatus::Hide;
@@ -748,8 +747,7 @@ void ConfigurableLabels::initializeLabels()
     item.title = tr("Legal");
     item.subtitle = tr("Content removed for legal reasons.");
     item.warning = tr("Legal");
-    item.values << "dmca-violation"
-                << "doxxing";
+    item.values << "dmca-violation" << "doxxing";
     item.is_adult_imagery = false;
     item.foldable_range = ConfigurableLabelFoldableRange::Content;
     item.status = ConfigurableLabelStatus::Hide;
@@ -762,11 +760,7 @@ void ConfigurableLabels::initializeLabels()
     item.title = tr("Violent / Bloody");
     item.subtitle = tr("Gore, self-harm, torture");
     item.warning = tr("Violence");
-    item.values << "gore"
-                << "self-harm"
-                << "torture"
-                << "nsfl"
-                << "corpse";
+    item.values << "gore" << "self-harm" << "torture" << "nsfl" << "corpse";
     item.is_adult_imagery = true;
     item.foldable_range = ConfigurableLabelFoldableRange::Media;
     item.status = ConfigurableLabelStatus::Hide;
@@ -779,16 +773,9 @@ void ConfigurableLabels::initializeLabels()
     item.title = tr("Hate Group Iconography");
     item.subtitle = tr("Images of terror groups, articles covering events, etc.");
     item.warning = tr("Hate Groups");
-    item.values << "icon-kkk"
-                << "icon-nazi"
-                << "icon-intolerant"
-                << "behavior-intolerant"
-                << "intolerant-race"
-                << "intolerant-gender"
-                << "intolerant-sexual-orientation"
-                << "intolerant-religion"
-                << "intolerant"
-                << "threat";
+    item.values << "icon-kkk" << "icon-nazi" << "icon-intolerant" << "behavior-intolerant"
+                << "intolerant-race" << "intolerant-gender" << "intolerant-sexual-orientation"
+                << "intolerant-religion" << "intolerant" << "threat";
     item.is_adult_imagery = false;
     item.foldable_range = ConfigurableLabelFoldableRange::Content;
     item.status = ConfigurableLabelStatus::Hide;
@@ -801,8 +788,7 @@ void ConfigurableLabels::initializeLabels()
     item.title = tr("Spam");
     item.subtitle = tr("Excessive unwanted interactions");
     item.warning = tr("Spam");
-    item.values << "spam"
-                << "spoiler";
+    item.values << "spam" << "spoiler";
     item.is_adult_imagery = false;
     item.foldable_range = ConfigurableLabelFoldableRange::Content;
     item.status = ConfigurableLabelStatus::Hide;
@@ -815,10 +801,7 @@ void ConfigurableLabels::initializeLabels()
     item.title = tr("Impersonation / Scam");
     item.subtitle = tr("Accounts falsely claiming to be people or orgs");
     item.warning = tr("Impersonation");
-    item.values << "impersonation"
-                << "account-security"
-                << "net-abuse"
-                << "scam";
+    item.values << "impersonation" << "account-security" << "net-abuse" << "scam";
     item.is_adult_imagery = false;
     item.foldable_range = ConfigurableLabelFoldableRange::Content;
     item.status = ConfigurableLabelStatus::Hide;

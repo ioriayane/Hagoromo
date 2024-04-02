@@ -2,7 +2,7 @@
 #define USERPROFILE_H
 
 #include "atprotocol/accessatprotocol.h"
-//#include "atprotocol/lexicons.h"
+// #include "atprotocol/lexicons.h"
 #include "systemtool.h"
 #include "tools/configurablelabels.h"
 
