@@ -1,7 +1,7 @@
 name: Release Check
 on:
   pull_request:
-    branches:    
+    branches:
       - main
 jobs:
   release_check:
@@ -10,8 +10,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name : Check documents
-        env: 
-          TZ: "Asia/Tokyo"       
+        env:
+          TZ: "Asia/Tokyo"
         run: |
           VERSION_NO=$(cat app/main.cpp | grep "app.setApplicationVersion" | grep -oE "[0-9]+.[0-9]+.[0-9]+")
           # Check download link

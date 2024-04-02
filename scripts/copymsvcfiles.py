@@ -22,7 +22,7 @@ def main(src_folder: str, dest_folder: str) -> None:
     if len(folders) == 0:
         print('Not found target folder.')
         return
-    
+
     for target in targets:
         copyFile(os.path.join(src_folder, sorted(folders)[-1]), target, dest_folder)
 

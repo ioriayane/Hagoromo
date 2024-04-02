@@ -1,7 +1,7 @@
 name: Unit test
 on:
   pull_request:
-    branches:    
+    branches:
       - dev
 jobs:
   unit_test:
@@ -35,6 +35,6 @@ jobs:
           qmake CONFIG+=debug_and_release ../qthttpserver/qthttpserver.pro
           make -j4 && make install
       - name: Unit test
-        env: 
-          TZ: "Asia/Tokyo"       
+        env:
+          TZ: "Asia/Tokyo"
         run: scripts/unittest.sh linux ${Qt5_DIR}/bin

@@ -10,4 +10,3 @@ export LD_LIBRARY_PATH
 #export XMODIFIERS=@im=fcitx
 
 $basedir/bin/$appname "$@"
-
