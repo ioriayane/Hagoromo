@@ -32,7 +32,7 @@ class Defs2Struct:
 
         # QVariantに入れる構造体をQ_DECLARE_METATYPE()で定義する構造体
         # （単純にすべてではない）
-        self.metatype = ('AppBskyFeedPost::Main', 
+        self.metatype = ('AppBskyFeedPost::Main',
                          'AppBskyFeedLike::Main',
                          'AppBskyFeedRepost::Main',
                          'AppBskyGraphListitem::Main',
@@ -410,9 +410,9 @@ class Defs2Struct:
                 if 'const QJsonValue &src' in func_def:
                     return False
         return True
-    
+
     def output_function(self, namespace: str, type_name: str, obj: dict):
-        
+
         if obj.get('type') == 'object':
             # 構造体
 
@@ -424,7 +424,7 @@ class Defs2Struct:
             self.output_func_text[namespace].append(function_define)
             self.output_func_text[namespace].append('{')
             self.output_func_text[namespace].append('    if (!src.isEmpty()) {')
-            
+
             # if (!json_author.isEmpty()) {
             #     author.avatar = json_author.value("avatar").toString();
 
@@ -517,14 +517,14 @@ class Defs2Struct:
                         if self.check_pointer(namespace, type_name, property_name, ref_namespace, ref_type_name):
                             self.output_func_text[namespace].append('            QSharedPointer<%s%s> child = QSharedPointer<%s%s>(new %s%s());' % (extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), ))
                             self.output_func_text[namespace].append('            %s(s.toObject(), *child);' % (func_name, ))
-                            self.output_func_text[namespace].append('            dest.%s.append(child);' % (property_name, )) 
+                            self.output_func_text[namespace].append('            dest.%s.append(child);' % (property_name, ))
                         else:
                             self.output_func_text[namespace].append('            %s%s child;' % (extend_ns, self.to_struct_style(ref_type_name), ))
                             if self.check_object(ref_namespace, 'copy%s' % (self.to_struct_style(ref_type_name), )):
                                 self.output_func_text[namespace].append('            %s(s.toObject(), child);' % (func_name, ))
                             else:
                                 self.output_func_text[namespace].append('            %s(s, child);' % (func_name, ))
-                            self.output_func_text[namespace].append('            dest.%s.append(child);' % (property_name, )) 
+                            self.output_func_text[namespace].append('            dest.%s.append(child);' % (property_name, ))
                         self.output_func_text[namespace].append('        }')
 
                     elif items_type == 'union':
@@ -702,7 +702,7 @@ class Defs2Struct:
             data['method_args'] = args
             data['api_id'] = namespace
             self.api_class[namespace] = data
-        
+
 
 
 
@@ -821,7 +821,7 @@ class Defs2Struct:
 
     def open(self, lexicons_path: str, base_path: str) -> None:
         obj = None
-        with open(lexicons_path, 'r') as fp: 
+        with open(lexicons_path, 'r') as fp:
             obj = json.load(fp)
         if obj is None:
             print('Failed to load json file')
@@ -830,11 +830,11 @@ class Defs2Struct:
         if rel_path[0] == '/':
             rel_path = rel_path[1:]
         namespace = rel_path.replace('/', '.')
-        
+
         extend_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'lexicons', namespace + '.json')
         if os.path.isfile(extend_path):
             # lexiconのユーザー拡張のJSONファイルがあれば合体する
-            with open(extend_path, 'r') as fp: 
+            with open(extend_path, 'r') as fp:
                 extend_obj = json.load(fp)
                 obj = self.json_deep_merge(obj, extend_obj)
 

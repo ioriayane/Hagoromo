@@ -23,4 +23,3 @@ if __name__ == "__main__":
 
     with open(output_file, 'w', encoding='utf-8') as fp:
         fp.write(template.render(params))
-
