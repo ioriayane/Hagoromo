@@ -575,6 +575,11 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     return roles;
 }
 
+bool TimelineListModel::aggregated(const QString &cid) const
+{
+    return false;
+}
+
 void TimelineListModel::finishedDisplayingQueuedPosts()
 {
     setRunning(false);

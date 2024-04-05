@@ -37,6 +37,7 @@ private slots:
     void test_ColumnListModelSelected();
     void test_NotificationListModel();
     void test_NotificationListModel2();
+    void test_NotificationList_collecting();
     void test_UserProfile();
     void test_charCount();
     void test_TimelineListModel_quote_warn();
@@ -964,6 +965,62 @@ void hagoromo_test::test_NotificationListModel2()
              QString("reason=%1")
                      .arg(model.item(i++, NotificationListModel::ReasonRole).toInt())
                      .toLocal8Bit());
+}
+
+void hagoromo_test::test_NotificationList_collecting()
+{
+    int i = 0;
+    NotificationListModel model;
+    model.setAccount(m_service + "/notifications/collecting/1", "did:plc:ipj5qejfoqu6eukvt72uhyit",
+                     QString(), QString(), "dummy", QString());
+
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait(20 * 1000);
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    QVERIFY2(model.rowCount() == 1, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+    i = 0;
+    QStringList liked_avatars =
+            model.item(i, NotificationListModel::LikedAvatarsRole).toStringList();
+    QVERIFY2(liked_avatars.count() == 3, QString::number(liked_avatars.count()).toLocal8Bit());
+    QVERIFY2(liked_avatars
+                     == QStringList()
+                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_1_did/"
+                                "bafkreid6z7kdocoo6snciauq2fwvzbsr3jjvpgokkekul35hk5jbjhdh5y@jpeg"
+                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_2_did/"
+                                "bafkreibgqvqe5ujw4xxqkwvs7twp2f5vhkm3c4yh6gb5rdruppbhvw4o6u@jpeg"
+                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_3_did/"
+                                "bafkreiah4zikm3wgc73y3efsb4dznet5b6e3zmqyjhqyk44b52jc24j47m@jpeg",
+             liked_avatars.join(", ").toLocal8Bit());
+
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait(20 * 1000);
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    QVERIFY2(model.rowCount() == 1, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+    i = 0;
+    liked_avatars = model.item(i, NotificationListModel::LikedAvatarsRole).toStringList();
+    QVERIFY2(liked_avatars.count() == 3, QString::number(liked_avatars.count()).toLocal8Bit());
+    QVERIFY2(liked_avatars
+                     == QStringList()
+                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_1_did/"
+                                "bafkreid6z7kdocoo6snciauq2fwvzbsr3jjvpgokkekul35hk5jbjhdh5y@jpeg"
+                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_2_did/"
+                                "bafkreibgqvqe5ujw4xxqkwvs7twp2f5vhkm3c4yh6gb5rdruppbhvw4o6u@jpeg"
+                             << "https://cdn.bsky.app/img/avatar/plain/did:plc:user_3_did/"
+                                "bafkreiah4zikm3wgc73y3efsb4dznet5b6e3zmqyjhqyk44b52jc24j47m@jpeg",
+             liked_avatars.join(", ").toLocal8Bit());
+
+    model.setVisibleLike(false);
+    QVERIFY2(model.rowCount() == 0, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
+    model.setVisibleLike(true);
+    QVERIFY2(model.rowCount() == 1, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
 }
 
 void hagoromo_test::test_UserProfile()

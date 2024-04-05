@@ -202,6 +202,11 @@ QHash<int, QByteArray> ListItemListModel::roleNames() const
     return roles;
 }
 
+bool ListItemListModel::aggregated(const QString &cid) const
+{
+    return false;
+}
+
 void ListItemListModel::finishedDisplayingQueuedPosts()
 {
     setRunning(false);

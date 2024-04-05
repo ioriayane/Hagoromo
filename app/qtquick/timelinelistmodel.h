@@ -171,6 +171,7 @@ signals:
 
 protected:
     QHash<int, QByteArray> roleNames() const;
+    virtual bool aggregated(const QString &cid) const;
     virtual void finishedDisplayingQueuedPosts();
     virtual bool checkVisibility(const QString &cid);
     void copyFrom(AtProtocolInterface::AppBskyFeedGetTimeline *timeline);

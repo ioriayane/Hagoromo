@@ -49,10 +49,12 @@ public:
         EmbedImagesRole,
         EmbedImagesFullRole,
         EmbedImagesAltRole,
+
         IsRepostedRole,
         IsLikedRole,
         RepostedUriRole,
         LikedUriRole,
+        LikedAvatarsRole,
         RunningRepostRole,
         RunningLikeRole,
 
@@ -159,6 +161,7 @@ signals:
 
 protected:
     QHash<int, QByteArray> roleNames() const;
+    virtual bool aggregated(const QString &cid) const;
     virtual void finishedDisplayingQueuedPosts();
     virtual bool checkVisibility(const QString &cid);
 
@@ -173,6 +176,8 @@ private:
     QStringList m_cueGetPost;
     QStringList m_cueGetFeedGenerator;
 
+    QHash<QString, QStringList> m_liked2Notification; // QHash<cid, QStringList<cid>>
+
     bool m_hasUnread; // 今回の読み込みで未読がある
     QHash<NotificationListModel::NotificationListModelRoles,
           AtpAbstractListModel::ExternalLinkRoles>
@@ -183,9 +188,16 @@ private:
     QHash<NotificationListModel::NotificationListModelRoles, AtpAbstractListModel::ListLinkRoles>
             m_toListLinkRoles;
 
+    void displayQueuedPosts();
+    void displayQueuedPostsNext();
+    void aggregateQueuedPosts(const PostCueItem &post);
+
     void getPosts();
     void getFeedGenerators();
     void updateSeen();
+
+    QStringList getLikedCids(
+            const AtProtocolType::AppBskyNotificationListNotifications::Notification &data) const;
 
     template<typename T>
     void appendGetPostCue(const QVariant &record);

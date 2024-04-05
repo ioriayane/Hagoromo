@@ -18,6 +18,7 @@ struct PostCueItem
     QDateTime reference_time;
     AtProtocolType::AppBskyFeedDefs::FeedViewPostReasonType reason_type =
             AtProtocolType::AppBskyFeedDefs::FeedViewPostReasonType::none;
+    QString reason;
 };
 
 struct BlobCueItem
@@ -137,6 +138,8 @@ public slots:
 protected:
     void displayQueuedPosts();
     void displayQueuedPostsNext();
+    int searchInsertPosition(const QString &cid);
+    virtual bool aggregated(const QString &cid) const = 0;
     virtual void finishedDisplayingQueuedPosts() = 0;
     virtual bool checkVisibility(const QString &cid) = 0;
     void updateContentFilterLabels(std::function<void()> callback);
@@ -197,8 +200,6 @@ protected:
     ConfigurableLabels m_contentFilterLabels;
 
 private:
-    int searchInsertPosition(const QString &cid);
-
     QTimer m_timer;
     AtProtocolInterface::AccountData m_account;
     int m_contentFilterRefreshCounter;
