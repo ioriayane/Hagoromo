@@ -43,6 +43,7 @@ QML_FILES = \
     qml/dialogs/SettingDialog.qml \
     qml/parts/AccountLayout.qml \
     qml/parts/AccountList.qml \
+    qml/parts/AggregatedAvatarImages.qml \
     qml/parts/ApplicationShortcut.qml \
     qml/parts/Author.qml \
     qml/parts/AvatarImage.qml \

@@ -54,9 +54,14 @@ public:
         IsLikedRole,
         RepostedUriRole,
         LikedUriRole,
-        LikedAvatarsRole,
         RunningRepostRole,
         RunningLikeRole,
+
+        AggregatedAvatarsRole,
+        AggregatedDisplayNamesRole,
+        AggregatedDidsRole,
+        AggregatedHandlesRole,
+        AggregatedIndexedAtsRole,
 
         ReasonRole,
 
@@ -196,7 +201,10 @@ private:
     void getFeedGenerators();
     void updateSeen();
 
-    QStringList getLikedCids(
+    QStringList getAggregatedItems(
+            const AtProtocolType::AppBskyNotificationListNotifications::Notification &data,
+            const NotificationListModel::NotificationListModelRoles role) const;
+    QStringList getAggregatedCids(
             const AtProtocolType::AppBskyNotificationListNotifications::Notification &data) const;
 
     template<typename T>

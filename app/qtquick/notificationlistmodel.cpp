@@ -165,21 +165,15 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             return m_postHash[current.cid].viewer.like;
         else
             return QString();
-    } else if (role == LikedAvatarsRole) {
-        QStringList liked_avatars;
-        for (const auto &liked_cid : getLikedCids(current)) {
-            if (m_notificationHash.contains(liked_cid)) {
-                liked_avatars.append(m_notificationHash.value(liked_cid).author.avatar);
-            }
-            if (liked_avatars.count() > 4) {
-                break;
-            }
-        }
-        return liked_avatars;
     } else if (role == RunningRepostRole) {
         return !current.cid.isEmpty() && (current.cid == m_runningRepostCid);
     } else if (role == RunningLikeRole) {
         return !current.cid.isEmpty() && (current.cid == m_runningLikeCid);
+
+    } else if (role == AggregatedAvatarsRole || role == AggregatedDisplayNamesRole
+               || role == AggregatedDidsRole || role == AggregatedHandlesRole
+               || role == AggregatedIndexedAtsRole) {
+        return getAggregatedItems(current, role);
 
     } else if (role == ReplyRootCidRole) {
         return AtProtocolType::LexiconsTypeUnknown::fromQVariant<
@@ -825,9 +819,14 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[IsLikedRole] = "isLiked";
     roles[RepostedUriRole] = "repostedUri";
     roles[LikedUriRole] = "likedUri";
-    roles[LikedAvatarsRole] = "likedAvatars";
     roles[RunningRepostRole] = "runningRepost";
     roles[RunningLikeRole] = "runningLike";
+
+    roles[AggregatedAvatarsRole] = "aggregatedAvatars";
+    roles[AggregatedDisplayNamesRole] = "aggregatedDisplayNames";
+    roles[AggregatedDidsRole] = "aggregatedDids";
+    roles[AggregatedHandlesRole] = "aggregatedHandles";
+    roles[AggregatedIndexedAtsRole] = "aggregatedIndexedAts";
 
     roles[ReasonRole] = "reason";
 
@@ -1229,7 +1228,31 @@ void NotificationListModel::updateSeen()
     seen->updateSeen(QString());
 }
 
-QStringList NotificationListModel::getLikedCids(
+QStringList NotificationListModel::getAggregatedItems(
+        const AtProtocolType::AppBskyNotificationListNotifications::Notification &data,
+        const NotificationListModelRoles role) const
+{
+    QStringList aggregated;
+    for (const auto &liked_cid : getAggregatedCids(data)) {
+        if (m_notificationHash.contains(liked_cid)) {
+            if (role == AggregatedAvatarsRole) {
+                aggregated.append(m_notificationHash.value(liked_cid).author.avatar);
+            } else if (role == AggregatedDisplayNamesRole) {
+                aggregated.append(m_notificationHash.value(liked_cid).author.displayName);
+            } else if (role == AggregatedDidsRole) {
+                aggregated.append(m_notificationHash.value(liked_cid).author.did);
+            } else if (role == AggregatedHandlesRole) {
+                aggregated.append(m_notificationHash.value(liked_cid).author.handle);
+            } else if (role == AggregatedIndexedAtsRole) {
+                aggregated.append(AtProtocolType::LexiconsTypeUnknown::formatDateTime(
+                        m_notificationHash.value(liked_cid).indexedAt));
+            }
+        }
+    }
+    return aggregated;
+}
+
+QStringList NotificationListModel::getAggregatedCids(
         const AtProtocolType::AppBskyNotificationListNotifications::Notification &data) const
 {
     if (data.reason == "like") {

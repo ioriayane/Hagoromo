@@ -984,7 +984,7 @@ void hagoromo_test::test_NotificationList_collecting()
     QVERIFY2(model.rowCount() == 1, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
     i = 0;
     QStringList liked_avatars =
-            model.item(i, NotificationListModel::LikedAvatarsRole).toStringList();
+            model.item(i, NotificationListModel::AggregatedAvatarsRole).toStringList();
     QVERIFY2(liked_avatars.count() == 3, QString::number(liked_avatars.count()).toLocal8Bit());
     QVERIFY2(liked_avatars
                      == QStringList()
@@ -1005,7 +1005,7 @@ void hagoromo_test::test_NotificationList_collecting()
 
     QVERIFY2(model.rowCount() == 1, QString("rowCount()=%1").arg(model.rowCount()).toUtf8());
     i = 0;
-    liked_avatars = model.item(i, NotificationListModel::LikedAvatarsRole).toStringList();
+    liked_avatars = model.item(i, NotificationListModel::AggregatedAvatarsRole).toStringList();
     QVERIFY2(liked_avatars.count() == 3, QString::number(liked_avatars.count()).toLocal8Bit());
     QVERIFY2(liked_avatars
                      == QStringList()
