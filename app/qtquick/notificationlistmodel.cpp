@@ -93,7 +93,7 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
     else if (role == MutedRole)
         return current.author.viewer.muted;
     else if (role == RecordTextRole)
-        return copyRecordText(current.record);
+        return AtProtocolType::LexiconsTypeUnknown::copyRecordText(current.record);
     else if (role == RecordTextPlainRole)
         return AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                        AtProtocolType::AppBskyFeedPost::Main>(current.record)
@@ -101,7 +101,7 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
     else if (role == RecordTextTranslationRole)
         return m_translations.contains(current.cid) ? m_translations[current.cid] : QString();
     else if (role == IndexedAtRole)
-        return formatDateTime(current.indexedAt);
+        return AtProtocolType::LexiconsTypeUnknown::formatDateTime(current.indexedAt);
     else if (role == EmbedImagesRole) {
         if (m_postHash.contains(current.cid))
             return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
@@ -165,6 +165,10 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             return m_postHash[current.cid].viewer.like;
         else
             return QString();
+    } else if (role == RunningRepostRole) {
+        return !current.cid.isEmpty() && (current.cid == m_runningRepostCid);
+    } else if (role == RunningLikeRole) {
+        return !current.cid.isEmpty() && (current.cid == m_runningLikeCid);
 
     } else if (role == ReplyRootCidRole) {
         return AtProtocolType::LexiconsTypeUnknown::fromQVariant<
@@ -295,12 +299,14 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
                 return QString();
         } else if (role == QuoteRecordIndexedAtRole) {
             if (m_postHash.contains(record_cid))
-                return formatDateTime(m_postHash[record_cid].indexedAt);
+                return AtProtocolType::LexiconsTypeUnknown::formatDateTime(
+                        m_postHash[record_cid].indexedAt);
             else
                 return QString();
         } else if (role == QuoteRecordRecordTextRole) {
             if (m_postHash.contains(record_cid))
-                return copyRecordText(m_postHash[record_cid].record);
+                return AtProtocolType::LexiconsTypeUnknown::copyRecordText(
+                        m_postHash[record_cid].record);
             else
                 return QString();
         } else if (role == QuoteRecordEmbedImagesRole) {
@@ -407,6 +413,20 @@ void NotificationListModel::update(int row, NotificationListModelRoles role, con
                 m_postHash[current.cid].likeCount++;
             emit dataChanged(index(row), index(row));
         }
+    } else if (role == RunningRepostRole) {
+        if (value.toBool()) {
+            m_runningRepostCid = current.cid;
+        } else {
+            m_runningRepostCid.clear();
+        }
+        emit dataChanged(index(row), index(row));
+    } else if (role == RunningLikeRole) {
+        if (value.toBool()) {
+            m_runningLikeCid = current.cid;
+        } else {
+            m_runningLikeCid.clear();
+        }
+        emit dataChanged(index(row), index(row));
     }
 
     return;
@@ -708,9 +728,9 @@ bool NotificationListModel::repost(int row)
 
     bool current = item(row, IsRepostedRole).toBool();
 
-    if (running())
+    if (runningRepost(row))
         return false;
-    setRunning(true);
+    setRunningRepost(row, true);
 
     RecordOperator *ope = new RecordOperator(this);
     connect(ope, &RecordOperator::errorOccured, this, &NotificationListModel::errorOccured);
@@ -721,7 +741,7 @@ bool NotificationListModel::repost(int row)
                 if (success) {
                     update(row, RepostedUriRole, uri);
                 }
-                setRunning(false);
+                setRunningRepost(row, false);
                 ope->deleteLater();
             });
     ope->setAccount(account().service, account().did, account().handle, account().email,
@@ -741,9 +761,9 @@ bool NotificationListModel::like(int row)
 
     bool current = item(row, IsLikedRole).toBool();
 
-    if (running())
+    if (runningLike(row))
         return false;
-    setRunning(true);
+    setRunningLike(row, true);
 
     RecordOperator *ope = new RecordOperator(this);
     connect(ope, &RecordOperator::errorOccured, this, &NotificationListModel::errorOccured);
@@ -753,7 +773,7 @@ bool NotificationListModel::like(int row)
                 if (success) {
                     update(row, LikedUriRole, uri);
                 }
-                setRunning(false);
+                setRunningLike(row, false);
                 ope->deleteLater();
             });
     ope->setAccount(account().service, account().did, account().handle, account().email,
@@ -793,6 +813,8 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[IsLikedRole] = "isLiked";
     roles[RepostedUriRole] = "repostedUri";
     roles[LikedUriRole] = "likedUri";
+    roles[RunningRepostRole] = "runningRepost";
+    roles[RunningLikeRole] = "runningLike";
 
     roles[ReasonRole] = "reason";
 
@@ -1068,6 +1090,23 @@ bool NotificationListModel::enableReason(const QString &reason) const
         return true;
 
     return false;
+}
+
+bool NotificationListModel::runningRepost(int row) const
+{
+    return item(row, RunningRepostRole).toBool();
+}
+void NotificationListModel::setRunningRepost(int row, bool running)
+{
+    update(row, RunningRepostRole, running);
+}
+bool NotificationListModel::runningLike(int row) const
+{
+    return item(row, RunningLikeRole).toBool();
+}
+void NotificationListModel::setRunningLike(int row, bool running)
+{
+    update(row, RunningLikeRole, running);
 }
 
 template<typename T>

@@ -16,6 +16,7 @@
 #include "postthreadlistmodel.h"
 #include "searchprofilelistmodel.h"
 #include "searchpostlistmodel.h"
+#include "contentfiltersettinglistmodel.h"
 
 class hagoromo_test : public QObject
 {
@@ -55,6 +56,7 @@ private slots:
     void test_SystemTool_ImageClip();
     void test_SearchProfileListModel_suggestion();
     void test_SearchPostListModel_text();
+    void test_ContentFilterSettingListModel();
 
 private:
     WebServer m_mockServer;
@@ -1112,8 +1114,8 @@ void hagoromo_test::test_TimelineListModel_quote_hide()
     row = 3;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
             == "quote a post with labeling image");
-    QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == false);
-    QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == true);
+    QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == true);
+    QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == false);
 
     row = 4;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
@@ -1124,8 +1126,8 @@ void hagoromo_test::test_TimelineListModel_quote_hide()
     row = 5;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
             == "quote a post with labeling image with image");
-    QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == false);
-    QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == true);
+    QVERIFY(model.item(row, TimelineListModel::QuoteFilterMatchedRole).toBool() == true);
+    QVERIFY(model.item(row, TimelineListModel::QuoteRecordBlockedRole).toBool() == false);
 
     row = 6;
     QVERIFY(model.item(row, TimelineListModel::RecordTextRole).toString()
@@ -1894,7 +1896,8 @@ void hagoromo_test::test_TimelineListModel_labelers()
                  model.item(row, TimelineListModel::ContentFilterMessageRole)
                          .toString()
                          .toLocal8Bit());
-        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMessageRole) == "Violence",
+        QVERIFY2(model.item(row, TimelineListModel::ContentMediaFilterMessageRole)
+                         == "Graphic Media",
                  model.item(row, TimelineListModel::ContentMediaFilterMessageRole)
                          .toString()
                          .toLocal8Bit());
@@ -2464,6 +2467,115 @@ void hagoromo_test::test_SearchPostListModel_text()
     QVERIFY2(model.replaceSearchCommand(QString("fuga%1from:me%1hoge").arg(QChar(0x3000)))
                      == "fuga from:hogehoge.bsky.sockal hoge",
              model.text().toLocal8Bit());
+}
+
+void hagoromo_test::test_ContentFilterSettingListModel()
+{
+    int i = 0;
+    ContentFilterSettingListModel model;
+    model.setService(m_service + "/content_filter/1");
+    model.setHandle(QString());
+    model.setAccessJwt("access_jwt");
+
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.load();
+        spy.wait(10 * 1000);
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    // -----------------------------------------
+    model.setLabelerDid(QString());
+    QVERIFY2(model.rowCount() == 11, QString::number(model.rowCount()).toLocal8Bit());
+    i = 0;
+    QVERIFY2(model.item(i, ContentFilterSettingListModel::TitleRole).toString() == "Content hidden",
+             model.item(i, ContentFilterSettingListModel::TitleRole).toString().toLocal8Bit());
+    QVERIFY2(
+            model.item(i, ContentFilterSettingListModel::DescriptionRole).toString()
+                    == "Moderator overrides for special cases.",
+            model.item(i, ContentFilterSettingListModel::DescriptionRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(i, ContentFilterSettingListModel::StatusRole).toInt()
+                     == static_cast<int>(ConfigurableLabelStatus::Hide),
+             model.item(i, ContentFilterSettingListModel::StatusRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(i, ContentFilterSettingListModel::IsAdultImageryRole).toBool() == false,
+             model.item(i, ContentFilterSettingListModel::IsAdultImageryRole)
+                     .toString()
+                     .toLocal8Bit());
+    QVERIFY2(model.item(i, ContentFilterSettingListModel::ConfigurableRole).toBool() == false,
+             model.item(i, ContentFilterSettingListModel::ConfigurableRole)
+                     .toString()
+                     .toLocal8Bit());
+    //
+    i = 10;
+    QVERIFY2(model.item(i, ContentFilterSettingListModel::TitleRole).toString()
+                     == "Impersonation / Scam",
+             model.item(i, ContentFilterSettingListModel::TitleRole).toString().toLocal8Bit());
+    //
+    i = 11;
+    QVERIFY2(model.item(i, ContentFilterSettingListModel::TitleRole).toString() == QString(),
+             model.item(i, ContentFilterSettingListModel::TitleRole).toString().toLocal8Bit());
+
+    model.setLabelerDid("did:plc:ar7c4by46qjdydhdevvrndac");
+    QVERIFY2(model.rowCount() == 18, QString::number(model.rowCount()).toLocal8Bit());
+    i = 0;
+    QVERIFY2(model.item(i, ContentFilterSettingListModel::TitleRole).toString()
+                     == "Sexually Suggestive (Cartoon)",
+             model.item(i, ContentFilterSettingListModel::TitleRole).toString().toLocal8Bit());
+    QVERIFY2(
+            model.item(i, ContentFilterSettingListModel::DescriptionRole).toString()
+                    == "Art with explicit or suggestive sexual themes, including provocative "
+                       "imagery or partial nudity.",
+            model.item(i, ContentFilterSettingListModel::DescriptionRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(i, ContentFilterSettingListModel::StatusRole).toInt()
+                     == static_cast<int>(ConfigurableLabelStatus::Show),
+             model.item(i, ContentFilterSettingListModel::StatusRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(i, ContentFilterSettingListModel::IsAdultImageryRole).toBool() == true,
+             model.item(i, ContentFilterSettingListModel::IsAdultImageryRole)
+                     .toString()
+                     .toLocal8Bit());
+    QVERIFY2(model.item(i, ContentFilterSettingListModel::ConfigurableRole).toBool() == true,
+             model.item(i, ContentFilterSettingListModel::ConfigurableRole)
+                     .toString()
+                     .toLocal8Bit());
+    i = 11;
+    QVERIFY2(model.item(i, ContentFilterSettingListModel::TitleRole).toString() == "Misinformation",
+             model.item(i, ContentFilterSettingListModel::TitleRole).toString().toLocal8Bit());
+    QVERIFY2(
+            model.item(i, ContentFilterSettingListModel::DescriptionRole).toString()
+                    == "Spreading false or misleading info, including unverified claims and "
+                       "harmful conspiracy theories.",
+            model.item(i, ContentFilterSettingListModel::DescriptionRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(i, ContentFilterSettingListModel::StatusRole).toInt()
+                     == static_cast<int>(ConfigurableLabelStatus::Warning),
+             model.item(i, ContentFilterSettingListModel::StatusRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(i, ContentFilterSettingListModel::IsAdultImageryRole).toBool() == false,
+             model.item(i, ContentFilterSettingListModel::IsAdultImageryRole)
+                     .toString()
+                     .toLocal8Bit());
+    QVERIFY2(model.item(i, ContentFilterSettingListModel::ConfigurableRole).toBool() == true,
+             model.item(i, ContentFilterSettingListModel::ConfigurableRole)
+                     .toString()
+                     .toLocal8Bit());
+    i = 17;
+    QVERIFY2(model.item(i, ContentFilterSettingListModel::TitleRole).toString()
+                     == "Inauthentic Account",
+             model.item(i, ContentFilterSettingListModel::TitleRole).toString().toLocal8Bit());
+    i = 18;
+    QVERIFY2(model.item(i, ContentFilterSettingListModel::TitleRole).toString() == QString(),
+             model.item(i, ContentFilterSettingListModel::TitleRole).toString().toLocal8Bit());
+
+    // -----------------------------------------
+    model.setLabelerDid("did:plc:original_labeler_did");
+    QVERIFY2(model.rowCount() == 1, QString::number(model.rowCount()).toLocal8Bit());
+    i = 0;
+    QVERIFY2(model.item(i, ContentFilterSettingListModel::TitleRole).toString() == "Original",
+             model.item(i, ContentFilterSettingListModel::TitleRole).toString().toLocal8Bit());
+    i = 1;
+    QVERIFY2(model.item(i, ContentFilterSettingListModel::TitleRole).toString() == QString(),
+             model.item(i, ContentFilterSettingListModel::TitleRole).toString().toLocal8Bit());
+
+    model.setLabelerDid("did:plc:unknown");
+    QVERIFY2(model.rowCount() == 0, QString::number(model.rowCount()).toLocal8Bit());
 }
 
 void hagoromo_test::verifyStr(const QString &expect, const QString &actual)

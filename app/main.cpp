@@ -34,6 +34,8 @@
 #include "qtquick/listslistmodel.h"
 #include "qtquick/listitemlistmodel.h"
 #include "qtquick/listfeedlistmodel.h"
+#include "qtquick/listblockslistmodel.h"
+#include "qtquick/listmuteslistmodel.h"
 #include "qtquick/thumbnailprovider.h"
 #include "qtquick/encryption.h"
 #include "qtquick/userprofile.h"
@@ -42,6 +44,7 @@
 #include "qtquick/reporter.h"
 #include "qtquick/feedgeneratorlink.h"
 #include "qtquick/listlink.h"
+#include "qtquick/postlink.h"
 
 void setAppFont(QGuiApplication &app)
 {
@@ -72,7 +75,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName(QStringLiteral("relog"));
     app.setOrganizationDomain(QStringLiteral("hagoromo.relog.tech"));
     app.setApplicationName(QStringLiteral("Hagoromo"));
-    app.setApplicationVersion(QStringLiteral("0.26.0"));
+    app.setApplicationVersion(QStringLiteral("0.27.0"));
 #ifndef HAGOROMO_RELEASE_BUILD
     app.setApplicationVersion(app.applicationVersion() + "d");
 #endif
@@ -128,6 +131,10 @@ int main(int argc, char *argv[])
                                        "ListItemListModel");
     qmlRegisterType<ListFeedListModel>("tech.relog.hagoromo.listfeedlistmodel", 1, 0,
                                        "ListFeedListModel");
+    qmlRegisterType<ListBlocksListModel>("tech.relog.hagoromo.listblocksListmodel", 1, 0,
+                                         "ListBlocksListModel");
+    qmlRegisterType<ListMutesListModel>("tech.relog.hagoromo.listmuteslistmodel", 1, 0,
+                                        "ListMutesListModel");
     qmlRegisterType<Encryption>("tech.relog.hagoromo.encryption", 1, 0, "Encryption");
     qmlRegisterType<UserProfile>("tech.relog.hagoromo.userprofile", 1, 0, "UserProfile");
     qmlRegisterType<SystemTool>("tech.relog.hagoromo.systemtool", 1, 0, "SystemTool");
@@ -136,6 +143,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<FeedGeneratorLink>("tech.relog.hagoromo.feedgeneratorlink", 1, 0,
                                        "FeedGeneratorLink");
     qmlRegisterType<ListLink>("tech.relog.hagoromo.listlink", 1, 0, "ListLink");
+    qmlRegisterType<PostLink>("tech.relog.hagoromo.postlink", 1, 0, "PostLink");
 
     qmlRegisterSingletonType(QUrl("qrc:/Hagoromo/qml/data/AdjustedValues.qml"),
                              "tech.relog.hagoromo.singleton", 1, 0, "AdjustedValues");

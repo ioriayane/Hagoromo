@@ -1,0 +1,23 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: end-of-file-fixer
+        exclude: |
+            (?x)^(
+                docs/CNAME
+            )$
+      - id: trailing-whitespace
+        exclude: |
+            (?x)^(
+                web/.*
+            )$
+  - repo: https://gitlab.com/daverona/pre-commit/cpp
+    rev: 0.8.0
+    hooks:
+      - id: clang-format
+        args: [-style=file]
+  # - repo: https://github.com/psf/black
+  #   rev: 24.3.0
+  #   hooks:
+  #     - id: black

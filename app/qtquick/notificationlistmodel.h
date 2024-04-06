@@ -53,6 +53,8 @@ public:
         IsLikedRole,
         RepostedUriRole,
         LikedUriRole,
+        RunningRepostRole,
+        RunningLikeRole,
 
         ReasonRole,
 
@@ -193,6 +195,10 @@ private:
     void emitRecordDataChanged(const int i, const QStringList &new_cid, const QVariant &record);
 
     bool enableReason(const QString &reason) const;
+    bool runningRepost(int row) const;
+    void setRunningRepost(int row, bool running);
+    bool runningLike(int row) const;
+    void setRunningLike(int row, bool running);
 
     bool m_visibleLike;
     bool m_visibleRepost;
@@ -201,6 +207,8 @@ private:
     bool m_visibleReply;
     bool m_visibleQuote;
     bool m_updateSeenNotification;
+    QString m_runningRepostCid;
+    QString m_runningLikeCid;
 };
 
 #endif // NOTIFICATIONLISTMODEL_H

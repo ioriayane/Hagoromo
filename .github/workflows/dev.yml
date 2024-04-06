@@ -1,7 +1,7 @@
 name: Unit test
 on:
   pull_request:
-    branches:    
+    branches:
       - dev
 jobs:
   unit_test:
@@ -26,6 +26,10 @@ jobs:
           qmake --version
           cp app/qtquick/encryption_seed_template.h app/qtquick/encryption_seed.h
           python -m pip install --upgrade pip jinja2
+      - name: Check style
+        uses: pre-commit/action@v3.0.1
+        with:
+          extra_args: --all-files
       - name: Build
         run: scripts/build.sh linux ${Qt5_DIR}/bin
       - name: Build httpserver
@@ -35,6 +39,6 @@ jobs:
           qmake CONFIG+=debug_and_release ../qthttpserver/qthttpserver.pro
           make -j4 && make install
       - name: Unit test
-        env: 
-          TZ: "Asia/Tokyo"       
+        env:
+          TZ: "Asia/Tokyo"
         run: scripts/unittest.sh linux ${Qt5_DIR}/bin

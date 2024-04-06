@@ -15,6 +15,15 @@ class ContentFilterSettingListModel : public QAbstractListModel
     Q_PROPERTY(QString service READ service WRITE setService NOTIFY serviceChanged)
     Q_PROPERTY(QString handle READ handle WRITE setHandle NOTIFY handleChanged)
     Q_PROPERTY(QString accessJwt READ accessJwt WRITE setAccessJwt NOTIFY accessJwtChanged)
+    // モデルとして提供されるラベラーのDIDを設定する
+    Q_PROPERTY(
+            QString labelerDid READ labelerDid WRITE setLabelerDid NOTIFY labelerDidChanged FINAL)
+    // laberDidに設定できるDIDの一覧
+    Q_PROPERTY(QStringList selectableLabelerDids READ selectableLabelerDids WRITE
+                       setSelectableLabelerDids NOTIFY selectableLabelerDidsChanged FINAL)
+    Q_PROPERTY(bool labelerHasAdultOnly READ labelerHasAdultOnly WRITE setLabelerHasAdultOnly NOTIFY
+                       labelerHasAdultOnlyChanged FINAL)
+    Q_PROPERTY(bool modified READ modified WRITE setModified NOTIFY modifiedChanged FINAL)
 
 public:
     explicit ContentFilterSettingListModel(QObject *parent = nullptr);
@@ -25,6 +34,7 @@ public:
         TitleRole,
         DescriptionRole,
         StatusRole,
+        LevelRole,
         IsAdultImageryRole,
         ConfigurableRole,
     };
@@ -41,6 +51,10 @@ public:
 
     Q_INVOKABLE void load();
     Q_INVOKABLE void save();
+    Q_INVOKABLE void clear();
+
+    Q_INVOKABLE QString selectableLabelerName(const QString &did) const;
+    Q_INVOKABLE QString selectableLabelerDescription(const QString &did) const;
 
     bool enableAdultContent() const;
     void setEnableAdultContent(bool newEnableAdultContent);
@@ -52,6 +66,17 @@ public:
     QString accessJwt() const;
     void setAccessJwt(const QString &newAccessJwt);
 
+    QString labelerDid() const;
+    void setLabelerDid(const QString &newLabelerDid);
+    QStringList selectableLabelerDids() const;
+    void setSelectableLabelerDids(const QStringList &newSelectableLabelerDids);
+
+    bool labelerHasAdultOnly() const;
+    void setLabelerHasAdultOnly(bool newLabelerHasAdultOnly);
+
+    bool modified() const;
+    void setModified(bool newModified);
+
 public slots:
     void setRunning(bool newRunning);
 
@@ -62,6 +87,14 @@ signals:
     void serviceChanged();
     void handleChanged();
     void accessJwtChanged();
+
+    void labelerDidChanged();
+
+    void selectableLabelerDidsChanged();
+
+    void labelerHasAdultOnlyChanged();
+
+    void modifiedChanged();
 
 protected:
     QHash<int, QByteArray> roleNames() const;
@@ -75,6 +108,10 @@ private:
     QString m_service;
     QString m_handle;
     QString m_accessJwt;
+    QString m_labelerDid;
+    QStringList m_selectableLabelerDids;
+    bool m_labelerHasAdultOnly;
+    bool m_modified;
 };
 
 #endif // CONTENTFILTERSETTINGLISTMODEL_H

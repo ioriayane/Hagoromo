@@ -116,7 +116,7 @@ ColumnLayout {
                     anchors.right: parent.right
                     height: AdjustedValues.b24
                     iconText: qsTr("Edit")
-                    visible: (listItemListModel.creatorHandle === recordOperator.accountHandle) &&  recordOperator.accountHandle.length > 0
+                    visible: listItemListModel.mine
                     onClicked: listDetailView.requestEditList(listDetailView.listUri, avatarImage.source,
                                                               listItemListModel.name, listItemListModel.description)
                     BusyIndicator {
@@ -132,6 +132,32 @@ ColumnLayout {
                 color: Material.color(Material.Grey)
                 text: listItemListModel.creatorHandle.length == 0 ?
                           "" : "by " + listItemListModel.creatorDisplayName + " (" + listItemListModel.creatorHandle + ")"
+            }
+            TagLabel {
+                fontPointSize: AdjustedValues.f8
+                color: Material.color(Material.Red,
+                                      Material.theme === Material.Light ? Material.Shade100 : Material.Shade800)
+                text: "Moderation"
+                source: "../images/list.png"
+                visible: listItemListModel.isModeration
+            }
+            RowLayout {
+                TagLabel {
+                    fontPointSize: AdjustedValues.f8
+                    color: Material.color(Material.BlueGrey,
+                                          Material.theme === Material.Light ? Material.Shade100 : Material.Shade800)
+                    text: qsTr("Muted")
+                    source: "../images/list.png"
+                    visible: listItemListModel.muted
+                }
+                TagLabel {
+                    fontPointSize: AdjustedValues.f8
+                    color: Material.color(Material.BlueGrey,
+                                          Material.theme === Material.Light ? Material.Shade100 : Material.Shade800)
+                    text: qsTr("Blocked")
+                    source: "../images/list.png"
+                    visible: listItemListModel.blocked
+                }
             }
             Label {
                 Layout.preferredWidth: parent.basisWidth
@@ -169,9 +195,21 @@ ColumnLayout {
                         }
                         MenuSeparator {}
                         MenuItem {
+                            enabled: listItemListModel.mine
                             text: qsTr("Delete list")
                             icon.source: "../images/delete.png"
                             onTriggered: recordOperator.deleteList(listDetailView.listUri)
+                        }
+                        MenuSeparator {}
+                        MenuItem {
+                            text: listItemListModel.muted ? qsTr("Unmute list") : qsTr("Mute list")
+                            icon.source: "../images/account_off.png"
+                            onTriggered: listItemListModel.mute()
+                        }
+                        MenuItem {
+                            text: listItemListModel.blocked ? qsTr("Unblock list") : qsTr("Block list")
+                            icon.source: "../images/block.png"
+                            onTriggered: listItemListModel.block()
                         }
                     }
                 }
@@ -197,6 +235,7 @@ ColumnLayout {
                 id: listItemListModel
                 autoLoading: false
                 uri: listDetailView.listUri
+                property bool mine: (creatorHandle === recordOperator.accountHandle) &&  recordOperator.accountHandle.length > 0
                 onErrorOccured: (code, message) => listDetailView.errorOccured(code, message)
             }
 

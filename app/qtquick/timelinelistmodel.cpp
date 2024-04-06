@@ -92,7 +92,7 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     else if (role == MutedRole)
         return current.post.author.viewer.muted;
     else if (role == RecordTextRole)
-        return copyRecordText(current.post.record);
+        return LexiconsTypeUnknown::copyRecordText(current.post.record);
     else if (role == RecordTextPlainRole)
         return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(current.post.record).text;
     else if (role == RecordTextTranslationRole)
@@ -107,9 +107,9 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     else if (role == ReplyDisabledRole)
         return current.post.viewer.replyDisabled;
     else if (role == IndexedAtRole)
-        return formatDateTime(current.post.indexedAt);
+        return LexiconsTypeUnknown::formatDateTime(current.post.indexedAt);
     else if (role == IndexedAtLongRole)
-        return formatDateTime(current.post.indexedAt, true);
+        return LexiconsTypeUnknown::formatDateTime(current.post.indexedAt, true);
     else if (role == EmbedImagesRole)
         return copyImagesFromPostView(current.post, LexiconsTypeUnknown::CopyImageType::Thumb);
     else if (role == EmbedImagesFullRole)
@@ -126,6 +126,12 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return current.post.viewer.repost;
     else if (role == LikedUriRole)
         return current.post.viewer.like;
+    else if (role == RunningRepostRole)
+        return !current.post.cid.isEmpty() && (current.post.cid == m_runningRepostCid);
+    else if (role == RunningLikeRole)
+        return !current.post.cid.isEmpty() && (current.post.cid == m_runningLikeCid);
+    else if (role == RunningdeletePostRole)
+        return !current.post.cid.isEmpty() && (current.post.cid == m_runningDeletePostCid);
 
     else if (role == HasQuoteRecordRole || role == QuoteRecordCidRole || role == QuoteRecordUriRole
              || role == QuoteRecordDisplayNameRole || role == QuoteRecordHandleRole
@@ -274,6 +280,27 @@ void TimelineListModel::update(int row, TimelineListModelRoles role, const QVari
         else
             current.post.likeCount++;
         emit dataChanged(index(row), index(row));
+    } else if (role == RunningRepostRole) {
+        if (value.toBool()) {
+            m_runningRepostCid = current.post.cid;
+        } else {
+            m_runningRepostCid.clear();
+        }
+        emit dataChanged(index(row), index(row));
+    } else if (role == RunningLikeRole) {
+        if (value.toBool()) {
+            m_runningLikeCid = current.post.cid;
+        } else {
+            m_runningLikeCid.clear();
+        }
+        emit dataChanged(index(row), index(row));
+    } else if (role == RunningdeletePostRole) {
+        if (value.toBool()) {
+            m_runningDeletePostCid = current.post.cid;
+        } else {
+            m_runningDeletePostCid.clear();
+        }
+        emit dataChanged(index(row), index(row));
     } else if (m_toThreadGateRoles.contains(role)) {
         updateThreadGateItem(current.post, m_toThreadGateRoles[role], value);
         emit dataChanged(index(row), index(row));
@@ -360,9 +387,9 @@ bool TimelineListModel::deletePost(int row)
     if (row < 0 || row >= m_cidList.count())
         return false;
 
-    if (running())
+    if (runningdeletePost(row))
         return false;
-    setRunning(true);
+    setRunningdeletePost(row, true);
 
     RecordOperator *ope = new RecordOperator(this);
     connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
@@ -375,7 +402,7 @@ bool TimelineListModel::deletePost(int row)
                     m_cidList.removeAt(row);
                     endRemoveRows();
                 }
-                setRunning(false);
+                setRunningdeletePost(row, false);
                 ope->deleteLater();
             });
     ope->setAccount(account().service, account().did, account().handle, account().email,
@@ -392,9 +419,9 @@ bool TimelineListModel::repost(int row)
 
     bool current = item(row, IsRepostedRole).toBool();
 
-    if (running())
+    if (runningRepost(row))
         return false;
-    setRunning(true);
+    setRunningRepost(row, true);
 
     RecordOperator *ope = new RecordOperator(this);
     connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
@@ -404,7 +431,7 @@ bool TimelineListModel::repost(int row)
                 if (success) {
                     update(row, RepostedUriRole, uri);
                 }
-                setRunning(false);
+                setRunningRepost(row, false);
                 ope->deleteLater();
             });
     ope->setAccount(account().service, account().did, account().handle, account().email,
@@ -424,9 +451,9 @@ bool TimelineListModel::like(int row)
 
     bool current = item(row, IsLikedRole).toBool();
 
-    if (running())
+    if (runningLike(row))
         return false;
-    setRunning(true);
+    setRunningLike(row, true);
 
     RecordOperator *ope = new RecordOperator(this);
     connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
@@ -437,7 +464,7 @@ bool TimelineListModel::like(int row)
                 if (success) {
                     update(row, LikedUriRole, uri);
                 }
-                setRunning(false);
+                setRunningLike(row, false);
                 ope->deleteLater();
             });
     ope->setAccount(account().service, account().did, account().handle, account().email,
@@ -478,6 +505,9 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[IsLikedRole] = "isLiked";
     roles[RepostedUriRole] = "repostedUri";
     roles[LikedUriRole] = "likedUri";
+    roles[RunningRepostRole] = "runningRepost";
+    roles[RunningLikeRole] = "runningLike";
+    roles[RunningdeletePostRole] = "runningdeletePost";
 
     roles[HasQuoteRecordRole] = "hasQuoteRecord";
     roles[QuoteRecordCidRole] = "quoteRecordCid";
@@ -761,18 +791,21 @@ QVariant TimelineListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDefs::
             return QString();
     } else if (role == QuoteRecordRecordTextRole) {
         if (has_record)
-            return copyRecordText(post.embed_AppBskyEmbedRecord_View->record_ViewRecord.value);
+            return LexiconsTypeUnknown::copyRecordText(
+                    post.embed_AppBskyEmbedRecord_View->record_ViewRecord.value);
         else if (has_with_image)
-            return copyRecordText(
+            return LexiconsTypeUnknown::copyRecordText(
                     post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.value);
         else
             return QString();
     } else if (role == QuoteRecordIndexedAtRole) {
         if (has_record)
-            return formatDateTime(post.embed_AppBskyEmbedRecord_View->record_ViewRecord.indexedAt);
+            return LexiconsTypeUnknown::formatDateTime(
+                    post.embed_AppBskyEmbedRecord_View->record_ViewRecord.indexedAt);
         else if (has_with_image)
-            return formatDateTime(post.embed_AppBskyEmbedRecordWithMedia_View.record
-                                          ->record_ViewRecord.indexedAt);
+            return LexiconsTypeUnknown::formatDateTime(
+                    post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
+                            .indexedAt);
         else
             return QString();
     } else if (role == QuoteRecordEmbedImagesRole) {
@@ -862,6 +895,35 @@ void TimelineListModel::updateExtendMediaFile(const QString &parent_cid)
     if (row >= 0) {
         emit dataChanged(index(row), index(row));
     }
+}
+
+bool TimelineListModel::runningRepost(int row) const
+{
+    return item(row, RunningRepostRole).toBool();
+}
+
+void TimelineListModel::setRunningRepost(int row, bool running)
+{
+    update(row, RunningRepostRole, running);
+}
+
+bool TimelineListModel::runningLike(int row) const
+{
+    return item(row, RunningLikeRole).toBool();
+}
+
+void TimelineListModel::setRunningLike(int row, bool running)
+{
+    update(row, RunningLikeRole, running);
+}
+
+bool TimelineListModel::runningdeletePost(int row) const
+{
+    return item(row, RunningdeletePostRole).toBool();
+}
+void TimelineListModel::setRunningdeletePost(int row, bool running)
+{
+    update(row, RunningdeletePostRole, running);
 }
 
 bool TimelineListModel::visibleReplyToUnfollowedUsers() const

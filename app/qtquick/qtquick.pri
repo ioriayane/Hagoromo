@@ -22,13 +22,16 @@ SOURCES += \
     $$PWD/followerslistmodel.cpp \
     $$PWD/followslistmodel.cpp \
     $$PWD/languagelistmodel.cpp \
+    $$PWD/listblockslistmodel.cpp \
     $$PWD/listfeedlistmodel.cpp \
     $$PWD/listitemlistmodel.cpp \
     $$PWD/listlink.cpp \
+    $$PWD/listmuteslistmodel.cpp \
     $$PWD/listslistmodel.cpp \
     $$PWD/mutedwordlistmodel.cpp \
     $$PWD/muteslistmodel.cpp \
     $$PWD/notificationlistmodel.cpp \
+    $$PWD/postlink.cpp \
     $$PWD/postthreadlistmodel.cpp \
     $$PWD/recordoperator.cpp \
     $$PWD/reporter.cpp \
@@ -62,13 +65,16 @@ HEADERS += \
     $$PWD/followerslistmodel.h \
     $$PWD/followslistmodel.h \
     $$PWD/languagelistmodel.h \
+    $$PWD/listblockslistmodel.h \
     $$PWD/listfeedlistmodel.h \
     $$PWD/listitemlistmodel.h \
     $$PWD/listlink.h \
+    $$PWD/listmuteslistmodel.h \
     $$PWD/listslistmodel.h \
     $$PWD/mutedwordlistmodel.h \
     $$PWD/muteslistmodel.h \
     $$PWD/notificationlistmodel.h \
+    $$PWD/postlink.h \
     $$PWD/postthreadlistmodel.h \
     $$PWD/recordoperator.h \
     $$PWD/reporter.h \

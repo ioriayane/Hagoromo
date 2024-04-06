@@ -10,6 +10,12 @@ enum class ConfigurableLabelStatus : int {
     Unknown, // デフォルトでしか使用しないこと
 };
 
+enum class ConfigurableLabelFoldableRange : int {
+    Content,
+    Media,
+    None,
+};
+
 enum class ConfigurableLabelLevel : int {
     Alert,
     Inform,
@@ -32,9 +38,11 @@ struct ConfigurableLabelItem
     QString subtitle; // ラベル一覧に表示する説明文
     QString warning; // 隠すときに表示するメッセージ
     QStringList values; // プロフィールやポストに設定されているラベルとマッチングさせる値
-    bool is_adult_imagery = false; // 画像を隠すかどうか
-    ConfigurableLabelLevel level =
-            ConfigurableLabelLevel::Alert; // ユーザーへの通知レベル(今のところ表現上の差はなし)
+    bool is_adult_imagery = false; // アダルトコンテンツの対象設定か
+    ConfigurableLabelFoldableRange foldable_range =
+            ConfigurableLabelFoldableRange::Content; // 隠す範囲（lexiconのblurs）
+    ConfigurableLabelLevel level = ConfigurableLabelLevel::
+            Alert; // ユーザーへの通知レベル(今のところ表現上の差はなし)（lexiconのseverity）
     ConfigurableLabelStatus status =
             ConfigurableLabelStatus::Hide; // プロフィールやポストをどうするか
     ConfigurableLabelStatus default_status = ConfigurableLabelStatus::Unknown;
@@ -77,11 +85,14 @@ public:
     QString title(const QString &label, const bool for_image,
                   const QString &labeler_did = QString()) const;
     QString description(const int index, const QString &labeler_did = QString()) const;
+    ConfigurableLabelFoldableRange foldableRange(const int index, const QString &labeler_did) const;
+    ConfigurableLabelLevel level(const int index, const QString &labeler_did) const;
     ConfigurableLabelStatus status(const int index, const QString &labeler_did = QString()) const;
     void setStatus(const int index, const ConfigurableLabelStatus status,
                    const QString &labeler_did = QString());
     bool isAdultImagery(const int index, const QString &labeler_did = QString()) const;
     bool configurable(const int index, const QString &labeler_did = QString()) const;
+    bool hasAdultOnly(const QString &labeler_did) const;
 
     int targetLabelerCount() const;
     QString targetLabelerDid(const int index) const;
@@ -128,6 +139,7 @@ private:
     bool putPreferences(const QString &json);
     QString updatePreferencesJson(const QString &src_json);
     QString removeSharp(const QString &value) const;
+    ConfigurableLabelFoldableRange toLabelFoldableRange(const QString &blurs) const;
     ConfigurableLabelStatus toLabelStatus(const QString &visibility) const;
     ConfigurableLabelLevel toLabelLevel(const QString &severity) const;
 

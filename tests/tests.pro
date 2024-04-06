@@ -6,4 +6,3 @@ SUBDIRS += \
     hagoromo_test2 \
     http_test \
     search_test
-

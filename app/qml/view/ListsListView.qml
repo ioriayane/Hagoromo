@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 import QtGraphicalEffects 1.15
 
+import tech.relog.hagoromo.listslistmodel 1.0
 import tech.relog.hagoromo.singleton 1.0
 
 import "../parts"
@@ -17,6 +18,7 @@ ScrollView {
 
     property alias listView: rootListView
     property alias model: rootListView.model
+    property int mode: 0    // 0:プロフィール用, 1:ミュートリスト一覧ダイアログ用, 2:ブロックリスト一覧ダイアログ用
 
     signal requestViewListDetail(string uri)
 
@@ -74,6 +76,41 @@ ScrollView {
 
             onClicked: (mouse) => listsListView.requestViewListDetail(model.uri)
 
+            states: [
+                State {
+                    when: (listsListView.mode === 0)
+                    PropertyChanges { target: statusLabelLayout; visible: true }
+                    PropertyChanges { target: controlButton; visible: false }
+
+                },
+                State {
+                    when: (listsListView.mode === 1)
+                    PropertyChanges { target: statusLabelLayout; visible: false }
+                    PropertyChanges {
+                        target: controlButton
+                        visible: true
+                        iconText: model.muted ? qsTr("Unmute") : qsTr("Mute")
+                        onClicked: {
+                            console.log("mute " + model.index)
+                            rootListView.model.mute(model.index)
+                        }
+                    }
+                },
+                State {
+                    when: (listsListView.mode === 2)
+                    PropertyChanges { target: statusLabelLayout; visible: false }
+                    PropertyChanges {
+                        target: controlButton
+                        visible: true
+                        iconText: model.blocked ? qsTr("Unblock") : qsTr("Block")
+                        onClicked: {
+                            console.log("block " + model.index)
+                            rootListView.model.block(model.index)
+                        }
+                    }
+                }
+            ]
+
             RowLayout{
                 spacing: 10
                 AvatarImage {
@@ -92,12 +129,49 @@ ScrollView {
                         Layout.preferredWidth: parent.basisWidth
                         font.pointSize: AdjustedValues.f10
                         text: model.name
+                        IconButton {
+                            id: controlButton
+                            anchors.top: parent.top
+                            anchors.right: parent.right
+                            height: AdjustedValues.b24
+                            enabled: !listsListView.model.running
+                            iconText: "   "
+                            font.pointSize: AdjustedValues.f8
+                        }
                     }
                     Label {
                         Layout.preferredWidth: parent.basisWidth
                         color: Material.color(Material.Grey)
                         font.pointSize: AdjustedValues.f8
                         text: "by " + model.creatorDisplayName + " (" + model.creatorHandle + ")"
+                    }
+                    TagLabel {
+                        fontPointSize: AdjustedValues.f8
+                        color: Material.color(Material.Red,
+                                              Material.theme === Material.Light ? Material.Shade100 : Material.Shade800)
+                        text: "Moderation"
+                        source: "../images/list.png"
+                        visible: model.isModeration
+                    }
+                    RowLayout {
+                        id: statusLabelLayout
+                        visible: (listsListView.mode === 0)
+                        TagLabel {
+                            fontPointSize: AdjustedValues.f8
+                            color: Material.color(Material.BlueGrey,
+                                                  Material.theme === Material.Light ? Material.Shade100 : Material.Shade800)
+                            text: qsTr("Muted")
+                            source: "../images/list.png"
+                            visible: model.muted
+                        }
+                        TagLabel {
+                            fontPointSize: AdjustedValues.f8
+                            color: Material.color(Material.BlueGrey,
+                                                  Material.theme === Material.Light ? Material.Shade100 : Material.Shade800)
+                            text: qsTr("Blocked")
+                            source: "../images/list.png"
+                            visible: model.blocked
+                        }
                     }
                     Label {
                         Layout.preferredWidth: parent.basisWidth

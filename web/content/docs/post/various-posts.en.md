@@ -117,5 +117,3 @@ Can be labeled for sensitive posts. Used primarily for image postings.
 If the viewing user has set the display of sensitive contents to `warning`, the images will be hidden as shown below.
 
 {{< figure src="../images/post_labeled_image.en.png" width="60%" >}}
-
-

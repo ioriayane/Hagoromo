@@ -70,6 +70,10 @@ RowLayout {
                 text: qsTr("Quote")
             }
         }
+        BusyIndicator {
+            anchors.fill: parent
+            visible: !parent.enabled
+        }
     }
     IconButton {
         id: likeButton
@@ -78,6 +82,10 @@ RowLayout {
         iconSize: AdjustedValues.i16
         foreground: isLiked ? Material.color(Material.Pink) : Material.color(Material.Grey)
         flat: true
+        BusyIndicator {
+            anchors.fill: parent
+            visible: !parent.enabled
+        }
     }
     Item {
         Layout.fillWidth: true

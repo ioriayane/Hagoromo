@@ -15,4 +15,3 @@ include(../../openssl/openssl.pri)
 
 RESOURCES += \
     hagoromo_test.qrc
-

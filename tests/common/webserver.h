@@ -18,6 +18,8 @@ signals:
 
 private:
     QMimeDatabase m_MimeDb;
+
+    bool verifyHttpHeader(const QHttpServerRequest &request) const;
 };
 
 #endif // WEBSERVER_H

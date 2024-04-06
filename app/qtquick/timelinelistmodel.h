@@ -62,6 +62,9 @@ public:
         IsLikedRole,
         RepostedUriRole,
         LikedUriRole,
+        RunningRepostRole,
+        RunningLikeRole,
+        RunningdeletePostRole,
 
         HasQuoteRecordRole,
         QuoteRecordCidRole,
@@ -182,6 +185,13 @@ protected:
     QHash<QString, ThreadConnector> m_threadConnectorHash;
 
 private:
+    bool runningRepost(int row) const;
+    void setRunningRepost(int row, bool running);
+    bool runningLike(int row) const;
+    void setRunningLike(int row, bool running);
+    bool runningdeletePost(int row) const;
+    void setRunningdeletePost(int row, bool running);
+
     QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::ExternalLinkRoles>
             m_toExternalLinkRoles;
     QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::FeedGeneratorRoles>
@@ -197,6 +207,9 @@ private:
     bool m_visibleRepostOfUnfollowingUsers;
     bool m_visibleRepostOfMine;
     bool m_visibleRepostByMe;
+    QString m_runningRepostCid;
+    QString m_runningLikeCid;
+    QString m_runningDeletePostCid;
 };
 
 #endif // TIMELINELISTMODEL_H

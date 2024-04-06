@@ -261,7 +261,7 @@
                         "severity": "alert"
                     },
                     {
-                        "adultOnly": true,
+                        "adultOnly": false,
                         "blurs": "media",
                         "defaultSetting": "show",
                         "identifier": "sexual-figurative",

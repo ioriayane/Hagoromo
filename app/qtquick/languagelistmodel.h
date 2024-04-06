@@ -23,7 +23,7 @@ class LanguageListModel : public QAbstractListModel
 public:
     explicit LanguageListModel(QObject *parent = nullptr);
 
-    //モデルで提供する項目のルールID的な（QML側へ公開するために大文字で始めること）
+    // モデルで提供する項目のルールID的な（QML側へ公開するために大文字で始めること）
     enum LanguageListModelRoles {
         ModelData = Qt::UserRole + 1,
         NameRole,

@@ -50,6 +50,12 @@ void ComAtprotoRepoDeleteRecord::deleteBlock(const QString &rkey)
     deleteRecord(this->did(), QStringLiteral("app.bsky.graph.block"), rkey, QString(), QString());
 }
 
+void ComAtprotoRepoDeleteRecord::deleteBlockList(const QString &rkey)
+{
+    deleteRecord(this->did(), QStringLiteral("app.bsky.graph.listblock"), rkey, QString(),
+                 QString());
+}
+
 void ComAtprotoRepoDeleteRecord::deleteList(const QString &rkey)
 {
     deleteRecord(this->did(), QStringLiteral("app.bsky.graph.list"), rkey, QString(), QString());

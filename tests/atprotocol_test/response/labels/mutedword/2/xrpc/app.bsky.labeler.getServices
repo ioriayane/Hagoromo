@@ -324,6 +324,22 @@
             "indexedAt": "2024-03-14T07:46:11.999Z",
             "labels": [],
             "policies": {
+                "labelValueDefinitions": [
+                    {
+                        "adultOnly": false,
+                        "blurs": "content",
+                        "defaultSetting": "warn",
+                        "identifier": "orignal",
+                        "locales": [
+                            {
+                                "description": "Original label",
+                                "lang": "en",
+                                "name": "Original"
+                            }
+                        ],
+                        "severity": "alert"
+                    }
+                ],
                 "labelValues": []
             }
         }

@@ -42,38 +42,23 @@
         },
         {
             "$type": "app.bsky.actor.defs#contentLabelPref",
-            "label": "nsfw",
+            "label": "porn",
             "visibility": "hide"
         },
         {
             "$type": "app.bsky.actor.defs#contentLabelPref",
-            "label": "nudity",
-            "visibility": "hide"
-        },
-        {
-            "$type": "app.bsky.actor.defs#contentLabelPref",
-            "label": "suggestive",
+            "label": "sexual",
             "visibility": "warn"
         },
         {
             "$type": "app.bsky.actor.defs#contentLabelPref",
-            "label": "gore",
-            "visibility": "hide"
+            "label": "graphic-media",
+            "visibility": "warn"
         },
         {
             "$type": "app.bsky.actor.defs#contentLabelPref",
-            "label": "hate",
-            "visibility": "hide"
-        },
-        {
-            "$type": "app.bsky.actor.defs#contentLabelPref",
-            "label": "spam",
-            "visibility": "hide"
-        },
-        {
-            "$type": "app.bsky.actor.defs#contentLabelPref",
-            "label": "impersonation",
-            "visibility": "hide"
+            "label": "nudity",
+            "visibility": "ignore"
         }
     ]
 }

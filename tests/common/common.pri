@@ -8,4 +8,3 @@ HEADERS += \
 SOURCES += \
     $$PWD/unittest_common.cpp \
     $$PWD/webserver.cpp
-

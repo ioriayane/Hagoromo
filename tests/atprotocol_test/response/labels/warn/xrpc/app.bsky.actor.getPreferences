@@ -19,7 +19,7 @@
         },
         {
             "$type": "app.bsky.actor.defs#contentLabelPref",
-            "label": "nsfw",
+            "label": "porn",
             "visibility": "warn"
         },
         {
@@ -29,7 +29,12 @@
         },
         {
             "$type": "app.bsky.actor.defs#contentLabelPref",
-            "label": "suggestive",
+            "label": "sexual",
+            "visibility": "warn"
+        },
+        {
+            "$type": "app.bsky.actor.defs#contentLabelPref",
+            "label": "graphic-media",
             "visibility": "warn"
         },
         {

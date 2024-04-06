@@ -28,10 +28,14 @@ SOURCES += \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollowers.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollows.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlist.cpp \
+    $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlistblocks.cpp \
+    $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlistmutes.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlists.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetmutes.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphmuteactor.cpp \
+    $$PWD/atprotocol/app/bsky/graph/appbskygraphmuteactorlist.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphunmuteactor.cpp \
+    $$PWD/atprotocol/app/bsky/graph/appbskygraphunmuteactorlist.cpp \
     $$PWD/atprotocol/app/bsky/labeler/appbskylabelergetservices.cpp \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationlistnotifications.cpp \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationupdateseen.cpp \
@@ -81,10 +85,14 @@ HEADERS += \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollowers.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollows.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlist.h \
+    $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlistblocks.h \
+    $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlistmutes.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlists.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetmutes.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphmuteactor.h \
+    $$PWD/atprotocol/app/bsky/graph/appbskygraphmuteactorlist.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphunmuteactor.h \
+    $$PWD/atprotocol/app/bsky/graph/appbskygraphunmuteactorlist.h \
     $$PWD/atprotocol/app/bsky/labeler/appbskylabelergetservices.h \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationlistnotifications.h \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationupdateseen.h \
