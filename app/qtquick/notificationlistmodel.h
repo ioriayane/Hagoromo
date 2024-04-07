@@ -182,6 +182,8 @@ private:
     QStringList m_cueGetFeedGenerator;
 
     QHash<QString, QStringList> m_liked2Notification; // QHash<cid, QStringList<cid>>
+    QHash<QString, QStringList> m_reposted2Notification; // QHash<cid, QStringList<cid>>
+    QHash<QString, QStringList> m_follow2Notification;
 
     bool m_hasUnread; // 今回の読み込みで未読がある
     QHash<NotificationListModel::NotificationListModelRoles,

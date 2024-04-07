@@ -441,6 +441,9 @@ void NotificationListModel::clear()
 {
     AtpAbstractListModel::clear();
     m_notificationHash.clear();
+    m_liked2Notification.clear();
+    m_reposted2Notification.clear();
+    m_follow2Notification.clear();
 }
 
 int NotificationListModel::indexOf(const QString &cid) const
@@ -1029,7 +1032,8 @@ void NotificationListModel::displayQueuedPostsNext()
 
 bool NotificationListModel::aggregateQueuedPosts(const PostCueItem &post, const bool next)
 {
-    bool do_add = false;
+    // 消す対象（自分より古いLike）がなかったときにcidListへの追加するのでデフォルトtrue
+    bool do_add = true;
     const auto &current = m_notificationHash.value(post.cid);
     QString subject_cid;
     QHash<QString, QStringList> *aggregatedTo = nullptr;
@@ -1039,20 +1043,28 @@ bool NotificationListModel::aggregateQueuedPosts(const PostCueItem &post, const 
         subject_cid = record.subject.cid;
         aggregatedTo = &m_liked2Notification;
     } else if (current.reason == "repost") {
+        const auto &record = AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                AtProtocolType::AppBskyFeedRepost::Main>(current.record);
+        subject_cid = record.subject.cid;
+        aggregatedTo = &m_reposted2Notification;
     } else if (current.reason == "follow") {
+        subject_cid = "__follow__";
+        aggregatedTo = &m_follow2Notification;
     }
 
     if (!subject_cid.isEmpty() && aggregatedTo != nullptr) {
-        if (!next) {
-            for (const auto &like_cid : aggregatedTo->value(subject_cid)) {
-                int r = m_cidList.indexOf(like_cid);
-                if (r >= 0) {
+        for (const auto &like_cid : aggregatedTo->value(subject_cid)) {
+            int r = m_cidList.indexOf(like_cid);
+            if (r >= 0) {
+                if (next) {
+                    // 続きの読み込みのときはm_cidListに追加しないようにする
+                    do_add = false;
+                } else {
                     beginRemoveRows(QModelIndex(), r, r);
                     m_cidList.removeAt(r);
                     endRemoveRows();
                 }
             }
-            do_add = true;
         }
         if (!aggregatedTo->value(subject_cid).contains(current.cid)) {
             if (next) {
@@ -1061,8 +1073,6 @@ bool NotificationListModel::aggregateQueuedPosts(const PostCueItem &post, const 
                 (*aggregatedTo)[subject_cid].insert(0, current.cid);
             }
         }
-    } else {
-        do_add = true;
     }
     return do_add;
 }
@@ -1078,7 +1088,13 @@ bool NotificationListModel::aggregated(const QString &cid) const
         subject_cid = record.subject.cid;
         aggregatedTo = &m_liked2Notification;
     } else if (current.reason == "repost") {
+        const auto &record = AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                AtProtocolType::AppBskyFeedRepost::Main>(current.record);
+        subject_cid = record.subject.cid;
+        aggregatedTo = &m_reposted2Notification;
     } else if (current.reason == "follow") {
+        subject_cid = "__follow__";
+        aggregatedTo = &m_follow2Notification;
     }
     if (!subject_cid.isEmpty() && aggregatedTo != nullptr) {
         if (aggregatedTo->contains(subject_cid)) {
@@ -1292,6 +1308,12 @@ QStringList NotificationListModel::getAggregatedCids(
         const auto &record = AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                 AtProtocolType::AppBskyFeedLike::Main>(data.record);
         return m_liked2Notification.value(record.subject.cid);
+    } else if (data.reason == "repost") {
+        const auto &record = AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                AtProtocolType::AppBskyFeedRepost::Main>(data.record);
+        return m_reposted2Notification.value(record.subject.cid);
+    } else if (data.reason == "follow") {
+        return m_follow2Notification.value("__follow__");
     } else {
         return QStringList();
     }
