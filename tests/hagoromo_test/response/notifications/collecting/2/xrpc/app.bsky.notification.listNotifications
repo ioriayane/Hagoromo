@@ -33,6 +33,38 @@
             "labels": []
         },
         {
+            "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.like/3kpjhotvgmk2s",
+            "cid": "bafyreidofiacyhigmns7av6dvxd27hl27epstaqyp5ml3eg7w4a6lpgapi",
+            "author": {
+                "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                "handle": "ioriayane2.bsky.social",
+                "displayName": "iori2",
+                "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false,
+                    "following": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3k4odyt4qk42g",
+                    "followedBy": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.follow/3kep33eowkk2c"
+                },
+                "labels": [],
+                "description": "ioriayane.relog.tech のテスト用アカウントの2つ目",
+                "indexedAt": "2024-01-26T01:10:40.626Z"
+            },
+            "reason": "like",
+            "reasonSubject": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.generator/aaajli5mudiws",
+            "record": {
+                "$type": "app.bsky.feed.like",
+                "createdAt": "2024-04-07T06:00:56.037Z",
+                "subject": {
+                    "cid": "bafyreifiwk54etwnvf276ibod6agn4tl6off4ddxpj5qxgj6vqtm7mi6hy",
+                    "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.generator/aaajli5mudiws"
+                }
+            },
+            "isRead": false,
+            "indexedAt": "2024-04-04T12:37:15.980Z",
+            "labels": []
+        },
+        {
             "uri": "at://did:plc:user_2_did/app.bsky.feed.like/3kpclbksc3p2c",
             "cid": "bafyreibx5qd5ggsuxn3cd6mdej3hyvwfvzuephlqpjkfwutz74adozzvey",
             "author": {

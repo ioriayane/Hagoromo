@@ -1031,11 +1031,20 @@ bool NotificationListModel::aggregateQueuedPosts(const PostCueItem &post, const 
 {
     bool do_add = false;
     const auto &current = m_notificationHash.value(post.cid);
-    if (post.reason == "like") {
+    QString subject_cid;
+    QHash<QString, QStringList> *aggregatedTo = nullptr;
+    if (current.reason == "like") {
         const auto &record = AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                 AtProtocolType::AppBskyFeedLike::Main>(current.record);
+        subject_cid = record.subject.cid;
+        aggregatedTo = &m_liked2Notification;
+    } else if (current.reason == "repost") {
+    } else if (current.reason == "follow") {
+    }
+
+    if (!subject_cid.isEmpty() && aggregatedTo != nullptr) {
         if (!next) {
-            for (const auto &like_cid : m_liked2Notification.value(record.subject.cid)) {
+            for (const auto &like_cid : aggregatedTo->value(subject_cid)) {
                 int r = m_cidList.indexOf(like_cid);
                 if (r >= 0) {
                     beginRemoveRows(QModelIndex(), r, r);
@@ -1045,11 +1054,11 @@ bool NotificationListModel::aggregateQueuedPosts(const PostCueItem &post, const 
             }
             do_add = true;
         }
-        if (!m_liked2Notification.value(record.subject.cid).contains(post.cid)) {
+        if (!aggregatedTo->value(subject_cid).contains(current.cid)) {
             if (next) {
-                m_liked2Notification[record.subject.cid].append(post.cid);
+                (*aggregatedTo)[subject_cid].append(current.cid);
             } else {
-                m_liked2Notification[record.subject.cid].insert(0, post.cid);
+                (*aggregatedTo)[subject_cid].insert(0, current.cid);
             }
         }
     } else {
@@ -1061,11 +1070,19 @@ bool NotificationListModel::aggregateQueuedPosts(const PostCueItem &post, const 
 bool NotificationListModel::aggregated(const QString &cid) const
 {
     const auto &current = m_notificationHash.value(cid);
+    QString subject_cid;
+    const QHash<QString, QStringList> *aggregatedTo = nullptr;
     if (current.reason == "like") {
         const auto &record = AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                 AtProtocolType::AppBskyFeedLike::Main>(current.record);
-        if (m_liked2Notification.contains(record.subject.cid)) {
-            QString first = m_liked2Notification.value(record.subject.cid).first();
+        subject_cid = record.subject.cid;
+        aggregatedTo = &m_liked2Notification;
+    } else if (current.reason == "repost") {
+    } else if (current.reason == "follow") {
+    }
+    if (!subject_cid.isEmpty() && aggregatedTo != nullptr) {
+        if (aggregatedTo->contains(subject_cid)) {
+            QString first = aggregatedTo->value(subject_cid).first();
             if (cid == first) {
                 // 先頭が自分の時は集約されていない
                 return false;

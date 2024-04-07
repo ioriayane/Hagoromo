@@ -89,6 +89,36 @@
             "isRead": true,
             "indexedAt": "2024-04-04T02:16:45.025Z",
             "labels": []
+        },
+        {
+            "uri": "at://did:plc:user_4_did/app.bsky.feed.like/3kp7ug7birv22",
+            "cid": "bafyreiclmktsadw7kw7upeb6gesi7ebjjdduog6e3c3qru3u6axs2i3p5u",
+            "author": {
+                "did": "did:plc:user_4_did",
+                "handle": "user_4_did",
+                "displayName": "user_4_display",
+                "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:user_4_did/bafkreiasanl4kya7ec5mahj6ranchwcjod7dtx6txvkffevqmnmhhxq2de@jpeg",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false
+                },
+                "labels": [],
+                "description": "user_4_description",
+                "indexedAt": "2024-02-16T05:36:36.743Z"
+            },
+            "reason": "like",
+            "reasonSubject": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.generator/aaajli5mudiws",
+            "record": {
+                "$type": "app.bsky.feed.like",
+                "createdAt": "2024-04-07T06:00:56.037Z",
+                "subject": {
+                    "cid": "bafyreifiwk54etwnvf276ibod6agn4tl6off4ddxpj5qxgj6vqtm7mi6hy",
+                    "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.generator/aaajli5mudiws"
+                }
+            },
+            "isRead": true,
+            "indexedAt": "2024-04-04T02:15:45.025Z",
+            "labels": []
        }
     ],
     "cursor": "2024-03-28T10:09:02.482Z"
