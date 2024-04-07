@@ -8,6 +8,11 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+- Add
+  - Support for aggregate display of notifications
+- Update
+- Fix
+
 ### v0.27.0 - 2024/4/6
 
 - Add
@@ -17,7 +22,6 @@ description: This is a multi-column Bluesky client.
   - Content filter settings to support the new label system
   - Support switching from post URL to quote in post dialog
   - Change to allow reposting, etc. even while columns are loading
-- Fix
 
 ### v0.26.0 - 2024/3/21
 
