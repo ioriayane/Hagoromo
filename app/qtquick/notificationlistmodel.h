@@ -195,7 +195,7 @@ private:
 
     void displayQueuedPosts();
     void displayQueuedPostsNext();
-    void aggregateQueuedPosts(const PostCueItem &post);
+    bool aggregateQueuedPosts(const PostCueItem &post, const bool next = false);
 
     void getPosts();
     void getFeedGenerators();

@@ -625,6 +625,7 @@ bool NotificationListModel::getNext()
                     post.cid = item->cid;
                     post.indexed_at = item->indexedAt;
                     post.reference_time = reference_time;
+                    post.reason = item->reason;
                     m_cuePost.append(post);
 
                     if (!item->isRead) {
@@ -998,6 +999,8 @@ void NotificationListModel::displayQueuedPostsNext()
                     m_cidList.removeAt(r);
                     endRemoveRows();
                 }
+            } else if (aggregated(post.cid)) {
+                // 集約済み
             } else {
                 int r = searchInsertPosition(post.cid);
                 if (visible && r >= 0) {
@@ -1009,9 +1012,11 @@ void NotificationListModel::displayQueuedPostsNext()
             }
         } else {
             if (visible) {
-                beginInsertRows(QModelIndex(), m_cidList.count(), m_cidList.count());
-                m_cidList.append(post.cid);
-                endInsertRows();
+                if (aggregateQueuedPosts(post, true)) {
+                    beginInsertRows(QModelIndex(), m_cidList.count(), m_cidList.count());
+                    m_cidList.append(post.cid);
+                    endInsertRows();
+                }
             }
             m_originalCidList.append(post.cid);
         }
@@ -1022,24 +1027,35 @@ void NotificationListModel::displayQueuedPostsNext()
     finishedDisplayingQueuedPosts();
 }
 
-void NotificationListModel::aggregateQueuedPosts(const PostCueItem &post)
+bool NotificationListModel::aggregateQueuedPosts(const PostCueItem &post, const bool next)
 {
+    bool do_add = false;
     const auto &current = m_notificationHash.value(post.cid);
     if (post.reason == "like") {
         const auto &record = AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                 AtProtocolType::AppBskyFeedLike::Main>(current.record);
-        for (const auto &like_cid : m_liked2Notification.value(record.subject.cid)) {
-            int r = m_cidList.indexOf(like_cid);
-            if (r >= 0) {
-                beginRemoveRows(QModelIndex(), r, r);
-                m_cidList.removeAt(r);
-                endRemoveRows();
+        if (!next) {
+            for (const auto &like_cid : m_liked2Notification.value(record.subject.cid)) {
+                int r = m_cidList.indexOf(like_cid);
+                if (r >= 0) {
+                    beginRemoveRows(QModelIndex(), r, r);
+                    m_cidList.removeAt(r);
+                    endRemoveRows();
+                }
             }
+            do_add = true;
         }
         if (!m_liked2Notification.value(record.subject.cid).contains(post.cid)) {
-            m_liked2Notification[record.subject.cid].insert(0, post.cid);
+            if (next) {
+                m_liked2Notification[record.subject.cid].append(post.cid);
+            } else {
+                m_liked2Notification[record.subject.cid].insert(0, post.cid);
+            }
         }
+    } else {
+        do_add = true;
     }
+    return do_add;
 }
 
 bool NotificationListModel::aggregated(const QString &cid) const

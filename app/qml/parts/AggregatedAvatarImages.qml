@@ -47,6 +47,7 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         visible: aggregatedAavatarImages.lineMode
+        spacing: AdjustedValues.s5
         Repeater {
             id: lineRepeater
             model: aggregatedAavatarImages.avatars
@@ -63,7 +64,7 @@ Item {
         }
         Label {
             font.pointSize: AdjustedValues.f8
-            visible: (lineRepeater.count >= lineRepeater.thresh)
+            visible: (lineRepeater.count > lineRepeater.thresh)
             text: "+" + (lineRepeater.count - lineRepeater.thresh)
         }
         MouseArea {
