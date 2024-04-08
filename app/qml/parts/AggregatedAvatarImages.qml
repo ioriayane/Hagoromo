@@ -28,7 +28,8 @@ Item {
 
     function updateList() {
         if(avatars.length === dids.length &&
-                dids.length === handles.length){
+                dids.length === handles.length &&
+                handles.length === indexedAts.length){
             userListModel.clear()
             for(var i=0; i<avatars.length; i++){
                 userListModel.append({
