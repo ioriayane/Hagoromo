@@ -97,8 +97,6 @@ void AtpAbstractListModel::reflectVisibility()
             // 表示させる
             if (m_cidList.contains(cid)) {
                 prev_row = m_cidList.indexOf(cid);
-                // } else if (aggregated(cid)) {
-                //     // 集約済み
             } else {
                 if (aggregateQueuedPosts(cid, true)) {
                     prev_row++;

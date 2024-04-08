@@ -74,6 +74,8 @@ QVariant ColumnListModel::item(int row, ColumnListModelRoles role) const
         return m_columnList.at(row).type_visibility.repost_of_mine;
     else if (role == VisibleRepostByMeRole)
         return m_columnList.at(row).type_visibility.repost_by_me;
+    else if (role == AggregateReactionsRole)
+        return m_columnList.at(row).aggregate_reactions;
 
     return QVariant();
 }
@@ -126,6 +128,8 @@ void ColumnListModel::update(int row, ColumnListModelRoles role, const QVariant 
         m_columnList[row].type_visibility.repost_of_mine = value.toBool();
     else if (role == VisibleRepostByMeRole)
         m_columnList[row].type_visibility.repost_by_me = value.toBool();
+    else if (role == AggregateReactionsRole)
+        m_columnList[row].aggregate_reactions = value.toBool();
 
     emit dataChanged(index(row), index(row));
 
@@ -393,6 +397,7 @@ void ColumnListModel::save() const
         column_item["image_layout_type"] = static_cast<int>(item.image_layout_type);
         column_item["name"] = item.name;
         column_item["value"] = item.value;
+        column_item["aggregate_reactions"] = item.aggregate_reactions;
 
         QJsonObject notification;
         notification["like"] = item.type_visibility.like;
@@ -444,6 +449,7 @@ void ColumnListModel::load()
                         static_cast<ImageLayoutType>(obj.value("image_layout_type").toInt(1));
                 item.name = obj.value("name").toString();
                 item.value = obj.value("value").toString();
+                item.aggregate_reactions = obj.value("aggregate_reactions").toBool(true);
 
                 item.type_visibility.like =
                         obj.value("type_visibility").toObject().value("like").toBool(true);
@@ -538,6 +544,8 @@ QHash<int, QByteArray> ColumnListModel::roleNames() const
     roles[VisibleRepostOfUnfollowingUsersRole] = "visibleRepostOfUnfollowingUsers";
     roles[VisibleRepostOfMineRole] = "visibleRepostOfMine";
     roles[VisibleRepostByMeRole] = "visibleRepostByMe";
+
+    roles[AggregateReactionsRole] = "aggregateReactions";
 
     return roles;
 }

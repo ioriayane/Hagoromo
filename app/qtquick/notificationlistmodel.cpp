@@ -23,7 +23,8 @@ NotificationListModel::NotificationListModel(QObject *parent)
       m_visibleMention(true),
       m_visibleReply(true),
       m_visibleQuote(true),
-      m_updateSeenNotification(true)
+      m_updateSeenNotification(true),
+      m_aggregateReactions(true)
 {
     m_toExternalLinkRoles[HasExternalLinkRole] =
             AtpAbstractListModel::ExternalLinkRoles::HasExternalLinkRole;
@@ -1030,8 +1031,38 @@ void NotificationListModel::displayQueuedPostsNext()
     finishedDisplayingQueuedPosts();
 }
 
+void NotificationListModel::refrectAggregation()
+{
+    int prev_row = -1;
+    for (const auto &cid : qAsConst(m_originalCidList)) {
+        if (checkVisibility(cid)) {
+            // 表示させる
+            if (!aggregateQueuedPosts(cid, true)) {
+                // aggregateQueuedPosts()の中では消せないので、ここで消す
+                int r = m_cidList.indexOf(cid);
+                if (r >= 0) {
+                    beginRemoveRows(QModelIndex(), r, r);
+                    m_cidList.removeAt(r);
+                    endRemoveRows();
+                    prev_row = r - 1;
+                }
+            } else {
+                if (m_cidList.contains(cid)) {
+                    prev_row = m_cidList.indexOf(cid);
+                } else {
+                    prev_row++;
+                    beginInsertRows(QModelIndex(), prev_row, prev_row);
+                    m_cidList.insert(prev_row, cid);
+                    endInsertRows();
+                }
+            }
+        }
+    }
+}
+
 bool NotificationListModel::aggregateQueuedPosts(const QString &cid, const bool next)
 {
+
     // 消す対象（自分より古いLike）がなかったときにcidListへの追加するのでデフォルトtrue
     bool do_add = true;
     const auto &current = m_notificationHash.value(cid);
@@ -1053,24 +1084,41 @@ bool NotificationListModel::aggregateQueuedPosts(const QString &cid, const bool 
     }
 
     if (!subject_cid.isEmpty() && aggregatedTo != nullptr) {
-        for (const auto &like_cid : aggregatedTo->value(subject_cid)) {
-            int r = m_cidList.indexOf(like_cid);
-            if (r >= 0) {
-                if (next) {
-                    // 続きの読み込みのときはm_cidListに追加しないようにする
-                    do_add = false;
-                } else {
-                    beginRemoveRows(QModelIndex(), r, r);
-                    m_cidList.removeAt(r);
-                    endRemoveRows();
+        if (!aggregateReactions()) {
+            if (aggregatedTo->value(subject_cid).contains(current.cid)) {
+                int r = -1;
+                if (!(*aggregatedTo)[subject_cid].isEmpty()) {
+                    r = m_cidList.indexOf((*aggregatedTo)[subject_cid].first());
+                }
+                (*aggregatedTo)[subject_cid].clear();
+                if (r >= 0) {
+                    emit dataChanged(index(r), index(r));
                 }
             }
-        }
-        if (!aggregatedTo->value(subject_cid).contains(current.cid)) {
-            if (next) {
-                (*aggregatedTo)[subject_cid].append(current.cid);
-            } else {
-                (*aggregatedTo)[subject_cid].insert(0, current.cid);
+        } else {
+            for (const auto &like_cid : aggregatedTo->value(subject_cid)) {
+                int r = m_cidList.indexOf(like_cid);
+                if (r >= 0) {
+                    if (next) {
+                        // 続きの読み込みのときはm_cidListに追加しないようにする
+                        do_add = false;
+                    } else {
+                        beginRemoveRows(QModelIndex(), r, r);
+                        m_cidList.removeAt(r);
+                        endRemoveRows();
+                    }
+                }
+            }
+            if (!aggregatedTo->value(subject_cid).contains(current.cid)) {
+                if (next) {
+                    (*aggregatedTo)[subject_cid].append(current.cid);
+                } else {
+                    (*aggregatedTo)[subject_cid].insert(0, current.cid);
+                }
+                int r = m_cidList.indexOf((*aggregatedTo)[subject_cid].first());
+                if (r >= 0) {
+                    emit dataChanged(index(r), index(r));
+                }
             }
         }
     }
@@ -1079,6 +1127,9 @@ bool NotificationListModel::aggregateQueuedPosts(const QString &cid, const bool 
 
 bool NotificationListModel::aggregated(const QString &cid) const
 {
+    if (!aggregateReactions())
+        return false;
+
     const auto &current = m_notificationHash.value(cid);
     QString subject_cid;
     const QHash<QString, QStringList> *aggregatedTo = nullptr;
@@ -1478,4 +1529,18 @@ void NotificationListModel::setUpdateSeenNotification(bool newUpdateSeenNotifica
         return;
     m_updateSeenNotification = newUpdateSeenNotification;
     emit updateSeenNotificationChanged();
+}
+
+bool NotificationListModel::aggregateReactions() const
+{
+    return m_aggregateReactions;
+}
+
+void NotificationListModel::setAggregateReactions(bool newAggregateReactions)
+{
+    if (m_aggregateReactions == newAggregateReactions)
+        return;
+    m_aggregateReactions = newAggregateReactions;
+    emit aggregateReactionsChanged();
+    refrectAggregation();
 }

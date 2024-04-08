@@ -25,6 +25,9 @@ class NotificationListModel : public AtpAbstractListModel
 
     Q_PROPERTY(bool updateSeenNotification READ updateSeenNotification WRITE
                        setUpdateSeenNotification NOTIFY updateSeenNotificationChanged)
+    Q_PROPERTY(bool aggregateReactions READ aggregateReactions WRITE setAggregateReactions NOTIFY
+                       aggregateReactionsChanged FINAL)
+
 public:
     explicit NotificationListModel(QObject *parent = nullptr);
 
@@ -154,6 +157,8 @@ public:
     void setVisibleQuote(bool newVisibleQuote);
     bool updateSeenNotification() const;
     void setUpdateSeenNotification(bool newUpdateSeenNotification);
+    bool aggregateReactions() const;
+    void setAggregateReactions(bool newAggregateReactions);
 
 signals:
     void visibleLikeChanged();
@@ -163,6 +168,7 @@ signals:
     void visibleReplyChanged();
     void visibleQuoteChanged();
     void updateSeenNotificationChanged();
+    void aggregateReactionsChanged();
 
 protected:
     QHash<int, QByteArray> roleNames() const;
@@ -198,6 +204,7 @@ private:
 
     void displayQueuedPosts();
     void displayQueuedPostsNext();
+    void refrectAggregation();
 
     void getPosts();
     void getFeedGenerators();
@@ -231,6 +238,7 @@ private:
     bool m_updateSeenNotification;
     QString m_runningRepostCid;
     QString m_runningLikeCid;
+    bool m_aggregateReactions;
 };
 
 #endif // NOTIFICATIONLISTMODEL_H
