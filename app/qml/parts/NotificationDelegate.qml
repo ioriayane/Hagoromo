@@ -228,7 +228,7 @@ ClickableFrame {
                     id: aggregatedAvatarImages
                     Layout.preferredWidth: parent.basisWidth
                     Layout.preferredHeight: height
-                    visible: avatars.length > 0
+                    visible: avatars.length > 1
                 }
 
                 CoverFrame {
