@@ -10,6 +10,7 @@ description: This is a multi-column Bluesky client.
 
 - Add
   - Support for aggregate display of notifications
+  - Added per-column setting for whether notifications are displayed in the aggregate
 - Update
 - Fix
 
