@@ -139,6 +139,7 @@ protected:
     void displayQueuedPosts();
     void displayQueuedPostsNext();
     int searchInsertPosition(const QString &cid);
+    virtual bool aggregateQueuedPosts(const QString &cid, const bool next = false) = 0;
     virtual bool aggregated(const QString &cid) const = 0;
     virtual void finishedDisplayingQueuedPosts() = 0;
     virtual bool checkVisibility(const QString &cid) = 0;

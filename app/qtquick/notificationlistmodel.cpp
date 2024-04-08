@@ -954,7 +954,7 @@ void NotificationListModel::displayQueuedPosts()
                 int r = searchInsertPosition(post.cid);
                 if (visible && r >= 0) {
                     // 復活させる
-                    aggregateQueuedPosts(post);
+                    aggregateQueuedPosts(post.cid);
                     beginInsertRows(QModelIndex(), r, r);
                     m_cidList.insert(r, post.cid);
                     endInsertRows();
@@ -962,7 +962,7 @@ void NotificationListModel::displayQueuedPosts()
             }
         } else {
             if (visible) {
-                aggregateQueuedPosts(post);
+                aggregateQueuedPosts(post.cid);
                 beginInsertRows(QModelIndex(), 0, 0);
                 m_cidList.insert(0, post.cid);
                 endInsertRows();
@@ -1015,7 +1015,7 @@ void NotificationListModel::displayQueuedPostsNext()
             }
         } else {
             if (visible) {
-                if (aggregateQueuedPosts(post, true)) {
+                if (aggregateQueuedPosts(post.cid, true)) {
                     beginInsertRows(QModelIndex(), m_cidList.count(), m_cidList.count());
                     m_cidList.append(post.cid);
                     endInsertRows();
@@ -1030,11 +1030,11 @@ void NotificationListModel::displayQueuedPostsNext()
     finishedDisplayingQueuedPosts();
 }
 
-bool NotificationListModel::aggregateQueuedPosts(const PostCueItem &post, const bool next)
+bool NotificationListModel::aggregateQueuedPosts(const QString &cid, const bool next)
 {
     // 消す対象（自分より古いLike）がなかったときにcidListへの追加するのでデフォルトtrue
     bool do_add = true;
-    const auto &current = m_notificationHash.value(post.cid);
+    const auto &current = m_notificationHash.value(cid);
     QString subject_cid;
     QHash<QString, QStringList> *aggregatedTo = nullptr;
     if (current.reason == "like") {

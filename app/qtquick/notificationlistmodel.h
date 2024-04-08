@@ -166,6 +166,7 @@ signals:
 
 protected:
     QHash<int, QByteArray> roleNames() const;
+    virtual bool aggregateQueuedPosts(const QString &cid, const bool next = false);
     virtual bool aggregated(const QString &cid) const;
     virtual void finishedDisplayingQueuedPosts();
     virtual bool checkVisibility(const QString &cid);
@@ -197,7 +198,6 @@ private:
 
     void displayQueuedPosts();
     void displayQueuedPostsNext();
-    bool aggregateQueuedPosts(const PostCueItem &post, const bool next = false);
 
     void getPosts();
     void getFeedGenerators();
