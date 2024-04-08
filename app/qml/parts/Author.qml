@@ -14,7 +14,8 @@ RowLayout {
     property string indexedAt: ""
 
     Label {
-        Layout.maximumWidth: layoutWidth - handleText.width - indexAtText.width - headerLayout.spacing * 3
+        id: displayNameText
+        Layout.fillWidth: true
         Layout.alignment: Qt.AlignTop
         font.pointSize: AdjustedValues.f10
         elide: Text.ElideRight
@@ -22,7 +23,9 @@ RowLayout {
     }
     Label {
         id: handleText
+        Layout.fillWidth: true
         Layout.alignment: Qt.AlignTop
+        elide: Text.ElideRight
         opacity: 0.8
         font.pointSize: AdjustedValues.f8
         text: headerLayout.handle

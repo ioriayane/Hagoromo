@@ -367,6 +367,16 @@ QHash<int, QByteArray> ListsListModel::roleNames() const
     return roles;
 }
 
+bool ListsListModel::aggregateQueuedPosts(const QString &cid, const bool next)
+{
+    return true;
+}
+
+bool ListsListModel::aggregated(const QString &cid) const
+{
+    return false;
+}
+
 void ListsListModel::finishedDisplayingQueuedPosts()
 {
     if (searchTarget().isEmpty()) {

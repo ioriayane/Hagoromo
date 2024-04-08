@@ -207,6 +207,8 @@ ApplicationWindow {
                 visibleRepostOfMineCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleRepostOfMineRole)
                 visibleRepostByMeCheckBox.checked = columnManageModel.item(i, ColumnListModel.VisibleRepostByMeRole)
 
+                aggregateReactionsCheckBox.checked = columnManageModel.item(i, ColumnListModel.AggregateReactionsRole)
+
                 open()
             }
         }
@@ -231,6 +233,8 @@ ApplicationWindow {
                 columnManageModel.update(i, ColumnListModel.VisibleRepostOfUnfollowingUsersRole, visibleRepostOfUnfollowingUsersCheckBox.checked)
                 columnManageModel.update(i, ColumnListModel.VisibleRepostOfMineRole, visibleRepostOfMineCheckBox.checked)
                 columnManageModel.update(i, ColumnListModel.VisibleRepostByMeRole, visibleRepostByMeCheckBox.checked)
+
+                columnManageModel.update(i, ColumnListModel.AggregateReactionsRole, aggregateReactionsCheckBox.checked)
 
                 repeater.updateSettings(0)
             }
@@ -807,6 +811,7 @@ ApplicationWindow {
                         item.settings.visibleRepostOfUnfollowingUsers = model.visibleRepostOfUnfollowingUsers
                         item.settings.visibleRepostOfMine = model.visibleRepostOfMine
                         item.settings.visibleRepostByMe = model.visibleRepostByMe
+                        item.settings.aggregateReactions = model.aggregateReactions
 
                         item.settings.updateSeenNotification = settingDialog.settings.updateSeenNotification
                         item.settings.sequentialDisplayOfPosts = (settingDialog.settings.displayOfPosts === "sequential")

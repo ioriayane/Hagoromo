@@ -36,6 +36,7 @@ Dialog {
     property alias visibleRepostOfUnfollowingUsersCheckBox: visibleRepostOfUnfollowingUsersCheckBox
     property alias visibleRepostOfMineCheckBox: visibleRepostOfMineCheckBox
     property alias visibleRepostByMeCheckBox: visibleRepostByMeCheckBox
+    property alias aggregateReactionsCheckBox: aggregateReactionsCheckBox
 
     ColumnLayout {
         spacing: AdjustedValues.s5
@@ -61,6 +62,7 @@ Dialog {
                 PropertyChanges { target: visibleMentionCheckBox; visible: true }
                 PropertyChanges { target: visibleReplyCheckBox; visible: true }
                 PropertyChanges { target: visibleQuoteCheckBox; visible: true }
+                PropertyChanges { target: aggregateReactionsCheckBox; visible: true }
                 PropertyChanges { target: imageLayoutLabel; visible: true }
                 PropertyChanges { target: imageLayoutCombobox; visible: true }
             },
@@ -288,6 +290,14 @@ Dialog {
                         visible: false
                         font.pointSize: AdjustedValues.f10
                         text: qsTr("Reposts by you")
+                    }
+                    CheckBox {
+                        id: aggregateReactionsCheckBox
+                        topPadding: 5
+                        bottomPadding: 5
+                        visible: false
+                        font.pointSize: AdjustedValues.f10
+                        text: qsTr("Aggregate reactions")
                     }
                 }
             }
