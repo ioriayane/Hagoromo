@@ -24,12 +24,17 @@ class FunctionArgument:
     def to_string_arg(self) -> str:
         """ コードの文字列に変換 """
         if self._is_array:
-            return f"const QList<{self._type}> &{self._name}"
+            if self._type == 'string':
+                return f"const QList<QString> &{self._name}"
+            if self._type == 'integer':
+                return f"const QList<int> &{self._name}"
+            if self._type == 'integer':
+                return f"const QList<bool> &{self._name}"
         if self._type == 'string':
             return f"const QString &{self._name}"
-        elif self._type == 'integer':
+        if self._type == 'integer':
             return f"const int {self._name}"
-        elif self._type == 'integer':
+        if self._type == 'integer':
             return f"const bool {self._name}"
         return ''
 
@@ -674,6 +679,25 @@ class Defs2Struct:
             if variant_obj is not None:
                 self.output_function(namespace, type_name, variant_obj)
 
+    def output_api_class_data(self, items: dict, is_array: bool) -> dict:
+        data: dict = {}
+        (ref_namespace, ref_struct_name) = self.split_ref(items.get('ref', ''))
+        if len(ref_namespace) > 0:
+            data['copy_method'] = 'AtProtocolType::%s::copy%s' % (self.to_namespace_style(ref_namespace),
+                                                  self.to_struct_style(ref_struct_name), )
+            data['variable_is_array'] = is_array
+            if is_array:
+                data['method_getter'] = '%ss' % (ref_struct_name, )
+                data['variable_type'] = 'QList<AtProtocolType::%s::%s>' % (self.to_namespace_style(ref_namespace),
+                                                                           self.to_struct_style(ref_struct_name), )
+                data['variable_name'] = 'm_%ss' % (ref_struct_name, )
+            else:
+                data['method_getter'] = '%s' % (ref_struct_name, )
+                data['variable_type'] = 'AtProtocolType::%s::%s' % (self.to_namespace_style(ref_namespace),
+                                                                    self.to_struct_style(ref_struct_name), )
+                data['variable_name'] = 'm_%s' % (ref_struct_name, )
+            data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
+        return data
 
     def output_api_class(self, namespace: str, type_name: str):
         obj = self.get_defs_obj(namespace, type_name)
@@ -725,18 +749,33 @@ class Defs2Struct:
         if obj.get('output') is not None:
             schema = obj.get('output', {}).get('schema', {})
             if schema.get('type', '') == 'ref':
-                (ref_namespace, ref_struct_name) = self.split_ref(schema.get('ref', ''))
-                if len(ref_namespace) > 0:
-                    data['copy_method'] = '%s::copy%s' % (self.to_namespace_style(ref_namespace),
-                                                          self.to_struct_style(ref_struct_name), )
-                    data['method_getter'] = '%s' % (ref_struct_name, )
-                    data['variable_type'] = '%s::%s' % (self.to_namespace_style(ref_namespace),
-                                                        self.to_struct_style(ref_struct_name), )
-                    data['variable_name'] = 'm_%s' % (ref_struct_name, )
+                property_item = self.output_api_class_data(schema, False)
+                if len(property_item) > 0:
+                    data['members'] = data.get('members', [])
+                    data['members'].append(property_item)
                     data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
 
             elif schema.get('type', '') == 'object':
-                pass
+                required = schema.get('required', [])
+                for required_name in required:
+                    req_property = schema.get('properties', {}).get(required_name, {})
+                    req_type = req_property.get('type')
+                    req_items = req_property.get('items', {})
+                    (ref_namespace, ref_struct_name) = self.split_ref(req_items.get('ref', ''))
+                    if req_type == 'array':
+                        item_type = req_items.get('type')
+                        if item_type == 'ref':
+                            property_item = self.output_api_class_data(req_items, True)
+                            if len(property_item) > 0:
+                                data['members'] = data.get('members', [])
+                                data['members'].append(property_item)
+                                data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
+                            else:
+                                print (namespace + ":" + ref_namespace + "," + ref_struct_name + " ??")
+                        else:
+                            print (namespace + ":" + ref_namespace + "," + ref_struct_name + " not ref")
+                    else:
+                        print (namespace + ":" + ref_namespace + "," + ref_struct_name + " not array")
 
         if len(data) > 0:
             data['completed'] = data.get('completed', False)
