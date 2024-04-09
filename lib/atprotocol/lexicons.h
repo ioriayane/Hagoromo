@@ -110,7 +110,7 @@ struct ListViewBasic
     QString cid; // cid
     QString name;
     ListPurpose purpose;
-    QString avatar;
+    QString avatar; // uri
     QList<ComAtprotoLabelDefs::Label> labels;
     ListViewerState viewer;
     QString indexedAt; // datetime
@@ -124,7 +124,7 @@ struct ListView
     ListPurpose purpose;
     QString description;
     QList<QSharedPointer<AppBskyRichtextFacet::Main>> descriptionFacets;
-    QString avatar;
+    QString avatar; // uri
     QList<ComAtprotoLabelDefs::Label> labels;
     ListViewerState viewer;
     QString indexedAt; // datetime
@@ -151,6 +151,12 @@ struct Relationship
 
 // app.bsky.actor.defs
 namespace AppBskyActorDefs {
+struct ProfileAssociated
+{
+    int lists = 0;
+    int feedgens = 0;
+    bool labeler = false;
+};
 struct ViewerState
 {
     bool muted = false;
@@ -166,7 +172,8 @@ struct ProfileViewBasic
     QString did; // did
     QString handle; // handle
     QString displayName;
-    QString avatar;
+    QString avatar; // uri
+    ProfileAssociated associated;
     ViewerState viewer;
     QList<ComAtprotoLabelDefs::Label> labels;
 };
@@ -176,16 +183,11 @@ struct ProfileView
     QString handle; // handle
     QString displayName;
     QString description;
-    QString avatar;
+    QString avatar; // uri
+    ProfileAssociated associated;
     QString indexedAt; // datetime
     ViewerState viewer;
     QList<ComAtprotoLabelDefs::Label> labels;
-};
-struct ProfileAssociated
-{
-    int lists = 0;
-    int feedgens = 0;
-    bool labeler = false;
 };
 struct ProfileViewDetailed
 {
@@ -193,8 +195,8 @@ struct ProfileViewDetailed
     QString handle; // handle
     QString displayName;
     QString description;
-    QString avatar;
-    QString banner;
+    QString avatar; // uri
+    QString banner; // uri
     int followersCount = 0;
     int followsCount = 0;
     int postsCount = 0;
@@ -308,7 +310,7 @@ struct ViewExternal
     QString uri; // uri
     QString title;
     QString description;
-    QString thumb;
+    QString thumb; // uri
 };
 struct View
 {
@@ -336,11 +338,11 @@ struct Main
 };
 struct ViewImage
 {
-    QString thumb; // Fully-qualified URL where a thumbnail of the image can be fetched. For
+    QString thumb; // uri , Fully-qualified URL where a thumbnail of the image can be fetched. For
                    // example, CDN location provided by the App View.
-    QString fullsize; // Fully-qualified URL where a large version of the image can be fetched. May
-                      // or may not be the exact original blob. For example, CDN location provided
-                      // by the App View.
+    QString fullsize; // uri , Fully-qualified URL where a large version of the image can be
+                      // fetched. May or may not be the exact original blob. For example, CDN
+                      // location provided by the App View.
     QString alt; // Alt text description of the image, for accessibility.
     AspectRatio aspectRatio;
 };
@@ -490,7 +492,7 @@ struct GeneratorView
     QString displayName;
     QString description;
     QList<AppBskyRichtextFacet::Main> descriptionFacets;
-    QString avatar;
+    QString avatar; // uri
     int likeCount = 0;
     QList<ComAtprotoLabelDefs::Label> labels;
     GeneratorViewerState viewer;
@@ -1094,8 +1096,8 @@ struct AccountCodes
 namespace ComAtprotoServerDescribeServer {
 struct Links
 {
-    QString privacyPolicy;
-    QString termsOfService;
+    QString privacyPolicy; // uri
+    QString termsOfService; // uri
 };
 struct Contact
 {

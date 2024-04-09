@@ -14,6 +14,27 @@
 #include <QVariant>
 
 namespace AtProtocolType {
+// app.bsky.actor.defs
+namespace AppBskyActorDefs {
+void copyProfileAssociated(const QJsonObject &src, AppBskyActorDefs::ProfileAssociated &dest);
+void copyViewerState(const QJsonObject &src, AppBskyActorDefs::ViewerState &dest);
+void copyProfileViewBasic(const QJsonObject &src, AppBskyActorDefs::ProfileViewBasic &dest);
+void copyProfileView(const QJsonObject &src, AppBskyActorDefs::ProfileView &dest);
+void copyProfileViewDetailed(const QJsonObject &src, AppBskyActorDefs::ProfileViewDetailed &dest);
+void copyAdultContentPref(const QJsonObject &src, AppBskyActorDefs::AdultContentPref &dest);
+void copyContentLabelPref(const QJsonObject &src, AppBskyActorDefs::ContentLabelPref &dest);
+void copySavedFeedsPref(const QJsonObject &src, AppBskyActorDefs::SavedFeedsPref &dest);
+void copyPersonalDetailsPref(const QJsonObject &src, AppBskyActorDefs::PersonalDetailsPref &dest);
+void copyFeedViewPref(const QJsonObject &src, AppBskyActorDefs::FeedViewPref &dest);
+void copyThreadViewPref(const QJsonObject &src, AppBskyActorDefs::ThreadViewPref &dest);
+void copyInterestsPref(const QJsonObject &src, AppBskyActorDefs::InterestsPref &dest);
+void copyMutedWordTarget(const QJsonValue &src, AppBskyActorDefs::MutedWordTarget &dest);
+void copyMutedWord(const QJsonObject &src, AppBskyActorDefs::MutedWord &dest);
+void copyMutedWordsPref(const QJsonObject &src, AppBskyActorDefs::MutedWordsPref &dest);
+void copyHiddenPostsPref(const QJsonObject &src, AppBskyActorDefs::HiddenPostsPref &dest);
+void copyLabelerPrefItem(const QJsonObject &src, AppBskyActorDefs::LabelerPrefItem &dest);
+void copyLabelersPref(const QJsonObject &src, AppBskyActorDefs::LabelersPref &dest);
+}
 // app.bsky.graph.defs
 namespace AppBskyGraphDefs {
 void copyListPurpose(const QJsonValue &src, AppBskyGraphDefs::ListPurpose &dest);
@@ -34,27 +55,6 @@ void copyLabelValueDefinitionStrings(const QJsonObject &src,
                                      ComAtprotoLabelDefs::LabelValueDefinitionStrings &dest);
 void copyLabelValueDefinition(const QJsonObject &src,
                               ComAtprotoLabelDefs::LabelValueDefinition &dest);
-}
-// app.bsky.actor.defs
-namespace AppBskyActorDefs {
-void copyViewerState(const QJsonObject &src, AppBskyActorDefs::ViewerState &dest);
-void copyProfileViewBasic(const QJsonObject &src, AppBskyActorDefs::ProfileViewBasic &dest);
-void copyProfileView(const QJsonObject &src, AppBskyActorDefs::ProfileView &dest);
-void copyProfileAssociated(const QJsonObject &src, AppBskyActorDefs::ProfileAssociated &dest);
-void copyProfileViewDetailed(const QJsonObject &src, AppBskyActorDefs::ProfileViewDetailed &dest);
-void copyAdultContentPref(const QJsonObject &src, AppBskyActorDefs::AdultContentPref &dest);
-void copyContentLabelPref(const QJsonObject &src, AppBskyActorDefs::ContentLabelPref &dest);
-void copySavedFeedsPref(const QJsonObject &src, AppBskyActorDefs::SavedFeedsPref &dest);
-void copyPersonalDetailsPref(const QJsonObject &src, AppBskyActorDefs::PersonalDetailsPref &dest);
-void copyFeedViewPref(const QJsonObject &src, AppBskyActorDefs::FeedViewPref &dest);
-void copyThreadViewPref(const QJsonObject &src, AppBskyActorDefs::ThreadViewPref &dest);
-void copyInterestsPref(const QJsonObject &src, AppBskyActorDefs::InterestsPref &dest);
-void copyMutedWordTarget(const QJsonValue &src, AppBskyActorDefs::MutedWordTarget &dest);
-void copyMutedWord(const QJsonObject &src, AppBskyActorDefs::MutedWord &dest);
-void copyMutedWordsPref(const QJsonObject &src, AppBskyActorDefs::MutedWordsPref &dest);
-void copyHiddenPostsPref(const QJsonObject &src, AppBskyActorDefs::HiddenPostsPref &dest);
-void copyLabelerPrefItem(const QJsonObject &src, AppBskyActorDefs::LabelerPrefItem &dest);
-void copyLabelersPref(const QJsonObject &src, AppBskyActorDefs::LabelersPref &dest);
 }
 // app.bsky.actor.profile
 namespace AppBskyActorProfile {
