@@ -12,9 +12,17 @@ AppBskyActorGetProfile::AppBskyActorGetProfile(QObject *parent) : AccessAtProtoc
 void AppBskyActorGetProfile::getProfile(const QString &actor)
 {
     QUrlQuery query;
-    query.addQueryItem(QStringLiteral("actor"), actor);
+    if (!actor.isEmpty()) {
+        query.addQueryItem(QStringLiteral("actor"), actor);
+    }
 
     get(QStringLiteral("xrpc/app.bsky.actor.getProfile"), query);
+}
+
+const AtProtocolType::AppBskyActorDefs::ProfileViewDetailed &
+AppBskyActorGetProfile::profileViewDetailed() const
+{
+    return m_profileViewDetailed;
 }
 
 bool AppBskyActorGetProfile::parseJson(bool success, const QString reply_json)
@@ -23,17 +31,12 @@ bool AppBskyActorGetProfile::parseJson(bool success, const QString reply_json)
     if (json_doc.isEmpty()) {
         success = false;
     } else {
+        // setCursor(json_doc.object().value("cursor").toString());
         AtProtocolType::AppBskyActorDefs::copyProfileViewDetailed(json_doc.object(),
                                                                   m_profileViewDetailed);
     }
 
     return success;
-}
-
-AtProtocolType::AppBskyActorDefs::ProfileViewDetailed
-AppBskyActorGetProfile::profileViewDetailed() const
-{
-    return m_profileViewDetailed;
 }
 
 }

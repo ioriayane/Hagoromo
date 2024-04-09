@@ -15,6 +15,45 @@ class FuncHistoryItem:
         self.type_name = type_name
         self.qt_type = qt_type
 
+class FunctionArgument:
+    def __init__(self, arg_type: str, name: str, is_array: bool) -> None:
+        self._type = arg_type
+        self._name = name
+        self._is_array = is_array
+
+    def to_string_arg(self) -> str:
+        """ コードの文字列に変換 """
+        if self._is_array:
+            return f"const QList<{self._type}> &{self._name}"
+        if self._type == 'string':
+            return f"const QString &{self._name}"
+        elif self._type == 'integer':
+            return f"const int {self._name}"
+        elif self._type == 'integer':
+            return f"const bool {self._name}"
+        return ''
+
+    def to_string_query(self) -> str:
+        """ クエリの作成 """
+        msg: str = ''
+        if self._is_array:
+            msg  = f"for (const auto &v : {self._name})" + "{\n"
+            msg += f"query.addQueryItem(QStringLiteral(\"{self._name}\"), v);\n"
+            msg += "}\n"
+        elif self._type == 'string':
+            msg  = f"if(!{self._name}.isEmpty())" + "{\n"
+            msg += f"query.addQueryItem(QStringLiteral(\"{self._name}\"), {self._name});\n"
+            msg += "}\n"
+        elif self._type == 'integer':
+            msg  = f"if({self._name} > 0)" + "{\n"
+            msg += f"query.addQueryItem(QStringLiteral(\"{self._name}\"), QString::number({self._name}));\n"
+            msg += "}\n"
+        elif self._type == 'boolean':
+            msg  = f"if({self._name})" + "{\n"
+            msg += f"query.addQueryItem(QStringLiteral(\"{self._name}\"), \"true\");\n"
+            msg += "}\n"
+        return msg
+
 class Defs2Struct:
     def __init__(self) -> None:
         self.history = [] # <namespace>#<struct_name>
@@ -638,13 +677,13 @@ class Defs2Struct:
 
     def output_api_class(self, namespace: str, type_name: str):
         obj = self.get_defs_obj(namespace, type_name)
+        data: dict = {}
         if obj.get('type') == 'query' or obj.get('type') == 'procedure':
-            data = {}
             data['file_name_lower'] = namespace.replace('.', '').lower()
             data['file_name_upper'] = namespace.replace('.', '').upper()
             data['method_name'] = namespace.split('.')[-1]
             data['class_name'] = self.to_namespace_style(namespace)
-            args = ''
+            arguments: list[FunctionArgument] = []
             # query
             properties = obj.get('parameters', {}).get('properties')
             if properties is not None:
@@ -652,33 +691,13 @@ class Defs2Struct:
                 for pro_name, pro_value in properties.items():
                     if self.check_deprecated(pro_value):
                         continue
+
                     pro_type = pro_value.get('type', '')
-                    if pro_type == 'string':
-                        if len(args) > 0:
-                            args += ", "
-                        args += "const QString &%s" % (pro_name, )
-                    elif pro_type == 'integer':
-                        if len(args) > 0:
-                            args += ", "
-                        args += "const int %s" % (pro_name, )
-                    elif pro_type == 'boolean':
-                        if len(args) > 0:
-                            args += ", "
-                        args += "const bool %s" % (pro_name, )
-                    elif pro_type == 'array':
+                    if pro_type == 'array':
                         pro_type = pro_value.get('items', {}).get('type', '')
-                        if pro_type == 'string':
-                            if len(args) > 0:
-                                args += ", "
-                            args += "const QList<QString> &%s" % (pro_name, )
-                        elif pro_type == 'integer':
-                            if len(args) > 0:
-                                args += ", "
-                            args += "const QList<int> %s" % (pro_name, )
-                        elif pro_type == 'boolean':
-                            if len(args) > 0:
-                                args += ", "
-                            args += "const QList<bool> %s" % (pro_name, )
+                        arguments.append(FunctionArgument(pro_type, pro_name, True))
+                    else:
+                        arguments.append(FunctionArgument(pro_type, pro_name, False))
             # post
             properties = obj.get('input', {}).get('schema', {}).get('properties')
             if properties is not None:
@@ -687,20 +706,40 @@ class Defs2Struct:
                     if self.check_deprecated(pro_value):
                         continue
                     pro_type = pro_value.get('type', '')
-                    if pro_type == 'string':
-                        if len(args) > 0:
-                            args += ", "
-                        args += "const QString &%s" % (pro_name, )
-                    elif pro_type == 'integer':
-                        if len(args) > 0:
-                            args += ", "
-                        args += "const int %s" % (pro_name, )
-                    elif pro_type == 'boolean':
-                        if len(args) > 0:
-                            args += ", "
-                        args += "const bool %s" % (pro_name, )
-            data['method_args'] = args
+                    if pro_type == 'array':
+                        pro_type = pro_value.get('items', {}).get('type', '')
+                        arguments.append(FunctionArgument(pro_type, pro_name, True))
+                    else:
+                        arguments.append(FunctionArgument(pro_type, pro_name, False))
+
+            args: list[str] = []
+            query: list[str] = []
+            for argument in arguments:
+                args.append(argument.to_string_arg())
+                query.append(argument.to_string_query())
+
+            data['method_args'] = ','.join(args)
+            data['method_query'] = ''.join(query)
             data['api_id'] = namespace
+
+        if obj.get('output') is not None:
+            schema = obj.get('output', {}).get('schema', {})
+            if schema.get('type', '') == 'ref':
+                (ref_namespace, ref_struct_name) = self.split_ref(schema.get('ref', ''))
+                if len(ref_namespace) > 0:
+                    data['copy_method'] = '%s::copy%s' % (self.to_namespace_style(ref_namespace),
+                                                          self.to_struct_style(ref_struct_name), )
+                    data['method_getter'] = '%s' % (ref_struct_name, )
+                    data['variable_type'] = '%s::%s' % (self.to_namespace_style(ref_namespace),
+                                                        self.to_struct_style(ref_struct_name), )
+                    data['variable_name'] = 'm_%s' % (ref_struct_name, )
+                    data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
+
+            elif schema.get('type', '') == 'object':
+                pass
+
+        if len(data) > 0:
+            data['completed'] = data.get('completed', False)
             self.api_class[namespace] = data
 
 
@@ -766,7 +805,11 @@ class Defs2Struct:
 
         template = environment.get_template('template/api_class.h.j2')
         for namespace, value in self.api_class.items():
-            output_folder = os.path.join(output_path, '/'.join(namespace.split('.')[:-1]))
+            if value['completed']:
+                output_folder = os.path.join(output_path, '/'.join(namespace.split('.')[:-1]))
+            else:
+                output_folder = os.path.join(os.path.dirname(__file__), 'out', '/'.join(namespace.split('.')[:-1]))
+
             os.makedirs(output_folder, exist_ok=True)
 
             with open(os.path.join(output_folder, value['file_name_lower'] + '.h'), 'w', encoding='utf-8') as fp:
@@ -774,7 +817,11 @@ class Defs2Struct:
 
         template = environment.get_template('template/api_class.cpp.j2')
         for namespace, value in self.api_class.items():
-            output_folder = os.path.join(output_path, '/'.join(namespace.split('.')[:-1]))
+            if value['completed']:
+                output_folder = os.path.join(output_path, '/'.join(namespace.split('.')[:-1]))
+            else:
+                output_folder = os.path.join(os.path.dirname(__file__), 'out', '/'.join(namespace.split('.')[:-1]))
+
             with open(os.path.join(output_folder, value['file_name_lower'] + '.cpp'), 'w', encoding='utf-8') as fp:
                 fp.write(template.render(value))
 
@@ -807,7 +854,7 @@ class Defs2Struct:
         self.output_file_lexicons_h(environment, output_path)
         self.output_lexicons_func_cpp(environment, output_path)
         self.output_lexicons_func_h(environment, output_path)
-        self.output_api_class_cpp_h(environment, os.path.join(os.path.dirname(__file__), 'out'))
+        self.output_api_class_cpp_h(environment, output_path)
 
     def json_deep_merge(self, dest, src):
         """ 再帰的に辞書をマージ """

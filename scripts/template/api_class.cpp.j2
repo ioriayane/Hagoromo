@@ -18,12 +18,17 @@ void {{ class_name }}::{{ method_name }}({{ method_args }})
 {
 {%- if access_type == "get" %}
     QUrlQuery query;
-    //    query.addQueryItem(QStringLiteral("name"), name);
+{{ method_query }}
 
     get(QStringLiteral("xrpc/{{ api_id }}"), query);
 {% else %}
     post(QStringLiteral("xrpc/{{ api_id }}"), QByteArray(), true);
 {% endif -%}
+}
+
+const AtProtocolType::{{ variable_type }} &{{ class_name }}::{{ method_getter }}() const
+{
+    return {{ variable_name }};
 }
 
 bool {{ class_name }}::parseJson(bool success, const QString reply_json)
@@ -33,6 +38,7 @@ bool {{ class_name }}::parseJson(bool success, const QString reply_json)
         success = false;
     } else {
         //setCursor(json_doc.object().value("cursor").toString());
+        AtProtocolType::{{ copy_method }}(json_doc.object(), {{ variable_name }});
     }
 
     return success;
