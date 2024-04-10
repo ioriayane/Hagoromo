@@ -918,7 +918,15 @@ class Defs2Struct:
             for type_name in defs.keys():
                 self.output_type(namespace, type_name, self.get_defs_obj(namespace, type_name))
 
-                self.output_api_class(namespace, type_name)
+                if not namespace.startswith('tools.ozone.') \
+                    and not namespace.startswith('com.atproto.admin.') \
+                    and not namespace.startswith('com.atproto.identity.') \
+                    and not namespace.startswith('com.atproto.label.') \
+                    and not namespace.startswith('com.atproto.moderation.') \
+                    and not namespace.startswith('com.atproto.server.') \
+                    and not namespace.startswith('com.atproto.temp.'):
+                    # class
+                    self.output_api_class(namespace, type_name)
 
 
         # コピー関数のための解析
