@@ -11,12 +11,12 @@ AppBskyActorGetProfiles::AppBskyActorGetProfiles(QObject *parent) : AccessAtProt
 
 void AppBskyActorGetProfiles::getProfiles(const QList<QString> &actors)
 {
-    QUrlQuery query;
+    QUrlQuery url_query;
     for (const auto &value : actors) {
-        query.addQueryItem(QStringLiteral("actors"), value);
+        url_query.addQueryItem(QStringLiteral("actors"), value);
     }
 
-    get(QStringLiteral("xrpc/app.bsky.actor.getProfiles"), query);
+    get(QStringLiteral("xrpc/app.bsky.actor.getProfiles"), url_query);
 }
 
 const QList<AtProtocolType::AppBskyActorDefs::ProfileViewDetailed> &

@@ -15,18 +15,18 @@ AppBskyGraphGetFollows::AppBskyGraphGetFollows(QObject *parent)
 void AppBskyGraphGetFollows::getFollows(const QString &actor, const int limit,
                                         const QString &cursor)
 {
-    QUrlQuery query;
+    QUrlQuery url_query;
     if (!actor.isEmpty()) {
-        query.addQueryItem(QStringLiteral("actor"), actor);
+        url_query.addQueryItem(QStringLiteral("actor"), actor);
     }
     if (limit > 0) {
-        query.addQueryItem(QStringLiteral("limit"), QString::number(limit));
+        url_query.addQueryItem(QStringLiteral("limit"), QString::number(limit));
     }
     if (!cursor.isEmpty()) {
-        query.addQueryItem(QStringLiteral("cursor"), cursor);
+        url_query.addQueryItem(QStringLiteral("cursor"), cursor);
     }
 
-    get(QStringLiteral("xrpc/app.bsky.graph.getFollows"), query);
+    get(QStringLiteral("xrpc/app.bsky.graph.getFollows"), url_query);
 }
 
 const QList<AtProtocolType::AppBskyActorDefs::ProfileView> &

@@ -10,18 +10,18 @@ AppBskyFeedGetFeed::AppBskyFeedGetFeed(QObject *parent) : AppBskyFeedGetTimeline
 
 void AppBskyFeedGetFeed::getFeed(const QString &feed, const int limit, const QString &cursor)
 {
-    QUrlQuery query;
+    QUrlQuery url_query;
     if (!feed.isEmpty()) {
-        query.addQueryItem(QStringLiteral("feed"), feed);
+        url_query.addQueryItem(QStringLiteral("feed"), feed);
     }
     if (limit > 0) {
-        query.addQueryItem(QStringLiteral("limit"), QString::number(limit));
+        url_query.addQueryItem(QStringLiteral("limit"), QString::number(limit));
     }
     if (!cursor.isEmpty()) {
-        query.addQueryItem(QStringLiteral("cursor"), cursor);
+        url_query.addQueryItem(QStringLiteral("cursor"), cursor);
     }
 
-    get(QStringLiteral("xrpc/app.bsky.feed.getFeed"), query);
+    get(QStringLiteral("xrpc/app.bsky.feed.getFeed"), url_query);
 }
 
 }

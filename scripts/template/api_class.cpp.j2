@@ -27,10 +27,10 @@ namespace AtProtocolInterface {
 void {{ class_name }}::{{ method_name }}({{ method_args }})
 {
 {%- if access_type == "get" %}
-    QUrlQuery query;
+    QUrlQuery url_query;
 {{ method_query }}
 
-    get(QStringLiteral("xrpc/{{ api_id }}"), query);
+    get(QStringLiteral("xrpc/{{ api_id }}"), url_query);
 {% else %}
     post(QStringLiteral("xrpc/{{ api_id }}"), QByteArray(), true);
 {% endif -%}

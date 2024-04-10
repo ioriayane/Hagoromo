@@ -43,19 +43,19 @@ class FunctionArgument:
         msg: str = ''
         if self._is_array:
             msg  = f"for (const auto &value : {self._name})" + "{\n"
-            msg += f"query.addQueryItem(QStringLiteral(\"{self._name}\"), value);\n"
+            msg += f"url_query.addQueryItem(QStringLiteral(\"{self._name}\"), value);\n"
             msg += "}\n"
         elif self._type == 'string':
             msg  = f"if(!{self._name}.isEmpty())" + "{\n"
-            msg += f"query.addQueryItem(QStringLiteral(\"{self._name}\"), {self._name});\n"
+            msg += f"url_query.addQueryItem(QStringLiteral(\"{self._name}\"), {self._name});\n"
             msg += "}\n"
         elif self._type == 'integer':
             msg  = f"if({self._name} > 0)" + "{\n"
-            msg += f"query.addQueryItem(QStringLiteral(\"{self._name}\"), QString::number({self._name}));\n"
+            msg += f"url_query.addQueryItem(QStringLiteral(\"{self._name}\"), QString::number({self._name}));\n"
             msg += "}\n"
         elif self._type == 'boolean':
             msg  = f"if({self._name})" + "{\n"
-            msg += f"query.addQueryItem(QStringLiteral(\"{self._name}\"), \"true\");\n"
+            msg += f"url_query.addQueryItem(QStringLiteral(\"{self._name}\"), \"true\");\n"
             msg += "}\n"
         return msg
 
