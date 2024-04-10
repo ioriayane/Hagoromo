@@ -19,10 +19,10 @@ void AppBskyActorGetProfiles::getProfiles(const QList<QString> &actors)
     get(QStringLiteral("xrpc/app.bsky.actor.getProfiles"), query);
 }
 
-const QList<AtProtocolType::AppBskyActorDefs::ProfileViewDetailed> *
+const QList<AtProtocolType::AppBskyActorDefs::ProfileViewDetailed> &
 AppBskyActorGetProfiles::profileViewDetailedList() const
 {
-    return &m_profileViewDetailedList;
+    return m_profileViewDetailedList;
 }
 
 bool AppBskyActorGetProfiles::parseJson(bool success, const QString reply_json)

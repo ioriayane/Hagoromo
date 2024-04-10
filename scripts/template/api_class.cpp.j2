@@ -38,9 +38,9 @@ void {{ class_name }}::{{ method_name }}({{ method_args }})
 {% if has_parent_class == False %}
 {% for member in members -%}
 {% if member.variable_is_array %}
-const QList<{{ member.variable_type }}> *{{ class_name }}::{{ member.method_getter }}() const
+const QList<{{ member.variable_type }}> &{{ class_name }}::{{ member.method_getter }}() const
 {
-    return &{{ member.variable_name }};
+    return {{ member.variable_name }};
 }
 {% else %}
 const {{ member.variable_type }} &{{ class_name }}::{{ member.method_getter }}() const

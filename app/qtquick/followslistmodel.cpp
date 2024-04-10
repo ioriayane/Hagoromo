@@ -219,8 +219,8 @@ void FollowsListModel::getProfiles()
         if (success) {
             QStringList new_cid;
 
-            for (auto item = posts->profileViewDetailedList()->crbegin();
-                 item != posts->profileViewDetailedList()->crend(); item++) {
+            for (auto item = posts->profileViewDetailedList().crbegin();
+                 item != posts->profileViewDetailedList().crend(); item++) {
                 AtProtocolType::AppBskyActorDefs::ProfileView profile_view;
                 profile_view.avatar = item->avatar;
                 profile_view.did = item->did;

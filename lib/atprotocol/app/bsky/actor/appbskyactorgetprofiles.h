@@ -12,7 +12,7 @@ public:
 
     void getProfiles(const QList<QString> &actors);
 
-    const QList<AtProtocolType::AppBskyActorDefs::ProfileViewDetailed> *
+    const QList<AtProtocolType::AppBskyActorDefs::ProfileViewDetailed> &
     profileViewDetailedList() const;
 
 private:
