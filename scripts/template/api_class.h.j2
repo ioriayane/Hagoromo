@@ -22,6 +22,14 @@ public:
     const {{ member.variable_type }} &{{ member.method_getter }}() const;
     {% endif %}
 {% endfor -%}
+{% endif %}
+
+{% if is_parent -%}
+protected:
+    QString m_listKey;
+{% endif %}
+
+{% if has_parent_class == False -%}
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 

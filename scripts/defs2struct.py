@@ -85,10 +85,15 @@ class Defs2Struct:
                          'AppBskyFeedThreadgate::Main',
                         )
         self.inheritance = {
-            'app.bsky.actor.defs#profileView': {
-                'parent_namespace': 'app.bsky.graph.getFollows',
-                'parent_header': ['atprotocol/app/bsky/graph/appbskygraphgetfollows.h']
-            }}
+                'app.bsky.actor.defs#profileView': {
+                    'parent_namespace': 'app.bsky.graph.getFollows',
+                    'parent_header': ['atprotocol/app/bsky/graph/appbskygraphgetfollows.h']
+                },
+                'app.bsky.feed.defs#feedViewPost': {
+                    'parent_namespace': 'app.bsky.feed.getTimeline',
+                    'parent_header': ['atprotocol/app/bsky/feed/appbskyfeedgettimeline.h']
+                }
+            }
 
     def to_struct_style(self, name: str) -> str:
         return name[0].upper() + name[1:]
@@ -100,6 +105,13 @@ class Defs2Struct:
             dest.append(src[0].upper() + src[1:])
             # app.bsky.embed.recordWithMediaがあるのでcapitalize()は使えない
         return ''.join(dest)
+
+    def to_header_path(self, namespace: str) -> str:
+        srcs = namespace.split('.')
+        dest = ['atprotocol']
+        dest.extend(srcs[:-1])
+        dest.append(namespace.lower().replace('.', '') + '.h')
+        return '/'.join(dest)
 
     def split_ref(self, path: str) -> tuple:
         if '#' in path:
@@ -777,10 +789,17 @@ class Defs2Struct:
                                 data['members'] = data.get('members', [])
                                 data['members'].append(item_obj)
                                 if len(item_obj['parent_info']) > 0:
-                                    data['has_parent_class'] = True
-                                    data['parent_class_name'] = self.to_namespace_style(item_obj['parent_info']['parent_namespace'])
-                                    data['include_paths'] = item_obj['parent_info']['parent_header']
+                                    parent_class_name = self.to_namespace_style(item_obj['parent_info']['parent_namespace'])
+                                    if parent_class_name != data['class_name']:
+                                        data['is_parent'] = False
+                                        data['has_parent_class'] = True
+                                        data['parent_class_name'] = parent_class_name
+                                        data['include_paths'] = [self.to_header_path(item_obj['parent_info']['parent_namespace'])]
+                                    else:
+                                        data['is_parent'] = True
+                                        data['has_parent_class'] = False
                                 else:
+                                    data['is_parent'] = False
                                     data['has_parent_class'] = False
                                 data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
                             else:

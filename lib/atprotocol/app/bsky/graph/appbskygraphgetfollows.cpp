@@ -16,7 +16,12 @@ void AppBskyGraphGetFollows::getFollows(const QString &actor, const int limit,
                                         const QString &cursor)
 {
     QUrlQuery query;
-    query.addQueryItem(QStringLiteral("actor"), actor);
+    if (!actor.isEmpty()) {
+        query.addQueryItem(QStringLiteral("actor"), actor);
+    }
+    if (limit > 0) {
+        query.addQueryItem(QStringLiteral("limit"), QString::number(limit));
+    }
     if (!cursor.isEmpty()) {
         query.addQueryItem(QStringLiteral("cursor"), cursor);
     }
@@ -24,10 +29,10 @@ void AppBskyGraphGetFollows::getFollows(const QString &actor, const int limit,
     get(QStringLiteral("xrpc/app.bsky.graph.getFollows"), query);
 }
 
-const QList<AtProtocolType::AppBskyActorDefs::ProfileView> *
-AppBskyGraphGetFollows::profileList() const
+const QList<AtProtocolType::AppBskyActorDefs::ProfileView> &
+AppBskyGraphGetFollows::profileViewList() const
 {
-    return &m_profileList;
+    return m_profileViewList;
 }
 
 bool AppBskyGraphGetFollows::parseJson(bool success, const QString reply_json)
@@ -37,11 +42,10 @@ bool AppBskyGraphGetFollows::parseJson(bool success, const QString reply_json)
         success = false;
     } else {
         setCursor(json_doc.object().value("cursor").toString());
-        for (const auto &obj : json_doc.object().value(m_listKey).toArray()) {
-            AtProtocolType::AppBskyActorDefs::ProfileView profile;
-            AtProtocolType::AppBskyActorDefs::copyProfileView(obj.toObject(), profile);
-
-            m_profileList.append(profile);
+        for (const auto &value : json_doc.object().value(m_listKey).toArray()) {
+            AtProtocolType::AppBskyActorDefs::ProfileView data;
+            AtProtocolType::AppBskyActorDefs::copyProfileView(value.toObject(), data);
+            m_profileViewList.append(data);
         }
     }
 

@@ -2,7 +2,6 @@
 #define APPBSKYFEEDGETACTORFEEDS_H
 
 #include "atprotocol/accessatprotocol.h"
-#include "atprotocol/lexicons.h"
 
 namespace AtProtocolInterface {
 
@@ -13,7 +12,7 @@ public:
 
     void getActorFeeds(const QString &actor, const int limit, const QString &cursor);
 
-    const QList<AtProtocolType::AppBskyFeedDefs::GeneratorView> *generatorViewList() const;
+    const QList<AtProtocolType::AppBskyFeedDefs::GeneratorView> &generatorViewList() const;
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);

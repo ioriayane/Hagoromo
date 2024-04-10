@@ -260,7 +260,7 @@ void FollowsListModel::copyProfiles(const AtProtocolInterface::AppBskyGraphGetFo
     if (followers == nullptr)
         return;
 
-    for (const auto &profile : *followers->profileList()) {
+    for (const auto &profile : followers->profileViewList()) {
         m_profileHash[profile.did] = profile;
         m_formattedDescriptionHash[profile.did] = m_systemTool.markupText(profile.description);
         if (m_didList.contains(profile.did)) {

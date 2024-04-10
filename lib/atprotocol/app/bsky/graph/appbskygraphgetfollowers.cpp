@@ -1,8 +1,4 @@
 #include "appbskygraphgetfollowers.h"
-#include "atprotocol/lexicons_func.h"
-
-#include <QJsonDocument>
-#include <QJsonObject>
 #include <QUrlQuery>
 
 namespace AtProtocolInterface {
@@ -17,7 +13,12 @@ void AppBskyGraphGetFollowers::getFollowers(const QString &actor, const int limi
                                             const QString &cursor)
 {
     QUrlQuery query;
-    query.addQueryItem(QStringLiteral("actor"), actor);
+    if (!actor.isEmpty()) {
+        query.addQueryItem(QStringLiteral("actor"), actor);
+    }
+    if (limit > 0) {
+        query.addQueryItem(QStringLiteral("limit"), QString::number(limit));
+    }
     if (!cursor.isEmpty()) {
         query.addQueryItem(QStringLiteral("cursor"), cursor);
     }

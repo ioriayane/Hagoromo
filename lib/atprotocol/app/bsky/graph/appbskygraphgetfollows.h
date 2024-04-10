@@ -2,7 +2,6 @@
 #define APPBSKYGRAPHGETFOLLOWS_H
 
 #include "atprotocol/accessatprotocol.h"
-#include "atprotocol/lexicons.h"
 
 namespace AtProtocolInterface {
 
@@ -13,7 +12,7 @@ public:
 
     void getFollows(const QString &actor, const int limit, const QString &cursor);
 
-    const QList<AtProtocolType::AppBskyActorDefs::ProfileView> *profileList() const;
+    const QList<AtProtocolType::AppBskyActorDefs::ProfileView> &profileViewList() const;
 
 protected:
     QString m_listKey;
@@ -21,7 +20,7 @@ protected:
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 
-    QList<AtProtocolType::AppBskyActorDefs::ProfileView> m_profileList;
+    QList<AtProtocolType::AppBskyActorDefs::ProfileView> m_profileViewList;
 };
 
 }
