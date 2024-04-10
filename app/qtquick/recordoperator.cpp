@@ -840,7 +840,7 @@ void RecordOperator::makeFacets(const QString &text, std::function<void()> callb
             AppBskyActorGetProfiles *profiles = new AppBskyActorGetProfiles(this);
             connect(profiles, &AppBskyActorGetProfiles::finished, [=](bool success) {
                 if (success) {
-                    for (const auto &item : qAsConst(*profiles->profileViewDetaileds())) {
+                    for (const auto &item : qAsConst(*profiles->profileViewDetailedList())) {
                         QString handle = item.handle;
                         handle.remove("@");
                         if (mention.contains(handle)) {

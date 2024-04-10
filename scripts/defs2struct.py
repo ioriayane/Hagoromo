@@ -698,8 +698,8 @@ class Defs2Struct:
             data['variable_type'] = 'AtProtocolType::%s::%s' % (self.to_namespace_style(ref_namespace),
                                                                 self.to_struct_style(ref_struct_name), )
             if is_array:
-                data['method_getter'] = '%ss' % (ref_struct_name, )
-                data['variable_name'] = 'm_%ss' % (ref_struct_name, )
+                data['method_getter'] = '%sList' % (ref_struct_name, )
+                data['variable_name'] = 'm_%sList' % (ref_struct_name, )
             else:
                 data['method_getter'] = '%s' % (ref_struct_name, )
                 data['variable_name'] = 'm_%s' % (ref_struct_name, )

@@ -20,9 +20,9 @@ void AppBskyActorGetProfiles::getProfiles(const QList<QString> &actors)
 }
 
 const QList<AtProtocolType::AppBskyActorDefs::ProfileViewDetailed> *
-AppBskyActorGetProfiles::profileViewDetaileds() const
+AppBskyActorGetProfiles::profileViewDetailedList() const
 {
-    return &m_profileViewDetaileds;
+    return &m_profileViewDetailedList;
 }
 
 bool AppBskyActorGetProfiles::parseJson(bool success, const QString reply_json)
@@ -34,7 +34,7 @@ bool AppBskyActorGetProfiles::parseJson(bool success, const QString reply_json)
         for (const auto &value : json_doc.object().value("profiles").toArray()) {
             AtProtocolType::AppBskyActorDefs::ProfileViewDetailed data;
             AtProtocolType::AppBskyActorDefs::copyProfileViewDetailed(value.toObject(), data);
-            m_profileViewDetaileds.append(data);
+            m_profileViewDetailedList.append(data);
         }
     }
 

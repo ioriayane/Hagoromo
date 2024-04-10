@@ -1,7 +1,4 @@
 #include "appbskyactorsearchactors.h"
-
-#include <QJsonDocument>
-#include <QJsonObject>
 #include <QUrlQuery>
 
 namespace AtProtocolInterface {
@@ -16,7 +13,9 @@ void AppBskyActorSearchActors::searchActors(const QString &q, const int limit,
                                             const QString &cursor)
 {
     QUrlQuery query;
-    query.addQueryItem(QStringLiteral("q"), q);
+    if (!q.isEmpty()) {
+        query.addQueryItem(QStringLiteral("q"), q);
+    }
     if (limit > 0) {
         query.addQueryItem(QStringLiteral("limit"), QString::number(limit));
     }
