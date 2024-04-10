@@ -18,6 +18,7 @@ public:
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);
+
     QList<AtProtocolType::AppBskyActorDefs::ProfileViewDetailed> m_profileViewDetaileds;
 };
 

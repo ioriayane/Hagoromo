@@ -28,7 +28,7 @@ void {{ class_name }}::{{ method_name }}({{ method_args }})
 
 {% for member in members -%}
 {% if member.variable_is_array %}
-const {{ member.variable_type }} *{{ class_name }}::{{ member.method_getter }}() const
+const QList<{{ member.variable_type }}> *{{ class_name }}::{{ member.method_getter }}() const
 {
     return &{{ member.variable_name }};
 }
@@ -43,12 +43,22 @@ const {{ member.variable_type }} &{{ class_name }}::{{ member.method_getter }}()
 bool {{ class_name }}::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
-    if (json_doc.isEmpty()) {
-        success = false;
-    } else {
-        //setCursor(json_doc.object().value("cursor").toString());
+    if (json_doc.isEmpty()
         {% for member in members -%}
         {% if member.variable_is_array -%}
+         || !json_doc.object().contains("{{ member.variable_array_name }}")
+    {% endif -%}
+    {% endfor -%}
+    ) {
+        success = false;
+    } else {
+        {% for member in members -%}
+        {% if member.variable_is_array -%}
+        for (const auto &value : json_doc.object().value("{{ member.variable_array_name }}").toArray()) {
+            {{ member.variable_type }} data;
+            {{ member.copy_method }}(value.toObject(), data);
+            {{ member.variable_name }}.append(data);
+        }
         {% else -%}
         {{ member.copy_method }}(json_doc.object(), {{ member.variable_name }});
     {% endif -%}

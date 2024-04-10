@@ -15,7 +15,7 @@ public:
 
 {% for member in members -%}
     {% if member.variable_is_array %}
-        const {{ member.variable_type }} *{{ member.method_getter }}() const;
+        const QList<{{ member.variable_type }}> *{{ member.method_getter }}() const;
     {% else %}
         const {{ member.variable_type }} &{{ member.method_getter }}() const;
     {% endif %}
@@ -24,7 +24,11 @@ private:
     virtual bool parseJson(bool success, const QString reply_json);
 
 {% for member in members -%}
+    {% if member.variable_is_array %}
+    QList<{{ member.variable_type }}> {{ member.variable_name }};
+    {% else %}
     {{ member.variable_type }} {{ member.variable_name }};
+    {% endif %}
 {% endfor -%}
 };
 

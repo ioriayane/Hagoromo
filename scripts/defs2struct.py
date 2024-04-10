@@ -42,8 +42,8 @@ class FunctionArgument:
         """ クエリの作成 """
         msg: str = ''
         if self._is_array:
-            msg  = f"for (const auto &v : {self._name})" + "{\n"
-            msg += f"query.addQueryItem(QStringLiteral(\"{self._name}\"), v);\n"
+            msg  = f"for (const auto &value : {self._name})" + "{\n"
+            msg += f"query.addQueryItem(QStringLiteral(\"{self._name}\"), value);\n"
             msg += "}\n"
         elif self._type == 'string':
             msg  = f"if(!{self._name}.isEmpty())" + "{\n"
@@ -679,22 +679,21 @@ class Defs2Struct:
             if variant_obj is not None:
                 self.output_function(namespace, type_name, variant_obj)
 
-    def output_api_class_data(self, items: dict, is_array: bool) -> dict:
+    def output_api_class_data(self, items: dict, is_array: bool, array_name: str) -> dict:
         data: dict = {}
         (ref_namespace, ref_struct_name) = self.split_ref(items.get('ref', ''))
         if len(ref_namespace) > 0:
             data['copy_method'] = 'AtProtocolType::%s::copy%s' % (self.to_namespace_style(ref_namespace),
                                                   self.to_struct_style(ref_struct_name), )
             data['variable_is_array'] = is_array
+            data['variable_array_name'] = array_name
+            data['variable_type'] = 'AtProtocolType::%s::%s' % (self.to_namespace_style(ref_namespace),
+                                                                self.to_struct_style(ref_struct_name), )
             if is_array:
                 data['method_getter'] = '%ss' % (ref_struct_name, )
-                data['variable_type'] = 'QList<AtProtocolType::%s::%s>' % (self.to_namespace_style(ref_namespace),
-                                                                           self.to_struct_style(ref_struct_name), )
                 data['variable_name'] = 'm_%ss' % (ref_struct_name, )
             else:
                 data['method_getter'] = '%s' % (ref_struct_name, )
-                data['variable_type'] = 'AtProtocolType::%s::%s' % (self.to_namespace_style(ref_namespace),
-                                                                    self.to_struct_style(ref_struct_name), )
                 data['variable_name'] = 'm_%s' % (ref_struct_name, )
             data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
         return data
@@ -749,7 +748,7 @@ class Defs2Struct:
         if obj.get('output') is not None:
             schema = obj.get('output', {}).get('schema', {})
             if schema.get('type', '') == 'ref':
-                property_item = self.output_api_class_data(schema, False)
+                property_item = self.output_api_class_data(schema, False, '')
                 if len(property_item) > 0:
                     data['members'] = data.get('members', [])
                     data['members'].append(property_item)
@@ -765,7 +764,7 @@ class Defs2Struct:
                     if req_type == 'array':
                         item_type = req_items.get('type')
                         if item_type == 'ref':
-                            property_item = self.output_api_class_data(req_items, True)
+                            property_item = self.output_api_class_data(req_items, True, required_name)
                             if len(property_item) > 0:
                                 data['members'] = data.get('members', [])
                                 data['members'].append(property_item)

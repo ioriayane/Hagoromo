@@ -31,7 +31,6 @@ bool AppBskyActorGetProfile::parseJson(bool success, const QString reply_json)
     if (json_doc.isEmpty()) {
         success = false;
     } else {
-        // setCursor(json_doc.object().value("cursor").toString());
         AtProtocolType::AppBskyActorDefs::copyProfileViewDetailed(json_doc.object(),
                                                                   m_profileViewDetailed);
     }

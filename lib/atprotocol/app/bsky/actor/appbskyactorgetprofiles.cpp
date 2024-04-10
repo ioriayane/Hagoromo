@@ -12,8 +12,8 @@ AppBskyActorGetProfiles::AppBskyActorGetProfiles(QObject *parent) : AccessAtProt
 void AppBskyActorGetProfiles::getProfiles(const QList<QString> &actors)
 {
     QUrlQuery query;
-    for (const auto &actor : actors) {
-        query.addQueryItem(QStringLiteral("actors[]"), actor);
+    for (const auto &value : actors) {
+        query.addQueryItem(QStringLiteral("actors"), value);
     }
 
     get(QStringLiteral("xrpc/app.bsky.actor.getProfiles"), query);
@@ -32,9 +32,9 @@ bool AppBskyActorGetProfiles::parseJson(bool success, const QString reply_json)
         success = false;
     } else {
         for (const auto &value : json_doc.object().value("profiles").toArray()) {
-            AtProtocolType::AppBskyActorDefs::ProfileViewDetailed profile;
-            AtProtocolType::AppBskyActorDefs::copyProfileViewDetailed(value.toObject(), profile);
-            m_profileViewDetaileds.append(profile);
+            AtProtocolType::AppBskyActorDefs::ProfileViewDetailed data;
+            AtProtocolType::AppBskyActorDefs::copyProfileViewDetailed(value.toObject(), data);
+            m_profileViewDetaileds.append(data);
         }
     }
 
