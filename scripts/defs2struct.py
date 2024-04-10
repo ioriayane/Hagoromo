@@ -84,6 +84,11 @@ class Defs2Struct:
                          'AppBskyGraphList::Main',
                          'AppBskyFeedThreadgate::Main',
                         )
+        self.inheritance = {
+            'app.bsky.actor.defs#profileView': {
+                'parent_namespace': 'app.bsky.graph.getFollows',
+                'parent_header': ['atprotocol/app/bsky/graph/appbskygraphgetfollows.h']
+            }}
 
     def to_struct_style(self, name: str) -> str:
         return name[0].upper() + name[1:]
@@ -681,8 +686,11 @@ class Defs2Struct:
 
     def output_api_class_data(self, items: dict, is_array: bool, array_name: str) -> dict:
         data: dict = {}
-        (ref_namespace, ref_struct_name) = self.split_ref(items.get('ref', ''))
+        ref: str = items.get('ref', '')
+        (ref_namespace, ref_struct_name) = self.split_ref(ref)
+
         if len(ref_namespace) > 0:
+            data['parent_info'] = self.inheritance.get(ref, {})
             data['copy_method'] = 'AtProtocolType::%s::copy%s' % (self.to_namespace_style(ref_namespace),
                                                   self.to_struct_style(ref_struct_name), )
             data['variable_is_array'] = is_array
@@ -706,6 +714,8 @@ class Defs2Struct:
             data['file_name_upper'] = namespace.replace('.', '').upper()
             data['method_name'] = namespace.split('.')[-1]
             data['class_name'] = self.to_namespace_style(namespace)
+            data['parent_class_name'] = 'AccessAtProtocol'
+            data['include_paths'] = ['atprotocol/accessatprotocol.h']
             arguments: list[FunctionArgument] = []
             # query
             properties = obj.get('parameters', {}).get('properties')
@@ -748,26 +758,30 @@ class Defs2Struct:
         if obj.get('output') is not None:
             schema = obj.get('output', {}).get('schema', {})
             if schema.get('type', '') == 'ref':
-                property_item = self.output_api_class_data(schema, False, '')
-                if len(property_item) > 0:
+                item_obj = self.output_api_class_data(schema, False, '')
+                if len(item_obj) > 0:
                     data['members'] = data.get('members', [])
-                    data['members'].append(property_item)
+                    data['members'].append(item_obj)
                     data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
 
             elif schema.get('type', '') == 'object':
-                required = schema.get('required', [])
-                for required_name in required:
-                    req_property = schema.get('properties', {}).get(required_name, {})
-                    req_type = req_property.get('type')
-                    req_items = req_property.get('items', {})
-                    (ref_namespace, ref_struct_name) = self.split_ref(req_items.get('ref', ''))
-                    if req_type == 'array':
-                        item_type = req_items.get('type')
+                for key_name, property_obj in schema.get('properties', {}).items():
+                    pro_type = property_obj.get('type')
+                    pro_items = property_obj.get('items', {})
+                    (ref_namespace, ref_struct_name) = self.split_ref(pro_items.get('ref', ''))
+                    if pro_type == 'array':
+                        item_type = pro_items.get('type')
                         if item_type == 'ref':
-                            property_item = self.output_api_class_data(req_items, True, required_name)
-                            if len(property_item) > 0:
+                            item_obj = self.output_api_class_data(pro_items, True, key_name)
+                            if len(item_obj) > 0:
                                 data['members'] = data.get('members', [])
-                                data['members'].append(property_item)
+                                data['members'].append(item_obj)
+                                if len(item_obj['parent_info']) > 0:
+                                    data['has_parent_class'] = True
+                                    data['parent_class_name'] = self.to_namespace_style(item_obj['parent_info']['parent_namespace'])
+                                    data['include_paths'] = item_obj['parent_info']['parent_header']
+                                else:
+                                    data['has_parent_class'] = False
                                 data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
                             else:
                                 print (namespace + ":" + ref_namespace + "," + ref_struct_name + " ??")
@@ -777,6 +791,7 @@ class Defs2Struct:
                         print (namespace + ":" + ref_namespace + "," + ref_struct_name + " not array")
 
         if len(data) > 0:
+            data['has_parent_class'] = data.get('has_parent_class', False)
             data['completed'] = data.get('completed', False)
             self.api_class[namespace] = data
 

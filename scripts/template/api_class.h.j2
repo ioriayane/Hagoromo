@@ -1,23 +1,25 @@
 #ifndef {{ file_name_upper }}_H
 #define {{ file_name_upper }}_H
 
-#include "atprotocol/accessatprotocol.h"
-#include "atprotocol/lexicons.h"
+{% for path in include_paths %}
+#include "{{ path }}"
+{% endfor %}
 
 namespace AtProtocolInterface {
 
-class {{ class_name }} : public AccessAtProtocol
+class {{ class_name }} : public {{ parent_class_name }}
 {
 public:
     explicit {{ class_name }}(QObject *parent = nullptr);
 
     void {{ method_name }}({{ method_args }});
 
+{% if has_parent_class == False -%}
 {% for member in members -%}
     {% if member.variable_is_array %}
-        const QList<{{ member.variable_type }}> *{{ member.method_getter }}() const;
+    const QList<{{ member.variable_type }}> *{{ member.method_getter }}() const;
     {% else %}
-        const {{ member.variable_type }} &{{ member.method_getter }}() const;
+    const {{ member.variable_type }} &{{ member.method_getter }}() const;
     {% endif %}
 {% endfor -%}
 private:
@@ -30,6 +32,7 @@ private:
     {{ member.variable_type }} {{ member.variable_name }};
     {% endif %}
 {% endfor -%}
+{% endif %}
 };
 
 }

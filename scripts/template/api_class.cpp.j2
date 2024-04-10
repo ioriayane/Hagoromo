@@ -1,8 +1,10 @@
 #include "{{ file_name_lower }}.h"
+{%- if has_parent_class == False %}
 #include "atprotocol/lexicons_func.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
+{%- endif %}
 {%- if access_type == "get" %}
 #include <QUrlQuery>
 {%- endif %}
@@ -10,8 +12,15 @@
 namespace AtProtocolInterface {
 
 {{ class_name }}::{{ class_name }}(QObject *parent)
-    : AccessAtProtocol { parent }
+    : {{ parent_class_name }} { parent }
 {
+{% if has_parent_class == True -%}
+{% for member in members -%}
+{% if member.variable_is_array -%}
+    m_listKey = QStringLiteral("{{ member.variable_array_name }}");
+{% endif -%}
+{% endfor -%}
+{% endif -%}
 }
 
 void {{ class_name }}::{{ method_name }}({{ method_args }})
@@ -26,6 +35,7 @@ void {{ class_name }}::{{ method_name }}({{ method_args }})
 {% endif -%}
 }
 
+{% if has_parent_class == False %}
 {% for member in members -%}
 {% if member.variable_is_array %}
 const QList<{{ member.variable_type }}> *{{ class_name }}::{{ member.method_getter }}() const
@@ -67,5 +77,5 @@ bool {{ class_name }}::parseJson(bool success, const QString reply_json)
 
     return success;
 }
-
+{% endif %}
 }
