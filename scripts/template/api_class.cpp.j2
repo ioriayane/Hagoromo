@@ -62,6 +62,9 @@ bool {{ class_name }}::parseJson(bool success, const QString reply_json)
     ) {
         success = false;
     } else {
+        {%if has_cursor -%}
+        setCursor(json_doc.object().value("cursor").toString());
+        {% endif -%}
         {% for member in members -%}
         {% if member.variable_is_array -%}
         for (const auto &value : json_doc.object().value("{{ member.variable_array_name }}").toArray()) {

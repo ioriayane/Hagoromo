@@ -787,6 +787,9 @@ class Defs2Struct:
                                 print (namespace + ":" + ref_namespace + "," + ref_struct_name + " ??")
                         else:
                             print (namespace + ":" + ref_namespace + "," + ref_struct_name + " not ref")
+                    elif pro_type == 'string':
+                        if key_name == 'cursor':
+                            data['has_cursor'] = True
                     else:
                         print (namespace + ":" + ref_namespace + "," + ref_struct_name + " not array")
 
