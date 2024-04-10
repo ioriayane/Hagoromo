@@ -89,6 +89,10 @@ class Defs2Struct:
                     'parent_namespace': 'app.bsky.graph.getFollows',
                     'parent_header': ['atprotocol/app/bsky/graph/appbskygraphgetfollows.h']
                 },
+                'app.bsky.actor.defs#profileViewBasic': {
+                    'parent_namespace': 'app.bsky.graph.getFollows',
+                    'parent_header': ['atprotocol/app/bsky/graph/appbskygraphgetfollows.h']
+                },
                 'app.bsky.feed.defs#feedViewPost': {
                     'parent_namespace': 'app.bsky.feed.getTimeline',
                     'parent_header': ['atprotocol/app/bsky/feed/appbskyfeedgettimeline.h']

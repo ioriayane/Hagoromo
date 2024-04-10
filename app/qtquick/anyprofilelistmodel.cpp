@@ -48,7 +48,7 @@ bool AnyProfileListModel::getLatest()
         connect(reposts, &AppBskyFeedGetRepostedBy::finished, [=](bool success) {
             if (success) {
                 m_cursor = reposts->cursor();
-                for (const auto &profile : *reposts->profileViewList()) {
+                for (const auto &profile : reposts->profileViewList()) {
                     m_profileHash[profile.did] = profile;
                     m_formattedDescriptionHash[profile.did] =
                             m_systemTool.markupText(profile.description);
@@ -113,11 +113,11 @@ bool AnyProfileListModel::getNext()
         AppBskyFeedGetRepostedBy *reposts = new AppBskyFeedGetRepostedBy(this);
         connect(reposts, &AppBskyFeedGetRepostedBy::finished, [=](bool success) {
             if (success) {
-                if (reposts->profileViewList()->isEmpty())
+                if (reposts->profileViewList().isEmpty())
                     m_cursor.clear();
                 else
                     m_cursor = reposts->cursor();
-                for (const auto &profile : *reposts->profileViewList()) {
+                for (const auto &profile : reposts->profileViewList()) {
                     m_profileHash[profile.did] = profile;
                     m_formattedDescriptionHash[profile.did] =
                             m_systemTool.markupText(profile.description);
