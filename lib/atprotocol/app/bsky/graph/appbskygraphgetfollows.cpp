@@ -29,6 +29,11 @@ void AppBskyGraphGetFollows::getFollows(const QString &actor, const int limit,
     get(QStringLiteral("xrpc/app.bsky.graph.getFollows"), url_query);
 }
 
+const AtProtocolType::AppBskyActorDefs::ProfileView &AppBskyGraphGetFollows::profileView() const
+{
+    return m_profileView;
+}
+
 const QList<AtProtocolType::AppBskyActorDefs::ProfileView> &
 AppBskyGraphGetFollows::profileViewList() const
 {
@@ -42,6 +47,8 @@ bool AppBskyGraphGetFollows::parseJson(bool success, const QString reply_json)
         success = false;
     } else {
         setCursor(json_doc.object().value("cursor").toString());
+        AtProtocolType::AppBskyActorDefs::copyProfileView(
+                json_doc.object().value("subject").toObject(), m_profileView);
         for (const auto &value : json_doc.object().value(m_listKey).toArray()) {
             AtProtocolType::AppBskyActorDefs::ProfileView data;
             AtProtocolType::AppBskyActorDefs::copyProfileView(value.toObject(), data);

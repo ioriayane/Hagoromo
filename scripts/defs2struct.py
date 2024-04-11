@@ -733,7 +733,7 @@ class Defs2Struct:
             if variant_obj is not None:
                 self.output_function(namespace, type_name, variant_obj)
 
-    def output_api_class_data(self, items: dict, is_array: bool, array_name: str) -> dict:
+    def output_api_class_data(self, items: dict, is_array: bool, key_name: str) -> dict:
         data: dict = {}
         ref: str = items.get('ref', '')
         (ref_namespace, ref_struct_name) = self.split_ref(ref)
@@ -742,8 +742,9 @@ class Defs2Struct:
             data['parent_info'] = self.inheritance.get(ref, {})
             data['copy_method'] = 'AtProtocolType::%s::copy%s' % (self.to_namespace_style(ref_namespace),
                                                   self.to_struct_style(ref_struct_name), )
+            data['variable_is_obj'] = False
             data['variable_is_array'] = is_array
-            data['variable_array_name'] = array_name
+            data['variable_key_name'] = key_name
             data['variable_type'] = 'AtProtocolType::%s::%s' % (self.to_namespace_style(ref_namespace),
                                                                 self.to_struct_style(ref_struct_name), )
             if is_array:
@@ -846,6 +847,13 @@ class Defs2Struct:
                     elif pro_type == 'string':
                         if key_name == 'cursor':
                             data['has_cursor'] = True
+                    elif pro_type == 'ref':
+                        item_obj = self.output_api_class_data(property_obj, False, key_name)
+                        if len(item_obj) > 0:
+                            item_obj['variable_is_obj'] = True
+                            data['members'] = data.get('members', [])
+                            data['members'].append(item_obj)
+                            data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
                     else:
                         print (namespace + ":" + ref_namespace + "," + ref_struct_name + " not array")
 

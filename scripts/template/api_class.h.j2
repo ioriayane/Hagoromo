@@ -16,11 +16,11 @@ public:
 
 {% if has_parent_class == False -%}
 {% for member in members -%}
-    {% if member.variable_is_array %}
+    {% if member.variable_is_array -%}
     const QList<{{ member.variable_type }}> &{{ member.method_getter }}() const;
-    {% else %}
+    {% else -%}
     const {{ member.variable_type }} &{{ member.method_getter }}() const;
-    {% endif %}
+    {% endif -%}
 {% endfor -%}
 {% endif %}
 
@@ -34,11 +34,11 @@ private:
     virtual bool parseJson(bool success, const QString reply_json);
 
 {% for member in members -%}
-    {% if member.variable_is_array %}
+    {% if member.variable_is_array -%}
     QList<{{ member.variable_type }}> {{ member.variable_name }};
-    {% else %}
+    {% else -%}
     {{ member.variable_type }} {{ member.variable_name }};
-    {% endif %}
+    {% endif -%}
 {% endfor -%}
 {% endif %}
 };

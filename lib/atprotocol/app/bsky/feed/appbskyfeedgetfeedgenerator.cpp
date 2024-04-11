@@ -14,10 +14,12 @@ AppBskyFeedGetFeedGenerator::AppBskyFeedGetFeedGenerator(QObject *parent)
 
 void AppBskyFeedGetFeedGenerator::getFeedGenerator(const QString &feed)
 {
-    QUrlQuery query;
-    query.addQueryItem(QStringLiteral("feed"), feed); // at:uri
+    QUrlQuery url_query;
+    if (!feed.isEmpty()) {
+        url_query.addQueryItem(QStringLiteral("feed"), feed);
+    }
 
-    get(QStringLiteral("xrpc/app.bsky.feed.getFeedGenerator"), query);
+    get(QStringLiteral("xrpc/app.bsky.feed.getFeedGenerator"), url_query);
 }
 
 const AtProtocolType::AppBskyFeedDefs::GeneratorView &

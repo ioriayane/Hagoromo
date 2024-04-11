@@ -225,20 +225,20 @@ bool ListItemListModel::checkVisibility(const QString &cid)
 
 void ListItemListModel::copyFrom(AtProtocolInterface::AppBskyGraphGetList *list)
 {
-    setUri(list->listView()->uri);
-    setCid(list->listView()->cid);
-    setName(list->listView()->name);
-    setAvatar(list->listView()->avatar);
-    setDescription(list->listView()->description);
-    setMuted(list->listView()->viewer.muted);
-    setBlocked(list->listView()->viewer.blocked.contains(did()) && !did().isEmpty());
-    setBlockedUri(list->listView()->viewer.blocked);
-    setCreatorDid(list->listView()->creator->did);
-    setCreatorHandle(list->listView()->creator->handle);
-    setCreatorDisplayName(list->listView()->creator->displayName);
-    setIsModeration((list->listView()->purpose == "app.bsky.graph.defs#modlist"));
+    setUri(list->listView().uri);
+    setCid(list->listView().cid);
+    setName(list->listView().name);
+    setAvatar(list->listView().avatar);
+    setDescription(list->listView().description);
+    setMuted(list->listView().viewer.muted);
+    setBlocked(list->listView().viewer.blocked.contains(did()) && !did().isEmpty());
+    setBlockedUri(list->listView().viewer.blocked);
+    setCreatorDid(list->listView().creator->did);
+    setCreatorHandle(list->listView().creator->handle);
+    setCreatorDisplayName(list->listView().creator->displayName);
+    setIsModeration((list->listView().purpose == "app.bsky.graph.defs#modlist"));
 
-    for (const auto &item : *list->listItemViewList()) {
+    for (const auto &item : list->listItemViewList()) {
         if (!item.subject)
             continue;
         m_listItemViewHash[item.subject->did] = item;

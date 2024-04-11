@@ -13,12 +13,12 @@ namespace AtProtocolInterface {
 
 {{ class_name }}::{{ class_name }}(QObject *parent)
     : {{ parent_class_name }} { parent }
-{%- if is_parent -%}{%- for member in members -%}, m_listKey("{{ member.variable_array_name }}"){%- endfor -%}{%- endif -%}
+{%- if is_parent -%}{%- for member in members -%}{%- if member.variable_is_array -%}, m_listKey("{{ member.variable_key_name }}"){%- endif -%}{%- endfor -%}{%- endif -%}
 {
 {% if has_parent_class == True -%}
 {% for member in members -%}
 {% if member.variable_is_array -%}
-    m_listKey = QStringLiteral("{{ member.variable_array_name }}");
+    m_listKey = QStringLiteral("{{ member.variable_key_name }}");
 {% endif -%}
 {% endfor -%}
 {% endif -%}
@@ -57,7 +57,7 @@ bool {{ class_name }}::parseJson(bool success, const QString reply_json)
     if (json_doc.isEmpty()
         {% for member in members -%}
         {% if member.variable_is_array -%}
-         || !json_doc.object().contains({%- if is_parent -%}m_listKey{%- else -%}"{{ member.variable_array_name }}"{%- endif -%})
+         || !json_doc.object().contains({%- if is_parent -%}m_listKey{%- else -%}"{{ member.variable_key_name }}"{%- endif -%})
     {% endif -%}
     {% endfor -%}
     ) {
@@ -68,11 +68,13 @@ bool {{ class_name }}::parseJson(bool success, const QString reply_json)
         {% endif -%}
         {% for member in members -%}
         {% if member.variable_is_array -%}
-        for (const auto &value : json_doc.object().value({%- if is_parent -%}m_listKey{%- else -%}"{{ member.variable_array_name }}"{%- endif -%}).toArray()) {
+        for (const auto &value : json_doc.object().value({%- if is_parent -%}m_listKey{%- else -%}"{{ member.variable_key_name }}"{%- endif -%}).toArray()) {
             {{ member.variable_type }} data;
             {{ member.copy_method }}(value.toObject(), data);
             {{ member.variable_name }}.append(data);
         }
+        {% elif member.variable_is_obj -%}
+        {{ member.copy_method }}(json_doc.object().value("{{ member.variable_key_name }}").toObject(), {{ member.variable_name }});
         {% else -%}
         {{ member.copy_method }}(json_doc.object(), {{ member.variable_name }});
     {% endif -%}
