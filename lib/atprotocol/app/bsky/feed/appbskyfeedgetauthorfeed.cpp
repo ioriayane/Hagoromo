@@ -1,8 +1,4 @@
 #include "appbskyfeedgetauthorfeed.h"
-#include "atprotocol/lexicons_func.h"
-
-#include <QJsonDocument>
-#include <QJsonObject>
 #include <QUrlQuery>
 
 namespace AtProtocolInterface {
@@ -10,25 +6,27 @@ namespace AtProtocolInterface {
 AppBskyFeedGetAuthorFeed::AppBskyFeedGetAuthorFeed(QObject *parent)
     : AppBskyFeedGetTimeline { parent }
 {
+    m_listKey = QStringLiteral("feed");
 }
 
 void AppBskyFeedGetAuthorFeed::getAuthorFeed(const QString &actor, const int limit,
-                                             const QString &cursor, const FilterType filter)
+                                             const QString &cursor, const QString &filter)
 {
-    QUrlQuery query;
-    query.addQueryItem(QStringLiteral("actor"), actor);
-    if (!cursor.isEmpty()) {
-        query.addQueryItem(QStringLiteral("cursor"), cursor);
+    QUrlQuery url_query;
+    if (!actor.isEmpty()) {
+        url_query.addQueryItem(QStringLiteral("actor"), actor);
     }
-    if (filter == FilterType::PostsNoReplies) {
-        query.addQueryItem(QStringLiteral("filter"), "posts_no_replies");
-    } else if (filter == FilterType::PostsWithMedia) {
-        query.addQueryItem(QStringLiteral("filter"), "posts_with_media");
-    } else {
-        query.addQueryItem(QStringLiteral("filter"), "posts_with_replies");
+    if (limit > 0) {
+        url_query.addQueryItem(QStringLiteral("limit"), QString::number(limit));
+    }
+    if (!cursor.isEmpty()) {
+        url_query.addQueryItem(QStringLiteral("cursor"), cursor);
+    }
+    if (!filter.isEmpty()) {
+        url_query.addQueryItem(QStringLiteral("filter"), filter);
     }
 
-    get(QStringLiteral("xrpc/app.bsky.feed.getAuthorFeed"), query);
+    get(QStringLiteral("xrpc/app.bsky.feed.getAuthorFeed"), url_query);
 }
 
 }
