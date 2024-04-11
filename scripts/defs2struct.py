@@ -93,11 +93,36 @@ class Defs2Struct:
                     'parent_namespace': 'app.bsky.graph.getFollows',
                     'parent_header': ['atprotocol/app/bsky/graph/appbskygraphgetfollows.h']
                 },
+                'app.bsky.feed.defs#generatorView': {
+                    'parent_namespace': 'app.bsky.feed.getFeedGenerators',
+                    'parent_header': ['atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerators.h']
+                },
                 'app.bsky.feed.defs#feedViewPost': {
                     'parent_namespace': 'app.bsky.feed.getTimeline',
                     'parent_header': ['atprotocol/app/bsky/feed/appbskyfeedgettimeline.h']
                 }
             }
+
+        self.skip_api_class_id = ['tools.ozone.',
+                                  'com.atproto.admin.',
+                                  'com.atproto.identity.',
+                                  'com.atproto.label.',
+                                  'com.atproto.moderation.',
+                                  'com.atproto.server.',
+                                  'com.atproto.temp.',
+                                  'app.bsky.unspecced.searchPostsSkeleton',
+                                  'app.bsky.unspecced.searchActorsSkeleton',
+                                  'app.bsky.graph.getSuggestedFollowsByActor',
+                                  'app.bsky.feed.getSuggestedFeeds',
+                                  'app.bsky.feed.getFeedSkeleton',
+                                  'app.bsky.actor.getSuggestions'
+                                  ]
+
+    def skip_spi_class(self, namespace: str) -> bool:
+        for id in self.skip_api_class_id:
+            if namespace.startswith(id):
+                return True
+        return False
 
     def to_struct_style(self, name: str) -> str:
         return name[0].upper() + name[1:]
@@ -918,13 +943,7 @@ class Defs2Struct:
             for type_name in defs.keys():
                 self.output_type(namespace, type_name, self.get_defs_obj(namespace, type_name))
 
-                if not namespace.startswith('tools.ozone.') \
-                    and not namespace.startswith('com.atproto.admin.') \
-                    and not namespace.startswith('com.atproto.identity.') \
-                    and not namespace.startswith('com.atproto.label.') \
-                    and not namespace.startswith('com.atproto.moderation.') \
-                    and not namespace.startswith('com.atproto.server.') \
-                    and not namespace.startswith('com.atproto.temp.'):
+                if not self.skip_spi_class(namespace):
                     # class
                     self.output_api_class(namespace, type_name)
 

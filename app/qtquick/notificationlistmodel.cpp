@@ -1279,7 +1279,7 @@ void NotificationListModel::getFeedGenerators()
     connect(generators, &AppBskyFeedGetFeedGenerators::finished, [=](bool success) {
         if (success) {
             QStringList new_cid;
-            for (const auto &generator : *generators->generatorViewList()) {
+            for (const auto &generator : generators->generatorViewList()) {
                 m_feedGeneratorHash[generator.cid] = generator;
                 new_cid.append(generator.cid);
             }
