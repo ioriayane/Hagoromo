@@ -213,7 +213,7 @@ void FeedTypeListModel::getLists()
             if (m_cursor.isEmpty()) {
                 m_cursor = lists->cursor();
             }
-            for (const auto &list : *lists->listViewList()) {
+            for (const auto &list : lists->listViewList()) {
                 if (list.purpose == "app.bsky.graph.defs#modlist") {
                     continue;
                 }

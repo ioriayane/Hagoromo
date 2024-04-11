@@ -327,7 +327,7 @@ bool ListsListModel::getNext()
     connect(lists, &AppBskyGraphGetLists::finished, [=](bool success) {
         if (success) {
             m_cursor = lists->cursor(); // 続きの読み込みの時は必ず上書き
-            if (lists->listViewList()->isEmpty())
+            if (lists->listViewList().isEmpty())
                 m_cursor.clear(); // すべて読み切って空になったときはカーソルこないので空になるはずだけど念のため
             copyFrom(lists);
             QTimer::singleShot(10, this, &ListsListModel::displayQueuedPostsNext);
@@ -418,7 +418,7 @@ bool ListsListModel::checkVisibility(const QString &cid)
 
 void ListsListModel::copyFrom(AtProtocolInterface::AppBskyGraphGetLists *lists)
 {
-    for (const auto &list : *lists->listViewList()) {
+    for (const auto &list : lists->listViewList()) {
         m_listViewHash[list.cid] = list;
 
         PostCueItem post;

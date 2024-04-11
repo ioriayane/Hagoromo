@@ -17,10 +17,10 @@ public:
 protected:
     QString m_listKey;
 
-    QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> m_feedViewPostList;
-
 private:
     virtual bool parseJson(bool success, const QString reply_json);
+
+    QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> m_feedViewPostList;
 };
 
 }

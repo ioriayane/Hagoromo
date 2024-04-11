@@ -103,7 +103,11 @@ class Defs2Struct:
                 },
                 'app.bsky.feed.defs#postView': {
                     'parent_namespace': 'app.bsky.feed.getPosts',
-                    'parent_header': ['atprotocol/appbskyfeedgetposts.h']
+                    'parent_header': ['atprotocol/app/bsky/feed/appbskyfeedgetposts.h']
+                },
+                'app.bsky.graph.defs#listView': {
+                    'parent_namespace': 'app.bsky.graph.getLists',
+                    'parent_header': ['atprotocol/app/bsky/graph/appbskygraphgetlists.h']
                 }
             }
 
