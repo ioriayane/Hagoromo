@@ -175,8 +175,9 @@ protected:
     virtual bool aggregated(const QString &cid) const;
     virtual void finishedDisplayingQueuedPosts();
     virtual bool checkVisibility(const QString &cid);
-    void copyFrom(AtProtocolInterface::AppBskyFeedGetTimeline *timeline);
-    void copyFromNext(AtProtocolInterface::AppBskyFeedGetTimeline *timeline);
+    void copyFrom(const QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> &feed_view_post_list);
+    void
+    copyFromNext(const QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> &feed_view_post_list);
     QString getReferenceTime(const AtProtocolType::AppBskyFeedDefs::FeedViewPost &view_post);
     QVariant getQuoteItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
                           const TimelineListModel::TimelineListModelRoles role) const;

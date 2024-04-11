@@ -1181,7 +1181,7 @@ void NotificationListModel::getPosts()
     connect(posts, &AppBskyFeedGetPosts::finished, [=](bool success) {
         if (success) {
             QStringList new_cid;
-            for (const auto &post : *posts->postList()) {
+            for (const auto &post : posts->postViewList()) {
                 //                qDebug() << post.cid << post.author.displayName;
                 //                AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                 //                        AtProtocolType::AppBskyFeedPost::Record>(post.record)

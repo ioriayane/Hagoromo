@@ -1,31 +1,28 @@
 #include "appbskyfeedgetlistfeed.h"
-#include "atprotocol/lexicons_func.h"
-
-#include <QJsonDocument>
-#include <QJsonObject>
 #include <QUrlQuery>
-
-using namespace AtProtocolType;
 
 namespace AtProtocolInterface {
 
 AppBskyFeedGetListFeed::AppBskyFeedGetListFeed(QObject *parent) : AppBskyFeedGetTimeline { parent }
 {
+    m_listKey = QStringLiteral("feed");
 }
 
 void AppBskyFeedGetListFeed::getListFeed(const QString &list, const int limit,
                                          const QString &cursor)
 {
-    QUrlQuery query;
-    query.addQueryItem(QStringLiteral("list"), list);
+    QUrlQuery url_query;
+    if (!list.isEmpty()) {
+        url_query.addQueryItem(QStringLiteral("list"), list);
+    }
     if (limit > 0) {
-        query.addQueryItem(QStringLiteral("limit"), QString::number(limit));
+        url_query.addQueryItem(QStringLiteral("limit"), QString::number(limit));
     }
     if (!cursor.isEmpty()) {
-        query.addQueryItem(QStringLiteral("cursor"), cursor);
+        url_query.addQueryItem(QStringLiteral("cursor"), cursor);
     }
 
-    get(QStringLiteral("xrpc/app.bsky.feed.getListFeed"), query);
+    get(QStringLiteral("xrpc/app.bsky.feed.getListFeed"), url_query);
 }
 
 }

@@ -370,82 +370,86 @@ void atprotocol_test::test_getTimeline()
     timeline.setAccount(m_account);
 
     QSignalSpy spy(&timeline, SIGNAL(finished(bool)));
-    timeline.getTimeline();
+    timeline.getTimeline(QString(), 0, QString());
     spy.wait();
     QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
     QList<QVariant> arguments = spy.takeFirst();
     QVERIFY(arguments.at(0).toBool());
 
-    QVERIFY(timeline.feedList()->count() == 6);
+    QVERIFY(timeline.feedViewPostList().count() == 6);
 
-    QVERIFY(timeline.feedList()->at(0).post.author.did == "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
+    QVERIFY(timeline.feedViewPostList().at(0).post.author.did
+            == "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
 
-    QVERIFY2(timeline.feedList()->at(1).post.embed_type
+    QVERIFY2(timeline.feedViewPostList().at(1).post.embed_type
                      == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecordWithMedia_View,
              QString("%1")
-                     .arg(static_cast<int>(timeline.feedList()->at(1).post.embed_type))
+                     .arg(static_cast<int>(timeline.feedViewPostList().at(1).post.embed_type))
                      .toLocal8Bit());
 
-    QVERIFY2(timeline.feedList()->at(1).post.embed_AppBskyEmbedRecordWithMedia_View.media_type
-                     == AppBskyEmbedRecordWithMedia::ViewMediaType::media_AppBskyEmbedImages_View,
-             QString("%1")
-                     .arg(static_cast<int>(
-                             timeline.feedList()
-                                     ->at(1)
-                                     .post.embed_AppBskyEmbedRecordWithMedia_View.media_type))
-                     .toLocal8Bit());
-    QVERIFY2(timeline.feedList()->at(1).post.embed_AppBskyEmbedRecordWithMedia_View.record.isNull()
+    QVERIFY2(
+            timeline.feedViewPostList().at(1).post.embed_AppBskyEmbedRecordWithMedia_View.media_type
+                    == AppBskyEmbedRecordWithMedia::ViewMediaType::media_AppBskyEmbedImages_View,
+            QString("%1")
+                    .arg(static_cast<int>(
+                            timeline.feedViewPostList()
+                                    .at(1)
+                                    .post.embed_AppBskyEmbedRecordWithMedia_View.media_type))
+                    .toLocal8Bit());
+    QVERIFY2(timeline.feedViewPostList()
+                             .at(1)
+                             .post.embed_AppBskyEmbedRecordWithMedia_View.record.isNull()
                      == false,
              QString("%1")
-                     .arg(timeline.feedList()
-                                  ->at(1)
+                     .arg(timeline.feedViewPostList()
+                                  .at(1)
                                   .post.embed_AppBskyEmbedRecordWithMedia_View.record.isNull())
                      .toLocal8Bit());
-    QVERIFY2(timeline.feedList()
-                             ->at(1)
+    QVERIFY2(timeline.feedViewPostList()
+                             .at(1)
                              .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_type
                      == AppBskyEmbedRecord::ViewRecordType::record_ViewRecord,
              QString("%1")
-                     .arg(static_cast<int>(timeline.feedList()
-                                                   ->at(1)
+                     .arg(static_cast<int>(timeline.feedViewPostList()
+                                                   .at(1)
                                                    .post.embed_AppBskyEmbedRecordWithMedia_View
                                                    .record->record_type))
                      .toLocal8Bit());
-    QVERIFY2(timeline.feedList()
-                             ->at(1)
+    QVERIFY2(timeline.feedViewPostList()
+                             .at(1)
                              .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
                              .cid
                      == "bafyreig5ylsbfssvs45welz6o45gbs4rsvg3ek3oi6ygdrl76vchbahhpu",
-             timeline.feedList()
-                     ->at(1)
+             timeline.feedViewPostList()
+                     .at(1)
                      .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.cid
                      .toLocal8Bit());
-    QVERIFY2(timeline.feedList()
-                             ->at(1)
+    QVERIFY2(timeline.feedViewPostList()
+                             .at(1)
                              .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
                              .author.handle
                      == "ioriayane2.bsky.social",
-             timeline.feedList()
-                     ->at(1)
+             timeline.feedViewPostList()
+                     .at(1)
                      .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.author
                      .handle.toLocal8Bit());
 
     QVERIFY(LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(
-                    timeline.feedList()
-                            ->at(1)
+                    timeline.feedViewPostList()
+                            .at(1)
                             .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
                             .value)
                     .text
             == "quoted post");
 
-    QVERIFY(timeline.feedList()
-                    ->at(1)
+    QVERIFY(timeline.feedViewPostList()
+                    .at(1)
                     .post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedImages_View
                     .images.count()
             == 1);
-    QVERIFY(timeline.feedList()
-                    ->at(1)
+    QVERIFY(timeline.feedViewPostList()
+                    .at(1)
                     .post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedImages_View
                     .images.at(0)
                     .thumb

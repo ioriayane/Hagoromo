@@ -100,6 +100,10 @@ class Defs2Struct:
                 'app.bsky.feed.defs#feedViewPost': {
                     'parent_namespace': 'app.bsky.feed.getTimeline',
                     'parent_header': ['atprotocol/app/bsky/feed/appbskyfeedgettimeline.h']
+                },
+                'app.bsky.feed.defs#postView': {
+                    'parent_namespace': 'app.bsky.feed.getPosts',
+                    'parent_header': ['atprotocol/appbskyfeedgetposts.h']
                 }
             }
 

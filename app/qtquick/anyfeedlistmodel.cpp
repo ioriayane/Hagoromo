@@ -199,7 +199,7 @@ void AnyFeedListModel::getPosts()
         if (success) {
             QStringList new_cid;
 
-            for (auto item = posts->postList()->crbegin(); item != posts->postList()->crend();
+            for (auto item = posts->postViewList().crbegin(); item != posts->postViewList().crend();
                  item++) {
                 AtProtocolType::AppBskyFeedDefs::FeedViewPost view_post;
                 view_post.post = *item;

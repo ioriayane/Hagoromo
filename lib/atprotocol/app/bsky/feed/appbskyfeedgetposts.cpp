@@ -5,42 +5,42 @@
 #include <QJsonObject>
 #include <QUrlQuery>
 
-using namespace AtProtocolType;
-
 namespace AtProtocolInterface {
 
-AppBskyFeedGetPosts::AppBskyFeedGetPosts(QObject *parent) : AccessAtProtocol { parent } { }
+AppBskyFeedGetPosts::AppBskyFeedGetPosts(QObject *parent)
+    : AccessAtProtocol { parent }, m_listKey("posts")
+{
+}
 
 void AppBskyFeedGetPosts::getPosts(const QList<QString> &uris)
 {
-    QUrlQuery query;
-    for (const auto &uri : uris) {
-        query.addQueryItem(QStringLiteral("uris[]"), uri);
+    QUrlQuery url_query;
+    for (const auto &value : uris) {
+        url_query.addQueryItem(QStringLiteral("uris"), value);
     }
 
-    get(QStringLiteral("xrpc/app.bsky.feed.getPosts"), query);
+    get(QStringLiteral("xrpc/app.bsky.feed.getPosts"), url_query);
 }
 
-const QList<AppBskyFeedDefs::PostView> *AppBskyFeedGetPosts::postList() const
+const QList<AtProtocolType::AppBskyFeedDefs::PostView> &AppBskyFeedGetPosts::postViewList() const
 {
-    return &m_postList;
+    return m_postViewList;
 }
 
 bool AppBskyFeedGetPosts::parseJson(bool success, const QString reply_json)
 {
-
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
-    if (json_doc.isEmpty() || !json_doc.object().contains("posts")) {
+    if (json_doc.isEmpty() || !json_doc.object().contains(m_listKey)) {
         success = false;
     } else {
-        for (const auto &obj : json_doc.object().value("posts").toArray()) {
-            AppBskyFeedDefs::PostView post;
-
-            AppBskyFeedDefs::copyPostView(obj.toObject(), post);
-            m_postList.append(post);
+        for (const auto &value : json_doc.object().value(m_listKey).toArray()) {
+            AtProtocolType::AppBskyFeedDefs::PostView data;
+            AtProtocolType::AppBskyFeedDefs::copyPostView(value.toObject(), data);
+            m_postViewList.append(data);
         }
     }
+
     return success;
 }
 
-} // namespace AtProtocolInterface
+}

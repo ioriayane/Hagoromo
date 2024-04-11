@@ -32,7 +32,7 @@ bool CustomFeedListModel::getLatest()
         AppBskyFeedGetFeed *feed = new AppBskyFeedGetFeed(this);
         connect(feed, &AppBskyFeedGetFeed::finished, [=](bool success) {
             if (success) {
-                copyFrom(feed);
+                copyFrom(feed->feedViewPostList());
             } else {
                 emit errorOccured(feed->errorCode(), feed->errorMessage());
             }
