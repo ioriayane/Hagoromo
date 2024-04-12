@@ -2,7 +2,6 @@
 #define APPBSKYNOTIFICATIONLISTNOTIFICATIONS_H
 
 #include "atprotocol/accessatprotocol.h"
-#include "atprotocol/lexicons.h"
 
 namespace AtProtocolInterface {
 
@@ -11,15 +10,17 @@ class AppBskyNotificationListNotifications : public AccessAtProtocol
 public:
     explicit AppBskyNotificationListNotifications(QObject *parent = nullptr);
 
-    void listNotifications(const QString &cursor);
+    void listNotifications(const int limit, const QString &cursor, const QString &seenAt);
 
-    const QList<AtProtocolType::AppBskyNotificationListNotifications::Notification> *
+    const QList<AtProtocolType::AppBskyNotificationListNotifications::Notification> &
     notificationList() const;
+    const QString &seenAt() const;
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 
     QList<AtProtocolType::AppBskyNotificationListNotifications::Notification> m_notificationList;
+    QString m_seenAt;
 };
 
 }

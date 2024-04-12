@@ -484,8 +484,8 @@ bool NotificationListModel::getLatest()
                 if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
                     m_cursor = notification->cursor();
                 }
-                for (auto item = notification->notificationList()->crbegin();
-                     item != notification->notificationList()->crend(); item++) {
+                for (auto item = notification->notificationList().crbegin();
+                     item != notification->notificationList().crend(); item++) {
                     m_notificationHash[item->cid] = *item;
 
                     PostCueItem post;
@@ -600,7 +600,7 @@ bool NotificationListModel::getLatest()
         });
         notification->setAccount(account());
         notification->setLabelers(m_contentFilterLabels.labelerDids());
-        notification->listNotifications(QString());
+        notification->listNotifications(0, QString(), QString());
     });
     return true;
 }
@@ -621,8 +621,8 @@ bool NotificationListModel::getNext()
 
                 m_cursor = notification->cursor();
 
-                for (auto item = notification->notificationList()->crbegin();
-                     item != notification->notificationList()->crend(); item++) {
+                for (auto item = notification->notificationList().crbegin();
+                     item != notification->notificationList().crend(); item++) {
                     m_notificationHash[item->cid] = *item;
 
                     PostCueItem post;
@@ -727,7 +727,7 @@ bool NotificationListModel::getNext()
         });
         notification->setAccount(account());
         notification->setLabelers(m_contentFilterLabels.labelerDids());
-        notification->listNotifications(m_cursor);
+        notification->listNotifications(0, m_cursor, QString());
     });
     return true;
 }

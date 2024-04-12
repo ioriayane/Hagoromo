@@ -117,7 +117,9 @@ class Defs2Struct:
                 'com.atproto.identity.',
                 'com.atproto.label.',
                 'com.atproto.repo.describeRepo',
+                'com.atproto.repo.getRecord',
                 'com.atproto.repo.listMissingBlobs',
+                'com.atproto.repo.listRecords',
                 'com.atproto.server.',
                 'com.atproto.sync.getHead',
                 'com.atproto.sync.getLatestCommit',
@@ -866,6 +868,9 @@ class Defs2Struct:
         if pro_type == 'string':
             data['copy_method'] = 'AtProtocolType::LexiconsTypeUnknown::copyString'
             data['variable_type'] = 'QString'
+        elif pro_type == 'unknown':
+            data['copy_method'] = 'AtProtocolType::LexiconsTypeUnknown::copyUnknown'
+            data['variable_type'] = 'QVariant'
         data['method_getter'] = '%s' % (key_name, )
         data['variable_name'] = 'm_%s' % (key_name, )
         data['variable_to'] = ''
@@ -960,7 +965,7 @@ class Defs2Struct:
                                 print (namespace + ":" + ref_namespace + "," + ref_struct_name + " ??")
                         else:
                             print (namespace + ":" + ref_namespace + "," + ref_struct_name + " not ref")
-                    elif pro_type == 'string':
+                    elif pro_type == 'string' or pro_type == 'unknown':
                         if key_name == 'cursor':
                             data['has_cursor'] = True
                         else:
