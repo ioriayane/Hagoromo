@@ -82,6 +82,11 @@ void copyBlob(const QJsonObject &src, Blob &dest)
     dest.size = src.value("size").toInt();
 }
 
+void copyString(const QJsonValue &src, QString &dest)
+{
+    dest = src.toString();
+}
+
 QStringList copyImagesFromPostView(const AppBskyFeedDefs::PostView &post, const CopyImageType type)
 {
     if (post.embed_type == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedImages_View) {

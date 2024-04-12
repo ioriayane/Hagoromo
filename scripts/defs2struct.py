@@ -111,20 +111,28 @@ class Defs2Struct:
                 }
             }
 
-        self.skip_api_class_id = ['tools.ozone.',
-                                  'com.atproto.admin.',
-                                  'com.atproto.identity.',
-                                  'com.atproto.label.',
-                                  'com.atproto.moderation.',
-                                  'com.atproto.server.',
-                                  'com.atproto.temp.',
-                                  'app.bsky.unspecced.searchPostsSkeleton',
-                                  'app.bsky.unspecced.searchActorsSkeleton',
-                                  'app.bsky.graph.getSuggestedFollowsByActor',
-                                  'app.bsky.feed.getSuggestedFeeds',
-                                  'app.bsky.feed.getFeedSkeleton',
-                                  'app.bsky.actor.getSuggestions'
-                                  ]
+        self.skip_api_class_id = [
+                'tools.ozone.',
+                'com.atproto.admin.',
+                'com.atproto.identity.',
+                'com.atproto.label.',
+                'com.atproto.repo.describeRepo',
+                'com.atproto.repo.listMissingBlobs',
+                'com.atproto.server.',
+                'com.atproto.sync.getHead',
+                'com.atproto.sync.getLatestCommit',
+                'com.atproto.sync.listRepos',
+                'com.atproto.temp.',
+                'app.bsky.unspecced.searchPostsSkeleton',
+                'app.bsky.unspecced.searchActorsSkeleton',
+                'app.bsky.unspecced.getTaggedSuggestions',
+                'app.bsky.graph.getSuggestedFollowsByActor',
+                'app.bsky.graph.getRelationships',
+                'app.bsky.feed.getSuggestedFeeds',
+                'app.bsky.feed.getFeedSkeleton',
+                'app.bsky.feed.describeFeedGenerator',
+                'app.bsky.actor.getSuggestions'
+            ]
 
     def skip_spi_class(self, namespace: str) -> bool:
         for id in self.skip_api_class_id:
@@ -818,28 +826,50 @@ class Defs2Struct:
             if variant_obj is not None:
                 self.output_function(namespace, type_name, variant_obj)
 
-    def output_api_class_data(self, items: dict, is_array: bool, key_name: str) -> dict:
+    def output_api_class_data(self, namespace: str, items: dict, is_array: bool, key_name: str) -> dict:
         data: dict = {}
         ref: str = items.get('ref', '')
         (ref_namespace, ref_struct_name) = self.split_ref(ref)
 
-        if len(ref_namespace) > 0:
-            data['parent_info'] = self.inheritance.get(ref, {})
-            data['copy_method'] = 'AtProtocolType::%s::copy%s' % (self.to_namespace_style(ref_namespace),
-                                                  self.to_struct_style(ref_struct_name), )
-            data['variable_is_obj'] = False
-            data['variable_is_array'] = is_array
-            data['variable_key_name'] = key_name
-            data['variable_type'] = 'AtProtocolType::%s::%s' % (self.to_namespace_style(ref_namespace),
-                                                                self.to_struct_style(ref_struct_name), )
-            if is_array:
-                data['method_getter'] = '%sList' % (ref_struct_name, )
-                data['variable_name'] = 'm_%sList' % (ref_struct_name, )
-            else:
-                data['method_getter'] = '%s' % (ref_struct_name, )
-                data['variable_name'] = 'm_%s' % (ref_struct_name, )
-            data['variable_ref_is_array'] = (self.history_type.get(ref, '') == 'array')
-            data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
+        if len(ref_namespace) == 0:
+            ref_namespace = namespace
+
+        data['parent_info'] = self.inheritance.get(ref, {})
+        data['copy_method'] = 'AtProtocolType::%s::copy%s' % (self.to_namespace_style(ref_namespace),
+                                                self.to_struct_style(ref_struct_name), )
+        data['variable_is_obj'] = False
+        data['variable_is_array'] = is_array
+        data['variable_key_name'] = key_name
+        data['variable_type'] = 'AtProtocolType::%s::%s' % (self.to_namespace_style(ref_namespace),
+                                                            self.to_struct_style(ref_struct_name), )
+        if is_array:
+            data['method_getter'] = '%sList' % (ref_struct_name, )
+            data['variable_name'] = 'm_%sList' % (ref_struct_name, )
+        else:
+            data['method_getter'] = '%s' % (ref_struct_name, )
+            data['variable_name'] = 'm_%s' % (ref_struct_name, )
+        if self.history_type.get(ref, '') == 'array':
+            data['variable_to'] = '.toArray()'
+        else:
+            data['variable_to'] = '.toObject()'
+        data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
+
+        return data
+
+    def output_api_class_data_primitive(self, pro_type: str, key_name: str) -> dict:
+        data: dict = {}
+
+        data['parent_info'] = {}
+        data['variable_is_obj'] = False
+        data['variable_is_array'] = False
+        data['variable_key_name'] = key_name
+        if pro_type == 'string':
+            data['copy_method'] = 'AtProtocolType::LexiconsTypeUnknown::copyString'
+            data['variable_type'] = 'QString'
+        data['method_getter'] = '%s' % (key_name, )
+        data['variable_name'] = 'm_%s' % (key_name, )
+        data['variable_to'] = ''
+        data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
         return data
 
     def output_api_class(self, namespace: str, type_name: str):
@@ -894,7 +924,7 @@ class Defs2Struct:
         if obj.get('output') is not None:
             schema = obj.get('output', {}).get('schema', {})
             if schema.get('type', '') == 'ref':
-                item_obj = self.output_api_class_data(schema, False, '')
+                item_obj = self.output_api_class_data(namespace, schema, False, '')
                 if len(item_obj) > 0:
                     data['members'] = data.get('members', [])
                     data['members'].append(item_obj)
@@ -908,7 +938,7 @@ class Defs2Struct:
                     if pro_type == 'array':
                         item_type = pro_items.get('type')
                         if item_type == 'ref':
-                            item_obj = self.output_api_class_data(pro_items, True, key_name)
+                            item_obj = self.output_api_class_data(namespace, pro_items, True, key_name)
                             if len(item_obj) > 0:
                                 data['members'] = data.get('members', [])
                                 data['members'].append(item_obj)
@@ -933,8 +963,16 @@ class Defs2Struct:
                     elif pro_type == 'string':
                         if key_name == 'cursor':
                             data['has_cursor'] = True
+                        else:
+                            item_obj = self.output_api_class_data_primitive(pro_type, key_name)
+                            if len(item_obj) > 0:
+                                item_obj['variable_is_obj'] = True
+                                data['members'] = data.get('members', [])
+                                data['members'].append(item_obj)
+                                data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
+                                data['has_primitive'] = True
                     elif pro_type == 'ref':
-                        item_obj = self.output_api_class_data(property_obj, False, key_name)
+                        item_obj = self.output_api_class_data(namespace, property_obj, False, key_name)
                         if len(item_obj) > 0:
                             item_obj['variable_is_obj'] = True
                             data['members'] = data.get('members', [])
@@ -944,8 +982,11 @@ class Defs2Struct:
                         print (namespace + ":" + ref_namespace + "," + ref_struct_name + " not array")
 
         if len(data) > 0:
+            data['has_primitive'] = data.get('has_primitive', False)
             data['has_parent_class'] = data.get('has_parent_class', False)
             data['completed'] = data.get('completed', False)
+            if data.get('access_type', '') == 'post':
+                data['completed'] = False
             self.api_class[namespace] = data
 
 

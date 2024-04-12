@@ -21,7 +21,7 @@ bool AnyProfileListModel::getLatest()
         connect(likes, &AppBskyFeedGetLikes::finished, [=](bool success) {
             if (success) {
                 m_cursor = likes->cursor();
-                for (const auto &like : *likes->likes()) {
+                for (const auto &like : likes->likeList()) {
                     m_profileHash[like.actor.did] = like.actor;
                     m_formattedDescriptionHash[like.actor.did] =
                             m_systemTool.markupText(like.actor.description);
@@ -83,11 +83,11 @@ bool AnyProfileListModel::getNext()
         AppBskyFeedGetLikes *likes = new AppBskyFeedGetLikes(this);
         connect(likes, &AppBskyFeedGetLikes::finished, [=](bool success) {
             if (success) {
-                if (likes->likes()->isEmpty())
+                if (likes->likeList().isEmpty())
                     m_cursor.clear();
                 else
                     m_cursor = likes->cursor();
-                for (const auto &like : *likes->likes()) {
+                for (const auto &like : likes->likeList()) {
                     m_profileHash[like.actor.did] = like.actor;
                     m_formattedDescriptionHash[like.actor.did] =
                             m_systemTool.markupText(like.actor.description);

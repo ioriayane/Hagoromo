@@ -1,6 +1,9 @@
 #include "{{ file_name_lower }}.h"
 {%- if has_parent_class == False %}
 #include "atprotocol/lexicons_func.h"
+{%- if has_primitive %}
+#include "atprotocol/lexicons_func_unknown.h"
+{%- endif %}
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -74,11 +77,7 @@ bool {{ class_name }}::parseJson(bool success, const QString reply_json)
             {{ member.variable_name }}.append(data);
         }
         {% elif member.variable_is_obj -%}
-            {% if member.variable_ref_is_array -%}
-            {{ member.copy_method }}(json_doc.object().value("{{ member.variable_key_name }}").toArray(), {{ member.variable_name }});
-            {% else -%}
-            {{ member.copy_method }}(json_doc.object().value("{{ member.variable_key_name }}").toObject(), {{ member.variable_name }});
-            {% endif -%}
+            {{ member.copy_method }}(json_doc.object().value("{{ member.variable_key_name }}"){{ member.variable_to }}, {{ member.variable_name }});
         {% else -%}
         {{ member.copy_method }}(json_doc.object(), {{ member.variable_name }});
     {% endif -%}
