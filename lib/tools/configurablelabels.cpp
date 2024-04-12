@@ -81,7 +81,7 @@ bool ConfigurableLabels::load()
     connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
         if (success) {
             m_targetLabelerDids.clear();
-            for (const auto &labelers_pref : *pref->labelersPrefList()) {
+            for (const auto &labelers_pref : pref->preferences().labelersPref) {
                 for (const auto &labeler : labelers_pref.labelers) {
                     m_targetLabelerDids.append(labeler.did);
                 }
@@ -91,8 +91,10 @@ bool ConfigurableLabels::load()
             }
             loadLabelers(m_targetLabelerDids, [=](bool load_labelers_success) {
                 if (load_labelers_success) {
-                    m_enableAdultContent = pref->adultContentPref().enabled;
-                    for (const auto &item : *pref->contentLabelPrefList()) {
+                    if (!pref->preferences().adultContentPref.isEmpty()) {
+                        m_enableAdultContent = pref->preferences().adultContentPref.first().enabled;
+                    }
+                    for (const auto &item : pref->preferences().contentLabelPref) {
                         int index = indexOf(item.label, item.labelerDid);
                         ConfigurableLabelStatus status = toLabelStatus(item.visibility);
                         if (index >= 0) {
@@ -119,7 +121,7 @@ bool ConfigurableLabels::load()
                         }
                     }
                     int group = 0;
-                    for (const auto &pref : *pref->mutedWordsPrefList()) {
+                    for (const auto &pref : pref->preferences().mutedWordsPref) {
                         for (const auto &item : pref.items) {
                             MutedWordItem mute;
                             mute.group = group;

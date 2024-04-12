@@ -34,6 +34,7 @@ void copyMutedWordsPref(const QJsonObject &src, AppBskyActorDefs::MutedWordsPref
 void copyHiddenPostsPref(const QJsonObject &src, AppBskyActorDefs::HiddenPostsPref &dest);
 void copyLabelerPrefItem(const QJsonObject &src, AppBskyActorDefs::LabelerPrefItem &dest);
 void copyLabelersPref(const QJsonObject &src, AppBskyActorDefs::LabelersPref &dest);
+void copyPreferences(const QJsonArray &src, AppBskyActorDefs::Preferences &dest);
 }
 // app.bsky.graph.defs
 namespace AppBskyGraphDefs {

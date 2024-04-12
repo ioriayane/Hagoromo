@@ -229,41 +229,13 @@ void FeedGeneratorListModel::getSavedGenerators()
     AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
     connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
         if (success) {
-            for (const auto &feed : *pref->savedFeedsPrefList()) {
+            for (const auto &feed : pref->preferences().savedFeedsPref) {
                 m_savedUriList.append(feed.saved);
-
-                //                    QHashIterator<QString,
-                //                    AtProtocolType::AppBskyFeedDefs::GeneratorView> i(
-                //                            m_generatorViewHash);
-                //                    while (i.hasNext()) {
-                //                        i.next();
-                //                        int pos = feed.saved.indexOf(i.value().uri);
-                //                        if (pos >= 0) {
-                //                            emit dataChanged(index(pos), index(pos),
-                //                                             QVector<int>() <<
-                //                                             static_cast<int>(SavingRole));
-                //                        }
-                //                    }
             }
             for (int i = 0; i < m_cidList.count(); i++) {
                 emit dataChanged(index(i), index(i),
                                  QVector<int>() << static_cast<int>(SavingRole));
             }
-            //                QHashIterator<QString,
-            //                AtProtocolType::AppBskyFeedDefs::GeneratorView> i(
-            //                        m_generatorViewHash);
-            //                while (i.hasNext()) {
-            //                    i.next();
-            //                    bool new_value = m_savedUriList.contains(i.value().uri);
-            //                    if (m_savedUriList.contains(i.value().uri)) {
-            //                        int pos = m_cidList.indexOf(i.value().cid);
-            //                        if (pos >= 0) {
-            //                            emit dataChanged(index(pos), index(pos),
-            //                                             QVector<int>() <<
-            //                                             static_cast<int>(SavingRole));
-            //                        }
-            //                    }
-            //                }
         } else {
             emit errorOccured(pref->errorCode(), pref->errorMessage());
         }

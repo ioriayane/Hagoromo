@@ -112,7 +112,7 @@ bool FeedTypeListModel::getLatest()
     AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
     connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
         if (success) {
-            for (const auto &feed : *pref->savedFeedsPrefList()) {
+            for (const auto &feed : pref->preferences().savedFeedsPref) {
                 m_cueUri = feed.saved;
             }
         } else {

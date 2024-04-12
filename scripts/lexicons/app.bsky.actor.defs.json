@@ -1,0 +1,11 @@
+{
+    "defs": {
+      "preferences": {
+        "items": {
+          "refs": [
+            "#labelersPref"
+          ]
+        }
+      }
+    }
+}

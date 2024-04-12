@@ -52,7 +52,7 @@ void CustomFeedListModel::updateFeedSaveStatus()
     connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
         if (success) {
             bool exist = false;
-            for (const auto &feed : *pref->savedFeedsPrefList()) {
+            for (const auto &feed : pref->preferences().savedFeedsPref) {
                 for (const auto &saved : feed.saved) {
                     if (saved == uri()) {
                         exist = true;

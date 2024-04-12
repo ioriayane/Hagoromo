@@ -269,6 +269,21 @@ struct LabelersPref
 {
     QList<LabelerPrefItem> labelers;
 };
+struct Preferences
+{
+    // union start : preferences
+    QList<AppBskyActorDefs::AdultContentPref> adultContentPref;
+    QList<AppBskyActorDefs::ContentLabelPref> contentLabelPref;
+    QList<AppBskyActorDefs::SavedFeedsPref> savedFeedsPref;
+    QList<AppBskyActorDefs::PersonalDetailsPref> personalDetailsPref;
+    QList<AppBskyActorDefs::FeedViewPref> feedViewPref;
+    QList<AppBskyActorDefs::ThreadViewPref> threadViewPref;
+    QList<AppBskyActorDefs::InterestsPref> interestsPref;
+    QList<AppBskyActorDefs::MutedWordsPref> mutedWordsPref;
+    QList<AppBskyActorDefs::HiddenPostsPref> hiddenPostsPref;
+    QList<AppBskyActorDefs::LabelersPref> labelersPref;
+    // union end : preferences
+};
 }
 
 // app.bsky.actor.profile

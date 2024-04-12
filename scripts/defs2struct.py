@@ -482,6 +482,39 @@ class Defs2Struct:
             self.output_text[namespace].append('typedef bool %s;%s' % (self.to_struct_style(type_name), obj_comment,))
             self.append_history(namespace, type_name)
 
+        elif obj.get('type') == 'array':
+            # arrayは型定義にする
+            items_type = obj.get('items', {}).get('type', '')
+            if items_type == 'union':
+                # refのときはその型を先に処理する
+                for ref_path in obj.get('items', {}).get('refs', []):
+                    self.output_ref_recursive(namespace, type_name, ref_path)
+
+                self.output_text[namespace].append('struct %s' % (self.to_struct_style(type_name), ))
+                self.output_text[namespace].append('{')
+                self.output_text[namespace].append('    // union start : %s' % (type_name, ))
+                for ref_path in obj.get('items', {}).get('refs', []):
+                    (ref_namespace, ref_type_name) = self.split_ref(ref_path)
+                    if len(ref_type_name) == 0:
+                        ref_type_name = 'main'
+                    if len(ref_namespace) == 0:
+                        extend_ns = '%s::' % (self.to_namespace_style(namespace), )
+                    else:
+                        extend_ns = '%s::' % (self.to_namespace_style(ref_namespace), )
+                    self.output_text[namespace].append('                QList<%s%s> %s;' % (extend_ns, self.to_struct_style(ref_type_name),ref_type_name, ))
+
+                self.output_text[namespace].append('    // union end : %s' % (type_name, ))
+                self.output_text[namespace].append('};')
+
+
+            elif items_type == 'integer':
+                self.output_text[namespace].append('typedef QList<int> %s;%s' % (self.to_struct_style(type_name), obj_comment, ))
+            elif items_type == 'boolean':
+                self.output_text[namespace].append('typedef QList<bool> %s;%s' % (self.to_struct_style(type_name), obj_comment, ))
+            elif items_type == 'string':
+                self.output_text[namespace].append('typedef QList<QString> %s;%s' % (self.to_struct_style(type_name), obj_comment, ))
+            self.append_history(namespace, type_name)
+
         else:
             variant_key = obj.get('type', '')
             variant_obj = obj.get(variant_key)
@@ -727,6 +760,58 @@ class Defs2Struct:
 
             self.append_func_history(namespace, function_define)
 
+        elif obj.get('type') == 'array':
+            # array
+            if namespace not in self.output_func_text:
+                self.output_func_text[namespace] = []
+            function_define = 'void copy%s(const QJsonArray &src, %s::%s &dest)' % (
+                self.to_struct_style(type_name), self.to_namespace_style(namespace), self.to_struct_style(type_name), )
+            self.output_func_text[namespace].append(function_define)
+            self.output_func_text[namespace].append('{')
+            self.output_func_text[namespace].append('    if (!src.isEmpty()) {')
+
+            items_type = obj.get('items', {}).get('type', '')
+            if items_type == 'union':
+                self.output_func_text[namespace].append('        for (const auto &value : src) {')
+                self.output_func_text[namespace].append('            QString value_type = value.toObject().value("$type").toString();')
+                chain_if = ''
+                for ref_path in obj.get('items', {}).get('refs', []):
+                    (ref_namespace, ref_type_name) = self.split_ref(ref_path)
+                    if len(ref_type_name) == 0:
+                        ref_type_name = 'main'
+
+                    if len(ref_type_name) == 0:
+                        self.output_func_text[namespace].append('        // union %s %s' % (type_name, ref_path, ))
+                    else:
+                        if len(ref_namespace) == 0:
+                            extend_ns = '%s::' % (self.to_namespace_style(namespace), )
+                            union_name = '%s_%s' % (type_name, self.to_struct_style(ref_type_name))
+                            ref_path_full = namespace + '#' + ref_type_name
+                        else:
+                            extend_ns = '%s::' % (self.to_namespace_style(ref_namespace), )
+                            union_name = '%s_%s_%s' % (type_name, self.to_namespace_style(ref_namespace), self.to_struct_style(ref_type_name))
+                            ref_path_full = ref_path
+                        union_type_name = '%s%sType' % (self.to_struct_style(type_name), self.to_struct_style(type_name), )
+
+                        self.output_func_text[namespace].append('            %sif (value_type == QStringLiteral("%s")) {' % (chain_if, ref_path_full, ))
+                        self.output_func_text[namespace].append('                %s%s child;' % (extend_ns, self.to_struct_style(ref_type_name), ))
+                        self.output_func_text[namespace].append('                %scopy%s(value.toObject(), child);' % (extend_ns, self.to_struct_style(ref_type_name), ))
+                        self.output_func_text[namespace].append('                dest.%s.append(child);' % (ref_type_name, ))
+                        self.output_func_text[namespace].append('            }')
+                        if len(chain_if) == 0:
+                            chain_if = '             else '
+                self.output_func_text[namespace].append('        }')
+            elif items_type == 'integer':
+                pass
+            elif items_type == 'boolean':
+                pass
+            elif items_type == 'string':
+                pass
+
+            self.output_func_text[namespace].append('    }')
+            self.output_func_text[namespace].append('}')
+
+            self.append_func_history(namespace, function_define)
         else:
             variant_key = obj.get('type', '')
             variant_obj = self.json_obj.get(namespace, {}).get('defs', {}).get('main', {}).get(variant_key, {})
@@ -753,6 +838,7 @@ class Defs2Struct:
             else:
                 data['method_getter'] = '%s' % (ref_struct_name, )
                 data['variable_name'] = 'm_%s' % (ref_struct_name, )
+            data['variable_ref_is_array'] = (self.history_type.get(ref, '') == 'array')
             data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
         return data
 
@@ -984,6 +1070,8 @@ class Defs2Struct:
             if key in dest:
                 if isinstance(dest[key], dict) and isinstance(src[key], dict):
                     self.json_deep_merge(dest[key], src[key])
+                elif isinstance(dest[key], list) and isinstance(src[key], list):
+                    dest[key].extend(src[key])
             else:
                 dest[key] = src[key]
         return dest

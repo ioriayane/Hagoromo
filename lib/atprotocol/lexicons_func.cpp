@@ -194,6 +194,55 @@ void copyLabelersPref(const QJsonObject &src, AppBskyActorDefs::LabelersPref &de
         }
     }
 }
+void copyPreferences(const QJsonArray &src, AppBskyActorDefs::Preferences &dest)
+{
+    if (!src.isEmpty()) {
+        for (const auto &value : src) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type == QStringLiteral("app.bsky.actor.defs#adultContentPref")) {
+                AppBskyActorDefs::AdultContentPref child;
+                AppBskyActorDefs::copyAdultContentPref(value.toObject(), child);
+                dest.adultContentPref.append(child);
+            } else if (value_type == QStringLiteral("app.bsky.actor.defs#contentLabelPref")) {
+                AppBskyActorDefs::ContentLabelPref child;
+                AppBskyActorDefs::copyContentLabelPref(value.toObject(), child);
+                dest.contentLabelPref.append(child);
+            } else if (value_type == QStringLiteral("app.bsky.actor.defs#savedFeedsPref")) {
+                AppBskyActorDefs::SavedFeedsPref child;
+                AppBskyActorDefs::copySavedFeedsPref(value.toObject(), child);
+                dest.savedFeedsPref.append(child);
+            } else if (value_type == QStringLiteral("app.bsky.actor.defs#personalDetailsPref")) {
+                AppBskyActorDefs::PersonalDetailsPref child;
+                AppBskyActorDefs::copyPersonalDetailsPref(value.toObject(), child);
+                dest.personalDetailsPref.append(child);
+            } else if (value_type == QStringLiteral("app.bsky.actor.defs#feedViewPref")) {
+                AppBskyActorDefs::FeedViewPref child;
+                AppBskyActorDefs::copyFeedViewPref(value.toObject(), child);
+                dest.feedViewPref.append(child);
+            } else if (value_type == QStringLiteral("app.bsky.actor.defs#threadViewPref")) {
+                AppBskyActorDefs::ThreadViewPref child;
+                AppBskyActorDefs::copyThreadViewPref(value.toObject(), child);
+                dest.threadViewPref.append(child);
+            } else if (value_type == QStringLiteral("app.bsky.actor.defs#interestsPref")) {
+                AppBskyActorDefs::InterestsPref child;
+                AppBskyActorDefs::copyInterestsPref(value.toObject(), child);
+                dest.interestsPref.append(child);
+            } else if (value_type == QStringLiteral("app.bsky.actor.defs#mutedWordsPref")) {
+                AppBskyActorDefs::MutedWordsPref child;
+                AppBskyActorDefs::copyMutedWordsPref(value.toObject(), child);
+                dest.mutedWordsPref.append(child);
+            } else if (value_type == QStringLiteral("app.bsky.actor.defs#hiddenPostsPref")) {
+                AppBskyActorDefs::HiddenPostsPref child;
+                AppBskyActorDefs::copyHiddenPostsPref(value.toObject(), child);
+                dest.hiddenPostsPref.append(child);
+            } else if (value_type == QStringLiteral("app.bsky.actor.defs#labelersPref")) {
+                AppBskyActorDefs::LabelersPref child;
+                AppBskyActorDefs::copyLabelersPref(value.toObject(), child);
+                dest.labelersPref.append(child);
+            }
+        }
+    }
+}
 }
 // app.bsky.graph.defs
 namespace AppBskyGraphDefs {

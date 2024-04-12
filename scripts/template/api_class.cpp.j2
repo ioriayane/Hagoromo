@@ -74,7 +74,11 @@ bool {{ class_name }}::parseJson(bool success, const QString reply_json)
             {{ member.variable_name }}.append(data);
         }
         {% elif member.variable_is_obj -%}
-        {{ member.copy_method }}(json_doc.object().value("{{ member.variable_key_name }}").toObject(), {{ member.variable_name }});
+            {% if member.variable_ref_is_array -%}
+            {{ member.copy_method }}(json_doc.object().value("{{ member.variable_key_name }}").toArray(), {{ member.variable_name }});
+            {% else -%}
+            {{ member.copy_method }}(json_doc.object().value("{{ member.variable_key_name }}").toObject(), {{ member.variable_name }});
+            {% endif -%}
         {% else -%}
         {{ member.copy_method }}(json_doc.object(), {{ member.variable_name }});
     {% endif -%}
