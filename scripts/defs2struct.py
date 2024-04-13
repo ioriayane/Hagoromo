@@ -128,6 +128,7 @@ class Defs2Struct:
                 'app.bsky.unspecced.searchPostsSkeleton',
                 'app.bsky.unspecced.searchActorsSkeleton',
                 'app.bsky.unspecced.getTaggedSuggestions',
+                'app.bsky.notification.getUnreadCount',
                 'app.bsky.graph.getSuggestedFollowsByActor',
                 'app.bsky.graph.getRelationships',
                 'app.bsky.feed.getSuggestedFeeds',
@@ -841,6 +842,7 @@ class Defs2Struct:
                                                 self.to_struct_style(ref_struct_name), )
         data['variable_is_obj'] = False
         data['variable_is_array'] = is_array
+        data['variable_is_union'] = False
         data['variable_key_name'] = key_name
         data['variable_type'] = 'AtProtocolType::%s::%s' % (self.to_namespace_style(ref_namespace),
                                                             self.to_struct_style(ref_struct_name), )
@@ -864,10 +866,17 @@ class Defs2Struct:
         data['parent_info'] = {}
         data['variable_is_obj'] = False
         data['variable_is_array'] = False
+        data['variable_is_union'] = False
         data['variable_key_name'] = key_name
         if pro_type == 'string':
             data['copy_method'] = 'AtProtocolType::LexiconsTypeUnknown::copyString'
             data['variable_type'] = 'QString'
+        elif pro_type == 'boolean':
+            data['copy_method'] = 'AtProtocolType::LexiconsTypeUnknown::copyBool'
+            data['variable_type'] = 'bool'
+        elif pro_type == 'integer':
+            data['copy_method'] = 'AtProtocolType::LexiconsTypeUnknown::copyInt'
+            data['variable_type'] = 'int'
         elif pro_type == 'unknown':
             data['copy_method'] = 'AtProtocolType::LexiconsTypeUnknown::copyUnknown'
             data['variable_type'] = 'QVariant'
@@ -875,6 +884,32 @@ class Defs2Struct:
         data['variable_name'] = 'm_%s' % (key_name, )
         data['variable_to'] = ''
         data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
+        return data
+
+    def output_api_class_data_union(self, namespace: str, union_ref: str, key_name: str) -> dict:
+        data: dict = {}
+        (ref_namespace, ref_struct_name) = self.split_ref(union_ref)
+
+        if len(ref_namespace) == 0:
+            ref_namespace = namespace
+        if len(ref_struct_name) == 0:
+            ref_struct_name = 'main'
+
+        data['parent_info'] = self.inheritance.get(union_ref, {})
+        data['copy_method'] = 'AtProtocolType::%s::copy%s' % (self.to_namespace_style(ref_namespace),
+                                                self.to_struct_style(ref_struct_name), )
+        data['variable_is_obj'] = False
+        data['variable_is_array'] = False
+        data['variable_is_union'] = True
+        data['variable_key_name'] = key_name
+        data['variable_type'] = 'AtProtocolType::%s::%s' % (self.to_namespace_style(ref_namespace),
+                                                            self.to_struct_style(ref_struct_name), )
+        data['method_getter'] = '%s' % (ref_struct_name, )
+        data['variable_name'] = 'm_%s' % (ref_struct_name, )
+        data['variable_to'] = '.toObject()'
+        data['union_ref'] = union_ref
+        data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
+
         return data
 
     def output_api_class(self, namespace: str, type_name: str):
@@ -965,7 +1000,7 @@ class Defs2Struct:
                                 print (namespace + ":" + ref_namespace + "," + ref_struct_name + " ??")
                         else:
                             print (namespace + ":" + ref_namespace + "," + ref_struct_name + " not ref")
-                    elif pro_type == 'string' or pro_type == 'unknown':
+                    elif pro_type == 'string' or pro_type == 'boolean' or pro_type == 'integer' or pro_type == 'unknown':
                         if key_name == 'cursor':
                             data['has_cursor'] = True
                         else:
@@ -983,6 +1018,14 @@ class Defs2Struct:
                             data['members'] = data.get('members', [])
                             data['members'].append(item_obj)
                             data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
+                    elif pro_type == 'union':
+                        union_refs = property_obj.get('refs', [])
+                        for union_ref in union_refs:
+                            item_obj = self.output_api_class_data_union(namespace, union_ref, key_name)
+                            if len(item_obj) > 0:
+                                data['members'] = data.get('members', [])
+                                data['members'].append(item_obj)
+                                data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
                     else:
                         print (namespace + ":" + ref_namespace + "," + ref_struct_name + " not array")
 

@@ -16,6 +16,8 @@ namespace LexiconsTypeUnknown {
 void copyUnknown(const QJsonObject &src, QVariant &dest);
 void copyBlob(const QJsonObject &src, Blob &dest);
 void copyString(const QJsonValue &src, QString &dest);
+void copyBool(const QJsonValue &src, bool &dest);
+void copyInt(const QJsonValue &src, int &dest);
 
 enum class CopyImageType : int {
     Thumb,

@@ -1,5 +1,6 @@
 #include "appbskyfeedgetfeedgenerator.h"
 #include "atprotocol/lexicons_func.h"
+#include "atprotocol/lexicons_func_unknown.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -28,6 +29,16 @@ AppBskyFeedGetFeedGenerator::generatorView() const
     return m_generatorView;
 }
 
+const bool &AppBskyFeedGetFeedGenerator::isOnline() const
+{
+    return m_isOnline;
+}
+
+const bool &AppBskyFeedGetFeedGenerator::isValid() const
+{
+    return m_isValid;
+}
+
 bool AppBskyFeedGetFeedGenerator::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
@@ -36,6 +47,10 @@ bool AppBskyFeedGetFeedGenerator::parseJson(bool success, const QString reply_js
     } else {
         AtProtocolType::AppBskyFeedDefs::copyGeneratorView(
                 json_doc.object().value("view").toObject(), m_generatorView);
+        AtProtocolType::LexiconsTypeUnknown::copyBool(json_doc.object().value("isOnline"),
+                                                      m_isOnline);
+        AtProtocolType::LexiconsTypeUnknown::copyBool(json_doc.object().value("isValid"),
+                                                      m_isValid);
     }
 
     return success;
