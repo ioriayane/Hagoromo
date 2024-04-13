@@ -4,18 +4,19 @@
 
 # python3 ./scripts/defs2struct.py
 
-import sys
 import os
 import glob
 import json
-from jinja2 import Template, Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader
 
 class FuncHistoryItem:
+    """ 関数の履歴保存用 """
     def __init__(self, type_name, qt_type) -> None:
         self.type_name = type_name
         self.qt_type = qt_type
 
 class FunctionArgument:
+    """ 関数の引数管理用 """
     def __init__(self, arg_type: str, name: str, is_array: bool) -> None:
         self._type = arg_type
         self._name = name
@@ -23,20 +24,21 @@ class FunctionArgument:
 
     def to_string_arg(self) -> str:
         """ コードの文字列に変換 """
+        arg_def: str = ''
         if self._is_array:
             if self._type == 'string':
-                return f"const QList<QString> &{self._name}"
-            if self._type == 'integer':
-                return f"const QList<int> &{self._name}"
-            if self._type == 'boolean':
-                return f"const QList<bool> &{self._name}"
-        if self._type == 'string':
-            return f"const QString &{self._name}"
-        if self._type == 'integer':
-            return f"const int {self._name}"
-        if self._type == 'boolean':
-            return f"const bool {self._name}"
-        return ''
+                arg_def = f"const QList<QString> &{self._name}"
+            elif self._type == 'integer':
+                arg_def =  f"const QList<int> &{self._name}"
+            elif self._type == 'boolean':
+                arg_def = f"const QList<bool> &{self._name}"
+        elif self._type == 'string':
+            arg_def = f"const QString &{self._name}"
+        elif self._type == 'integer':
+            arg_def = f"const int {self._name}"
+        elif self._type == 'boolean':
+            arg_def = f"const bool {self._name}"
+        return arg_def
 
     def to_string_query(self) -> str:
         """ クエリの作成 """
@@ -60,6 +62,7 @@ class FunctionArgument:
         return msg
 
 class Defs2Struct:
+    """ lexiconの定義から構造体などを生成 """
     def __init__(self) -> None:
         self.history = [] # <namespace>#<struct_name>
         self.history_namespace = []
@@ -123,6 +126,7 @@ class Defs2Struct:
                 'com.atproto.server.',
                 'com.atproto.sync.getHead',
                 'com.atproto.sync.getLatestCommit',
+                'com.atproto.sync.listBlobs',
                 'com.atproto.sync.listRepos',
                 'com.atproto.temp.',
                 'app.bsky.unspecced.searchPostsSkeleton',
@@ -138,8 +142,8 @@ class Defs2Struct:
             ]
 
     def skip_spi_class(self, namespace: str) -> bool:
-        for id in self.skip_api_class_id:
-            if namespace.startswith(id):
+        for class_id in self.skip_api_class_id:
+            if namespace.startswith(class_id):
                 return True
         return False
 
@@ -871,18 +875,29 @@ class Defs2Struct:
         if pro_type == 'string':
             data['copy_method'] = 'AtProtocolType::LexiconsTypeUnknown::copyString'
             data['variable_type'] = 'QString'
+        elif pro_type == 'array_string':
+            data['copy_method'] = 'AtProtocolType::LexiconsTypeUnknown::copyStringList'
+            data['variable_type'] = 'QStringList'
         elif pro_type == 'boolean':
             data['copy_method'] = 'AtProtocolType::LexiconsTypeUnknown::copyBool'
             data['variable_type'] = 'bool'
         elif pro_type == 'integer':
             data['copy_method'] = 'AtProtocolType::LexiconsTypeUnknown::copyInt'
             data['variable_type'] = 'int'
+        elif pro_type == 'blob':
+            data['copy_method'] = 'AtProtocolType::LexiconsTypeUnknown::copyBlob'
+            data['variable_type'] = 'Blob'
         elif pro_type == 'unknown':
             data['copy_method'] = 'AtProtocolType::LexiconsTypeUnknown::copyUnknown'
             data['variable_type'] = 'QVariant'
-        data['method_getter'] = '%s' % (key_name, )
-        data['variable_name'] = 'm_%s' % (key_name, )
-        data['variable_to'] = ''
+        if pro_type.startswith('array_'):
+            data['method_getter'] = '%sList' % (key_name, )
+            data['variable_name'] = 'm_%sList' % (key_name, )
+            data['variable_to'] = '.toArray()'
+        else:
+            data['method_getter'] = '%s' % (key_name, )
+            data['variable_name'] = 'm_%s' % (key_name, )
+            data['variable_to'] = ''
         data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
         return data
 
@@ -923,33 +938,35 @@ class Defs2Struct:
             data['parent_class_name'] = 'AccessAtProtocol'
             data['include_paths'] = ['atprotocol/accessatprotocol.h']
             arguments: list[FunctionArgument] = []
-            # query
-            properties = obj.get('parameters', {}).get('properties')
-            if properties is not None:
+            if obj.get('type') == 'query':
+                # query
                 data['access_type'] = 'get'
-                for pro_name, pro_value in properties.items():
-                    if self.check_deprecated(pro_value):
-                        continue
+                properties = obj.get('parameters', {}).get('properties')
+                if properties is not None:
+                    for pro_name, pro_value in properties.items():
+                        if self.check_deprecated(pro_value):
+                            continue
 
-                    pro_type = pro_value.get('type', '')
-                    if pro_type == 'array':
-                        pro_type = pro_value.get('items', {}).get('type', '')
-                        arguments.append(FunctionArgument(pro_type, pro_name, True))
-                    else:
-                        arguments.append(FunctionArgument(pro_type, pro_name, False))
-            # post
-            properties = obj.get('input', {}).get('schema', {}).get('properties')
-            if properties is not None:
+                        pro_type = pro_value.get('type', '')
+                        if pro_type == 'array':
+                            pro_type = pro_value.get('items', {}).get('type', '')
+                            arguments.append(FunctionArgument(pro_type, pro_name, True))
+                        else:
+                            arguments.append(FunctionArgument(pro_type, pro_name, False))
+            elif obj.get('type') == 'procedure':
+                # post
                 data['access_type'] = 'post'
-                for pro_name, pro_value in properties.items():
-                    if self.check_deprecated(pro_value):
-                        continue
-                    pro_type = pro_value.get('type', '')
-                    if pro_type == 'array':
-                        pro_type = pro_value.get('items', {}).get('type', '')
-                        arguments.append(FunctionArgument(pro_type, pro_name, True))
-                    else:
-                        arguments.append(FunctionArgument(pro_type, pro_name, False))
+                properties = obj.get('input', {}).get('schema', {}).get('properties')
+                if properties is not None:
+                    for pro_name, pro_value in properties.items():
+                        if self.check_deprecated(pro_value):
+                            continue
+                        pro_type = pro_value.get('type', '')
+                        if pro_type == 'array':
+                            pro_type = pro_value.get('items', {}).get('type', '')
+                            arguments.append(FunctionArgument(pro_type, pro_name, True))
+                        else:
+                            arguments.append(FunctionArgument(pro_type, pro_name, False))
 
             args: list[str] = []
             query: list[str] = []
@@ -982,14 +999,28 @@ class Defs2Struct:
                             var_type = 'array_ref'
                         elif item_type == 'union':
                             var_type = 'array_union'
+                        elif item_type == 'string':
+                            var_type = 'array_string'
                         else:
                             var_type = ''
                             print (namespace + ":" + ref_namespace + "," + ref_struct_name + " not ref")
 
-                        if len(var_type) > 0:
+                        if var_type == 'array_string':
+                            item_obj = self.output_api_class_data_primitive(var_type, key_name)
+                            if len(item_obj) > 0:
+                                item_obj['variable_is_obj'] = True
+                                data['members'] = data.get('members', [])
+                                data['members'].append(item_obj)
+                                data['is_parent'] = False
+                                data['has_parent_class'] = False
+                                data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
+                                data['has_primitive'] = True
+                        elif len(var_type) > 0:
                             refs = pro_items.get('refs', [])
                             if len(refs) == 0 and 'ref' in pro_items:
                                 refs = [pro_items.get('ref', '')]
+                            if len(refs) == 0:
+                                refs = [namespace]
                             for ref in refs:
                                 item_obj = self.output_api_class_data(namespace, ref, var_type, key_name)
                                 if len(item_obj) > 0:
@@ -1011,9 +1042,10 @@ class Defs2Struct:
                                     data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
                                 else:
                                     print (namespace + ":" + ref_namespace + "," + ref_struct_name + " ??")
-                    elif pro_type == 'string' or pro_type == 'boolean' or pro_type == 'integer' or pro_type == 'unknown':
+                    elif pro_type == 'string' or pro_type == 'boolean' or pro_type == 'integer' or pro_type == 'blob' or pro_type == 'unknown':
                         if key_name == 'cursor':
                             data['has_cursor'] = True
+                            data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
                         else:
                             item_obj = self.output_api_class_data_primitive(pro_type, key_name)
                             if len(item_obj) > 0:

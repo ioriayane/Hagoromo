@@ -62,6 +62,13 @@ void copyString(const QJsonValue &src, QString &dest)
     dest = src.toString();
 }
 
+void copyStringList(const QJsonArray &src, QStringList &dest)
+{
+    for (const auto &value : src) {
+        dest.append(value.toString());
+    }
+}
+
 void copyBool(const QJsonValue &src, bool &dest)
 {
     dest = src.toBool(false);
