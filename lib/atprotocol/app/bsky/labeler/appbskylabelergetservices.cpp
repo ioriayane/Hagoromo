@@ -11,35 +11,49 @@ AppBskyLabelerGetServices::AppBskyLabelerGetServices(QObject *parent) : AccessAt
 {
 }
 
-const QList<AtProtocolType::AppBskyLabelerDefs::LabelerViewDetailed> *
-AppBskyLabelerGetServices::labelerViewDetails()
-{
-    return &m_labelerViewDetails;
-}
-
 void AppBskyLabelerGetServices::getServices(const QList<QString> &dids, const bool detailed)
 {
-    QUrlQuery query;
-    for (const auto &did : dids) {
-        query.addQueryItem(QStringLiteral("dids"), did);
+    QUrlQuery url_query;
+    for (const auto &value : dids) {
+        url_query.addQueryItem(QStringLiteral("dids"), value);
     }
     if (detailed) {
-        query.addQueryItem(QStringLiteral("detailed"), "true");
+        url_query.addQueryItem(QStringLiteral("detailed"), "true");
     }
 
-    get(QStringLiteral("xrpc/app.bsky.labeler.getServices"), query);
+    get(QStringLiteral("xrpc/app.bsky.labeler.getServices"), url_query);
+}
+
+const QList<AtProtocolType::AppBskyLabelerDefs::LabelerView> &
+AppBskyLabelerGetServices::labelerViewList() const
+{
+    return m_labelerViewList;
+}
+
+const QList<AtProtocolType::AppBskyLabelerDefs::LabelerViewDetailed> &
+AppBskyLabelerGetServices::labelerViewDetailedList() const
+{
+    return m_labelerViewDetailedList;
 }
 
 bool AppBskyLabelerGetServices::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
-    if (json_doc.isEmpty()) {
+    if (json_doc.isEmpty() || !json_doc.object().contains("views")) {
         success = false;
     } else {
-        for (const auto &obj : json_doc.object().value("views").toArray()) {
-            AtProtocolType::AppBskyLabelerDefs::LabelerViewDetailed labeler;
-            AtProtocolType::AppBskyLabelerDefs::copyLabelerViewDetailed(obj.toObject(), labeler);
-            m_labelerViewDetails.append(labeler);
+        QString type;
+        for (const auto &value : json_doc.object().value("views").toArray()) {
+            type = json_doc.object().value("views").toObject().value("$type").toString();
+            if (type == QStringLiteral("app.bsky.labeler.defs#labelerView")) {
+                AtProtocolType::AppBskyLabelerDefs::LabelerView data;
+                AtProtocolType::AppBskyLabelerDefs::copyLabelerView(value.toObject(), data);
+                m_labelerViewList.append(data);
+            } else if (type == QStringLiteral("app.bsky.labeler.defs#labelerViewDetailed")) {
+                AtProtocolType::AppBskyLabelerDefs::LabelerViewDetailed data;
+                AtProtocolType::AppBskyLabelerDefs::copyLabelerViewDetailed(value.toObject(), data);
+                m_labelerViewDetailedList.append(data);
+            }
         }
     }
 

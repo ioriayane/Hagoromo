@@ -28,13 +28,13 @@ class FunctionArgument:
                 return f"const QList<QString> &{self._name}"
             if self._type == 'integer':
                 return f"const QList<int> &{self._name}"
-            if self._type == 'integer':
+            if self._type == 'boolean':
                 return f"const QList<bool> &{self._name}"
         if self._type == 'string':
             return f"const QString &{self._name}"
         if self._type == 'integer':
             return f"const int {self._name}"
-        if self._type == 'integer':
+        if self._type == 'boolean':
             return f"const bool {self._name}"
         return ''
 
@@ -829,9 +829,8 @@ class Defs2Struct:
             if variant_obj is not None:
                 self.output_function(namespace, type_name, variant_obj)
 
-    def output_api_class_data(self, namespace: str, items: dict, is_array: bool, key_name: str) -> dict:
+    def output_api_class_data(self, namespace: str, ref: str, var_type: str, key_name: str) -> dict:
         data: dict = {}
-        ref: str = items.get('ref', '')
         (ref_namespace, ref_struct_name) = self.split_ref(ref)
 
         if len(ref_namespace) == 0:
@@ -840,13 +839,13 @@ class Defs2Struct:
         data['parent_info'] = self.inheritance.get(ref, {})
         data['copy_method'] = 'AtProtocolType::%s::copy%s' % (self.to_namespace_style(ref_namespace),
                                                 self.to_struct_style(ref_struct_name), )
-        data['variable_is_obj'] = False
-        data['variable_is_array'] = is_array
-        data['variable_is_union'] = False
+        data['variable_is_obj'] = (var_type == 'obj')
+        data['variable_is_array'] = var_type.startswith('array_')
+        data['variable_is_union'] = (var_type == 'array_union')
         data['variable_key_name'] = key_name
         data['variable_type'] = 'AtProtocolType::%s::%s' % (self.to_namespace_style(ref_namespace),
                                                             self.to_struct_style(ref_struct_name), )
-        if is_array:
+        if var_type.startswith('array_'):
             data['method_getter'] = '%sList' % (ref_struct_name, )
             data['variable_name'] = 'm_%sList' % (ref_struct_name, )
         else:
@@ -856,6 +855,7 @@ class Defs2Struct:
             data['variable_to'] = '.toArray()'
         else:
             data['variable_to'] = '.toObject()'
+        data['union_ref'] = ref
         data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
 
         return data
@@ -964,7 +964,8 @@ class Defs2Struct:
         if obj.get('output') is not None:
             schema = obj.get('output', {}).get('schema', {})
             if schema.get('type', '') == 'ref':
-                item_obj = self.output_api_class_data(namespace, schema, False, '')
+                ref = schema.get('ref', '')
+                item_obj = self.output_api_class_data(namespace, ref, '', '')
                 if len(item_obj) > 0:
                     data['members'] = data.get('members', [])
                     data['members'].append(item_obj)
@@ -978,28 +979,38 @@ class Defs2Struct:
                     if pro_type == 'array':
                         item_type = pro_items.get('type')
                         if item_type == 'ref':
-                            item_obj = self.output_api_class_data(namespace, pro_items, True, key_name)
-                            if len(item_obj) > 0:
-                                data['members'] = data.get('members', [])
-                                data['members'].append(item_obj)
-                                if len(item_obj['parent_info']) > 0:
-                                    parent_class_name = self.to_namespace_style(item_obj['parent_info']['parent_namespace'])
-                                    if parent_class_name != data['class_name']:
-                                        data['is_parent'] = False
-                                        data['has_parent_class'] = True
-                                        data['parent_class_name'] = parent_class_name
-                                        data['include_paths'] = [self.to_header_path(item_obj['parent_info']['parent_namespace'])]
-                                    else:
-                                        data['is_parent'] = True
-                                        data['has_parent_class'] = False
-                                else:
-                                    data['is_parent'] = False
-                                    data['has_parent_class'] = False
-                                data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
-                            else:
-                                print (namespace + ":" + ref_namespace + "," + ref_struct_name + " ??")
+                            var_type = 'array_ref'
+                        elif item_type == 'union':
+                            var_type = 'array_union'
                         else:
+                            var_type = ''
                             print (namespace + ":" + ref_namespace + "," + ref_struct_name + " not ref")
+
+                        if len(var_type) > 0:
+                            refs = pro_items.get('refs', [])
+                            if len(refs) == 0 and 'ref' in pro_items:
+                                refs = [pro_items.get('ref', '')]
+                            for ref in refs:
+                                item_obj = self.output_api_class_data(namespace, ref, var_type, key_name)
+                                if len(item_obj) > 0:
+                                    data['members'] = data.get('members', [])
+                                    data['members'].append(item_obj)
+                                    if len(item_obj['parent_info']) > 0:
+                                        parent_class_name = self.to_namespace_style(item_obj['parent_info']['parent_namespace'])
+                                        if parent_class_name != data['class_name']:
+                                            data['is_parent'] = False
+                                            data['has_parent_class'] = True
+                                            data['parent_class_name'] = parent_class_name
+                                            data['include_paths'] = [self.to_header_path(item_obj['parent_info']['parent_namespace'])]
+                                        else:
+                                            data['is_parent'] = True
+                                            data['has_parent_class'] = False
+                                    else:
+                                        data['is_parent'] = False
+                                        data['has_parent_class'] = False
+                                    data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
+                                else:
+                                    print (namespace + ":" + ref_namespace + "," + ref_struct_name + " ??")
                     elif pro_type == 'string' or pro_type == 'boolean' or pro_type == 'integer' or pro_type == 'unknown':
                         if key_name == 'cursor':
                             data['has_cursor'] = True
@@ -1012,9 +1023,9 @@ class Defs2Struct:
                                 data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
                                 data['has_primitive'] = True
                     elif pro_type == 'ref':
-                        item_obj = self.output_api_class_data(namespace, property_obj, False, key_name)
+                        ref = property_obj.get('ref', '')
+                        item_obj = self.output_api_class_data(namespace, ref, 'obj', key_name)
                         if len(item_obj) > 0:
-                            item_obj['variable_is_obj'] = True
                             data['members'] = data.get('members', [])
                             data['members'].append(item_obj)
                             data['completed'] = True    # 出力先を正式な場所にするための仮フラグ

@@ -184,7 +184,7 @@ void ConfigurableLabels::loadLabelers(const QStringList &dids, std::function<voi
     AppBskyLabelerGetServices *services = new AppBskyLabelerGetServices(this);
     connect(services, &AppBskyLabelerGetServices::finished, [=](bool success) {
         if (success) {
-            for (const auto &labeler : *services->labelerViewDetails()) {
+            for (const auto &labeler : services->labelerViewDetailedList()) {
                 LabelerItem labeler_item;
                 labeler_item.did = labeler.creator.did;
                 labeler_item.handle = labeler.creator.handle;
@@ -217,6 +217,14 @@ void ConfigurableLabels::loadLabelers(const QStringList &dids, std::function<voi
                     label_item.configurable = true;
                     m_labels[labeler_item.did].append(label_item);
                 }
+            }
+            for (const auto &labeler : services->labelerViewList()) {
+                LabelerItem labeler_item;
+                labeler_item.did = labeler.creator.did;
+                labeler_item.handle = labeler.creator.handle;
+                labeler_item.display_name = labeler.creator.displayName;
+                labeler_item.description = labeler.creator.description;
+                m_labelers[labeler.creator.did] = labeler_item;
             }
         }
         callback(success);

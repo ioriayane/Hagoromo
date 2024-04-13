@@ -58,10 +58,12 @@ bool {{ class_name }}::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
     if (json_doc.isEmpty()
+        {%- set ns = namespace(prev_key_name="", pref_is_for=False) -%}
         {% for member in members -%}
-        {% if member.variable_is_array -%}
+        {% if member.variable_is_array and member.variable_key_name != ns.prev_key_name -%}
          || !json_doc.object().contains({%- if is_parent -%}m_listKey{%- else -%}"{{ member.variable_key_name }}"{%- endif -%})
     {% endif -%}
+        {%- set ns.prev_key_name  = member.variable_key_name -%}
     {% endfor -%}
     ) {
         success = false;
@@ -69,17 +71,43 @@ bool {{ class_name }}::parseJson(bool success, const QString reply_json)
         {%if has_cursor -%}
         setCursor(json_doc.object().value("cursor").toString());
         {% endif -%}
-        {%- set ns = namespace(prev_key_name="") -%}
+        {%- set ns.prev_key_name  = "" -%}
         {% for member in members -%}
-        {% if member.variable_is_array -%}
+        {% if member.variable_is_array and member.variable_is_union == True -%}
+            {% if ns.prev_key_name == "" -%}
+        QString type;
+        for (const auto &value : json_doc.object().value({%- if is_parent -%}m_listKey{%- else -%}"{{ member.variable_key_name }}"{%- endif -%}).toArray()) {
+            type = json_doc.object().value("{{ member.variable_key_name }}").toObject().value("$type").toString();
+            {% else -%}
+            else
+            {% endif -%}
+            if (type == QStringLiteral("{{ member.union_ref }}")){
+                {{ member.variable_type }} data;
+                {{ member.copy_method }}(value.toObject(), data);
+                {{ member.variable_name }}.append(data);
+            }
+            {%- set ns.prev_is_for  = True -%}
+        {% elif member.variable_is_array -%}
+            {% if ns.prev_is_for -%}
+                }
+                {%- set ns.prev_is_for  = False -%}
+            {% endif -%}
         for (const auto &value : json_doc.object().value({%- if is_parent -%}m_listKey{%- else -%}"{{ member.variable_key_name }}"{%- endif -%}).toArray()) {
             {{ member.variable_type }} data;
             {{ member.copy_method }}(value.toObject(), data);
             {{ member.variable_name }}.append(data);
         }
         {% elif member.variable_is_obj == True -%}
+            {% if ns.prev_is_for -%}
+                }
+                {%- set ns.prev_is_for  = False -%}
+            {% endif -%}
             {{ member.copy_method }}(json_doc.object().value("{{ member.variable_key_name }}"){{ member.variable_to }}, {{ member.variable_name }});
         {% elif member.variable_is_union == True -%}
+            {% if ns.prev_is_for -%}
+                }
+                {%- set ns.prev_is_for  = False -%}
+            {% endif -%}
             {% if ns.prev_key_name == "" -%}
         QString type;
             {% endif -%}
@@ -91,11 +119,18 @@ bool {{ class_name }}::parseJson(bool success, const QString reply_json)
         if (type == QStringLiteral("{{ member.union_ref }}")){
             {{ member.copy_method }}(json_doc.object().value("{{ member.variable_key_name }}").toObject(), {{ member.variable_name }});
         }
-        {%- set ns.prev_key_name  = member.variable_key_name -%}
         {% else -%}
+            {% if ns.prev_is_for -%}
+                }
+                {%- set ns.prev_is_for  = False -%}
+            {% endif -%}
         {{ member.copy_method }}(json_doc.object(), {{ member.variable_name }});
     {% endif -%}
+        {%- set ns.prev_key_name  = member.variable_key_name -%}
     {% endfor -%}
+    {% if ns.prev_is_for -%}
+        }
+    {% endif -%}
     }
 
     return success;
