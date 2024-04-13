@@ -109,6 +109,7 @@ void copyFeedViewPost(const QJsonObject &src, AppBskyFeedDefs::FeedViewPost &des
 void copyThreadViewPost(const QJsonObject &src, AppBskyFeedDefs::ThreadViewPost &dest);
 void copySkeletonReasonRepost(const QJsonObject &src, AppBskyFeedDefs::SkeletonReasonRepost &dest);
 void copySkeletonFeedPost(const QJsonObject &src, AppBskyFeedDefs::SkeletonFeedPost &dest);
+void copyInteraction(const QJsonObject &src, AppBskyFeedDefs::Interaction &dest);
 }
 // app.bsky.richtext.facet
 namespace AppBskyRichtextFacet {

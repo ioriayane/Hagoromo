@@ -509,6 +509,7 @@ struct GeneratorView
     QList<AppBskyRichtextFacet::Main> descriptionFacets;
     QString avatar; // uri
     int likeCount = 0;
+    bool acceptsInteractions = false;
     QList<ComAtprotoLabelDefs::Label> labels;
     GeneratorViewerState viewer;
     QString indexedAt; // datetime
@@ -586,6 +587,8 @@ struct FeedViewPost
     FeedViewPostReasonType reason_type = FeedViewPostReasonType::none;
     ReasonRepost reason_ReasonRepost;
     // union end : reason
+    QString feedContext; // Context provided by feed generator that may be passed back alongside
+                         // interactions.
 };
 struct ThreadViewPost
 {
@@ -614,6 +617,15 @@ struct SkeletonFeedPost
     SkeletonFeedPostReasonType reason_type = SkeletonFeedPostReasonType::none;
     SkeletonReasonRepost reason_SkeletonReasonRepost;
     // union end : reason
+    QString feedContext; // Context that will be passed through to client and may be passed to feed
+                         // generator back alongside interactions.
+};
+struct Interaction
+{
+    QString item; // at-uri
+    QString event;
+    QString feedContext; // Context on a feed item that was orginally supplied by the feed generator
+                         // on getFeedSkeleton.
 };
 }
 
@@ -682,6 +694,9 @@ struct ViewRecord
     AppBskyActorDefs::ProfileViewBasic author;
     QVariant value; // The record data itself.
     QList<ComAtprotoLabelDefs::Label> labels;
+    int replyCount = 0;
+    int repostCount = 0;
+    int likeCount = 0;
     // union start : embeds
     ViewRecordEmbedsType embeds_type = ViewRecordEmbedsType::none;
     QList<AppBskyEmbedImages::View> embeds_AppBskyEmbedImages_View;
@@ -742,6 +757,8 @@ struct Main
     QString description;
     QList<AppBskyRichtextFacet::Main> descriptionFacets;
     Blob avatar;
+    bool acceptsInteractions = false; // Declaration that a feed accepts feedback interactions from
+                                      // a client through app.bsky.feed.sendInteractions
     // union start : labels
     MainLabelsType labels_type = MainLabelsType::none;
     ComAtprotoLabelDefs::SelfLabels labels_ComAtprotoLabelDefs_SelfLabels; // Self-label values

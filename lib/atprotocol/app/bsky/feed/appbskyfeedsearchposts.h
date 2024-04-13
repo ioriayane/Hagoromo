@@ -10,7 +10,10 @@ class AppBskyFeedSearchPosts : public AppBskyFeedGetPosts
 public:
     explicit AppBskyFeedSearchPosts(QObject *parent = nullptr);
 
-    void searchPosts(const QString &q, const int limit, const QString &cursor);
+    void searchPosts(const QString &q, const QString &sort, const QString &since,
+                     const QString &until, const QString &mentions, const QString &author,
+                     const QString &lang, const QString &domain, const QString &url,
+                     const QList<QString> &tag, const int limit, const QString &cursor);
 };
 
 }

@@ -34,7 +34,9 @@ bool SearchPostListModel::getLatest()
         });
         posts->setAccount(account());
         posts->setLabelers(m_contentFilterLabels.labelerDids());
-        posts->searchPosts(replaceSearchCommand(text()), 10, QString());
+        posts->searchPosts(replaceSearchCommand(text()), QString(), QString(), QString(), QString(),
+                           QString(), QString(), QString(), QString(), QStringList(), 10,
+                           QString());
     });
     return true;
 }
@@ -66,7 +68,8 @@ bool SearchPostListModel::getNext()
 
         posts->setAccount(account());
         posts->setLabelers(m_contentFilterLabels.labelerDids());
-        posts->searchPosts(replaceSearchCommand(text()), 10, m_cursor);
+        posts->searchPosts(replaceSearchCommand(text()), QString(), QString(), QString(), QString(),
+                           QString(), QString(), QString(), QString(), QStringList(), 10, m_cursor);
     });
     return true;
 }

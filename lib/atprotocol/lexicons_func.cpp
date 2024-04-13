@@ -518,6 +518,9 @@ void copyViewRecord(const QJsonObject &src, AppBskyEmbedRecord::ViewRecord &dest
             ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
             dest.labels.append(child);
         }
+        dest.replyCount = src.value("replyCount").toInt();
+        dest.repostCount = src.value("repostCount").toInt();
+        dest.likeCount = src.value("likeCount").toInt();
         // array<union> embeds
         for (const auto &value : src.value("embeds").toArray()) {
             QString value_type = value.toObject().value("$type").toString();
@@ -685,6 +688,7 @@ void copyGeneratorView(const QJsonObject &src, AppBskyFeedDefs::GeneratorView &d
         }
         dest.avatar = src.value("avatar").toString();
         dest.likeCount = src.value("likeCount").toInt();
+        dest.acceptsInteractions = src.value("acceptsInteractions").toBool();
         for (const auto &s : src.value("labels").toArray()) {
             ComAtprotoLabelDefs::Label child;
             ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
@@ -827,6 +831,7 @@ void copyFeedViewPost(const QJsonObject &src, AppBskyFeedDefs::FeedViewPost &des
             AppBskyFeedDefs::copyReasonRepost(src.value("reason").toObject(),
                                               dest.reason_ReasonRepost);
         }
+        dest.feedContext = src.value("feedContext").toString();
     }
 }
 void copyThreadViewPost(const QJsonObject &src, AppBskyFeedDefs::ThreadViewPost &dest)
@@ -899,6 +904,15 @@ void copySkeletonFeedPost(const QJsonObject &src, AppBskyFeedDefs::SkeletonFeedP
             AppBskyFeedDefs::copySkeletonReasonRepost(src.value("reason").toObject(),
                                                       dest.reason_SkeletonReasonRepost);
         }
+        dest.feedContext = src.value("feedContext").toString();
+    }
+}
+void copyInteraction(const QJsonObject &src, AppBskyFeedDefs::Interaction &dest)
+{
+    if (!src.isEmpty()) {
+        dest.item = src.value("item").toString();
+        dest.event = src.value("event").toString();
+        dest.feedContext = src.value("feedContext").toString();
     }
 }
 }
@@ -1048,6 +1062,7 @@ void copyMain(const QJsonObject &src, AppBskyFeedGenerator::Main &dest)
             dest.descriptionFacets.append(child);
         }
         LexiconsTypeUnknown::copyBlob(src.value("avatar").toObject(), dest.avatar);
+        dest.acceptsInteractions = src.value("acceptsInteractions").toBool();
         QString labels_type = src.value("labels").toObject().value("$type").toString();
         if (labels_type == QStringLiteral("com.atproto.label.defs#selfLabels")) {
             dest.labels_type =

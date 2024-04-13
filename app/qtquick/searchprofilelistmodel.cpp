@@ -32,7 +32,7 @@ bool SearchProfileListModel::getSuggestion(const QString &q, int limit)
         profiles->deleteLater();
     });
     profiles->setAccount(account());
-    profiles->searchActorsTypeahead(q, limit);
+    profiles->searchActorsTypeahead(q, QString(), limit);
     return true;
 }
 
