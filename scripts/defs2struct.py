@@ -119,11 +119,41 @@ class Defs2Struct:
             'com.atproto.admin.',
             'com.atproto.identity.',
             'com.atproto.label.',
+            'com.atproto.moderation.',
+            'com.atproto.repo.applyWrites',
+            'com.atproto.repo.createRecord',
+            'com.atproto.repo.deleteRecord',
             'com.atproto.repo.describeRepo',
+            'com.atproto.repo.importRepo',
+            'com.atproto.repo.putRecord',
+            'com.atproto.repo.uploadBlob',
             'com.atproto.repo.getRecord',
             'com.atproto.repo.listMissingBlobs',
             'com.atproto.repo.listRecords',
-            'com.atproto.server.',
+            'com.atproto.server.activateAccount',
+            'com.atproto.server.checkAccountStatus',
+            'com.atproto.server.confirmEmail',
+            'com.atproto.server.createAccount',
+            'com.atproto.server.createAppPassword',
+            'com.atproto.server.createInviteCode',
+            'com.atproto.server.createInviteCodes',
+            'com.atproto.server.deactivateAccount',
+            'com.atproto.server.deleteAccount',
+            'com.atproto.server.deleteSession',
+            'com.atproto.server.describeServer',
+            'com.atproto.server.getAccountInviteCodes',
+            'com.atproto.server.getServiceAuth',
+            'com.atproto.server.getSession',
+            'com.atproto.server.listAppPasswords',
+            'com.atproto.server.refreshSession',
+            'com.atproto.server.requestAccountDelete',
+            'com.atproto.server.requestEmailConfirmation',
+            'com.atproto.server.requestEmailUpdate',
+            'com.atproto.server.requestPasswordReset',
+            'com.atproto.server.reserveSigningKey',
+            'com.atproto.server.resetPassword',
+            'com.atproto.server.revokeAppPassword',
+            'com.atproto.server.updateEmail',
             'com.atproto.sync.getHead',
             'com.atproto.sync.getLatestCommit',
             'com.atproto.sync.listBlobs',
@@ -141,6 +171,7 @@ class Defs2Struct:
             'app.bsky.actor.getSuggestions'
         ]
         self.unuse_auth = [
+            'com.atproto.server.createSession',
             'com.atproto.sync.getBlob',
         ]
 
@@ -903,7 +934,10 @@ class Defs2Struct:
         else:
             data['method_getter'] = '%s' % (key_name, )
             data['variable_name'] = 'm_%s' % (key_name, )
-            data['variable_to'] = ''
+            if pro_type == 'unknown':
+                data['variable_to'] = '.toObject()'
+            else:
+                data['variable_to'] = ''
         data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
         return data
 
@@ -1101,8 +1135,12 @@ class Defs2Struct:
             data['has_primitive'] = data.get('has_primitive', False)
             data['has_parent_class'] = data.get('has_parent_class', False)
             data['completed'] = data.get('completed', False)
+            data['my_include_path'] = self.to_header_path(namespace)
             if data.get('access_type', '') == 'post':
-                data['completed'] = False
+                data['need_extension'] = True
+            #     data['completed'] = False
+            else:
+                data['need_extension'] = False
             self.api_class[namespace] = data
 
 
@@ -1187,6 +1225,28 @@ class Defs2Struct:
 
             with open(os.path.join(output_folder, value['file_name_lower'] + '.cpp'), 'w', encoding='utf-8') as fp:
                 fp.write(template.render(value))
+
+
+        template = environment.get_template('template/api_class_ex.h.j2')
+        for namespace, value in self.api_class.items():
+            if not value['need_extension']:
+                continue
+            output_folder = os.path.join(os.path.dirname(__file__), 'out_ex', '/'.join(namespace.split('.')[:-1]))
+            os.makedirs(output_folder, exist_ok=True)
+
+            with open(os.path.join(output_folder, value['file_name_lower'] + 'ex.h'), 'w', encoding='utf-8') as fp:
+                fp.write(template.render(value))
+
+        template = environment.get_template('template/api_class_ex.cpp.j2')
+        for namespace, value in self.api_class.items():
+            if not value['need_extension']:
+                continue
+            output_folder = os.path.join(os.path.dirname(__file__), 'out_ex', '/'.join(namespace.split('.')[:-1]))
+
+            with open(os.path.join(output_folder, value['file_name_lower'] + 'ex.cpp'), 'w', encoding='utf-8') as fp:
+                fp.write(template.render(value))
+
+
 
     def output(self, output_path: str) -> None:
         # 各ファイル（名前空間）ごとに解析する

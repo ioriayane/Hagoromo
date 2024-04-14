@@ -1,0 +1,20 @@
+#ifndef {{ file_name_upper }}EX_H
+#define {{ file_name_upper }}EX_H
+
+#include "{{ my_include_path }}"
+
+namespace AtProtocolInterface {
+
+class {{ class_name }}Ex : public {{ class_name }}
+{
+public:
+    explicit {{ class_name }}Ex(QObject *parent = nullptr);
+
+private:
+    virtual bool parseJson(bool success, const QString reply_json);
+
+};
+
+}
+
+#endif // {{ file_name_upper }}EX_H

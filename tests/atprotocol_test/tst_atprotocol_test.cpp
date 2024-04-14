@@ -20,7 +20,7 @@
 #include "atprotocol/com/atproto/repo/comatprotorepocreaterecord.h"
 #include "atprotocol/com/atproto/repo/comatprotorepogetrecord.h"
 #include "atprotocol/com/atproto/repo/comatprotorepoputrecord.h"
-#include "atprotocol/com/atproto/server/comatprotoservercreatesession.h"
+#include "extension/com/atproto/server/comatprotoservercreatesessionex.h"
 #include "tools/opengraphprotocol.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "tools/configurablelabels.h"
@@ -133,12 +133,12 @@ void atprotocol_test::cleanupTestCase() { }
 
 void atprotocol_test::test_ComAtprotoServerCreateSession()
 {
-    AtProtocolInterface::ComAtprotoServerCreateSession session;
+    AtProtocolInterface::ComAtprotoServerCreateSessionEx session;
     session.setService(m_service);
 
     {
         QSignalSpy spy(&session, SIGNAL(finished(bool)));
-        session.create("hoge", "fuga");
+        session.createSession("hoge", "fuga");
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
         QList<QVariant> arguments = spy.takeFirst();
@@ -154,11 +154,17 @@ void atprotocol_test::test_ComAtprotoServerCreateSession()
     // 後ろのテストで使うアカウント情報
     m_account = session.account();
 
+    QVERIFY(m_account.did == "did:plc:ipj5qejfoqu6eukvt72uhyit");
+    QVERIFY(m_account.handle == "ioriayane.relog.tech");
+    QVERIFY(m_account.email == "iori.ayane@gmail.com");
+    QVERIFY(m_account.accessJwt == "hoge hoge accessJwt");
+    QVERIFY(m_account.refreshJwt == "hoge hoge refreshJwt");
+
     session.setService(m_service + "/limit");
 
     {
         QSignalSpy spy(&session, SIGNAL(finished(bool)));
-        session.create("hoge", "fuga");
+        session.createSession("hoge", "fuga");
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
         QList<QVariant> arguments = spy.takeFirst();
@@ -1561,12 +1567,12 @@ void atprotocol_test::test_AppBskyFeedGetFeedGenerator()
 
 void atprotocol_test::test_ServiceUrl()
 {
-    AtProtocolInterface::ComAtprotoServerCreateSession session;
+    AtProtocolInterface::ComAtprotoServerCreateSessionEx session;
     session.setService(m_service + "/");
 
     {
         QSignalSpy spy(&session, SIGNAL(finished(bool)));
-        session.create("hoge", "fuga");
+        session.createSession("hoge", "fuga");
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
         QList<QVariant> arguments = spy.takeFirst();

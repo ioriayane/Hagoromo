@@ -52,6 +52,7 @@ SOURCES += \
     $$PWD/atprotocol/com/atproto/sync/comatprotosyncgetblob.cpp \
     $$PWD/atprotocol/lexicons_func.cpp \
     $$PWD/atprotocol/lexicons_func_unknown.cpp \
+    $$PWD/extension/com/atproto/server/comatprotoservercreatesessionex.cpp \
     $$PWD/http/httpaccess.cpp \
     $$PWD/http/httpaccessmanager.cpp \
     $$PWD/http/httpreply.cpp \
@@ -110,6 +111,7 @@ HEADERS += \
     $$PWD/atprotocol/lexicons.h \
     $$PWD/atprotocol/lexicons_func.h \
     $$PWD/atprotocol/lexicons_func_unknown.h \
+    $$PWD/extension/com/atproto/server/comatprotoservercreatesessionex.h \
     $$PWD/http/httpaccess.h \
     $$PWD/http/httpaccessmanager.h \
     $$PWD/http/httpreply.h \
