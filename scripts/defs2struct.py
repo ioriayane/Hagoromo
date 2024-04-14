@@ -38,28 +38,56 @@ class FunctionArgument:
             arg_def = f"const int {self._name}"
         elif self._type == 'boolean':
             arg_def = f"const bool {self._name}"
+        elif self._type == 'unknown':
+            arg_def = f"const QJsonObject &{self._name}"
         return arg_def
 
     def to_string_query(self) -> str:
         """ クエリの作成 """
-        msg: str = ''
+        query: str = ''
         if self._is_array:
-            msg  = f"for (const auto &value : {self._name})" + "{\n"
-            msg += f"url_query.addQueryItem(QStringLiteral(\"{self._name}\"), value);\n"
-            msg += "}\n"
+            query  = f"for (const auto &value : {self._name})" + "{\n"
+            query += f"url_query.addQueryItem(QStringLiteral(\"{self._name}\"), value);\n"
+            query += "}\n"
         elif self._type == 'string':
-            msg  = f"if(!{self._name}.isEmpty())" + "{\n"
-            msg += f"url_query.addQueryItem(QStringLiteral(\"{self._name}\"), {self._name});\n"
-            msg += "}\n"
+            query  = f"if(!{self._name}.isEmpty())" + "{\n"
+            query += f"url_query.addQueryItem(QStringLiteral(\"{self._name}\"), {self._name});\n"
+            query += "}\n"
         elif self._type == 'integer':
-            msg  = f"if({self._name} > 0)" + "{\n"
-            msg += f"url_query.addQueryItem(QStringLiteral(\"{self._name}\"), QString::number({self._name}));\n"
-            msg += "}\n"
+            query  = f"if({self._name} > 0)" + "{\n"
+            query += f"url_query.addQueryItem(QStringLiteral(\"{self._name}\"), QString::number({self._name}));\n"
+            query += "}\n"
         elif self._type == 'boolean':
-            msg  = f"if({self._name})" + "{\n"
-            msg += f"url_query.addQueryItem(QStringLiteral(\"{self._name}\"), \"true\");\n"
-            msg += "}\n"
-        return msg
+            query  = f"if({self._name})" + "{\n"
+            query += f"url_query.addQueryItem(QStringLiteral(\"{self._name}\"), \"true\");\n"
+            query += "}\n"
+        return query
+
+    def to_string_payload(self) -> str:
+        """ postのデータ """
+        payload: str = ''
+        if self._is_array:
+            payload  = f"for (const auto &value : {self._name})" + "{\n"
+            payload += f"url_query.addQueryItem(QStringLiteral(\"{self._name}\"), value);\n"
+            payload += "}\n"
+        elif self._type == 'string':
+            payload  = f"if(!{self._name}.isEmpty())" + "{\n"
+            payload += f"json_obj.insert(QStringLiteral(\"{self._name}\"), {self._name});\n"
+            payload += "}\n"
+        elif self._type == 'integer':
+            payload  = f"if({self._name} > 0)" + "{\n"
+            payload += f"json_obj.insert(QStringLiteral(\"{self._name}\"), QString::number({self._name}));\n"
+            payload += "}\n"
+        elif self._type == 'boolean':
+            # payload  = f"if({self._name})" + "{\n"
+            payload += f"json_obj.insert(QStringLiteral(\"{self._name}\"), {self._name});\n"
+            # payload += "}\n"
+        elif self._type == 'unknown':
+            payload  = f"if(!{self._name}.isEmpty())" + "{\n"
+            payload += f"json_obj.insert(QStringLiteral(\"{self._name}\"), {self._name});\n"
+            payload += "}\n"
+        return payload
+
 
 class Defs2Struct:
     """ lexiconの定義から構造体などを生成 """
@@ -1011,12 +1039,15 @@ class Defs2Struct:
 
             args: list[str] = []
             query: list[str] = []
+            payload: list[str] = []
             for argument in arguments:
                 args.append(argument.to_string_arg())
                 query.append(argument.to_string_query())
+                payload.append(argument.to_string_payload())
 
             data['method_args'] = ','.join(args)
             data['method_query'] = ''.join(query)
+            data['method_payload'] = ''.join(payload)
             data['api_id'] = namespace
 
         if obj.get('output') is not None:

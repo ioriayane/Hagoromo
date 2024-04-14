@@ -15,7 +15,18 @@ ComAtprotoServerCreateSession::ComAtprotoServerCreateSession(QObject *parent)
 void ComAtprotoServerCreateSession::createSession(const QString &identifier,
                                                   const QString &password)
 {
-    post(QStringLiteral("xrpc/com.atproto.server.createSession"), QByteArray(), false);
+    QJsonObject json_obj;
+    if (!identifier.isEmpty()) {
+        json_obj.insert(QStringLiteral("identifier"), identifier);
+    }
+    if (!password.isEmpty()) {
+        json_obj.insert(QStringLiteral("password"), password);
+    }
+
+    QJsonDocument json_doc(json_obj);
+
+    post(QStringLiteral("xrpc/com.atproto.server.createSession"),
+         json_doc.toJson(QJsonDocument::Compact), false);
 }
 
 const QString &ComAtprotoServerCreateSession::accessJwt() const
