@@ -115,31 +115,34 @@ class Defs2Struct:
             }
 
         self.skip_api_class_id = [
-                'tools.ozone.',
-                'com.atproto.admin.',
-                'com.atproto.identity.',
-                'com.atproto.label.',
-                'com.atproto.repo.describeRepo',
-                'com.atproto.repo.getRecord',
-                'com.atproto.repo.listMissingBlobs',
-                'com.atproto.repo.listRecords',
-                'com.atproto.server.',
-                'com.atproto.sync.getHead',
-                'com.atproto.sync.getLatestCommit',
-                'com.atproto.sync.listBlobs',
-                'com.atproto.sync.listRepos',
-                'com.atproto.temp.',
-                'app.bsky.unspecced.searchPostsSkeleton',
-                'app.bsky.unspecced.searchActorsSkeleton',
-                'app.bsky.unspecced.getTaggedSuggestions',
-                'app.bsky.notification.getUnreadCount',
-                'app.bsky.graph.getSuggestedFollowsByActor',
-                'app.bsky.graph.getRelationships',
-                'app.bsky.feed.getSuggestedFeeds',
-                'app.bsky.feed.getFeedSkeleton',
-                'app.bsky.feed.describeFeedGenerator',
-                'app.bsky.actor.getSuggestions'
-            ]
+            'tools.ozone.',
+            'com.atproto.admin.',
+            'com.atproto.identity.',
+            'com.atproto.label.',
+            'com.atproto.repo.describeRepo',
+            'com.atproto.repo.getRecord',
+            'com.atproto.repo.listMissingBlobs',
+            'com.atproto.repo.listRecords',
+            'com.atproto.server.',
+            'com.atproto.sync.getHead',
+            'com.atproto.sync.getLatestCommit',
+            'com.atproto.sync.listBlobs',
+            'com.atproto.sync.listRepos',
+            'com.atproto.temp.',
+            'app.bsky.unspecced.searchPostsSkeleton',
+            'app.bsky.unspecced.searchActorsSkeleton',
+            'app.bsky.unspecced.getTaggedSuggestions',
+            'app.bsky.notification.getUnreadCount',
+            'app.bsky.graph.getSuggestedFollowsByActor',
+            'app.bsky.graph.getRelationships',
+            'app.bsky.feed.getSuggestedFeeds',
+            'app.bsky.feed.getFeedSkeleton',
+            'app.bsky.feed.describeFeedGenerator',
+            'app.bsky.actor.getSuggestions'
+        ]
+        self.unuse_auth = [
+            'com.atproto.sync.getBlob',
+        ]
 
     def skip_spi_class(self, namespace: str) -> bool:
         for class_id in self.skip_api_class_id:
@@ -887,6 +890,9 @@ class Defs2Struct:
         elif pro_type == 'blob':
             data['copy_method'] = 'AtProtocolType::LexiconsTypeUnknown::copyBlob'
             data['variable_type'] = 'Blob'
+        elif pro_type == 'byte_array':
+            data['copy_method'] = 'AtProtocolType::LexiconsTypeUnknown::copyByteArray'
+            data['variable_type'] = 'QByteArray'
         elif pro_type == 'unknown':
             data['copy_method'] = 'AtProtocolType::LexiconsTypeUnknown::copyUnknown'
             data['variable_type'] = 'QVariant'
@@ -937,6 +943,7 @@ class Defs2Struct:
             data['class_name'] = self.to_namespace_style(namespace)
             data['parent_class_name'] = 'AccessAtProtocol'
             data['include_paths'] = ['atprotocol/accessatprotocol.h']
+            data['user_auth'] = (namespace not in self.unuse_auth)
             arguments: list[FunctionArgument] = []
             if obj.get('type') == 'query':
                 # query
@@ -980,7 +987,24 @@ class Defs2Struct:
 
         if obj.get('output') is not None:
             schema = obj.get('output', {}).get('schema', {})
-            if schema.get('type', '') == 'ref':
+            encoding = obj.get('output', {}).get('encoding', {})
+            if encoding == '*/*':
+                variables = (('byte_array', 'blobData', ), ('string', 'extension', ), )
+                for variable in variables:
+                    item_obj = self.output_api_class_data_primitive(variable[0], variable[1])
+                    if len(item_obj) > 0:
+                        item_obj['variable_is_obj'] = True
+                        data['members'] = data.get('members', [])
+                        data['members'].append(item_obj)
+                        data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
+                        data['has_primitive'] = True
+                data['recv_image'] = True
+
+            elif encoding == 'application/vnd.ipld.car':
+                pass
+            elif encoding != 'application/json':
+                pass
+            elif schema.get('type', '') == 'ref':
                 ref = schema.get('ref', '')
                 item_obj = self.output_api_class_data(namespace, ref, '', '')
                 if len(item_obj) > 0:
@@ -1073,6 +1097,7 @@ class Defs2Struct:
                         print (namespace + ":" + ref_namespace + "," + ref_struct_name + " not array")
 
         if len(data) > 0:
+            data['recv_image'] = data.get('recv_image', False)
             data['has_primitive'] = data.get('has_primitive', False)
             data['has_parent_class'] = data.get('has_parent_class', False)
             data['completed'] = data.get('completed', False)

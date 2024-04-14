@@ -33,9 +33,9 @@ void {{ class_name }}::{{ method_name }}({{ method_args }})
     QUrlQuery url_query;
 {{ method_query }}
 
-    get(QStringLiteral("xrpc/{{ api_id }}"), url_query);
+    get(QStringLiteral("xrpc/{{ api_id }}"), url_query{%- if user_auth == False -%}, false{%- endif -%});
 {% else %}
-    post(QStringLiteral("xrpc/{{ api_id }}"), QByteArray(), true);
+    post(QStringLiteral("xrpc/{{ api_id }}"), QByteArray(){%- if user_auth == False -%}, false{%- endif -%});
 {% endif -%}
 }
 
@@ -54,6 +54,26 @@ const {{ member.variable_type }} &{{ class_name }}::{{ member.method_getter }}()
 {% endif -%}
 {% endfor %}
 
+{% if recv_image -%}
+bool ComAtprotoSyncGetBlob::parseJson(bool success, const QString reply_json)
+{
+    Q_UNUSED(success)
+    Q_UNUSED(reply_json)
+    return false;
+}
+
+bool ComAtprotoSyncGetBlob::recvImage(const QByteArray &data, const QString &content_type)
+{
+    m_blobData = data;
+
+    QStringList items = content_type.split("/");
+    if (items.length() == 2) {
+        m_extension = items.last();
+    }
+
+    return true;
+}
+{% else -%}
 bool {{ class_name }}::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
@@ -135,5 +155,6 @@ bool {{ class_name }}::parseJson(bool success, const QString reply_json)
 
     return success;
 }
+{% endif -%}
 {% endif %}
 }

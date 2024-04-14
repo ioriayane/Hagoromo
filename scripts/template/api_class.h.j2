@@ -32,6 +32,9 @@ protected:
 {% if has_parent_class == False -%}
 private:
     virtual bool parseJson(bool success, const QString reply_json);
+{% if recv_image -%}
+    virtual bool recvImage(const QByteArray &data, const QString &content_type);
+{% endif %}
 
 {% for member in members -%}
     {% if member.variable_is_array -%}
