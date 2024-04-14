@@ -1,0 +1,26 @@
+{
+    "mutes": [
+        {
+            "did": "did:plc:l4fsx4ujos7uw7n4ijq2ulgs",
+            "handle": "ioriayane.bsky.social",
+            "displayName": "",
+            "viewer": {
+                "muted": true,
+                "blockedBy": false,
+                "following": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.follow/3k5u735ydrb2p",
+                "followedBy": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.graph.follow/3km57slkrvu2v"
+            },
+            "labels": [
+                {
+                    "src": "did:plc:l4fsx4ujos7uw7n4ijq2ulgs",
+                    "uri": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.actor.profile/self",
+                    "cid": "bafyreiho75b4tbqmhvvbpbnpb75z6kvcy4ywaq564nfaeu5yqxucppopxq",
+                    "val": "!no-unauthenticated",
+                    "cts": "1970-01-01T00:00:00.000Z"
+                }
+            ],
+            "description": "@ioriayane.relog.tech のテスト用のサブアカウントです。\nhttps://github.com/ioriayane/Hagoromo/blob/main/README.md#%E6%A6%82%E8%A6%81",
+            "indexedAt": "2024-01-26T00:40:49.892Z"
+        }
+    ]
+}

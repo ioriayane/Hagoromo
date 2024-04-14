@@ -3,12 +3,24 @@
 #include <QTemporaryFile>
 
 #include "webserver.h"
-#include "atprotocol/com/atproto/server/comatprotoservercreatesession.h"
-#include "atprotocol/com/atproto/repo/comatprotorepocreaterecord.h"
+#include "atprotocol/app/bsky/actor/appbskyactorsearchactorstypeahead.h"
+#include "atprotocol/app/bsky/feed/appbskyfeedgetactorfeeds.h"
+#include "atprotocol/app/bsky/feed/appbskyfeedgetactorlikes.h"
+#include "atprotocol/app/bsky/feed/appbskyfeedgetauthorfeed.h"
+#include "atprotocol/app/bsky/feed/appbskyfeedgetfeed.h"
 #include "atprotocol/app/bsky/feed/appbskyfeedgettimeline.h"
 #include "atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerator.h"
+#include "atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerators.h"
+#include "atprotocol/app/bsky/graph/appbskygraphgetblocks.h"
+#include "atprotocol/app/bsky/graph/appbskygraphgetfollowers.h"
+#include "atprotocol/app/bsky/graph/appbskygraphgetfollows.h"
+#include "atprotocol/app/bsky/graph/appbskygraphgetlistmutes.h"
+#include "atprotocol/app/bsky/graph/appbskygraphgetlistblocks.h"
+#include "atprotocol/app/bsky/graph/appbskygraphgetmutes.h"
+#include "atprotocol/com/atproto/repo/comatprotorepocreaterecord.h"
 #include "atprotocol/com/atproto/repo/comatprotorepogetrecord.h"
 #include "atprotocol/com/atproto/repo/comatprotorepoputrecord.h"
+#include "atprotocol/com/atproto/server/comatprotoservercreatesession.h"
 #include "tools/opengraphprotocol.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "tools/configurablelabels.h"
@@ -46,6 +58,19 @@ private slots:
     void test_ComAtprotoRepoPutRecord_profile();
     void test_ListItemsCache();
     void test_checkPartialMatchLanguage();
+
+    void test_AppBskyActorSearchActorsTypeahead();
+    void test_AppBskyFeedGetActorFeeds();
+    void test_AppBskyFeedGetActorLikes();
+    void test_AppBskyFeedGetAuthorFeed();
+    void test_AppBskyFeedGetFeed();
+    void test_AppBskyFeedGetFeedGenerators();
+    void test_AppBskyGraphGetBlocks();
+    void test_AppBskyGraphGetFollowers();
+    void test_AppBskyGraphGetFollows();
+    void test_AppBskyGraphGetListMutes();
+    void test_AppBskyGraphGetListBlocks();
+    void test_AppBskyGraphGetMutes();
 
 private:
     void test_putPreferences(const QString &path, const QByteArray &body);
@@ -1790,6 +1815,290 @@ void atprotocol_test::test_checkPartialMatchLanguage()
     QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "de") == false);
     QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList() << "") == false);
     QVERIFY(LexiconsTypeUnknown::checkPartialMatchLanguage(QStringList()) == false);
+}
+
+void atprotocol_test::test_AppBskyActorSearchActorsTypeahead()
+{
+    AtProtocolInterface::AppBskyActorSearchActorsTypeahead api;
+    m_account.did = "did:plc:mqxsuw5b5rhpwo4lw6iwlid5";
+    api.setAccount(m_account);
+    api.setService(QString("http://localhost:%1/response").arg(m_listenPort));
+
+    {
+        QSignalSpy spy(&api, SIGNAL(finished(bool)));
+        api.searchActorsTypeahead("hoge", "", 0);
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+
+    QVERIFY(api.profileViewList().count() == 2);
+    QVERIFY(api.profileViewList().at(0).did == "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
+    QVERIFY(api.profileViewList().at(1).did == "did:plc:ipj5qejfoqu6eukvt72uhyit");
+}
+
+void atprotocol_test::test_AppBskyFeedGetActorFeeds()
+{
+    AtProtocolInterface::AppBskyFeedGetActorFeeds api;
+
+    m_account.did = "did:plc:mqxsuw5b5rhpwo4lw6iwlid5";
+    api.setAccount(m_account);
+    api.setService(QString("http://localhost:%1/response").arg(m_listenPort));
+
+    {
+        QSignalSpy spy(&api, SIGNAL(finished(bool)));
+        api.getActorFeeds("", 0, QString());
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+
+    QVERIFY(api.generatorViewList().count() == 2);
+    QVERIFY(api.generatorViewList().at(0).cid
+            == "bafyreifiwk54etwnvf276ibod6agn4tl6off4ddxpj5qxgj6vqtm7mi6hy");
+    QVERIFY(api.generatorViewList().at(1).cid
+            == "bafyreifnih4vdr3nmwg3nsdkaamb6wnvwgo44v6qi73uxxugele65wswgi");
+}
+
+void atprotocol_test::test_AppBskyFeedGetActorLikes()
+{
+    AtProtocolInterface::AppBskyFeedGetActorLikes api;
+    m_account.did = "did:plc:mqxsuw5b5rhpwo4lw6iwlid5";
+    api.setAccount(m_account);
+    api.setService(QString("http://localhost:%1/response").arg(m_listenPort));
+
+    {
+        QSignalSpy spy(&api, SIGNAL(finished(bool)));
+        api.getActorLikes("", 0, QString());
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+
+    QVERIFY(api.feedViewPostList().count() == 1);
+    QVERIFY(api.feedViewPostList().at(0).post.cid
+            == "bafyreigkj2ljajuvh5yg4dxnaduxslxftfvbyshdaastjx6iacjuarmxka");
+}
+
+void atprotocol_test::test_AppBskyFeedGetAuthorFeed()
+{
+    AtProtocolInterface::AppBskyFeedGetAuthorFeed api;
+    m_account.did = "did:plc:mqxsuw5b5rhpwo4lw6iwlid5";
+    api.setAccount(m_account);
+    api.setService(QString("http://localhost:%1/response").arg(m_listenPort));
+
+    {
+        QSignalSpy spy(&api, SIGNAL(finished(bool)));
+        api.getAuthorFeed("", 0, QString(), QString());
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+
+    QVERIFY(api.feedViewPostList().count() == 3);
+    QVERIFY(api.feedViewPostList().at(0).post.cid
+            == "bafyreifkt2ejac2rxsj6j3lvslvh6m3pvpcq5l4y5zmisops7hq2g4y5n4");
+    QVERIFY(api.feedViewPostList().at(1).post.cid
+            == "bafyreicdy6ddnhqbhxmzhsyvwxsdqx3zeaybdud5tzl3mnwe3zehaysmei");
+    QVERIFY(api.feedViewPostList().at(1).reply.root_PostView.cid
+            == "bafyreiad5kukibhklryendcsnzfbmqknqzxogwp67vorehabwryizs7to4");
+    QVERIFY(api.feedViewPostList().at(1).reply.parent_PostView.cid
+            == "bafyreiad5kukibhklryendcsnzfbmqknqzxogwp67vorehabwryizs7to4");
+    QVERIFY(api.feedViewPostList().at(2).post.cid
+            == "bafyreibl6vp7vczey2fxae5gqw2xfhb4cmnd6lcez4d6hlbrll3p6fg4o4");
+}
+
+void atprotocol_test::test_AppBskyFeedGetFeed()
+{
+    AtProtocolInterface::AppBskyFeedGetFeed api;
+    m_account.did = "did:plc:mqxsuw5b5rhpwo4lw6iwlid5";
+    api.setAccount(m_account);
+    api.setService(QString("http://localhost:%1/response").arg(m_listenPort));
+
+    {
+        QSignalSpy spy(&api, SIGNAL(finished(bool)));
+        api.getFeed("", 0, QString());
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+
+    QVERIFY(api.feedViewPostList().count() == 6);
+    QVERIFY(api.feedViewPostList().at(0).post.cid
+            == "bafyreidmnkhb3ls2t5jog774uncafb5zkzzyjffgs2pd7b2425wqshl2am");
+    QVERIFY(api.feedViewPostList().at(1).post.cid
+            == "bafyreibaqfe5nk4dbr5zcdjqlz6n32gungxhx5skk552n57dquhq4zvw7e");
+    QVERIFY(api.feedViewPostList().at(2).post.cid
+            == "bafyreihq26lx4cgiimgqoj6xekcilnmgzjxiogryaawprk262iqq3ws4vy");
+    QVERIFY(api.feedViewPostList().at(3).post.cid
+            == "bafyreicm2xpzq3aysgnypi7mjtihsptcomqj3ic6ryiq2qsgb2vdfnx6um");
+    QVERIFY(api.feedViewPostList().at(4).post.cid
+            == "bafyreiarsieqm27cswgla3b6z3ywvtpmozhdp67jenl4vz4whpyyqrqzbu");
+    QVERIFY(api.feedViewPostList().at(5).post.cid
+            == "bafyreiabnzvhd6ut7qcsjvofqq62hkicg2swfsn6ftcgfzpakxorwlyt4y");
+}
+
+void atprotocol_test::test_AppBskyFeedGetFeedGenerators()
+{
+    AtProtocolInterface::AppBskyFeedGetFeedGenerators api;
+    m_account.did = "did:plc:mqxsuw5b5rhpwo4lw6iwlid5";
+    api.setAccount(m_account);
+    api.setService(QString("http://localhost:%1/response").arg(m_listenPort));
+
+    {
+        QSignalSpy spy(&api, SIGNAL(finished(bool)));
+        api.getFeedGenerators(QStringList() << "");
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+
+    QVERIFY(api.generatorViewList().count() == 3);
+    QVERIFY(api.generatorViewList().at(0).cid
+            == "bafyreibffkfh5lnndhpmginso7txws4cmqcjrubb3dtfnnwqt2lyrydkua");
+    QVERIFY(api.generatorViewList().at(1).cid
+            == "bafyreifiwk54etwnvf276ibod6agn4tl6off4ddxpj5qxgj6vqtm7mi6hy");
+    QVERIFY(api.generatorViewList().at(2).cid
+            == "bafyreifnih4vdr3nmwg3nsdkaamb6wnvwgo44v6qi73uxxugele65wswgi");
+}
+
+void atprotocol_test::test_AppBskyGraphGetBlocks()
+{
+    AtProtocolInterface::AppBskyGraphGetBlocks api;
+    m_account.did = "did:plc:mqxsuw5b5rhpwo4lw6iwlid5";
+    api.setAccount(m_account);
+    api.setService(QString("http://localhost:%1/response").arg(m_listenPort));
+
+    {
+        QSignalSpy spy(&api, SIGNAL(finished(bool)));
+        api.getBlocks(0, QString());
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+
+    QVERIFY(api.profileViewList().count() == 1);
+    QVERIFY(api.profileViewList().at(0).did == "did:plc:blocked_user_did");
+}
+
+void atprotocol_test::test_AppBskyGraphGetFollowers()
+{
+    AtProtocolInterface::AppBskyGraphGetFollowers api;
+    m_account.did = "did:plc:mqxsuw5b5rhpwo4lw6iwlid5";
+    api.setAccount(m_account);
+    api.setService(QString("http://localhost:%1/response").arg(m_listenPort));
+
+    {
+        QSignalSpy spy(&api, SIGNAL(finished(bool)));
+        api.getFollowers("", 0, QString());
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+
+    QVERIFY(api.profileViewList().count() == 2);
+    QVERIFY(api.profileViewList().at(0).did == "did:plc:73l5atmh7p3fn3xigbp6ao5x");
+    QVERIFY(api.profileViewList().at(1).did == "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
+
+    QVERIFY(api.profileView().did == "did:plc:l4fsx4ujos7uw7n4ijq2ulgs1");
+}
+
+void atprotocol_test::test_AppBskyGraphGetFollows()
+{
+    AtProtocolInterface::AppBskyGraphGetFollows api;
+    m_account.did = "did:plc:mqxsuw5b5rhpwo4lw6iwlid5";
+    api.setAccount(m_account);
+    api.setService(QString("http://localhost:%1/response").arg(m_listenPort));
+
+    {
+        QSignalSpy spy(&api, SIGNAL(finished(bool)));
+        api.getFollows("", 0, QString());
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+
+    QVERIFY(api.profileViewList().count() == 3);
+    QVERIFY(api.profileViewList().at(0).did == "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
+    QVERIFY(api.profileViewList().at(1).did == "did:plc:73l5atmh7p3fn3xigbp6ao5x");
+    QVERIFY(api.profileViewList().at(2).did == "did:plc:ipj5qejfoqu6eukvt72uhyit");
+
+    QVERIFY(api.profileView().did == "did:plc:l4fsx4ujos7uw7n4ijq2ulgs");
+}
+
+void atprotocol_test::test_AppBskyGraphGetListMutes()
+{
+    AtProtocolInterface::AppBskyGraphGetListMutes api;
+    m_account.did = "did:plc:mqxsuw5b5rhpwo4lw6iwlid5";
+    api.setAccount(m_account);
+    api.setService(QString("http://localhost:%1/response").arg(m_listenPort));
+
+    {
+        QSignalSpy spy(&api, SIGNAL(finished(bool)));
+        api.getListMutes(0, QString());
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+
+    QVERIFY(api.listViewList().count() == 2);
+    QVERIFY(api.listViewList().at(0).cid
+            == "bafyreiexwt5i5qo4wy6qnn3wxnznjbqjbemmbqq3dwfaf7qbn2wk4cdblm");
+    QVERIFY(api.listViewList().at(1).cid
+            == "bafyreifw2u4s2k6axspo3dppja3ofbwmyhkz6a5igemezmx3spxfvi6mcy");
+}
+
+void atprotocol_test::test_AppBskyGraphGetListBlocks()
+{
+    AtProtocolInterface::AppBskyGraphGetListBlocks api;
+    m_account.did = "did:plc:mqxsuw5b5rhpwo4lw6iwlid5";
+    api.setAccount(m_account);
+    api.setService(QString("http://localhost:%1/response").arg(m_listenPort));
+
+    {
+        QSignalSpy spy(&api, SIGNAL(finished(bool)));
+        api.getListBlocks(0, QString());
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+
+    QVERIFY(api.listViewList().count() == 2);
+    QVERIFY(api.listViewList().at(0).cid
+            == "bafyreif73o7vskbe36slr3zalbvitpcl5scr2d27ts3vmuqkyhj4u4pvm4");
+    QVERIFY(api.listViewList().at(1).cid
+            == "bafyreieyd765syuilkovwe3ms3cpegt7wo3xksistzy2v4xmazrwbzlwtm");
+}
+
+void atprotocol_test::test_AppBskyGraphGetMutes()
+{
+    AtProtocolInterface::AppBskyGraphGetMutes api;
+    m_account.did = "did:plc:mqxsuw5b5rhpwo4lw6iwlid5";
+    api.setAccount(m_account);
+    api.setService(QString("http://localhost:%1/response").arg(m_listenPort));
+
+    {
+        QSignalSpy spy(&api, SIGNAL(finished(bool)));
+        api.getMutes(0, QString());
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+
+    QVERIFY(api.profileViewList().count() == 1);
+    QVERIFY(api.profileViewList().at(0).did == "did:plc:l4fsx4ujos7uw7n4ijq2ulgs");
 }
 
 void atprotocol_test::test_putPreferences(const QString &path, const QByteArray &body)

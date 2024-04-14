@@ -1,0 +1,59 @@
+{
+    "lists": [
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/3kkyvi4ukzx2r",
+            "cid": "bafyreif73o7vskbe36slr3zalbvitpcl5scr2d27ts3vmuqkyhj4u4pvm4",
+            "name": "test1",
+            "purpose": "app.bsky.graph.defs#curatelist",
+            "indexedAt": "2024-02-09T18:11:41.684Z",
+            "labels": [],
+            "viewer": {
+                "muted": false,
+                "blocked": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.listblock/3kp3j2w3xkg22"
+            },
+            "creator": {
+                "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+                "handle": "ioriayane.relog.tech",
+                "displayName": "IoriAYANE",
+                "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy@jpeg",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false,
+                    "following": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.follow/3kep33eowkk2c",
+                    "followedBy": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3k4odyt4qk42g"
+                },
+                "labels": [],
+                "description": "Blueskyクライアントの羽衣を作ってます。\nhttps://hagoromo.relog.tech/ja/\nepubを作るソフトのLeMEを作ってます。\nhttps://leme.style\nX:@ioriayane\nアイコンは X:@keikawagutiさん",
+                "indexedAt": "2024-03-19T16:38:04.244Z"
+            }
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/3kbkuwma4lc27",
+            "cid": "bafyreieyd765syuilkovwe3ms3cpegt7wo3xksistzy2v4xmazrwbzlwtm",
+            "name": "sample",
+            "purpose": "app.bsky.graph.defs#modlist",
+            "indexedAt": "2023-10-12T15:37:51.839Z",
+            "labels": [],
+            "viewer": {
+                "muted": false,
+                "blocked": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.listblock/3kpzslyxcqf2d"
+            },
+            "creator": {
+                "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+                "handle": "ioriayane.relog.tech",
+                "displayName": "IoriAYANE",
+                "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy@jpeg",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false,
+                    "following": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.follow/3kep33eowkk2c",
+                    "followedBy": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3k4odyt4qk42g"
+                },
+                "labels": [],
+                "description": "Blueskyクライアントの羽衣を作ってます。\nhttps://hagoromo.relog.tech/ja/\nepubを作るソフトのLeMEを作ってます。\nhttps://leme.style\nX:@ioriayane\nアイコンは X:@keikawagutiさん",
+                "indexedAt": "2024-03-19T16:38:04.244Z"
+            },
+            "description": "test"
+        }
+    ]
+}
