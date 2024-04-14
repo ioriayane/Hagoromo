@@ -44,7 +44,7 @@ bool AppBskyLabelerGetServices::parseJson(bool success, const QString reply_json
     } else {
         QString type;
         for (const auto &value : json_doc.object().value("views").toArray()) {
-            type = json_doc.object().value("views").toObject().value("$type").toString();
+            type = value.toObject().value("$type").toString();
             if (type == QStringLiteral("app.bsky.labeler.defs#labelerView")) {
                 AtProtocolType::AppBskyLabelerDefs::LabelerView data;
                 AtProtocolType::AppBskyLabelerDefs::copyLabelerView(value.toObject(), data);

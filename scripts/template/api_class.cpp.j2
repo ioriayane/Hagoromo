@@ -77,7 +77,7 @@ bool {{ class_name }}::parseJson(bool success, const QString reply_json)
             {% if ns.prev_key_name == "" -%}
         QString type;
         for (const auto &value : json_doc.object().value({%- if is_parent -%}m_listKey{%- else -%}"{{ member.variable_key_name }}"{%- endif -%}).toArray()) {
-            type = json_doc.object().value("{{ member.variable_key_name }}").toObject().value("$type").toString();
+            type = value.toObject().value("$type").toString();
             {% else -%}
             else
             {% endif -%}
