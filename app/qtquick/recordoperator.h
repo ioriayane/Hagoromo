@@ -2,9 +2,8 @@
 #define RECORDOPERATOR_H
 
 #include "atprotocol/lexicons.h"
-#include "atprotocol/lexicons_func_unknown.h"
 #include "atprotocol/accessatprotocol.h"
-#include "atprotocol/com/atproto/repo/comatprotorepocreaterecord.h"
+#include "extension/com/atproto/repo/comatprotorepocreaterecordex.h"
 #include <QObject>
 
 struct EmbedImage
@@ -23,8 +22,8 @@ public:
     explicit RecordOperator(QObject *parent = nullptr);
 
     enum ListPurpose : int {
-        Curation = AtProtocolInterface::ComAtprotoRepoCreateRecord::ListPurpose::Curation,
-        Moderation = AtProtocolInterface::ComAtprotoRepoCreateRecord::ListPurpose::Moderation,
+        Curation = AtProtocolInterface::ComAtprotoRepoCreateRecordEx::ListPurpose::Curation,
+        Moderation = AtProtocolInterface::ComAtprotoRepoCreateRecordEx::ListPurpose::Moderation,
     };
     Q_ENUM(ListPurpose);
 

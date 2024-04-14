@@ -149,7 +149,6 @@ class Defs2Struct:
             'com.atproto.label.',
             'com.atproto.moderation.',
             'com.atproto.repo.applyWrites',
-            'com.atproto.repo.createRecord',
             'com.atproto.repo.deleteRecord',
             'com.atproto.repo.describeRepo',
             'com.atproto.repo.importRepo',

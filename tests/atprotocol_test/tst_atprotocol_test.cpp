@@ -17,7 +17,7 @@
 #include "atprotocol/app/bsky/graph/appbskygraphgetlistmutes.h"
 #include "atprotocol/app/bsky/graph/appbskygraphgetlistblocks.h"
 #include "atprotocol/app/bsky/graph/appbskygraphgetmutes.h"
-#include "atprotocol/com/atproto/repo/comatprotorepocreaterecord.h"
+#include "extension/com/atproto/repo/comatprotorepocreaterecordex.h"
 #include "atprotocol/com/atproto/repo/comatprotorepogetrecord.h"
 #include "atprotocol/com/atproto/repo/comatprotorepoputrecord.h"
 #include "extension/com/atproto/server/comatprotoservercreatesessionex.h"
@@ -1432,7 +1432,7 @@ void atprotocol_test::test_ConfigurableLabels_contains_mutedword()
 
 void atprotocol_test::test_ComAtprotoRepoCreateRecord_post()
 {
-    AtProtocolInterface::ComAtprotoRepoCreateRecord createrecord;
+    AtProtocolInterface::ComAtprotoRepoCreateRecordEx createrecord;
     createrecord.setAccount(m_account);
     createrecord.setSelfLabels(QStringList() << "!warn"
                                              << "spam");
@@ -1448,7 +1448,7 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_threadgate()
 {
     QString temp_did = m_account.did;
     m_account.did = "did:plc:mqxsuw5b5rhpwo4lw6iwlid5";
-    AtProtocolInterface::ComAtprotoRepoCreateRecord createrecord;
+    AtProtocolInterface::ComAtprotoRepoCreateRecordEx createrecord;
     createrecord.setAccount(m_account);
 
     //    QVERIFY(createrecord.threadGate("at://uri", AtProtocolType::ThreadGateType::Everybody,
