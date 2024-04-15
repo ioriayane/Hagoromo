@@ -1325,7 +1325,7 @@ void NotificationListModel::updateSeen()
         seen->deleteLater();
     });
     seen->setAccount(account());
-    seen->updateSeen(QString());
+    seen->updateSeen(QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
 }
 
 QStringList NotificationListModel::getAggregatedItems(

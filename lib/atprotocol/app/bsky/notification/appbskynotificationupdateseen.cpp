@@ -14,11 +14,10 @@ AppBskyNotificationUpdateSeen::AppBskyNotificationUpdateSeen(QObject *parent)
 void AppBskyNotificationUpdateSeen::updateSeen(const QString &seenAt)
 {
     QJsonObject json_obj;
-    if (seenAt.isEmpty()) {
-        json_obj.insert("seenAt", QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
-    } else {
-        json_obj.insert("seenAt", seenAt);
+    if (!seenAt.isEmpty()) {
+        json_obj.insert(QStringLiteral("seenAt"), seenAt);
     }
+
     QJsonDocument json_doc(json_obj);
 
     post(QStringLiteral("xrpc/app.bsky.notification.updateSeen"),

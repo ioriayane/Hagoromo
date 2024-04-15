@@ -152,6 +152,7 @@ class Defs2Struct:
             'com.atproto.moderation.',
             'com.atproto.repo.applyWrites',
             'com.atproto.repo.describeRepo',
+            'com.atproto.repo.deleteRecord',
             'com.atproto.repo.importRepo',
             'com.atproto.repo.putRecord',
             'com.atproto.repo.uploadBlob',
@@ -934,7 +935,6 @@ class Defs2Struct:
         else:
             data['variable_to'] = '.toObject()'
         data['union_ref'] = ref
-        data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
 
         return data
 
@@ -978,7 +978,6 @@ class Defs2Struct:
                 data['variable_to'] = '.toObject()'
             else:
                 data['variable_to'] = ''
-        data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
         return data
 
     def output_api_class_data_union(self, namespace: str, union_ref: str, key_name: str) -> dict:
@@ -1003,7 +1002,6 @@ class Defs2Struct:
         data['variable_name'] = 'm_%s' % (ref_struct_name, )
         data['variable_to'] = '.toObject()'
         data['union_ref'] = union_ref
-        data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
 
         return data
 
@@ -1076,7 +1074,6 @@ class Defs2Struct:
                         item_obj['variable_is_obj'] = True
                         data['members'] = data.get('members', [])
                         data['members'].append(item_obj)
-                        data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
                         data['has_primitive'] = True
                 data['recv_image'] = True
 
@@ -1090,7 +1087,6 @@ class Defs2Struct:
                 if len(item_obj) > 0:
                     data['members'] = data.get('members', [])
                     data['members'].append(item_obj)
-                    data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
 
             elif schema.get('type', '') == 'object':
                 for key_name, property_obj in schema.get('properties', {}).items():
@@ -1117,7 +1113,6 @@ class Defs2Struct:
                                 data['members'].append(item_obj)
                                 data['is_parent'] = False
                                 data['has_parent_class'] = False
-                                data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
                                 data['has_primitive'] = True
                         elif len(var_type) > 0:
                             refs = pro_items.get('refs', [])
@@ -1143,20 +1138,17 @@ class Defs2Struct:
                                     else:
                                         data['is_parent'] = False
                                         data['has_parent_class'] = False
-                                    data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
                                 else:
                                     print (namespace + ":" + ref_namespace + "," + ref_struct_name + " ??")
                     elif pro_type == 'string' or pro_type == 'boolean' or pro_type == 'integer' or pro_type == 'blob' or pro_type == 'unknown':
                         if key_name == 'cursor':
                             data['has_cursor'] = True
-                            data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
                         else:
                             item_obj = self.output_api_class_data_primitive(pro_type, key_name)
                             if len(item_obj) > 0:
                                 item_obj['variable_is_obj'] = True
                                 data['members'] = data.get('members', [])
                                 data['members'].append(item_obj)
-                                data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
                                 data['has_primitive'] = True
                     elif pro_type == 'ref':
                         ref = property_obj.get('ref', '')
@@ -1164,7 +1156,6 @@ class Defs2Struct:
                         if len(item_obj) > 0:
                             data['members'] = data.get('members', [])
                             data['members'].append(item_obj)
-                            data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
                     elif pro_type == 'union':
                         union_refs = property_obj.get('refs', [])
                         for union_ref in union_refs:
@@ -1172,7 +1163,6 @@ class Defs2Struct:
                             if len(item_obj) > 0:
                                 data['members'] = data.get('members', [])
                                 data['members'].append(item_obj)
-                                data['completed'] = True    # 出力先を正式な場所にするための仮フラグ
                     else:
                         print (namespace + ":" + ref_namespace + "," + ref_struct_name + " not array")
 
@@ -1180,7 +1170,7 @@ class Defs2Struct:
             data['recv_image'] = data.get('recv_image', False)
             data['has_primitive'] = data.get('has_primitive', False)
             data['has_parent_class'] = data.get('has_parent_class', False)
-            data['completed'] = data.get('completed', False)
+            data['completed'] = True
             data['my_include_path'] = self.to_header_path(namespace)
             data['need_extension'] = (namespace in self.need_extension)
             # if data.get('access_type', '') == 'post':
