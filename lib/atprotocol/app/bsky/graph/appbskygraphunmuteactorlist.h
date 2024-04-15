@@ -2,7 +2,6 @@
 #define APPBSKYGRAPHUNMUTEACTORLIST_H
 
 #include "atprotocol/accessatprotocol.h"
-#include "atprotocol/lexicons.h"
 
 namespace AtProtocolInterface {
 

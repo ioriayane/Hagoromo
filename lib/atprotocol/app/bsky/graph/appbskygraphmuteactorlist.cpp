@@ -13,7 +13,10 @@ AppBskyGraphMuteActorList::AppBskyGraphMuteActorList(QObject *parent) : AccessAt
 void AppBskyGraphMuteActorList::muteActorList(const QString &list)
 {
     QJsonObject json_obj;
-    json_obj.insert("list", list);
+    if (!list.isEmpty()) {
+        json_obj.insert(QStringLiteral("list"), list);
+    }
+
     QJsonDocument json_doc(json_obj);
 
     post(QStringLiteral("xrpc/app.bsky.graph.muteActorList"),
@@ -23,7 +26,6 @@ void AppBskyGraphMuteActorList::muteActorList(const QString &list)
 bool AppBskyGraphMuteActorList::parseJson(bool success, const QString reply_json)
 {
     Q_UNUSED(reply_json)
-
     return success;
 }
 
