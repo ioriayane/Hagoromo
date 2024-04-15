@@ -1,6 +1,5 @@
 #include "recordoperator.h"
 #include "atprotocol/com/atproto/repo/comatprotorepouploadblob.h"
-#include "atprotocol/com/atproto/repo/comatprotorepodeleterecord.h"
 #include "atprotocol/com/atproto/repo/comatprotorepolistrecords.h"
 #include "atprotocol/com/atproto/repo/comatprotorepogetrecord.h"
 #include "atprotocol/com/atproto/repo/comatprotorepoputrecord.h"
@@ -8,6 +7,7 @@
 #include "atprotocol/app/bsky/graph/appbskygraphmuteactor.h"
 #include "atprotocol/app/bsky/graph/appbskygraphunmuteactor.h"
 #include "atprotocol/lexicons_func_unknown.h"
+#include "extension/com/atproto/repo/comatprotorepodeleterecordex.h"
 #include "systemtool.h"
 
 #include <QTimer>
@@ -16,7 +16,7 @@ using AtProtocolInterface::AppBskyActorGetProfiles;
 using AtProtocolInterface::AppBskyGraphMuteActor;
 using AtProtocolInterface::AppBskyGraphUnmuteActor;
 using AtProtocolInterface::ComAtprotoRepoCreateRecordEx;
-using AtProtocolInterface::ComAtprotoRepoDeleteRecord;
+using AtProtocolInterface::ComAtprotoRepoDeleteRecordEx;
 using AtProtocolInterface::ComAtprotoRepoGetRecord;
 using AtProtocolInterface::ComAtprotoRepoListRecords;
 using AtProtocolInterface::ComAtprotoRepoPutRecord;
@@ -379,8 +379,8 @@ void RecordOperator::deletePost(const QString &uri)
 
     QString r_key = uri.split("/").last();
 
-    ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord(this);
-    connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
+    ComAtprotoRepoDeleteRecordEx *delete_record = new ComAtprotoRepoDeleteRecordEx(this);
+    connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished, [=](bool success) {
         if (!success) {
             emit errorOccured(delete_record->errorCode(), delete_record->errorMessage());
         }
@@ -400,8 +400,8 @@ void RecordOperator::deleteLike(const QString &uri)
 
     QString r_key = uri.split("/").last();
 
-    ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord(this);
-    connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
+    ComAtprotoRepoDeleteRecordEx *delete_record = new ComAtprotoRepoDeleteRecordEx(this);
+    connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished, [=](bool success) {
         if (!success) {
             emit errorOccured(delete_record->errorCode(), delete_record->errorMessage());
         }
@@ -421,8 +421,8 @@ void RecordOperator::deleteRepost(const QString &uri)
 
     QString r_key = uri.split("/").last();
 
-    ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord(this);
-    connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
+    ComAtprotoRepoDeleteRecordEx *delete_record = new ComAtprotoRepoDeleteRecordEx(this);
+    connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished, [=](bool success) {
         if (!success) {
             emit errorOccured(delete_record->errorCode(), delete_record->errorMessage());
         }
@@ -442,8 +442,8 @@ void RecordOperator::deleteFollow(const QString &uri)
 
     QString r_key = uri.split("/").last();
 
-    ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord(this);
-    connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
+    ComAtprotoRepoDeleteRecordEx *delete_record = new ComAtprotoRepoDeleteRecordEx(this);
+    connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished, [=](bool success) {
         if (!success) {
             emit errorOccured(delete_record->errorCode(), delete_record->errorMessage());
         }
@@ -483,8 +483,8 @@ void RecordOperator::deleteBlock(const QString &uri)
 
     QString r_key = uri.split("/").last();
 
-    ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord(this);
-    connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
+    ComAtprotoRepoDeleteRecordEx *delete_record = new ComAtprotoRepoDeleteRecordEx(this);
+    connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished, [=](bool success) {
         if (!success) {
             emit errorOccured(delete_record->errorCode(), delete_record->errorMessage());
         }
@@ -504,8 +504,8 @@ void RecordOperator::deleteBlockList(const QString &uri)
 
     QString r_key = uri.split("/").last();
 
-    ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord(this);
-    connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
+    ComAtprotoRepoDeleteRecordEx *delete_record = new ComAtprotoRepoDeleteRecordEx(this);
+    connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished, [=](bool success) {
         if (!success) {
             emit errorOccured(delete_record->errorCode(), delete_record->errorMessage());
         }
@@ -530,9 +530,9 @@ bool RecordOperator::deleteList(const QString &uri)
                 if (success2) {
                     QString r_key = uri.split("/").last();
 
-                    ComAtprotoRepoDeleteRecord *delete_record =
-                            new ComAtprotoRepoDeleteRecord(this);
-                    connect(delete_record, &ComAtprotoRepoDeleteRecord::finished,
+                    ComAtprotoRepoDeleteRecordEx *delete_record =
+                            new ComAtprotoRepoDeleteRecordEx(this);
+                    connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished,
                             [=](bool success) {
                                 if (!success) {
                                     emit errorOccured(delete_record->errorCode(),
@@ -578,8 +578,8 @@ bool RecordOperator::deleteListItem(const QString &uri)
 
     QString r_key = uri.split("/").last();
 
-    ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord(this);
-    connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
+    ComAtprotoRepoDeleteRecordEx *delete_record = new ComAtprotoRepoDeleteRecordEx(this);
+    connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished, [=](bool success) {
         if (!success) {
             emit errorOccured(delete_record->errorCode(), delete_record->errorMessage());
         }
@@ -726,8 +726,8 @@ void RecordOperator::updateThreadGate(const QString &uri, const QString &threadg
 
     QString r_key = threadgate_uri.split("/").last();
 
-    ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord(this);
-    connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
+    ComAtprotoRepoDeleteRecordEx *delete_record = new ComAtprotoRepoDeleteRecordEx(this);
+    connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished, [=](bool success) {
         if (!success) {
             emit errorOccured(delete_record->errorCode(), delete_record->errorMessage());
             setRunning(false);
@@ -968,8 +968,8 @@ void RecordOperator::deleteAllListItems(std::function<void(bool)> callback)
     QString r_key = m_listItems.front().split("/").last();
     m_listItems.pop_front();
 
-    ComAtprotoRepoDeleteRecord *delete_record = new ComAtprotoRepoDeleteRecord(this);
-    connect(delete_record, &ComAtprotoRepoDeleteRecord::finished, [=](bool success) {
+    ComAtprotoRepoDeleteRecordEx *delete_record = new ComAtprotoRepoDeleteRecordEx(this);
+    connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished, [=](bool success) {
         if (success) {
             deleteAllListItems(callback);
         } else {

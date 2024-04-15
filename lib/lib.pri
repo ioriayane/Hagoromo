@@ -53,6 +53,7 @@ SOURCES += \
     $$PWD/atprotocol/lexicons_func.cpp \
     $$PWD/atprotocol/lexicons_func_unknown.cpp \
     $$PWD/extension/com/atproto/repo/comatprotorepocreaterecordex.cpp \
+    $$PWD/extension/com/atproto/repo/comatprotorepodeleterecordex.cpp \
     $$PWD/extension/com/atproto/server/comatprotoservercreatesessionex.cpp \
     $$PWD/http/httpaccess.cpp \
     $$PWD/http/httpaccessmanager.cpp \
@@ -113,6 +114,7 @@ HEADERS += \
     $$PWD/atprotocol/lexicons_func.h \
     $$PWD/atprotocol/lexicons_func_unknown.h \
     $$PWD/extension/com/atproto/repo/comatprotorepocreaterecordex.h \
+    $$PWD/extension/com/atproto/repo/comatprotorepodeleterecordex.h \
     $$PWD/extension/com/atproto/server/comatprotoservercreatesessionex.h \
     $$PWD/http/httpaccess.h \
     $$PWD/http/httpaccessmanager.h \

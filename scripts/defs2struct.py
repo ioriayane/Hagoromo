@@ -152,7 +152,6 @@ class Defs2Struct:
             'com.atproto.moderation.',
             'com.atproto.repo.applyWrites',
             'com.atproto.repo.describeRepo',
-            'com.atproto.repo.deleteRecord',
             'com.atproto.repo.importRepo',
             'com.atproto.repo.putRecord',
             'com.atproto.repo.uploadBlob',
@@ -213,6 +212,7 @@ class Defs2Struct:
         ]
         self.need_extension = [
             'com.atproto.repo.createRecord',
+            'com.atproto.repo.deleteRecord',
             'com.atproto.server.createSession'
         ]
 

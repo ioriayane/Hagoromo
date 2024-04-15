@@ -13,17 +13,7 @@ public:
     void deleteRecord(const QString &repo, const QString &collection, const QString &rkey,
                       const QString &swapRecord, const QString &swapCommit);
 
-    void deletePost(const QString &rkey);
-    void deleteLike(const QString &rkey);
-    void deleteRepost(const QString &rkey);
-    void unfollow(const QString &rkey);
-    void deleteBlock(const QString &rkey);
-    void deleteBlockList(const QString &rkey);
-    void deleteList(const QString &rkey);
-    void deleteListItem(const QString &rkey);
-    void deleteThreadGate(const QString &rkey);
-
-private:
+protected:
     virtual bool parseJson(bool success, const QString reply_json);
 };
 
