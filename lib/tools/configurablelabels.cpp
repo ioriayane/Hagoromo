@@ -836,7 +836,7 @@ void ConfigurableLabels::initializeLabels()
     m_labels[GLOBAL_LABELER_KEY].append(item);
 }
 
-bool ConfigurableLabels::putPreferences(const QString &json)
+bool ConfigurableLabels::putPreferences(const QJsonArray &json)
 {
     AppBskyActorPutPreferences *pref = new AppBskyActorPutPreferences(this);
     connect(pref, &AppBskyActorPutPreferences::finished, [=](bool success) {
@@ -852,96 +852,88 @@ bool ConfigurableLabels::putPreferences(const QString &json)
     return true;
 }
 
-QString ConfigurableLabels::updatePreferencesJson(const QString &src_json)
+QJsonArray ConfigurableLabels::updatePreferencesJson(const QString &src_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(src_json.toUtf8());
     QJsonObject root_object = json_doc.object();
-    if (root_object.contains("preferences")) {
-        QJsonValue preferences = root_object.value("preferences");
-        QJsonArray dest_preferences;
-        if (preferences.isArray()) {
-            bool existAdult = false;
-            QStringList existId;
-            for (int i = 0; i < preferences.toArray().count(); i++) {
-                if (!preferences.toArray().at(i).isObject())
-                    continue;
-                QJsonObject value = preferences.toArray().takeAt(i).toObject();
-                if (value.value("$type")
-                    == QStringLiteral("app.bsky.actor.defs#adultContentPref")) {
-                    // ここで更新するデータはいったん消す
-                } else if (value.value("$type")
-                           == QStringLiteral("app.bsky.actor.defs#contentLabelPref")) {
-                    // ここで更新するデータはいったん消す（順番を守るため）
-                } else if (value.value("$type")
-                                   == QStringLiteral("app.bsky.actor.defs#mutedWordsPref")
-                           && !m_mutedWords.isEmpty()) {
-                    // ここで更新するデータはいったん消す
-                } else {
-                    // その他のデータはそのまま引き継ぐ
-                    dest_preferences.append(value);
-                }
-            }
-            {
-                QJsonObject value;
-                value.insert("$type", QStringLiteral("app.bsky.actor.defs#adultContentPref"));
-                value.insert("enabled", QJsonValue(enableAdultContent()));
-                dest_preferences.append(value);
-            }
-            QMapIterator<QString, QList<ConfigurableLabelItem>> i(m_labels);
-            while (i.hasNext()) {
-                i.next();
-                for (const auto &label : i.value()) {
-                    if (!label.configurable)
-                        continue;
-                    QJsonObject value;
-                    value.insert("$type", QStringLiteral("app.bsky.actor.defs#contentLabelPref"));
-                    value.insert("label", QJsonValue(label.id));
-                    if (!label.labeler_did.isEmpty()) {
-                        value.insert("labelerDid", label.labeler_did);
-                    }
-                    if (label.status == ConfigurableLabelStatus::Hide) {
-                        value.insert("visibility", QJsonValue("hide"));
-                    } else if (label.status == ConfigurableLabelStatus::Warning) {
-                        value.insert("visibility", QJsonValue("warn"));
-                    } else if (label.status == ConfigurableLabelStatus::Show) {
-                        value.insert("visibility", QJsonValue("ignore"));
-                    }
-                    dest_preferences.append(value);
-                }
-            }
-            {
-                QMap<int, QJsonArray> muted_items;
-                for (const auto &muted_word : qAsConst(m_mutedWords)) {
-                    QJsonObject item;
-                    item.insert("value", muted_word.value);
-                    QJsonArray targets;
-                    if (muted_word.targets.contains(MutedWordTarget::Content)) {
-                        targets.append(QJsonValue("content"));
-                    }
-                    if (muted_word.targets.contains(MutedWordTarget::Tag)) {
-                        targets.append(QJsonValue("tag"));
-                    }
-                    item.insert("targets", targets);
-                    muted_items[muted_word.group].append(item);
-                }
-                QMapIterator<int, QJsonArray> ii(muted_items);
-                while (ii.hasNext()) {
-                    ii.next();
-                    QJsonObject value;
-                    value.insert("$type", QStringLiteral("app.bsky.actor.defs#mutedWordsPref"));
-                    value.insert("items", ii.value());
-                    dest_preferences.append(value);
-                }
-            }
-            root_object.insert("preferences", dest_preferences);
+    if (!root_object.contains("preferences"))
+        return QJsonArray();
+
+    QJsonValue preferences = root_object.value("preferences");
+    QJsonArray dest_preferences;
+    if (!preferences.isArray())
+        return QJsonArray();
+
+    QStringList existId;
+    for (int i = 0; i < preferences.toArray().count(); i++) {
+        if (!preferences.toArray().at(i).isObject())
+            continue;
+        QJsonObject value = preferences.toArray().takeAt(i).toObject();
+        if (value.value("$type") == QStringLiteral("app.bsky.actor.defs#adultContentPref")) {
+            // ここで更新するデータはいったん消す
+        } else if (value.value("$type") == QStringLiteral("app.bsky.actor.defs#contentLabelPref")) {
+            // ここで更新するデータはいったん消す（順番を守るため）
+        } else if (value.value("$type") == QStringLiteral("app.bsky.actor.defs#mutedWordsPref")
+                   && !m_mutedWords.isEmpty()) {
+            // ここで更新するデータはいったん消す
+        } else {
+            // その他のデータはそのまま引き継ぐ
+            dest_preferences.append(value);
         }
     }
-    json_doc.setObject(root_object);
-#ifdef QT_DEBUG
-    return json_doc.toJson();
-#else
-    return json_doc.toJson(QJsonDocument::Compact);
-#endif
+    {
+        QJsonObject value;
+        value.insert("$type", QStringLiteral("app.bsky.actor.defs#adultContentPref"));
+        value.insert("enabled", QJsonValue(enableAdultContent()));
+        dest_preferences.append(value);
+    }
+    QMapIterator<QString, QList<ConfigurableLabelItem>> i(m_labels);
+    while (i.hasNext()) {
+        i.next();
+        for (const auto &label : i.value()) {
+            if (!label.configurable)
+                continue;
+            QJsonObject value;
+            value.insert("$type", QStringLiteral("app.bsky.actor.defs#contentLabelPref"));
+            value.insert("label", QJsonValue(label.id));
+            if (!label.labeler_did.isEmpty()) {
+                value.insert("labelerDid", label.labeler_did);
+            }
+            if (label.status == ConfigurableLabelStatus::Hide) {
+                value.insert("visibility", QJsonValue("hide"));
+            } else if (label.status == ConfigurableLabelStatus::Warning) {
+                value.insert("visibility", QJsonValue("warn"));
+            } else if (label.status == ConfigurableLabelStatus::Show) {
+                value.insert("visibility", QJsonValue("ignore"));
+            }
+            dest_preferences.append(value);
+        }
+    }
+    {
+        QMap<int, QJsonArray> muted_items;
+        for (const auto &muted_word : qAsConst(m_mutedWords)) {
+            QJsonObject item;
+            item.insert("value", muted_word.value);
+            QJsonArray targets;
+            if (muted_word.targets.contains(MutedWordTarget::Content)) {
+                targets.append(QJsonValue("content"));
+            }
+            if (muted_word.targets.contains(MutedWordTarget::Tag)) {
+                targets.append(QJsonValue("tag"));
+            }
+            item.insert("targets", targets);
+            muted_items[muted_word.group].append(item);
+        }
+        QMapIterator<int, QJsonArray> ii(muted_items);
+        while (ii.hasNext()) {
+            ii.next();
+            QJsonObject value;
+            value.insert("$type", QStringLiteral("app.bsky.actor.defs#mutedWordsPref"));
+            value.insert("items", ii.value());
+            dest_preferences.append(value);
+        }
+    }
+    return dest_preferences;
 }
 
 inline QString ConfigurableLabels::removeSharp(const QString &value) const

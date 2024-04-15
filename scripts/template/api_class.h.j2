@@ -39,7 +39,7 @@ private:
 {% if recv_image -%}
     virtual bool recvImage(const QByteArray &data, const QString &content_type);
 {% endif %}
-{% if need_extension -%}
+{% if need_extension and members is defined -%}
 private:
 {% endif -%}
 

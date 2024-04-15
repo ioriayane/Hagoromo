@@ -80,6 +80,9 @@ bool ComAtprotoSyncGetBlob::recvImage(const QByteArray &data, const QString &con
 {% else -%}
 bool {{ class_name }}::parseJson(bool success, const QString reply_json)
 {
+{% if members is not defined -%}
+    Q_UNUSED(reply_json)
+{% else -%}
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
     if (json_doc.isEmpty()
         {%- set ns = namespace(prev_key_name="", pref_is_for=False) -%}
@@ -157,6 +160,7 @@ bool {{ class_name }}::parseJson(bool success, const QString reply_json)
     {% endif -%}
     }
 
+{% endif -%}
     return success;
 }
 {% endif -%}

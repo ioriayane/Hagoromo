@@ -40,6 +40,8 @@ class FunctionArgument:
             arg_def = f"const bool {self._name}"
         elif self._type == 'unknown':
             arg_def = f"const QJsonObject &{self._name}"
+        elif self._type == 'json_array':
+            arg_def = f"const QJsonArray &{self._name}"
         return arg_def
 
     def to_string_query(self) -> str:
@@ -82,7 +84,7 @@ class FunctionArgument:
             # payload  = f"if({self._name})" + "{\n"
             payload += f"json_obj.insert(QStringLiteral(\"{self._name}\"), {self._name});\n"
             # payload += "}\n"
-        elif self._type == 'unknown':
+        elif self._type == 'unknown' or self._type == 'json_array':
             payload  = f"if(!{self._name}.isEmpty())" + "{\n"
             payload += f"json_obj.insert(QStringLiteral(\"{self._name}\"), {self._name});\n"
             payload += "}\n"
@@ -149,7 +151,6 @@ class Defs2Struct:
             'com.atproto.label.',
             'com.atproto.moderation.',
             'com.atproto.repo.applyWrites',
-            'com.atproto.repo.deleteRecord',
             'com.atproto.repo.describeRepo',
             'com.atproto.repo.importRepo',
             'com.atproto.repo.putRecord',
@@ -183,15 +184,23 @@ class Defs2Struct:
             'com.atproto.server.updateEmail',
             'com.atproto.sync.getHead',
             'com.atproto.sync.getLatestCommit',
+            'com.atproto.sync.getBlocks',
+            'com.atproto.sync.getCheckout',
+            'com.atproto.sync.getRecord',
+            'com.atproto.sync.getRepo',
+            'com.atproto.sync.notifyOfUpdate',
+            'com.atproto.sync.requestCrawl',
             'com.atproto.sync.listBlobs',
             'com.atproto.sync.listRepos',
             'com.atproto.temp.',
             'app.bsky.unspecced.searchPostsSkeleton',
             'app.bsky.unspecced.searchActorsSkeleton',
             'app.bsky.unspecced.getTaggedSuggestions',
+            'app.bsky.notification.registerPush',
             'app.bsky.notification.getUnreadCount',
             'app.bsky.graph.getSuggestedFollowsByActor',
             'app.bsky.graph.getRelationships',
+            'app.bsky.feed.sendInteractions',
             'app.bsky.feed.getSuggestedFeeds',
             'app.bsky.feed.getFeedSkeleton',
             'app.bsky.feed.describeFeedGenerator',
@@ -200,6 +209,10 @@ class Defs2Struct:
         self.unuse_auth = [
             'com.atproto.server.createSession',
             'com.atproto.sync.getBlob',
+        ]
+        self.need_extension = [
+            'com.atproto.repo.createRecord',
+            'com.atproto.server.createSession'
         ]
 
     def skip_spi_class(self, namespace: str) -> bool:
@@ -1033,6 +1046,9 @@ class Defs2Struct:
                         if pro_type == 'array':
                             pro_type = pro_value.get('items', {}).get('type', '')
                             arguments.append(FunctionArgument(pro_type, pro_name, True))
+                        elif pro_type == 'ref':
+                            pro_ref = pro_value.get('ref', '')
+                            arguments.append(FunctionArgument('json_' + self.history_type.get(pro_ref, ''), pro_name, False))
                         else:
                             arguments.append(FunctionArgument(pro_type, pro_name, False))
 
@@ -1166,11 +1182,9 @@ class Defs2Struct:
             data['has_parent_class'] = data.get('has_parent_class', False)
             data['completed'] = data.get('completed', False)
             data['my_include_path'] = self.to_header_path(namespace)
-            if data.get('access_type', '') == 'post':
-                data['need_extension'] = True
+            data['need_extension'] = (namespace in self.need_extension)
+            # if data.get('access_type', '') == 'post':
             #     data['completed'] = False
-            else:
-                data['need_extension'] = False
             self.api_class[namespace] = data
 
 
