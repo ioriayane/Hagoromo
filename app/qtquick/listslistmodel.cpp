@@ -3,7 +3,7 @@
 #include "tools/listitemscache.h"
 
 #include "atprotocol/app/bsky/graph/appbskygraphgetlists.h"
-#include "atprotocol/com/atproto/repo/comatprotorepolistrecords.h"
+#include "extension/com/atproto/repo/comatprotorepolistrecordsex.h"
 #include "atprotocol/app/bsky/graph/appbskygraphmuteactorlist.h"
 #include "atprotocol/app/bsky/graph/appbskygraphunmuteactorlist.h"
 #include "recordoperator.h"
@@ -11,7 +11,7 @@
 using AtProtocolInterface::AppBskyGraphGetLists;
 using AtProtocolInterface::AppBskyGraphMuteActorList;
 using AtProtocolInterface::AppBskyGraphUnmuteActorList;
-using AtProtocolInterface::ComAtprotoRepoListRecords;
+using AtProtocolInterface::ComAtprotoRepoListRecordsEx;
 using namespace AtProtocolType;
 
 ListsListModel::ListsListModel(QObject *parent)
@@ -441,15 +441,15 @@ void ListsListModel::searchActorInEachLists()
         cursor.clear();
         m_listItemCursor.clear();
     }
-    AtProtocolInterface::ComAtprotoRepoListRecords *list =
-            new AtProtocolInterface::ComAtprotoRepoListRecords(this);
-    connect(list, &AtProtocolInterface::ComAtprotoRepoListRecords::finished, [=](bool success) {
+    AtProtocolInterface::ComAtprotoRepoListRecordsEx *list =
+            new AtProtocolInterface::ComAtprotoRepoListRecordsEx(this);
+    connect(list, &AtProtocolInterface::ComAtprotoRepoListRecordsEx::finished, [=](bool success) {
         if (success) {
             m_listItemCursor = list->cursor();
-            if (list->recordList()->isEmpty())
+            if (list->recordList().isEmpty())
                 m_listItemCursor.clear();
 
-            for (const auto &item : *list->recordList()) {
+            for (const auto &item : list->recordList()) {
                 AppBskyGraphListitem::Main record =
                         AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                                 AppBskyGraphListitem::Main>(item.value);

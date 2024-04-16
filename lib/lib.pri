@@ -55,6 +55,7 @@ SOURCES += \
     $$PWD/extension/com/atproto/repo/comatprotorepocreaterecordex.cpp \
     $$PWD/extension/com/atproto/repo/comatprotorepodeleterecordex.cpp \
     $$PWD/extension/com/atproto/repo/comatprotorepogetrecordex.cpp \
+    $$PWD/extension/com/atproto/repo/comatprotorepolistrecordsex.cpp \
     $$PWD/extension/com/atproto/server/comatprotoservercreatesessionex.cpp \
     $$PWD/http/httpaccess.cpp \
     $$PWD/http/httpaccessmanager.cpp \
@@ -117,6 +118,7 @@ HEADERS += \
     $$PWD/extension/com/atproto/repo/comatprotorepocreaterecordex.h \
     $$PWD/extension/com/atproto/repo/comatprotorepodeleterecordex.h \
     $$PWD/extension/com/atproto/repo/comatprotorepogetrecordex.h \
+    $$PWD/extension/com/atproto/repo/comatprotorepolistrecordsex.h \
     $$PWD/extension/com/atproto/server/comatprotoservercreatesessionex.h \
     $$PWD/http/httpaccess.h \
     $$PWD/http/httpaccessmanager.h \

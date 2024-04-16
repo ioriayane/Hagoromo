@@ -1,6 +1,5 @@
 #include "recordoperator.h"
 #include "atprotocol/com/atproto/repo/comatprotorepouploadblob.h"
-#include "atprotocol/com/atproto/repo/comatprotorepolistrecords.h"
 #include "atprotocol/com/atproto/repo/comatprotorepoputrecord.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofiles.h"
 #include "atprotocol/app/bsky/graph/appbskygraphmuteactor.h"
@@ -8,6 +7,7 @@
 #include "atprotocol/lexicons_func_unknown.h"
 #include "extension/com/atproto/repo/comatprotorepodeleterecordex.h"
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
+#include "extension/com/atproto/repo/comatprotorepolistrecordsex.h"
 #include "systemtool.h"
 
 #include <QTimer>
@@ -18,7 +18,7 @@ using AtProtocolInterface::AppBskyGraphUnmuteActor;
 using AtProtocolInterface::ComAtprotoRepoCreateRecordEx;
 using AtProtocolInterface::ComAtprotoRepoDeleteRecordEx;
 using AtProtocolInterface::ComAtprotoRepoGetRecordEx;
-using AtProtocolInterface::ComAtprotoRepoListRecords;
+using AtProtocolInterface::ComAtprotoRepoListRecordsEx;
 using AtProtocolInterface::ComAtprotoRepoPutRecord;
 using AtProtocolInterface::ComAtprotoRepoUploadBlob;
 using namespace AtProtocolType;
@@ -929,14 +929,14 @@ bool RecordOperator::getAllListItems(const QString &list_uri, std::function<void
         m_listItemCursor.clear();
     }
 
-    AtProtocolInterface::ComAtprotoRepoListRecords *list =
-            new AtProtocolInterface::ComAtprotoRepoListRecords(this);
-    connect(list, &AtProtocolInterface::ComAtprotoRepoListRecords::finished, [=](bool success) {
+    AtProtocolInterface::ComAtprotoRepoListRecordsEx *list =
+            new AtProtocolInterface::ComAtprotoRepoListRecordsEx(this);
+    connect(list, &AtProtocolInterface::ComAtprotoRepoListRecordsEx::finished, [=](bool success) {
         if (success) {
             m_listItemCursor = list->cursor();
-            if (list->recordList()->isEmpty())
+            if (list->recordList().isEmpty())
                 m_listItemCursor.clear();
-            for (const auto &item : *list->recordList()) {
+            for (const auto &item : list->recordList()) {
                 AppBskyGraphListitem::Main record =
                         AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                                 AppBskyGraphListitem::Main>(item.value);

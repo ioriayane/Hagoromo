@@ -1,11 +1,11 @@
 #include "anyfeedlistmodel.h"
 
 #include "atprotocol/app/bsky/feed/appbskyfeedgetposts.h"
-#include "atprotocol/com/atproto/repo/comatprotorepolistrecords.h"
+#include "extension/com/atproto/repo/comatprotorepolistrecordsex.h"
 #include "atprotocol/lexicons_func_unknown.h"
 
 using AtProtocolInterface::AppBskyFeedGetPosts;
-using AtProtocolInterface::ComAtprotoRepoListRecords;
+using AtProtocolInterface::ComAtprotoRepoListRecordsEx;
 
 AnyFeedListModel::AnyFeedListModel(QObject *parent) : TimelineListModel { parent }
 {
@@ -23,15 +23,15 @@ bool AnyFeedListModel::getLatest()
     setRunning(true);
 
     updateContentFilterLabels([=]() {
-        ComAtprotoRepoListRecords *records = new ComAtprotoRepoListRecords(this);
-        connect(records, &ComAtprotoRepoListRecords::finished, [=](bool success) {
+        ComAtprotoRepoListRecordsEx *records = new ComAtprotoRepoListRecordsEx(this);
+        connect(records, &ComAtprotoRepoListRecordsEx::finished, [=](bool success) {
             if (success) {
                 QDateTime reference_time = QDateTime::currentDateTimeUtc();
 
                 if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
                     m_cursor = records->cursor();
                 }
-                for (const auto &record : *records->recordList()) {
+                for (const auto &record : records->recordList()) {
                     m_recordHash[record.cid] = record;
 
                     QString cid;
@@ -89,14 +89,14 @@ bool AnyFeedListModel::getNext()
     setRunning(true);
 
     updateContentFilterLabels([=]() {
-        ComAtprotoRepoListRecords *records = new ComAtprotoRepoListRecords(this);
-        connect(records, &ComAtprotoRepoListRecords::finished, [=](bool success) {
+        ComAtprotoRepoListRecordsEx *records = new ComAtprotoRepoListRecordsEx(this);
+        connect(records, &ComAtprotoRepoListRecordsEx::finished, [=](bool success) {
             if (success) {
                 QDateTime reference_time = QDateTime::currentDateTimeUtc();
 
                 m_cursor = records->cursor();
 
-                for (const auto &record : *records->recordList()) {
+                for (const auto &record : records->recordList()) {
                     m_recordHash[record.cid] = record;
 
                     QString cid;
