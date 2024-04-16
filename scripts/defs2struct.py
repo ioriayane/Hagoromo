@@ -32,7 +32,7 @@ class FunctionArgument:
                 arg_def =  f"const QList<int> &{self._name}"
             elif self._type == 'boolean':
                 arg_def = f"const QList<bool> &{self._name}"
-        elif self._type == 'string':
+        elif self._type == 'string' or self._type == 'json_string':
             arg_def = f"const QString &{self._name}"
         elif self._type == 'integer':
             arg_def = f"const int {self._name}"
@@ -42,6 +42,8 @@ class FunctionArgument:
             arg_def = f"const QJsonObject &{self._name}"
         elif self._type == 'json_array':
             arg_def = f"const QJsonArray &{self._name}"
+        elif self._type == 'object':
+            arg_def = f"const QJsonObject &{self._name}"
         return arg_def
 
     def to_string_query(self) -> str:
@@ -72,7 +74,7 @@ class FunctionArgument:
             payload  = f"for (const auto &value : {self._name})" + "{\n"
             payload += f"url_query.addQueryItem(QStringLiteral(\"{self._name}\"), value);\n"
             payload += "}\n"
-        elif self._type == 'string':
+        elif self._type == 'string' or self._type == 'json_string':
             payload  = f"if(!{self._name}.isEmpty())" + "{\n"
             payload += f"json_obj.insert(QStringLiteral(\"{self._name}\"), {self._name});\n"
             payload += "}\n"
@@ -84,7 +86,7 @@ class FunctionArgument:
             # payload  = f"if({self._name})" + "{\n"
             payload += f"json_obj.insert(QStringLiteral(\"{self._name}\"), {self._name});\n"
             # payload += "}\n"
-        elif self._type == 'unknown' or self._type == 'json_array':
+        elif self._type == 'unknown' or self._type == 'json_array' or self._type == 'object':
             payload  = f"if(!{self._name}.isEmpty())" + "{\n"
             payload += f"json_obj.insert(QStringLiteral(\"{self._name}\"), {self._name});\n"
             payload += "}\n"
@@ -149,7 +151,6 @@ class Defs2Struct:
             'com.atproto.admin.',
             'com.atproto.identity.',
             'com.atproto.label.',
-            'com.atproto.moderation.',
             'com.atproto.repo.applyWrites',
             'com.atproto.repo.describeRepo',
             'com.atproto.repo.importRepo',
@@ -207,6 +208,7 @@ class Defs2Struct:
             'com.atproto.sync.getBlob',
         ]
         self.need_extension = [
+            'com.atproto.moderation.createReport',
             'com.atproto.repo.createRecord',
             'com.atproto.repo.deleteRecord',
             'com.atproto.repo.getRecord',
@@ -1047,6 +1049,15 @@ class Defs2Struct:
                         elif pro_type == 'ref':
                             pro_ref = pro_value.get('ref', '')
                             arguments.append(FunctionArgument('json_' + self.history_type.get(pro_ref, ''), pro_name, False))
+                        elif pro_type == 'union':
+                            pro_refs = pro_value.get('refs', [])
+                            for pro_ref in pro_refs:
+                                if pro_ref in self.history_type:
+                                    pro_type = self.history_type.get(pro_ref)
+                                    break
+                            arguments.append(FunctionArgument(pro_type, pro_name, False))
+                        elif pro_type == 'ref':
+                            pass
                         else:
                             arguments.append(FunctionArgument(pro_type, pro_name, False))
 
@@ -1297,8 +1308,10 @@ class Defs2Struct:
             for type_name in defs.keys():
                 self.output_type(namespace, type_name, self.get_defs_obj(namespace, type_name))
 
-                if not self.skip_spi_class(namespace):
-                    # class
+        for namespace, type_obj in self.json_obj.items():
+            if not self.skip_spi_class(namespace):
+                # class
+                for type_name in defs.keys():
                     self.output_api_class(namespace, type_name)
 
 

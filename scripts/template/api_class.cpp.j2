@@ -118,6 +118,7 @@ bool {{ class_name }}::parseJson(bool success, const QString reply_json)
                 {{ member.variable_name }}.append(data);
             }
             {%- set ns.prev_is_for  = True -%}
+            {%- set ns.prev_key_name  = member.variable_key_name -%}
         {% elif member.variable_is_array -%}
             {% if ns.prev_is_for -%}
                 }
@@ -150,6 +151,7 @@ bool {{ class_name }}::parseJson(bool success, const QString reply_json)
         if (type == QStringLiteral("{{ member.union_ref }}")){
             {{ member.copy_method }}(json_doc.object().value("{{ member.variable_key_name }}").toObject(), {{ member.variable_name }});
         }
+            {%- set ns.prev_key_name  = member.variable_key_name -%}
         {% else -%}
             {% if ns.prev_is_for -%}
                 }
@@ -157,7 +159,6 @@ bool {{ class_name }}::parseJson(bool success, const QString reply_json)
             {% endif -%}
         {{ member.copy_method }}(json_doc.object(), {{ member.variable_name }});
     {% endif -%}
-        {%- set ns.prev_key_name  = member.variable_key_name -%}
     {% endfor -%}
     {% if ns.prev_is_for -%}
         }

@@ -52,6 +52,7 @@ SOURCES += \
     $$PWD/atprotocol/com/atproto/sync/comatprotosyncgetblob.cpp \
     $$PWD/atprotocol/lexicons_func.cpp \
     $$PWD/atprotocol/lexicons_func_unknown.cpp \
+    $$PWD/extension/com/atproto/moderation/comatprotomoderationcreatereportex.cpp \
     $$PWD/extension/com/atproto/repo/comatprotorepocreaterecordex.cpp \
     $$PWD/extension/com/atproto/repo/comatprotorepodeleterecordex.cpp \
     $$PWD/extension/com/atproto/repo/comatprotorepogetrecordex.cpp \
@@ -117,6 +118,7 @@ HEADERS += \
     $$PWD/atprotocol/lexicons.h \
     $$PWD/atprotocol/lexicons_func.h \
     $$PWD/atprotocol/lexicons_func_unknown.h \
+    $$PWD/extension/com/atproto/moderation/comatprotomoderationcreatereportex.h \
     $$PWD/extension/com/atproto/repo/comatprotorepocreaterecordex.h \
     $$PWD/extension/com/atproto/repo/comatprotorepodeleterecordex.h \
     $$PWD/extension/com/atproto/repo/comatprotorepogetrecordex.h \
