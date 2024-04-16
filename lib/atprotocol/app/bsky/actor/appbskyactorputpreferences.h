@@ -2,7 +2,6 @@
 #define APPBSKYACTORPUTPREFERENCES_H
 
 #include "atprotocol/accessatprotocol.h"
-#include "atprotocol/lexicons.h"
 
 namespace AtProtocolInterface {
 
@@ -11,7 +10,7 @@ class AppBskyActorPutPreferences : public AccessAtProtocol
 public:
     explicit AppBskyActorPutPreferences(QObject *parent = nullptr);
 
-    void putPreferences(const QString &json);
+    void putPreferences(const QJsonArray &preferences);
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);

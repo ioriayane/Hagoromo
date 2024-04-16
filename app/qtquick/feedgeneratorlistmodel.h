@@ -57,10 +57,10 @@ protected:
     virtual void finishedDisplayingQueuedPosts() { }
     virtual bool checkVisibility(const QString &cid);
     void getSavedGenerators();
-    void putPreferences(const QString &json);
+    void putPreferences(const QJsonArray &json);
 
-    QString appendGeneratorToPreference(const QString &src_json, const QString &uri) const;
-    QString removeGeneratorToPreference(const QString &src_json, const QString &uri) const;
+    QJsonArray appendGeneratorToPreference(const QString &src_json, const QString &uri) const;
+    QJsonArray removeGeneratorToPreference(const QString &src_json, const QString &uri) const;
 
     QHash<QString, AtProtocolType::AppBskyFeedDefs::GeneratorView> m_generatorViewHash;
     QList<QString> m_savedUriList;

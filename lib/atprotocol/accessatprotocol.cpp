@@ -364,7 +364,6 @@ QJsonObject AccessAtProtocol::makeThreadGateJsonObject(
         const QString &uri, const AtProtocolType::ThreadGateType type,
         const QList<AtProtocolType::ThreadGateAllow> &allow_rules)
 {
-    QString rkey = uri.split("/").last();
 
     QJsonArray json_allow;
     if (type == ThreadGateType::Choice) {
@@ -388,13 +387,7 @@ QJsonObject AccessAtProtocol::makeThreadGateJsonObject(
     json_record.insert("createdAt", QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
     json_record.insert("allow", json_allow);
 
-    QJsonObject json_obj;
-    json_obj.insert("collection", "app.bsky.feed.threadgate");
-    json_obj.insert("repo", this->did());
-    json_obj.insert("rkey", rkey);
-    json_obj.insert("record", json_record);
-
-    return json_obj;
+    return json_record;
 }
 
 QString AccessAtProtocol::cursor() const

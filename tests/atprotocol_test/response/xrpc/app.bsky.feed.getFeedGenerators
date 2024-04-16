@@ -1,0 +1,79 @@
+{
+    "feeds": [
+        {
+            "uri": "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/whats-hot",
+            "cid": "bafyreibffkfh5lnndhpmginso7txws4cmqcjrubb3dtfnnwqt2lyrydkua",
+            "did": "did:web:discover.bsky.social",
+            "creator": {
+                "did": "did:plc:z72i7hdynmk6r22z27h6tvur",
+                "handle": "bsky.app",
+                "displayName": "Bluesky",
+                "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:z72i7hdynmk6r22z27h6tvur/bafkreihagr2cmvl2jt4mgx3sppwe2it3fwolkrbtjrhcnwjk4jdijhsoze@jpeg",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false,
+                    "following": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3jurpib5l7q2c"
+                },
+                "labels": [],
+                "description": "Official Bluesky account (check domain👆)\n\nFollow for updates and announcements",
+                "indexedAt": "2024-01-25T23:46:28.776Z"
+            },
+            "displayName": "Discover",
+            "description": "Trending content from your personal network",
+            "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:z72i7hdynmk6r22z27h6tvur/bafkreidljdg62x3zhlweyzshoekrw2znokytt5tmib7g4xsngwvpnf6ule@jpeg",
+            "likeCount": 6701,
+            "labels": [],
+            "viewer": {},
+            "indexedAt": "2023-05-19T23:19:19.592Z"
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.generator/aaajli5mudiws",
+            "cid": "bafyreifiwk54etwnvf276ibod6agn4tl6off4ddxpj5qxgj6vqtm7mi6hy",
+            "did": "did:web:skyfeed.me",
+            "creator": {
+                "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+                "handle": "ioriayane.relog.tech",
+                "displayName": "IoriAYANE",
+                "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy@jpeg",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false
+                },
+                "labels": [],
+                "description": "Blueskyクライアントの羽衣を作ってます。\nhttps://hagoromo.relog.tech/ja/\nepubを作るソフトのLeMEを作ってます。\nhttps://leme.style\nX:@ioriayane\nアイコンは X:@keikawagutiさん",
+                "indexedAt": "2024-03-19T16:38:04.244Z"
+            },
+            "displayName": "illst",
+            "description": "Only submit images for \"illst\" listings.",
+            "likeCount": 2,
+            "labels": [],
+            "viewer": {},
+            "indexedAt": "2023-12-26T16:04:23.695Z"
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.generator/18bd2c12255dc50",
+            "cid": "bafyreifnih4vdr3nmwg3nsdkaamb6wnvwgo44v6qi73uxxugele65wswgi",
+            "did": "did:web:www.bluefeed.app",
+            "creator": {
+                "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+                "handle": "ioriayane.relog.tech",
+                "displayName": "IoriAYANE",
+                "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy@jpeg",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false
+                },
+                "labels": [],
+                "description": "Blueskyクライアントの羽衣を作ってます。\nhttps://hagoromo.relog.tech/ja/\nepubを作るソフトのLeMEを作ってます。\nhttps://leme.style\nX:@ioriayane\nアイコンは X:@keikawagutiさん",
+                "indexedAt": "2024-03-19T16:38:04.244Z"
+            },
+            "displayName": "ぷらも",
+            "description": "プラモデル関係のポストのまとめ",
+            "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/bafkreicuocwtxhltiskj5pfhtulpt5utp6idyrzzkbjyyy7zwu7j5zerrq@jpeg",
+            "likeCount": 4,
+            "labels": [],
+            "viewer": {},
+            "indexedAt": "2024-02-26T16:50:30.290Z"
+        }
+    ]
+}

@@ -1,11 +1,10 @@
 #include "comatprotorepogetrecord.h"
+#include "atprotocol/lexicons_func.h"
 #include "atprotocol/lexicons_func_unknown.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QUrlQuery>
-
-using namespace AtProtocolType;
 
 namespace AtProtocolInterface {
 
@@ -14,31 +13,36 @@ ComAtprotoRepoGetRecord::ComAtprotoRepoGetRecord(QObject *parent) : AccessAtProt
 void ComAtprotoRepoGetRecord::getRecord(const QString &repo, const QString &collection,
                                         const QString &rkey, const QString &cid)
 {
-    QUrlQuery query;
+    QUrlQuery url_query;
     if (!repo.isEmpty()) {
-        query.addQueryItem(QStringLiteral("repo"), repo);
+        url_query.addQueryItem(QStringLiteral("repo"), repo);
     }
     if (!collection.isEmpty()) {
-        query.addQueryItem(QStringLiteral("collection"), collection);
+        url_query.addQueryItem(QStringLiteral("collection"), collection);
     }
     if (!rkey.isEmpty()) {
-        query.addQueryItem(QStringLiteral("rkey"), rkey);
+        url_query.addQueryItem(QStringLiteral("rkey"), rkey);
     }
     if (!cid.isEmpty()) {
-        query.addQueryItem(QStringLiteral("cid"), cid);
+        url_query.addQueryItem(QStringLiteral("cid"), cid);
     }
 
-    get(QStringLiteral("xrpc/com.atproto.repo.getRecord"), query);
+    get(QStringLiteral("xrpc/com.atproto.repo.getRecord"), url_query);
 }
 
-void ComAtprotoRepoGetRecord::profile(const QString &did)
+const QString &ComAtprotoRepoGetRecord::uri() const
 {
-    getRecord(did, QStringLiteral("app.bsky.actor.profile"), QStringLiteral("self"), QString());
+    return m_uri;
 }
 
-void ComAtprotoRepoGetRecord::list(const QString &did, const QString &rkey)
+const QString &ComAtprotoRepoGetRecord::cid() const
 {
-    getRecord(did, QStringLiteral("app.bsky.graph.list"), rkey, QString());
+    return m_cid;
+}
+
+const QVariant &ComAtprotoRepoGetRecord::value() const
+{
+    return m_value;
 }
 
 bool ComAtprotoRepoGetRecord::parseJson(bool success, const QString reply_json)
@@ -47,27 +51,13 @@ bool ComAtprotoRepoGetRecord::parseJson(bool success, const QString reply_json)
     if (json_doc.isEmpty()) {
         success = false;
     } else {
-        m_cid = json_doc.object().value("cid").toString();
-        m_uri = json_doc.object().value("uri").toString();
-        LexiconsTypeUnknown::copyUnknown(json_doc.object().value("value").toObject(), m_record);
+        AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("uri"), m_uri);
+        AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("cid"), m_cid);
+        AtProtocolType::LexiconsTypeUnknown::copyUnknown(
+                json_doc.object().value("value").toObject(), m_value);
     }
 
     return success;
-}
-
-QString ComAtprotoRepoGetRecord::cid() const
-{
-    return m_cid;
-}
-
-QString ComAtprotoRepoGetRecord::uri() const
-{
-    return m_uri;
-}
-
-QVariant ComAtprotoRepoGetRecord::record() const
-{
-    return m_record;
 }
 
 }

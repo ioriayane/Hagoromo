@@ -4,18 +4,97 @@
 
 # python3 ./scripts/defs2struct.py
 
-import sys
 import os
 import glob
 import json
-from jinja2 import Template, Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader
 
 class FuncHistoryItem:
+    """ 関数の履歴保存用 """
     def __init__(self, type_name, qt_type) -> None:
         self.type_name = type_name
         self.qt_type = qt_type
 
+class FunctionArgument:
+    """ 関数の引数管理用 """
+    def __init__(self, arg_type: str, name: str, is_array: bool) -> None:
+        self._type = arg_type
+        self._name = name
+        self._is_array = is_array
+
+    def to_string_arg(self) -> str:
+        """ コードの文字列に変換 """
+        arg_def: str = ''
+        if self._is_array:
+            if self._type == 'string':
+                arg_def = f"const QList<QString> &{self._name}"
+            elif self._type == 'integer':
+                arg_def =  f"const QList<int> &{self._name}"
+            elif self._type == 'boolean':
+                arg_def = f"const QList<bool> &{self._name}"
+        elif self._type == 'string' or self._type == 'json_string':
+            arg_def = f"const QString &{self._name}"
+        elif self._type == 'integer':
+            arg_def = f"const int {self._name}"
+        elif self._type == 'boolean':
+            arg_def = f"const bool {self._name}"
+        elif self._type == 'unknown':
+            arg_def = f"const QJsonObject &{self._name}"
+        elif self._type == 'json_array':
+            arg_def = f"const QJsonArray &{self._name}"
+        elif self._type == 'object':
+            arg_def = f"const QJsonObject &{self._name}"
+        return arg_def
+
+    def to_string_query(self) -> str:
+        """ クエリの作成 """
+        query: str = ''
+        if self._is_array:
+            query  = f"for (const auto &value : {self._name})" + "{\n"
+            query += f"url_query.addQueryItem(QStringLiteral(\"{self._name}\"), value);\n"
+            query += "}\n"
+        elif self._type == 'string':
+            query  = f"if(!{self._name}.isEmpty())" + "{\n"
+            query += f"url_query.addQueryItem(QStringLiteral(\"{self._name}\"), {self._name});\n"
+            query += "}\n"
+        elif self._type == 'integer':
+            query  = f"if({self._name} > 0)" + "{\n"
+            query += f"url_query.addQueryItem(QStringLiteral(\"{self._name}\"), QString::number({self._name}));\n"
+            query += "}\n"
+        elif self._type == 'boolean':
+            query  = f"if({self._name})" + "{\n"
+            query += f"url_query.addQueryItem(QStringLiteral(\"{self._name}\"), \"true\");\n"
+            query += "}\n"
+        return query
+
+    def to_string_payload(self) -> str:
+        """ postのデータ """
+        payload: str = ''
+        if self._is_array:
+            payload  = f"for (const auto &value : {self._name})" + "{\n"
+            payload += f"url_query.addQueryItem(QStringLiteral(\"{self._name}\"), value);\n"
+            payload += "}\n"
+        elif self._type == 'string' or self._type == 'json_string':
+            payload  = f"if(!{self._name}.isEmpty())" + "{\n"
+            payload += f"json_obj.insert(QStringLiteral(\"{self._name}\"), {self._name});\n"
+            payload += "}\n"
+        elif self._type == 'integer':
+            payload  = f"if({self._name} > 0)" + "{\n"
+            payload += f"json_obj.insert(QStringLiteral(\"{self._name}\"), QString::number({self._name}));\n"
+            payload += "}\n"
+        elif self._type == 'boolean':
+            # payload  = f"if({self._name})" + "{\n"
+            payload += f"json_obj.insert(QStringLiteral(\"{self._name}\"), {self._name});\n"
+            # payload += "}\n"
+        elif self._type == 'unknown' or self._type == 'json_array' or self._type == 'object':
+            payload  = f"if(!{self._name}.isEmpty())" + "{\n"
+            payload += f"json_obj.insert(QStringLiteral(\"{self._name}\"), {self._name});\n"
+            payload += "}\n"
+        return payload
+
+
 class Defs2Struct:
+    """ lexiconの定義から構造体などを生成 """
     def __init__(self) -> None:
         self.history = [] # <namespace>#<struct_name>
         self.history_namespace = []
@@ -40,6 +119,110 @@ class Defs2Struct:
                          'AppBskyGraphList::Main',
                          'AppBskyFeedThreadgate::Main',
                         )
+        self.inheritance = {
+                'app.bsky.actor.defs#profileView': {
+                    'parent_namespace': 'app.bsky.graph.getFollows',
+                    'parent_header': ['atprotocol/app/bsky/graph/appbskygraphgetfollows.h']
+                },
+                'app.bsky.actor.defs#profileViewBasic': {
+                    'parent_namespace': 'app.bsky.graph.getFollows',
+                    'parent_header': ['atprotocol/app/bsky/graph/appbskygraphgetfollows.h']
+                },
+                'app.bsky.feed.defs#generatorView': {
+                    'parent_namespace': 'app.bsky.feed.getFeedGenerators',
+                    'parent_header': ['atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerators.h']
+                },
+                'app.bsky.feed.defs#feedViewPost': {
+                    'parent_namespace': 'app.bsky.feed.getTimeline',
+                    'parent_header': ['atprotocol/app/bsky/feed/appbskyfeedgettimeline.h']
+                },
+                'app.bsky.feed.defs#postView': {
+                    'parent_namespace': 'app.bsky.feed.getPosts',
+                    'parent_header': ['atprotocol/app/bsky/feed/appbskyfeedgetposts.h']
+                },
+                'app.bsky.graph.defs#listView': {
+                    'parent_namespace': 'app.bsky.graph.getLists',
+                    'parent_header': ['atprotocol/app/bsky/graph/appbskygraphgetlists.h']
+                }
+            }
+
+        self.skip_api_class_id = [
+            'tools.ozone.',
+            'com.atproto.admin.',
+            'com.atproto.identity.',
+            'com.atproto.label.',
+            'com.atproto.repo.applyWrites',
+            'com.atproto.repo.describeRepo',
+            'com.atproto.repo.importRepo',
+            'com.atproto.repo.uploadBlob',
+            'com.atproto.repo.listMissingBlobs',
+            'com.atproto.server.activateAccount',
+            'com.atproto.server.checkAccountStatus',
+            'com.atproto.server.confirmEmail',
+            'com.atproto.server.createAccount',
+            'com.atproto.server.createAppPassword',
+            'com.atproto.server.createInviteCode',
+            'com.atproto.server.createInviteCodes',
+            'com.atproto.server.deactivateAccount',
+            'com.atproto.server.deleteAccount',
+            'com.atproto.server.deleteSession',
+            'com.atproto.server.describeServer',
+            'com.atproto.server.getAccountInviteCodes',
+            'com.atproto.server.getServiceAuth',
+            'com.atproto.server.getSession',
+            'com.atproto.server.listAppPasswords',
+            'com.atproto.server.requestAccountDelete',
+            'com.atproto.server.requestEmailConfirmation',
+            'com.atproto.server.requestEmailUpdate',
+            'com.atproto.server.requestPasswordReset',
+            'com.atproto.server.reserveSigningKey',
+            'com.atproto.server.resetPassword',
+            'com.atproto.server.revokeAppPassword',
+            'com.atproto.server.updateEmail',
+            'com.atproto.sync.getHead',
+            'com.atproto.sync.getLatestCommit',
+            'com.atproto.sync.getBlocks',
+            'com.atproto.sync.getCheckout',
+            'com.atproto.sync.getRecord',
+            'com.atproto.sync.getRepo',
+            'com.atproto.sync.notifyOfUpdate',
+            'com.atproto.sync.requestCrawl',
+            'com.atproto.sync.listBlobs',
+            'com.atproto.sync.listRepos',
+            'com.atproto.temp.',
+            'app.bsky.unspecced.searchPostsSkeleton',
+            'app.bsky.unspecced.searchActorsSkeleton',
+            'app.bsky.unspecced.getTaggedSuggestions',
+            'app.bsky.notification.registerPush',
+            'app.bsky.notification.getUnreadCount',
+            'app.bsky.graph.getSuggestedFollowsByActor',
+            'app.bsky.graph.getRelationships',
+            'app.bsky.feed.sendInteractions',
+            'app.bsky.feed.getSuggestedFeeds',
+            'app.bsky.feed.getFeedSkeleton',
+            'app.bsky.feed.describeFeedGenerator',
+            'app.bsky.actor.getSuggestions'
+        ]
+        self.unuse_auth = [
+            'com.atproto.server.createSession',
+            'com.atproto.sync.getBlob',
+        ]
+        self.need_extension = [
+            'com.atproto.moderation.createReport',
+            'com.atproto.repo.createRecord',
+            'com.atproto.repo.deleteRecord',
+            'com.atproto.repo.getRecord',
+            'com.atproto.repo.listRecords',
+            'com.atproto.repo.putRecord',
+            'com.atproto.server.createSession',
+            'com.atproto.server.refreshSession'
+        ]
+
+    def skip_spi_class(self, namespace: str) -> bool:
+        for class_id in self.skip_api_class_id:
+            if namespace.startswith(class_id):
+                return True
+        return False
 
     def to_struct_style(self, name: str) -> str:
         return name[0].upper() + name[1:]
@@ -51,6 +234,13 @@ class Defs2Struct:
             dest.append(src[0].upper() + src[1:])
             # app.bsky.embed.recordWithMediaがあるのでcapitalize()は使えない
         return ''.join(dest)
+
+    def to_header_path(self, namespace: str) -> str:
+        srcs = namespace.split('.')
+        dest = ['atprotocol']
+        dest.extend(srcs[:-1])
+        dest.append(namespace.lower().replace('.', '') + '.h')
+        return '/'.join(dest)
 
     def split_ref(self, path: str) -> tuple:
         if '#' in path:
@@ -384,6 +574,39 @@ class Defs2Struct:
             self.output_text[namespace].append('typedef bool %s;%s' % (self.to_struct_style(type_name), obj_comment,))
             self.append_history(namespace, type_name)
 
+        elif obj.get('type') == 'array':
+            # arrayは型定義にする
+            items_type = obj.get('items', {}).get('type', '')
+            if items_type == 'union':
+                # refのときはその型を先に処理する
+                for ref_path in obj.get('items', {}).get('refs', []):
+                    self.output_ref_recursive(namespace, type_name, ref_path)
+
+                self.output_text[namespace].append('struct %s' % (self.to_struct_style(type_name), ))
+                self.output_text[namespace].append('{')
+                self.output_text[namespace].append('    // union start : %s' % (type_name, ))
+                for ref_path in obj.get('items', {}).get('refs', []):
+                    (ref_namespace, ref_type_name) = self.split_ref(ref_path)
+                    if len(ref_type_name) == 0:
+                        ref_type_name = 'main'
+                    if len(ref_namespace) == 0:
+                        extend_ns = '%s::' % (self.to_namespace_style(namespace), )
+                    else:
+                        extend_ns = '%s::' % (self.to_namespace_style(ref_namespace), )
+                    self.output_text[namespace].append('                QList<%s%s> %s;' % (extend_ns, self.to_struct_style(ref_type_name),ref_type_name, ))
+
+                self.output_text[namespace].append('    // union end : %s' % (type_name, ))
+                self.output_text[namespace].append('};')
+
+
+            elif items_type == 'integer':
+                self.output_text[namespace].append('typedef QList<int> %s;%s' % (self.to_struct_style(type_name), obj_comment, ))
+            elif items_type == 'boolean':
+                self.output_text[namespace].append('typedef QList<bool> %s;%s' % (self.to_struct_style(type_name), obj_comment, ))
+            elif items_type == 'string':
+                self.output_text[namespace].append('typedef QList<QString> %s;%s' % (self.to_struct_style(type_name), obj_comment, ))
+            self.append_history(namespace, type_name)
+
         else:
             variant_key = obj.get('type', '')
             variant_obj = obj.get(variant_key)
@@ -629,78 +852,341 @@ class Defs2Struct:
 
             self.append_func_history(namespace, function_define)
 
+        elif obj.get('type') == 'array':
+            # array
+            if namespace not in self.output_func_text:
+                self.output_func_text[namespace] = []
+            function_define = 'void copy%s(const QJsonArray &src, %s::%s &dest)' % (
+                self.to_struct_style(type_name), self.to_namespace_style(namespace), self.to_struct_style(type_name), )
+            self.output_func_text[namespace].append(function_define)
+            self.output_func_text[namespace].append('{')
+            self.output_func_text[namespace].append('    if (!src.isEmpty()) {')
+
+            items_type = obj.get('items', {}).get('type', '')
+            if items_type == 'union':
+                self.output_func_text[namespace].append('        for (const auto &value : src) {')
+                self.output_func_text[namespace].append('            QString value_type = value.toObject().value("$type").toString();')
+                chain_if = ''
+                for ref_path in obj.get('items', {}).get('refs', []):
+                    (ref_namespace, ref_type_name) = self.split_ref(ref_path)
+                    if len(ref_type_name) == 0:
+                        ref_type_name = 'main'
+
+                    if len(ref_type_name) == 0:
+                        self.output_func_text[namespace].append('        // union %s %s' % (type_name, ref_path, ))
+                    else:
+                        if len(ref_namespace) == 0:
+                            extend_ns = '%s::' % (self.to_namespace_style(namespace), )
+                            union_name = '%s_%s' % (type_name, self.to_struct_style(ref_type_name))
+                            ref_path_full = namespace + '#' + ref_type_name
+                        else:
+                            extend_ns = '%s::' % (self.to_namespace_style(ref_namespace), )
+                            union_name = '%s_%s_%s' % (type_name, self.to_namespace_style(ref_namespace), self.to_struct_style(ref_type_name))
+                            ref_path_full = ref_path
+                        union_type_name = '%s%sType' % (self.to_struct_style(type_name), self.to_struct_style(type_name), )
+
+                        self.output_func_text[namespace].append('            %sif (value_type == QStringLiteral("%s")) {' % (chain_if, ref_path_full, ))
+                        self.output_func_text[namespace].append('                %s%s child;' % (extend_ns, self.to_struct_style(ref_type_name), ))
+                        self.output_func_text[namespace].append('                %scopy%s(value.toObject(), child);' % (extend_ns, self.to_struct_style(ref_type_name), ))
+                        self.output_func_text[namespace].append('                dest.%s.append(child);' % (ref_type_name, ))
+                        self.output_func_text[namespace].append('            }')
+                        if len(chain_if) == 0:
+                            chain_if = '             else '
+                self.output_func_text[namespace].append('        }')
+            elif items_type == 'integer':
+                pass
+            elif items_type == 'boolean':
+                pass
+            elif items_type == 'string':
+                pass
+
+            self.output_func_text[namespace].append('    }')
+            self.output_func_text[namespace].append('}')
+
+            self.append_func_history(namespace, function_define)
         else:
             variant_key = obj.get('type', '')
             variant_obj = self.json_obj.get(namespace, {}).get('defs', {}).get('main', {}).get(variant_key, {})
             if variant_obj is not None:
                 self.output_function(namespace, type_name, variant_obj)
 
+    def output_api_class_data(self, namespace: str, ref: str, var_type: str, key_name: str) -> dict:
+        data: dict = {}
+        (ref_namespace, ref_struct_name) = self.split_ref(ref)
+
+        if len(ref_namespace) == 0:
+            ref_namespace = namespace
+
+        data['parent_info'] = self.inheritance.get(ref, {})
+        data['copy_method'] = 'AtProtocolType::%s::copy%s' % (self.to_namespace_style(ref_namespace),
+                                                self.to_struct_style(ref_struct_name), )
+        data['variable_is_obj'] = (var_type == 'obj')
+        data['variable_is_array'] = var_type.startswith('array_')
+        data['variable_is_union'] = (var_type == 'array_union')
+        data['variable_key_name'] = key_name
+        data['variable_type'] = 'AtProtocolType::%s::%s' % (self.to_namespace_style(ref_namespace),
+                                                            self.to_struct_style(ref_struct_name), )
+        if var_type.startswith('array_'):
+            data['method_getter'] = '%sList' % (ref_struct_name, )
+            data['variable_name'] = 'm_%sList' % (ref_struct_name, )
+        else:
+            data['method_getter'] = '%s' % (ref_struct_name, )
+            data['variable_name'] = 'm_%s' % (ref_struct_name, )
+        if self.history_type.get(ref, '') == 'array':
+            data['variable_to'] = '.toArray()'
+        else:
+            data['variable_to'] = '.toObject()'
+        data['union_ref'] = ref
+
+        return data
+
+    def output_api_class_data_primitive(self, pro_type: str, key_name: str) -> dict:
+        data: dict = {}
+
+        data['parent_info'] = {}
+        data['variable_is_obj'] = False
+        data['variable_is_array'] = False
+        data['variable_is_union'] = False
+        data['variable_key_name'] = key_name
+        if pro_type == 'string':
+            data['copy_method'] = 'AtProtocolType::LexiconsTypeUnknown::copyString'
+            data['variable_type'] = 'QString'
+        elif pro_type == 'array_string':
+            data['copy_method'] = 'AtProtocolType::LexiconsTypeUnknown::copyStringList'
+            data['variable_type'] = 'QStringList'
+        elif pro_type == 'boolean':
+            data['copy_method'] = 'AtProtocolType::LexiconsTypeUnknown::copyBool'
+            data['variable_type'] = 'bool'
+        elif pro_type == 'integer':
+            data['copy_method'] = 'AtProtocolType::LexiconsTypeUnknown::copyInt'
+            data['variable_type'] = 'int'
+        elif pro_type == 'blob':
+            data['copy_method'] = 'AtProtocolType::LexiconsTypeUnknown::copyBlob'
+            data['variable_type'] = 'Blob'
+        elif pro_type == 'byte_array':
+            data['copy_method'] = 'AtProtocolType::LexiconsTypeUnknown::copyByteArray'
+            data['variable_type'] = 'QByteArray'
+        elif pro_type == 'unknown':
+            data['copy_method'] = 'AtProtocolType::LexiconsTypeUnknown::copyUnknown'
+            data['variable_type'] = 'QVariant'
+        if pro_type.startswith('array_'):
+            data['method_getter'] = '%sList' % (key_name, )
+            data['variable_name'] = 'm_%sList' % (key_name, )
+            data['variable_to'] = '.toArray()'
+        else:
+            data['method_getter'] = '%s' % (key_name, )
+            data['variable_name'] = 'm_%s' % (key_name, )
+            if pro_type == 'unknown':
+                data['variable_to'] = '.toObject()'
+            else:
+                data['variable_to'] = ''
+        return data
+
+    def output_api_class_data_union(self, namespace: str, union_ref: str, key_name: str) -> dict:
+        data: dict = {}
+        (ref_namespace, ref_struct_name) = self.split_ref(union_ref)
+
+        if len(ref_namespace) == 0:
+            ref_namespace = namespace
+        if len(ref_struct_name) == 0:
+            ref_struct_name = 'main'
+
+        data['parent_info'] = self.inheritance.get(union_ref, {})
+        data['copy_method'] = 'AtProtocolType::%s::copy%s' % (self.to_namespace_style(ref_namespace),
+                                                self.to_struct_style(ref_struct_name), )
+        data['variable_is_obj'] = False
+        data['variable_is_array'] = False
+        data['variable_is_union'] = True
+        data['variable_key_name'] = key_name
+        data['variable_type'] = 'AtProtocolType::%s::%s' % (self.to_namespace_style(ref_namespace),
+                                                            self.to_struct_style(ref_struct_name), )
+        data['method_getter'] = '%s' % (ref_struct_name, )
+        data['variable_name'] = 'm_%s' % (ref_struct_name, )
+        data['variable_to'] = '.toObject()'
+        data['union_ref'] = union_ref
+
+        return data
 
     def output_api_class(self, namespace: str, type_name: str):
         obj = self.get_defs_obj(namespace, type_name)
+        data: dict = {}
         if obj.get('type') == 'query' or obj.get('type') == 'procedure':
-            data = {}
             data['file_name_lower'] = namespace.replace('.', '').lower()
             data['file_name_upper'] = namespace.replace('.', '').upper()
             data['method_name'] = namespace.split('.')[-1]
             data['class_name'] = self.to_namespace_style(namespace)
-            args = ''
-            # query
-            properties = obj.get('parameters', {}).get('properties')
-            if properties is not None:
+            data['parent_class_name'] = 'AccessAtProtocol'
+            data['include_paths'] = ['atprotocol/accessatprotocol.h']
+            data['user_auth'] = (namespace not in self.unuse_auth)
+            arguments: list[FunctionArgument] = []
+            if obj.get('type') == 'query':
+                # query
                 data['access_type'] = 'get'
-                for pro_name, pro_value in properties.items():
-                    if self.check_deprecated(pro_value):
-                        continue
-                    pro_type = pro_value.get('type', '')
-                    if pro_type == 'string':
-                        if len(args) > 0:
-                            args += ", "
-                        args += "const QString &%s" % (pro_name, )
-                    elif pro_type == 'integer':
-                        if len(args) > 0:
-                            args += ", "
-                        args += "const int %s" % (pro_name, )
-                    elif pro_type == 'boolean':
-                        if len(args) > 0:
-                            args += ", "
-                        args += "const bool %s" % (pro_name, )
-                    elif pro_type == 'array':
-                        pro_type = pro_value.get('items', {}).get('type', '')
-                        if pro_type == 'string':
-                            if len(args) > 0:
-                                args += ", "
-                            args += "const QList<QString> &%s" % (pro_name, )
-                        elif pro_type == 'integer':
-                            if len(args) > 0:
-                                args += ", "
-                            args += "const QList<int> %s" % (pro_name, )
-                        elif pro_type == 'boolean':
-                            if len(args) > 0:
-                                args += ", "
-                            args += "const QList<bool> %s" % (pro_name, )
-            # post
-            properties = obj.get('input', {}).get('schema', {}).get('properties')
-            if properties is not None:
+                properties = obj.get('parameters', {}).get('properties')
+                if properties is not None:
+                    for pro_name, pro_value in properties.items():
+                        if self.check_deprecated(pro_value):
+                            continue
+
+                        pro_type = pro_value.get('type', '')
+                        if pro_type == 'array':
+                            pro_type = pro_value.get('items', {}).get('type', '')
+                            arguments.append(FunctionArgument(pro_type, pro_name, True))
+                        else:
+                            arguments.append(FunctionArgument(pro_type, pro_name, False))
+            elif obj.get('type') == 'procedure':
+                # post
                 data['access_type'] = 'post'
-                for pro_name, pro_value in properties.items():
-                    if self.check_deprecated(pro_value):
-                        continue
-                    pro_type = pro_value.get('type', '')
-                    if pro_type == 'string':
-                        if len(args) > 0:
-                            args += ", "
-                        args += "const QString &%s" % (pro_name, )
-                    elif pro_type == 'integer':
-                        if len(args) > 0:
-                            args += ", "
-                        args += "const int %s" % (pro_name, )
-                    elif pro_type == 'boolean':
-                        if len(args) > 0:
-                            args += ", "
-                        args += "const bool %s" % (pro_name, )
-            data['method_args'] = args
+                properties = obj.get('input', {}).get('schema', {}).get('properties')
+                if properties is not None:
+                    for pro_name, pro_value in properties.items():
+                        if self.check_deprecated(pro_value):
+                            continue
+                        pro_type = pro_value.get('type', '')
+                        if pro_type == 'array':
+                            pro_type = pro_value.get('items', {}).get('type', '')
+                            arguments.append(FunctionArgument(pro_type, pro_name, True))
+                        elif pro_type == 'ref':
+                            pro_ref = pro_value.get('ref', '')
+                            arguments.append(FunctionArgument('json_' + self.history_type.get(pro_ref, ''), pro_name, False))
+                        elif pro_type == 'union':
+                            pro_refs = pro_value.get('refs', [])
+                            for pro_ref in pro_refs:
+                                if pro_ref in self.history_type:
+                                    pro_type = self.history_type.get(pro_ref)
+                                    break
+                            arguments.append(FunctionArgument(pro_type, pro_name, False))
+                        elif pro_type == 'ref':
+                            pass
+                        else:
+                            arguments.append(FunctionArgument(pro_type, pro_name, False))
+
+            args: list[str] = []
+            query: list[str] = []
+            payload: list[str] = []
+            for argument in arguments:
+                args.append(argument.to_string_arg())
+                query.append(argument.to_string_query())
+                payload.append(argument.to_string_payload())
+
+            data['method_args'] = ','.join(args)
+            data['method_query'] = ''.join(query)
+            if len(payload) > 0:
+                data['method_payload'] = ''.join(payload)
             data['api_id'] = namespace
+
+        if obj.get('output') is not None:
+            schema = obj.get('output', {}).get('schema', {})
+            encoding = obj.get('output', {}).get('encoding', {})
+            if encoding == '*/*':
+                variables = (('byte_array', 'blobData', ), ('string', 'extension', ), )
+                for variable in variables:
+                    item_obj = self.output_api_class_data_primitive(variable[0], variable[1])
+                    if len(item_obj) > 0:
+                        item_obj['variable_is_obj'] = True
+                        data['members'] = data.get('members', [])
+                        data['members'].append(item_obj)
+                        data['has_primitive'] = True
+                data['recv_image'] = True
+
+            elif encoding == 'application/vnd.ipld.car':
+                pass
+            elif encoding != 'application/json':
+                pass
+            elif schema.get('type', '') == 'ref':
+                ref = schema.get('ref', '')
+                item_obj = self.output_api_class_data(namespace, ref, '', '')
+                if len(item_obj) > 0:
+                    data['members'] = data.get('members', [])
+                    data['members'].append(item_obj)
+
+            elif schema.get('type', '') == 'object':
+                for key_name, property_obj in schema.get('properties', {}).items():
+                    pro_type = property_obj.get('type')
+                    pro_items = property_obj.get('items', {})
+                    (ref_namespace, ref_struct_name) = self.split_ref(pro_items.get('ref', ''))
+                    if pro_type == 'array':
+                        item_type = pro_items.get('type')
+                        if item_type == 'ref':
+                            var_type = 'array_ref'
+                        elif item_type == 'union':
+                            var_type = 'array_union'
+                        elif item_type == 'string':
+                            var_type = 'array_string'
+                        else:
+                            var_type = ''
+                            print (namespace + ":" + ref_namespace + "," + ref_struct_name + " not ref")
+
+                        if var_type == 'array_string':
+                            item_obj = self.output_api_class_data_primitive(var_type, key_name)
+                            if len(item_obj) > 0:
+                                item_obj['variable_is_obj'] = True
+                                data['members'] = data.get('members', [])
+                                data['members'].append(item_obj)
+                                data['is_parent'] = False
+                                data['has_parent_class'] = False
+                                data['has_primitive'] = True
+                        elif len(var_type) > 0:
+                            refs = pro_items.get('refs', [])
+                            if len(refs) == 0 and 'ref' in pro_items:
+                                refs = [pro_items.get('ref', '')]
+                            if len(refs) == 0:
+                                refs = [namespace]
+                            for ref in refs:
+                                item_obj = self.output_api_class_data(namespace, ref, var_type, key_name)
+                                if len(item_obj) > 0:
+                                    data['members'] = data.get('members', [])
+                                    data['members'].append(item_obj)
+                                    if len(item_obj['parent_info']) > 0:
+                                        parent_class_name = self.to_namespace_style(item_obj['parent_info']['parent_namespace'])
+                                        if parent_class_name != data['class_name']:
+                                            data['is_parent'] = False
+                                            data['has_parent_class'] = True
+                                            data['parent_class_name'] = parent_class_name
+                                            data['include_paths'] = [self.to_header_path(item_obj['parent_info']['parent_namespace'])]
+                                        else:
+                                            data['is_parent'] = True
+                                            data['has_parent_class'] = False
+                                    else:
+                                        data['is_parent'] = False
+                                        data['has_parent_class'] = False
+                                else:
+                                    print (namespace + ":" + ref_namespace + "," + ref_struct_name + " ??")
+                    elif pro_type == 'string' or pro_type == 'boolean' or pro_type == 'integer' or pro_type == 'blob' or pro_type == 'unknown':
+                        if key_name == 'cursor':
+                            data['has_cursor'] = True
+                        else:
+                            item_obj = self.output_api_class_data_primitive(pro_type, key_name)
+                            if len(item_obj) > 0:
+                                item_obj['variable_is_obj'] = True
+                                data['members'] = data.get('members', [])
+                                data['members'].append(item_obj)
+                                data['has_primitive'] = True
+                    elif pro_type == 'ref':
+                        ref = property_obj.get('ref', '')
+                        item_obj = self.output_api_class_data(namespace, ref, 'obj', key_name)
+                        if len(item_obj) > 0:
+                            data['members'] = data.get('members', [])
+                            data['members'].append(item_obj)
+                    elif pro_type == 'union':
+                        union_refs = property_obj.get('refs', [])
+                        for union_ref in union_refs:
+                            item_obj = self.output_api_class_data_union(namespace, union_ref, key_name)
+                            if len(item_obj) > 0:
+                                data['members'] = data.get('members', [])
+                                data['members'].append(item_obj)
+                    else:
+                        print (namespace + ":" + ref_namespace + "," + ref_struct_name + " not array")
+
+        if len(data) > 0:
+            data['recv_image'] = data.get('recv_image', False)
+            data['has_primitive'] = data.get('has_primitive', False)
+            data['has_parent_class'] = data.get('has_parent_class', False)
+            data['completed'] = True
+            data['my_include_path'] = self.to_header_path(namespace)
+            data['need_extension'] = (namespace in self.need_extension)
+            # if data.get('access_type', '') == 'post':
+            #     data['completed'] = False
             self.api_class[namespace] = data
 
 
@@ -766,7 +1252,11 @@ class Defs2Struct:
 
         template = environment.get_template('template/api_class.h.j2')
         for namespace, value in self.api_class.items():
-            output_folder = os.path.join(output_path, '/'.join(namespace.split('.')[:-1]))
+            if value['completed']:
+                output_folder = os.path.join(output_path, '/'.join(namespace.split('.')[:-1]))
+            else:
+                output_folder = os.path.join(os.path.dirname(__file__), 'out', '/'.join(namespace.split('.')[:-1]))
+
             os.makedirs(output_folder, exist_ok=True)
 
             with open(os.path.join(output_folder, value['file_name_lower'] + '.h'), 'w', encoding='utf-8') as fp:
@@ -774,9 +1264,35 @@ class Defs2Struct:
 
         template = environment.get_template('template/api_class.cpp.j2')
         for namespace, value in self.api_class.items():
-            output_folder = os.path.join(output_path, '/'.join(namespace.split('.')[:-1]))
+            if value['completed']:
+                output_folder = os.path.join(output_path, '/'.join(namespace.split('.')[:-1]))
+            else:
+                output_folder = os.path.join(os.path.dirname(__file__), 'out', '/'.join(namespace.split('.')[:-1]))
+
             with open(os.path.join(output_folder, value['file_name_lower'] + '.cpp'), 'w', encoding='utf-8') as fp:
                 fp.write(template.render(value))
+
+
+        template = environment.get_template('template/api_class_ex.h.j2')
+        for namespace, value in self.api_class.items():
+            if not value['need_extension']:
+                continue
+            output_folder = os.path.join(os.path.dirname(__file__), 'out_ex', '/'.join(namespace.split('.')[:-1]))
+            os.makedirs(output_folder, exist_ok=True)
+
+            with open(os.path.join(output_folder, value['file_name_lower'] + 'ex.h'), 'w', encoding='utf-8') as fp:
+                fp.write(template.render(value))
+
+        template = environment.get_template('template/api_class_ex.cpp.j2')
+        for namespace, value in self.api_class.items():
+            if not value['need_extension']:
+                continue
+            output_folder = os.path.join(os.path.dirname(__file__), 'out_ex', '/'.join(namespace.split('.')[:-1]))
+
+            with open(os.path.join(output_folder, value['file_name_lower'] + 'ex.cpp'), 'w', encoding='utf-8') as fp:
+                fp.write(template.render(value))
+
+
 
     def output(self, output_path: str) -> None:
         # 各ファイル（名前空間）ごとに解析する
@@ -792,7 +1308,11 @@ class Defs2Struct:
             for type_name in defs.keys():
                 self.output_type(namespace, type_name, self.get_defs_obj(namespace, type_name))
 
-                self.output_api_class(namespace, type_name)
+        for namespace, type_obj in self.json_obj.items():
+            if not self.skip_spi_class(namespace):
+                # class
+                for type_name in defs.keys():
+                    self.output_api_class(namespace, type_name)
 
 
         # コピー関数のための解析
@@ -807,7 +1327,7 @@ class Defs2Struct:
         self.output_file_lexicons_h(environment, output_path)
         self.output_lexicons_func_cpp(environment, output_path)
         self.output_lexicons_func_h(environment, output_path)
-        self.output_api_class_cpp_h(environment, os.path.join(os.path.dirname(__file__), 'out'))
+        self.output_api_class_cpp_h(environment, output_path)
 
     def json_deep_merge(self, dest, src):
         """ 再帰的に辞書をマージ """
@@ -815,6 +1335,8 @@ class Defs2Struct:
             if key in dest:
                 if isinstance(dest[key], dict) and isinstance(src[key], dict):
                     self.json_deep_merge(dest[key], src[key])
+                elif isinstance(dest[key], list) and isinstance(src[key], list):
+                    dest[key].extend(src[key])
             else:
                 dest[key] = src[key]
         return dest

@@ -19,7 +19,13 @@ bool SearchPostListModel::getLatest()
                 if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
                     m_cursor = posts->cursor();
                 }
-                copyFrom(posts);
+                QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> feed_view_post_list;
+                for (const auto &post : qAsConst(posts->postViewList())) {
+                    AtProtocolType::AppBskyFeedDefs::FeedViewPost feed_view_post;
+                    feed_view_post.post = post;
+                    feed_view_post_list.append(feed_view_post);
+                }
+                copyFrom(feed_view_post_list);
             } else {
                 emit errorOccured(posts->errorCode(), posts->errorMessage());
             }
@@ -28,7 +34,9 @@ bool SearchPostListModel::getLatest()
         });
         posts->setAccount(account());
         posts->setLabelers(m_contentFilterLabels.labelerDids());
-        posts->searchPosts(replaceSearchCommand(text()), 10, QString());
+        posts->searchPosts(replaceSearchCommand(text()), QString(), QString(), QString(), QString(),
+                           QString(), QString(), QString(), QString(), QStringList(), 10,
+                           QString());
     });
     return true;
 }
@@ -44,7 +52,13 @@ bool SearchPostListModel::getNext()
         connect(posts, &AppBskyFeedSearchPosts::finished, [=](bool success) {
             if (success) {
                 m_cursor = posts->cursor();
-                copyFromNext(posts);
+                QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> feed_view_post_list;
+                for (const auto &post : qAsConst(posts->postViewList())) {
+                    AtProtocolType::AppBskyFeedDefs::FeedViewPost feed_view_post;
+                    feed_view_post.post = post;
+                    feed_view_post_list.append(feed_view_post);
+                }
+                copyFromNext(feed_view_post_list);
             } else {
                 emit errorOccured(posts->errorCode(), posts->errorMessage());
             }
@@ -54,7 +68,8 @@ bool SearchPostListModel::getNext()
 
         posts->setAccount(account());
         posts->setLabelers(m_contentFilterLabels.labelerDids());
-        posts->searchPosts(replaceSearchCommand(text()), 10, m_cursor);
+        posts->searchPosts(replaceSearchCommand(text()), QString(), QString(), QString(), QString(),
+                           QString(), QString(), QString(), QString(), QStringList(), 10, m_cursor);
     });
     return true;
 }

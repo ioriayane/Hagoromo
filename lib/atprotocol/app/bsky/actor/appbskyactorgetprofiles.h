@@ -2,7 +2,6 @@
 #define APPBSKYACTORGETPROFILES_H
 
 #include "atprotocol/accessatprotocol.h"
-#include "atprotocol/lexicons.h"
 
 namespace AtProtocolInterface {
 
@@ -13,12 +12,13 @@ public:
 
     void getProfiles(const QList<QString> &actors);
 
-    const QList<AtProtocolType::AppBskyActorDefs::ProfileViewDetailed> *
-    profileViewDetaileds() const;
+    const QList<AtProtocolType::AppBskyActorDefs::ProfileViewDetailed> &
+    profileViewDetailedList() const;
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);
-    QList<AtProtocolType::AppBskyActorDefs::ProfileViewDetailed> m_profileViewDetaileds;
+
+    QList<AtProtocolType::AppBskyActorDefs::ProfileViewDetailed> m_profileViewDetailedList;
 };
 
 }

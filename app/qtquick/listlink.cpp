@@ -20,14 +20,14 @@ void ListLink::getList(const QString &uri)
         }
         AppBskyGraphGetList *list = new AppBskyGraphGetList(this);
         connect(list, &AppBskyGraphGetList::finished, [=](bool success) {
-            if (success && list->listView() && list->listView()->creator) {
-                setAvatar(list->listView()->avatar);
-                setDisplayName(list->listView()->name);
-                setCreatorHandle(list->listView()->creator->handle);
+            if (success && list->listView().creator) {
+                setAvatar(list->listView().avatar);
+                setDisplayName(list->listView().name);
+                setCreatorHandle(list->listView().creator->handle);
                 setLikeCount(0);
-                setUri(list->listView()->uri);
-                setCid(list->listView()->cid);
-                setDescription(list->listView()->description);
+                setUri(list->listView().uri);
+                setCid(list->listView().cid);
+                setDescription(list->listView().description);
                 setValid(true);
             }
             setRunning(false);

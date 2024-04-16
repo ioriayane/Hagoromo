@@ -14,7 +14,10 @@ AppBskyGraphUnmuteActorList::AppBskyGraphUnmuteActorList(QObject *parent)
 void AppBskyGraphUnmuteActorList::unmuteActorList(const QString &list)
 {
     QJsonObject json_obj;
-    json_obj.insert("list", list);
+    if (!list.isEmpty()) {
+        json_obj.insert(QStringLiteral("list"), list);
+    }
+
     QJsonDocument json_doc(json_obj);
 
     post(QStringLiteral("xrpc/app.bsky.graph.unmuteActorList"),
@@ -24,7 +27,6 @@ void AppBskyGraphUnmuteActorList::unmuteActorList(const QString &list)
 bool AppBskyGraphUnmuteActorList::parseJson(bool success, const QString reply_json)
 {
     Q_UNUSED(reply_json)
-
     return success;
 }
 

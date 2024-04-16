@@ -1,8 +1,13 @@
 #include "{{ file_name_lower }}.h"
+{%- if has_parent_class == False %}
 #include "atprotocol/lexicons_func.h"
+{%- if has_primitive %}
+#include "atprotocol/lexicons_func_unknown.h"
+{%- endif %}
 
 #include <QJsonDocument>
 #include <QJsonObject>
+{%- endif %}
 {%- if access_type == "get" %}
 #include <QUrlQuery>
 {%- endif %}
@@ -10,32 +15,159 @@
 namespace AtProtocolInterface {
 
 {{ class_name }}::{{ class_name }}(QObject *parent)
-    : AccessAtProtocol { parent }
+    : {{ parent_class_name }} { parent }
+{%- if is_parent -%}{%- for member in members -%}{%- if member.variable_is_array -%}, m_listKey("{{ member.variable_key_name }}"){%- endif -%}{%- endfor -%}{%- endif -%}
 {
+{% if has_parent_class == True -%}
+{% for member in members -%}
+{% if member.variable_is_array -%}
+    m_listKey = QStringLiteral("{{ member.variable_key_name }}");
+{% endif -%}
+{% endfor -%}
+{% endif -%}
 }
 
 void {{ class_name }}::{{ method_name }}({{ method_args }})
 {
 {%- if access_type == "get" %}
-    QUrlQuery query;
-    //    query.addQueryItem(QStringLiteral("name"), name);
+    QUrlQuery url_query;
+{{ method_query }}
 
-    get(QStringLiteral("xrpc/{{ api_id }}"), query);
+    get(QStringLiteral("xrpc/{{ api_id }}"), url_query{%- if user_auth == False -%}, false{%- endif -%});
 {% else %}
-    post(QStringLiteral("xrpc/{{ api_id }}"), QByteArray(), true);
+{% if method_payload is defined -%}
+    QJsonObject json_obj;
+{{ method_payload }}
+    QJsonDocument json_doc(json_obj);
+
+    post(QStringLiteral("xrpc/{{ api_id }}"), json_doc.toJson(QJsonDocument::Compact){%- if user_auth == False -%}, false{%- endif -%});
+{% else -%}
+    post(QStringLiteral("xrpc/{{ api_id }}"), QByteArray(){%- if user_auth == False -%}, false{%- endif -%});
+{% endif -%}
 {% endif -%}
 }
 
-bool {{ class_name }}::parseJson(bool success, const QString reply_json)
+{% if has_parent_class == False %}
+{% for member in members -%}
+{% if member.variable_is_array %}
+const QList<{{ member.variable_type }}> &{{ class_name }}::{{ member.method_getter }}() const
 {
-    QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
-    if (json_doc.isEmpty()) {
-        success = false;
-    } else {
-        //setCursor(json_doc.object().value("cursor").toString());
-    }
+    return {{ member.variable_name }};
+}
+{% else %}
+const {{ member.variable_type }} &{{ class_name }}::{{ member.method_getter }}() const
+{
+    return {{ member.variable_name }};
+}
+{% endif -%}
+{% endfor %}
 
-    return success;
+{% if recv_image -%}
+bool ComAtprotoSyncGetBlob::parseJson(bool success, const QString reply_json)
+{
+    Q_UNUSED(success)
+    Q_UNUSED(reply_json)
+    return false;
 }
 
+bool ComAtprotoSyncGetBlob::recvImage(const QByteArray &data, const QString &content_type)
+{
+    m_blobData = data;
+
+    QStringList items = content_type.split("/");
+    if (items.length() == 2) {
+        m_extension = items.last();
+    }
+
+    return true;
+}
+{% else -%}
+bool {{ class_name }}::parseJson(bool success, const QString reply_json)
+{
+{% if members is not defined -%}
+    Q_UNUSED(reply_json)
+{% else -%}
+    QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
+    if (json_doc.isEmpty()
+        {%- set ns = namespace(prev_key_name="", pref_is_for=False) -%}
+        {% for member in members -%}
+        {% if member.variable_is_array and member.variable_key_name != ns.prev_key_name -%}
+         || !json_doc.object().contains({%- if is_parent -%}m_listKey{%- else -%}"{{ member.variable_key_name }}"{%- endif -%})
+    {% endif -%}
+        {%- set ns.prev_key_name  = member.variable_key_name -%}
+    {% endfor -%}
+    ) {
+        success = false;
+    } else {
+        {%if has_cursor -%}
+        setCursor(json_doc.object().value("cursor").toString());
+        {% endif -%}
+        {%- set ns.prev_key_name  = "" -%}
+        {% for member in members -%}
+        {% if member.variable_is_array and member.variable_is_union == True -%}
+            {% if ns.prev_key_name == "" -%}
+        QString type;
+        for (const auto &value : json_doc.object().value({%- if is_parent -%}m_listKey{%- else -%}"{{ member.variable_key_name }}"{%- endif -%}).toArray()) {
+            type = value.toObject().value("$type").toString();
+            {% else -%}
+            else
+            {% endif -%}
+            if (type == QStringLiteral("{{ member.union_ref }}")){
+                {{ member.variable_type }} data;
+                {{ member.copy_method }}(value.toObject(), data);
+                {{ member.variable_name }}.append(data);
+            }
+            {%- set ns.prev_is_for  = True -%}
+            {%- set ns.prev_key_name  = member.variable_key_name -%}
+        {% elif member.variable_is_array -%}
+            {% if ns.prev_is_for -%}
+                }
+                {%- set ns.prev_is_for  = False -%}
+            {% endif -%}
+        for (const auto &value : json_doc.object().value({%- if is_parent -%}m_listKey{%- else -%}"{{ member.variable_key_name }}"{%- endif -%}).toArray()) {
+            {{ member.variable_type }} data;
+            {{ member.copy_method }}(value.toObject(), data);
+            {{ member.variable_name }}.append(data);
+        }
+        {% elif member.variable_is_obj == True -%}
+            {% if ns.prev_is_for -%}
+                }
+                {%- set ns.prev_is_for  = False -%}
+            {% endif -%}
+            {{ member.copy_method }}(json_doc.object().value("{{ member.variable_key_name }}"){{ member.variable_to }}, {{ member.variable_name }});
+        {% elif member.variable_is_union == True -%}
+            {% if ns.prev_is_for -%}
+                }
+                {%- set ns.prev_is_for  = False -%}
+            {% endif -%}
+            {% if ns.prev_key_name == "" -%}
+        QString type;
+            {% endif -%}
+            {% if member.variable_key_name != ns.prev_key_name -%}
+        type = json_doc.object().value("{{ member.variable_key_name }}").toObject().value("$type").toString();
+            {% else -%}
+            else
+            {% endif -%}
+        if (type == QStringLiteral("{{ member.union_ref }}")){
+            {{ member.copy_method }}(json_doc.object().value("{{ member.variable_key_name }}").toObject(), {{ member.variable_name }});
+        }
+            {%- set ns.prev_key_name  = member.variable_key_name -%}
+        {% else -%}
+            {% if ns.prev_is_for -%}
+                }
+                {%- set ns.prev_is_for  = False -%}
+            {% endif -%}
+        {{ member.copy_method }}(json_doc.object(), {{ member.variable_name }});
+    {% endif -%}
+    {% endfor -%}
+    {% if ns.prev_is_for -%}
+        }
+    {% endif -%}
+    }
+
+{% endif -%}
+    return success;
+}
+{% endif -%}
+{% endif %}
 }

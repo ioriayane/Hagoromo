@@ -54,6 +54,7 @@ compile_commands.json
 
 
 scripts/out/*
+scripts/out_ex/*
 .vscode/settings.json
 encryption_seed.h
 build-hagoromo

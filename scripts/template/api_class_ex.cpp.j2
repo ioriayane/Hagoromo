@@ -1,0 +1,17 @@
+#include "{{ file_name_lower }}ex.h"
+
+namespace AtProtocolInterface {
+
+{{ class_name }}Ex::{{ class_name }}Ex(QObject *parent)
+    : {{ class_name }} { parent }
+{
+}
+
+bool {{ class_name }}Ex::parseJson(bool success, const QString reply_json)
+{
+    success = {{ class_name }}::parseJson(success, reply_json);
+
+    return success;
+}
+
+}

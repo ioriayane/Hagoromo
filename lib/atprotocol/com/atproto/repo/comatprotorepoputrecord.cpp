@@ -1,5 +1,6 @@
 #include "comatprotorepoputrecord.h"
 #include "atprotocol/lexicons_func.h"
+#include "atprotocol/lexicons_func_unknown.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -10,80 +11,44 @@ ComAtprotoRepoPutRecord::ComAtprotoRepoPutRecord(QObject *parent) : AccessAtProt
 
 void ComAtprotoRepoPutRecord::putRecord(const QString &repo, const QString &collection,
                                         const QString &rkey, const bool validate,
-                                        const QString &swapRecord, const QString &swapCommit,
-                                        const QJsonObject &record)
+                                        const QJsonObject &record, const QString &swapRecord,
+                                        const QString &swapCommit)
 {
     QJsonObject json_obj;
-    json_obj.insert("repo", repo);
-    json_obj.insert("collection", collection);
-    if (!rkey.isEmpty()) {
-        json_obj.insert("rkey", rkey);
+    if (!repo.isEmpty()) {
+        json_obj.insert(QStringLiteral("repo"), repo);
     }
-    json_obj.insert("validate", validate); // default = true
+    if (!collection.isEmpty()) {
+        json_obj.insert(QStringLiteral("collection"), collection);
+    }
+    if (!rkey.isEmpty()) {
+        json_obj.insert(QStringLiteral("rkey"), rkey);
+    }
+    json_obj.insert(QStringLiteral("validate"), validate);
+    if (!record.isEmpty()) {
+        json_obj.insert(QStringLiteral("record"), record);
+    }
     if (!swapRecord.isEmpty()) {
-        json_obj.insert("swapRecord", swapRecord);
+        json_obj.insert(QStringLiteral("swapRecord"), swapRecord);
     }
     if (!swapCommit.isEmpty()) {
-        json_obj.insert("swapCommit", swapCommit);
+        json_obj.insert(QStringLiteral("swapCommit"), swapCommit);
     }
-    json_obj.insert("record", record);
 
     QJsonDocument json_doc(json_obj);
 
-    post(QStringLiteral("xrpc/com.atproto.repo.putRecord"), json_doc.toJson(QJsonDocument::Compact),
-         true);
+    post(QStringLiteral("xrpc/com.atproto.repo.putRecord"),
+         json_doc.toJson(QJsonDocument::Compact));
 }
 
-void ComAtprotoRepoPutRecord::profile(const AtProtocolType::Blob &avatar,
-                                      const AtProtocolType::Blob &banner,
-                                      const QString &description, const QString &display_name,
-                                      const QString &cid)
+const QString &ComAtprotoRepoPutRecord::uri() const
 {
-    QString type = QStringLiteral("app.bsky.actor.profile");
-    QJsonObject json_record;
-    json_record.insert("$type", type);
-    if (!description.isEmpty()) {
-        json_record.insert("description", description);
-    }
-    if (!display_name.isEmpty()) {
-        json_record.insert("displayName", display_name);
-    }
-    if (!avatar.cid.isEmpty()) {
-        QJsonObject json_avatar;
-        setJsonBlob(avatar, json_avatar);
-        json_record.insert("avatar", json_avatar);
-    }
-    if (!banner.cid.isEmpty()) {
-        QJsonObject json_banner;
-        setJsonBlob(banner, json_banner);
-        json_record.insert("banner", json_banner);
-    }
-
-    putRecord(this->did(), type, QStringLiteral("self"), true, cid, QString(), json_record);
+    return m_uri;
 }
 
-void ComAtprotoRepoPutRecord::list(const AtProtocolType::Blob &avatar, const QString &purpose,
-                                   const QString &description, const QString &name,
-                                   const QString &rkey)
+const QString &ComAtprotoRepoPutRecord::cid() const
 {
-    QString type = QStringLiteral("app.bsky.graph.list");
-    QJsonObject json_record;
-    json_record.insert("$type", type);
-    json_record.insert("purpose", purpose);
-    json_record.insert("createdAt", QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
-    if (!description.isEmpty()) {
-        json_record.insert("description", description);
-    }
-    if (!name.isEmpty()) {
-        json_record.insert("name", name);
-    }
-    if (!avatar.cid.isEmpty()) {
-        QJsonObject json_avatar;
-        setJsonBlob(avatar, json_avatar);
-        json_record.insert("avatar", json_avatar);
-    }
-
-    putRecord(this->did(), type, rkey, true, QString(), QString(), json_record);
+    return m_cid;
 }
 
 bool ComAtprotoRepoPutRecord::parseJson(bool success, const QString reply_json)
@@ -92,7 +57,8 @@ bool ComAtprotoRepoPutRecord::parseJson(bool success, const QString reply_json)
     if (json_doc.isEmpty()) {
         success = false;
     } else {
-        // setCursor(json_doc.object().value("cursor").toString());
+        AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("uri"), m_uri);
+        AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("cid"), m_cid);
     }
 
     return success;

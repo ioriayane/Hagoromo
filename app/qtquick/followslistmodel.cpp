@@ -219,8 +219,8 @@ void FollowsListModel::getProfiles()
         if (success) {
             QStringList new_cid;
 
-            for (auto item = posts->profileViewDetaileds()->crbegin();
-                 item != posts->profileViewDetaileds()->crend(); item++) {
+            for (auto item = posts->profileViewDetailedList().crbegin();
+                 item != posts->profileViewDetailedList().crend(); item++) {
                 AtProtocolType::AppBskyActorDefs::ProfileView profile_view;
                 profile_view.avatar = item->avatar;
                 profile_view.did = item->did;
@@ -260,7 +260,7 @@ void FollowsListModel::copyProfiles(const AtProtocolInterface::AppBskyGraphGetFo
     if (followers == nullptr)
         return;
 
-    for (const auto &profile : *followers->profileList()) {
+    for (const auto &profile : followers->profileViewList()) {
         m_profileHash[profile.did] = profile;
         m_formattedDescriptionHash[profile.did] = m_systemTool.markupText(profile.description);
         if (m_didList.contains(profile.did)) {

@@ -8,6 +8,242 @@
 #include "lexicons_func_unknown.h"
 
 namespace AtProtocolType {
+// app.bsky.actor.defs
+namespace AppBskyActorDefs {
+void copyProfileAssociated(const QJsonObject &src, AppBskyActorDefs::ProfileAssociated &dest)
+{
+    if (!src.isEmpty()) {
+        dest.lists = src.value("lists").toInt();
+        dest.feedgens = src.value("feedgens").toInt();
+        dest.labeler = src.value("labeler").toBool();
+    }
+}
+void copyViewerState(const QJsonObject &src, AppBskyActorDefs::ViewerState &dest)
+{
+    if (!src.isEmpty()) {
+        dest.muted = src.value("muted").toBool();
+        AppBskyGraphDefs::copyListViewBasic(src.value("mutedByList").toObject(), dest.mutedByList);
+        dest.blockedBy = src.value("blockedBy").toBool();
+        dest.blocking = src.value("blocking").toString();
+        AppBskyGraphDefs::copyListViewBasic(src.value("blockingByList").toObject(),
+                                            dest.blockingByList);
+        dest.following = src.value("following").toString();
+        dest.followedBy = src.value("followedBy").toString();
+    }
+}
+void copyProfileViewBasic(const QJsonObject &src, AppBskyActorDefs::ProfileViewBasic &dest)
+{
+    if (!src.isEmpty()) {
+        dest.did = src.value("did").toString();
+        dest.handle = src.value("handle").toString();
+        dest.displayName = src.value("displayName").toString();
+        dest.avatar = src.value("avatar").toString();
+        copyProfileAssociated(src.value("associated").toObject(), dest.associated);
+        copyViewerState(src.value("viewer").toObject(), dest.viewer);
+        for (const auto &s : src.value("labels").toArray()) {
+            ComAtprotoLabelDefs::Label child;
+            ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
+            dest.labels.append(child);
+        }
+    }
+}
+void copyProfileView(const QJsonObject &src, AppBskyActorDefs::ProfileView &dest)
+{
+    if (!src.isEmpty()) {
+        dest.did = src.value("did").toString();
+        dest.handle = src.value("handle").toString();
+        dest.displayName = src.value("displayName").toString();
+        dest.description = src.value("description").toString();
+        dest.avatar = src.value("avatar").toString();
+        copyProfileAssociated(src.value("associated").toObject(), dest.associated);
+        dest.indexedAt = src.value("indexedAt").toString();
+        copyViewerState(src.value("viewer").toObject(), dest.viewer);
+        for (const auto &s : src.value("labels").toArray()) {
+            ComAtprotoLabelDefs::Label child;
+            ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
+            dest.labels.append(child);
+        }
+    }
+}
+void copyProfileViewDetailed(const QJsonObject &src, AppBskyActorDefs::ProfileViewDetailed &dest)
+{
+    if (!src.isEmpty()) {
+        dest.did = src.value("did").toString();
+        dest.handle = src.value("handle").toString();
+        dest.displayName = src.value("displayName").toString();
+        dest.description = src.value("description").toString();
+        dest.avatar = src.value("avatar").toString();
+        dest.banner = src.value("banner").toString();
+        dest.followersCount = src.value("followersCount").toInt();
+        dest.followsCount = src.value("followsCount").toInt();
+        dest.postsCount = src.value("postsCount").toInt();
+        copyProfileAssociated(src.value("associated").toObject(), dest.associated);
+        dest.indexedAt = src.value("indexedAt").toString();
+        copyViewerState(src.value("viewer").toObject(), dest.viewer);
+        for (const auto &s : src.value("labels").toArray()) {
+            ComAtprotoLabelDefs::Label child;
+            ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
+            dest.labels.append(child);
+        }
+    }
+}
+void copyAdultContentPref(const QJsonObject &src, AppBskyActorDefs::AdultContentPref &dest)
+{
+    if (!src.isEmpty()) {
+        dest.enabled = src.value("enabled").toBool();
+    }
+}
+void copyContentLabelPref(const QJsonObject &src, AppBskyActorDefs::ContentLabelPref &dest)
+{
+    if (!src.isEmpty()) {
+        dest.labelerDid = src.value("labelerDid").toString();
+        dest.label = src.value("label").toString();
+        dest.visibility = src.value("visibility").toString();
+    }
+}
+void copySavedFeedsPref(const QJsonObject &src, AppBskyActorDefs::SavedFeedsPref &dest)
+{
+    if (!src.isEmpty()) {
+        for (const auto &value : src.value("pinned").toArray()) {
+            dest.pinned.append(value.toString());
+        }
+        for (const auto &value : src.value("saved").toArray()) {
+            dest.saved.append(value.toString());
+        }
+        dest.timelineIndex = src.value("timelineIndex").toInt();
+    }
+}
+void copyPersonalDetailsPref(const QJsonObject &src, AppBskyActorDefs::PersonalDetailsPref &dest)
+{
+    if (!src.isEmpty()) {
+        dest.birthDate = src.value("birthDate").toString();
+    }
+}
+void copyFeedViewPref(const QJsonObject &src, AppBskyActorDefs::FeedViewPref &dest)
+{
+    if (!src.isEmpty()) {
+        dest.feed = src.value("feed").toString();
+        dest.hideReplies = src.value("hideReplies").toBool();
+        dest.hideRepliesByUnfollowed = src.value("hideRepliesByUnfollowed").toBool();
+        dest.hideRepliesByLikeCount = src.value("hideRepliesByLikeCount").toInt();
+        dest.hideReposts = src.value("hideReposts").toBool();
+        dest.hideQuotePosts = src.value("hideQuotePosts").toBool();
+    }
+}
+void copyThreadViewPref(const QJsonObject &src, AppBskyActorDefs::ThreadViewPref &dest)
+{
+    if (!src.isEmpty()) {
+        dest.sort = src.value("sort").toString();
+        dest.prioritizeFollowedUsers = src.value("prioritizeFollowedUsers").toBool();
+    }
+}
+void copyInterestsPref(const QJsonObject &src, AppBskyActorDefs::InterestsPref &dest)
+{
+    if (!src.isEmpty()) {
+        for (const auto &value : src.value("tags").toArray()) {
+            dest.tags.append(value.toString());
+        }
+    }
+}
+void copyMutedWordTarget(const QJsonValue &src, AppBskyActorDefs::MutedWordTarget &dest)
+{
+    dest = src.toString();
+}
+void copyMutedWord(const QJsonObject &src, AppBskyActorDefs::MutedWord &dest)
+{
+    if (!src.isEmpty()) {
+        dest.value = src.value("value").toString();
+        for (const auto &s : src.value("targets").toArray()) {
+            AppBskyActorDefs::MutedWordTarget child;
+            AppBskyActorDefs::copyMutedWordTarget(s, child);
+            dest.targets.append(child);
+        }
+    }
+}
+void copyMutedWordsPref(const QJsonObject &src, AppBskyActorDefs::MutedWordsPref &dest)
+{
+    if (!src.isEmpty()) {
+        for (const auto &s : src.value("items").toArray()) {
+            AppBskyActorDefs::MutedWord child;
+            AppBskyActorDefs::copyMutedWord(s.toObject(), child);
+            dest.items.append(child);
+        }
+    }
+}
+void copyHiddenPostsPref(const QJsonObject &src, AppBskyActorDefs::HiddenPostsPref &dest)
+{
+    if (!src.isEmpty()) {
+        for (const auto &value : src.value("items").toArray()) {
+            dest.items.append(value.toString());
+        }
+    }
+}
+void copyLabelerPrefItem(const QJsonObject &src, AppBskyActorDefs::LabelerPrefItem &dest)
+{
+    if (!src.isEmpty()) {
+        dest.did = src.value("did").toString();
+    }
+}
+void copyLabelersPref(const QJsonObject &src, AppBskyActorDefs::LabelersPref &dest)
+{
+    if (!src.isEmpty()) {
+        for (const auto &s : src.value("labelers").toArray()) {
+            LabelerPrefItem child;
+            copyLabelerPrefItem(s.toObject(), child);
+            dest.labelers.append(child);
+        }
+    }
+}
+void copyPreferences(const QJsonArray &src, AppBskyActorDefs::Preferences &dest)
+{
+    if (!src.isEmpty()) {
+        for (const auto &value : src) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type == QStringLiteral("app.bsky.actor.defs#adultContentPref")) {
+                AppBskyActorDefs::AdultContentPref child;
+                AppBskyActorDefs::copyAdultContentPref(value.toObject(), child);
+                dest.adultContentPref.append(child);
+            } else if (value_type == QStringLiteral("app.bsky.actor.defs#contentLabelPref")) {
+                AppBskyActorDefs::ContentLabelPref child;
+                AppBskyActorDefs::copyContentLabelPref(value.toObject(), child);
+                dest.contentLabelPref.append(child);
+            } else if (value_type == QStringLiteral("app.bsky.actor.defs#savedFeedsPref")) {
+                AppBskyActorDefs::SavedFeedsPref child;
+                AppBskyActorDefs::copySavedFeedsPref(value.toObject(), child);
+                dest.savedFeedsPref.append(child);
+            } else if (value_type == QStringLiteral("app.bsky.actor.defs#personalDetailsPref")) {
+                AppBskyActorDefs::PersonalDetailsPref child;
+                AppBskyActorDefs::copyPersonalDetailsPref(value.toObject(), child);
+                dest.personalDetailsPref.append(child);
+            } else if (value_type == QStringLiteral("app.bsky.actor.defs#feedViewPref")) {
+                AppBskyActorDefs::FeedViewPref child;
+                AppBskyActorDefs::copyFeedViewPref(value.toObject(), child);
+                dest.feedViewPref.append(child);
+            } else if (value_type == QStringLiteral("app.bsky.actor.defs#threadViewPref")) {
+                AppBskyActorDefs::ThreadViewPref child;
+                AppBskyActorDefs::copyThreadViewPref(value.toObject(), child);
+                dest.threadViewPref.append(child);
+            } else if (value_type == QStringLiteral("app.bsky.actor.defs#interestsPref")) {
+                AppBskyActorDefs::InterestsPref child;
+                AppBskyActorDefs::copyInterestsPref(value.toObject(), child);
+                dest.interestsPref.append(child);
+            } else if (value_type == QStringLiteral("app.bsky.actor.defs#mutedWordsPref")) {
+                AppBskyActorDefs::MutedWordsPref child;
+                AppBskyActorDefs::copyMutedWordsPref(value.toObject(), child);
+                dest.mutedWordsPref.append(child);
+            } else if (value_type == QStringLiteral("app.bsky.actor.defs#hiddenPostsPref")) {
+                AppBskyActorDefs::HiddenPostsPref child;
+                AppBskyActorDefs::copyHiddenPostsPref(value.toObject(), child);
+                dest.hiddenPostsPref.append(child);
+            } else if (value_type == QStringLiteral("app.bsky.actor.defs#labelersPref")) {
+                AppBskyActorDefs::LabelersPref child;
+                AppBskyActorDefs::copyLabelersPref(value.toObject(), child);
+                dest.labelersPref.append(child);
+            }
+        }
+    }
+}
+}
 // app.bsky.graph.defs
 namespace AppBskyGraphDefs {
 void copyListPurpose(const QJsonValue &src, AppBskyGraphDefs::ListPurpose &dest)
@@ -153,191 +389,6 @@ void copyLabelValueDefinition(const QJsonObject &src,
     }
 }
 }
-// app.bsky.actor.defs
-namespace AppBskyActorDefs {
-void copyViewerState(const QJsonObject &src, AppBskyActorDefs::ViewerState &dest)
-{
-    if (!src.isEmpty()) {
-        dest.muted = src.value("muted").toBool();
-        AppBskyGraphDefs::copyListViewBasic(src.value("mutedByList").toObject(), dest.mutedByList);
-        dest.blockedBy = src.value("blockedBy").toBool();
-        dest.blocking = src.value("blocking").toString();
-        AppBskyGraphDefs::copyListViewBasic(src.value("blockingByList").toObject(),
-                                            dest.blockingByList);
-        dest.following = src.value("following").toString();
-        dest.followedBy = src.value("followedBy").toString();
-    }
-}
-void copyProfileViewBasic(const QJsonObject &src, AppBskyActorDefs::ProfileViewBasic &dest)
-{
-    if (!src.isEmpty()) {
-        dest.did = src.value("did").toString();
-        dest.handle = src.value("handle").toString();
-        dest.displayName = src.value("displayName").toString();
-        dest.avatar = src.value("avatar").toString();
-        copyViewerState(src.value("viewer").toObject(), dest.viewer);
-        for (const auto &s : src.value("labels").toArray()) {
-            ComAtprotoLabelDefs::Label child;
-            ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
-            dest.labels.append(child);
-        }
-    }
-}
-void copyProfileView(const QJsonObject &src, AppBskyActorDefs::ProfileView &dest)
-{
-    if (!src.isEmpty()) {
-        dest.did = src.value("did").toString();
-        dest.handle = src.value("handle").toString();
-        dest.displayName = src.value("displayName").toString();
-        dest.description = src.value("description").toString();
-        dest.avatar = src.value("avatar").toString();
-        dest.indexedAt = src.value("indexedAt").toString();
-        copyViewerState(src.value("viewer").toObject(), dest.viewer);
-        for (const auto &s : src.value("labels").toArray()) {
-            ComAtprotoLabelDefs::Label child;
-            ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
-            dest.labels.append(child);
-        }
-    }
-}
-void copyProfileAssociated(const QJsonObject &src, AppBskyActorDefs::ProfileAssociated &dest)
-{
-    if (!src.isEmpty()) {
-        dest.lists = src.value("lists").toInt();
-        dest.feedgens = src.value("feedgens").toInt();
-        dest.labeler = src.value("labeler").toBool();
-    }
-}
-void copyProfileViewDetailed(const QJsonObject &src, AppBskyActorDefs::ProfileViewDetailed &dest)
-{
-    if (!src.isEmpty()) {
-        dest.did = src.value("did").toString();
-        dest.handle = src.value("handle").toString();
-        dest.displayName = src.value("displayName").toString();
-        dest.description = src.value("description").toString();
-        dest.avatar = src.value("avatar").toString();
-        dest.banner = src.value("banner").toString();
-        dest.followersCount = src.value("followersCount").toInt();
-        dest.followsCount = src.value("followsCount").toInt();
-        dest.postsCount = src.value("postsCount").toInt();
-        copyProfileAssociated(src.value("associated").toObject(), dest.associated);
-        dest.indexedAt = src.value("indexedAt").toString();
-        copyViewerState(src.value("viewer").toObject(), dest.viewer);
-        for (const auto &s : src.value("labels").toArray()) {
-            ComAtprotoLabelDefs::Label child;
-            ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
-            dest.labels.append(child);
-        }
-    }
-}
-void copyAdultContentPref(const QJsonObject &src, AppBskyActorDefs::AdultContentPref &dest)
-{
-    if (!src.isEmpty()) {
-        dest.enabled = src.value("enabled").toBool();
-    }
-}
-void copyContentLabelPref(const QJsonObject &src, AppBskyActorDefs::ContentLabelPref &dest)
-{
-    if (!src.isEmpty()) {
-        dest.labelerDid = src.value("labelerDid").toString();
-        dest.label = src.value("label").toString();
-        dest.visibility = src.value("visibility").toString();
-    }
-}
-void copySavedFeedsPref(const QJsonObject &src, AppBskyActorDefs::SavedFeedsPref &dest)
-{
-    if (!src.isEmpty()) {
-        for (const auto &value : src.value("pinned").toArray()) {
-            dest.pinned.append(value.toString());
-        }
-        for (const auto &value : src.value("saved").toArray()) {
-            dest.saved.append(value.toString());
-        }
-        dest.timelineIndex = src.value("timelineIndex").toInt();
-    }
-}
-void copyPersonalDetailsPref(const QJsonObject &src, AppBskyActorDefs::PersonalDetailsPref &dest)
-{
-    if (!src.isEmpty()) {
-        dest.birthDate = src.value("birthDate").toString();
-    }
-}
-void copyFeedViewPref(const QJsonObject &src, AppBskyActorDefs::FeedViewPref &dest)
-{
-    if (!src.isEmpty()) {
-        dest.feed = src.value("feed").toString();
-        dest.hideReplies = src.value("hideReplies").toBool();
-        dest.hideRepliesByUnfollowed = src.value("hideRepliesByUnfollowed").toBool();
-        dest.hideRepliesByLikeCount = src.value("hideRepliesByLikeCount").toInt();
-        dest.hideReposts = src.value("hideReposts").toBool();
-        dest.hideQuotePosts = src.value("hideQuotePosts").toBool();
-    }
-}
-void copyThreadViewPref(const QJsonObject &src, AppBskyActorDefs::ThreadViewPref &dest)
-{
-    if (!src.isEmpty()) {
-        dest.sort = src.value("sort").toString();
-        dest.prioritizeFollowedUsers = src.value("prioritizeFollowedUsers").toBool();
-    }
-}
-void copyInterestsPref(const QJsonObject &src, AppBskyActorDefs::InterestsPref &dest)
-{
-    if (!src.isEmpty()) {
-        for (const auto &value : src.value("tags").toArray()) {
-            dest.tags.append(value.toString());
-        }
-    }
-}
-void copyMutedWordTarget(const QJsonValue &src, AppBskyActorDefs::MutedWordTarget &dest)
-{
-    dest = src.toString();
-}
-void copyMutedWord(const QJsonObject &src, AppBskyActorDefs::MutedWord &dest)
-{
-    if (!src.isEmpty()) {
-        dest.value = src.value("value").toString();
-        for (const auto &s : src.value("targets").toArray()) {
-            AppBskyActorDefs::MutedWordTarget child;
-            AppBskyActorDefs::copyMutedWordTarget(s, child);
-            dest.targets.append(child);
-        }
-    }
-}
-void copyMutedWordsPref(const QJsonObject &src, AppBskyActorDefs::MutedWordsPref &dest)
-{
-    if (!src.isEmpty()) {
-        for (const auto &s : src.value("items").toArray()) {
-            AppBskyActorDefs::MutedWord child;
-            AppBskyActorDefs::copyMutedWord(s.toObject(), child);
-            dest.items.append(child);
-        }
-    }
-}
-void copyHiddenPostsPref(const QJsonObject &src, AppBskyActorDefs::HiddenPostsPref &dest)
-{
-    if (!src.isEmpty()) {
-        for (const auto &value : src.value("items").toArray()) {
-            dest.items.append(value.toString());
-        }
-    }
-}
-void copyLabelerPrefItem(const QJsonObject &src, AppBskyActorDefs::LabelerPrefItem &dest)
-{
-    if (!src.isEmpty()) {
-        dest.did = src.value("did").toString();
-    }
-}
-void copyLabelersPref(const QJsonObject &src, AppBskyActorDefs::LabelersPref &dest)
-{
-    if (!src.isEmpty()) {
-        for (const auto &s : src.value("labelers").toArray()) {
-            LabelerPrefItem child;
-            copyLabelerPrefItem(s.toObject(), child);
-            dest.labelers.append(child);
-        }
-    }
-}
-}
 // app.bsky.actor.profile
 namespace AppBskyActorProfile {
 void copyMain(const QJsonObject &src, AppBskyActorProfile::Main &dest)
@@ -467,6 +518,9 @@ void copyViewRecord(const QJsonObject &src, AppBskyEmbedRecord::ViewRecord &dest
             ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
             dest.labels.append(child);
         }
+        dest.replyCount = src.value("replyCount").toInt();
+        dest.repostCount = src.value("repostCount").toInt();
+        dest.likeCount = src.value("likeCount").toInt();
         // array<union> embeds
         for (const auto &value : src.value("embeds").toArray()) {
             QString value_type = value.toObject().value("$type").toString();
@@ -634,6 +688,7 @@ void copyGeneratorView(const QJsonObject &src, AppBskyFeedDefs::GeneratorView &d
         }
         dest.avatar = src.value("avatar").toString();
         dest.likeCount = src.value("likeCount").toInt();
+        dest.acceptsInteractions = src.value("acceptsInteractions").toBool();
         for (const auto &s : src.value("labels").toArray()) {
             ComAtprotoLabelDefs::Label child;
             ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
@@ -776,6 +831,7 @@ void copyFeedViewPost(const QJsonObject &src, AppBskyFeedDefs::FeedViewPost &des
             AppBskyFeedDefs::copyReasonRepost(src.value("reason").toObject(),
                                               dest.reason_ReasonRepost);
         }
+        dest.feedContext = src.value("feedContext").toString();
     }
 }
 void copyThreadViewPost(const QJsonObject &src, AppBskyFeedDefs::ThreadViewPost &dest)
@@ -848,6 +904,15 @@ void copySkeletonFeedPost(const QJsonObject &src, AppBskyFeedDefs::SkeletonFeedP
             AppBskyFeedDefs::copySkeletonReasonRepost(src.value("reason").toObject(),
                                                       dest.reason_SkeletonReasonRepost);
         }
+        dest.feedContext = src.value("feedContext").toString();
+    }
+}
+void copyInteraction(const QJsonObject &src, AppBskyFeedDefs::Interaction &dest)
+{
+    if (!src.isEmpty()) {
+        dest.item = src.value("item").toString();
+        dest.event = src.value("event").toString();
+        dest.feedContext = src.value("feedContext").toString();
     }
 }
 }
@@ -997,6 +1062,7 @@ void copyMain(const QJsonObject &src, AppBskyFeedGenerator::Main &dest)
             dest.descriptionFacets.append(child);
         }
         LexiconsTypeUnknown::copyBlob(src.value("avatar").toObject(), dest.avatar);
+        dest.acceptsInteractions = src.value("acceptsInteractions").toBool();
         QString labels_type = src.value("labels").toObject().value("$type").toString();
         if (labels_type == QStringLiteral("com.atproto.label.defs#selfLabels")) {
             dest.labels_type =

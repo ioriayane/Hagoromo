@@ -13,55 +13,45 @@ ComAtprotoRepoListRecords::ComAtprotoRepoListRecords(QObject *parent) : AccessAt
 
 void ComAtprotoRepoListRecords::listRecords(const QString &repo, const QString &collection,
                                             const int limit, const QString &cursor,
-                                            const QString &rkeyStart, const QString &rkeyEnd)
+                                            const bool reverse)
 {
-    Q_UNUSED(rkeyStart)
-    Q_UNUSED(rkeyEnd)
-
-    QUrlQuery query;
-    query.addQueryItem(QStringLiteral("repo"), repo);
-    query.addQueryItem(QStringLiteral("collection"), collection);
+    QUrlQuery url_query;
+    if (!repo.isEmpty()) {
+        url_query.addQueryItem(QStringLiteral("repo"), repo);
+    }
+    if (!collection.isEmpty()) {
+        url_query.addQueryItem(QStringLiteral("collection"), collection);
+    }
+    if (limit > 0) {
+        url_query.addQueryItem(QStringLiteral("limit"), QString::number(limit));
+    }
     if (!cursor.isEmpty()) {
-        query.addQueryItem(QStringLiteral("cursor"), cursor);
+        url_query.addQueryItem(QStringLiteral("cursor"), cursor);
+    }
+    if (reverse) {
+        url_query.addQueryItem(QStringLiteral("reverse"), "true");
     }
 
-    get(QStringLiteral("xrpc/com.atproto.repo.listRecords"), query);
+    get(QStringLiteral("xrpc/com.atproto.repo.listRecords"), url_query);
 }
 
-void ComAtprotoRepoListRecords::listLikes(const QString &repo, const QString &cursor)
-{
-    listRecords(repo, "app.bsky.feed.like", 50, cursor, QString(), QString());
-}
-
-void ComAtprotoRepoListRecords::listReposts(const QString &repo, const QString &cursor)
-{
-    listRecords(repo, "app.bsky.feed.repost", 50, cursor, QString(), QString());
-}
-
-void ComAtprotoRepoListRecords::listListItems(const QString &repo, const QString &cursor)
-{
-    listRecords(repo, "app.bsky.graph.listitem", 100, cursor, QString(), QString());
-}
-
-const QList<AtProtocolType::ComAtprotoRepoListRecords::Record> *
+const QList<AtProtocolType::ComAtprotoRepoListRecords::Record> &
 ComAtprotoRepoListRecords::recordList() const
 {
-    return &m_recordList;
+    return m_recordList;
 }
 
 bool ComAtprotoRepoListRecords::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
-    if (json_doc.isEmpty()) {
+    if (json_doc.isEmpty() || !json_doc.object().contains("records")) {
         success = false;
     } else {
         setCursor(json_doc.object().value("cursor").toString());
-        for (const auto &obj : json_doc.object().value("records").toArray()) {
-            AtProtocolType::ComAtprotoRepoListRecords::Record record;
-
-            AtProtocolType::ComAtprotoRepoListRecords::copyRecord(obj.toObject(), record);
-
-            m_recordList.append(record);
+        for (const auto &value : json_doc.object().value("records").toArray()) {
+            AtProtocolType::ComAtprotoRepoListRecords::Record data;
+            AtProtocolType::ComAtprotoRepoListRecords::copyRecord(value.toObject(), data);
+            m_recordList.append(data);
         }
     }
 

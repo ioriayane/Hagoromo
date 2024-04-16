@@ -1,8 +1,4 @@
 #include "appbskygraphgetlistmutes.h"
-#include "atprotocol/lexicons_func.h"
-
-#include <QJsonDocument>
-#include <QJsonObject>
 #include <QUrlQuery>
 
 namespace AtProtocolInterface {
@@ -10,19 +6,20 @@ namespace AtProtocolInterface {
 AppBskyGraphGetListMutes::AppBskyGraphGetListMutes(QObject *parent)
     : AppBskyGraphGetLists { parent }
 {
+    m_listKey = QStringLiteral("lists");
 }
 
 void AppBskyGraphGetListMutes::getListMutes(const int limit, const QString &cursor)
 {
-    QUrlQuery query;
+    QUrlQuery url_query;
     if (limit > 0) {
-        query.addQueryItem(QStringLiteral("limit"), QString::number(limit));
+        url_query.addQueryItem(QStringLiteral("limit"), QString::number(limit));
     }
     if (!cursor.isEmpty()) {
-        query.addQueryItem(QStringLiteral("cursor"), cursor);
+        url_query.addQueryItem(QStringLiteral("cursor"), cursor);
     }
 
-    get(QStringLiteral("xrpc/app.bsky.graph.getListMutes"), query);
+    get(QStringLiteral("xrpc/app.bsky.graph.getListMutes"), url_query);
 }
 
 }

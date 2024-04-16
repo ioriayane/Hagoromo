@@ -1,8 +1,4 @@
 #include "appbskygraphgetlistblocks.h"
-#include "atprotocol/lexicons_func.h"
-
-#include <QJsonDocument>
-#include <QJsonObject>
 #include <QUrlQuery>
 
 namespace AtProtocolInterface {
@@ -10,19 +6,20 @@ namespace AtProtocolInterface {
 AppBskyGraphGetListBlocks::AppBskyGraphGetListBlocks(QObject *parent)
     : AppBskyGraphGetLists { parent }
 {
+    m_listKey = QStringLiteral("lists");
 }
 
 void AppBskyGraphGetListBlocks::getListBlocks(const int limit, const QString &cursor)
 {
-    QUrlQuery query;
+    QUrlQuery url_query;
     if (limit > 0) {
-        query.addQueryItem(QStringLiteral("limit"), QString::number(limit));
+        url_query.addQueryItem(QStringLiteral("limit"), QString::number(limit));
     }
     if (!cursor.isEmpty()) {
-        query.addQueryItem(QStringLiteral("cursor"), cursor);
+        url_query.addQueryItem(QStringLiteral("cursor"), cursor);
     }
 
-    get(QStringLiteral("xrpc/app.bsky.graph.getListBlocks"), query);
+    get(QStringLiteral("xrpc/app.bsky.graph.getListBlocks"), url_query);
 }
 
 }

@@ -136,8 +136,8 @@ protected:
 
 private:
     void initializeLabels();
-    bool putPreferences(const QString &json);
-    QString updatePreferencesJson(const QString &src_json);
+    bool putPreferences(const QJsonArray &json);
+    QJsonArray updatePreferencesJson(const QString &src_json);
     QString removeSharp(const QString &value) const;
     ConfigurableLabelFoldableRange toLabelFoldableRange(const QString &blurs) const;
     ConfigurableLabelStatus toLabelStatus(const QString &visibility) const;

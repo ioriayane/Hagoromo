@@ -3,46 +3,49 @@
 
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QJsonArray>
 #include <QUrlQuery>
-
-using namespace AtProtocolType;
 
 namespace AtProtocolInterface {
 
-AppBskyFeedGetTimeline::AppBskyFeedGetTimeline(QObject *parent) : AccessAtProtocol { parent } { }
-
-void AppBskyFeedGetTimeline::getTimeline(const QString &cursor)
+AppBskyFeedGetTimeline::AppBskyFeedGetTimeline(QObject *parent)
+    : AccessAtProtocol { parent }, m_listKey("feed")
 {
-    QUrlQuery query;
-    query.addQueryItem(QStringLiteral("actor"), handle());
-    if (!cursor.isEmpty()) {
-        query.addQueryItem(QStringLiteral("cursor"), cursor);
-    }
-
-    get(QStringLiteral("xrpc/app.bsky.feed.getTimeline"), query);
 }
 
-const QList<AppBskyFeedDefs::FeedViewPost> *AppBskyFeedGetTimeline::feedList() const
+void AppBskyFeedGetTimeline::getTimeline(const QString &algorithm, const int limit,
+                                         const QString &cursor)
 {
-    return &m_feedList;
+    QUrlQuery url_query;
+    if (!algorithm.isEmpty()) {
+        url_query.addQueryItem(QStringLiteral("algorithm"), algorithm);
+    }
+    if (limit > 0) {
+        url_query.addQueryItem(QStringLiteral("limit"), QString::number(limit));
+    }
+    if (!cursor.isEmpty()) {
+        url_query.addQueryItem(QStringLiteral("cursor"), cursor);
+    }
+
+    get(QStringLiteral("xrpc/app.bsky.feed.getTimeline"), url_query);
+}
+
+const QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> &
+AppBskyFeedGetTimeline::feedViewPostList() const
+{
+    return m_feedViewPostList;
 }
 
 bool AppBskyFeedGetTimeline::parseJson(bool success, const QString reply_json)
 {
-    m_feedList.clear();
-
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
-    if (json_doc.isEmpty() || !json_doc.object().contains("feed")) {
+    if (json_doc.isEmpty() || !json_doc.object().contains(m_listKey)) {
         success = false;
     } else {
         setCursor(json_doc.object().value("cursor").toString());
-        for (const auto &obj : json_doc.object().value("feed").toArray()) {
-            AppBskyFeedDefs::FeedViewPost feed_item;
-
-            AppBskyFeedDefs::copyFeedViewPost(obj.toObject(), feed_item);
-
-            m_feedList.append(feed_item);
+        for (const auto &value : json_doc.object().value(m_listKey).toArray()) {
+            AtProtocolType::AppBskyFeedDefs::FeedViewPost data;
+            AtProtocolType::AppBskyFeedDefs::copyFeedViewPost(value.toObject(), data);
+            m_feedViewPostList.append(data);
         }
     }
 

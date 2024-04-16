@@ -7,5 +7,6 @@
         "createdAt": "2023-12-13T14:41:55.415Z",
         "allow": [],
         "$type": "app.bsky.feed.threadgate"
-    }
+    },
+    "validate": true
 }

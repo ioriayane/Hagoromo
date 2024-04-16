@@ -16,52 +16,27 @@ void copyUnknown(const QJsonObject &src, QVariant &dest)
     if (type == QStringLiteral("app.bsky.feed.post")) {
         AppBskyFeedPost::Main record;
         AppBskyFeedPost::copyMain(src, record);
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-        dest.setValue<AppBskyFeedPost::Main>(record);
-#else
         dest.setValue(record);
-#endif
     } else if (type == QStringLiteral("app.bsky.feed.like")) {
         AppBskyFeedLike::Main record;
         AppBskyFeedLike::copyMain(src, record);
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-        dest.setValue<AppBskyFeedLike::Main>(record);
-#else
         dest.setValue(record);
-#endif
-
     } else if (type == QStringLiteral("app.bsky.feed.repost")) {
         AppBskyFeedRepost::Main record;
         AppBskyFeedRepost::copyMain(src, record);
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-        dest.setValue<AppBskyFeedRepost::Main>(record);
-#else
         dest.setValue(record);
-#endif
     } else if (type == QStringLiteral("app.bsky.graph.listitem")) {
         AppBskyGraphListitem::Main record;
         AppBskyGraphListitem::copyMain(src, record);
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-        dest.setValue<AppBskyGraphListitem::Main>(record);
-#else
         dest.setValue(record);
-#endif
     } else if (type == QStringLiteral("app.bsky.actor.profile")) {
         AppBskyActorProfile::Main record;
         AppBskyActorProfile::copyMain(src, record);
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-        dest.setValue<AppBskyActorProfile::Main>(record);
-#else
         dest.setValue(record);
-#endif
     } else if (type == QStringLiteral("app.bsky.graph.list")) {
         AppBskyGraphList::Main record;
         AppBskyGraphList::copyMain(src, record);
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-        dest.setValue<AppBskyGraphList::Main>(record);
-#else
         dest.setValue(record);
-#endif
     } else if (type == QStringLiteral("app.bsky.feed.threadgate")) {
         AppBskyFeedThreadgate::Main record;
         AppBskyFeedThreadgate::copyMain(src, record);
@@ -80,6 +55,28 @@ void copyBlob(const QJsonObject &src, Blob &dest)
     dest.alt = src.value("alt").toString();
     dest.mimeType = src.value("mimeType").toString();
     dest.size = src.value("size").toInt();
+}
+
+void copyString(const QJsonValue &src, QString &dest)
+{
+    dest = src.toString();
+}
+
+void copyStringList(const QJsonArray &src, QStringList &dest)
+{
+    for (const auto &value : src) {
+        dest.append(value.toString());
+    }
+}
+
+void copyBool(const QJsonValue &src, bool &dest)
+{
+    dest = src.toBool(false);
+}
+
+void copyInt(const QJsonValue &src, int &dest)
+{
+    dest = src.toInt(0);
 }
 
 QStringList copyImagesFromPostView(const AppBskyFeedDefs::PostView &post, const CopyImageType type)

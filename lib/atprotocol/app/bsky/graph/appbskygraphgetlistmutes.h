@@ -1,7 +1,7 @@
 #ifndef APPBSKYGRAPHGETLISTMUTES_H
 #define APPBSKYGRAPHGETLISTMUTES_H
 
-#include "appbskygraphgetlists.h"
+#include "atprotocol/app/bsky/graph/appbskygraphgetlists.h"
 
 namespace AtProtocolInterface {
 
@@ -11,7 +11,6 @@ public:
     explicit AppBskyGraphGetListMutes(QObject *parent = nullptr);
 
     void getListMutes(const int limit, const QString &cursor);
-    void getLists(const QString &actor, const int limit, const QString &cursor) = delete;
 };
 
 }

@@ -1,8 +1,8 @@
 #include "reporter.h"
 
-#include "atprotocol/com/atproto/moderation/comatprotomoderationcreatereport.h"
+#include "extension/com/atproto/moderation/comatprotomoderationcreatereportex.h"
 
-using AtProtocolInterface::ComAtprotoModerationCreateReport;
+using AtProtocolInterface::ComAtprotoModerationCreateReportEx;
 
 Reporter::Reporter(QObject *parent) : QObject { parent }, m_running(false)
 {
@@ -34,8 +34,8 @@ void Reporter::reportPost(const QString &uri, const QString &cid, Reporter::Repo
         return;
     setRunning(true);
 
-    ComAtprotoModerationCreateReport *report = new ComAtprotoModerationCreateReport(this);
-    connect(report, &ComAtprotoModerationCreateReport::finished, [=](bool success) {
+    ComAtprotoModerationCreateReportEx *report = new ComAtprotoModerationCreateReportEx(this);
+    connect(report, &ComAtprotoModerationCreateReportEx::finished, [=](bool success) {
         setRunning(false);
         emit errorOccured(report->errorCode(), report->errorMessage());
         emit finished(success);
@@ -54,8 +54,8 @@ void Reporter::reportAccount(const QString &did, ReportReason reason)
         return;
     setRunning(true);
 
-    ComAtprotoModerationCreateReport *report = new ComAtprotoModerationCreateReport(this);
-    connect(report, &ComAtprotoModerationCreateReport::finished, [=](bool success) {
+    ComAtprotoModerationCreateReportEx *report = new ComAtprotoModerationCreateReportEx(this);
+    connect(report, &ComAtprotoModerationCreateReportEx::finished, [=](bool success) {
         setRunning(false);
         emit errorOccured(report->errorCode(), report->errorMessage());
         emit finished(success);

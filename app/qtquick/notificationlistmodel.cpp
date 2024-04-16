@@ -484,8 +484,8 @@ bool NotificationListModel::getLatest()
                 if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
                     m_cursor = notification->cursor();
                 }
-                for (auto item = notification->notificationList()->crbegin();
-                     item != notification->notificationList()->crend(); item++) {
+                for (auto item = notification->notificationList().crbegin();
+                     item != notification->notificationList().crend(); item++) {
                     m_notificationHash[item->cid] = *item;
 
                     PostCueItem post;
@@ -600,7 +600,7 @@ bool NotificationListModel::getLatest()
         });
         notification->setAccount(account());
         notification->setLabelers(m_contentFilterLabels.labelerDids());
-        notification->listNotifications(QString());
+        notification->listNotifications(0, QString(), QString());
     });
     return true;
 }
@@ -621,8 +621,8 @@ bool NotificationListModel::getNext()
 
                 m_cursor = notification->cursor();
 
-                for (auto item = notification->notificationList()->crbegin();
-                     item != notification->notificationList()->crend(); item++) {
+                for (auto item = notification->notificationList().crbegin();
+                     item != notification->notificationList().crend(); item++) {
                     m_notificationHash[item->cid] = *item;
 
                     PostCueItem post;
@@ -727,7 +727,7 @@ bool NotificationListModel::getNext()
         });
         notification->setAccount(account());
         notification->setLabelers(m_contentFilterLabels.labelerDids());
-        notification->listNotifications(m_cursor);
+        notification->listNotifications(0, m_cursor, QString());
     });
     return true;
 }
@@ -1181,7 +1181,7 @@ void NotificationListModel::getPosts()
     connect(posts, &AppBskyFeedGetPosts::finished, [=](bool success) {
         if (success) {
             QStringList new_cid;
-            for (const auto &post : *posts->postList()) {
+            for (const auto &post : posts->postViewList()) {
                 //                qDebug() << post.cid << post.author.displayName;
                 //                AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                 //                        AtProtocolType::AppBskyFeedPost::Record>(post.record)
@@ -1279,7 +1279,7 @@ void NotificationListModel::getFeedGenerators()
     connect(generators, &AppBskyFeedGetFeedGenerators::finished, [=](bool success) {
         if (success) {
             QStringList new_cid;
-            for (const auto &generator : *generators->generatorViewList()) {
+            for (const auto &generator : generators->generatorViewList()) {
                 m_feedGeneratorHash[generator.cid] = generator;
                 new_cid.append(generator.cid);
             }
@@ -1325,7 +1325,7 @@ void NotificationListModel::updateSeen()
         seen->deleteLater();
     });
     seen->setAccount(account());
-    seen->updateSeen(QString());
+    seen->updateSeen(QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
 }
 
 QStringList NotificationListModel::getAggregatedItems(

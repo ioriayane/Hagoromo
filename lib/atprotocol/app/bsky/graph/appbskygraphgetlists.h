@@ -2,7 +2,6 @@
 #define APPBSKYGRAPHGETLISTS_H
 
 #include "atprotocol/accessatprotocol.h"
-#include "atprotocol/lexicons.h"
 
 namespace AtProtocolInterface {
 
@@ -13,7 +12,10 @@ public:
 
     void getLists(const QString &actor, const int limit, const QString &cursor);
 
-    const QList<AtProtocolType::AppBskyGraphDefs::ListView> *listViewList() const;
+    const QList<AtProtocolType::AppBskyGraphDefs::ListView> &listViewList() const;
+
+protected:
+    QString m_listKey;
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);

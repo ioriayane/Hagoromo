@@ -1,10 +1,10 @@
 #include "createsession.h"
-#include "atprotocol/com/atproto/server/comatprotoservercreatesession.h"
+#include "extension/com/atproto/server/comatprotoservercreatesessionex.h"
 #include <QDebug>
 
 using AtProtocolInterface::AccountData;
 using AtProtocolInterface::AccountStatus;
-using AtProtocolInterface::ComAtprotoServerCreateSession;
+using AtProtocolInterface::ComAtprotoServerCreateSessionEx;
 
 CreateSession::CreateSession(QObject *parent) : QObject { parent }, m_running(false) { }
 
@@ -15,8 +15,8 @@ void CreateSession::create()
     }
     setRunning(true);
 
-    ComAtprotoServerCreateSession *session = new ComAtprotoServerCreateSession(this);
-    connect(session, &ComAtprotoServerCreateSession::finished, [=](bool success) {
+    ComAtprotoServerCreateSessionEx *session = new ComAtprotoServerCreateSessionEx(this);
+    connect(session, &ComAtprotoServerCreateSessionEx::finished, [=](bool success) {
         setDid(session->did());
         setHandle(session->handle());
         setEmail(session->email());
@@ -31,7 +31,7 @@ void CreateSession::create()
         session->deleteLater();
     });
     session->setService(service());
-    session->create(identifier(), password());
+    session->createSession(identifier(), password());
 }
 
 QString CreateSession::service() const

@@ -1,0 +1,15 @@
+{
+    "blocks": [
+        {
+            "did": "did:plc:blocked_user_did",
+            "handle": "handle.invalid",
+            "viewer": {
+                "muted": false,
+                "blockedBy": false,
+                "blocking": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.block/3kct5lggoai2a"
+            },
+            "labels": [],
+            "indexedAt": "0001-01-01T00:00:00.000Z"
+        }
+    ]
+}
