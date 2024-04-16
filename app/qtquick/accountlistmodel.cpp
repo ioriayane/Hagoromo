@@ -1,7 +1,7 @@
 #include "accountlistmodel.h"
 #include "common.h"
 #include "extension/com/atproto/server/comatprotoservercreatesessionex.h"
-#include "atprotocol/com/atproto/server/comatprotoserverrefreshsession.h"
+#include "extension/com/atproto/server/comatprotoserverrefreshsessionex.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofile.h"
 
 #include <QByteArray>
@@ -16,7 +16,7 @@ using AtProtocolInterface::AccountData;
 using AtProtocolInterface::AccountStatus;
 using AtProtocolInterface::AppBskyActorGetProfile;
 using AtProtocolInterface::ComAtprotoServerCreateSessionEx;
-using AtProtocolInterface::ComAtprotoServerRefreshSession;
+using AtProtocolInterface::ComAtprotoServerRefreshSessionEx;
 
 AccountListModel::AccountListModel(QObject *parent) : QAbstractListModel { parent }
 {
@@ -447,10 +447,11 @@ void AccountListModel::refreshSession(int row, bool initial)
     if (row < 0 || row >= m_accountList.count())
         return;
 
-    ComAtprotoServerRefreshSession *session = new ComAtprotoServerRefreshSession(this);
-    connect(session, &ComAtprotoServerRefreshSession::finished, [=](bool success) {
+    ComAtprotoServerRefreshSessionEx *session = new ComAtprotoServerRefreshSessionEx(this);
+    connect(session, &ComAtprotoServerRefreshSessionEx::finished, [=](bool success) {
         if (success) {
-            qDebug() << "Refresh session" << session->did() << session->handle();
+            qDebug() << "Refresh session" << session->did() << session->handle()
+                     << session->email();
             m_accountList[row].did = session->did();
             m_accountList[row].handle = session->handle();
             m_accountList[row].email = session->email();

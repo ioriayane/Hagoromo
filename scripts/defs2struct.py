@@ -170,7 +170,6 @@ class Defs2Struct:
             'com.atproto.server.getServiceAuth',
             'com.atproto.server.getSession',
             'com.atproto.server.listAppPasswords',
-            'com.atproto.server.refreshSession',
             'com.atproto.server.requestAccountDelete',
             'com.atproto.server.requestEmailConfirmation',
             'com.atproto.server.requestEmailUpdate',
@@ -213,7 +212,8 @@ class Defs2Struct:
             'com.atproto.repo.getRecord',
             'com.atproto.repo.listRecords',
             'com.atproto.repo.putRecord',
-            'com.atproto.server.createSession'
+            'com.atproto.server.createSession',
+            'com.atproto.server.refreshSession'
         ]
 
     def skip_spi_class(self, namespace: str) -> bool:
@@ -1060,7 +1060,8 @@ class Defs2Struct:
 
             data['method_args'] = ','.join(args)
             data['method_query'] = ''.join(query)
-            data['method_payload'] = ''.join(payload)
+            if len(payload) > 0:
+                data['method_payload'] = ''.join(payload)
             data['api_id'] = namespace
 
         if obj.get('output') is not None:

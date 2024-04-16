@@ -67,5 +67,6 @@
         <file>response/xrpc/app.bsky.graph.getListMutes</file>
         <file>response/xrpc/app.bsky.graph.getListBlocks</file>
         <file>response/xrpc/app.bsky.graph.getMutes</file>
+        <file>response/xrpc/com.atproto.server.refreshSession</file>
     </qresource>
 </RCC>

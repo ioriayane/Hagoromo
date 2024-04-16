@@ -1,4 +1,6 @@
 #include "comatprotoserverrefreshsession.h"
+#include "atprotocol/lexicons_func.h"
+#include "atprotocol/lexicons_func_unknown.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -12,8 +14,32 @@ ComAtprotoServerRefreshSession::ComAtprotoServerRefreshSession(QObject *parent)
 
 void ComAtprotoServerRefreshSession::refreshSession()
 {
-    setSession(did(), handle(), email(), refreshJwt(), refreshJwt());
-    post(QStringLiteral("xrpc/com.atproto.server.refreshSession"), QByteArray(), true);
+    post(QStringLiteral("xrpc/com.atproto.server.refreshSession"), QByteArray());
+}
+
+const QString &ComAtprotoServerRefreshSession::accessJwt() const
+{
+    return m_accessJwt;
+}
+
+const QString &ComAtprotoServerRefreshSession::refreshJwt() const
+{
+    return m_refreshJwt;
+}
+
+const QString &ComAtprotoServerRefreshSession::handle() const
+{
+    return m_handle;
+}
+
+const QString &ComAtprotoServerRefreshSession::did() const
+{
+    return m_did;
+}
+
+const QVariant &ComAtprotoServerRefreshSession::didDoc() const
+{
+    return m_didDoc;
 }
 
 bool ComAtprotoServerRefreshSession::parseJson(bool success, const QString reply_json)
@@ -22,15 +48,15 @@ bool ComAtprotoServerRefreshSession::parseJson(bool success, const QString reply
     if (json_doc.isEmpty()) {
         success = false;
     } else {
-        setSession(json_doc.object().value("did").toString(),
-                   json_doc.object().value("handle").toString(), email(),
-                   json_doc.object().value("accessJwt").toString(),
-                   json_doc.object().value("refreshJwt").toString());
-
-        if (did().isEmpty() || handle().isEmpty() || accessJwt().isEmpty()
-            || refreshJwt().isEmpty()) {
-            success = false;
-        }
+        AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("accessJwt"),
+                                                        m_accessJwt);
+        AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("refreshJwt"),
+                                                        m_refreshJwt);
+        AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("handle"),
+                                                        m_handle);
+        AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("did"), m_did);
+        AtProtocolType::LexiconsTypeUnknown::copyUnknown(
+                json_doc.object().value("didDoc").toObject(), m_didDoc);
     }
 
     return success;

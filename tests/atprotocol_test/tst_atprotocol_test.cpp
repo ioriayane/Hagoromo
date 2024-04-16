@@ -18,6 +18,7 @@
 #include "atprotocol/app/bsky/graph/appbskygraphgetlistblocks.h"
 #include "atprotocol/app/bsky/graph/appbskygraphgetmutes.h"
 #include "extension/com/atproto/repo/comatprotorepocreaterecordex.h"
+#include "extension/com/atproto/server/comatprotoserverrefreshsessionex.h"
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
 #include "extension/com/atproto/repo/comatprotorepoputrecordex.h"
 #include "extension/com/atproto/server/comatprotoservercreatesessionex.h"
@@ -42,6 +43,7 @@ private slots:
     void initTestCase();
     void cleanupTestCase();
     void test_ComAtprotoServerCreateSession();
+    void test_ComAtprotoServerRefreshSession();
     void test_OpenGraphProtocol();
     void test_getTimeline();
     void test_ConfigurableLabels();
@@ -151,6 +153,12 @@ void atprotocol_test::test_ComAtprotoServerCreateSession()
     QVERIFY(session.accessJwt() == "hoge hoge accessJwt");
     QVERIFY(session.refreshJwt() == "hoge hoge refreshJwt");
 
+    QVERIFY(session.did() == session.account().did);
+    QVERIFY(session.handle() == session.account().handle);
+    QVERIFY(session.email() == session.account().email);
+    QVERIFY(session.accessJwt() == session.account().accessJwt);
+    QVERIFY(session.refreshJwt() == session.account().refreshJwt);
+
     // 後ろのテストで使うアカウント情報
     m_account = session.account();
 
@@ -180,6 +188,33 @@ void atprotocol_test::test_ComAtprotoServerCreateSession()
     QVERIFY2(session.replyJson().trimmed()
                      == "{\"error\":\"RateLimitExceeded\",\"message\":\"Rate Limit Exceeded\"}",
              session.replyJson().toLocal8Bit());
+}
+
+void atprotocol_test::test_ComAtprotoServerRefreshSession()
+{
+    AtProtocolInterface::ComAtprotoServerRefreshSessionEx session;
+    session.setService(m_service);
+    session.setSession("did", "handle", "email", "access", "refresh");
+    {
+        QSignalSpy spy(&session, SIGNAL(finished(bool)));
+        session.refreshSession();
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+
+    QVERIFY(session.did() == "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
+    QVERIFY(session.handle() == "ioriayane2.bsky.social");
+    QVERIFY(session.email() == "email");
+    QVERIFY(session.accessJwt() == "access jwt");
+    QVERIFY(session.refreshJwt() == "refresh jwt");
+
+    QVERIFY(session.did() == session.account().did);
+    QVERIFY(session.handle() == session.account().handle);
+    QVERIFY(session.email() == session.account().email);
+    QVERIFY(session.accessJwt() == session.account().accessJwt);
+    QVERIFY(session.refreshJwt() == session.account().refreshJwt);
 }
 
 void atprotocol_test::test_OpenGraphProtocol()

@@ -35,11 +35,15 @@ void {{ class_name }}::{{ method_name }}({{ method_args }})
 
     get(QStringLiteral("xrpc/{{ api_id }}"), url_query{%- if user_auth == False -%}, false{%- endif -%});
 {% else %}
+{% if method_payload is defined -%}
     QJsonObject json_obj;
 {{ method_payload }}
     QJsonDocument json_doc(json_obj);
 
     post(QStringLiteral("xrpc/{{ api_id }}"), json_doc.toJson(QJsonDocument::Compact){%- if user_auth == False -%}, false{%- endif -%});
+{% else -%}
+    post(QStringLiteral("xrpc/{{ api_id }}"), QByteArray(){%- if user_auth == False -%}, false{%- endif -%});
+{% endif -%}
 {% endif -%}
 }
 
