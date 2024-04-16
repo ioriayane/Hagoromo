@@ -1,13 +1,13 @@
 #include "recordoperator.h"
 #include "atprotocol/com/atproto/repo/comatprotorepouploadblob.h"
 #include "atprotocol/com/atproto/repo/comatprotorepolistrecords.h"
-#include "atprotocol/com/atproto/repo/comatprotorepogetrecord.h"
 #include "atprotocol/com/atproto/repo/comatprotorepoputrecord.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofiles.h"
 #include "atprotocol/app/bsky/graph/appbskygraphmuteactor.h"
 #include "atprotocol/app/bsky/graph/appbskygraphunmuteactor.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "extension/com/atproto/repo/comatprotorepodeleterecordex.h"
+#include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
 #include "systemtool.h"
 
 #include <QTimer>
@@ -17,7 +17,7 @@ using AtProtocolInterface::AppBskyGraphMuteActor;
 using AtProtocolInterface::AppBskyGraphUnmuteActor;
 using AtProtocolInterface::ComAtprotoRepoCreateRecordEx;
 using AtProtocolInterface::ComAtprotoRepoDeleteRecordEx;
-using AtProtocolInterface::ComAtprotoRepoGetRecord;
+using AtProtocolInterface::ComAtprotoRepoGetRecordEx;
 using AtProtocolInterface::ComAtprotoRepoListRecords;
 using AtProtocolInterface::ComAtprotoRepoPutRecord;
 using AtProtocolInterface::ComAtprotoRepoUploadBlob;
@@ -611,12 +611,12 @@ void RecordOperator::updateProfile(const QString &avatar_url, const QString &ban
     }
     setImages(images, alts);
 
-    ComAtprotoRepoGetRecord *old_profile = new ComAtprotoRepoGetRecord(this);
-    connect(old_profile, &ComAtprotoRepoGetRecord::finished, [=](bool success1) {
+    ComAtprotoRepoGetRecordEx *old_profile = new ComAtprotoRepoGetRecordEx(this);
+    connect(old_profile, &ComAtprotoRepoGetRecordEx::finished, [=](bool success1) {
         if (success1) {
             AppBskyActorProfile::Main old_record =
                     LexiconsTypeUnknown::fromQVariant<AppBskyActorProfile::Main>(
-                            old_profile->record());
+                            old_profile->value());
             QString old_cid = old_profile->cid();
             uploadBlob([=](bool success2) {
                 if (success2) {
@@ -676,11 +676,11 @@ void RecordOperator::updateList(const QString &uri, const QString &avatar_url,
     }
     setImages(images, alts);
 
-    ComAtprotoRepoGetRecord *old_list = new ComAtprotoRepoGetRecord(this);
-    connect(old_list, &ComAtprotoRepoGetRecord::finished, [=](bool success1) {
+    ComAtprotoRepoGetRecordEx *old_list = new ComAtprotoRepoGetRecordEx(this);
+    connect(old_list, &ComAtprotoRepoGetRecordEx::finished, [=](bool success1) {
         if (success1) {
             AppBskyGraphList::Main old_record =
-                    LexiconsTypeUnknown::fromQVariant<AppBskyGraphList::Main>(old_list->record());
+                    LexiconsTypeUnknown::fromQVariant<AppBskyGraphList::Main>(old_list->value());
             uploadBlob([=](bool success2) {
                 if (success2) {
                     AtProtocolType::Blob avatar = old_record.avatar;

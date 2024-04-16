@@ -18,7 +18,7 @@
 #include "atprotocol/app/bsky/graph/appbskygraphgetlistblocks.h"
 #include "atprotocol/app/bsky/graph/appbskygraphgetmutes.h"
 #include "extension/com/atproto/repo/comatprotorepocreaterecordex.h"
-#include "atprotocol/com/atproto/repo/comatprotorepogetrecord.h"
+#include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
 #include "atprotocol/com/atproto/repo/comatprotorepoputrecord.h"
 #include "extension/com/atproto/server/comatprotoservercreatesessionex.h"
 #include "tools/opengraphprotocol.h"
@@ -1582,7 +1582,7 @@ void atprotocol_test::test_ServiceUrl()
 
 void atprotocol_test::test_ComAtprotoRepoGetRecord_profile()
 {
-    AtProtocolInterface::ComAtprotoRepoGetRecord record;
+    AtProtocolInterface::ComAtprotoRepoGetRecordEx record;
     record.setAccount(m_account);
     record.setService(QString("http://localhost:%1/response/profile").arg(m_listenPort));
 
@@ -1600,7 +1600,7 @@ void atprotocol_test::test_ComAtprotoRepoGetRecord_profile()
     QVERIFY2(record.cid() == "bafyreif4chy7iugq3blmvqt6sgqeo72pxkkr4v4fnzjqii2yriijh545ei",
              record.cid().toLocal8Bit());
     AppBskyActorProfile::Main value =
-            LexiconsTypeUnknown::fromQVariant<AppBskyActorProfile::Main>(record.record());
+            LexiconsTypeUnknown::fromQVariant<AppBskyActorProfile::Main>(record.value());
     QVERIFY2(value.description == "epub\nLeME", value.description.toLocal8Bit());
     QVERIFY2(value.displayName == "IoriAYANE", value.displayName.toLocal8Bit());
     QVERIFY2(value.avatar.cid == "bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy",

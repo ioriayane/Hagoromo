@@ -155,7 +155,6 @@ class Defs2Struct:
             'com.atproto.repo.importRepo',
             'com.atproto.repo.putRecord',
             'com.atproto.repo.uploadBlob',
-            'com.atproto.repo.getRecord',
             'com.atproto.repo.listMissingBlobs',
             'com.atproto.repo.listRecords',
             'com.atproto.server.activateAccount',
@@ -213,6 +212,7 @@ class Defs2Struct:
         self.need_extension = [
             'com.atproto.repo.createRecord',
             'com.atproto.repo.deleteRecord',
+            'com.atproto.repo.getRecord',
             'com.atproto.server.createSession'
         ]
 

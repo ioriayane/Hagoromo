@@ -2,7 +2,6 @@
 #define COMATPROTOREPOGETRECORD_H
 
 #include "atprotocol/accessatprotocol.h"
-#include "atprotocol/lexicons.h"
 
 namespace AtProtocolInterface {
 
@@ -14,19 +13,17 @@ public:
     void getRecord(const QString &repo, const QString &collection, const QString &rkey,
                    const QString &cid);
 
-    void profile(const QString &did);
-    void list(const QString &did, const QString &rkey);
+    const QString &uri() const;
+    const QString &cid() const;
+    const QVariant &value() const;
 
-    QString cid() const;
-    QString uri() const;
-    QVariant record() const;
-
-private:
+protected:
     virtual bool parseJson(bool success, const QString reply_json);
 
-    QString m_cid;
+private:
     QString m_uri;
-    QVariant m_record;
+    QString m_cid;
+    QVariant m_value;
 };
 
 }
