@@ -19,7 +19,7 @@
 #include "atprotocol/app/bsky/graph/appbskygraphgetmutes.h"
 #include "extension/com/atproto/repo/comatprotorepocreaterecordex.h"
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
-#include "atprotocol/com/atproto/repo/comatprotorepoputrecord.h"
+#include "extension/com/atproto/repo/comatprotorepoputrecordex.h"
 #include "extension/com/atproto/server/comatprotoservercreatesessionex.h"
 #include "tools/opengraphprotocol.h"
 #include "atprotocol/lexicons_func_unknown.h"
@@ -1617,7 +1617,7 @@ void atprotocol_test::test_ComAtprotoRepoGetRecord_profile()
 
 void atprotocol_test::test_ComAtprotoRepoPutRecord_profile()
 {
-    AtProtocolInterface::ComAtprotoRepoPutRecord record;
+    AtProtocolInterface::ComAtprotoRepoPutRecordEx record;
 
     AtProtocolType::Blob avatar;
     AtProtocolType::Blob banner;

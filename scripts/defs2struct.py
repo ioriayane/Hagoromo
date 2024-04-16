@@ -153,7 +153,6 @@ class Defs2Struct:
             'com.atproto.repo.applyWrites',
             'com.atproto.repo.describeRepo',
             'com.atproto.repo.importRepo',
-            'com.atproto.repo.putRecord',
             'com.atproto.repo.uploadBlob',
             'com.atproto.repo.listMissingBlobs',
             'com.atproto.server.activateAccount',
@@ -213,6 +212,7 @@ class Defs2Struct:
             'com.atproto.repo.deleteRecord',
             'com.atproto.repo.getRecord',
             'com.atproto.repo.listRecords',
+            'com.atproto.repo.putRecord',
             'com.atproto.server.createSession'
         ]
 

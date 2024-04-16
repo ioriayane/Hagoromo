@@ -1,6 +1,5 @@
 #include "recordoperator.h"
 #include "atprotocol/com/atproto/repo/comatprotorepouploadblob.h"
-#include "atprotocol/com/atproto/repo/comatprotorepoputrecord.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofiles.h"
 #include "atprotocol/app/bsky/graph/appbskygraphmuteactor.h"
 #include "atprotocol/app/bsky/graph/appbskygraphunmuteactor.h"
@@ -8,6 +7,7 @@
 #include "extension/com/atproto/repo/comatprotorepodeleterecordex.h"
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
 #include "extension/com/atproto/repo/comatprotorepolistrecordsex.h"
+#include "extension/com/atproto/repo/comatprotorepoputrecordex.h"
 #include "systemtool.h"
 
 #include <QTimer>
@@ -19,7 +19,7 @@ using AtProtocolInterface::ComAtprotoRepoCreateRecordEx;
 using AtProtocolInterface::ComAtprotoRepoDeleteRecordEx;
 using AtProtocolInterface::ComAtprotoRepoGetRecordEx;
 using AtProtocolInterface::ComAtprotoRepoListRecordsEx;
-using AtProtocolInterface::ComAtprotoRepoPutRecord;
+using AtProtocolInterface::ComAtprotoRepoPutRecordEx;
 using AtProtocolInterface::ComAtprotoRepoUploadBlob;
 using namespace AtProtocolType;
 
@@ -631,8 +631,8 @@ void RecordOperator::updateProfile(const QString &avatar_url, const QString &ban
                             banner.alt.clear();
                         }
                     }
-                    ComAtprotoRepoPutRecord *new_profile = new ComAtprotoRepoPutRecord(this);
-                    connect(new_profile, &ComAtprotoRepoPutRecord::finished, [=](bool success3) {
+                    ComAtprotoRepoPutRecordEx *new_profile = new ComAtprotoRepoPutRecordEx(this);
+                    connect(new_profile, &ComAtprotoRepoPutRecordEx::finished, [=](bool success3) {
                         if (!success3) {
                             emit errorOccured(new_profile->errorCode(),
                                               new_profile->errorMessage());
@@ -690,8 +690,8 @@ void RecordOperator::updateList(const QString &uri, const QString &avatar_url,
                             avatar.alt.clear();
                         }
                     }
-                    ComAtprotoRepoPutRecord *new_list = new ComAtprotoRepoPutRecord(this);
-                    connect(new_list, &ComAtprotoRepoPutRecord::finished, [=](bool success3) {
+                    ComAtprotoRepoPutRecordEx *new_list = new ComAtprotoRepoPutRecordEx(this);
+                    connect(new_list, &ComAtprotoRepoPutRecordEx::finished, [=](bool success3) {
                         if (!success3) {
                             emit errorOccured(new_list->errorCode(), new_list->errorMessage());
                         }
