@@ -90,13 +90,15 @@ private:
 
     QRegularExpression m_rxFacet;
     AtProtocolInterface::AccountData m_account;
+    int m_sequentialPostsTotal;
+    int m_sequentialPostsCurrent;
 
     QString m_text;
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_replyParent;
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_replyRoot;
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_embedQuote;
     QList<EmbedImage> m_embedImages;
-    QList<AtProtocolType::Blob> m_embedImageBlogs;
+    QList<AtProtocolType::Blob> m_embedImageBlobs;
     QList<AtProtocolType::AppBskyRichtextFacet::Main> m_facets;
     QStringList m_postLanguages;
     QString m_externalLinkUri;

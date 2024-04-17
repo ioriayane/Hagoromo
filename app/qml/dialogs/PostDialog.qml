@@ -475,64 +475,71 @@ Dialog {
                 descriptionLabel.text: listLink.description
             }
 
-            RowLayout {
+            ScrollView {
+                Layout.preferredWidth: 400 * AdjustedValues.ratio
+                Layout.preferredHeight: 97 * AdjustedValues.ratio + ScrollBar.horizontal.height + 1
+                ScrollBar.horizontal.policy: ScrollBar.AlwaysOn
                 visible: embedImagePreview.embedImages.length > 0
-                spacing: 4
-                Repeater {
-                    id: embedImagePreview
-                    property var embedImages: []
-                    property var embedAlts: []
-                    model: embedImagePreview.embedImages
-                    delegate: ImageWithIndicator {
-                        Layout.preferredWidth: 97 * AdjustedValues.ratio
-                        Layout.preferredHeight: 97 * AdjustedValues.ratio
-                        fillMode: Image.PreserveAspectCrop
-                        source: modelData
-                        TagLabel {
-                            anchors.left: parent.left
-                            anchors.bottom: parent.bottom
-                            anchors.margins: 3
-                            visible: model.index < embedImagePreview.embedAlts.length ? embedImagePreview.embedAlts[model.index].length > 0 : false
-                            source: ""
-                            fontPointSize: AdjustedValues.f8
-                            text: "Alt"
-                        }
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: {
-                                altEditDialog.editingIndex = model.index
-                                altEditDialog.embedImage = modelData
-                                if(model.index < embedImagePreview.embedAlts.length){
-                                    altEditDialog.embedAlt = embedImagePreview.embedAlts[model.index]
+                clip: true
+                RowLayout {
+                    spacing: 4
+                    Repeater {
+                        id: embedImagePreview
+                        property var embedImages: []
+                        property var embedAlts: []
+                        model: embedImagePreview.embedImages
+                        delegate: ImageWithIndicator {
+                            Layout.preferredWidth: 97 * AdjustedValues.ratio
+                            Layout.preferredHeight: 97 * AdjustedValues.ratio
+                            fillMode: Image.PreserveAspectCrop
+                            source: modelData
+                            TagLabel {
+                                anchors.left: parent.left
+                                anchors.bottom: parent.bottom
+                                anchors.margins: 3
+                                visible: model.index < embedImagePreview.embedAlts.length ?
+                                             embedImagePreview.embedAlts[model.index].length > 0 : false
+                                source: ""
+                                fontPointSize: AdjustedValues.f8
+                                text: "Alt"
+                            }
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: {
+                                    altEditDialog.editingIndex = model.index
+                                    altEditDialog.embedImage = modelData
+                                    if(model.index < embedImagePreview.embedAlts.length){
+                                        altEditDialog.embedAlt = embedImagePreview.embedAlts[model.index]
+                                    }
+                                    altEditDialog.open()
                                 }
-                                altEditDialog.open()
+                            }
+                            IconButton {
+                                enabled: !createRecord.running
+                                width: AdjustedValues.b24
+                                height: AdjustedValues.b24
+                                anchors.top: parent.top
+                                anchors.right: parent.right
+                                anchors.margins: 5
+                                iconSource: "../images/delete.png"
+                                onClicked: embedImagePreview.removeImage(modelData)
                             }
                         }
-                        IconButton {
-                            enabled: !createRecord.running
-                            width: AdjustedValues.b24
-                            height: AdjustedValues.b24
-                            anchors.top: parent.top
-                            anchors.right: parent.right
-                            anchors.margins: 5
-                            iconSource: "../images/delete.png"
-                            onClicked: embedImagePreview.removeImage(modelData)
-                        }
-                    }
-                    function removeImage(path){
-                        var images = embedImagePreview.embedImages
-                        var alts = embedImagePreview.embedAlts
-                        var new_images = []
-                        var new_alts = []
-                        for(var i=0; i<images.length; i++){
-                            if(images[i] === path){
-                                continue;
+                        function removeImage(path){
+                            var images = embedImagePreview.embedImages
+                            var alts = embedImagePreview.embedAlts
+                            var new_images = []
+                            var new_alts = []
+                            for(var i=0; i<images.length; i++){
+                                if(images[i] === path){
+                                    continue;
+                                }
+                                new_images.push(images[i])
+                                new_alts.push(alts[i])
                             }
-                            new_images.push(images[i])
-                            new_alts.push(alts[i])
+                            embedImagePreview.embedImages = new_images
+                            embedImagePreview.embedAlts = new_alts
                         }
-                        embedImagePreview.embedImages = new_images
-                        embedImagePreview.embedAlts = new_alts
                     }
                 }
             }
@@ -708,13 +715,13 @@ Dialog {
             prevFolder = folder
 
             var images = embedImagePreview.embedImages
-            if(images.length >= 4){
+            if(images.length >= 64){
                 return
             }
             var new_images = embedImagePreview.embedImages
             var new_alts = embedImagePreview.embedAlts
             for(var i=0; i<files.length; i++){
-                if(new_images.length >= 4){
+                if(new_images.length >= 64){
                     break
                 }
                 if(images.indexOf(files[i]) >= 0){

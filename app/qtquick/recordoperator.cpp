@@ -29,7 +29,8 @@ struct MentionData
     int end = -1;
 };
 
-RecordOperator::RecordOperator(QObject *parent) : QObject { parent }, m_running(false)
+RecordOperator::RecordOperator(QObject *parent)
+    : QObject { parent }, m_sequentialPostsTotal(0), m_sequentialPostsCurrent(0), m_running(false)
 {
     m_rxFacet = QRegularExpression(QString("(?:%1)|(?:%2)|(?:%3)")
                                            .arg(REG_EXP_URL, REG_EXP_MENTION)
@@ -123,7 +124,7 @@ void RecordOperator::clear()
     m_replyRoot = AtProtocolType::ComAtprotoRepoStrongRef::Main();
     m_embedQuote = AtProtocolType::ComAtprotoRepoStrongRef::Main();
     m_embedImages.clear();
-    m_embedImageBlogs.clear();
+    m_embedImageBlobs.clear();
     m_facets.clear();
     m_externalLinkUri.clear();
     m_externalLinkTitle.clear();
@@ -131,6 +132,8 @@ void RecordOperator::clear()
     m_feedGeneratorLinkUri.clear();
     m_feedGeneratorLinkCid.clear();
     m_selfLabels.clear();
+    m_sequentialPostsTotal = 0;
+    m_sequentialPostsCurrent = 0;
 
     m_threadGateType = "everybody";
     m_threadGateRules.clear();
@@ -143,14 +146,45 @@ void RecordOperator::post()
 
     setRunning(true);
 
+    if (m_embedImageBlobs.count() > 4 && m_sequentialPostsTotal == 0) {
+        m_sequentialPostsTotal = static_cast<int>(m_embedImageBlobs.count() / 4)
+                + ((m_embedImageBlobs.count() % 4) > 0 ? 1 : 0);
+        m_text +=
+                QString("\n(%1/%2)").arg(m_sequentialPostsCurrent + 1).arg(m_sequentialPostsTotal);
+    } else if (m_sequentialPostsCurrent > 0) {
+        m_text = QString("(%1/%2)").arg(m_sequentialPostsCurrent + 1).arg(m_sequentialPostsTotal);
+    }
+    QList<AtProtocolType::Blob> embed_imageBlobs;
+    for (int i = 0; i < 4; i++) {
+        if (m_embedImageBlobs.isEmpty()) {
+            break;
+        }
+        embed_imageBlobs.append(m_embedImageBlobs.first());
+        m_embedImageBlobs.pop_front();
+    }
+
     makeFacets(m_text, [=]() {
         ComAtprotoRepoCreateRecordEx *create_record = new ComAtprotoRepoCreateRecordEx(this);
         connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, [=](bool success) {
             if (success) {
+                QString last_post_uri = create_record->uri();
+                QString last_post_cid = create_record->cid();
                 bool ret = threadGate(create_record->uri(),
                                       [=](bool success2, const QString &uri, const QString &cid) {
-                                          emit finished(success2, uri, cid);
-                                          setRunning(false);
+                                          m_sequentialPostsCurrent++;
+                                          if (m_sequentialPostsCurrent >= m_sequentialPostsTotal) {
+                                              emit finished(success2, uri, cid);
+                                              setRunning(false);
+                                          } else {
+                                              if (m_sequentialPostsCurrent == 1
+                                                  && m_replyRoot.uri.isEmpty()) {
+                                                  m_replyRoot.uri = last_post_uri;
+                                                  m_replyRoot.cid = last_post_cid;
+                                              }
+                                              m_replyParent.uri = last_post_uri;
+                                              m_replyParent.cid = last_post_cid;
+                                              post();
+                                          }
                                       });
                 if (!ret) {
                     emit errorOccured("InvalidThreadGateSetting",
@@ -170,7 +204,7 @@ void RecordOperator::post()
         create_record->setReply(m_replyParent.cid, m_replyParent.uri, m_replyRoot.cid,
                                 m_replyRoot.uri);
         create_record->setQuote(m_embedQuote.cid, m_embedQuote.uri);
-        create_record->setImageBlobs(m_embedImageBlogs);
+        create_record->setImageBlobs(embed_imageBlobs);
         create_record->setFacets(m_facets);
         create_record->setPostLanguages(m_postLanguages);
         create_record->setExternalLink(m_externalLinkUri, m_externalLinkTitle,
@@ -334,7 +368,7 @@ bool RecordOperator::list(const QString &name, const RecordOperator::ListPurpose
                 setRunning(false);
                 create_record->deleteLater();
             });
-            create_record->setImageBlobs(m_embedImageBlogs);
+            create_record->setImageBlobs(m_embedImageBlobs);
             create_record->setAccount(m_account);
             create_record->list(
                     name,
@@ -622,7 +656,7 @@ void RecordOperator::updateProfile(const QString &avatar_url, const QString &ban
                 if (success2) {
                     AtProtocolType::Blob avatar = old_record.avatar;
                     AtProtocolType::Blob banner = old_record.banner;
-                    for (const auto &blob : qAsConst(m_embedImageBlogs)) {
+                    for (const auto &blob : qAsConst(m_embedImageBlobs)) {
                         if (blob.alt == "avatar") {
                             avatar = blob;
                             avatar.alt.clear();
@@ -684,7 +718,7 @@ void RecordOperator::updateList(const QString &uri, const QString &avatar_url,
             uploadBlob([=](bool success2) {
                 if (success2) {
                     AtProtocolType::Blob avatar = old_record.avatar;
-                    for (const auto &blob : qAsConst(m_embedImageBlogs)) {
+                    for (const auto &blob : qAsConst(m_embedImageBlobs)) {
                         if (blob.alt == "avatar") {
                             avatar = blob;
                             avatar.alt.clear();
@@ -898,7 +932,7 @@ void RecordOperator::uploadBlob(std::function<void(bool)> callback)
             blob.size = upload_blob->size();
             blob.alt = alt;
             blob.aspect_ratio = upload_blob->aspectRatio();
-            m_embedImageBlogs.append(blob);
+            m_embedImageBlobs.append(blob);
 
             if (m_embedImages.isEmpty()) {
                 callback(true);
