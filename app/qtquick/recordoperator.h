@@ -17,6 +17,8 @@ class RecordOperator : public QObject
     Q_OBJECT
 
     Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
+    Q_PROPERTY(QString progressMessage READ progressMessage WRITE setProgressMessage NOTIFY
+                       progressMessageChanged FINAL)
 
 public:
     explicit RecordOperator(QObject *parent = nullptr);
@@ -75,10 +77,15 @@ public:
     bool running() const;
     void setRunning(bool newRunning);
 
+    QString progressMessage() const;
+    void setProgressMessage(const QString &newProgressMessage);
+
 signals:
     void errorOccured(const QString &code, const QString &message);
     void finished(bool success, const QString &uri, const QString &cid);
     void runningChanged();
+
+    void progressMessageChanged();
 
 private:
     void makeFacets(const QString &text, std::function<void()> callback);
@@ -92,6 +99,7 @@ private:
     AtProtocolInterface::AccountData m_account;
     int m_sequentialPostsTotal;
     int m_sequentialPostsCurrent;
+    int m_embedImagesTotal;
 
     QString m_text;
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_replyParent;
@@ -113,6 +121,7 @@ private:
     QStringList m_threadGateRules;
 
     bool m_running;
+    QString m_progressMessage;
 };
 
 #endif // RECORDOPERATOR_H

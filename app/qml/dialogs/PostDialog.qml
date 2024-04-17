@@ -575,6 +575,25 @@ Dialog {
                 }
             }
 
+            Label {
+                Layout.preferredWidth: postText.width
+                Layout.leftMargin: 5
+                Layout.topMargin: 2
+                Layout.bottomMargin: 2
+                font.pointSize: AdjustedValues.f8
+                text: createRecord.progressMessage
+                visible: createRecord.running && createRecord.progressMessage.length > 0
+                Rectangle {
+                    anchors.fill: parent
+                    anchors.leftMargin: -5
+                    anchors.topMargin: -2
+                    anchors.bottomMargin: -2
+                    z: -1
+                    radius: height / 2
+                    color: Material.accentColor
+                }
+            }
+
             RowLayout {
                 spacing: 0
                 Button {
