@@ -9,6 +9,7 @@ import tech.relog.hagoromo.accountlistmodel 1.0
 import tech.relog.hagoromo.languagelistmodel 1.0
 import tech.relog.hagoromo.externallink 1.0
 import tech.relog.hagoromo.feedgeneratorlink 1.0
+import tech.relog.hagoromo.embedimagelistmodel 1.0
 import tech.relog.hagoromo.listlink 1.0
 import tech.relog.hagoromo.postlink 1.0
 import tech.relog.hagoromo.systemtool 1.0
@@ -90,8 +91,7 @@ Dialog {
         selfLabelsButton.iconText = ""
 
         postText.clear()
-        embedImagePreview.embedImages = []
-        embedImagePreview.embedAlts = []
+        embedImageListModel.clear()
         externalLink.clear()
         feedGeneratorLink.clear()
         listLink.clear()
@@ -358,7 +358,7 @@ Dialog {
 
             RowLayout {
                 Layout.maximumWidth: 400 * AdjustedValues.ratio
-                visible: embedImagePreview.embedImages.length === 0
+                visible: embedImageListModel.count === 0
                 ScrollView {
                     Layout.fillWidth: true
                     clip: true
@@ -479,26 +479,25 @@ Dialog {
                 Layout.preferredWidth: 400 * AdjustedValues.ratio
                 Layout.preferredHeight: 97 * AdjustedValues.ratio + ScrollBar.horizontal.height + 1
                 ScrollBar.horizontal.policy: ScrollBar.AlwaysOn
-                visible: embedImagePreview.embedImages.length > 0
+                visible: embedImageListModel.count > 0
+                enabled: !createRecord.running
                 clip: true
                 RowLayout {
                     spacing: 4
                     Repeater {
-                        id: embedImagePreview
-                        property var embedImages: []
-                        property var embedAlts: []
-                        model: embedImagePreview.embedImages
+                        model: EmbedImageListModel {
+                            id: embedImageListModel
+                        }
                         delegate: ImageWithIndicator {
                             Layout.preferredWidth: 97 * AdjustedValues.ratio
                             Layout.preferredHeight: 97 * AdjustedValues.ratio
                             fillMode: Image.PreserveAspectCrop
-                            source: modelData
+                            source: model.uri
                             TagLabel {
                                 anchors.left: parent.left
                                 anchors.bottom: parent.bottom
                                 anchors.margins: 3
-                                visible: model.index < embedImagePreview.embedAlts.length ?
-                                             embedImagePreview.embedAlts[model.index].length > 0 : false
+                                visible: model.alt.length > 0
                                 source: ""
                                 fontPointSize: AdjustedValues.f8
                                 text: "Alt"
@@ -507,10 +506,8 @@ Dialog {
                                 anchors.fill: parent
                                 onClicked: {
                                     altEditDialog.editingIndex = model.index
-                                    altEditDialog.embedImage = modelData
-                                    if(model.index < embedImagePreview.embedAlts.length){
-                                        altEditDialog.embedAlt = embedImagePreview.embedAlts[model.index]
-                                    }
+                                    altEditDialog.embedImage = model.uri
+                                    altEditDialog.embedAlt = model.alt
                                     altEditDialog.open()
                                 }
                             }
@@ -522,23 +519,8 @@ Dialog {
                                 anchors.right: parent.right
                                 anchors.margins: 5
                                 iconSource: "../images/delete.png"
-                                onClicked: embedImagePreview.removeImage(modelData)
+                                onClicked: embedImageListModel.remove(model.index)
                             }
-                        }
-                        function removeImage(path){
-                            var images = embedImagePreview.embedImages
-                            var alts = embedImagePreview.embedAlts
-                            var new_images = []
-                            var new_alts = []
-                            for(var i=0; i<images.length; i++){
-                                if(images[i] === path){
-                                    continue;
-                                }
-                                new_images.push(images[i])
-                                new_alts.push(alts[i])
-                            }
-                            embedImagePreview.embedImages = new_images
-                            embedImagePreview.embedAlts = new_alts
                         }
                     }
                 }
@@ -706,8 +688,8 @@ Dialog {
                         }else if(listLink.valid){
                             createRecord.setFeedGeneratorLink(listLink.uri, listLink.cid)
                             createRecord.post()
-                        }else if(embedImagePreview.embedImages.length > 0){
-                            createRecord.setImages(embedImagePreview.embedImages, embedImagePreview.embedAlts)
+                        }else if(embedImageListModel.count > 0){
+                            createRecord.setImages(embedImageListModel.uris(), embedImageListModel.alts())
                             createRecord.postWithImages()
                         }else{
                             createRecord.post()
@@ -734,24 +716,11 @@ Dialog {
             //選択されたファイルをすべて追加
             prevFolder = folder
 
-            var images = embedImagePreview.embedImages
-            if(images.length >= 64){
-                return
-            }
-            var new_images = embedImagePreview.embedImages
-            var new_alts = embedImagePreview.embedAlts
+            var new_files = []
             for(var i=0; i<files.length; i++){
-                if(new_images.length >= 64){
-                    break
-                }
-                if(images.indexOf(files[i]) >= 0){
-                    continue;
-                }
-                new_images.push(files[i])
-                new_alts.push("")
+                new_files.push(files[i])
             }
-            embedImagePreview.embedImages = new_images
-            embedImagePreview.embedAlts = new_alts
+            embedImageListModel.append(new_files)
         }
         property string prevFolder
     }
@@ -767,13 +736,7 @@ Dialog {
     AltEditDialog {
         id: altEditDialog
         property int editingIndex: -1
-        onAccepted: {
-            if(editingIndex >= 0 && editingIndex < embedImagePreview.embedAlts.length){
-                var alts = embedImagePreview.embedAlts
-                alts[editingIndex] = altEditDialog.embedAlt
-                embedImagePreview.embedAlts = alts
-            }
-        }
+        onAccepted: embedImageListModel.updateAlt(editingIndex, altEditDialog.embedAlt)
     }
 
     SelectThreadGateDialog {
