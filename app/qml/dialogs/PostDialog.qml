@@ -487,6 +487,7 @@ Dialog {
                     Repeater {
                         model: EmbedImageListModel {
                             id: embedImageListModel
+                            property int adjustPostLength: count > 4 ? 5 + (Math.ceil(count / 4) + "").length : 0
                         }
                         delegate: ImageWithIndicator {
                             Layout.preferredWidth: 97 * AdjustedValues.ratio
@@ -617,7 +618,8 @@ Dialog {
                     enabled: !createRecord.running &&
                              !externalLink.valid &&
                              !feedGeneratorLink.valid &&
-                             !listLink.valid
+                             !listLink.valid &&
+                             !embedImageListModel.running
                     iconSource: "../images/add_image.png"
                     iconSize: AdjustedValues.i18
                     flat: true
@@ -633,7 +635,7 @@ Dialog {
                     Layout.leftMargin: 5
                     Layout.alignment: Qt.AlignVCenter
                     font.pointSize: AdjustedValues.f8
-                    text: 300 - postText.realTextLength
+                    text: 300 - embedImageListModel.adjustPostLength - postText.realTextLength
                 }
                 ProgressCircle {
                     Layout.leftMargin: 5
@@ -641,14 +643,14 @@ Dialog {
                     Layout.preferredHeight: AdjustedValues.i24
                     Layout.alignment: Qt.AlignVCenter
                     from: 0
-                    to: 300
+                    to: 300 - embedImageListModel.adjustPostLength
                     value: postText.realTextLength
                 }
                 Button {
                     id: postButton
                     Layout.alignment: Qt.AlignRight
                     enabled: postText.text.length > 0 &&
-                             postText.realTextLength <= 300 &&
+                             postText.realTextLength <= (300 - embedImageListModel.adjustPostLength) &&
                              !createRecord.running &&
                              !externalLink.running &&
                              !feedGeneratorLink.running &&
