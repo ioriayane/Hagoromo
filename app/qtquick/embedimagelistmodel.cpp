@@ -4,7 +4,7 @@
 #include <QDebug>
 
 EmbedImageListModel::EmbedImageListModel(QObject *parent)
-    : QAbstractListModel { parent }, m_count(0)
+    : QAbstractListModel { parent }, m_count(0), m_running(false)
 {
 }
 
@@ -71,9 +71,10 @@ void EmbedImageListModel::remove(const int row)
 
 void EmbedImageListModel::append(const QStringList &uris)
 {
-    if (uris.isEmpty())
+    if (uris.isEmpty() || running())
         return;
 
+    setRunning(true);
     m_uriCue = uris;
 
     QTimer::singleShot(10, this, &EmbedImageListModel::appendItem);
@@ -127,8 +128,10 @@ QHash<int, QByteArray> EmbedImageListModel::roleNames() const
 
 void EmbedImageListModel::appendItem()
 {
-    if (m_uriCue.isEmpty())
+    if (m_uriCue.isEmpty()) {
+        setRunning(false);
         return;
+    }
 
     EmbedImageItem item;
     item.uri = m_uriCue.first();
@@ -143,4 +146,17 @@ void EmbedImageListModel::appendItem()
     setCount(rowCount());
 
     QTimer::singleShot(10, this, &EmbedImageListModel::appendItem);
+}
+
+bool EmbedImageListModel::running() const
+{
+    return m_running;
+}
+
+void EmbedImageListModel::setRunning(bool newRunning)
+{
+    if (m_running == newRunning)
+        return;
+    m_running = newRunning;
+    emit runningChanged();
 }

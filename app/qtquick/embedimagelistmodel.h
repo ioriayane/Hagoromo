@@ -14,6 +14,7 @@ class EmbedImageListModel : public QAbstractListModel
     Q_OBJECT
 
     Q_PROPERTY(int count READ count NOTIFY countChanged FINAL)
+    Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged FINAL)
 public:
     explicit EmbedImageListModel(QObject *parent = nullptr);
 
@@ -43,11 +44,16 @@ public:
     int count() const;
     void setCount(int newCount);
 
+    bool running() const;
+    void setRunning(bool newRunning);
+
 protected:
     QHash<int, QByteArray> roleNames() const;
 
 signals:
     void countChanged();
+
+    void runningChanged();
 
 private:
     void appendItem();
@@ -55,6 +61,7 @@ private:
     QStringList m_uriCue;
     QList<EmbedImageItem> m_embedImageList;
     int m_count;
+    bool m_running;
 };
 
 #endif // EMBEDIMAGELISTMODEL_H
