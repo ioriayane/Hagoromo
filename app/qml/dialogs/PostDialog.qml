@@ -503,6 +503,15 @@ Dialog {
                                 fontPointSize: AdjustedValues.f8
                                 text: "Alt"
                             }
+                            TagLabel {
+                                anchors.right: parent.right
+                                anchors.bottom: parent.bottom
+                                anchors.margins: 3
+                                visible: model.number.length > 0
+                                source: ""
+                                fontPointSize: AdjustedValues.f8
+                                text: model.number
+                            }
                             MouseArea {
                                 anchors.fill: parent
                                 onClicked: {

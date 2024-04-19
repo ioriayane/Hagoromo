@@ -23,6 +23,7 @@ public:
         ModelData = Qt::UserRole + 1,
         UriRole,
         AltRole,
+        NumberRole,
     };
     Q_ENUM(EmbedImageListModelRoles)
 

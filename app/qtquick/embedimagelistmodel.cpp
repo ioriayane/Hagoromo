@@ -28,6 +28,13 @@ QVariant EmbedImageListModel::item(int row, EmbedImageListModelRoles role) const
         return m_embedImageList.at(row).uri;
     else if (role == AltRole)
         return m_embedImageList.at(row).alt;
+    else if (role == NumberRole) {
+        if (rowCount() > 4) {
+            return QString("%1/%2").arg(row + 1).arg(rowCount());
+        } else {
+            return QString();
+        }
+    }
 
     return QVariant();
 }
@@ -67,6 +74,10 @@ void EmbedImageListModel::remove(const int row)
     endRemoveRows();
 
     setCount(rowCount());
+
+    if (count() > 0) {
+        emit dataChanged(index(0), index(count() - 1));
+    }
 }
 
 void EmbedImageListModel::append(const QStringList &uris)
@@ -122,6 +133,7 @@ QHash<int, QByteArray> EmbedImageListModel::roleNames() const
 
     roles[UriRole] = "uri";
     roles[AltRole] = "alt";
+    roles[NumberRole] = "number";
 
     return roles;
 }
@@ -144,6 +156,8 @@ void EmbedImageListModel::appendItem()
     endInsertRows();
 
     setCount(rowCount());
+
+    emit dataChanged(index(0), index(count() - 2));
 
     QTimer::singleShot(10, this, &EmbedImageListModel::appendItem);
 }
