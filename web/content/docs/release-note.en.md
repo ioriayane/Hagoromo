@@ -10,7 +10,9 @@ description: This is a multi-column Bluesky client.
 
 - Add
   - Support for aggregate display of notifications
-  - Added per-column setting for whether notifications are displayed in the aggregate
+  - Add per-column setting for whether notifications are displayed in the aggregate
+  - Support for sequential posts with 4 or more images attached
+  - Add progress indicator to post dialog
 - Update
 - Fix
 
