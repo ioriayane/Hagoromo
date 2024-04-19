@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+### v0.28.0 - 2024/4/20
+
 - Add
   - Support for aggregate display of notifications
   - Add per-column setting for whether notifications are displayed in the aggregate
@@ -15,7 +17,6 @@ description: This is a multi-column Bluesky client.
   - Add progress indicator to post dialog
 - Update
   - Adjusted post dialog layout
-- Fix
 
 ### v0.27.0 - 2024/4/6
 
