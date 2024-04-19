@@ -14,6 +14,7 @@ SOURCES += \
     $$PWD/contentfiltersettinglistmodel.cpp \
     $$PWD/createsession.cpp \
     $$PWD/customfeedlistmodel.cpp \
+    $$PWD/embedimagelistmodel.cpp \
     $$PWD/encryption.cpp \
     $$PWD/externallink.cpp \
     $$PWD/feedgeneratorlink.cpp \
@@ -56,6 +57,7 @@ HEADERS += \
     $$PWD/contentfiltersettinglistmodel.h \
     $$PWD/createsession.h \
     $$PWD/customfeedlistmodel.h \
+    $$PWD/embedimagelistmodel.h \
     $$PWD/encryption.h \
     $$PWD/encryption_seed.h \
     $$PWD/externallink.h \
