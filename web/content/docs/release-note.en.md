@@ -14,6 +14,7 @@ description: This is a multi-column Bluesky client.
   - Support for sequential posts with 4 or more images attached
   - Add progress indicator to post dialog
 - Update
+  - Adjusted post dialog layout
 - Fix
 
 ### v0.27.0 - 2024/4/6
