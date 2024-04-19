@@ -302,8 +302,8 @@ Dialog {
 
             ScrollView {
                 z: 99   // MentionSuggetionViewを最前に表示するため
-                Layout.preferredWidth: 400 * AdjustedValues.ratio
-                Layout.preferredHeight: 100 * AdjustedValues.ratio
+                Layout.preferredWidth: 420 * AdjustedValues.ratio
+                Layout.preferredHeight: 120 * AdjustedValues.ratio
                 TextArea {
                     id: postText
                     verticalAlignment: TextInput.AlignTop
@@ -357,7 +357,7 @@ Dialog {
             }
 
             RowLayout {
-                Layout.maximumWidth: 400 * AdjustedValues.ratio
+                Layout.preferredWidth: postText.width
                 visible: embedImageListModel.count === 0
                 ScrollView {
                     Layout.fillWidth: true
@@ -448,7 +448,7 @@ Dialog {
                 }
             }
             ExternalLinkCard {
-                Layout.preferredWidth: 400 * AdjustedValues.ratio
+                Layout.preferredWidth: postText.width
                 Layout.maximumHeight: 280 * AdjustedValues.ratio
                 visible: externalLink.valid
 
@@ -458,7 +458,7 @@ Dialog {
                 descriptionLabel.text: externalLink.description
             }
             FeedGeneratorLinkCard {
-                Layout.preferredWidth: 400 * AdjustedValues.ratio
+                Layout.preferredWidth: postText.width
                 visible: feedGeneratorLink.valid
 
                 avatarImage.source: feedGeneratorLink.avatar
@@ -467,7 +467,7 @@ Dialog {
                 likeCountLabel.text: feedGeneratorLink.likeCount
             }
             ListLinkCard {
-                Layout.preferredWidth: 400 * AdjustedValues.ratio
+                Layout.preferredWidth: postText.width
                 visible: listLink.valid
                 avatarImage.source: listLink.avatar
                 displayNameLabel.text: listLink.displayName
@@ -476,22 +476,22 @@ Dialog {
             }
 
             ScrollView {
-                Layout.preferredWidth: 400 * AdjustedValues.ratio
-                Layout.preferredHeight: 97 * AdjustedValues.ratio + ScrollBar.horizontal.height + 1
+                Layout.preferredWidth: postText.width
+                Layout.preferredHeight: 102 * AdjustedValues.ratio + ScrollBar.horizontal.height + 1
                 ScrollBar.horizontal.policy: ScrollBar.AlwaysOn
                 visible: embedImageListModel.count > 0
                 enabled: !createRecord.running
                 clip: true
                 RowLayout {
-                    spacing: 4
+                    spacing: 4 * AdjustedValues.ratio
                     Repeater {
                         model: EmbedImageListModel {
                             id: embedImageListModel
                             property int adjustPostLength: count > 4 ? 5 + (Math.ceil(count / 4) + "").length : 0
                         }
                         delegate: ImageWithIndicator {
-                            Layout.preferredWidth: 97 * AdjustedValues.ratio
-                            Layout.preferredHeight: 97 * AdjustedValues.ratio
+                            Layout.preferredWidth: 102 * AdjustedValues.ratio
+                            Layout.preferredHeight: 102 * AdjustedValues.ratio
                             fillMode: Image.PreserveAspectCrop
                             source: model.uri
                             TagLabel {
