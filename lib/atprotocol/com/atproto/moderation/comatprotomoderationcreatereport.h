@@ -2,7 +2,6 @@
 #define COMATPROTOMODERATIONCREATEREPORT_H
 
 #include "atprotocol/accessatprotocol.h"
-#include "atprotocol/lexicons.h"
 
 namespace AtProtocolInterface {
 
@@ -11,11 +10,27 @@ class ComAtprotoModerationCreateReport : public AccessAtProtocol
 public:
     explicit ComAtprotoModerationCreateReport(QObject *parent = nullptr);
 
-    void reportPost(const QString &uri, const QString &cid, const QString &reason);
-    void reportAccount(const QString &did, const QString &reason);
+    void createReport(const QString &reasonType, const QString &reason, const QJsonObject &subject);
+
+    const int &id() const;
+    const AtProtocolType::ComAtprotoModerationDefs::ReasonType &reasonType() const;
+    const QString &reason() const;
+    const AtProtocolType::ComAtprotoAdminDefs::RepoRef &repoRef() const;
+    const AtProtocolType::ComAtprotoRepoStrongRef::Main &main() const;
+    const QString &reportedBy() const;
+    const QString &createdAt() const;
+
+protected:
+    virtual bool parseJson(bool success, const QString reply_json);
 
 private:
-    virtual bool parseJson(bool success, const QString reply_json);
+    int m_id;
+    AtProtocolType::ComAtprotoModerationDefs::ReasonType m_reasonType;
+    QString m_reason;
+    AtProtocolType::ComAtprotoAdminDefs::RepoRef m_repoRef;
+    AtProtocolType::ComAtprotoRepoStrongRef::Main m_main;
+    QString m_reportedBy;
+    QString m_createdAt;
 };
 
 }

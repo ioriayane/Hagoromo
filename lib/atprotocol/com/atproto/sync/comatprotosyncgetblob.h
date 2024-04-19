@@ -2,7 +2,6 @@
 #define COMATPROTOSYNCGETBLOB_H
 
 #include "atprotocol/accessatprotocol.h"
-#include "atprotocol/lexicons.h"
 
 namespace AtProtocolInterface {
 
@@ -14,15 +13,14 @@ public:
     void getBlob(const QString &did, const QString &cid);
 
     const QByteArray &blobData() const;
-
-    QString extension() const;
+    const QString &extension() const;
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);
     virtual bool recvImage(const QByteArray &data, const QString &content_type);
 
     QByteArray m_blobData;
-    QString m_extention;
+    QString m_extension;
 };
 
 }

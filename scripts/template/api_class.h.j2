@@ -1,20 +1,56 @@
 #ifndef {{ file_name_upper }}_H
 #define {{ file_name_upper }}_H
 
-#include "atprotocol/accessatprotocol.h"
-#include "atprotocol/lexicons.h"
+{% for path in include_paths %}
+#include "{{ path }}"
+{% endfor %}
 
 namespace AtProtocolInterface {
 
-class {{ class_name }} : public AccessAtProtocol
+class {{ class_name }} : public {{ parent_class_name }}
 {
 public:
     explicit {{ class_name }}(QObject *parent = nullptr);
 
     void {{ method_name }}({{ method_args }});
 
+{% if has_parent_class == False -%}
+{% for member in members -%}
+    {% if member.variable_is_array -%}
+    const QList<{{ member.variable_type }}> &{{ member.method_getter }}() const;
+    {% else -%}
+    const {{ member.variable_type }} &{{ member.method_getter }}() const;
+    {% endif -%}
+{% endfor -%}
+{% endif %}
+
+{% if is_parent -%}
+protected:
+    QString m_listKey;
+{% endif %}
+
+{% if has_parent_class == False -%}
+{% if need_extension -%}
+protected:
+{% else -%}
 private:
+{% endif -%}
     virtual bool parseJson(bool success, const QString reply_json);
+{% if recv_image -%}
+    virtual bool recvImage(const QByteArray &data, const QString &content_type);
+{% endif %}
+{% if need_extension and members is defined -%}
+private:
+{% endif -%}
+
+{% for member in members -%}
+    {% if member.variable_is_array -%}
+    QList<{{ member.variable_type }}> {{ member.variable_name }};
+    {% else -%}
+    {{ member.variable_type }} {{ member.variable_name }};
+    {% endif -%}
+{% endfor -%}
+{% endif %}
 };
 
 }

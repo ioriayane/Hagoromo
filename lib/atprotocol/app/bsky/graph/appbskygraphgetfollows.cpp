@@ -15,19 +15,29 @@ AppBskyGraphGetFollows::AppBskyGraphGetFollows(QObject *parent)
 void AppBskyGraphGetFollows::getFollows(const QString &actor, const int limit,
                                         const QString &cursor)
 {
-    QUrlQuery query;
-    query.addQueryItem(QStringLiteral("actor"), actor);
+    QUrlQuery url_query;
+    if (!actor.isEmpty()) {
+        url_query.addQueryItem(QStringLiteral("actor"), actor);
+    }
+    if (limit > 0) {
+        url_query.addQueryItem(QStringLiteral("limit"), QString::number(limit));
+    }
     if (!cursor.isEmpty()) {
-        query.addQueryItem(QStringLiteral("cursor"), cursor);
+        url_query.addQueryItem(QStringLiteral("cursor"), cursor);
     }
 
-    get(QStringLiteral("xrpc/app.bsky.graph.getFollows"), query);
+    get(QStringLiteral("xrpc/app.bsky.graph.getFollows"), url_query);
 }
 
-const QList<AtProtocolType::AppBskyActorDefs::ProfileView> *
-AppBskyGraphGetFollows::profileList() const
+const AtProtocolType::AppBskyActorDefs::ProfileView &AppBskyGraphGetFollows::profileView() const
 {
-    return &m_profileList;
+    return m_profileView;
+}
+
+const QList<AtProtocolType::AppBskyActorDefs::ProfileView> &
+AppBskyGraphGetFollows::profileViewList() const
+{
+    return m_profileViewList;
 }
 
 bool AppBskyGraphGetFollows::parseJson(bool success, const QString reply_json)
@@ -37,11 +47,12 @@ bool AppBskyGraphGetFollows::parseJson(bool success, const QString reply_json)
         success = false;
     } else {
         setCursor(json_doc.object().value("cursor").toString());
-        for (const auto &obj : json_doc.object().value(m_listKey).toArray()) {
-            AtProtocolType::AppBskyActorDefs::ProfileView profile;
-            AtProtocolType::AppBskyActorDefs::copyProfileView(obj.toObject(), profile);
-
-            m_profileList.append(profile);
+        AtProtocolType::AppBskyActorDefs::copyProfileView(
+                json_doc.object().value("subject").toObject(), m_profileView);
+        for (const auto &value : json_doc.object().value(m_listKey).toArray()) {
+            AtProtocolType::AppBskyActorDefs::ProfileView data;
+            AtProtocolType::AppBskyActorDefs::copyProfileView(value.toObject(), data);
+            m_profileViewList.append(data);
         }
     }
 

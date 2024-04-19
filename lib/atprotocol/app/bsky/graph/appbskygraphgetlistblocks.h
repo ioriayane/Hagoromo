@@ -1,7 +1,7 @@
 #ifndef APPBSKYGRAPHGETLISTBLOCKS_H
 #define APPBSKYGRAPHGETLISTBLOCKS_H
 
-#include "appbskygraphgetlists.h"
+#include "atprotocol/app/bsky/graph/appbskygraphgetlists.h"
 
 namespace AtProtocolInterface {
 
@@ -11,7 +11,6 @@ public:
     explicit AppBskyGraphGetListBlocks(QObject *parent = nullptr);
 
     void getListBlocks(const int limit, const QString &cursor);
-    void getLists(const QString &actor, const int limit, const QString &cursor) = delete;
 };
 
 }

@@ -55,5 +55,18 @@
         <file>response/labels/save/3/xrpc/app.bsky.labeler.getServices</file>
         <file>response/labels/save/2/xrpc/app.bsky.labeler.getServices</file>
         <file>response/labels/save/1/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/xrpc/app.bsky.actor.searchActorsTypeahead</file>
+        <file>response/xrpc/app.bsky.feed.getActorFeeds</file>
+        <file>response/xrpc/app.bsky.feed.getAuthorFeed</file>
+        <file>response/xrpc/app.bsky.feed.getActorLikes</file>
+        <file>response/xrpc/app.bsky.feed.getFeed</file>
+        <file>response/xrpc/app.bsky.feed.getFeedGenerators</file>
+        <file>response/xrpc/app.bsky.graph.getBlocks</file>
+        <file>response/xrpc/app.bsky.graph.getFollows</file>
+        <file>response/xrpc/app.bsky.graph.getFollowers</file>
+        <file>response/xrpc/app.bsky.graph.getListMutes</file>
+        <file>response/xrpc/app.bsky.graph.getListBlocks</file>
+        <file>response/xrpc/app.bsky.graph.getMutes</file>
+        <file>response/xrpc/com.atproto.server.refreshSession</file>
     </qresource>
 </RCC>

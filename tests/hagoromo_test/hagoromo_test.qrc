@@ -59,5 +59,12 @@
         <file>response/facet/xrpc/app.bsky.actor.getPreferences</file>
         <file>response/content_filter/1/xrpc/app.bsky.actor.getPreferences</file>
         <file>response/content_filter/1/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/notifications/collecting/1/xrpc/app.bsky.actor.getPreferences</file>
+        <file>response/notifications/collecting/1/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/notifications/collecting/1/xrpc/app.bsky.notification.listNotifications</file>
+        <file>response/notifications/collecting/2/xrpc/app.bsky.actor.getPreferences</file>
+        <file>response/notifications/collecting/2/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/notifications/collecting/2/xrpc/app.bsky.notification.listNotifications</file>
+        <file>response/notifications/collecting/2/xrpc/app.bsky.notification.listNotifications_1</file>
     </qresource>
 </RCC>

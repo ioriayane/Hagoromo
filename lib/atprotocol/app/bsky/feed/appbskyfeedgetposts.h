@@ -2,7 +2,6 @@
 #define APPBSKYFEEDGETPOSTS_H
 
 #include "atprotocol/accessatprotocol.h"
-#include "atprotocol/lexicons.h"
 
 namespace AtProtocolInterface {
 
@@ -13,12 +12,15 @@ public:
 
     void getPosts(const QList<QString> &uris);
 
-    const QList<AtProtocolType::AppBskyFeedDefs::PostView> *postList() const;
+    const QList<AtProtocolType::AppBskyFeedDefs::PostView> &postViewList() const;
+
+protected:
+    QString m_listKey;
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 
-    QList<AtProtocolType::AppBskyFeedDefs::PostView> m_postList;
+    QList<AtProtocolType::AppBskyFeedDefs::PostView> m_postViewList;
 };
 
 }

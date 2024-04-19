@@ -143,6 +143,7 @@ ColumnLayout {
                 visibleQuote: settings.visibleQuote
                 visibleContainingMutedWord: true   // 通知はミュートワードを含んでらたたんで表示
                 updateSeenNotification: settings.updateSeenNotification
+                aggregateReactions: settings.aggregateReactions
 
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }

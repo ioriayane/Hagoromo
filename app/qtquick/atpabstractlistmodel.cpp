@@ -98,10 +98,12 @@ void AtpAbstractListModel::reflectVisibility()
             if (m_cidList.contains(cid)) {
                 prev_row = m_cidList.indexOf(cid);
             } else {
-                prev_row++;
-                beginInsertRows(QModelIndex(), prev_row, prev_row);
-                m_cidList.insert(prev_row, cid);
-                endInsertRows();
+                if (aggregateQueuedPosts(cid, true)) {
+                    prev_row++;
+                    beginInsertRows(QModelIndex(), prev_row, prev_row);
+                    m_cidList.insert(prev_row, cid);
+                    endInsertRows();
+                }
             }
         } else {
             // 消す
@@ -250,6 +252,21 @@ void AtpAbstractListModel::displayQueuedPostsNext()
     }
 
     finishedDisplayingQueuedPosts();
+}
+
+int AtpAbstractListModel::searchInsertPosition(const QString &cid)
+{
+    int basis_pos = m_originalCidList.indexOf(cid);
+    if (basis_pos < 0)
+        return -1;
+    if (basis_pos == 0)
+        return 0;
+    for (int i = basis_pos - 1; i >= 0; i--) {
+        int pos = m_cidList.indexOf(m_originalCidList.at(i));
+        if (pos >= 0)
+            return pos + 1;
+    }
+    return -1;
 }
 
 void AtpAbstractListModel::updateContentFilterLabels(std::function<void()> callback)
@@ -778,21 +795,6 @@ QString AtpAbstractListModel::cursor() const
 void AtpAbstractListModel::setCursor(const QString &newCursor)
 {
     m_cursor = newCursor;
-}
-
-int AtpAbstractListModel::searchInsertPosition(const QString &cid)
-{
-    int basis_pos = m_originalCidList.indexOf(cid);
-    if (basis_pos < 0)
-        return -1;
-    if (basis_pos == 0)
-        return 0;
-    for (int i = basis_pos - 1; i >= 0; i--) {
-        int pos = m_cidList.indexOf(m_originalCidList.at(i));
-        if (pos >= 0)
-            return pos + 1;
-    }
-    return -1;
 }
 
 int AtpAbstractListModel::displayInterval() const

@@ -61,6 +61,7 @@ struct ColumnItem
     QString value;
 
     ColumnPostType type_visibility;
+    bool aggregate_reactions = true;
 };
 
 class ColumnListModel : public QAbstractListModel
@@ -96,6 +97,8 @@ public:
         VisibleRepostOfUnfollowingUsersRole,
         VisibleRepostOfMineRole,
         VisibleRepostByMeRole,
+
+        AggregateReactionsRole,
     };
     Q_ENUM(ColumnListModelRoles)
     Q_ENUM(FeedComponentType)

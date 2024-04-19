@@ -9,6 +9,7 @@ import tech.relog.hagoromo.accountlistmodel 1.0
 import tech.relog.hagoromo.languagelistmodel 1.0
 import tech.relog.hagoromo.externallink 1.0
 import tech.relog.hagoromo.feedgeneratorlink 1.0
+import tech.relog.hagoromo.embedimagelistmodel 1.0
 import tech.relog.hagoromo.listlink 1.0
 import tech.relog.hagoromo.postlink 1.0
 import tech.relog.hagoromo.systemtool 1.0
@@ -90,8 +91,7 @@ Dialog {
         selfLabelsButton.iconText = ""
 
         postText.clear()
-        embedImagePreview.embedImages = []
-        embedImagePreview.embedAlts = []
+        embedImageListModel.clear()
         externalLink.clear()
         feedGeneratorLink.clear()
         listLink.clear()
@@ -302,8 +302,8 @@ Dialog {
 
             ScrollView {
                 z: 99   // MentionSuggetionViewを最前に表示するため
-                Layout.preferredWidth: 400 * AdjustedValues.ratio
-                Layout.preferredHeight: 100 * AdjustedValues.ratio
+                Layout.preferredWidth: 420 * AdjustedValues.ratio
+                Layout.preferredHeight: 120 * AdjustedValues.ratio
                 TextArea {
                     id: postText
                     verticalAlignment: TextInput.AlignTop
@@ -357,8 +357,8 @@ Dialog {
             }
 
             RowLayout {
-                Layout.maximumWidth: 400 * AdjustedValues.ratio
-                visible: embedImagePreview.embedImages.length === 0
+                Layout.preferredWidth: postText.width
+                visible: embedImageListModel.count === 0
                 ScrollView {
                     Layout.fillWidth: true
                     clip: true
@@ -448,7 +448,7 @@ Dialog {
                 }
             }
             ExternalLinkCard {
-                Layout.preferredWidth: 400 * AdjustedValues.ratio
+                Layout.preferredWidth: postText.width
                 Layout.maximumHeight: 280 * AdjustedValues.ratio
                 visible: externalLink.valid
 
@@ -458,7 +458,7 @@ Dialog {
                 descriptionLabel.text: externalLink.description
             }
             FeedGeneratorLinkCard {
-                Layout.preferredWidth: 400 * AdjustedValues.ratio
+                Layout.preferredWidth: postText.width
                 visible: feedGeneratorLink.valid
 
                 avatarImage.source: feedGeneratorLink.avatar
@@ -467,7 +467,7 @@ Dialog {
                 likeCountLabel.text: feedGeneratorLink.likeCount
             }
             ListLinkCard {
-                Layout.preferredWidth: 400 * AdjustedValues.ratio
+                Layout.preferredWidth: postText.width
                 visible: listLink.valid
                 avatarImage.source: listLink.avatar
                 displayNameLabel.text: listLink.displayName
@@ -475,64 +475,63 @@ Dialog {
                 descriptionLabel.text: listLink.description
             }
 
-            RowLayout {
-                visible: embedImagePreview.embedImages.length > 0
-                spacing: 4
-                Repeater {
-                    id: embedImagePreview
-                    property var embedImages: []
-                    property var embedAlts: []
-                    model: embedImagePreview.embedImages
-                    delegate: ImageWithIndicator {
-                        Layout.preferredWidth: 97 * AdjustedValues.ratio
-                        Layout.preferredHeight: 97 * AdjustedValues.ratio
-                        fillMode: Image.PreserveAspectCrop
-                        source: modelData
-                        TagLabel {
-                            anchors.left: parent.left
-                            anchors.bottom: parent.bottom
-                            anchors.margins: 3
-                            visible: model.index < embedImagePreview.embedAlts.length ? embedImagePreview.embedAlts[model.index].length > 0 : false
-                            source: ""
-                            fontPointSize: AdjustedValues.f8
-                            text: "Alt"
+            ScrollView {
+                Layout.preferredWidth: postText.width
+                Layout.preferredHeight: 102 * AdjustedValues.ratio + ScrollBar.horizontal.height + 1
+                ScrollBar.horizontal.policy: ScrollBar.AlwaysOn
+                visible: embedImageListModel.count > 0
+                enabled: !createRecord.running
+                clip: true
+                RowLayout {
+                    spacing: 4 * AdjustedValues.ratio
+                    Repeater {
+                        model: EmbedImageListModel {
+                            id: embedImageListModel
+                            property int adjustPostLength: count > 4 ? 5 + (Math.ceil(count / 4) + "").length : 0
                         }
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: {
-                                altEditDialog.editingIndex = model.index
-                                altEditDialog.embedImage = modelData
-                                if(model.index < embedImagePreview.embedAlts.length){
-                                    altEditDialog.embedAlt = embedImagePreview.embedAlts[model.index]
+                        delegate: ImageWithIndicator {
+                            Layout.preferredWidth: 102 * AdjustedValues.ratio
+                            Layout.preferredHeight: 102 * AdjustedValues.ratio
+                            fillMode: Image.PreserveAspectCrop
+                            source: model.uri
+                            TagLabel {
+                                anchors.left: parent.left
+                                anchors.bottom: parent.bottom
+                                anchors.margins: 3
+                                visible: model.alt.length > 0
+                                source: ""
+                                fontPointSize: AdjustedValues.f8
+                                text: "Alt"
+                            }
+                            TagLabel {
+                                anchors.right: parent.right
+                                anchors.bottom: parent.bottom
+                                anchors.margins: 3
+                                visible: model.number.length > 0
+                                source: ""
+                                fontPointSize: AdjustedValues.f8
+                                text: model.number
+                            }
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: {
+                                    altEditDialog.editingIndex = model.index
+                                    altEditDialog.embedImage = model.uri
+                                    altEditDialog.embedAlt = model.alt
+                                    altEditDialog.open()
                                 }
-                                altEditDialog.open()
+                            }
+                            IconButton {
+                                enabled: !createRecord.running
+                                width: AdjustedValues.b24
+                                height: AdjustedValues.b24
+                                anchors.top: parent.top
+                                anchors.right: parent.right
+                                anchors.margins: 5
+                                iconSource: "../images/delete.png"
+                                onClicked: embedImageListModel.remove(model.index)
                             }
                         }
-                        IconButton {
-                            enabled: !createRecord.running
-                            width: AdjustedValues.b24
-                            height: AdjustedValues.b24
-                            anchors.top: parent.top
-                            anchors.right: parent.right
-                            anchors.margins: 5
-                            iconSource: "../images/delete.png"
-                            onClicked: embedImagePreview.removeImage(modelData)
-                        }
-                    }
-                    function removeImage(path){
-                        var images = embedImagePreview.embedImages
-                        var alts = embedImagePreview.embedAlts
-                        var new_images = []
-                        var new_alts = []
-                        for(var i=0; i<images.length; i++){
-                            if(images[i] === path){
-                                continue;
-                            }
-                            new_images.push(images[i])
-                            new_alts.push(alts[i])
-                        }
-                        embedImagePreview.embedImages = new_images
-                        embedImagePreview.embedAlts = new_alts
                     }
                 }
             }
@@ -565,6 +564,26 @@ Dialog {
                         font.pointSize: AdjustedValues.f8
                         text: quoteText
                     }
+                }
+            }
+
+            Label {
+                Layout.preferredWidth: postText.width
+                Layout.leftMargin: 10
+                Layout.topMargin: 2
+                Layout.bottomMargin: 2
+                font.pointSize: AdjustedValues.f8
+                text: createRecord.progressMessage
+                visible: createRecord.running && createRecord.progressMessage.length > 0
+                color: Material.theme === Material.Dark ? Material.foreground : "white"
+                Rectangle {
+                    anchors.fill: parent
+                    anchors.leftMargin: -10
+                    anchors.topMargin: -2
+                    anchors.bottomMargin: -2
+                    z: -1
+                    radius: height / 2
+                    color: Material.color(Material.Indigo)
                 }
             }
 
@@ -608,7 +627,8 @@ Dialog {
                     enabled: !createRecord.running &&
                              !externalLink.valid &&
                              !feedGeneratorLink.valid &&
-                             !listLink.valid
+                             !listLink.valid &&
+                             !embedImageListModel.running
                     iconSource: "../images/add_image.png"
                     iconSize: AdjustedValues.i18
                     flat: true
@@ -624,7 +644,7 @@ Dialog {
                     Layout.leftMargin: 5
                     Layout.alignment: Qt.AlignVCenter
                     font.pointSize: AdjustedValues.f8
-                    text: 300 - postText.realTextLength
+                    text: 300 - embedImageListModel.adjustPostLength - postText.realTextLength
                 }
                 ProgressCircle {
                     Layout.leftMargin: 5
@@ -632,14 +652,14 @@ Dialog {
                     Layout.preferredHeight: AdjustedValues.i24
                     Layout.alignment: Qt.AlignVCenter
                     from: 0
-                    to: 300
+                    to: 300 - embedImageListModel.adjustPostLength
                     value: postText.realTextLength
                 }
                 Button {
                     id: postButton
                     Layout.alignment: Qt.AlignRight
                     enabled: postText.text.length > 0 &&
-                             postText.realTextLength <= 300 &&
+                             postText.realTextLength <= (300 - embedImageListModel.adjustPostLength) &&
                              !createRecord.running &&
                              !externalLink.running &&
                              !feedGeneratorLink.running &&
@@ -679,8 +699,8 @@ Dialog {
                         }else if(listLink.valid){
                             createRecord.setFeedGeneratorLink(listLink.uri, listLink.cid)
                             createRecord.post()
-                        }else if(embedImagePreview.embedImages.length > 0){
-                            createRecord.setImages(embedImagePreview.embedImages, embedImagePreview.embedAlts)
+                        }else if(embedImageListModel.count > 0){
+                            createRecord.setImages(embedImageListModel.uris(), embedImageListModel.alts())
                             createRecord.postWithImages()
                         }else{
                             createRecord.post()
@@ -707,24 +727,11 @@ Dialog {
             //選択されたファイルをすべて追加
             prevFolder = folder
 
-            var images = embedImagePreview.embedImages
-            if(images.length >= 4){
-                return
-            }
-            var new_images = embedImagePreview.embedImages
-            var new_alts = embedImagePreview.embedAlts
+            var new_files = []
             for(var i=0; i<files.length; i++){
-                if(new_images.length >= 4){
-                    break
-                }
-                if(images.indexOf(files[i]) >= 0){
-                    continue;
-                }
-                new_images.push(files[i])
-                new_alts.push("")
+                new_files.push(files[i])
             }
-            embedImagePreview.embedImages = new_images
-            embedImagePreview.embedAlts = new_alts
+            embedImageListModel.append(new_files)
         }
         property string prevFolder
     }
@@ -740,13 +747,7 @@ Dialog {
     AltEditDialog {
         id: altEditDialog
         property int editingIndex: -1
-        onAccepted: {
-            if(editingIndex >= 0 && editingIndex < embedImagePreview.embedAlts.length){
-                var alts = embedImagePreview.embedAlts
-                alts[editingIndex] = altEditDialog.embedAlt
-                embedImagePreview.embedAlts = alts
-            }
-        }
+        onAccepted: embedImageListModel.updateAlt(editingIndex, altEditDialog.embedAlt)
     }
 
     SelectThreadGateDialog {

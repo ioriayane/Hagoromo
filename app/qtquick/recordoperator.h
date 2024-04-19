@@ -2,9 +2,8 @@
 #define RECORDOPERATOR_H
 
 #include "atprotocol/lexicons.h"
-#include "atprotocol/lexicons_func_unknown.h"
 #include "atprotocol/accessatprotocol.h"
-#include "atprotocol/com/atproto/repo/comatprotorepocreaterecord.h"
+#include "extension/com/atproto/repo/comatprotorepocreaterecordex.h"
 #include <QObject>
 
 struct EmbedImage
@@ -18,13 +17,15 @@ class RecordOperator : public QObject
     Q_OBJECT
 
     Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
+    Q_PROPERTY(QString progressMessage READ progressMessage WRITE setProgressMessage NOTIFY
+                       progressMessageChanged FINAL)
 
 public:
     explicit RecordOperator(QObject *parent = nullptr);
 
     enum ListPurpose : int {
-        Curation = AtProtocolInterface::ComAtprotoRepoCreateRecord::ListPurpose::Curation,
-        Moderation = AtProtocolInterface::ComAtprotoRepoCreateRecord::ListPurpose::Moderation,
+        Curation = AtProtocolInterface::ComAtprotoRepoCreateRecordEx::ListPurpose::Curation,
+        Moderation = AtProtocolInterface::ComAtprotoRepoCreateRecordEx::ListPurpose::Moderation,
     };
     Q_ENUM(ListPurpose);
 
@@ -76,10 +77,15 @@ public:
     bool running() const;
     void setRunning(bool newRunning);
 
+    QString progressMessage() const;
+    void setProgressMessage(const QString &newProgressMessage);
+
 signals:
     void errorOccured(const QString &code, const QString &message);
     void finished(bool success, const QString &uri, const QString &cid);
     void runningChanged();
+
+    void progressMessageChanged();
 
 private:
     void makeFacets(const QString &text, std::function<void()> callback);
@@ -91,13 +97,16 @@ private:
 
     QRegularExpression m_rxFacet;
     AtProtocolInterface::AccountData m_account;
+    int m_sequentialPostsTotal;
+    int m_sequentialPostsCurrent;
+    int m_embedImagesTotal;
 
     QString m_text;
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_replyParent;
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_replyRoot;
     AtProtocolType::ComAtprotoRepoStrongRef::Main m_embedQuote;
     QList<EmbedImage> m_embedImages;
-    QList<AtProtocolType::Blob> m_embedImageBlogs;
+    QList<AtProtocolType::Blob> m_embedImageBlobs;
     QList<AtProtocolType::AppBskyRichtextFacet::Main> m_facets;
     QStringList m_postLanguages;
     QString m_externalLinkUri;
@@ -112,6 +121,7 @@ private:
     QStringList m_threadGateRules;
 
     bool m_running;
+    QString m_progressMessage;
 };
 
 #endif // RECORDOPERATOR_H

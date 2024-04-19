@@ -1,0 +1,32 @@
+{
+    "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+    "didDoc": {
+        "@context": [
+            "https://www.w3.org/ns/did/v1",
+            "https://w3id.org/security/multikey/v1",
+            "https://w3id.org/security/suites/secp256k1-2019/v1"
+        ],
+        "id": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+        "alsoKnownAs": [
+            "at://ioriayane2.bsky.social"
+        ],
+        "verificationMethod": [
+            {
+                "id": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5#atproto",
+                "type": "Multikey",
+                "controller": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                "publicKeyMultibase": "zQ3shSgoB6Tg6h5PGLvPYzbo4sfdqX66JjRQ2x4FMn88YBV6S"
+            }
+        ],
+        "service": [
+            {
+                "id": "#atproto_pds",
+                "type": "AtprotoPersonalDataServer",
+                "serviceEndpoint": "https://shimeji.us-east.host.bsky.network"
+            }
+        ]
+    },
+    "handle": "ioriayane2.bsky.social",
+    "accessJwt": "access jwt",
+    "refreshJwt": "refresh jwt"
+}

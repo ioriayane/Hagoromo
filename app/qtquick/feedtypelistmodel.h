@@ -47,6 +47,8 @@ public:
 
 protected:
     QHash<int, QByteArray> roleNames() const;
+    virtual bool aggregateQueuedPosts(const QString &cid, const bool next = false) { return true; }
+    virtual bool aggregated(const QString &cid) const { return false; }
     virtual void finishedDisplayingQueuedPosts() { }
     virtual bool checkVisibility(const QString &cid);
 

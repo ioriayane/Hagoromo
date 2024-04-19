@@ -2,7 +2,6 @@
 #define APPBSKYFEEDGETTIMELINE_H
 
 #include "atprotocol/accessatprotocol.h"
-#include "atprotocol/lexicons.h"
 
 namespace AtProtocolInterface {
 
@@ -11,15 +10,17 @@ class AppBskyFeedGetTimeline : public AccessAtProtocol
 public:
     explicit AppBskyFeedGetTimeline(QObject *parent = nullptr);
 
-    void getTimeline(const QString &cursor = QString());
+    void getTimeline(const QString &algorithm, const int limit, const QString &cursor);
 
-    const QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> *feedList() const;
+    const QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> &feedViewPostList() const;
 
 protected:
-    QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> m_feedList;
+    QString m_listKey;
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);
+
+    QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> m_feedViewPostList;
 };
 
 }

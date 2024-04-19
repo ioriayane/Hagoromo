@@ -19,6 +19,7 @@ QtObject {
     property bool visibleRepostOfUnfollowingUsers: true
     property bool visibleRepostOfMine: true
     property bool visibleRepostByMe: true
+    property bool aggregateReactions: true
 
     // 保存しない全体からの反映
     property bool updateSeenNotification: true

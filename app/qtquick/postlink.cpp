@@ -21,17 +21,17 @@ void PostLink::getPost(const QString &uri)
         }
         AppBskyFeedGetPosts *post = new AppBskyFeedGetPosts(this);
         connect(post, &AppBskyFeedGetPosts::finished, [=](bool success) {
-            if (success && post->postList() && !post->postList()->isEmpty()) {
-                setAvatar(post->postList()->at(0).author.avatar);
-                setDisplayName(post->postList()->at(0).author.displayName);
-                setCreatorHandle(post->postList()->at(0).author.handle);
+            if (success && !post->postViewList().isEmpty()) {
+                setAvatar(post->postViewList().at(0).author.avatar);
+                setDisplayName(post->postViewList().at(0).author.displayName);
+                setCreatorHandle(post->postViewList().at(0).author.handle);
                 setLikeCount(0);
-                setUri(post->postList()->at(0).uri);
-                setCid(post->postList()->at(0).cid);
+                setUri(post->postViewList().at(0).uri);
+                setCid(post->postViewList().at(0).cid);
                 setIndexedAt(AtProtocolType::LexiconsTypeUnknown::formatDateTime(
-                        post->postList()->at(0).indexedAt));
+                        post->postViewList().at(0).indexedAt));
                 setText(AtProtocolType::LexiconsTypeUnknown::copyRecordText(
-                        post->postList()->at(0).record));
+                        post->postViewList().at(0).record));
                 setValid(true);
             }
             setRunning(false);

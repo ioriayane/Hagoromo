@@ -17,7 +17,7 @@ bool PostThreadListModel::getLatest()
         AppBskyFeedGetPostThread *thread = new AppBskyFeedGetPostThread(this);
         connect(thread, &AppBskyFeedGetPostThread::finished, [=](bool success) {
             if (success) {
-                copyFrom(thread->threadViewPost(), 0);
+                copyFrom(&thread->threadViewPost(), 0);
             } else {
                 emit errorOccured(thread->errorCode(), thread->errorMessage());
             }
@@ -26,7 +26,7 @@ bool PostThreadListModel::getLatest()
         });
         thread->setAccount(account());
         thread->setLabelers(m_contentFilterLabels.labelerDids());
-        thread->getPostThread(postThreadUri());
+        thread->getPostThread(postThreadUri(), 0, 0);
     });
     return true;
 }

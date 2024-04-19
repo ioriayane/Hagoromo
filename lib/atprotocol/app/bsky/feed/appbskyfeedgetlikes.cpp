@@ -1,5 +1,6 @@
 #include "appbskyfeedgetlikes.h"
 #include "atprotocol/lexicons_func.h"
+#include "atprotocol/lexicons_func_unknown.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -9,37 +10,54 @@ namespace AtProtocolInterface {
 
 AppBskyFeedGetLikes::AppBskyFeedGetLikes(QObject *parent) : AccessAtProtocol { parent } { }
 
-const QList<AtProtocolType::AppBskyFeedGetLikes::Like> *AppBskyFeedGetLikes::likes() const
-{
-    return &m_likes;
-}
-
 void AppBskyFeedGetLikes::getLikes(const QString &uri, const QString &cid, const int limit,
                                    const QString &cursor)
 {
-    QUrlQuery query;
-    query.addQueryItem(QStringLiteral("uri"), uri);
+    QUrlQuery url_query;
+    if (!uri.isEmpty()) {
+        url_query.addQueryItem(QStringLiteral("uri"), uri);
+    }
+    if (!cid.isEmpty()) {
+        url_query.addQueryItem(QStringLiteral("cid"), cid);
+    }
     if (limit > 0) {
-        query.addQueryItem(QStringLiteral("limit"), QString::number(limit));
+        url_query.addQueryItem(QStringLiteral("limit"), QString::number(limit));
     }
     if (!cursor.isEmpty()) {
-        query.addQueryItem(QStringLiteral("cursor"), cursor);
+        url_query.addQueryItem(QStringLiteral("cursor"), cursor);
     }
 
-    get(QStringLiteral("xrpc/app.bsky.feed.getLikes"), query);
+    get(QStringLiteral("xrpc/app.bsky.feed.getLikes"), url_query);
+}
+
+const QString &AppBskyFeedGetLikes::uri() const
+{
+    return m_uri;
+}
+
+const QString &AppBskyFeedGetLikes::cid() const
+{
+    return m_cid;
+}
+
+const QList<AtProtocolType::AppBskyFeedGetLikes::Like> &AppBskyFeedGetLikes::likeList() const
+{
+    return m_likeList;
 }
 
 bool AppBskyFeedGetLikes::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
-    if (json_doc.isEmpty()) {
+    if (json_doc.isEmpty() || !json_doc.object().contains("likes")) {
         success = false;
     } else {
         setCursor(json_doc.object().value("cursor").toString());
-        for (const auto &obj : json_doc.object().value("likes").toArray()) {
-            AtProtocolType::AppBskyFeedGetLikes::Like like;
-            AtProtocolType::AppBskyFeedGetLikes::copyLike(obj.toObject(), like);
-            m_likes.append(like);
+        AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("uri"), m_uri);
+        AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("cid"), m_cid);
+        for (const auto &value : json_doc.object().value("likes").toArray()) {
+            AtProtocolType::AppBskyFeedGetLikes::Like data;
+            AtProtocolType::AppBskyFeedGetLikes::copyLike(value.toObject(), data);
+            m_likeList.append(data);
         }
     }
 

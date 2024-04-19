@@ -11,9 +11,17 @@ AppBskyActorPutPreferences::AppBskyActorPutPreferences(QObject *parent)
 {
 }
 
-void AppBskyActorPutPreferences::putPreferences(const QString &json)
+void AppBskyActorPutPreferences::putPreferences(const QJsonArray &preferences)
 {
-    post(QStringLiteral("xrpc/app.bsky.actor.putPreferences"), json.toUtf8(), true);
+    QJsonObject json_obj;
+    if (!preferences.isEmpty()) {
+        json_obj.insert(QStringLiteral("preferences"), preferences);
+    }
+
+    QJsonDocument json_doc(json_obj);
+
+    post(QStringLiteral("xrpc/app.bsky.actor.putPreferences"),
+         json_doc.toJson(QJsonDocument::Compact));
 }
 
 bool AppBskyActorPutPreferences::parseJson(bool success, const QString reply_json)

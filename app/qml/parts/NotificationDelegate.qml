@@ -36,6 +36,7 @@ ClickableFrame {
 
     property alias moderationFrame: moderationFrame
     property alias postAvatarImage: postAvatarImage
+    property alias aggregatedAvatarImages: aggregatedAvatarImages
     property alias postAuthor: postAuthor
     property alias contentFilterFrame: contentFilterFrame
     property alias contentMediaFilterFrame: contentMediaFilterFrame
@@ -212,6 +213,7 @@ ClickableFrame {
                                          postLayout.spacing - reasonImage.width
 
                 RowLayout {
+                    visible: !aggregatedAvatarImages.visible
                     AvatarImage {
                         id: postAvatarImage
                         Layout.preferredWidth: AdjustedValues.i16
@@ -221,6 +223,12 @@ ClickableFrame {
                         id: postAuthor
                         layoutWidth: bodyLayout.basisWidth - postAvatarImage.width
                     }
+                }
+                AggregatedAvatarImages {
+                    id: aggregatedAvatarImages
+                    Layout.preferredWidth: parent.basisWidth
+                    Layout.preferredHeight: height
+                    visible: avatars.length > 1
                 }
 
                 CoverFrame {

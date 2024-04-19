@@ -101,6 +101,8 @@ protected:
                                          const AtProtocolType::ThreadGateType type,
                                          const QList<AtProtocolType::ThreadGateAllow> &allow_rules);
 
+    QString m_listKey;
+
 private:
     static HttpAccessManager *m_manager;
 

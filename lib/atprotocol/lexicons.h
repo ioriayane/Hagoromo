@@ -110,7 +110,7 @@ struct ListViewBasic
     QString cid; // cid
     QString name;
     ListPurpose purpose;
-    QString avatar;
+    QString avatar; // uri
     QList<ComAtprotoLabelDefs::Label> labels;
     ListViewerState viewer;
     QString indexedAt; // datetime
@@ -124,7 +124,7 @@ struct ListView
     ListPurpose purpose;
     QString description;
     QList<QSharedPointer<AppBskyRichtextFacet::Main>> descriptionFacets;
-    QString avatar;
+    QString avatar; // uri
     QList<ComAtprotoLabelDefs::Label> labels;
     ListViewerState viewer;
     QString indexedAt; // datetime
@@ -151,6 +151,12 @@ struct Relationship
 
 // app.bsky.actor.defs
 namespace AppBskyActorDefs {
+struct ProfileAssociated
+{
+    int lists = 0;
+    int feedgens = 0;
+    bool labeler = false;
+};
 struct ViewerState
 {
     bool muted = false;
@@ -166,7 +172,8 @@ struct ProfileViewBasic
     QString did; // did
     QString handle; // handle
     QString displayName;
-    QString avatar;
+    QString avatar; // uri
+    ProfileAssociated associated;
     ViewerState viewer;
     QList<ComAtprotoLabelDefs::Label> labels;
 };
@@ -176,16 +183,11 @@ struct ProfileView
     QString handle; // handle
     QString displayName;
     QString description;
-    QString avatar;
+    QString avatar; // uri
+    ProfileAssociated associated;
     QString indexedAt; // datetime
     ViewerState viewer;
     QList<ComAtprotoLabelDefs::Label> labels;
-};
-struct ProfileAssociated
-{
-    int lists = 0;
-    int feedgens = 0;
-    bool labeler = false;
 };
 struct ProfileViewDetailed
 {
@@ -193,8 +195,8 @@ struct ProfileViewDetailed
     QString handle; // handle
     QString displayName;
     QString description;
-    QString avatar;
-    QString banner;
+    QString avatar; // uri
+    QString banner; // uri
     int followersCount = 0;
     int followsCount = 0;
     int postsCount = 0;
@@ -267,6 +269,21 @@ struct LabelersPref
 {
     QList<LabelerPrefItem> labelers;
 };
+struct Preferences
+{
+    // union start : preferences
+    QList<AppBskyActorDefs::AdultContentPref> adultContentPref;
+    QList<AppBskyActorDefs::ContentLabelPref> contentLabelPref;
+    QList<AppBskyActorDefs::SavedFeedsPref> savedFeedsPref;
+    QList<AppBskyActorDefs::PersonalDetailsPref> personalDetailsPref;
+    QList<AppBskyActorDefs::FeedViewPref> feedViewPref;
+    QList<AppBskyActorDefs::ThreadViewPref> threadViewPref;
+    QList<AppBskyActorDefs::InterestsPref> interestsPref;
+    QList<AppBskyActorDefs::MutedWordsPref> mutedWordsPref;
+    QList<AppBskyActorDefs::HiddenPostsPref> hiddenPostsPref;
+    QList<AppBskyActorDefs::LabelersPref> labelersPref;
+    // union end : preferences
+};
 }
 
 // app.bsky.actor.profile
@@ -308,7 +325,7 @@ struct ViewExternal
     QString uri; // uri
     QString title;
     QString description;
-    QString thumb;
+    QString thumb; // uri
 };
 struct View
 {
@@ -336,11 +353,11 @@ struct Main
 };
 struct ViewImage
 {
-    QString thumb; // Fully-qualified URL where a thumbnail of the image can be fetched. For
+    QString thumb; // uri , Fully-qualified URL where a thumbnail of the image can be fetched. For
                    // example, CDN location provided by the App View.
-    QString fullsize; // Fully-qualified URL where a large version of the image can be fetched. May
-                      // or may not be the exact original blob. For example, CDN location provided
-                      // by the App View.
+    QString fullsize; // uri , Fully-qualified URL where a large version of the image can be
+                      // fetched. May or may not be the exact original blob. For example, CDN
+                      // location provided by the App View.
     QString alt; // Alt text description of the image, for accessibility.
     AspectRatio aspectRatio;
 };
@@ -490,8 +507,9 @@ struct GeneratorView
     QString displayName;
     QString description;
     QList<AppBskyRichtextFacet::Main> descriptionFacets;
-    QString avatar;
+    QString avatar; // uri
     int likeCount = 0;
+    bool acceptsInteractions = false;
     QList<ComAtprotoLabelDefs::Label> labels;
     GeneratorViewerState viewer;
     QString indexedAt; // datetime
@@ -569,6 +587,8 @@ struct FeedViewPost
     FeedViewPostReasonType reason_type = FeedViewPostReasonType::none;
     ReasonRepost reason_ReasonRepost;
     // union end : reason
+    QString feedContext; // Context provided by feed generator that may be passed back alongside
+                         // interactions.
 };
 struct ThreadViewPost
 {
@@ -597,6 +617,15 @@ struct SkeletonFeedPost
     SkeletonFeedPostReasonType reason_type = SkeletonFeedPostReasonType::none;
     SkeletonReasonRepost reason_SkeletonReasonRepost;
     // union end : reason
+    QString feedContext; // Context that will be passed through to client and may be passed to feed
+                         // generator back alongside interactions.
+};
+struct Interaction
+{
+    QString item; // at-uri
+    QString event;
+    QString feedContext; // Context on a feed item that was orginally supplied by the feed generator
+                         // on getFeedSkeleton.
 };
 }
 
@@ -665,6 +694,9 @@ struct ViewRecord
     AppBskyActorDefs::ProfileViewBasic author;
     QVariant value; // The record data itself.
     QList<ComAtprotoLabelDefs::Label> labels;
+    int replyCount = 0;
+    int repostCount = 0;
+    int likeCount = 0;
     // union start : embeds
     ViewRecordEmbedsType embeds_type = ViewRecordEmbedsType::none;
     QList<AppBskyEmbedImages::View> embeds_AppBskyEmbedImages_View;
@@ -725,6 +757,8 @@ struct Main
     QString description;
     QList<AppBskyRichtextFacet::Main> descriptionFacets;
     Blob avatar;
+    bool acceptsInteractions = false; // Declaration that a feed accepts feedback interactions from
+                                      // a client through app.bsky.feed.sendInteractions
     // union start : labels
     MainLabelsType labels_type = MainLabelsType::none;
     ComAtprotoLabelDefs::SelfLabels labels_ComAtprotoLabelDefs_SelfLabels; // Self-label values
@@ -1094,8 +1128,8 @@ struct AccountCodes
 namespace ComAtprotoServerDescribeServer {
 struct Links
 {
-    QString privacyPolicy;
-    QString termsOfService;
+    QString privacyPolicy; // uri
+    QString termsOfService; // uri
 };
 struct Contact
 {

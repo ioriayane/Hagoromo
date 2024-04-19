@@ -22,7 +22,7 @@ bool AuthorFeedListModel::getLatest()
                 if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
                     m_cursor = timeline->cursor();
                 }
-                copyFrom(timeline);
+                copyFrom(timeline->feedViewPostList());
             } else {
                 emit errorOccured(timeline->errorCode(), timeline->errorMessage());
             }
@@ -30,13 +30,15 @@ bool AuthorFeedListModel::getLatest()
             timeline->deleteLater();
         });
 
-        AppBskyFeedGetAuthorFeed::FilterType filter_type;
+        QString filter_type;
         if (filter() == AuthorFeedListModelFilterType::PostsNoReplies) {
-            filter_type = AppBskyFeedGetAuthorFeed::FilterType::PostsNoReplies;
+            filter_type = "posts_no_replies";
         } else if (filter() == AuthorFeedListModelFilterType::PostsWithMedia) {
-            filter_type = AppBskyFeedGetAuthorFeed::FilterType::PostsWithMedia;
+            filter_type = "posts_with_media";
+        } else if (filter() == AuthorFeedListModelFilterType::PostsAndAuthorThreads) {
+            filter_type = "posts_and_author_threads";
         } else {
-            filter_type = AppBskyFeedGetAuthorFeed::FilterType::PostsWithReplies;
+            filter_type = "posts_with_replies";
         }
         timeline->setAccount(account());
         timeline->setLabelers(m_contentFilterLabels.labelerDids());
@@ -56,7 +58,7 @@ bool AuthorFeedListModel::getNext()
         connect(timeline, &AppBskyFeedGetAuthorFeed::finished, [=](bool success) {
             if (success) {
                 m_cursor = timeline->cursor();
-                copyFromNext(timeline);
+                copyFromNext(timeline->feedViewPostList());
             } else {
                 emit errorOccured(timeline->errorCode(), timeline->errorMessage());
             }
@@ -64,13 +66,15 @@ bool AuthorFeedListModel::getNext()
             timeline->deleteLater();
         });
 
-        AppBskyFeedGetAuthorFeed::FilterType filter_type;
+        QString filter_type;
         if (filter() == AuthorFeedListModelFilterType::PostsNoReplies) {
-            filter_type = AppBskyFeedGetAuthorFeed::FilterType::PostsNoReplies;
+            filter_type = "posts_no_replies";
         } else if (filter() == AuthorFeedListModelFilterType::PostsWithMedia) {
-            filter_type = AppBskyFeedGetAuthorFeed::FilterType::PostsWithMedia;
+            filter_type = "posts_with_media";
+        } else if (filter() == AuthorFeedListModelFilterType::PostsAndAuthorThreads) {
+            filter_type = "posts_and_author_threads";
         } else {
-            filter_type = AppBskyFeedGetAuthorFeed::FilterType::PostsWithReplies;
+            filter_type = "posts_with_replies";
         }
         timeline->setAccount(account());
         timeline->setLabelers(m_contentFilterLabels.labelerDids());

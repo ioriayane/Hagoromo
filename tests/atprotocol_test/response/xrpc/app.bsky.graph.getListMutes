@@ -1,0 +1,55 @@
+{
+    "lists": [
+        {
+            "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/3kflf2r3lwg2x",
+            "cid": "bafyreiexwt5i5qo4wy6qnn3wxnznjbqjbemmbqq3dwfaf7qbn2wk4cdblm",
+            "name": "ice",
+            "purpose": "app.bsky.graph.defs#curatelist",
+            "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreiczowa2mpzych2h6sfbsswgdtdjqrmt3zjkgygsv4rd6f5rfwtefu@jpeg",
+            "indexedAt": "2023-12-02T18:07:18.224Z",
+            "labels": [],
+            "viewer": {
+                "muted": true
+            },
+            "creator": {
+                "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                "handle": "ioriayane2.bsky.social",
+                "displayName": "iori2",
+                "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false
+                },
+                "labels": [],
+                "description": "ioriayane.relog.tech のテスト用アカウントの2つ目。\n\nThis account is used to test the report function.\nIt reports from @ioriayane.relog.tech and @ioriayane.bsky.social.",
+                "indexedAt": "2024-01-26T01:10:40.626Z"
+            },
+            "description": "test"
+        },
+        {
+            "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/3kowhfor2pq2w",
+            "cid": "bafyreifw2u4s2k6axspo3dppja3ofbwmyhkz6a5igemezmx3spxfvi6mcy",
+            "name": "test moderation",
+            "purpose": "app.bsky.graph.defs#modlist",
+            "indexedAt": "2024-03-30T17:52:29.162Z",
+            "labels": [],
+            "viewer": {
+                "muted": true
+            },
+            "creator": {
+                "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                "handle": "ioriayane2.bsky.social",
+                "displayName": "iori2",
+                "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false
+                },
+                "labels": [],
+                "description": "ioriayane.relog.tech のテスト用アカウントの2つ目。\n\nThis account is used to test the report function.\nIt reports from @ioriayane.relog.tech and @ioriayane.bsky.social.",
+                "indexedAt": "2024-01-26T01:10:40.626Z"
+            },
+            "description": "description of test moderation list"
+        }
+    ]
+}

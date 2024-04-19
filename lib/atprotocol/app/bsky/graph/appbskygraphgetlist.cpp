@@ -11,44 +11,44 @@ AppBskyGraphGetList::AppBskyGraphGetList(QObject *parent) : AccessAtProtocol { p
 
 void AppBskyGraphGetList::getList(const QString &list, const int limit, const QString &cursor)
 {
-    QUrlQuery query;
-    query.addQueryItem(QStringLiteral("list"), list);
+    QUrlQuery url_query;
+    if (!list.isEmpty()) {
+        url_query.addQueryItem(QStringLiteral("list"), list);
+    }
     if (limit > 0) {
-        query.addQueryItem(QStringLiteral("limit"), QString::number(limit));
+        url_query.addQueryItem(QStringLiteral("limit"), QString::number(limit));
     }
     if (!cursor.isEmpty()) {
-        query.addQueryItem(QStringLiteral("cursor"), cursor);
+        url_query.addQueryItem(QStringLiteral("cursor"), cursor);
     }
 
-    get(QStringLiteral("xrpc/app.bsky.graph.getList"), query);
+    get(QStringLiteral("xrpc/app.bsky.graph.getList"), url_query);
 }
 
-const AtProtocolType::AppBskyGraphDefs::ListView *AppBskyGraphGetList::listView() const
+const AtProtocolType::AppBskyGraphDefs::ListView &AppBskyGraphGetList::listView() const
 {
-    return &m_listView;
+    return m_listView;
 }
 
-const QList<AtProtocolType::AppBskyGraphDefs::ListItemView> *
+const QList<AtProtocolType::AppBskyGraphDefs::ListItemView> &
 AppBskyGraphGetList::listItemViewList() const
 {
-    return &m_listItemViewList;
+    return m_listItemViewList;
 }
 
 bool AppBskyGraphGetList::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
-    if (json_doc.isEmpty()) {
+    if (json_doc.isEmpty() || !json_doc.object().contains("items")) {
         success = false;
     } else {
         setCursor(json_doc.object().value("cursor").toString());
         AtProtocolType::AppBskyGraphDefs::copyListView(json_doc.object().value("list").toObject(),
                                                        m_listView);
-
-        for (const auto &obj : json_doc.object().value("items").toArray()) {
-            AtProtocolType::AppBskyGraphDefs::ListItemView item;
-            AtProtocolType::AppBskyGraphDefs::copyListItemView(obj.toObject(), item);
-
-            m_listItemViewList.append(item);
+        for (const auto &value : json_doc.object().value("items").toArray()) {
+            AtProtocolType::AppBskyGraphDefs::ListItemView data;
+            AtProtocolType::AppBskyGraphDefs::copyListItemView(value.toObject(), data);
+            m_listItemViewList.append(data);
         }
     }
 

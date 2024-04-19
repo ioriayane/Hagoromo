@@ -342,7 +342,7 @@ bool TimelineListModel::getLatest()
                 if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
                     m_cursor = timeline->cursor();
                 }
-                copyFrom(timeline);
+                copyFrom(timeline->feedViewPostList());
             } else {
                 emit errorOccured(timeline->errorCode(), timeline->errorMessage());
             }
@@ -351,7 +351,7 @@ bool TimelineListModel::getLatest()
         });
         timeline->setAccount(account());
         timeline->setLabelers(m_contentFilterLabels.labelerDids());
-        timeline->getTimeline();
+        timeline->getTimeline(QString(), 0, QString());
     });
     return true;
 }
@@ -368,7 +368,7 @@ bool TimelineListModel::getNext()
             if (success) {
                 m_cursor = timeline->cursor(); // 続きの読み込みの時は必ず上書き
 
-                copyFromNext(timeline);
+                copyFromNext(timeline->feedViewPostList());
             } else {
                 emit errorOccured(timeline->errorCode(), timeline->errorMessage());
             }
@@ -377,7 +377,7 @@ bool TimelineListModel::getNext()
         });
         timeline->setAccount(account());
         timeline->setLabelers(m_contentFilterLabels.labelerDids());
-        timeline->getTimeline(m_cursor);
+        timeline->getTimeline(QString(), 0, m_cursor);
     });
     return true;
 }
@@ -575,6 +575,16 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     return roles;
 }
 
+bool TimelineListModel::aggregateQueuedPosts(const QString &cid, const bool next)
+{
+    return true;
+}
+
+bool TimelineListModel::aggregated(const QString &cid) const
+{
+    return false;
+}
+
 void TimelineListModel::finishedDisplayingQueuedPosts()
 {
     setRunning(false);
@@ -670,20 +680,19 @@ bool TimelineListModel::checkVisibility(const QString &cid)
     return true;
 }
 
-void TimelineListModel::copyFrom(AppBskyFeedGetTimeline *timeline)
+void TimelineListModel::copyFrom(const QList<AppBskyFeedDefs::FeedViewPost> &feed_view_post_list)
 {
     QDateTime reference_time;
     if (m_cidList.count() > 0 && m_viewPostHash.count() > 0) {
         reference_time = QDateTime::fromString(getReferenceTime(m_viewPostHash[m_cidList.at(0)]),
                                                Qt::ISODateWithMs);
-    } else if (timeline->feedList()->count() > 0) {
-        reference_time = QDateTime::fromString(getReferenceTime(timeline->feedList()->last()),
+    } else if (feed_view_post_list.count() > 0) {
+        reference_time = QDateTime::fromString(getReferenceTime(feed_view_post_list.last()),
                                                Qt::ISODateWithMs);
     } else {
         reference_time = QDateTime::currentDateTimeUtc();
     }
-    for (auto item = timeline->feedList()->crbegin(); item != timeline->feedList()->crend();
-         item++) {
+    for (auto item = feed_view_post_list.crbegin(); item != feed_view_post_list.crend(); item++) {
         m_viewPostHash[item->post.cid] = *item;
 
         PostCueItem post;
@@ -700,12 +709,12 @@ void TimelineListModel::copyFrom(AppBskyFeedGetTimeline *timeline)
     getExtendMediaFiles();
 }
 
-void TimelineListModel::copyFromNext(AtProtocolInterface::AppBskyFeedGetTimeline *timeline)
+void TimelineListModel::copyFromNext(
+        const QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> &feed_view_post_list)
 {
     QDateTime reference_time = QDateTime::currentDateTimeUtc();
 
-    for (auto item = timeline->feedList()->crbegin(); item != timeline->feedList()->crend();
-         item++) {
+    for (auto item = feed_view_post_list.crbegin(); item != feed_view_post_list.crend(); item++) {
         m_viewPostHash[item->post.cid] = *item;
 
         PostCueItem post;

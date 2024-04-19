@@ -3,7 +3,7 @@
 #include "tools/listitemscache.h"
 
 #include "atprotocol/app/bsky/graph/appbskygraphgetlists.h"
-#include "atprotocol/com/atproto/repo/comatprotorepolistrecords.h"
+#include "extension/com/atproto/repo/comatprotorepolistrecordsex.h"
 #include "atprotocol/app/bsky/graph/appbskygraphmuteactorlist.h"
 #include "atprotocol/app/bsky/graph/appbskygraphunmuteactorlist.h"
 #include "recordoperator.h"
@@ -11,7 +11,7 @@
 using AtProtocolInterface::AppBskyGraphGetLists;
 using AtProtocolInterface::AppBskyGraphMuteActorList;
 using AtProtocolInterface::AppBskyGraphUnmuteActorList;
-using AtProtocolInterface::ComAtprotoRepoListRecords;
+using AtProtocolInterface::ComAtprotoRepoListRecordsEx;
 using namespace AtProtocolType;
 
 ListsListModel::ListsListModel(QObject *parent)
@@ -327,7 +327,7 @@ bool ListsListModel::getNext()
     connect(lists, &AppBskyGraphGetLists::finished, [=](bool success) {
         if (success) {
             m_cursor = lists->cursor(); // 続きの読み込みの時は必ず上書き
-            if (lists->listViewList()->isEmpty())
+            if (lists->listViewList().isEmpty())
                 m_cursor.clear(); // すべて読み切って空になったときはカーソルこないので空になるはずだけど念のため
             copyFrom(lists);
             QTimer::singleShot(10, this, &ListsListModel::displayQueuedPostsNext);
@@ -365,6 +365,16 @@ QHash<int, QByteArray> ListsListModel::roleNames() const
     roles[CheckedRole] = "checked";
 
     return roles;
+}
+
+bool ListsListModel::aggregateQueuedPosts(const QString &cid, const bool next)
+{
+    return true;
+}
+
+bool ListsListModel::aggregated(const QString &cid) const
+{
+    return false;
 }
 
 void ListsListModel::finishedDisplayingQueuedPosts()
@@ -408,7 +418,7 @@ bool ListsListModel::checkVisibility(const QString &cid)
 
 void ListsListModel::copyFrom(AtProtocolInterface::AppBskyGraphGetLists *lists)
 {
-    for (const auto &list : *lists->listViewList()) {
+    for (const auto &list : lists->listViewList()) {
         m_listViewHash[list.cid] = list;
 
         PostCueItem post;
@@ -431,15 +441,15 @@ void ListsListModel::searchActorInEachLists()
         cursor.clear();
         m_listItemCursor.clear();
     }
-    AtProtocolInterface::ComAtprotoRepoListRecords *list =
-            new AtProtocolInterface::ComAtprotoRepoListRecords(this);
-    connect(list, &AtProtocolInterface::ComAtprotoRepoListRecords::finished, [=](bool success) {
+    AtProtocolInterface::ComAtprotoRepoListRecordsEx *list =
+            new AtProtocolInterface::ComAtprotoRepoListRecordsEx(this);
+    connect(list, &AtProtocolInterface::ComAtprotoRepoListRecordsEx::finished, [=](bool success) {
         if (success) {
             m_listItemCursor = list->cursor();
-            if (list->recordList()->isEmpty())
+            if (list->recordList().isEmpty())
                 m_listItemCursor.clear();
 
-            for (const auto &item : *list->recordList()) {
+            for (const auto &item : list->recordList()) {
                 AppBskyGraphListitem::Main record =
                         AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                                 AppBskyGraphListitem::Main>(item.value);

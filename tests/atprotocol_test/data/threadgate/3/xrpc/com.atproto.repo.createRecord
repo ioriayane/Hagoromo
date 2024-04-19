@@ -11,5 +11,6 @@
             }
         ],
         "$type": "app.bsky.feed.threadgate"
-    }
+    },
+    "validate": true
 }

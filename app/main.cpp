@@ -45,6 +45,7 @@
 #include "qtquick/feedgeneratorlink.h"
 #include "qtquick/listlink.h"
 #include "qtquick/postlink.h"
+#include "qtquick/embedimagelistmodel.h"
 
 void setAppFont(QGuiApplication &app)
 {
@@ -75,7 +76,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName(QStringLiteral("relog"));
     app.setOrganizationDomain(QStringLiteral("hagoromo.relog.tech"));
     app.setApplicationName(QStringLiteral("Hagoromo"));
-    app.setApplicationVersion(QStringLiteral("0.27.0"));
+    app.setApplicationVersion(QStringLiteral("0.28.0"));
 #ifndef HAGOROMO_RELEASE_BUILD
     app.setApplicationVersion(app.applicationVersion() + "d");
 #endif
@@ -144,6 +145,8 @@ int main(int argc, char *argv[])
                                        "FeedGeneratorLink");
     qmlRegisterType<ListLink>("tech.relog.hagoromo.listlink", 1, 0, "ListLink");
     qmlRegisterType<PostLink>("tech.relog.hagoromo.postlink", 1, 0, "PostLink");
+    qmlRegisterType<EmbedImageListModel>("tech.relog.hagoromo.embedimagelistmodel", 1, 0,
+                                         "EmbedImageListModel");
 
     qmlRegisterSingletonType(QUrl("qrc:/Hagoromo/qml/data/AdjustedValues.qml"),
                              "tech.relog.hagoromo.singleton", 1, 0, "AdjustedValues");

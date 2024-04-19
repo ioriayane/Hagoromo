@@ -112,7 +112,7 @@ bool FeedTypeListModel::getLatest()
     AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
     connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
         if (success) {
-            for (const auto &feed : *pref->savedFeedsPrefList()) {
+            for (const auto &feed : pref->preferences().savedFeedsPref) {
                 m_cueUri = feed.saved;
             }
         } else {
@@ -182,7 +182,7 @@ void FeedTypeListModel::getFeedDetails()
             // apiで渡した順番と逆順で結果が来るので元の順番で追加する
             // 結果の仕様がいつ変わるか分からないのでAPIに投げるuriの順番で制御しない
             for (const auto &uri : qAsConst(uris)) {
-                for (const auto &generator : *generators->generatorViewList()) {
+                for (const auto &generator : generators->generatorViewList()) {
                     if (uri == generator.uri) {
                         FeedTypeItem item;
                         item.group = tr("My Feeds");
@@ -213,7 +213,7 @@ void FeedTypeListModel::getLists()
             if (m_cursor.isEmpty()) {
                 m_cursor = lists->cursor();
             }
-            for (const auto &list : *lists->listViewList()) {
+            for (const auto &list : lists->listViewList()) {
                 if (list.purpose == "app.bsky.graph.defs#modlist") {
                     continue;
                 }

@@ -25,6 +25,9 @@ class NotificationListModel : public AtpAbstractListModel
 
     Q_PROPERTY(bool updateSeenNotification READ updateSeenNotification WRITE
                        setUpdateSeenNotification NOTIFY updateSeenNotificationChanged)
+    Q_PROPERTY(bool aggregateReactions READ aggregateReactions WRITE setAggregateReactions NOTIFY
+                       aggregateReactionsChanged FINAL)
+
 public:
     explicit NotificationListModel(QObject *parent = nullptr);
 
@@ -49,12 +52,19 @@ public:
         EmbedImagesRole,
         EmbedImagesFullRole,
         EmbedImagesAltRole,
+
         IsRepostedRole,
         IsLikedRole,
         RepostedUriRole,
         LikedUriRole,
         RunningRepostRole,
         RunningLikeRole,
+
+        AggregatedAvatarsRole,
+        AggregatedDisplayNamesRole,
+        AggregatedDidsRole,
+        AggregatedHandlesRole,
+        AggregatedIndexedAtsRole,
 
         ReasonRole,
 
@@ -147,6 +157,8 @@ public:
     void setVisibleQuote(bool newVisibleQuote);
     bool updateSeenNotification() const;
     void setUpdateSeenNotification(bool newUpdateSeenNotification);
+    bool aggregateReactions() const;
+    void setAggregateReactions(bool newAggregateReactions);
 
 signals:
     void visibleLikeChanged();
@@ -156,9 +168,12 @@ signals:
     void visibleReplyChanged();
     void visibleQuoteChanged();
     void updateSeenNotificationChanged();
+    void aggregateReactionsChanged();
 
 protected:
     QHash<int, QByteArray> roleNames() const;
+    virtual bool aggregateQueuedPosts(const QString &cid, const bool next = false);
+    virtual bool aggregated(const QString &cid) const;
     virtual void finishedDisplayingQueuedPosts();
     virtual bool checkVisibility(const QString &cid);
 
@@ -173,6 +188,10 @@ private:
     QStringList m_cueGetPost;
     QStringList m_cueGetFeedGenerator;
 
+    QHash<QString, QStringList> m_liked2Notification; // QHash<cid, QStringList<cid>>
+    QHash<QString, QStringList> m_reposted2Notification; // QHash<cid, QStringList<cid>>
+    QHash<QString, QStringList> m_follow2Notification;
+
     bool m_hasUnread; // 今回の読み込みで未読がある
     QHash<NotificationListModel::NotificationListModelRoles,
           AtpAbstractListModel::ExternalLinkRoles>
@@ -183,9 +202,19 @@ private:
     QHash<NotificationListModel::NotificationListModelRoles, AtpAbstractListModel::ListLinkRoles>
             m_toListLinkRoles;
 
+    void displayQueuedPosts();
+    void displayQueuedPostsNext();
+    void refrectAggregation();
+
     void getPosts();
     void getFeedGenerators();
     void updateSeen();
+
+    QStringList getAggregatedItems(
+            const AtProtocolType::AppBskyNotificationListNotifications::Notification &data,
+            const NotificationListModel::NotificationListModelRoles role) const;
+    QStringList getAggregatedCids(
+            const AtProtocolType::AppBskyNotificationListNotifications::Notification &data) const;
 
     template<typename T>
     void appendGetPostCue(const QVariant &record);
@@ -209,6 +238,7 @@ private:
     bool m_updateSeenNotification;
     QString m_runningRepostCid;
     QString m_runningLikeCid;
+    bool m_aggregateReactions;
 };
 
 #endif // NOTIFICATIONLISTMODEL_H

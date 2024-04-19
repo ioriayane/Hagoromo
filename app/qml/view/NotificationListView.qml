@@ -92,6 +92,12 @@ ScrollView {
             reason: model.reason
             postAvatarImage.source: model.avatar
             postAvatarImage.onClicked: requestViewProfile(model.did)
+            aggregatedAvatarImages.avatars: model.aggregatedAvatars
+            aggregatedAvatarImages.displayNames: model.aggregatedDisplayNames
+            aggregatedAvatarImages.dids: model.aggregatedDids
+            aggregatedAvatarImages.handles: model.aggregatedHandles
+            aggregatedAvatarImages.indexedAts: model.aggregatedIndexedAts
+            aggregatedAvatarImages.onSelectAvatar: (did) => requestViewProfile(did)
             postAuthor.displayName: model.displayName
             postAuthor.handle: model.handle
             postAuthor.indexedAt: model.indexedAt
