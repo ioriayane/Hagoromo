@@ -113,6 +113,25 @@ void copySavedFeedsPref(const QJsonObject &src, AppBskyActorDefs::SavedFeedsPref
         dest.timelineIndex = src.value("timelineIndex").toInt();
     }
 }
+void copySavedFeed(const QJsonObject &src, AppBskyActorDefs::SavedFeed &dest)
+{
+    if (!src.isEmpty()) {
+        dest.id = src.value("id").toString();
+        dest.type = src.value("type").toString();
+        dest.value = src.value("value").toString();
+        dest.pinned = src.value("pinned").toBool();
+    }
+}
+void copySavedFeedsPrefV2(const QJsonObject &src, AppBskyActorDefs::SavedFeedsPrefV2 &dest)
+{
+    if (!src.isEmpty()) {
+        for (const auto &s : src.value("items").toArray()) {
+            AppBskyActorDefs::SavedFeed child;
+            AppBskyActorDefs::copySavedFeed(s.toObject(), child);
+            dest.items.append(child);
+        }
+    }
+}
 void copyPersonalDetailsPref(const QJsonObject &src, AppBskyActorDefs::PersonalDetailsPref &dest)
 {
     if (!src.isEmpty()) {
@@ -211,6 +230,10 @@ void copyPreferences(const QJsonArray &src, AppBskyActorDefs::Preferences &dest)
                 AppBskyActorDefs::SavedFeedsPref child;
                 AppBskyActorDefs::copySavedFeedsPref(value.toObject(), child);
                 dest.savedFeedsPref.append(child);
+            } else if (value_type == QStringLiteral("app.bsky.actor.defs#savedFeedsPrefV2")) {
+                AppBskyActorDefs::SavedFeedsPrefV2 child;
+                AppBskyActorDefs::copySavedFeedsPrefV2(value.toObject(), child);
+                dest.savedFeedsPrefV2.append(child);
             } else if (value_type == QStringLiteral("app.bsky.actor.defs#personalDetailsPref")) {
                 AppBskyActorDefs::PersonalDetailsPref child;
                 AppBskyActorDefs::copyPersonalDetailsPref(value.toObject(), child);

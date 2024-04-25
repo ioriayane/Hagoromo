@@ -10,7 +10,8 @@ class ComAtprotoServerCreateSession : public AccessAtProtocol
 public:
     explicit ComAtprotoServerCreateSession(QObject *parent = nullptr);
 
-    void createSession(const QString &identifier, const QString &password);
+    void createSession(const QString &identifier, const QString &password,
+                       const QString &authFactorToken);
 
     const QString &accessJwt() const;
     const QString &refreshJwt() const;
@@ -19,6 +20,7 @@ public:
     const QVariant &didDoc() const;
     const QString &email() const;
     const bool &emailConfirmed() const;
+    const bool &emailAuthFactor() const;
 
 protected:
     virtual bool parseJson(bool success, const QString reply_json);
@@ -31,6 +33,7 @@ private:
     QVariant m_didDoc;
     QString m_email;
     bool m_emailConfirmed;
+    bool m_emailAuthFactor;
 };
 
 }

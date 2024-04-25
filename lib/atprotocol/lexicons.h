@@ -222,6 +222,17 @@ struct SavedFeedsPref
     QList<QString> saved;
     int timelineIndex = 0;
 };
+struct SavedFeed
+{
+    QString id;
+    QString type;
+    QString value;
+    bool pinned = false;
+};
+struct SavedFeedsPrefV2
+{
+    QList<AppBskyActorDefs::SavedFeed> items;
+};
 struct PersonalDetailsPref
 {
     QString birthDate; // datetime , The birth date of account owner.
@@ -275,6 +286,7 @@ struct Preferences
     QList<AppBskyActorDefs::AdultContentPref> adultContentPref;
     QList<AppBskyActorDefs::ContentLabelPref> contentLabelPref;
     QList<AppBskyActorDefs::SavedFeedsPref> savedFeedsPref;
+    QList<AppBskyActorDefs::SavedFeedsPrefV2> savedFeedsPrefV2;
     QList<AppBskyActorDefs::PersonalDetailsPref> personalDetailsPref;
     QList<AppBskyActorDefs::FeedViewPref> feedViewPref;
     QList<AppBskyActorDefs::ThreadViewPref> threadViewPref;

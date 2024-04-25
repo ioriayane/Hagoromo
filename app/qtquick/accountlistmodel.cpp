@@ -439,7 +439,8 @@ void AccountListModel::createSession(int row)
         session->deleteLater();
     });
     session->setAccount(m_accountList.at(row));
-    session->createSession(m_accountList.at(row).identifier, m_accountList.at(row).password);
+    session->createSession(m_accountList.at(row).identifier, m_accountList.at(row).password,
+                           QString());
 }
 
 void AccountListModel::refreshSession(int row, bool initial)

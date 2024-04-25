@@ -24,6 +24,8 @@ void copyProfileViewDetailed(const QJsonObject &src, AppBskyActorDefs::ProfileVi
 void copyAdultContentPref(const QJsonObject &src, AppBskyActorDefs::AdultContentPref &dest);
 void copyContentLabelPref(const QJsonObject &src, AppBskyActorDefs::ContentLabelPref &dest);
 void copySavedFeedsPref(const QJsonObject &src, AppBskyActorDefs::SavedFeedsPref &dest);
+void copySavedFeed(const QJsonObject &src, AppBskyActorDefs::SavedFeed &dest);
+void copySavedFeedsPrefV2(const QJsonObject &src, AppBskyActorDefs::SavedFeedsPrefV2 &dest);
 void copyPersonalDetailsPref(const QJsonObject &src, AppBskyActorDefs::PersonalDetailsPref &dest);
 void copyFeedViewPref(const QJsonObject &src, AppBskyActorDefs::FeedViewPref &dest);
 void copyThreadViewPref(const QJsonObject &src, AppBskyActorDefs::ThreadViewPref &dest);
