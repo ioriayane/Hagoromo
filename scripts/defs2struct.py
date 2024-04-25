@@ -192,6 +192,7 @@ class Defs2Struct:
             'com.atproto.temp.',
             'app.bsky.unspecced.searchPostsSkeleton',
             'app.bsky.unspecced.searchActorsSkeleton',
+            'app.bsky.unspecced.getSuggestionsSkeleton',
             'app.bsky.unspecced.getTaggedSuggestions',
             'app.bsky.notification.registerPush',
             'app.bsky.notification.getUnreadCount',

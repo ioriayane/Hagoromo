@@ -13,7 +13,8 @@ ComAtprotoServerCreateSession::ComAtprotoServerCreateSession(QObject *parent)
 }
 
 void ComAtprotoServerCreateSession::createSession(const QString &identifier,
-                                                  const QString &password)
+                                                  const QString &password,
+                                                  const QString &authFactorToken)
 {
     QJsonObject json_obj;
     if (!identifier.isEmpty()) {
@@ -21,6 +22,9 @@ void ComAtprotoServerCreateSession::createSession(const QString &identifier,
     }
     if (!password.isEmpty()) {
         json_obj.insert(QStringLiteral("password"), password);
+    }
+    if (!authFactorToken.isEmpty()) {
+        json_obj.insert(QStringLiteral("authFactorToken"), authFactorToken);
     }
 
     QJsonDocument json_doc(json_obj);
@@ -64,6 +68,11 @@ const bool &ComAtprotoServerCreateSession::emailConfirmed() const
     return m_emailConfirmed;
 }
 
+const bool &ComAtprotoServerCreateSession::emailAuthFactor() const
+{
+    return m_emailAuthFactor;
+}
+
 bool ComAtprotoServerCreateSession::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
@@ -82,6 +91,8 @@ bool ComAtprotoServerCreateSession::parseJson(bool success, const QString reply_
         AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("email"), m_email);
         AtProtocolType::LexiconsTypeUnknown::copyBool(json_doc.object().value("emailConfirmed"),
                                                       m_emailConfirmed);
+        AtProtocolType::LexiconsTypeUnknown::copyBool(json_doc.object().value("emailAuthFactor"),
+                                                      m_emailAuthFactor);
     }
 
     return success;

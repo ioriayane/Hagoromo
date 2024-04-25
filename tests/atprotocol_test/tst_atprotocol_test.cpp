@@ -140,7 +140,7 @@ void atprotocol_test::test_ComAtprotoServerCreateSession()
 
     {
         QSignalSpy spy(&session, SIGNAL(finished(bool)));
-        session.createSession("hoge", "fuga");
+        session.createSession("hoge", "fuga", QString());
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
         QList<QVariant> arguments = spy.takeFirst();
@@ -172,7 +172,7 @@ void atprotocol_test::test_ComAtprotoServerCreateSession()
 
     {
         QSignalSpy spy(&session, SIGNAL(finished(bool)));
-        session.createSession("hoge", "fuga");
+        session.createSession("hoge", "fuga", QString());
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
         QList<QVariant> arguments = spy.takeFirst();
@@ -1607,7 +1607,7 @@ void atprotocol_test::test_ServiceUrl()
 
     {
         QSignalSpy spy(&session, SIGNAL(finished(bool)));
-        session.createSession("hoge", "fuga");
+        session.createSession("hoge", "fuga", QString());
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
         QList<QVariant> arguments = spy.takeFirst();
@@ -1867,7 +1867,7 @@ void atprotocol_test::test_AppBskyActorSearchActorsTypeahead()
 
     {
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
-        api.searchActorsTypeahead("hoge", "", 0);
+        api.searchActorsTypeahead("hoge", 0);
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
         QList<QVariant> arguments = spy.takeFirst();

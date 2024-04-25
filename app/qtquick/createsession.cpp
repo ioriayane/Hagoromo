@@ -31,7 +31,7 @@ void CreateSession::create()
         session->deleteLater();
     });
     session->setService(service());
-    session->createSession(identifier(), password());
+    session->createSession(identifier(), password(), QString());
 }
 
 QString CreateSession::service() const
