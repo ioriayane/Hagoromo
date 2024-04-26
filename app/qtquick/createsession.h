@@ -11,6 +11,8 @@ class CreateSession : public QObject
     Q_PROPERTY(QString service READ service WRITE setService NOTIFY serviceChanged)
     Q_PROPERTY(QString identifier READ identifier WRITE setIdentifier NOTIFY identifierChanged)
     Q_PROPERTY(QString password READ password WRITE setPassword NOTIFY passwordChanged)
+    Q_PROPERTY(QString authFactorToken READ authFactorToken WRITE setAuthFactorToken NOTIFY
+                       authFactorTokenChanged FINAL)
 
     Q_PROPERTY(QString did READ did WRITE setDid NOTIFY didChanged)
     Q_PROPERTY(QString handle READ handle WRITE setHandle NOTIFY handleChanged)
@@ -32,6 +34,9 @@ public:
     void setIdentifier(const QString &newIdentifier);
     QString password() const;
     void setPassword(const QString &newPassword);
+    QString authFactorToken() const;
+    void setAuthFactorToken(const QString &newAuthFactorToken);
+
     QString did() const;
     void setDid(const QString &newDid);
     QString handle() const;
@@ -54,6 +59,8 @@ signals:
     void serviceChanged();
     void identifierChanged();
     void passwordChanged();
+    void authFactorTokenChanged();
+
     void didChanged();
     void handleChanged();
     void emailChanged();
@@ -69,6 +76,7 @@ private:
     QString m_identifier;
     QString m_password;
     bool m_running;
+    QString m_authFactorToken;
 };
 
 #endif // CREATESESSION_H

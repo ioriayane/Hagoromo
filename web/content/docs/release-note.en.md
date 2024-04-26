@@ -8,6 +8,11 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+- Add
+- Update
+  - Supports login with MFA (deprecated)
+- Fix
+
 ### v0.28.0 - 2024/4/20
 
 - Add
