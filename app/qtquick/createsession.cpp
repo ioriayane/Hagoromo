@@ -31,7 +31,7 @@ void CreateSession::create()
         session->deleteLater();
     });
     session->setService(service());
-    session->createSession(identifier(), password(), QString());
+    session->createSession(identifier(), password(), authFactorToken());
 }
 
 QString CreateSession::service() const
@@ -162,4 +162,17 @@ void CreateSession::setRunning(bool newRunning)
         return;
     m_running = newRunning;
     emit runningChanged();
+}
+
+QString CreateSession::authFactorToken() const
+{
+    return m_authFactorToken;
+}
+
+void CreateSession::setAuthFactorToken(const QString &newAuthFactorToken)
+{
+    if (m_authFactorToken == newAuthFactorToken)
+        return;
+    m_authFactorToken = newAuthFactorToken;
+    emit authFactorTokenChanged();
 }
