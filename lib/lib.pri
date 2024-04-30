@@ -63,6 +63,7 @@ SOURCES += \
     $$PWD/http/httpaccess.cpp \
     $$PWD/http/httpaccessmanager.cpp \
     $$PWD/http/httpreply.cpp \
+    $$PWD/tools/base32.cpp \
     $$PWD/tools/configurablelabels.cpp \
     $$PWD/tools/imagecompressor.cpp \
     $$PWD/tools/listitemscache.cpp \
@@ -130,6 +131,7 @@ HEADERS += \
     $$PWD/http/httpaccessmanager.h \
     $$PWD/http/httpreply.h \
     $$PWD/search/search.h \
+    $$PWD/tools/base32.h \
     $$PWD/tools/configurablelabels.h \
     $$PWD/tools/imagecompressor.h \
     $$PWD/tools/listitemscache.h \
