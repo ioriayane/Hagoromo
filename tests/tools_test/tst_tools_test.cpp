@@ -2,6 +2,7 @@
 #include <QCoreApplication>
 
 #include "tools/base32.h"
+#include "tools/leb128.h"
 
 class tools_test : public QObject
 {
@@ -14,7 +15,9 @@ public:
 private slots:
     void initTestCase();
     void cleanupTestCase();
+
     void test_base32();
+    void test_Leb128();
 };
 
 tools_test::tools_test() { }
@@ -69,6 +72,50 @@ void tools_test::test_base32()
         actual = Base32::encode(QByteArray(), true);
         QVERIFY2(actual == QString(), actual.toLocal8Bit());
     }
+}
+
+void tools_test::test_Leb128()
+{
+    quint8 buf[] = { 0x00, 0x00, 0x00, 0x00, 0x00 };
+    int offset;
+    int v;
+
+    memset(buf, 0, sizeof(buf));
+    buf[0] = 0x20;
+    offset = 0;
+    v = Leb128::decode_u(QByteArray::fromRawData(reinterpret_cast<char *>(buf), sizeof(buf)),
+                         offset);
+    QVERIFY2(v == 32, QString::number(v).toLocal8Bit());
+    QVERIFY2(offset == 1, QString::number(v).toLocal8Bit());
+
+    memset(buf, 0, sizeof(buf));
+    buf[0] = 0xff;
+    buf[1] = 0xaf;
+    offset = 0;
+    v = Leb128::decode_u(QByteArray::fromRawData(reinterpret_cast<char *>(buf), sizeof(buf)),
+                         offset);
+    QVERIFY2(v == 6143, QString::number(v).toLocal8Bit());
+    QVERIFY2(offset == 3, QString::number(offset).toLocal8Bit());
+
+    memset(buf, 0, sizeof(buf));
+    buf[0] = 0x3a;
+    buf[1] = 0xa2;
+    buf[2] = 0x65;
+    offset = 0;
+    v = Leb128::decode_u(QByteArray::fromRawData(reinterpret_cast<char *>(buf), sizeof(buf)),
+                         offset);
+    QVERIFY2(v == 58, QString::number(v).toLocal8Bit());
+    QVERIFY2(offset == 1, QString::number(offset).toLocal8Bit());
+
+    memset(buf, 0, sizeof(buf));
+    buf[0] = 0xd7;
+    buf[1] = 0x09;
+    buf[2] = 0x01;
+    offset = 0;
+    v = Leb128::decode_u(QByteArray::fromRawData(reinterpret_cast<char *>(buf), sizeof(buf)),
+                         offset);
+    QVERIFY2(v == 1239, QString::number(v).toLocal8Bit());
+    QVERIFY2(offset == 2, QString::number(offset).toLocal8Bit());
 }
 
 QTEST_MAIN(tools_test)

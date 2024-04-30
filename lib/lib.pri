@@ -66,6 +66,7 @@ SOURCES += \
     $$PWD/tools/base32.cpp \
     $$PWD/tools/configurablelabels.cpp \
     $$PWD/tools/imagecompressor.cpp \
+    $$PWD/tools/leb128.cpp \
     $$PWD/tools/listitemscache.cpp \
     $$PWD/tools/opengraphprotocol.cpp
 
@@ -134,6 +135,7 @@ HEADERS += \
     $$PWD/tools/base32.h \
     $$PWD/tools/configurablelabels.h \
     $$PWD/tools/imagecompressor.h \
+    $$PWD/tools/leb128.h \
     $$PWD/tools/listitemscache.h \
     $$PWD/tools/opengraphprotocol.h \
     $$PWD/tools/qstringex.h
