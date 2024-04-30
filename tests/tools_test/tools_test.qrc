@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>response/xrpc/com.atproto.sync.getRepo</file>
+    </qresource>
+</RCC>

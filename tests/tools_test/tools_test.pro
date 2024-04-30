@@ -11,3 +11,6 @@ SOURCES +=  tst_tools_test.cpp
 include(../common/common.pri)
 include(../../lib/lib.pri)
 include(../../openssl/openssl.pri)
+
+RESOURCES += \
+    tools_test.qrc

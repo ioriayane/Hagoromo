@@ -64,6 +64,7 @@ SOURCES += \
     $$PWD/http/httpaccessmanager.cpp \
     $$PWD/http/httpreply.cpp \
     $$PWD/tools/base32.cpp \
+    $$PWD/tools/cardecoder.cpp \
     $$PWD/tools/configurablelabels.cpp \
     $$PWD/tools/imagecompressor.cpp \
     $$PWD/tools/leb128.cpp \
@@ -133,6 +134,7 @@ HEADERS += \
     $$PWD/http/httpreply.h \
     $$PWD/search/search.h \
     $$PWD/tools/base32.h \
+    $$PWD/tools/cardecoder.h \
     $$PWD/tools/configurablelabels.h \
     $$PWD/tools/imagecompressor.h \
     $$PWD/tools/leb128.h \

@@ -3,6 +3,7 @@
 
 #include "tools/base32.h"
 #include "tools/leb128.h"
+#include "tools/cardecoder.h"
 
 class tools_test : public QObject
 {
@@ -18,6 +19,7 @@ private slots:
 
     void test_base32();
     void test_Leb128();
+    void test_CarDecoder();
 };
 
 tools_test::tools_test() { }
@@ -116,6 +118,34 @@ void tools_test::test_Leb128()
                          offset);
     QVERIFY2(v == 1239, QString::number(v).toLocal8Bit());
     QVERIFY2(offset == 2, QString::number(offset).toLocal8Bit());
+}
+
+void tools_test::test_CarDecoder()
+{
+    CarDecoder decoder;
+
+    QFile repo(":/response/xrpc/com.atproto.sync.getRepo");
+    QVERIFY(repo.open(QFile::ReadOnly));
+    QVERIFY(decoder.setContent(repo.readAll()));
+
+    int i = 0;
+    while (!decoder.eof()) {
+        if (i == 0) {
+            QVERIFY2(decoder.cid() == "bafyreihz3ltonllans77xjbngp2qilac2ui6k5pqx4i4u6p4k3pnpr53bu",
+                     decoder.cid().toLocal8Bit());
+        } else if (i == 22) {
+            QVERIFY2(decoder.cid() == "bafyreifptt2wkfkut5rwf5vjkmp6jqb7525okdgd6yvrdpn5na24wbqlyy",
+                     decoder.cid().toLocal8Bit());
+        } else if (i == 713) {
+            QVERIFY2(decoder.cid() == "bafyreia2udub3oplahxbj2akwytpiu6bopoxkox2locgzns6cieuebcqi4",
+                     decoder.cid().toLocal8Bit());
+        }
+
+        i++;
+        decoder.next();
+    }
+
+    repo.close();
 }
 
 QTEST_MAIN(tools_test)
