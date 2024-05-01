@@ -241,6 +241,7 @@ ColumnLayout {
                 id: avatarImage
                 Layout.preferredWidth: AdjustedValues.i48
                 Layout.preferredHeight: AdjustedValues.i48
+                Layout.alignment: Qt.AlignTop
                 Layout.rowSpan: 2
                 source: userProfile.avatar
             }
@@ -293,6 +294,27 @@ ColumnLayout {
                         text: qsTr("posts")
                     }
                 }
+            }
+        }
+        RowLayout {
+            Layout.leftMargin: 5
+            Layout.rightMargin: 5
+            visible: userProfile.serviceEndpoint.length > 0
+            spacing: 1
+            Image {
+                Layout.preferredWidth: AdjustedValues.i12
+                Layout.preferredHeight: AdjustedValues.i12
+                source: "../images/database.png"
+                layer.enabled: true
+                layer.effect: ColorOverlay {
+                    color: Material.color(Material.Grey)
+                }
+            }
+            Label {
+                Layout.topMargin: 2
+                font.pointSize: AdjustedValues.f8
+                color: Material.color(Material.Grey)
+                text: userProfile.serviceEndpoint
             }
         }
         TagLabelLayout {

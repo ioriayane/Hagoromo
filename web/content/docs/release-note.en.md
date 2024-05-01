@@ -9,8 +9,10 @@ description: This is a multi-column Bluesky client.
 ## 2024
 
 - Add
-- Update
   - Supports login with MFA (deprecated)
+  - Display PDS belonging to user's profile
+  - Display pinned a post in user's profile
+- Update
 - Fix
 
 ### v0.28.0 - 2024/4/20

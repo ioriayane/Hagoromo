@@ -93,6 +93,7 @@ IMAGE_FILES += \
     qml/images/arrow_left_double.png \
     qml/images/arrow_left_single.png \
     qml/images/auto.png \
+    qml/images/database.png \
     qml/images/block.png \
     qml/images/bookmark_add.png \
     qml/images/check.png \
