@@ -16,7 +16,8 @@ AtpAbstractListModel::AtpAbstractListModel(QObject *parent)
       m_running(false),
       m_loadingInterval(5 * 60 * 1000),
       m_displayInterval(400),
-      m_visibleContainingMutedWord(true)
+      m_visibleContainingMutedWord(true),
+      m_displayPinnedPost(false)
 {
     connect(&m_timer, &QTimer::timeout, this, &AtpAbstractListModel::getLatest);
 }
@@ -908,7 +909,20 @@ void AtpAbstractListModel::setPinnedPost(const QString &newPinnedPost)
     m_pinnedPost = newPinnedPost;
     emit pinnedPostChanged();
 
-    if (m_pinnedPost.isEmpty() && !running()) {
+    if (displayPinnedPost() && m_pinnedPost.isEmpty() && !running()) {
         removePinnedPost();
     }
+}
+
+bool AtpAbstractListModel::displayPinnedPost() const
+{
+    return m_displayPinnedPost;
+}
+
+void AtpAbstractListModel::setDisplayPinnedPost(bool newDisplayPinnedPost)
+{
+    if (m_displayPinnedPost == newDisplayPinnedPost)
+        return;
+    m_displayPinnedPost = newDisplayPinnedPost;
+    emit displayPinnedPostChanged();
 }

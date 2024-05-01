@@ -125,7 +125,7 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     else if (role == IsLikedRole)
         return current.post.viewer.like.contains(account().did);
     else if (role == PinnedRole)
-        return (current.post.cid == m_currentPinnedPost);
+        return (!m_currentPinnedPost.isEmpty() && current.post.cid == m_currentPinnedPost);
     else if (role == RepostedUriRole)
         return current.post.viewer.repost;
     else if (role == LikedUriRole)
@@ -507,8 +507,10 @@ bool TimelineListModel::pin(int row)
 
                 if (success) {
                     if (pin_uri.isEmpty()) {
+                        setPinnedPost(QString());
                         m_currentPinnedPost.clear();
                     } else {
+                        setPinnedPost(current.post.uri);
                         m_currentPinnedPost = current.post.cid;
                     }
                     emit dataChanged(index(row), index(row));
@@ -634,7 +636,7 @@ bool TimelineListModel::aggregated(const QString &cid) const
 
 void TimelineListModel::finishedDisplayingQueuedPosts()
 {
-    if (!pinnedPost().isEmpty() && !hasPinnedPost()) {
+    if (displayPinnedPost() && !pinnedPost().isEmpty() && !hasPinnedPost()) {
         // ピン止め対象のURLがあるけど、先頭が対象のポストじゃないときは取得にいく
         getPinnedPost();
     } else {
@@ -1020,7 +1022,6 @@ void TimelineListModel::removePinnedPost()
         m_cidList.pop_front();
         endRemoveRows();
     }
-    m_currentPinnedPost.clear();
 }
 
 bool TimelineListModel::runningRepost(int row) const

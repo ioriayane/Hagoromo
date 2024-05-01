@@ -2589,6 +2589,39 @@ void hagoromo_test::test_TimelineListModel_pinnded()
                         == "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3kgbuys4rx52e",
                 model.item(row, TimelineListModel::UriRole).toString().toLocal8Bit());
     }
+
+    // replace pin
+    model.setAccount(m_service + "/timeline/pinned/2", "did:plc:l4fsx4ujos7uw7n4ijq2ulgs",
+                     "ioriayane.bsky.social", QString(), "dummy", QString());
+    model.setPinnedPost("at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3kgbutwycqd2g");
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        QVERIFY(model.getLatest());
+        spy.wait(10 * 1000);
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+        QVERIFY2(model.rowCount() == 7, QString::number(model.rowCount()).toLocal8Bit());
+        row = 0;
+        QVERIFY2(
+                model.item(row, TimelineListModel::UriRole)
+                        == "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3kgbutwycqd2g",
+                model.item(row, TimelineListModel::UriRole).toString().toLocal8Bit());
+        row = 1;
+        QVERIFY2(
+                model.item(row, TimelineListModel::UriRole)
+                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3klrvkltf672n",
+                model.item(row, TimelineListModel::UriRole).toString().toLocal8Bit());
+        row = 2;
+        QVERIFY2(
+                model.item(row, TimelineListModel::UriRole)
+                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3klrth7knov2m",
+                model.item(row, TimelineListModel::UriRole).toString().toLocal8Bit());
+        row = 3;
+        QVERIFY2(
+                model.item(row, TimelineListModel::UriRole)
+                        == "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3kgbuys4rx52e",
+                model.item(row, TimelineListModel::UriRole).toString().toLocal8Bit());
+    }
 }
 
 void hagoromo_test::test_NotificationListModel_warn()

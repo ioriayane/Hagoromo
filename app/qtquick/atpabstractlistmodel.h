@@ -49,6 +49,8 @@ class AtpAbstractListModel : public QAbstractListModel
                        setVisibleContainingMutedWord NOTIFY visibleContainingMutedWordChanged)
     Q_PROPERTY(
             QString pinnedPost READ pinnedPost WRITE setPinnedPost NOTIFY pinnedPostChanged FINAL)
+    Q_PROPERTY(bool displayPinnedPost READ displayPinnedPost WRITE setDisplayPinnedPost NOTIFY
+                       displayPinnedPostChanged)
 
     Q_PROPERTY(QString service READ service CONSTANT)
     Q_PROPERTY(QString did READ did CONSTANT)
@@ -128,6 +130,9 @@ public:
     QString cursor() const;
     void setCursor(const QString &newCursor);
 
+    bool displayPinnedPost() const;
+    void setDisplayPinnedPost(bool newDisplayPinnedPost);
+
 signals:
     void errorOccured(const QString &code, const QString &message);
     void runningChanged();
@@ -136,6 +141,8 @@ signals:
     void displayIntervalChanged();
     void visibleContainingMutedWordChanged();
     void pinnedPostChanged();
+
+    void displayPinnedPostChanged();
 
 public slots:
     virtual Q_INVOKABLE bool getLatest() = 0;
@@ -203,7 +210,7 @@ protected:
 
     QHash<QString, QString> m_translations; // QHash<cid, translation>
     QHash<QString, QString> m_mutedPosts; // QHash<cid, cid>
-    QString m_currentPinnedPost; // cid
+    QString m_currentPinnedPost; // リストに入れているピン止めしたポストのcid（実際にピンできているかとは関係ない）
 
     QList<BlobCueItem> m_cueExtendMedia;
 
@@ -219,6 +226,7 @@ private:
     int m_displayInterval;
     bool m_visibleContainingMutedWord;
     QString m_pinnedPost; // at-uri
+    bool m_displayPinnedPost;
 };
 
 #endif // ATPABSTRACTLISTMODEL_H

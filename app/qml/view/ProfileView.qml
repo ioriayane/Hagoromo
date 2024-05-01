@@ -527,6 +527,7 @@ ColumnLayout {
                 authorDid: profileView.userDid
                 filter: AuthorFeedListModel.PostsWithReplies
                 pinnedPost: userProfile.pinnedPost
+                displayPinnedPost: true
 
                 onErrorOccured: (code, message) => profileView.errorOccured(code, message)
             }
