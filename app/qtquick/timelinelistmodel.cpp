@@ -135,8 +135,7 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     else if (role == IsLikedRole)
         return current.post.viewer.like.contains(account().did);
     else if (role == PinnedRole)
-        return (!m_currentPinnedPost.isEmpty() && current.post.cid == m_currentPinnedPost
-                && displayPinnedPost());
+        return isPinnedPost(current.post.cid) && row == 0;
     else if (role == PinnedByMeRole)
         return PinnedPostCache::getInstance()->pinned(account().did, current.post.uri);
     else if (role == RepostedUriRole)
@@ -170,7 +169,10 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return getListLinkItem(current.post, m_toListLinkRoles[role]);
 
     else if (role == HasReplyRole) {
-        if (current.reply.parent_type == AppBskyFeedDefs::ReplyRefParentType::parent_PostView)
+        if (isPinnedPost(current.post.cid) && row == 0)
+            // 固定ポストは基本getPostsで取得したデータでcurrent.replyがないので表示を合わせるために非表示固定
+            return false;
+        else if (current.reply.parent_type == AppBskyFeedDefs::ReplyRefParentType::parent_PostView)
             return current.reply.parent_PostView.cid.length() > 0;
         else
             return false;
@@ -198,10 +200,14 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
             return current.reply.parent_PostView.author.handle;
         else
             return QString();
-    else if (role == IsRepostedByRole)
-        return (current.reason_type
-                == AppBskyFeedDefs::FeedViewPostReasonType::reason_ReasonRepost);
-    else if (role == RepostedByDisplayNameRole)
+    else if (role == IsRepostedByRole) {
+        if (isPinnedPost(current.post.cid) && row == 0)
+            // 固定ポストは基本getPostsで取得したデータでcurrent.replyがないので表示を合わせるために非表示固定
+            return false;
+        else
+            return (current.reason_type
+                    == AppBskyFeedDefs::FeedViewPostReasonType::reason_ReasonRepost);
+    } else if (role == RepostedByDisplayNameRole)
         return current.reason_ReasonRepost.by.displayName;
     else if (role == RepostedByHandleRole)
         return current.reason_ReasonRepost.by.handle;
@@ -1004,9 +1010,11 @@ void TimelineListModel::getPinnedPost()
 
             QString new_cid = post->postViewList().at(0).cid;
 
-            AppBskyFeedDefs::FeedViewPost feed_view_post;
-            feed_view_post.post = post->postViewList().at(0);
-            m_viewPostHash[new_cid] = feed_view_post;
+            if (!m_viewPostHash.contains(new_cid)) {
+                AppBskyFeedDefs::FeedViewPost feed_view_post;
+                feed_view_post.post = post->postViewList().at(0);
+                m_viewPostHash[new_cid] = feed_view_post;
+            }
 
             // 前のを消す
             removePinnedPost();

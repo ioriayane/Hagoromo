@@ -172,13 +172,16 @@ void AtpAbstractListModel::displayQueuedPosts()
                 interval = 0;
                 int r = m_cidList.indexOf(post.cid);
                 if (r >= 0) {
-                    if (visible) {
-                        emit dataChanged(index(r), index(r));
-                    } else {
-                        beginRemoveRows(QModelIndex(), r, r);
-                        m_cidList.removeAt(r);
-                        endRemoveRows();
-                    }
+                    do {
+                        if (visible) {
+                            emit dataChanged(index(r), index(r));
+                        } else {
+                            beginRemoveRows(QModelIndex(), r, r);
+                            m_cidList.removeAt(r);
+                            endRemoveRows();
+                        }
+                        r = m_cidList.indexOf(post.cid, ++r);
+                    } while (r >= 0);
                 } else {
                     int r = searchInsertPosition(post.cid);
                     if (visible && r >= 0) {
@@ -710,6 +713,11 @@ bool AtpAbstractListModel::hasPinnedPost() const
 }
 
 void AtpAbstractListModel::removePinnedPost() { }
+
+bool AtpAbstractListModel::isPinnedPost(const QString &cid) const
+{
+    return (displayPinnedPost() && !m_currentPinnedPost.isEmpty() && cid == m_currentPinnedPost);
+}
 
 // 画像URLを取得する
 // recordのembed/blobにgifがある場合はローカルに保存されているファイルパスを返す

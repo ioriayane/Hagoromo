@@ -189,6 +189,7 @@ protected:
     virtual void updateExtendMediaFile(const QString &parent_cid);
     virtual bool hasPinnedPost() const;
     virtual void removePinnedPost();
+    bool isPinnedPost(const QString &cid) const;
 
     QStringList
     copyImagesFromPostView(const AtProtocolType::AppBskyFeedDefs::PostView &post,
