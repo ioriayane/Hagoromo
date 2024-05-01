@@ -1,10 +1,13 @@
 #include "userprofile.h"
 #include "tools/listitemscache.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofile.h"
+#include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
+#include "atprotocol/lexicons_func_unknown.h"
 
 #include <QPointer>
 
 using AtProtocolInterface::AppBskyActorGetProfile;
+using AtProtocolInterface::ComAtprotoRepoGetRecordEx;
 
 UserProfile::UserProfile(QObject *parent)
     : QObject { parent },
@@ -102,10 +105,13 @@ void UserProfile::getProfile(const QString &did)
                 }
                 setBelongingLists(
                         ListItemsCache::getInstance()->getListNames(m_account.did, detail.did));
+
+                //追加情報読み込み
+                getRawProfile();
             } else {
                 emit errorOccured(profile->errorCode(), profile->errorMessage());
+                setRunning(false);
             }
-            setRunning(false);
             profile->deleteLater();
         });
         profile->setAccount(m_account);
@@ -400,6 +406,29 @@ void UserProfile::updateContentFilterLabels(std::function<void()> callback)
     });
     labels->setAccount(m_account);
     labels->load();
+}
+
+// getProfileの追加読み込みとして動作させる
+void UserProfile::getRawProfile()
+{
+    if (did().isEmpty()) {
+        setRunning(false);
+        return;
+    }
+
+    ComAtprotoRepoGetRecordEx *record = new ComAtprotoRepoGetRecordEx(this);
+    connect(record, &ComAtprotoRepoGetRecordEx::finished, this, [=](bool success) {
+        if (success) {
+            AtProtocolType::AppBskyActorProfile::Main profile =
+                    AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                            AtProtocolType::AppBskyActorProfile::Main>(record->value());
+            setPinnedPost(profile.pinnedPost);
+        }
+        setRunning(false);
+        record->deleteLater();
+    });
+    record->setAccount(m_account);
+    record->profile(did());
 }
 
 QStringList UserProfile::belongingLists() const

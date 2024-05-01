@@ -135,6 +135,7 @@ public slots:
 
 private:
     void updateContentFilterLabels(std::function<void()> callback);
+    void getRawProfile();
 
     SystemTool m_systemTool;
     AtProtocolInterface::AccountData m_account;

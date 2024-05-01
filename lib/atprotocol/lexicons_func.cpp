@@ -428,6 +428,7 @@ void copyMain(const QJsonObject &src, AppBskyActorProfile::Main &dest)
             ComAtprotoLabelDefs::copySelfLabels(src.value("labels").toObject(),
                                                 dest.labels_ComAtprotoLabelDefs_SelfLabels);
         }
+        dest.pinnedPost = src.value("pinnedPost").toString();
     }
 }
 }

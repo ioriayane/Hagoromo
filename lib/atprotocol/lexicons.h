@@ -316,6 +316,7 @@ struct Main
             labels_ComAtprotoLabelDefs_SelfLabels; // Self-label values, specific to the Bluesky
                                                    // application, on the overall account.
     // union end : labels
+    QString pinnedPost; // at-uri , (Unofficial field)
 };
 }
 
