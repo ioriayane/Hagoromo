@@ -27,6 +27,7 @@
 #include "tools/configurablelabels.h"
 #include "tools/listitemscache.h"
 #include "unittest_common.h"
+#include "extension/plc/plcdirectory.h"
 
 using namespace AtProtocolType;
 using namespace AtProtocolType::LexiconsTypeUnknown;
@@ -73,6 +74,8 @@ private slots:
     void test_AppBskyGraphGetListMutes();
     void test_AppBskyGraphGetListBlocks();
     void test_AppBskyGraphGetMutes();
+
+    void test_PlcDirectory();
 
 private:
     void test_putPreferences(const QString &path, const QByteArray &body);
@@ -2140,6 +2143,29 @@ void atprotocol_test::test_AppBskyGraphGetMutes()
 
     QVERIFY(api.profileViewList().count() == 1);
     QVERIFY(api.profileViewList().at(0).did == "did:plc:l4fsx4ujos7uw7n4ijq2ulgs");
+}
+
+void atprotocol_test::test_PlcDirectory()
+{
+#if 0
+    AtProtocolInterface::PlcDirectory plc;
+
+    {
+        QSignalSpy spy(&plc, SIGNAL(finished(bool)));
+        plc.directory("did:plc:ipj5qejfoqu6eukvt72uhyit");
+        spy.wait(10 * 1000);
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    QVERIFY(!plc.didDoc().service.isEmpty());
+    QVERIFY(plc.didDoc().service.at(0).id == "#atproto_pds");
+    QVERIFY(plc.didDoc().service.at(0).type == "AtprotoPersonalDataServer");
+    QVERIFY(plc.didDoc().service.at(0).serviceEndpoint
+            == "https://porcini.us-east.host.bsky.network");
+
+    QVERIFY(plc.serviceEndpoint() == "https://porcini.us-east.host.bsky.network");
+
+#endif
 }
 
 void atprotocol_test::test_putPreferences(const QString &path, const QByteArray &body)

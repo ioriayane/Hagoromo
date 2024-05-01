@@ -1026,6 +1026,27 @@ struct InviteCode
     QString createdAt; // datetime
     QList<InviteCodeUse> uses;
 };
+struct DidDocVerificationMethod
+{
+    QString id;
+    QString type;
+    QString controller;
+    QString publicKeyMultibase;
+};
+struct DidDocService
+{
+    QString id;
+    QString type;
+    QString serviceEndpoint;
+};
+struct DidDoc
+{
+    QList<QString> context;
+    QString id; // did
+    QString alsoKnownAs; // at://HANDLE
+    QList<DidDocVerificationMethod> verificationMethod;
+    QList<DidDocService> service;
+};
 }
 
 // com.atproto.admin.defs
