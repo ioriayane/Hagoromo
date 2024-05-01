@@ -102,6 +102,7 @@ ScrollView {
             replyReactionAuthor.visible: model.hasReply
             replyReactionAuthor.displayName: model.replyParentDisplayName
             replyReactionAuthor.handle: model.replyParentHandle
+            pinnedIndicatorLabel.visible: model.pinned
 
             postAvatarImage.source: model.avatar
             postAvatarImage.onClicked: requestViewProfile(model.did)

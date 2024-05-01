@@ -107,6 +107,7 @@ public:
         IsRepostedByRole,
         RepostedByDisplayNameRole,
         RepostedByHandleRole,
+        PinnedRole,
 
         UserFilterMatchedRole,
         UserFilterMessageRole,
@@ -183,6 +184,9 @@ protected:
                           const TimelineListModel::TimelineListModelRoles role) const;
 
     virtual void updateExtendMediaFile(const QString &parent_cid);
+    virtual bool hasPinnedPost() const;
+    void getPinnedPost();
+    virtual void removePinnedPost();
 
     QHash<QString, AtProtocolType::AppBskyFeedDefs::FeedViewPost> m_viewPostHash;
     QHash<QString, ThreadConnector> m_threadConnectorHash;

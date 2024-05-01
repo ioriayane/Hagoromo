@@ -1,0 +1,50 @@
+{
+    "posts": [
+        {
+            "uri": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3kgbutwycqd2g",
+            "cid": "bafyreich4twgrnb6jtgmmw7dl7wopenvupamvxeukgnyzxuxjf3i5ogcd4",
+            "author": {
+                "did": "did:plc:l4fsx4ujos7uw7n4ijq2ulgs",
+                "handle": "ioriayane.bsky.social",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false,
+                    "following": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.follow/3k5u735ydrb2p"
+                },
+                "labels": []
+            },
+            "record": {
+                "tags": [],
+                "text": "フォロワー",
+                "$type": "app.bsky.feed.post",
+                "langs": [
+                    "en"
+                ],
+                "createdAt": "2023-12-11T16:48:22.383Z"
+            },
+            "replyCount": 0,
+            "repostCount": 0,
+            "likeCount": 0,
+            "indexedAt": "2023-12-11T16:48:22.383Z",
+            "viewer": {
+                "replyDisabled": true
+            },
+            "labels": [],
+            "threadgate": {
+                "uri": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.threadgate/3kgbutwycqd2g",
+                "cid": "bafyreigl2gikenbexlao342oua6wygtayfabcebl52dxhm56nuxjzkfb2a",
+                "record": {
+                    "post": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3kgbutwycqd2g",
+                    "$type": "app.bsky.feed.threadgate",
+                    "allow": [
+                        {
+                            "$type": "app.bsky.feed.threadgate#followingRule"
+                        }
+                    ],
+                    "createdAt": "2023-12-11T16:48:23.089Z"
+                },
+                "lists": []
+            }
+        }
+    ]
+}

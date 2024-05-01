@@ -26,6 +26,7 @@ ClickableFrame {
     property alias moderationFrame: moderationFrame
     property alias repostReactionAuthor: repostReactionAuthor
     property alias replyReactionAuthor: replyReactionAuthor
+    property alias pinnedIndicatorLabel: pinnedIndicatorLabel
     property alias postAvatarImage: postAvatarImage
     property alias postAuthor: postAuthor
     property alias recordText: recordText
@@ -81,6 +82,7 @@ ClickableFrame {
                 when: moderationFrame.showContent === false
                 PropertyChanges { target: repostReactionAuthor; visible: false }
                 PropertyChanges { target: replyReactionAuthor; visible: false }
+                PropertyChanges { target: pinnedIndicatorLabel; visible: false }
                 PropertyChanges { target: postLayout; visible: false }
             }
 
@@ -104,6 +106,11 @@ ClickableFrame {
             ]
         }
 
+        PinnedIndicator {
+            id: pinnedIndicatorLabel
+            Layout.fillWidth: true
+            Layout.preferredHeight: AdjustedValues.i12 * 1.2
+        }
         ReactionAuthor {
             id: repostReactionAuthor
             Layout.maximumWidth: postFrame.layoutWidth

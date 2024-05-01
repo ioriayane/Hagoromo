@@ -44,7 +44,7 @@ class UserProfile : public QObject
 
     Q_PROPERTY(QStringList belongingLists READ belongingLists WRITE setBelongingLists NOTIFY
                        belongingListsChanged)
-
+    Q_PROPERTY(QString pinnedPost READ pinnedPost WRITE setPinnedPost NOTIFY pinnedPostChanged)
 public:
     explicit UserProfile(QObject *parent = nullptr);
     ~UserProfile();
@@ -99,6 +99,9 @@ public:
 
     QString formattedDescription() const;
 
+    QString pinnedPost() const;
+    void setPinnedPost(const QString &newPinnedPost);
+
 signals:
     void errorOccured(const QString &code, const QString &message);
     void runningChanged();
@@ -124,6 +127,8 @@ signals:
     void belongingListsChanged();
 
     void formattedDescriptionChanged();
+
+    void pinnedPostChanged();
 
 public slots:
     void updatedBelongingLists(const QString &account_did, const QString &user_did);
@@ -158,6 +163,7 @@ private:
     bool m_userFilterMatched;
     QString m_userFilterTitle;
     QStringList m_belongingLists;
+    QString m_pinnedPost;
 };
 
 #endif // USERPROFILE_H

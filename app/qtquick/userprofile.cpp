@@ -414,3 +414,16 @@ void UserProfile::setBelongingLists(const QStringList &newBelongingLists)
     m_belongingLists = newBelongingLists;
     emit belongingListsChanged();
 }
+
+QString UserProfile::pinnedPost() const
+{
+    return m_pinnedPost;
+}
+
+void UserProfile::setPinnedPost(const QString &newPinnedPost)
+{
+    if (m_pinnedPost == newPinnedPost)
+        return;
+    m_pinnedPost = newPinnedPost;
+    emit pinnedPostChanged();
+}

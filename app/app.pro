@@ -57,6 +57,7 @@ QML_FILES = \
     qml/parts/ListLinkCard.qml \
     qml/parts/MentionSuggestionView.qml \
     qml/parts/NotificationDelegate.qml \
+    qml/parts/PinnedIndicator.qml \
     qml/parts/PostControls.qml \
     qml/parts/PostDelegate.qml \
     qml/parts/PostInformation.qml \
@@ -117,6 +118,7 @@ IMAGE_FILES += \
     qml/images/mute.png \
     qml/images/notification.png \
     qml/images/open_in_other.png \
+    qml/images/pin.png \
     qml/images/quote.png \
     qml/images/refresh.png \
     qml/images/reply.png \

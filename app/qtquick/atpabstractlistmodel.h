@@ -47,6 +47,8 @@ class AtpAbstractListModel : public QAbstractListModel
                        displayIntervalChanged)
     Q_PROPERTY(bool visibleContainingMutedWord READ visibleContainingMutedWord WRITE
                        setVisibleContainingMutedWord NOTIFY visibleContainingMutedWordChanged)
+    Q_PROPERTY(
+            QString pinnedPost READ pinnedPost WRITE setPinnedPost NOTIFY pinnedPostChanged FINAL)
 
     Q_PROPERTY(QString service READ service CONSTANT)
     Q_PROPERTY(QString did READ did CONSTANT)
@@ -113,6 +115,9 @@ public:
     void setDisplayInterval(int newDisplayInterval);
     bool visibleContainingMutedWord() const;
     void setVisibleContainingMutedWord(bool newVisibleContainingMutedWord);
+    QString pinnedPost() const;
+    void setPinnedPost(const QString &newPinnedPost);
+
     QString service() const;
     QString did() const;
     QString handle() const;
@@ -130,6 +135,7 @@ signals:
     void loadingIntervalChanged();
     void displayIntervalChanged();
     void visibleContainingMutedWordChanged();
+    void pinnedPostChanged();
 
 public slots:
     virtual Q_INVOKABLE bool getLatest() = 0;
@@ -176,6 +182,8 @@ protected:
     QString getMediaFilePath(const QString &cid, const QString &ext) const;
     QString saveMediaFile(const QByteArray &data, const QString &cid, const QString &ext);
     virtual void updateExtendMediaFile(const QString &parent_cid);
+    virtual bool hasPinnedPost() const;
+    virtual void removePinnedPost();
 
     QStringList
     copyImagesFromPostView(const AtProtocolType::AppBskyFeedDefs::PostView &post,
@@ -195,6 +203,7 @@ protected:
 
     QHash<QString, QString> m_translations; // QHash<cid, translation>
     QHash<QString, QString> m_mutedPosts; // QHash<cid, cid>
+    QString m_currentPinnedPost; // cid
 
     QList<BlobCueItem> m_cueExtendMedia;
 
@@ -209,6 +218,7 @@ private:
     int m_loadingInterval;
     int m_displayInterval;
     bool m_visibleContainingMutedWord;
+    QString m_pinnedPost;
 };
 
 #endif // ATPABSTRACTLISTMODEL_H

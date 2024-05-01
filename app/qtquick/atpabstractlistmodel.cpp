@@ -32,6 +32,8 @@ void AtpAbstractListModel::clear()
     m_translations.clear();
     m_mutedPosts.clear();
     m_cursor.clear();
+    m_currentPinnedPost.clear();
+    m_pinnedPost.clear();
 }
 
 AtProtocolInterface::AccountData AtpAbstractListModel::account() const
@@ -135,6 +137,7 @@ void AtpAbstractListModel::displayQueuedPosts()
 {
     int interval = m_displayInterval;
     bool batch_mode = (m_originalCidList.isEmpty() || interval == 0);
+    int top_index = hasPinnedPost() ? 1 : 0;
 
     while (!m_cuePost.isEmpty()) {
         const PostCueItem &post = m_cuePost.front();
@@ -150,15 +153,15 @@ void AtpAbstractListModel::displayQueuedPosts()
                 int r;
                 if (visible) {
                     r = m_cidList.indexOf(post.cid);
-                    if (r > 0) {
-                        beginMoveRows(QModelIndex(), r, r, QModelIndex(), 0);
-                        m_cidList.move(r, 0);
+                    if (r > top_index) {
+                        beginMoveRows(QModelIndex(), r, r, QModelIndex(), top_index);
+                        m_cidList.move(r, top_index);
                         endMoveRows();
                     }
                 }
                 r = m_originalCidList.indexOf(post.cid);
-                if (r > 0) {
-                    m_originalCidList.move(r, 0);
+                if (r > top_index) {
+                    m_originalCidList.move(r, top_index);
                 }
             } else {
                 // リストは更新しないでデータのみ入れ替える
@@ -186,11 +189,11 @@ void AtpAbstractListModel::displayQueuedPosts()
             }
         } else {
             if (visible) {
-                beginInsertRows(QModelIndex(), 0, 0);
-                m_cidList.insert(0, post.cid);
+                beginInsertRows(QModelIndex(), top_index, top_index);
+                m_cidList.insert(top_index, post.cid);
                 endInsertRows();
             }
-            m_originalCidList.insert(0, post.cid);
+            m_originalCidList.insert(top_index, post.cid);
         }
 
         m_cuePost.pop_front();
@@ -699,6 +702,13 @@ void AtpAbstractListModel::updateExtendMediaFile(const QString &parent_cid)
     Q_UNUSED(parent_cid)
 }
 
+bool AtpAbstractListModel::hasPinnedPost() const
+{
+    return false;
+}
+
+void AtpAbstractListModel::removePinnedPost() { }
+
 // 画像URLを取得する
 // recordのembed/blobにgifがある場合はローカルに保存されているファイルパスを返す
 // 無ければ通常のサムネ画像のURLを返す
@@ -884,4 +894,21 @@ void AtpAbstractListModel::setVisibleContainingMutedWord(bool newVisibleContaini
         return;
     m_visibleContainingMutedWord = newVisibleContainingMutedWord;
     emit visibleContainingMutedWordChanged();
+}
+
+QString AtpAbstractListModel::pinnedPost() const
+{
+    return m_pinnedPost;
+}
+
+void AtpAbstractListModel::setPinnedPost(const QString &newPinnedPost)
+{
+    if (m_pinnedPost == newPinnedPost)
+        return;
+    m_pinnedPost = newPinnedPost;
+    emit pinnedPostChanged();
+
+    if (m_pinnedPost.isEmpty() && !running()) {
+        removePinnedPost();
+    }
 }

@@ -1,10 +1,12 @@
 #include "timelinelistmodel.h"
+#include "atprotocol/app/bsky/feed/appbskyfeedgetposts.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "recordoperator.h"
 
 #include <QDebug>
 
 using AtProtocolInterface::AccountData;
+using AtProtocolInterface::AppBskyFeedGetPosts;
 using AtProtocolInterface::AppBskyFeedGetTimeline;
 using namespace AtProtocolType;
 
@@ -186,6 +188,9 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return current.reason_ReasonRepost.by.displayName;
     else if (role == RepostedByHandleRole)
         return current.reason_ReasonRepost.by.handle;
+    else if (role == PinnedRole)
+        return (current.post.cid == m_currentPinnedPost
+                && m_cidList.first() == m_currentPinnedPost);
 
     else if (role == UserFilterMatchedRole) {
         return getContentFilterMatched(current.post.author.labels, false);
@@ -550,6 +555,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[IsRepostedByRole] = "isRepostedBy";
     roles[RepostedByDisplayNameRole] = "repostedByDisplayName";
     roles[RepostedByHandleRole] = "repostedByHandle";
+    roles[PinnedRole] = "pinned";
 
     roles[UserFilterMatchedRole] = "userFilterMatched";
     roles[UserFilterMessageRole] = "userFilterMessage";
@@ -587,7 +593,12 @@ bool TimelineListModel::aggregated(const QString &cid) const
 
 void TimelineListModel::finishedDisplayingQueuedPosts()
 {
-    setRunning(false);
+    if (!pinnedPost().isEmpty() && !hasPinnedPost()) {
+        // ピン止め対象のURLがあるけど、先頭が対象のポストじゃないときは取得にいく
+        getPinnedPost();
+    } else {
+        setRunning(false);
+    }
 }
 
 bool TimelineListModel::checkVisibility(const QString &cid)
@@ -683,9 +694,11 @@ bool TimelineListModel::checkVisibility(const QString &cid)
 void TimelineListModel::copyFrom(const QList<AppBskyFeedDefs::FeedViewPost> &feed_view_post_list)
 {
     QDateTime reference_time;
-    if (m_cidList.count() > 0 && m_viewPostHash.count() > 0) {
-        reference_time = QDateTime::fromString(getReferenceTime(m_viewPostHash[m_cidList.at(0)]),
-                                               Qt::ISODateWithMs);
+    int top_index = hasPinnedPost() ? 1 : 0;
+
+    if (m_cidList.count() > top_index && m_viewPostHash.count() > 0) {
+        reference_time = QDateTime::fromString(
+                getReferenceTime(m_viewPostHash[m_cidList.at(top_index)]), Qt::ISODateWithMs);
     } else if (feed_view_post_list.count() > 0) {
         reference_time = QDateTime::fromString(getReferenceTime(feed_view_post_list.last()),
                                                Qt::ISODateWithMs);
@@ -904,6 +917,69 @@ void TimelineListModel::updateExtendMediaFile(const QString &parent_cid)
     if (row >= 0) {
         emit dataChanged(index(row), index(row));
     }
+}
+
+bool TimelineListModel::hasPinnedPost() const
+{
+    if (pinnedPost().isEmpty() || m_currentPinnedPost.isEmpty())
+        return false;
+
+    const AppBskyFeedDefs::FeedViewPost &current = m_viewPostHash.value(m_currentPinnedPost);
+
+    return (current.post.uri == pinnedPost());
+}
+
+void TimelineListModel::getPinnedPost()
+{
+    if (pinnedPost().isEmpty()) {
+        setRunning(false);
+        return;
+    }
+
+    AppBskyFeedGetPosts *post = new AppBskyFeedGetPosts(this);
+    connect(post, &AppBskyFeedGetPosts::finished, [=](bool success) {
+        if (success && !post->postViewList().isEmpty()) {
+
+            QString new_cid = post->postViewList().at(0).cid;
+
+            AppBskyFeedDefs::FeedViewPost feed_view_post;
+            feed_view_post.post = post->postViewList().at(0);
+            m_viewPostHash[new_cid] = feed_view_post;
+
+            // 前のを消す
+            removePinnedPost();
+            // 新しいものを追加
+            bool visible = checkVisibility(new_cid);
+            if (visible) {
+                beginInsertRows(QModelIndex(), 0, 0);
+                m_cidList.insert(0, new_cid);
+                endInsertRows();
+            }
+            m_originalCidList.insert(0, new_cid);
+
+            m_currentPinnedPost = new_cid;
+        }
+        setRunning(false);
+        post->deleteLater();
+    });
+    post->setAccount(account());
+    post->getPosts(QStringList() << pinnedPost());
+}
+
+void TimelineListModel::removePinnedPost()
+{
+    if (m_currentPinnedPost.isEmpty())
+        return;
+
+    if (!m_originalCidList.isEmpty() && m_originalCidList.first() == m_currentPinnedPost) {
+        m_originalCidList.pop_front();
+    }
+    if (!m_cidList.isEmpty() && m_cidList.first() == m_currentPinnedPost) {
+        beginRemoveRows(QModelIndex(), 0, 0);
+        m_cidList.pop_front();
+        endRemoveRows();
+    }
+    m_currentPinnedPost.clear();
 }
 
 bool TimelineListModel::runningRepost(int row) const

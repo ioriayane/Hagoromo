@@ -143,6 +143,11 @@ ColumnLayout {
 
     UserProfile {
         id: userProfile
+        onRunningChanged: {
+            if(running === false){
+                swipView.getLatest()
+            }
+        }
     }
 
     SystemTool {
@@ -477,12 +482,16 @@ ColumnLayout {
         currentIndex: tabBar.currentIndex
         interactive: false
 
-        onCurrentItemChanged: {
+        onCurrentItemChanged: getLatest()
+
+        function getLatest() {
             if(currentItem == null)
                 return
             if(currentItem.model === undefined)
                 return
             if(currentItem.model.rowCount() > 0)
+                return
+            if(userProfile.handle.length === 0)
                 return
             currentItem.model.getLatest()
         }
@@ -495,6 +504,7 @@ ColumnLayout {
                 displayInterval: 0
                 authorDid: profileView.userDid
                 filter: AuthorFeedListModel.PostsWithReplies
+                pinnedPost: userProfile.pinnedPost
 
                 onErrorOccured: (code, message) => profileView.errorOccured(code, message)
             }
