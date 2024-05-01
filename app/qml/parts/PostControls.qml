@@ -11,6 +11,7 @@ RowLayout {
 
     property bool isReposted: false
     property bool isLiked: false
+    property bool pinned: false
     property string postUri: ""
     property string handle: ""
     property bool mine: false
@@ -29,6 +30,7 @@ RowLayout {
     signal triggeredRequestViewLikedBy()
     signal triggeredRequestViewRepostedBy()
     signal triggeredRequestUpdateThreadGate()
+    signal triggeredRequestPin()
 
 
     function openInOhters(uri, handle){
@@ -144,6 +146,11 @@ RowLayout {
             }
             MenuSeparator {}
             MenuItem {
+                text: pinned ? qsTr("Unpin this post") : qsTr("Pin this post")
+                icon.source: "../images/thread.png"
+                onTriggered: triggeredRequestPin()
+            }
+            MenuItem {
                 text: qsTr("Who can reply")
                 enabled: mine
                 icon.source: "../images/thread.png"
@@ -198,6 +205,12 @@ RowLayout {
                 enabled: likeButton.iconText > 0
                 icon.source: "../images/like.png"
                 onTriggered: triggeredRequestViewLikedBy()
+            }
+            MenuSeparator {}
+            MenuItem {
+                text: pinned ? qsTr("Unpin this post") : qsTr("Pin this post")
+                icon.source: "../images/thread.png"
+                onTriggered: triggeredRequestPin()
             }
             MenuSeparator {}
             MenuItem {

@@ -1668,7 +1668,7 @@ void atprotocol_test::test_ComAtprotoRepoPutRecord_profile()
     avatar.size = 52880;
     {
         QSignalSpy spy(&record, SIGNAL(finished(bool)));
-        record.profile(avatar, banner, "description", "display name",
+        record.profile(avatar, banner, "description", "display name", QString(),
                        "bafyreie3ckzfk5xadlunbotovrffkhsfb2hdnr7bujofy2bb5ro45elcmy");
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
@@ -1687,7 +1687,7 @@ void atprotocol_test::test_ComAtprotoRepoPutRecord_profile()
     banner.size = 51567;
     {
         QSignalSpy spy(&record, SIGNAL(finished(bool)));
-        record.profile(avatar, banner, "epub\nLeME", "IoriAYANE",
+        record.profile(avatar, banner, "epub\nLeME", "IoriAYANE", QString(),
                        "bafyreif4chy7iugq3blmvqt6sgqeo72pxkkr4v4fnzjqii2yriijh545ei");
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());

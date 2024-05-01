@@ -65,6 +65,7 @@ public:
         RunningRepostRole,
         RunningLikeRole,
         RunningdeletePostRole,
+        RunningPostPinningRole,
 
         HasQuoteRecordRole,
         QuoteRecordCidRole,
@@ -148,6 +149,7 @@ public:
     Q_INVOKABLE bool deletePost(int row);
     Q_INVOKABLE bool repost(int row);
     Q_INVOKABLE bool like(int row);
+    Q_INVOKABLE bool pin(int row);
 
     bool visibleReplyToUnfollowedUsers() const;
     void setVisibleReplyToUnfollowedUsers(bool newVisibleReplyToUnfollowedUser);
@@ -198,6 +200,8 @@ private:
     void setRunningLike(int row, bool running);
     bool runningdeletePost(int row) const;
     void setRunningdeletePost(int row, bool running);
+    bool runningPostPinning(int row) const;
+    void setRunningPostPinning(int row, bool running);
 
     QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::ExternalLinkRoles>
             m_toExternalLinkRoles;
@@ -217,6 +221,7 @@ private:
     QString m_runningRepostCid;
     QString m_runningLikeCid;
     QString m_runningDeletePostCid;
+    QString m_runningPostPinningCid;
 };
 
 #endif // TIMELINELISTMODEL_H

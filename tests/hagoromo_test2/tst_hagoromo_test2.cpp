@@ -137,15 +137,43 @@ void hagoromo_test::test_RecordOperator_profile()
     RecordOperator ope;
     ope.setAccount(m_service + "/profile/1", "did:plc:ipj5qejfoqu6eukvt72uhyit", QString(),
                    QString(), "dummy", QString());
+    {
+        QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
+        ope.updateProfile("", "", "description", "display_name");
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
-    QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
-    ope.updateProfile("", "", "description", "display_name");
-    spy.wait();
-    QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).type() == QVariant::Bool);
+        QVERIFY(arguments.at(0).toBool() == true);
+    }
 
-    QList<QVariant> arguments = spy.takeFirst();
-    QVERIFY(arguments.at(0).type() == QVariant::Bool);
-    QVERIFY(arguments.at(0).toBool() == true);
+    ope.setAccount(m_service + "/profile/3.1", "did:plc:ipj5qejfoqu6eukvt72uhyit", QString(),
+                   QString(), "dummy", QString());
+    {
+        QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
+        ope.updatePostPinning(
+                "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3k5ml2mujje2n");
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).type() == QVariant::Bool);
+        QVERIFY(arguments.at(0).toBool() == true);
+    }
+
+    ope.setAccount(m_service + "/profile/3.2", "did:plc:ipj5qejfoqu6eukvt72uhyit", QString(),
+                   QString(), "dummy", QString());
+    {
+        QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
+        ope.updatePostPinning(QString());
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).type() == QVariant::Bool);
+        QVERIFY(arguments.at(0).toBool() == true);
+    }
 }
 
 void hagoromo_test::test_FeedGeneratorListModel()
@@ -549,6 +577,10 @@ void hagoromo_test::test_putRecord(const QString &path, const QByteArray &body)
     QJsonDocument json_doc_expect;
     if (path.contains("/profile/1/")) {
         json_doc_expect = UnitTestCommon::loadJson(":/data/profile/1/com.atproto.repo.putRecord");
+    } else if (path.contains("/profile/3.1/")) {
+        json_doc_expect = UnitTestCommon::loadJson(":/data/profile/3.1/com.atproto.repo.putRecord");
+    } else if (path.contains("/profile/3.2/")) {
+        json_doc_expect = UnitTestCommon::loadJson(":/data/profile/3.2/com.atproto.repo.putRecord");
     } else {
         QVERIFY(false);
     }

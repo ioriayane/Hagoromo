@@ -124,6 +124,8 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return current.post.viewer.repost.contains(account().did);
     else if (role == IsLikedRole)
         return current.post.viewer.like.contains(account().did);
+    else if (role == PinnedRole)
+        return (current.post.cid == m_currentPinnedPost);
     else if (role == RepostedUriRole)
         return current.post.viewer.repost;
     else if (role == LikedUriRole)
@@ -134,6 +136,8 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return !current.post.cid.isEmpty() && (current.post.cid == m_runningLikeCid);
     else if (role == RunningdeletePostRole)
         return !current.post.cid.isEmpty() && (current.post.cid == m_runningDeletePostCid);
+    else if (role == RunningPostPinningRole)
+        return !current.post.cid.isEmpty() && (current.post.cid == m_runningPostPinningCid);
 
     else if (role == HasQuoteRecordRole || role == QuoteRecordCidRole || role == QuoteRecordUriRole
              || role == QuoteRecordDisplayNameRole || role == QuoteRecordHandleRole
@@ -188,9 +192,6 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return current.reason_ReasonRepost.by.displayName;
     else if (role == RepostedByHandleRole)
         return current.reason_ReasonRepost.by.handle;
-    else if (role == PinnedRole)
-        return (current.post.cid == m_currentPinnedPost
-                && m_cidList.first() == m_currentPinnedPost);
 
     else if (role == UserFilterMatchedRole) {
         return getContentFilterMatched(current.post.author.labels, false);
@@ -482,6 +483,46 @@ bool TimelineListModel::like(int row)
     return true;
 }
 
+bool TimelineListModel::pin(int row)
+{
+    if (row < 0 || row >= m_cidList.count())
+        return false;
+
+    const AppBskyFeedDefs::FeedViewPost &current = m_viewPostHash.value(m_cidList.at(row));
+    QString pin_uri;
+    if (current.post.cid != m_currentPinnedPost) {
+        pin_uri = current.post.uri;
+    }
+
+    if (runningPostPinning(row))
+        return false;
+    setRunningPostPinning(row, true);
+
+    RecordOperator *ope = new RecordOperator(this);
+    connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
+    connect(ope, &RecordOperator::finished,
+            [=](bool success, const QString &uri, const QString &cid) {
+                Q_UNUSED(uri)
+                Q_UNUSED(cid)
+
+                if (success) {
+                    if (pin_uri.isEmpty()) {
+                        m_currentPinnedPost.clear();
+                    } else {
+                        m_currentPinnedPost = current.post.cid;
+                    }
+                    emit dataChanged(index(row), index(row));
+                }
+                setRunningPostPinning(row, false);
+                ope->deleteLater();
+            });
+    ope->setAccount(account().service, account().did, account().handle, account().email,
+                    account().accessJwt, account().refreshJwt);
+    ope->updatePostPinning(pin_uri);
+
+    return true;
+}
+
 QHash<int, QByteArray> TimelineListModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
@@ -508,6 +549,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
 
     roles[IsRepostedRole] = "isReposted";
     roles[IsLikedRole] = "isLiked";
+    roles[PinnedRole] = "pinned";
     roles[RepostedUriRole] = "repostedUri";
     roles[LikedUriRole] = "likedUri";
     roles[RunningRepostRole] = "runningRepost";
@@ -555,7 +597,6 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[IsRepostedByRole] = "isRepostedBy";
     roles[RepostedByDisplayNameRole] = "repostedByDisplayName";
     roles[RepostedByHandleRole] = "repostedByHandle";
-    roles[PinnedRole] = "pinned";
 
     roles[UserFilterMatchedRole] = "userFilterMatched";
     roles[UserFilterMessageRole] = "userFilterMessage";
@@ -1009,6 +1050,16 @@ bool TimelineListModel::runningdeletePost(int row) const
 void TimelineListModel::setRunningdeletePost(int row, bool running)
 {
     update(row, RunningdeletePostRole, running);
+}
+
+bool TimelineListModel::runningPostPinning(int row) const
+{
+    return item(row, RunningPostPinningRole).toBool();
+}
+
+void TimelineListModel::setRunningPostPinning(int row, bool running)
+{
+    update(row, RunningPostPinningRole, running);
 }
 
 bool TimelineListModel::visibleReplyToUnfollowedUsers() const

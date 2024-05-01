@@ -218,7 +218,7 @@ private:
     int m_loadingInterval;
     int m_displayInterval;
     bool m_visibleContainingMutedWord;
-    QString m_pinnedPost;
+    QString m_pinnedPost; // at-uri
 };
 
 #endif // ATPABSTRACTLISTMODEL_H
