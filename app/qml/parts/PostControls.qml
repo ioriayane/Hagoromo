@@ -147,7 +147,7 @@ RowLayout {
             MenuSeparator {}
             MenuItem {
                 text: pinned ? qsTr("Unpin this post") : qsTr("Pin this post")
-                icon.source: "../images/thread.png"
+                icon.source: "../images/pin.png"
                 onTriggered: triggeredRequestPin()
             }
             MenuItem {
@@ -209,7 +209,7 @@ RowLayout {
             MenuSeparator {}
             MenuItem {
                 text: pinned ? qsTr("Unpin this post") : qsTr("Pin this post")
-                icon.source: "../images/thread.png"
+                icon.source: "../images/pin.png"
                 onTriggered: triggeredRequestPin()
             }
             MenuSeparator {}
