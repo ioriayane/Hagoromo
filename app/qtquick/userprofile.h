@@ -22,6 +22,9 @@ class UserProfile : public QObject
                        formattedDescriptionChanged)
     Q_PROPERTY(QString avatar READ avatar WRITE setAvatar NOTIFY avatarChanged)
     Q_PROPERTY(QString banner READ banner WRITE setBanner NOTIFY bannerChanged)
+    Q_PROPERTY(QString serviceEndpoint READ serviceEndpoint WRITE setServiceEndpoint NOTIFY
+                       serviceEndpointChanged)
+
     Q_PROPERTY(int followersCount READ followersCount WRITE setFollowersCount NOTIFY
                        followersCountChanged)
     Q_PROPERTY(int followsCount READ followsCount WRITE setFollowsCount NOTIFY followsCountChanged)
@@ -102,6 +105,9 @@ public:
     QString pinnedPost() const;
     void setPinnedPost(const QString &newPinnedPost);
 
+    QString serviceEndpoint() const;
+    void setServiceEndpoint(const QString &newServiceEndpoint);
+
 signals:
     void errorOccured(const QString &code, const QString &message);
     void runningChanged();
@@ -129,6 +135,8 @@ signals:
     void formattedDescriptionChanged();
 
     void pinnedPostChanged();
+
+    void serviceEndpointChanged();
 
 public slots:
     void updatedBelongingLists(const QString &account_did, const QString &user_did);
@@ -165,6 +173,7 @@ private:
     QString m_userFilterTitle;
     QStringList m_belongingLists;
     QString m_pinnedPost;
+    QString m_serviceEndpoint;
 };
 
 #endif // USERPROFILE_H
