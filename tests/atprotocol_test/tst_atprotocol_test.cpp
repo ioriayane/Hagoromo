@@ -22,12 +22,12 @@
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
 #include "extension/com/atproto/repo/comatprotorepoputrecordex.h"
 #include "extension/com/atproto/server/comatprotoservercreatesessionex.h"
-#include "tools/opengraphprotocol.h"
 #include "atprotocol/lexicons_func_unknown.h"
+#include "tools/opengraphprotocol.h"
 #include "tools/configurablelabels.h"
 #include "tools/listitemscache.h"
+#include "tools/pinnedpostcache.h"
 #include "unittest_common.h"
-#include "extension/plc/plcdirectory.h"
 
 using namespace AtProtocolType;
 using namespace AtProtocolType::LexiconsTypeUnknown;
@@ -76,6 +76,7 @@ private slots:
     void test_AppBskyGraphGetMutes();
 
     void test_PlcDirectory();
+    void test_PinnedPostCache();
 
 private:
     void test_putPreferences(const QString &path, const QByteArray &body);
@@ -2166,6 +2167,30 @@ void atprotocol_test::test_PlcDirectory()
     QVERIFY(plc.serviceEndpoint() == "https://porcini.us-east.host.bsky.network");
 
 #endif
+}
+
+void atprotocol_test::test_PinnedPostCache()
+{
+    QVERIFY(PinnedPostCache::getInstance()->pinned("", "") == false);
+    //
+    QVERIFY(PinnedPostCache::getInstance()->pinned("did1", "") == false);
+    QVERIFY(PinnedPostCache::getInstance()->pinned("did1", "uri1") == false);
+    PinnedPostCache::getInstance()->update("did1", "uri1");
+    QVERIFY(PinnedPostCache::getInstance()->pinned("did1", "uri1") == true);
+    PinnedPostCache::getInstance()->update("did1", "uri1-1");
+    QVERIFY(PinnedPostCache::getInstance()->pinned("did1", "uri1") == false);
+    QVERIFY(PinnedPostCache::getInstance()->pinned("did1", "uri1-1") == true);
+    //
+    QVERIFY(PinnedPostCache::getInstance()->pinned("did2", "") == false);
+    QVERIFY(PinnedPostCache::getInstance()->pinned("did2", "uri1") == false);
+    PinnedPostCache::getInstance()->update("did2", "uri1");
+    QVERIFY(PinnedPostCache::getInstance()->pinned("did2", "uri1") == true);
+    PinnedPostCache::getInstance()->update("did2", "uri1-1");
+    QVERIFY(PinnedPostCache::getInstance()->pinned("did2", "uri1") == false);
+    QVERIFY(PinnedPostCache::getInstance()->pinned("did2", "uri1-1") == true);
+    //
+    PinnedPostCache::getInstance()->update("did2", "");
+    QVERIFY(PinnedPostCache::getInstance()->pinned("did2", "") == false);
 }
 
 void atprotocol_test::test_putPreferences(const QString &path, const QByteArray &body)

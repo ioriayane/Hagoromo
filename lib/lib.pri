@@ -67,7 +67,8 @@ SOURCES += \
     $$PWD/tools/configurablelabels.cpp \
     $$PWD/tools/imagecompressor.cpp \
     $$PWD/tools/listitemscache.cpp \
-    $$PWD/tools/opengraphprotocol.cpp
+    $$PWD/tools/opengraphprotocol.cpp \
+    $$PWD/tools/pinnedpostcache.cpp
 
 HEADERS += \
     $$PWD/atprotocol/accessatprotocol.h \
@@ -136,4 +137,5 @@ HEADERS += \
     $$PWD/tools/imagecompressor.h \
     $$PWD/tools/listitemscache.h \
     $$PWD/tools/opengraphprotocol.h \
+    $$PWD/tools/pinnedpostcache.h \
     $$PWD/tools/qstringex.h

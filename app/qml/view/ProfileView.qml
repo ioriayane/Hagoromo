@@ -529,6 +529,10 @@ ColumnLayout {
                 pinnedPost: userProfile.pinnedPost
                 displayPinnedPost: true
 
+                onUpdatePin: (uri) => {
+                                 userProfile.pinnedPost = uri
+                                 getLatest()
+                             }
                 onErrorOccured: (code, message) => profileView.errorOccured(code, message)
             }
             accountDid: profileView.accountDid

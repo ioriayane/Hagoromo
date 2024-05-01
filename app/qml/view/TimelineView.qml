@@ -181,7 +181,7 @@ ScrollView {
             postControls.onTriggeredTranslate: rootListView.model.translate(model.cid)
             postControls.isReposted: model.isReposted
             postControls.isLiked: model.isLiked
-            postControls.pinned: model.pinned
+            postControls.pinned: model.pinnedByMe
             postControls.postUri: model.uri
             postControls.handle: model.handle
             postControls.mine: model.did === timelineView.accountDid

@@ -34,6 +34,7 @@ class TimelineListModel : public AtpAbstractListModel
 
 public:
     explicit TimelineListModel(QObject *parent = nullptr);
+    ~TimelineListModel();
 
     // モデルで提供する項目のルールID的な（QML側へ公開するために大文字で始めること）
     enum TimelineListModelRoles {
@@ -109,6 +110,7 @@ public:
         RepostedByDisplayNameRole,
         RepostedByHandleRole,
         PinnedRole,
+        PinnedByMeRole,
 
         UserFilterMatchedRole,
         UserFilterMessageRole,
@@ -171,6 +173,10 @@ signals:
     void visibleRepostOfUnfollowingUsersChanged();
     void visibleRepostOfMineChanged();
     void visibleRepostByMeChanged();
+    void updatePin(const QString &uri);
+
+public slots:
+    void updatedPin(const QString &did, const QString &new_uri, const QString &old_uri);
 
 protected:
     QHash<int, QByteArray> roleNames() const;

@@ -133,9 +133,7 @@ signals:
     void belongingListsChanged();
 
     void formattedDescriptionChanged();
-
     void pinnedPostChanged();
-
     void serviceEndpointChanged();
 
 public slots:

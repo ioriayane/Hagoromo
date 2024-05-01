@@ -2,6 +2,7 @@
 #include "atprotocol/app/bsky/feed/appbskyfeedgetposts.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "recordoperator.h"
+#include "tools/pinnedpostcache.h"
 
 #include <QDebug>
 
@@ -59,6 +60,15 @@ TimelineListModel::TimelineListModel(QObject *parent)
             AtpAbstractListModel::ThreadGateRoles::ThreadGateTypeRole;
     m_toThreadGateRoles[ThreadGateRulesRole] =
             AtpAbstractListModel::ThreadGateRoles::ThreadGateRulesRole;
+
+    connect(PinnedPostCache::getInstance(), &PinnedPostCache::updated, this,
+            &TimelineListModel::updatedPin);
+}
+
+TimelineListModel::~TimelineListModel()
+{
+    disconnect(PinnedPostCache::getInstance(), &PinnedPostCache::updated, this,
+               &TimelineListModel::updatedPin);
 }
 
 int TimelineListModel::rowCount(const QModelIndex &parent) const
@@ -125,7 +135,10 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     else if (role == IsLikedRole)
         return current.post.viewer.like.contains(account().did);
     else if (role == PinnedRole)
-        return (!m_currentPinnedPost.isEmpty() && current.post.cid == m_currentPinnedPost);
+        return (!m_currentPinnedPost.isEmpty() && current.post.cid == m_currentPinnedPost
+                && displayPinnedPost());
+    else if (role == PinnedByMeRole)
+        return PinnedPostCache::getInstance()->pinned(account().did, current.post.uri);
     else if (role == RepostedUriRole)
         return current.post.viewer.repost;
     else if (role == LikedUriRole)
@@ -285,6 +298,9 @@ void TimelineListModel::update(int row, TimelineListModelRoles role, const QVari
             current.post.likeCount--;
         else
             current.post.likeCount++;
+        emit dataChanged(index(row), index(row));
+    } else if (role == PinnedByMeRole) {
+        qDebug() << "update Pinned by me:" << value.toString();
         emit dataChanged(index(row), index(row));
     } else if (role == RunningRepostRole) {
         if (value.toBool()) {
@@ -490,7 +506,7 @@ bool TimelineListModel::pin(int row)
 
     const AppBskyFeedDefs::FeedViewPost &current = m_viewPostHash.value(m_cidList.at(row));
     QString pin_uri;
-    if (current.post.cid != m_currentPinnedPost) {
+    if (!item(row, PinnedByMeRole).toBool()) {
         pin_uri = current.post.uri;
     }
 
@@ -504,16 +520,13 @@ bool TimelineListModel::pin(int row)
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(uri)
                 Q_UNUSED(cid)
-
                 if (success) {
-                    if (pin_uri.isEmpty()) {
-                        setPinnedPost(QString());
-                        m_currentPinnedPost.clear();
-                    } else {
-                        setPinnedPost(current.post.uri);
-                        m_currentPinnedPost = current.post.cid;
-                    }
+                    PinnedPostCache::getInstance()->update(account().did, pin_uri);
+                    // 新しい方の表示
+                    m_pinnedUriCid[pin_uri] = current.post.cid;
                     emit dataChanged(index(row), index(row));
+                    // 古い方の表示の更新はPinnedPostCacheからの更新シグナルで実施
+                    emit updatePin(pin_uri);
                 }
                 setRunningPostPinning(row, false);
                 ope->deleteLater();
@@ -552,6 +565,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[IsRepostedRole] = "isReposted";
     roles[IsLikedRole] = "isLiked";
     roles[PinnedRole] = "pinned";
+    roles[PinnedByMeRole] = "pinnedByMe";
     roles[RepostedUriRole] = "repostedUri";
     roles[LikedUriRole] = "likedUri";
     roles[RunningRepostRole] = "runningRepost";
@@ -650,6 +664,11 @@ bool TimelineListModel::checkVisibility(const QString &cid)
         return true;
 
     const AppBskyFeedDefs::FeedViewPost &current = m_viewPostHash.value(cid);
+
+    // 固定ポストの関連付け
+    if (PinnedPostCache::getInstance()->pinned(account().did, current.post.uri)) {
+        m_pinnedUriCid[current.post.uri] = cid;
+    }
 
     // ミュートワードの判定
     if (cachePostsContainingMutedWords(
@@ -1001,6 +1020,7 @@ void TimelineListModel::getPinnedPost()
             m_originalCidList.insert(0, new_cid);
 
             m_currentPinnedPost = new_cid;
+            m_pinnedUriCid[post->postViewList().at(0).uri] = new_cid;
         }
         setRunning(false);
         post->deleteLater();
@@ -1151,4 +1171,15 @@ void TimelineListModel::setVisibleRepostByMe(bool newVisibleRepostByMe)
     emit visibleRepostByMeChanged();
 
     reflectVisibility();
+}
+
+void TimelineListModel::updatedPin(const QString &did, const QString &new_uri,
+                                   const QString &old_uri)
+{
+    int row = m_cidList.indexOf(m_pinnedUriCid.value(old_uri));
+    while (row >= 0) {
+        qDebug() << "updatedPin(old)" << row << old_uri << this;
+        emit dataChanged(index(row), index(row));
+        row = m_cidList.indexOf(m_pinnedUriCid.value(old_uri), ++row);
+    }
 }

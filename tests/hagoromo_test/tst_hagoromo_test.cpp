@@ -2474,6 +2474,7 @@ void hagoromo_test::test_TimelineListModel_pinnded()
     model.setAccount(m_service + "/timeline/pinned/1", "did:plc:l4fsx4ujos7uw7n4ijq2ulgs",
                      "ioriayane.bsky.social", QString(), "dummy", QString());
     model.setDisplayInterval(0);
+    model.setDisplayPinnedPost(true);
     model.setPinnedPost("at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3kgbutwycqd2g");
 
     {

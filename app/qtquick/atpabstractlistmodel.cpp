@@ -34,6 +34,7 @@ void AtpAbstractListModel::clear()
     m_mutedPosts.clear();
     m_cursor.clear();
     m_currentPinnedPost.clear();
+    m_pinnedUriCid.clear();
     m_pinnedPost.clear();
 }
 
@@ -908,6 +909,8 @@ void AtpAbstractListModel::setPinnedPost(const QString &newPinnedPost)
         return;
     m_pinnedPost = newPinnedPost;
     emit pinnedPostChanged();
+
+    qDebug() << "setPinnedPost" << m_pinnedPost;
 
     if (displayPinnedPost() && m_pinnedPost.isEmpty() && !running()) {
         removePinnedPost();
