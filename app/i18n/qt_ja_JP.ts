@@ -2055,64 +2055,76 @@
 <context>
     <name>PostControls</name>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="65"/>
+        <location filename="../qml/parts/PostControls.qml" line="67"/>
         <source>Repost</source>
         <translation>リポスト</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="70"/>
+        <location filename="../qml/parts/PostControls.qml" line="72"/>
         <source>Quote</source>
         <translation>引用</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="113"/>
-        <location filename="../qml/parts/PostControls.qml" line="170"/>
+        <location filename="../qml/parts/PostControls.qml" line="115"/>
+        <location filename="../qml/parts/PostControls.qml" line="177"/>
         <source>Translate</source>
         <translation>翻訳</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="118"/>
-        <location filename="../qml/parts/PostControls.qml" line="175"/>
+        <location filename="../qml/parts/PostControls.qml" line="120"/>
+        <location filename="../qml/parts/PostControls.qml" line="182"/>
         <source>Copy post text</source>
         <translation>ポストをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="122"/>
-        <location filename="../qml/parts/PostControls.qml" line="179"/>
+        <location filename="../qml/parts/PostControls.qml" line="124"/>
+        <location filename="../qml/parts/PostControls.qml" line="186"/>
         <source>Copy url</source>
         <translation>URLをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="127"/>
-        <location filename="../qml/parts/PostControls.qml" line="184"/>
+        <location filename="../qml/parts/PostControls.qml" line="129"/>
+        <location filename="../qml/parts/PostControls.qml" line="191"/>
         <source>Open in Official</source>
         <translation>公式で開く</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="134"/>
-        <location filename="../qml/parts/PostControls.qml" line="191"/>
+        <location filename="../qml/parts/PostControls.qml" line="136"/>
+        <location filename="../qml/parts/PostControls.qml" line="198"/>
         <source>Reposted by</source>
         <translation>リポストしたアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="140"/>
-        <location filename="../qml/parts/PostControls.qml" line="197"/>
+        <location filename="../qml/parts/PostControls.qml" line="142"/>
+        <location filename="../qml/parts/PostControls.qml" line="204"/>
         <source>Liked by</source>
         <translation>いいねしたアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="147"/>
+        <location filename="../qml/parts/PostControls.qml" line="149"/>
+        <location filename="../qml/parts/PostControls.qml" line="211"/>
+        <source>Unpin this post</source>
+        <translation>固定ポストを解除</translation>
+    </message>
+    <message>
+        <location filename="../qml/parts/PostControls.qml" line="149"/>
+        <location filename="../qml/parts/PostControls.qml" line="211"/>
+        <source>Pin this post</source>
+        <translation>固定ポストにする</translation>
+    </message>
+    <message>
+        <location filename="../qml/parts/PostControls.qml" line="154"/>
         <source>Who can reply</source>
         <translation>リプライできるユーザー</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="153"/>
+        <location filename="../qml/parts/PostControls.qml" line="160"/>
         <source>Delete post</source>
         <translation>ポストを削除</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="160"/>
-        <location filename="../qml/parts/PostControls.qml" line="204"/>
+        <location filename="../qml/parts/PostControls.qml" line="167"/>
+        <location filename="../qml/parts/PostControls.qml" line="217"/>
         <source>Report post</source>
         <translation>ポストを通報</translation>
     </message>
@@ -2194,7 +2206,7 @@
         <translation>ポストスレッド</translation>
     </message>
     <message>
-        <location filename="../qml/view/PostThreadView.qml" line="155"/>
+        <location filename="../qml/view/PostThreadView.qml" line="156"/>
         <source>Quoted content warning</source>
         <translation>閲覧注意な引用</translation>
     </message>
@@ -2260,97 +2272,97 @@
         <translation>あなたをフォロー中</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="271"/>
+        <location filename="../qml/view/ProfileView.qml" line="272"/>
         <source>follows</source>
         <translation>フォロー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="282"/>
+        <location filename="../qml/view/ProfileView.qml" line="283"/>
         <source>followers</source>
         <translation>フォロワー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="293"/>
+        <location filename="../qml/view/ProfileView.qml" line="294"/>
         <source>posts</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="344"/>
+        <location filename="../qml/view/ProfileView.qml" line="366"/>
         <source>Send mention</source>
         <translation>メンションを送る</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="351"/>
+        <location filename="../qml/view/ProfileView.qml" line="373"/>
         <source>Copy handle</source>
         <translation>ハンドルをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="357"/>
+        <location filename="../qml/view/ProfileView.qml" line="379"/>
         <source>Copy DID</source>
         <translation>DIDをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="363"/>
+        <location filename="../qml/view/ProfileView.qml" line="385"/>
         <source>Copy Official Url</source>
         <translation>公式のURLをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="370"/>
+        <location filename="../qml/view/ProfileView.qml" line="392"/>
         <source>Open in new col</source>
         <translation>新しいカラムで開く</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="376"/>
+        <location filename="../qml/view/ProfileView.qml" line="398"/>
         <source>Open in Official</source>
         <translation>公式で開く</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="383"/>
+        <location filename="../qml/view/ProfileView.qml" line="405"/>
         <source>Add/Remove from lists</source>
         <translation>リストへ追加/削除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="390"/>
+        <location filename="../qml/view/ProfileView.qml" line="412"/>
         <source>Unmute account</source>
         <translation>ミュート解除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="390"/>
+        <location filename="../qml/view/ProfileView.qml" line="412"/>
         <source>Mute account</source>
         <translation>ミュート</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="402"/>
+        <location filename="../qml/view/ProfileView.qml" line="424"/>
         <source>Unblock account</source>
         <translation>ブロック解除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="402"/>
+        <location filename="../qml/view/ProfileView.qml" line="424"/>
         <source>Block account</source>
         <translation>ブロック</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="414"/>
+        <location filename="../qml/view/ProfileView.qml" line="436"/>
         <source>Report account</source>
         <translation>通報</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="435"/>
+        <location filename="../qml/view/ProfileView.qml" line="457"/>
         <source>Account blocked</source>
         <translation>ブロックしたアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="446"/>
+        <location filename="../qml/view/ProfileView.qml" line="468"/>
         <source>Account muted</source>
         <translation>ミュートしたアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="458"/>
+        <location filename="../qml/view/ProfileView.qml" line="480"/>
         <source>This account has been flagged : </source>
         <translation>このアカウントに設定されたラベル : </translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="467"/>
+        <location filename="../qml/view/ProfileView.qml" line="489"/>
         <source>This account has blocked you</source>
         <translation>あなたをブロックしているアカウント</translation>
     </message>
@@ -2385,122 +2397,127 @@
         <location filename="../qtquick/recordoperator.cpp" line="160"/>
         <location filename="../qtquick/recordoperator.cpp" line="165"/>
         <source>Posting ... %1</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../qtquick/recordoperator.cpp" line="167"/>
         <source>Posting ...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../qtquick/recordoperator.cpp" line="258"/>
         <source>Repost ...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../qtquick/recordoperator.cpp" line="282"/>
         <source>Like ...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../qtquick/recordoperator.cpp" line="306"/>
         <source>Follow ...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../qtquick/recordoperator.cpp" line="328"/>
         <source>Mute ...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../qtquick/recordoperator.cpp" line="351"/>
         <source>Block ...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../qtquick/recordoperator.cpp" line="373"/>
         <source>Block list ...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../qtquick/recordoperator.cpp" line="397"/>
         <source>Create list ... (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../qtquick/recordoperator.cpp" line="433"/>
         <source>Add to list ...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../qtquick/recordoperator.cpp" line="458"/>
         <source>Delete post ...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../qtquick/recordoperator.cpp" line="482"/>
         <source>Delete like ...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../qtquick/recordoperator.cpp" line="506"/>
         <source>Delete repost ...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../qtquick/recordoperator.cpp" line="530"/>
         <source>Unfollow ...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../qtquick/recordoperator.cpp" line="552"/>
         <source>Unmute ...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../qtquick/recordoperator.cpp" line="577"/>
         <source>Unblock ...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../qtquick/recordoperator.cpp" line="601"/>
         <source>Unblock block list ...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../qtquick/recordoperator.cpp" line="622"/>
         <source>Delete list ...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../qtquick/recordoperator.cpp" line="684"/>
         <source>Delete list item ...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../qtquick/recordoperator.cpp" line="708"/>
         <source>Update profile ... (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="782"/>
+        <location filename="../qtquick/recordoperator.cpp" line="780"/>
+        <source>Update post pinning ... (%1)</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../qtquick/recordoperator.cpp" line="823"/>
         <source>Update list ... (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="845"/>
+        <location filename="../qtquick/recordoperator.cpp" line="886"/>
         <source>Update who can reply ...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="1010"/>
+        <location filename="../qtquick/recordoperator.cpp" line="1051"/>
         <source>Uploading images ... (%1/%2)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="1096"/>
+        <location filename="../qtquick/recordoperator.cpp" line="1137"/>
         <source>Delete list item ... (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -3071,7 +3088,7 @@
 <context>
     <name>TimelineListModel</name>
     <message>
-        <location filename="../qtquick/timelinelistmodel.cpp" line="207"/>
+        <location filename="../qtquick/timelinelistmodel.cpp" line="221"/>
         <source>Post hidden by muted word</source>
         <translation>ミュートワードを含む</translation>
     </message>
