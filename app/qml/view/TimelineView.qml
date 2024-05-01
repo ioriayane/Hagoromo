@@ -171,6 +171,7 @@ ScrollView {
             postControls.replyButton.enabled: !model.replyDisabled
             postControls.repostButton.enabled: !model.runningRepost
             postControls.likeButton.enabled: !model.runningLike
+            postControls.pinnedImage.enabled: !model.runningPostPinning
             postControls.replyButton.onClicked: requestReply(model.cid, model.uri,
                                                              model.replyRootCid, model.replyRootUri,
                                                              model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)

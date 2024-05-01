@@ -2,6 +2,8 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
+import QtGraphicalEffects 1.15
+
 import tech.relog.hagoromo.singleton 1.0
 
 import "../controls"
@@ -21,6 +23,7 @@ RowLayout {
     property alias repostMenuItem: repostMenuItem
     property alias quoteMenuItem: quoteMenuItem
     property alias likeButton: likeButton
+    property alias pinnedImage: pinnedImage
 
     signal triggeredTranslate()
     signal triggeredCopyToClipboard()
@@ -84,6 +87,28 @@ RowLayout {
         iconSize: AdjustedValues.i16
         foreground: isLiked ? Material.color(Material.Pink) : Material.color(Material.Grey)
         flat: true
+        BusyIndicator {
+            anchors.fill: parent
+            visible: !parent.enabled
+        }
+    }
+    Item {
+        id: pinnedImage
+        Layout.preferredWidth: AdjustedValues.b24
+        Layout.preferredHeight: AdjustedValues.b24
+        Layout.leftMargin: 5
+        Layout.rightMargin: 5
+        Layout.alignment: Qt.AlignVCenter
+        Image {
+            width: AdjustedValues.i16
+            height: AdjustedValues.i16
+            anchors.centerIn: parent
+            source: pinned ? "../images/pin.png" : ""
+            layer.enabled: true
+            layer.effect: ColorOverlay {
+                color: "white"
+            }
+        }
         BusyIndicator {
             anchors.fill: parent
             visible: !parent.enabled
