@@ -22,10 +22,11 @@
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
 #include "extension/com/atproto/repo/comatprotorepoputrecordex.h"
 #include "extension/com/atproto/server/comatprotoservercreatesessionex.h"
-#include "tools/opengraphprotocol.h"
 #include "atprotocol/lexicons_func_unknown.h"
+#include "tools/opengraphprotocol.h"
 #include "tools/configurablelabels.h"
 #include "tools/listitemscache.h"
+#include "tools/pinnedpostcache.h"
 #include "unittest_common.h"
 
 using namespace AtProtocolType;
@@ -73,6 +74,9 @@ private slots:
     void test_AppBskyGraphGetListMutes();
     void test_AppBskyGraphGetListBlocks();
     void test_AppBskyGraphGetMutes();
+
+    void test_PlcDirectory();
+    void test_PinnedPostCache();
 
 private:
     void test_putPreferences(const QString &path, const QByteArray &body);
@@ -1665,7 +1669,7 @@ void atprotocol_test::test_ComAtprotoRepoPutRecord_profile()
     avatar.size = 52880;
     {
         QSignalSpy spy(&record, SIGNAL(finished(bool)));
-        record.profile(avatar, banner, "description", "display name",
+        record.profile(avatar, banner, "description", "display name", QString(),
                        "bafyreie3ckzfk5xadlunbotovrffkhsfb2hdnr7bujofy2bb5ro45elcmy");
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
@@ -1684,7 +1688,7 @@ void atprotocol_test::test_ComAtprotoRepoPutRecord_profile()
     banner.size = 51567;
     {
         QSignalSpy spy(&record, SIGNAL(finished(bool)));
-        record.profile(avatar, banner, "epub\nLeME", "IoriAYANE",
+        record.profile(avatar, banner, "epub\nLeME", "IoriAYANE", QString(),
                        "bafyreif4chy7iugq3blmvqt6sgqeo72pxkkr4v4fnzjqii2yriijh545ei");
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
@@ -2140,6 +2144,53 @@ void atprotocol_test::test_AppBskyGraphGetMutes()
 
     QVERIFY(api.profileViewList().count() == 1);
     QVERIFY(api.profileViewList().at(0).did == "did:plc:l4fsx4ujos7uw7n4ijq2ulgs");
+}
+
+void atprotocol_test::test_PlcDirectory()
+{
+#if 0
+    AtProtocolInterface::PlcDirectory plc;
+
+    {
+        QSignalSpy spy(&plc, SIGNAL(finished(bool)));
+        plc.directory("did:plc:ipj5qejfoqu6eukvt72uhyit");
+        spy.wait(10 * 1000);
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    QVERIFY(!plc.didDoc().service.isEmpty());
+    QVERIFY(plc.didDoc().service.at(0).id == "#atproto_pds");
+    QVERIFY(plc.didDoc().service.at(0).type == "AtprotoPersonalDataServer");
+    QVERIFY(plc.didDoc().service.at(0).serviceEndpoint
+            == "https://porcini.us-east.host.bsky.network");
+
+    QVERIFY(plc.serviceEndpoint() == "https://porcini.us-east.host.bsky.network");
+
+#endif
+}
+
+void atprotocol_test::test_PinnedPostCache()
+{
+    QVERIFY(PinnedPostCache::getInstance()->pinned("", "") == false);
+    //
+    QVERIFY(PinnedPostCache::getInstance()->pinned("did1", "") == false);
+    QVERIFY(PinnedPostCache::getInstance()->pinned("did1", "uri1") == false);
+    PinnedPostCache::getInstance()->update("did1", "uri1");
+    QVERIFY(PinnedPostCache::getInstance()->pinned("did1", "uri1") == true);
+    PinnedPostCache::getInstance()->update("did1", "uri1-1");
+    QVERIFY(PinnedPostCache::getInstance()->pinned("did1", "uri1") == false);
+    QVERIFY(PinnedPostCache::getInstance()->pinned("did1", "uri1-1") == true);
+    //
+    QVERIFY(PinnedPostCache::getInstance()->pinned("did2", "") == false);
+    QVERIFY(PinnedPostCache::getInstance()->pinned("did2", "uri1") == false);
+    PinnedPostCache::getInstance()->update("did2", "uri1");
+    QVERIFY(PinnedPostCache::getInstance()->pinned("did2", "uri1") == true);
+    PinnedPostCache::getInstance()->update("did2", "uri1-1");
+    QVERIFY(PinnedPostCache::getInstance()->pinned("did2", "uri1") == false);
+    QVERIFY(PinnedPostCache::getInstance()->pinned("did2", "uri1-1") == true);
+    //
+    PinnedPostCache::getInstance()->update("did2", "");
+    QVERIFY(PinnedPostCache::getInstance()->pinned("did2", "") == false);
 }
 
 void atprotocol_test::test_putPreferences(const QString &path, const QByteArray &body)

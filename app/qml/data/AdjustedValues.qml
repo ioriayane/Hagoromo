@@ -22,6 +22,7 @@ QtObject {
     property real i18: 18 * ratio
     property real i16: 16 * ratio
     property real i12: 12 * ratio
+    property real i10: 10 * ratio
 
     // for Font
     property real f14: 14 * ratio

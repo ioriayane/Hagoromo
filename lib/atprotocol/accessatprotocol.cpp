@@ -157,7 +157,8 @@ void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
             if (checkReply(reply)) {
                 if (reply->contentType().startsWith("image/")) {
                     success = recvImage(reply->recvData(), reply->contentType());
-                } else if (reply->contentType().startsWith("application/json")) {
+                } else if (reply->contentType().startsWith("application/json")
+                           || reply->contentType().startsWith("application/did+ld+json")) {
                     success = parseJson(true, m_replyJson);
                     if (!success && m_errorCode.isEmpty()) {
                         m_errorCode = QStringLiteral("ContentParseError");

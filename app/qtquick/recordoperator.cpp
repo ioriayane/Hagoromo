@@ -751,13 +751,54 @@ void RecordOperator::updateProfile(const QString &avatar_url, const QString &ban
                         new_profile->deleteLater();
                     });
                     new_profile->setAccount(m_account);
-                    new_profile->profile(avatar, banner, description, display_name, old_cid);
+                    new_profile->profile(avatar, banner, description, display_name,
+                                         old_record.pinnedPost, old_cid);
                 } else {
                     setProgressMessage(QString());
                     emit finished(false, QString(), QString());
                     setRunning(false);
                 }
             });
+        } else {
+            setProgressMessage(QString());
+            emit errorOccured(old_profile->errorCode(), old_profile->errorMessage());
+            emit finished(false, QString(), QString());
+            setRunning(false);
+        }
+        old_profile->deleteLater();
+    });
+    old_profile->setAccount(m_account);
+    old_profile->profile(m_account.did);
+}
+
+void RecordOperator::updatePostPinning(const QString &post_uri)
+{
+    if (running())
+        return;
+    setRunning(true);
+
+    setProgressMessage(tr("Update post pinning ... (%1)").arg(m_account.handle));
+
+    ComAtprotoRepoGetRecordEx *old_profile = new ComAtprotoRepoGetRecordEx(this);
+    connect(old_profile, &ComAtprotoRepoGetRecordEx::finished, [=](bool success1) {
+        if (success1) {
+            AppBskyActorProfile::Main old_record =
+                    LexiconsTypeUnknown::fromQVariant<AppBskyActorProfile::Main>(
+                            old_profile->value());
+            QString old_cid = old_profile->cid();
+            ComAtprotoRepoPutRecordEx *new_profile = new ComAtprotoRepoPutRecordEx(this);
+            connect(new_profile, &ComAtprotoRepoPutRecordEx::finished, [=](bool success3) {
+                if (!success3) {
+                    emit errorOccured(new_profile->errorCode(), new_profile->errorMessage());
+                }
+                setProgressMessage(QString());
+                emit finished(success3, QString(), QString());
+                setRunning(false);
+                new_profile->deleteLater();
+            });
+            new_profile->setAccount(m_account);
+            new_profile->profile(old_record.avatar, old_record.banner, old_record.description,
+                                 old_record.displayName, post_uri, old_cid);
         } else {
             setProgressMessage(QString());
             emit errorOccured(old_profile->errorCode(), old_profile->errorMessage());

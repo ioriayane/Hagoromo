@@ -428,6 +428,7 @@ void copyMain(const QJsonObject &src, AppBskyActorProfile::Main &dest)
             ComAtprotoLabelDefs::copySelfLabels(src.value("labels").toObject(),
                                                 dest.labels_ComAtprotoLabelDefs_SelfLabels);
         }
+        dest.pinnedPost = src.value("pinnedPost").toString();
     }
 }
 }
@@ -1447,6 +1448,44 @@ void copyInviteCode(const QJsonObject &src, ComAtprotoServerDefs::InviteCode &de
             InviteCodeUse child;
             copyInviteCodeUse(s.toObject(), child);
             dest.uses.append(child);
+        }
+    }
+}
+void copyDidDocVerificationMethod(const QJsonObject &src,
+                                  ComAtprotoServerDefs::DidDocVerificationMethod &dest)
+{
+    if (!src.isEmpty()) {
+        dest.id = src.value("id").toString();
+        dest.type = src.value("type").toString();
+        dest.controller = src.value("controller").toString();
+        dest.publicKeyMultibase = src.value("publicKeyMultibase").toString();
+    }
+}
+void copyDidDocService(const QJsonObject &src, ComAtprotoServerDefs::DidDocService &dest)
+{
+    if (!src.isEmpty()) {
+        dest.id = src.value("id").toString();
+        dest.type = src.value("type").toString();
+        dest.serviceEndpoint = src.value("serviceEndpoint").toString();
+    }
+}
+void copyDidDoc(const QJsonObject &src, ComAtprotoServerDefs::DidDoc &dest)
+{
+    if (!src.isEmpty()) {
+        for (const auto &value : src.value("context").toArray()) {
+            dest.context.append(value.toString());
+        }
+        dest.id = src.value("id").toString();
+        dest.alsoKnownAs = src.value("alsoKnownAs").toString();
+        for (const auto &s : src.value("verificationMethod").toArray()) {
+            DidDocVerificationMethod child;
+            copyDidDocVerificationMethod(s.toObject(), child);
+            dest.verificationMethod.append(child);
+        }
+        for (const auto &s : src.value("service").toArray()) {
+            DidDocService child;
+            copyDidDocService(s.toObject(), child);
+            dest.service.append(child);
         }
     }
 }

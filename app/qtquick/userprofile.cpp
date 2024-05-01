@@ -1,10 +1,15 @@
 #include "userprofile.h"
 #include "tools/listitemscache.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofile.h"
+#include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
+#include "atprotocol/lexicons_func_unknown.h"
+#include "extension/plc/plcdirectory.h"
 
 #include <QPointer>
 
 using AtProtocolInterface::AppBskyActorGetProfile;
+using AtProtocolInterface::ComAtprotoRepoGetRecordEx;
+using AtProtocolInterface::PlcDirectory;
 
 UserProfile::UserProfile(QObject *parent)
     : QObject { parent },
@@ -102,10 +107,13 @@ void UserProfile::getProfile(const QString &did)
                 }
                 setBelongingLists(
                         ListItemsCache::getInstance()->getListNames(m_account.did, detail.did));
+
+                //追加情報読み込み
+                getRawProfile();
             } else {
                 emit errorOccured(profile->errorCode(), profile->errorMessage());
+                setRunning(false);
             }
-            setRunning(false);
             profile->deleteLater();
         });
         profile->setAccount(m_account);
@@ -402,6 +410,41 @@ void UserProfile::updateContentFilterLabels(std::function<void()> callback)
     labels->load();
 }
 
+// getProfileの追加読み込みとして動作させる
+void UserProfile::getRawProfile()
+{
+    if (did().isEmpty()) {
+        setRunning(false);
+        return;
+    }
+
+    PlcDirectory *plc = new PlcDirectory(this);
+    connect(plc, &PlcDirectory::finished, this, [=](bool success) {
+        ComAtprotoRepoGetRecordEx *record = new ComAtprotoRepoGetRecordEx(this);
+        connect(record, &ComAtprotoRepoGetRecordEx::finished, this, [=](bool success) {
+            if (success) {
+                AtProtocolType::AppBskyActorProfile::Main profile =
+                        AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                                AtProtocolType::AppBskyActorProfile::Main>(record->value());
+                setPinnedPost(profile.pinnedPost);
+            }
+            setRunning(false);
+            record->deleteLater();
+        });
+        record->setAccount(m_account);
+        if (success) {
+            record->setService(plc->serviceEndpoint());
+            setServiceEndpoint(plc->serviceEndpoint());
+        } else {
+            // プロフィールを参照されるユーザーのサービスが参照する側と同じとは限らない（bsky.socialだったとしても）
+            setServiceEndpoint(QString());
+        }
+        record->profile(did());
+        plc->deleteLater();
+    });
+    plc->directory(did());
+}
+
 QStringList UserProfile::belongingLists() const
 {
     return m_belongingLists;
@@ -413,4 +456,30 @@ void UserProfile::setBelongingLists(const QStringList &newBelongingLists)
         return;
     m_belongingLists = newBelongingLists;
     emit belongingListsChanged();
+}
+
+QString UserProfile::pinnedPost() const
+{
+    return m_pinnedPost;
+}
+
+void UserProfile::setPinnedPost(const QString &newPinnedPost)
+{
+    if (m_pinnedPost == newPinnedPost)
+        return;
+    m_pinnedPost = newPinnedPost;
+    emit pinnedPostChanged();
+}
+
+QString UserProfile::serviceEndpoint() const
+{
+    return m_serviceEndpoint;
+}
+
+void UserProfile::setServiceEndpoint(const QString &newServiceEndpoint)
+{
+    if (m_serviceEndpoint == newServiceEndpoint)
+        return;
+    m_serviceEndpoint = newServiceEndpoint;
+    emit serviceEndpointChanged();
 }

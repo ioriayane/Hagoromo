@@ -1,0 +1,15 @@
+{
+    "defs": {
+        "main": {
+            "record": {
+                "properties": {
+                    "pinnedPost": {
+                        "type": "string",
+                        "description": "(Unofficial field)",
+                        "format": "at-uri"
+                    }
+                }
+            }
+        }
+    }
+}
