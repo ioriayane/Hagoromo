@@ -24,6 +24,8 @@ void copyProfileViewDetailed(const QJsonObject &src, AppBskyActorDefs::ProfileVi
 void copyAdultContentPref(const QJsonObject &src, AppBskyActorDefs::AdultContentPref &dest);
 void copyContentLabelPref(const QJsonObject &src, AppBskyActorDefs::ContentLabelPref &dest);
 void copySavedFeedsPref(const QJsonObject &src, AppBskyActorDefs::SavedFeedsPref &dest);
+void copySavedFeed(const QJsonObject &src, AppBskyActorDefs::SavedFeed &dest);
+void copySavedFeedsPrefV2(const QJsonObject &src, AppBskyActorDefs::SavedFeedsPrefV2 &dest);
 void copyPersonalDetailsPref(const QJsonObject &src, AppBskyActorDefs::PersonalDetailsPref &dest);
 void copyFeedViewPref(const QJsonObject &src, AppBskyActorDefs::FeedViewPref &dest);
 void copyThreadViewPref(const QJsonObject &src, AppBskyActorDefs::ThreadViewPref &dest);
@@ -211,6 +213,10 @@ void copyRepoBlobRef(const QJsonObject &src, ComAtprotoAdminDefs::RepoBlobRef &d
 namespace ComAtprotoServerDefs {
 void copyInviteCodeUse(const QJsonObject &src, ComAtprotoServerDefs::InviteCodeUse &dest);
 void copyInviteCode(const QJsonObject &src, ComAtprotoServerDefs::InviteCode &dest);
+void copyDidDocVerificationMethod(const QJsonObject &src,
+                                  ComAtprotoServerDefs::DidDocVerificationMethod &dest);
+void copyDidDocService(const QJsonObject &src, ComAtprotoServerDefs::DidDocService &dest);
+void copyDidDoc(const QJsonObject &src, ComAtprotoServerDefs::DidDoc &dest);
 }
 // com.atproto.label.subscribeLabels
 namespace ComAtprotoLabelSubscribeLabels {

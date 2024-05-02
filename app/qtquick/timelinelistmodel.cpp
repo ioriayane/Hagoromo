@@ -1,10 +1,13 @@
 #include "timelinelistmodel.h"
+#include "atprotocol/app/bsky/feed/appbskyfeedgetposts.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "recordoperator.h"
+#include "tools/pinnedpostcache.h"
 
 #include <QDebug>
 
 using AtProtocolInterface::AccountData;
+using AtProtocolInterface::AppBskyFeedGetPosts;
 using AtProtocolInterface::AppBskyFeedGetTimeline;
 using namespace AtProtocolType;
 
@@ -57,6 +60,15 @@ TimelineListModel::TimelineListModel(QObject *parent)
             AtpAbstractListModel::ThreadGateRoles::ThreadGateTypeRole;
     m_toThreadGateRoles[ThreadGateRulesRole] =
             AtpAbstractListModel::ThreadGateRoles::ThreadGateRulesRole;
+
+    connect(PinnedPostCache::getInstance(), &PinnedPostCache::updated, this,
+            &TimelineListModel::updatedPin);
+}
+
+TimelineListModel::~TimelineListModel()
+{
+    disconnect(PinnedPostCache::getInstance(), &PinnedPostCache::updated, this,
+               &TimelineListModel::updatedPin);
 }
 
 int TimelineListModel::rowCount(const QModelIndex &parent) const
@@ -122,6 +134,10 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return current.post.viewer.repost.contains(account().did);
     else if (role == IsLikedRole)
         return current.post.viewer.like.contains(account().did);
+    else if (role == PinnedRole)
+        return isPinnedPost(current.post.cid) && row == 0;
+    else if (role == PinnedByMeRole)
+        return PinnedPostCache::getInstance()->pinned(account().did, current.post.uri);
     else if (role == RepostedUriRole)
         return current.post.viewer.repost;
     else if (role == LikedUriRole)
@@ -132,6 +148,8 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return !current.post.cid.isEmpty() && (current.post.cid == m_runningLikeCid);
     else if (role == RunningdeletePostRole)
         return !current.post.cid.isEmpty() && (current.post.cid == m_runningDeletePostCid);
+    else if (role == RunningPostPinningRole)
+        return !current.post.cid.isEmpty() && (current.post.cid == m_runningPostPinningCid);
 
     else if (role == HasQuoteRecordRole || role == QuoteRecordCidRole || role == QuoteRecordUriRole
              || role == QuoteRecordDisplayNameRole || role == QuoteRecordHandleRole
@@ -151,7 +169,10 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return getListLinkItem(current.post, m_toListLinkRoles[role]);
 
     else if (role == HasReplyRole) {
-        if (current.reply.parent_type == AppBskyFeedDefs::ReplyRefParentType::parent_PostView)
+        if (isPinnedPost(current.post.cid) && row == 0)
+            // 固定ポストは基本getPostsで取得したデータでcurrent.replyがないので表示を合わせるために非表示固定
+            return false;
+        else if (current.reply.parent_type == AppBskyFeedDefs::ReplyRefParentType::parent_PostView)
             return current.reply.parent_PostView.cid.length() > 0;
         else
             return false;
@@ -179,10 +200,14 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
             return current.reply.parent_PostView.author.handle;
         else
             return QString();
-    else if (role == IsRepostedByRole)
-        return (current.reason_type
-                == AppBskyFeedDefs::FeedViewPostReasonType::reason_ReasonRepost);
-    else if (role == RepostedByDisplayNameRole)
+    else if (role == IsRepostedByRole) {
+        if (isPinnedPost(current.post.cid) && row == 0)
+            // 固定ポストは基本getPostsで取得したデータでcurrent.replyがないので表示を合わせるために非表示固定
+            return false;
+        else
+            return (current.reason_type
+                    == AppBskyFeedDefs::FeedViewPostReasonType::reason_ReasonRepost);
+    } else if (role == RepostedByDisplayNameRole)
         return current.reason_ReasonRepost.by.displayName;
     else if (role == RepostedByHandleRole)
         return current.reason_ReasonRepost.by.handle;
@@ -280,6 +305,9 @@ void TimelineListModel::update(int row, TimelineListModelRoles role, const QVari
         else
             current.post.likeCount++;
         emit dataChanged(index(row), index(row));
+    } else if (role == PinnedByMeRole) {
+        qDebug() << "update Pinned by me:" << value.toString();
+        emit dataChanged(index(row), index(row));
     } else if (role == RunningRepostRole) {
         if (value.toBool()) {
             m_runningRepostCid = current.post.cid;
@@ -299,6 +327,13 @@ void TimelineListModel::update(int row, TimelineListModelRoles role, const QVari
             m_runningDeletePostCid = current.post.cid;
         } else {
             m_runningDeletePostCid.clear();
+        }
+        emit dataChanged(index(row), index(row));
+    } else if (role == RunningPostPinningRole) {
+        if (value.toBool()) {
+            m_runningPostPinningCid = current.post.cid;
+        } else {
+            m_runningPostPinningCid.clear();
         }
         emit dataChanged(index(row), index(row));
     } else if (m_toThreadGateRoles.contains(role)) {
@@ -477,6 +512,45 @@ bool TimelineListModel::like(int row)
     return true;
 }
 
+bool TimelineListModel::pin(int row)
+{
+    if (row < 0 || row >= m_cidList.count())
+        return false;
+
+    const AppBskyFeedDefs::FeedViewPost &current = m_viewPostHash.value(m_cidList.at(row));
+    QString pin_uri;
+    if (!item(row, PinnedByMeRole).toBool()) {
+        pin_uri = current.post.uri;
+    }
+
+    if (runningPostPinning(row))
+        return false;
+    setRunningPostPinning(row, true);
+
+    RecordOperator *ope = new RecordOperator(this);
+    connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
+    connect(ope, &RecordOperator::finished,
+            [=](bool success, const QString &uri, const QString &cid) {
+                Q_UNUSED(uri)
+                Q_UNUSED(cid)
+                if (success) {
+                    PinnedPostCache::getInstance()->update(account().did, pin_uri);
+                    // 新しい方の表示
+                    m_pinnedUriCid[pin_uri] = current.post.cid;
+                    emit dataChanged(index(row), index(row));
+                    // 古い方の表示の更新はPinnedPostCacheからの更新シグナルで実施
+                    emit updatePin(pin_uri);
+                }
+                setRunningPostPinning(row, false);
+                ope->deleteLater();
+            });
+    ope->setAccount(account().service, account().did, account().handle, account().email,
+                    account().accessJwt, account().refreshJwt);
+    ope->updatePostPinning(pin_uri);
+
+    return true;
+}
+
 QHash<int, QByteArray> TimelineListModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
@@ -503,11 +577,14 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
 
     roles[IsRepostedRole] = "isReposted";
     roles[IsLikedRole] = "isLiked";
+    roles[PinnedRole] = "pinned";
+    roles[PinnedByMeRole] = "pinnedByMe";
     roles[RepostedUriRole] = "repostedUri";
     roles[LikedUriRole] = "likedUri";
     roles[RunningRepostRole] = "runningRepost";
     roles[RunningLikeRole] = "runningLike";
     roles[RunningdeletePostRole] = "runningdeletePost";
+    roles[RunningPostPinningRole] = "runningPostPinning";
 
     roles[HasQuoteRecordRole] = "hasQuoteRecord";
     roles[QuoteRecordCidRole] = "quoteRecordCid";
@@ -587,7 +664,12 @@ bool TimelineListModel::aggregated(const QString &cid) const
 
 void TimelineListModel::finishedDisplayingQueuedPosts()
 {
-    setRunning(false);
+    if (displayPinnedPost() && !pinnedPost().isEmpty() && !hasPinnedPost()) {
+        // ピン止め対象のURLがあるけど、先頭が対象のポストじゃないときは取得にいく
+        getPinnedPost();
+    } else {
+        setRunning(false);
+    }
 }
 
 bool TimelineListModel::checkVisibility(const QString &cid)
@@ -596,6 +678,11 @@ bool TimelineListModel::checkVisibility(const QString &cid)
         return true;
 
     const AppBskyFeedDefs::FeedViewPost &current = m_viewPostHash.value(cid);
+
+    // 固定ポストの関連付け
+    if (PinnedPostCache::getInstance()->pinned(account().did, current.post.uri)) {
+        m_pinnedUriCid[current.post.uri] = cid;
+    }
 
     // ミュートワードの判定
     if (cachePostsContainingMutedWords(
@@ -683,9 +770,11 @@ bool TimelineListModel::checkVisibility(const QString &cid)
 void TimelineListModel::copyFrom(const QList<AppBskyFeedDefs::FeedViewPost> &feed_view_post_list)
 {
     QDateTime reference_time;
-    if (m_cidList.count() > 0 && m_viewPostHash.count() > 0) {
-        reference_time = QDateTime::fromString(getReferenceTime(m_viewPostHash[m_cidList.at(0)]),
-                                               Qt::ISODateWithMs);
+    int top_index = hasPinnedPost() ? 1 : 0;
+
+    if (m_cidList.count() > top_index && m_viewPostHash.count() > 0) {
+        reference_time = QDateTime::fromString(
+                getReferenceTime(m_viewPostHash[m_cidList.at(top_index)]), Qt::ISODateWithMs);
     } else if (feed_view_post_list.count() > 0) {
         reference_time = QDateTime::fromString(getReferenceTime(feed_view_post_list.last()),
                                                Qt::ISODateWithMs);
@@ -906,6 +995,72 @@ void TimelineListModel::updateExtendMediaFile(const QString &parent_cid)
     }
 }
 
+bool TimelineListModel::hasPinnedPost() const
+{
+    if (pinnedPost().isEmpty() || m_currentPinnedPost.isEmpty())
+        return false;
+
+    const AppBskyFeedDefs::FeedViewPost &current = m_viewPostHash.value(m_currentPinnedPost);
+
+    return (current.post.uri == pinnedPost());
+}
+
+void TimelineListModel::getPinnedPost()
+{
+    if (pinnedPost().isEmpty()) {
+        setRunning(false);
+        return;
+    }
+
+    AppBskyFeedGetPosts *post = new AppBskyFeedGetPosts(this);
+    connect(post, &AppBskyFeedGetPosts::finished, [=](bool success) {
+        if (success && !post->postViewList().isEmpty()) {
+
+            QString new_cid = post->postViewList().at(0).cid;
+
+            if (!m_viewPostHash.contains(new_cid)) {
+                AppBskyFeedDefs::FeedViewPost feed_view_post;
+                feed_view_post.post = post->postViewList().at(0);
+                m_viewPostHash[new_cid] = feed_view_post;
+            }
+
+            // 前のを消す
+            removePinnedPost();
+            // 新しいものを追加
+            bool visible = checkVisibility(new_cid);
+            if (visible) {
+                beginInsertRows(QModelIndex(), 0, 0);
+                m_cidList.insert(0, new_cid);
+                endInsertRows();
+            }
+            m_originalCidList.insert(0, new_cid);
+
+            m_currentPinnedPost = new_cid;
+            m_pinnedUriCid[post->postViewList().at(0).uri] = new_cid;
+        }
+        setRunning(false);
+        post->deleteLater();
+    });
+    post->setAccount(account());
+    post->getPosts(QStringList() << pinnedPost());
+}
+
+void TimelineListModel::removePinnedPost()
+{
+    if (m_currentPinnedPost.isEmpty())
+        return;
+
+    if (!m_originalCidList.isEmpty() && m_originalCidList.first() == m_currentPinnedPost) {
+        m_originalCidList.pop_front();
+    }
+    if (!m_cidList.isEmpty() && m_cidList.first() == m_currentPinnedPost) {
+        beginRemoveRows(QModelIndex(), 0, 0);
+        m_currentPinnedPost.clear();
+        m_cidList.pop_front();
+        endRemoveRows();
+    }
+}
+
 bool TimelineListModel::runningRepost(int row) const
 {
     return item(row, RunningRepostRole).toBool();
@@ -933,6 +1088,16 @@ bool TimelineListModel::runningdeletePost(int row) const
 void TimelineListModel::setRunningdeletePost(int row, bool running)
 {
     update(row, RunningdeletePostRole, running);
+}
+
+bool TimelineListModel::runningPostPinning(int row) const
+{
+    return item(row, RunningPostPinningRole).toBool();
+}
+
+void TimelineListModel::setRunningPostPinning(int row, bool running)
+{
+    update(row, RunningPostPinningRole, running);
 }
 
 bool TimelineListModel::visibleReplyToUnfollowedUsers() const
@@ -1023,4 +1188,15 @@ void TimelineListModel::setVisibleRepostByMe(bool newVisibleRepostByMe)
     emit visibleRepostByMeChanged();
 
     reflectVisibility();
+}
+
+void TimelineListModel::updatedPin(const QString &did, const QString &new_uri,
+                                   const QString &old_uri)
+{
+    int row = m_cidList.indexOf(m_pinnedUriCid.value(old_uri));
+    while (row >= 0) {
+        qDebug() << "updatedPin(old)" << row << old_uri << this;
+        emit dataChanged(index(row), index(row));
+        row = m_cidList.indexOf(m_pinnedUriCid.value(old_uri), ++row);
+    }
 }

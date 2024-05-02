@@ -222,6 +222,17 @@ struct SavedFeedsPref
     QList<QString> saved;
     int timelineIndex = 0;
 };
+struct SavedFeed
+{
+    QString id;
+    QString type;
+    QString value;
+    bool pinned = false;
+};
+struct SavedFeedsPrefV2
+{
+    QList<AppBskyActorDefs::SavedFeed> items;
+};
 struct PersonalDetailsPref
 {
     QString birthDate; // datetime , The birth date of account owner.
@@ -275,6 +286,7 @@ struct Preferences
     QList<AppBskyActorDefs::AdultContentPref> adultContentPref;
     QList<AppBskyActorDefs::ContentLabelPref> contentLabelPref;
     QList<AppBskyActorDefs::SavedFeedsPref> savedFeedsPref;
+    QList<AppBskyActorDefs::SavedFeedsPrefV2> savedFeedsPrefV2;
     QList<AppBskyActorDefs::PersonalDetailsPref> personalDetailsPref;
     QList<AppBskyActorDefs::FeedViewPref> feedViewPref;
     QList<AppBskyActorDefs::ThreadViewPref> threadViewPref;
@@ -304,6 +316,7 @@ struct Main
             labels_ComAtprotoLabelDefs_SelfLabels; // Self-label values, specific to the Bluesky
                                                    // application, on the overall account.
     // union end : labels
+    QString pinnedPost; // at-uri , (Unofficial field)
 };
 }
 
@@ -1012,6 +1025,27 @@ struct InviteCode
     QString createdBy;
     QString createdAt; // datetime
     QList<InviteCodeUse> uses;
+};
+struct DidDocVerificationMethod
+{
+    QString id;
+    QString type;
+    QString controller;
+    QString publicKeyMultibase;
+};
+struct DidDocService
+{
+    QString id;
+    QString type;
+    QString serviceEndpoint;
+};
+struct DidDoc
+{
+    QList<QString> context;
+    QString id; // did
+    QString alsoKnownAs; // at://HANDLE
+    QList<DidDocVerificationMethod> verificationMethod;
+    QList<DidDocService> service;
 };
 }
 

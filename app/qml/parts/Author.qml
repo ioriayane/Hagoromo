@@ -15,7 +15,7 @@ RowLayout {
 
     Label {
         id: displayNameText
-        Layout.fillWidth: true
+        Layout.maximumWidth: layoutWidth / 2
         Layout.alignment: Qt.AlignTop
         font.pointSize: AdjustedValues.f10
         elide: Text.ElideRight

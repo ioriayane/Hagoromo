@@ -143,6 +143,11 @@ ColumnLayout {
 
     UserProfile {
         id: userProfile
+        onRunningChanged: {
+            if(running === false){
+                swipView.getLatest()
+            }
+        }
     }
 
     SystemTool {
@@ -236,6 +241,7 @@ ColumnLayout {
                 id: avatarImage
                 Layout.preferredWidth: AdjustedValues.i48
                 Layout.preferredHeight: AdjustedValues.i48
+                Layout.alignment: Qt.AlignTop
                 Layout.rowSpan: 2
                 source: userProfile.avatar
             }
@@ -288,6 +294,27 @@ ColumnLayout {
                         text: qsTr("posts")
                     }
                 }
+            }
+        }
+        RowLayout {
+            Layout.leftMargin: 5
+            Layout.rightMargin: 5
+            visible: userProfile.serviceEndpoint.length > 0
+            spacing: 1
+            Image {
+                Layout.preferredWidth: AdjustedValues.i12
+                Layout.preferredHeight: AdjustedValues.i12
+                source: "../images/database.png"
+                layer.enabled: true
+                layer.effect: ColorOverlay {
+                    color: Material.color(Material.Grey)
+                }
+            }
+            Label {
+                Layout.topMargin: 2
+                font.pointSize: AdjustedValues.f8
+                color: Material.color(Material.Grey)
+                text: userProfile.serviceEndpoint
             }
         }
         TagLabelLayout {
@@ -477,12 +504,16 @@ ColumnLayout {
         currentIndex: tabBar.currentIndex
         interactive: false
 
-        onCurrentItemChanged: {
+        onCurrentItemChanged: getLatest()
+
+        function getLatest() {
             if(currentItem == null)
                 return
             if(currentItem.model === undefined)
                 return
             if(currentItem.model.rowCount() > 0)
+                return
+            if(userProfile.handle.length === 0)
                 return
             currentItem.model.getLatest()
         }
@@ -495,7 +526,13 @@ ColumnLayout {
                 displayInterval: 0
                 authorDid: profileView.userDid
                 filter: AuthorFeedListModel.PostsWithReplies
+                pinnedPost: userProfile.pinnedPost
+                displayPinnedPost: true
 
+                onUpdatePin: (uri) => {
+                                 userProfile.pinnedPost = uri
+                                 getLatest()
+                             }
                 onErrorOccured: (code, message) => profileView.errorOccured(code, message)
             }
             accountDid: profileView.accountDid

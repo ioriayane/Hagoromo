@@ -29,5 +29,9 @@
         <file>data/profile/1/com.atproto.repo.putRecord</file>
         <file>response/profile/1/xrpc/com.atproto.repo.getRecord</file>
         <file>response/lists/feed/0/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/profile/3.1/xrpc/com.atproto.repo.getRecord</file>
+        <file>data/profile/3.1/com.atproto.repo.putRecord</file>
+        <file>response/profile/3.2/xrpc/com.atproto.repo.getRecord</file>
+        <file>data/profile/3.2/com.atproto.repo.putRecord</file>
     </qresource>
 </RCC>

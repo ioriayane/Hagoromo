@@ -87,6 +87,7 @@ private:
     void createSession(int row);
     void refreshSession(int row, bool initial = false);
     void getProfile(int row);
+    void getRawProfile(int row);
 };
 
 #endif // ACCOUNTLISTMODEL_H

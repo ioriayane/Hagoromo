@@ -20,11 +20,17 @@ Dialog {
 
     signal errorOccured(string code, string message)
 
+    onClosed: {
+        mfaCodeTextInput.visible = false
+        mfaCodeTextInput.text = ""
+    }
+
     CreateSession {
         id: session
         service: serviceTextInput.text
         identifier: idTextInput.text
         password: passwordTextInput.text
+        authFactorToken: mfaCodeTextInput.text
 
         onFinished: (success) => {
                       if(success){
@@ -33,7 +39,14 @@ Dialog {
                           // NG
                       }
                   }
-        onErrorOccured: (code, message) => loginDialog.errorOccured(code, message)
+        onErrorOccured: (code, message) => {
+                            if(code === "AuthFactorTokenRequired"){
+                                mfaCodeTextInput.text = ""
+                                mfaCodeTextInput.visible = true
+                            }else{
+                                loginDialog.errorOccured(code, message)
+                            }
+                        }
     }
 
     GridLayout {
@@ -75,6 +88,20 @@ Dialog {
             placeholderText: "The use of App Password is recommended."
             font.pointSize: AdjustedValues.f10
         }
+        Label {
+            font.pointSize: AdjustedValues.f10
+            text: qsTr("2FA Confirmation")
+            visible: mfaCodeTextInput.visible
+        }
+        TextField {
+            id: mfaCodeTextInput
+            Layout.fillWidth: true
+            enabled: !session.running
+            visible: false
+            echoMode: TextInput.Password
+            placeholderText: "Confirmation code"
+            font.pointSize: AdjustedValues.f10
+        }
 
         Button {
             Layout.alignment: Qt.AlignLeft
@@ -85,7 +112,11 @@ Dialog {
         }
         Button {
             Layout.alignment: Qt.AlignRight
-            enabled: !(session.running || serviceTextInput.text.length == 0 || idTextInput.text.length == 0 || passwordTextInput.text.length == 0)
+            enabled: !(session.running ||
+                       serviceTextInput.text.length == 0 ||
+                       idTextInput.text.length == 0 ||
+                       passwordTextInput.text.length == 0 ||
+                       (mfaCodeTextInput.visible && mfaCodeTextInput.text.length === 0))
             font.pointSize: AdjustedValues.f10
             text: qsTr("Login")
             onClicked: session.create()

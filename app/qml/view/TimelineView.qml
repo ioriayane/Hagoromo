@@ -102,6 +102,7 @@ ScrollView {
             replyReactionAuthor.visible: model.hasReply
             replyReactionAuthor.displayName: model.replyParentDisplayName
             replyReactionAuthor.handle: model.replyParentHandle
+            pinnedIndicatorLabel.visible: (model.pinned && model.index === 0)
 
             postAvatarImage.source: model.avatar
             postAvatarImage.onClicked: requestViewProfile(model.did)
@@ -170,6 +171,7 @@ ScrollView {
             postControls.replyButton.enabled: !model.replyDisabled
             postControls.repostButton.enabled: !model.runningRepost
             postControls.likeButton.enabled: !model.runningLike
+            postControls.pinnedImage.enabled: !model.runningPostPinning
             postControls.replyButton.onClicked: requestReply(model.cid, model.uri,
                                                              model.replyRootCid, model.replyRootUri,
                                                              model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
@@ -180,6 +182,7 @@ ScrollView {
             postControls.onTriggeredTranslate: rootListView.model.translate(model.cid)
             postControls.isReposted: model.isReposted
             postControls.isLiked: model.isLiked
+            postControls.pinned: model.pinnedByMe
             postControls.postUri: model.uri
             postControls.handle: model.handle
             postControls.mine: model.did === timelineView.accountDid
@@ -190,6 +193,7 @@ ScrollView {
             postControls.onTriggeredRequestViewLikedBy: timelineView.requestViewLikedBy(model.uri)
             postControls.onTriggeredRequestViewRepostedBy: timelineView.requestViewRepostedBy(model.uri)
             postControls.onTriggeredRequestUpdateThreadGate: timelineView.requestUpdateThreadGate(model.uri, model.threadGateUri, model.threadGateType, model.threadGateRules, updatedThreadGate)
+            postControls.onTriggeredRequestPin: rootListView.model.pin(model.index)
             onHoveredLinkChanged: timelineView.hoveredLink = hoveredLink
 
             function updatedThreadGate(threadgate_uri, type, rules){
