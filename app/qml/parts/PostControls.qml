@@ -103,7 +103,8 @@ RowLayout {
             width: AdjustedValues.i16
             height: AdjustedValues.i16
             anchors.centerIn: parent
-            source: pinned ? "../images/pin.png" : ""
+            visible: pinned
+            source: "../images/pin.png"
             layer.enabled: true
             layer.effect: ColorOverlay {
                 color: Material.foreground
