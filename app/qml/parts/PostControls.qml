@@ -106,7 +106,7 @@ RowLayout {
             source: pinned ? "../images/pin.png" : ""
             layer.enabled: true
             layer.effect: ColorOverlay {
-                color: "white"
+                color: Material.foreground
             }
         }
         BusyIndicator {
