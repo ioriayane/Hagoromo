@@ -329,6 +329,13 @@ void TimelineListModel::update(int row, TimelineListModelRoles role, const QVari
             m_runningDeletePostCid.clear();
         }
         emit dataChanged(index(row), index(row));
+    } else if (role == RunningPostPinningRole) {
+        if (value.toBool()) {
+            m_runningPostPinningCid = current.post.cid;
+        } else {
+            m_runningPostPinningCid.clear();
+        }
+        emit dataChanged(index(row), index(row));
     } else if (m_toThreadGateRoles.contains(role)) {
         updateThreadGateItem(current.post, m_toThreadGateRoles[role], value);
         emit dataChanged(index(row), index(row));
@@ -577,6 +584,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[RunningRepostRole] = "runningRepost";
     roles[RunningLikeRole] = "runningLike";
     roles[RunningdeletePostRole] = "runningdeletePost";
+    roles[RunningPostPinningRole] = "runningPostPinning";
 
     roles[HasQuoteRecordRole] = "hasQuoteRecord";
     roles[QuoteRecordCidRole] = "quoteRecordCid";
@@ -1047,6 +1055,7 @@ void TimelineListModel::removePinnedPost()
     }
     if (!m_cidList.isEmpty() && m_cidList.first() == m_currentPinnedPost) {
         beginRemoveRows(QModelIndex(), 0, 0);
+        m_currentPinnedPost.clear();
         m_cidList.pop_front();
         endRemoveRows();
     }

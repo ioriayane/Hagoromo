@@ -14,6 +14,7 @@ description: This is a multi-column Bluesky client.
   - Display pinned a post in user's profile
 - Update
 - Fix
+  - Fix display layout of handles, etc
 
 ### v0.28.0 - 2024/4/20
 
