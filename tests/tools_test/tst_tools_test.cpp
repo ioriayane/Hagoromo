@@ -1,5 +1,8 @@
 #include <QtTest>
 #include <QCoreApplication>
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 #include "tools/base32.h"
 #include "tools/leb128.h"
@@ -128,21 +131,52 @@ void tools_test::test_CarDecoder()
     QVERIFY(repo.open(QFile::ReadOnly));
     QVERIFY(decoder.setContent(repo.readAll()));
 
+    QJsonObject except_json;
+    QFile file(":/data/car/records.json");
+    if (file.open(QFile::ReadOnly)) {
+        except_json = QJsonDocument::fromJson(file.readAll()).object();
+        file.close();
+    }
+    QHash<QString, QJsonObject> except_hash;
+    for (const auto &record : except_json.value("records").toArray()) {
+        QString cid = record.toObject().value("cid").toString();
+        if (!cid.isEmpty()) {
+            except_hash[cid] = record.toObject();
+            // qDebug() << cid << except_hash[cid].value("$type").toString();
+        }
+    }
     int i = 0;
+    QStringList cids;
     while (!decoder.eof()) {
-        if (i == 0) {
-            QVERIFY2(decoder.cid() == "bafyreihz3ltonllans77xjbngp2qilac2ui6k5pqx4i4u6p4k3pnpr53bu",
-                     decoder.cid().toLocal8Bit());
-        } else if (i == 22) {
-            QVERIFY2(decoder.cid() == "bafyreifptt2wkfkut5rwf5vjkmp6jqb7525okdgd6yvrdpn5na24wbqlyy",
-                     decoder.cid().toLocal8Bit());
-        } else if (i == 713) {
-            QVERIFY2(decoder.cid() == "bafyreia2udub3oplahxbj2akwytpiu6bopoxkox2locgzns6cieuebcqi4",
-                     decoder.cid().toLocal8Bit());
+        if (decoder.type() != "$car_address") {
+            bool check = (except_hash[decoder.cid()].value("value").toObject() == decoder.json());
+            if (!check) {
+                qDebug().nospace().noquote() << "cid:" << decoder.cid();
+                qDebug().nospace().noquote()
+                        << "except:"
+                        << QJsonDocument(except_hash[decoder.cid()].value("value").toObject())
+                                   .toJson();
+                qDebug().nospace().noquote() << "actual:" << QJsonDocument(decoder.json()).toJson();
+            }
+            QVERIFY(check);
+
+            cids.append(decoder.cid());
+
+        } else {
+            qDebug().nospace().noquote() << "cid:" << decoder.cid();
+            qDebug().nospace().noquote() << "actual:" << QJsonDocument(decoder.json()).toJson();
         }
 
         i++;
         decoder.next();
+    }
+
+    for (const auto &cid : cids) {
+        QVERIFY2(except_hash[cid].value("uri").toString() == decoder.uri(cid),
+                 QString("%1 <> %2")
+                         .arg(except_hash[cid].value("uri").toString())
+                         .arg(decoder.uri(cid))
+                         .toLocal8Bit());
     }
 
     repo.close();

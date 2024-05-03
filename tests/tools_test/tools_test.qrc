@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>response/xrpc/com.atproto.sync.getRepo</file>
+        <file>data/car/records.json</file>
     </qresource>
 </RCC>
