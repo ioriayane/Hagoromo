@@ -28,6 +28,9 @@ bool CarDecoder::setContent(const QByteArray &content)
     int leb_size = 0;
     int data_size = Leb128::decode_u(m_content.mid(offset), leb_size);
     offset += leb_size;
+    if (data_size <= 0 || leb_size <= 0) {
+        return false;
+    }
     QByteArray block = m_content.mid(offset, data_size);
     if (!decodeCbor(block, "__header__")) {
         return false;
@@ -83,16 +86,22 @@ int CarDecoder::decodeData(int offset)
     int data_size = Leb128::decode_u(m_content.mid(offset), leb_size);
     offset += leb_size;
 
+    if (data_size <= 0 || leb_size <= 0) {
+        return m_content.length();
+    }
+
     int cid_size = 0;
     QString cid = decodeCid(m_content.mid(offset, data_size), cid_size);
     if (cid.isEmpty())
-        return -1;
+        return m_content.length();
     m_cids.append(cid);
     offset += cid_size;
 
     QByteArray block = m_content.mid(offset, data_size - cid_size);
 
-    decodeCbor(block, cid);
+    if (!decodeCbor(block, cid)) {
+        return m_content.length();
+    }
 
     return leb_size + data_size;
 }

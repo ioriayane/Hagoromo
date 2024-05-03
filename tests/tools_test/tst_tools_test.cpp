@@ -174,7 +174,12 @@ void tools_test::test_CarDecoder()
         }
     }
 
-    qDebug().nospace().noquote() << "header:" << QJsonDocument(decoder.headerJson()).toJson();
+    QVERIFY(decoder.headerJson().value("roots").isArray());
+    QVERIFY(decoder.headerJson().value("roots").toArray().count() == 1);
+    QVERIFY(decoder.headerJson().value("roots").toArray().at(0).toObject().value("$link").toString()
+            == "bafyreia5is2dgfsipq3qdj4bya7kb7cv32534sfwutiffh6kwgle4p26je");
+
+    // qDebug().nospace().noquote() << "header:" << QJsonDocument(decoder.headerJson()).toJson();
 
     repo.close();
 }
