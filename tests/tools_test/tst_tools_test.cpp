@@ -179,6 +179,8 @@ void tools_test::test_CarDecoder()
                          .toLocal8Bit());
     }
 
+    qDebug().nospace().noquote() << "header:" << QJsonDocument(decoder.headerJson()).toJson();
+
     repo.close();
 }
 

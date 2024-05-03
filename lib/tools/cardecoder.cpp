@@ -31,7 +31,12 @@ bool CarDecoder::setContent(const QByteArray &content)
     int offset = m_offset;
     m_lebSize = 0;
     m_dataSize = Leb128::decode_u(m_content.mid(offset), m_lebSize);
-    // offset += m_lebSize;
+    offset += m_lebSize;
+    m_block = m_content.mid(offset, m_dataSize);
+
+    if (decodeCbor(m_block)) {
+        m_headerJson = m_json;
+    }
 
     next();
 
@@ -62,6 +67,11 @@ QString CarDecoder::type() const
 const QJsonObject &CarDecoder::json() const
 {
     return m_json;
+}
+
+const QJsonObject &CarDecoder::headerJson() const
+{
+    return m_headerJson;
 }
 
 QString CarDecoder::did() const

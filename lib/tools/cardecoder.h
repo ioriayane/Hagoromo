@@ -19,6 +19,7 @@ public:
     QString cid() const;
     QString type() const;
     const QJsonObject &json() const;
+    const QJsonObject &headerJson() const;
     // すべて読み終わるまで確定しない
     QString did() const;
     QString uri(const QString &cid) const;
@@ -30,6 +31,7 @@ private:
     QString m_type;
     QByteArray m_block;
     QJsonObject m_json;
+    QJsonObject m_headerJson;
     QString m_did;
     QHash<QString, QString> m_cid2uri; // QHash<cid, uri>
     int m_lebSize;
