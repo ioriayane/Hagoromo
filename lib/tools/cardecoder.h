@@ -13,33 +13,24 @@ public:
     CarDecoder();
 
     bool setContent(const QByteArray &content);
-    bool eof() const;
-    bool next();
-    // 現在のDataブロックの情報
-    QString cid() const;
-    QString type() const;
-    const QJsonObject &json() const;
-    const QJsonObject &headerJson() const;
-    // すべて読み終わるまで確定しない
+    QStringList cids() const;
+    QString type(const QString &cid) const;
+    QJsonObject json(const QString &cid) const;
+    QJsonObject headerJson() const;
     QString did() const;
     QString uri(const QString &cid) const;
 
 private:
     QByteArray m_content;
-    int m_offset;
-    QString m_cid;
-    QString m_type;
-    QByteArray m_block;
-    QJsonObject m_json;
-    QJsonObject m_headerJson;
     QString m_did;
+    QStringList m_cids;
+    QHash<QString, QString> m_cid2type;
+    QHash<QString, QJsonObject> m_cid2Json;
     QHash<QString, QString> m_cid2uri; // QHash<cid, uri>
-    int m_lebSize;
-    int m_dataSize;
 
-    bool decodeData();
+    int decodeData(int offset);
     QString decodeCid(const QByteArray &data, int &offset) const;
-    bool decodeCbor(const QByteArray &block);
+    bool decodeCbor(const QByteArray &block, const QString &cid);
     bool decodeCborObject(const QCborValue &value, QJsonObject &parent);
     QVariant decodeCborValue(const QCborValue &value);
     void decodeCarAddress(const QJsonObject &json);

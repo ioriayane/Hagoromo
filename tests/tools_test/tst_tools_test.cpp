@@ -145,38 +145,33 @@ void tools_test::test_CarDecoder()
             // qDebug() << cid << except_hash[cid].value("$type").toString();
         }
     }
-    int i = 0;
-    QStringList cids;
-    while (!decoder.eof()) {
-        if (decoder.type() != "$car_address") {
-            bool check = (except_hash[decoder.cid()].value("value").toObject() == decoder.json());
+
+    QVERIFY2(decoder.cids().length() == 718,
+             QString::number(decoder.cids().length()).toLocal8Bit());
+
+    for (const auto &cid : decoder.cids()) {
+        if (decoder.type(cid) != "$car_address") {
+            bool check = (except_hash[cid].value("value").toObject() == decoder.json(cid));
             if (!check) {
-                qDebug().nospace().noquote() << "cid:" << decoder.cid();
+                qDebug().nospace().noquote() << "cid:" << cid;
                 qDebug().nospace().noquote()
                         << "except:"
-                        << QJsonDocument(except_hash[decoder.cid()].value("value").toObject())
-                                   .toJson();
-                qDebug().nospace().noquote() << "actual:" << QJsonDocument(decoder.json()).toJson();
+                        << QJsonDocument(except_hash[cid].value("value").toObject()).toJson();
+                qDebug().nospace().noquote()
+                        << "actual:" << QJsonDocument(decoder.json(cid)).toJson();
             }
             QVERIFY(check);
 
-            cids.append(decoder.cid());
-
+            QVERIFY2(except_hash[cid].value("uri").toString() == decoder.uri(cid),
+                     QString("%1 <> %2")
+                             .arg(except_hash[cid].value("uri").toString())
+                             .arg(decoder.uri(cid))
+                             .toLocal8Bit());
         } else {
-            qDebug().nospace().noquote() << "cid:" << decoder.cid();
-            qDebug().nospace().noquote() << "actual:" << QJsonDocument(decoder.json()).toJson();
+            // qDebug().nospace().noquote() << "cid:" << cid;
+            // qDebug().nospace().noquote() << "actual:" <<
+            // QJsonDocument(decoder.json(cid)).toJson();
         }
-
-        i++;
-        decoder.next();
-    }
-
-    for (const auto &cid : cids) {
-        QVERIFY2(except_hash[cid].value("uri").toString() == decoder.uri(cid),
-                 QString("%1 <> %2")
-                         .arg(except_hash[cid].value("uri").toString())
-                         .arg(decoder.uri(cid))
-                         .toLocal8Bit());
     }
 
     qDebug().nospace().noquote() << "header:" << QJsonDocument(decoder.headerJson()).toJson();

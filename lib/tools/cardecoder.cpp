@@ -13,13 +13,9 @@ CarDecoder::CarDecoder() { }
 
 bool CarDecoder::setContent(const QByteArray &content)
 {
-    m_offset = 0;
     m_content.clear();
     m_did.clear();
-    m_cid.clear();
-    m_type.clear();
-    m_block.clear();
-    m_json = QJsonObject();
+    m_cids.clear();
     m_cid2uri.clear();
 
     if (content.isEmpty())
@@ -28,50 +24,45 @@ bool CarDecoder::setContent(const QByteArray &content)
     m_content = content;
 
     // decode header
-    int offset = m_offset;
-    m_lebSize = 0;
-    m_dataSize = Leb128::decode_u(m_content.mid(offset), m_lebSize);
-    offset += m_lebSize;
-    m_block = m_content.mid(offset, m_dataSize);
-
-    if (decodeCbor(m_block)) {
-        m_headerJson = m_json;
+    int offset = 0;
+    int leb_size = 0;
+    int data_size = Leb128::decode_u(m_content.mid(offset), leb_size);
+    offset += leb_size;
+    QByteArray block = m_content.mid(offset, data_size);
+    if (!decodeCbor(block, "__header__")) {
+        return false;
     }
 
-    next();
+    // decode data
+    offset += data_size;
+    do {
+        int t = decodeData(offset);
+        if (t < 0)
+            break;
+        offset += t;
+    } while (offset < m_content.length());
 
-    return decodeData();
+    return true;
 }
 
-bool CarDecoder::eof() const
+QStringList CarDecoder::cids() const
 {
-    return (m_offset >= m_content.length());
+    return m_cids;
 }
 
-bool CarDecoder::next()
+QString CarDecoder::type(const QString &cid) const
 {
-    m_offset += m_lebSize + m_dataSize;
-    return decodeData();
+    return m_cid2type.value(cid);
 }
 
-QString CarDecoder::cid() const
+QJsonObject CarDecoder::json(const QString &cid) const
 {
-    return m_cid;
+    return m_cid2Json.value(cid);
 }
 
-QString CarDecoder::type() const
+QJsonObject CarDecoder::headerJson() const
 {
-    return m_type;
-}
-
-const QJsonObject &CarDecoder::json() const
-{
-    return m_json;
-}
-
-const QJsonObject &CarDecoder::headerJson() const
-{
-    return m_headerJson;
+    return m_cid2Json.value("__header__");
 }
 
 QString CarDecoder::did() const
@@ -86,24 +77,24 @@ QString CarDecoder::uri(const QString &cid) const
     return QString("at://%1/%2").arg(did()).arg(m_cid2uri[cid]);
 }
 
-bool CarDecoder::decodeData()
+int CarDecoder::decodeData(int offset)
 {
-    if (eof())
-        return false;
-
-    int offset = m_offset;
-
-    m_lebSize = 0;
-    m_dataSize = Leb128::decode_u(m_content.mid(offset), m_lebSize);
-    offset += m_lebSize;
+    int leb_size = 0;
+    int data_size = Leb128::decode_u(m_content.mid(offset), leb_size);
+    offset += leb_size;
 
     int cid_size = 0;
-    m_cid = decodeCid(m_content.mid(offset, m_dataSize), cid_size);
+    QString cid = decodeCid(m_content.mid(offset, data_size), cid_size);
+    if (cid.isEmpty())
+        return -1;
+    m_cids.append(cid);
     offset += cid_size;
 
-    m_block = m_content.mid(offset, m_dataSize - cid_size);
+    QByteArray block = m_content.mid(offset, data_size - cid_size);
 
-    return decodeCbor(m_block);
+    decodeCbor(block, cid);
+
+    return leb_size + data_size;
 }
 
 QString CarDecoder::decodeCid(const QByteArray &data, int &offset) const
@@ -114,6 +105,7 @@ QString CarDecoder::decodeCid(const QByteArray &data, int &offset) const
     } else if (data.at(0) == 0x12 && data.at(1) == 0x20) {
         // CIDv0
         qDebug() << "CIDv0 : Unknown format data.";
+        return QString();
     } else if (data.length() < 4) {
         return QString();
     } else {
@@ -128,18 +120,20 @@ QString CarDecoder::decodeCid(const QByteArray &data, int &offset) const
     }
 }
 
-bool CarDecoder::decodeCbor(const QByteArray &block)
+bool CarDecoder::decodeCbor(const QByteArray &block, const QString &cid)
 {
     QCborValue value = QCborValue::fromCbor(block);
 
-    m_json = QJsonObject();
-    decodeCborObject(value, m_json);
+    QJsonObject json;
+    decodeCborObject(value, json);
 
-    if (m_json.contains("$type")) {
-        m_type = m_json.value("$type").toString();
+    m_cid2Json[cid] = json;
+
+    if (json.contains("$type")) {
+        m_cid2type[cid] = json.value("$type").toString();
     } else {
-        m_type = "$car_address";
-        decodeCarAddress(m_json);
+        m_cid2type[cid] = "$car_address";
+        decodeCarAddress(json);
     }
 
     return true;
