@@ -155,7 +155,8 @@ void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
 
             bool success = false;
             if (checkReply(reply)) {
-                if (reply->contentType().startsWith("image/")) {
+                if (reply->contentType().startsWith("image/")
+                    || reply->contentType().startsWith("application/vnd.ipld.car")) {
                     success = recvImage(reply->recvData(), reply->contentType());
                 } else if (reply->contentType().startsWith("application/json")) {
                     success = parseJson(true, m_replyJson);

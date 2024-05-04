@@ -50,6 +50,7 @@ SOURCES += \
     $$PWD/atprotocol/com/atproto/server/comatprotoservercreatesession.cpp \
     $$PWD/atprotocol/com/atproto/server/comatprotoserverrefreshsession.cpp \
     $$PWD/atprotocol/com/atproto/sync/comatprotosyncgetblob.cpp \
+    $$PWD/atprotocol/com/atproto/sync/comatprotosyncgetrepo.cpp \
     $$PWD/atprotocol/lexicons_func.cpp \
     $$PWD/atprotocol/lexicons_func_unknown.cpp \
     $$PWD/extension/com/atproto/moderation/comatprotomoderationcreatereportex.cpp \
@@ -118,6 +119,7 @@ HEADERS += \
     $$PWD/atprotocol/com/atproto/server/comatprotoservercreatesession.h \
     $$PWD/atprotocol/com/atproto/server/comatprotoserverrefreshsession.h \
     $$PWD/atprotocol/com/atproto/sync/comatprotosyncgetblob.h \
+    $$PWD/atprotocol/com/atproto/sync/comatprotosyncgetrepo.h \
     $$PWD/atprotocol/lexicons.h \
     $$PWD/atprotocol/lexicons_func.h \
     $$PWD/atprotocol/lexicons_func_unknown.h \
