@@ -2,6 +2,7 @@
 #define LOGACCESS_H
 
 #include <QObject>
+#include <QSqlQuery>
 
 struct TotalItem
 {
@@ -23,10 +24,13 @@ public slots:
     void updateDb(const QString &did, const QByteArray &data);
     void dailyTotals(const QString &did);
     void monthlyTotals(const QString &did);
+    void selectRecords(const QString &did, const int type, const QString &condition,
+                       const QString &cursor, const int limit);
 
 signals:
     void finishedUpdateDb(bool success);
     void finishedTotals(const QList<TotalItem> &list);
+    void finishedSelection(const QString &records);
 
 private:
     QString dbPath(QString did);
@@ -37,11 +41,12 @@ private:
     bool dbCreateTable();
     bool dbInsertRecord(const QString &uri, const QString &cid, const QString &type,
                         const QJsonObject &json);
-    bool dbInsertHandle(const QString &uri, const QString &cid, const QString &type,
-                        const QJsonObject &json);
+    bool dbSelect(QSqlQuery &query, const QString &sql) const;
     QStringList dbGetSavedCids() const;
     QList<TotalItem> dbMakeDailyTotals() const;
     QList<TotalItem> dbMakeMonthlyTotals() const;
+    QString dbSelectRecords(const int type, const QString &condition, const QString &cursor,
+                            const int limit) const;
 
     QString m_dbConnectionName;
 };

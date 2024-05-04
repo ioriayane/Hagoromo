@@ -13,7 +13,6 @@ public:
     ~LogManager();
 
     void update(const QString &service, const QString &did);
-
     void clearDb(const QString &did);
 
 public slots:
@@ -24,6 +23,9 @@ signals:
     void dailyTotals(const QString &did);
     void monthlyTotals(const QString &did);
     void finishedTotals(const QList<TotalItem> &list);
+    void selectRecords(const QString &did, const int type, const QString &condition,
+                       const QString &cursor, const int limit);
+    void finishedSelection(const QString &records);
 
 private:
     QThread m_thread;

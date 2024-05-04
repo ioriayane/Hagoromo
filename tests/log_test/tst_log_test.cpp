@@ -5,7 +5,7 @@
 #include <QJsonArray>
 
 #include "webserver.h"
-#include <log/logmanager.h>
+#include "log/logmanager.h"
 
 class log_test : public QObject
 {
@@ -21,6 +21,7 @@ private slots:
     void test_LogManager();
     void test_LogManager_daily();
     void test_LogManager_monthly();
+    void test_LogManager_select();
 
 private:
     WebServer m_mockServer;
@@ -165,6 +166,81 @@ void log_test::test_LogManager_monthly()
                              .arg(list.at(0).count)
                              .toLocal8Bit());
         }
+    }
+}
+
+void log_test::test_LogManager_select()
+{
+    LogManager manager;
+    QString did("did:plc:log_manager_test");
+
+    {
+        QSignalSpy spy(&manager, SIGNAL(finishedSelection(const QString &)));
+        emit manager.selectRecords(did, 0, "2024/04/18", QString(), 5);
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+        QList<QVariant> arguments = spy.takeFirst();
+
+        QFile file(":/data/repo/select_1.json");
+        QVERIFY(file.open(QFile::ReadOnly));
+        QJsonDocument except = QJsonDocument::fromJson(file.readAll());
+        file.close();
+
+        bool check = (except.object()
+                      == QJsonDocument::fromJson(arguments.at(0).toString().toUtf8()).object());
+        if (!check) {
+            qDebug().noquote().nospace()
+                    << "except:" << except.toJson(QJsonDocument::JsonFormat::Compact);
+            qDebug().noquote().nospace() << "actual:" << arguments.at(0).toString();
+        }
+        QVERIFY(check);
+    }
+
+    {
+        QSignalSpy spy(&manager, SIGNAL(finishedSelection(const QString &)));
+        emit manager.selectRecords(did, 0, "2024/04/18", "2024-04-18T17:17:47.225Z", 5);
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+        QList<QVariant> arguments = spy.takeFirst();
+
+        QFile file(":/data/repo/select_2.json");
+        QVERIFY(file.open(QFile::ReadOnly));
+        QJsonDocument except = QJsonDocument::fromJson(file.readAll());
+        file.close();
+
+        bool check = (except.object()
+                      == QJsonDocument::fromJson(arguments.at(0).toString().toUtf8()).object());
+        if (!check) {
+            qDebug().noquote().nospace()
+                    << "except:" << except.toJson(QJsonDocument::JsonFormat::Compact);
+            qDebug().noquote().nospace() << "actual:" << arguments.at(0).toString();
+        }
+        QVERIFY(check);
+    }
+
+    {
+        QSignalSpy spy(&manager, SIGNAL(finishedSelection(const QString &)));
+        emit manager.selectRecords(did, 1, "2023/07", QString(), 5);
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+        QList<QVariant> arguments = spy.takeFirst();
+
+        QFile file(":/data/repo/select_3.json");
+        QVERIFY(file.open(QFile::ReadOnly));
+        QJsonDocument except = QJsonDocument::fromJson(file.readAll());
+        file.close();
+
+        bool check = (except.object()
+                      == QJsonDocument::fromJson(arguments.at(0).toString().toUtf8()).object());
+        if (!check) {
+            qDebug().noquote().nospace()
+                    << "except:" << except.toJson(QJsonDocument::JsonFormat::Compact);
+            qDebug().noquote().nospace() << "actual:" << arguments.at(0).toString();
+        }
+        QVERIFY(check);
     }
 }
 

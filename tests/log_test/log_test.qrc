@@ -3,5 +3,8 @@
         <file>response/xrpc/com.atproto.sync.getRepo</file>
         <file>data/repo/daily.json</file>
         <file>data/repo/monthly.json</file>
+        <file>data/repo/select_1.json</file>
+        <file>data/repo/select_2.json</file>
+        <file>data/repo/select_3.json</file>
     </qresource>
 </RCC>

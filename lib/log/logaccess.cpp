@@ -11,6 +11,7 @@
 #include <QFile>
 
 #include <QDateTime>
+#include <QThread>
 #define LOG_DATETIME QDateTime::currentDateTime().toString("yyyy/MM/dd hh:mm:ss.zzz")
 
 LogAccess::LogAccess(QObject *parent) : QObject { parent } { }
@@ -92,6 +93,24 @@ void LogAccess::monthlyTotals(const QString &did)
     emit finishedTotals(list);
 }
 
+void LogAccess::selectRecords(const QString &did, const int type, const QString &condition,
+                              const QString &cursor, const int limit)
+{
+    QString records;
+    qDebug().noquote() << LOG_DATETIME << "selectRecords" << did << type << condition;
+    if (did.isEmpty()) {
+        emit finishedSelection(records);
+        return;
+    }
+    dbInit();
+    if (dbOpen(did)) {
+        records = dbSelectRecords(type, condition, cursor, limit);
+        dbClose();
+    }
+    dbRelease();
+    emit finishedSelection(records);
+}
+
 QString LogAccess::dbPath(QString did)
 {
     did.replace(":", "_");
@@ -113,8 +132,9 @@ QString LogAccess::dbPath(QString did)
 
 void LogAccess::dbInit()
 {
-    qDebug().noquote() << LOG_DATETIME << "dbInit()";
-    m_dbConnectionName = "tech.relog.hagoromo";
+    m_dbConnectionName = QString("tech.relog.hagoromo.%1")
+                                 .arg(QString::number((uintptr_t)(QThread::currentThreadId())));
+    qDebug().noquote() << LOG_DATETIME << "dbInit()" << m_dbConnectionName;
     QSqlDatabase::addDatabase("QSQLITE", m_dbConnectionName);
 }
 
@@ -228,65 +248,31 @@ bool LogAccess::dbInsertRecord(const QString &uri, const QString &cid, const QSt
     return ret;
 }
 
-bool LogAccess::dbInsertHandle(const QString &uri, const QString &cid, const QString &type,
-                               const QJsonObject &json)
+bool LogAccess::dbSelect(QSqlQuery &query, const QString &sql) const
 {
-    if (type != "app.bsky.feed.post")
-        return true;
-
-    bool ret = true;
-    QString created_at_str = json.value("createdAt").toString();
-    QDateTime created_at = QDateTime::fromString(created_at_str, Qt::ISODateWithMs);
-
-    QSqlQuery query(QSqlDatabase::database(m_dbConnectionName));
-    if (query.prepare("INSERT INTO record(cid, uri, day, month, createdAt, type, record, view)"
-                      " VALUES (?, ?, ?, ?, ?, ?, ?, ?)")) {
-        query.addBindValue(cid);
-        query.addBindValue(uri);
-        if (created_at.isValid()) {
-            query.addBindValue(created_at.toUTC().toString("yyyy/MM/dd"));
-            query.addBindValue(created_at.toUTC().toString("yyyy/MM"));
-            query.addBindValue(created_at_str);
-        } else {
-            query.addBindValue(QVariant());
-            query.addBindValue(QVariant());
-            query.addBindValue(QVariant());
-        }
-        query.addBindValue(type);
-        query.addBindValue(QJsonDocument(json).toJson(QJsonDocument::Compact));
-        query.addBindValue(QVariant());
+    bool ret = false;
+    if (query.prepare(sql)) {
         if (query.exec()) {
-            // qInfo() << query.lastInsertId().toLongLong() << "added";
+            ret = true;
         } else {
             qWarning().noquote() << LOG_DATETIME << query.lastError();
             qInfo().noquote() << LOG_DATETIME << query.lastQuery() << query.boundValues();
-            ret = false;
         }
     } else {
         qWarning().noquote() << LOG_DATETIME << query.lastError();
-        ret = false;
     }
-
-    return true;
+    return ret;
 }
 
 QStringList LogAccess::dbGetSavedCids() const
 {
     QStringList cids;
     QSqlQuery query(QSqlDatabase::database(m_dbConnectionName));
-    if (query.prepare("SELECT cid FROM record")) {
-        if (query.exec()) {
-            while (query.next()) {
-                cids.append(query.value(0).toString());
-            }
-        } else {
-            qWarning().noquote() << LOG_DATETIME << query.lastError();
-            qInfo().noquote() << LOG_DATETIME << query.lastQuery() << query.boundValues();
+    if (dbSelect(query, "SELECT cid FROM record")) {
+        while (query.next()) {
+            cids.append(query.value(0).toString());
         }
-    } else {
-        qWarning().noquote() << LOG_DATETIME << query.lastError();
     }
-
     return cids;
 }
 
@@ -294,22 +280,16 @@ QList<TotalItem> LogAccess::dbMakeDailyTotals() const
 {
     QList<TotalItem> list;
     QSqlQuery query(QSqlDatabase::database(m_dbConnectionName));
-    if (query.prepare("SELECT day, count(day) FROM record"
-                      " WHERE day NOTNULL AND type = 'app.bsky.feed.post' "
-                      " GROUP BY day ORDER BY day DESC")) {
-        if (query.exec()) {
-            while (query.next()) {
-                TotalItem item;
-                item.name = query.value(0).toString();
-                item.count = query.value(1).toInt();
-                list.append(item);
-            }
-        } else {
-            qWarning().noquote() << LOG_DATETIME << query.lastError();
-            qInfo().noquote() << LOG_DATETIME << query.lastQuery() << query.boundValues();
+    if (dbSelect(query,
+                 "SELECT day, count(day) FROM record"
+                 " WHERE day NOTNULL AND type = 'app.bsky.feed.post' "
+                 " GROUP BY day ORDER BY day DESC")) {
+        while (query.next()) {
+            TotalItem item;
+            item.name = query.value(0).toString();
+            item.count = query.value(1).toInt();
+            list.append(item);
         }
-    } else {
-        qWarning().noquote() << LOG_DATETIME << query.lastError();
     }
     return list;
 }
@@ -318,22 +298,56 @@ QList<TotalItem> LogAccess::dbMakeMonthlyTotals() const
 {
     QList<TotalItem> list;
     QSqlQuery query(QSqlDatabase::database(m_dbConnectionName));
-    if (query.prepare("SELECT month, count(month) FROM record"
-                      " WHERE month NOTNULL AND type = 'app.bsky.feed.post' "
-                      " GROUP BY month ORDER BY month DESC")) {
-        if (query.exec()) {
-            while (query.next()) {
-                TotalItem item;
-                item.name = query.value(0).toString();
-                item.count = query.value(1).toInt();
-                list.append(item);
-            }
-        } else {
-            qWarning().noquote() << LOG_DATETIME << query.lastError();
-            qInfo().noquote() << LOG_DATETIME << query.lastQuery() << query.boundValues();
+    if (dbSelect(query,
+                 "SELECT month, count(month) FROM record"
+                 " WHERE month NOTNULL AND type = 'app.bsky.feed.post' "
+                 " GROUP BY month ORDER BY month DESC")) {
+        while (query.next()) {
+            TotalItem item;
+            item.name = query.value(0).toString();
+            item.count = query.value(1).toInt();
+            list.append(item);
         }
-    } else {
-        qWarning().noquote() << LOG_DATETIME << query.lastError();
     }
     return list;
+}
+
+QString LogAccess::dbSelectRecords(const int type, const QString &condition, const QString &cursor,
+                                   const int limit) const
+{
+    QString sql("SELECT uri, cid, record, createdAt FROM record"
+                " WHERE type = 'app.bsky.feed.post'");
+    if (!condition.isEmpty()) {
+        if (type == 0) {
+            sql.append(" AND day == '").append(condition).append("'");
+        } else if (type == 1) {
+            sql.append(" AND month == '").append(condition).append("'");
+        }
+    }
+    if (!cursor.isEmpty()) {
+        sql.append(" AND createdAt < '").append(cursor).append("'");
+    }
+    sql.append(" ORDER BY createdAt DESC");
+    if (limit > 0) {
+        sql.append(" LIMIT ").append(QString::number(limit));
+    } else {
+        sql.append(" LIMIT 50");
+    }
+
+    QSqlQuery query(QSqlDatabase::database(m_dbConnectionName));
+    if (dbSelect(query, sql)) {
+        QStringList records;
+        QString record_base("{\"uri\": \"%1\", \"cid\": \"%2\", \"value\": %3}");
+        QString last_created_at;
+        while (query.next()) {
+            records.append(record_base.arg(query.value(0).toString())
+                                   .arg(query.value(1).toString())
+                                   .arg(query.value(2).toString()));
+            last_created_at = query.value(3).toString();
+        }
+        return QString("{\"records\": [%1], \"cursor\":\"%2\"}")
+                .arg(records.join(","))
+                .arg(last_created_at);
+    }
+    return QString("{\"records\": []}");
 }
