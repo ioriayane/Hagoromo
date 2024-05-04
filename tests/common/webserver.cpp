@@ -60,9 +60,13 @@ bool WebServer::handleRequest(const QHttpServerRequest &request, QTcpSocket *soc
         } else {
             QFileInfo file_info(request.url().path());
             QByteArray data;
+            QString mime_type = "application/json";
+            if (path.endsWith("/xrpc/com.atproto.sync.getRepo")) {
+                mime_type = "application/vnd.ipld.car";
+            }
             if (WebServer::readFile(path, data)) {
                 makeResponder(request, socket)
-                        .write(data, "application/json", QHttpServerResponder::StatusCode::Ok);
+                        .write(data, mime_type.toUtf8(), QHttpServerResponder::StatusCode::Ok);
             } else {
                 makeResponder(request, socket)
                         .write(QHttpServerResponder::StatusCode::InternalServerError);

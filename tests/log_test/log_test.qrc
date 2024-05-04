@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>response/xrpc/com.atproto.sync.getRepo</file>
+        <file>data/repo/daily.json</file>
+        <file>data/repo/monthly.json</file>
+    </qresource>
+</RCC>

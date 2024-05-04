@@ -1,4 +1,4 @@
-QT += xml
+QT += xml sql
 
 INCLUDEPATH += $$PWD \
     $$PWD/../3rdparty/cpp-httplib
@@ -64,6 +64,8 @@ SOURCES += \
     $$PWD/http/httpaccess.cpp \
     $$PWD/http/httpaccessmanager.cpp \
     $$PWD/http/httpreply.cpp \
+    $$PWD/log/logaccess.cpp \
+    $$PWD/log/logmanager.cpp \
     $$PWD/tools/base32.cpp \
     $$PWD/tools/cardecoder.cpp \
     $$PWD/tools/configurablelabels.cpp \
@@ -134,6 +136,8 @@ HEADERS += \
     $$PWD/http/httpaccess.h \
     $$PWD/http/httpaccessmanager.h \
     $$PWD/http/httpreply.h \
+    $$PWD/log/logaccess.h \
+    $$PWD/log/logmanager.h \
     $$PWD/search/search.h \
     $$PWD/tools/base32.h \
     $$PWD/tools/cardecoder.h \
