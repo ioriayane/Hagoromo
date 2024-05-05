@@ -24,7 +24,8 @@ public slots:
     void updateDb(const QString &did, const QByteArray &data);
     void dailyTotals(const QString &did);
     void monthlyTotals(const QString &did);
-    void selectRecords(const QString &did, const int type, const QString &condition,
+    void statistics(const QString &did);
+    void selectRecords(const QString &did, const int kind, const QString &condition,
                        const QString &cursor, const int limit);
 
 signals:
@@ -45,7 +46,8 @@ private:
     QStringList dbGetSavedCids() const;
     QList<TotalItem> dbMakeDailyTotals() const;
     QList<TotalItem> dbMakeMonthlyTotals() const;
-    QString dbSelectRecords(const int type, const QString &condition, const QString &cursor,
+    QList<TotalItem> dbMakeStatistics() const;
+    QString dbSelectRecords(const int kind, const QString &condition, const QString &cursor,
                             const int limit) const;
 
     QString m_dbConnectionName;

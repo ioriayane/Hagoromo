@@ -1,0 +1,34 @@
+[
+    {
+        "name": "Total number of posts",
+        "count": 439
+    },
+    {
+        "name": "Total number of likes",
+        "count": 12
+    },
+    {
+        "name": "Total number of reposts",
+        "count": 14
+    },
+    {
+        "name": "Total number of follows",
+        "count": 4
+    },
+    {
+        "name": "Total number of lists",
+        "count": 3
+    },
+    {
+        "name": "Total number of list items",
+        "count": 2
+    },
+    {
+        "name": "Total number of who can reply",
+        "count": 82
+    },
+    {
+        "name": "Total number of blocks",
+        "count": 1
+    }
+]

@@ -93,18 +93,35 @@ void LogAccess::monthlyTotals(const QString &did)
     emit finishedTotals(list);
 }
 
-void LogAccess::selectRecords(const QString &did, const int type, const QString &condition,
+void LogAccess::statistics(const QString &did)
+{
+    QList<TotalItem> list;
+    qDebug().noquote() << LOG_DATETIME << "statistics" << did;
+    if (did.isEmpty()) {
+        emit finishedTotals(list);
+        return;
+    }
+    dbInit();
+    if (dbOpen(did)) {
+        list = dbMakeStatistics();
+        dbClose();
+    }
+    dbRelease();
+    emit finishedTotals(list);
+}
+
+void LogAccess::selectRecords(const QString &did, const int kind, const QString &condition,
                               const QString &cursor, const int limit)
 {
     QString records;
-    qDebug().noquote() << LOG_DATETIME << "selectRecords" << did << type << condition;
+    qDebug().noquote() << LOG_DATETIME << "selectRecords" << did << kind << condition;
     if (did.isEmpty()) {
         emit finishedSelection(records);
         return;
     }
     dbInit();
     if (dbOpen(did)) {
-        records = dbSelectRecords(type, condition, cursor, limit);
+        records = dbSelectRecords(kind, condition, cursor, limit);
         dbClose();
     }
     dbRelease();
@@ -312,15 +329,64 @@ QList<TotalItem> LogAccess::dbMakeMonthlyTotals() const
     return list;
 }
 
-QString LogAccess::dbSelectRecords(const int type, const QString &condition, const QString &cursor,
+QList<TotalItem> LogAccess::dbMakeStatistics() const
+{
+    QStringList types;
+    types << "app.bsky.feed.post"
+          << "app.bsky.feed.like"
+          << "app.bsky.feed.repost"
+          << "app.bsky.graph.follow"
+          << "app.bsky.graph.list"
+          << "app.bsky.graph.listitem"
+          << "app.bsky.feed.threadgate"
+          << "app.bsky.graph.block";
+    QHash<QString, QString> type2name;
+    type2name["app.bsky.feed.post"] = tr("Total number of posts");
+    type2name["app.bsky.feed.like"] = tr("Total number of likes");
+    type2name["app.bsky.feed.repost"] = tr("Total number of reposts");
+    type2name["app.bsky.graph.follow"] = tr("Total number of follows");
+    type2name["app.bsky.graph.list"] = tr("Total number of lists");
+    type2name["app.bsky.graph.listitem"] = tr("Total number of list items");
+    type2name["app.bsky.feed.threadgate"] = tr("Total number of who can reply");
+    type2name["app.bsky.graph.block"] = tr("Total number of blocks");
+
+    QList<TotalItem> list;
+    QSqlQuery query(QSqlDatabase::database(m_dbConnectionName));
+    if (dbSelect(query,
+                 "SELECT type, count(type) FROM record"
+                 " WHERE type != '$car_address'"
+                 " GROUP BY type")) {
+        while (query.next()) {
+            TotalItem item;
+            item.name = query.value(0).toString();
+            item.count = query.value(1).toInt();
+            if (type2name.contains(item.name)) {
+                list.append(item);
+            }
+        }
+    }
+    for (int i = 0; i < types.length(); i++) {
+        for (int r = 0; r < list.length(); r++) {
+            if (list.at(r).name == types.at(i)) {
+                list[r].name = type2name.value(list.at(r).name);
+                if (r != i) {
+                    list.swapItemsAt(r, i);
+                }
+            }
+        }
+    }
+    return list;
+}
+
+QString LogAccess::dbSelectRecords(const int kind, const QString &condition, const QString &cursor,
                                    const int limit) const
 {
     QString sql("SELECT uri, cid, record, createdAt FROM record"
                 " WHERE type = 'app.bsky.feed.post'");
     if (!condition.isEmpty()) {
-        if (type == 0) {
+        if (kind == 0) {
             sql.append(" AND day == '").append(condition).append("'");
-        } else if (type == 1) {
+        } else if (kind == 1) {
             sql.append(" AND month == '").append(condition).append("'");
         }
     }

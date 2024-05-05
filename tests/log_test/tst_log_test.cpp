@@ -22,6 +22,7 @@ private slots:
     void test_LogManager_daily();
     void test_LogManager_monthly();
     void test_LogManager_select();
+    void test_LogManager_statistics();
 
 private:
     WebServer m_mockServer;
@@ -241,6 +242,52 @@ void log_test::test_LogManager_select()
             qDebug().noquote().nospace() << "actual:" << arguments.at(0).toString();
         }
         QVERIFY(check);
+    }
+}
+
+void log_test::test_LogManager_statistics()
+{
+    LogManager manager;
+    QString did("did:plc:log_manager_test");
+
+    QFile file(":/data/repo/statistics.json");
+    QVERIFY(file.open(QFile::ReadOnly));
+    QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
+    file.close();
+
+    QList<TotalItem> except;
+    for (const auto &value : doc.array()) {
+        TotalItem item;
+        item.name = value.toObject().value("name").toString();
+        item.count = value.toObject().value("count").toInt();
+        except.append(item);
+    }
+
+    {
+        QSignalSpy spy(&manager, SIGNAL(finishedTotals(const QList<TotalItem> &)));
+        emit manager.statistics(did);
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+        QList<QVariant> arguments = spy.takeFirst();
+        QList<TotalItem> list = qvariant_cast<QList<TotalItem>>(arguments.at(0));
+
+        QVERIFY2(except.length() == list.length(),
+                 QString("%1 == %2").arg(except.length()).arg(list.length()).toLocal8Bit());
+        for (int i = 0; i < list.length(); i++) {
+            QVERIFY2(except.at(i).name == list.at(i).name,
+                     QString("%1, %2 == %3")
+                             .arg(i)
+                             .arg(except.at(i).name)
+                             .arg(list.at(0).name)
+                             .toLocal8Bit());
+            QVERIFY2(except.at(i).count == list.at(i).count,
+                     QString("%1, %2 == %3")
+                             .arg(i)
+                             .arg(except.at(i).count)
+                             .arg(list.at(0).count)
+                             .toLocal8Bit());
+        }
     }
 }
 

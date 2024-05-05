@@ -11,6 +11,7 @@ LogManager::LogManager(QObject *parent) : QObject { parent }
     connect(this, &LogManager::updateDb, &m_logAccess, &LogAccess::updateDb);
     connect(this, &LogManager::dailyTotals, &m_logAccess, &LogAccess::dailyTotals);
     connect(this, &LogManager::monthlyTotals, &m_logAccess, &LogAccess::monthlyTotals);
+    connect(this, &LogManager::statistics, &m_logAccess, &LogAccess::statistics);
     connect(this, &LogManager::selectRecords, &m_logAccess, &LogAccess::selectRecords);
     connect(&m_logAccess, &LogAccess::finishedUpdateDb, this,
             [=](bool success) { emit finished(success); });
