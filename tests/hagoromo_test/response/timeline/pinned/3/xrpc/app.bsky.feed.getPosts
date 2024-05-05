@@ -1,0 +1,79 @@
+{
+    "posts": [
+        {
+            "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3klrvkltf672n",
+            "cid": "bafyreiabtxbuno6sigmm2gjsxc6ocsaodgehbpq6srth7awuemct7yxu7u",
+            "author": {
+                "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                "handle": "ioriayane2.bsky.social",
+                "displayName": "iori2",
+                "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false
+                },
+                "labels": []
+            },
+            "record": {
+                "$type": "app.bsky.feed.post",
+                "createdAt": "2024-02-19T16:49:34.993Z",
+                "text": "test",
+                "via": "Hagoromo"
+            },
+            "replyCount": 0,
+            "repostCount": 0,
+            "likeCount": 0,
+            "indexedAt": "2024-02-19T16:49:34.993Z",
+            "viewer": {
+                "replyDisabled": false
+            },
+            "labels": [],
+            "threadgate": {
+                "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.threadgate/3klrvkltf672n",
+                "cid": "bafyreicrvra7l33jqbryctx6xvprnopruct3uje5hjy5qokibqu6xxggbi",
+                "record": {
+                    "$type": "app.bsky.feed.threadgate",
+                    "allow": [
+                        {
+                            "$type": "app.bsky.feed.threadgate#followingRule"
+                        },
+                        {
+                            "$type": "app.bsky.feed.threadgate#listRule",
+                            "list": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/3kflf2r3lwg2x"
+                        },
+                        {
+                            "$type": "app.bsky.feed.threadgate#listRule",
+                            "list": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/3kflbnc4c4o2x"
+                        }
+                    ],
+                    "createdAt": "2024-02-19T16:49:35.845Z",
+                    "post": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3klrvkltf672n"
+                },
+                "lists": [
+                    {
+                        "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/3kflf2r3lwg2x",
+                        "cid": "bafyreiexwt5i5qo4wy6qnn3wxnznjbqjbemmbqq3dwfaf7qbn2wk4cdblm",
+                        "name": "ice",
+                        "purpose": "app.bsky.graph.defs#curatelist",
+                        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreiczowa2mpzych2h6sfbsswgdtdjqrmt3zjkgygsv4rd6f5rfwtefu@jpeg",
+                        "indexedAt": "2023-12-02T18:07:18.224Z",
+                        "viewer": {
+                            "muted": false
+                        }
+                    },
+                    {
+                        "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/3kflbnc4c4o2x",
+                        "cid": "bafyreibs257hdrhfx3i3h3npyfzl74fg43dofjufxs2ao4zl4htlocsjhm",
+                        "name": "list",
+                        "purpose": "app.bsky.graph.defs#curatelist",
+                        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreicacdzensmat7ue7sroawuymgcz2thgs4eoadi2twf6iyjulubx4m@jpeg",
+                        "indexedAt": "2023-12-02T17:07:06.613Z",
+                        "viewer": {
+                            "muted": false
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

@@ -34,6 +34,7 @@ class TimelineListModel : public AtpAbstractListModel
 
 public:
     explicit TimelineListModel(QObject *parent = nullptr);
+    ~TimelineListModel();
 
     // モデルで提供する項目のルールID的な（QML側へ公開するために大文字で始めること）
     enum TimelineListModelRoles {
@@ -65,6 +66,7 @@ public:
         RunningRepostRole,
         RunningLikeRole,
         RunningdeletePostRole,
+        RunningPostPinningRole,
 
         HasQuoteRecordRole,
         QuoteRecordCidRole,
@@ -107,6 +109,8 @@ public:
         IsRepostedByRole,
         RepostedByDisplayNameRole,
         RepostedByHandleRole,
+        PinnedRole,
+        PinnedByMeRole,
 
         UserFilterMatchedRole,
         UserFilterMessageRole,
@@ -147,6 +151,7 @@ public:
     Q_INVOKABLE bool deletePost(int row);
     Q_INVOKABLE bool repost(int row);
     Q_INVOKABLE bool like(int row);
+    Q_INVOKABLE bool pin(int row);
 
     bool visibleReplyToUnfollowedUsers() const;
     void setVisibleReplyToUnfollowedUsers(bool newVisibleReplyToUnfollowedUser);
@@ -168,6 +173,10 @@ signals:
     void visibleRepostOfUnfollowingUsersChanged();
     void visibleRepostOfMineChanged();
     void visibleRepostByMeChanged();
+    void updatePin(const QString &uri);
+
+public slots:
+    void updatedPin(const QString &did, const QString &new_uri, const QString &old_uri);
 
 protected:
     QHash<int, QByteArray> roleNames() const;
@@ -183,6 +192,9 @@ protected:
                           const TimelineListModel::TimelineListModelRoles role) const;
 
     virtual void updateExtendMediaFile(const QString &parent_cid);
+    virtual bool hasPinnedPost() const;
+    void getPinnedPost();
+    virtual void removePinnedPost();
 
     QHash<QString, AtProtocolType::AppBskyFeedDefs::FeedViewPost> m_viewPostHash;
     QHash<QString, ThreadConnector> m_threadConnectorHash;
@@ -194,6 +206,8 @@ private:
     void setRunningLike(int row, bool running);
     bool runningdeletePost(int row) const;
     void setRunningdeletePost(int row, bool running);
+    bool runningPostPinning(int row) const;
+    void setRunningPostPinning(int row, bool running);
 
     QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::ExternalLinkRoles>
             m_toExternalLinkRoles;
@@ -213,6 +227,7 @@ private:
     QString m_runningRepostCid;
     QString m_runningLikeCid;
     QString m_runningDeletePostCid;
+    QString m_runningPostPinningCid;
 };
 
 #endif // TIMELINELISTMODEL_H

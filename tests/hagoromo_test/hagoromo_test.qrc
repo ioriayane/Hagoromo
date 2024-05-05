@@ -66,5 +66,17 @@
         <file>response/notifications/collecting/2/xrpc/app.bsky.labeler.getServices</file>
         <file>response/notifications/collecting/2/xrpc/app.bsky.notification.listNotifications</file>
         <file>response/notifications/collecting/2/xrpc/app.bsky.notification.listNotifications_1</file>
+        <file>response/timeline/pinned/1/xrpc/app.bsky.actor.getPreferences</file>
+        <file>response/timeline/pinned/1/xrpc/app.bsky.feed.getTimeline</file>
+        <file>response/timeline/pinned/1/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/timeline/pinned/1/xrpc/app.bsky.feed.getPosts</file>
+        <file>response/timeline/pinned/2/xrpc/app.bsky.actor.getPreferences</file>
+        <file>response/timeline/pinned/2/xrpc/app.bsky.feed.getPosts</file>
+        <file>response/timeline/pinned/2/xrpc/app.bsky.feed.getTimeline</file>
+        <file>response/timeline/pinned/2/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/timeline/pinned/3/xrpc/app.bsky.actor.getPreferences</file>
+        <file>response/timeline/pinned/3/xrpc/app.bsky.feed.getPosts</file>
+        <file>response/timeline/pinned/3/xrpc/app.bsky.feed.getTimeline</file>
+        <file>response/timeline/pinned/3/xrpc/app.bsky.labeler.getServices</file>
     </qresource>
 </RCC>

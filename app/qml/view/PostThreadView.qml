@@ -129,6 +129,7 @@ ColumnLayout {
                 replyReactionAuthor.visible: model.hasReply
                 replyReactionAuthor.displayName: model.replyParentDisplayName
                 replyReactionAuthor.handle: model.replyParentHandle
+                pinnedIndicatorLabel.visible: false
 
                 postAvatarImage.source: model.avatar
                 postAvatarImage.onClicked: requestViewProfile(model.did)
@@ -214,6 +215,7 @@ ColumnLayout {
                 postControls.onTriggeredTranslate: postThreadListModel.translate(model.cid)
                 postControls.isReposted: model.isReposted
                 postControls.isLiked: model.isLiked
+                postControls.pinned: model.pinnedByMe
                 postControls.postUri: model.uri
                 postControls.handle: model.handle
                 postControls.mine: model.did === postThreadView.accountDid
@@ -224,6 +226,7 @@ ColumnLayout {
                 postControls.onTriggeredRequestViewLikedBy: postThreadView.requestViewLikedBy(model.uri)
                 postControls.onTriggeredRequestViewRepostedBy: postThreadView.requestViewRepostedBy(model.uri)
                 postControls.onTriggeredRequestUpdateThreadGate: postThreadView.requestUpdateThreadGate(model.uri, model.threadGateUri, model.threadGateType, model.threadGateRules, updatedThreadGate)
+                postControls.onTriggeredRequestPin: rootListView.model.pin(model.index)
 
                 threadConnected: model.threadConnected
                 threadConnectorTop.visible:  model.threadConnectorTop
