@@ -11,13 +11,15 @@ void LogOperator::getLatest()
 
     LogManager *manager = new LogManager(this);
     connect(manager, &LogManager::finished, this, [=](bool success) {
-        if (success) {
+        if (!success) {
             //
         }
         emit finished(success);
         setRunning(false);
         manager->deleteLater();
     });
+    connect(manager, &LogManager::errorOccured, this,
+            [=](const QString &code, const QString &message) { emit errorOccured(code, message); });
     manager->update(service(), did());
 }
 

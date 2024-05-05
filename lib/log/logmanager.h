@@ -18,6 +18,7 @@ public:
 public slots:
 
 signals:
+    void errorOccured(const QString &code, const QString &message);
     void updateDb(const QString &did, const QByteArray &data);
     void finished(bool success);
     void dailyTotals(const QString &did);

@@ -25,6 +25,7 @@ public:
     void setDid(const QString &newDid);
 
 signals:
+    void errorOccured(const QString &code, const QString &message);
     void finished(bool success);
     void runningChanged();
     void serviceChanged();

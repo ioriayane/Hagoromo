@@ -48,6 +48,10 @@ Dialog {
     MutedListsDialog {
         id: mutedListsDialog
     }
+    LogViewDialog {
+        id: logViewDialog
+        onErrorOccured: (uuid, code, message) => accountDialog.errorOccured(uuid, code, message)
+    }
 
     SelectThreadGateDialog {
         id: selectThreadGateDialog
@@ -214,6 +218,15 @@ Dialog {
                                         selectThreadGateDialog.initialOptions = accountList.model.item(i, AccountListModel.ThreadGateOptionsRole)
                                         selectThreadGateDialog.accountIndex = i
                                         selectThreadGateDialog.open()
+                                    }
+                                }
+                            }
+                            MenuItem {
+                                icon.source: "../images/delete.png"
+                                text: qsTr("Log")
+                                onTriggered: {
+                                    if(logViewDialog.account.set(accountList.model, model.uuid)){
+                                        logViewDialog.open()
                                     }
                                 }
                             }

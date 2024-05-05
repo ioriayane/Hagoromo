@@ -42,6 +42,7 @@ void LogManager::update(const QString &service, const QString &did)
         if (success) {
             emit updateDb(did, repo->repo());
         } else {
+            emit errorOccured(repo->errorCode(), repo->errorMessage());
             emit finished(false);
         }
         repo->deleteLater();
