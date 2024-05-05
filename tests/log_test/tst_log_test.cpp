@@ -6,6 +6,8 @@
 
 #include "webserver.h"
 #include "log/logmanager.h"
+#include "log/logoperator.h"
+#include "log/logstatisticslistmodel.h"
 
 class log_test : public QObject
 {
@@ -23,6 +25,8 @@ private slots:
     void test_LogManager_monthly();
     void test_LogManager_select();
     void test_LogManager_statistics();
+    void test_LogOperator();
+    void test_LogStatisticsListModel();
 
 private:
     WebServer m_mockServer;
@@ -32,6 +36,8 @@ private:
 
 log_test::log_test()
 {
+    qRegisterMetaType<QList<TotalItem>>("QList<TotalItem>");
+
     QCoreApplication::setOrganizationName(QStringLiteral("relog"));
     QCoreApplication::setApplicationName(QStringLiteral("Hagoromo"));
 
@@ -289,6 +295,51 @@ void log_test::test_LogManager_statistics()
                              .toLocal8Bit());
         }
     }
+}
+
+void log_test::test_LogOperator()
+{
+    LogOperator ope;
+
+    ope.setService(m_service);
+    ope.setDid("did:plc:log_operaot_test");
+
+    ope.clear();
+
+    {
+        QSignalSpy spy(&ope, SIGNAL(finished(bool)));
+        emit ope.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool() == true);
+    }
+}
+
+void log_test::test_LogStatisticsListModel()
+{
+    LogStatisticsListModel model;
+    model.setDid("did:plc:log_operaot_test");
+
+    {
+        QSignalSpy spy(&model, SIGNAL(finished()));
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    QVERIFY2(model.rowCount() == 8, QString("%1").arg(model.rowCount()).toLocal8Bit());
+    QVERIFY2(model.item(0, LogStatisticsListModel::NameRole).toString() == "Total number of posts",
+             model.item(0, LogStatisticsListModel::NameRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(0, LogStatisticsListModel::CountRole).toInt() == 439,
+             model.item(0, LogStatisticsListModel::CountRole).toString().toLocal8Bit());
+
+    QVERIFY2(model.item(3, LogStatisticsListModel::NameRole).toString()
+                     == "Total number of follows",
+             model.item(3, LogStatisticsListModel::NameRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(3, LogStatisticsListModel::CountRole).toInt() == 4,
+             model.item(3, LogStatisticsListModel::CountRole).toString().toLocal8Bit());
 }
 
 QTEST_MAIN(log_test)

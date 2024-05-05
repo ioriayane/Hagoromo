@@ -29,6 +29,8 @@ SOURCES += \
     $$PWD/listlink.cpp \
     $$PWD/listmuteslistmodel.cpp \
     $$PWD/listslistmodel.cpp \
+    $$PWD/log/logoperator.cpp \
+    $$PWD/log/logstatisticslistmodel.cpp \
     $$PWD/mutedwordlistmodel.cpp \
     $$PWD/muteslistmodel.cpp \
     $$PWD/notificationlistmodel.cpp \
@@ -73,6 +75,8 @@ HEADERS += \
     $$PWD/listlink.h \
     $$PWD/listmuteslistmodel.h \
     $$PWD/listslistmodel.h \
+    $$PWD/log/logoperator.h \
+    $$PWD/log/logstatisticslistmodel.h \
     $$PWD/mutedwordlistmodel.h \
     $$PWD/muteslistmodel.h \
     $$PWD/notificationlistmodel.h \

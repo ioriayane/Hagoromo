@@ -10,6 +10,7 @@ struct TotalItem
     int count = 0;
 };
 Q_DECLARE_METATYPE(TotalItem)
+Q_DECLARE_METATYPE(QList<TotalItem>)
 
 class LogAccess : public QObject
 {
