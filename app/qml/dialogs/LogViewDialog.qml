@@ -5,6 +5,8 @@ import QtQuick.Controls.Material 2.15
 
 import tech.relog.hagoromo.logoperator 1.0
 import tech.relog.hagoromo.logstatisticslistmodel 1.0
+import tech.relog.hagoromo.logdailylistmodel 1.0
+import tech.relog.hagoromo.logmonthlylistmodel 1.0
 import tech.relog.hagoromo.singleton 1.0
 
 import "../controls"
@@ -25,9 +27,13 @@ Dialog {
 
     onOpened: {
         logStatisticsListModel.getLatest()
+        logDailyListModel.getLatest()
+        logMonthlyListModel.getLatest()
     }
     onClosed: {
         logStatisticsListModel.clear()
+        logDailyListModel.clear()
+        logMonthlyListModel.clear()
     }
 
 
@@ -93,9 +99,13 @@ Dialog {
             }
         }
         SwipeView {
+            id: swipeView
             currentIndex: tabBar.currentIndex
             interactive: false
             clip: true
+
+            property int frameWidth: 500
+            property int frameHeight: 350
 
             Frame {
                 contentWidth: statisticsScrollView.width
@@ -103,8 +113,8 @@ Dialog {
 
                 LogTotalListView {
                     id: statisticsScrollView
-                    width: 500
-                    height: 350
+                    width: swipeView.frameWidth
+                    height: swipeView.frameHeight
                     verticalScrollBar: false
                     model: LogStatisticsListModel {
                         id: logStatisticsListModel
@@ -113,10 +123,56 @@ Dialog {
                 }
             }
             Frame {
+                contentWidth: dailyRowLayout.width
+                contentHeight: dailyRowLayout.height
 
+                RowLayout {
+                    id: dailyRowLayout
+                    width: swipeView.frameWidth
+                    LogTotalListView {
+                        Layout.preferredWidth: 150
+                        Layout.preferredHeight: swipeView.frameHeight
+                        verticalScrollBar: true
+                        model: LogDailyListModel {
+                            id: logDailyListModel
+                            did: account.did
+                        }
+                        onClickedItem: (name) => {
+                                           console.log("select:" + name)
+                                       }
+                    }
+                    Rectangle {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: swipeView.frameHeight
+
+                    }
+                }
             }
             Frame {
+                contentWidth: monthlyRowLayout.width
+                contentHeight: monthlyRowLayout.height
 
+                RowLayout {
+                    id: monthlyRowLayout
+                    width: swipeView.frameWidth
+                    LogTotalListView {
+                        Layout.preferredWidth: 150
+                        Layout.preferredHeight: swipeView.frameHeight
+                        verticalScrollBar: true
+                        model: LogMonthlyListModel {
+                            id: logMonthlyListModel
+                            did: account.did
+                        }
+                        onClickedItem: (name) => {
+                                           console.log("select:" + name)
+                                       }
+                    }
+                    Rectangle {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: swipeView.frameHeight
+
+                    }
+                }
             }
         }
         RowLayout {

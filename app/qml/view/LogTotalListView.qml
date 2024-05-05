@@ -7,15 +7,15 @@ import tech.relog.hagoromo.singleton 1.0
 
 ScrollView {
     id: statisticsScrollView
-    ScrollBar.vertical.policy: verticalScrollBar ? ScrollBar.AsNeeded : ScrollBar.AlwaysOff
+    ScrollBar.vertical.policy: verticalScrollBar ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     clip: true
 
     property bool verticalScrollBar: false
-    property int verticalScrollBarWidth: statisticsScrollView.ScrollBar.vertical.active ?
-                                             statisticsScrollView.ScrollBar.vertical.width : 0
-
+    property int verticalScrollBarWidth: verticalScrollBar ? statisticsScrollView.ScrollBar.vertical.width : 0
     property alias model: statisticsListView.model
+
+    signal clickedItem(string name)
 
     ListView {
         id: statisticsListView
@@ -42,6 +42,7 @@ ScrollView {
                     text: model.count
                 }
             }
+            onClicked: statisticsScrollView.clickedItem(model.name)
         }
     }
 }

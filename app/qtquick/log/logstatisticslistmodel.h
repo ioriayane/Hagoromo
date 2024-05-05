@@ -43,9 +43,9 @@ signals:
 
 protected:
     QHash<int, QByteArray> roleNames() const;
+    QList<TotalItem> m_totalList;
 
 private:
-    QList<TotalItem> m_statistics;
     bool m_running;
     QString m_did;
 };

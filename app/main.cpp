@@ -48,6 +48,8 @@
 #include "qtquick/embedimagelistmodel.h"
 #include "qtquick/log/logoperator.h"
 #include "qtquick/log/logstatisticslistmodel.h"
+#include "qtquick/log/logdailylistmodel.h"
+#include "qtquick/log/logmonthlylistmodel.h"
 
 void setAppFont(QGuiApplication &app)
 {
@@ -154,6 +156,10 @@ int main(int argc, char *argv[])
     qmlRegisterType<LogOperator>("tech.relog.hagoromo.logoperator", 1, 0, "LogOperator");
     qmlRegisterType<LogStatisticsListModel>("tech.relog.hagoromo.logstatisticslistmodel", 1, 0,
                                             "LogStatisticsListModel");
+    qmlRegisterType<LogDailyListModel>("tech.relog.hagoromo.logdailylistmodel", 1, 0,
+                                       "LogDailyListModel");
+    qmlRegisterType<LogMonthlyListModel>("tech.relog.hagoromo.logmonthlylistmodel", 1, 0,
+                                         "LogMonthlyListModel");
 
     qmlRegisterSingletonType(QUrl("qrc:/Hagoromo/qml/data/AdjustedValues.qml"),
                              "tech.relog.hagoromo.singleton", 1, 0, "AdjustedValues");

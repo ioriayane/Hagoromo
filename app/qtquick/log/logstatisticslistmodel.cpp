@@ -8,7 +8,7 @@ LogStatisticsListModel::LogStatisticsListModel(QObject *parent)
 
 int LogStatisticsListModel::rowCount(const QModelIndex &parent) const
 {
-    return m_statistics.count();
+    return m_totalList.count();
 }
 
 QVariant LogStatisticsListModel::data(const QModelIndex &index, int role) const
@@ -18,13 +18,13 @@ QVariant LogStatisticsListModel::data(const QModelIndex &index, int role) const
 
 QVariant LogStatisticsListModel::item(int row, LogStatisticsListModelRoles role) const
 {
-    if (row < 0 || row >= m_statistics.count())
+    if (row < 0 || row >= m_totalList.count())
         return QVariant();
 
     if (role == NameRole)
-        return m_statistics.at(row).name;
+        return m_totalList.at(row).name;
     else if (role == CountRole)
-        return m_statistics.at(row).count;
+        return m_totalList.at(row).count;
 
     return QVariant();
 }
@@ -41,7 +41,7 @@ void LogStatisticsListModel::getLatest()
     connect(manager, &LogManager::finishedTotals, this, [=](const QList<TotalItem> &list) {
         if (!list.isEmpty()) {
             beginInsertRows(QModelIndex(), 0, list.count() - 1);
-            m_statistics = list;
+            m_totalList = list;
             endInsertRows();
         }
         emit finished();
@@ -53,11 +53,11 @@ void LogStatisticsListModel::getLatest()
 
 void LogStatisticsListModel::clear()
 {
-    if (m_statistics.isEmpty())
+    if (m_totalList.isEmpty())
         return;
 
-    beginRemoveRows(QModelIndex(), 0, m_statistics.count() - 1);
-    m_statistics.clear();
+    beginRemoveRows(QModelIndex(), 0, m_totalList.count() - 1);
+    m_totalList.clear();
     endRemoveRows();
 }
 
