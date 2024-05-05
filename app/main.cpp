@@ -50,6 +50,7 @@
 #include "qtquick/log/logstatisticslistmodel.h"
 #include "qtquick/log/logdailylistmodel.h"
 #include "qtquick/log/logmonthlylistmodel.h"
+#include "qtquick/log/logfeedlistmodel.h"
 
 void setAppFont(QGuiApplication &app)
 {
@@ -160,6 +161,8 @@ int main(int argc, char *argv[])
                                        "LogDailyListModel");
     qmlRegisterType<LogMonthlyListModel>("tech.relog.hagoromo.logmonthlylistmodel", 1, 0,
                                          "LogMonthlyListModel");
+    qmlRegisterType<LogFeedListModel>("tech.relog.hagoromo.logfeedlistmodel", 1, 0,
+                                      "LogFeedListModel");
 
     qmlRegisterSingletonType(QUrl("qrc:/Hagoromo/qml/data/AdjustedValues.qml"),
                              "tech.relog.hagoromo.singleton", 1, 0, "AdjustedValues");

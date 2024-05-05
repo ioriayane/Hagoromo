@@ -8,6 +8,7 @@
 #include "log/logmanager.h"
 #include "log/logoperator.h"
 #include "log/logstatisticslistmodel.h"
+#include "log/logfeedlistmodel.h"
 
 class log_test : public QObject
 {
@@ -27,6 +28,7 @@ private slots:
     void test_LogManager_statistics();
     void test_LogOperator();
     void test_LogStatisticsListModel();
+    void test_LogFeedListModel();
 
 private:
     WebServer m_mockServer;
@@ -302,7 +304,7 @@ void log_test::test_LogOperator()
     LogOperator ope;
 
     ope.setService(m_service);
-    ope.setDid("did:plc:log_operaot_test");
+    ope.setDid("did:plc:log_operator_test");
 
     ope.clear();
 
@@ -320,7 +322,7 @@ void log_test::test_LogOperator()
 void log_test::test_LogStatisticsListModel()
 {
     LogStatisticsListModel model;
-    model.setDid("did:plc:log_operaot_test");
+    model.setDid("did:plc:log_operator_test");
 
     {
         QSignalSpy spy(&model, SIGNAL(finished()));
@@ -340,6 +342,43 @@ void log_test::test_LogStatisticsListModel()
              model.item(3, LogStatisticsListModel::NameRole).toString().toLocal8Bit());
     QVERIFY2(model.item(3, LogStatisticsListModel::CountRole).toInt() == 4,
              model.item(3, LogStatisticsListModel::CountRole).toString().toLocal8Bit());
+}
+
+void log_test::test_LogFeedListModel()
+{
+    int i = 0;
+    LogFeedListModel model;
+    model.setTargetDid("did:plc:log_operator_test");
+    model.setTargetHandle("test.handle");
+    model.setTargetAvatar("test_avatar.jpg");
+    model.setSelectCondition("2024/03/28");
+    model.setFeedType(LogFeedListModel::LogFeedListModelFeedType::DailyFeedType);
+
+    {
+        QSignalSpy spy(&model, SIGNAL(finished(bool)));
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool() == true);
+    }
+
+    QVERIFY(model.running() == false);
+    QVERIFY2(model.rowCount() == 4, QString::number(model.rowCount()).toLocal8Bit());
+
+    i = 1;
+    QVERIFY2(model.item(i, LogFeedListModel::CidRole).toString()
+                     == "bafyreibl6vp7vczey2fxae5gqw2xfhb4cmnd6lcez4d6hlbrll3p6fg4o4",
+             model.item(i, LogFeedListModel::CidRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(i, LogFeedListModel::DisplayNameRole).toString() == "",
+             model.item(i, LogFeedListModel::DisplayNameRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(i, LogFeedListModel::HandleRole).toString() == "test.handle",
+             model.item(i, LogFeedListModel::HandleRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(i, LogFeedListModel::AvatarRole).toString() == "test_avatar.jpg",
+             model.item(i, LogFeedListModel::AvatarRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(i, LogFeedListModel::RecordTextPlainRole).toString() == "tst",
+             model.item(i, LogFeedListModel::RecordTextPlainRole).toString().toLocal8Bit());
 }
 
 QTEST_MAIN(log_test)

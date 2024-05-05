@@ -7,6 +7,7 @@ import tech.relog.hagoromo.logoperator 1.0
 import tech.relog.hagoromo.logstatisticslistmodel 1.0
 import tech.relog.hagoromo.logdailylistmodel 1.0
 import tech.relog.hagoromo.logmonthlylistmodel 1.0
+import tech.relog.hagoromo.logfeedlistmodel 1.0
 import tech.relog.hagoromo.singleton 1.0
 
 import "../controls"
@@ -31,9 +32,12 @@ Dialog {
         logMonthlyListModel.getLatest()
     }
     onClosed: {
+        tabBar.currentIndex = 0
         logStatisticsListModel.clear()
         logDailyListModel.clear()
         logMonthlyListModel.clear()
+        logDailyFeedListModel.clear()
+        logMonthlyFeedListModel.clear()
     }
 
 
@@ -46,6 +50,8 @@ Dialog {
         did: account.did
         onFinished: {
             logStatisticsListModel.getLatest()
+            logDailyListModel.getLatest()
+            logMonthlyListModel.getLatest()
         }
         onErrorOccured: (code, message) => logViewDialog.errorOccured(account.uuid, code, message)
     }
@@ -104,8 +110,9 @@ Dialog {
             interactive: false
             clip: true
 
-            property int frameWidth: 500
-            property int frameHeight: 350
+            property int frameWidth: 500 * AdjustedValues.ratio
+            property int frameHeight: 350 * AdjustedValues.ratio
+            property int frameColumnWidth: 150 * AdjustedValues.ratio
 
             Frame {
                 contentWidth: statisticsScrollView.width
@@ -130,21 +137,36 @@ Dialog {
                     id: dailyRowLayout
                     width: swipeView.frameWidth
                     LogTotalListView {
-                        Layout.preferredWidth: 150
+                        Layout.preferredWidth: swipeView.frameColumnWidth
                         Layout.preferredHeight: swipeView.frameHeight
                         verticalScrollBar: true
+                        enabled: !logDailyFeedListModel.running
                         model: LogDailyListModel {
                             id: logDailyListModel
                             did: account.did
+                            onFinished: {
+                                if(rowCount()){
+
+                                }
+                            }
                         }
                         onClickedItem: (name) => {
                                            console.log("select:" + name)
+                                           logDailyFeedListModel.selectCondition = name
+                                           logDailyFeedListModel.clear()
+                                           logDailyFeedListModel.getLatest()
                                        }
                     }
-                    Rectangle {
+                    TimelineView {
                         Layout.fillWidth: true
                         Layout.preferredHeight: swipeView.frameHeight
-
+                        model: LogFeedListModel {
+                            id: logDailyFeedListModel
+                            targetDid: account.did
+                            targetHandle: account.handle
+                            targetAvatar: account.avatar
+                            feedType: LogFeedListModel.DailyFeedType
+                        }
                     }
                 }
             }
@@ -156,7 +178,7 @@ Dialog {
                     id: monthlyRowLayout
                     width: swipeView.frameWidth
                     LogTotalListView {
-                        Layout.preferredWidth: 150
+                        Layout.preferredWidth: swipeView.frameColumnWidth
                         Layout.preferredHeight: swipeView.frameHeight
                         verticalScrollBar: true
                         model: LogMonthlyListModel {
@@ -165,12 +187,21 @@ Dialog {
                         }
                         onClickedItem: (name) => {
                                            console.log("select:" + name)
+                                           logMonthlyFeedListModel.selectCondition = name
+                                           logMonthlyFeedListModel.clear()
+                                           logMonthlyFeedListModel.getLatest()
                                        }
                     }
-                    Rectangle {
+                    TimelineView {
                         Layout.fillWidth: true
                         Layout.preferredHeight: swipeView.frameHeight
-
+                        model: LogFeedListModel {
+                            id: logMonthlyFeedListModel
+                            targetDid: account.did
+                            targetHandle: account.handle
+                            targetAvatar: account.avatar
+                            feedType: LogFeedListModel.MonthlyFeedType
+                        }
                     }
                 }
             }

@@ -232,7 +232,7 @@ bool LogAccess::dbInsertRecord(const QString &uri, const QString &cid, const QSt
 {
     bool ret = true;
     QString created_at_str = json.value("createdAt").toString();
-    QDateTime created_at = QDateTime::fromString(created_at_str, Qt::ISODateWithMs);
+    QDateTime created_at = QDateTime::fromString(created_at_str, Qt::ISODateWithMs).toLocalTime();
 
     QSqlQuery query(QSqlDatabase::database(m_dbConnectionName));
     if (query.prepare("INSERT INTO record(cid, uri, day, month, createdAt, type, record, view)"
@@ -240,8 +240,10 @@ bool LogAccess::dbInsertRecord(const QString &uri, const QString &cid, const QSt
         query.addBindValue(cid);
         query.addBindValue(uri);
         if (!created_at_str.isEmpty() && created_at.isValid()) {
-            query.addBindValue(created_at.toUTC().toString("yyyy/MM/dd"));
-            query.addBindValue(created_at.toUTC().toString("yyyy/MM"));
+            // 集計結果の見た目や検索条件に使うのでローカルタイム
+            query.addBindValue(created_at.toString("yyyy/MM/dd"));
+            query.addBindValue(created_at.toString("yyyy/MM"));
+            // カーソルで使うのでrecordの値を同じ
             query.addBindValue(created_at_str);
         } else {
             query.addBindValue(QVariant());
