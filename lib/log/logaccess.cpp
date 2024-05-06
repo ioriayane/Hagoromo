@@ -301,7 +301,7 @@ QList<TotalItem> LogAccess::dbMakeDailyTotals() const
     QSqlQuery query(QSqlDatabase::database(m_dbConnectionName));
     if (dbSelect(query,
                  "SELECT day, count(day) FROM record"
-                 " WHERE day NOTNULL AND type = 'app.bsky.feed.post' "
+                 " WHERE day NOTNULL AND type = 'app.bsky.feed.post'"
                  " GROUP BY day ORDER BY day DESC")) {
         while (query.next()) {
             TotalItem item;
@@ -319,7 +319,7 @@ QList<TotalItem> LogAccess::dbMakeMonthlyTotals() const
     QSqlQuery query(QSqlDatabase::database(m_dbConnectionName));
     if (dbSelect(query,
                  "SELECT month, count(month) FROM record"
-                 " WHERE month NOTNULL AND type = 'app.bsky.feed.post' "
+                 " WHERE month NOTNULL AND type = 'app.bsky.feed.post'"
                  " GROUP BY month ORDER BY month DESC")) {
         while (query.next()) {
             TotalItem item;

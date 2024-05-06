@@ -208,7 +208,7 @@ void log_test::test_LogManager_select()
 
     {
         QSignalSpy spy(&manager, SIGNAL(finishedSelection(const QString &)));
-        emit manager.selectRecords(did, 0, "2024/04/18", "2024-04-18T17:17:47.225Z", 5);
+        emit manager.selectRecords(did, 0, "2024/04/18", "2024-04-18T13:38:16.029Z", 5);
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
@@ -365,7 +365,7 @@ void log_test::test_LogFeedListModel()
     }
 
     QVERIFY(model.running() == false);
-    QVERIFY2(model.rowCount() == 4, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY2(model.rowCount() == 5, QString::number(model.rowCount()).toLocal8Bit());
 
     i = 1;
     QVERIFY2(model.item(i, LogFeedListModel::CidRole).toString()
