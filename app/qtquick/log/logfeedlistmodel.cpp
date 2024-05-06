@@ -26,9 +26,13 @@ bool LogFeedListModel::getLatest()
     connect(manager, &LogManager::finishedSelection, this, [=](const QString &records) {
         if (!records.isEmpty()) {
             QJsonDocument doc = QJsonDocument::fromJson(records.toUtf8());
-            QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> feed_view_post_list;
+            // QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> feed_view_post_list;
 
             // post処理ではcursorのみ処理する
+            if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
+                m_cursor = doc.object().value("cursor").toString();
+                qDebug() << "Update cursor(getLatest)" << m_cursor;
+            }
 
             // for (const auto &src : doc.object().value("records").toArray()) {
             //     AppBskyFeedDefs::FeedViewPost view_post;
@@ -65,7 +69,32 @@ bool LogFeedListModel::getLatest()
 
 bool LogFeedListModel::getNext()
 {
-    //
+    if (running() || did().isEmpty() || selectCondition().isEmpty()) {
+        emit finished(false);
+        return false;
+    }
+    setRunning(true);
+
+    LogManager *manager = new LogManager(this);
+    connect(manager, &LogManager::finishedSelection, this, [=](const QString &records) {
+        if (!records.isEmpty()) {
+            QJsonDocument doc = QJsonDocument::fromJson(records.toUtf8());
+            // post処理ではcursorのみ処理する
+            m_cursor = doc.object().value("cursor").toString();
+            qDebug() << "Update cursor(getNext)" << m_cursor;
+        }
+    });
+    connect(manager, &LogManager::finishedSelectionPosts, this, [=]() {
+        if (!manager->feedViewPosts().isEmpty()) {
+            copyFromNext(manager->feedViewPosts());
+        }
+        QTimer::singleShot(1, this, &LogFeedListModel::displayQueuedPostsNext);
+        manager->deleteLater();
+    });
+    manager->setAccount(account());
+    emit manager->selectRecords(did(), static_cast<int>(feedType()), selectCondition(), m_cursor,
+                                0);
+
     return true;
 }
 
