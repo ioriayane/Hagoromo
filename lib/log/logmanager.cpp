@@ -29,6 +29,7 @@ LogManager::LogManager(QObject *parent) : AtProtocolAccount { parent }
                 m_viewPosts = view_posts;
                 m_cueGetPost.clear();
                 m_postViews.clear();
+                m_postViewsJson = QJsonArray();
                 for (const auto &post : view_posts) {
                     if (post.startsWith("at://")) {
                         m_cueGetPost.append(post);
@@ -36,6 +37,8 @@ LogManager::LogManager(QObject *parent) : AtProtocolAccount { parent }
                 }
                 getPosts();
             });
+    connect(&m_logAccess, &LogAccess::finishedUpdateRecords, this,
+            [=]() { emit finishedSelectionPosts(); });
     connect(&m_logAccess, &LogAccess::progressMessage, this,
             [=](const QString &message) { emit progressMessage(message); });
     m_thread.start();
@@ -84,6 +87,8 @@ const QList<AppBskyFeedDefs::FeedViewPost> &LogManager::feedViewPosts() const
 
 void LogManager::makeFeedViewPostList()
 {
+    QList<RecordPostItem> record_post_items;
+
     for (const auto &post_str : qAsConst(m_viewPosts)) {
         if (post_str.startsWith("at://")) {
             // APIで取得したデータを探して追加する
@@ -95,6 +100,16 @@ void LogManager::makeFeedViewPostList()
                     break;
                 }
             }
+            // DBへのフィードバック用データ
+            for (const auto &post_val : qAsConst(m_postViewsJson)) {
+                if (post_val.toObject().value("uri").toString() == post_str) {
+                    RecordPostItem item;
+                    item.uri = post_str;
+                    item.json = QJsonDocument(post_val.toObject()).toJson(QJsonDocument::Compact);
+                    record_post_items.append(item);
+                    break;
+                }
+            }
         } else {
             // dbに保存してあったpostのデータを追加する
             QJsonDocument doc = QJsonDocument::fromJson(post_str.toUtf8());
@@ -103,6 +118,8 @@ void LogManager::makeFeedViewPostList()
             m_feedViewPosts.append(feed_view_post);
         }
     }
+    // record_post_itemsが0件でも必ず呼び出して更新完了シグナルを受ける
+    emit m_logAccess.updateRecords(did(), record_post_items);
 }
 
 void LogManager::getPosts()
@@ -110,7 +127,7 @@ void LogManager::getPosts()
     if (m_cueGetPost.isEmpty()) {
         m_feedViewPosts.clear();
         makeFeedViewPostList();
-        emit finishedSelectionPosts();
+        // 完了通知はDBの更新シグナルで実施
         return;
     }
 
@@ -127,6 +144,11 @@ void LogManager::getPosts()
     connect(posts, &AppBskyFeedGetPosts::finished, [=](bool success) {
         if (success) {
             m_postViews.append(posts->postViewList());
+
+            QJsonDocument doc = QJsonDocument::fromJson(posts->replyJson().toUtf8());
+            for (const auto &post_val : doc.object().value("posts").toArray()) {
+                m_postViewsJson.append(post_val);
+            }
         } else {
             emit errorOccured(posts->errorCode(), posts->errorMessage());
         }

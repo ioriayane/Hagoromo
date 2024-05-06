@@ -11,6 +11,13 @@ struct TotalItem
 };
 Q_DECLARE_METATYPE(TotalItem)
 
+struct RecordPostItem
+{
+    QString uri;
+    QString json;
+};
+Q_DECLARE_METATYPE(RecordPostItem)
+
 class LogAccess : public QObject
 {
     Q_OBJECT
@@ -27,12 +34,14 @@ public slots:
     void statistics(const QString &did);
     void selectRecords(const QString &did, const int kind, const QString &condition,
                        const QString &cursor, const int limit);
+    void updateRecords(const QString &did, const QList<RecordPostItem> &record_post_items);
 
 signals:
     void progressMessage(const QString &message);
     void finishedUpdateDb(bool success);
     void finishedTotals(const QList<TotalItem> &list);
     void finishedSelection(const QString &records, const QStringList &view_posts);
+    void finishedUpdateRecords();
 
 private:
     QString dbPath(QString did);
@@ -51,6 +60,7 @@ private:
     QList<TotalItem> dbMakeStatistics() const;
     QString dbSelectRecords(const int kind, const QString &condition, const QString &cursor,
                             const int limit, QStringList &view_posts) const;
+    void dbUpdateRecords(const QList<RecordPostItem> &record_post_items);
 
     QString m_dbConnectionName;
 };

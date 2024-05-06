@@ -1,6 +1,7 @@
 #ifndef LOGMANAGER_H
 #define LOGMANAGER_H
 
+#include <QJsonArray>
 #include <QObject>
 #include <QThread>
 #include "logaccess.h"
@@ -40,6 +41,7 @@ private:
     QStringList m_cueGetPost; // uri
     QStringList m_viewPosts;
     QList<AtProtocolType::AppBskyFeedDefs::PostView> m_postViews;
+    QJsonArray m_postViewsJson; // m_postViewsのJSON
     QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> m_feedViewPosts;
 
     QThread m_thread;

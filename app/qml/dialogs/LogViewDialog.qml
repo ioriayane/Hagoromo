@@ -151,7 +151,8 @@ Dialog {
                         Layout.preferredWidth: swipeView.frameColumnWidth
                         Layout.preferredHeight: swipeView.frameHeight
                         verticalScrollBar: true
-                        enabled: !logDailyFeedListModel.running
+                        enabled: !logDailyFeedListModel.running &&
+                                 !logMonthlyFeedListModel.running
                         model: LogDailyListModel {
                             id: logDailyListModel
                             did: account.did
@@ -163,6 +164,9 @@ Dialog {
                         }
                         onClickedItem: (name) => {
                                            console.log("select:" + name)
+                                           logDailyFeedListModel.setAccount(account.service, account.did,
+                                                                            account.handle, account.email,
+                                                                            account.accessJwt, account.refreshJwt)
                                            logDailyFeedListModel.selectCondition = name
                                            logDailyFeedListModel.clear()
                                            logDailyFeedListModel.getLatest()
@@ -192,12 +196,17 @@ Dialog {
                         Layout.preferredWidth: swipeView.frameColumnWidth
                         Layout.preferredHeight: swipeView.frameHeight
                         verticalScrollBar: true
+                        enabled: !logDailyFeedListModel.running &&
+                                 !logMonthlyFeedListModel.running
                         model: LogMonthlyListModel {
                             id: logMonthlyListModel
                             did: account.did
                         }
                         onClickedItem: (name) => {
                                            console.log("select:" + name)
+                                           logMonthlyFeedListModel.setAccount(account.service, account.did,
+                                                                              account.handle, account.email,
+                                                                              account.accessJwt, account.refreshJwt)
                                            logMonthlyFeedListModel.selectCondition = name
                                            logMonthlyFeedListModel.clear()
                                            logMonthlyFeedListModel.getLatest()

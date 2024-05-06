@@ -153,6 +153,23 @@ void LogAccess::selectRecords(const QString &did, const int kind, const QString 
     emit finishedSelection(records, view_posts);
 }
 
+void LogAccess::updateRecords(const QString &did, const QList<RecordPostItem> &record_post_items)
+{
+    qDebug().noquote() << LOG_DATETIME << "updateRecords" << did
+                       << "count:" << record_post_items.length();
+    if (did.isEmpty() || record_post_items.isEmpty()) {
+        emit finishedUpdateRecords();
+        return;
+    }
+    dbInit();
+    if (dbOpen(did)) {
+        dbUpdateRecords(record_post_items);
+        dbClose();
+    }
+    dbRelease();
+    emit finishedUpdateRecords();
+}
+
 QString LogAccess::dbPath(QString did)
 {
     did.replace(":", "_");
@@ -470,4 +487,24 @@ QString LogAccess::dbSelectRecords(const int kind, const QString &condition, con
                 .arg(last_created_at);
     }
     return QString("{\"records\": []}");
+}
+
+void LogAccess::dbUpdateRecords(const QList<RecordPostItem> &record_post_items)
+{
+    QString sql;
+    for (const auto &item : record_post_items) {
+        QSqlQuery query(QSqlDatabase::database(m_dbConnectionName));
+        if (query.prepare("UPDATE record"
+                          " SET view = ?"
+                          " WHERE uri = ?")) {
+            query.addBindValue(item.json);
+            query.addBindValue(item.uri);
+            if (!query.exec()) {
+                qWarning().noquote() << LOG_DATETIME << query.lastError();
+                qInfo().noquote() << LOG_DATETIME << query.lastQuery() << query.boundValues();
+            }
+        } else {
+            qWarning().noquote() << LOG_DATETIME << query.lastError();
+        }
+    }
 }

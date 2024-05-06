@@ -10,5 +10,6 @@
         <file>response/posts/1/xrpc/app.bsky.feed.getPosts</file>
         <file>response/posts/2/xrpc/app.bsky.feed.getPosts</file>
         <file>response/posts/3/xrpc/app.bsky.feed.getPosts</file>
+        <file>response/posts/10/xrpc/app.bsky.feed.getPosts</file>
     </qresource>
 </RCC>

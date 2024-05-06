@@ -26,26 +26,37 @@ bool LogFeedListModel::getLatest()
     connect(manager, &LogManager::finishedSelection, this, [=](const QString &records) {
         if (!records.isEmpty()) {
             QJsonDocument doc = QJsonDocument::fromJson(records.toUtf8());
-            QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> view_post_list;
+            QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> feed_view_post_list;
 
-            for (const auto &src : doc.object().value("records").toArray()) {
-                AppBskyFeedDefs::FeedViewPost view_post;
-                view_post.post.uri = src.toObject().value("uri").toString();
-                view_post.post.cid = src.toObject().value("cid").toString();
-                LexiconsTypeUnknown::copyUnknown(src.toObject().value("value").toObject(),
-                                                 view_post.post.record);
-                view_post.post.author.did = did();
-                view_post.post.author.handle = handle();
-                view_post.post.author.avatar = targetAvatar();
-                view_post.post.indexedAt =
-                        src.toObject().value("value").toObject().value("createdAt").toString();
-                view_post_list.append(view_post);
-            }
-            copyFrom(view_post_list);
+            // post処理ではcursorのみ処理する
+
+            // for (const auto &src : doc.object().value("records").toArray()) {
+            //     AppBskyFeedDefs::FeedViewPost view_post;
+            //     view_post.post.uri = src.toObject().value("uri").toString();
+            //     view_post.post.cid = src.toObject().value("cid").toString();
+            //     LexiconsTypeUnknown::copyUnknown(src.toObject().value("value").toObject(),
+            //                                      view_post.post.record);
+            //     view_post.post.author.did = did();
+            //     view_post.post.author.handle = handle();
+            //     view_post.post.author.avatar = targetAvatar();
+            //     view_post.post.indexedAt =
+            //             src.toObject().value("value").toObject().value("createdAt").toString();
+            //     feed_view_post_list.append(view_post);
+            // }
+            // copyFrom(feed_view_post_list);
+        }
+        // QTimer::singleShot(1, this, &LogFeedListModel::displayQueuedPosts);
+        // deleteはDB更新後
+        // manager->deleteLater();
+    });
+    connect(manager, &LogManager::finishedSelectionPosts, this, [=]() {
+        if (!manager->feedViewPosts().isEmpty()) {
+            copyFrom(manager->feedViewPosts());
         }
         QTimer::singleShot(1, this, &LogFeedListModel::displayQueuedPosts);
         manager->deleteLater();
     });
+    manager->setAccount(account());
     emit manager->selectRecords(did(), static_cast<int>(feedType()), selectCondition(), QString(),
                                 0);
 

@@ -304,6 +304,65 @@ void log_test::test_LogManager_select()
                 manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
     }
 
+    // レコードにポストの情報が正しくフィードバックできていればREST
+    // APIは呼ばないのでエラーにならないはず
+    manager.setService(account.service + "/posts/1_dummy");
+    {
+        QSignalSpy spy(&manager, SIGNAL(finishedSelection(const QString &)));
+        QSignalSpy spy2(&manager, SIGNAL(finishedSelectionPosts()));
+        emit manager.selectRecords(did, 0, "2024/04/18", QString(), 5);
+        spy.wait();
+        spy2.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QVERIFY2(spy2.count() == 1, QString("spy2.count()=%1").arg(spy2.count()).toUtf8());
+
+        QList<QVariant> arguments = spy.takeFirst();
+
+        QFile file(":/data/repo/select_1.json");
+        QVERIFY(file.open(QFile::ReadOnly));
+        QJsonDocument except = QJsonDocument::fromJson(file.readAll());
+        file.close();
+
+        bool check = (except.object()
+                      == QJsonDocument::fromJson(arguments.at(0).toString().toUtf8()).object());
+        if (!check) {
+            qDebug().noquote().nospace()
+                    << "except:" << except.toJson(QJsonDocument::JsonFormat::Compact);
+            qDebug().noquote().nospace() << "actual:" << arguments.at(0).toString();
+        }
+        QVERIFY(check);
+
+        qDebug() << "feedViewPosts:" << manager.feedViewPosts().length();
+        QVERIFY2(manager.feedViewPosts().length() == 5,
+                 QString::number(manager.feedViewPosts().length()).toLocal8Bit());
+
+        i = 0;
+        QVERIFY2(
+                manager.feedViewPosts().at(i).post.uri
+                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfxfddc6u22",
+                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        i = 1;
+        QVERIFY2(
+                manager.feedViewPosts().at(i).post.uri
+                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfxf5lbjo2b",
+                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        i = 2;
+        QVERIFY2(
+                manager.feedViewPosts().at(i).post.uri
+                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfxex2a5c2a",
+                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        i = 3;
+        QVERIFY2(
+                manager.feedViewPosts().at(i).post.uri
+                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfxegyxbg2b",
+                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        i = 4;
+        QVERIFY2(
+                manager.feedViewPosts().at(i).post.uri
+                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfweqao2e2r",
+                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+    }
+
     manager.setService(account.service + "/posts/3");
     {
         QSignalSpy spy(&manager, SIGNAL(finishedSelection(const QString &)));
@@ -456,9 +515,17 @@ void log_test::test_LogStatisticsListModel()
 void log_test::test_LogFeedListModel()
 {
     int i = 0;
+    AtProtocolInterface::AccountData account;
+    account.service = m_service;
+    account.did = "did:plc:log_manager_test";
+    account.handle = "log.manager.test";
+    account.accessJwt = "access jwt";
+
     LogFeedListModel model;
-    model.setTargetDid("did:plc:log_operator_test");
-    model.setTargetHandle("test.handle");
+    model.setAccount(account.service + "/posts/10", account.did, account.handle, account.email,
+                     account.accessJwt, account.refreshJwt);
+    model.setTargetDid(account.did);
+    model.setTargetHandle(account.handle);
     model.setTargetAvatar("test_avatar.jpg");
     model.setSelectCondition("2024/03/28");
     model.setFeedType(LogFeedListModel::LogFeedListModelFeedType::DailyFeedType);
@@ -480,14 +547,31 @@ void log_test::test_LogFeedListModel()
     QVERIFY2(model.item(i, LogFeedListModel::CidRole).toString()
                      == "bafyreibl6vp7vczey2fxae5gqw2xfhb4cmnd6lcez4d6hlbrll3p6fg4o4",
              model.item(i, LogFeedListModel::CidRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(i, LogFeedListModel::DisplayNameRole).toString() == "",
+    QVERIFY2(model.item(i, LogFeedListModel::DisplayNameRole).toString() == "iori2",
              model.item(i, LogFeedListModel::DisplayNameRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(i, LogFeedListModel::HandleRole).toString() == "test.handle",
+    QVERIFY2(model.item(i, LogFeedListModel::HandleRole).toString() == "ioriayane2.bsky.social",
              model.item(i, LogFeedListModel::HandleRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(i, LogFeedListModel::AvatarRole).toString() == "test_avatar.jpg",
+    QVERIFY2(model.item(i, LogFeedListModel::AvatarRole).toString()
+                     == "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
+                        "bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg",
              model.item(i, LogFeedListModel::AvatarRole).toString().toLocal8Bit());
     QVERIFY2(model.item(i, LogFeedListModel::RecordTextPlainRole).toString() == "tst",
              model.item(i, LogFeedListModel::RecordTextPlainRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(i, LogFeedListModel::HasQuoteRecordRole).toBool() == true,
+             model.item(i, LogFeedListModel::HasQuoteRecordRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(i, LogFeedListModel::QuoteRecordCidRole).toString()
+                     == "bafyreic2q7ofjjen2sgyempgdbpveopqja537j7jauss4epdlmsfplrdsy",
+             model.item(i, LogFeedListModel::QuoteRecordCidRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(i, LogFeedListModel::QuoteRecordHandleRole).toString()
+                     == "ioriayane.relog.tech",
+             model.item(i, LogFeedListModel::QuoteRecordHandleRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(i, LogFeedListModel::HasExternalLinkRole).toBool() == true,
+             model.item(i, LogFeedListModel::HasExternalLinkRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(i, LogFeedListModel::ExternalLinkThumbRole).toString()
+                     == "https://cdn.bsky.app/img/feed_thumbnail/plain/"
+                        "did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
+                        "bafkreicyv4kxm3gjayv2farf4lwhzhh6hdf3l6lsyac2ww3mphgrm6dosq@jpeg",
+             model.item(i, LogFeedListModel::ExternalLinkThumbRole).toString().toLocal8Bit());
 }
 
 QTEST_MAIN(log_test)
