@@ -22,6 +22,7 @@ public:
         UuidRole,
         IsMainRole,
         ServiceRole,
+        ServiceEndpointRole,
         IdentifierRole,
         PasswordRole,
         DidRole,

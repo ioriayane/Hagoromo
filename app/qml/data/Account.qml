@@ -11,6 +11,7 @@ QtObject {
     property string accessJwt: ""
     property string refreshJwt: ""
     property string avatar: ""
+    property string serviceEndpoint: ""
 
     function set(model, uuid){
         var row = model.indexAt(uuid)
@@ -23,6 +24,7 @@ QtObject {
             obj.accessJwt = model.item(row, AccountListModel.AccessJwtRole)
             obj.refreshJwt = model.item(row, AccountListModel.RefreshJwtRole)
             obj.avatar = model.item(row, AccountListModel.AvatarRole)
+            obj.serviceEndpoint = model.item(row, AccountListModel.ServiceEndpointRole)
 
             return true
         }else{

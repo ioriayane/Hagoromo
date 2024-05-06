@@ -222,7 +222,7 @@ Dialog {
                                 }
                             }
                             MenuItem {
-                                icon.source: "../images/delete.png"
+                                icon.source: "../images/database.png"
                                 text: qsTr("Log")
                                 onTriggered: {
                                     if(logViewDialog.account.set(accountList.model, model.uuid)){

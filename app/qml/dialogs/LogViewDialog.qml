@@ -46,7 +46,7 @@ Dialog {
     }
     LogOperator {
         id: logOperator
-        service: account.service
+        service: account.serviceEndpoint
         did: account.did
         onFinished: {
             logStatisticsListModel.getLatest()
