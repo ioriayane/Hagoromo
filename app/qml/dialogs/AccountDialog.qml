@@ -136,12 +136,30 @@ Dialog {
                         onClicked: moreMenu.open()
                         Menu {
                             id: moreMenu
-                            width: mutedWordMenuItem.implicitWidth > threadGateMenuItem.implicitWidth ?
-                                       mutedWordMenuItem.implicitWidth : threadGateMenuItem.implicitWidth
+                            width: {
+                                var w = mutedWordMenuItem.implicitWidth
+                                if(threadGateMenuItem.implicitWidth > w){
+                                    w = threadGateMenuItem.implicitWidth
+                                }
+                                if(statsAndLogsMenutItem.implicitWidth > w){
+                                    w = statsAndLogsMenutItem.implicitWidth
+                                }
+                                return w
+                            }
                             MenuItem {
                                 icon.source: "../images/account_icon.png"
                                 text: qsTr("Set as main")
                                 onTriggered: accountList.model.setMainAccount(model.index)
+                            }
+                            MenuItem {
+                                id: statsAndLogsMenutItem
+                                icon.source: "../images/database.png"
+                                text: qsTr("Post statistics and logs")
+                                onTriggered: {
+                                    if(logViewDialog.account.set(accountList.model, model.uuid)){
+                                        logViewDialog.open()
+                                    }
+                                }
                             }
                             MenuSeparator {}
                             MenuItem {
@@ -219,15 +237,6 @@ Dialog {
                                         selectThreadGateDialog.initialOptions = accountList.model.item(i, AccountListModel.ThreadGateOptionsRole)
                                         selectThreadGateDialog.accountIndex = i
                                         selectThreadGateDialog.open()
-                                    }
-                                }
-                            }
-                            MenuItem {
-                                icon.source: "../images/database.png"
-                                text: qsTr("Log")
-                                onTriggered: {
-                                    if(logViewDialog.account.set(accountList.model, model.uuid)){
-                                        logViewDialog.open()
                                     }
                                 }
                             }

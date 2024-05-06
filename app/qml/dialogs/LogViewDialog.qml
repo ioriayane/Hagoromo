@@ -241,10 +241,6 @@ Dialog {
             Item {
                 Layout.fillWidth: true
             }
-            Button {
-                text: "test"
-                onClicked: console.log("height:" + logViewDialog.height)
-            }
         }
     }
 }
