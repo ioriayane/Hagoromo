@@ -57,7 +57,7 @@ Dialog {
     }
 
     ColumnLayout {
-        spacing: 10
+        spacing: 0
         RowLayout {
             AvatarImage {
                 Layout.preferredWidth: AdjustedValues.i24
@@ -98,18 +98,22 @@ Dialog {
         }
         TabBar {
             id: tabBar
+            Layout.topMargin: 5
             Layout.fillWidth: true
             TabButton {
+                implicitHeight: AdjustedValues.b36
                 font.pointSize: AdjustedValues.f10
                 font.capitalization: Font.MixedCase
                 text: qsTr("Statistics")
             }
             TabButton {
+                implicitHeight: AdjustedValues.b36
                 font.pointSize: AdjustedValues.f10
                 font.capitalization: Font.MixedCase
                 text: qsTr("Daily")
             }
             TabButton {
+                implicitHeight: AdjustedValues.b36
                 font.pointSize: AdjustedValues.f10
                 font.capitalization: Font.MixedCase
                 text: qsTr("Monthly")
@@ -121,7 +125,7 @@ Dialog {
             interactive: false
             clip: true
 
-            property int frameWidth: 500 * AdjustedValues.ratio
+            property int frameWidth: 600 * AdjustedValues.ratio
             property int frameHeight: 350 * AdjustedValues.ratio
             property int frameColumnWidth: 150 * AdjustedValues.ratio
 
