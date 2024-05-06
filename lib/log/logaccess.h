@@ -10,7 +10,6 @@ struct TotalItem
     int count = 0;
 };
 Q_DECLARE_METATYPE(TotalItem)
-Q_DECLARE_METATYPE(QList<TotalItem>)
 
 class LogAccess : public QObject
 {
@@ -33,7 +32,7 @@ signals:
     void progressMessage(const QString &message);
     void finishedUpdateDb(bool success);
     void finishedTotals(const QList<TotalItem> &list);
-    void finishedSelection(const QString &records);
+    void finishedSelection(const QString &records, const QStringList &view_posts);
 
 private:
     QString dbPath(QString did);
@@ -51,7 +50,7 @@ private:
     QList<TotalItem> dbMakeMonthlyTotals() const;
     QList<TotalItem> dbMakeStatistics() const;
     QString dbSelectRecords(const int kind, const QString &condition, const QString &cursor,
-                            const int limit) const;
+                            const int limit, QStringList &view_posts) const;
 
     QString m_dbConnectionName;
 };

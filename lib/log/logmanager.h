@@ -4,8 +4,10 @@
 #include <QObject>
 #include <QThread>
 #include "logaccess.h"
+#include "atprotocol/lexicons.h"
+#include "atprotocol/accessatprotocol.h"
 
-class LogManager : public QObject
+class LogManager : public AtProtocolInterface::AtProtocolAccount
 {
     Q_OBJECT
 public:
@@ -15,6 +17,7 @@ public:
     void update(const QString &service, const QString &did);
     void clearDb(const QString &did);
 
+    const QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> &feedViewPosts() const;
 public slots:
 
 signals:
@@ -29,8 +32,16 @@ signals:
     void selectRecords(const QString &did, const int kind, const QString &condition,
                        const QString &cursor, const int limit);
     void finishedSelection(const QString &records);
+    void finishedSelectionPosts();
 
 private:
+    void makeFeedViewPostList();
+    void getPosts();
+    QStringList m_cueGetPost; // uri
+    QStringList m_viewPosts;
+    QList<AtProtocolType::AppBskyFeedDefs::PostView> m_postViews;
+    QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> m_feedViewPosts;
+
     QThread m_thread;
     LogAccess m_logAccess;
 };

@@ -1,11 +1,17 @@
 #include "logmanager.h"
+#include "atprotocol/app/bsky/feed/appbskyfeedgetposts.h"
 #include "atprotocol/com/atproto/sync/comatprotosyncgetrepo.h"
+#include "atprotocol/lexicons_func.h"
 
 #include <QDebug>
+#include <QJsonDocument>
+#include <QTimer>
 
+using namespace AtProtocolType;
+using AtProtocolInterface::AppBskyFeedGetPosts;
 using AtProtocolInterface::ComAtprotoSyncGetRepo;
 
-LogManager::LogManager(QObject *parent) : QObject { parent }
+LogManager::LogManager(QObject *parent) : AtProtocolAccount { parent }
 {
     m_logAccess.moveToThread(&m_thread);
     connect(this, &LogManager::updateDb, &m_logAccess, &LogAccess::updateDb);
@@ -18,7 +24,18 @@ LogManager::LogManager(QObject *parent) : QObject { parent }
     connect(&m_logAccess, &LogAccess::finishedTotals, this,
             [=](const QList<TotalItem> &list) { emit finishedTotals(list); });
     connect(&m_logAccess, &LogAccess::finishedSelection, this,
-            [=](const QString &records) { emit finishedSelection(records); });
+            [=](const QString &records, const QStringList &view_posts) {
+                emit finishedSelection(records);
+                m_viewPosts = view_posts;
+                m_cueGetPost.clear();
+                m_postViews.clear();
+                for (const auto &post : view_posts) {
+                    if (post.startsWith("at://")) {
+                        m_cueGetPost.append(post);
+                    }
+                }
+                getPosts();
+            });
     connect(&m_logAccess, &LogAccess::progressMessage, this,
             [=](const QString &message) { emit progressMessage(message); });
     m_thread.start();
@@ -58,4 +75,66 @@ void LogManager::update(const QString &service, const QString &did)
 void LogManager::clearDb(const QString &did)
 {
     m_logAccess.removeDbFile(did);
+}
+
+const QList<AppBskyFeedDefs::FeedViewPost> &LogManager::feedViewPosts() const
+{
+    return m_feedViewPosts;
+}
+
+void LogManager::makeFeedViewPostList()
+{
+    for (const auto &post_str : qAsConst(m_viewPosts)) {
+        if (post_str.startsWith("at://")) {
+            // APIで取得したデータを探して追加する
+            for (const auto &post_view : qAsConst(m_postViews)) {
+                if (post_view.uri == post_str) {
+                    AppBskyFeedDefs::FeedViewPost feed_view_post;
+                    feed_view_post.post = post_view;
+                    m_feedViewPosts.append(feed_view_post);
+                    break;
+                }
+            }
+        } else {
+            // dbに保存してあったpostのデータを追加する
+            QJsonDocument doc = QJsonDocument::fromJson(post_str.toUtf8());
+            AppBskyFeedDefs::FeedViewPost feed_view_post;
+            AppBskyFeedDefs::copyPostView(doc.object(), feed_view_post.post);
+            m_feedViewPosts.append(feed_view_post);
+        }
+    }
+}
+
+void LogManager::getPosts()
+{
+    if (m_cueGetPost.isEmpty()) {
+        m_feedViewPosts.clear();
+        makeFeedViewPostList();
+        emit finishedSelectionPosts();
+        return;
+    }
+
+    // getPostsは最大25個までいっきに取得できる
+    QStringList uris;
+    for (int i = 0; i < 25; i++) {
+        if (m_cueGetPost.isEmpty())
+            break;
+        uris.append(m_cueGetPost.first());
+        m_cueGetPost.removeFirst();
+    }
+
+    AppBskyFeedGetPosts *posts = new AppBskyFeedGetPosts(this);
+    connect(posts, &AppBskyFeedGetPosts::finished, [=](bool success) {
+        if (success) {
+            m_postViews.append(posts->postViewList());
+        } else {
+            emit errorOccured(posts->errorCode(), posts->errorMessage());
+        }
+        // 残ってたらもう1回
+        QTimer::singleShot(10, this, &LogManager::getPosts);
+        posts->deleteLater();
+    });
+    posts->setAccount(account());
+    // posts->setLabelers(m_contentFilterLabels.labelerDids());
+    posts->getPosts(uris);
 }

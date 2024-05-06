@@ -50,9 +50,9 @@ void LogAccess::updateDb(const QString &did, const QByteArray &data)
             QStringList saved_cids = dbGetSavedCids();
             for (const auto &cid : decoder.cids()) {
                 if (i++ % 100 == 0) {
-                    emit progressMessage(QString("Updating local databse ... (%1/%2)")
-                                                 .arg(i)
-                                                 .arg(decoder.cids().length()));
+                    emit progressMessage(
+                            QString("Updating local databse ... (%1%)")
+                                    .arg(static_cast<int>(100 * i / decoder.cids().length())));
                 }
                 if (!saved_cids.contains(cid)) {
                     if (!dbInsertRecord(decoder.uri(cid), cid, decoder.type(cid),
@@ -62,8 +62,7 @@ void LogAccess::updateDb(const QString &did, const QByteArray &data)
                     }
                 }
             }
-            emit progressMessage(
-                    QString("Updating local databse ... (%1/%1)").arg(decoder.cids().length()));
+            emit progressMessage(QString("Updating local databse ... (100%)"));
 
             // 保存されているけど取得したデータにないものは消す
             qDebug().noquote() << LOG_DATETIME << "Checking deleted data...";
@@ -139,18 +138,19 @@ void LogAccess::selectRecords(const QString &did, const int kind, const QString 
                               const QString &cursor, const int limit)
 {
     QString records;
+    QStringList view_posts;
     qDebug().noquote() << LOG_DATETIME << "selectRecords" << did << kind << condition;
     if (did.isEmpty()) {
-        emit finishedSelection(records);
+        emit finishedSelection(records, view_posts);
         return;
     }
     dbInit();
     if (dbOpen(did)) {
-        records = dbSelectRecords(kind, condition, cursor, limit);
+        records = dbSelectRecords(kind, condition, cursor, limit, view_posts);
         dbClose();
     }
     dbRelease();
-    emit finishedSelection(records);
+    emit finishedSelection(records, view_posts);
 }
 
 QString LogAccess::dbPath(QString did)
@@ -424,9 +424,9 @@ QList<TotalItem> LogAccess::dbMakeStatistics() const
 }
 
 QString LogAccess::dbSelectRecords(const int kind, const QString &condition, const QString &cursor,
-                                   const int limit) const
+                                   const int limit, QStringList &view_posts) const
 {
-    QString sql("SELECT uri, cid, record, createdAt FROM record"
+    QString sql("SELECT uri, cid, record, createdAt, view FROM record"
                 " WHERE type = 'app.bsky.feed.post'");
     if (!condition.isEmpty()) {
         if (kind == 0) {
@@ -450,11 +450,20 @@ QString LogAccess::dbSelectRecords(const int kind, const QString &condition, con
         QStringList records;
         QString record_base("{\"uri\": \"%1\", \"cid\": \"%2\", \"value\": %3}");
         QString last_created_at;
+        QString view;
+        QString uri;
         while (query.next()) {
-            records.append(record_base.arg(query.value(0).toString())
+            uri = query.value(0).toString();
+            records.append(record_base.arg(uri)
                                    .arg(query.value(1).toString())
                                    .arg(query.value(2).toString()));
             last_created_at = query.value(3).toString();
+            view = query.value(4).toString();
+            if (view.isEmpty()) {
+                view_posts.append(uri);
+            } else {
+                view_posts.append(view);
+            }
         }
         return QString("{\"records\": [%1], \"cursor\":\"%2\"}")
                 .arg(records.join(","))

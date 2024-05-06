@@ -180,14 +180,25 @@ void log_test::test_LogManager_monthly()
 
 void log_test::test_LogManager_select()
 {
+    int i = 0;
+    AtProtocolInterface::AccountData account;
+    account.service = m_service;
+    account.did = "did:plc:log_manager_test";
+    account.handle = "log.manager.test";
+    account.accessJwt = "access jwt";
     LogManager manager;
     QString did("did:plc:log_manager_test");
+    manager.setAccount(account);
 
+    manager.setService(account.service + "/posts/1");
     {
         QSignalSpy spy(&manager, SIGNAL(finishedSelection(const QString &)));
+        QSignalSpy spy2(&manager, SIGNAL(finishedSelectionPosts()));
         emit manager.selectRecords(did, 0, "2024/04/18", QString(), 5);
         spy.wait();
+        spy2.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QVERIFY2(spy2.count() == 1, QString("spy2.count()=%1").arg(spy2.count()).toUtf8());
 
         QList<QVariant> arguments = spy.takeFirst();
 
@@ -204,13 +215,47 @@ void log_test::test_LogManager_select()
             qDebug().noquote().nospace() << "actual:" << arguments.at(0).toString();
         }
         QVERIFY(check);
+
+        qDebug() << "feedViewPosts:" << manager.feedViewPosts().length();
+        QVERIFY2(manager.feedViewPosts().length() == 5,
+                 QString::number(manager.feedViewPosts().length()).toLocal8Bit());
+
+        i = 0;
+        QVERIFY2(
+                manager.feedViewPosts().at(i).post.uri
+                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfxfddc6u22",
+                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        i = 1;
+        QVERIFY2(
+                manager.feedViewPosts().at(i).post.uri
+                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfxf5lbjo2b",
+                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        i = 2;
+        QVERIFY2(
+                manager.feedViewPosts().at(i).post.uri
+                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfxex2a5c2a",
+                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        i = 3;
+        QVERIFY2(
+                manager.feedViewPosts().at(i).post.uri
+                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfxegyxbg2b",
+                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        i = 4;
+        QVERIFY2(
+                manager.feedViewPosts().at(i).post.uri
+                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfweqao2e2r",
+                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
     }
 
+    manager.setService(account.service + "/posts/2");
     {
         QSignalSpy spy(&manager, SIGNAL(finishedSelection(const QString &)));
+        QSignalSpy spy2(&manager, SIGNAL(finishedSelectionPosts()));
         emit manager.selectRecords(did, 0, "2024/04/18", "2024-04-18T13:38:16.029Z", 5);
         spy.wait();
+        spy2.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QVERIFY2(spy2.count() == 1, QString("spy2.count()=%1").arg(spy2.count()).toUtf8());
 
         QList<QVariant> arguments = spy.takeFirst();
 
@@ -227,13 +272,47 @@ void log_test::test_LogManager_select()
             qDebug().noquote().nospace() << "actual:" << arguments.at(0).toString();
         }
         QVERIFY(check);
+
+        qDebug() << "feedViewPosts:" << manager.feedViewPosts().length();
+        QVERIFY2(manager.feedViewPosts().length() == 5,
+                 QString::number(manager.feedViewPosts().length()).toLocal8Bit());
+
+        i = 0;
+        QVERIFY2(
+                manager.feedViewPosts().at(i).post.uri
+                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfweerkyx27",
+                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        i = 1;
+        QVERIFY2(
+                manager.feedViewPosts().at(i).post.uri
+                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfvyabmpg2n",
+                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        i = 2;
+        QVERIFY2(
+                manager.feedViewPosts().at(i).post.uri
+                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfvvohpdc2q",
+                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        i = 3;
+        QVERIFY2(
+                manager.feedViewPosts().at(i).post.uri
+                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfvuzmjoc2a",
+                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        i = 4;
+        QVERIFY2(
+                manager.feedViewPosts().at(i).post.uri
+                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kqfvsj5wx42r",
+                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
     }
 
+    manager.setService(account.service + "/posts/3");
     {
         QSignalSpy spy(&manager, SIGNAL(finishedSelection(const QString &)));
+        QSignalSpy spy2(&manager, SIGNAL(finishedSelectionPosts()));
         emit manager.selectRecords(did, 1, "2023/07", QString(), 5);
         spy.wait();
+        spy2.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QVERIFY2(spy2.count() == 1, QString("spy2.count()=%1").arg(spy2.count()).toUtf8());
 
         QList<QVariant> arguments = spy.takeFirst();
 
@@ -250,6 +329,36 @@ void log_test::test_LogManager_select()
             qDebug().noquote().nospace() << "actual:" << arguments.at(0).toString();
         }
         QVERIFY(check);
+
+        qDebug() << "feedViewPosts:" << manager.feedViewPosts().length();
+        QVERIFY2(manager.feedViewPosts().length() == 5,
+                 QString::number(manager.feedViewPosts().length()).toLocal8Bit());
+
+        i = 0;
+        QVERIFY2(
+                manager.feedViewPosts().at(i).post.uri
+                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k3qetyacqs2g",
+                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        i = 1;
+        QVERIFY2(
+                manager.feedViewPosts().at(i).post.uri
+                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k3ofnldrp52u",
+                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        i = 2;
+        QVERIFY2(
+                manager.feedViewPosts().at(i).post.uri
+                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k3e7aciteg2m",
+                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        i = 3;
+        QVERIFY2(
+                manager.feedViewPosts().at(i).post.uri
+                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k34hcgybdx27",
+                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        i = 4;
+        QVERIFY2(
+                manager.feedViewPosts().at(i).post.uri
+                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k32c2xekas2h",
+                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
     }
 }
 
