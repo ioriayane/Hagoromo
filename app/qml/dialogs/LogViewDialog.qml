@@ -20,7 +20,7 @@ Dialog {
     modal: true
     x: (parent.width - width) * 0.5
     y: (parent.height - height) * 0.5 - 20
-    title: qsTr("Log")
+    title: qsTr("Post statistics and logs")
 
     signal errorOccured(string account_uuid, string code, string message)
 

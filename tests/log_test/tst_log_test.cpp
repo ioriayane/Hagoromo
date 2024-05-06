@@ -455,13 +455,13 @@ void log_test::test_LogManager_statistics()
                      QString("%1, %2 == %3")
                              .arg(i)
                              .arg(except.at(i).name)
-                             .arg(list.at(0).name)
+                             .arg(list.at(i).name)
                              .toLocal8Bit());
             QVERIFY2(except.at(i).count == list.at(i).count,
                      QString("%1, %2 == %3")
                              .arg(i)
                              .arg(except.at(i).count)
-                             .arg(list.at(0).count)
+                             .arg(list.at(i).count)
                              .toLocal8Bit());
         }
     }
