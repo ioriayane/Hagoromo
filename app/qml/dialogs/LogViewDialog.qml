@@ -19,11 +19,12 @@ Dialog {
     id: logViewDialog
     modal: true
     x: (parent.width - width) * 0.5
-    y: (parent.height - height) * 0.5
+    y: (parent.height - height) * 0.5 - 20
     title: qsTr("Log")
 
     signal errorOccured(string account_uuid, string code, string message)
 
+    property int parentHeight: parent.height
     property alias account: account
 
     onOpened: {
@@ -126,7 +127,7 @@ Dialog {
             clip: true
 
             property int frameWidth: 600 * AdjustedValues.ratio
-            property int frameHeight: 350 * AdjustedValues.ratio
+            property int frameHeight: parentHeight - 260 * AdjustedValues.ratioHalf
             property int frameColumnWidth: 150 * AdjustedValues.ratio
 
             Frame {
@@ -239,6 +240,10 @@ Dialog {
             }
             Item {
                 Layout.fillWidth: true
+            }
+            Button {
+                text: "test"
+                onClicked: console.log("height:" + logViewDialog.height)
             }
         }
     }

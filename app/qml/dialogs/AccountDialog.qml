@@ -50,6 +50,7 @@ Dialog {
     }
     LogViewDialog {
         id: logViewDialog
+        parentHeight: accountDialog.parent.height
         onErrorOccured: (uuid, code, message) => accountDialog.errorOccured(uuid, code, message)
     }
 
