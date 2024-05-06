@@ -70,12 +70,23 @@ Dialog {
                 text: account.handle
                 elide: Text.ElideRight
             }
+            Label {
+                Layout.alignment: Qt.AlignBottom
+                font.pointSize: AdjustedValues.f8
+                visible: logOperator.running
+                text: logOperator.progressMessage
+            }
             IconButton {
                 Layout.preferredWidth: AdjustedValues.b30
                 Layout.preferredHeight: AdjustedValues.b24
                 iconSource: "../images/refresh.png"
                 iconSize: AdjustedValues.i16
-                enabled: !logOperator.running
+                enabled: !logOperator.running &&
+                         !logStatisticsListModel.running &&
+                         !logDailyListModel.running &&
+                         !logMonthlyListModel.running &&
+                         !logDailyFeedListModel.running &&
+                         !logMonthlyFeedListModel.running
                 onClicked: {
                     logOperator.getLatest()
                 }

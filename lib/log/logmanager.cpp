@@ -19,6 +19,8 @@ LogManager::LogManager(QObject *parent) : QObject { parent }
             [=](const QList<TotalItem> &list) { emit finishedTotals(list); });
     connect(&m_logAccess, &LogAccess::finishedSelection, this,
             [=](const QString &records) { emit finishedSelection(records); });
+    connect(&m_logAccess, &LogAccess::progressMessage, this,
+            [=](const QString &message) { emit progressMessage(message); });
     m_thread.start();
 }
 
@@ -36,6 +38,8 @@ void LogManager::update(const QString &service, const QString &did)
         emit finished(false);
         return;
     }
+
+    emit progressMessage("Downloading repository data ...");
 
     ComAtprotoSyncGetRepo *repo = new ComAtprotoSyncGetRepo(this);
     connect(repo, &ComAtprotoSyncGetRepo::finished, this, [=](bool success) {

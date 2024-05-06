@@ -20,6 +20,7 @@ LogAccess::~LogAccess() { }
 
 void LogAccess::removeDbFile(const QString &did)
 {
+    qDebug().noquote() << LOG_DATETIME << "Remove database file" << did;
     QString path = dbPath(did);
     if (QFile::exists(path)) {
         QFile::remove(path);
@@ -38,14 +39,38 @@ void LogAccess::updateDb(const QString &did, const QByteArray &data)
     if (dbOpen(did)) {
         if (dbCreateTable()) {
 
+            qDebug().noquote() << LOG_DATETIME << "Decoding repository data...";
+            emit progressMessage("Analyzing repository data ...");
             CarDecoder decoder;
             decoder.setContent(data);
 
+            qDebug().noquote() << LOG_DATETIME << "Insert repository data...";
+            emit progressMessage("Updating local databse ...");
+            int i = 0;
             QStringList saved_cids = dbGetSavedCids();
             for (const auto &cid : decoder.cids()) {
+                if (i++ % 100 == 0) {
+                    emit progressMessage(QString("Updating local databse ... (%1/%2)")
+                                                 .arg(i)
+                                                 .arg(decoder.cids().length()));
+                }
                 if (!saved_cids.contains(cid)) {
                     if (!dbInsertRecord(decoder.uri(cid), cid, decoder.type(cid),
                                         decoder.json(cid))) {
+                        emit finishedUpdateDb(false);
+                        break;
+                    }
+                }
+            }
+            emit progressMessage(
+                    QString("Updating local databse ... (%1/%1)").arg(decoder.cids().length()));
+
+            // 保存されているけど取得したデータにないものは消す
+            qDebug().noquote() << LOG_DATETIME << "Checking deleted data...";
+            emit progressMessage("Checking deleted data ...");
+            for (const auto &cid : saved_cids) {
+                if (!decoder.cids().contains(cid)) {
+                    if (!dbDeleteRecord(cid)) {
                         emit finishedUpdateDb(false);
                         break;
                     }
@@ -256,6 +281,24 @@ bool LogAccess::dbInsertRecord(const QString &uri, const QString &cid, const QSt
         if (query.exec()) {
             // qInfo() << query.lastInsertId().toLongLong() << "added";
         } else {
+            qWarning().noquote() << LOG_DATETIME << query.lastError();
+            qInfo().noquote() << LOG_DATETIME << query.lastQuery() << query.boundValues();
+            ret = false;
+        }
+    } else {
+        qWarning().noquote() << LOG_DATETIME << query.lastError();
+        ret = false;
+    }
+    return ret;
+}
+
+bool LogAccess::dbDeleteRecord(const QString &cid)
+{
+    bool ret = true;
+    QSqlQuery query(QSqlDatabase::database(m_dbConnectionName));
+    if (query.prepare("DELETE FROM record WHERE cid = ?")) {
+        query.addBindValue(cid);
+        if (!query.exec()) {
             qWarning().noquote() << LOG_DATETIME << query.lastError();
             qInfo().noquote() << LOG_DATETIME << query.lastQuery() << query.boundValues();
             ret = false;

@@ -14,12 +14,14 @@ void LogOperator::getLatest()
         if (!success) {
             //
         }
+        setProgressMessage(QString());
         emit finished(success);
         setRunning(false);
         manager->deleteLater();
     });
     connect(manager, &LogManager::errorOccured, this,
             [=](const QString &code, const QString &message) { emit errorOccured(code, message); });
+    connect(manager, &LogManager::progressMessage, this, &LogOperator::setProgressMessage);
     manager->update(service(), did());
 }
 
@@ -69,4 +71,17 @@ void LogOperator::setDid(const QString &newDid)
         return;
     m_did = newDid;
     emit didChanged();
+}
+
+QString LogOperator::progressMessage() const
+{
+    return m_progressMessage;
+}
+
+void LogOperator::setProgressMessage(const QString &newProgressMessage)
+{
+    if (m_progressMessage == newProgressMessage)
+        return;
+    m_progressMessage = newProgressMessage;
+    emit progressMessageChanged();
 }

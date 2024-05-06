@@ -30,6 +30,7 @@ public slots:
                        const QString &cursor, const int limit);
 
 signals:
+    void progressMessage(const QString &message);
     void finishedUpdateDb(bool success);
     void finishedTotals(const QList<TotalItem> &list);
     void finishedSelection(const QString &records);
@@ -43,6 +44,7 @@ private:
     bool dbCreateTable();
     bool dbInsertRecord(const QString &uri, const QString &cid, const QString &type,
                         const QJsonObject &json);
+    bool dbDeleteRecord(const QString &cid);
     bool dbSelect(QSqlQuery &query, const QString &sql) const;
     QStringList dbGetSavedCids() const;
     QList<TotalItem> dbMakeDailyTotals() const;
