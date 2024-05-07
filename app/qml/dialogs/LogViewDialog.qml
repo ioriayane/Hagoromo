@@ -20,7 +20,7 @@ Dialog {
     modal: true
     x: (parent.width - width) * 0.5
     y: (parent.height - height) * 0.5 - 20
-    title: qsTr("Post statistics and logs")
+    title: qsTr("Statistics and logs")
 
     signal errorOccured(string account_uuid, string code, string message)
 
@@ -187,6 +187,7 @@ Dialog {
                             targetAvatar: account.avatar
                             feedType: LogFeedListModel.DailyFeedType
                         }
+                        accountDid: account.did
                     }
                 }
             }
@@ -227,6 +228,7 @@ Dialog {
                             targetAvatar: account.avatar
                             feedType: LogFeedListModel.MonthlyFeedType
                         }
+                        accountDid: account.did
                     }
                 }
             }
