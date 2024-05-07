@@ -19,11 +19,23 @@ Dialog {
     id: logViewDialog
     modal: true
     x: (parent.width - width) * 0.5
-    y: (parent.height - height) * 0.5 - 20
+    y: (parent.height - height) * 0.5
     title: qsTr("Statistics and logs")
 
     signal errorOccured(string account_uuid, string code, string message)
 
+    signal requestReply(string account_uuid,
+                        string cid, string uri,
+                        string reply_root_cid, string reply_root_uri,
+                        string avatar, string display_name, string handle, string indexed_at, string text)
+    signal requestQuote(string account_uuid,
+                        string cid, string uri,
+                        string avatar, string display_name, string handle, string indexed_at, string text)
+    signal requestViewImages(int index, var paths, var alts)
+    signal requestAddMutedWord(string account_uuid, string text)
+    signal requestUpdateThreadGate(string account_uuid, string uri, string threadgate_uri, string type, var rules, var callback)
+
+    property string hoveredLink: ""
     property int parentHeight: parent.height
     property alias account: account
 
@@ -188,6 +200,15 @@ Dialog {
                             feedType: LogFeedListModel.DailyFeedType
                         }
                         accountDid: account.did
+                        onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
+                                        logViewDialog.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+                        onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
+                                        logViewDialog.requestQuote(account.uuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+                        onRequestViewImages: (index, paths, alts) => logViewDialog.requestViewImages(index, paths, alts)
+                        onRequestAddMutedWord: (text) => logViewDialog.requestAddMutedWord(account.uuid, text)
+                        onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) =>
+                                                   logViewDialog.requestUpdateThreadGate(account.uuid, uri, threadgate_uri, type, rules, callback)
+                        onHoveredLinkChanged: logViewDialog.hoveredLink = hoveredLink
                     }
                 }
             }
@@ -229,6 +250,15 @@ Dialog {
                             feedType: LogFeedListModel.MonthlyFeedType
                         }
                         accountDid: account.did
+                        onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
+                                        logViewDialog.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+                        onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
+                                        logViewDialog.requestQuote(account.uuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+                        onRequestViewImages: (index, paths, alts) => logViewDialog.requestViewImages(index, paths, alts)
+                        onRequestAddMutedWord: (text) => logViewDialog.requestAddMutedWord(account.uuid, text)
+                        onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) =>
+                                                   logViewDialog.requestUpdateThreadGate(account.uuid, uri, threadgate_uri, type, rules, callback)
+                        onHoveredLinkChanged: logViewDialog.hoveredLink = hoveredLink
                     }
                 }
             }

@@ -512,9 +512,8 @@ QList<TotalItem> LogAccess::dbMakeStatistics() const
             if (dbSelect(query, sql)) {
                 while (query.next()) {
                     TotalItem item;
-                    item.group = tr("List");
-                    item.name =
-                            tr("Number of registrations for '%1'").arg(query.value(1).toString());
+                    item.group = tr("Number of registrations for list");
+                    item.name = query.value(1).toString();
                     item.count = query.value(2).toInt();
                     list.insert(i + offset, item);
                     offset++;

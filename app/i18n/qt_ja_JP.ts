@@ -9,7 +9,7 @@
         <translation>アカウント管理</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="151"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="147"/>
         <source>Set as main</source>
         <translation>メインに設定</translation>
     </message>
@@ -18,7 +18,7 @@
         <translation type="vanished">ポストの統計とログ</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="167"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="159"/>
         <source>Content filter</source>
         <translation>コンテンツフィルター</translation>
     </message>
@@ -27,17 +27,17 @@
         <translation type="vanished">ミュート中</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="180"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="172"/>
         <source>Muted words and tags</source>
         <translation>ミュートワードの編集</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="186"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="178"/>
         <source>Muted accounts</source>
         <translation>ミュート中のアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="196"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="188"/>
         <source>Muted lists</source>
         <translation>ミュート中のリスト</translation>
     </message>
@@ -46,42 +46,42 @@
         <translation type="vanished">ブロック中</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="157"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="153"/>
         <source>Statistics and logs</source>
         <translation>統計とログ</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="175"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="167"/>
         <source>Mute</source>
         <translation>ミュート</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="205"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="197"/>
         <source>Block</source>
         <translation>ブロック</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="210"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="202"/>
         <source>Blocked accounts</source>
         <translation>ブロック中のアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="220"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="212"/>
         <source>Blocked lists</source>
         <translation>ブロック中のリスト</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="232"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="224"/>
         <source>Who can reply</source>
         <translation>リプライできるユーザー</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="246"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="238"/>
         <source>Remove account</source>
         <translation>アカウントを削除</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="256"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="248"/>
         <source>Close</source>
         <translation>閉じる</translation>
     </message>
@@ -2025,7 +2025,6 @@
     <message>
         <location filename="../../lib/log/logaccess.cpp" line="432"/>
         <location filename="../../lib/log/logaccess.cpp" line="433"/>
-        <location filename="../../lib/log/logaccess.cpp" line="515"/>
         <source>List</source>
         <translation>リスト</translation>
     </message>
@@ -2062,9 +2061,13 @@
         <translation>総ブロック数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="517"/>
+        <location filename="../../lib/log/logaccess.cpp" line="515"/>
+        <source>Number of registrations for list</source>
+        <translation>リストに登録しているアカウント数</translation>
+    </message>
+    <message>
         <source>Number of registrations for &apos;%1&apos;</source>
-        <translation>&apos;%1&apos;に登録しているアカウント数</translation>
+        <translation type="vanished">&apos;%1&apos;に登録しているアカウント数</translation>
     </message>
 </context>
 <context>
@@ -3263,7 +3266,7 @@
     </message>
     <message>
         <location filename="../qml/main.qml" line="114"/>
-        <location filename="../qml/main.qml" line="448"/>
+        <location filename="../qml/main.qml" line="453"/>
         <source>Search posts</source>
         <translation>検索(ポスト)</translation>
     </message>
@@ -3278,12 +3281,12 @@
         <translation>リプライできるユーザーの更新中 ...</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="376"/>
+        <location filename="../qml/main.qml" line="381"/>
         <source>Loading lists</source>
         <translation>リストの読み込み中</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="913"/>
+        <location filename="../qml/main.qml" line="918"/>
         <source>Loading account(s) ...</source>
         <translation>アカウント情報の読み込み中 ...</translation>
     </message>

@@ -20,7 +20,8 @@ Dialog {
     property alias accountModel: accountList.model
     signal errorOccured(string account_uuid, string code, string message)
 
-    signal requestAddMutedWords(int account_index)
+    signal requestAddMutedWords(string account_uuid)
+    signal requestStatisticsAndLogs(string account_uuid)
 
     LoginDialog {
         id: login
@@ -47,11 +48,6 @@ Dialog {
     }
     MutedListsDialog {
         id: mutedListsDialog
-    }
-    LogViewDialog {
-        id: logViewDialog
-        parentHeight: accountDialog.parent.height
-        onErrorOccured: (uuid, code, message) => accountDialog.errorOccured(uuid, code, message)
     }
 
     SelectThreadGateDialog {
@@ -154,12 +150,8 @@ Dialog {
                             MenuItem {
                                 id: statsAndLogsMenutItem
                                 icon.source: "../images/database.png"
-                                text: qsTr("Post statistics and logs")
-                                onTriggered: {
-                                    if(logViewDialog.account.set(accountList.model, model.uuid)){
-                                        logViewDialog.open()
-                                    }
-                                }
+                                text: qsTr("Statistics and logs")
+                                onTriggered: accountDialog.requestStatisticsAndLogs(model.uuid)
                             }
                             MenuSeparator {}
                             MenuItem {
@@ -178,7 +170,7 @@ Dialog {
                                     id: mutedWordMenuItem
                                     icon.source: "../images/mute.png"
                                     text: qsTr("Muted words and tags")
-                                    onTriggered: accountDialog.requestAddMutedWords(model.index)
+                                    onTriggered: accountDialog.requestAddMutedWords(model.uuid)
                                 }
                                 MenuItem {
                                     id: mutedAccountsMenuItem
