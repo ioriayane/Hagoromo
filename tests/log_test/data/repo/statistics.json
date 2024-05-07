@@ -55,13 +55,13 @@
         "count": 2
     },
     {
-        "group": "List",
-        "name": "Number of registrations for 'list'",
+        "group": "Number of registrations for list",
+        "name": "list",
         "count": 1
     },
     {
-        "group": "List",
-        "name": "Number of registrations for 'test moderation'",
+        "group": "Number of registrations for list",
+        "name": "test moderation",
         "count": 1
     },
     {
