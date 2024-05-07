@@ -48,10 +48,11 @@ ScrollView {
         section.criteria: ViewSection.FullString
         section.delegate: Rectangle {
             width: statisticsListView.width - statisticsScrollView.verticalScrollBarWidth
-            height: childrenRect.height * 1.3 * AdjustedValues.ratio
+            height: text.contentHeight * 1.3 * AdjustedValues.ratio
             color: Material.color(Material.BlueGrey)
             required property string section
             Text {
+                id: text
                 anchors.left: parent.left
                 anchors.leftMargin: 5
                 anchors.verticalCenter: parent.verticalCenter

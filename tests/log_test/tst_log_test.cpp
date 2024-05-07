@@ -506,16 +506,15 @@ void log_test::test_LogStatisticsListModel()
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
 
-    QVERIFY2(model.rowCount() == 8, QString("%1").arg(model.rowCount()).toLocal8Bit());
+    QVERIFY2(model.rowCount() == 16, QString("%1").arg(model.rowCount()).toLocal8Bit());
     QVERIFY2(model.item(0, LogStatisticsListModel::NameRole).toString() == "Total number of posts",
              model.item(0, LogStatisticsListModel::NameRole).toString().toLocal8Bit());
     QVERIFY2(model.item(0, LogStatisticsListModel::CountRole).toInt() == 439,
              model.item(0, LogStatisticsListModel::CountRole).toString().toLocal8Bit());
 
-    QVERIFY2(model.item(3, LogStatisticsListModel::NameRole).toString()
-                     == "Total number of follows",
+    QVERIFY2(model.item(3, LogStatisticsListModel::NameRole).toString() == "Total number of likes",
              model.item(3, LogStatisticsListModel::NameRole).toString().toLocal8Bit());
-    QVERIFY2(model.item(3, LogStatisticsListModel::CountRole).toInt() == 4,
+    QVERIFY2(model.item(3, LogStatisticsListModel::CountRole).toInt() == 12,
              model.item(3, LogStatisticsListModel::CountRole).toString().toLocal8Bit());
 }
 

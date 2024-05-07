@@ -39,8 +39,8 @@ void LogAccess::updateDb(const QString &did, const QByteArray &data)
     if (dbOpen(did)) {
         if (dbCreateTable()) {
 
-            qDebug().noquote() << LOG_DATETIME << "Decoding repository data...";
-            emit progressMessage("Analyzing repository data ...");
+            qDebug().noquote() << LOG_DATETIME << "Decording repository data...";
+            emit progressMessage("Decording repository data ...");
             CarDecoder decoder;
             decoder.setContent(data);
 
@@ -235,6 +235,8 @@ bool LogAccess::dbCreateTable()
     sqls.append("CREATE TABLE IF NOT EXISTS record("
                 "cid TEXT NOT NULL PRIMARY KEY, "
                 "uri TEXT, "
+                "parent_uri TEXT, "
+                "name TEXT, "
                 "day TEXT, "
                 "month TEXT, "
                 "createdAt DATETIME, "
@@ -273,14 +275,20 @@ bool LogAccess::dbInsertRecord(const QString &uri, const QString &cid, const QSt
                                const QJsonObject &json)
 {
     bool ret = true;
+    QString parent_uri = json.value("list").toString();
+    QString name = json.value("name").toString();
     QString created_at_str = json.value("createdAt").toString();
     QDateTime created_at = QDateTime::fromString(created_at_str, Qt::ISODateWithMs).toLocalTime();
 
     QSqlQuery query(QSqlDatabase::database(m_dbConnectionName));
-    if (query.prepare("INSERT INTO record(cid, uri, day, month, createdAt, type, record, view)"
-                      " VALUES (?, ?, ?, ?, ?, ?, ?, ?)")) {
+    if (query.prepare("INSERT INTO record(cid, uri, parent_uri, name,"
+                      " day, month, createdAt, type,"
+                      " record, view)"
+                      " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
         query.addBindValue(cid);
         query.addBindValue(uri);
+        query.addBindValue(parent_uri);
+        query.addBindValue(name);
         if (!created_at_str.isEmpty() && created_at.isValid()) {
             // 集計結果の見た目や検索条件に使うのでローカルタイム
             query.addBindValue(created_at.toString("yyyy/MM/dd"));
@@ -403,9 +411,9 @@ QList<TotalItem> LogAccess::dbMakeStatistics() const
           << "app.bsky.feed.repost"
           << "number.of.days.repost"
           << "average.number.of.daily.repost"
-          << "app.bsky.graph.follow"
           << "app.bsky.graph.list"
           << "app.bsky.graph.listitem"
+          << "app.bsky.graph.follow"
           << "app.bsky.feed.threadgate"
           << "app.bsky.graph.block";
     QHash<QString, TotalItem> type2name;
@@ -421,9 +429,9 @@ QList<TotalItem> LogAccess::dbMakeStatistics() const
     type2name["number.of.days.repost"] = TotalItem(tr("Repost"), tr("Number of days reposts"));
     type2name["average.number.of.daily.repost"] =
             TotalItem(tr("Repost"), tr("Average number of daily reposts"));
+    type2name["app.bsky.graph.list"] = TotalItem(tr("List"), tr("Total number of lists"));
+    type2name["app.bsky.graph.listitem"] = TotalItem(tr("List"), tr("Total number of list items"));
     type2name["app.bsky.graph.follow"] = TotalItem(tr("Other"), tr("Total number of follows"));
-    type2name["app.bsky.graph.list"] = TotalItem(tr("Other"), tr("Total number of lists"));
-    type2name["app.bsky.graph.listitem"] = TotalItem(tr("Other"), tr("Total number of list items"));
     type2name["app.bsky.feed.threadgate"] =
             TotalItem(tr("Other"), tr("Total number of who can reply"));
     type2name["app.bsky.graph.block"] = TotalItem(tr("Other"), tr("Total number of blocks"));
@@ -491,6 +499,29 @@ QList<TotalItem> LogAccess::dbMakeStatistics() const
         }
     }
 
+    {
+        QString sql = "SELECT parent.cid, parent.name, count(parent.cid) FROM record AS parent "
+                      " INNER JOIN record AS child ON parent.uri = child.parent_uri"
+                      " WHERE parent.type = 'app.bsky.graph.list'"
+                      " AND child.type = 'app.bsky.graph.listitem'"
+                      " GROUP BY parent.cid ORDER BY parent.name";
+        int offset = 1;
+        int i = types.indexOf("app.bsky.graph.listitem");
+        if (i >= 0) {
+            QSqlQuery query(QSqlDatabase::database(m_dbConnectionName));
+            if (dbSelect(query, sql)) {
+                while (query.next()) {
+                    TotalItem item;
+                    item.group = tr("List");
+                    item.name =
+                            tr("Number of registrations for '%1'").arg(query.value(1).toString());
+                    item.count = query.value(2).toInt();
+                    list.insert(i + offset, item);
+                    offset++;
+                }
+            }
+        }
+    }
     return list;
 }
 

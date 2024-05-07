@@ -45,19 +45,29 @@
         "count": 1
     },
     {
-        "group": "Other",
-        "name": "Total number of follows",
-        "count": 4
-    },
-    {
-        "group": "Other",
+        "group": "List",
         "name": "Total number of lists",
         "count": 3
     },
     {
-        "group": "Other",
+        "group": "List",
         "name": "Total number of list items",
         "count": 2
+    },
+    {
+        "group": "List",
+        "name": "Number of registrations for 'list'",
+        "count": 1
+    },
+    {
+        "group": "List",
+        "name": "Number of registrations for 'test moderation'",
+        "count": 1
+    },
+    {
+        "group": "Other",
+        "name": "Total number of follows",
+        "count": 4
     },
     {
         "group": "Other",
