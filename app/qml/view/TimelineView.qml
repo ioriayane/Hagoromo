@@ -19,6 +19,7 @@ ScrollView {
     property string hoveredLink: ""
     property string accountDid: ""   // 取得するユーザー
     property int imageLayoutType: 1
+    property bool logMode: false
 
     property alias listView: rootListView
     property alias model: rootListView.model
@@ -186,6 +187,7 @@ ScrollView {
             postControls.postUri: model.uri
             postControls.handle: model.handle
             postControls.mine: model.did === timelineView.accountDid
+            postControls.logMode: timelineView.logMode
             postControls.onTriggeredCopyToClipboard: systemTool.copyToClipboard(model.recordTextPlain)
             postControls.onTriggeredCopyPostUrlToClipboard: systemTool.copyToClipboard(rootListView.model.getItemOfficialUrl(model.index))
             postControls.onTriggeredDeletePost: rootListView.model.deletePost(model.index)

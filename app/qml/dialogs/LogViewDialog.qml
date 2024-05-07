@@ -200,6 +200,7 @@ Dialog {
                             feedType: LogFeedListModel.DailyFeedType
                         }
                         accountDid: account.did
+                        logMode: true
                         onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                                         logViewDialog.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
                         onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
@@ -250,6 +251,7 @@ Dialog {
                             feedType: LogFeedListModel.MonthlyFeedType
                         }
                         accountDid: account.did
+                        logMode: true
                         onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                                         logViewDialog.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
                         onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
