@@ -408,28 +408,29 @@ QList<TotalItem> LogAccess::dbMakeStatistics() const
           << "app.bsky.graph.listitem"
           << "app.bsky.feed.threadgate"
           << "app.bsky.graph.block";
-    QHash<QString, QString> type2name;
-    type2name["app.bsky.feed.post"] = tr("Total number of posts");
-    type2name["number.of.days.posts"] = tr("Number of days posts");
-    type2name["average.number.of.daily.posts"] = tr("Average number of daily posts");
-    type2name["app.bsky.feed.like"] = tr("Total number of likes");
-    type2name["number.of.days.like"] = tr("Number of days likes");
-    type2name["average.number.of.daily.like"] = tr("Average number of daily likes");
-    type2name["app.bsky.feed.repost"] = tr("Total number of reposts");
-    type2name["number.of.days.repost"] = tr("Number of days reposts");
-    type2name["average.number.of.daily.repost"] = tr("Average number of daily reposts");
-    type2name["app.bsky.graph.follow"] = tr("Total number of follows");
-    type2name["app.bsky.graph.list"] = tr("Total number of lists");
-    type2name["app.bsky.graph.listitem"] = tr("Total number of list items");
-    type2name["app.bsky.feed.threadgate"] = tr("Total number of who can reply");
-    type2name["app.bsky.graph.block"] = tr("Total number of blocks");
+    QHash<QString, TotalItem> type2name;
+    type2name["app.bsky.feed.post"] = TotalItem(tr("Post"), tr("Total number of posts"));
+    type2name["number.of.days.posts"] = TotalItem(tr("Post"), tr("Number of days posts"));
+    type2name["average.number.of.daily.posts"] =
+            TotalItem(tr("Post"), tr("Average number of daily posts"));
+    type2name["app.bsky.feed.like"] = TotalItem(tr("Like"), tr("Total number of likes"));
+    type2name["number.of.days.like"] = TotalItem(tr("Like"), tr("Number of days likes"));
+    type2name["average.number.of.daily.like"] =
+            TotalItem(tr("Like"), tr("Average number of daily likes"));
+    type2name["app.bsky.feed.repost"] = TotalItem(tr("Repost"), tr("Total number of reposts"));
+    type2name["number.of.days.repost"] = TotalItem(tr("Repost"), tr("Number of days reposts"));
+    type2name["average.number.of.daily.repost"] =
+            TotalItem(tr("Repost"), tr("Average number of daily reposts"));
+    type2name["app.bsky.graph.follow"] = TotalItem(tr("Other"), tr("Total number of follows"));
+    type2name["app.bsky.graph.list"] = TotalItem(tr("Other"), tr("Total number of lists"));
+    type2name["app.bsky.graph.listitem"] = TotalItem(tr("Other"), tr("Total number of list items"));
+    type2name["app.bsky.feed.threadgate"] =
+            TotalItem(tr("Other"), tr("Total number of who can reply"));
+    type2name["app.bsky.graph.block"] = TotalItem(tr("Other"), tr("Total number of blocks"));
 
     QList<TotalItem> list;
     for (int i = 0; i < types.length(); i++) {
-        TotalItem item;
-        item.name = type2name.value(types.at(i), types.at(i));
-        item.count = 0;
-        list.append(item);
+        list.append(type2name.value(types.at(i)));
     }
 
     {

@@ -6,6 +6,19 @@
 
 struct TotalItem
 {
+    TotalItem() { }
+    TotalItem(const TotalItem &other)
+    {
+        this->group = other.group;
+        this->name = other.name;
+        this->count = other.count;
+    }
+    TotalItem(const QString &group, const QString &name)
+    {
+        this->group = group;
+        this->name = name;
+    }
+    QString group;
     QString name;
     int count = 0;
 };

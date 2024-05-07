@@ -1,57 +1,71 @@
 [
     {
+        "group": "Post",
         "name": "Total number of posts",
         "count": 439
     },
     {
+        "group": "Post",
         "name": "Number of days posts",
         "count": 110
     },
     {
+        "group": "Post",
         "name": "Average number of daily posts",
         "count": 4
     },
     {
+        "group": "Like",
         "name": "Total number of likes",
         "count": 12
     },
     {
+        "group": "Like",
         "name": "Number of days likes",
         "count": 9
     },
     {
+        "group": "Like",
         "name": "Average number of daily likes",
         "count": 1
     },
     {
+        "group": "Repost",
         "name": "Total number of reposts",
         "count": 14
     },
     {
+        "group": "Repost",
         "name": "Number of days reposts",
         "count": 10
     },
     {
+        "group": "Repost",
         "name": "Average number of daily reposts",
         "count": 1
     },
     {
+        "group": "Other",
         "name": "Total number of follows",
         "count": 4
     },
     {
+        "group": "Other",
         "name": "Total number of lists",
         "count": 3
     },
     {
+        "group": "Other",
         "name": "Total number of list items",
         "count": 2
     },
     {
+        "group": "Other",
         "name": "Total number of who can reply",
         "count": 82
     },
     {
+        "group": "Other",
         "name": "Total number of blocks",
         "count": 1
     }

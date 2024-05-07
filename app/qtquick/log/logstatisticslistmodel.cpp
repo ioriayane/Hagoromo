@@ -21,7 +21,9 @@ QVariant LogStatisticsListModel::item(int row, LogStatisticsListModelRoles role)
     if (row < 0 || row >= m_totalList.count())
         return QVariant();
 
-    if (role == NameRole)
+    if (role == GroupRole)
+        return m_totalList.at(row).group;
+    else if (role == NameRole)
         return m_totalList.at(row).name;
     else if (role == CountRole)
         return m_totalList.at(row).count;
@@ -65,6 +67,7 @@ QHash<int, QByteArray> LogStatisticsListModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
 
+    roles[GroupRole] = "group";
     roles[NameRole] = "name";
     roles[CountRole] = "count";
 

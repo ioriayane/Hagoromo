@@ -434,6 +434,7 @@ void log_test::test_LogManager_statistics()
     QList<TotalItem> except;
     for (const auto &value : doc.array()) {
         TotalItem item;
+        item.group = value.toObject().value("group").toString();
         item.name = value.toObject().value("name").toString();
         item.count = value.toObject().value("count").toInt();
         except.append(item);
@@ -451,6 +452,12 @@ void log_test::test_LogManager_statistics()
         QVERIFY2(except.length() == list.length(),
                  QString("%1 == %2").arg(except.length()).arg(list.length()).toLocal8Bit());
         for (int i = 0; i < list.length(); i++) {
+            QVERIFY2(except.at(i).group == list.at(i).group,
+                     QString("%1, %2 == %3")
+                             .arg(i)
+                             .arg(except.at(i).group)
+                             .arg(list.at(i).group)
+                             .toLocal8Bit());
             QVERIFY2(except.at(i).name == list.at(i).name,
                      QString("%1, %2 == %3")
                              .arg(i)
