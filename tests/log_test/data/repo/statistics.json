@@ -16,8 +16,24 @@
         "count": 12
     },
     {
+        "name": "Number of days likes",
+        "count": 9
+    },
+    {
+        "name": "Average number of daily likes",
+        "count": 1
+    },
+    {
         "name": "Total number of reposts",
         "count": 14
+    },
+    {
+        "name": "Number of days reposts",
+        "count": 10
+    },
+    {
+        "name": "Average number of daily reposts",
+        "count": 1
     },
     {
         "name": "Total number of follows",

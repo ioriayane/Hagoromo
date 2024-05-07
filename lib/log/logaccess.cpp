@@ -398,7 +398,11 @@ QList<TotalItem> LogAccess::dbMakeStatistics() const
           << "number.of.days.posts"
           << "average.number.of.daily.posts"
           << "app.bsky.feed.like"
+          << "number.of.days.like"
+          << "average.number.of.daily.like"
           << "app.bsky.feed.repost"
+          << "number.of.days.repost"
+          << "average.number.of.daily.repost"
           << "app.bsky.graph.follow"
           << "app.bsky.graph.list"
           << "app.bsky.graph.listitem"
@@ -409,7 +413,11 @@ QList<TotalItem> LogAccess::dbMakeStatistics() const
     type2name["number.of.days.posts"] = tr("Number of days posts");
     type2name["average.number.of.daily.posts"] = tr("Average number of daily posts");
     type2name["app.bsky.feed.like"] = tr("Total number of likes");
+    type2name["number.of.days.like"] = tr("Number of days likes");
+    type2name["average.number.of.daily.like"] = tr("Average number of daily likes");
     type2name["app.bsky.feed.repost"] = tr("Total number of reposts");
+    type2name["number.of.days.repost"] = tr("Number of days reposts");
+    type2name["average.number.of.daily.repost"] = tr("Average number of daily reposts");
     type2name["app.bsky.graph.follow"] = tr("Total number of follows");
     type2name["app.bsky.graph.list"] = tr("Total number of lists");
     type2name["app.bsky.graph.listitem"] = tr("Total number of list items");
@@ -438,14 +446,42 @@ QList<TotalItem> LogAccess::dbMakeStatistics() const
             }
         }
     }
-    {
+
+    QMap<QString, QString> type2sql;
+    type2sql["number.of.days.posts"] =
+            "SELECT count(type) FROM("
+            "SELECT day, type FROM record WHERE type = 'app.bsky.feed.post' GROUP BY day"
+            ") GROUP BY type";
+    type2sql["average.number.of.daily.posts"] =
+            "SELECT avg(day_count) FROM("
+            "SELECT type, day, count(day) AS day_count "
+            " FROM record WHERE type = 'app.bsky.feed.post' GROUP BY day"
+            ") GROUP BY type";
+    type2sql["number.of.days.like"] =
+            "SELECT count(type) FROM("
+            "SELECT day, type FROM record WHERE type = 'app.bsky.feed.like' GROUP BY day"
+            ") GROUP BY type";
+    type2sql["average.number.of.daily.like"] =
+            "SELECT avg(day_count) FROM("
+            "SELECT type, day, count(day) AS day_count "
+            " FROM record WHERE type = 'app.bsky.feed.like' GROUP BY day"
+            ") GROUP BY type";
+    type2sql["number.of.days.repost"] =
+            "SELECT count(type) FROM("
+            "SELECT day, type FROM record WHERE type = 'app.bsky.feed.repost' GROUP BY day"
+            ") GROUP BY type";
+    type2sql["average.number.of.daily.repost"] =
+            "SELECT avg(day_count) FROM("
+            "SELECT type, day, count(day) AS day_count "
+            " FROM record WHERE type = 'app.bsky.feed.repost' GROUP BY day"
+            ") GROUP BY type";
+
+    for (QMap<QString, QString>::const_iterator it = type2sql.cbegin(); it != type2sql.cend();
+         it++) {
         QSqlQuery query(QSqlDatabase::database(m_dbConnectionName));
-        if (dbSelect(query,
-                     "SELECT count(type) FROM("
-                     "SELECT day, type FROM record WHERE type = 'app.bsky.feed.post' GROUP BY day"
-                     ") GROUP BY type")) {
+        if (dbSelect(query, it.value())) {
             while (query.next()) {
-                int i = types.indexOf("number.of.days.posts");
+                int i = types.indexOf(it.key());
                 if (i >= 0) {
                     list[i].count = query.value(0).toInt();
                 }
@@ -453,22 +489,7 @@ QList<TotalItem> LogAccess::dbMakeStatistics() const
             }
         }
     }
-    {
-        QSqlQuery query(QSqlDatabase::database(m_dbConnectionName));
-        if (dbSelect(query,
-                     "SELECT avg(day_count) FROM("
-                     "SELECT type, day, count(day) AS day_count "
-                     " FROM record WHERE type = 'app.bsky.feed.post' GROUP BY day"
-                     ") GROUP BY type")) {
-            while (query.next()) {
-                int i = types.indexOf("average.number.of.daily.posts");
-                if (i >= 0) {
-                    list[i].count = query.value(0).toInt();
-                }
-                break;
-            }
-        }
-    }
+
     return list;
 }
 
