@@ -150,7 +150,7 @@ Dialog {
                     id: statisticsScrollView
                     width: swipeView.frameWidth
                     height: swipeView.frameHeight
-                    verticalScrollBar: false
+                    verticalScrollBar: true
                     model: LogStatisticsListModel {
                         id: logStatisticsListModel
                         did: account.did
@@ -174,8 +174,8 @@ Dialog {
                             id: logDailyListModel
                             did: account.did
                             onFinished: {
-                                if(rowCount()){
-
+                                if(rowCount() === 0){
+                                    logOperator.getLatest()
                                 }
                             }
                         }

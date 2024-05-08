@@ -88,6 +88,8 @@ ScrollView {
         delegate: PostDelegate {
             Layout.preferredWidth: rootListView.width
 
+            logMode: timelineView.logMode
+
             onClicked: (mouse) => requestViewThread(model.uri)
             onRequestViewProfile: (did) => timelineView.requestViewProfile(did)
             onRequestViewSearchPosts: (text) => timelineView.requestViewSearchPosts(text)
