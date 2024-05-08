@@ -10,7 +10,7 @@ class LogStatisticsListModel : public QAbstractListModel
 
     Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged FINAL)
     Q_PROPERTY(QString did READ did WRITE setDid NOTIFY didChanged FINAL)
-
+    Q_PROPERTY(int totalMax READ totalMax WRITE setTotalMax NOTIFY totalMaxChanged)
 public:
     explicit LogStatisticsListModel(QObject *parent = nullptr);
 
@@ -20,6 +20,7 @@ public:
         GroupRole,
         NameRole,
         CountRole,
+        PercentRole,
     };
     Q_ENUM(LogStatisticsListModelRoles)
 
@@ -36,11 +37,14 @@ public:
     void setRunning(bool newRunning);
     QString did() const;
     void setDid(const QString &newDid);
+    int totalMax() const;
+    void setTotalMax(int newTotalMax);
 
 signals:
     void finished();
     void runningChanged();
     void didChanged();
+    void totalMaxChanged();
 
 protected:
     QHash<int, QByteArray> roleNames() const;
@@ -49,6 +53,7 @@ protected:
 private:
     bool m_running;
     QString m_did;
+    int m_totalMax;
 };
 
 #endif // LOGSTATISTICSLISTMODEL_H

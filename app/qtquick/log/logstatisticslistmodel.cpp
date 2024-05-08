@@ -2,7 +2,7 @@
 #include "log/logmanager.h"
 
 LogStatisticsListModel::LogStatisticsListModel(QObject *parent)
-    : QAbstractListModel { parent }, m_running(false)
+    : QAbstractListModel { parent }, m_running(false), m_totalMax(0)
 {
 }
 
@@ -27,6 +27,13 @@ QVariant LogStatisticsListModel::item(int row, LogStatisticsListModelRoles role)
         return m_totalList.at(row).name;
     else if (role == CountRole)
         return m_totalList.at(row).count;
+    else if (role == PercentRole) {
+        if (totalMax() == 0) {
+            return 0.0;
+        } else {
+            return static_cast<qreal>(m_totalList.at(row).count) / static_cast<qreal>(totalMax());
+        }
+    }
 
     return QVariant();
 }
@@ -40,16 +47,19 @@ void LogStatisticsListModel::getLatest()
     clear();
 
     LogManager *manager = new LogManager(this);
-    connect(manager, &LogManager::finishedTotals, this, [=](const QList<TotalItem> &list) {
-        if (!list.isEmpty()) {
-            beginInsertRows(QModelIndex(), 0, list.count() - 1);
-            m_totalList = list;
-            endInsertRows();
-        }
-        emit finished();
-        setRunning(false);
-        manager->deleteLater();
-    });
+    connect(manager, &LogManager::finishedTotals, this,
+            [=](const QList<TotalItem> &list, const int max) {
+                if (!list.isEmpty()) {
+                    setTotalMax(max);
+
+                    beginInsertRows(QModelIndex(), 0, list.count() - 1);
+                    m_totalList = list;
+                    endInsertRows();
+                }
+                emit finished();
+                setRunning(false);
+                manager->deleteLater();
+            });
     emit manager->statistics(did());
 }
 
@@ -61,6 +71,8 @@ void LogStatisticsListModel::clear()
     beginRemoveRows(QModelIndex(), 0, m_totalList.count() - 1);
     m_totalList.clear();
     endRemoveRows();
+
+    setTotalMax(0);
 }
 
 QHash<int, QByteArray> LogStatisticsListModel::roleNames() const
@@ -70,6 +82,7 @@ QHash<int, QByteArray> LogStatisticsListModel::roleNames() const
     roles[GroupRole] = "group";
     roles[NameRole] = "name";
     roles[CountRole] = "count";
+    roles[PercentRole] = "percent";
 
     return roles;
 }
@@ -98,4 +111,17 @@ void LogStatisticsListModel::setDid(const QString &newDid)
         return;
     m_did = newDid;
     emit didChanged();
+}
+
+int LogStatisticsListModel::totalMax() const
+{
+    return m_totalMax;
+}
+
+void LogStatisticsListModel::setTotalMax(int newTotalMax)
+{
+    if (m_totalMax == newTotalMax)
+        return;
+    m_totalMax = newTotalMax;
+    emit totalMaxChanged();
 }

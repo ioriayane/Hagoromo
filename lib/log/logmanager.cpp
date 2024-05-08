@@ -22,7 +22,7 @@ LogManager::LogManager(QObject *parent) : AtProtocolAccount { parent }
     connect(&m_logAccess, &LogAccess::finishedUpdateDb, this,
             [=](bool success) { emit finished(success); });
     connect(&m_logAccess, &LogAccess::finishedTotals, this,
-            [=](const QList<TotalItem> &list) { emit finishedTotals(list); });
+            [=](const QList<TotalItem> &list, const int max) { emit finishedTotals(list, max); });
     connect(&m_logAccess, &LogAccess::finishedSelection, this,
             [=](const QString &records, const QStringList &view_posts) {
                 emit finishedSelection(records);

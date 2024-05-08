@@ -106,16 +106,18 @@ void log_test::test_LogManager_daily()
     QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
     file.close();
 
+    int max = 0;
     QList<TotalItem> except;
     for (const auto &value : doc.array()) {
         TotalItem item;
         item.name = value.toObject().value("name").toString();
         item.count = value.toObject().value("count").toInt();
+        max = (item.count > max) ? item.count : max;
         except.append(item);
     }
 
     {
-        QSignalSpy spy(&manager, SIGNAL(finishedTotals(const QList<TotalItem> &)));
+        QSignalSpy spy(&manager, SIGNAL(finishedTotals(const QList<TotalItem> &, const int)));
         emit manager.dailyTotals(did);
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
@@ -123,6 +125,8 @@ void log_test::test_LogManager_daily()
         QList<QVariant> arguments = spy.takeFirst();
         QList<TotalItem> list = qvariant_cast<QList<TotalItem>>(arguments.at(0));
 
+        QVERIFY2(max == arguments.at(1).toInt(),
+                 QString("%1 == %2").arg(max).arg(arguments.at(1).toInt()).toLocal8Bit());
         QVERIFY2(except.length() == list.length(),
                  QString("%1 == %2").arg(except.length()).arg(list.length()).toLocal8Bit());
         for (int i = 0; i < list.length(); i++) {
@@ -147,16 +151,18 @@ void log_test::test_LogManager_monthly()
     QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
     file.close();
 
+    int max = 0;
     QList<TotalItem> except;
     for (const auto &value : doc.array()) {
         TotalItem item;
         item.name = value.toObject().value("name").toString();
         item.count = value.toObject().value("count").toInt();
+        max = (item.count > max) ? item.count : max;
         except.append(item);
     }
 
     {
-        QSignalSpy spy(&manager, SIGNAL(finishedTotals(const QList<TotalItem> &)));
+        QSignalSpy spy(&manager, SIGNAL(finishedTotals(const QList<TotalItem> &, const int)));
         emit manager.monthlyTotals(did);
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
@@ -164,6 +170,8 @@ void log_test::test_LogManager_monthly()
         QList<QVariant> arguments = spy.takeFirst();
         QList<TotalItem> list = qvariant_cast<QList<TotalItem>>(arguments.at(0));
 
+        QVERIFY2(max == arguments.at(1).toInt(),
+                 QString("%1 == %2").arg(max).arg(arguments.at(1).toInt()).toLocal8Bit());
         QVERIFY2(except.length() == list.length(),
                  QString("%1 == %2").arg(except.length()).arg(list.length()).toLocal8Bit());
         for (int i = 0; i < list.length(); i++) {
@@ -431,6 +439,7 @@ void log_test::test_LogManager_statistics()
     QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
     file.close();
 
+    int max = 0;
     QList<TotalItem> except;
     for (const auto &value : doc.array()) {
         TotalItem item;
@@ -441,7 +450,7 @@ void log_test::test_LogManager_statistics()
     }
 
     {
-        QSignalSpy spy(&manager, SIGNAL(finishedTotals(const QList<TotalItem> &)));
+        QSignalSpy spy(&manager, SIGNAL(finishedTotals(const QList<TotalItem> &, const int)));
         emit manager.statistics(did);
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
@@ -449,6 +458,8 @@ void log_test::test_LogManager_statistics()
         QList<QVariant> arguments = spy.takeFirst();
         QList<TotalItem> list = qvariant_cast<QList<TotalItem>>(arguments.at(0));
 
+        QVERIFY2(max == arguments.at(1).toInt(),
+                 QString("%1 == %2").arg(max).arg(arguments.at(1).toInt()).toLocal8Bit());
         QVERIFY2(except.length() == list.length(),
                  QString("%1 == %2").arg(except.length()).arg(list.length()).toLocal8Bit());
         for (int i = 0; i < list.length(); i++) {

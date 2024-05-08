@@ -23,6 +23,13 @@ ScrollView {
         delegate: ItemDelegate {
             width: statisticsListView.width - statisticsScrollView.verticalScrollBarWidth
             height: nameLabel.contentHeight * 2
+            Rectangle {
+                visible: model.count > 0
+                anchors.fill: parent
+                anchors.leftMargin:  (1 - model.percent) * parent.width
+                color: Material.color(Material.LightBlue)
+                opacity: 0.2
+            }
             RowLayout {
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.left: parent.left

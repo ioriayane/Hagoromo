@@ -29,7 +29,7 @@ signals:
     void dailyTotals(const QString &did);
     void monthlyTotals(const QString &did);
     void statistics(const QString &did);
-    void finishedTotals(const QList<TotalItem> &list);
+    void finishedTotals(const QList<TotalItem> &list, const int max);
     void selectRecords(const QString &did, const int kind, const QString &condition,
                        const QString &cursor, const int limit);
     void finishedSelection(const QString &records);

@@ -85,36 +85,38 @@ void LogAccess::updateDb(const QString &did, const QByteArray &data)
 
 void LogAccess::dailyTotals(const QString &did)
 {
+    int max = 0;
     QList<TotalItem> list;
     qDebug().noquote() << LOG_DATETIME << "dailyTotals" << did;
     if (did.isEmpty()) {
-        emit finishedTotals(list);
+        emit finishedTotals(list, max);
         return;
     }
     dbInit();
     if (dbOpen(did)) {
-        list = dbMakeDailyTotals();
+        list = dbMakeDailyTotals(max);
         dbClose();
     }
     dbRelease();
-    emit finishedTotals(list);
+    emit finishedTotals(list, max);
 }
 
 void LogAccess::monthlyTotals(const QString &did)
 {
+    int max = 0;
     QList<TotalItem> list;
     qDebug().noquote() << LOG_DATETIME << "monthlyTotals" << did;
     if (did.isEmpty()) {
-        emit finishedTotals(list);
+        emit finishedTotals(list, max);
         return;
     }
     dbInit();
     if (dbOpen(did)) {
-        list = dbMakeMonthlyTotals();
+        list = dbMakeMonthlyTotals(max);
         dbClose();
     }
     dbRelease();
-    emit finishedTotals(list);
+    emit finishedTotals(list, max);
 }
 
 void LogAccess::statistics(const QString &did)
@@ -122,7 +124,7 @@ void LogAccess::statistics(const QString &did)
     QList<TotalItem> list;
     qDebug().noquote() << LOG_DATETIME << "statistics" << did;
     if (did.isEmpty()) {
-        emit finishedTotals(list);
+        emit finishedTotals(list, 0);
         return;
     }
     dbInit();
@@ -131,7 +133,7 @@ void LogAccess::statistics(const QString &did)
         dbClose();
     }
     dbRelease();
-    emit finishedTotals(list);
+    emit finishedTotals(list, 0);
 }
 
 void LogAccess::selectRecords(const QString &did, const int kind, const QString &condition,
@@ -363,8 +365,9 @@ QStringList LogAccess::dbGetSavedCids() const
     return cids;
 }
 
-QList<TotalItem> LogAccess::dbMakeDailyTotals() const
+QList<TotalItem> LogAccess::dbMakeDailyTotals(int &max) const
 {
+    max = 0;
     QList<TotalItem> list;
     QSqlQuery query(QSqlDatabase::database(m_dbConnectionName));
     if (dbSelect(query,
@@ -375,14 +378,16 @@ QList<TotalItem> LogAccess::dbMakeDailyTotals() const
             TotalItem item;
             item.name = query.value(0).toString();
             item.count = query.value(1).toInt();
+            max = (item.count > max) ? item.count : max;
             list.append(item);
         }
     }
     return list;
 }
 
-QList<TotalItem> LogAccess::dbMakeMonthlyTotals() const
+QList<TotalItem> LogAccess::dbMakeMonthlyTotals(int &max) const
 {
+    max = 0;
     QList<TotalItem> list;
     QSqlQuery query(QSqlDatabase::database(m_dbConnectionName));
     if (dbSelect(query,
@@ -393,6 +398,7 @@ QList<TotalItem> LogAccess::dbMakeMonthlyTotals() const
             TotalItem item;
             item.name = query.value(0).toString();
             item.count = query.value(1).toInt();
+            max = (item.count > max) ? item.count : max;
             list.append(item);
         }
     }

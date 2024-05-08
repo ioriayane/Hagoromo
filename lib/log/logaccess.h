@@ -52,7 +52,7 @@ public slots:
 signals:
     void progressMessage(const QString &message);
     void finishedUpdateDb(bool success);
-    void finishedTotals(const QList<TotalItem> &list);
+    void finishedTotals(const QList<TotalItem> &list, const int max);
     void finishedSelection(const QString &records, const QStringList &view_posts);
     void finishedUpdateRecords();
 
@@ -68,8 +68,8 @@ private:
     bool dbDeleteRecord(const QString &cid);
     bool dbSelect(QSqlQuery &query, const QString &sql) const;
     QStringList dbGetSavedCids() const;
-    QList<TotalItem> dbMakeDailyTotals() const;
-    QList<TotalItem> dbMakeMonthlyTotals() const;
+    QList<TotalItem> dbMakeDailyTotals(int &max) const;
+    QList<TotalItem> dbMakeMonthlyTotals(int &max) const;
     QList<TotalItem> dbMakeStatistics() const;
     QString dbSelectRecords(const int kind, const QString &condition, const QString &cursor,
                             const int limit, QStringList &view_posts) const;

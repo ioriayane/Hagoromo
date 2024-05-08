@@ -12,15 +12,18 @@ void LogMonthlyListModel::getLatest()
     clear();
 
     LogManager *manager = new LogManager(this);
-    connect(manager, &LogManager::finishedTotals, this, [=](const QList<TotalItem> &list) {
-        if (!list.isEmpty()) {
-            beginInsertRows(QModelIndex(), 0, list.count() - 1);
-            m_totalList = list;
-            endInsertRows();
-        }
-        emit finished();
-        setRunning(false);
-        manager->deleteLater();
-    });
+    connect(manager, &LogManager::finishedTotals, this,
+            [=](const QList<TotalItem> &list, const int max) {
+                if (!list.isEmpty()) {
+                    setTotalMax(max);
+
+                    beginInsertRows(QModelIndex(), 0, list.count() - 1);
+                    m_totalList = list;
+                    endInsertRows();
+                }
+                emit finished();
+                setRunning(false);
+                manager->deleteLater();
+            });
     emit manager->monthlyTotals(did());
 }
