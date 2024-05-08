@@ -67,7 +67,8 @@ private:
     bool dbInsertRecord(const QString &uri, const QString &cid, const QString &type,
                         const QJsonObject &json);
     bool dbDeleteRecord(const QString &cid);
-    bool dbSelect(QSqlQuery &query, const QString &sql) const;
+    bool dbSelect(QSqlQuery &query, const QString &sql,
+                  const QStringList &bind_values = QStringList()) const;
     QStringList dbGetSavedCids() const;
     QList<TotalItem> dbMakeDailyTotals(int &max) const;
     QList<TotalItem> dbMakeMonthlyTotals(int &max) const;

@@ -354,10 +354,13 @@ bool LogAccess::dbDeleteRecord(const QString &cid)
     return ret;
 }
 
-bool LogAccess::dbSelect(QSqlQuery &query, const QString &sql) const
+bool LogAccess::dbSelect(QSqlQuery &query, const QString &sql, const QStringList &bind_values) const
 {
     bool ret = false;
     if (query.prepare(sql)) {
+        for (const auto &bind_value : bind_values) {
+            query.addBindValue(bind_value);
+        }
         if (query.exec()) {
             ret = true;
         } else {
@@ -550,33 +553,39 @@ QList<TotalItem> LogAccess::dbMakeStatistics() const
 QString LogAccess::dbSelectRecords(const int kind, const QString &condition, const QString &cursor,
                                    const int limit, QStringList &view_posts) const
 {
+    QStringList bind_values;
     QString sql("SELECT uri, cid, record, createdAt, view FROM record"
                 " WHERE type = 'app.bsky.feed.post'");
     if (!condition.isEmpty()) {
         if (kind == 0) {
-            sql.append(" AND day == '").append(condition).append("'");
+            sql.append(" AND day == ?");
+            bind_values.append(condition.trimmed());
         } else if (kind == 1) {
-            sql.append(" AND month == '").append(condition).append("'");
+            sql.append(" AND month == ?");
+            bind_values.append(condition.trimmed());
         } else if (kind == 2) {
             const QStringList words =
                     condition.trimmed().split(QRegularExpression(REG_EXP_WHITE_SPACE));
             for (const auto &word : words) {
-                sql.append(" AND text like '%").append(word).append("%'");
+                sql.append(" AND text like ?");
+                bind_values.append("%" + word.trimmed() + "%");
             }
         }
     }
     if (!cursor.isEmpty()) {
-        sql.append(" AND createdAt < '").append(cursor).append("'");
+        sql.append(" AND createdAt < ?");
+        bind_values.append(cursor.trimmed());
     }
     sql.append(" ORDER BY createdAt DESC");
     if (limit > 0) {
-        sql.append(" LIMIT ").append(QString::number(limit));
+        sql.append(" LIMIT ?");
+        bind_values.append(QString::number(limit));
     } else {
         sql.append(" LIMIT 50");
     }
 
     QSqlQuery query(QSqlDatabase::database(m_dbConnectionName));
-    if (dbSelect(query, sql)) {
+    if (dbSelect(query, sql, bind_values)) {
         QStringList records;
         QString record_base("{\"uri\": \"%1\", \"cid\": \"%2\", \"value\": %3}");
         QString last_created_at;
