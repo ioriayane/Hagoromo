@@ -11,5 +11,7 @@
         <file>response/posts/2/xrpc/app.bsky.feed.getPosts</file>
         <file>response/posts/3/xrpc/app.bsky.feed.getPosts</file>
         <file>response/posts/10/xrpc/app.bsky.feed.getPosts</file>
+        <file>data/repo/select_4.json</file>
+        <file>response/posts/4/xrpc/app.bsky.feed.getPosts</file>
     </qresource>
 </RCC>

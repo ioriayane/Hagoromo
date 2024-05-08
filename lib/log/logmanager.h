@@ -30,6 +30,7 @@ signals:
     void monthlyTotals(const QString &did);
     void statistics(const QString &did);
     void finishedTotals(const QList<TotalItem> &list, const int max);
+    // kind, 0:daily, 1:montyly, 2:words
     void selectRecords(const QString &did, const int kind, const QString &condition,
                        const QString &cursor, const int limit);
     void finishedSelection(const QString &records);

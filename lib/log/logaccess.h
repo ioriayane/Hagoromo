@@ -45,6 +45,7 @@ public slots:
     void dailyTotals(const QString &did);
     void monthlyTotals(const QString &did);
     void statistics(const QString &did);
+    // kind, 0:daily, 1:montyly, 2:words
     void selectRecords(const QString &did, const int kind, const QString &condition,
                        const QString &cursor, const int limit);
     void updateRecords(const QString &did, const QList<RecordPostItem> &record_post_items);

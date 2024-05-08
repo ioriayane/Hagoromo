@@ -14,6 +14,19 @@
 #include <QThread>
 #define LOG_DATETIME QDateTime::currentDateTime().toString("yyyy/MM/dd hh:mm:ss.zzz")
 
+#define REG_EXP_WHITE_SPACE                                                                        \
+    QStringLiteral("[ \\f\\n\\r\\t\\v%1%2%3-%4%5%6%7%8%9%10]")                                     \
+            .arg(QChar(0x00a0))                                                                    \
+            .arg(QChar(0x1680))                                                                    \
+            .arg(QChar(0x2000))                                                                    \
+            .arg(QChar(0x200a))                                                                    \
+            .arg(QChar(0x2028))                                                                    \
+            .arg(QChar(0x2029))                                                                    \
+            .arg(QChar(0x202f))                                                                    \
+            .arg(QChar(0x205f))                                                                    \
+            .arg(QChar(0x3000))                                                                    \
+            .arg(QChar(0xfeff))
+
 LogAccess::LogAccess(QObject *parent) : QObject { parent } { }
 
 LogAccess::~LogAccess() { }
@@ -136,6 +149,7 @@ void LogAccess::statistics(const QString &did)
     emit finishedTotals(list, 0);
 }
 
+// kind, 0:daily, 1:montyly, 2:words
 void LogAccess::selectRecords(const QString &did, const int kind, const QString &condition,
                               const QString &cursor, const int limit)
 {
@@ -242,6 +256,7 @@ bool LogAccess::dbCreateTable()
                 "day TEXT, "
                 "month TEXT, "
                 "createdAt DATETIME, "
+                "text TEXT, "
                 "type TEXT NOT NULL, "
                 "record TEXT NOT NULL, "
                 "view TEXT "
@@ -279,14 +294,15 @@ bool LogAccess::dbInsertRecord(const QString &uri, const QString &cid, const QSt
     bool ret = true;
     QString parent_uri = json.value("list").toString();
     QString name = json.value("name").toString();
+    QString text = json.value("text").toString();
     QString created_at_str = json.value("createdAt").toString();
     QDateTime created_at = QDateTime::fromString(created_at_str, Qt::ISODateWithMs).toLocalTime();
 
     QSqlQuery query(QSqlDatabase::database(m_dbConnectionName));
     if (query.prepare("INSERT INTO record(cid, uri, parent_uri, name,"
-                      " day, month, createdAt, type,"
+                      " day, month, createdAt, text, type,"
                       " record, view)"
-                      " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+                      " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
         query.addBindValue(cid);
         query.addBindValue(uri);
         query.addBindValue(parent_uri);
@@ -302,6 +318,7 @@ bool LogAccess::dbInsertRecord(const QString &uri, const QString &cid, const QSt
             query.addBindValue(QVariant());
             query.addBindValue(QVariant());
         }
+        query.addBindValue(text);
         query.addBindValue(type);
         query.addBindValue(QJsonDocument(json).toJson(QJsonDocument::Compact));
         query.addBindValue(QVariant());
@@ -540,6 +557,12 @@ QString LogAccess::dbSelectRecords(const int kind, const QString &condition, con
             sql.append(" AND day == '").append(condition).append("'");
         } else if (kind == 1) {
             sql.append(" AND month == '").append(condition).append("'");
+        } else if (kind == 2) {
+            const QStringList words =
+                    condition.trimmed().split(QRegularExpression(REG_EXP_WHITE_SPACE));
+            for (const auto &word : words) {
+                sql.append(" AND text like '%").append(word).append("%'");
+            }
         }
     }
     if (!cursor.isEmpty()) {

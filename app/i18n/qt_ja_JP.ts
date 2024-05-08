@@ -879,17 +879,17 @@
 <context>
     <name>HashTagMenu</name>
     <message>
-        <location filename="../qml/parts/HashTagMenu.qml" line="14"/>
+        <location filename="../qml/parts/HashTagMenu.qml" line="16"/>
         <source>Search %s posts</source>
         <translation>%s を検索</translation>
     </message>
     <message>
-        <location filename="../qml/parts/HashTagMenu.qml" line="20"/>
+        <location filename="../qml/parts/HashTagMenu.qml" line="23"/>
         <source>Search %s posts by this user</source>
         <translation>このユーザーによる %s を検索</translation>
     </message>
     <message>
-        <location filename="../qml/parts/HashTagMenu.qml" line="26"/>
+        <location filename="../qml/parts/HashTagMenu.qml" line="29"/>
         <source>Mute %s posts</source>
         <translation>%s をミュートする</translation>
     </message>
@@ -1957,111 +1957,111 @@
 <context>
     <name>LogAccess</name>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="420"/>
-        <location filename="../../lib/log/logaccess.cpp" line="421"/>
-        <location filename="../../lib/log/logaccess.cpp" line="423"/>
+        <location filename="../../lib/log/logaccess.cpp" line="443"/>
+        <location filename="../../lib/log/logaccess.cpp" line="444"/>
+        <location filename="../../lib/log/logaccess.cpp" line="446"/>
         <source>Post</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="420"/>
+        <location filename="../../lib/log/logaccess.cpp" line="443"/>
         <source>Total number of posts</source>
         <translation>総ポスト数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="421"/>
+        <location filename="../../lib/log/logaccess.cpp" line="444"/>
         <source>Number of days posts</source>
         <translation>ポストした日数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="423"/>
+        <location filename="../../lib/log/logaccess.cpp" line="446"/>
         <source>Average number of daily posts</source>
         <translation>1日あたりの平均ポスト数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="424"/>
-        <location filename="../../lib/log/logaccess.cpp" line="425"/>
-        <location filename="../../lib/log/logaccess.cpp" line="427"/>
+        <location filename="../../lib/log/logaccess.cpp" line="447"/>
+        <location filename="../../lib/log/logaccess.cpp" line="448"/>
+        <location filename="../../lib/log/logaccess.cpp" line="450"/>
         <source>Like</source>
         <translation>いいね</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="424"/>
+        <location filename="../../lib/log/logaccess.cpp" line="447"/>
         <source>Total number of likes</source>
         <translation>総いいね数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="425"/>
+        <location filename="../../lib/log/logaccess.cpp" line="448"/>
         <source>Number of days likes</source>
         <translation>いいねした日数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="427"/>
+        <location filename="../../lib/log/logaccess.cpp" line="450"/>
         <source>Average number of daily likes</source>
         <translation>1日あたりの平均いいね数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="428"/>
-        <location filename="../../lib/log/logaccess.cpp" line="429"/>
-        <location filename="../../lib/log/logaccess.cpp" line="431"/>
+        <location filename="../../lib/log/logaccess.cpp" line="451"/>
+        <location filename="../../lib/log/logaccess.cpp" line="452"/>
+        <location filename="../../lib/log/logaccess.cpp" line="454"/>
         <source>Repost</source>
         <translation>リポスト</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="428"/>
+        <location filename="../../lib/log/logaccess.cpp" line="451"/>
         <source>Total number of reposts</source>
         <translation>総リポスト数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="429"/>
+        <location filename="../../lib/log/logaccess.cpp" line="452"/>
         <source>Number of days reposts</source>
         <translation>リポストした日数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="431"/>
+        <location filename="../../lib/log/logaccess.cpp" line="454"/>
         <source>Average number of daily reposts</source>
         <translation>1日あたりの平均リポスト数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="432"/>
-        <location filename="../../lib/log/logaccess.cpp" line="433"/>
+        <location filename="../../lib/log/logaccess.cpp" line="455"/>
+        <location filename="../../lib/log/logaccess.cpp" line="456"/>
         <source>List</source>
         <translation>リスト</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="432"/>
+        <location filename="../../lib/log/logaccess.cpp" line="455"/>
         <source>Total number of lists</source>
         <translation>リストの数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="433"/>
+        <location filename="../../lib/log/logaccess.cpp" line="456"/>
         <source>Total number of list items</source>
         <translation>リストに登録している総アカウント数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="434"/>
-        <location filename="../../lib/log/logaccess.cpp" line="436"/>
-        <location filename="../../lib/log/logaccess.cpp" line="437"/>
+        <location filename="../../lib/log/logaccess.cpp" line="457"/>
+        <location filename="../../lib/log/logaccess.cpp" line="459"/>
+        <location filename="../../lib/log/logaccess.cpp" line="460"/>
         <source>Other</source>
         <translation>その他</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="434"/>
+        <location filename="../../lib/log/logaccess.cpp" line="457"/>
         <source>Total number of follows</source>
         <translation>フォロー数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="436"/>
+        <location filename="../../lib/log/logaccess.cpp" line="459"/>
         <source>Total number of who can reply</source>
         <translation>リプライ制限をした数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="437"/>
+        <location filename="../../lib/log/logaccess.cpp" line="460"/>
         <source>Total number of blocks</source>
         <translation>総ブロック数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="515"/>
+        <location filename="../../lib/log/logaccess.cpp" line="538"/>
         <source>Number of registrations for list</source>
         <translation>リストに登録しているアカウント数</translation>
     </message>
@@ -2082,22 +2082,28 @@
         <translation>統計とログ</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/LogViewDialog.qml" line="108"/>
+        <location filename="../qml/dialogs/LogViewDialog.qml" line="128"/>
         <source>Statistics</source>
         <translation>統計</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/LogViewDialog.qml" line="114"/>
+        <location filename="../qml/dialogs/LogViewDialog.qml" line="134"/>
+        <location filename="../qml/dialogs/LogViewDialog.qml" line="194"/>
+        <source>Search</source>
+        <translation>検索</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/LogViewDialog.qml" line="140"/>
         <source>Daily</source>
         <translation>日毎</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/LogViewDialog.qml" line="120"/>
+        <location filename="../qml/dialogs/LogViewDialog.qml" line="146"/>
         <source>Monthly</source>
         <translation>月毎</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/LogViewDialog.qml" line="239"/>
+        <location filename="../qml/dialogs/LogViewDialog.qml" line="343"/>
         <source>Close</source>
         <translation>閉じる</translation>
     </message>
@@ -2212,76 +2218,75 @@
 <context>
     <name>PostControls</name>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="70"/>
+        <location filename="../qml/parts/PostControls.qml" line="71"/>
         <source>Repost</source>
         <translation>リポスト</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="75"/>
+        <location filename="../qml/parts/PostControls.qml" line="76"/>
         <source>Quote</source>
         <translation>引用</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="141"/>
-        <location filename="../qml/parts/PostControls.qml" line="203"/>
+        <location filename="../qml/parts/PostControls.qml" line="142"/>
+        <location filename="../qml/parts/PostControls.qml" line="198"/>
         <source>Translate</source>
         <translation>翻訳</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="146"/>
-        <location filename="../qml/parts/PostControls.qml" line="208"/>
+        <location filename="../qml/parts/PostControls.qml" line="147"/>
+        <location filename="../qml/parts/PostControls.qml" line="203"/>
         <source>Copy post text</source>
         <translation>ポストをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="150"/>
-        <location filename="../qml/parts/PostControls.qml" line="212"/>
+        <location filename="../qml/parts/PostControls.qml" line="151"/>
+        <location filename="../qml/parts/PostControls.qml" line="207"/>
         <source>Copy url</source>
         <translation>URLをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="155"/>
-        <location filename="../qml/parts/PostControls.qml" line="217"/>
+        <location filename="../qml/parts/PostControls.qml" line="156"/>
+        <location filename="../qml/parts/PostControls.qml" line="212"/>
         <source>Open in Official</source>
         <translation>公式で開く</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="162"/>
-        <location filename="../qml/parts/PostControls.qml" line="224"/>
+        <location filename="../qml/parts/PostControls.qml" line="163"/>
+        <location filename="../qml/parts/PostControls.qml" line="219"/>
         <source>Reposted by</source>
         <translation>リポストしたアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="168"/>
-        <location filename="../qml/parts/PostControls.qml" line="230"/>
+        <location filename="../qml/parts/PostControls.qml" line="169"/>
+        <location filename="../qml/parts/PostControls.qml" line="225"/>
         <source>Liked by</source>
         <translation>いいねしたアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="175"/>
-        <location filename="../qml/parts/PostControls.qml" line="237"/>
+        <location filename="../qml/parts/PostControls.qml" line="176"/>
+        <location filename="../qml/parts/PostControls.qml" line="232"/>
         <source>Unpin this post</source>
         <translation>固定ポストを解除</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="175"/>
-        <location filename="../qml/parts/PostControls.qml" line="237"/>
+        <location filename="../qml/parts/PostControls.qml" line="176"/>
+        <location filename="../qml/parts/PostControls.qml" line="232"/>
         <source>Pin this post</source>
         <translation>固定ポストにする</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="180"/>
+        <location filename="../qml/parts/PostControls.qml" line="181"/>
         <source>Who can reply</source>
         <translation>リプライできるユーザー</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="186"/>
+        <location filename="../qml/parts/PostControls.qml" line="187"/>
         <source>Delete post</source>
         <translation>ポストを削除</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="193"/>
-        <location filename="../qml/parts/PostControls.qml" line="243"/>
+        <location filename="../qml/parts/PostControls.qml" line="238"/>
         <source>Report post</source>
         <translation>ポストを通報</translation>
     </message>
@@ -2289,7 +2294,7 @@
 <context>
     <name>PostDelegate</name>
     <message>
-        <location filename="../qml/parts/PostDelegate.qml" line="96"/>
+        <location filename="../qml/parts/PostDelegate.qml" line="97"/>
         <source>Post from an account you muted.</source>
         <translation>ミュートしているアカウントのポスト</translation>
     </message>
@@ -2302,7 +2307,7 @@
         <translation type="vanished">このユーザーの #%s のポストを検索</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostDelegate.qml" line="305"/>
+        <location filename="../qml/parts/PostDelegate.qml" line="307"/>
         <source>blocked</source>
         <translation>ブロック済み</translation>
     </message>
@@ -3253,7 +3258,7 @@
 <context>
     <name>TimelineView</name>
     <message>
-        <location filename="../qml/view/TimelineView.qml" line="129"/>
+        <location filename="../qml/view/TimelineView.qml" line="132"/>
         <source>Quoted content warning</source>
         <translation>閲覧注意な引用</translation>
     </message>
@@ -3266,7 +3271,7 @@
     </message>
     <message>
         <location filename="../qml/main.qml" line="114"/>
-        <location filename="../qml/main.qml" line="453"/>
+        <location filename="../qml/main.qml" line="505"/>
         <source>Search posts</source>
         <translation>検索(ポスト)</translation>
     </message>
@@ -3281,12 +3286,12 @@
         <translation>リプライできるユーザーの更新中 ...</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="381"/>
+        <location filename="../qml/main.qml" line="433"/>
         <source>Loading lists</source>
         <translation>リストの読み込み中</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="918"/>
+        <location filename="../qml/main.qml" line="970"/>
         <source>Loading account(s) ...</source>
         <translation>アカウント情報の読み込み中 ...</translation>
     </message>

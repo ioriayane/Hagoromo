@@ -111,7 +111,7 @@ ScrollView {
             postAvatarImage.onClicked: requestViewProfile(model.did)
             postAuthor.displayName: model.displayName
             postAuthor.handle: model.handle
-            postAuthor.indexedAt: model.indexedAt
+            postAuthor.indexedAt: timelineView.logMode ? model.indexedAtLong : model.indexedAt
             recordText.text: {
                 var text = model.recordText
                 if(model.recordTextTranslation.length > 0){

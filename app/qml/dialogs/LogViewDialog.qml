@@ -49,8 +49,10 @@ Dialog {
         logStatisticsListModel.clear()
         logDailyListModel.clear()
         logMonthlyListModel.clear()
+        logSearchFeedListModel.clear()
         logDailyFeedListModel.clear()
         logMonthlyFeedListModel.clear()
+        searchText.clear()
     }
 
 
@@ -67,6 +69,11 @@ Dialog {
             logMonthlyListModel.getLatest()
         }
         onErrorOccured: (code, message) => logViewDialog.errorOccured(account.uuid, code, message)
+    }
+    Shortcut {  // Search
+        enabled: logViewDialog.visible && searchButton.enabled && searchText.focus && tabBar.currentIndex == 1
+        sequence: "Ctrl+Return"
+        onActivated: searchButton.clicked()
     }
 
     ColumnLayout {
@@ -99,7 +106,8 @@ Dialog {
                          !logDailyListModel.running &&
                          !logMonthlyListModel.running &&
                          !logDailyFeedListModel.running &&
-                         !logMonthlyFeedListModel.running
+                         !logMonthlyFeedListModel.running &&
+                         !logSearchFeedListModel.running
                 onClicked: {
                     logOperator.getLatest()
                 }
@@ -118,6 +126,12 @@ Dialog {
                 font.pointSize: AdjustedValues.f10
                 font.capitalization: Font.MixedCase
                 text: qsTr("Statistics")
+            }
+            TabButton {
+                implicitHeight: AdjustedValues.b36
+                font.pointSize: AdjustedValues.f10
+                font.capitalization: Font.MixedCase
+                text: qsTr("Search")
             }
             TabButton {
                 implicitHeight: AdjustedValues.b36
@@ -158,6 +172,62 @@ Dialog {
                 }
             }
             Frame {
+                contentWidth: searchRowLayout.width
+                contentHeight: searchRowLayout.height
+
+                ColumnLayout {
+                    id: searchRowLayout
+                    width: swipeView.frameWidth
+                    height: swipeView.frameHeight
+                    RowLayout {
+                        Layout.fillWidth: true
+                        TextField  {
+                            id: searchText
+                            Layout.fillWidth: true
+                            selectByMouse: true
+                            font.pointSize: AdjustedValues.f10
+                        }
+                        Button {
+                            id: searchButton
+                            enabled: searchText.text.length > 0
+                            font.pointSize: AdjustedValues.f10
+                            text: qsTr("Search")
+                            onClicked: {
+                                console.log("search:" + searchText.text)
+                                logSearchFeedListModel.setAccount(account.service, account.did,
+                                                                 account.handle, account.email,
+                                                                 account.accessJwt, account.refreshJwt)
+                                logSearchFeedListModel.selectCondition = searchText.text
+                                logSearchFeedListModel.clear()
+                                logSearchFeedListModel.getLatest()
+                            }
+                        }
+                    }
+                    TimelineView {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        model: LogFeedListModel {
+                            id: logSearchFeedListModel
+                            targetDid: account.did
+                            targetHandle: account.handle
+                            targetAvatar: account.avatar
+                            feedType: LogFeedListModel.WordsFeedType
+                        }
+                        accountDid: account.did
+                        logMode: true
+                        onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
+                                        logViewDialog.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+                        onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
+                                        logViewDialog.requestQuote(account.uuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+                        onRequestViewImages: (index, paths, alts) => logViewDialog.requestViewImages(index, paths, alts)
+                        onRequestAddMutedWord: (text) => logViewDialog.requestAddMutedWord(account.uuid, text)
+                        onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) =>
+                                                   logViewDialog.requestUpdateThreadGate(account.uuid, uri, threadgate_uri, type, rules, callback)
+                        onHoveredLinkChanged: logViewDialog.hoveredLink = hoveredLink
+                    }
+                }
+            }
+            Frame {
                 contentWidth: dailyRowLayout.width
                 contentHeight: dailyRowLayout.height
 
@@ -169,7 +239,8 @@ Dialog {
                         Layout.preferredHeight: swipeView.frameHeight
                         verticalScrollBar: true
                         enabled: !logDailyFeedListModel.running &&
-                                 !logMonthlyFeedListModel.running
+                                 !logMonthlyFeedListModel.running &&
+                                 !logSearchFeedListModel.running
                         model: LogDailyListModel {
                             id: logDailyListModel
                             did: account.did
@@ -225,7 +296,8 @@ Dialog {
                         Layout.preferredHeight: swipeView.frameHeight
                         verticalScrollBar: true
                         enabled: !logDailyFeedListModel.running &&
-                                 !logMonthlyFeedListModel.running
+                                 !logMonthlyFeedListModel.running &&
+                                 !logSearchFeedListModel.running
                         model: LogMonthlyListModel {
                             id: logMonthlyListModel
                             did: account.did

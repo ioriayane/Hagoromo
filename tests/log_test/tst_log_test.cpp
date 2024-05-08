@@ -427,6 +427,51 @@ void log_test::test_LogManager_select()
                         == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3k32c2xekas2h",
                 manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
     }
+
+    manager.setService(account.service + "/posts/4");
+    {
+        QSignalSpy spy(&manager, SIGNAL(finishedSelection(const QString &)));
+        QSignalSpy spy2(&manager, SIGNAL(finishedSelectionPosts()));
+        emit manager.selectRecords(
+                did, 2,
+                QString("tech %1%2%3").arg(QChar(0x3066)).arg(QChar(0x3059)).arg(QChar(0x3068)),
+                QString(), 5);
+        spy.wait();
+        spy2.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QVERIFY2(spy2.count() == 1, QString("spy2.count()=%1").arg(spy2.count()).toUtf8());
+
+        QList<QVariant> arguments = spy.takeFirst();
+
+        QFile file(":/data/repo/select_4.json");
+        QVERIFY(file.open(QFile::ReadOnly));
+        QJsonDocument except = QJsonDocument::fromJson(file.readAll());
+        file.close();
+
+        bool check = (except.object()
+                      == QJsonDocument::fromJson(arguments.at(0).toString().toUtf8()).object());
+        if (!check) {
+            qDebug().noquote().nospace()
+                    << "except:" << except.toJson(QJsonDocument::JsonFormat::Compact);
+            qDebug().noquote().nospace() << "actual:" << arguments.at(0).toString();
+        }
+        QVERIFY(check);
+
+        qDebug() << "feedViewPosts:" << manager.feedViewPosts().length();
+        QVERIFY2(manager.feedViewPosts().length() == 2,
+                 QString::number(manager.feedViewPosts().length()).toLocal8Bit());
+
+        i = 0;
+        QVERIFY2(
+                manager.feedViewPosts().at(i).post.uri
+                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kjvg2xwac32j",
+                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        i = 1;
+        QVERIFY2(
+                manager.feedViewPosts().at(i).post.uri
+                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kdttptwwvb2h",
+                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+    }
 }
 
 void log_test::test_LogManager_statistics()

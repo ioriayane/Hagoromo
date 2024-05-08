@@ -20,7 +20,7 @@ class LogFeedListModel : public TimelineListModel
 public:
     explicit LogFeedListModel(QObject *parent = nullptr);
 
-    enum LogFeedListModelFeedType { DailyFeedType = 0, MonthlyFeedType = 1 };
+    enum LogFeedListModelFeedType { DailyFeedType = 0, MonthlyFeedType = 1, WordsFeedType = 2 };
     Q_ENUM(LogFeedListModelFeedType)
 
     Q_INVOKABLE bool getLatest();
