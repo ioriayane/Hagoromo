@@ -94,12 +94,12 @@
         <translation>カラムの追加</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AddColumnDialog.qml" line="72"/>
+        <location filename="../qml/dialogs/AddColumnDialog.qml" line="73"/>
         <source>Account</source>
         <translation>アカウント</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AddColumnDialog.qml" line="95"/>
+        <location filename="../qml/dialogs/AddColumnDialog.qml" line="96"/>
         <source>Column type</source>
         <translation>カラムタイプ</translation>
     </message>
@@ -108,12 +108,17 @@
         <translation type="vanished">カスタムフィードの検索</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AddColumnDialog.qml" line="227"/>
+        <location filename="../qml/dialogs/AddColumnDialog.qml" line="231"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AddColumnDialog.qml" line="237"/>
+        <location filename="../qml/dialogs/AddColumnDialog.qml" line="240"/>
+        <source>Logs</source>
+        <translation>ログ</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/AddColumnDialog.qml" line="250"/>
         <source>Add</source>
         <translation>追加</translation>
     </message>
@@ -1957,111 +1962,111 @@
 <context>
     <name>LogAccess</name>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="443"/>
-        <location filename="../../lib/log/logaccess.cpp" line="444"/>
         <location filename="../../lib/log/logaccess.cpp" line="446"/>
+        <location filename="../../lib/log/logaccess.cpp" line="447"/>
+        <location filename="../../lib/log/logaccess.cpp" line="449"/>
         <source>Post</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="443"/>
+        <location filename="../../lib/log/logaccess.cpp" line="446"/>
         <source>Total number of posts</source>
         <translation>総ポスト数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="444"/>
+        <location filename="../../lib/log/logaccess.cpp" line="447"/>
         <source>Number of days posts</source>
         <translation>ポストした日数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="446"/>
+        <location filename="../../lib/log/logaccess.cpp" line="449"/>
         <source>Average number of daily posts</source>
         <translation>1日あたりの平均ポスト数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="447"/>
-        <location filename="../../lib/log/logaccess.cpp" line="448"/>
         <location filename="../../lib/log/logaccess.cpp" line="450"/>
+        <location filename="../../lib/log/logaccess.cpp" line="451"/>
+        <location filename="../../lib/log/logaccess.cpp" line="453"/>
         <source>Like</source>
         <translation>いいね</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="447"/>
+        <location filename="../../lib/log/logaccess.cpp" line="450"/>
         <source>Total number of likes</source>
         <translation>総いいね数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="448"/>
+        <location filename="../../lib/log/logaccess.cpp" line="451"/>
         <source>Number of days likes</source>
         <translation>いいねした日数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="450"/>
+        <location filename="../../lib/log/logaccess.cpp" line="453"/>
         <source>Average number of daily likes</source>
         <translation>1日あたりの平均いいね数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="451"/>
-        <location filename="../../lib/log/logaccess.cpp" line="452"/>
         <location filename="../../lib/log/logaccess.cpp" line="454"/>
+        <location filename="../../lib/log/logaccess.cpp" line="455"/>
+        <location filename="../../lib/log/logaccess.cpp" line="457"/>
         <source>Repost</source>
         <translation>リポスト</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="451"/>
+        <location filename="../../lib/log/logaccess.cpp" line="454"/>
         <source>Total number of reposts</source>
         <translation>総リポスト数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="452"/>
+        <location filename="../../lib/log/logaccess.cpp" line="455"/>
         <source>Number of days reposts</source>
         <translation>リポストした日数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="454"/>
+        <location filename="../../lib/log/logaccess.cpp" line="457"/>
         <source>Average number of daily reposts</source>
         <translation>1日あたりの平均リポスト数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="455"/>
-        <location filename="../../lib/log/logaccess.cpp" line="456"/>
+        <location filename="../../lib/log/logaccess.cpp" line="458"/>
+        <location filename="../../lib/log/logaccess.cpp" line="459"/>
         <source>List</source>
         <translation>リスト</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="455"/>
+        <location filename="../../lib/log/logaccess.cpp" line="458"/>
         <source>Total number of lists</source>
         <translation>リストの数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="456"/>
+        <location filename="../../lib/log/logaccess.cpp" line="459"/>
         <source>Total number of list items</source>
         <translation>リストに登録している総アカウント数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="457"/>
-        <location filename="../../lib/log/logaccess.cpp" line="459"/>
         <location filename="../../lib/log/logaccess.cpp" line="460"/>
+        <location filename="../../lib/log/logaccess.cpp" line="462"/>
+        <location filename="../../lib/log/logaccess.cpp" line="463"/>
         <source>Other</source>
         <translation>その他</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="457"/>
+        <location filename="../../lib/log/logaccess.cpp" line="460"/>
         <source>Total number of follows</source>
         <translation>フォロー数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="459"/>
+        <location filename="../../lib/log/logaccess.cpp" line="462"/>
         <source>Total number of who can reply</source>
         <translation>リプライ制限をした数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="460"/>
+        <location filename="../../lib/log/logaccess.cpp" line="463"/>
         <source>Total number of blocks</source>
         <translation>総ブロック数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="538"/>
+        <location filename="../../lib/log/logaccess.cpp" line="541"/>
         <source>Number of registrations for list</source>
         <translation>リストに登録しているアカウント数</translation>
     </message>

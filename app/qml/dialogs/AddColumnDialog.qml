@@ -25,7 +25,8 @@ Dialog {
     property string selectedName: ""
     property string selectedUri: ""
 
-    signal openDiscoverFeeds(int account_index)
+    signal openSatisticsAndLogs(string account_uid)
+    signal openDiscoverFeeds(string account_uuid)
     signal errorOccured(string account_uuid, string code, string message)
 
     onOpened: {
@@ -151,7 +152,9 @@ Dialog {
                                     onClicked: {
                                         if(model.feedType === 101){
                                             if(!typeList.model.running){
-                                                addColumnDialog.openDiscoverFeeds(accountList.currentIndex)
+                                                var uuid = accountModel.item(accountList.currentIndex, AccountListModel.UuidRole)
+                                                console.log("index=" + accountList.currentIndex + "," + uuid)
+                                                addColumnDialog.openDiscoverFeeds(uuid)
                                             }
                                         }else{
                                             typeList.currentIndex = model.index
@@ -222,6 +225,7 @@ Dialog {
             }
         }
         RowLayout {
+            spacing: 10
             Button {
                 font.pointSize: AdjustedValues.f10
                 text: qsTr("Cancel")
@@ -230,6 +234,15 @@ Dialog {
             }
             Item {
                 Layout.fillWidth: true
+            }
+            Button {
+                font.pointSize: AdjustedValues.f10
+                text: qsTr("Logs")
+                flat: true
+                onClicked: {
+                    var uuid = accountModel.item(accountList.currentIndex, AccountListModel.UuidRole)
+                    addColumnDialog.openSatisticsAndLogs(uuid)
+                }
             }
             Button {
                 font.pointSize: AdjustedValues.f10

@@ -136,18 +136,18 @@ ApplicationWindow {
                                      settingDialog.settings.imageLayoutType, selectedName, selectedUri)
             scrollView.showRightMost()
         }
-        onOpenDiscoverFeeds: (account_index) => {
-                                 discoverFeedsDialog.account.uuid = accountListModel.item(account_index, AccountListModel.UuidRole)
-                                 discoverFeedsDialog.account.service = accountListModel.item(account_index, AccountListModel.ServiceRole)
-                                 discoverFeedsDialog.account.did = accountListModel.item(account_index, AccountListModel.DidRole)
-                                 discoverFeedsDialog.account.handle = accountListModel.item(account_index, AccountListModel.HandleRole)
-                                 discoverFeedsDialog.account.email = accountListModel.item(account_index, AccountListModel.EmailRole)
-                                 discoverFeedsDialog.account.accessJwt = accountListModel.item(account_index, AccountListModel.AccessJwtRole)
-                                 discoverFeedsDialog.account.refreshJwt = accountListModel.item(account_index, AccountListModel.RefreshJwtRole)
-                                 discoverFeedsDialog.account.avatar = accountListModel.item(account_index, AccountListModel.AvatarRole)
-                                 discoverFeedsDialog.open()
-
-                                 addColumnDialog.reject()
+        onOpenSatisticsAndLogs: (account_uuid) => {
+                                    console.log("onOpenSatisticsAndLogs:" + account_uuid)
+                                    if(logViewDialog.account.set(accountListModel, account_uuid)){
+                                        logViewDialog.open()
+                                    }
+                                }
+        onOpenDiscoverFeeds: (account_uuid) => {
+                                 console.log("onOpenDiscoverFeeds:" + account_uuid)
+                                 if(discoverFeedsDialog.account.set(accountListModel, account_uuid)){
+                                     discoverFeedsDialog.open()
+                                     addColumnDialog.reject()
+                                 }
                              }
         onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
     }
