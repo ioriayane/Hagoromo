@@ -24,6 +24,7 @@ struct AccountData
     QString service;
     QString identifier;
     QString password;
+    QString service_endpoint;
 
     QString did;
     QString handle;

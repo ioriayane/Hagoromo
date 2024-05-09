@@ -5,17 +5,20 @@ Menu {
     id: tagMenu
     width: tagMenuItem.implicitWidth
     property string tagText: ""
+    property bool logMode: false
 
     signal requestViewSearchPosts(string text)
     signal requestAddMutedWord(string text)
 
     MenuItem {
+        enabled: !logMode
         icon.source: "../images/search.png"
         text: qsTr("Search %s posts").replace("%s", tagMenu.tagText)
         onTriggered: requestViewSearchPosts(tagMenu.tagText)
     }
     MenuItem {
         id: tagMenuItem
+        enabled: !logMode
         icon.source: "../images/account.png"
         text: qsTr("Search %s posts by this user").replace("%s", tagMenu.tagText)
         onTriggered: requestViewSearchPosts(tagMenu.tagText + " from:" + postAuthor.handle)

@@ -136,18 +136,18 @@ ApplicationWindow {
                                      settingDialog.settings.imageLayoutType, selectedName, selectedUri)
             scrollView.showRightMost()
         }
-        onOpenDiscoverFeeds: (account_index) => {
-                                 discoverFeedsDialog.account.uuid = accountListModel.item(account_index, AccountListModel.UuidRole)
-                                 discoverFeedsDialog.account.service = accountListModel.item(account_index, AccountListModel.ServiceRole)
-                                 discoverFeedsDialog.account.did = accountListModel.item(account_index, AccountListModel.DidRole)
-                                 discoverFeedsDialog.account.handle = accountListModel.item(account_index, AccountListModel.HandleRole)
-                                 discoverFeedsDialog.account.email = accountListModel.item(account_index, AccountListModel.EmailRole)
-                                 discoverFeedsDialog.account.accessJwt = accountListModel.item(account_index, AccountListModel.AccessJwtRole)
-                                 discoverFeedsDialog.account.refreshJwt = accountListModel.item(account_index, AccountListModel.RefreshJwtRole)
-                                 discoverFeedsDialog.account.avatar = accountListModel.item(account_index, AccountListModel.AvatarRole)
-                                 discoverFeedsDialog.open()
-
-                                 addColumnDialog.reject()
+        onOpenSatisticsAndLogs: (account_uuid) => {
+                                    console.log("onOpenSatisticsAndLogs:" + account_uuid)
+                                    if(logViewDialog.account.set(accountListModel, account_uuid)){
+                                        logViewDialog.open()
+                                    }
+                                }
+        onOpenDiscoverFeeds: (account_uuid) => {
+                                 console.log("onOpenDiscoverFeeds:" + account_uuid)
+                                 if(discoverFeedsDialog.account.set(accountListModel, account_uuid)){
+                                     discoverFeedsDialog.open()
+                                     addColumnDialog.reject()
+                                 }
                              }
         onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
     }
@@ -157,16 +157,16 @@ ApplicationWindow {
         accountModel: accountListModel
         onClosed: accountListModel.syncColumn()
         onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
-        onRequestAddMutedWords: (account_index) => {
-                                    addMutedWordDialog.account.service = accountListModel.item(account_index, AccountListModel.ServiceRole)
-                                    addMutedWordDialog.account.did = accountListModel.item(account_index, AccountListModel.DidRole)
-                                    addMutedWordDialog.account.handle = accountListModel.item(account_index, AccountListModel.HandleRole)
-                                    addMutedWordDialog.account.email = accountListModel.item(account_index, AccountListModel.EmailRole)
-                                    addMutedWordDialog.account.accessJwt = accountListModel.item(account_index, AccountListModel.AccessJwtRole)
-                                    addMutedWordDialog.account.refreshJwt = accountListModel.item(account_index, AccountListModel.RefreshJwtRole)
-                                    addMutedWordDialog.account.avatar = accountListModel.item(account_index, AccountListModel.AvatarRole)
-                                    addMutedWordDialog.open()
+        onRequestAddMutedWords: (account_uuid) => {
+                                    if(addMutedWordDialog.account.set(accountListModel, account_uuid)){
+                                        addMutedWordDialog.open()
+                                    }
                                 }
+        onRequestStatisticsAndLogs: (account_uuid) => {
+                                        if(logViewDialog.account.set(accountListModel, account_uuid)){
+                                            logViewDialog.open()
+                                        }
+                                    }
     }
 
     DiscoverFeedsDialog {
@@ -300,6 +300,63 @@ ApplicationWindow {
                 }
             }
         }
+    }
+    LogViewDialog {
+        id: logViewDialog
+        parentHeight: parent.height
+        onErrorOccured: (uuid, code, message) => appWindow.errorHandler(uuid, code, message)
+
+        onRequestReply: (account_uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) => {
+                            console.log(account_uuid + ",\n" +
+                                        cid + ", "+ uri + ",\n" +
+                                        reply_root_cid + ", "+ reply_root_uri + ",\n" +
+                                        avatar + ",\n" +
+                                        display_name + ", "+ handle + ", "+ indexed_at + ",\n"+ text)
+                            postDialog.postType = "reply"
+                            postDialog.defaultAccountUuid = account_uuid
+                            postDialog.replyCid = cid
+                            postDialog.replyUri = uri
+                            postDialog.replyRootCid = reply_root_cid
+                            postDialog.replyRootUri = reply_root_uri
+                            postDialog.replyAvatar = avatar
+                            postDialog.replyDisplayName = display_name
+                            postDialog.replyHandle = handle
+                            postDialog.replyIndexedAt = indexed_at
+                            postDialog.replyText = text
+                            postDialog.open()
+                        }
+        onRequestQuote: (account_uuid, cid, uri, avatar, display_name, handle, indexed_at, text) => {
+                            postDialog.postType = "quote"
+                            postDialog.defaultAccountUuid = account_uuid
+                            postDialog.quoteCid = cid
+                            postDialog.quoteUri = uri
+                            postDialog.quoteAvatar = avatar
+                            postDialog.quoteDisplayName = display_name
+                            postDialog.quoteHandle = handle
+                            postDialog.quoteIndexedAt = indexed_at
+                            postDialog.quoteText = text
+                            postDialog.open()
+                        }
+        // ダイアログより前に出せない
+        // onRequestViewImages: (index, paths, alts) => imageFullView.open(index, paths, alts)
+        onRequestAddMutedWord: (account_uuid, text) => {
+                                   console.log(account_uuid + ", " + text)
+                                   if(addMutedWordDialog.account.set(accountListModel, account_uuid)){
+                                       addMutedWordDialog.initialValue = text
+                                       addMutedWordDialog.open()
+                                   }
+                               }
+        onRequestUpdateThreadGate: (account_uuid, uri, threadgate_uri, type, rules, callback) => {
+                                       if(selectThreadGateDialog.account.set(accountListModel, account_uuid)){
+                                           selectThreadGateDialog.postUri = uri
+                                           selectThreadGateDialog.threadgateUri = threadgate_uri
+                                           selectThreadGateDialog.initialType = type
+                                           selectThreadGateDialog.initialOptions = rules
+                                           selectThreadGateDialog.callback = callback
+                                           selectThreadGateDialog.open()
+                                       }
+                                   }
+        onHoveredLinkChanged: hoveredLinkFrame.text = hoveredLink
     }
 
     MessageDialog {

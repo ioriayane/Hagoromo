@@ -17,6 +17,7 @@ RowLayout {
     property string postUri: ""
     property string handle: ""
     property bool mine: false
+    property bool logMode: false
 
     property alias replyButton: replyButton
     property alias repostButton: repostButton
@@ -160,13 +161,13 @@ RowLayout {
             MenuSeparator {}
             MenuItem {
                 text: qsTr("Reposted by")
-                enabled: repostButton.iconText > 0
+                enabled: repostButton.iconText > 0 && !logMode
                 icon.source: "../images/repost.png"
                 onTriggered: triggeredRequestViewRepostedBy()
             }
             MenuItem {
                 text: qsTr("Liked by")
-                enabled: likeButton.iconText > 0
+                enabled: likeButton.iconText > 0 && !logMode
                 icon.source: "../images/like.png"
                 onTriggered: triggeredRequestViewLikedBy()
             }
@@ -187,12 +188,6 @@ RowLayout {
                 enabled: mine
                 icon.source: "../images/delete.png"
                 onTriggered: triggeredDeletePost()
-            }
-            MenuSeparator {}
-            MenuItem {
-                text: qsTr("Report post")
-                icon.source: "../images/report.png"
-                onTriggered: triggeredRequestReport()
             }
         }
         Menu {

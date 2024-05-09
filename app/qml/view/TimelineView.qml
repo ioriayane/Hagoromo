@@ -19,6 +19,7 @@ ScrollView {
     property string hoveredLink: ""
     property string accountDid: ""   // 取得するユーザー
     property int imageLayoutType: 1
+    property bool logMode: false
 
     property alias listView: rootListView
     property alias model: rootListView.model
@@ -87,6 +88,8 @@ ScrollView {
         delegate: PostDelegate {
             Layout.preferredWidth: rootListView.width
 
+            logMode: timelineView.logMode
+
             onClicked: (mouse) => requestViewThread(model.uri)
             onRequestViewProfile: (did) => timelineView.requestViewProfile(did)
             onRequestViewSearchPosts: (text) => timelineView.requestViewSearchPosts(text)
@@ -108,7 +111,7 @@ ScrollView {
             postAvatarImage.onClicked: requestViewProfile(model.did)
             postAuthor.displayName: model.displayName
             postAuthor.handle: model.handle
-            postAuthor.indexedAt: model.indexedAt
+            postAuthor.indexedAt: timelineView.logMode ? model.indexedAtLong : model.indexedAt
             recordText.text: {
                 var text = model.recordText
                 if(model.recordTextTranslation.length > 0){
@@ -186,6 +189,7 @@ ScrollView {
             postControls.postUri: model.uri
             postControls.handle: model.handle
             postControls.mine: model.did === timelineView.accountDid
+            postControls.logMode: timelineView.logMode
             postControls.onTriggeredCopyToClipboard: systemTool.copyToClipboard(model.recordTextPlain)
             postControls.onTriggeredCopyPostUrlToClipboard: systemTool.copyToClipboard(rootListView.model.getItemOfficialUrl(model.index))
             postControls.onTriggeredDeletePost: rootListView.model.deletePost(model.index)

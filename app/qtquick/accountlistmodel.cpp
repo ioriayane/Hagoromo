@@ -6,6 +6,7 @@
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofile.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "tools/pinnedpostcache.h"
+#include "extension/plc/plcdirectory.h"
 
 #include <QByteArray>
 #include <QSettings>
@@ -21,6 +22,7 @@ using AtProtocolInterface::AppBskyActorGetProfile;
 using AtProtocolInterface::ComAtprotoRepoGetRecordEx;
 using AtProtocolInterface::ComAtprotoServerCreateSessionEx;
 using AtProtocolInterface::ComAtprotoServerRefreshSessionEx;
+using AtProtocolInterface::PlcDirectory;
 
 AccountListModel::AccountListModel(QObject *parent) : QAbstractListModel { parent }
 {
@@ -54,6 +56,8 @@ QVariant AccountListModel::item(int row, AccountListModelRoles role) const
         return m_accountList.at(row).is_main;
     else if (role == ServiceRole)
         return m_accountList.at(row).service;
+    else if (role == ServiceEndpointRole)
+        return m_accountList.at(row).service_endpoint;
     else if (role == IdentifierRole)
         return m_accountList.at(row).identifier;
     else if (role == PasswordRole)
@@ -335,6 +339,7 @@ void AccountListModel::load()
                 item.uuid = doc.array().at(i).toObject().value("uuid").toString();
                 item.is_main = doc.array().at(i).toObject().value("is_main").toBool();
                 item.service = doc.array().at(i).toObject().value("service").toString();
+                item.service_endpoint = item.service;
                 item.identifier = doc.array().at(i).toObject().value("identifier").toString();
                 item.password = m_encryption.decrypt(
                         doc.array().at(i).toObject().value("password").toString());
@@ -394,6 +399,7 @@ QHash<int, QByteArray> AccountListModel::roleNames() const
     roles[UuidRole] = "uuid";
     roles[IsMainRole] = "isMain";
     roles[ServiceRole] = "service";
+    roles[ServiceEndpointRole] = "serviceEndpoint";
     roles[IdentifierRole] = "identifier";
     roles[PasswordRole] = "password";
     roles[DidRole] = "did";
@@ -419,7 +425,8 @@ void AccountListModel::createSession(int row)
 
     ComAtprotoServerCreateSessionEx *session = new ComAtprotoServerCreateSessionEx(this);
     connect(session, &ComAtprotoServerCreateSessionEx::finished, [=](bool success) {
-        //        qDebug() << session << session->service() << session->did() << session->handle()
+        //        qDebug() << session << session->service() << session->did() <<
+        //        session->handle()
         //                 << session->email() << session->accessJwt() << session->refreshJwt();
         //        qDebug() << service << identifier << password;
         if (success) {
@@ -490,30 +497,43 @@ void AccountListModel::getProfile(int row)
     if (row < 0 || row >= m_accountList.count())
         return;
 
-    AppBskyActorGetProfile *profile = new AppBskyActorGetProfile(this);
-    profile->setAccount(m_accountList.at(row));
-    connect(profile, &AppBskyActorGetProfile::finished, [=](bool success) {
-        if (success) {
-            AtProtocolType::AppBskyActorDefs::ProfileViewDetailed detail =
-                    profile->profileViewDetailed();
-            qDebug() << "Update profile detailed" << detail.displayName << detail.description;
-            m_accountList[row].displayName = detail.displayName;
-            m_accountList[row].description = detail.description;
-            m_accountList[row].avatar = detail.avatar;
-            m_accountList[row].banner = detail.banner;
-
-            save();
-
-            emit updatedAccount(row, m_accountList[row].uuid);
-            emit dataChanged(index(row), index(row));
-
-            getRawProfile(row);
+    PlcDirectory *plc = new PlcDirectory(this);
+    connect(plc, &PlcDirectory::finished, this, [=](bool success) {
+        if (success && !plc->serviceEndpoint().isEmpty()) {
+            m_accountList[row].service_endpoint = plc->serviceEndpoint();
         } else {
-            emit errorOccured(profile->errorCode(), profile->errorMessage());
+            m_accountList[row].service_endpoint = m_accountList.at(row).service;
         }
-        profile->deleteLater();
+        qDebug() << "Update service endpoint" << m_accountList.at(row).service_endpoint;
+
+        AppBskyActorGetProfile *profile = new AppBskyActorGetProfile(this);
+        profile->setAccount(m_accountList.at(row));
+        connect(profile, &AppBskyActorGetProfile::finished, [=](bool success) {
+            if (success) {
+                AtProtocolType::AppBskyActorDefs::ProfileViewDetailed detail =
+                        profile->profileViewDetailed();
+                qDebug() << "Update profile detailed" << detail.displayName << detail.description;
+                m_accountList[row].displayName = detail.displayName;
+                m_accountList[row].description = detail.description;
+                m_accountList[row].avatar = detail.avatar;
+                m_accountList[row].banner = detail.banner;
+
+                save();
+
+                emit updatedAccount(row, m_accountList[row].uuid);
+                emit dataChanged(index(row), index(row));
+
+                getRawProfile(row);
+            } else {
+                emit errorOccured(profile->errorCode(), profile->errorMessage());
+            }
+            profile->deleteLater();
+        });
+        profile->getProfile(m_accountList.at(row).did);
+
+        plc->deleteLater();
     });
-    profile->getProfile(m_accountList.at(row).did);
+    plc->directory(m_accountList.at(row).did);
 }
 
 void AccountListModel::getRawProfile(int row)

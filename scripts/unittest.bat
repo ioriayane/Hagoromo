@@ -63,6 +63,10 @@ if ERRORLEVEL 1 goto TEST_FAIL
 if ERRORLEVEL 1 goto TEST_FAIL
 %BUILD_FOLDER%\search_test\debug\search_test.exe
 if ERRORLEVEL 1 goto TEST_FAIL
+%BUILD_FOLDER%\log_test\debug\log_test.exe
+if ERRORLEVEL 1 goto TEST_FAIL
+%BUILD_FOLDER%\tools_test\debug\tools_test.exe
+if ERRORLEVEL 1 goto TEST_FAIL
 
 goto QUIT
 :TEST_FAIL

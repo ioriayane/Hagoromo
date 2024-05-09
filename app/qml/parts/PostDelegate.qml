@@ -22,6 +22,7 @@ ClickableFrame {
     property string userFilterMessage: ""
     property bool hasQuote: false
     property bool threadConnected: false
+    property bool logMode: false
 
     property alias moderationFrame: moderationFrame
     property alias repostReactionAuthor: repostReactionAuthor
@@ -201,6 +202,7 @@ ClickableFrame {
 
                             HashTagMenu {
                                 id: tagMenu
+                                logMode: postFrame.logMode
                                 onRequestViewSearchPosts: (text) => postFrame.requestViewSearchPosts(text)
                                 onRequestAddMutedWord: (text) => postFrame.requestAddMutedWord(text)
                             }

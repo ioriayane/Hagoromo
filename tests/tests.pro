@@ -5,4 +5,6 @@ SUBDIRS += \
     hagoromo_test \
     hagoromo_test2 \
     http_test \
-    search_test
+    log_test \
+    search_test \
+    tools_test
