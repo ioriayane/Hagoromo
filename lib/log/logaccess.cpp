@@ -267,7 +267,7 @@ bool LogAccess::dbOpen(const QString &did) const
     QSqlDatabase db = QSqlDatabase::database(m_dbConnectionName);
     db.setDatabaseName(path);
     if (!db.open()) {
-        qWarning() << db.lastError();
+        qDebug() << db.lastError();
         return false;
     }
     qDebug().noquote() << LOG_DATETIME << "open db:" << path;
@@ -317,12 +317,12 @@ bool LogAccess::dbCreateTable() const
     for (const auto &sql : sqls) {
         if (query.prepare(sql)) {
             if (!query.exec()) {
-                qWarning().noquote() << LOG_DATETIME << query.lastError();
+                qDebug().noquote() << LOG_DATETIME << query.lastError();
                 qDebug().noquote() << LOG_DATETIME << query.lastQuery() << query.boundValues();
                 ret = false;
             }
         } else {
-            qWarning().noquote() << LOG_DATETIME << query.lastError();
+            qDebug().noquote() << LOG_DATETIME << query.lastError();
             ret = false;
         }
     }
@@ -342,11 +342,11 @@ void LogAccess::dbDropTable() const
         QSqlQuery query(db);
         if (query.prepare("DROP TABLE IF EXISTS " + name)) {
             if (!query.exec()) {
-                qWarning().noquote() << LOG_DATETIME << query.lastError();
-                qInfo().noquote() << LOG_DATETIME << query.lastQuery() << query.boundValues();
+                qDebug().noquote() << LOG_DATETIME << query.lastError();
+                qDebug().noquote() << LOG_DATETIME << query.lastQuery() << query.boundValues();
             }
         } else {
-            qWarning().noquote() << LOG_DATETIME << query.lastError();
+            qDebug().noquote() << LOG_DATETIME << query.lastError();
         }
     }
 }
@@ -386,14 +386,14 @@ bool LogAccess::dbInsertRecord(const QString &uri, const QString &cid, const QSt
         query.addBindValue(QJsonDocument(json).toJson(QJsonDocument::Compact));
         query.addBindValue(QVariant());
         if (query.exec()) {
-            // qInfo() << query.lastInsertId().toLongLong() << "added";
+            // qDebug() << query.lastInsertId().toLongLong() << "added";
         } else {
-            qWarning().noquote() << LOG_DATETIME << query.lastError();
-            qInfo().noquote() << LOG_DATETIME << query.lastQuery() << query.boundValues();
+            qDebug().noquote() << LOG_DATETIME << query.lastError();
+            qDebug().noquote() << LOG_DATETIME << query.lastQuery() << query.boundValues();
             ret = false;
         }
     } else {
-        qWarning().noquote() << LOG_DATETIME << query.lastError();
+        qDebug().noquote() << LOG_DATETIME << query.lastError();
         ret = false;
     }
     return ret;
@@ -406,12 +406,12 @@ bool LogAccess::dbDeleteRecord(const QString &cid) const
     if (query.prepare("DELETE FROM record WHERE cid = ?")) {
         query.addBindValue(cid);
         if (!query.exec()) {
-            qWarning().noquote() << LOG_DATETIME << query.lastError();
-            qInfo().noquote() << LOG_DATETIME << query.lastQuery() << query.boundValues();
+            qDebug().noquote() << LOG_DATETIME << query.lastError();
+            qDebug().noquote() << LOG_DATETIME << query.lastQuery() << query.boundValues();
             ret = false;
         }
     } else {
-        qWarning().noquote() << LOG_DATETIME << query.lastError();
+        qDebug().noquote() << LOG_DATETIME << query.lastError();
         ret = false;
     }
     return ret;
@@ -427,11 +427,11 @@ bool LogAccess::dbSelect(QSqlQuery &query, const QString &sql, const QStringList
         if (query.exec()) {
             ret = true;
         } else {
-            qWarning().noquote() << LOG_DATETIME << query.lastError();
-            qInfo().noquote() << LOG_DATETIME << query.lastQuery() << query.boundValues();
+            qDebug().noquote() << LOG_DATETIME << query.lastError();
+            qDebug().noquote() << LOG_DATETIME << query.lastQuery() << query.boundValues();
         }
     } else {
-        qWarning().noquote() << LOG_DATETIME << query.lastError();
+        qDebug().noquote() << LOG_DATETIME << query.lastError();
     }
     return ret;
 }
@@ -685,11 +685,11 @@ void LogAccess::dbUpdateRecords(const QList<RecordPostItem> &record_post_items) 
             query.addBindValue(item.json);
             query.addBindValue(item.uri);
             if (!query.exec()) {
-                qWarning().noquote() << LOG_DATETIME << query.lastError();
-                qInfo().noquote() << LOG_DATETIME << query.lastQuery() << query.boundValues();
+                qDebug().noquote() << LOG_DATETIME << query.lastError();
+                qDebug().noquote() << LOG_DATETIME << query.lastQuery() << query.boundValues();
             }
         } else {
-            qWarning().noquote() << LOG_DATETIME << query.lastError();
+            qDebug().noquote() << LOG_DATETIME << query.lastError();
         }
     }
 }
@@ -720,10 +720,10 @@ void LogAccess::dbSetVersion(const int version) const
     if (query.prepare(sql)) {
         query.addBindValue(version);
         if (!query.exec()) {
-            qWarning().noquote() << LOG_DATETIME << query.lastError();
-            qInfo().noquote() << LOG_DATETIME << query.lastQuery() << query.boundValues();
+            qDebug().noquote() << LOG_DATETIME << query.lastError();
+            qDebug().noquote() << LOG_DATETIME << query.lastQuery() << query.boundValues();
         }
     } else {
-        qWarning().noquote() << LOG_DATETIME << query.lastError();
+        qDebug().noquote() << LOG_DATETIME << query.lastError();
     }
 }
