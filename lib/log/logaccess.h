@@ -49,6 +49,8 @@ public slots:
     void selectRecords(const QString &did, const int kind, const QString &condition,
                        const QString &cursor, const int limit);
     void updateRecords(const QString &did, const QList<RecordPostItem> &record_post_items);
+    void setVersion(const QString &did, const int version);
+    int getVersion(const QString &did);
 
 signals:
     void progressMessage(const QString &message);
@@ -58,15 +60,16 @@ signals:
     void finishedUpdateRecords();
 
 private:
-    QString dbPath(QString did);
+    QString dbPath(QString did) const;
     void dbInit();
-    void dbRelease();
-    bool dbOpen(const QString &did);
-    void dbClose();
-    bool dbCreateTable();
+    void dbRelease() const;
+    bool dbOpen(const QString &did) const;
+    void dbClose() const;
+    bool dbCreateTable() const;
+    void dbDropTable() const;
     bool dbInsertRecord(const QString &uri, const QString &cid, const QString &type,
-                        const QJsonObject &json);
-    bool dbDeleteRecord(const QString &cid);
+                        const QJsonObject &json) const;
+    bool dbDeleteRecord(const QString &cid) const;
     bool dbSelect(QSqlQuery &query, const QString &sql,
                   const QStringList &bind_values = QStringList()) const;
     QStringList dbGetSavedCids() const;
@@ -75,7 +78,9 @@ private:
     QList<TotalItem> dbMakeStatistics() const;
     QString dbSelectRecords(const int kind, const QString &condition, const QString &cursor,
                             const int limit, QStringList &view_posts) const;
-    void dbUpdateRecords(const QList<RecordPostItem> &record_post_items);
+    void dbUpdateRecords(const QList<RecordPostItem> &record_post_items) const;
+    int dbGetVersion() const;
+    void dbSetVersion(const int version) const;
 
     QString m_dbConnectionName;
 };

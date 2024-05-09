@@ -21,6 +21,7 @@ public:
 private slots:
     void initTestCase();
     void cleanupTestCase();
+    void test_LogAccess();
     void test_LogManager();
     void test_LogManager_daily();
     void test_LogManager_monthly();
@@ -57,6 +58,26 @@ log_test::~log_test() { }
 void log_test::initTestCase() { }
 
 void log_test::cleanupTestCase() { }
+
+void log_test::test_LogAccess()
+{
+    LogAccess access;
+    QString did("did:plc:log_access_test");
+
+    access.removeDbFile(did);
+
+    access.updateDb(did, QByteArray());
+    int ver = access.getVersion(did);
+    QVERIFY2(ver == 1, QString::number(ver).toLocal8Bit());
+    access.setVersion(did, 100);
+    ver = access.getVersion(did);
+    QVERIFY2(ver == 100, QString::number(ver).toLocal8Bit());
+
+    access.setVersion(did, 0);
+    access.updateDb(did, QByteArray());
+    ver = access.getVersion(did);
+    QVERIFY2(ver == 1, QString::number(ver).toLocal8Bit());
+}
 
 void log_test::test_LogManager()
 {

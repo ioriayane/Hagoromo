@@ -9,10 +9,12 @@
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlError>
 #include <QFile>
+#include <QThread>
 
 #include <QDateTime>
-#include <QThread>
 #define LOG_DATETIME QDateTime::currentDateTime().toString("yyyy/MM/dd hh:mm:ss.zzz")
+
+#define DB_VERSION 1
 
 #define REG_EXP_WHITE_SPACE                                                                        \
     QStringLiteral("[ \\f\\n\\r\\t\\v%1%2%3-%4%5%6%7%8%9%10]")                                     \
@@ -51,44 +53,56 @@ void LogAccess::updateDb(const QString &did, const QByteArray &data)
     dbInit();
     if (dbOpen(did)) {
         if (dbCreateTable()) {
+            int version = dbGetVersion();
+            qDebug().noquote() << LOG_DATETIME << "Check database version:" << version;
+            if (version < DB_VERSION) {
+                qDebug().noquote() << LOG_DATETIME << "Database version is out of date";
+                qDebug().noquote()
+                        << LOG_DATETIME << "Update version from " << version << "to " << DB_VERSION;
+                dbDropTable();
+                ret = dbCreateTable();
+            } else {
+                ret = true;
+            }
 
-            qDebug().noquote() << LOG_DATETIME << "Decording repository data...";
-            emit progressMessage("Decording repository data ...");
-            CarDecoder decoder;
-            decoder.setContent(data);
+            if (ret) {
+                qDebug().noquote() << LOG_DATETIME << "Decording repository data...";
+                emit progressMessage("Decording repository data ...");
+                CarDecoder decoder;
+                decoder.setContent(data);
 
-            qDebug().noquote() << LOG_DATETIME << "Insert repository data...";
-            emit progressMessage("Updating local databse ...");
-            int i = 0;
-            QStringList saved_cids = dbGetSavedCids();
-            for (const auto &cid : decoder.cids()) {
-                if (i++ % 100 == 0) {
-                    emit progressMessage(
-                            QString("Updating local databse ... (%1%)")
-                                    .arg(static_cast<int>(100 * i / decoder.cids().length())));
+                qDebug().noquote() << LOG_DATETIME << "Insert repository data...";
+                emit progressMessage("Updating local databse ...");
+                int i = 0;
+                const QStringList saved_cids = dbGetSavedCids();
+                for (const auto &cid : decoder.cids()) {
+                    if (i++ % 100 == 0) {
+                        emit progressMessage(
+                                QString("Updating local databse ... (%1%)")
+                                        .arg(static_cast<int>(100 * i / decoder.cids().length())));
+                    }
+                    if (!saved_cids.contains(cid)) {
+                        if (!dbInsertRecord(decoder.uri(cid), cid, decoder.type(cid),
+                                            decoder.json(cid))) {
+                            emit finishedUpdateDb(false);
+                            break;
+                        }
+                    }
                 }
-                if (!saved_cids.contains(cid)) {
-                    if (!dbInsertRecord(decoder.uri(cid), cid, decoder.type(cid),
-                                        decoder.json(cid))) {
-                        emit finishedUpdateDb(false);
-                        break;
+                emit progressMessage(QString("Updating local databse ... (100%)"));
+
+                // 保存されているけど取得したデータにないものは消す
+                qDebug().noquote() << LOG_DATETIME << "Checking deleted data...";
+                emit progressMessage("Checking deleted data ...");
+                for (const auto &cid : saved_cids) {
+                    if (!decoder.cids().contains(cid)) {
+                        if (!dbDeleteRecord(cid)) {
+                            emit finishedUpdateDb(false);
+                            break;
+                        }
                     }
                 }
             }
-            emit progressMessage(QString("Updating local databse ... (100%)"));
-
-            // 保存されているけど取得したデータにないものは消す
-            qDebug().noquote() << LOG_DATETIME << "Checking deleted data...";
-            emit progressMessage("Checking deleted data ...");
-            for (const auto &cid : saved_cids) {
-                if (!decoder.cids().contains(cid)) {
-                    if (!dbDeleteRecord(cid)) {
-                        emit finishedUpdateDb(false);
-                        break;
-                    }
-                }
-            }
-            ret = true;
         }
         dbClose();
     }
@@ -186,7 +200,31 @@ void LogAccess::updateRecords(const QString &did, const QList<RecordPostItem> &r
     emit finishedUpdateRecords();
 }
 
-QString LogAccess::dbPath(QString did)
+void LogAccess::setVersion(const QString &did, const int version)
+{
+    qDebug().noquote() << LOG_DATETIME << "setVersion" << version;
+    dbInit();
+    if (dbOpen(did)) {
+        dbSetVersion(version);
+        dbClose();
+    }
+    dbRelease();
+}
+
+int LogAccess::getVersion(const QString &did)
+{
+    int version = -1;
+    qDebug().noquote() << LOG_DATETIME << "getVersion";
+    dbInit();
+    if (dbOpen(did)) {
+        version = dbGetVersion();
+        dbClose();
+    }
+    dbRelease();
+    return version;
+}
+
+QString LogAccess::dbPath(QString did) const
 {
     did.replace(":", "_");
     return QString("%1/%2/%3%4/%5.db")
@@ -213,13 +251,13 @@ void LogAccess::dbInit()
     QSqlDatabase::addDatabase("QSQLITE", m_dbConnectionName);
 }
 
-void LogAccess::dbRelease()
+void LogAccess::dbRelease() const
 {
     qDebug().noquote() << LOG_DATETIME << "dbRelease()";
     QSqlDatabase::removeDatabase(m_dbConnectionName);
 }
 
-bool LogAccess::dbOpen(const QString &did)
+bool LogAccess::dbOpen(const QString &did) const
 {
     qDebug().noquote() << LOG_DATETIME << "dbOpen()";
     if (did.isEmpty())
@@ -236,14 +274,14 @@ bool LogAccess::dbOpen(const QString &did)
     return true;
 }
 
-void LogAccess::dbClose()
+void LogAccess::dbClose() const
 {
     qDebug().noquote() << LOG_DATETIME << "dbClose()";
     QSqlDatabase db = QSqlDatabase::database(m_dbConnectionName);
     db.close();
 }
 
-bool LogAccess::dbCreateTable()
+bool LogAccess::dbCreateTable() const
 {
     qDebug().noquote() << LOG_DATETIME << "dbCreateTable()";
     bool ret = true;
@@ -270,8 +308,12 @@ bool LogAccess::dbCreateTable()
     //             "tag TEXT NOT NULL, "
     //             "uri TEXT NOT NULL "
     //             ")");
-
-    QSqlQuery query(QSqlDatabase::database(m_dbConnectionName));
+    sqls.append("CREATE TABLE IF NOT EXISTS inform("
+                "version INTEGER NOT NULL "
+                ")");
+    QSqlDatabase db = QSqlDatabase::database(m_dbConnectionName);
+    bool isempty = db.tables().isEmpty();
+    QSqlQuery query(db);
     for (const auto &sql : sqls) {
         if (query.prepare(sql)) {
             if (!query.exec()) {
@@ -285,11 +327,32 @@ bool LogAccess::dbCreateTable()
         }
     }
 
+    if (isempty) {
+        qDebug().noquote() << LOG_DATETIME << "Set version" << DB_VERSION << "(new tables)";
+        dbSetVersion(DB_VERSION);
+    }
+
     return ret;
 }
 
+void LogAccess::dbDropTable() const
+{
+    QSqlDatabase db = QSqlDatabase::database(m_dbConnectionName);
+    for (const auto &name : db.tables()) {
+        QSqlQuery query(db);
+        if (query.prepare("DROP TABLE IF EXISTS " + name)) {
+            if (!query.exec()) {
+                qWarning().noquote() << LOG_DATETIME << query.lastError();
+                qInfo().noquote() << LOG_DATETIME << query.lastQuery() << query.boundValues();
+            }
+        } else {
+            qWarning().noquote() << LOG_DATETIME << query.lastError();
+        }
+    }
+}
+
 bool LogAccess::dbInsertRecord(const QString &uri, const QString &cid, const QString &type,
-                               const QJsonObject &json)
+                               const QJsonObject &json) const
 {
     bool ret = true;
     QString parent_uri = json.value("list").toString();
@@ -336,7 +399,7 @@ bool LogAccess::dbInsertRecord(const QString &uri, const QString &cid, const QSt
     return ret;
 }
 
-bool LogAccess::dbDeleteRecord(const QString &cid)
+bool LogAccess::dbDeleteRecord(const QString &cid) const
 {
     bool ret = true;
     QSqlQuery query(QSqlDatabase::database(m_dbConnectionName));
@@ -611,7 +674,7 @@ QString LogAccess::dbSelectRecords(const int kind, const QString &condition, con
     return QString("{\"records\": []}");
 }
 
-void LogAccess::dbUpdateRecords(const QList<RecordPostItem> &record_post_items)
+void LogAccess::dbUpdateRecords(const QList<RecordPostItem> &record_post_items) const
 {
     QString sql;
     for (const auto &item : record_post_items) {
@@ -628,5 +691,39 @@ void LogAccess::dbUpdateRecords(const QList<RecordPostItem> &record_post_items)
         } else {
             qWarning().noquote() << LOG_DATETIME << query.lastError();
         }
+    }
+}
+
+int LogAccess::dbGetVersion() const
+{
+    int version = -1;
+    QSqlQuery query(QSqlDatabase::database(m_dbConnectionName));
+    if (dbSelect(query, "SELECT version FROM inform")) {
+        while (query.next()) {
+            version = query.value(0).toInt();
+            break;
+        }
+    }
+    return version;
+}
+
+void LogAccess::dbSetVersion(const int version) const
+{
+    int old = dbGetVersion();
+    QString sql;
+    if (old < 0) {
+        sql = "INSERT INTO inform(version) VALUES(?)";
+    } else {
+        sql = "UPDATE inform SET version = ?";
+    }
+    QSqlQuery query(QSqlDatabase::database(m_dbConnectionName));
+    if (query.prepare(sql)) {
+        query.addBindValue(version);
+        if (!query.exec()) {
+            qWarning().noquote() << LOG_DATETIME << query.lastError();
+            qInfo().noquote() << LOG_DATETIME << query.lastQuery() << query.boundValues();
+        }
+    } else {
+        qWarning().noquote() << LOG_DATETIME << query.lastError();
     }
 }
