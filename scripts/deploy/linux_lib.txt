@@ -20,6 +20,8 @@ libQt5QuickControls2.so.5
 libQt5QuickControls2.so.5.15.2
 libQt5QuickTemplates2.so.5
 libQt5QuickTemplates2.so.5.15.2
+libQt5Sql.so.5
+libQt5Sql.so.5.15.2
 libQt5Svg.so.5
 libQt5Svg.so.5.15.2
 libQt5Widgets.so.5
