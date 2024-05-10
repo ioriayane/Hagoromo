@@ -16,6 +16,10 @@ void ExternalLink::getExternalLink(const QString &uri)
     setUri(QString());
     setTitle(QString());
     setDescription(QString());
+    setThumb(QString());
+    // 表示のキャッシュ対策
+    m_thumbLocal.rename(m_thumbLocal.fileName()
+                        + QString::number(QDateTime::currentMSecsSinceEpoch()));
 
     OpenGraphProtocol *open_graph = new OpenGraphProtocol(this);
     connect(open_graph, &OpenGraphProtocol::finished, [=](bool success) {
