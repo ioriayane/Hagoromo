@@ -12,6 +12,7 @@ description: This is a multi-column Bluesky client.
   - Add log reference function
 - Fix
   - Fix a bug that caused a post to be mistakenly displayed as a pinned post when the post was pinned in someone else's profile
+  - Corrected layout of content filter dialog
 
 ### v0.29.0 - 2024/5/2
 
