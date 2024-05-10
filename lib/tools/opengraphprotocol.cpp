@@ -85,6 +85,35 @@ void OpenGraphProtocol::downloadThumb(const QString &path)
     manager->get(request);
 }
 
+QString OpenGraphProtocol::decodeHtml(const QString &encoded)
+{
+    QRegularExpression re("&(#?\\w+);");
+    QHash<QString, QString> htmlEntities = { { "&amp;", "&" },  { "&lt;", "<" },
+                                             { "&gt;", ">" },   { "&quot;", "\"" },
+                                             { "&apos;", "'" }, { "&nbsp;", " " } };
+    QRegularExpressionMatch match = re.match(encoded);
+    if (!match.hasMatch()) {
+        return encoded;
+    }
+    QString decoded;
+    int pos = 0;
+    int start_pos = 0;
+    while ((pos = match.capturedStart()) != -1) {
+        if (!htmlEntities.contains(match.captured())) {
+            decoded += encoded.midRef(start_pos, match.capturedEnd() - start_pos + 1);
+        } else {
+            decoded += encoded.midRef(start_pos, match.capturedStart() - start_pos);
+            decoded += htmlEntities.value(match.captured());
+        }
+
+        start_pos = pos + match.capturedLength();
+        match = re.match(encoded, start_pos);
+    }
+    decoded += encoded.midRef(start_pos, encoded.length() - start_pos);
+
+    return decoded;
+}
+
 QString OpenGraphProtocol::uri() const
 {
     return m_uri;
@@ -146,8 +175,8 @@ bool OpenGraphProtocol::parse(const QByteArray &data, const QString &src_uri)
     QDomElement element = head.firstChildElement();
     while (!element.isNull()) {
         if (element.tagName().toLower() == "meta") {
-            QString property = element.attribute("property");
-            QString content = element.attribute("content");
+            QString property = OpenGraphProtocol::decodeHtml(element.attribute("property"));
+            QString content = OpenGraphProtocol::decodeHtml(element.attribute("content"));
             if (property == "og:url") {
                 if (content.startsWith("/")) {
                     QUrl uri(src_uri);

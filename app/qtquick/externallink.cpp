@@ -20,23 +20,34 @@ void ExternalLink::getExternalLink(const QString &uri)
     OpenGraphProtocol *open_graph = new OpenGraphProtocol(this);
     connect(open_graph, &OpenGraphProtocol::finished, [=](bool success) {
         bool do_download = false;
-        qDebug() << open_graph->uri() << open_graph->title() << open_graph->thumb();
+        qDebug().noquote() << "uri:" << open_graph->uri();
+        qDebug().noquote() << "title:" << open_graph->title();
+        qDebug().noquote() << "thumb:" << open_graph->thumb();
         if (success && !open_graph->thumb().isEmpty()) {
             do_download = true;
             open_graph->downloadThumb(m_thumbLocal.fileName());
         }
         if (!do_download) {
+            setUri(open_graph->uri());
+            setTitle(open_graph->title());
+            setDescription(open_graph->description());
+            setThumb(QString());
+            setValid(success);
             open_graph->deleteLater();
             setRunning(false);
         }
     });
     connect(open_graph, &OpenGraphProtocol::finishedDownload, [=](bool success) {
-        if (success) {
-            setUri(open_graph->uri());
-            setTitle(open_graph->title());
-            setDescription(open_graph->description());
-            setValid(true);
+        qDebug().noquote() << "finishedDownload" << success;
+        if (!success) {
+            setThumb(QString());
+        } else {
+            setThumb(open_graph->thumb());
         }
+        setUri(open_graph->uri());
+        setTitle(open_graph->title());
+        setDescription(open_graph->description());
+        setValid(true);
         setRunning(false);
         open_graph->deleteLater();
     });
@@ -106,7 +117,7 @@ void ExternalLink::setThumb(const QString &newThumb)
 
 QString ExternalLink::thumbLocal() const
 {
-    if (valid()) {
+    if (valid() && !thumb().isEmpty()) {
         return QUrl::fromLocalFile(m_thumbLocal.fileName()).toString();
     } else {
         return QString();
