@@ -172,10 +172,15 @@ bool OpenGraphProtocol::parse(const QByteArray &data, const QString &src_uri)
 
     setUri(src_uri);
 
+    QString temp_title;
+    QString temp_description;
     QDomElement element = head.firstChildElement();
     while (!element.isNull()) {
         if (element.tagName().toLower() == "meta") {
             QString property = OpenGraphProtocol::decodeHtml(element.attribute("property"));
+            if (property.isEmpty()) {
+                property = OpenGraphProtocol::decodeHtml(element.attribute("name"));
+            }
             QString content = OpenGraphProtocol::decodeHtml(element.attribute("content"));
             if (property == "og:url") {
                 if (content.startsWith("/")) {
@@ -186,8 +191,12 @@ bool OpenGraphProtocol::parse(const QByteArray &data, const QString &src_uri)
                 }
             } else if (property == "og:title") {
                 setTitle(content);
+            } else if (property == "title") {
+                temp_title = content;
             } else if (property == "og:description") {
                 setDescription(content);
+            } else if (property == "description") {
+                temp_description = content;
             } else if (property == "og:image") {
                 // ダウンロードしてローカルパスに置換が必要
                 if (content.startsWith("/")) {
@@ -198,11 +207,17 @@ bool OpenGraphProtocol::parse(const QByteArray &data, const QString &src_uri)
                 }
             }
         } else if (element.tagName().toLower() == "title") {
-            if (title().isEmpty()) {
-                setTitle(element.text());
+            if (temp_title.isEmpty()) {
+                temp_title = element.text();
             }
         }
         element = element.nextSiblingElement();
+    }
+    if (title().isEmpty() && !temp_title.isEmpty()) {
+        setTitle(temp_title);
+    }
+    if (description().isEmpty() && !temp_description.isEmpty()) {
+        setDescription(temp_description);
     }
     if (!uri().isEmpty() && !title().isEmpty()) {
         ret = true;
@@ -314,6 +329,12 @@ bool OpenGraphProtocol::rebuildTag(QString text, QDomElement &element) const
                 state = 1;
                 names.append("");
                 values.append("");
+            } else if (c == '>') {
+                if (close_tag_pos > i) {
+                    element.appendChild(element.toDocument().createTextNode(
+                            text.mid(i + 1, close_tag_pos - (i + 1))));
+                }
+                break;
             }
             result += c;
         } else if (state == 1) {
@@ -379,6 +400,8 @@ bool OpenGraphProtocol::rebuildTag(QString text, QDomElement &element) const
         }
         return true;
     } else if (element.tagName() == "title") {
+        qDebug().noquote() << "rebuild:" << names << values << result
+                           << element.toDocument().toString();
         return true;
     } else {
         return false;
