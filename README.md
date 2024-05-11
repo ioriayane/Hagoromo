@@ -107,6 +107,44 @@ $ qmake CONFIG+=debug_and_release ../qthttpserver/qthttpserver.pro
 $ make && make install
 ```
 
+## コントリビューション
+
+変更を加えるときは`dev`からブランチして、`dev`にプルリクエストを提出してください。
+
+また、下記の事項を実施してください。Github Actionsにてチェックしています。クリアするとレビューします。
+
+### コードの整形
+
+ソースコードの管理で[pre-commit](https://pre-commit.com/)を使用しています。
+git hookで実行されるように公式サイトを確認してセットアップしてください。
+
+セットアップ例
+```bash
+$ pip install pre-commit
+$ pre-commit --version
+pre-commit 3.7.1
+$ cd path/to/this_repo
+$ pre-commit install
+pre-commit installed at .git/hooks/pre-commit
+```
+
+### 単体テスト
+
+いづれかの環境で実行してクリアできることを確認してください。
+
+Windows
+```cmd
+> .\scripts\unittest.bat path\to\Qt\5.15.2\msvc2019_64\bin
+```
+Ubuntu
+```bash
+$ ./scripts/unittest.sh linux path/to/Qt/5.15.2/gcc_64/bin
+```
+Mac
+```bash
+$ ./scripts/unittest.sh mac path/to/Qt/5.15.2/gcc_64/bin
+```
+
 ---
 
 ## Overview
@@ -214,4 +252,42 @@ $ mkdir 3rdparty/build-qthttpserver
 $ cd 3rdparty/build-qthttpserver
 $ qmake CONFIG+=debug_and_release ../qthttpserver/qthttpserver.pro
 $ make && make install
+```
+
+## Contribution
+
+If you want to make changes, please branch from `dev` and submit a pull request to `dev`.
+
+Also, please do the following: Check in Github Actions. We will review it when it is cleared.
+
+### Code formatting
+
+Use [pre-commit](https://pre-commit.com/) with source code management.
+Please check the official site and set it up to run with git hook.
+
+Setup Example
+```bash
+$ pip install pre-commit
+$ pre-commit --version
+pre-commit 3.7.1
+$ cd path/to/this_repo
+$ pre-commit install
+pre-commit installed at .git/hooks/pre-commit
+```
+
+### Unit Tests
+
+Please confirm that you can clear it by running it in one of the environments.
+
+Windows
+```cmd
+> .\scripts\unittest.bat path\to\Qt\5.15.2\msvc2019_64\bin
+```
+Ubuntu
+```bash
+$ ./scripts/unittest.sh linux path/to/Qt/5.15.2/gcc_64/bin
+```
+Mac
+```bash
+$ ./scripts/unittest.sh mac path/to/Qt/5.15.2/gcc_64/bin
 ```
