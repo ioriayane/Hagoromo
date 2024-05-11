@@ -435,14 +435,14 @@ AtpAbstractListModel::getExternalLinkItem(const AtProtocolType::AppBskyFeedDefs:
             return QString();
         }
     } else if (role == ExternalLinkDescriptionRole) {
+        QString description;
         if (is_external) {
-            return post.embed_AppBskyEmbedExternal_View.external.description;
+            description = post.embed_AppBskyEmbedExternal_View.external.description;
         } else if (with_image) {
-            return post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedExternal_View
-                    .external.description;
-        } else {
-            return QString();
+            description = post.embed_AppBskyEmbedRecordWithMedia_View
+                                  .media_AppBskyEmbedExternal_View.external.description;
         }
+        return Common::truncateTo3lines(description);
     } else if (role == ExternalLinkThumbRole) {
         if (is_external) {
             return post.embed_AppBskyEmbedExternal_View.external.thumb;
@@ -537,7 +537,8 @@ AtpAbstractListModel::getListLinkItem(const AtProtocolType::AppBskyFeedDefs::Pos
             return QString();
     } else if (role == ListLinkDescriptionRole) {
         if (has_record)
-            return post.embed_AppBskyEmbedRecord_View->record_AppBskyGraphDefs_ListView.description;
+            return Common::truncateTo3lines(post.embed_AppBskyEmbedRecord_View
+                                                    ->record_AppBskyGraphDefs_ListView.description);
         else
             return QString();
     } else if (role == ListLinkAvatarRole) {

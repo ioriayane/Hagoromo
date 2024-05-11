@@ -97,9 +97,11 @@ void RecordOperator::setExternalLink(const QString &uri, const QString &title,
     m_externalLinkTitle = title;
     m_externalLinkDescription = description;
     m_embedImages.clear();
-    EmbedImage e;
-    e.path = image_path;
-    m_embedImages.append(e);
+    if (!image_path.isEmpty()) {
+        EmbedImage e;
+        e.path = image_path;
+        m_embedImages.append(e);
+    }
 }
 
 void RecordOperator::setFeedGeneratorLink(const QString &uri, const QString &cid)
@@ -233,8 +235,10 @@ void RecordOperator::post()
 
 void RecordOperator::postWithImages()
 {
-    if (m_embedImages.isEmpty())
+    if (m_embedImages.isEmpty()) {
+        post();
         return;
+    }
 
     setRunning(true);
 

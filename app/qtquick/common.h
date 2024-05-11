@@ -72,5 +72,20 @@ inline QJsonDocument loadJsonDocument(const QString &file_name)
     return QJsonDocument::fromJson(byte_array);
 }
 
+inline QString truncateTo3lines(const QString &text)
+{
+    const QStringList lines = text.split("\n");
+    QStringList dest;
+    for (const auto &line : lines) {
+        if (dest.length() > 2) {
+            break;
+        }
+        if (!line.isEmpty()) {
+            dest.append(line);
+        }
+    }
+    return dest.join("\n");
+}
+
 }
 #endif // COMMON_H
