@@ -111,11 +111,12 @@ $ make && make install
 
 変更を加えるときは`dev`からブランチして、`dev`にプルリクエストを提出してください。
 
-また、下記の事項を実施してください。Github Actionsにてチェックしています。クリアするとレビューします。
+また、下記の事項を実施してください。Github Actionsにてチェックしています。
 
-### コードの整形
+### ソースコードの整形
 
-ソースコードの管理で[pre-commit](https://pre-commit.com/)を使用しています。
+[pre-commit](https://pre-commit.com/)を使用しています。
+
 git hookで実行されるように公式サイトを確認してセットアップしてください。
 
 セットアップ例
@@ -258,11 +259,11 @@ $ make && make install
 
 If you want to make changes, please branch from `dev` and submit a pull request to `dev`.
 
-Also, please do the following: Check in Github Actions. We will review it when it is cleared.
+Also, please do the following: Check in Github Actions.
 
 ### Code formatting
 
-Use [pre-commit](https://pre-commit.com/) with source code management.
+[pre-commit](https://pre-commit.com/) are used for source code formatting.
 Please check the official site and set it up to run with git hook.
 
 Setup Example
