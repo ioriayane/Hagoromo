@@ -76,7 +76,7 @@ Dialog {
                     }
                     Label {
                         font.pointSize: AdjustedValues.f8
-                        text: model.description
+                        text: model.description.split("\n")[0]
                     }
                 }
             }

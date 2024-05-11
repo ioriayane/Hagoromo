@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/">
+        <file>response/xrpc/com.atproto.sync.getRepo</file>
+        <file>data/repo/daily.json</file>
+        <file>data/repo/monthly.json</file>
+        <file>data/repo/select_1.json</file>
+        <file>data/repo/select_2.json</file>
+        <file>data/repo/select_3.json</file>
+        <file>data/repo/statistics.json</file>
+        <file>response/posts/1/xrpc/app.bsky.feed.getPosts</file>
+        <file>response/posts/2/xrpc/app.bsky.feed.getPosts</file>
+        <file>response/posts/3/xrpc/app.bsky.feed.getPosts</file>
+        <file>response/posts/10/xrpc/app.bsky.feed.getPosts</file>
+        <file>data/repo/select_4.json</file>
+        <file>response/posts/4/xrpc/app.bsky.feed.getPosts</file>
+    </qresource>
+</RCC>

@@ -8,6 +8,17 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+### v0.30.0 - 2024/5/11
+
+- Add
+  - Add log reference function
+- Update
+  - Adjust link card layout
+- Fix
+  - Fix a bug that caused a post to be mistakenly displayed as a pinned post when the post was pinned in someone else's profile
+  - Corrected layout of content filter dialog
+  - Improved processing of reading link card information(OGP)
+
 ### v0.29.0 - 2024/5/2
 
 - Add

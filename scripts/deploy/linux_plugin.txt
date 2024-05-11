@@ -34,5 +34,8 @@ qmltooling/libqmldbg_profiler.so
 qmltooling/libqmldbg_quickprofiler.so
 qmltooling/libqmldbg_server.so
 qmltooling/libqmldbg_tcp.so
+sqldrivers/libqsqlite.so
+sqldrivers/libqsqlodbc.so
+sqldrivers/libqsqlpsql.so
 xcbglintegrations/libqxcb-egl-integration.so
 xcbglintegrations/libqxcb-glx-integration.so

@@ -58,3 +58,5 @@ do_test ./build-hagoromo/hagoromo_test/hagoromo_test
 do_test ./build-hagoromo/hagoromo_test2/hagoromo_test2
 do_test ./build-hagoromo/http_test/http_test
 do_test ./build-hagoromo/search_test/search_test
+do_test ./build-hagoromo/log_test/log_test
+do_test ./build-hagoromo/tools_test/tools_test

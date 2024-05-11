@@ -1,4 +1,4 @@
-QT += xml
+QT += xml sql
 
 INCLUDEPATH += $$PWD \
     $$PWD/../3rdparty/cpp-httplib
@@ -50,6 +50,7 @@ SOURCES += \
     $$PWD/atprotocol/com/atproto/server/comatprotoservercreatesession.cpp \
     $$PWD/atprotocol/com/atproto/server/comatprotoserverrefreshsession.cpp \
     $$PWD/atprotocol/com/atproto/sync/comatprotosyncgetblob.cpp \
+    $$PWD/atprotocol/com/atproto/sync/comatprotosyncgetrepo.cpp \
     $$PWD/atprotocol/lexicons_func.cpp \
     $$PWD/atprotocol/lexicons_func_unknown.cpp \
     $$PWD/extension/com/atproto/moderation/comatprotomoderationcreatereportex.cpp \
@@ -64,8 +65,13 @@ SOURCES += \
     $$PWD/http/httpaccess.cpp \
     $$PWD/http/httpaccessmanager.cpp \
     $$PWD/http/httpreply.cpp \
+    $$PWD/log/logaccess.cpp \
+    $$PWD/log/logmanager.cpp \
+    $$PWD/tools/base32.cpp \
+    $$PWD/tools/cardecoder.cpp \
     $$PWD/tools/configurablelabels.cpp \
     $$PWD/tools/imagecompressor.cpp \
+    $$PWD/tools/leb128.cpp \
     $$PWD/tools/listitemscache.cpp \
     $$PWD/tools/opengraphprotocol.cpp \
     $$PWD/tools/pinnedpostcache.cpp
@@ -117,6 +123,7 @@ HEADERS += \
     $$PWD/atprotocol/com/atproto/server/comatprotoservercreatesession.h \
     $$PWD/atprotocol/com/atproto/server/comatprotoserverrefreshsession.h \
     $$PWD/atprotocol/com/atproto/sync/comatprotosyncgetblob.h \
+    $$PWD/atprotocol/com/atproto/sync/comatprotosyncgetrepo.h \
     $$PWD/atprotocol/lexicons.h \
     $$PWD/atprotocol/lexicons_func.h \
     $$PWD/atprotocol/lexicons_func_unknown.h \
@@ -132,9 +139,14 @@ HEADERS += \
     $$PWD/http/httpaccess.h \
     $$PWD/http/httpaccessmanager.h \
     $$PWD/http/httpreply.h \
+    $$PWD/log/logaccess.h \
+    $$PWD/log/logmanager.h \
     $$PWD/search/search.h \
+    $$PWD/tools/base32.h \
+    $$PWD/tools/cardecoder.h \
     $$PWD/tools/configurablelabels.h \
     $$PWD/tools/imagecompressor.h \
+    $$PWD/tools/leb128.h \
     $$PWD/tools/listitemscache.h \
     $$PWD/tools/opengraphprotocol.h \
     $$PWD/tools/pinnedpostcache.h \

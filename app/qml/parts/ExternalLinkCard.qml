@@ -28,7 +28,7 @@ ClickableFrame {
         ImageWithIndicator {
             id: thumbImage
             Layout.preferredWidth: externalLinkFrame.width
-            Layout.preferredHeight: status !== Image.Null ? externalLinkFrame.width * 0.5 : 30
+            Layout.preferredHeight: status !== Image.Null ? externalLinkFrame.width * 0.5 : 5
             fillMode: Image.PreserveAspectCrop
         }
         Label {

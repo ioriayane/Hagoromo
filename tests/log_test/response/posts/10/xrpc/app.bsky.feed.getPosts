@@ -1,0 +1,538 @@
+{
+    "posts": [
+        {
+            "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kor6nc3qsa2v",
+            "cid": "bafyreicdy6ddnhqbhxmzhsyvwxsdqx3zeaybdud5tzl3mnwe3zehaysmei",
+            "author": {
+                "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                "handle": "ioriayane2.bsky.social",
+                "displayName": "iori2",
+                "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false
+                },
+                "labels": []
+            },
+            "record": {
+                "$type": "app.bsky.feed.post",
+                "createdAt": "2024-03-28T14:15:06.906Z",
+                "embed": {
+                    "$type": "app.bsky.embed.record",
+                    "record": {
+                        "cid": "bafyreiad5kukibhklryendcsnzfbmqknqzxogwp67vorehabwryizs7to4",
+                        "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3knimc5ju2d2j"
+                    }
+                },
+                "reply": {
+                    "parent": {
+                        "cid": "bafyreiad5kukibhklryendcsnzfbmqknqzxogwp67vorehabwryizs7to4",
+                        "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3knimc5ju2d2j"
+                    },
+                    "root": {
+                        "cid": "bafyreiad5kukibhklryendcsnzfbmqknqzxogwp67vorehabwryizs7to4",
+                        "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3knimc5ju2d2j"
+                    }
+                },
+                "text": "リプに引用できるようになった",
+                "via": "Hagoromo"
+            },
+            "embed": {
+                "$type": "app.bsky.embed.record#view",
+                "record": {
+                    "$type": "app.bsky.embed.record#viewRecord",
+                    "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3knimc5ju2d2j",
+                    "cid": "bafyreiad5kukibhklryendcsnzfbmqknqzxogwp67vorehabwryizs7to4",
+                    "author": {
+                        "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+                        "handle": "ioriayane.relog.tech",
+                        "displayName": "IoriAYANE",
+                        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy@jpeg",
+                        "viewer": {
+                            "muted": false,
+                            "blockedBy": false,
+                            "following": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.follow/3kq6sirdu6i2r",
+                            "followedBy": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3k4odyt4qk42g"
+                        },
+                        "labels": []
+                    },
+                    "value": {
+                        "$type": "app.bsky.feed.post",
+                        "createdAt": "2024-03-12T11:00:17.719Z",
+                        "embed": {
+                            "$type": "app.bsky.embed.images",
+                            "images": [
+                                {
+                                    "alt": "",
+                                    "aspectRatio": {
+                                        "height": 1477,
+                                        "width": 1108
+                                    },
+                                    "image": {
+                                        "$type": "blob",
+                                        "ref": {
+                                            "$link": "bafkreic47i3bh7isux5z2lskpwspykyvdkgfqkj7cvdv3xdct6oukqmpfq"
+                                        },
+                                        "mimeType": "image/jpeg",
+                                        "size": 777700
+                                    }
+                                }
+                            ]
+                        },
+                        "langs": [
+                            "ja"
+                        ],
+                        "text": "見返り美人"
+                    },
+                    "labels": [],
+                    "likeCount": 7,
+                    "replyCount": 1,
+                    "repostCount": 0,
+                    "indexedAt": "2024-03-12T11:00:17.719Z",
+                    "embeds": [
+                        {
+                            "$type": "app.bsky.embed.images#view",
+                            "images": [
+                                {
+                                    "thumb": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/bafkreic47i3bh7isux5z2lskpwspykyvdkgfqkj7cvdv3xdct6oukqmpfq@jpeg",
+                                    "fullsize": "https://cdn.bsky.app/img/feed_fullsize/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/bafkreic47i3bh7isux5z2lskpwspykyvdkgfqkj7cvdv3xdct6oukqmpfq@jpeg",
+                                    "alt": "",
+                                    "aspectRatio": {
+                                        "height": 1477,
+                                        "width": 1108
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            },
+            "replyCount": 0,
+            "repostCount": 0,
+            "likeCount": 0,
+            "indexedAt": "2024-03-28T14:15:06.906Z",
+            "viewer": {},
+            "labels": []
+        },
+        {
+            "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kor645t44j2q",
+            "cid": "bafyreibl6vp7vczey2fxae5gqw2xfhb4cmnd6lcez4d6hlbrll3p6fg4o4",
+            "author": {
+                "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                "handle": "ioriayane2.bsky.social",
+                "displayName": "iori2",
+                "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false
+                },
+                "labels": []
+            },
+            "record": {
+                "$type": "app.bsky.feed.post",
+                "createdAt": "2024-03-28T14:05:32.255Z",
+                "embed": {
+                    "$type": "app.bsky.embed.recordWithMedia",
+                    "media": {
+                        "$type": "app.bsky.embed.external",
+                        "external": {
+                            "description": "This is a multi-column Bluesky client. Contribute to ioriayane/Hagoromo development by creating an account on GitHub.",
+                            "thumb": {
+                                "$type": "blob",
+                                "ref": {
+                                    "$link": "bafkreicyv4kxm3gjayv2farf4lwhzhh6hdf3l6lsyac2ww3mphgrm6dosq"
+                                },
+                                "mimeType": "image/jpeg",
+                                "size": 55516
+                            },
+                            "title": "GitHub - ioriayane/Hagoromo: This is a multi-column Bluesky client.",
+                            "uri": "https://github.com/ioriayane/Hagoromo"
+                        }
+                    },
+                    "record": {
+                        "$type": "app.bsky.embed.record",
+                        "record": {
+                            "cid": "bafyreic2q7ofjjen2sgyempgdbpveopqja537j7jauss4epdlmsfplrdsy",
+                            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3koqrxrr6ye2b"
+                        }
+                    }
+                },
+                "text": "tst",
+                "via": "Hagoromo"
+            },
+            "embed": {
+                "$type": "app.bsky.embed.recordWithMedia#view",
+                "media": {
+                    "$type": "app.bsky.embed.external#view",
+                    "external": {
+                        "uri": "https://github.com/ioriayane/Hagoromo",
+                        "title": "GitHub - ioriayane/Hagoromo: This is a multi-column Bluesky client.",
+                        "description": "This is a multi-column Bluesky client. Contribute to ioriayane/Hagoromo development by creating an account on GitHub.",
+                        "thumb": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreicyv4kxm3gjayv2farf4lwhzhh6hdf3l6lsyac2ww3mphgrm6dosq@jpeg"
+                    }
+                },
+                "record": {
+                    "record": {
+                        "$type": "app.bsky.embed.record#viewRecord",
+                        "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3koqrxrr6ye2b",
+                        "cid": "bafyreic2q7ofjjen2sgyempgdbpveopqja537j7jauss4epdlmsfplrdsy",
+                        "author": {
+                            "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+                            "handle": "ioriayane.relog.tech",
+                            "displayName": "IoriAYANE",
+                            "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy@jpeg",
+                            "viewer": {
+                                "muted": false,
+                                "blockedBy": false,
+                                "following": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.follow/3kq6sirdu6i2r",
+                                "followedBy": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3k4odyt4qk42g"
+                            },
+                            "labels": []
+                        },
+                        "value": {
+                            "$type": "app.bsky.feed.post",
+                            "createdAt": "2024-03-28T10:28:21.173Z",
+                            "langs": [
+                                "ja"
+                            ],
+                            "text": "英語の打ち合わせは😭"
+                        },
+                        "labels": [],
+                        "likeCount": 0,
+                        "replyCount": 1,
+                        "repostCount": 0,
+                        "indexedAt": "2024-03-28T10:28:21.173Z",
+                        "embeds": []
+                    }
+                }
+            },
+            "replyCount": 0,
+            "repostCount": 0,
+            "likeCount": 0,
+            "indexedAt": "2024-03-28T14:05:32.255Z",
+            "viewer": {
+                "replyDisabled": false
+            },
+            "labels": [],
+            "threadgate": {
+                "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.threadgate/3kor645t44j2q",
+                "cid": "bafyreiearrxoi3y35mgpg6ogueeakjdewwjbpdy6syf4fjtj2vzpe7k2e4",
+                "record": {
+                    "$type": "app.bsky.feed.threadgate",
+                    "allow": [
+                        {
+                            "$type": "app.bsky.feed.threadgate#mentionRule"
+                        },
+                        {
+                            "$type": "app.bsky.feed.threadgate#listRule",
+                            "list": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/3kflf2r3lwg2x"
+                        }
+                    ],
+                    "createdAt": "2024-03-28T14:05:33.526Z",
+                    "post": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kor645t44j2q"
+                },
+                "lists": [
+                    {
+                        "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/3kflf2r3lwg2x",
+                        "cid": "bafyreifiwgjkxmetrhubpnhc3efnjariq2rhhckuxh3wr3louf2ikz4phi",
+                        "name": "ice",
+                        "purpose": "app.bsky.graph.defs#curatelist",
+                        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreiczowa2mpzych2h6sfbsswgdtdjqrmt3zjkgygsv4rd6f5rfwtefu@jpeg",
+                        "indexedAt": "2024-04-16T12:50:30.132Z",
+                        "labels": [],
+                        "viewer": {
+                            "muted": false
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kor4wgqgev2e",
+            "cid": "bafyreif6mjpmqgi7e6ldmigygfabw2hft2o57uztslfajp5uehmw6aycda",
+            "author": {
+                "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                "handle": "ioriayane2.bsky.social",
+                "displayName": "iori2",
+                "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false
+                },
+                "labels": []
+            },
+            "record": {
+                "$type": "app.bsky.feed.post",
+                "createdAt": "2024-03-28T13:44:26.361Z",
+                "embed": {
+                    "$type": "app.bsky.embed.record",
+                    "record": {
+                        "cid": "bafyreibrtvxs2fimagux6rsj2imqzfllqmnmlob53buz3oh7pbeluk4iye",
+                        "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3koqqk7gxng2w"
+                    }
+                },
+                "reply": {
+                    "parent": {
+                        "cid": "bafyreibrtvxs2fimagux6rsj2imqzfllqmnmlob53buz3oh7pbeluk4iye",
+                        "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3koqqk7gxng2w"
+                    },
+                    "root": {
+                        "cid": "bafyreibrtvxs2fimagux6rsj2imqzfllqmnmlob53buz3oh7pbeluk4iye",
+                        "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3koqqk7gxng2w"
+                    }
+                },
+                "text": "リプ先のポストを引用",
+                "via": "Hagoromo"
+            },
+            "embed": {
+                "$type": "app.bsky.embed.record#view",
+                "record": {
+                    "$type": "app.bsky.embed.record#viewRecord",
+                    "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3koqqk7gxng2w",
+                    "cid": "bafyreibrtvxs2fimagux6rsj2imqzfllqmnmlob53buz3oh7pbeluk4iye",
+                    "author": {
+                        "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+                        "handle": "ioriayane.relog.tech",
+                        "displayName": "IoriAYANE",
+                        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy@jpeg",
+                        "viewer": {
+                            "muted": false,
+                            "blockedBy": false,
+                            "following": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.follow/3kq6sirdu6i2r",
+                            "followedBy": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3k4odyt4qk42g"
+                        },
+                        "labels": []
+                    },
+                    "value": {
+                        "$type": "app.bsky.feed.post",
+                        "createdAt": "2024-03-28T10:02:51.881Z",
+                        "langs": [
+                            "ja"
+                        ],
+                        "text": "社内プレゼンはしのぎきったので晴れやかや"
+                    },
+                    "labels": [],
+                    "likeCount": 3,
+                    "replyCount": 1,
+                    "repostCount": 0,
+                    "indexedAt": "2024-03-28T10:02:51.881Z",
+                    "embeds": []
+                }
+            },
+            "replyCount": 0,
+            "repostCount": 0,
+            "likeCount": 0,
+            "indexedAt": "2024-03-28T13:44:26.361Z",
+            "viewer": {},
+            "labels": []
+        },
+        {
+            "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kor4dzcs3r2r",
+            "cid": "bafyreidtyba7c7pjxhu6pbelpzoiwvllkfqazl36fvrlvar6lxfvnb6r4m",
+            "author": {
+                "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                "handle": "ioriayane2.bsky.social",
+                "displayName": "iori2",
+                "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false
+                },
+                "labels": []
+            },
+            "record": {
+                "$type": "app.bsky.feed.post",
+                "createdAt": "2024-03-28T13:34:08.292Z",
+                "embed": {
+                    "$type": "app.bsky.embed.record",
+                    "record": {
+                        "cid": "bafyreifw7y6kfadysxxuohf2ajramui3whzz3siyjbeorsqzfjwyjgumea",
+                        "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3koqr7ugjtb2u"
+                    }
+                },
+                "text": "test",
+                "via": "Hagoromo"
+            },
+            "embed": {
+                "$type": "app.bsky.embed.record#view",
+                "record": {
+                    "$type": "app.bsky.embed.record#viewRecord",
+                    "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3koqr7ugjtb2u",
+                    "cid": "bafyreifw7y6kfadysxxuohf2ajramui3whzz3siyjbeorsqzfjwyjgumea",
+                    "author": {
+                        "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+                        "handle": "ioriayane.relog.tech",
+                        "displayName": "IoriAYANE",
+                        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy@jpeg",
+                        "viewer": {
+                            "muted": false,
+                            "blockedBy": false,
+                            "following": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.follow/3kq6sirdu6i2r",
+                            "followedBy": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3k4odyt4qk42g"
+                        },
+                        "labels": []
+                    },
+                    "value": {
+                        "$type": "app.bsky.feed.post",
+                        "createdAt": "2024-03-28T10:14:57.924Z",
+                        "langs": [
+                            "ja"
+                        ],
+                        "text": "ご飯準備するのだるいがはらへ",
+                        "via": "Hagoromo"
+                    },
+                    "labels": [],
+                    "likeCount": 0,
+                    "replyCount": 0,
+                    "repostCount": 0,
+                    "indexedAt": "2024-03-28T10:14:57.924Z",
+                    "embeds": []
+                }
+            },
+            "replyCount": 0,
+            "repostCount": 0,
+            "likeCount": 0,
+            "indexedAt": "2024-03-28T13:34:08.292Z",
+            "viewer": {
+                "replyDisabled": false
+            },
+            "labels": [],
+            "threadgate": {
+                "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.threadgate/3kor4dzcs3r2r",
+                "cid": "bafyreifmjexrzux4qic4zib5iegronh34mrxonazjf5d6yzbd3owpbm744",
+                "record": {
+                    "$type": "app.bsky.feed.threadgate",
+                    "allow": [
+                        {
+                            "$type": "app.bsky.feed.threadgate#mentionRule"
+                        },
+                        {
+                            "$type": "app.bsky.feed.threadgate#listRule",
+                            "list": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/3kflf2r3lwg2x"
+                        }
+                    ],
+                    "createdAt": "2024-03-28T13:34:09.066Z",
+                    "post": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kor4dzcs3r2r"
+                },
+                "lists": [
+                    {
+                        "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/3kflf2r3lwg2x",
+                        "cid": "bafyreifiwgjkxmetrhubpnhc3efnjariq2rhhckuxh3wr3louf2ikz4phi",
+                        "name": "ice",
+                        "purpose": "app.bsky.graph.defs#curatelist",
+                        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreiczowa2mpzych2h6sfbsswgdtdjqrmt3zjkgygsv4rd6f5rfwtefu@jpeg",
+                        "indexedAt": "2024-04-16T12:50:30.132Z",
+                        "labels": [],
+                        "viewer": {
+                            "muted": false
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kooy3255pz24",
+            "cid": "bafyreicrijauo7poo7sn7ysv74qlusmkcaecjl2oe2iw27jhfgonwe2z3a",
+            "author": {
+                "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                "handle": "ioriayane2.bsky.social",
+                "displayName": "iori2",
+                "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false
+                },
+                "labels": []
+            },
+            "record": {
+                "$type": "app.bsky.feed.post",
+                "createdAt": "2024-03-27T17:12:12.623Z",
+                "embed": {
+                    "$type": "app.bsky.embed.record",
+                    "record": {
+                        "cid": "bafyreifuwphfa6bju3a36sf22jy2vgn4yfsd3whwhdi4swfuoacq3qcaje",
+                        "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3koovoqxizs2c"
+                    }
+                },
+                "text": "test",
+                "via": "Hagoromo"
+            },
+            "embed": {
+                "$type": "app.bsky.embed.record#view",
+                "record": {
+                    "$type": "app.bsky.embed.record#viewRecord",
+                    "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3koovoqxizs2c",
+                    "cid": "bafyreifuwphfa6bju3a36sf22jy2vgn4yfsd3whwhdi4swfuoacq3qcaje",
+                    "author": {
+                        "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+                        "handle": "ioriayane.relog.tech",
+                        "displayName": "IoriAYANE",
+                        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy@jpeg",
+                        "viewer": {
+                            "muted": false,
+                            "blockedBy": false,
+                            "following": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.follow/3kq6sirdu6i2r",
+                            "followedBy": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3k4odyt4qk42g"
+                        },
+                        "labels": []
+                    },
+                    "value": {
+                        "$type": "app.bsky.feed.post",
+                        "createdAt": "2024-03-27T16:29:32.868Z",
+                        "langs": [
+                            "ja"
+                        ],
+                        "text": "うぉー。リプライと引用が両立できないように作ってあるー。",
+                        "via": "Hagoromo"
+                    },
+                    "labels": [],
+                    "likeCount": 0,
+                    "replyCount": 0,
+                    "repostCount": 0,
+                    "indexedAt": "2024-03-27T16:29:32.868Z",
+                    "embeds": []
+                }
+            },
+            "replyCount": 0,
+            "repostCount": 0,
+            "likeCount": 0,
+            "indexedAt": "2024-03-27T17:12:12.623Z",
+            "viewer": {
+                "replyDisabled": false
+            },
+            "labels": [],
+            "threadgate": {
+                "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.threadgate/3kooy3255pz24",
+                "cid": "bafyreigtdd6xibcd3cymfrhtdjsinehdz4stfudfjtgzqbm3ebaravbc3u",
+                "record": {
+                    "$type": "app.bsky.feed.threadgate",
+                    "allow": [
+                        {
+                            "$type": "app.bsky.feed.threadgate#mentionRule"
+                        },
+                        {
+                            "$type": "app.bsky.feed.threadgate#listRule",
+                            "list": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/3kflf2r3lwg2x"
+                        }
+                    ],
+                    "createdAt": "2024-03-27T17:12:13.409Z",
+                    "post": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kooy3255pz24"
+                },
+                "lists": [
+                    {
+                        "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/3kflf2r3lwg2x",
+                        "cid": "bafyreifiwgjkxmetrhubpnhc3efnjariq2rhhckuxh3wr3louf2ikz4phi",
+                        "name": "ice",
+                        "purpose": "app.bsky.graph.defs#curatelist",
+                        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreiczowa2mpzych2h6sfbsswgdtdjqrmt3zjkgygsv4rd6f5rfwtefu@jpeg",
+                        "indexedAt": "2024-04-16T12:50:30.132Z",
+                        "labels": [],
+                        "viewer": {
+                            "muted": false
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

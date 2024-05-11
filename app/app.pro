@@ -32,6 +32,7 @@ QML_FILES = \
     qml/dialogs/ImageClipDialog.qml \
     qml/dialogs/LanguageSelectionDialog.qml \
     qml/dialogs/LoginDialog.qml \
+    qml/dialogs/LogViewDialog.qml \
     qml/dialogs/MessageDialog.qml \
     qml/dialogs/MutedAccountsDialog.qml \
     qml/dialogs/MutedListsDialog.qml \
@@ -75,6 +76,7 @@ QML_FILES = \
     qml/view/ImageFullView.qml \
     qml/view/ListDetailView.qml \
     qml/view/ListsListView.qml \
+    qml/view/LogTotalListView.qml \
     qml/view/NotificationListView.qml \
     qml/view/PostThreadView.qml \
     qml/view/ProfileListView.qml \

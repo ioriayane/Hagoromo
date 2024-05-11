@@ -46,6 +46,7 @@ private slots:
     void test_ComAtprotoServerCreateSession();
     void test_ComAtprotoServerRefreshSession();
     void test_OpenGraphProtocol();
+    void test_ogpDecodeHtml();
     void test_getTimeline();
     void test_ConfigurableLabels();
     void test_ConfigurableLabels_load();
@@ -432,6 +433,29 @@ void atprotocol_test::test_OpenGraphProtocol()
                                     .arg(QString::number(m_listenPort)),
                  ogp.thumb().toLocal8Bit());
     }
+}
+
+void atprotocol_test::test_ogpDecodeHtml()
+{
+    QString actual;
+
+    actual = OpenGraphProtocol::decodeHtml("hoge fuga");
+    QVERIFY2(actual == "hoge fuga", actual.toLocal8Bit());
+
+    actual = OpenGraphProtocol::decodeHtml("hoge&amp;fuga");
+    QVERIFY2(actual == "hoge&fuga", actual.toLocal8Bit());
+
+    actual = OpenGraphProtocol::decodeHtml("hoge fuga&amp;");
+    QVERIFY2(actual == "hoge fuga&", actual.toLocal8Bit());
+
+    actual = OpenGraphProtocol::decodeHtml("&amp;hoge fuga");
+    QVERIFY2(actual == "&hoge fuga", actual.toLocal8Bit());
+
+    actual = OpenGraphProtocol::decodeHtml("&amphoge fuga");
+    QVERIFY2(actual == "&amphoge fuga", actual.toLocal8Bit());
+
+    actual = OpenGraphProtocol::decodeHtml("&amp;hoge&lt;fuga&gt;&quot;foo&apos;&nbsp;bar");
+    QVERIFY2(actual == "&hoge<fuga>\"foo' bar", actual.toLocal8Bit());
 }
 
 void atprotocol_test::test_getTimeline()

@@ -46,6 +46,11 @@
 #include "qtquick/listlink.h"
 #include "qtquick/postlink.h"
 #include "qtquick/embedimagelistmodel.h"
+#include "qtquick/log/logoperator.h"
+#include "qtquick/log/logstatisticslistmodel.h"
+#include "qtquick/log/logdailylistmodel.h"
+#include "qtquick/log/logmonthlylistmodel.h"
+#include "qtquick/log/logfeedlistmodel.h"
 
 void setAppFont(QGuiApplication &app)
 {
@@ -76,7 +81,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName(QStringLiteral("relog"));
     app.setOrganizationDomain(QStringLiteral("hagoromo.relog.tech"));
     app.setApplicationName(QStringLiteral("Hagoromo"));
-    app.setApplicationVersion(QStringLiteral("0.29.0"));
+    app.setApplicationVersion(QStringLiteral("0.30.0"));
 #ifndef HAGOROMO_RELEASE_BUILD
     app.setApplicationVersion(app.applicationVersion() + "d");
 #endif
@@ -147,6 +152,17 @@ int main(int argc, char *argv[])
     qmlRegisterType<PostLink>("tech.relog.hagoromo.postlink", 1, 0, "PostLink");
     qmlRegisterType<EmbedImageListModel>("tech.relog.hagoromo.embedimagelistmodel", 1, 0,
                                          "EmbedImageListModel");
+
+    qRegisterMetaType<QList<TotalItem>>("QList<TotalItem>");
+    qmlRegisterType<LogOperator>("tech.relog.hagoromo.logoperator", 1, 0, "LogOperator");
+    qmlRegisterType<LogStatisticsListModel>("tech.relog.hagoromo.logstatisticslistmodel", 1, 0,
+                                            "LogStatisticsListModel");
+    qmlRegisterType<LogDailyListModel>("tech.relog.hagoromo.logdailylistmodel", 1, 0,
+                                       "LogDailyListModel");
+    qmlRegisterType<LogMonthlyListModel>("tech.relog.hagoromo.logmonthlylistmodel", 1, 0,
+                                         "LogMonthlyListModel");
+    qmlRegisterType<LogFeedListModel>("tech.relog.hagoromo.logfeedlistmodel", 1, 0,
+                                      "LogFeedListModel");
 
     qmlRegisterSingletonType(QUrl("qrc:/Hagoromo/qml/data/AdjustedValues.qml"),
                              "tech.relog.hagoromo.singleton", 1, 0, "AdjustedValues");
