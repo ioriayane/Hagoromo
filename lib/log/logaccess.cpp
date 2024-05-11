@@ -72,13 +72,13 @@ void LogAccess::updateDb(const QString &did, const QByteArray &data)
                 decoder.setContent(data);
 
                 qDebug().noquote() << LOG_DATETIME << "Insert repository data...";
-                emit progressMessage("Updating local databse ...");
+                emit progressMessage("Updating local database ...");
                 int i = 0;
                 const QStringList saved_cids = dbGetSavedCids();
                 for (const auto &cid : decoder.cids()) {
                     if (i++ % 100 == 0) {
                         emit progressMessage(
-                                QString("Updating local databse ... (%1%)")
+                                QString("Updating local database ... (%1%)")
                                         .arg(static_cast<int>(100 * i / decoder.cids().length())));
                     }
                     if (!saved_cids.contains(cid)) {
@@ -89,7 +89,7 @@ void LogAccess::updateDb(const QString &did, const QByteArray &data)
                         }
                     }
                 }
-                emit progressMessage(QString("Updating local databse ... (100%)"));
+                emit progressMessage(QString("Updating local database ... (100%)"));
 
                 // 保存されているけど取得したデータにないものは消す
                 qDebug().noquote() << LOG_DATETIME << "Checking deleted data...";
