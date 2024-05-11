@@ -1,9 +1,16 @@
 #include "externallink.h"
 #include "tools/opengraphprotocol.h"
 
-ExternalLink::ExternalLink(QObject *parent) : QObject { parent }, m_running(false), m_valid(false)
+ExternalLink::ExternalLink(QObject *parent)
+    : QObject { parent }, m_thumbLocal(nullptr), m_running(false), m_valid(false)
 {
-    m_thumbLocal.open();
+}
+
+ExternalLink::~ExternalLink()
+{
+    if (m_thumbLocal != nullptr) {
+        delete m_thumbLocal;
+    }
 }
 
 void ExternalLink::getExternalLink(const QString &uri)
@@ -18,8 +25,11 @@ void ExternalLink::getExternalLink(const QString &uri)
     setDescription(QString());
     setThumb(QString());
     // 表示のキャッシュ対策
-    m_thumbLocal.rename(m_thumbLocal.fileName()
-                        + QString::number(QDateTime::currentMSecsSinceEpoch()));
+    if (m_thumbLocal != nullptr) {
+        delete m_thumbLocal;
+    }
+    m_thumbLocal = new QTemporaryFile();
+    m_thumbLocal->open();
 
     OpenGraphProtocol *open_graph = new OpenGraphProtocol(this);
     connect(open_graph, &OpenGraphProtocol::finished, [=](bool success) {
@@ -29,7 +39,7 @@ void ExternalLink::getExternalLink(const QString &uri)
         qDebug().noquote() << "thumb:" << open_graph->thumb();
         if (success && !open_graph->thumb().isEmpty()) {
             do_download = true;
-            open_graph->downloadThumb(m_thumbLocal.fileName());
+            open_graph->downloadThumb(m_thumbLocal->fileName());
         }
         if (!do_download) {
             setUri(open_graph->uri());
@@ -121,8 +131,10 @@ void ExternalLink::setThumb(const QString &newThumb)
 
 QString ExternalLink::thumbLocal() const
 {
-    if (valid() && !thumb().isEmpty()) {
-        return QUrl::fromLocalFile(m_thumbLocal.fileName()).toString();
+    if (m_thumbLocal == nullptr) {
+        return QString();
+    } else if (valid() && !thumb().isEmpty()) {
+        return QUrl::fromLocalFile(m_thumbLocal->fileName()).toString();
     } else {
         return QString();
     }
@@ -130,9 +142,11 @@ QString ExternalLink::thumbLocal() const
 
 void ExternalLink::setThumbLocal(const QString &newThumbLocal)
 {
-    if (m_thumbLocal.fileName() == newThumbLocal)
+    if (m_thumbLocal == nullptr)
         return;
-    m_thumbLocal.setFileName(newThumbLocal);
+    if (m_thumbLocal->fileName() == newThumbLocal)
+        return;
+    m_thumbLocal->setFileName(newThumbLocal);
     emit thumbLocalChanged();
 }
 

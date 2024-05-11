@@ -18,6 +18,7 @@ class ExternalLink : public QObject
 
 public:
     explicit ExternalLink(QObject *parent = nullptr);
+    ~ExternalLink();
 
     Q_INVOKABLE void getExternalLink(const QString &uri);
     Q_INVOKABLE void clear();
@@ -47,7 +48,7 @@ signals:
     void validChanged();
 
 private:
-    QTemporaryFile m_thumbLocal;
+    QTemporaryFile *m_thumbLocal;
 
     QString m_uri;
     QString m_title;
