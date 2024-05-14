@@ -35,6 +35,7 @@ Dialog {
         property real fontSizeRatio: 1.0
         property string fontFamily: ""
         property real maximumFlickVelocity: 2500
+        property string language: ""
         // Feed
         property string displayOfPosts: "sequential"
         property bool updateSeenNotification: true
@@ -63,6 +64,7 @@ Dialog {
             fontSizeRatioSlider.value = fontSizeRatio
             setFontFamily(fontFamilyComboBox, settings.fontFamily)
             maximumFlickVelocitySlider.value = settings.maximumFlickVelocity
+            languageComboBox.setByValue(settings.language)
             // Feed
             setRadioButton(displayOfPostsGroup.buttons, settings.displayOfPosts)
             setRadioButton(updateSeenNotificationGroup.buttons, settings.updateSeenNotification)
@@ -292,25 +294,39 @@ Dialog {
                         font.family: fontFamilyComboBox.currentText
                         text: qsTr("Font family")
                     }
-                    ColumnLayout {
-                        spacing: 1
-                        ComboBox {
-                            id: fontFamilyComboBox
-                            Layout.fillWidth: true
-                            font.pointSize: AdjustedValues.f10
-                            font.family: currentText
-                            model: Qt.fontFamilies()
-                            delegate: ItemDelegate {
-                                width: fontFamilyComboBox.width
-                                contentItem: Text {
-                                    text: modelData
-                                    color: fontFamilyComboBox.currentIndex === index ? Material.accentColor : Material.foreground
-                                    //font.family: modelData
-                                    elide: Text.ElideRight
-                                    verticalAlignment: Text.AlignVCenter
-                                }
-                                highlighted: fontFamilyComboBox.highlightedIndex === index
+                    ComboBox {
+                        id: fontFamilyComboBox
+                        Layout.fillWidth: true
+                        font.pointSize: AdjustedValues.f10
+                        font.family: currentText
+                        model: Qt.fontFamilies()
+                        delegate: ItemDelegate {
+                            width: fontFamilyComboBox.width
+                            contentItem: Text {
+                                text: modelData
+                                color: fontFamilyComboBox.currentIndex === index ? Material.accentColor : Material.foreground
+                                //font.family: modelData
+                                elide: Text.ElideRight
+                                verticalAlignment: Text.AlignVCenter
                             }
+                            highlighted: fontFamilyComboBox.highlightedIndex === index
+                        }
+                    }
+
+                    Label {
+                        font.pointSize: AdjustedValues.f10
+                        font.family: fontFamilyComboBox.currentText
+                        text: qsTr("Language")
+                    }
+                    ComboBoxEx {
+                        id: languageComboBox
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
+                        font.pointSize: AdjustedValues.f10
+                        font.family: fontFamilyComboBox.currentText
+                        model: ListModel {
+                            ListElement { value: "en"; text: qsTr("English") }
+                            ListElement { value: "ja"; text: qsTr("Japanese") }
                         }
                     }
                 }
@@ -633,6 +649,7 @@ Dialog {
                         systemTool.updateFont(settings.fontFamily)
                     }
                     settings.maximumFlickVelocity = maximumFlickVelocitySlider.value
+                    settings.language = languageComboBox.currentValue
                     // Feed
                     settings.displayOfPosts = displayOfPostsGroup.checkedButton.value
                     settings.updateSeenNotification = updateSeenNotificationGroup.checkedButton.value

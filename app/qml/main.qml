@@ -70,6 +70,11 @@ ApplicationWindow {
         property alias width: appWindow.width
         property alias height: appWindow.height
     }
+    QtObject {
+        id: translatorChanger
+        objectName: "translatorChanger"
+        signal triggered(string lang)
+    }
 
     SystemTool {
         id: systemTool
@@ -96,7 +101,10 @@ ApplicationWindow {
 
     SettingDialog {
         id: settingDialog
-        onAccepted: repeater.updateSettings(2)
+        onAccepted: {
+            repeater.updateSettings(2)
+            translatorChanger.triggered(settingDialog.settings.language)
+        }
     }
 
     PostDialog {

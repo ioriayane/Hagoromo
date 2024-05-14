@@ -51,6 +51,7 @@
 #include "qtquick/log/logdailylistmodel.h"
 #include "qtquick/log/logmonthlylistmodel.h"
 #include "qtquick/log/logfeedlistmodel.h"
+#include "tools/translatorchanger.h"
 
 void setAppFont(QGuiApplication &app)
 {
@@ -167,18 +168,6 @@ int main(int argc, char *argv[])
     qmlRegisterSingletonType(QUrl("qrc:/Hagoromo/qml/data/AdjustedValues.qml"),
                              "tech.relog.hagoromo.singleton", 1, 0, "AdjustedValues");
 
-    QString dir = QString("%1/translations").arg(QCoreApplication::applicationDirPath());
-    // 翻訳データ登録
-    QTranslator translator;
-    if (translator.load(QString("qt_%1").arg(QLocale::system().name()), dir)) {
-        app.installTranslator(&translator);
-    }
-    // Qt標準機能の日本語化
-    QTranslator translator2;
-    if (translator2.load(QString("qt_ja"), dir)) {
-        app.installTranslator(&translator2);
-    }
-
     setAppFont(app);
 
 #ifdef QT_NO_DEBUG
@@ -189,6 +178,9 @@ int main(int argc, char *argv[])
 #endif
 
     QQmlApplicationEngine engine;
+    TranslatorChanger changer;
+    changer.initialize(&app, &engine);
+    changer.setBySavedSetting();
 
     engine.addImageProvider(QStringLiteral("thumbnail"), new ThumbnailProvider);
 
@@ -201,6 +193,7 @@ int main(int argc, char *argv[])
             },
             Qt::QueuedConnection);
     engine.load(url);
+    changer.connect();
 
     return app.exec();
 }

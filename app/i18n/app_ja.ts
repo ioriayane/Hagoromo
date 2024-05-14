@@ -1962,111 +1962,111 @@
 <context>
     <name>LogAccess</name>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="446"/>
-        <location filename="../../lib/log/logaccess.cpp" line="447"/>
-        <location filename="../../lib/log/logaccess.cpp" line="449"/>
+        <location filename="../../lib/log/logaccess.cpp" line="509"/>
+        <location filename="../../lib/log/logaccess.cpp" line="510"/>
+        <location filename="../../lib/log/logaccess.cpp" line="512"/>
         <source>Post</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="446"/>
+        <location filename="../../lib/log/logaccess.cpp" line="509"/>
         <source>Total number of posts</source>
         <translation>総ポスト数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="447"/>
+        <location filename="../../lib/log/logaccess.cpp" line="510"/>
         <source>Number of days posts</source>
         <translation>ポストした日数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="449"/>
+        <location filename="../../lib/log/logaccess.cpp" line="512"/>
         <source>Average number of daily posts</source>
         <translation>1日あたりの平均ポスト数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="450"/>
-        <location filename="../../lib/log/logaccess.cpp" line="451"/>
-        <location filename="../../lib/log/logaccess.cpp" line="453"/>
+        <location filename="../../lib/log/logaccess.cpp" line="513"/>
+        <location filename="../../lib/log/logaccess.cpp" line="514"/>
+        <location filename="../../lib/log/logaccess.cpp" line="516"/>
         <source>Like</source>
         <translation>いいね</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="450"/>
+        <location filename="../../lib/log/logaccess.cpp" line="513"/>
         <source>Total number of likes</source>
         <translation>総いいね数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="451"/>
+        <location filename="../../lib/log/logaccess.cpp" line="514"/>
         <source>Number of days likes</source>
         <translation>いいねした日数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="453"/>
+        <location filename="../../lib/log/logaccess.cpp" line="516"/>
         <source>Average number of daily likes</source>
         <translation>1日あたりの平均いいね数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="454"/>
-        <location filename="../../lib/log/logaccess.cpp" line="455"/>
-        <location filename="../../lib/log/logaccess.cpp" line="457"/>
+        <location filename="../../lib/log/logaccess.cpp" line="517"/>
+        <location filename="../../lib/log/logaccess.cpp" line="518"/>
+        <location filename="../../lib/log/logaccess.cpp" line="520"/>
         <source>Repost</source>
         <translation>リポスト</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="454"/>
+        <location filename="../../lib/log/logaccess.cpp" line="517"/>
         <source>Total number of reposts</source>
         <translation>総リポスト数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="455"/>
+        <location filename="../../lib/log/logaccess.cpp" line="518"/>
         <source>Number of days reposts</source>
         <translation>リポストした日数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="457"/>
+        <location filename="../../lib/log/logaccess.cpp" line="520"/>
         <source>Average number of daily reposts</source>
         <translation>1日あたりの平均リポスト数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="458"/>
-        <location filename="../../lib/log/logaccess.cpp" line="459"/>
+        <location filename="../../lib/log/logaccess.cpp" line="521"/>
+        <location filename="../../lib/log/logaccess.cpp" line="522"/>
         <source>List</source>
         <translation>リスト</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="458"/>
+        <location filename="../../lib/log/logaccess.cpp" line="521"/>
         <source>Total number of lists</source>
         <translation>リストの数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="459"/>
+        <location filename="../../lib/log/logaccess.cpp" line="522"/>
         <source>Total number of list items</source>
         <translation>リストに登録している総アカウント数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="460"/>
-        <location filename="../../lib/log/logaccess.cpp" line="462"/>
-        <location filename="../../lib/log/logaccess.cpp" line="463"/>
+        <location filename="../../lib/log/logaccess.cpp" line="523"/>
+        <location filename="../../lib/log/logaccess.cpp" line="525"/>
+        <location filename="../../lib/log/logaccess.cpp" line="526"/>
         <source>Other</source>
         <translation>その他</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="460"/>
+        <location filename="../../lib/log/logaccess.cpp" line="523"/>
         <source>Total number of follows</source>
         <translation>フォロー数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="462"/>
+        <location filename="../../lib/log/logaccess.cpp" line="525"/>
         <source>Total number of who can reply</source>
         <translation>リプライ制限をした数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="463"/>
+        <location filename="../../lib/log/logaccess.cpp" line="526"/>
         <source>Total number of blocks</source>
         <translation>総ブロック数</translation>
     </message>
     <message>
-        <location filename="../../lib/log/logaccess.cpp" line="541"/>
+        <location filename="../../lib/log/logaccess.cpp" line="604"/>
         <source>Number of registrations for list</source>
         <translation>リストに登録しているアカウント数</translation>
     </message>
@@ -2561,128 +2561,128 @@
 <context>
     <name>RecordOperator</name>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="160"/>
-        <location filename="../qtquick/recordoperator.cpp" line="165"/>
+        <location filename="../qtquick/recordoperator.cpp" line="162"/>
+        <location filename="../qtquick/recordoperator.cpp" line="167"/>
         <source>Posting ... %1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="167"/>
+        <location filename="../qtquick/recordoperator.cpp" line="169"/>
         <source>Posting ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="258"/>
+        <location filename="../qtquick/recordoperator.cpp" line="262"/>
         <source>Repost ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="282"/>
+        <location filename="../qtquick/recordoperator.cpp" line="286"/>
         <source>Like ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="306"/>
+        <location filename="../qtquick/recordoperator.cpp" line="310"/>
         <source>Follow ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="328"/>
+        <location filename="../qtquick/recordoperator.cpp" line="332"/>
         <source>Mute ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="351"/>
+        <location filename="../qtquick/recordoperator.cpp" line="355"/>
         <source>Block ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="373"/>
+        <location filename="../qtquick/recordoperator.cpp" line="377"/>
         <source>Block list ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="397"/>
+        <location filename="../qtquick/recordoperator.cpp" line="401"/>
         <source>Create list ... (%1)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="433"/>
+        <location filename="../qtquick/recordoperator.cpp" line="437"/>
         <source>Add to list ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="458"/>
+        <location filename="../qtquick/recordoperator.cpp" line="462"/>
         <source>Delete post ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="482"/>
+        <location filename="../qtquick/recordoperator.cpp" line="486"/>
         <source>Delete like ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="506"/>
+        <location filename="../qtquick/recordoperator.cpp" line="510"/>
         <source>Delete repost ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="530"/>
+        <location filename="../qtquick/recordoperator.cpp" line="534"/>
         <source>Unfollow ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="552"/>
+        <location filename="../qtquick/recordoperator.cpp" line="556"/>
         <source>Unmute ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="577"/>
+        <location filename="../qtquick/recordoperator.cpp" line="581"/>
         <source>Unblock ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="601"/>
+        <location filename="../qtquick/recordoperator.cpp" line="605"/>
         <source>Unblock block list ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="622"/>
+        <location filename="../qtquick/recordoperator.cpp" line="626"/>
         <source>Delete list ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="684"/>
+        <location filename="../qtquick/recordoperator.cpp" line="688"/>
         <source>Delete list item ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="708"/>
+        <location filename="../qtquick/recordoperator.cpp" line="712"/>
         <source>Update profile ... (%1)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="780"/>
+        <location filename="../qtquick/recordoperator.cpp" line="784"/>
         <source>Update post pinning ... (%1)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="823"/>
+        <location filename="../qtquick/recordoperator.cpp" line="827"/>
         <source>Update list ... (%1)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="886"/>
+        <location filename="../qtquick/recordoperator.cpp" line="890"/>
         <source>Update who can reply ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="1051"/>
+        <location filename="../qtquick/recordoperator.cpp" line="1055"/>
         <source>Uploading images ... (%1/%2)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="1137"/>
+        <location filename="../qtquick/recordoperator.cpp" line="1141"/>
         <source>Delete list item ... (%1)</source>
         <translation></translation>
     </message>
