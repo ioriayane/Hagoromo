@@ -3,13 +3,13 @@
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofile.h"
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
 #include "atprotocol/lexicons_func_unknown.h"
-#include "extension/plc/plcdirectory.h"
+#include "extension/directory/plc/directoryplc.h"
 
 #include <QPointer>
 
 using AtProtocolInterface::AppBskyActorGetProfile;
 using AtProtocolInterface::ComAtprotoRepoGetRecordEx;
-using AtProtocolInterface::PlcDirectory;
+using AtProtocolInterface::DirectoryPlc;
 
 UserProfile::UserProfile(QObject *parent)
     : QObject { parent },
@@ -418,8 +418,8 @@ void UserProfile::getRawProfile()
         return;
     }
 
-    PlcDirectory *plc = new PlcDirectory(this);
-    connect(plc, &PlcDirectory::finished, this, [=](bool success) {
+    DirectoryPlc *plc = new DirectoryPlc(this);
+    connect(plc, &DirectoryPlc::finished, this, [=](bool success) {
         ComAtprotoRepoGetRecordEx *record = new ComAtprotoRepoGetRecordEx(this);
         connect(record, &ComAtprotoRepoGetRecordEx::finished, this, [=](bool success) {
             if (success) {

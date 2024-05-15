@@ -1,14 +1,14 @@
-#ifndef PLCDIRECTORY_H
-#define PLCDIRECTORY_H
+#ifndef DIRECTORYPLC_H
+#define DIRECTORYPLC_H
 
 #include "atprotocol/accessatprotocol.h"
 
 namespace AtProtocolInterface {
 
-class PlcDirectory : public AccessAtProtocol
+class DirectoryPlc : public AccessAtProtocol
 {
 public:
-    explicit PlcDirectory(QObject *parent = nullptr);
+    explicit DirectoryPlc(QObject *parent = nullptr);
 
     void directory(const QString &did);
 
@@ -23,4 +23,4 @@ private:
 
 }
 
-#endif // PLCDIRECTORY_H
+#endif // DIRECTORYPLC_H
