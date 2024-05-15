@@ -64,6 +64,7 @@ Dialog {
             fontSizeRatioSlider.value = fontSizeRatio
             setFontFamily(fontFamilyComboBox, settings.fontFamily)
             maximumFlickVelocitySlider.value = settings.maximumFlickVelocity
+            languageComboBox.currentIndex = -1
             languageComboBox.setByValue(settings.language)
             // Feed
             setRadioButton(displayOfPostsGroup.buttons, settings.displayOfPosts)
@@ -78,6 +79,7 @@ Dialog {
             // Translate
             translateApiUrlText.text = settings.translateApiUrl
             translateApiKeyText.text = encryption.decrypt(settings.translateApiKey)
+            translateTargetLanguageCombo.currentIndex = -1
             translateTargetLanguageCombo.setByValue(settings.translateTargetLanguage)
             // About
             displayVersionInfoInMainAreaCheckBox.checked = settings.displayVersionInfoInMainArea

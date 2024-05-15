@@ -483,28 +483,28 @@ ColumnLayout {
         console.log("ColumnLayout:componentType=" + componentType)
         if(componentType === 0){
             columnStackView.push(timelineComponent)
-            componentTypeLabel.text = qsTr("Home")
+            componentTypeLabel.addText = ""
         }else if(componentType === 1){
             columnStackView.push(listNotificationComponent)
-            componentTypeLabel.text = qsTr("Notifications")
+            componentTypeLabel.addText = ""
         }else if(componentType === 2){
             columnStackView.push(searchPostsComponent)
-            componentTypeLabel.text = qsTr("Search posts") + " : " + settings.columnValue
+            componentTypeLabel.addText = " : " + settings.columnValue
         }else if(componentType === 3){
             columnStackView.push(searchProfilesComponent)
-            componentTypeLabel.text = qsTr("Search users") + " : " + settings.columnValue
+            componentTypeLabel.addText = " : " + settings.columnValue
         }else if(componentType === 4){
             columnStackView.push(customComponent)
-            componentTypeLabel.text = qsTr("Feed") + " : " + settings.columnName
+            componentTypeLabel.addText = " : " + settings.columnName
         }else if(componentType === 5){
             columnStackView.push(authorFeedComponent)
-            componentTypeLabel.text = qsTr("User") + " : " + settings.columnName
+            componentTypeLabel.addText = " : " + settings.columnName
         }else if(componentType === 6){
             columnStackView.push(listFeedComponent)
-            componentTypeLabel.text = qsTr("List") + " : " + settings.columnName
+            componentTypeLabel.addText = " : " + settings.columnName
         }else{
             columnStackView.push(timelineComponent)
-            componentTypeLabel.text = qsTr("Unknown")
+            componentTypeLabel.addText = ""
         }
     }
 
@@ -577,6 +577,18 @@ ColumnLayout {
                     id: componentTypeLabel
                     elide: Text.ElideRight
                     font.pointSize: AdjustedValues.f10
+                    text: baseText[componentType] + addText
+                    property var baseText: [
+                        qsTr("Home"),
+                        qsTr("Notifications"),
+                        qsTr("Search posts"),
+                        qsTr("Search users"),
+                        qsTr("Feed"),
+                        qsTr("User"),
+                        qsTr("List"),
+                        qsTr("Unknown")
+                    ]
+                    property string addText: ""
                 }
                 Label {
                     id: accountInfoLabel
