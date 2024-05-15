@@ -3,7 +3,8 @@ QT += quick network quickcontrols2
 TARGET = Hagoromo
 
 SOURCES += \
-    main.cpp
+    main.cpp \
+    tools/translatorchanger.cpp
 
 QML_FILES = \
     qml/main.qml \
@@ -141,7 +142,7 @@ resources.files = $$QML_FILES $$IMAGE_FILES
 resources.prefix = /$${TARGET}
 RESOURCES += resources
 
-TRANSLATIONS += i18n/qt_ja_JP.ts
+TRANSLATIONS += i18n/app_ja.ts
 
 # icon
 win32:RC_FILE = app.rc
@@ -174,3 +175,6 @@ mac:translations.path = \
 translations.files = $$PWD/i18n/*.qm
 #qmファイルが存在しないとmakefileに追加されないので注意
 INSTALLS += translations
+
+HEADERS += \
+    tools/translatorchanger.h

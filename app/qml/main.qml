@@ -70,6 +70,11 @@ ApplicationWindow {
         property alias width: appWindow.width
         property alias height: appWindow.height
     }
+    QtObject {
+        id: translatorChanger
+        objectName: "translatorChanger"
+        signal triggered(string lang)
+    }
 
     SystemTool {
         id: systemTool
@@ -96,7 +101,10 @@ ApplicationWindow {
 
     SettingDialog {
         id: settingDialog
-        onAccepted: repeater.updateSettings(2)
+        onAccepted: {
+            repeater.updateSettings(2)
+            translatorChanger.triggered(settingDialog.settings.language)
+        }
     }
 
     PostDialog {
@@ -188,6 +196,10 @@ ApplicationWindow {
             var i = columnManageModel.indexOf(columnKey)
             console.log("open column setting dialog:" + i + ", " + columnKey)
             if(i >= 0){
+                // 言語を切り替えたときに選択項目を変更しないと初期表示の言語が変わらないのでいったん変更
+                autoLoadingIntervalCombo.currentIndex = -1
+                imageLayoutCombobox.currentIndex = -1
+
                 autoLoadingCheckbox.checked = columnManageModel.item(i, ColumnListModel.AutoLoadingRole)
                 autoLoadingIntervalCombo.setByValue(columnManageModel.item(i, ColumnListModel.LoadingIntervalRole))
                 columnWidthSlider.value = columnManageModel.item(i, ColumnListModel.WidthRole)
