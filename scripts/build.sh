@@ -55,7 +55,7 @@ deploy_hagoromo(){
         cp ${SCRIPT_FOLDER}/deploy/Hagoromo.sh ${work_dir}
         cp "openssl/lib/libcrypto.so.1.1" ${work_dir}/lib
         cp "openssl/lib/libssl.so.1.1" ${work_dir}/lib
-        cp "app/i18n/qt_ja_JP.qm" ${work_dir}/bin/translations
+        cp "app/i18n/*.qm" ${work_dir}/bin/translations
         cp ${QT_BIN_FOLDER}/../translations/qt_ja.qm ${work_dir}/bin/translations
 
         cat ${SCRIPT_FOLDER}/deploy/linux_lib.txt | xargs -i{} cp -P ${QT_BIN_FOLDER}/../lib/{} ${work_dir}/lib
@@ -69,7 +69,7 @@ deploy_hagoromo(){
         ${QT_BIN_FOLDER}/macdeployqt ${work_dir}/Hagoromo.app -qmldir=app/qml
 
         mkdir -p ${work_dir}/Hagoromo.app/Contents/MacOS/translations
-        cp "app/i18n/qt_ja_JP.qm" ${work_dir}/Hagoromo.app/Contents/MacOS/translations
+        cp "app/i18n/*.qm" ${work_dir}/Hagoromo.app/Contents/MacOS/translations
         cp ${QT_BIN_FOLDER}/../translations/qt_ja.qm ${work_dir}/Hagoromo.app/Contents/MacOS/translations
 
     fi
