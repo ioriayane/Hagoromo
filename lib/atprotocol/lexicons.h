@@ -151,11 +151,16 @@ struct Relationship
 
 // app.bsky.actor.defs
 namespace AppBskyActorDefs {
+struct ProfileAssociatedChat
+{
+    QString allowIncoming;
+};
 struct ProfileAssociated
 {
     int lists = 0;
     int feedgens = 0;
     bool labeler = false;
+    ProfileAssociatedChat chat;
 };
 struct ViewerState
 {
@@ -586,6 +591,7 @@ struct ReplyRef
     NotFoundPost parent_NotFoundPost;
     BlockedPost parent_BlockedPost;
     // union end : parent
+    AppBskyActorDefs::ProfileViewBasic grandparentAuthor;
 };
 struct ReasonRepost
 {
@@ -1009,6 +1015,159 @@ struct Suggestion
 };
 }
 
+// chat.bsky.actor.declaration
+namespace ChatBskyActorDeclaration {
+struct Main
+{
+    QString allowIncoming;
+};
+}
+
+// chat.bsky.actor.defs
+namespace ChatBskyActorDefs {
+struct ProfileViewBasic
+{
+    QString did; // did
+    QString handle; // handle
+    QString displayName;
+    QString avatar; // uri
+    AppBskyActorDefs::ProfileAssociated associated;
+    AppBskyActorDefs::ViewerState viewer;
+    QList<ComAtprotoLabelDefs::Label> labels;
+    bool chatDisabled =
+            false; // Set to true when the actor cannot actively participate in converations
+};
+}
+
+// chat.bsky.convo.defs
+namespace ChatBskyConvoDefs {
+enum class LogDeleteMessageMessageType : int {
+    none,
+    message_MessageView,
+    message_DeletedMessageView,
+};
+enum class LogCreateMessageMessageType : int {
+    none,
+    message_MessageView,
+    message_DeletedMessageView,
+};
+enum class ConvoViewLastMessageType : int {
+    none,
+    lastMessage_MessageView,
+    lastMessage_DeletedMessageView,
+};
+enum class MessageViewEmbedType : int {
+    none,
+    embed_AppBskyEmbedRecord_Main,
+};
+enum class MessageEmbedType : int {
+    none,
+    embed_AppBskyEmbedRecord_Main,
+};
+struct MessageRef
+{
+    QString did; // did
+    QString messageId;
+};
+struct Message
+{
+    QString id;
+    QString text;
+    QList<AppBskyRichtextFacet::Main> facets;
+    // union start : embed
+    MessageEmbedType embed_type = MessageEmbedType::none;
+    AppBskyEmbedRecord::Main embed_AppBskyEmbedRecord_Main;
+    // union end : embed
+};
+struct MessageViewSender
+{
+    QString did; // did
+};
+struct MessageView
+{
+    QString id;
+    QString rev;
+    QString text;
+    QList<AppBskyRichtextFacet::Main> facets;
+    // union start : embed
+    MessageViewEmbedType embed_type = MessageViewEmbedType::none;
+    AppBskyEmbedRecord::Main embed_AppBskyEmbedRecord_Main;
+    // union end : embed
+    MessageViewSender sender;
+    QString sentAt; // datetime
+};
+struct DeletedMessageView
+{
+    QString id;
+    QString rev;
+    MessageViewSender sender;
+    QString sentAt; // datetime
+};
+struct ConvoView
+{
+    QString id;
+    QString rev;
+    QList<ChatBskyActorDefs::ProfileViewBasic> members;
+    // union start : lastMessage
+    ConvoViewLastMessageType lastMessage_type = ConvoViewLastMessageType::none;
+    MessageView lastMessage_MessageView;
+    DeletedMessageView lastMessage_DeletedMessageView;
+    // union end : lastMessage
+    bool muted = false;
+    int unreadCount = 0;
+};
+struct LogBeginConvo
+{
+    QString rev;
+    QString convoId;
+};
+struct LogLeaveConvo
+{
+    QString rev;
+    QString convoId;
+};
+struct LogCreateMessage
+{
+    QString rev;
+    QString convoId;
+    // union start : message
+    LogCreateMessageMessageType message_type = LogCreateMessageMessageType::none;
+    MessageView message_MessageView;
+    DeletedMessageView message_DeletedMessageView;
+    // union end : message
+};
+struct LogDeleteMessage
+{
+    QString rev;
+    QString convoId;
+    // union start : message
+    LogDeleteMessageMessageType message_type = LogDeleteMessageMessageType::none;
+    MessageView message_MessageView;
+    DeletedMessageView message_DeletedMessageView;
+    // union end : message
+};
+}
+
+// chat.bsky.convo.sendMessageBatch
+namespace ChatBskyConvoSendMessageBatch {
+struct BatchItem
+{
+    QString convoId;
+    ChatBskyConvoDefs::Message message;
+};
+}
+
+// chat.bsky.moderation.getActorMetadata
+namespace ChatBskyModerationGetActorMetadata {
+struct Metadata
+{
+    int messagesSent = 0;
+    int messagesReceived = 0;
+    int convos = 0;
+    int convosStarted = 0;
+};
+}
+
 // com.atproto.server.defs
 namespace ComAtprotoServerDefs {
 struct InviteCodeUse
@@ -1270,6 +1429,9 @@ enum class ModEventViewDetailEventType : int {
     event_ModEventAcknowledge,
     event_ModEventEscalate,
     event_ModEventMute,
+    event_ModEventUnmute,
+    event_ModEventMuteReporter,
+    event_ModEventUnmuteReporter,
     event_ModEventEmail,
     event_ModEventResolveAppeal,
     event_ModEventDivert,
@@ -1301,6 +1463,9 @@ enum class ModEventViewEventType : int {
     event_ModEventAcknowledge,
     event_ModEventEscalate,
     event_ModEventMute,
+    event_ModEventUnmute,
+    event_ModEventMuteReporter,
+    event_ModEventUnmuteReporter,
     event_ModEventEmail,
     event_ModEventResolveAppeal,
     event_ModEventDivert,
@@ -1328,6 +1493,9 @@ struct ModEventComment
 struct ModEventReport
 {
     QString comment;
+    bool isReporterMuted =
+            false; // Set to true if the reporter was muted from reporting at the time of the event.
+                   // These reports won't impact the reviewState of the subject.
     ComAtprotoModerationDefs::ReasonType reportType;
 };
 struct ModEventLabel
@@ -1348,6 +1516,19 @@ struct ModEventMute
 {
     QString comment;
     int durationInHours = 0; // Indicates how long the subject should remain muted.
+};
+struct ModEventUnmute
+{
+    QString comment; // Describe reasoning behind the reversal.
+};
+struct ModEventMuteReporter
+{
+    QString comment;
+    int durationInHours = 0; // Indicates how long the account should remain muted.
+};
+struct ModEventUnmuteReporter
+{
+    QString comment; // Describe reasoning behind the reversal.
 };
 struct ModEventEmail
 {
@@ -1376,6 +1557,9 @@ struct ModEventView
     ModEventAcknowledge event_ModEventAcknowledge;
     ModEventEscalate event_ModEventEscalate;
     ModEventMute event_ModEventMute;
+    ModEventUnmute event_ModEventUnmute;
+    ModEventMuteReporter event_ModEventMuteReporter;
+    ModEventUnmuteReporter event_ModEventUnmuteReporter;
     ModEventEmail event_ModEventEmail;
     ModEventResolveAppeal event_ModEventResolveAppeal;
     ModEventDivert event_ModEventDivert;
@@ -1409,6 +1593,7 @@ struct SubjectStatusView
     SubjectReviewState reviewState;
     QString comment; // Sticky comment on the subject.
     QString muteUntil; // datetime
+    QString muteReportingUntil; // datetime
     QString lastReviewedBy; // did
     QString lastReviewedAt; // datetime
     QString lastReportedAt; // datetime
@@ -1491,6 +1676,9 @@ struct ModEventViewDetail
     ModEventAcknowledge event_ModEventAcknowledge;
     ModEventEscalate event_ModEventEscalate;
     ModEventMute event_ModEventMute;
+    ModEventUnmute event_ModEventUnmute;
+    ModEventMuteReporter event_ModEventMuteReporter;
+    ModEventUnmuteReporter event_ModEventUnmuteReporter;
     ModEventEmail event_ModEventEmail;
     ModEventResolveAppeal event_ModEventResolveAppeal;
     ModEventDivert event_ModEventDivert;
@@ -1505,10 +1693,6 @@ struct ModEventViewDetail
     QList<BlobView> subjectBlobs;
     QString createdBy; // did
     QString createdAt; // datetime
-};
-struct ModEventUnmute
-{
-    QString comment; // Describe reasoning behind the reversal.
 };
 struct ModEventTag
 {

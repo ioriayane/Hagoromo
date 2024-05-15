@@ -16,6 +16,8 @@
 namespace AtProtocolType {
 // app.bsky.actor.defs
 namespace AppBskyActorDefs {
+void copyProfileAssociatedChat(const QJsonObject &src,
+                               AppBskyActorDefs::ProfileAssociatedChat &dest);
 void copyProfileAssociated(const QJsonObject &src, AppBskyActorDefs::ProfileAssociated &dest);
 void copyViewerState(const QJsonObject &src, AppBskyActorDefs::ViewerState &dest);
 void copyProfileViewBasic(const QJsonObject &src, AppBskyActorDefs::ProfileViewBasic &dest);
@@ -202,6 +204,35 @@ void copySkeletonSearchActor(const QJsonObject &src,
 namespace AppBskyUnspeccedGetTaggedSuggestions {
 void copySuggestion(const QJsonObject &src, AppBskyUnspeccedGetTaggedSuggestions::Suggestion &dest);
 }
+// chat.bsky.actor.declaration
+namespace ChatBskyActorDeclaration {
+void copyMain(const QJsonObject &src, ChatBskyActorDeclaration::Main &dest);
+}
+// chat.bsky.actor.defs
+namespace ChatBskyActorDefs {
+void copyProfileViewBasic(const QJsonObject &src, ChatBskyActorDefs::ProfileViewBasic &dest);
+}
+// chat.bsky.convo.defs
+namespace ChatBskyConvoDefs {
+void copyMessageRef(const QJsonObject &src, ChatBskyConvoDefs::MessageRef &dest);
+void copyMessage(const QJsonObject &src, ChatBskyConvoDefs::Message &dest);
+void copyMessageViewSender(const QJsonObject &src, ChatBskyConvoDefs::MessageViewSender &dest);
+void copyMessageView(const QJsonObject &src, ChatBskyConvoDefs::MessageView &dest);
+void copyDeletedMessageView(const QJsonObject &src, ChatBskyConvoDefs::DeletedMessageView &dest);
+void copyConvoView(const QJsonObject &src, ChatBskyConvoDefs::ConvoView &dest);
+void copyLogBeginConvo(const QJsonObject &src, ChatBskyConvoDefs::LogBeginConvo &dest);
+void copyLogLeaveConvo(const QJsonObject &src, ChatBskyConvoDefs::LogLeaveConvo &dest);
+void copyLogCreateMessage(const QJsonObject &src, ChatBskyConvoDefs::LogCreateMessage &dest);
+void copyLogDeleteMessage(const QJsonObject &src, ChatBskyConvoDefs::LogDeleteMessage &dest);
+}
+// chat.bsky.convo.sendMessageBatch
+namespace ChatBskyConvoSendMessageBatch {
+void copyBatchItem(const QJsonObject &src, ChatBskyConvoSendMessageBatch::BatchItem &dest);
+}
+// chat.bsky.moderation.getActorMetadata
+namespace ChatBskyModerationGetActorMetadata {
+void copyMetadata(const QJsonObject &src, ChatBskyModerationGetActorMetadata::Metadata &dest);
+}
 // com.atproto.admin.defs
 namespace ComAtprotoAdminDefs {
 void copyStatusAttr(const QJsonObject &src, ComAtprotoAdminDefs::StatusAttr &dest);
@@ -289,6 +320,11 @@ void copyModEventAcknowledge(const QJsonObject &src,
                              ToolsOzoneModerationDefs::ModEventAcknowledge &dest);
 void copyModEventEscalate(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventEscalate &dest);
 void copyModEventMute(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventMute &dest);
+void copyModEventUnmute(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventUnmute &dest);
+void copyModEventMuteReporter(const QJsonObject &src,
+                              ToolsOzoneModerationDefs::ModEventMuteReporter &dest);
+void copyModEventUnmuteReporter(const QJsonObject &src,
+                                ToolsOzoneModerationDefs::ModEventUnmuteReporter &dest);
 void copyModEventEmail(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventEmail &dest);
 void copyModEventResolveAppeal(const QJsonObject &src,
                                ToolsOzoneModerationDefs::ModEventResolveAppeal &dest);
@@ -309,7 +345,6 @@ void copyVideoDetails(const QJsonObject &src, ToolsOzoneModerationDefs::VideoDet
 void copyBlobView(const QJsonObject &src, ToolsOzoneModerationDefs::BlobView &dest);
 void copyModEventViewDetail(const QJsonObject &src,
                             ToolsOzoneModerationDefs::ModEventViewDetail &dest);
-void copyModEventUnmute(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventUnmute &dest);
 void copyModEventTag(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventTag &dest);
 void copyModerationDetail(const QJsonObject &src, ToolsOzoneModerationDefs::ModerationDetail &dest);
 void copyRepoViewDetail(const QJsonObject &src, ToolsOzoneModerationDefs::RepoViewDetail &dest);

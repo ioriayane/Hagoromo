@@ -148,6 +148,7 @@ class Defs2Struct:
 
         self.skip_api_class_id = [
             'tools.ozone.',
+            'chat.bsky.',
             'com.atproto.admin.',
             'com.atproto.identity.',
             'com.atproto.label.',
