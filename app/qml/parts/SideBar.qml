@@ -20,21 +20,25 @@ ColumnLayout {
 
     IconButton {
         id: post
-        Layout.fillWidth: true
+        width: parent.width
+        Layout.preferredWidth: parent.width
         Layout.preferredHeight: AdjustedValues.b36
         enabled: accountListModel.count > 0
         display: AbstractButton.IconOnly
         iconSource: "../images/edit.png"
         //                    iconText: qsTr("New Post")
+        onWidthChanged: console.log("post:" + width)
     }
 
     IconButton {
         id: search
-        Layout.fillWidth: true
+        width: parent.width
+        Layout.preferredWidth: parent.width
         Layout.preferredHeight: AdjustedValues.b36
         enabled: accountListModel.count > 0
         display: AbstractButton.IconOnly
         iconSource: "../images/search.png"
+        onWidthChanged: console.log("search:" + width)
     }
 
     Item {
@@ -44,7 +48,8 @@ ColumnLayout {
 
     IconButton {
         id: addColumn
-        Layout.fillWidth: true
+        width: parent.width
+        Layout.preferredWidth: parent.width
         Layout.preferredHeight: AdjustedValues.b36
         enabled: accountListModel.count > 0
         display: AbstractButton.IconOnly
@@ -54,7 +59,8 @@ ColumnLayout {
 
     IconButton {
         id: moderation
-        Layout.fillWidth: true
+        width: parent.width
+        Layout.preferredWidth: parent.width
         Layout.preferredHeight: AdjustedValues.b36
         visible: false
         enabled: accountListModel.count > 0
@@ -64,7 +70,8 @@ ColumnLayout {
 
     IconButton {
         id: account
-        Layout.fillWidth: true
+        width: parent.width
+        Layout.preferredWidth: parent.width
         Layout.preferredHeight: AdjustedValues.b36
         display: AbstractButton.IconOnly
         iconSource: "../images/account.png"
@@ -73,7 +80,8 @@ ColumnLayout {
 
     IconButton {
         id: setting
-        Layout.fillWidth: true
+        width: parent.width
+        Layout.preferredWidth: parent.width
         Layout.preferredHeight: AdjustedValues.b36
         display: AbstractButton.IconOnly
         iconSource: "../images/settings.png"

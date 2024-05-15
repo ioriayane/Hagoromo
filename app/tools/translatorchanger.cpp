@@ -55,8 +55,6 @@ void TranslatorChanger::connect()
     if (!obj)
         return;
     QObject::connect(obj, SIGNAL(triggered(QString)), this, SLOT(change(const QString &)));
-
-    // change(const QString &)
 }
 
 void TranslatorChanger::setBySavedSetting()

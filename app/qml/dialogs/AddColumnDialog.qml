@@ -171,7 +171,7 @@ Dialog {
                                         AvatarImage {
                                             Layout.preferredWidth: AdjustedValues.i24
                                             Layout.preferredHeight: AdjustedValues.i24
-                                            source: model.avatar
+                                            source: model.avatar ? model.avatar : ""
                                             altSource: {
                                                 if(model.feedType === 0){
                                                     return "../images/home.png"
@@ -186,12 +186,12 @@ Dialog {
                                         }
                                         Label {
                                             font.pointSize: AdjustedValues.f10
-                                            text: model.displayName
+                                            text: model.displayName ? model.displayName : ""
                                         }
                                         Label {
                                             color: Material.color(Material.Grey)
                                             font.pointSize: AdjustedValues.f10
-                                            text: model.creatorDisplayName.length > 0 ? "by @" + model.creatorDisplayName : model.creatorDisplayName
+                                            text: model.creatorDisplayName ? (model.creatorDisplayName.length > 0 ? "by @" + model.creatorDisplayName : model.creatorDisplayName) : ""
                                         }
                                         Item {
                                             Layout.fillWidth: true
