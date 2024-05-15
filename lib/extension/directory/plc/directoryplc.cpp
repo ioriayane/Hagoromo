@@ -18,7 +18,7 @@ void DirectoryPlc::directory(const QString &did)
     get(did, url_query, false);
 }
 
-const AtProtocolType::ComAtprotoServerDefs::DidDoc &DirectoryPlc::didDoc() const
+const AtProtocolType::DirectoryPlcDefs::DidDoc &DirectoryPlc::didDoc() const
 {
     return m_didDoc;
 }
@@ -39,7 +39,7 @@ bool DirectoryPlc::parseJson(bool success, const QString reply_json)
     if (json_doc.isEmpty()) {
         success = false;
     } else {
-        AtProtocolType::ComAtprotoServerDefs::copyDidDoc(json_doc.object(), m_didDoc);
+        AtProtocolType::DirectoryPlcDefs::copyDidDoc(json_doc.object(), m_didDoc);
     }
 
     return success;

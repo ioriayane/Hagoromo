@@ -12,13 +12,13 @@ public:
 
     void directory(const QString &did);
 
-    const AtProtocolType::ComAtprotoServerDefs::DidDoc &didDoc() const;
+    const AtProtocolType::DirectoryPlcDefs::DidDoc &didDoc() const;
     QString serviceEndpoint() const;
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 
-    AtProtocolType::ComAtprotoServerDefs::DidDoc m_didDoc;
+    AtProtocolType::DirectoryPlcDefs::DidDoc m_didDoc;
 };
 
 }

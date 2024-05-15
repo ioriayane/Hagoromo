@@ -1657,44 +1657,6 @@ void copyInviteCode(const QJsonObject &src, ComAtprotoServerDefs::InviteCode &de
         }
     }
 }
-void copyDidDocVerificationMethod(const QJsonObject &src,
-                                  ComAtprotoServerDefs::DidDocVerificationMethod &dest)
-{
-    if (!src.isEmpty()) {
-        dest.id = src.value("id").toString();
-        dest.type = src.value("type").toString();
-        dest.controller = src.value("controller").toString();
-        dest.publicKeyMultibase = src.value("publicKeyMultibase").toString();
-    }
-}
-void copyDidDocService(const QJsonObject &src, ComAtprotoServerDefs::DidDocService &dest)
-{
-    if (!src.isEmpty()) {
-        dest.id = src.value("id").toString();
-        dest.type = src.value("type").toString();
-        dest.serviceEndpoint = src.value("serviceEndpoint").toString();
-    }
-}
-void copyDidDoc(const QJsonObject &src, ComAtprotoServerDefs::DidDoc &dest)
-{
-    if (!src.isEmpty()) {
-        for (const auto &value : src.value("context").toArray()) {
-            dest.context.append(value.toString());
-        }
-        dest.id = src.value("id").toString();
-        dest.alsoKnownAs = src.value("alsoKnownAs").toString();
-        for (const auto &s : src.value("verificationMethod").toArray()) {
-            DidDocVerificationMethod child;
-            copyDidDocVerificationMethod(s.toObject(), child);
-            dest.verificationMethod.append(child);
-        }
-        for (const auto &s : src.value("service").toArray()) {
-            DidDocService child;
-            copyDidDocService(s.toObject(), child);
-            dest.service.append(child);
-        }
-    }
-}
 }
 // com.atproto.label.subscribeLabels
 namespace ComAtprotoLabelSubscribeLabels {
@@ -2436,6 +2398,47 @@ void copyRecordViewDetail(const QJsonObject &src, ToolsOzoneModerationDefs::Reco
         dest.indexedAt = src.value("indexedAt").toString();
         copyModerationDetail(src.value("moderation").toObject(), dest.moderation);
         copyRepoView(src.value("repo").toObject(), dest.repo);
+    }
+}
+}
+// directory.plc.defs
+namespace DirectoryPlcDefs {
+void copyDidDocVerificationMethod(const QJsonObject &src,
+                                  DirectoryPlcDefs::DidDocVerificationMethod &dest)
+{
+    if (!src.isEmpty()) {
+        dest.id = src.value("id").toString();
+        dest.type = src.value("type").toString();
+        dest.controller = src.value("controller").toString();
+        dest.publicKeyMultibase = src.value("publicKeyMultibase").toString();
+    }
+}
+void copyDidDocService(const QJsonObject &src, DirectoryPlcDefs::DidDocService &dest)
+{
+    if (!src.isEmpty()) {
+        dest.id = src.value("id").toString();
+        dest.type = src.value("type").toString();
+        dest.serviceEndpoint = src.value("serviceEndpoint").toString();
+    }
+}
+void copyDidDoc(const QJsonObject &src, DirectoryPlcDefs::DidDoc &dest)
+{
+    if (!src.isEmpty()) {
+        for (const auto &value : src.value("context").toArray()) {
+            dest.context.append(value.toString());
+        }
+        dest.id = src.value("id").toString();
+        dest.alsoKnownAs = src.value("alsoKnownAs").toString();
+        for (const auto &s : src.value("verificationMethod").toArray()) {
+            DidDocVerificationMethod child;
+            copyDidDocVerificationMethod(s.toObject(), child);
+            dest.verificationMethod.append(child);
+        }
+        for (const auto &s : src.value("service").toArray()) {
+            DidDocService child;
+            copyDidDocService(s.toObject(), child);
+            dest.service.append(child);
+        }
     }
 }
 }

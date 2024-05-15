@@ -1,4 +1,6 @@
 {
+    "lexicon": 1,
+    "id": "directory.plc.defs",
     "defs": {
         "didDocVerificationMethod": {
             "type": "object",
