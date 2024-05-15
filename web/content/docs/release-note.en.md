@@ -8,6 +8,9 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+- Add
+  - Add the feature to switch the display language
+
 ### v0.30.0 - 2024/5/11
 
 - Add
