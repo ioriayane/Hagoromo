@@ -66,6 +66,131 @@
                     }
                 }
             }
+        },
+        "plcLogAtprotoPds": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "endpoint": {
+                    "type": "string"
+                }
+            }
+        },
+        "plcLogService": {
+            "type": "object",
+            "properties": {
+                "atproto_pds": {
+                    "type": "ref",
+                    "ref": "#plcLogAtprotoPds"
+                }
+            }
+        },
+        "plcLogVerificationMethods": {
+            "type": "object",
+            "properties": {
+                "atproto": {
+                    "type": "string"
+                }
+            }
+        },
+        "plc_operation": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "description": "#plc_operation"
+                },
+                "rotationKeys": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Ordered set (no duplicates) of cryptographic public keys in did:key format"
+                },
+                "verificationMethods": {
+                    "type": "ref",
+                    "ref": "#plcLogVerificationMethods",
+                    "description": "Map (object) of application-specific cryptographic public keys in did:key format"
+                },
+                "alsoKnownAs": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Ordered set (no duplicates) of aliases and names for this account, in the form of URIs"
+                },
+                "services": {
+                    "type": "ref",
+                    "ref": "#plcLogService",
+                    "description": "Map (object) of application-specific service endpoints for this account"
+                },
+                "prev": {
+                    "type": "string",
+                    "description": "Strong reference (hash) of preceeding operation for this DID, in string CID format. Null for genesis operation"
+                },
+                "sig": {
+                    "type": "string",
+                    "description": "Cryptographic signature of this object, with base64 string encoding"
+                }
+            }
+        },
+        "plc_tombstone": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "description": "#plc_tombstone"
+                }
+            }
+        },
+        "create": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "description": "#create"
+                }
+            }
+        },
+        "plcAuditLogDetail": {
+            "type": "object",
+            "properties": {
+                "did": {
+                    "type": "string",
+                    "description": "DID that this operation applies to"
+                },
+                "operation": {
+                    "type": "union",
+                    "refs": [
+                        "#plc_operation",
+                        "#plc_tombstone",
+                        "#create"
+                    ],
+                    "forceRerative": true
+                },
+                "cid": {
+                    "type": "string",
+                    "description": "Hash of the operation, in string CID format"
+                },
+                "nullified": {
+                    "type": "boolean",
+                    "description": "Whether this operation is included in the current operation chain, or has been overridden"
+                },
+                "createdAt": {
+                    "type": "string",
+                    "format": "datetime",
+                    "description": "Timestamp when this operation was received by the directory server"
+                }
+            }
+        },
+        "plcAuditLog": {
+            "type": "array",
+            "items": {
+                "type": "ref",
+                "ref": "#plcAuditLogDetail"
+            }
         }
     }
 }

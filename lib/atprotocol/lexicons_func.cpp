@@ -2441,6 +2441,92 @@ void copyDidDoc(const QJsonObject &src, DirectoryPlcDefs::DidDoc &dest)
         }
     }
 }
+void copyPlcLogAtprotoPds(const QJsonObject &src, DirectoryPlcDefs::PlcLogAtprotoPds &dest)
+{
+    if (!src.isEmpty()) {
+        dest.type = src.value("type").toString();
+        dest.endpoint = src.value("endpoint").toString();
+    }
+}
+void copyPlcLogService(const QJsonObject &src, DirectoryPlcDefs::PlcLogService &dest)
+{
+    if (!src.isEmpty()) {
+        copyPlcLogAtprotoPds(src.value("atproto_pds").toObject(), dest.atproto_pds);
+    }
+}
+void copyPlcLogVerificationMethods(const QJsonObject &src,
+                                   DirectoryPlcDefs::PlcLogVerificationMethods &dest)
+{
+    if (!src.isEmpty()) {
+        dest.atproto = src.value("atproto").toString();
+    }
+}
+void copyPlc_operation(const QJsonObject &src, DirectoryPlcDefs::Plc_operation &dest)
+{
+    if (!src.isEmpty()) {
+        dest.type = src.value("type").toString();
+        for (const auto &value : src.value("rotationKeys").toArray()) {
+            dest.rotationKeys.append(value.toString());
+        }
+        copyPlcLogVerificationMethods(src.value("verificationMethods").toObject(),
+                                      dest.verificationMethods);
+        for (const auto &value : src.value("alsoKnownAs").toArray()) {
+            dest.alsoKnownAs.append(value.toString());
+        }
+        copyPlcLogService(src.value("services").toObject(), dest.services);
+        dest.prev = src.value("prev").toString();
+        dest.sig = src.value("sig").toString();
+    }
+}
+void copyPlc_tombstone(const QJsonObject &src, DirectoryPlcDefs::Plc_tombstone &dest)
+{
+    if (!src.isEmpty()) {
+        dest.type = src.value("type").toString();
+    }
+}
+void copyCreate(const QJsonObject &src, DirectoryPlcDefs::Create &dest)
+{
+    if (!src.isEmpty()) {
+        dest.type = src.value("type").toString();
+    }
+}
+void copyPlcAuditLogDetail(const QJsonObject &src, DirectoryPlcDefs::PlcAuditLogDetail &dest)
+{
+    if (!src.isEmpty()) {
+        dest.did = src.value("did").toString();
+        QString operation_type = src.value("operation").toObject().value("type").toString();
+        if (operation_type == QStringLiteral("plc_operation")) {
+            dest.operation_type =
+                    DirectoryPlcDefs::PlcAuditLogDetailOperationType::operation_Plc_operation;
+            DirectoryPlcDefs::copyPlc_operation(src.value("operation").toObject(),
+                                                dest.operation_Plc_operation);
+        }
+        if (operation_type == QStringLiteral("plc_tombstone")) {
+            dest.operation_type =
+                    DirectoryPlcDefs::PlcAuditLogDetailOperationType::operation_Plc_tombstone;
+            DirectoryPlcDefs::copyPlc_tombstone(src.value("operation").toObject(),
+                                                dest.operation_Plc_tombstone);
+        }
+        if (operation_type == QStringLiteral("create")) {
+            dest.operation_type =
+                    DirectoryPlcDefs::PlcAuditLogDetailOperationType::operation_Create;
+            DirectoryPlcDefs::copyCreate(src.value("operation").toObject(), dest.operation_Create);
+        }
+        dest.cid = src.value("cid").toString();
+        dest.nullified = src.value("nullified").toBool();
+        dest.createdAt = src.value("createdAt").toString();
+    }
+}
+void copyPlcAuditLog(const QJsonArray &src, DirectoryPlcDefs::PlcAuditLog &dest)
+{
+    if (!src.isEmpty()) {
+        for (const auto &s : src) {
+            PlcAuditLogDetail child;
+            copyPlcAuditLogDetail(s.toObject(), child);
+            dest.append(child);
+        }
+    }
+}
 }
 
 }

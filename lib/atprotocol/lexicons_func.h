@@ -352,6 +352,15 @@ void copyDidDocVerificationMethod(const QJsonObject &src,
                                   DirectoryPlcDefs::DidDocVerificationMethod &dest);
 void copyDidDocService(const QJsonObject &src, DirectoryPlcDefs::DidDocService &dest);
 void copyDidDoc(const QJsonObject &src, DirectoryPlcDefs::DidDoc &dest);
+void copyPlcLogAtprotoPds(const QJsonObject &src, DirectoryPlcDefs::PlcLogAtprotoPds &dest);
+void copyPlcLogService(const QJsonObject &src, DirectoryPlcDefs::PlcLogService &dest);
+void copyPlcLogVerificationMethods(const QJsonObject &src,
+                                   DirectoryPlcDefs::PlcLogVerificationMethods &dest);
+void copyPlc_operation(const QJsonObject &src, DirectoryPlcDefs::Plc_operation &dest);
+void copyPlc_tombstone(const QJsonObject &src, DirectoryPlcDefs::Plc_tombstone &dest);
+void copyCreate(const QJsonObject &src, DirectoryPlcDefs::Create &dest);
+void copyPlcAuditLogDetail(const QJsonObject &src, DirectoryPlcDefs::PlcAuditLogDetail &dest);
+void copyPlcAuditLog(const QJsonArray &src, DirectoryPlcDefs::PlcAuditLog &dest);
 }
 
 }

@@ -1713,6 +1713,12 @@ struct RecordViewDetail
 
 // directory.plc.defs
 namespace DirectoryPlcDefs {
+enum class PlcAuditLogDetailOperationType : int {
+    none,
+    operation_Plc_operation,
+    operation_Plc_tombstone,
+    operation_Create,
+};
 struct DidDocVerificationMethod
 {
     QString id;
@@ -1734,6 +1740,58 @@ struct DidDoc
     QList<DidDocVerificationMethod> verificationMethod;
     QList<DidDocService> service;
 };
+struct PlcLogAtprotoPds
+{
+    QString type;
+    QString endpoint;
+};
+struct PlcLogService
+{
+    PlcLogAtprotoPds atproto_pds;
+};
+struct PlcLogVerificationMethods
+{
+    QString atproto;
+};
+struct Plc_operation
+{
+    QString type; // #plc_operation
+    QList<QString> rotationKeys; // Ordered set (no duplicates) of cryptographic public keys in
+                                 // did:key format
+    PlcLogVerificationMethods verificationMethods; // Map (object) of application-specific
+                                                   // cryptographic public keys in did:key format
+    QList<QString> alsoKnownAs; // Ordered set (no duplicates) of aliases and names for this
+                                // account, in the form of URIs
+    PlcLogService
+            services; // Map (object) of application-specific service endpoints for this account
+    QString prev; // Strong reference (hash) of preceeding operation for this DID, in string CID
+                  // format. Null for genesis operation
+    QString sig; // Cryptographic signature of this object, with base64 string encoding
+};
+struct Plc_tombstone
+{
+    QString type; // #plc_tombstone
+};
+struct Create
+{
+    QString type; // #create
+};
+struct PlcAuditLogDetail
+{
+    QString did; // DID that this operation applies to
+    // union start : operation
+    PlcAuditLogDetailOperationType operation_type = PlcAuditLogDetailOperationType::none;
+    Plc_operation operation_Plc_operation;
+    Plc_tombstone operation_Plc_tombstone;
+    Create operation_Create;
+    // union end : operation
+    QString cid; // Hash of the operation, in string CID format
+    bool nullified = false; // Whether this operation is included in the current operation chain, or
+                            // has been overridden
+    QString createdAt; // datetime , Timestamp when this operation was received by the directory
+                       // server
+};
+typedef QList<PlcAuditLogDetail> PlcAuditLog;
 }
 
 }
