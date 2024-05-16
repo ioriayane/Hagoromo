@@ -141,6 +141,8 @@ public slots:
 
 private:
     void updateContentFilterLabels(std::function<void()> callback);
+    void getServiceEndpoint(const QString &did,
+                            std::function<void(const QString &service_endpoint)> callback);
     void getRawProfile();
 
     SystemTool m_systemTool;

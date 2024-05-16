@@ -410,6 +410,26 @@ void UserProfile::updateContentFilterLabels(std::function<void()> callback)
     labels->load();
 }
 
+void UserProfile::getServiceEndpoint(const QString &did,
+                                     std::function<void(const QString &)> callback)
+{
+    if (did.isEmpty()) {
+        callback(QString());
+        return;
+    }
+
+    DirectoryPlc *plc = new DirectoryPlc(this);
+    connect(plc, &DirectoryPlc::finished, this, [=](bool success) {
+        if (success) {
+            callback(plc->serviceEndpoint());
+        } else {
+            callback(QString());
+        }
+        plc->deleteLater();
+    });
+    plc->directory(did);
+}
+
 // getProfileの追加読み込みとして動作させる
 void UserProfile::getRawProfile()
 {
@@ -418,8 +438,7 @@ void UserProfile::getRawProfile()
         return;
     }
 
-    DirectoryPlc *plc = new DirectoryPlc(this);
-    connect(plc, &DirectoryPlc::finished, this, [=](bool success) {
+    getServiceEndpoint(did(), [=](const QString &service_endpoint) {
         ComAtprotoRepoGetRecordEx *record = new ComAtprotoRepoGetRecordEx(this);
         connect(record, &ComAtprotoRepoGetRecordEx::finished, this, [=](bool success) {
             if (success) {
@@ -432,17 +451,15 @@ void UserProfile::getRawProfile()
             record->deleteLater();
         });
         record->setAccount(m_account);
-        if (success) {
-            record->setService(plc->serviceEndpoint());
-            setServiceEndpoint(plc->serviceEndpoint());
+        if (!service_endpoint.isEmpty()) {
+            record->setService(service_endpoint);
+            setServiceEndpoint(service_endpoint);
         } else {
             // プロフィールを参照されるユーザーのサービスが参照する側と同じとは限らない（bsky.socialだったとしても）
             setServiceEndpoint(QString());
         }
         record->profile(did());
-        plc->deleteLater();
     });
-    plc->directory(did());
 }
 
 QStringList UserProfile::belongingLists() const
