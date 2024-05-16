@@ -4,12 +4,14 @@
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "extension/directory/plc/directoryplc.h"
+#include "extension/directory/plc/directoryplclogaudit.h"
 
 #include <QPointer>
 
 using AtProtocolInterface::AppBskyActorGetProfile;
 using AtProtocolInterface::ComAtprotoRepoGetRecordEx;
 using AtProtocolInterface::DirectoryPlc;
+using AtProtocolInterface::DirectoryPlcLogAudit;
 
 UserProfile::UserProfile(QObject *parent)
     : QObject { parent },
@@ -430,6 +432,31 @@ void UserProfile::getServiceEndpoint(const QString &did,
     plc->directory(did);
 }
 
+void UserProfile::getRegistrationDate(const QString &did,
+                                      std::function<void(const QString &)> callback)
+{
+    if (did.isEmpty()) {
+        callback(QString());
+        return;
+    }
+
+    DirectoryPlcLogAudit *plc = new DirectoryPlcLogAudit(this);
+    connect(plc, &DirectoryPlcLogAudit::finished, this, [=](bool success) {
+        if (success) {
+            if (plc->plcAuditLog().isEmpty()) {
+                callback(QString());
+            } else {
+                callback(AtProtocolType::LexiconsTypeUnknown::formatDateTime(
+                        plc->plcAuditLog().first().createdAt, true));
+            }
+        } else {
+            callback(QString());
+        }
+        plc->deleteLater();
+    });
+    plc->audit(did);
+}
+
 // getProfileの追加読み込みとして動作させる
 void UserProfile::getRawProfile()
 {
@@ -439,6 +466,9 @@ void UserProfile::getRawProfile()
     }
 
     getServiceEndpoint(did(), [=](const QString &service_endpoint) {
+        getRegistrationDate(did(), [=](const QString &registration_date) {
+            setRegistrationDate(registration_date);
+        });
         ComAtprotoRepoGetRecordEx *record = new ComAtprotoRepoGetRecordEx(this);
         connect(record, &ComAtprotoRepoGetRecordEx::finished, this, [=](bool success) {
             if (success) {
@@ -499,4 +529,17 @@ void UserProfile::setServiceEndpoint(const QString &newServiceEndpoint)
         return;
     m_serviceEndpoint = newServiceEndpoint;
     emit serviceEndpointChanged();
+}
+
+QString UserProfile::registrationDate() const
+{
+    return m_registrationDate;
+}
+
+void UserProfile::setRegistrationDate(const QString &newRegistrationDate)
+{
+    if (m_registrationDate == newRegistrationDate)
+        return;
+    m_registrationDate = newRegistrationDate;
+    emit registrationDateChanged();
 }

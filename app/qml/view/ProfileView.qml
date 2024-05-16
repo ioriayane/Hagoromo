@@ -317,6 +317,24 @@ ColumnLayout {
                 text: userProfile.serviceEndpoint
             }
         }
+        RowLayout {
+            Layout.leftMargin: 6
+            Layout.rightMargin: 5
+            Layout.bottomMargin: 0
+            visible: userProfile.registrationDate.length > 0
+            spacing: 1
+            Label {
+                font.pointSize: AdjustedValues.f8
+                color: Material.color(Material.Grey)
+                text: qsTr("Regisitration date:")
+            }
+            Label {
+                Layout.topMargin: 2
+                font.pointSize: AdjustedValues.f8
+                color: Material.color(Material.Grey)
+                text: userProfile.registrationDate
+            }
+        }
         TagLabelLayout {
             id: belongingListsLayout
             Layout.preferredWidth: profileView.width - 10
