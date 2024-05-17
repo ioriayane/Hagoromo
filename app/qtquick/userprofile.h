@@ -8,6 +8,13 @@
 
 #include <QObject>
 
+struct HistoryItem
+{
+    QString date;
+    QString handle;
+    QString endpoint;
+};
+
 class UserProfile : public QObject
 {
     Q_OBJECT
@@ -50,6 +57,8 @@ class UserProfile : public QObject
     Q_PROPERTY(QString pinnedPost READ pinnedPost WRITE setPinnedPost NOTIFY pinnedPostChanged)
     Q_PROPERTY(QString registrationDate READ registrationDate WRITE setRegistrationDate NOTIFY
                        registrationDateChanged)
+    Q_PROPERTY(QStringList handleHistory READ handleHistory WRITE setHandleHistory NOTIFY
+                       handleHistoryChanged)
 
 public:
     explicit UserProfile(QObject *parent = nullptr);
@@ -112,6 +121,9 @@ public:
     QString registrationDate() const;
     void setRegistrationDate(const QString &newRegistrationDate);
 
+    QStringList handleHistory() const;
+    void setHandleHistory(const QStringList &newHandleHistory);
+
 signals:
     void errorOccured(const QString &code, const QString &message);
     void runningChanged();
@@ -141,6 +153,8 @@ signals:
     void serviceEndpointChanged();
     void registrationDateChanged();
 
+    void handleHistoryChanged();
+
 public slots:
     void updatedBelongingLists(const QString &account_did, const QString &user_did);
 
@@ -150,7 +164,7 @@ private:
                             std::function<void(const QString &service_endpoint)> callback);
     void getRawInformation(
             const QString &did,
-            std::function<void(const QString &service_endpoint, const QString &registration_date)>
+            std::function<void(const QString &, const QString &, const QList<HistoryItem> &)>
                     callback);
     void getRawProfile();
 
@@ -184,6 +198,7 @@ private:
     QString m_pinnedPost;
     QString m_serviceEndpoint;
     QString m_registrationDate;
+    QStringList m_handleHistory;
 };
 
 #endif // USERPROFILE_H

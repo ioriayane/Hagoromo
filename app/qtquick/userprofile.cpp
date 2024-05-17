@@ -434,11 +434,12 @@ void UserProfile::getServiceEndpoint(const QString &did,
 
 void UserProfile::getRawInformation(
         const QString &did,
-        std::function<void(const QString &service_endpoint, const QString &registration_date)>
+        std::function<void(const QString &service_endpoint, const QString &registration_date,
+                           const QList<HistoryItem> &handle_history)>
                 callback)
 {
     if (did.isEmpty()) {
-        callback(QString(), QString());
+        callback(QString(), QString(), QList<HistoryItem>());
         return;
     }
 
@@ -446,16 +447,40 @@ void UserProfile::getRawInformation(
     connect(plc, &DirectoryPlcLogAudit::finished, this, [=](bool success) {
         if (success) {
             if (plc->plcAuditLog().isEmpty()) {
-                callback(QString(), QString());
+                callback(QString(), QString(), QList<HistoryItem>());
             } else {
+                QList<HistoryItem> history;
+                for (const auto &log : plc->plcAuditLog()) {
+                    if (log.operation_type
+                        == AtProtocolType::DirectoryPlcDefs::PlcAuditLogDetailOperationType::
+                                operation_Plc_operation) {
+                        for (auto uri : log.operation_Plc_operation.alsoKnownAs) {
+                            HistoryItem item;
+                            item.date = AtProtocolType::LexiconsTypeUnknown::formatDateTime(
+                                    log.createdAt, true);
+                            item.handle = uri.remove("at://");
+                            item.endpoint =
+                                    log.operation_Plc_operation.services.atproto_pds.endpoint;
+                            if (history.isEmpty()) {
+                                history.append(item);
+                            } else {
+                                if (history.last().handle != item.handle
+                                    || history.last().endpoint != item.endpoint) {
+                                    history.append(item);
+                                }
+                            }
+                        }
+                    }
+                }
                 callback(plc->plcAuditLog()
                                  .last()
                                  .operation_Plc_operation.services.atproto_pds.endpoint,
                          AtProtocolType::LexiconsTypeUnknown::formatDateTime(
-                                 plc->plcAuditLog().first().createdAt, true));
+                                 plc->plcAuditLog().first().createdAt, true),
+                         history);
             }
         } else {
-            callback(QString(), QString());
+            callback(QString(), QString(), QList<HistoryItem>());
         }
         plc->deleteLater();
     });
@@ -471,7 +496,9 @@ void UserProfile::getRawProfile()
     }
 
     getRawInformation(
-            did(), [=](const QString &service_endpoint, const QString &registration_date) {
+            did(),
+            [=](const QString &service_endpoint, const QString &registration_date,
+                const QList<HistoryItem> &handle_history) {
                 ComAtprotoRepoGetRecordEx *record = new ComAtprotoRepoGetRecordEx(this);
                 connect(record, &ComAtprotoRepoGetRecordEx::finished, this, [=](bool success) {
                     if (success) {
@@ -492,6 +519,13 @@ void UserProfile::getRawProfile()
                     setServiceEndpoint(QString());
                 }
                 setRegistrationDate(registration_date);
+                QStringList history;
+                for (const auto &item : handle_history) {
+                    history.append(item.date);
+                    history.append(item.handle);
+                    history.append(item.endpoint);
+                }
+                setHandleHistory(history);
                 record->profile(did());
             });
 }
@@ -546,4 +580,17 @@ void UserProfile::setRegistrationDate(const QString &newRegistrationDate)
         return;
     m_registrationDate = newRegistrationDate;
     emit registrationDateChanged();
+}
+
+QStringList UserProfile::handleHistory() const
+{
+    return m_handleHistory;
+}
+
+void UserProfile::setHandleHistory(const QStringList &newHandleHistory)
+{
+    if (m_handleHistory == newHandleHistory)
+        return;
+    m_handleHistory = newHandleHistory;
+    emit handleHistoryChanged();
 }

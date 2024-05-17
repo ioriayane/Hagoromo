@@ -260,6 +260,12 @@ ColumnLayout {
                     font.pointSize: AdjustedValues.f8
                     color: Material.color(Material.Grey)
                     text: "@" + userProfile.handle
+                    visible: userProfile.handle.length > 0
+
+                    HandleHistoryPopup {
+                        id: handleHistoryPopup
+                        model: userProfile.handleHistory
+                    }
                 }
                 RowLayout {
                     spacing: 3
