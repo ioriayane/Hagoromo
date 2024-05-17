@@ -432,11 +432,13 @@ void UserProfile::getServiceEndpoint(const QString &did,
     plc->directory(did);
 }
 
-void UserProfile::getRegistrationDate(const QString &did,
-                                      std::function<void(const QString &)> callback)
+void UserProfile::getRawInformation(
+        const QString &did,
+        std::function<void(const QString &service_endpoint, const QString &registration_date)>
+                callback)
 {
     if (did.isEmpty()) {
-        callback(QString());
+        callback(QString(), QString());
         return;
     }
 
@@ -444,13 +446,16 @@ void UserProfile::getRegistrationDate(const QString &did,
     connect(plc, &DirectoryPlcLogAudit::finished, this, [=](bool success) {
         if (success) {
             if (plc->plcAuditLog().isEmpty()) {
-                callback(QString());
+                callback(QString(), QString());
             } else {
-                callback(AtProtocolType::LexiconsTypeUnknown::formatDateTime(
-                        plc->plcAuditLog().first().createdAt, true));
+                callback(plc->plcAuditLog()
+                                 .last()
+                                 .operation_Plc_operation.services.atproto_pds.endpoint,
+                         AtProtocolType::LexiconsTypeUnknown::formatDateTime(
+                                 plc->plcAuditLog().first().createdAt, true));
             }
         } else {
-            callback(QString());
+            callback(QString(), QString());
         }
         plc->deleteLater();
     });
@@ -465,31 +470,30 @@ void UserProfile::getRawProfile()
         return;
     }
 
-    getServiceEndpoint(did(), [=](const QString &service_endpoint) {
-        getRegistrationDate(did(), [=](const QString &registration_date) {
-            setRegistrationDate(registration_date);
-        });
-        ComAtprotoRepoGetRecordEx *record = new ComAtprotoRepoGetRecordEx(this);
-        connect(record, &ComAtprotoRepoGetRecordEx::finished, this, [=](bool success) {
-            if (success) {
-                AtProtocolType::AppBskyActorProfile::Main profile =
-                        AtProtocolType::LexiconsTypeUnknown::fromQVariant<
-                                AtProtocolType::AppBskyActorProfile::Main>(record->value());
-                setPinnedPost(profile.pinnedPost);
-            }
-            setRunning(false);
-            record->deleteLater();
-        });
-        record->setAccount(m_account);
-        if (!service_endpoint.isEmpty()) {
-            record->setService(service_endpoint);
-            setServiceEndpoint(service_endpoint);
-        } else {
-            // プロフィールを参照されるユーザーのサービスが参照する側と同じとは限らない（bsky.socialだったとしても）
-            setServiceEndpoint(QString());
-        }
-        record->profile(did());
-    });
+    getRawInformation(
+            did(), [=](const QString &service_endpoint, const QString &registration_date) {
+                ComAtprotoRepoGetRecordEx *record = new ComAtprotoRepoGetRecordEx(this);
+                connect(record, &ComAtprotoRepoGetRecordEx::finished, this, [=](bool success) {
+                    if (success) {
+                        AtProtocolType::AppBskyActorProfile::Main profile =
+                                AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                                        AtProtocolType::AppBskyActorProfile::Main>(record->value());
+                        setPinnedPost(profile.pinnedPost);
+                    }
+                    setRunning(false);
+                    record->deleteLater();
+                });
+                record->setAccount(m_account);
+                if (!service_endpoint.isEmpty()) {
+                    record->setService(service_endpoint);
+                    setServiceEndpoint(service_endpoint);
+                } else {
+                    // プロフィールを参照されるユーザーのサービスが参照する側と同じとは限らない（bsky.socialだったとしても）
+                    setServiceEndpoint(QString());
+                }
+                setRegistrationDate(registration_date);
+                record->profile(did());
+            });
 }
 
 QStringList UserProfile::belongingLists() const

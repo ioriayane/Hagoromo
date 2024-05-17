@@ -148,8 +148,10 @@ private:
     void updateContentFilterLabels(std::function<void()> callback);
     void getServiceEndpoint(const QString &did,
                             std::function<void(const QString &service_endpoint)> callback);
-    void getRegistrationDate(const QString &did,
-                             std::function<void(const QString &registration_date)> callback);
+    void getRawInformation(
+            const QString &did,
+            std::function<void(const QString &service_endpoint, const QString &registration_date)>
+                    callback);
     void getRawProfile();
 
     SystemTool m_systemTool;
