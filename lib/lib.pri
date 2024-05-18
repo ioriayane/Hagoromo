@@ -61,7 +61,8 @@ SOURCES += \
     $$PWD/extension/com/atproto/repo/comatprotorepoputrecordex.cpp \
     $$PWD/extension/com/atproto/server/comatprotoservercreatesessionex.cpp \
     $$PWD/extension/com/atproto/server/comatprotoserverrefreshsessionex.cpp \
-    $$PWD/extension/plc/plcdirectory.cpp \
+    $$PWD/extension/directory/plc/directoryplc.cpp \
+    $$PWD/extension/directory/plc/directoryplclogaudit.cpp \
     $$PWD/http/httpaccess.cpp \
     $$PWD/http/httpaccessmanager.cpp \
     $$PWD/http/httpreply.cpp \
@@ -135,7 +136,8 @@ HEADERS += \
     $$PWD/extension/com/atproto/repo/comatprotorepoputrecordex.h \
     $$PWD/extension/com/atproto/server/comatprotoservercreatesessionex.h \
     $$PWD/extension/com/atproto/server/comatprotoserverrefreshsessionex.h \
-    $$PWD/extension/plc/plcdirectory.h \
+    $$PWD/extension/directory/plc/directoryplc.h \
+    $$PWD/extension/directory/plc/directoryplclogaudit.h \
     $$PWD/http/httpaccess.h \
     $$PWD/http/httpaccessmanager.h \
     $$PWD/http/httpreply.h \

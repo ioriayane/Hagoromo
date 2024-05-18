@@ -22,6 +22,8 @@
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
 #include "extension/com/atproto/repo/comatprotorepoputrecordex.h"
 #include "extension/com/atproto/server/comatprotoservercreatesessionex.h"
+#include "extension/directory/plc/directoryplclogaudit.h"
+#include "extension/directory/plc/directoryplc.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "tools/opengraphprotocol.h"
 #include "tools/configurablelabels.h"
@@ -77,6 +79,7 @@ private slots:
     void test_AppBskyGraphGetMutes();
 
     void test_PlcDirectory();
+    void test_DirectoryPlcLogAudit();
     void test_PinnedPostCache();
 
 private:
@@ -2173,7 +2176,7 @@ void atprotocol_test::test_AppBskyGraphGetMutes()
 void atprotocol_test::test_PlcDirectory()
 {
 #if 0
-    AtProtocolInterface::PlcDirectory plc;
+    AtProtocolInterface::DirectoryPlc plc;
 
     {
         QSignalSpy spy(&plc, SIGNAL(finished(bool)));
@@ -2190,6 +2193,75 @@ void atprotocol_test::test_PlcDirectory()
 
     QVERIFY(plc.serviceEndpoint() == "https://porcini.us-east.host.bsky.network");
 
+#endif
+}
+
+void atprotocol_test::test_DirectoryPlcLogAudit()
+{
+#if 0
+    AtProtocolInterface::DirectoryPlcLogAudit audit;
+
+    {
+        QSignalSpy spy(&audit, SIGNAL(finished(bool)));
+        audit.audit("did:plc:ipj5qejfoqu6eukvt72uhyit");
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    QVERIFY(audit.plcAuditLog().length() >= 3);
+    int i = 0;
+    QVERIFY2(audit.plcAuditLog().at(i).cid
+                     == "bafyreicd2pmbcjlufhrfcvm76vb6ceyhzk77ky66wrew3qhifzgbqkp2we",
+             audit.plcAuditLog().at(i).cid.toLocal8Bit());
+    QVERIFY2(audit.plcAuditLog().at(i).did == "did:plc:ipj5qejfoqu6eukvt72uhyit",
+             audit.plcAuditLog().at(i).did.toLocal8Bit());
+    QVERIFY2(audit.plcAuditLog().at(i).createdAt == "2023-04-13T16:33:31.049Z",
+             audit.plcAuditLog().at(i).createdAt.toLocal8Bit());
+    QVERIFY2(audit.plcAuditLog().at(i).operation_Plc_operation.type == "plc_operation",
+             audit.plcAuditLog().at(i).operation_Plc_operation.type.toLocal8Bit());
+    QVERIFY2(audit.plcAuditLog().at(i).operation_Plc_operation.services.atproto_pds.type
+                     == "AtprotoPersonalDataServer",
+             audit.plcAuditLog()
+                     .at(i)
+                     .operation_Plc_operation.services.atproto_pds.type.toLocal8Bit());
+    QVERIFY2(audit.plcAuditLog().at(i).operation_Plc_operation.services.atproto_pds.endpoint
+                     == "https://bsky.social",
+             audit.plcAuditLog()
+                     .at(i)
+                     .operation_Plc_operation.services.atproto_pds.endpoint.toLocal8Bit());
+    QVERIFY2(audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.length() == 1,
+             QString::number(audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.length())
+                     .toLocal8Bit());
+    QVERIFY2(audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.at(0)
+                     == "at://ioriayane.bsky.social",
+             audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.at(0).toLocal8Bit());
+
+    i = 2;
+    QVERIFY2(audit.plcAuditLog().at(i).cid
+                     == "bafyreigxn7o7fdb4a3rkaqfiqaivvcq4abt2wgjktgtpuicxhzr4qvj64i",
+             audit.plcAuditLog().at(i).cid.toLocal8Bit());
+    QVERIFY2(audit.plcAuditLog().at(i).did == "did:plc:ipj5qejfoqu6eukvt72uhyit",
+             audit.plcAuditLog().at(i).did.toLocal8Bit());
+    QVERIFY2(audit.plcAuditLog().at(i).createdAt == "2023-11-10T05:23:30.519Z",
+             audit.plcAuditLog().at(i).createdAt.toLocal8Bit());
+    QVERIFY2(audit.plcAuditLog().at(i).operation_Plc_operation.type == "plc_operation",
+             audit.plcAuditLog().at(i).operation_Plc_operation.type.toLocal8Bit());
+    QVERIFY2(audit.plcAuditLog().at(i).operation_Plc_operation.services.atproto_pds.type
+                     == "AtprotoPersonalDataServer",
+             audit.plcAuditLog()
+                     .at(i)
+                     .operation_Plc_operation.services.atproto_pds.type.toLocal8Bit());
+    QVERIFY2(audit.plcAuditLog().at(i).operation_Plc_operation.services.atproto_pds.endpoint
+                     == "https://porcini.us-east.host.bsky.network",
+             audit.plcAuditLog()
+                     .at(i)
+                     .operation_Plc_operation.services.atproto_pds.endpoint.toLocal8Bit());
+    QVERIFY2(audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.length() == 1,
+             QString::number(audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.length())
+                     .toLocal8Bit());
+    QVERIFY2(audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.at(0)
+                     == "at://ioriayane.relog.tech",
+             audit.plcAuditLog().at(i).operation_Plc_operation.alsoKnownAs.at(0).toLocal8Bit());
 #endif
 }
 

@@ -8,6 +8,13 @@
 
 #include <QObject>
 
+struct HistoryItem
+{
+    QString date;
+    QString handle;
+    QString endpoint;
+};
+
 class UserProfile : public QObject
 {
     Q_OBJECT
@@ -48,6 +55,11 @@ class UserProfile : public QObject
     Q_PROPERTY(QStringList belongingLists READ belongingLists WRITE setBelongingLists NOTIFY
                        belongingListsChanged)
     Q_PROPERTY(QString pinnedPost READ pinnedPost WRITE setPinnedPost NOTIFY pinnedPostChanged)
+    Q_PROPERTY(QString registrationDate READ registrationDate WRITE setRegistrationDate NOTIFY
+                       registrationDateChanged)
+    Q_PROPERTY(QStringList handleHistory READ handleHistory WRITE setHandleHistory NOTIFY
+                       handleHistoryChanged)
+
 public:
     explicit UserProfile(QObject *parent = nullptr);
     ~UserProfile();
@@ -104,9 +116,13 @@ public:
 
     QString pinnedPost() const;
     void setPinnedPost(const QString &newPinnedPost);
-
     QString serviceEndpoint() const;
     void setServiceEndpoint(const QString &newServiceEndpoint);
+    QString registrationDate() const;
+    void setRegistrationDate(const QString &newRegistrationDate);
+
+    QStringList handleHistory() const;
+    void setHandleHistory(const QStringList &newHandleHistory);
 
 signals:
     void errorOccured(const QString &code, const QString &message);
@@ -135,12 +151,21 @@ signals:
     void formattedDescriptionChanged();
     void pinnedPostChanged();
     void serviceEndpointChanged();
+    void registrationDateChanged();
+
+    void handleHistoryChanged();
 
 public slots:
     void updatedBelongingLists(const QString &account_did, const QString &user_did);
 
 private:
     void updateContentFilterLabels(std::function<void()> callback);
+    void getServiceEndpoint(const QString &did,
+                            std::function<void(const QString &service_endpoint)> callback);
+    void getRawInformation(
+            const QString &did,
+            std::function<void(const QString &, const QString &, const QList<HistoryItem> &)>
+                    callback);
     void getRawProfile();
 
     SystemTool m_systemTool;
@@ -172,6 +197,8 @@ private:
     QStringList m_belongingLists;
     QString m_pinnedPost;
     QString m_serviceEndpoint;
+    QString m_registrationDate;
+    QStringList m_handleHistory;
 };
 
 #endif // USERPROFILE_H

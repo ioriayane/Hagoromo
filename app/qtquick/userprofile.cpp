@@ -3,13 +3,15 @@
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofile.h"
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
 #include "atprotocol/lexicons_func_unknown.h"
-#include "extension/plc/plcdirectory.h"
+#include "extension/directory/plc/directoryplc.h"
+#include "extension/directory/plc/directoryplclogaudit.h"
 
 #include <QPointer>
 
 using AtProtocolInterface::AppBskyActorGetProfile;
 using AtProtocolInterface::ComAtprotoRepoGetRecordEx;
-using AtProtocolInterface::PlcDirectory;
+using AtProtocolInterface::DirectoryPlc;
+using AtProtocolInterface::DirectoryPlcLogAudit;
 
 UserProfile::UserProfile(QObject *parent)
     : QObject { parent },
@@ -410,6 +412,81 @@ void UserProfile::updateContentFilterLabels(std::function<void()> callback)
     labels->load();
 }
 
+void UserProfile::getServiceEndpoint(const QString &did,
+                                     std::function<void(const QString &)> callback)
+{
+    if (did.isEmpty()) {
+        callback(QString());
+        return;
+    }
+
+    DirectoryPlc *plc = new DirectoryPlc(this);
+    connect(plc, &DirectoryPlc::finished, this, [=](bool success) {
+        if (success) {
+            callback(plc->serviceEndpoint());
+        } else {
+            callback(QString());
+        }
+        plc->deleteLater();
+    });
+    plc->directory(did);
+}
+
+void UserProfile::getRawInformation(
+        const QString &did,
+        std::function<void(const QString &service_endpoint, const QString &registration_date,
+                           const QList<HistoryItem> &handle_history)>
+                callback)
+{
+    if (did.isEmpty()) {
+        callback(QString(), QString(), QList<HistoryItem>());
+        return;
+    }
+
+    DirectoryPlcLogAudit *plc = new DirectoryPlcLogAudit(this);
+    connect(plc, &DirectoryPlcLogAudit::finished, this, [=](bool success) {
+        if (success) {
+            if (plc->plcAuditLog().isEmpty()) {
+                callback(QString(), QString(), QList<HistoryItem>());
+            } else {
+                QList<HistoryItem> history;
+                for (const auto &log : plc->plcAuditLog()) {
+                    if (log.operation_type
+                        == AtProtocolType::DirectoryPlcDefs::PlcAuditLogDetailOperationType::
+                                operation_Plc_operation) {
+                        for (auto uri : log.operation_Plc_operation.alsoKnownAs) {
+                            HistoryItem item;
+                            item.date = AtProtocolType::LexiconsTypeUnknown::formatDateTime(
+                                    log.createdAt, true);
+                            item.handle = uri.remove("at://");
+                            item.endpoint =
+                                    log.operation_Plc_operation.services.atproto_pds.endpoint;
+                            if (history.isEmpty()) {
+                                history.append(item);
+                            } else {
+                                if (history.last().handle != item.handle
+                                    || history.last().endpoint != item.endpoint) {
+                                    history.append(item);
+                                }
+                            }
+                        }
+                    }
+                }
+                callback(plc->plcAuditLog()
+                                 .last()
+                                 .operation_Plc_operation.services.atproto_pds.endpoint,
+                         AtProtocolType::LexiconsTypeUnknown::formatDateTime(
+                                 plc->plcAuditLog().first().createdAt, true),
+                         history);
+            }
+        } else {
+            callback(QString(), QString(), QList<HistoryItem>());
+        }
+        plc->deleteLater();
+    });
+    plc->audit(did);
+}
+
 // getProfileの追加読み込みとして動作させる
 void UserProfile::getRawProfile()
 {
@@ -418,31 +495,39 @@ void UserProfile::getRawProfile()
         return;
     }
 
-    PlcDirectory *plc = new PlcDirectory(this);
-    connect(plc, &PlcDirectory::finished, this, [=](bool success) {
-        ComAtprotoRepoGetRecordEx *record = new ComAtprotoRepoGetRecordEx(this);
-        connect(record, &ComAtprotoRepoGetRecordEx::finished, this, [=](bool success) {
-            if (success) {
-                AtProtocolType::AppBskyActorProfile::Main profile =
-                        AtProtocolType::LexiconsTypeUnknown::fromQVariant<
-                                AtProtocolType::AppBskyActorProfile::Main>(record->value());
-                setPinnedPost(profile.pinnedPost);
-            }
-            setRunning(false);
-            record->deleteLater();
-        });
-        record->setAccount(m_account);
-        if (success) {
-            record->setService(plc->serviceEndpoint());
-            setServiceEndpoint(plc->serviceEndpoint());
-        } else {
-            // プロフィールを参照されるユーザーのサービスが参照する側と同じとは限らない（bsky.socialだったとしても）
-            setServiceEndpoint(QString());
-        }
-        record->profile(did());
-        plc->deleteLater();
-    });
-    plc->directory(did());
+    getRawInformation(
+            did(),
+            [=](const QString &service_endpoint, const QString &registration_date,
+                const QList<HistoryItem> &handle_history) {
+                ComAtprotoRepoGetRecordEx *record = new ComAtprotoRepoGetRecordEx(this);
+                connect(record, &ComAtprotoRepoGetRecordEx::finished, this, [=](bool success) {
+                    if (success) {
+                        AtProtocolType::AppBskyActorProfile::Main profile =
+                                AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                                        AtProtocolType::AppBskyActorProfile::Main>(record->value());
+                        setPinnedPost(profile.pinnedPost);
+                    }
+                    setRunning(false);
+                    record->deleteLater();
+                });
+                record->setAccount(m_account);
+                if (!service_endpoint.isEmpty()) {
+                    record->setService(service_endpoint);
+                    setServiceEndpoint(service_endpoint);
+                } else {
+                    // プロフィールを参照されるユーザーのサービスが参照する側と同じとは限らない（bsky.socialだったとしても）
+                    setServiceEndpoint(QString());
+                }
+                setRegistrationDate(registration_date);
+                QStringList history;
+                for (const auto &item : handle_history) {
+                    history.append(item.date);
+                    history.append(item.handle);
+                    history.append(item.endpoint);
+                }
+                setHandleHistory(history);
+                record->profile(did());
+            });
 }
 
 QStringList UserProfile::belongingLists() const
@@ -482,4 +567,30 @@ void UserProfile::setServiceEndpoint(const QString &newServiceEndpoint)
         return;
     m_serviceEndpoint = newServiceEndpoint;
     emit serviceEndpointChanged();
+}
+
+QString UserProfile::registrationDate() const
+{
+    return m_registrationDate;
+}
+
+void UserProfile::setRegistrationDate(const QString &newRegistrationDate)
+{
+    if (m_registrationDate == newRegistrationDate)
+        return;
+    m_registrationDate = newRegistrationDate;
+    emit registrationDateChanged();
+}
+
+QStringList UserProfile::handleHistory() const
+{
+    return m_handleHistory;
+}
+
+void UserProfile::setHandleHistory(const QStringList &newHandleHistory)
+{
+    if (m_handleHistory == newHandleHistory)
+        return;
+    m_handleHistory = newHandleHistory;
+    emit handleHistoryChanged();
 }

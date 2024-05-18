@@ -184,8 +184,9 @@ ColumnLayout {
         Layout.topMargin: 0
         Layout.leftMargin: 0
         Layout.rightMargin: 0
-        Layout.bottomMargin: 5
+        // Layout.bottomMargin: 5
         clip: true
+        spacing: 0
 
         function viewChange(top){
             console.log("view change : " + top +
@@ -235,6 +236,7 @@ ColumnLayout {
             }
         }
         RowLayout {
+            Layout.topMargin: 5
             Layout.leftMargin: 5
             Layout.rightMargin: 5
             AvatarImage {
@@ -258,6 +260,12 @@ ColumnLayout {
                     font.pointSize: AdjustedValues.f8
                     color: Material.color(Material.Grey)
                     text: "@" + userProfile.handle
+                    visible: userProfile.handle.length > 0
+
+                    HandleHistoryPopup {
+                        id: handleHistoryPopup
+                        model: userProfile.handleHistory
+                    }
                 }
                 RowLayout {
                     spacing: 3
@@ -317,10 +325,30 @@ ColumnLayout {
                 text: userProfile.serviceEndpoint
             }
         }
+        RowLayout {
+            Layout.topMargin: 2
+            Layout.leftMargin: 6
+            Layout.rightMargin: 5
+            Layout.bottomMargin: 0
+            visible: userProfile.registrationDate.length > 0
+            spacing: 1
+            Label {
+                font.pointSize: AdjustedValues.f8
+                color: Material.color(Material.Grey)
+                text: qsTr("Regisitration date:")
+            }
+            Label {
+                Layout.topMargin: 2
+                font.pointSize: AdjustedValues.f8
+                color: Material.color(Material.Grey)
+                text: userProfile.registrationDate
+            }
+        }
         TagLabelLayout {
             id: belongingListsLayout
             Layout.preferredWidth: profileView.width - 10
             Layout.maximumWidth: profileView.width
+            Layout.topMargin: 5
             Layout.leftMargin: 5
             Layout.rightMargin: 5
             visible: count > 0
@@ -332,6 +360,7 @@ ColumnLayout {
         }
         Label {
             id: descriptionLabel
+            Layout.topMargin: 5
             Layout.preferredWidth: profileView.width
             Layout.preferredHeight: 0
             wrapMode: Text.Wrap
@@ -472,6 +501,7 @@ ColumnLayout {
         }
         IconLabelFrame {
             id: moderationFrame3
+            Layout.topMargin: 2
             Layout.preferredWidth: profileView.width
             visible: userProfile.userFilterMatched
             backgroundColor: Material.color(Material.Red)
@@ -481,6 +511,7 @@ ColumnLayout {
         }
         IconLabelFrame {
             id: moderationFrame2
+            Layout.topMargin: 2
             Layout.preferredWidth: profileView.width
             visible: userProfile.blockedBy
             backgroundColor: Material.color(Material.Red)
