@@ -31,9 +31,9 @@ void AppBskyNotificationListNotifications::listNotifications(const int limit, co
 }
 
 const QList<AtProtocolType::AppBskyNotificationListNotifications::Notification> &
-AppBskyNotificationListNotifications::notificationList() const
+AppBskyNotificationListNotifications::notificationsNotificationList() const
 {
-    return m_notificationList;
+    return m_notificationsNotificationList;
 }
 
 const QString &AppBskyNotificationListNotifications::seenAt() const
@@ -52,7 +52,7 @@ bool AppBskyNotificationListNotifications::parseJson(bool success, const QString
             AtProtocolType::AppBskyNotificationListNotifications::Notification data;
             AtProtocolType::AppBskyNotificationListNotifications::copyNotification(value.toObject(),
                                                                                    data);
-            m_notificationList.append(data);
+            m_notificationsNotificationList.append(data);
         }
         AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("seenAt"),
                                                         m_seenAt);

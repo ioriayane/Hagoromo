@@ -31,7 +31,7 @@ bool AnyFeedListModel::getLatest()
                 if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
                     m_cursor = records->cursor();
                 }
-                for (const auto &record : records->recordList()) {
+                for (const auto &record : records->recordsRecordList()) {
                     m_recordHash[record.cid] = record;
 
                     QString cid;
@@ -96,7 +96,7 @@ bool AnyFeedListModel::getNext()
 
                 m_cursor = records->cursor();
 
-                for (const auto &record : records->recordList()) {
+                for (const auto &record : records->recordsRecordList()) {
                     m_recordHash[record.cid] = record;
 
                     QString cid;
@@ -199,8 +199,8 @@ void AnyFeedListModel::getPosts()
         if (success) {
             QStringList new_cid;
 
-            for (auto item = posts->postViewList().crbegin(); item != posts->postViewList().crend();
-                 item++) {
+            for (auto item = posts->postsPostViewList().crbegin();
+                 item != posts->postsPostViewList().crend(); item++) {
                 AtProtocolType::AppBskyFeedDefs::FeedViewPost view_post;
                 view_post.post = *item;
                 m_viewPostHash[item->cid] = view_post;

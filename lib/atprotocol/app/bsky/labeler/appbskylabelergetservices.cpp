@@ -25,15 +25,15 @@ void AppBskyLabelerGetServices::getServices(const QList<QString> &dids, const bo
 }
 
 const QList<AtProtocolType::AppBskyLabelerDefs::LabelerView> &
-AppBskyLabelerGetServices::labelerViewList() const
+AppBskyLabelerGetServices::viewsLabelerViewList() const
 {
-    return m_labelerViewList;
+    return m_viewsLabelerViewList;
 }
 
 const QList<AtProtocolType::AppBskyLabelerDefs::LabelerViewDetailed> &
-AppBskyLabelerGetServices::labelerViewDetailedList() const
+AppBskyLabelerGetServices::viewsLabelerViewDetailedList() const
 {
-    return m_labelerViewDetailedList;
+    return m_viewsLabelerViewDetailedList;
 }
 
 bool AppBskyLabelerGetServices::parseJson(bool success, const QString reply_json)
@@ -48,11 +48,11 @@ bool AppBskyLabelerGetServices::parseJson(bool success, const QString reply_json
             if (type == QStringLiteral("app.bsky.labeler.defs#labelerView")) {
                 AtProtocolType::AppBskyLabelerDefs::LabelerView data;
                 AtProtocolType::AppBskyLabelerDefs::copyLabelerView(value.toObject(), data);
-                m_labelerViewList.append(data);
+                m_viewsLabelerViewList.append(data);
             } else if (type == QStringLiteral("app.bsky.labeler.defs#labelerViewDetailed")) {
                 AtProtocolType::AppBskyLabelerDefs::LabelerViewDetailed data;
                 AtProtocolType::AppBskyLabelerDefs::copyLabelerViewDetailed(value.toObject(), data);
-                m_labelerViewDetailedList.append(data);
+                m_viewsLabelerViewDetailedList.append(data);
             }
         }
     }

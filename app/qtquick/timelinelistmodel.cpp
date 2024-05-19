@@ -377,7 +377,7 @@ bool TimelineListModel::getLatest()
                 if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
                     m_cursor = timeline->cursor();
                 }
-                copyFrom(timeline->feedViewPostList());
+                copyFrom(timeline->feedFeedViewPostList());
             } else {
                 emit errorOccured(timeline->errorCode(), timeline->errorMessage());
             }
@@ -403,7 +403,7 @@ bool TimelineListModel::getNext()
             if (success) {
                 m_cursor = timeline->cursor(); // 続きの読み込みの時は必ず上書き
 
-                copyFromNext(timeline->feedViewPostList());
+                copyFromNext(timeline->feedFeedViewPostList());
             } else {
                 emit errorOccured(timeline->errorCode(), timeline->errorMessage());
             }
@@ -1014,13 +1014,13 @@ void TimelineListModel::getPinnedPost()
 
     AppBskyFeedGetPosts *post = new AppBskyFeedGetPosts(this);
     connect(post, &AppBskyFeedGetPosts::finished, [=](bool success) {
-        if (success && !post->postViewList().isEmpty()) {
+        if (success && !post->postsPostViewList().isEmpty()) {
 
-            QString new_cid = post->postViewList().at(0).cid;
+            QString new_cid = post->postsPostViewList().at(0).cid;
 
             if (!m_viewPostHash.contains(new_cid)) {
                 AppBskyFeedDefs::FeedViewPost feed_view_post;
-                feed_view_post.post = post->postViewList().at(0);
+                feed_view_post.post = post->postsPostViewList().at(0);
                 m_viewPostHash[new_cid] = feed_view_post;
             }
 
@@ -1036,7 +1036,7 @@ void TimelineListModel::getPinnedPost()
             m_originalCidList.insert(0, new_cid);
 
             m_currentPinnedPost = new_cid;
-            m_pinnedUriCid[post->postViewList().at(0).uri] = new_cid;
+            m_pinnedUriCid[post->postsPostViewList().at(0).uri] = new_cid;
         }
         setRunning(false);
         post->deleteLater();

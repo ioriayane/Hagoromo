@@ -19,7 +19,7 @@ bool ActorLikeListModel::getLatest()
                 if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
                     m_cursor = likes->cursor();
                 }
-                copyFrom(likes->feedViewPostList());
+                copyFrom(likes->feedFeedViewPostList());
             } else {
                 emit errorOccured(likes->errorCode(), likes->errorMessage());
             }
@@ -44,7 +44,7 @@ bool ActorLikeListModel::getNext()
         connect(likes, &AppBskyFeedGetActorLikes::finished, [=](bool success) {
             if (success) {
                 m_cursor = likes->cursor();
-                copyFromNext(likes->feedViewPostList());
+                copyFromNext(likes->feedFeedViewPostList());
             } else {
                 emit errorOccured(likes->errorCode(), likes->errorMessage());
             }

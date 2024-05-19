@@ -23,10 +23,9 @@ void AppBskyFeedGetFeedGenerator::getFeedGenerator(const QString &feed)
     get(QStringLiteral("xrpc/app.bsky.feed.getFeedGenerator"), url_query);
 }
 
-const AtProtocolType::AppBskyFeedDefs::GeneratorView &
-AppBskyFeedGetFeedGenerator::generatorView() const
+const AtProtocolType::AppBskyFeedDefs::GeneratorView &AppBskyFeedGetFeedGenerator::view() const
 {
-    return m_generatorView;
+    return m_view;
 }
 
 const bool &AppBskyFeedGetFeedGenerator::isOnline() const
@@ -46,7 +45,7 @@ bool AppBskyFeedGetFeedGenerator::parseJson(bool success, const QString reply_js
         success = false;
     } else {
         AtProtocolType::AppBskyFeedDefs::copyGeneratorView(
-                json_doc.object().value("view").toObject(), m_generatorView);
+                json_doc.object().value("view").toObject(), m_view);
         AtProtocolType::LexiconsTypeUnknown::copyBool(json_doc.object().value("isOnline"),
                                                       m_isOnline);
         AtProtocolType::LexiconsTypeUnknown::copyBool(json_doc.object().value("isValid"),

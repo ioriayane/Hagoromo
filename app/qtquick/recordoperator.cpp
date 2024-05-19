@@ -1008,7 +1008,7 @@ void RecordOperator::makeFacets(const QString &text, std::function<void()> callb
             AppBskyActorGetProfiles *profiles = new AppBskyActorGetProfiles(this);
             connect(profiles, &AppBskyActorGetProfiles::finished, [=](bool success) {
                 if (success) {
-                    for (const auto &item : qAsConst(profiles->profileViewDetailedList())) {
+                    for (const auto &item : qAsConst(profiles->profilesProfileViewDetailedList())) {
                         QString handle = item.handle;
                         handle.remove("@");
                         if (mention.contains(handle)) {
@@ -1107,9 +1107,9 @@ bool RecordOperator::getAllListItems(const QString &list_uri, std::function<void
     connect(list, &AtProtocolInterface::ComAtprotoRepoListRecordsEx::finished, [=](bool success) {
         if (success) {
             m_listItemCursor = list->cursor();
-            if (list->recordList().isEmpty())
+            if (list->recordsRecordList().isEmpty())
                 m_listItemCursor.clear();
-            for (const auto &item : list->recordList()) {
+            for (const auto &item : list->recordsRecordList()) {
                 AppBskyGraphListitem::Main record =
                         AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                                 AppBskyGraphListitem::Main>(item.value);

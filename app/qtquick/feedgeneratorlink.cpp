@@ -89,12 +89,12 @@ void FeedGeneratorLink::getFeedGenerator(const QString &uri)
         AppBskyFeedGetFeedGenerator *generator = new AppBskyFeedGetFeedGenerator(this);
         connect(generator, &AppBskyFeedGetFeedGenerator::finished, [=](bool success) {
             if (success) {
-                setAvatar(generator->generatorView().avatar);
-                setDisplayName(generator->generatorView().displayName);
-                setCreatorHandle(generator->generatorView().creator.handle);
-                setLikeCount(generator->generatorView().likeCount);
-                setUri(generator->generatorView().uri);
-                setCid(generator->generatorView().cid);
+                setAvatar(generator->view().avatar);
+                setDisplayName(generator->view().displayName);
+                setCreatorHandle(generator->view().creator.handle);
+                setLikeCount(generator->view().likeCount);
+                setUri(generator->view().uri);
+                setCid(generator->view().cid);
                 setValid(true);
             }
             setRunning(false);

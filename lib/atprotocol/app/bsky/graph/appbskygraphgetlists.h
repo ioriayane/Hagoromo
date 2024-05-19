@@ -12,7 +12,7 @@ public:
 
     void getLists(const QString &actor, const int limit, const QString &cursor);
 
-    const QList<AtProtocolType::AppBskyGraphDefs::ListView> &listViewList() const;
+    const QList<AtProtocolType::AppBskyGraphDefs::ListView> &listsListViewList() const;
 
 protected:
     QString m_listKey;
@@ -20,7 +20,7 @@ protected:
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 
-    QList<AtProtocolType::AppBskyGraphDefs::ListView> m_listViewList;
+    QList<AtProtocolType::AppBskyGraphDefs::ListView> m_listsListViewList;
 };
 
 }

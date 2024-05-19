@@ -22,9 +22,10 @@ void AppBskyFeedGetPosts::getPosts(const QList<QString> &uris)
     get(QStringLiteral("xrpc/app.bsky.feed.getPosts"), url_query);
 }
 
-const QList<AtProtocolType::AppBskyFeedDefs::PostView> &AppBskyFeedGetPosts::postViewList() const
+const QList<AtProtocolType::AppBskyFeedDefs::PostView> &
+AppBskyFeedGetPosts::postsPostViewList() const
 {
-    return m_postViewList;
+    return m_postsPostViewList;
 }
 
 bool AppBskyFeedGetPosts::parseJson(bool success, const QString reply_json)
@@ -36,7 +37,7 @@ bool AppBskyFeedGetPosts::parseJson(bool success, const QString reply_json)
         for (const auto &value : json_doc.object().value(m_listKey).toArray()) {
             AtProtocolType::AppBskyFeedDefs::PostView data;
             AtProtocolType::AppBskyFeedDefs::copyPostView(value.toObject(), data);
-            m_postViewList.append(data);
+            m_postsPostViewList.append(data);
         }
     }
 

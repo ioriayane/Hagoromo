@@ -44,6 +44,8 @@ class FunctionArgument:
             arg_def = f"const QJsonArray &{self._name}"
         elif self._type == 'object':
             arg_def = f"const QJsonObject &{self._name}"
+        elif self._type == 'json_object':
+            arg_def = f"const QJsonObject &{self._name}"
         return arg_def
 
     def to_string_query(self) -> str:
@@ -86,7 +88,7 @@ class FunctionArgument:
             # payload  = f"if({self._name})" + "{\n"
             payload += f"json_obj.insert(QStringLiteral(\"{self._name}\"), {self._name});\n"
             # payload += "}\n"
-        elif self._type == 'unknown' or self._type == 'json_array' or self._type == 'object':
+        elif self._type == 'unknown' or self._type == 'json_array' or self._type == 'object' or self._type == 'json_object':
             payload  = f"if(!{self._name}.isEmpty())" + "{\n"
             payload += f"json_obj.insert(QStringLiteral(\"{self._name}\"), {self._name});\n"
             payload += "}\n"
@@ -149,7 +151,6 @@ class Defs2Struct:
 
         self.skip_api_class_id = [
             'tools.ozone.',
-            'chat.bsky.',
             'com.atproto.admin.',
             'com.atproto.identity.',
             'com.atproto.label.',
@@ -952,7 +953,7 @@ class Defs2Struct:
             if variant_obj is not None:
                 self.output_function(namespace, type_name, variant_obj)
 
-    def output_api_class_data(self, namespace: str, ref: str, var_type: str, key_name: str) -> dict:
+    def output_api_class_data(self, namespace: str, ref: str, var_type: str, property_name: str, key_name: str) -> dict:
         data: dict = {}
         (ref_namespace, ref_struct_name) = self.split_ref(ref)
 
@@ -969,11 +970,11 @@ class Defs2Struct:
         data['variable_type'] = 'AtProtocolType::%s::%s' % (self.to_namespace_style(ref_namespace),
                                                             self.to_struct_style(ref_struct_name), )
         if var_type.startswith('array_'):
-            data['method_getter'] = '%sList' % (ref_struct_name, )
-            data['variable_name'] = 'm_%sList' % (ref_struct_name, )
+            data['method_getter'] = '%sList' % (property_name, )
+            data['variable_name'] = 'm_%sList' % (property_name, )
         else:
-            data['method_getter'] = '%s' % (ref_struct_name, )
-            data['variable_name'] = 'm_%s' % (ref_struct_name, )
+            data['method_getter'] = '%s' % (property_name, )
+            data['variable_name'] = 'm_%s' % (property_name, )
         if self.history_type.get(ref, '') == 'array':
             data['variable_to'] = '.toArray()'
         else:
@@ -1087,7 +1088,13 @@ class Defs2Struct:
                         pro_type = pro_value.get('type', '')
                         if pro_type == 'array':
                             pro_type = pro_value.get('items', {}).get('type', '')
-                            arguments.append(FunctionArgument(pro_type, pro_name, True))
+                            if pro_type == 'ref':
+                                pro_ref = pro_value.get('items', {}).get('ref', '')
+                                if pro_ref.startswith('#'):
+                                    pro_ref = namespace + pro_ref
+                                arguments.append(FunctionArgument('json_' + self.history_type.get(pro_ref, ''), pro_name, False))
+                            else:
+                                arguments.append(FunctionArgument(pro_type, pro_name, True))
                         elif pro_type == 'ref':
                             pro_ref = pro_value.get('ref', '')
                             arguments.append(FunctionArgument('json_' + self.history_type.get(pro_ref, ''), pro_name, False))
@@ -1137,7 +1144,8 @@ class Defs2Struct:
                 pass
             elif schema.get('type', '') == 'ref':
                 ref = schema.get('ref', '')
-                item_obj = self.output_api_class_data(namespace, ref, '', '')
+                (ref_namespace, ref_key_name) = self.split_ref(ref)
+                item_obj = self.output_api_class_data(namespace, ref, '', ref_key_name, '')
                 if len(item_obj) > 0:
                     data['members'] = data.get('members', [])
                     data['members'].append(item_obj)
@@ -1175,7 +1183,8 @@ class Defs2Struct:
                             if len(refs) == 0:
                                 refs = [namespace]
                             for ref in refs:
-                                item_obj = self.output_api_class_data(namespace, ref, var_type, key_name)
+                                (var_ref_namespace, var_ref_key_name) = self.split_ref(ref)
+                                item_obj = self.output_api_class_data(namespace, ref, var_type, key_name + self.to_struct_style(var_ref_key_name), key_name)
                                 if len(item_obj) > 0:
                                     data['members'] = data.get('members', [])
                                     data['members'].append(item_obj)
@@ -1206,7 +1215,7 @@ class Defs2Struct:
                                 data['has_primitive'] = True
                     elif pro_type == 'ref':
                         ref = property_obj.get('ref', '')
-                        item_obj = self.output_api_class_data(namespace, ref, 'obj', key_name)
+                        item_obj = self.output_api_class_data(namespace, ref, 'obj', key_name, key_name)
                         if len(item_obj) > 0:
                             data['members'] = data.get('members', [])
                             data['members'].append(item_obj)
@@ -1353,6 +1362,7 @@ class Defs2Struct:
         for namespace, type_obj in self.json_obj.items():
             if not self.skip_spi_class(namespace):
                 # class
+                defs = self.json_obj[namespace].get('defs', {})
                 for type_name in defs.keys():
                     self.output_api_class(namespace, type_name)
 

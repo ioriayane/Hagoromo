@@ -29,15 +29,15 @@ void AppBskyGraphGetFollows::getFollows(const QString &actor, const int limit,
     get(QStringLiteral("xrpc/app.bsky.graph.getFollows"), url_query);
 }
 
-const AtProtocolType::AppBskyActorDefs::ProfileView &AppBskyGraphGetFollows::profileView() const
+const AtProtocolType::AppBskyActorDefs::ProfileView &AppBskyGraphGetFollows::subject() const
 {
-    return m_profileView;
+    return m_subject;
 }
 
 const QList<AtProtocolType::AppBskyActorDefs::ProfileView> &
-AppBskyGraphGetFollows::profileViewList() const
+AppBskyGraphGetFollows::followsProfileViewList() const
 {
-    return m_profileViewList;
+    return m_followsProfileViewList;
 }
 
 bool AppBskyGraphGetFollows::parseJson(bool success, const QString reply_json)
@@ -48,11 +48,11 @@ bool AppBskyGraphGetFollows::parseJson(bool success, const QString reply_json)
     } else {
         setCursor(json_doc.object().value("cursor").toString());
         AtProtocolType::AppBskyActorDefs::copyProfileView(
-                json_doc.object().value("subject").toObject(), m_profileView);
+                json_doc.object().value("subject").toObject(), m_subject);
         for (const auto &value : json_doc.object().value(m_listKey).toArray()) {
             AtProtocolType::AppBskyActorDefs::ProfileView data;
             AtProtocolType::AppBskyActorDefs::copyProfileView(value.toObject(), data);
-            m_profileViewList.append(data);
+            m_followsProfileViewList.append(data);
         }
     }
 

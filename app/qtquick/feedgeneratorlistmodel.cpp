@@ -98,9 +98,9 @@ bool FeedGeneratorListModel::getLatest()
     AppBskyUnspeccedGetPopularFeedGenerators *generators =
             new AppBskyUnspeccedGetPopularFeedGenerators(this);
     connect(generators, &AppBskyUnspeccedGetPopularFeedGenerators::finished, [=](bool success) {
-        if (success && !generators->generatorViewList().isEmpty()) {
-            beginInsertRows(QModelIndex(), 0, generators->generatorViewList().count() - 1);
-            for (const auto &generator : generators->generatorViewList()) {
+        if (success && !generators->feedsGeneratorViewList().isEmpty()) {
+            beginInsertRows(QModelIndex(), 0, generators->feedsGeneratorViewList().count() - 1);
+            for (const auto &generator : generators->feedsGeneratorViewList()) {
                 m_cidList.append(generator.cid);
                 m_generatorViewHash[generator.cid] = generator;
             }
@@ -129,10 +129,10 @@ bool FeedGeneratorListModel::getNext()
     AppBskyUnspeccedGetPopularFeedGenerators *generators =
             new AppBskyUnspeccedGetPopularFeedGenerators(this);
     connect(generators, &AppBskyUnspeccedGetPopularFeedGenerators::finished, [=](bool success) {
-        if (success && !generators->generatorViewList().isEmpty()) {
+        if (success && !generators->feedsGeneratorViewList().isEmpty()) {
             beginInsertRows(QModelIndex(), m_cidList.count(),
-                            m_cidList.count() + generators->generatorViewList().count() - 1);
-            for (const auto &generator : generators->generatorViewList()) {
+                            m_cidList.count() + generators->feedsGeneratorViewList().count() - 1);
+            for (const auto &generator : generators->feedsGeneratorViewList()) {
                 m_cidList.append(generator.cid);
                 m_generatorViewHash[generator.cid] = generator;
             }

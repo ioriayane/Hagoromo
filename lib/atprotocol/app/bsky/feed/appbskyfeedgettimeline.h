@@ -12,7 +12,7 @@ public:
 
     void getTimeline(const QString &algorithm, const int limit, const QString &cursor);
 
-    const QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> &feedViewPostList() const;
+    const QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> &feedFeedViewPostList() const;
 
 protected:
     QString m_listKey;
@@ -20,7 +20,7 @@ protected:
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 
-    QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> m_feedViewPostList;
+    QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> m_feedFeedViewPostList;
 };
 
 }

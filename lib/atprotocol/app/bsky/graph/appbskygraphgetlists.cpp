@@ -28,9 +28,10 @@ void AppBskyGraphGetLists::getLists(const QString &actor, const int limit, const
     get(QStringLiteral("xrpc/app.bsky.graph.getLists"), url_query);
 }
 
-const QList<AtProtocolType::AppBskyGraphDefs::ListView> &AppBskyGraphGetLists::listViewList() const
+const QList<AtProtocolType::AppBskyGraphDefs::ListView> &
+AppBskyGraphGetLists::listsListViewList() const
 {
-    return m_listViewList;
+    return m_listsListViewList;
 }
 
 bool AppBskyGraphGetLists::parseJson(bool success, const QString reply_json)
@@ -43,7 +44,7 @@ bool AppBskyGraphGetLists::parseJson(bool success, const QString reply_json)
         for (const auto &value : json_doc.object().value(m_listKey).toArray()) {
             AtProtocolType::AppBskyGraphDefs::ListView data;
             AtProtocolType::AppBskyGraphDefs::copyListView(value.toObject(), data);
-            m_listViewList.append(data);
+            m_listsListViewList.append(data);
         }
     }
 

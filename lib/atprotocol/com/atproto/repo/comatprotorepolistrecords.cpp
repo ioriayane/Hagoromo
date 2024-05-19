@@ -36,9 +36,9 @@ void ComAtprotoRepoListRecords::listRecords(const QString &repo, const QString &
 }
 
 const QList<AtProtocolType::ComAtprotoRepoListRecords::Record> &
-ComAtprotoRepoListRecords::recordList() const
+ComAtprotoRepoListRecords::recordsRecordList() const
 {
-    return m_recordList;
+    return m_recordsRecordList;
 }
 
 bool ComAtprotoRepoListRecords::parseJson(bool success, const QString reply_json)
@@ -51,7 +51,7 @@ bool ComAtprotoRepoListRecords::parseJson(bool success, const QString reply_json
         for (const auto &value : json_doc.object().value("records").toArray()) {
             AtProtocolType::ComAtprotoRepoListRecords::Record data;
             AtProtocolType::ComAtprotoRepoListRecords::copyRecord(value.toObject(), data);
-            m_recordList.append(data);
+            m_recordsRecordList.append(data);
         }
     }
 

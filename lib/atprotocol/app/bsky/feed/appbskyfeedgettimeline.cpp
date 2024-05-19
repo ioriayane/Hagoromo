@@ -30,9 +30,9 @@ void AppBskyFeedGetTimeline::getTimeline(const QString &algorithm, const int lim
 }
 
 const QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> &
-AppBskyFeedGetTimeline::feedViewPostList() const
+AppBskyFeedGetTimeline::feedFeedViewPostList() const
 {
-    return m_feedViewPostList;
+    return m_feedFeedViewPostList;
 }
 
 bool AppBskyFeedGetTimeline::parseJson(bool success, const QString reply_json)
@@ -45,7 +45,7 @@ bool AppBskyFeedGetTimeline::parseJson(bool success, const QString reply_json)
         for (const auto &value : json_doc.object().value(m_listKey).toArray()) {
             AtProtocolType::AppBskyFeedDefs::FeedViewPost data;
             AtProtocolType::AppBskyFeedDefs::copyFeedViewPost(value.toObject(), data);
-            m_feedViewPostList.append(data);
+            m_feedFeedViewPostList.append(data);
         }
     }
 

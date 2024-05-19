@@ -13,13 +13,14 @@ public:
     void listNotifications(const int limit, const QString &cursor, const QString &seenAt);
 
     const QList<AtProtocolType::AppBskyNotificationListNotifications::Notification> &
-    notificationList() const;
+    notificationsNotificationList() const;
     const QString &seenAt() const;
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 
-    QList<AtProtocolType::AppBskyNotificationListNotifications::Notification> m_notificationList;
+    QList<AtProtocolType::AppBskyNotificationListNotifications::Notification>
+            m_notificationsNotificationList;
     QString m_seenAt;
 };
 

@@ -40,9 +40,9 @@ const QString &AppBskyFeedGetLikes::cid() const
     return m_cid;
 }
 
-const QList<AtProtocolType::AppBskyFeedGetLikes::Like> &AppBskyFeedGetLikes::likeList() const
+const QList<AtProtocolType::AppBskyFeedGetLikes::Like> &AppBskyFeedGetLikes::likesLikeList() const
 {
-    return m_likeList;
+    return m_likesLikeList;
 }
 
 bool AppBskyFeedGetLikes::parseJson(bool success, const QString reply_json)
@@ -57,7 +57,7 @@ bool AppBskyFeedGetLikes::parseJson(bool success, const QString reply_json)
         for (const auto &value : json_doc.object().value("likes").toArray()) {
             AtProtocolType::AppBskyFeedGetLikes::Like data;
             AtProtocolType::AppBskyFeedGetLikes::copyLike(value.toObject(), data);
-            m_likeList.append(data);
+            m_likesLikeList.append(data);
         }
     }
 

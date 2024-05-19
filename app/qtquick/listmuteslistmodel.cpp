@@ -41,7 +41,7 @@ bool ListMutesListModel::getNext()
     connect(lists, &AppBskyGraphGetListMutes::finished, [=](bool success) {
         if (success) {
             m_cursor = lists->cursor(); // 続きの読み込みの時は必ず上書き
-            if (lists->listViewList().isEmpty())
+            if (lists->listsListViewList().isEmpty())
                 m_cursor.clear(); // すべて読み切って空になったときはカーソルこないので空になるはずだけど念のため
             copyFrom(lists);
             QTimer::singleShot(10, this, &ListMutesListModel::displayQueuedPostsNext);

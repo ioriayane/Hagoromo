@@ -14,14 +14,14 @@ public:
 
     const QString &uri() const;
     const QString &cid() const;
-    const QList<AtProtocolType::AppBskyFeedGetLikes::Like> &likeList() const;
+    const QList<AtProtocolType::AppBskyFeedGetLikes::Like> &likesLikeList() const;
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 
     QString m_uri;
     QString m_cid;
-    QList<AtProtocolType::AppBskyFeedGetLikes::Like> m_likeList;
+    QList<AtProtocolType::AppBskyFeedGetLikes::Like> m_likesLikeList;
 };
 
 }

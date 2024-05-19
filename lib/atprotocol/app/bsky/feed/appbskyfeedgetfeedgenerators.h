@@ -12,7 +12,7 @@ public:
 
     void getFeedGenerators(const QList<QString> &feeds);
 
-    const QList<AtProtocolType::AppBskyFeedDefs::GeneratorView> &generatorViewList() const;
+    const QList<AtProtocolType::AppBskyFeedDefs::GeneratorView> &feedsGeneratorViewList() const;
 
 protected:
     QString m_listKey;
@@ -20,7 +20,7 @@ protected:
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 
-    QList<AtProtocolType::AppBskyFeedDefs::GeneratorView> m_generatorViewList;
+    QList<AtProtocolType::AppBskyFeedDefs::GeneratorView> m_feedsGeneratorViewList;
 };
 
 }

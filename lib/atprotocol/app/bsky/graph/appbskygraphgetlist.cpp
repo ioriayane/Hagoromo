@@ -25,15 +25,15 @@ void AppBskyGraphGetList::getList(const QString &list, const int limit, const QS
     get(QStringLiteral("xrpc/app.bsky.graph.getList"), url_query);
 }
 
-const AtProtocolType::AppBskyGraphDefs::ListView &AppBskyGraphGetList::listView() const
+const AtProtocolType::AppBskyGraphDefs::ListView &AppBskyGraphGetList::list() const
 {
-    return m_listView;
+    return m_list;
 }
 
 const QList<AtProtocolType::AppBskyGraphDefs::ListItemView> &
-AppBskyGraphGetList::listItemViewList() const
+AppBskyGraphGetList::itemsListItemViewList() const
 {
-    return m_listItemViewList;
+    return m_itemsListItemViewList;
 }
 
 bool AppBskyGraphGetList::parseJson(bool success, const QString reply_json)
@@ -44,11 +44,11 @@ bool AppBskyGraphGetList::parseJson(bool success, const QString reply_json)
     } else {
         setCursor(json_doc.object().value("cursor").toString());
         AtProtocolType::AppBskyGraphDefs::copyListView(json_doc.object().value("list").toObject(),
-                                                       m_listView);
+                                                       m_list);
         for (const auto &value : json_doc.object().value("items").toArray()) {
             AtProtocolType::AppBskyGraphDefs::ListItemView data;
             AtProtocolType::AppBskyGraphDefs::copyListItemView(value.toObject(), data);
-            m_listItemViewList.append(data);
+            m_itemsListItemViewList.append(data);
         }
     }
 
