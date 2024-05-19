@@ -474,79 +474,74 @@ void atprotocol_test::test_getTimeline()
     QList<QVariant> arguments = spy.takeFirst();
     QVERIFY(arguments.at(0).toBool());
 
-    QVERIFY(timeline.feedFeedViewPostList().count() == 6);
+    QVERIFY(timeline.feedList().count() == 6);
 
-    QVERIFY(timeline.feedFeedViewPostList().at(0).post.author.did
-            == "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
+    QVERIFY(timeline.feedList().at(0).post.author.did == "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
 
-    QVERIFY2(timeline.feedFeedViewPostList().at(1).post.embed_type
+    QVERIFY2(timeline.feedList().at(1).post.embed_type
                      == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecordWithMedia_View,
              QString("%1")
-                     .arg(static_cast<int>(timeline.feedFeedViewPostList().at(1).post.embed_type))
+                     .arg(static_cast<int>(timeline.feedList().at(1).post.embed_type))
                      .toLocal8Bit());
 
-    QVERIFY2(timeline.feedFeedViewPostList()
-                             .at(1)
-                             .post.embed_AppBskyEmbedRecordWithMedia_View.media_type
+    QVERIFY2(timeline.feedList().at(1).post.embed_AppBskyEmbedRecordWithMedia_View.media_type
                      == AppBskyEmbedRecordWithMedia::ViewMediaType::media_AppBskyEmbedImages_View,
              QString("%1")
                      .arg(static_cast<int>(
-                             timeline.feedFeedViewPostList()
+                             timeline.feedList()
                                      .at(1)
                                      .post.embed_AppBskyEmbedRecordWithMedia_View.media_type))
                      .toLocal8Bit());
-    QVERIFY2(timeline.feedFeedViewPostList()
-                             .at(1)
-                             .post.embed_AppBskyEmbedRecordWithMedia_View.record.isNull()
+    QVERIFY2(timeline.feedList().at(1).post.embed_AppBskyEmbedRecordWithMedia_View.record.isNull()
                      == false,
              QString("%1")
-                     .arg(timeline.feedFeedViewPostList()
+                     .arg(timeline.feedList()
                                   .at(1)
                                   .post.embed_AppBskyEmbedRecordWithMedia_View.record.isNull())
                      .toLocal8Bit());
-    QVERIFY2(timeline.feedFeedViewPostList()
+    QVERIFY2(timeline.feedList()
                              .at(1)
                              .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_type
                      == AppBskyEmbedRecord::ViewRecordType::record_ViewRecord,
              QString("%1")
-                     .arg(static_cast<int>(timeline.feedFeedViewPostList()
+                     .arg(static_cast<int>(timeline.feedList()
                                                    .at(1)
                                                    .post.embed_AppBskyEmbedRecordWithMedia_View
                                                    .record->record_type))
                      .toLocal8Bit());
-    QVERIFY2(timeline.feedFeedViewPostList()
+    QVERIFY2(timeline.feedList()
                              .at(1)
                              .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
                              .cid
                      == "bafyreig5ylsbfssvs45welz6o45gbs4rsvg3ek3oi6ygdrl76vchbahhpu",
-             timeline.feedFeedViewPostList()
+             timeline.feedList()
                      .at(1)
                      .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.cid
                      .toLocal8Bit());
-    QVERIFY2(timeline.feedFeedViewPostList()
+    QVERIFY2(timeline.feedList()
                              .at(1)
                              .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
                              .author.handle
                      == "ioriayane2.bsky.social",
-             timeline.feedFeedViewPostList()
+             timeline.feedList()
                      .at(1)
                      .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.author
                      .handle.toLocal8Bit());
 
     QVERIFY(LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(
-                    timeline.feedFeedViewPostList()
+                    timeline.feedList()
                             .at(1)
                             .post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
                             .value)
                     .text
             == "quoted post");
 
-    QVERIFY(timeline.feedFeedViewPostList()
+    QVERIFY(timeline.feedList()
                     .at(1)
                     .post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedImages_View
                     .images.count()
             == 1);
-    QVERIFY(timeline.feedFeedViewPostList()
+    QVERIFY(timeline.feedList()
                     .at(1)
                     .post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedImages_View
                     .images.at(0)
@@ -1905,9 +1900,9 @@ void atprotocol_test::test_AppBskyActorSearchActorsTypeahead()
         QVERIFY(arguments.at(0).toBool());
     }
 
-    QVERIFY(api.followsProfileViewList().count() == 2);
-    QVERIFY(api.followsProfileViewList().at(0).did == "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
-    QVERIFY(api.followsProfileViewList().at(1).did == "did:plc:ipj5qejfoqu6eukvt72uhyit");
+    QVERIFY(api.followsList().count() == 2);
+    QVERIFY(api.followsList().at(0).did == "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
+    QVERIFY(api.followsList().at(1).did == "did:plc:ipj5qejfoqu6eukvt72uhyit");
 }
 
 void atprotocol_test::test_AppBskyFeedGetActorFeeds()
@@ -1927,10 +1922,10 @@ void atprotocol_test::test_AppBskyFeedGetActorFeeds()
         QVERIFY(arguments.at(0).toBool());
     }
 
-    QVERIFY(api.feedsGeneratorViewList().count() == 2);
-    QVERIFY(api.feedsGeneratorViewList().at(0).cid
+    QVERIFY(api.feedsList().count() == 2);
+    QVERIFY(api.feedsList().at(0).cid
             == "bafyreifiwk54etwnvf276ibod6agn4tl6off4ddxpj5qxgj6vqtm7mi6hy");
-    QVERIFY(api.feedsGeneratorViewList().at(1).cid
+    QVERIFY(api.feedsList().at(1).cid
             == "bafyreifnih4vdr3nmwg3nsdkaamb6wnvwgo44v6qi73uxxugele65wswgi");
 }
 
@@ -1950,8 +1945,8 @@ void atprotocol_test::test_AppBskyFeedGetActorLikes()
         QVERIFY(arguments.at(0).toBool());
     }
 
-    QVERIFY(api.feedFeedViewPostList().count() == 1);
-    QVERIFY(api.feedFeedViewPostList().at(0).post.cid
+    QVERIFY(api.feedList().count() == 1);
+    QVERIFY(api.feedList().at(0).post.cid
             == "bafyreigkj2ljajuvh5yg4dxnaduxslxftfvbyshdaastjx6iacjuarmxka");
 }
 
@@ -1971,16 +1966,16 @@ void atprotocol_test::test_AppBskyFeedGetAuthorFeed()
         QVERIFY(arguments.at(0).toBool());
     }
 
-    QVERIFY(api.feedFeedViewPostList().count() == 3);
-    QVERIFY(api.feedFeedViewPostList().at(0).post.cid
+    QVERIFY(api.feedList().count() == 3);
+    QVERIFY(api.feedList().at(0).post.cid
             == "bafyreifkt2ejac2rxsj6j3lvslvh6m3pvpcq5l4y5zmisops7hq2g4y5n4");
-    QVERIFY(api.feedFeedViewPostList().at(1).post.cid
+    QVERIFY(api.feedList().at(1).post.cid
             == "bafyreicdy6ddnhqbhxmzhsyvwxsdqx3zeaybdud5tzl3mnwe3zehaysmei");
-    QVERIFY(api.feedFeedViewPostList().at(1).reply.root_PostView.cid
+    QVERIFY(api.feedList().at(1).reply.root_PostView.cid
             == "bafyreiad5kukibhklryendcsnzfbmqknqzxogwp67vorehabwryizs7to4");
-    QVERIFY(api.feedFeedViewPostList().at(1).reply.parent_PostView.cid
+    QVERIFY(api.feedList().at(1).reply.parent_PostView.cid
             == "bafyreiad5kukibhklryendcsnzfbmqknqzxogwp67vorehabwryizs7to4");
-    QVERIFY(api.feedFeedViewPostList().at(2).post.cid
+    QVERIFY(api.feedList().at(2).post.cid
             == "bafyreibl6vp7vczey2fxae5gqw2xfhb4cmnd6lcez4d6hlbrll3p6fg4o4");
 }
 
@@ -2000,18 +1995,18 @@ void atprotocol_test::test_AppBskyFeedGetFeed()
         QVERIFY(arguments.at(0).toBool());
     }
 
-    QVERIFY(api.feedFeedViewPostList().count() == 6);
-    QVERIFY(api.feedFeedViewPostList().at(0).post.cid
+    QVERIFY(api.feedList().count() == 6);
+    QVERIFY(api.feedList().at(0).post.cid
             == "bafyreidmnkhb3ls2t5jog774uncafb5zkzzyjffgs2pd7b2425wqshl2am");
-    QVERIFY(api.feedFeedViewPostList().at(1).post.cid
+    QVERIFY(api.feedList().at(1).post.cid
             == "bafyreibaqfe5nk4dbr5zcdjqlz6n32gungxhx5skk552n57dquhq4zvw7e");
-    QVERIFY(api.feedFeedViewPostList().at(2).post.cid
+    QVERIFY(api.feedList().at(2).post.cid
             == "bafyreihq26lx4cgiimgqoj6xekcilnmgzjxiogryaawprk262iqq3ws4vy");
-    QVERIFY(api.feedFeedViewPostList().at(3).post.cid
+    QVERIFY(api.feedList().at(3).post.cid
             == "bafyreicm2xpzq3aysgnypi7mjtihsptcomqj3ic6ryiq2qsgb2vdfnx6um");
-    QVERIFY(api.feedFeedViewPostList().at(4).post.cid
+    QVERIFY(api.feedList().at(4).post.cid
             == "bafyreiarsieqm27cswgla3b6z3ywvtpmozhdp67jenl4vz4whpyyqrqzbu");
-    QVERIFY(api.feedFeedViewPostList().at(5).post.cid
+    QVERIFY(api.feedList().at(5).post.cid
             == "bafyreiabnzvhd6ut7qcsjvofqq62hkicg2swfsn6ftcgfzpakxorwlyt4y");
 }
 
@@ -2031,12 +2026,12 @@ void atprotocol_test::test_AppBskyFeedGetFeedGenerators()
         QVERIFY(arguments.at(0).toBool());
     }
 
-    QVERIFY(api.feedsGeneratorViewList().count() == 3);
-    QVERIFY(api.feedsGeneratorViewList().at(0).cid
+    QVERIFY(api.feedsList().count() == 3);
+    QVERIFY(api.feedsList().at(0).cid
             == "bafyreibffkfh5lnndhpmginso7txws4cmqcjrubb3dtfnnwqt2lyrydkua");
-    QVERIFY(api.feedsGeneratorViewList().at(1).cid
+    QVERIFY(api.feedsList().at(1).cid
             == "bafyreifiwk54etwnvf276ibod6agn4tl6off4ddxpj5qxgj6vqtm7mi6hy");
-    QVERIFY(api.feedsGeneratorViewList().at(2).cid
+    QVERIFY(api.feedsList().at(2).cid
             == "bafyreifnih4vdr3nmwg3nsdkaamb6wnvwgo44v6qi73uxxugele65wswgi");
 }
 
@@ -2056,8 +2051,8 @@ void atprotocol_test::test_AppBskyGraphGetBlocks()
         QVERIFY(arguments.at(0).toBool());
     }
 
-    QVERIFY(api.followsProfileViewList().count() == 1);
-    QVERIFY(api.followsProfileViewList().at(0).did == "did:plc:blocked_user_did");
+    QVERIFY(api.followsList().count() == 1);
+    QVERIFY(api.followsList().at(0).did == "did:plc:blocked_user_did");
 }
 
 void atprotocol_test::test_AppBskyGraphGetFollowers()
@@ -2076,9 +2071,9 @@ void atprotocol_test::test_AppBskyGraphGetFollowers()
         QVERIFY(arguments.at(0).toBool());
     }
 
-    QVERIFY(api.followsProfileViewList().count() == 2);
-    QVERIFY(api.followsProfileViewList().at(0).did == "did:plc:73l5atmh7p3fn3xigbp6ao5x");
-    QVERIFY(api.followsProfileViewList().at(1).did == "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
+    QVERIFY(api.followsList().count() == 2);
+    QVERIFY(api.followsList().at(0).did == "did:plc:73l5atmh7p3fn3xigbp6ao5x");
+    QVERIFY(api.followsList().at(1).did == "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
 
     QVERIFY(api.subject().did == "did:plc:l4fsx4ujos7uw7n4ijq2ulgs1");
 }
@@ -2099,10 +2094,10 @@ void atprotocol_test::test_AppBskyGraphGetFollows()
         QVERIFY(arguments.at(0).toBool());
     }
 
-    QVERIFY(api.followsProfileViewList().count() == 3);
-    QVERIFY(api.followsProfileViewList().at(0).did == "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
-    QVERIFY(api.followsProfileViewList().at(1).did == "did:plc:73l5atmh7p3fn3xigbp6ao5x");
-    QVERIFY(api.followsProfileViewList().at(2).did == "did:plc:ipj5qejfoqu6eukvt72uhyit");
+    QVERIFY(api.followsList().count() == 3);
+    QVERIFY(api.followsList().at(0).did == "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
+    QVERIFY(api.followsList().at(1).did == "did:plc:73l5atmh7p3fn3xigbp6ao5x");
+    QVERIFY(api.followsList().at(2).did == "did:plc:ipj5qejfoqu6eukvt72uhyit");
 
     QVERIFY(api.subject().did == "did:plc:l4fsx4ujos7uw7n4ijq2ulgs");
 }
@@ -2123,10 +2118,10 @@ void atprotocol_test::test_AppBskyGraphGetListMutes()
         QVERIFY(arguments.at(0).toBool());
     }
 
-    QVERIFY(api.listsListViewList().count() == 2);
-    QVERIFY(api.listsListViewList().at(0).cid
+    QVERIFY(api.listsList().count() == 2);
+    QVERIFY(api.listsList().at(0).cid
             == "bafyreiexwt5i5qo4wy6qnn3wxnznjbqjbemmbqq3dwfaf7qbn2wk4cdblm");
-    QVERIFY(api.listsListViewList().at(1).cid
+    QVERIFY(api.listsList().at(1).cid
             == "bafyreifw2u4s2k6axspo3dppja3ofbwmyhkz6a5igemezmx3spxfvi6mcy");
 }
 
@@ -2146,10 +2141,10 @@ void atprotocol_test::test_AppBskyGraphGetListBlocks()
         QVERIFY(arguments.at(0).toBool());
     }
 
-    QVERIFY(api.listsListViewList().count() == 2);
-    QVERIFY(api.listsListViewList().at(0).cid
+    QVERIFY(api.listsList().count() == 2);
+    QVERIFY(api.listsList().at(0).cid
             == "bafyreif73o7vskbe36slr3zalbvitpcl5scr2d27ts3vmuqkyhj4u4pvm4");
-    QVERIFY(api.listsListViewList().at(1).cid
+    QVERIFY(api.listsList().at(1).cid
             == "bafyreieyd765syuilkovwe3ms3cpegt7wo3xksistzy2v4xmazrwbzlwtm");
 }
 
@@ -2169,8 +2164,8 @@ void atprotocol_test::test_AppBskyGraphGetMutes()
         QVERIFY(arguments.at(0).toBool());
     }
 
-    QVERIFY(api.followsProfileViewList().count() == 1);
-    QVERIFY(api.followsProfileViewList().at(0).did == "did:plc:l4fsx4ujos7uw7n4ijq2ulgs");
+    QVERIFY(api.followsList().count() == 1);
+    QVERIFY(api.followsList().at(0).did == "did:plc:l4fsx4ujos7uw7n4ijq2ulgs");
 }
 
 void atprotocol_test::test_PlcDirectory()

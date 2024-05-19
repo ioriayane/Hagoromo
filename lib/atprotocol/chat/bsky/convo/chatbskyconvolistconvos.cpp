@@ -23,9 +23,9 @@ void ChatBskyConvoListConvos::listConvos(const int limit, const QString &cursor)
 }
 
 const QList<AtProtocolType::ChatBskyConvoDefs::ConvoView> &
-ChatBskyConvoListConvos::convosConvoViewList() const
+ChatBskyConvoListConvos::convosList() const
 {
-    return m_convosConvoViewList;
+    return m_convosList;
 }
 
 bool ChatBskyConvoListConvos::parseJson(bool success, const QString reply_json)
@@ -38,7 +38,7 @@ bool ChatBskyConvoListConvos::parseJson(bool success, const QString reply_json)
         for (const auto &value : json_doc.object().value("convos").toArray()) {
             AtProtocolType::ChatBskyConvoDefs::ConvoView data;
             AtProtocolType::ChatBskyConvoDefs::copyConvoView(value.toObject(), data);
-            m_convosConvoViewList.append(data);
+            m_convosList.append(data);
         }
     }
 

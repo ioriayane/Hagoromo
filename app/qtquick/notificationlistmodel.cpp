@@ -484,8 +484,8 @@ bool NotificationListModel::getLatest()
                 if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
                     m_cursor = notification->cursor();
                 }
-                for (auto item = notification->notificationsNotificationList().crbegin();
-                     item != notification->notificationsNotificationList().crend(); item++) {
+                for (auto item = notification->notificationsList().crbegin();
+                     item != notification->notificationsList().crend(); item++) {
                     m_notificationHash[item->cid] = *item;
 
                     PostCueItem post;
@@ -621,8 +621,8 @@ bool NotificationListModel::getNext()
 
                 m_cursor = notification->cursor();
 
-                for (auto item = notification->notificationsNotificationList().crbegin();
-                     item != notification->notificationsNotificationList().crend(); item++) {
+                for (auto item = notification->notificationsList().crbegin();
+                     item != notification->notificationsList().crend(); item++) {
                     m_notificationHash[item->cid] = *item;
 
                     PostCueItem post;
@@ -1181,7 +1181,7 @@ void NotificationListModel::getPosts()
     connect(posts, &AppBskyFeedGetPosts::finished, [=](bool success) {
         if (success) {
             QStringList new_cid;
-            for (const auto &post : posts->postsPostViewList()) {
+            for (const auto &post : posts->postsList()) {
                 //                qDebug() << post.cid << post.author.displayName;
                 //                AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                 //                        AtProtocolType::AppBskyFeedPost::Record>(post.record)
@@ -1279,7 +1279,7 @@ void NotificationListModel::getFeedGenerators()
     connect(generators, &AppBskyFeedGetFeedGenerators::finished, [=](bool success) {
         if (success) {
             QStringList new_cid;
-            for (const auto &generator : generators->feedsGeneratorViewList()) {
+            for (const auto &generator : generators->feedsList()) {
                 m_feedGeneratorHash[generator.cid] = generator;
                 new_cid.append(generator.cid);
             }

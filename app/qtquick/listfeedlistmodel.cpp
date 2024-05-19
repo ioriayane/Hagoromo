@@ -19,7 +19,7 @@ bool ListFeedListModel::getLatest()
                 if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
                     m_cursor = list->cursor();
                 }
-                copyFrom(list->feedFeedViewPostList());
+                copyFrom(list->feedList());
             } else {
                 emit errorOccured(list->errorCode(), list->errorMessage());
             }
@@ -45,7 +45,7 @@ bool ListFeedListModel::getNext()
             if (success) {
                 m_cursor = list->cursor(); // 続きの読み込みの時は必ず上書き
 
-                copyFromNext(list->feedFeedViewPostList());
+                copyFromNext(list->feedList());
             } else {
                 emit errorOccured(list->errorCode(), list->errorMessage());
             }

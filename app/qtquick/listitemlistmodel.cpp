@@ -238,7 +238,7 @@ void ListItemListModel::copyFrom(AtProtocolInterface::AppBskyGraphGetList *list)
     setCreatorDisplayName(list->list().creator->displayName);
     setIsModeration((list->list().purpose == "app.bsky.graph.defs#modlist"));
 
-    for (const auto &item : list->itemsListItemViewList()) {
+    for (const auto &item : list->itemsList()) {
         if (!item.subject)
             continue;
         m_listItemViewHash[item.subject->did] = item;

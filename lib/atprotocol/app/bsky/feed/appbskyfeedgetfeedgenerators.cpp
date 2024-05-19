@@ -23,9 +23,9 @@ void AppBskyFeedGetFeedGenerators::getFeedGenerators(const QList<QString> &feeds
 }
 
 const QList<AtProtocolType::AppBskyFeedDefs::GeneratorView> &
-AppBskyFeedGetFeedGenerators::feedsGeneratorViewList() const
+AppBskyFeedGetFeedGenerators::feedsList() const
 {
-    return m_feedsGeneratorViewList;
+    return m_feedsList;
 }
 
 bool AppBskyFeedGetFeedGenerators::parseJson(bool success, const QString reply_json)
@@ -37,7 +37,7 @@ bool AppBskyFeedGetFeedGenerators::parseJson(bool success, const QString reply_j
         for (const auto &value : json_doc.object().value(m_listKey).toArray()) {
             AtProtocolType::AppBskyFeedDefs::GeneratorView data;
             AtProtocolType::AppBskyFeedDefs::copyGeneratorView(value.toObject(), data);
-            m_feedsGeneratorViewList.append(data);
+            m_feedsList.append(data);
         }
     }
 

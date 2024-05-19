@@ -182,7 +182,7 @@ void FeedTypeListModel::getFeedDetails()
             // apiで渡した順番と逆順で結果が来るので元の順番で追加する
             // 結果の仕様がいつ変わるか分からないのでAPIに投げるuriの順番で制御しない
             for (const auto &uri : qAsConst(uris)) {
-                for (const auto &generator : generators->feedsGeneratorViewList()) {
+                for (const auto &generator : generators->feedsList()) {
                     if (uri == generator.uri) {
                         FeedTypeItem item;
                         item.group = tr("My Feeds");
@@ -213,7 +213,7 @@ void FeedTypeListModel::getLists()
             if (m_cursor.isEmpty()) {
                 m_cursor = lists->cursor();
             }
-            for (const auto &list : lists->listsListViewList()) {
+            for (const auto &list : lists->listsList()) {
                 if (list.purpose == "app.bsky.graph.defs#modlist") {
                     continue;
                 }

@@ -12,12 +12,12 @@ public:
 
     void listConvos(const int limit, const QString &cursor);
 
-    const QList<AtProtocolType::ChatBskyConvoDefs::ConvoView> &convosConvoViewList() const;
+    const QList<AtProtocolType::ChatBskyConvoDefs::ConvoView> &convosList() const;
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 
-    QList<AtProtocolType::ChatBskyConvoDefs::ConvoView> m_convosConvoViewList;
+    QList<AtProtocolType::ChatBskyConvoDefs::ConvoView> m_convosList;
 };
 
 }

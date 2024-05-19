@@ -1184,7 +1184,10 @@ class Defs2Struct:
                                 refs = [namespace]
                             for ref in refs:
                                 (var_ref_namespace, var_ref_key_name) = self.split_ref(ref)
-                                item_obj = self.output_api_class_data(namespace, ref, var_type, key_name + self.to_struct_style(var_ref_key_name), key_name)
+                                if len(refs) > 1:
+                                    item_obj = self.output_api_class_data(namespace, ref, var_type, key_name + self.to_struct_style(var_ref_key_name), key_name)
+                                else:
+                                    item_obj = self.output_api_class_data(namespace, ref, var_type, key_name, key_name)
                                 if len(item_obj) > 0:
                                     data['members'] = data.get('members', [])
                                     data['members'].append(item_obj)

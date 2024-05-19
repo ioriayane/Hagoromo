@@ -12,12 +12,12 @@ public:
 
     void sendMessageBatch(const QJsonObject &items);
 
-    const QList<AtProtocolType::ChatBskyConvoDefs::MessageView> &itemsMessageViewList() const;
+    const QList<AtProtocolType::ChatBskyConvoDefs::MessageView> &itemsList() const;
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 
-    QList<AtProtocolType::ChatBskyConvoDefs::MessageView> m_itemsMessageViewList;
+    QList<AtProtocolType::ChatBskyConvoDefs::MessageView> m_itemsList;
 };
 
 }

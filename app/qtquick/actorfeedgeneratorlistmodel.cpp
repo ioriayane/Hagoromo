@@ -22,9 +22,9 @@ bool ActorFeedGeneratorListModel::getLatest()
         if (success) {
             m_cursor = feeds->cursor();
 
-            if (!feeds->feedsGeneratorViewList().isEmpty()) {
-                beginInsertRows(QModelIndex(), 0, feeds->feedsGeneratorViewList().count() - 1);
-                for (const auto &generator : feeds->feedsGeneratorViewList()) {
+            if (!feeds->feedsList().isEmpty()) {
+                beginInsertRows(QModelIndex(), 0, feeds->feedsList().count() - 1);
+                for (const auto &generator : feeds->feedsList()) {
                     m_cidList.append(generator.cid);
                     m_generatorViewHash[generator.cid] = generator;
                 }

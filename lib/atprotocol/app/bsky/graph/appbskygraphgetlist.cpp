@@ -30,10 +30,9 @@ const AtProtocolType::AppBskyGraphDefs::ListView &AppBskyGraphGetList::list() co
     return m_list;
 }
 
-const QList<AtProtocolType::AppBskyGraphDefs::ListItemView> &
-AppBskyGraphGetList::itemsListItemViewList() const
+const QList<AtProtocolType::AppBskyGraphDefs::ListItemView> &AppBskyGraphGetList::itemsList() const
 {
-    return m_itemsListItemViewList;
+    return m_itemsList;
 }
 
 bool AppBskyGraphGetList::parseJson(bool success, const QString reply_json)
@@ -48,7 +47,7 @@ bool AppBskyGraphGetList::parseJson(bool success, const QString reply_json)
         for (const auto &value : json_doc.object().value("items").toArray()) {
             AtProtocolType::AppBskyGraphDefs::ListItemView data;
             AtProtocolType::AppBskyGraphDefs::copyListItemView(value.toObject(), data);
-            m_itemsListItemViewList.append(data);
+            m_itemsList.append(data);
         }
     }
 

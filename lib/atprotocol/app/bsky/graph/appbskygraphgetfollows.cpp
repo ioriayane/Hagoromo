@@ -35,9 +35,9 @@ const AtProtocolType::AppBskyActorDefs::ProfileView &AppBskyGraphGetFollows::sub
 }
 
 const QList<AtProtocolType::AppBskyActorDefs::ProfileView> &
-AppBskyGraphGetFollows::followsProfileViewList() const
+AppBskyGraphGetFollows::followsList() const
 {
-    return m_followsProfileViewList;
+    return m_followsList;
 }
 
 bool AppBskyGraphGetFollows::parseJson(bool success, const QString reply_json)
@@ -52,7 +52,7 @@ bool AppBskyGraphGetFollows::parseJson(bool success, const QString reply_json)
         for (const auto &value : json_doc.object().value(m_listKey).toArray()) {
             AtProtocolType::AppBskyActorDefs::ProfileView data;
             AtProtocolType::AppBskyActorDefs::copyProfileView(value.toObject(), data);
-            m_followsProfileViewList.append(data);
+            m_followsList.append(data);
         }
     }
 

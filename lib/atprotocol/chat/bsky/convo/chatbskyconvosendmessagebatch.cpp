@@ -25,9 +25,9 @@ void ChatBskyConvoSendMessageBatch::sendMessageBatch(const QJsonObject &items)
 }
 
 const QList<AtProtocolType::ChatBskyConvoDefs::MessageView> &
-ChatBskyConvoSendMessageBatch::itemsMessageViewList() const
+ChatBskyConvoSendMessageBatch::itemsList() const
 {
-    return m_itemsMessageViewList;
+    return m_itemsList;
 }
 
 bool ChatBskyConvoSendMessageBatch::parseJson(bool success, const QString reply_json)
@@ -39,7 +39,7 @@ bool ChatBskyConvoSendMessageBatch::parseJson(bool success, const QString reply_
         for (const auto &value : json_doc.object().value("items").toArray()) {
             AtProtocolType::ChatBskyConvoDefs::MessageView data;
             AtProtocolType::ChatBskyConvoDefs::copyMessageView(value.toObject(), data);
-            m_itemsMessageViewList.append(data);
+            m_itemsList.append(data);
         }
     }
 
