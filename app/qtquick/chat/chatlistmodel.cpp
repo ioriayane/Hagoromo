@@ -33,13 +33,17 @@ QVariant ChatListModel::item(int row, ChatListModelRoles role) const
     else if (role == MemberDisplayNamesRole) {
         QStringList names;
         for (const auto &member : current.members) {
-            names.append(member.displayName);
+            if (member.did != account().did) {
+                names.append(member.displayName);
+            }
         }
         return names;
     } else if (role == MemberAvatarsRole) {
         QStringList avatars;
         for (const auto &member : current.members) {
-            avatars.append(member.avatar);
+            if (member.did != account().did) {
+                avatars.append(member.avatar);
+            }
         }
         return avatars;
 
@@ -59,7 +63,7 @@ QVariant ChatListModel::item(int row, ChatListModelRoles role) const
         return current.lastMessage_type == ConvoViewLastMessageType::lastMessage_MessageView
                 ? current.lastMessage_MessageView.text
                 : QString();
-    else if (role == LastMessageUnreadCountRole)
+    else if (role == UnreadCountRole)
         return current.unreadCount;
 
     return QVariant();
@@ -71,29 +75,33 @@ bool ChatListModel::getLatest()
         return false;
     setRunning(true);
 
-    ChatBskyConvoListConvos *convos = new ChatBskyConvoListConvos(this);
-    connect(convos, &ChatBskyConvoListConvos::finished, this, [=](bool success) {
-        if (success) {
-            if (m_idList.isEmpty() && m_cursor.isEmpty()) {
-                m_cursor = convos->cursor();
-            }
+    getServiceEndpoint([=]() {
+        ChatBskyConvoListConvos *convos = new ChatBskyConvoListConvos(this);
+        connect(convos, &ChatBskyConvoListConvos::finished, this, [=](bool success) {
+            if (success) {
+                if (m_idList.isEmpty() && m_cursor.isEmpty()) {
+                    m_cursor = convos->cursor();
+                }
 
-            beginInsertRows(QModelIndex(), 0, convos->convosList().count() - 1);
-            for (auto item = convos->convosList().crbegin(); item != convos->convosList().crend();
-                 item++) {
-                m_convoHash[item->id] = *item;
-                m_idList.insert(0, item->id);
+                beginInsertRows(QModelIndex(), 0, convos->convosList().count() - 1);
+                for (auto item = convos->convosList().crbegin();
+                     item != convos->convosList().crend(); item++) {
+                    m_convoHash[item->id] = *item;
+                    m_idList.insert(0, item->id);
+                }
+                endInsertRows();
+            } else {
+                emit errorOccured(convos->errorCode(), convos->errorMessage());
             }
-            endInsertRows();
-        } else {
-            emit errorOccured(convos->errorCode(), convos->errorMessage());
-        }
-        setRunning(false);
-        convos->deleteLater();
+            setRunning(false);
+            convos->deleteLater();
+        });
+        convos->setAccount(account());
+        convos->setService(account().service_endpoint);
+        convos->appendRawHeader(headerName, headerValue);
+        convos->listConvos(0, QString());
     });
-    convos->setAccount(account());
-    convos->appendRawHeader(headerName, headerValue);
-    convos->listConvos(0, QString());
+
     return true;
 }
 
@@ -103,28 +111,31 @@ bool ChatListModel::getNext()
         return false;
     setRunning(true);
 
-    ChatBskyConvoListConvos *convos = new ChatBskyConvoListConvos(this);
-    connect(convos, &ChatBskyConvoListConvos::finished, this, [=](bool success) {
-        if (success) {
-            m_cursor = convos->cursor();
+    getServiceEndpoint([=]() {
+        ChatBskyConvoListConvos *convos = new ChatBskyConvoListConvos(this);
+        connect(convos, &ChatBskyConvoListConvos::finished, this, [=](bool success) {
+            if (success) {
+                m_cursor = convos->cursor();
 
-            beginInsertRows(QModelIndex(), m_idList.count(),
-                            m_idList.count() + convos->convosList().count() - 1);
-            for (auto item = convos->convosList().cbegin(); item != convos->convosList().cend();
-                 item++) {
-                m_convoHash[item->id] = *item;
-                m_idList.append(item->id);
+                beginInsertRows(QModelIndex(), rowCount(),
+                                rowCount() + convos->convosList().count() - 1);
+                for (auto item = convos->convosList().cbegin(); item != convos->convosList().cend();
+                     item++) {
+                    m_convoHash[item->id] = *item;
+                    m_idList.append(item->id);
+                }
+                endInsertRows();
+            } else {
+                emit errorOccured(convos->errorCode(), convos->errorMessage());
             }
-            endInsertRows();
-        } else {
-            emit errorOccured(convos->errorCode(), convos->errorMessage());
-        }
-        setRunning(false);
-        convos->deleteLater();
+            setRunning(false);
+            convos->deleteLater();
+        });
+        convos->setAccount(account());
+        convos->setService(account().service_endpoint);
+        convos->appendRawHeader(headerName, headerValue);
+        convos->listConvos(0, m_cursor);
     });
-    convos->setAccount(account());
-    convos->appendRawHeader(headerName, headerValue);
-    convos->listConvos(0, m_cursor);
 
     return true;
 }
@@ -142,8 +153,8 @@ QHash<int, QByteArray> ChatListModel::roleNames() const
     roles[LastMessageIdRole] = "lastMessageId";
     roles[LastMessageRevRole] = "lastMessageRev";
     roles[LastMessageSenderDidRole] = "lastMessageSenderDid";
-    roles[LastMessageTextRole] = "lastMessageTextRole";
-    roles[LastMessageUnreadCountRole] = "lastMessageUnreadCountRole";
+    roles[LastMessageTextRole] = "lastMessageText";
+    roles[UnreadCountRole] = "unreadCountRole";
 
     return roles;
 }

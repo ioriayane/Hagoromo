@@ -69,7 +69,9 @@ void chat_test::cleanupTestCase() { }
 void chat_test::test_ChatListModel()
 {
     ChatListModel model;
-    model.setAccount(m_service + "/list", "did", "handle", "email", "accessJwt", "refreshJwt");
+    model.setAccount(m_service + "/list", "did:plc:ipj5qejfoqu6eukvt72uhyit", "handle", "email",
+                     "accessJwt", "refreshJwt");
+    model.setServiceEndpoint(m_service + "/list");
 
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));

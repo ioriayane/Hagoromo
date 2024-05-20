@@ -20,6 +20,7 @@ public:
     Q_INVOKABLE void setAccount(const QString &service, const QString &did, const QString &handle,
                                 const QString &email, const QString &accessJwt,
                                 const QString &refreshJwt);
+    void setServiceEndpoint(const QString &service_endpoint);
 
     virtual Q_INVOKABLE bool getLatest() = 0;
     virtual Q_INVOKABLE bool getNext() = 0;
@@ -32,6 +33,8 @@ signals:
     void runningChanged();
 
 protected:
+    void getServiceEndpoint(std::function<void()> callback);
+
     QString m_cursor;
 
     const QString headerName = "atproto-proxy";

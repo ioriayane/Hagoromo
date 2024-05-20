@@ -13,6 +13,7 @@ import tech.relog.hagoromo.customfeedlistmodel 1.0
 import tech.relog.hagoromo.authorfeedlistmodel 1.0
 import tech.relog.hagoromo.anyprofilelistmodel 1.0
 import tech.relog.hagoromo.listfeedlistmodel 1.0
+import tech.relog.hagoromo.chatlistmodel 1.0
 import tech.relog.hagoromo.systemtool 1.0
 import tech.relog.hagoromo.singleton 1.0
 
@@ -479,6 +480,15 @@ ColumnLayout {
         }
     }
 
+    Component {
+        id: chatListComponent
+        ChatListView {
+            model: ChatListModel {
+                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
+            }
+        }
+    }
+
     function load(){
         console.log("ColumnLayout:componentType=" + componentType)
         if(componentType === 0){
@@ -502,6 +512,9 @@ ColumnLayout {
         }else if(componentType === 6){
             columnStackView.push(listFeedComponent)
             componentTypeLabel.addText = " : " + settings.columnName
+        }else if(componentType === 7){
+            columnStackView.push(chatListComponent)
+            componentTypeLabel.addText = ""
         }else{
             columnStackView.push(timelineComponent)
             componentTypeLabel.addText = ""
@@ -586,6 +599,7 @@ ColumnLayout {
                         qsTr("Feed"),
                         qsTr("User"),
                         qsTr("List"),
+                        qsTr("Chat"),
                         qsTr("Unknown")
                     ]
                     property string addText: ""

@@ -6,6 +6,9 @@ SOURCES += \
     main.cpp \
     tools/translatorchanger.cpp
 
+HEADERS += \
+    tools/translatorchanger.h
+
 QML_FILES = \
     qml/main.qml \
     qml/controls/ClickableFrame.qml \
@@ -73,6 +76,7 @@ QML_FILES = \
     qml/parts/TagLabelLayout.qml \
     qml/parts/VersionInfomation.qml \
     qml/view/AnyProfileListView.qml \
+    qml/view/ChatListView.qml \
     qml/view/ColumnView.qml \
     qml/view/FeedGeneratorListView.qml \
     qml/view/ImageFullView.qml \
@@ -176,6 +180,3 @@ mac:translations.path = \
 translations.files = $$PWD/i18n/*.qm
 #qmファイルが存在しないとmakefileに追加されないので注意
 INSTALLS += translations
-
-HEADERS += \
-    tools/translatorchanger.h

@@ -51,6 +51,7 @@
 #include "qtquick/log/logdailylistmodel.h"
 #include "qtquick/log/logmonthlylistmodel.h"
 #include "qtquick/log/logfeedlistmodel.h"
+#include "qtquick/chat/chatlistmodel.h"
 #include "tools/translatorchanger.h"
 
 void setAppFont(QGuiApplication &app)
@@ -164,6 +165,8 @@ int main(int argc, char *argv[])
                                          "LogMonthlyListModel");
     qmlRegisterType<LogFeedListModel>("tech.relog.hagoromo.logfeedlistmodel", 1, 0,
                                       "LogFeedListModel");
+
+    qmlRegisterType<ChatListModel>("tech.relog.hagoromo.chatlistmodel", 1, 0, "ChatListModel");
 
     qmlRegisterSingletonType(QUrl("qrc:/Hagoromo/qml/data/AdjustedValues.qml"),
                              "tech.relog.hagoromo.singleton", 1, 0, "AdjustedValues");

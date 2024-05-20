@@ -22,7 +22,7 @@ public:
         LastMessageRevRole,
         LastMessageSenderDidRole,
         LastMessageTextRole,
-        LastMessageUnreadCountRole,
+        UnreadCountRole,
     };
     Q_ENUM(ChatListModelRoles);
 

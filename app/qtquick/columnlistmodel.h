@@ -13,6 +13,7 @@ enum class FeedComponentType : int {
     CustomFeed = 4,
     AuthorFeed = 5,
     ListFeed = 6,
+    ChatList = 7,
 
     PostThread = 100,
     DiscoverFeeds = 101,
