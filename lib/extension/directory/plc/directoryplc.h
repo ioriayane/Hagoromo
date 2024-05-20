@@ -15,10 +15,13 @@ public:
     const AtProtocolType::DirectoryPlcDefs::DidDoc &didDoc() const;
     QString serviceEndpoint() const;
 
+    QString defaultService() const;
+
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 
     AtProtocolType::DirectoryPlcDefs::DidDoc m_didDoc;
+    QString m_defaultService;
 };
 
 }
