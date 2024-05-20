@@ -83,7 +83,11 @@ void FeedTypeListModel::clear()
         m_feedTypeItemList.clear();
         endRemoveRows();
     }
-    beginInsertRows(QModelIndex(), 0, 1);
+
+    // デフォルトで追加した状態にするアイテムを増減させるときは
+    // AddColumnDialog.qmlのchangeColumnTypeView()を
+    // 修正しないとカスタムフィードなどが読み込まれない
+    beginInsertRows(QModelIndex(), 0, 2);
     {
         FeedTypeItem item;
         item.group = tr("Default Feeds");
@@ -96,6 +100,13 @@ void FeedTypeListModel::clear()
         item.group = tr("Default Feeds");
         item.type = FeedComponentType::Notification;
         item.generator.displayName = tr("Notification");
+        m_feedTypeItemList.append(item);
+    }
+    {
+        FeedTypeItem item;
+        item.group = tr("Chat");
+        item.type = FeedComponentType::ChatList;
+        item.generator.displayName = tr("Chat list");
         m_feedTypeItemList.append(item);
     }
     endInsertRows();
@@ -228,6 +239,7 @@ void FeedTypeListModel::getLists()
         } else {
             emit errorOccured(lists->errorCode(), lists->errorMessage());
         }
+
         setRunning(false);
         lists->deleteLater();
     });
