@@ -14,6 +14,8 @@ ChatBskyModerationGetActorMetadata::ChatBskyModerationGetActorMetadata(QObject *
 
 void ChatBskyModerationGetActorMetadata::getActorMetadata(const QString &actor)
 {
+    appendRawHeader("atproto-proxy", "did:web:api.bsky.chat#bsky_chat");
+
     QUrlQuery url_query;
     if (!actor.isEmpty()) {
         url_query.addQueryItem(QStringLiteral("actor"), actor);

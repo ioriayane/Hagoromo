@@ -15,6 +15,8 @@ ChatBskyModerationGetMessageContext::ChatBskyModerationGetMessageContext(QObject
 void ChatBskyModerationGetMessageContext::getMessageContext(const QString &messageId,
                                                             const int before, const int after)
 {
+    appendRawHeader("atproto-proxy", "did:web:api.bsky.chat#bsky_chat");
+
     QUrlQuery url_query;
     if (!messageId.isEmpty()) {
         url_query.addQueryItem(QStringLiteral("messageId"), messageId);

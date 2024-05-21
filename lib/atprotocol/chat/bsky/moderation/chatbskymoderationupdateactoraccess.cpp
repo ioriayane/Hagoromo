@@ -15,6 +15,8 @@ void ChatBskyModerationUpdateActorAccess::updateActorAccess(const QString &actor
                                                             const bool allowAccess,
                                                             const QString &ref)
 {
+    appendRawHeader("atproto-proxy", "did:web:api.bsky.chat#bsky_chat");
+
     QJsonObject json_obj;
     if (!actor.isEmpty()) {
         json_obj.insert(QStringLiteral("actor"), actor);

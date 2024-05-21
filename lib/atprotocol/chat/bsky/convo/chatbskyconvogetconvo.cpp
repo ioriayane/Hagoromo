@@ -11,6 +11,8 @@ ChatBskyConvoGetConvo::ChatBskyConvoGetConvo(QObject *parent) : AccessAtProtocol
 
 void ChatBskyConvoGetConvo::getConvo(const QString &convoId)
 {
+    appendRawHeader("atproto-proxy", "did:web:api.bsky.chat#bsky_chat");
+
     QUrlQuery url_query;
     if (!convoId.isEmpty()) {
         url_query.addQueryItem(QStringLiteral("convoId"), convoId);

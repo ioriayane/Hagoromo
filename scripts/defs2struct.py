@@ -149,6 +149,13 @@ class Defs2Struct:
                 }
             }
 
+        self.rawHttpHeader = {
+            'chat.bsky.': {
+                'name': 'atproto-proxy',
+                'value': 'did:web:api.bsky.chat#bsky_chat'
+            }
+        }
+
         self.skip_api_class_id = [
             'tools.ozone.',
             'com.atproto.admin.',
@@ -1050,6 +1057,16 @@ class Defs2Struct:
 
         return data
 
+    def output_api_class_raw_header(self, namespace: str) -> dict:
+        data: list = []
+
+        for key in self.rawHttpHeader:
+            if namespace.startswith(key):
+                data.append(self.rawHttpHeader.get(key))
+
+        return data
+
+
     def output_api_class(self, namespace: str, type_name: str):
         obj = self.get_defs_obj(namespace, type_name)
         data: dict = {}
@@ -1236,6 +1253,7 @@ class Defs2Struct:
             data['recv_image'] = data.get('recv_image', False)
             data['has_primitive'] = data.get('has_primitive', False)
             data['has_parent_class'] = data.get('has_parent_class', False)
+            data['raw_headers'] = self.output_api_class_raw_header(namespace)
             data['completed'] = True
             data['my_include_path'] = self.to_header_path(namespace)
             data['need_extension'] = (namespace in self.need_extension)
