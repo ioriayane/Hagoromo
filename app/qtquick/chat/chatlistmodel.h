@@ -38,7 +38,6 @@ protected:
     QHash<int, QByteArray> roleNames() const;
 
 private:
-    QStringList m_idList;
     QHash<QString, AtProtocolType::ChatBskyConvoDefs::ConvoView> m_convoHash; // QHash<id, convo>
 };
 

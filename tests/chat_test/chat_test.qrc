@@ -2,5 +2,7 @@
     <qresource prefix="/">
         <file>response/list/xrpc/chat.bsky.convo.listConvos</file>
         <file>response/list/xrpc/chat.bsky.convo.listConvos_22222222223lr</file>
+        <file>response/message/1/xrpc/chat.bsky.convo.getMessages</file>
+        <file>response/message/1/xrpc/chat.bsky.convo.getMessages_2222222222aa2</file>
     </qresource>
 </RCC>

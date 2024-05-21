@@ -35,10 +35,8 @@ signals:
 protected:
     void getServiceEndpoint(std::function<void()> callback);
 
+    QStringList m_idList;
     QString m_cursor;
-
-    const QString headerName = "atproto-proxy";
-    const QString headerValue = "did:web:api.bsky.chat#bsky_chat";
 
 private:
     AtProtocolInterface::AccountData m_account;

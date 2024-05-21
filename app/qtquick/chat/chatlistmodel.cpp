@@ -98,7 +98,6 @@ bool ChatListModel::getLatest()
         });
         convos->setAccount(account());
         convos->setService(account().service_endpoint);
-        convos->appendRawHeader(headerName, headerValue);
         convos->listConvos(0, QString());
     });
 
@@ -107,7 +106,7 @@ bool ChatListModel::getLatest()
 
 bool ChatListModel::getNext()
 {
-    if (running())
+    if (running() || m_cursor.isEmpty())
         return false;
     setRunning(true);
 
@@ -133,7 +132,6 @@ bool ChatListModel::getNext()
         });
         convos->setAccount(account());
         convos->setService(account().service_endpoint);
-        convos->appendRawHeader(headerName, headerValue);
         convos->listConvos(0, m_cursor);
     });
 
