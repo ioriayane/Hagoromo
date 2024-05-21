@@ -70,6 +70,7 @@ void chat_test::cleanupTestCase() { }
 
 void chat_test::test_ChatListModel()
 {
+    int i = 0;
     ChatListModel model;
     model.setAccount(m_service + "/list", "did:plc:ipj5qejfoqu6eukvt72uhyit", "handle", "email",
                      "accessJwt", "refreshJwt");
@@ -81,7 +82,15 @@ void chat_test::test_ChatListModel()
         spy.wait();
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
-    int i = 0;
+
+    QVERIFY2(model.rowCount() == 2, QString::number(model.rowCount()).toLocal8Bit());
+
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
 
     QVERIFY2(model.rowCount() == 2, QString::number(model.rowCount()).toLocal8Bit());
 

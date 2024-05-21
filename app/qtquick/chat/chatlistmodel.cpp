@@ -1,7 +1,5 @@
 #include "chatlistmodel.h"
 
-#include "atprotocol/chat/bsky/convo/chatbskyconvolistconvos.h"
-
 using AtProtocolInterface::ChatBskyConvoListConvos;
 using namespace AtProtocolType::ChatBskyConvoDefs;
 
@@ -83,13 +81,7 @@ bool ChatListModel::getLatest()
                     m_cursor = convos->cursor();
                 }
 
-                beginInsertRows(QModelIndex(), 0, convos->convosList().count() - 1);
-                for (auto item = convos->convosList().crbegin();
-                     item != convos->convosList().crend(); item++) {
-                    m_convoHash[item->id] = *item;
-                    m_idList.insert(0, item->id);
-                }
-                endInsertRows();
+                copyFrom(convos, true);
             } else {
                 emit errorOccured(convos->errorCode(), convos->errorMessage());
             }
@@ -116,14 +108,7 @@ bool ChatListModel::getNext()
             if (success) {
                 m_cursor = convos->cursor();
 
-                beginInsertRows(QModelIndex(), rowCount(),
-                                rowCount() + convos->convosList().count() - 1);
-                for (auto item = convos->convosList().cbegin(); item != convos->convosList().cend();
-                     item++) {
-                    m_convoHash[item->id] = *item;
-                    m_idList.append(item->id);
-                }
-                endInsertRows();
+                copyFrom(convos, false);
             } else {
                 emit errorOccured(convos->errorCode(), convos->errorMessage());
             }
@@ -155,4 +140,40 @@ QHash<int, QByteArray> ChatListModel::roleNames() const
     roles[UnreadCountRole] = "unreadCountRole";
 
     return roles;
+}
+
+void ChatListModel::copyFrom(const AtProtocolInterface::ChatBskyConvoListConvos *convos,
+                             bool to_top)
+{
+    if (convos == nullptr)
+        return;
+
+    QStringList add_ids;
+
+    for (auto item = convos->convosList().cbegin(); item != convos->convosList().cend(); item++) {
+        if (!m_idList.contains(item->id)) {
+            if (to_top) {
+                add_ids.insert(0, item->id);
+            } else {
+                add_ids.append(item->id);
+            }
+        }
+        m_convoHash[item->id] = *item;
+    }
+
+    if (!add_ids.isEmpty()) {
+        int basis_pos = 0;
+        if (!to_top) {
+            basis_pos = rowCount();
+        }
+        beginInsertRows(QModelIndex(), basis_pos, basis_pos + add_ids.count() - 1);
+        for (const auto &id : add_ids) {
+            if (to_top) {
+                m_idList.insert(0, id);
+            } else {
+                m_idList.append(id);
+            }
+        }
+        endInsertRows();
+    }
 }

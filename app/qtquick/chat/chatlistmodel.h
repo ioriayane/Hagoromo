@@ -2,6 +2,7 @@
 #define CHATLISTMODEL_H
 
 #include "atpchatabstractlistmodel.h"
+#include "atprotocol/chat/bsky/convo/chatbskyconvolistconvos.h"
 
 class ChatListModel : public AtpChatAbstractListModel
 {
@@ -36,6 +37,8 @@ public:
 
 protected:
     QHash<int, QByteArray> roleNames() const;
+
+    void copyFrom(const AtProtocolInterface::ChatBskyConvoListConvos *convos, bool to_top);
 
 private:
     QHash<QString, AtProtocolType::ChatBskyConvoDefs::ConvoView> m_convoHash; // QHash<id, convo>
