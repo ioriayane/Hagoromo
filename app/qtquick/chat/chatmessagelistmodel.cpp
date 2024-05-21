@@ -120,14 +120,17 @@ void ChatMessageListModel::copyFrom(const AtProtocolInterface::ChatBskyConvoGetM
     QStringList add_ids;
     for (auto item = messages->messagesMessageViewList().cbegin();
          item != messages->messagesMessageViewList().cend(); item++) {
+        m_messageHash[item->id] = *item;
         if (!m_idList.contains(item->id)) {
             if (to_top) {
                 add_ids.insert(0, item->id);
             } else {
                 add_ids.append(item->id);
             }
+        } else {
+            int row = m_idList.indexOf(item->id);
+            emit dataChanged(index(row), index(row));
         }
-        m_messageHash[item->id] = *item;
     }
     if (!add_ids.isEmpty()) {
         int basis_pos = 0;

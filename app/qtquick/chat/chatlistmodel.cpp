@@ -1,7 +1,9 @@
 #include "chatlistmodel.h"
+#include "atprotocol/lexicons_func_unknown.h"
 
 using AtProtocolInterface::ChatBskyConvoListConvos;
 using namespace AtProtocolType::ChatBskyConvoDefs;
+using namespace AtProtocolType;
 
 ChatListModel::ChatListModel(QObject *parent) : AtpChatAbstractListModel { parent } { }
 
@@ -61,6 +63,11 @@ QVariant ChatListModel::item(int row, ChatListModelRoles role) const
         return current.lastMessage_type == ConvoViewLastMessageType::lastMessage_MessageView
                 ? current.lastMessage_MessageView.text
                 : QString();
+    else if (role == LastMessageSentAtRole)
+        return current.lastMessage_type == ConvoViewLastMessageType::lastMessage_MessageView
+                ? LexiconsTypeUnknown::formatDateTime(current.lastMessage_MessageView.sentAt, true)
+                : QString();
+
     else if (role == UnreadCountRole)
         return current.unreadCount;
 
@@ -137,6 +144,8 @@ QHash<int, QByteArray> ChatListModel::roleNames() const
     roles[LastMessageRevRole] = "lastMessageRev";
     roles[LastMessageSenderDidRole] = "lastMessageSenderDid";
     roles[LastMessageTextRole] = "lastMessageText";
+    roles[LastMessageSentAtRole] = "lastMessageSentAt";
+
     roles[UnreadCountRole] = "unreadCountRole";
 
     return roles;
@@ -151,14 +160,17 @@ void ChatListModel::copyFrom(const AtProtocolInterface::ChatBskyConvoListConvos 
     QStringList add_ids;
 
     for (auto item = convos->convosList().cbegin(); item != convos->convosList().cend(); item++) {
+        m_convoHash[item->id] = *item;
         if (!m_idList.contains(item->id)) {
             if (to_top) {
                 add_ids.insert(0, item->id);
             } else {
                 add_ids.append(item->id);
             }
+        } else {
+            int row = m_idList.indexOf(item->id);
+            emit dataChanged(index(row), index(row));
         }
-        m_convoHash[item->id] = *item;
     }
 
     if (!add_ids.isEmpty()) {

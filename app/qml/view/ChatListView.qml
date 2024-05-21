@@ -72,11 +72,24 @@ ScrollView {
                 ColumnLayout {
                     property int basisWidth: chatItemLayout.layoutWidth - chatItemLayout.leftPadding - chatItemLayout.rightPadding -
                                              postAvatarImage.width - parent.spacing
-                    Label {
+
+                    RowLayout {
                         Layout.preferredWidth: parent.basisWidth
-                        font.pointSize: AdjustedValues.f10
-                        text: model.memberDisplayNames.length > 0 ? model.memberDisplayNames[0] : ""
+                        Label {
+                            Layout.fillWidth: true
+                            elide: Text.ElideRight
+                            font.pointSize: AdjustedValues.f10
+                            text: model.memberDisplayNames.length > 0 ? model.memberDisplayNames[0] : ""
+                        }
+                        Label {
+                            Layout.preferredWidth: implicitWidth
+                            Layout.minimumWidth: implicitWidth
+                            font.pointSize: AdjustedValues.f8
+                            color: Material.color(Material.Grey)
+                            text: model.lastMessageSentAt
+                        }
                     }
+
                     Label {
                         Layout.preferredWidth: parent.basisWidth
                         font.pointSize: AdjustedValues.f10
