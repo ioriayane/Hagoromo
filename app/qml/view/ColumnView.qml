@@ -14,6 +14,7 @@ import tech.relog.hagoromo.authorfeedlistmodel 1.0
 import tech.relog.hagoromo.anyprofilelistmodel 1.0
 import tech.relog.hagoromo.listfeedlistmodel 1.0
 import tech.relog.hagoromo.chatlistmodel 1.0
+import tech.relog.hagoromo.chatmessagelistmodel 1.0
 import tech.relog.hagoromo.systemtool 1.0
 import tech.relog.hagoromo.singleton 1.0
 
@@ -486,6 +487,23 @@ ColumnLayout {
             model: ChatListModel {
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }
+
+            onRequestViewChatMessage: (convo_id) => {
+                                          console.log("onRequestViewChatMessage:" + convo_id)
+                                          settings.columnValue = convo_id
+                                          columnStackView.push(chatMessageListComponent)
+                                      }
+
+        }
+    }
+    Component {
+        id: chatMessageListComponent
+        ChatMessageListView {
+            accountDid: account.did
+            model: ChatMessageListModel {
+                convoId: settings.columnValue
+                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
+            }
         }
     }
 
@@ -513,6 +531,9 @@ ColumnLayout {
             columnStackView.push(listFeedComponent)
             componentTypeLabel.addText = " : " + settings.columnName
         }else if(componentType === 7){
+            columnStackView.push(chatListComponent)
+            componentTypeLabel.addText = ""
+        }else if(componentType === 8){
             columnStackView.push(chatListComponent)
             componentTypeLabel.addText = ""
         }else{
@@ -600,6 +621,7 @@ ColumnLayout {
                         qsTr("User"),
                         qsTr("List"),
                         qsTr("Chat"),
+                        qsTr("Message"),
                         qsTr("Unknown")
                     ]
                     property string addText: ""

@@ -77,6 +77,7 @@ QML_FILES = \
     qml/parts/VersionInfomation.qml \
     qml/view/AnyProfileListView.qml \
     qml/view/ChatListView.qml \
+    qml/view/ChatMessageListView.qml \
     qml/view/ColumnView.qml \
     qml/view/FeedGeneratorListView.qml \
     qml/view/ImageFullView.qml \

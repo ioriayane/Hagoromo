@@ -9,15 +9,16 @@ import "../parts"
 import "../controls"
 
 ScrollView {
-    id: chatListView
+    id: chatMessageListView
     ScrollBar.vertical.policy: ScrollBar.AlwaysOn
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     clip: true
 
+    property string hoveredLink: ""
+    property string accountDid: ""   // 取得するユーザー
+
     property alias listView: rootListView
     property alias model: rootListView.model
-
-    signal requestViewChatMessage(string convo_id)
 
     ListView {
         id: rootListView
@@ -25,6 +26,7 @@ ScrollView {
         anchors.rightMargin: parent.ScrollBar.vertical.width
         spacing: 5
         maximumFlickVelocity: AdjustedValues.maximumFlickVelocity
+        verticalLayoutDirection: ListView.BottomToTop
 
         onMovementEnded: {
             if(atYEnd){
@@ -62,57 +64,28 @@ ScrollView {
 
             property int layoutWidth: rootListView.width
 
-            onClicked: chatListView.requestViewChatMessage(model.id)
-
             RowLayout {
                 AvatarImage {
                     id: postAvatarImage
                     Layout.preferredWidth: AdjustedValues.i36
                     Layout.preferredHeight: AdjustedValues.i36
-                    source: model.memberAvatars.length > 0 ? model.memberAvatars[0] : "../images/account_icon.png"
+                    source: "".length > 0 ? "" : "../images/account_icon.png"
                 }
                 ColumnLayout {
+                    Layout.preferredWidth: basisWidth
                     property int basisWidth: chatItemLayout.layoutWidth - chatItemLayout.leftPadding - chatItemLayout.rightPadding -
                                              postAvatarImage.width - parent.spacing
 
-                    RowLayout {
-                        Layout.preferredWidth: parent.basisWidth
-                        Label {
-                            Layout.fillWidth: true
-                            elide: Text.ElideRight
-                            font.pointSize: AdjustedValues.f10
-                            text: model.memberDisplayNames.length > 0 ? model.memberDisplayNames[0] : ""
-                        }
-                        Label {
-                            Layout.preferredWidth: implicitWidth
-                            Layout.minimumWidth: implicitWidth
-                            font.pointSize: AdjustedValues.f8
-                            color: Material.color(Material.Grey)
-                            text: model.lastMessageSentAt
-                        }
-                    }
-
                     Label {
-                        Layout.preferredWidth: parent.basisWidth
+                        Layout.fillWidth: true
+                        elide: Text.ElideRight
                         font.pointSize: AdjustedValues.f10
+                        text: model.text
+                    }
+                    Label {
+                        font.pointSize: AdjustedValues.f8
                         color: Material.color(Material.Grey)
-                        text: model.lastMessageText
-
-                        Rectangle {
-                            anchors.right: parent.right
-                            anchors.bottom: parent.bottom
-                            width: childrenRect.width * 2
-                            height: childrenRect.height
-                            radius: height / 2
-                            visible: unreadCountLabel.text.length > 0
-                            color: Material.accentColor
-                            Label {
-                                id: unreadCountLabel
-                                x: width / 2
-                                font.pointSize: AdjustedValues.f8
-                                text: model.unreadCountRole
-                            }
-                        }
+                        text: model.sentAt
                     }
                 }
             }
