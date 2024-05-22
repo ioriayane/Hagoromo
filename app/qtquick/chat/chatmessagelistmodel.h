@@ -35,6 +35,8 @@ public:
     virtual Q_INVOKABLE bool getLatest();
     virtual Q_INVOKABLE bool getNext();
 
+    Q_INVOKABLE void send(const QString &message);
+
     QString convoId() const;
     void setConvoId(const QString &newConvoId);
 

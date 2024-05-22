@@ -1,10 +1,12 @@
 #include "chatmessagelistmodel.h"
 
 #include "atprotocol/chat/bsky/convo/chatbskyconvogetconvo.h"
+#include "atprotocol/chat/bsky/convo/chatbskyconvosendmessage.h"
 #include "atprotocol/lexicons_func_unknown.h"
 
 using AtProtocolInterface::ChatBskyConvoGetConvo;
 using AtProtocolInterface::ChatBskyConvoGetMessages;
+using AtProtocolInterface::ChatBskyConvoSendMessage;
 using namespace AtProtocolType::ChatBskyConvoDefs;
 using namespace AtProtocolType;
 
@@ -105,6 +107,33 @@ bool ChatMessageListModel::getNext()
     });
 
     return true;
+}
+
+void ChatMessageListModel::send(const QString &message)
+{
+    if (running() || convoId().isEmpty())
+        return;
+    setRunning(true);
+
+    QJsonObject obj;
+
+    obj.insert("text", message);
+
+    ChatBskyConvoSendMessage *convo = new ChatBskyConvoSendMessage(this);
+    connect(convo, &ChatBskyConvoSendMessage::finished, this, [=](bool success) {
+        if (success) {
+            qDebug() << "Sended" << convo->messageView().id << convo->messageView().text;
+            // QList<AtProtocolType::ChatBskyConvoDefs::MessageView> messages;
+            // messages.append(convo->messageView());
+        } else {
+            emit errorOccured(convo->errorCode(), convo->errorMessage());
+        }
+        setRunning(false);
+        convo->deleteLater();
+    });
+    convo->setAccount(account());
+    convo->setService(account().service_endpoint);
+    convo->sendMessage(convoId(), obj);
 }
 
 QHash<int, QByteArray> ChatMessageListModel::roleNames() const

@@ -17,6 +17,11 @@ ColumnLayout {
     property alias listView: rootListView
     property alias model: rootListView.model
 
+    Shortcut {  // Post
+        enabled: chatMessageListView.visible && sendButton.enabled && messageTextArea.focus
+        sequence: "Ctrl+Return"
+        onActivated: sendButton.clicked()
+    }
     QtObject {
         id: relayObject
         function rowCount() {
@@ -132,15 +137,22 @@ ColumnLayout {
     }
     RowLayout {
         TextArea {
+            id: messageTextArea
             Layout.fillWidth: parent
             selectByMouse: true
             font.pointSize: AdjustedValues.f10
             placeholderText: qsTr("Write a message")
         }
         IconButton {
+            id: sendButton
             font.pointSize: AdjustedValues.f10
             iconSource: "../images/send.png"
+            enabled: messageTextArea.text.length > 0 && !rootListView.model.running
             // iconText: qsTr("Send")
+            onClicked: {
+                rootListView.model.send(messageTextArea.text)
+                messageTextArea.text = ""
+            }
         }
     }
 }
