@@ -14,6 +14,7 @@
 #include <QFontDatabase>
 #include <QQuickItem>
 #include <QPainter>
+#include "atprotocol/lexicons_func_unknown.h"
 
 SystemTool::SystemTool(QObject *parent) : QObject { parent }
 {

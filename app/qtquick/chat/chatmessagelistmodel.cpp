@@ -117,27 +117,32 @@ void ChatMessageListModel::send(const QString &message)
         return;
     setRunning(true);
 
-    QJsonObject obj;
+    LexiconsTypeUnknown::makeFacets(
+            this, account(), message,
+            [=](const QList<AtProtocolType::AppBskyRichtextFacet::Main> &facets) {
+                QJsonObject obj;
+                obj.insert("text", message);
+                LexiconsTypeUnknown::insertFacetsJson(obj, facets);
 
-    obj.insert("text", message);
-
-    ChatBskyConvoSendMessage *convo = new ChatBskyConvoSendMessage(this);
-    connect(convo, &ChatBskyConvoSendMessage::finished, this, [=](bool success) {
-        if (success) {
-            qDebug() << "Sent" << convo->messageView().id << convo->messageView().text;
-            QList<AtProtocolType::ChatBskyConvoDefs::MessageView> messages;
-            messages.append(convo->messageView());
-            copyFrom(messages, QList<AtProtocolType::ChatBskyConvoDefs::DeletedMessageView>(),
-                     true);
-        } else {
-            emit errorOccured(convo->errorCode(), convo->errorMessage());
-        }
-        setRunning(false);
-        convo->deleteLater();
-    });
-    convo->setAccount(account());
-    convo->setService(account().service_endpoint);
-    convo->sendMessage(convoId(), obj);
+                ChatBskyConvoSendMessage *convo = new ChatBskyConvoSendMessage(this);
+                connect(convo, &ChatBskyConvoSendMessage::finished, this, [=](bool success) {
+                    if (success) {
+                        qDebug() << "Sent" << convo->messageView().id << convo->messageView().text;
+                        QList<AtProtocolType::ChatBskyConvoDefs::MessageView> messages;
+                        messages.append(convo->messageView());
+                        copyFrom(messages,
+                                 QList<AtProtocolType::ChatBskyConvoDefs::DeletedMessageView>(),
+                                 true);
+                    } else {
+                        emit errorOccured(convo->errorCode(), convo->errorMessage());
+                    }
+                    setRunning(false);
+                    convo->deleteLater();
+                });
+                convo->setAccount(account());
+                convo->setService(account().service_endpoint);
+                convo->sendMessage(convoId(), obj);
+            });
 }
 
 QHash<int, QByteArray> ChatMessageListModel::roleNames() const

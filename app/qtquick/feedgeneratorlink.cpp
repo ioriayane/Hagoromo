@@ -1,7 +1,7 @@
 #include "feedgeneratorlink.h"
 #include "atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerator.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofile.h"
-#include "systemtool.h"
+#include "atprotocol/lexicons_func_unknown.h"
 
 using AtProtocolInterface::AppBskyActorGetProfile;
 using AtProtocolInterface::AppBskyFeedGetFeedGenerator;

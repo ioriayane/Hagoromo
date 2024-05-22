@@ -1,5 +1,6 @@
 #include "comatprotorepocreaterecordex.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofiles.h"
+#include "atprotocol/lexicons_func_unknown.h"
 
 #include <QDateTime>
 #include <QJsonArray>
@@ -124,36 +125,7 @@ void ComAtprotoRepoCreateRecordEx::post(const QString &text)
     }
 
     if (!m_facets.isEmpty()) {
-        QJsonArray json_facets;
-        for (const auto &facet : qAsConst(m_facets)) {
-            QJsonObject json_facet;
-            QJsonObject json_index;
-            QJsonArray json_features;
-            QJsonObject json_feature;
-
-            json_index.insert("byteStart", facet.index.byteStart);
-            json_index.insert("byteEnd", facet.index.byteEnd);
-            if (facet.features_type == AppBskyRichtextFacet::MainFeaturesType::features_Link
-                && !facet.features_Link.isEmpty()) {
-                json_feature.insert("uri", facet.features_Link.first().uri);
-                json_feature.insert("$type", "app.bsky.richtext.facet#link");
-            } else if (facet.features_type
-                               == AppBskyRichtextFacet::MainFeaturesType::features_Mention
-                       && !facet.features_Mention.isEmpty()) {
-                json_facet.insert("$type", "app.bsky.richtext.facet");
-                json_feature.insert("did", facet.features_Mention.first().did);
-                json_feature.insert("$type", "app.bsky.richtext.facet#mention");
-            } else if (facet.features_type == AppBskyRichtextFacet::MainFeaturesType::features_Tag
-                       && !facet.features_Tag.isEmpty()) {
-                json_feature.insert("tag", facet.features_Tag.first().tag);
-                json_feature.insert("$type", "app.bsky.richtext.facet#tag");
-            }
-            json_facet.insert("index", json_index);
-            json_features.append(json_feature);
-            json_facet.insert("features", json_features);
-            json_facets.append(json_facet);
-        }
-        json_record.insert("facets", json_facets);
+        LexiconsTypeUnknown::insertFacetsJson(json_record, m_facets);
     }
 
     if (!m_selfLabels.isEmpty()) {

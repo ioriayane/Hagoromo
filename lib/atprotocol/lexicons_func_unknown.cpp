@@ -3,9 +3,18 @@
 
 #include "lexicons_func.h"
 #include "lexicons_func_unknown.h"
+#include "atprotocol/app/bsky/actor/appbskyactorgetprofiles.h"
+
+using AtProtocolInterface::AppBskyActorGetProfiles;
 
 namespace AtProtocolType {
 namespace LexiconsTypeUnknown {
+
+struct MentionData
+{
+    int start = -1;
+    int end = -1;
+};
 
 void copyUnknown(const QJsonObject &src, QVariant &dest)
 {
@@ -255,6 +264,152 @@ QString formatDateTime(const QString &value, const bool is_long)
         return QDateTime::fromString(value, Qt::ISODateWithMs)
                 .toLocalTime()
                 .toString("MM/dd hh:mm");
+}
+
+void makeFacets(
+        QObject *parent, AtProtocolInterface::AccountData account, const QString &text,
+        std::function<void(const QList<AtProtocolType::AppBskyRichtextFacet::Main> &)> callback)
+{
+
+    QMultiMap<QString, MentionData> mention;
+    QList<AtProtocolType::AppBskyRichtextFacet::Main> facets;
+    QRegularExpression rx_facet = QRegularExpression(QString("(?:%1)|(?:%2)|(?:%3)")
+                                                             .arg(REG_EXP_URL, REG_EXP_MENTION)
+                                                             .arg(REG_EXP_HASH_TAG));
+
+    QRegularExpressionMatch match = rx_facet.match(text);
+    if (!match.capturedTexts().isEmpty()) {
+        QString temp;
+        int pos;
+        int byte_start = 0;
+        int byte_end = 0;
+        while ((pos = match.capturedStart()) != -1) {
+            byte_start = text.left(pos).toUtf8().length();
+            temp = match.captured();
+            byte_end = byte_start + temp.toUtf8().length();
+
+            int trimmed_offset = 0;
+            QString trimmed_temp = temp.trimmed();
+            int temp_pos = temp.indexOf(trimmed_temp);
+            int temp_diff_len = temp.length() - trimmed_temp.length();
+            if (temp_diff_len > 0) {
+                // 前後の空白を消す
+                // 今のところhashtagだけここにくる可能性がある
+                byte_start = text.left(pos + temp_pos).toUtf8().length();
+                byte_end = byte_start + trimmed_temp.toUtf8().length();
+                temp = trimmed_temp;
+                if (temp_diff_len == 2 || (temp_diff_len == 1 && temp_pos == 0)) {
+                    trimmed_offset = 1;
+                }
+            }
+            if (temp.startsWith("@")) {
+                temp.remove("@");
+                MentionData position;
+                position.start = byte_start;
+                position.end = byte_end;
+                mention.insert(temp, position);
+            } else if (temp.startsWith("#")) {
+                AppBskyRichtextFacet::Main facet;
+                facet.index.byteStart = byte_start;
+                facet.index.byteEnd = byte_end;
+                AppBskyRichtextFacet::Tag tag;
+                tag.tag = temp.mid(1);
+                facet.features_type = AppBskyRichtextFacet::MainFeaturesType::features_Tag;
+                facet.features_Tag.append(tag);
+                facets.append(facet);
+            } else {
+                AppBskyRichtextFacet::Main facet;
+                facet.index.byteStart = byte_start;
+                facet.index.byteEnd = byte_end;
+                AppBskyRichtextFacet::Link link;
+                link.uri = temp;
+                facet.features_type = AppBskyRichtextFacet::MainFeaturesType::features_Link;
+                facet.features_Link.append(link);
+                facets.append(facet);
+            }
+
+            match = rx_facet.match(text, pos + match.capturedLength() - trimmed_offset);
+        }
+
+        if (!mention.isEmpty()) {
+            QStringList ids;
+            QMapIterator<QString, MentionData> i(mention);
+            while (i.hasNext()) {
+                i.next();
+                if (!ids.contains(i.key())) {
+                    ids.append(i.key());
+                }
+            }
+
+            AppBskyActorGetProfiles *profiles = new AppBskyActorGetProfiles(parent);
+            QObject::connect(profiles, &AppBskyActorGetProfiles::finished, [=](bool success) {
+                QList<AtProtocolType::AppBskyRichtextFacet::Main> facets2(facets);
+                if (success) {
+                    for (const auto &item : qAsConst(profiles->profilesList())) {
+                        QString handle = item.handle;
+                        handle.remove("@");
+                        if (mention.contains(handle)) {
+                            const QList<MentionData> positions = mention.values(handle);
+                            for (const auto &position : positions) {
+                                AppBskyRichtextFacet::Main facet;
+                                facet.index.byteStart = position.start;
+                                facet.index.byteEnd = position.end;
+                                AppBskyRichtextFacet::Mention mention;
+                                mention.did = item.did;
+                                facet.features_type =
+                                        AppBskyRichtextFacet::MainFeaturesType::features_Mention;
+                                facet.features_Mention.append(mention);
+                                facets2.append(facet);
+                            }
+                        }
+                    }
+                }
+                callback(facets2);
+                profiles->deleteLater();
+            });
+            profiles->setAccount(account);
+            profiles->getProfiles(ids);
+        } else {
+            // mentionがないときは直接戻る
+            callback(facets);
+        }
+    } else {
+        // uriもmentionがないときは直接戻る
+        callback(facets);
+    }
+}
+
+void insertFacetsJson(QJsonObject &parent, const QList<AppBskyRichtextFacet::Main> &facets)
+{
+    QJsonArray json_facets;
+    for (const auto &facet : qAsConst(facets)) {
+        QJsonObject json_facet;
+        QJsonObject json_index;
+        QJsonArray json_features;
+        QJsonObject json_feature;
+
+        json_index.insert("byteStart", facet.index.byteStart);
+        json_index.insert("byteEnd", facet.index.byteEnd);
+        if (facet.features_type == AppBskyRichtextFacet::MainFeaturesType::features_Link
+            && !facet.features_Link.isEmpty()) {
+            json_feature.insert("uri", facet.features_Link.first().uri);
+            json_feature.insert("$type", "app.bsky.richtext.facet#link");
+        } else if (facet.features_type == AppBskyRichtextFacet::MainFeaturesType::features_Mention
+                   && !facet.features_Mention.isEmpty()) {
+            json_facet.insert("$type", "app.bsky.richtext.facet");
+            json_feature.insert("did", facet.features_Mention.first().did);
+            json_feature.insert("$type", "app.bsky.richtext.facet#mention");
+        } else if (facet.features_type == AppBskyRichtextFacet::MainFeaturesType::features_Tag
+                   && !facet.features_Tag.isEmpty()) {
+            json_feature.insert("tag", facet.features_Tag.first().tag);
+            json_feature.insert("$type", "app.bsky.richtext.facet#tag");
+        }
+        json_facet.insert("index", json_index);
+        json_features.append(json_feature);
+        json_facet.insert("features", json_features);
+        json_facets.append(json_facet);
+    }
+    parent.insert("facets", json_facets);
 }
 
 }

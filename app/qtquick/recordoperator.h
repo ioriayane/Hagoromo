@@ -89,10 +89,6 @@ signals:
     void progressMessageChanged();
 
 private:
-    void
-    makeFacets(const QString &text,
-               std::function<void(const QList<AtProtocolType::AppBskyRichtextFacet::Main> &facets)>
-                       callback);
     void uploadBlob(std::function<void(bool)> callback);
     bool getAllListItems(const QString &list_uri, std::function<void(bool)> callback);
     void deleteAllListItems(std::function<void(bool)> callback);

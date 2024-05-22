@@ -8,7 +8,6 @@
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
 #include "extension/com/atproto/repo/comatprotorepolistrecordsex.h"
 #include "extension/com/atproto/repo/comatprotorepoputrecordex.h"
-#include "systemtool.h"
 
 #include <QTimer>
 
@@ -22,12 +21,6 @@ using AtProtocolInterface::ComAtprotoRepoListRecordsEx;
 using AtProtocolInterface::ComAtprotoRepoPutRecordEx;
 using AtProtocolInterface::ComAtprotoRepoUploadBlob;
 using namespace AtProtocolType;
-
-struct MentionData
-{
-    int start = -1;
-    int end = -1;
-};
 
 RecordOperator::RecordOperator(QObject *parent)
     : QObject { parent },
@@ -173,60 +166,66 @@ void RecordOperator::post()
         m_embedImageBlobs.pop_front();
     }
 
-    makeFacets(m_text, [=](const QList<AtProtocolType::AppBskyRichtextFacet::Main> &facets) {
-        ComAtprotoRepoCreateRecordEx *create_record = new ComAtprotoRepoCreateRecordEx(this);
-        connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, [=](bool success) {
-            if (success) {
-                QString last_post_uri = create_record->uri();
-                QString last_post_cid = create_record->cid();
-                bool ret = threadGate(create_record->uri(),
-                                      [=](bool success2, const QString &uri, const QString &cid) {
-                                          m_sequentialPostsCurrent++;
-                                          if (m_sequentialPostsCurrent >= m_sequentialPostsTotal) {
-                                              setProgressMessage(QString());
-                                              emit finished(success2, uri, cid);
-                                              setRunning(false);
-                                          } else {
-                                              m_threadGateType = "everybody";
-                                              if (m_sequentialPostsCurrent == 1
-                                                  && m_replyRoot.uri.isEmpty()) {
-                                                  m_replyRoot.uri = last_post_uri;
-                                                  m_replyRoot.cid = last_post_cid;
-                                              }
-                                              m_replyParent.uri = last_post_uri;
-                                              m_replyParent.cid = last_post_cid;
-                                              post();
-                                          }
-                                      });
-                if (!ret) {
-                    setProgressMessage(QString());
-                    emit errorOccured("InvalidThreadGateSetting",
-                                      QString("Invalid thread gate setting.\ntype:%1\nrules:%2")
-                                              .arg(m_threadGateType, m_threadGateRules.join(", ")));
-                    emit finished(ret, QString(), QString());
-                    setRunning(false);
-                }
-            } else {
-                setProgressMessage(QString());
-                emit errorOccured(create_record->errorCode(), create_record->errorMessage());
-                emit finished(success, QString(), QString());
-                setRunning(false);
-            }
-            create_record->deleteLater();
-        });
-        create_record->setAccount(m_account);
-        create_record->setReply(m_replyParent.cid, m_replyParent.uri, m_replyRoot.cid,
-                                m_replyRoot.uri);
-        create_record->setQuote(m_embedQuote.cid, m_embedQuote.uri);
-        create_record->setImageBlobs(embed_imageBlobs);
-        create_record->setFacets(facets);
-        create_record->setPostLanguages(m_postLanguages);
-        create_record->setExternalLink(m_externalLinkUri, m_externalLinkTitle,
-                                       m_externalLinkDescription);
-        create_record->setFeedGeneratorLink(m_feedGeneratorLinkUri, m_feedGeneratorLinkCid);
-        create_record->setSelfLabels(m_selfLabels);
-        create_record->post(m_text);
-    });
+    LexiconsTypeUnknown::makeFacets(
+            this, m_account, m_text,
+            [=](const QList<AtProtocolType::AppBskyRichtextFacet::Main> &facets) {
+                ComAtprotoRepoCreateRecordEx *create_record =
+                        new ComAtprotoRepoCreateRecordEx(this);
+                connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, [=](bool success) {
+                    if (success) {
+                        QString last_post_uri = create_record->uri();
+                        QString last_post_cid = create_record->cid();
+                        bool ret = threadGate(
+                                create_record->uri(),
+                                [=](bool success2, const QString &uri, const QString &cid) {
+                                    m_sequentialPostsCurrent++;
+                                    if (m_sequentialPostsCurrent >= m_sequentialPostsTotal) {
+                                        setProgressMessage(QString());
+                                        emit finished(success2, uri, cid);
+                                        setRunning(false);
+                                    } else {
+                                        m_threadGateType = "everybody";
+                                        if (m_sequentialPostsCurrent == 1
+                                            && m_replyRoot.uri.isEmpty()) {
+                                            m_replyRoot.uri = last_post_uri;
+                                            m_replyRoot.cid = last_post_cid;
+                                        }
+                                        m_replyParent.uri = last_post_uri;
+                                        m_replyParent.cid = last_post_cid;
+                                        post();
+                                    }
+                                });
+                        if (!ret) {
+                            setProgressMessage(QString());
+                            emit errorOccured(
+                                    "InvalidThreadGateSetting",
+                                    QString("Invalid thread gate setting.\ntype:%1\nrules:%2")
+                                            .arg(m_threadGateType, m_threadGateRules.join(", ")));
+                            emit finished(ret, QString(), QString());
+                            setRunning(false);
+                        }
+                    } else {
+                        setProgressMessage(QString());
+                        emit errorOccured(create_record->errorCode(),
+                                          create_record->errorMessage());
+                        emit finished(success, QString(), QString());
+                        setRunning(false);
+                    }
+                    create_record->deleteLater();
+                });
+                create_record->setAccount(m_account);
+                create_record->setReply(m_replyParent.cid, m_replyParent.uri, m_replyRoot.cid,
+                                        m_replyRoot.uri);
+                create_record->setQuote(m_embedQuote.cid, m_embedQuote.uri);
+                create_record->setImageBlobs(embed_imageBlobs);
+                create_record->setFacets(facets);
+                create_record->setPostLanguages(m_postLanguages);
+                create_record->setExternalLink(m_externalLinkUri, m_externalLinkTitle,
+                                               m_externalLinkDescription);
+                create_record->setFeedGeneratorLink(m_feedGeneratorLinkUri, m_feedGeneratorLinkCid);
+                create_record->setSelfLabels(m_selfLabels);
+                create_record->post(m_text);
+            });
 }
 
 void RecordOperator::postWithImages()
@@ -931,119 +930,6 @@ void RecordOperator::setRunning(bool newRunning)
         return;
     m_running = newRunning;
     emit runningChanged();
-}
-
-void RecordOperator::makeFacets(
-        const QString &text,
-        std::function<void(const QList<AtProtocolType::AppBskyRichtextFacet::Main> &facets)>
-                callback)
-{
-    QMultiMap<QString, MentionData> mention;
-    QList<AtProtocolType::AppBskyRichtextFacet::Main> facets;
-    QRegularExpression rx_facet = QRegularExpression(QString("(?:%1)|(?:%2)|(?:%3)")
-                                                             .arg(REG_EXP_URL, REG_EXP_MENTION)
-                                                             .arg(REG_EXP_HASH_TAG));
-
-    QRegularExpressionMatch match = rx_facet.match(text);
-    if (!match.capturedTexts().isEmpty()) {
-        QString temp;
-        int pos;
-        int byte_start = 0;
-        int byte_end = 0;
-        while ((pos = match.capturedStart()) != -1) {
-            byte_start = text.left(pos).toUtf8().length();
-            temp = match.captured();
-            byte_end = byte_start + temp.toUtf8().length();
-
-            int trimmed_offset = 0;
-            QString trimmed_temp = temp.trimmed();
-            int temp_pos = temp.indexOf(trimmed_temp);
-            int temp_diff_len = temp.length() - trimmed_temp.length();
-            if (temp_diff_len > 0) {
-                // 前後の空白を消す
-                // 今のところhashtagだけここにくる可能性がある
-                byte_start = text.left(pos + temp_pos).toUtf8().length();
-                byte_end = byte_start + trimmed_temp.toUtf8().length();
-                temp = trimmed_temp;
-                if (temp_diff_len == 2 || (temp_diff_len == 1 && temp_pos == 0)) {
-                    trimmed_offset = 1;
-                }
-            }
-            if (temp.startsWith("@")) {
-                temp.remove("@");
-                MentionData position;
-                position.start = byte_start;
-                position.end = byte_end;
-                mention.insert(temp, position);
-            } else if (temp.startsWith("#")) {
-                AppBskyRichtextFacet::Main facet;
-                facet.index.byteStart = byte_start;
-                facet.index.byteEnd = byte_end;
-                AppBskyRichtextFacet::Tag tag;
-                tag.tag = temp.mid(1);
-                facet.features_type = AppBskyRichtextFacet::MainFeaturesType::features_Tag;
-                facet.features_Tag.append(tag);
-                facets.append(facet);
-            } else {
-                AppBskyRichtextFacet::Main facet;
-                facet.index.byteStart = byte_start;
-                facet.index.byteEnd = byte_end;
-                AppBskyRichtextFacet::Link link;
-                link.uri = temp;
-                facet.features_type = AppBskyRichtextFacet::MainFeaturesType::features_Link;
-                facet.features_Link.append(link);
-                facets.append(facet);
-            }
-
-            match = rx_facet.match(text, pos + match.capturedLength() - trimmed_offset);
-        }
-
-        if (!mention.isEmpty()) {
-            QStringList ids;
-            QMapIterator<QString, MentionData> i(mention);
-            while (i.hasNext()) {
-                i.next();
-                if (!ids.contains(i.key())) {
-                    ids.append(i.key());
-                }
-            }
-
-            AppBskyActorGetProfiles *profiles = new AppBskyActorGetProfiles(this);
-            connect(profiles, &AppBskyActorGetProfiles::finished, [=](bool success) {
-                QList<AtProtocolType::AppBskyRichtextFacet::Main> facets2(facets);
-                if (success) {
-                    for (const auto &item : qAsConst(profiles->profilesList())) {
-                        QString handle = item.handle;
-                        handle.remove("@");
-                        if (mention.contains(handle)) {
-                            const QList<MentionData> positions = mention.values(handle);
-                            for (const auto &position : positions) {
-                                AppBskyRichtextFacet::Main facet;
-                                facet.index.byteStart = position.start;
-                                facet.index.byteEnd = position.end;
-                                AppBskyRichtextFacet::Mention mention;
-                                mention.did = item.did;
-                                facet.features_type =
-                                        AppBskyRichtextFacet::MainFeaturesType::features_Mention;
-                                facet.features_Mention.append(mention);
-                                facets2.append(facet);
-                            }
-                        }
-                    }
-                    callback(facets2);
-                }
-                profiles->deleteLater();
-            });
-            profiles->setAccount(m_account);
-            profiles->getProfiles(ids);
-        } else {
-            // mentionがないときは直接戻る
-            callback(facets);
-        }
-    } else {
-        // uriもmentionがないときは直接戻る
-        callback(facets);
-    }
 }
 
 void RecordOperator::uploadBlob(std::function<void(bool)> callback)
