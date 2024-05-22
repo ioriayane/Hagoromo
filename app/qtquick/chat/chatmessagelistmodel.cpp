@@ -66,7 +66,8 @@ bool ChatMessageListModel::getLatest()
                     if (m_idList.isEmpty() && m_cursor.isEmpty()) {
                         m_cursor = messages->cursor();
                     }
-                    copyFrom(messages, true);
+                    copyFrom(messages->messagesMessageViewList(),
+                             messages->messagesDeletedMessageViewList(), true);
                 } else {
                     emit errorOccured(messages->errorCode(), messages->errorMessage());
                 }
@@ -94,7 +95,8 @@ bool ChatMessageListModel::getNext()
             if (success) {
                 m_cursor = messages->cursor();
 
-                copyFrom(messages, false);
+                copyFrom(messages->messagesMessageViewList(),
+                         messages->messagesDeletedMessageViewList(), false);
             } else {
                 emit errorOccured(messages->errorCode(), messages->errorMessage());
             }
@@ -122,9 +124,11 @@ void ChatMessageListModel::send(const QString &message)
     ChatBskyConvoSendMessage *convo = new ChatBskyConvoSendMessage(this);
     connect(convo, &ChatBskyConvoSendMessage::finished, this, [=](bool success) {
         if (success) {
-            qDebug() << "Sended" << convo->messageView().id << convo->messageView().text;
-            // QList<AtProtocolType::ChatBskyConvoDefs::MessageView> messages;
-            // messages.append(convo->messageView());
+            qDebug() << "Sent" << convo->messageView().id << convo->messageView().text;
+            QList<AtProtocolType::ChatBskyConvoDefs::MessageView> messages;
+            messages.append(convo->messageView());
+            copyFrom(messages, QList<AtProtocolType::ChatBskyConvoDefs::DeletedMessageView>(),
+                     true);
         } else {
             emit errorOccured(convo->errorCode(), convo->errorMessage());
         }
@@ -152,15 +156,11 @@ QHash<int, QByteArray> ChatMessageListModel::roleNames() const
     return roles;
 }
 
-void ChatMessageListModel::copyFrom(const AtProtocolInterface::ChatBskyConvoGetMessages *messages,
-                                    bool to_top)
+void ChatMessageListModel::copyFrom(const QList<MessageView> &messages,
+                                    const QList<DeletedMessageView> &deletedMessages, bool to_top)
 {
-    if (messages == nullptr)
-        return;
-
     QStringList add_ids;
-    for (auto item = messages->messagesMessageViewList().cbegin();
-         item != messages->messagesMessageViewList().cend(); item++) {
+    for (auto item = messages.cbegin(); item != messages.cend(); item++) {
         m_messageHash[item->id] = *item;
         if (!m_idList.contains(item->id)) {
             if (to_top) {
@@ -189,8 +189,7 @@ void ChatMessageListModel::copyFrom(const AtProtocolInterface::ChatBskyConvoGetM
         endInsertRows();
     }
 
-    for (auto item = messages->messagesDeletedMessageViewList().crbegin();
-         item != messages->messagesDeletedMessageViewList().crend(); item++) {
+    for (auto item = deletedMessages.crbegin(); item != deletedMessages.crend(); item++) {
         int row = m_idList.indexOf(item->id);
         if (row >= 0) {
             beginRemoveRows(QModelIndex(), row, row);

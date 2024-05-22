@@ -46,7 +46,10 @@ signals:
 protected:
     QHash<int, QByteArray> roleNames() const;
 
-    void copyFrom(const AtProtocolInterface::ChatBskyConvoGetMessages *messages, bool to_top);
+    void
+    copyFrom(const QList<AtProtocolType::ChatBskyConvoDefs::MessageView> &messages,
+             const QList<AtProtocolType::ChatBskyConvoDefs::DeletedMessageView> &deletedMessages,
+             bool to_top);
 
 private:
     void getConvo(const QString &convoId, std::function<void()> callback);
