@@ -20,6 +20,8 @@ public:
         RevRole,
 
         SenderDidRoles,
+        SenderAvatarRoles,
+
         TextRoles,
         SentAtRoles,
     };
@@ -45,7 +47,10 @@ protected:
     void copyFrom(const AtProtocolInterface::ChatBskyConvoGetMessages *messages, bool to_top);
 
 private:
+    void getConvo(const QString &convoId, std::function<void()> callback);
+
     QHash<QString, AtProtocolType::ChatBskyConvoDefs::MessageView> m_messageHash;
+    AtProtocolType::ChatBskyConvoDefs::ConvoView m_convo;
     QString m_convoId;
 };
 

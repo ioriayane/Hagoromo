@@ -17,6 +17,7 @@ QML_FILES = \
     qml/controls/IconButton.qml \
     qml/controls/IconLabelFrame.qml \
     qml/controls/ImageWithIndicator.qml \
+    qml/controls/MessageBubble.qml \
     qml/controls/RadioButtonEx.qml \
     qml/data/Account.qml \
     qml/data/AdjustedValues.qml \
@@ -135,6 +136,7 @@ IMAGE_FILES += \
     qml/images/report.png \
     qml/images/repost.png \
     qml/images/search.png \
+    qml/images/send.png \
     qml/images/settings.png \
     qml/images/tag.png \
     qml/images/terminal.png \

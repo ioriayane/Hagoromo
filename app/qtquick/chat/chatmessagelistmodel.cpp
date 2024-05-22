@@ -1,7 +1,9 @@
 #include "chatmessagelistmodel.h"
 
+#include "atprotocol/chat/bsky/convo/chatbskyconvogetconvo.h"
 #include "atprotocol/lexicons_func_unknown.h"
 
+using AtProtocolInterface::ChatBskyConvoGetConvo;
 using AtProtocolInterface::ChatBskyConvoGetMessages;
 using namespace AtProtocolType::ChatBskyConvoDefs;
 using namespace AtProtocolType;
@@ -33,7 +35,14 @@ QVariant ChatMessageListModel::item(int row, ChatMessageListModelRoles role) con
         return current.rev;
     else if (role == SenderDidRoles)
         return current.sender.did;
-    else if (role == TextRoles)
+    else if (role == SenderAvatarRoles) {
+        for (const auto &member : m_convo.members) {
+            if (member.did == current.sender.did) {
+                return member.avatar;
+            }
+        }
+        return QString();
+    } else if (role == TextRoles)
         return current.text;
     else if (role == SentAtRoles)
         return LexiconsTypeUnknown::formatDateTime(current.sentAt);
@@ -48,23 +57,24 @@ bool ChatMessageListModel::getLatest()
     setRunning(true);
 
     getServiceEndpoint([=]() {
-        ChatBskyConvoGetMessages *messages = new ChatBskyConvoGetMessages(this);
-        connect(messages, &ChatBskyConvoGetMessages::finished, this, [=](bool success) {
-            if (success) {
-                if (m_idList.isEmpty() && m_cursor.isEmpty()) {
-                    m_cursor = messages->cursor();
+        getConvo(convoId(), [=]() {
+            ChatBskyConvoGetMessages *messages = new ChatBskyConvoGetMessages(this);
+            connect(messages, &ChatBskyConvoGetMessages::finished, this, [=](bool success) {
+                if (success) {
+                    if (m_idList.isEmpty() && m_cursor.isEmpty()) {
+                        m_cursor = messages->cursor();
+                    }
+                    copyFrom(messages, true);
+                } else {
+                    emit errorOccured(messages->errorCode(), messages->errorMessage());
                 }
-
-                copyFrom(messages, true);
-            } else {
-                emit errorOccured(messages->errorCode(), messages->errorMessage());
-            }
-            setRunning(false);
-            messages->deleteLater();
+                setRunning(false);
+                messages->deleteLater();
+            });
+            messages->setAccount(account());
+            messages->setService(account().service_endpoint);
+            messages->getMessages(convoId(), 0, QString());
         });
-        messages->setAccount(account());
-        messages->setService(account().service_endpoint);
-        messages->getMessages(convoId(), 0, QString());
     });
 
     return true;
@@ -105,6 +115,8 @@ QHash<int, QByteArray> ChatMessageListModel::roleNames() const
     roles[RevRole] = "rev";
 
     roles[SenderDidRoles] = "senderDid";
+    roles[SenderAvatarRoles] = "senderAvatar";
+
     roles[TextRoles] = "text";
     roles[SentAtRoles] = "sentAt";
 
@@ -157,6 +169,28 @@ void ChatMessageListModel::copyFrom(const AtProtocolInterface::ChatBskyConvoGetM
             endRemoveRows();
         }
     }
+}
+
+void ChatMessageListModel::getConvo(const QString &convoId, std::function<void()> callback)
+{
+    if (convoId.isEmpty() || !m_convo.id.isEmpty()) {
+        callback();
+        return;
+    }
+
+    ChatBskyConvoGetConvo *convo = new ChatBskyConvoGetConvo(this);
+    connect(convo, &ChatBskyConvoGetConvo::finished, [=](bool success) {
+        if (success) {
+            m_convo = convo->convo();
+        } else {
+            m_convo.id.clear();
+        }
+        callback();
+        convo->deleteLater();
+    });
+    convo->setAccount(account());
+    convo->setService(account().service_endpoint);
+    convo->getConvo(convoId);
 }
 
 QString ChatMessageListModel::convoId() const

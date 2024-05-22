@@ -97,6 +97,8 @@ ScrollView {
                         font.pointSize: AdjustedValues.f10
                         color: Material.color(Material.Grey)
                         text: model.lastMessageText
+                        textFormat: Text.StyledText
+                        wrapMode: Text.WrapAnywhere
 
                         Rectangle {
                             anchors.right: parent.right
@@ -104,7 +106,7 @@ ScrollView {
                             width: childrenRect.width * 2
                             height: childrenRect.height
                             radius: height / 2
-                            visible: unreadCountLabel.text.length > 0
+                            visible: model.unreadCountRole > 0
                             color: Material.accentColor
                             Label {
                                 id: unreadCountLabel
