@@ -36,9 +36,6 @@ RecordOperator::RecordOperator(QObject *parent)
       m_embedImagesTotal(0),
       m_running(false)
 {
-    m_rxFacet = QRegularExpression(QString("(?:%1)|(?:%2)|(?:%3)")
-                                           .arg(REG_EXP_URL, REG_EXP_MENTION)
-                                           .arg(REG_EXP_HASH_TAG));
 }
 
 void RecordOperator::setAccount(const QString &service, const QString &did, const QString &handle,
@@ -131,7 +128,6 @@ void RecordOperator::clear()
     m_embedQuote = AtProtocolType::ComAtprotoRepoStrongRef::Main();
     m_embedImages.clear();
     m_embedImageBlobs.clear();
-    m_facets.clear();
     m_externalLinkUri.clear();
     m_externalLinkTitle.clear();
     m_externalLinkDescription.clear();
@@ -177,7 +173,7 @@ void RecordOperator::post()
         m_embedImageBlobs.pop_front();
     }
 
-    makeFacets(m_text, [=]() {
+    makeFacets(m_text, [=](const QList<AtProtocolType::AppBskyRichtextFacet::Main> &facets) {
         ComAtprotoRepoCreateRecordEx *create_record = new ComAtprotoRepoCreateRecordEx(this);
         connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, [=](bool success) {
             if (success) {
@@ -223,7 +219,7 @@ void RecordOperator::post()
                                 m_replyRoot.uri);
         create_record->setQuote(m_embedQuote.cid, m_embedQuote.uri);
         create_record->setImageBlobs(embed_imageBlobs);
-        create_record->setFacets(m_facets);
+        create_record->setFacets(facets);
         create_record->setPostLanguages(m_postLanguages);
         create_record->setExternalLink(m_externalLinkUri, m_externalLinkTitle,
                                        m_externalLinkDescription);
@@ -937,11 +933,18 @@ void RecordOperator::setRunning(bool newRunning)
     emit runningChanged();
 }
 
-void RecordOperator::makeFacets(const QString &text, std::function<void()> callback)
+void RecordOperator::makeFacets(
+        const QString &text,
+        std::function<void(const QList<AtProtocolType::AppBskyRichtextFacet::Main> &facets)>
+                callback)
 {
     QMultiMap<QString, MentionData> mention;
+    QList<AtProtocolType::AppBskyRichtextFacet::Main> facets;
+    QRegularExpression rx_facet = QRegularExpression(QString("(?:%1)|(?:%2)|(?:%3)")
+                                                             .arg(REG_EXP_URL, REG_EXP_MENTION)
+                                                             .arg(REG_EXP_HASH_TAG));
 
-    QRegularExpressionMatch match = m_rxFacet.match(text);
+    QRegularExpressionMatch match = rx_facet.match(text);
     if (!match.capturedTexts().isEmpty()) {
         QString temp;
         int pos;
@@ -980,7 +983,7 @@ void RecordOperator::makeFacets(const QString &text, std::function<void()> callb
                 tag.tag = temp.mid(1);
                 facet.features_type = AppBskyRichtextFacet::MainFeaturesType::features_Tag;
                 facet.features_Tag.append(tag);
-                m_facets.append(facet);
+                facets.append(facet);
             } else {
                 AppBskyRichtextFacet::Main facet;
                 facet.index.byteStart = byte_start;
@@ -989,10 +992,10 @@ void RecordOperator::makeFacets(const QString &text, std::function<void()> callb
                 link.uri = temp;
                 facet.features_type = AppBskyRichtextFacet::MainFeaturesType::features_Link;
                 facet.features_Link.append(link);
-                m_facets.append(facet);
+                facets.append(facet);
             }
 
-            match = m_rxFacet.match(text, pos + match.capturedLength() - trimmed_offset);
+            match = rx_facet.match(text, pos + match.capturedLength() - trimmed_offset);
         }
 
         if (!mention.isEmpty()) {
@@ -1007,6 +1010,7 @@ void RecordOperator::makeFacets(const QString &text, std::function<void()> callb
 
             AppBskyActorGetProfiles *profiles = new AppBskyActorGetProfiles(this);
             connect(profiles, &AppBskyActorGetProfiles::finished, [=](bool success) {
+                QList<AtProtocolType::AppBskyRichtextFacet::Main> facets2(facets);
                 if (success) {
                     for (const auto &item : qAsConst(profiles->profilesList())) {
                         QString handle = item.handle;
@@ -1022,11 +1026,11 @@ void RecordOperator::makeFacets(const QString &text, std::function<void()> callb
                                 facet.features_type =
                                         AppBskyRichtextFacet::MainFeaturesType::features_Mention;
                                 facet.features_Mention.append(mention);
-                                m_facets.append(facet);
+                                facets2.append(facet);
                             }
                         }
                     }
-                    callback();
+                    callback(facets2);
                 }
                 profiles->deleteLater();
             });
@@ -1034,11 +1038,11 @@ void RecordOperator::makeFacets(const QString &text, std::function<void()> callb
             profiles->getProfiles(ids);
         } else {
             // mentionがないときは直接戻る
-            callback();
+            callback(facets);
         }
     } else {
         // uriもmentionがないときは直接戻る
-        callback();
+        callback(facets);
     }
 }
 
