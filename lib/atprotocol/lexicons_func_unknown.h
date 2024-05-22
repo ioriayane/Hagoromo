@@ -68,6 +68,7 @@ void makeFacets(QObject *parent, AtProtocolInterface::AccountData account, const
                         callback);
 void insertFacetsJson(QJsonObject &parent,
                       const QList<AtProtocolType::AppBskyRichtextFacet::Main> &facets);
+QString applyFacetsTo(const QString &text, const QList<AppBskyRichtextFacet::Main> &text_facets);
 
 template<typename T>
 T fromQVariant(const QVariant &variant)

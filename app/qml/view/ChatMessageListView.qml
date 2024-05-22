@@ -142,13 +142,13 @@ ColumnLayout {
             selectByMouse: true
             font.pointSize: AdjustedValues.f10
             placeholderText: qsTr("Write a message")
+            enabled: !rootListView.model.running
         }
         IconButton {
             id: sendButton
             font.pointSize: AdjustedValues.f10
             iconSource: "../images/send.png"
             enabled: messageTextArea.text.length > 0 && !rootListView.model.running
-            // iconText: qsTr("Send")
             onClicked: {
                 rootListView.model.send(messageTextArea.text)
                 messageTextArea.text = ""

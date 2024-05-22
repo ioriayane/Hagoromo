@@ -45,7 +45,7 @@ QVariant ChatMessageListModel::item(int row, ChatMessageListModelRoles role) con
         }
         return QString();
     } else if (role == TextRoles)
-        return current.text;
+        return LexiconsTypeUnknown::applyFacetsTo(current.text, current.facets);
     else if (role == SentAtRoles)
         return LexiconsTypeUnknown::formatDateTime(current.sentAt);
 
