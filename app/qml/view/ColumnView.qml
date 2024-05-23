@@ -509,6 +509,11 @@ ColumnLayout {
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
                 onFinishSent: (success) => chatMesssageListView.finishSent(success)
             }
+
+            onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+            onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
+            onRequestAddMutedWord: (text) => columnView.requestAddMutedWord(account.uuid, text)
+            onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
         }
     }
 

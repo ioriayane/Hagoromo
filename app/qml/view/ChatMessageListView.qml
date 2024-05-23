@@ -17,11 +17,22 @@ ColumnLayout {
     property alias listView: rootListView
     property alias model: rootListView.model
 
+    signal requestViewProfile(string did)
+    signal requestViewSearchPosts(string text)
+    signal requestAddMutedWord(string text)
+
     function finishSent(success) {
         if(success){
             messageTextArea.text = ""
         }else{
             console.log("Fail send")
+        }
+    }
+    function displayLink(url){
+        if(url === undefined || url.indexOf("did:") === 0 || url.indexOf("search://") === 0){
+            hoveredLink = ""
+        }else{
+            hoveredLink = url
         }
     }
 
@@ -89,6 +100,22 @@ ColumnLayout {
                 property int layoutWidth: rootListView.width
                 property bool me: model.senderDid === accountDid
 
+                function openLink(url){
+                    if(url.indexOf("did:") === 0){
+                        chatMessageListView.requestViewProfile(url)
+                    }else if(url.indexOf("search://") === 0){
+                        // tagMenu.x = recrdTextMouseArea.mouseX
+                        // tagMenu.y = recrdTextMouseArea.mouseY
+                        tagMenu.tagText = url.substring(9)
+                        if(tagMenu.tagText.charAt(0) !== "#"){
+                            tagMenu.tagText = "#" + tagMenu.tagText
+                        }
+                        tagMenu.open()
+                    }else{
+                        Qt.openUrlExternally(url)
+                    }
+                }
+
                 states: [
                     State {
                         when: chatItemLayout.me
@@ -117,11 +144,22 @@ ColumnLayout {
                         property int basisWidth: chatItemLayout.layoutWidth - chatItemLayout.leftPadding - chatItemLayout.rightPadding -
                                                  postAvatarImage.width - parent.spacing
                         MessageBubble {
-                            Layout.maximumWidth: parent.basisWidth
+                            id: messageBubble
+                            Layout.maximumWidth: parent.basisWidth * 0.8
                             Layout.alignment: chatItemLayout.me ? Qt.AlignRight : Qt.AlignLeft
                             font.pointSize: AdjustedValues.f10
                             text: model.text
                             fromRight: chatItemLayout.me
+
+                            onLinkActivated: (url) => chatItemLayout.openLink(url)
+                            onHoveredLinkChanged: displayLink(hoveredLink)
+
+                            HashTagMenu {
+                                id: tagMenu
+                                logMode: false
+                                onRequestViewSearchPosts: (text) => chatMessageListView.requestViewSearchPosts(text)
+                                onRequestAddMutedWord: (text) => chatMessageListView.requestAddMutedWord(text)
+                            }
                         }
                         Label {
                             Layout.alignment: chatItemLayout.me ? Qt.AlignRight : Qt.AlignLeft
