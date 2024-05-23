@@ -2,7 +2,6 @@
 #define CHATMESSAGELISTMODEL_H
 
 #include "atpchatabstractlistmodel.h"
-#include "atprotocol/chat/bsky/convo/chatbskyconvogetmessages.h"
 
 class ChatMessageListModel : public AtpChatAbstractListModel
 {

@@ -57,19 +57,10 @@ ColumnLayout {
                 }
             }
 
-            header: ItemDelegate {
+            header: BusyIndicator {
                 width: rootListView.width
-                height: AdjustedValues.h24
-                display: AbstractButton.IconOnly
-                icon.source: rootListView.model.running ? "" : "../images/expand_less.png"
-                onClicked: rootListView.model.getLatest()
-
-                BusyIndicator {
-                    anchors.centerIn: parent
-                    width: AdjustedValues.i24
-                    height: AdjustedValues.i24
-                    visible: rootListView.model.running
-                }
+                height: AdjustedValues.i24
+                visible: rootListView.model.running && rootListView.model.rowCount() === 0
             }
             footer: BusyIndicator {
                 width: rootListView.width
@@ -142,13 +133,12 @@ ColumnLayout {
             selectByMouse: true
             font.pointSize: AdjustedValues.f10
             placeholderText: qsTr("Write a message")
-            enabled: !rootListView.model.running
         }
         IconButton {
             id: sendButton
             font.pointSize: AdjustedValues.f10
             iconSource: "../images/send.png"
-            enabled: messageTextArea.text.length > 0 && !rootListView.model.running
+            enabled: messageTextArea.text.length > 0
             onClicked: {
                 rootListView.model.send(messageTextArea.text)
                 messageTextArea.text = ""

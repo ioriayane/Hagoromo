@@ -4,5 +4,8 @@
         <file>response/list/xrpc/chat.bsky.convo.listConvos_22222222223lr</file>
         <file>response/message/1/xrpc/chat.bsky.convo.getMessages</file>
         <file>response/message/1/xrpc/chat.bsky.convo.getMessages_2222222222aa2</file>
+        <file>response/message/1/xrpc/chat.bsky.convo.getLog_222222222dv3t</file>
+        <file>response/message/1/xrpc/chat.bsky.convo.getLog_2222222222aa6</file>
+        <file>response/message/1/xrpc/chat.bsky.convo.getConvo</file>
     </qresource>
 </RCC>

@@ -4,8 +4,9 @@
 using AtProtocolInterface::DirectoryPlc;
 
 AtpChatAbstractListModel::AtpChatAbstractListModel(QObject *parent)
-    : QAbstractListModel { parent }, m_running(false)
+    : QAbstractListModel { parent }, m_running(false), m_loadingInterval(30000)
 {
+    connect(&m_timer, &QTimer::timeout, this, &AtpChatAbstractListModel::getLatest);
 }
 
 void AtpChatAbstractListModel::clear()
@@ -70,4 +71,37 @@ void AtpChatAbstractListModel::getServiceEndpoint(std::function<void()> callback
         plc->deleteLater();
     });
     plc->directory(account().did);
+}
+
+bool AtpChatAbstractListModel::autoLoading() const
+{
+    return m_timer.isActive();
+}
+
+void AtpChatAbstractListModel::setAutoLoading(bool newAutoLoading)
+{
+    if (newAutoLoading) {
+        // Off -> On
+        if (m_timer.isActive())
+            return;
+        m_timer.start(loadingInterval());
+    } else {
+        // * -> Off
+        m_timer.stop();
+    }
+    emit autoLoadingChanged();
+}
+
+int AtpChatAbstractListModel::loadingInterval() const
+{
+    return m_loadingInterval;
+}
+
+void AtpChatAbstractListModel::setLoadingInterval(int newLoadingInterval)
+{
+    if (m_loadingInterval == newLoadingInterval)
+        return;
+    m_loadingInterval = newLoadingInterval;
+    m_timer.setInterval(m_loadingInterval);
+    emit loadingIntervalChanged();
 }

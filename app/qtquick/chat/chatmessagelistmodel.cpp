@@ -1,10 +1,13 @@
 #include "chatmessagelistmodel.h"
 
 #include "atprotocol/chat/bsky/convo/chatbskyconvogetconvo.h"
+#include "atprotocol/chat/bsky/convo/chatbskyconvogetlog.h"
+#include "atprotocol/chat/bsky/convo/chatbskyconvogetmessages.h"
 #include "atprotocol/chat/bsky/convo/chatbskyconvosendmessage.h"
 #include "atprotocol/lexicons_func_unknown.h"
 
 using AtProtocolInterface::ChatBskyConvoGetConvo;
+using AtProtocolInterface::ChatBskyConvoGetLog;
 using AtProtocolInterface::ChatBskyConvoGetMessages;
 using AtProtocolInterface::ChatBskyConvoSendMessage;
 using namespace AtProtocolType::ChatBskyConvoDefs;
@@ -60,23 +63,56 @@ bool ChatMessageListModel::getLatest()
 
     getServiceEndpoint([=]() {
         getConvo(convoId(), [=]() {
-            ChatBskyConvoGetMessages *messages = new ChatBskyConvoGetMessages(this);
-            connect(messages, &ChatBskyConvoGetMessages::finished, this, [=](bool success) {
-                if (success) {
-                    if (m_idList.isEmpty() && m_cursor.isEmpty()) {
-                        m_cursor = messages->cursor();
-                    }
-                    copyFrom(messages->messagesMessageViewList(),
-                             messages->messagesDeletedMessageViewList(), true);
-                } else {
-                    emit errorOccured(messages->errorCode(), messages->errorMessage());
+            QString cursor;
+            if (!m_idList.isEmpty()) {
+                const auto &latest = m_messageHash[m_idList.first()];
+                if (!latest.rev.isEmpty()) {
+                    cursor = latest.rev;
                 }
-                setRunning(false);
-                messages->deleteLater();
-            });
-            messages->setAccount(account());
-            messages->setService(account().service_endpoint);
-            messages->getMessages(convoId(), 0, QString());
+            }
+            if (cursor.isEmpty()) {
+                ChatBskyConvoGetMessages *messages = new ChatBskyConvoGetMessages(this);
+                connect(messages, &ChatBskyConvoGetMessages::finished, this, [=](bool success) {
+                    if (success) {
+                        if (m_idList.isEmpty() && m_cursor.isEmpty()) {
+                            m_cursor = messages->cursor();
+                        }
+                        copyFrom(messages->messagesMessageViewList(),
+                                 messages->messagesDeletedMessageViewList(), true);
+                    } else {
+                        emit errorOccured(messages->errorCode(), messages->errorMessage());
+                    }
+                    setRunning(false);
+                    messages->deleteLater();
+                });
+                messages->setAccount(account());
+                messages->setService(account().service_endpoint);
+                messages->getMessages(convoId(), 0, QString());
+            } else {
+                ChatBskyConvoGetLog *log = new ChatBskyConvoGetLog(this);
+                connect(log, &ChatBskyConvoGetLog::finished, this, [=](bool success) {
+                    if (success) {
+                        QList<AtProtocolType::ChatBskyConvoDefs::MessageView> messages;
+                        for (const auto msg : log->logsLogCreateMessageList()) {
+                            if (msg.message_type
+                                == LogCreateMessageMessageType::message_MessageView) {
+                                messages.insert(0, msg.message_MessageView);
+                            }
+                        }
+                        copyFrom(messages,
+                                 QList<AtProtocolType::ChatBskyConvoDefs::DeletedMessageView>(),
+                                 true);
+
+                    } else {
+                        emit errorOccured(log->errorCode(), log->errorMessage());
+                    }
+                    setRunning(false);
+                    log->deleteLater();
+                });
+                log->setAccount(account());
+                log->setService(account().service_endpoint);
+                log->getLog(cursor);
+            }
         });
     });
 
@@ -128,11 +164,11 @@ void ChatMessageListModel::send(const QString &message)
                 connect(convo, &ChatBskyConvoSendMessage::finished, this, [=](bool success) {
                     if (success) {
                         qDebug() << "Sent" << convo->messageView().id << convo->messageView().text;
-                        QList<AtProtocolType::ChatBskyConvoDefs::MessageView> messages;
-                        messages.append(convo->messageView());
-                        copyFrom(messages,
-                                 QList<AtProtocolType::ChatBskyConvoDefs::DeletedMessageView>(),
-                                 true);
+                        // QList<AtProtocolType::ChatBskyConvoDefs::MessageView> messages;
+                        // messages.append(convo->messageView());
+                        // copyFrom(messages,
+                        //          QList<AtProtocolType::ChatBskyConvoDefs::DeletedMessageView>(),
+                        //          true);
                     } else {
                         emit errorOccured(convo->errorCode(), convo->errorMessage());
                     }

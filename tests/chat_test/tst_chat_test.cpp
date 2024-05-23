@@ -170,20 +170,23 @@ void chat_test::test_ChatMessageListModel()
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
 
-    QVERIFY2(model.rowCount() == 5, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY2(model.rowCount() == 6, QString::number(model.rowCount()).toLocal8Bit());
     i = 0;
-    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzepxa2s2m",
+    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3kt5o6y7wmr2r",
              model.item(i, ChatMessageListModel::IdRole).toString().toLocal8Bit());
     i = 1;
-    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzejyngk2s",
+    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzepxa2s2m",
              model.item(i, ChatMessageListModel::IdRole).toString().toLocal8Bit());
     i = 2;
-    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzdsn7hk2m",
+    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzejyngk2s",
              model.item(i, ChatMessageListModel::IdRole).toString().toLocal8Bit());
     i = 3;
-    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzdmpzqs2s",
+    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzdsn7hk2m",
              model.item(i, ChatMessageListModel::IdRole).toString().toLocal8Bit());
     i = 4;
+    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzdmpzqs2s",
+             model.item(i, ChatMessageListModel::IdRole).toString().toLocal8Bit());
+    i = 5;
     QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzdesy3s2m",
              model.item(i, ChatMessageListModel::IdRole).toString().toLocal8Bit());
 
@@ -194,36 +197,64 @@ void chat_test::test_ChatMessageListModel()
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
 
-    QVERIFY2(model.rowCount() == 10, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY2(model.rowCount() == 11, QString::number(model.rowCount()).toLocal8Bit());
     i = 0;
-    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzepxa2s2m",
+    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3kt5o6y7wmr2r",
              model.item(i, ChatMessageListModel::IdRole).toString().toLocal8Bit());
     i = 1;
-    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzejyngk2s",
+    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzepxa2s2m",
              model.item(i, ChatMessageListModel::IdRole).toString().toLocal8Bit());
     i = 2;
-    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzdsn7hk2m",
+    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzejyngk2s",
              model.item(i, ChatMessageListModel::IdRole).toString().toLocal8Bit());
     i = 3;
-    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzdmpzqs2s",
+    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzdsn7hk2m",
              model.item(i, ChatMessageListModel::IdRole).toString().toLocal8Bit());
     i = 4;
-    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzdesy3s2m",
+    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzdmpzqs2s",
              model.item(i, ChatMessageListModel::IdRole).toString().toLocal8Bit());
     i = 5;
-    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzd6vyak2s",
+    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzdesy3s2m",
              model.item(i, ChatMessageListModel::IdRole).toString().toLocal8Bit());
     i = 6;
-    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzcwz7es2s",
+    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzd6vyak2s",
              model.item(i, ChatMessageListModel::IdRole).toString().toLocal8Bit());
     i = 7;
-    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzbti4ns2k",
+    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzcwz7es2s",
              model.item(i, ChatMessageListModel::IdRole).toString().toLocal8Bit());
     i = 8;
-    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzbmczm22s",
+    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzbti4ns2k",
              model.item(i, ChatMessageListModel::IdRole).toString().toLocal8Bit());
     i = 9;
+    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzbmczm22s",
+             model.item(i, ChatMessageListModel::IdRole).toString().toLocal8Bit());
+    i = 10;
     QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzbg7zek2m",
+             model.item(i, ChatMessageListModel::IdRole).toString().toLocal8Bit());
+
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    QVERIFY2(model.rowCount() == 15, QString::number(model.rowCount()).toLocal8Bit());
+
+    i = 0;
+    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3kt5qzdatpk2r",
+             model.item(i, ChatMessageListModel::IdRole).toString().toLocal8Bit());
+    i = 1;
+    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3kt5qz2u7yw2q",
+             model.item(i, ChatMessageListModel::IdRole).toString().toLocal8Bit());
+    i = 2;
+    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3kt5qysohzt2n",
+             model.item(i, ChatMessageListModel::IdRole).toString().toLocal8Bit());
+    i = 3;
+    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3kt5qy5yzzd2a",
+             model.item(i, ChatMessageListModel::IdRole).toString().toLocal8Bit());
+    i = 4;
+    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3kt5o6y7wmr2r",
              model.item(i, ChatMessageListModel::IdRole).toString().toLocal8Bit());
 }
 
