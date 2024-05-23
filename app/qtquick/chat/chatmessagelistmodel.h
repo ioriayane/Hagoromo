@@ -11,6 +11,7 @@ class ChatMessageListModel : public AtpChatAbstractListModel
 
 public:
     explicit ChatMessageListModel(QObject *parent = nullptr);
+    ~ChatMessageListModel();
 
     // モデルで提供する項目のルールID的な（QML側へ公開するために大文字で始めること）
     enum ChatMessageListModelRoles {
@@ -52,6 +53,7 @@ protected:
 
 private:
     void getConvo(const QString &convoId, std::function<void()> callback);
+    void updateRead(const QString &convoId, const QString &messageId);
 
     QHash<QString, AtProtocolType::ChatBskyConvoDefs::MessageView> m_messageHash;
     AtProtocolType::ChatBskyConvoDefs::ConvoView m_convo;

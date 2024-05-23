@@ -7,5 +7,6 @@
         <file>response/message/1/xrpc/chat.bsky.convo.getLog_222222222dv3t</file>
         <file>response/message/1/xrpc/chat.bsky.convo.getLog_2222222222aa6</file>
         <file>response/message/1/xrpc/chat.bsky.convo.getConvo</file>
+        <file>response/message/1/xrpc/chat.bsky.convo.updateRead</file>
     </qresource>
 </RCC>

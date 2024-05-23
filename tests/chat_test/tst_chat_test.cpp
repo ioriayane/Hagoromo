@@ -47,8 +47,7 @@ chat_test::chat_test()
                         json = "{}";
                         result = false;
                     }
-                } else if (request.url().path().endsWith(
-                                   "/xrpc/app.bsky.notification.updateSeen")) {
+                } else if (request.url().path().endsWith("/xrpc/chat.bsky.convo.updateRead")) {
                     json = "{}";
                     result = true;
                 } else {
