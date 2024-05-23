@@ -33,6 +33,7 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
     Q_INVOKABLE QVariant item(int row, ChatListModel::ChatListModelRoles role) const;
+    Q_INVOKABLE void update(int row, ChatListModel::ChatListModelRoles role, const QVariant &value);
 
     virtual Q_INVOKABLE bool getLatest();
     virtual Q_INVOKABLE bool getNext();

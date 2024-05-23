@@ -3,6 +3,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 
+import tech.relog.hagoromo.chatlistmodel 1.0
 import tech.relog.hagoromo.singleton 1.0
 
 import "../parts"
@@ -73,6 +74,7 @@ ScrollView {
             onClicked: {
                 requestedConvoId = model.id
                 chatListView.requestViewChatMessage(model.id)
+                rootListView.model.update(model.index, ChatListModel.UnreadCountRole, 0)
             }
 
             RowLayout {

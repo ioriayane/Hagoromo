@@ -74,6 +74,23 @@ QVariant ChatListModel::item(int row, ChatListModelRoles role) const
     return QVariant();
 }
 
+void ChatListModel::update(int row, ChatListModelRoles role, const QVariant &value)
+{
+    if (row < 0 || row >= m_idList.count())
+        return;
+
+    auto &current = m_convoHash[m_idList.at(row)];
+
+    if (role == UnreadCountRole) {
+        int count = value.toInt();
+        if (current.unreadCount != count) {
+            qDebug() << "update value" << current.unreadCount << "->" << count;
+            current.unreadCount = value.toInt();
+            emit dataChanged(index(row), index(row));
+        }
+    }
+}
+
 bool ChatListModel::getLatest()
 {
     if (running())

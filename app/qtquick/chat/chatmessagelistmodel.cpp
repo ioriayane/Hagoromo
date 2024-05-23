@@ -14,7 +14,9 @@ using namespace AtProtocolType::ChatBskyConvoDefs;
 using namespace AtProtocolType;
 
 ChatMessageListModel::ChatMessageListModel(QObject *parent)
-    : AtpChatAbstractListModel { parent } { }
+    : AtpChatAbstractListModel { parent }, m_runSending(false)
+{
+}
 
 ChatMessageListModel::~ChatMessageListModel() { }
 
@@ -153,9 +155,9 @@ bool ChatMessageListModel::getNext()
 
 void ChatMessageListModel::send(const QString &message)
 {
-    if (running() || convoId().isEmpty())
+    if (runSending() || convoId().isEmpty())
         return;
-    setRunning(true);
+    setRunSending(true);
 
     LexiconsTypeUnknown::makeFacets(
             this, account(), message,
@@ -176,7 +178,8 @@ void ChatMessageListModel::send(const QString &message)
                     } else {
                         emit errorOccured(convo->errorCode(), convo->errorMessage());
                     }
-                    setRunning(false);
+                    finishSent(success);
+                    setRunSending(false);
                     convo->deleteLater();
                 });
                 convo->setAccount(account());
@@ -277,4 +280,17 @@ void ChatMessageListModel::setConvoId(const QString &newConvoId)
         return;
     m_convoId = newConvoId;
     emit convoIdChanged();
+}
+
+bool ChatMessageListModel::runSending() const
+{
+    return m_runSending;
+}
+
+void ChatMessageListModel::setRunSending(bool newRunSending)
+{
+    if (m_runSending == newRunSending)
+        return;
+    m_runSending = newRunSending;
+    emit runSendingChanged();
 }

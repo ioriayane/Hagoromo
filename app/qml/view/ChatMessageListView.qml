@@ -17,6 +17,14 @@ ColumnLayout {
     property alias listView: rootListView
     property alias model: rootListView.model
 
+    function finishSent(success) {
+        if(success){
+            messageTextArea.text = ""
+        }else{
+            console.log("Fail send")
+        }
+    }
+
     Shortcut {  // Post
         enabled: chatMessageListView.visible && sendButton.enabled && messageTextArea.focus
         sequence: "Ctrl+Return"
@@ -130,6 +138,9 @@ ColumnLayout {
         TextArea {
             id: messageTextArea
             Layout.fillWidth: parent
+            Layout.leftMargin: 5
+            enabled: !rootListView.model.runSending
+            wrapMode: Text.WrapAnywhere
             selectByMouse: true
             font.pointSize: AdjustedValues.f10
             placeholderText: qsTr("Write a message")
@@ -138,10 +149,13 @@ ColumnLayout {
             id: sendButton
             font.pointSize: AdjustedValues.f10
             iconSource: "../images/send.png"
-            enabled: messageTextArea.text.length > 0
+            enabled: messageTextArea.text.length > 0 && !rootListView.model.runSending
             onClicked: {
                 rootListView.model.send(messageTextArea.text)
-                messageTextArea.text = ""
+            }
+            BusyIndicator {
+                anchors.fill: parent
+                visible: rootListView.model.runSending
             }
         }
     }

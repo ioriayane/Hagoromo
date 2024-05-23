@@ -486,7 +486,7 @@ ColumnLayout {
         ChatListView {
             model: ChatListModel {
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
-                onFinishUpdateRead: getLatest()
+                onFinishUpdateRead: (success) => getLatest()
             }
 
             onRequestViewChatMessage: (convo_id) => {
@@ -500,12 +500,14 @@ ColumnLayout {
     Component {
         id: chatMessageListComponent
         ChatMessageListView {
+            id: chatMesssageListView
             accountDid: account.did
             model: ChatMessageListModel {
                 convoId: settings.columnValue
                 autoLoading: true
                 loadingInterval: 3000
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
+                onFinishSent: (success) => chatMesssageListView.finishSent(success)
             }
         }
     }
