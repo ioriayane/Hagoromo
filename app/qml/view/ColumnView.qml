@@ -486,6 +486,7 @@ ColumnLayout {
         ChatListView {
             model: ChatListModel {
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
+                onFinishUpdateRead: getLatest()
             }
 
             onRequestViewChatMessage: (convo_id) => {
@@ -735,10 +736,15 @@ ColumnLayout {
         clip: true
 
         onCurrentItemChanged: {
-            if(currentItem.model === undefined)
+            if(currentItem.model === undefined){
                 return
-            if(currentItem.model.rowCount() > 0)
+            }
+            if(currentItem.model.rowCount() > 0){
+                if(currentItem.resume){
+                    currentItem.resume()
+                }
                 return
+            }
             currentItem.model.setAccount(account.service,
                                          account.did,
                                          account.handle,

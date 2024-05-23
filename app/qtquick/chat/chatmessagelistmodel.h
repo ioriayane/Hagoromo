@@ -53,7 +53,6 @@ protected:
 
 private:
     void getConvo(const QString &convoId, std::function<void()> callback);
-    void updateRead(const QString &convoId, const QString &messageId);
 
     QHash<QString, AtProtocolType::ChatBskyConvoDefs::MessageView> m_messageHash;
     AtProtocolType::ChatBskyConvoDefs::ConvoView m_convo;

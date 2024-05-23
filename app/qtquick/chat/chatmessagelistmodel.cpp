@@ -4,24 +4,19 @@
 #include "atprotocol/chat/bsky/convo/chatbskyconvogetlog.h"
 #include "atprotocol/chat/bsky/convo/chatbskyconvogetmessages.h"
 #include "atprotocol/chat/bsky/convo/chatbskyconvosendmessage.h"
-#include "atprotocol/chat/bsky/convo/chatbskyconvoupdateread.h"
 #include "atprotocol/lexicons_func_unknown.h"
 
 using AtProtocolInterface::ChatBskyConvoGetConvo;
 using AtProtocolInterface::ChatBskyConvoGetLog;
 using AtProtocolInterface::ChatBskyConvoGetMessages;
 using AtProtocolInterface::ChatBskyConvoSendMessage;
-using AtProtocolInterface::ChatBskyConvoUpdateRead;
 using namespace AtProtocolType::ChatBskyConvoDefs;
 using namespace AtProtocolType;
 
 ChatMessageListModel::ChatMessageListModel(QObject *parent)
     : AtpChatAbstractListModel { parent } { }
 
-ChatMessageListModel::~ChatMessageListModel()
-{
-    updateRead(convoId(), QString());
-}
+ChatMessageListModel::~ChatMessageListModel() { }
 
 int ChatMessageListModel::rowCount(const QModelIndex &parent) const
 {
@@ -269,25 +264,6 @@ void ChatMessageListModel::getConvo(const QString &convoId, std::function<void()
     convo->setAccount(account());
     convo->setService(account().service_endpoint);
     convo->getConvo(convoId);
-}
-
-void ChatMessageListModel::updateRead(const QString &convoId, const QString &messageId)
-{
-    if (convoId.isEmpty())
-        return;
-
-    ChatBskyConvoUpdateRead *read = new ChatBskyConvoUpdateRead(this);
-    connect(read, &ChatBskyConvoUpdateRead::finished, this, [=](bool success) {
-        if (success) {
-            qDebug() << "updateRead" << read->convo().unreadCount;
-        } else {
-            emit errorOccured(read->errorCode(), read->errorMessage());
-        }
-        read->deleteLater();
-    });
-    read->setAccount(account());
-    read->setService(account().service_endpoint);
-    read->updateRead(convoId, messageId);
 }
 
 QString ChatMessageListModel::convoId() const

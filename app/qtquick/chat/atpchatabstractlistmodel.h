@@ -28,6 +28,7 @@ public:
 
     virtual Q_INVOKABLE bool getLatest() = 0;
     virtual Q_INVOKABLE bool getNext() = 0;
+    Q_INVOKABLE void updateRead(const QString &convoId, const QString &messageId);
 
     bool running() const;
     void setRunning(bool newRunning);
@@ -38,10 +39,9 @@ public:
 
 signals:
     void errorOccured(const QString &code, const QString &message);
+    void finishUpdateRead(bool success);
     void runningChanged();
-
     void autoLoadingChanged();
-
     void loadingIntervalChanged();
 
 protected:

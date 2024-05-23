@@ -16,8 +16,16 @@ ScrollView {
 
     property alias listView: rootListView
     property alias model: rootListView.model
+    property string requestedConvoId: ""
 
     signal requestViewChatMessage(string convo_id)
+
+    function resume(){
+        console.log("chatListView: resume from " + requestedConvoId)
+        if(requestedConvoId.length > 0){
+            model.updateRead(requestedConvoId, "")
+        }
+    }
 
     ListView {
         id: rootListView
@@ -62,7 +70,10 @@ ScrollView {
 
             property int layoutWidth: rootListView.width
 
-            onClicked: chatListView.requestViewChatMessage(model.id)
+            onClicked: {
+                requestedConvoId = model.id
+                chatListView.requestViewChatMessage(model.id)
+            }
 
             RowLayout {
                 AvatarImage {

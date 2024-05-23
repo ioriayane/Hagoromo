@@ -1,6 +1,8 @@
 #include "atpchatabstractlistmodel.h"
 #include "extension/directory/plc/directoryplc.h"
+#include "atprotocol/chat/bsky/convo/chatbskyconvoupdateread.h"
 
+using AtProtocolInterface::ChatBskyConvoUpdateRead;
 using AtProtocolInterface::DirectoryPlc;
 
 AtpChatAbstractListModel::AtpChatAbstractListModel(QObject *parent)
@@ -34,6 +36,26 @@ void AtpChatAbstractListModel::setAccount(const QString &service, const QString 
 void AtpChatAbstractListModel::setServiceEndpoint(const QString &service_endpoint)
 {
     m_account.service_endpoint = service_endpoint;
+}
+
+void AtpChatAbstractListModel::updateRead(const QString &convoId, const QString &messageId)
+{
+    if (convoId.isEmpty())
+        return;
+
+    ChatBskyConvoUpdateRead *read = new ChatBskyConvoUpdateRead(this);
+    connect(read, &ChatBskyConvoUpdateRead::finished, this, [=](bool success) {
+        if (success) {
+            qDebug() << "updateRead" << read->convo().unreadCount;
+        } else {
+            emit errorOccured(read->errorCode(), read->errorMessage());
+        }
+        emit finishUpdateRead(success);
+        read->deleteLater();
+    });
+    read->setAccount(account());
+    read->setService(account().service_endpoint);
+    read->updateRead(convoId, messageId);
 }
 
 bool AtpChatAbstractListModel::running() const
