@@ -62,6 +62,22 @@ QVariant FollowsListModel::item(int row, FollowsListModelRoles role) const
             labels.append(label.val);
         }
         return labels;
+    } else if (role == AssociatedChatAllowIncomingRole) {
+        if (profile.associated.chat.allowIncoming == "none") {
+            return AssociatedChatAllowIncomingNone;
+        } else if (profile.associated.chat.allowIncoming == "following") {
+            return AssociatedChatAllowIncomingFollowing;
+        } else {
+            return AssociatedChatAllowIncomingAll;
+        }
+    } else if (role == AssociatedChatAllowRole) {
+        if (profile.associated.chat.allowIncoming == "none") {
+            return false;
+        } else if (profile.associated.chat.allowIncoming == "following") {
+            return profile.viewer.followedBy.contains(profile.did);
+        } else {
+            return true;
+        }
     }
 
     return QVariant();
@@ -188,6 +204,8 @@ QHash<int, QByteArray> FollowsListModel::roleNames() const
     roles[BlockingUriRole] = "blockingUri";
     roles[FollowingUriRole] = "followingUri";
     roles[LabelsRole] = "labels";
+    roles[AssociatedChatAllowIncomingRole] = "associatedChatAllowIncoming";
+    roles[AssociatedChatAllowRole] = "associatedChatAllow";
 
     return roles;
 }

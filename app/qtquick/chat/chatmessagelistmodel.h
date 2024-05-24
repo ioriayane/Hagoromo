@@ -8,6 +8,8 @@ class ChatMessageListModel : public AtpChatAbstractListModel
     Q_OBJECT
 
     Q_PROPERTY(QString convoId READ convoId WRITE setConvoId NOTIFY convoIdChanged FINAL)
+    Q_PROPERTY(QStringList memberDids READ memberDids WRITE setMemberDids NOTIFY memberDidsChanged
+                       FINAL)
     Q_PROPERTY(bool runSending READ runSending WRITE setRunSending NOTIFY runSendingChanged FINAL)
 
 public:
@@ -43,11 +45,16 @@ public:
     bool runSending() const;
     void setRunSending(bool newRunSending);
 
+    QStringList memberDids() const;
+    void setMemberDids(const QStringList &newMemberDids);
+
 signals:
     void finishSent(bool success);
     void convoIdChanged();
 
     void runSendingChanged();
+
+    void memberDidsChanged();
 
 protected:
     QHash<int, QByteArray> roleNames() const;
@@ -58,12 +65,14 @@ protected:
              bool to_top);
 
 private:
-    void getConvo(const QString &convoId, std::function<void()> callback);
+    void getConvo(const QString &convoId, const QStringList &memberDids,
+                  std::function<void()> callback);
 
     QHash<QString, AtProtocolType::ChatBskyConvoDefs::MessageView> m_messageHash;
     AtProtocolType::ChatBskyConvoDefs::ConvoView m_convo;
     QString m_convoId;
     bool m_runSending;
+    QStringList m_memberDids;
 };
 
 #endif // CHATMESSAGELISTMODEL_H

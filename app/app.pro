@@ -89,6 +89,7 @@ QML_FILES = \
     qml/view/PostThreadView.qml \
     qml/view/ProfileListView.qml \
     qml/view/ProfileView.qml \
+    qml/view/SuggestionProfileListView.qml \
     qml/view/TimelineView.qml
 
 IMAGE_FILES += \

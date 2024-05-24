@@ -4,132 +4,230 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 
 import tech.relog.hagoromo.chatlistmodel 1.0
+import tech.relog.hagoromo.searchprofilelistmodel 1.0
 import tech.relog.hagoromo.singleton 1.0
 
 import "../parts"
 import "../controls"
 
-ScrollView {
+Item {
     id: chatListView
-    ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-    ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-    clip: true
+
+    property string accountDid: ""   // 取得するユーザー
 
     property alias listView: rootListView
-    property alias model: rootListView.model
+    property alias model: relayObject
     property string requestedConvoId: ""
 
-    signal requestViewChatMessage(string convo_id)
+    signal requestViewChatMessage(string convo_id, var dids)
+    signal errorOccured(string code, string message)
 
     function resume(){
         console.log("chatListView: resume from " + requestedConvoId)
         if(requestedConvoId.length > 0){
-            model.updateRead(requestedConvoId, "")
+            rootListView.model.updateRead(requestedConvoId, "")
         }
     }
 
-    ListView {
-        id: rootListView
+
+    QtObject {
+        id: relayObject
+        function rowCount() {
+            return rootListView.model.rowCount()
+        }
+        function setAccount(service, did, handle, email, accessJwt, refreshJwt) {
+            accountDid = did
+            searchProfileListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
+            rootListView.model.setAccount(service, did, handle, email, accessJwt, refreshJwt)
+        }
+        function getLatest() {
+            rootListView.model.getLatest()
+        }
+    }
+
+
+    ScrollView {
+        id: chatListScrollView
         anchors.fill: parent
-        anchors.rightMargin: parent.ScrollBar.vertical.width
-        spacing: 5
-        maximumFlickVelocity: AdjustedValues.maximumFlickVelocity
+        ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        clip: true
 
-        onMovementEnded: {
-            if(atYEnd){
-                rootListView.model.getNext()
-            }
-        }
 
-        header: ItemDelegate {
-            width: rootListView.width
-            height: AdjustedValues.h24
-            display: AbstractButton.IconOnly
-            icon.source: rootListView.model.running ? "" : "../images/expand_less.png"
-            onClicked: rootListView.model.getLatest()
-
-            BusyIndicator {
-                anchors.centerIn: parent
-                width: AdjustedValues.i24
-                height: AdjustedValues.i24
-                visible: rootListView.model.running
-            }
-        }
-        footer: BusyIndicator {
-            width: rootListView.width
-            height: AdjustedValues.i24
-            visible: rootListView.model.running && rootListView.model.rowCount() > 0
-        }
-
-        delegate: ClickableFrame {
-            id: chatItemLayout
-            clip: true
-            topPadding: 10
-            leftPadding: 10
-            rightPadding: 10
-            bottomPadding: 10
-
-            property int layoutWidth: rootListView.width
-
-            onClicked: {
-                requestedConvoId = model.id
-                chatListView.requestViewChatMessage(model.id)
-                rootListView.model.update(model.index, ChatListModel.UnreadCountRole, 0)
+        ListView {
+            id: rootListView
+            anchors.fill: parent
+            anchors.rightMargin: parent.ScrollBar.vertical.width
+            spacing: 5
+            maximumFlickVelocity: AdjustedValues.maximumFlickVelocity
+            model: ChatListModel {
+                onErrorOccured: (code, message) => chatListView.errorOccured(code, message)
+                onFinishUpdateRead: (success) => getLatest()
             }
 
-            RowLayout {
-                AvatarImage {
-                    id: postAvatarImage
-                    Layout.preferredWidth: AdjustedValues.i36
-                    Layout.preferredHeight: AdjustedValues.i36
-                    source: model.memberAvatars.length > 0 ? model.memberAvatars[0] : "../images/account_icon.png"
+            onMovementEnded: {
+                if(atYEnd){
+                    rootListView.model.getNext()
                 }
-                ColumnLayout {
-                    property int basisWidth: chatItemLayout.layoutWidth - chatItemLayout.leftPadding - chatItemLayout.rightPadding -
-                                             postAvatarImage.width - parent.spacing
+            }
 
-                    RowLayout {
-                        Layout.preferredWidth: parent.basisWidth
-                        Label {
-                            Layout.fillWidth: true
-                            elide: Text.ElideRight
-                            font.pointSize: AdjustedValues.f10
-                            text: model.memberDisplayNames.length > 0 ? model.memberDisplayNames[0] : ""
-                        }
-                        Label {
-                            Layout.preferredWidth: implicitWidth
-                            Layout.minimumWidth: implicitWidth
-                            font.pointSize: AdjustedValues.f8
-                            color: Material.color(Material.Grey)
-                            text: model.lastMessageSentAt
-                        }
+            header: ItemDelegate {
+                width: rootListView.width
+                height: AdjustedValues.h24
+                display: AbstractButton.IconOnly
+                icon.source: rootListView.model.running ? "" : "../images/expand_less.png"
+                onClicked: rootListView.model.getLatest()
+
+                BusyIndicator {
+                    anchors.centerIn: parent
+                    width: AdjustedValues.i24
+                    height: AdjustedValues.i24
+                    visible: rootListView.model.running
+                }
+            }
+            footer: ColumnLayout {
+                width: rootListView.width
+                IconButton {
+                    Layout.preferredWidth: AdjustedValues.b55
+                    Layout.alignment: Qt.AlignRight
+                    Layout.rightMargin: 5
+                    iconSource: "../images/add.png"
+                    onClicked: startNewChatLayout.visible = true
+                }
+                BusyIndicator {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: AdjustedValues.i24
+                    visible: rootListView.model.running && rootListView.model.rowCount() > 0
+                }
+            }
+
+            delegate: ClickableFrame {
+                id: chatItemLayout
+                clip: true
+                topPadding: 10
+                leftPadding: 10
+                rightPadding: 10
+                bottomPadding: 10
+
+                property int layoutWidth: rootListView.width
+
+                onClicked: {
+                    requestedConvoId = model.id
+                    chatListView.requestViewChatMessage(model.id, [])
+                    rootListView.model.update(model.index, ChatListModel.UnreadCountRole, 0)
+                }
+
+                RowLayout {
+                    AvatarImage {
+                        id: postAvatarImage
+                        Layout.preferredWidth: AdjustedValues.i36
+                        Layout.preferredHeight: AdjustedValues.i36
+                        source: model.memberAvatars.length > 0 ? model.memberAvatars[0] : "../images/account_icon.png"
                     }
+                    ColumnLayout {
+                        property int basisWidth: chatItemLayout.layoutWidth - chatItemLayout.leftPadding - chatItemLayout.rightPadding -
+                                                 postAvatarImage.width - parent.spacing
 
-                    Label {
-                        Layout.preferredWidth: parent.basisWidth
-                        font.pointSize: AdjustedValues.f10
-                        color: Material.color(Material.Grey)
-                        text: model.lastMessageText
-                        textFormat: Text.StyledText
-                        wrapMode: Text.WrapAnywhere
-
-                        Rectangle {
-                            anchors.right: parent.right
-                            anchors.bottom: parent.bottom
-                            width: childrenRect.width * 2
-                            height: childrenRect.height
-                            radius: height / 2
-                            visible: model.unreadCountRole > 0
-                            color: Material.accentColor
+                        RowLayout {
+                            Layout.preferredWidth: parent.basisWidth
                             Label {
-                                id: unreadCountLabel
-                                x: width / 2
+                                Layout.fillWidth: true
+                                elide: Text.ElideRight
+                                font.pointSize: AdjustedValues.f10
+                                text: model.memberDisplayNames.length > 0 ? model.memberDisplayNames[0] : ""
+                            }
+                            Label {
+                                Layout.preferredWidth: implicitWidth
+                                Layout.minimumWidth: implicitWidth
                                 font.pointSize: AdjustedValues.f8
-                                text: model.unreadCountRole
+                                color: Material.color(Material.Grey)
+                                text: model.lastMessageSentAt
+                            }
+                        }
+
+                        Label {
+                            Layout.preferredWidth: parent.basisWidth
+                            font.pointSize: AdjustedValues.f10
+                            color: Material.color(Material.Grey)
+                            text: model.lastMessageText
+                            textFormat: Text.StyledText
+                            wrapMode: Text.WrapAnywhere
+
+                            Rectangle {
+                                anchors.right: parent.right
+                                anchors.bottom: parent.bottom
+                                width: childrenRect.width * 2
+                                height: childrenRect.height
+                                radius: height / 2
+                                visible: model.unreadCountRole > 0
+                                color: Material.accentColor
+                                Label {
+                                    id: unreadCountLabel
+                                    x: width / 2
+                                    font.pointSize: AdjustedValues.f8
+                                    text: model.unreadCountRole
+                                }
                             }
                         }
                     }
                 }
+            }
+        }
+    }
+    Pane {
+        id: startNewChatLayout
+        anchors.fill: parent
+        visible: false
+        leftPadding: 0
+        rightPadding: 0
+        onVisibleChanged: searchTextArea.text = ""
+
+        ColumnLayout {
+            anchors.fill: parent
+            RowLayout {
+                Label {
+                    Layout.fillWidth: true
+                    font.bold: true
+                    font.pointSize: AdjustedValues.f10
+                    text: qsTr("Start a new chat")
+                }
+                IconButton {
+                    flat: true
+                    iconSource: "../images/close.png"
+                    onClicked: startNewChatLayout.visible = false
+                }
+            }
+            TextArea {
+                id: searchTextArea
+                Layout.fillWidth: parent
+                Layout.leftMargin: 5
+                Layout.rightMargin: 5
+                wrapMode: Text.WrapAnywhere
+                selectByMouse: true
+                font.pointSize: AdjustedValues.f10
+                placeholderText: qsTr("Search")
+                onTextChanged: {
+                    if(text.length > 0){
+                        searchProfileListModel.getSuggestion(text, 10)
+                    }else{
+                        searchProfileListModel.clear()
+                    }
+                }
+            }
+            SuggestionProfileListView {
+                id: suggestionProfileListView
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                accountDid: chatListView.accountDid
+                model: SearchProfileListModel {
+                    id: searchProfileListModel
+                    enabledSuggestion: true
+                    onErrorOccured: (code, message) => chatListView.errorOccured(code, message)
+                }
+                onSelectedProfile: (did) => {
+                                       startNewChatLayout.visible = false
+                                       chatListView.requestViewChatMessage("", [did])
+                                   }
             }
         }
     }

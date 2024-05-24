@@ -1,12 +1,14 @@
 #include "chatmessagelistmodel.h"
 
 #include "atprotocol/chat/bsky/convo/chatbskyconvogetconvo.h"
+#include "atprotocol/chat/bsky/convo/chatbskyconvogetconvoformembers.h"
 #include "atprotocol/chat/bsky/convo/chatbskyconvogetlog.h"
 #include "atprotocol/chat/bsky/convo/chatbskyconvogetmessages.h"
 #include "atprotocol/chat/bsky/convo/chatbskyconvosendmessage.h"
 #include "atprotocol/lexicons_func_unknown.h"
 
 using AtProtocolInterface::ChatBskyConvoGetConvo;
+using AtProtocolInterface::ChatBskyConvoGetConvoForMembers;
 using AtProtocolInterface::ChatBskyConvoGetLog;
 using AtProtocolInterface::ChatBskyConvoGetMessages;
 using AtProtocolInterface::ChatBskyConvoSendMessage;
@@ -61,12 +63,12 @@ QVariant ChatMessageListModel::item(int row, ChatMessageListModelRoles role) con
 
 bool ChatMessageListModel::getLatest()
 {
-    if (running() || convoId().isEmpty())
+    if (running() || (convoId().isEmpty() && memberDids().isEmpty()))
         return false;
     setRunning(true);
 
     getServiceEndpoint([=]() {
-        getConvo(convoId(), [=]() {
+        getConvo(convoId(), memberDids(), [=]() {
             QString cursor;
             if (!m_idList.isEmpty()) {
                 const auto &latest = m_messageHash[m_idList.first()];
@@ -247,26 +249,46 @@ void ChatMessageListModel::copyFrom(const QList<MessageView> &messages,
     }
 }
 
-void ChatMessageListModel::getConvo(const QString &convoId, std::function<void()> callback)
+void ChatMessageListModel::getConvo(const QString &convoId, const QStringList &memberDids,
+                                    std::function<void()> callback)
 {
-    if (convoId.isEmpty() || !m_convo.id.isEmpty()) {
+    if ((convoId.isEmpty() && memberDids.isEmpty()) || !m_convo.id.isEmpty()) {
         callback();
         return;
     }
 
-    ChatBskyConvoGetConvo *convo = new ChatBskyConvoGetConvo(this);
-    connect(convo, &ChatBskyConvoGetConvo::finished, [=](bool success) {
-        if (success) {
-            m_convo = convo->convo();
-        } else {
-            m_convo.id.clear();
-        }
-        callback();
-        convo->deleteLater();
-    });
-    convo->setAccount(account());
-    convo->setService(account().service_endpoint);
-    convo->getConvo(convoId);
+    if (!convoId.isEmpty()) {
+        ChatBskyConvoGetConvo *convo = new ChatBskyConvoGetConvo(this);
+        connect(convo, &ChatBskyConvoGetConvo::finished, [=](bool success) {
+            if (success) {
+                m_convo = convo->convo();
+            } else {
+                m_convo.id.clear();
+            }
+            callback();
+            convo->deleteLater();
+        });
+        convo->setAccount(account());
+        convo->setService(account().service_endpoint);
+        convo->getConvo(convoId);
+    } else {
+        ChatBskyConvoGetConvoForMembers *convo = new ChatBskyConvoGetConvoForMembers(this);
+        connect(convo, &ChatBskyConvoGetConvoForMembers::finished, [=](bool success) {
+            qDebug().noquote() << success << convo->replyJson();
+            if (success) {
+                m_convo = convo->convo();
+                setConvoId(m_convo.id);
+            } else {
+                m_convo.id.clear();
+            }
+            qDebug() << "in" << m_convo.id;
+            callback();
+            convo->deleteLater();
+        });
+        convo->setAccount(account());
+        convo->setService(account().service_endpoint);
+        convo->getConvoForMembers(memberDids);
+    }
 }
 
 QString ChatMessageListModel::convoId() const
@@ -293,4 +315,17 @@ void ChatMessageListModel::setRunSending(bool newRunSending)
         return;
     m_runSending = newRunSending;
     emit runSendingChanged();
+}
+
+QStringList ChatMessageListModel::memberDids() const
+{
+    return m_memberDids;
+}
+
+void ChatMessageListModel::setMemberDids(const QStringList &newMemberDids)
+{
+    if (m_memberDids == newMemberDids)
+        return;
+    m_memberDids = newMemberDids;
+    emit memberDidsChanged();
 }

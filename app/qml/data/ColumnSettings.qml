@@ -6,6 +6,7 @@ QtObject {
     property int imageLayoutType: 1
     property string columnName: ""
     property string columnValue: ""
+    property var columnValueList: []
 
     property bool visibleLike: true
     property bool visibleRepost: true

@@ -18,6 +18,7 @@ private slots:
     void cleanupTestCase();
     void test_ChatListModel();
     void test_ChatMessageListModel();
+    void test_ChatMessageListModelByMembers();
 
 private:
     WebServer m_mockServer;
@@ -254,6 +255,42 @@ void chat_test::test_ChatMessageListModel()
              model.item(i, ChatMessageListModel::IdRole).toString().toLocal8Bit());
     i = 4;
     QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3kt5o6y7wmr2r",
+             model.item(i, ChatMessageListModel::IdRole).toString().toLocal8Bit());
+}
+
+void chat_test::test_ChatMessageListModelByMembers()
+{
+    ChatMessageListModel model;
+    int i = 0;
+
+    model.setAccount(m_service + "/message/2", "did:plc:ipj5qejfoqu6eukvt72uhyit", "handle",
+                     "email", "accessJwt", "refreshJwt");
+    model.setServiceEndpoint(m_service + "/message/2");
+
+    model.setMemberDids(QStringList() << "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
+
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    QVERIFY2(model.rowCount() == 5, QString::number(model.rowCount()).toLocal8Bit());
+    i = 0;
+    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzepxa2s2m",
+             model.item(i, ChatMessageListModel::IdRole).toString().toLocal8Bit());
+    i = 1;
+    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzejyngk2s",
+             model.item(i, ChatMessageListModel::IdRole).toString().toLocal8Bit());
+    i = 2;
+    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzdsn7hk2m",
+             model.item(i, ChatMessageListModel::IdRole).toString().toLocal8Bit());
+    i = 3;
+    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzdmpzqs2s",
+             model.item(i, ChatMessageListModel::IdRole).toString().toLocal8Bit());
+    i = 4;
+    QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzdesy3s2m",
              model.item(i, ChatMessageListModel::IdRole).toString().toLocal8Bit());
 }
 

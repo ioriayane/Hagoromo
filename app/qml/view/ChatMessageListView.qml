@@ -81,11 +81,11 @@ ColumnLayout {
                 height: AdjustedValues.i24
                 visible: rootListView.model.running && rootListView.model.rowCount() === 0
             }
-            footer: BusyIndicator {
-                width: rootListView.width
-                height: AdjustedValues.i24
-                visible: rootListView.model.running && rootListView.model.rowCount() > 0
-            }
+            // footer: BusyIndicator {
+            //     width: rootListView.width
+            //     height: AdjustedValues.i24
+            //     visible: rootListView.model.running && rootListView.model.rowCount() > 0
+            // }
 
             delegate: Control {
                 id: chatItemLayout

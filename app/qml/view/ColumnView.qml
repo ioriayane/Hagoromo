@@ -484,17 +484,12 @@ ColumnLayout {
     Component {
         id: chatListComponent
         ChatListView {
-            model: ChatListModel {
-                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
-                onFinishUpdateRead: (success) => getLatest()
-            }
-
-            onRequestViewChatMessage: (convo_id) => {
-                                          console.log("onRequestViewChatMessage:" + convo_id)
+            onRequestViewChatMessage: (convo_id, dids) => {
+                                          console.log("onRequestViewChatMessage:" + convo_id + ", " + dids)
                                           settings.columnValue = convo_id
+                                          settings.columnValueList = dids
                                           columnStackView.push(chatMessageListComponent)
                                       }
-
         }
     }
     Component {
@@ -504,6 +499,7 @@ ColumnLayout {
             accountDid: account.did
             model: ChatMessageListModel {
                 convoId: settings.columnValue
+                memberDids: settings.columnValueList
                 autoLoading: true
                 loadingInterval: 3000
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
