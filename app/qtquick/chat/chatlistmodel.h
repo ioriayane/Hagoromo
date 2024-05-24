@@ -16,6 +16,7 @@ public:
         IdRole,
         RevRole,
 
+        MemberHandlesRole,
         MemberDisplayNamesRole,
         MemberAvatarsRole,
 

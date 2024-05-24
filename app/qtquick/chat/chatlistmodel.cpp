@@ -30,7 +30,15 @@ QVariant ChatListModel::item(int row, ChatListModelRoles role) const
     else if (role == RevRole)
         return current.rev;
 
-    else if (role == MemberDisplayNamesRole) {
+    else if (role == MemberHandlesRole) {
+        QStringList handles;
+        for (const auto &member : current.members) {
+            if (member.did != account().did) {
+                handles.append(member.handle);
+            }
+        }
+        return handles;
+    } else if (role == MemberDisplayNamesRole) {
         QStringList names;
         for (const auto &member : current.members) {
             if (member.did != account().did) {
@@ -154,6 +162,7 @@ QHash<int, QByteArray> ChatListModel::roleNames() const
     roles[IdRole] = "id";
     roles[RevRole] = "rev";
 
+    roles[MemberHandlesRole] = "memberHandles";
     roles[MemberDisplayNamesRole] = "memberDisplayNames";
     roles[MemberAvatarsRole] = "memberAvatars";
 

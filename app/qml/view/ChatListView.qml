@@ -61,6 +61,8 @@ Item {
             spacing: 5
             maximumFlickVelocity: AdjustedValues.maximumFlickVelocity
             model: ChatListModel {
+                autoLoading: true
+                loadingInterval: 30000  // 30s
                 onErrorOccured: (code, message) => chatListView.errorOccured(code, message)
                 onFinishUpdateRead: (success) => getLatest()
             }
@@ -85,8 +87,14 @@ Item {
                     visible: rootListView.model.running
                 }
             }
-            footer: ColumnLayout {
+            footer: RowLayout {
+                z: 3
                 width: rootListView.width
+                BusyIndicator {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: AdjustedValues.i24
+                    visible: rootListView.model.running && rootListView.model.rowCount() > 0
+                }
                 IconButton {
                     Layout.preferredWidth: AdjustedValues.b55
                     Layout.alignment: Qt.AlignRight
@@ -94,12 +102,8 @@ Item {
                     iconSource: "../images/add.png"
                     onClicked: startNewChatLayout.visible = true
                 }
-                BusyIndicator {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: AdjustedValues.i24
-                    visible: rootListView.model.running && rootListView.model.rowCount() > 0
-                }
             }
+            footerPositioning: ListView.OverlayFooter
 
             delegate: ClickableFrame {
                 id: chatItemLayout
@@ -143,6 +147,13 @@ Item {
                                 color: Material.color(Material.Grey)
                                 text: model.lastMessageSentAt
                             }
+                        }
+                        Label {
+                            Layout.fillWidth: true
+                            elide: Text.ElideRight
+                            font.pointSize: AdjustedValues.f8
+                            color: Material.color(Material.Grey)
+                            text: "@" + (model.memberHandles.length > 0 ? model.memberHandles[0] : "")
                         }
 
                         Label {

@@ -501,7 +501,7 @@ ColumnLayout {
                 convoId: settings.columnValue
                 memberDids: settings.columnValueList
                 autoLoading: true
-                loadingInterval: 3000
+                loadingInterval: 2000
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
                 onFinishSent: (success) => chatMesssageListView.finishSent(success)
             }
