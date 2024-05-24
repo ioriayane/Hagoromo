@@ -187,7 +187,7 @@ ColumnLayout {
             id: sendButton
             font.pointSize: AdjustedValues.f10
             iconSource: "../images/send.png"
-            enabled: messageTextArea.text.length > 0 && !rootListView.model.runSending
+            enabled: messageTextArea.text.length > 0 && !rootListView.model.runSending && rootListView.model.ready
             onClicked: {
                 rootListView.model.send(messageTextArea.text)
             }

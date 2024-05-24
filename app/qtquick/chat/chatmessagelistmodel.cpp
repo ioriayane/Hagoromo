@@ -16,7 +16,7 @@ using namespace AtProtocolType::ChatBskyConvoDefs;
 using namespace AtProtocolType;
 
 ChatMessageListModel::ChatMessageListModel(QObject *parent)
-    : AtpChatAbstractListModel { parent }, m_runSending(false)
+    : AtpChatAbstractListModel { parent }, m_runSending(false), m_ready(false)
 {
 }
 
@@ -302,6 +302,8 @@ void ChatMessageListModel::setConvoId(const QString &newConvoId)
         return;
     m_convoId = newConvoId;
     emit convoIdChanged();
+
+    setReady(!m_convoId.isEmpty());
 }
 
 bool ChatMessageListModel::runSending() const
@@ -328,4 +330,17 @@ void ChatMessageListModel::setMemberDids(const QStringList &newMemberDids)
         return;
     m_memberDids = newMemberDids;
     emit memberDidsChanged();
+}
+
+bool ChatMessageListModel::ready() const
+{
+    return m_ready;
+}
+
+void ChatMessageListModel::setReady(bool newReady)
+{
+    if (m_ready == newReady)
+        return;
+    m_ready = newReady;
+    emit readyChanged();
 }

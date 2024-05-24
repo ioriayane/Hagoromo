@@ -11,6 +11,7 @@ class ChatMessageListModel : public AtpChatAbstractListModel
     Q_PROPERTY(QStringList memberDids READ memberDids WRITE setMemberDids NOTIFY memberDidsChanged
                        FINAL)
     Q_PROPERTY(bool runSending READ runSending WRITE setRunSending NOTIFY runSendingChanged FINAL)
+    Q_PROPERTY(bool ready READ ready NOTIFY readyChanged FINAL)
 
 public:
     explicit ChatMessageListModel(QObject *parent = nullptr);
@@ -48,6 +49,9 @@ public:
     QStringList memberDids() const;
     void setMemberDids(const QStringList &newMemberDids);
 
+    bool ready() const;
+    void setReady(bool newReady);
+
 signals:
     void finishSent(bool success);
     void convoIdChanged();
@@ -55,6 +59,8 @@ signals:
     void runSendingChanged();
 
     void memberDidsChanged();
+
+    void readyChanged();
 
 protected:
     QHash<int, QByteArray> roleNames() const;
@@ -73,6 +79,7 @@ private:
     QString m_convoId;
     bool m_runSending;
     QStringList m_memberDids;
+    bool m_ready;
 };
 
 #endif // CHATMESSAGELISTMODEL_H
