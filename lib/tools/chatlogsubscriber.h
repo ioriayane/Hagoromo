@@ -16,8 +16,7 @@ public:
     static ChatLogSubscriber *getInstance();
 
     void setAccount(const AtProtocolInterface::AccountData &account);
-    void start(const AtProtocolInterface::AccountData &account,
-               const QString &cursor);
+    void start(const AtProtocolInterface::AccountData &account, const QString &cursor);
     void stop(const AtProtocolInterface::AccountData &account);
 
 signals:
