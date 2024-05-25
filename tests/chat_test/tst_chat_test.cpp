@@ -4,6 +4,7 @@
 #include "webserver.h"
 #include "chat/chatlistmodel.h"
 #include "chat/chatmessagelistmodel.h"
+#include "tools/chatlogsubscriber.h"
 
 class chat_test : public QObject
 {
@@ -19,6 +20,8 @@ private slots:
     void test_ChatListModel();
     void test_ChatMessageListModel();
     void test_ChatMessageListModelByMembers();
+
+    void test_ChatLogSubscriber();
 
 private:
     WebServer m_mockServer;
@@ -292,6 +295,41 @@ void chat_test::test_ChatMessageListModelByMembers()
     i = 4;
     QVERIFY2(model.item(i, ChatMessageListModel::IdRole).toString() == "3ksyzdesy3s2m",
              model.item(i, ChatMessageListModel::IdRole).toString().toLocal8Bit());
+}
+
+void chat_test::test_ChatLogSubscriber()
+{
+    ChatLogSubscriber *log = ChatLogSubscriber::getInstance();
+
+    AtProtocolInterface::AccountData account;
+    account.service = m_service + "/message/1";
+    account.service_endpoint = m_service + "/message/1";
+    account.did = "did:plc:ipj5qejfoqu6eukvt72uhyit";
+    account.handle = "handle";
+    account.accessJwt = "access_jwt";
+    account.refreshJwt = "refresh_jwt";
+
+    log->setAccount(account);
+
+    log->start(account, "2222222222aa6");
+
+    qRegisterMetaType<QList<AtProtocolType::ChatBskyConvoDefs::MessageView>>(
+            "QList<AtProtocolType::ChatBskyConvoDefs::MessageView>");
+    qRegisterMetaType<QList<AtProtocolType::ChatBskyConvoDefs::DeletedMessageView>>(
+            "QList<AtProtocolType::ChatBskyConvoDefs::DeletedMessageView>");
+
+    {
+        QSignalSpy spy(log,
+                       SIGNAL(receiveLogs(
+                               const QList<AtProtocolType::ChatBskyConvoDefs::MessageView> &,
+                               const QList<AtProtocolType::ChatBskyConvoDefs::DeletedMessageView> &,
+                               bool)));
+        log->start(account, "2222222222aa6");
+        spy.wait();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        log->stop(account);
+    }
 }
 
 QTEST_MAIN(chat_test)

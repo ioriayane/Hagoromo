@@ -31,6 +31,7 @@ const AccountData &AtProtocolAccount::account() const
 void AtProtocolAccount::setAccount(const AccountData &account)
 {
     m_account.service = account.service;
+    m_account.service_endpoint = account.service_endpoint;
     m_account.identifier.clear();
     m_account.password.clear();
 
