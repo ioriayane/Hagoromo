@@ -51,6 +51,22 @@
         },
         {
             "$type": "chat.bsky.convo.defs#logCreateMessage",
+            "convoId": "aaaaaaaaaaaa",
+            "rev": "a22222222ecsu",
+            "message": {
+                "$type": "chat.bsky.convo.defs#messageView",
+                "id": "akt5qz2u7yw2q",
+                "rev": "a22222222ecsu",
+                "sender": {
+                    "did": "did:plc:ipj5qejfoqu6eukvtaaaaaa"
+                },
+                "text": "from a",
+                "facets": [],
+                "sentAt": "2024-05-23T11:56:33.539Z"
+            }
+        },
+        {
+            "$type": "chat.bsky.convo.defs#logCreateMessage",
             "convoId": "3ksrqt7eebs2b",
             "rev": "222222222ecu5",
             "message": {

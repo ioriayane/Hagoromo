@@ -101,9 +101,9 @@ bool ChatMessageListModel::getLatest()
                 connect(log, &ChatBskyConvoGetLog::finished, this, [=](bool success) {
                     if (success) {
                         QList<AtProtocolType::ChatBskyConvoDefs::MessageView> messages;
-                        for (const auto msg : log->logsLogCreateMessageList()) {
-                            if (msg.message_type
-                                == LogCreateMessageMessageType::message_MessageView) {
+                        for (const auto &msg : log->logsLogCreateMessageList()) {
+                            if (msg.message_type == LogCreateMessageMessageType::message_MessageView
+                                && msg.convoId == convoId()) {
                                 messages.insert(0, msg.message_MessageView);
                             }
                         }
