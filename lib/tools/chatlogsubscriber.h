@@ -2,6 +2,7 @@
 #define CHATLOGSUBSCRIBER_H
 
 #include "atprotocol/accessatprotocol.h"
+#include "atprotocol/chat/bsky/convo/chatbskyconvogetlog.h"
 
 #include <QObject>
 #include <QHash>
@@ -19,12 +20,11 @@ public:
     void start(const AtProtocolInterface::AccountData &account, const QString &cursor);
     void stop(const AtProtocolInterface::AccountData &account);
 
+    static bool isMine(const AtProtocolInterface::AccountData &account, const QString &key);
 signals:
-    void
-    receiveLogs(const QList<AtProtocolType::ChatBskyConvoDefs::MessageView> &messages,
-                const QList<AtProtocolType::ChatBskyConvoDefs::DeletedMessageView> &deletedMessages,
-                bool to_top);
-    void errorOccured(const QString &code, const QString &message);
+    // シグナルは全アカウント全チャットにブロードキャストされるので自分の分か判断すること！
+    void receiveLogs(const QString &key, const AtProtocolInterface::ChatBskyConvoGetLog &log);
+    void errorOccured(const QString &key, const QString &code, const QString &message);
 
 private:
     class Private;

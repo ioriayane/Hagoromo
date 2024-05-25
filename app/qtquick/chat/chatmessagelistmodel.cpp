@@ -4,13 +4,16 @@
 #include "atprotocol/chat/bsky/convo/chatbskyconvogetconvoformembers.h"
 #include "atprotocol/chat/bsky/convo/chatbskyconvogetlog.h"
 #include "atprotocol/chat/bsky/convo/chatbskyconvogetmessages.h"
+#include "atprotocol/chat/bsky/convo/chatbskyconvolistconvos.h"
 #include "atprotocol/chat/bsky/convo/chatbskyconvosendmessage.h"
 #include "atprotocol/lexicons_func_unknown.h"
+#include "tools/chatlogsubscriber.h"
 
 using AtProtocolInterface::ChatBskyConvoGetConvo;
 using AtProtocolInterface::ChatBskyConvoGetConvoForMembers;
 using AtProtocolInterface::ChatBskyConvoGetLog;
 using AtProtocolInterface::ChatBskyConvoGetMessages;
+using AtProtocolInterface::ChatBskyConvoListConvos;
 using AtProtocolInterface::ChatBskyConvoSendMessage;
 using namespace AtProtocolType::ChatBskyConvoDefs;
 using namespace AtProtocolType;
@@ -18,9 +21,18 @@ using namespace AtProtocolType;
 ChatMessageListModel::ChatMessageListModel(QObject *parent)
     : AtpChatAbstractListModel { parent }, m_runSending(false), m_ready(false)
 {
+    ChatLogSubscriber *log = ChatLogSubscriber::getInstance();
+    connect(log, &ChatLogSubscriber::receiveLogs, this, &ChatMessageListModel::receiveLogs);
+    connect(log, &ChatLogSubscriber::errorOccured, this, &ChatMessageListModel::errorLogs);
 }
 
-ChatMessageListModel::~ChatMessageListModel() { }
+ChatMessageListModel::~ChatMessageListModel()
+{
+    ChatLogSubscriber *log = ChatLogSubscriber::getInstance();
+    log->stop(account());
+    disconnect(log, &ChatLogSubscriber::receiveLogs, this, &ChatMessageListModel::receiveLogs);
+    disconnect(log, &ChatLogSubscriber::errorOccured, this, &ChatMessageListModel::errorLogs);
+}
 
 int ChatMessageListModel::rowCount(const QModelIndex &parent) const
 {
@@ -69,58 +81,34 @@ bool ChatMessageListModel::getLatest()
 
     getServiceEndpoint([=]() {
         getConvo(convoId(), memberDids(), [=]() {
-            QString cursor;
-            if (!m_idList.isEmpty()) {
-                const auto &latest = m_messageHash[m_idList.first()];
-                if (!latest.rev.isEmpty()) {
-                    cursor = latest.rev;
-                }
-            }
-            if (cursor.isEmpty()) {
-                ChatBskyConvoGetMessages *messages = new ChatBskyConvoGetMessages(this);
-                connect(messages, &ChatBskyConvoGetMessages::finished, this, [=](bool success) {
-                    if (success) {
-                        if (m_idList.isEmpty() && m_cursor.isEmpty()) {
-                            m_cursor = messages->cursor();
-                        }
-                        copyFrom(messages->messagesMessageViewList(),
-                                 messages->messagesDeletedMessageViewList(), true);
-
-                        updateRead(convoId(), QString());
-                    } else {
-                        emit errorOccured(messages->errorCode(), messages->errorMessage());
-                    }
-                    setRunning(false);
-                    messages->deleteLater();
-                });
-                messages->setAccount(account());
-                messages->setService(account().service_endpoint);
-                messages->getMessages(convoId(), 0, QString());
-            } else {
-                ChatBskyConvoGetLog *log = new ChatBskyConvoGetLog(this);
-                connect(log, &ChatBskyConvoGetLog::finished, this, [=](bool success) {
-                    if (success) {
-                        QList<AtProtocolType::ChatBskyConvoDefs::MessageView> messages;
-                        for (const auto &msg : log->logsLogCreateMessageList()) {
-                            if (msg.message_type == LogCreateMessageMessageType::message_MessageView
-                                && msg.convoId == convoId()) {
-                                messages.insert(0, msg.message_MessageView);
+            getLogCursor([=] {
+                if (m_idList.isEmpty() || m_logCursor.isEmpty()) {
+                    ChatBskyConvoGetMessages *messages = new ChatBskyConvoGetMessages(this);
+                    connect(messages, &ChatBskyConvoGetMessages::finished, this, [=](bool success) {
+                        if (success) {
+                            if (m_idList.isEmpty() && m_cursor.isEmpty()) {
+                                m_cursor = messages->cursor();
                             }
-                        }
-                        copyFrom(messages,
-                                 QList<AtProtocolType::ChatBskyConvoDefs::DeletedMessageView>(),
-                                 true);
+                            copyFrom(messages->messagesMessageViewList(),
+                                     messages->messagesDeletedMessageViewList(), true);
 
-                    } else {
-                        emit errorOccured(log->errorCode(), log->errorMessage());
-                    }
+                            updateRead(convoId(), QString());
+                        } else {
+                            emit errorOccured(messages->errorCode(), messages->errorMessage());
+                        }
+                        setRunning(false);
+                        messages->deleteLater();
+                    });
+                    messages->setAccount(account());
+                    messages->setService(account().service_endpoint);
+                    messages->getMessages(convoId(), 0, QString());
+                } else {
+                    ChatLogSubscriber *log = ChatLogSubscriber::getInstance();
+                    log->setAccount(account());
+                    log->start(account(), m_logCursor);
                     setRunning(false);
-                    log->deleteLater();
-                });
-                log->setAccount(account());
-                log->setService(account().service_endpoint);
-                log->getLog(cursor);
-            }
+                }
+            });
         });
     });
 
@@ -291,6 +279,28 @@ void ChatMessageListModel::getConvo(const QString &convoId, const QStringList &m
     }
 }
 
+void ChatMessageListModel::getLogCursor(std::function<void()> callback)
+{
+    if (!m_logCursor.isEmpty()) {
+        callback();
+        return;
+    }
+    ChatBskyConvoListConvos *convos = new ChatBskyConvoListConvos(this);
+    connect(convos, &ChatBskyConvoListConvos::finished, this, [=](bool success) {
+        if (success && !convos->convosList().isEmpty()) {
+            m_logCursor = convos->convosList().first().rev;
+        } else {
+            m_logCursor.clear();
+        }
+        qDebug() << "Convo id" << convoId() << "Log cursor" << m_logCursor;
+        callback();
+        convos->deleteLater();
+    });
+    convos->setAccount(account());
+    convos->setService(account().service_endpoint);
+    convos->listConvos(1, QString());
+}
+
 QString ChatMessageListModel::convoId() const
 {
     return m_convoId;
@@ -343,4 +353,45 @@ void ChatMessageListModel::setReady(bool newReady)
         return;
     m_ready = newReady;
     emit readyChanged();
+}
+
+void ChatMessageListModel::receiveLogs(const QString &key,
+                                       const AtProtocolInterface::ChatBskyConvoGetLog &log)
+{
+    qDebug().quote() << "receiveLogs" << this << key << log.logsLogCreateMessageList().length();
+    if (!ChatLogSubscriber::isMine(account(), key))
+        return;
+
+    // 別カラムで同一アカウントのチャットを閉じると再スタートさせるので、そのときにチャットを開いたときの古いものをしようしないようにする
+    if (!log.cursor().isEmpty())
+        m_logCursor = log.cursor();
+
+    // old->new から new->oldの順番に直す
+    QList<AtProtocolType::ChatBskyConvoDefs::MessageView> messages;
+    for (const auto &msg : log.logsLogCreateMessageList()) {
+        if (msg.message_type == LogCreateMessageMessageType::message_MessageView
+            && msg.convoId == convoId()) {
+            messages.insert(0, msg.message_MessageView);
+        }
+    }
+    QList<AtProtocolType::ChatBskyConvoDefs::DeletedMessageView> deleted_messages;
+    for (const auto &msg : log.logsLogDeleteMessageList()) {
+        if (msg.message_type == LogDeleteMessageMessageType::message_DeletedMessageView
+            && msg.convoId == convoId()) {
+            deleted_messages.insert(0, msg.message_DeletedMessageView);
+        }
+    }
+
+    copyFrom(messages, deleted_messages, true);
+}
+
+void ChatMessageListModel::errorLogs(const QString &key, const QString &code,
+                                     const QString &message)
+{
+    qDebug().quote() << "errorLogs" << this << key << code << message;
+    ChatLogSubscriber *log = ChatLogSubscriber::getInstance();
+    if (!log->isMine(account(), key))
+        return;
+
+    emit errorOccured(code, message);
 }

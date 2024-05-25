@@ -2,6 +2,7 @@
 #define CHATMESSAGELISTMODEL_H
 
 #include "atpchatabstractlistmodel.h"
+#include "atprotocol/chat/bsky/convo/chatbskyconvogetlog.h"
 
 class ChatMessageListModel : public AtpChatAbstractListModel
 {
@@ -45,22 +46,22 @@ public:
     void setConvoId(const QString &newConvoId);
     bool runSending() const;
     void setRunSending(bool newRunSending);
-
     QStringList memberDids() const;
     void setMemberDids(const QStringList &newMemberDids);
-
     bool ready() const;
     void setReady(bool newReady);
 
 signals:
     void finishSent(bool success);
+    void errorOccured(const QString &code, const QString &message);
     void convoIdChanged();
-
     void runSendingChanged();
-
     void memberDidsChanged();
-
     void readyChanged();
+
+public slots:
+    void receiveLogs(const QString &key, const AtProtocolInterface::ChatBskyConvoGetLog &log);
+    void errorLogs(const QString &key, const QString &code, const QString &message);
 
 protected:
     QHash<int, QByteArray> roleNames() const;
@@ -73,9 +74,11 @@ protected:
 private:
     void getConvo(const QString &convoId, const QStringList &memberDids,
                   std::function<void()> callback);
+    void getLogCursor(std::function<void()> callback);
 
     QHash<QString, AtProtocolType::ChatBskyConvoDefs::MessageView> m_messageHash;
     AtProtocolType::ChatBskyConvoDefs::ConvoView m_convo;
+    QString m_logCursor;
     QString m_convoId;
     bool m_runSending;
     QStringList m_memberDids;

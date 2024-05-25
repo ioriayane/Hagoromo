@@ -1,7 +1,5 @@
 #include "chatlogsubscriber.h"
 
-#include "atprotocol/chat/bsky/convo/chatbskyconvogetlog.h"
-
 #include <QDebug>
 #include <QTimer>
 
@@ -26,7 +24,6 @@ public:
 private:
     ChatLogSubscriber *q;
 
-    ChatBskyConvoGetLog m_log;
     QTimer m_timer;
     bool m_running;
     QString m_cursor;
@@ -34,38 +31,15 @@ private:
 
 ChatLogSubscriber::Private::Private(ChatLogSubscriber *parent) : q(parent), m_running(false)
 {
-    qDebug() << this << "Private()";
+    qDebug() << this << "ChatLogSubscriber::Private()";
 
     connect(&m_timer, &QTimer::timeout, this, &Private::getLatest);
-    connect(&m_log, &ChatBskyConvoGetLog::finished, this, [=](bool success) {
-        qDebug().noquote() << this << "receive" << success << m_cursor << "->" << m_log.cursor();
-        if (success) {
-            m_cursor = m_log.cursor();
-
-            // old->new から new->oldの順番に直す
-            QList<AtProtocolType::ChatBskyConvoDefs::MessageView> messages;
-            for (const auto &msg : m_log.logsLogCreateMessageList()) {
-                if (msg.message_type == LogCreateMessageMessageType::message_MessageView) {
-                    messages.insert(0, msg.message_MessageView);
-                }
-            }
-            QList<AtProtocolType::ChatBskyConvoDefs::DeletedMessageView> deleted_messages;
-            for (const auto &msg : m_log.logsLogDeleteMessageList()) {
-                if (msg.message_type == LogDeleteMessageMessageType::message_DeletedMessageView) {
-                    deleted_messages.insert(0, msg.message_DeletedMessageView);
-                }
-            }
-            emit q->receiveLogs(messages, deleted_messages, true);
-        } else {
-            emit q->errorOccured(m_log.errorCode(), m_log.errorMessage());
-        }
-        m_running = false;
-    });
 }
 
 ChatLogSubscriber::Private::~Private()
 {
-    qDebug() << this << "~Private()";
+    qDebug() << this << "ChatLogSubscriber::~Private()";
+    stop();
 }
 
 bool ChatLogSubscriber::Private::validateAccount(const AccountData &account)
@@ -81,12 +55,18 @@ QString ChatLogSubscriber::Private::accountKey(const AccountData &account)
 
 void ChatLogSubscriber::Private::start(const QString &cursor)
 {
-    m_timer.start(2000);
-    m_cursor = cursor;
+    if (!m_timer.isActive()) {
+        qDebug().quote() << this << "start timer" << account().did << cursor;
+        m_timer.start(2000);
+        m_cursor = cursor;
+    } else {
+        qDebug().quote() << this << "(start timer)" << account().did << cursor;
+    }
 }
 
 void ChatLogSubscriber::Private::stop()
 {
+    qDebug().quote() << this << "stop timer" << account().did;
     m_timer.stop();
 }
 
@@ -96,10 +76,30 @@ void ChatLogSubscriber::Private::getLatest()
         return;
     m_running = true;
 
-    qDebug().noquote() << this << "getLatest" << m_cursor;
-    m_log.setAccount(account());
-    m_log.setService(account().service_endpoint);
-    m_log.getLog(m_cursor);
+    qDebug().noquote() << this << "getLatest" << m_cursor << &m_cursor;
+    ChatBskyConvoGetLog *log = new ChatBskyConvoGetLog(this);
+    connect(log, &ChatBskyConvoGetLog::finished, this, [=](bool success) {
+        const QString key = ChatLogSubscriber::Private::accountKey(account());
+
+        qDebug().noquote() << this << "receive" << success << this->m_cursor << "->"
+                           << log->cursor() << key;
+        qDebug().noquote() << log->replyJson();
+        if (success) {
+            if (!log->cursor().isEmpty()) {
+                this->m_cursor = log->cursor();
+            }
+
+            emit q->receiveLogs(key, *log);
+        } else {
+            emit q->errorOccured(key, log->errorCode(), log->errorMessage());
+        }
+        m_running = false;
+        log->deleteLater();
+    });
+
+    log->setAccount(account());
+    log->setService(account().service_endpoint);
+    log->getLog(m_cursor);
 }
 
 ChatLogSubscriber::ChatLogSubscriber(QObject *parent) : QObject { parent }
@@ -128,7 +128,6 @@ void ChatLogSubscriber::setAccount(const AtProtocolInterface::AccountData &accou
     const QString key = ChatLogSubscriber::Private::accountKey(account);
     if (!d.contains(key)) {
         d[key] = new ChatLogSubscriber::Private(this);
-        // connect(this, &QObject::destroyed, [this, key]() { delete d[key]; });
     }
     d[key]->setAccount(account);
 }
@@ -152,4 +151,11 @@ void ChatLogSubscriber::stop(const AtProtocolInterface::AccountData &account)
     if (d.contains(key)) {
         d[key]->stop();
     }
+}
+
+bool ChatLogSubscriber::isMine(const AtProtocolInterface::AccountData &account, const QString &key)
+{
+    if (!ChatLogSubscriber::Private::validateAccount(account) || key.isEmpty())
+        return false;
+    return (ChatLogSubscriber::Private::accountKey(account) == key);
 }

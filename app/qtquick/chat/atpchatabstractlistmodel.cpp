@@ -89,6 +89,7 @@ void AtpChatAbstractListModel::getServiceEndpoint(std::function<void()> callback
         } else {
             m_account.service_endpoint = m_account.service;
         }
+        qDebug() << "Update service endpoint" << m_account.service_endpoint;
         callback();
         plc->deleteLater();
     });
