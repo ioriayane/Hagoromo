@@ -55,7 +55,7 @@ REM windeployqt --qmldir app\qml %BUILD_FOLDER%\atprotocol_test\debug\atprotocol
 REM --- run -------
 %BUILD_FOLDER%\atprotocol_test\debug\atprotocol_test.exe
 if ERRORLEVEL 1 goto TEST_FAIL
-%BUILD_FOLDER%\hagoromo_test\debug\chat_test.exe
+%BUILD_FOLDER%\chat_test\debug\chat_test.exe
 if ERRORLEVEL 1 goto TEST_FAIL
 %BUILD_FOLDER%\hagoromo_test\debug\hagoromo_test.exe
 if ERRORLEVEL 1 goto TEST_FAIL
