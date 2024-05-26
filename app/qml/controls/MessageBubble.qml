@@ -19,7 +19,9 @@ Label {
 
     background: Rectangle {
         id: bubbleBackground
-        color: Material.color(Material.BlueGrey)
+        color: (Material.theme === Material.Light) ?
+                   Material.color(Material.Grey, Material.Shade300) :
+                   Material.color(Material.Grey, Material.Shade800)
         radius: 10
         width: label.width
         height: label.height
