@@ -46,6 +46,8 @@ QVariant ColumnListModel::item(int row, ColumnListModelRoles role) const
         return m_columnList.at(row).name;
     else if (role == ValueRole)
         return m_columnList.at(row).value;
+    else if (role == ValueListRole)
+        return m_columnList.at(row).value_list;
 
     else if (role == SelectedRole)
         return (m_columnList.at(row).position == m_selectedPosition);
@@ -103,6 +105,8 @@ void ColumnListModel::update(int row, ColumnListModelRoles role, const QVariant 
         m_columnList[row].name = value.toString();
     else if (role == ValueRole)
         m_columnList[row].value = value.toString();
+    else if (role == ValueListRole)
+        m_columnList[row].value_list = value.toStringList();
 
     else if (role == VisibleLikeRole)
         m_columnList[row].type_visibility.like = value.toBool();
@@ -138,15 +142,16 @@ void ColumnListModel::update(int row, ColumnListModelRoles role, const QVariant 
 
 void ColumnListModel::append(const QString &account_uuid, int component_type, bool auto_loading,
                              int interval, int width, int image_layout_type, const QString &name,
-                             const QString &value)
+                             const QString &value, const QStringList &value_list)
 {
     insert(rowCount(), account_uuid, component_type, auto_loading, interval, width,
-           image_layout_type, name, value);
+           image_layout_type, name, value, value_list);
 }
 
 void ColumnListModel::insert(int row, const QString &account_uuid, int component_type,
                              bool auto_loading, int interval, int width, int image_layout_type,
-                             const QString &name, const QString &value)
+                             const QString &name, const QString &value,
+                             const QStringList &value_list)
 {
     if (row < 0 || row > m_columnList.count())
         return;
@@ -162,6 +167,7 @@ void ColumnListModel::insert(int row, const QString &account_uuid, int component
     item.image_layout_type = static_cast<ImageLayoutType>(image_layout_type);
     item.name = name;
     item.value = value;
+    item.value_list = value_list;
 
     if (m_columnList.isEmpty()) {
         m_selectedPosition = 0;
@@ -176,10 +182,11 @@ void ColumnListModel::insert(int row, const QString &account_uuid, int component
 
 int ColumnListModel::insertNext(const QString &key, const QString &account_uuid, int component_type,
                                 bool auto_loading, int interval, int width, int image_layout_type,
-                                const QString &name, const QString &value)
+                                const QString &name, const QString &value,
+                                const QStringList &value_list)
 {
     insert(rowCount(), account_uuid, component_type, auto_loading, interval, width,
-           image_layout_type, name, value);
+           image_layout_type, name, value, value_list);
 
     int to_position = -1;
     int from_index = -1;
@@ -397,6 +404,7 @@ void ColumnListModel::save() const
         column_item["image_layout_type"] = static_cast<int>(item.image_layout_type);
         column_item["name"] = item.name;
         column_item["value"] = item.value;
+        column_item["value_list"] = QJsonArray::fromStringList(item.value_list);
         column_item["aggregate_reactions"] = item.aggregate_reactions;
 
         QJsonObject notification;
@@ -449,6 +457,9 @@ void ColumnListModel::load()
                         static_cast<ImageLayoutType>(obj.value("image_layout_type").toInt(1));
                 item.name = obj.value("name").toString();
                 item.value = obj.value("value").toString();
+                for (const auto &v : obj.value("value_list").toArray()) {
+                    item.value_list.append(v.toString());
+                }
                 item.aggregate_reactions = obj.value("aggregate_reactions").toBool(true);
 
                 item.type_visibility.like =
@@ -529,6 +540,7 @@ QHash<int, QByteArray> ColumnListModel::roleNames() const
     roles[ImageLayoutTypeRole] = "imageLayoutType";
     roles[NameRole] = "name";
     roles[ValueRole] = "value";
+    roles[ValueListRole] = "valueList";
 
     roles[SelectedRole] = "selected";
 

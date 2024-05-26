@@ -37,6 +37,7 @@ ColumnLayout {
                         string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestQuote(string cid, string uri, string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestMention(string handle)
+    signal requestMessage(string did)
     signal requestViewThread(string uri)
     signal requestViewImages(int index, var paths, var alts)
     signal requestViewProfile(string did)
@@ -396,6 +397,12 @@ ColumnLayout {
                         icon.source: "../images/reply.png"
                         enabled: userProfile.handle.length > 0
                         onTriggered: requestMention("@" + userProfile.handle)
+                    }
+                    MenuItem {
+                        text: qsTr("Send message")
+                        icon.source: "../images/chat.png"
+                        enabled: userProfile.handle.length > 0
+                        onTriggered: requestMessage(userProfile.did)
                     }
                     MenuSeparator {}
                     MenuItem {

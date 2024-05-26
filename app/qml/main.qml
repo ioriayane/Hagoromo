@@ -126,7 +126,7 @@ ApplicationWindow {
             }
             columnManageModel.append(accountListModel.item(selectedAccountIndex, AccountListModel.UuidRole),
                                      component_type, false, 300000, 350,
-                                     settingDialog.settings.imageLayoutType, column_name, searchDialog.searchText)
+                                     settingDialog.settings.imageLayoutType, column_name, searchDialog.searchText, [])
             scrollView.showRightMost()
         }
     }
@@ -141,7 +141,7 @@ ApplicationWindow {
                         "\n  selectedUri=" + selectedUri)
             columnManageModel.append(accountListModel.item(selectedAccountIndex, AccountListModel.UuidRole),
                                      selectedType, false, 300000, 400,
-                                     settingDialog.settings.imageLayoutType, selectedName, selectedUri)
+                                     settingDialog.settings.imageLayoutType, selectedName, selectedUri, [])
             scrollView.showRightMost()
         }
         onOpenSatisticsAndLogs: (account_uuid) => {
@@ -182,7 +182,7 @@ ApplicationWindow {
         onAccepted: {
             columnManageModel.append(discoverFeedsDialog.account.uuid,
                                      4, false, 300000, 400,
-                                     settingDialog.settings.imageLayoutType, selectedName, selectedUri)
+                                     settingDialog.settings.imageLayoutType, selectedName, selectedUri, [])
             scrollView.showRightMost()
         }
         onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
@@ -499,29 +499,37 @@ ApplicationWindow {
                                   postDialog.postText.text = handle + " "
                                   postDialog.open()
                               }
+            onRequestMessage: (account_uuid, did, current_column_key) => {
+                                  var pos = columnManageModel.insertNext(current_column_key, account_uuid, 8, false, 300000, 350,
+                                                                         settingDialog.settings.imageLayoutType,
+                                                                         qsTr("Chat"), "", [did])
+                                  repeater.updateSettings(1)
+                                  scrollView.showColumn(pos)
+                              }
+
             onRequestViewAuthorFeed: (account_uuid, did, handle) => {
                                          columnManageModel.append(account_uuid, 5, false, 300000, 350,
-                                                                  settingDialog.settings.imageLayoutType, handle, did)
+                                                                  settingDialog.settings.imageLayoutType, handle, did, [])
                                          scrollView.showRightMost()
                                      }
             onRequestViewImages: (index, paths, alts) => imageFullView.open(index, paths, alts)
             onRequestViewFeedGenerator: (account_uuid, name, uri) => {
                                             columnManageModel.append(account_uuid, 4, false, 300000, 400,
-                                                                     settingDialog.settings.imageLayoutType, name, uri)
+                                                                     settingDialog.settings.imageLayoutType, name, uri, [])
                                             scrollView.showRightMost()
                                         }
             onRequestViewSearchPosts: (account_uuid, text, current_column_key) => {
                                           console.log("Search:" + account_uuid + ", " + text + ", " + current_column_key)
                                           var pos = columnManageModel.insertNext(current_column_key, account_uuid, 2, false, 300000, 350,
                                                                                  settingDialog.settings.imageLayoutType,
-                                                                                 qsTr("Search posts"), text)
+                                                                                 qsTr("Search posts"), text, [])
                                           repeater.updateSettings(1)
                                           scrollView.showColumn(pos)
                                       }
             onRequestViewListFeed: (account_uuid, uri, name) => {
                                        console.log("uuid=" + account_uuid + "\nuri=" + uri + "\nname=" + name)
                                        columnManageModel.append(account_uuid, 6, false, 300000, 400,
-                                                                settingDialog.settings.imageLayoutType, name, uri)
+                                                                settingDialog.settings.imageLayoutType, name, uri, [])
                                        scrollView.showRightMost()
                                    }
 
@@ -866,6 +874,7 @@ ApplicationWindow {
                         item.settings.loadingInterval = model.loadingInterval
                         item.settings.columnName = model.name
                         item.settings.columnValue = model.value
+                        item.settings.columnValueList = model.valueList
                         item.settings.imageLayoutType = model.imageLayoutType
 
                         item.settings.visibleLike = model.visibleLike

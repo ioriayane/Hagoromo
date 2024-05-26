@@ -42,6 +42,7 @@ ColumnLayout {
                         string cid, string uri,
                         string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestMention(string account_uuid, string handle)
+    signal requestMessage(string account_uuid, string did, string current_column_key)
     signal requestViewAuthorFeed(string account_uuid, string did, string handle)
     signal requestViewImages(int index, var paths, var alts)
     signal requestViewFeedGenerator(string account_uuid, string name, string uri)
@@ -220,6 +221,7 @@ ColumnLayout {
                             columnView.requestQuote(account.uuid, cid, uri, avatar, display_name, handle, indexed_at, text)
             onRequestMention: (handle) =>
                               columnView.requestMention(account.uuid, handle)
+            onRequestMessage: (did) => columnView.requestMessage(account.uuid, did, columnView.columnKey)
             onRequestViewThread: (uri) => {
                                      // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
                                      // これはPostThreadViewのプロパティにダイレクトに設定する
@@ -540,7 +542,7 @@ ColumnLayout {
             columnStackView.push(chatListComponent)
             componentTypeLabel.addText = ""
         }else if(componentType === 8){
-            columnStackView.push(chatListComponent)
+            columnStackView.push(chatMessageListComponent)
             componentTypeLabel.addText = ""
         }else{
             columnStackView.push(timelineComponent)
@@ -627,7 +629,7 @@ ColumnLayout {
                         qsTr("User"),
                         qsTr("List"),
                         qsTr("Chat"),
-                        qsTr("Message"),
+                        qsTr("Chat"),
                         qsTr("Unknown")
                     ]
                     property string addText: ""

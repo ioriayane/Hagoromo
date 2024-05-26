@@ -107,6 +107,7 @@ IMAGE_FILES += \
     qml/images/database.png \
     qml/images/block.png \
     qml/images/bookmark_add.png \
+    qml/images/chat.png \
     qml/images/check.png \
     qml/images/close.png \
     qml/images/column.png \
