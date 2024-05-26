@@ -241,7 +241,7 @@ Item {
                     Layout.leftMargin: 5
                     layer.enabled: true
                     layer.effect: ColorOverlay {
-                        color: button.foreground
+                        color: Material.foreground
                     }
                     source: "../images/search.png"
                 }
