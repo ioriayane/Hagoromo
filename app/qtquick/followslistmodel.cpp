@@ -67,16 +67,21 @@ QVariant FollowsListModel::item(int row, FollowsListModelRoles role) const
             return AssociatedChatAllowIncomingNone;
         } else if (profile.associated.chat.allowIncoming == "following") {
             return AssociatedChatAllowIncomingFollowing;
-        } else {
+        } else if (profile.associated.chat.allowIncoming == "all") {
             return AssociatedChatAllowIncomingAll;
+        } else {
+            return AssociatedChatAllowIncomingNotSet;
         }
     } else if (role == AssociatedChatAllowRole) {
         if (profile.associated.chat.allowIncoming == "none") {
             return false;
         } else if (profile.associated.chat.allowIncoming == "following") {
             return profile.viewer.followedBy.contains(profile.did);
-        } else {
+        } else if (profile.associated.chat.allowIncoming == "all") {
             return true;
+        } else {
+            // 未設定はフォロー中と同等（2024/5/26）
+            return profile.viewer.followedBy.contains(profile.did);
         }
     }
 

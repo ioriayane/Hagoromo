@@ -295,12 +295,12 @@
 <context>
     <name>ChatListView</name>
     <message>
-        <location filename="../qml/view/ChatListView.qml" line="203"/>
+        <location filename="../qml/view/ChatListView.qml" line="222"/>
         <source>Start a new chat</source>
         <translation>新しいチャットを開始</translation>
     </message>
     <message>
-        <location filename="../qml/view/ChatListView.qml" line="219"/>
+        <location filename="../qml/view/ChatListView.qml" line="251"/>
         <source>Search</source>
         <translation>検索</translation>
     </message>
@@ -3331,27 +3331,32 @@
         <translation>チャット:全員</translation>
     </message>
     <message>
-        <location filename="../qml/view/SuggestionProfileListView.qml" line="65"/>
+        <location filename="../qml/view/SuggestionProfileListView.qml" line="66"/>
         <source>Chat:Following</source>
         <translation>チャット:フォローしているユーザー</translation>
     </message>
     <message>
-        <location filename="../qml/view/SuggestionProfileListView.qml" line="65"/>
+        <location filename="../qml/view/SuggestionProfileListView.qml" line="68"/>
         <source>Chat:None</source>
         <translation>チャット:誰からも受け取らない</translation>
     </message>
     <message>
-        <location filename="../qml/view/SuggestionProfileListView.qml" line="71"/>
+        <location filename="../qml/view/SuggestionProfileListView.qml" line="68"/>
+        <source>Chat:Not set</source>
+        <translation>チャット:未設定</translation>
+    </message>
+    <message>
+        <location filename="../qml/view/SuggestionProfileListView.qml" line="76"/>
         <source>Following</source>
         <translation>フォロー中</translation>
     </message>
     <message>
-        <location filename="../qml/view/SuggestionProfileListView.qml" line="77"/>
+        <location filename="../qml/view/SuggestionProfileListView.qml" line="82"/>
         <source>Follows you</source>
         <translation>あなたをフォロー中</translation>
     </message>
     <message>
-        <location filename="../qml/view/SuggestionProfileListView.qml" line="83"/>
+        <location filename="../qml/view/SuggestionProfileListView.qml" line="88"/>
         <source>Muted user</source>
         <translation>ミュート中</translation>
     </message>

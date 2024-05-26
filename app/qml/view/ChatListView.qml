@@ -192,18 +192,23 @@ Item {
         y: parent.height
         width: parent.width
         height: parent.height
-        // visible: false
         leftPadding: 0
         rightPadding: 0
-        onVisibleChanged: searchTextArea.text = ""
 
         function open(){
             y = 0
+            searchTextArea.forceActiveFocus()
         }
         function close(){
             y = parent.height
+            searchTextArea.text = ""
         }
 
+        Shortcut {  // close
+            enabled: chatListView.visible && (startNewChatLayout.y === 0) && searchTextArea.focus
+            sequence: "Esc"
+            onActivated: startNewChatLayout.close()
+        }
         Behavior on y {
             NumberAnimation {
 

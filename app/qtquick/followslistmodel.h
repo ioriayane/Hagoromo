@@ -42,6 +42,7 @@ public:
         AssociatedChatAllowIncomingAll,
         AssociatedChatAllowIncomingFollowing,
         AssociatedChatAllowIncomingNone,
+        AssociatedChatAllowIncomingNotSet,
     };
     Q_ENUM(AssociatedChatAllowIncoming)
 

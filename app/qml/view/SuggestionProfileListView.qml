@@ -61,8 +61,13 @@ ListView {
                         source: ""
                         fontPointSize: AdjustedValues.f8
                         text: model.associatedChatAllowIncoming === SearchProfileListModel.AssociatedChatAllowIncomingAll ?
-                                  qsTr("Chat:All") : (model.associatedChatAllowIncoming === SearchProfileListModel.AssociatedChatAllowIncomingFollowing ?
-                                                          qsTr("Chat:Following") : qsTr("Chat:None"))
+                                  qsTr("Chat:All") : (
+                                      model.associatedChatAllowIncoming === SearchProfileListModel.AssociatedChatAllowIncomingFollowing ?
+                                          qsTr("Chat:Following") : (
+                                              model.associatedChatAllowIncoming === SearchProfileListModel.AssociatedChatAllowIncomingNone ?
+                                                  qsTr("Chat:None") : qsTr("Chat:Not set")
+                                              )
+                                      )
                     }
                     TagLabel {
                         visible: model.following
