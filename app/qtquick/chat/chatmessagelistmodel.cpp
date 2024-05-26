@@ -105,7 +105,9 @@ bool ChatMessageListModel::getLatest()
                 } else {
                     ChatLogSubscriber *log = ChatLogSubscriber::getInstance();
                     log->setAccount(account());
-                    log->start(account(), m_logCursor);
+                    if (autoLoading()) {
+                        log->start(account(), m_logCursor);
+                    }
                     setRunning(false);
                 }
             });

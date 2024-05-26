@@ -142,6 +142,7 @@ void chat_test::test_ChatMessageListModel()
     model.setServiceEndpoint(m_service + "/message/1");
 
     model.setConvoId("3ksrqt7eebs2b");
+    model.setAutoLoading(false);
 
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
