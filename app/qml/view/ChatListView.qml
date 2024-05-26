@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
+import QtGraphicalEffects 1.15
 
 import tech.relog.hagoromo.chatlistmodel 1.0
 import tech.relog.hagoromo.searchprofilelistmodel 1.0
@@ -100,7 +101,7 @@ Item {
                     Layout.alignment: Qt.AlignRight
                     Layout.rightMargin: 5
                     iconSource: "../images/add.png"
-                    onClicked: startNewChatLayout.visible = true
+                    onClicked: startNewChatLayout.open()
                 }
             }
             footerPositioning: ListView.OverlayFooter
@@ -187,11 +188,29 @@ Item {
     }
     Pane {
         id: startNewChatLayout
-        anchors.fill: parent
-        visible: false
+        x: 0
+        y: parent.height
+        width: parent.width
+        height: parent.height
+        // visible: false
         leftPadding: 0
         rightPadding: 0
         onVisibleChanged: searchTextArea.text = ""
+
+        function open(){
+            y = 0
+        }
+        function close(){
+            y = parent.height
+        }
+
+        Behavior on y {
+            NumberAnimation {
+
+                duration: 200
+                // easing.type: Easing.InOutQuad
+            }
+        }
 
         ColumnLayout {
             anchors.fill: parent
@@ -205,23 +224,37 @@ Item {
                 IconButton {
                     flat: true
                     iconSource: "../images/close.png"
-                    onClicked: startNewChatLayout.visible = false
+                    onClicked: startNewChatLayout.close()
                 }
             }
-            TextArea {
-                id: searchTextArea
-                Layout.fillWidth: parent
-                Layout.leftMargin: 5
-                Layout.rightMargin: 5
-                wrapMode: Text.WrapAnywhere
-                selectByMouse: true
-                font.pointSize: AdjustedValues.f10
-                placeholderText: qsTr("Search")
-                onTextChanged: {
-                    if(text.length > 0){
-                        searchProfileListModel.getSuggestion(text, 10)
-                    }else{
-                        searchProfileListModel.clear()
+            RowLayout {
+                Image {
+                    id: iconImage
+                    Layout.preferredWidth: AdjustedValues.i18
+                    Layout.preferredHeight: AdjustedValues.i18
+                    Layout.alignment: Qt.AlignVCenter
+                    Layout.leftMargin: 5
+                    layer.enabled: true
+                    layer.effect: ColorOverlay {
+                        color: button.foreground
+                    }
+                    source: "../images/search.png"
+                }
+                TextArea {
+                    id: searchTextArea
+                    Layout.fillWidth: parent
+                    Layout.leftMargin: 5
+                    Layout.rightMargin: 5
+                    wrapMode: Text.WrapAnywhere
+                    selectByMouse: true
+                    font.pointSize: AdjustedValues.f10
+                    placeholderText: qsTr("Search")
+                    onTextChanged: {
+                        if(text.length > 0){
+                            searchProfileListModel.getSuggestion(text, 10)
+                        }else{
+                            searchProfileListModel.clear()
+                        }
                     }
                 }
             }
@@ -236,7 +269,7 @@ Item {
                     onErrorOccured: (code, message) => chatListView.errorOccured(code, message)
                 }
                 onSelectedProfile: (did) => {
-                                       startNewChatLayout.visible = false
+                                       startNewChatLayout.close()
                                        chatListView.requestViewChatMessage("", [did])
                                    }
             }
