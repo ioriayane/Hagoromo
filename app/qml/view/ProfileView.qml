@@ -401,7 +401,7 @@ ColumnLayout {
                     MenuItem {
                         text: qsTr("Send message")
                         icon.source: "../images/chat.png"
-                        enabled: userProfile.handle.length > 0
+                        enabled: userProfile.handle.length > 0 && userProfile.associatedChatAllow
                         onTriggered: requestMessage(userProfile.did)
                     }
                     MenuSeparator {}

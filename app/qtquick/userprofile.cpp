@@ -110,6 +110,17 @@ void UserProfile::getProfile(const QString &did)
                 setBelongingLists(
                         ListItemsCache::getInstance()->getListNames(m_account.did, detail.did));
 
+                if (detail.associated.chat.allowIncoming == "none") {
+                    setAssociatedChatAllow(false);
+                } else if (detail.associated.chat.allowIncoming == "following") {
+                    setAssociatedChatAllow(detail.viewer.followedBy.contains(detail.did));
+                } else if (detail.associated.chat.allowIncoming == "all") {
+                    setAssociatedChatAllow(true);
+                } else {
+                    // 未設定はフォロー中と同等（2024/5/26）
+                    setAssociatedChatAllow(detail.viewer.followedBy.contains(detail.did));
+                }
+
                 //追加情報読み込み
                 getRawProfile();
             } else {
@@ -593,4 +604,17 @@ void UserProfile::setHandleHistory(const QStringList &newHandleHistory)
         return;
     m_handleHistory = newHandleHistory;
     emit handleHistoryChanged();
+}
+
+bool UserProfile::associatedChatAllow() const
+{
+    return m_associatedChatAllow;
+}
+
+void UserProfile::setAssociatedChatAllow(bool newAssociatedChatAllow)
+{
+    if (m_associatedChatAllow == newAssociatedChatAllow)
+        return;
+    m_associatedChatAllow = newAssociatedChatAllow;
+    emit associatedChatAllowChanged();
 }
