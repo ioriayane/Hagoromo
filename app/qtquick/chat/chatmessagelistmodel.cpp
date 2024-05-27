@@ -93,6 +93,7 @@ bool ChatMessageListModel::getLatest()
                                      messages->messagesDeletedMessageViewList(), true);
 
                             updateRead(convoId(), QString());
+                            setReady(true);
                         } else {
                             emit errorOccured(messages->errorCode(), messages->errorMessage());
                             checkScopeError(messages->errorCode(), messages->errorMessage());
@@ -319,8 +320,6 @@ void ChatMessageListModel::setConvoId(const QString &newConvoId)
         return;
     m_convoId = newConvoId;
     emit convoIdChanged();
-
-    setReady(!m_convoId.isEmpty());
 }
 
 bool ChatMessageListModel::runSending() const
