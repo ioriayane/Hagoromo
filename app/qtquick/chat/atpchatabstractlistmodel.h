@@ -46,6 +46,7 @@ signals:
 
 protected:
     void getServiceEndpoint(std::function<void()> callback);
+    void checkScopeError(const QString &code, const QString &message);
 
     QStringList m_idList;
     QString m_cursor;

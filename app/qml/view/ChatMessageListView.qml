@@ -8,7 +8,7 @@ import tech.relog.hagoromo.singleton 1.0
 import "../parts"
 import "../controls"
 
-ColumnLayout {
+Item {
     id: chatMessageListView
 
     property string hoveredLink: ""
@@ -16,6 +16,7 @@ ColumnLayout {
 
     property alias listView: rootListView
     property alias model: rootListView.model
+    property alias errorMessageOnChatMessageList: errorMessageOnChatMessageList
 
     signal requestViewProfile(string did)
     signal requestViewSearchPosts(string text)
@@ -54,147 +55,158 @@ ColumnLayout {
         }
     }
 
-    ScrollView {
-        Layout.fillWidth: true
-        Layout.fillHeight: true
+    ColumnLayout {
+        anchors.fill: parent
 
-        ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-        clip: true
+        ScrollView {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
 
-        ListView {
-            id: rootListView
-            anchors.fill: parent
-            anchors.rightMargin: parent.ScrollBar.vertical.width
-            spacing: 5
-            maximumFlickVelocity: AdjustedValues.maximumFlickVelocity
-            verticalLayoutDirection: ListView.BottomToTop
+            ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+            clip: true
 
-            onMovementEnded: {
-                if(atYEnd){
-                    rootListView.model.getNext()
-                }
-            }
+            ListView {
+                id: rootListView
+                anchors.fill: parent
+                anchors.rightMargin: parent.ScrollBar.vertical.width
+                spacing: 5
+                maximumFlickVelocity: AdjustedValues.maximumFlickVelocity
+                verticalLayoutDirection: ListView.BottomToTop
 
-            header: BusyIndicator {
-                width: rootListView.width
-                height: AdjustedValues.i24
-                visible: rootListView.model.running && rootListView.model.rowCount() === 0
-            }
-            // footer: BusyIndicator {
-            //     width: rootListView.width
-            //     height: AdjustedValues.i24
-            //     visible: rootListView.model.running && rootListView.model.rowCount() > 0
-            // }
-
-            delegate: Control {
-                id: chatItemLayout
-                clip: true
-                width: rootListView.width
-                height: childrenRect.height
-                topPadding: 10
-                leftPadding: 10
-                rightPadding: 10
-                // bottomPadding: 10
-
-                property int layoutWidth: rootListView.width
-                property bool me: model.senderDid === accountDid
-
-                function openLink(url){
-                    if(url.indexOf("did:") === 0){
-                        chatMessageListView.requestViewProfile(url)
-                    }else if(url.indexOf("search://") === 0){
-                        // tagMenu.x = recrdTextMouseArea.mouseX
-                        // tagMenu.y = recrdTextMouseArea.mouseY
-                        tagMenu.tagText = url.substring(9)
-                        if(tagMenu.tagText.charAt(0) !== "#"){
-                            tagMenu.tagText = "#" + tagMenu.tagText
-                        }
-                        tagMenu.open()
-                    }else{
-                        Qt.openUrlExternally(url)
+                onMovementEnded: {
+                    if(atYEnd){
+                        rootListView.model.getNext()
                     }
                 }
 
-                states: [
-                    State {
-                        when: chatItemLayout.me
-                        AnchorChanges {
-                            target: messageItemLayout
-                            anchors.right: chatItemLayout.right
-                            anchors.left: undefined
+                header: BusyIndicator {
+                    width: rootListView.width
+                    height: AdjustedValues.i24
+                    visible: rootListView.model.running &&
+                             rootListView.model.rowCount() === 0 &&
+                             !rootListView.model.ready
+                }
+                // footer: BusyIndicator {
+                //     width: rootListView.width
+                //     height: AdjustedValues.i24
+                //     visible: rootListView.model.running && rootListView.model.rowCount() > 0
+                // }
+
+                delegate: Control {
+                    id: chatItemLayout
+                    clip: true
+                    width: rootListView.width
+                    height: childrenRect.height
+                    topPadding: 10
+                    leftPadding: 10
+                    rightPadding: 10
+                    // bottomPadding: 10
+
+                    property int layoutWidth: rootListView.width
+                    property bool me: model.senderDid === accountDid
+
+                    function openLink(url){
+                        if(url.indexOf("did:") === 0){
+                            chatMessageListView.requestViewProfile(url)
+                        }else if(url.indexOf("search://") === 0){
+                            // tagMenu.x = recrdTextMouseArea.mouseX
+                            // tagMenu.y = recrdTextMouseArea.mouseY
+                            tagMenu.tagText = url.substring(9)
+                            if(tagMenu.tagText.charAt(0) !== "#"){
+                                tagMenu.tagText = "#" + tagMenu.tagText
+                            }
+                            tagMenu.open()
+                        }else{
+                            Qt.openUrlExternally(url)
                         }
                     }
-                ]
-                RowLayout {
-                    id: messageItemLayout
-                    anchors.left: parent.left
-                    anchors.leftMargin: 5
-                    anchors.rightMargin: 5
 
-                    AvatarImage {
-                        id: postAvatarImage
-                        Layout.preferredWidth: AdjustedValues.i24
-                        Layout.preferredHeight: AdjustedValues.i24
-                        Layout.alignment: Qt.AlignTop
-                        source: model.senderAvatar
-                        visible: !chatItemLayout.me
-                    }
-                    ColumnLayout {
-                        property int basisWidth: chatItemLayout.layoutWidth - chatItemLayout.leftPadding - chatItemLayout.rightPadding -
-                                                 postAvatarImage.width - parent.spacing
-                        MessageBubble {
-                            id: messageBubble
-                            Layout.maximumWidth: parent.basisWidth * 0.8
-                            Layout.alignment: chatItemLayout.me ? Qt.AlignRight : Qt.AlignLeft
-                            font.pointSize: AdjustedValues.f10
-                            text: model.text
-                            fromRight: chatItemLayout.me
-
-                            onLinkActivated: (url) => chatItemLayout.openLink(url)
-                            onHoveredLinkChanged: displayLink(hoveredLink)
-
-                            HashTagMenu {
-                                id: tagMenu
-                                logMode: false
-                                onRequestViewSearchPosts: (text) => chatMessageListView.requestViewSearchPosts(text)
-                                onRequestAddMutedWord: (text) => chatMessageListView.requestAddMutedWord(text)
+                    states: [
+                        State {
+                            when: chatItemLayout.me
+                            AnchorChanges {
+                                target: messageItemLayout
+                                anchors.right: chatItemLayout.right
+                                anchors.left: undefined
                             }
                         }
-                        Label {
-                            Layout.alignment: chatItemLayout.me ? Qt.AlignRight : Qt.AlignLeft
-                            font.pointSize: AdjustedValues.f8
-                            color: Material.color(Material.Grey)
-                            text: model.sentAt
+                    ]
+                    RowLayout {
+                        id: messageItemLayout
+                        anchors.left: parent.left
+                        anchors.leftMargin: 5
+                        anchors.rightMargin: 5
+
+                        AvatarImage {
+                            id: postAvatarImage
+                            Layout.preferredWidth: AdjustedValues.i24
+                            Layout.preferredHeight: AdjustedValues.i24
+                            Layout.alignment: Qt.AlignTop
+                            source: model.senderAvatar
+                            visible: !chatItemLayout.me
+                        }
+                        ColumnLayout {
+                            property int basisWidth: chatItemLayout.layoutWidth - chatItemLayout.leftPadding - chatItemLayout.rightPadding -
+                                                     postAvatarImage.width - parent.spacing
+                            MessageBubble {
+                                id: messageBubble
+                                Layout.maximumWidth: parent.basisWidth * 0.8
+                                Layout.alignment: chatItemLayout.me ? Qt.AlignRight : Qt.AlignLeft
+                                font.pointSize: AdjustedValues.f10
+                                text: model.text
+                                fromRight: chatItemLayout.me
+
+                                onLinkActivated: (url) => chatItemLayout.openLink(url)
+                                onHoveredLinkChanged: displayLink(hoveredLink)
+
+                                HashTagMenu {
+                                    id: tagMenu
+                                    logMode: false
+                                    onRequestViewSearchPosts: (text) => chatMessageListView.requestViewSearchPosts(text)
+                                    onRequestAddMutedWord: (text) => chatMessageListView.requestAddMutedWord(text)
+                                }
+                            }
+                            Label {
+                                Layout.alignment: chatItemLayout.me ? Qt.AlignRight : Qt.AlignLeft
+                                font.pointSize: AdjustedValues.f8
+                                color: Material.color(Material.Grey)
+                                text: model.sentAt
+                            }
                         }
                     }
+                }
+            }
+        }
+        RowLayout {
+            TextArea {
+                id: messageTextArea
+                Layout.fillWidth: parent
+                Layout.leftMargin: 5
+                enabled: !rootListView.model.runSending
+                wrapMode: Text.WrapAnywhere
+                selectByMouse: true
+                font.pointSize: AdjustedValues.f10
+                placeholderText: qsTr("Write a message")
+            }
+            IconButton {
+                id: sendButton
+                font.pointSize: AdjustedValues.f10
+                iconSource: "../images/send.png"
+                enabled: messageTextArea.text.length > 0 && !rootListView.model.runSending && rootListView.model.ready
+                onClicked: {
+                    rootListView.model.send(messageTextArea.text)
+                }
+                BusyIndicator {
+                    anchors.fill: parent
+                    visible: rootListView.model.runSending
                 }
             }
         }
     }
-    RowLayout {
-        TextArea {
-            id: messageTextArea
-            Layout.fillWidth: parent
-            Layout.leftMargin: 5
-            enabled: !rootListView.model.runSending
-            wrapMode: Text.WrapAnywhere
-            selectByMouse: true
-            font.pointSize: AdjustedValues.f10
-            placeholderText: qsTr("Write a message")
-        }
-        IconButton {
-            id: sendButton
-            font.pointSize: AdjustedValues.f10
-            iconSource: "../images/send.png"
-            enabled: messageTextArea.text.length > 0 && !rootListView.model.runSending && rootListView.model.ready
-            onClicked: {
-                rootListView.model.send(messageTextArea.text)
-            }
-            BusyIndicator {
-                anchors.fill: parent
-                visible: rootListView.model.runSending
-            }
-        }
+    ChatErrorMessage {
+        id: errorMessageOnChatMessageList
+        anchors.fill: parent
+        visible: false
     }
 }

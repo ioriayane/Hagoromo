@@ -116,6 +116,7 @@ bool ChatListModel::getLatest()
                 copyFrom(convos, true);
             } else {
                 emit errorOccured(convos->errorCode(), convos->errorMessage());
+                checkScopeError(convos->errorCode(), convos->errorMessage());
             }
             setRunning(false);
             convos->deleteLater();

@@ -96,6 +96,13 @@ void AtpChatAbstractListModel::getServiceEndpoint(std::function<void()> callback
     plc->directory(account().did);
 }
 
+void AtpChatAbstractListModel::checkScopeError(const QString &code, const QString &message)
+{
+    if (code == "InvalidToken" && message == "Bad token scope") {
+        setAutoLoading(false);
+    }
+}
+
 bool AtpChatAbstractListModel::autoLoading() const
 {
     return m_timer.isActive();

@@ -492,6 +492,7 @@ ColumnLayout {
                                           settings.columnValueList = dids
                                           columnStackView.push(chatMessageListComponent)
                                       }
+            onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
         }
     }
     Component {
@@ -504,7 +505,13 @@ ColumnLayout {
                 memberDids: settings.columnValueList
                 autoLoading: true
                 loadingInterval: 2000
-                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
+                onErrorOccured: (code, message) => {
+                                    if(code === "InvalidToken" && message === "Bad token scope"){
+                                        chatMesssageListView.errorMessageOnChatMessageList.visible = true
+                                    }else{
+                                        columnView.errorOccured(columnView.account.uuid, code, message)
+                                    }
+                                }
                 onFinishSent: (success) => chatMesssageListView.finishSent(success)
             }
 

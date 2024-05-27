@@ -95,6 +95,7 @@ bool ChatMessageListModel::getLatest()
                             updateRead(convoId(), QString());
                         } else {
                             emit errorOccured(messages->errorCode(), messages->errorMessage());
+                            checkScopeError(messages->errorCode(), messages->errorMessage());
                         }
                         setRunning(false);
                         messages->deleteLater();
@@ -254,6 +255,8 @@ void ChatMessageListModel::getConvo(const QString &convoId, const QStringList &m
                 m_convo = convo->convo();
             } else {
                 m_convo.id.clear();
+                emit errorOccured(convo->errorCode(), convo->errorMessage());
+                checkScopeError(convo->errorCode(), convo->errorMessage());
             }
             callback();
             convo->deleteLater();
@@ -270,6 +273,8 @@ void ChatMessageListModel::getConvo(const QString &convoId, const QStringList &m
                 setConvoId(m_convo.id);
             } else {
                 m_convo.id.clear();
+                emit errorOccured(convo->errorCode(), convo->errorMessage());
+                checkScopeError(convo->errorCode(), convo->errorMessage());
             }
             qDebug() << "in" << m_convo.id;
             callback();

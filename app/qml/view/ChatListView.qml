@@ -64,7 +64,13 @@ Item {
             model: ChatListModel {
                 autoLoading: true
                 loadingInterval: 30000  // 30s
-                onErrorOccured: (code, message) => chatListView.errorOccured(code, message)
+                onErrorOccured: (code, message) => {
+                                    if(code === "InvalidToken" && message === "Bad token scope"){
+                                        errorMessageOnChatList.visible = true
+                                    }else{
+                                        chatListView.errorOccured(code, message)
+                                    }
+                                }
                 onFinishUpdateRead: (success) => getLatest()
             }
 
@@ -279,5 +285,10 @@ Item {
                                    }
             }
         }
+    }
+    ChatErrorMessage {
+        id: errorMessageOnChatList
+        anchors.fill: parent
+        visible: false
     }
 }
