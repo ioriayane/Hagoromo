@@ -124,6 +124,7 @@ IMAGE_FILES += \
     qml/images/label.png \
     qml/images/labeling.png \
     qml/images/language.png \
+    qml/images/leave.png \
     qml/images/like.png \
     qml/images/list.png \
     qml/images/logo.png \

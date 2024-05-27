@@ -26,7 +26,10 @@ public:
         LastMessageTextRole,
         LastMessageSentAtRole,
 
+        MutedRole,
         UnreadCountRole,
+
+        RunningRole,
     };
     Q_ENUM(ChatListModelRoles);
 
@@ -38,6 +41,9 @@ public:
 
     virtual Q_INVOKABLE bool getLatest();
     virtual Q_INVOKABLE bool getNext();
+
+    Q_INVOKABLE void mute(int row);
+    Q_INVOKABLE void leave(int row);
 
 protected:
     QHash<int, QByteArray> roleNames() const;

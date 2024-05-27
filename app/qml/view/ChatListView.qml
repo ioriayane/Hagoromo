@@ -117,8 +117,9 @@ Item {
                 clip: true
                 topPadding: 10
                 leftPadding: 10
-                rightPadding: 10
+                rightPadding: 2
                 bottomPadding: 10
+                enabled: !model.running
 
                 property int layoutWidth: rootListView.width
 
@@ -137,7 +138,7 @@ Item {
                     }
                     ColumnLayout {
                         property int basisWidth: chatItemLayout.layoutWidth - chatItemLayout.leftPadding - chatItemLayout.rightPadding -
-                                                 postAvatarImage.width - parent.spacing
+                                                 postAvatarImage.width - (parent.spacing * 2) - moreButton.width
 
                         RowLayout {
                             Layout.preferredWidth: parent.basisWidth
@@ -146,6 +147,16 @@ Item {
                                 elide: Text.ElideRight
                                 font.pointSize: AdjustedValues.f10
                                 text: model.memberDisplayNames.length > 0 ? model.memberDisplayNames[0] : ""
+                            }
+                            Image {
+                                Layout.preferredWidth: AdjustedValues.i10
+                                Layout.preferredHeight: AdjustedValues.i10
+                                source: "../images/mute.png"
+                                visible: model.muted
+                                layer.enabled: true
+                                layer.effect: ColorOverlay {
+                                    color: Material.foreground
+                                }
                             }
                             Label {
                                 Layout.preferredWidth: implicitWidth
@@ -186,6 +197,37 @@ Item {
                                     text: model.unreadCountRole
                                 }
                             }
+                        }
+                    }
+                    IconButton {
+                        id: moreButton
+                        Layout.preferredHeight: AdjustedValues.b24
+                        Layout.alignment: Qt.AlignVCenter
+                        iconSource: "../images/more.png"
+                        iconSize: AdjustedValues.i16
+                        foreground: Material.color(Material.Grey)
+                        flat: true
+                        onClicked: myMorePopup.open()
+                        Menu {
+                            id: myMorePopup
+                            width: muteMenuItem.implicitWidth > leaveMenuItem.implicitWidth ?
+                                       muteMenuItem.implicitWidth : leaveMenuItem.implicitWidth
+                            MenuItem {
+                                id: muteMenuItem
+                                text: model.muted ? qsTr("Unmute conversation") : qsTr("Mute conversation")
+                                icon.source: "../images/mute.png"
+                                onTriggered: rootListView.model.mute(model.index)
+                            }
+                            MenuItem {
+                                id: leaveMenuItem
+                                text: qsTr("Leave conversation")
+                                icon.source: "../images/leave.png"
+                                onTriggered: rootListView.model.leave(model.index)
+                            }
+                        }
+                        BusyIndicator {
+                            anchors.fill: parent
+                            visible: model.running
                         }
                     }
                 }

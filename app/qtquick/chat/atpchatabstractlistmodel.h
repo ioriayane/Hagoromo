@@ -50,6 +50,7 @@ protected:
 
     QStringList m_idList;
     QString m_cursor;
+    QHash<QString, bool> m_itemRunningHash;
 
 private:
     QTimer m_timer;
