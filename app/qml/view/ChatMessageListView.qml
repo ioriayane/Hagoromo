@@ -181,8 +181,12 @@ Item {
                                     width: AdjustedValues.b24
                                     height: AdjustedValues.b24
                                     hoverEnabled: true
-                                    opacity: hovered ? 1.0 : 0.0
+                                    opacity: (hovered || model.running) ? 1.0 : 0.0
                                     onClicked: morePopup.open()
+                                    BusyIndicator {
+                                        anchors.fill: parent
+                                        visible: model.running
+                                    }
                                 }
                             }
                             Label {
@@ -200,7 +204,7 @@ Item {
                                 id: deleteMenuItem
                                 text: qsTr("Delete for me")
                                 icon.source: "../images/delete.png"
-                                // onTriggered: rootListView.model.mute(model.index)
+                                onTriggered: rootListView.model.deleteMessage(model.index)
                             }
                             MenuItem {
                                 id: reportMenuItem

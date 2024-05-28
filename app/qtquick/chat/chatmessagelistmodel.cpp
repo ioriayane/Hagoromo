@@ -1,5 +1,6 @@
 #include "chatmessagelistmodel.h"
 
+#include "atprotocol/chat/bsky/convo/chatbskyconvodeletemessageforself.h"
 #include "atprotocol/chat/bsky/convo/chatbskyconvogetconvo.h"
 #include "atprotocol/chat/bsky/convo/chatbskyconvogetconvoformembers.h"
 #include "atprotocol/chat/bsky/convo/chatbskyconvogetlog.h"
@@ -9,6 +10,7 @@
 #include "atprotocol/lexicons_func_unknown.h"
 #include "tools/chatlogsubscriber.h"
 
+using AtProtocolInterface::ChatBskyConvoDeleteMessageForSelf;
 using AtProtocolInterface::ChatBskyConvoGetConvo;
 using AtProtocolInterface::ChatBskyConvoGetConvoForMembers;
 using AtProtocolInterface::ChatBskyConvoGetLog;
@@ -56,21 +58,40 @@ QVariant ChatMessageListModel::item(int row, ChatMessageListModelRoles role) con
         return current.id;
     else if (role == RevRole)
         return current.rev;
-    else if (role == SenderDidRoles)
+    else if (role == SenderDidRole)
         return current.sender.did;
-    else if (role == SenderAvatarRoles) {
+    else if (role == SenderAvatarRole) {
         for (const auto &member : m_convo.members) {
             if (member.did == current.sender.did) {
                 return member.avatar;
             }
         }
         return QString();
-    } else if (role == TextRoles)
+    } else if (role == TextRole)
         return LexiconsTypeUnknown::applyFacetsTo(current.text, current.facets);
-    else if (role == SentAtRoles)
+    else if (role == SentAtRole)
         return LexiconsTypeUnknown::formatDateTime(current.sentAt);
 
+    else if (role == RunningRole)
+        return m_itemRunningHash.value(m_idList.at(row), false);
+
     return QVariant();
+}
+
+void ChatMessageListModel::update(int row, ChatMessageListModelRoles role, const QVariant &value)
+{
+    if (row < 0 || row >= m_idList.count())
+        return;
+
+    auto &current = m_messageHash[m_idList.at(row)];
+
+    if (role == RunningRole) {
+        bool running = m_itemRunningHash.value(m_idList.at(row), false);
+        if (running != value.toBool()) {
+            m_itemRunningHash[m_idList.at(row)] = value.toBool();
+            emit dataChanged(index(row), index(row));
+        }
+    }
 }
 
 bool ChatMessageListModel::getLatest()
@@ -182,6 +203,30 @@ void ChatMessageListModel::send(const QString &message)
             });
 }
 
+void ChatMessageListModel::deleteMessage(int row)
+{
+    if (row < 0 || row >= m_idList.count())
+        return;
+    const auto &current = m_messageHash[m_idList.at(row)];
+    bool running = item(row, RunningRole).toBool();
+    if (running)
+        return;
+    update(row, RunningRole, true);
+
+    ChatBskyConvoDeleteMessageForSelf *convo = new ChatBskyConvoDeleteMessageForSelf(this);
+    connect(convo, &ChatBskyConvoDeleteMessageForSelf::finished, this, [=](bool success) {
+        if (success) {
+        } else {
+            emit errorOccured(convo->errorCode(), convo->errorMessage());
+        }
+        update(row, RunningRole, false);
+        convo->deleteLater();
+    });
+    convo->setAccount(account());
+    convo->setService(account().service_endpoint);
+    convo->deleteMessageForSelf(convoId(), current.id);
+}
+
 QHash<int, QByteArray> ChatMessageListModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
@@ -189,11 +234,13 @@ QHash<int, QByteArray> ChatMessageListModel::roleNames() const
     roles[IdRole] = "id";
     roles[RevRole] = "rev";
 
-    roles[SenderDidRoles] = "senderDid";
-    roles[SenderAvatarRoles] = "senderAvatar";
+    roles[SenderDidRole] = "senderDid";
+    roles[SenderAvatarRole] = "senderAvatar";
 
-    roles[TextRoles] = "text";
-    roles[SentAtRoles] = "sentAt";
+    roles[TextRole] = "text";
+    roles[SentAtRole] = "sentAt";
+
+    roles[RunningRole] = "running";
 
     return roles;
 }

@@ -24,11 +24,13 @@ public:
         IdRole,
         RevRole,
 
-        SenderDidRoles,
-        SenderAvatarRoles,
+        SenderDidRole,
+        SenderAvatarRole,
 
-        TextRoles,
-        SentAtRoles,
+        TextRole,
+        SentAtRole,
+
+        RunningRole,
     };
     Q_ENUM(ChatMessageListModelRoles);
 
@@ -36,11 +38,14 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
     Q_INVOKABLE QVariant item(int row, ChatMessageListModel::ChatMessageListModelRoles role) const;
+    Q_INVOKABLE void update(int row, ChatMessageListModel::ChatMessageListModelRoles role,
+                            const QVariant &value);
 
     virtual Q_INVOKABLE bool getLatest();
     virtual Q_INVOKABLE bool getNext();
 
     Q_INVOKABLE void send(const QString &message);
+    Q_INVOKABLE void deleteMessage(int row);
 
     QString convoId() const;
     void setConvoId(const QString &newConvoId);
