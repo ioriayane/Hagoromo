@@ -18,6 +18,7 @@ Item {
     property alias model: rootListView.model
     property alias errorMessageOnChatMessageList: errorMessageOnChatMessageList
 
+    signal requestReportMessage(string did, string convo_id, string message_id)
     signal requestViewProfile(string did)
     signal requestViewSearchPosts(string text)
     signal requestAddMutedWord(string text)
@@ -130,6 +131,11 @@ Item {
                                 anchors.right: chatItemLayout.right
                                 anchors.left: undefined
                             }
+                            AnchorChanges {
+                                target: moreButton
+                                anchors.right: messageBubble.left
+                                anchors.left: undefined
+                            }
                         }
                     ]
                     RowLayout {
@@ -151,8 +157,8 @@ Item {
                                                      postAvatarImage.width - parent.spacing
                             MessageBubble {
                                 id: messageBubble
-                                Layout.maximumWidth: parent.basisWidth * 0.8
                                 Layout.alignment: chatItemLayout.me ? Qt.AlignRight : Qt.AlignLeft
+                                Layout.maximumWidth: parent.basisWidth * 0.7
                                 font.pointSize: AdjustedValues.f10
                                 text: model.text
                                 fromRight: chatItemLayout.me
@@ -166,6 +172,18 @@ Item {
                                     onRequestViewSearchPosts: (text) => chatMessageListView.requestViewSearchPosts(text)
                                     onRequestAddMutedWord: (text) => chatMessageListView.requestAddMutedWord(text)
                                 }
+                                MoreButton {
+                                    id: moreButton
+                                    anchors.left: parent.right
+                                    anchors.leftMargin: 2
+                                    anchors.rightMargin: 2
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: AdjustedValues.b24
+                                    height: AdjustedValues.b24
+                                    hoverEnabled: true
+                                    opacity: hovered ? 1.0 : 0.0
+                                    onClicked: morePopup.open()
+                                }
                             }
                             Label {
                                 Layout.alignment: chatItemLayout.me ? Qt.AlignRight : Qt.AlignLeft
@@ -174,6 +192,27 @@ Item {
                                 text: model.sentAt
                             }
                         }
+                        Menu {
+                            id: morePopup
+                            width: deleteMenuItem.implicitWidth > reportMenuItem.implicitWidth ?
+                                       deleteMenuItem.implicitWidth : reportMenuItem.implicitWidth
+                            MenuItem {
+                                id: deleteMenuItem
+                                text: qsTr("Delete for me")
+                                icon.source: "../images/delete.png"
+                                // onTriggered: rootListView.model.mute(model.index)
+                            }
+                            MenuItem {
+                                id: reportMenuItem
+                                enabled: !chatItemLayout.me
+                                text: qsTr("Report message")
+                                icon.source: "../images/report.png"
+                                onTriggered: chatMessageListView.requestReportMessage(model.senderDid,
+                                                                                      rootListView.model.convoId,
+                                                                                      model.id)
+                            }
+                        }
+
                     }
                 }
             }

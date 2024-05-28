@@ -18,6 +18,7 @@ QML_FILES = \
     qml/controls/IconLabelFrame.qml \
     qml/controls/ImageWithIndicator.qml \
     qml/controls/MessageBubble.qml \
+    qml/controls/MoreButton.qml \
     qml/controls/RadioButtonEx.qml \
     qml/data/Account.qml \
     qml/data/AdjustedValues.qml \
@@ -43,6 +44,7 @@ QML_FILES = \
     qml/dialogs/MutedListsDialog.qml \
     qml/dialogs/PostDialog.qml \
     qml/dialogs/ReportAccountDialog.qml \
+    qml/dialogs/ReportMessageDialog.qml \
     qml/dialogs/ReportPostDialog.qml \
     qml/dialogs/SearchDialog.qml \
     qml/dialogs/SelectThreadGateDialog.qml \

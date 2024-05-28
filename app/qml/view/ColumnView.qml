@@ -50,6 +50,7 @@ ColumnLayout {
     signal requestViewListFeed(string account_uuid, string uri, string name)
     signal requestReportPost(string account_uuid, string uri, string cid)
     signal requestReportAccount(string account_uuid, string did)
+    signal requestReportMessage(string account_uuid, string did, string convo_id, string message_id)
     signal requestAddRemoveFromLists(string account_uuid, string did)
     signal requestAddMutedWord(string account_uuid, string text)
     signal requestEditProfile(string account_uuid, string did, string avatar, string banner, string display_name, string description)
@@ -515,6 +516,7 @@ ColumnLayout {
                 onFinishSent: (success) => chatMesssageListView.finishSent(success)
             }
 
+            onRequestReportMessage: (did, convo_id, message_id) => columnView.requestReportMessage(account.uuid, did, convo_id, message_id)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
             onRequestAddMutedWord: (text) => columnView.requestAddMutedWord(account.uuid, text)

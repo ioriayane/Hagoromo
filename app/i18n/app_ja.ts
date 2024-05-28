@@ -293,14 +293,39 @@
     </message>
 </context>
 <context>
+    <name>ChatErrorMessage</name>
+    <message>
+        <location filename="../qml/parts/ChatErrorMessage.qml" line="13"/>
+        <source>You are not authorized to use chat.
+Please recreate AppPassword in the official application.</source>
+        <translation>チャットを使用する権限がありません。
+公式アプリでAppPasswordを再作成してください。</translation>
+    </message>
+</context>
+<context>
     <name>ChatListView</name>
     <message>
-        <location filename="../qml/view/ChatListView.qml" line="222"/>
+        <location filename="../qml/view/ChatListView.qml" line="217"/>
+        <source>Unmute conversation</source>
+        <translation>チャットのミュートを解除</translation>
+    </message>
+    <message>
+        <location filename="../qml/view/ChatListView.qml" line="217"/>
+        <source>Mute conversation</source>
+        <translation>チャットをミュート</translation>
+    </message>
+    <message>
+        <location filename="../qml/view/ChatListView.qml" line="223"/>
+        <source>Leave conversation</source>
+        <translation>チャットを離脱</translation>
+    </message>
+    <message>
+        <location filename="../qml/view/ChatListView.qml" line="275"/>
         <source>Start a new chat</source>
         <translation>新しいチャットを開始</translation>
     </message>
     <message>
-        <location filename="../qml/view/ChatListView.qml" line="251"/>
+        <location filename="../qml/view/ChatListView.qml" line="304"/>
         <source>Search</source>
         <translation>検索</translation>
     </message>
@@ -308,7 +333,17 @@
 <context>
     <name>ChatMessageListView</name>
     <message>
-        <location filename="../qml/view/ChatMessageListView.qml" line="184"/>
+        <location filename="../qml/view/ChatMessageListView.qml" line="201"/>
+        <source>Delete for me</source>
+        <translation>自分宛を削除</translation>
+    </message>
+    <message>
+        <location filename="../qml/view/ChatMessageListView.qml" line="208"/>
+        <source>Report message</source>
+        <translation>メッセージを通報</translation>
+    </message>
+    <message>
+        <location filename="../qml/view/ChatMessageListView.qml" line="229"/>
         <source>Write a message</source>
         <translation>メッセージを書く</translation>
     </message>
@@ -509,89 +544,89 @@
 <context>
     <name>ColumnView</name>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="624"/>
+        <location filename="../qml/view/ColumnView.qml" line="633"/>
         <source>Home</source>
         <translation>ホーム</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="625"/>
+        <location filename="../qml/view/ColumnView.qml" line="634"/>
         <source>Notifications</source>
         <translation>通知</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="626"/>
+        <location filename="../qml/view/ColumnView.qml" line="635"/>
         <source>Search posts</source>
         <translation>検索(ポスト)</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="627"/>
+        <location filename="../qml/view/ColumnView.qml" line="636"/>
         <source>Search users</source>
         <translation>検索(ユーザー)</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="628"/>
-        <location filename="../qml/view/ColumnView.qml" line="688"/>
+        <location filename="../qml/view/ColumnView.qml" line="637"/>
+        <location filename="../qml/view/ColumnView.qml" line="697"/>
         <source>Feed</source>
         <translation>フィード</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="629"/>
+        <location filename="../qml/view/ColumnView.qml" line="638"/>
         <source>User</source>
         <translation>ユーザー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="630"/>
+        <location filename="../qml/view/ColumnView.qml" line="639"/>
         <source>List</source>
         <translation>リスト</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="631"/>
-        <location filename="../qml/view/ColumnView.qml" line="632"/>
+        <location filename="../qml/view/ColumnView.qml" line="640"/>
+        <location filename="../qml/view/ColumnView.qml" line="641"/>
         <source>Chat</source>
         <translation>チャット</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="633"/>
+        <location filename="../qml/view/ColumnView.qml" line="642"/>
         <source>Unknown</source>
         <translation>不明</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="672"/>
+        <location filename="../qml/view/ColumnView.qml" line="681"/>
         <source>Move to left</source>
         <translation>左へ移動</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="677"/>
+        <location filename="../qml/view/ColumnView.qml" line="686"/>
         <source>Move to right</source>
         <translation>右へ移動</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="682"/>
+        <location filename="../qml/view/ColumnView.qml" line="691"/>
         <source>Delete column</source>
         <translation>削除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="691"/>
+        <location filename="../qml/view/ColumnView.qml" line="700"/>
         <source>Copy url</source>
         <translation>URLをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="700"/>
+        <location filename="../qml/view/ColumnView.qml" line="709"/>
         <source>Open in Official</source>
         <translation>公式で開く</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="711"/>
+        <location filename="../qml/view/ColumnView.qml" line="720"/>
         <source>Drop</source>
         <translation>解除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="711"/>
+        <location filename="../qml/view/ColumnView.qml" line="720"/>
         <source>Save</source>
         <translation>保存</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="729"/>
+        <location filename="../qml/view/ColumnView.qml" line="738"/>
         <source>Settings</source>
         <translation>設定</translation>
     </message>
@@ -2791,6 +2826,86 @@
     </message>
 </context>
 <context>
+    <name>ReportMessageDialog</name>
+    <message>
+        <location filename="../qml/dialogs/ReportMessageDialog.qml" line="19"/>
+        <source>Report message</source>
+        <translation>メッセージの通報</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/ReportMessageDialog.qml" line="66"/>
+        <source>Report this message
+Why should this message be reviewed?</source>
+        <translation>このメッセージを通報
+なぜこのメッセージをレビューする必要がありますか？</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/ReportMessageDialog.qml" line="73"/>
+        <source>Spam</source>
+        <translation>スパム</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/ReportMessageDialog.qml" line="74"/>
+        <source>Excessive or unwanted messages</source>
+        <translation>多すぎる、または不要なメッセージ</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/ReportMessageDialog.qml" line="80"/>
+        <source>Unwanted Sexual Content</source>
+        <translation>望まれない性的コンテンツ</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/ReportMessageDialog.qml" line="81"/>
+        <source>Inappropriate messages or explicit links</source>
+        <translation>不適切なメッセージ、または露骨なコンテンツへのリンク</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/ReportMessageDialog.qml" line="87"/>
+        <source>Anti-Social Behavior</source>
+        <translation>反社会的な行為</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/ReportMessageDialog.qml" line="88"/>
+        <source>Harassment, trolling, or intolerance</source>
+        <translation>嫌がらせ、荒らし、不寛容</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/ReportMessageDialog.qml" line="94"/>
+        <source>Illegal and Urgent</source>
+        <translation>違法かつ執拗</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/ReportMessageDialog.qml" line="95"/>
+        <source>Glaring violations of law or terms of service</source>
+        <translation>法律または利用規約への明白な違反</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/ReportMessageDialog.qml" line="101"/>
+        <source>Other</source>
+        <translation>その他</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/ReportMessageDialog.qml" line="102"/>
+        <source>An issue not included in these options</source>
+        <translation>以上のオプションに含まれていない問題</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/ReportMessageDialog.qml" line="109"/>
+        <source>Optionally provide additional information below:</source>
+        <translation>オプションとして以下に追加情報を記入してください：</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/ReportMessageDialog.qml" line="132"/>
+        <source>Cancel</source>
+        <translation>キャンセル</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/ReportMessageDialog.qml" line="143"/>
+        <source>Send report</source>
+        <translation>通報</translation>
+    </message>
+</context>
+<context>
     <name>ReportPostDialog</name>
     <message>
         <location filename="../qml/dialogs/ReportPostDialog.qml" line="18"/>
@@ -3385,7 +3500,7 @@
     </message>
     <message>
         <location filename="../qml/main.qml" line="122"/>
-        <location filename="../qml/main.qml" line="525"/>
+        <location filename="../qml/main.qml" line="530"/>
         <source>Search posts</source>
         <translation>検索(ポスト)</translation>
     </message>
@@ -3395,22 +3510,22 @@
         <translation>検索(ユーザー)</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="299"/>
+        <location filename="../qml/main.qml" line="304"/>
         <source>Updating &apos;Who can reply&apos; ...</source>
         <translation>リプライできるユーザーの更新中 ...</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="445"/>
+        <location filename="../qml/main.qml" line="450"/>
         <source>Loading lists</source>
         <translation>リストの読み込み中</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="505"/>
+        <location filename="../qml/main.qml" line="510"/>
         <source>Chat</source>
         <translation>チャット</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="991"/>
+        <location filename="../qml/main.qml" line="1006"/>
         <source>Loading account(s) ...</source>
         <translation>アカウント情報の読み込み中 ...</translation>
     </message>

@@ -261,6 +261,10 @@ ApplicationWindow {
         id: reportAccountDialog
         onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
     }
+    ReportMessageDialog {
+        id: reportMessageDialog
+        onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
+    }
     AddToListDialog {
         id: addToListDialog
         onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
@@ -546,6 +550,16 @@ ApplicationWindow {
                                             reportAccountDialog.open()
                                         }
                                     }
+            onRequestReportMessage: (account_uuid, did, convo_id, message_id) => {
+                                        if(reportMessageDialog.account.set(accountListModel, account_uuid)){
+                                            console.log("onRequestReportMessage: account_uuid=" + account_uuid + ", did=" + did + ", convo_id=" + convo_id + ", message_id=" + message_id)
+                                            reportMessageDialog.targetAccountDid = did
+                                            reportMessageDialog.targetConvoId = convo_id
+                                            reportMessageDialog.targetMessageId = message_id
+                                            reportMessageDialog.open()
+                                        }
+                                    }
+
             onRequestAddRemoveFromLists: (account_uuid, did) => {
                                              if(addToListDialog.account.set(accountListModel, account_uuid)){
                                                  addToListDialog.targetDid = did
