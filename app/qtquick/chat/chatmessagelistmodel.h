@@ -28,6 +28,7 @@ public:
         SenderAvatarRole,
 
         TextRole,
+        TextPlainRole,
         SentAtRole,
 
         RunningRole,

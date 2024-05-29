@@ -69,6 +69,8 @@ QVariant ChatMessageListModel::item(int row, ChatMessageListModelRoles role) con
         return QString();
     } else if (role == TextRole)
         return LexiconsTypeUnknown::applyFacetsTo(current.text, current.facets);
+    else if (role == TextPlainRole)
+        return current.text;
     else if (role == SentAtRole)
         return LexiconsTypeUnknown::formatDateTime(current.sentAt);
 
@@ -238,6 +240,7 @@ QHash<int, QByteArray> ChatMessageListModel::roleNames() const
     roles[SenderAvatarRole] = "senderAvatar";
 
     roles[TextRole] = "text";
+    roles[TextPlainRole] = "textPlain";
     roles[SentAtRole] = "sentAt";
 
     roles[RunningRole] = "running";

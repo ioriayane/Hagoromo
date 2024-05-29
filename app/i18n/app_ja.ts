@@ -333,17 +333,22 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>ChatMessageListView</name>
     <message>
-        <location filename="../qml/view/ChatMessageListView.qml" line="201"/>
+        <location filename="../qml/view/ChatMessageListView.qml" line="205"/>
+        <source>Copy message</source>
+        <translation>メッセージをコピー</translation>
+    </message>
+    <message>
+        <location filename="../qml/view/ChatMessageListView.qml" line="210"/>
         <source>Delete for me</source>
         <translation>自分宛を削除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ChatMessageListView.qml" line="208"/>
+        <location filename="../qml/view/ChatMessageListView.qml" line="217"/>
         <source>Report message</source>
         <translation>メッセージを通報</translation>
     </message>
     <message>
-        <location filename="../qml/view/ChatMessageListView.qml" line="229"/>
+        <location filename="../qml/view/ChatMessageListView.qml" line="238"/>
         <source>Write a message</source>
         <translation>メッセージを書く</translation>
     </message>
@@ -379,142 +384,142 @@ Please recreate AppPassword in the official application.</source>
         <translation>カラム設定</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="106"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="116"/>
         <source>Auto loading</source>
         <translation>自動更新</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="112"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="123"/>
         <source>Interval</source>
         <translation>間隔</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="119"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="130"/>
         <source>1 min.</source>
         <translation>1分</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="120"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="131"/>
         <source>3 min.</source>
         <translation>3分</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="121"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="132"/>
         <source>5 min.</source>
         <translation>5分</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="122"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="133"/>
         <source>10 min.</source>
         <translation>10分</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="123"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="134"/>
         <source>15 min.</source>
         <translation>15分</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="124"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="135"/>
         <source>20 min.</source>
         <translation>20分</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="133"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="144"/>
         <source>Column width</source>
         <translation>カラムの幅</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="156"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="167"/>
         <source>Image layout</source>
         <translation>画像のレイアウト</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="164"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="175"/>
         <source>Compact</source>
         <translation>コンパクト</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="165"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="176"/>
         <source>Normal</source>
         <translation>ふつう</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="166"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="177"/>
         <source>When one is whole</source>
         <translation>1枚のときは全体</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="167"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="178"/>
         <source>All whole</source>
         <translation>すべて全体</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="195"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="206"/>
         <source>Display</source>
         <translation>表示</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="204"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="215"/>
         <source>Like</source>
         <translation>いいね</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="212"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="223"/>
         <source>Repost</source>
         <translation>リポスト</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="220"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="231"/>
         <source>Follow</source>
         <translation>フォロー</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="228"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="239"/>
         <source>Mention</source>
         <translation>メンション</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="236"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="247"/>
         <source>Reply</source>
         <translation>リプライ</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="244"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="255"/>
         <source>Quote</source>
         <translation>引用</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="252"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="263"/>
         <source>Reply to unfollowed users</source>
         <translation>フォローしていないユーザーへの返信</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="260"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="271"/>
         <source>Reposts by the user</source>
         <translation>本人によるリポスト</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="268"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="279"/>
         <source>Reposts of users followed</source>
         <translation>フォローしているユーザーのポストのリポスト</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="276"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="287"/>
         <source>Reposts of users you do not follow</source>
         <translation>フォローしていないユーザーのポストのリポスト</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="284"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="295"/>
         <source>Reposts of your posts</source>
         <translation>カラムのアカウントのポストのリポスト</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="292"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="303"/>
         <source>Reposts by you</source>
         <translation>カラムのアカウントによるリポスト</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="300"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="311"/>
         <source>Aggregate reactions</source>
         <translation>リアクションを集約する</translation>
     </message>
@@ -531,12 +536,12 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">フォローしていないユーザーのリポスト</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="311"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="322"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="321"/>
+        <location filename="../qml/dialogs/ColumnSettingDialog.qml" line="332"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
@@ -3500,7 +3505,7 @@ Why should this message be reviewed?</source>
     </message>
     <message>
         <location filename="../qml/main.qml" line="122"/>
-        <location filename="../qml/main.qml" line="530"/>
+        <location filename="../qml/main.qml" line="529"/>
         <source>Search posts</source>
         <translation>検索(ポスト)</translation>
     </message>
@@ -3510,22 +3515,22 @@ Why should this message be reviewed?</source>
         <translation>検索(ユーザー)</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="304"/>
+        <location filename="../qml/main.qml" line="303"/>
         <source>Updating &apos;Who can reply&apos; ...</source>
         <translation>リプライできるユーザーの更新中 ...</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="450"/>
+        <location filename="../qml/main.qml" line="449"/>
         <source>Loading lists</source>
         <translation>リストの読み込み中</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="510"/>
+        <location filename="../qml/main.qml" line="509"/>
         <source>Chat</source>
         <translation>チャット</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="1006"/>
+        <location filename="../qml/main.qml" line="1005"/>
         <source>Loading account(s) ...</source>
         <translation>アカウント情報の読み込み中 ...</translation>
     </message>

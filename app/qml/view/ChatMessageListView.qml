@@ -201,6 +201,11 @@ Item {
                             width: deleteMenuItem.implicitWidth > reportMenuItem.implicitWidth ?
                                        deleteMenuItem.implicitWidth : reportMenuItem.implicitWidth
                             MenuItem {
+                                icon.source: "../images/copy.png"
+                                text: qsTr("Copy message")
+                                onTriggered: systemTool.copyToClipboard(model.textPlain)
+                            }
+                            MenuItem {
                                 id: deleteMenuItem
                                 text: qsTr("Delete for me")
                                 icon.source: "../images/delete.png"
