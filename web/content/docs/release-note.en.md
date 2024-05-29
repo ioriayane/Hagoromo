@@ -12,6 +12,7 @@ description: This is a multi-column Bluesky client.
   - Add the feature to switch the display language
   - Add the date of registration to account profile
   - Add the feature to view handle history from profile
+  - Add chat feature
 
 ### v0.30.0 - 2024/5/11
 
