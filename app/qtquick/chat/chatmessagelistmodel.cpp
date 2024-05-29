@@ -170,15 +170,15 @@ bool ChatMessageListModel::getNext()
 
 void ChatMessageListModel::send(const QString &message)
 {
-    if (runSending() || convoId().isEmpty())
+    if (runSending() || convoId().isEmpty() || message.trimmed().isEmpty())
         return;
     setRunSending(true);
 
     LexiconsTypeUnknown::makeFacets(
-            this, account(), message,
+            this, account(), message.trimmed(),
             [=](const QList<AtProtocolType::AppBskyRichtextFacet::Main> &facets) {
                 QJsonObject obj;
-                obj.insert("text", message);
+                obj.insert("text", message.trimmed());
                 LexiconsTypeUnknown::insertFacetsJson(obj, facets);
 
                 ChatBskyConvoSendMessage *convo = new ChatBskyConvoSendMessage(this);
