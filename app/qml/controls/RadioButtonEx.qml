@@ -7,6 +7,8 @@ RadioButton {
     id: control
     text: " "
     rightPadding: indicator.width + control.spacing * 2
+    topPadding: 6
+    bottomPadding: 6
 
     property alias mainText: mainLabel.text
     property alias description: descriptionLabel.text

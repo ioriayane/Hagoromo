@@ -143,7 +143,7 @@ void LogManager::getPosts()
     AppBskyFeedGetPosts *posts = new AppBskyFeedGetPosts(this);
     connect(posts, &AppBskyFeedGetPosts::finished, [=](bool success) {
         if (success) {
-            m_postViews.append(posts->postViewList());
+            m_postViews.append(posts->postsList());
 
             QJsonDocument doc = QJsonDocument::fromJson(posts->replyJson().toUtf8());
             for (const auto &post_val : doc.object().value("posts").toArray()) {

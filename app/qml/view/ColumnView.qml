@@ -13,6 +13,8 @@ import tech.relog.hagoromo.customfeedlistmodel 1.0
 import tech.relog.hagoromo.authorfeedlistmodel 1.0
 import tech.relog.hagoromo.anyprofilelistmodel 1.0
 import tech.relog.hagoromo.listfeedlistmodel 1.0
+import tech.relog.hagoromo.chatlistmodel 1.0
+import tech.relog.hagoromo.chatmessagelistmodel 1.0
 import tech.relog.hagoromo.systemtool 1.0
 import tech.relog.hagoromo.singleton 1.0
 
@@ -40,6 +42,7 @@ ColumnLayout {
                         string cid, string uri,
                         string avatar, string display_name, string handle, string indexed_at, string text)
     signal requestMention(string account_uuid, string handle)
+    signal requestMessage(string account_uuid, string did, string current_column_key)
     signal requestViewAuthorFeed(string account_uuid, string did, string handle)
     signal requestViewImages(int index, var paths, var alts)
     signal requestViewFeedGenerator(string account_uuid, string name, string uri)
@@ -47,6 +50,7 @@ ColumnLayout {
     signal requestViewListFeed(string account_uuid, string uri, string name)
     signal requestReportPost(string account_uuid, string uri, string cid)
     signal requestReportAccount(string account_uuid, string did)
+    signal requestReportMessage(string account_uuid, string did, string convo_id, string message_id)
     signal requestAddRemoveFromLists(string account_uuid, string did)
     signal requestAddMutedWord(string account_uuid, string text)
     signal requestEditProfile(string account_uuid, string did, string avatar, string banner, string display_name, string description)
@@ -218,6 +222,7 @@ ColumnLayout {
                             columnView.requestQuote(account.uuid, cid, uri, avatar, display_name, handle, indexed_at, text)
             onRequestMention: (handle) =>
                               columnView.requestMention(account.uuid, handle)
+            onRequestMessage: (did) => columnView.requestMessage(account.uuid, did, columnView.columnKey)
             onRequestViewThread: (uri) => {
                                      // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
                                      // これはPostThreadViewのプロパティにダイレクトに設定する
@@ -479,6 +484,46 @@ ColumnLayout {
         }
     }
 
+    Component {
+        id: chatListComponent
+        ChatListView {
+            onRequestViewChatMessage: (convo_id, dids) => {
+                                          console.log("onRequestViewChatMessage:" + convo_id + ", " + dids)
+                                          settings.columnValue = convo_id
+                                          settings.columnValueList = dids
+                                          columnStackView.push(chatMessageListComponent)
+                                      }
+            onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
+        }
+    }
+    Component {
+        id: chatMessageListComponent
+        ChatMessageListView {
+            id: chatMesssageListView
+            accountDid: account.did
+            model: ChatMessageListModel {
+                convoId: settings.columnValue
+                memberDids: settings.columnValueList
+                autoLoading: true
+                loadingInterval: 2000
+                onErrorOccured: (code, message) => {
+                                    if(code === "InvalidToken" && message === "Bad token scope"){
+                                        chatMesssageListView.errorMessageOnChatMessageList.visible = true
+                                    }else{
+                                        columnView.errorOccured(columnView.account.uuid, code, message)
+                                    }
+                                }
+                onFinishSent: (success) => chatMesssageListView.finishSent(success)
+            }
+
+            onRequestReportMessage: (did, convo_id, message_id) => columnView.requestReportMessage(account.uuid, did, convo_id, message_id)
+            onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+            onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
+            onRequestAddMutedWord: (text) => columnView.requestAddMutedWord(account.uuid, text)
+            onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
+        }
+    }
+
     function load(){
         console.log("ColumnLayout:componentType=" + componentType)
         if(componentType === 0){
@@ -502,6 +547,12 @@ ColumnLayout {
         }else if(componentType === 6){
             columnStackView.push(listFeedComponent)
             componentTypeLabel.addText = " : " + settings.columnName
+        }else if(componentType === 7){
+            columnStackView.push(chatListComponent)
+            componentTypeLabel.addText = ""
+        }else if(componentType === 8){
+            columnStackView.push(chatMessageListComponent)
+            componentTypeLabel.addText = ""
         }else{
             columnStackView.push(timelineComponent)
             componentTypeLabel.addText = ""
@@ -586,6 +637,8 @@ ColumnLayout {
                         qsTr("Feed"),
                         qsTr("User"),
                         qsTr("List"),
+                        qsTr("Chat"),
+                        qsTr("Chat"),
                         qsTr("Unknown")
                     ]
                     property string addText: ""
@@ -697,10 +750,15 @@ ColumnLayout {
         clip: true
 
         onCurrentItemChanged: {
-            if(currentItem.model === undefined)
+            if(currentItem.model === undefined){
                 return
-            if(currentItem.model.rowCount() > 0)
+            }
+            if(currentItem.model.rowCount() > 0){
+                if(currentItem.resume){
+                    currentItem.resume()
+                }
                 return
+            }
             currentItem.model.setAccount(account.service,
                                          account.did,
                                          account.handle,

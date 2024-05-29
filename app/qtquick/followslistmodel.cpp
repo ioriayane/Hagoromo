@@ -62,6 +62,27 @@ QVariant FollowsListModel::item(int row, FollowsListModelRoles role) const
             labels.append(label.val);
         }
         return labels;
+    } else if (role == AssociatedChatAllowIncomingRole) {
+        if (profile.associated.chat.allowIncoming == "none") {
+            return AssociatedChatAllowIncomingNone;
+        } else if (profile.associated.chat.allowIncoming == "following") {
+            return AssociatedChatAllowIncomingFollowing;
+        } else if (profile.associated.chat.allowIncoming == "all") {
+            return AssociatedChatAllowIncomingAll;
+        } else {
+            return AssociatedChatAllowIncomingNotSet;
+        }
+    } else if (role == AssociatedChatAllowRole) {
+        if (profile.associated.chat.allowIncoming == "none") {
+            return false;
+        } else if (profile.associated.chat.allowIncoming == "following") {
+            return profile.viewer.followedBy.contains(profile.did);
+        } else if (profile.associated.chat.allowIncoming == "all") {
+            return true;
+        } else {
+            // 未設定はフォロー中と同等（2024/5/26）
+            return profile.viewer.followedBy.contains(profile.did);
+        }
     }
 
     return QVariant();
@@ -188,6 +209,8 @@ QHash<int, QByteArray> FollowsListModel::roleNames() const
     roles[BlockingUriRole] = "blockingUri";
     roles[FollowingUriRole] = "followingUri";
     roles[LabelsRole] = "labels";
+    roles[AssociatedChatAllowIncomingRole] = "associatedChatAllowIncoming";
+    roles[AssociatedChatAllowRole] = "associatedChatAllow";
 
     return roles;
 }
@@ -219,8 +242,8 @@ void FollowsListModel::getProfiles()
         if (success) {
             QStringList new_cid;
 
-            for (auto item = posts->profileViewDetailedList().crbegin();
-                 item != posts->profileViewDetailedList().crend(); item++) {
+            for (auto item = posts->profilesList().crbegin(); item != posts->profilesList().crend();
+                 item++) {
                 AtProtocolType::AppBskyActorDefs::ProfileView profile_view;
                 profile_view.avatar = item->avatar;
                 profile_view.did = item->did;
@@ -260,7 +283,7 @@ void FollowsListModel::copyProfiles(const AtProtocolInterface::AppBskyGraphGetFo
     if (followers == nullptr)
         return;
 
-    for (const auto &profile : followers->profileViewList()) {
+    for (const auto &profile : followers->followsList()) {
         m_profileHash[profile.did] = profile;
         m_formattedDescriptionHash[profile.did] = m_systemTool.markupText(profile.description);
         if (m_didList.contains(profile.did)) {

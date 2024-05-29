@@ -7,13 +7,18 @@
 
 namespace AtProtocolInterface {
 
-DirectoryPlc::DirectoryPlc(QObject *parent) : AccessAtProtocol { parent } { }
+DirectoryPlc::DirectoryPlc(QObject *parent) : AccessAtProtocol { parent }
+{
+    m_defaultService = "https://plc.directory";
+}
 
 void DirectoryPlc::directory(const QString &did)
 {
     QUrlQuery url_query;
 
-    setService("https://plc.directory");
+    if (service().isEmpty()) {
+        setService(defaultService());
+    }
 
     get(did, url_query, false);
 }
@@ -45,4 +50,8 @@ bool DirectoryPlc::parseJson(bool success, const QString reply_json)
     return success;
 }
 
+QString DirectoryPlc::defaultService() const
+{
+    return m_defaultService;
+}
 }

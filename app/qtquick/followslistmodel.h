@@ -32,8 +32,19 @@ public:
         BlockingUriRole,
         FollowingUriRole,
         LabelsRole,
+
+        AssociatedChatAllowIncomingRole,
+        AssociatedChatAllowRole,
     };
     Q_ENUM(FollowsListModelRoles)
+
+    enum AssociatedChatAllowIncoming {
+        AssociatedChatAllowIncomingAll,
+        AssociatedChatAllowIncomingFollowing,
+        AssociatedChatAllowIncomingNone,
+        AssociatedChatAllowIncomingNotSet,
+    };
+    Q_ENUM(AssociatedChatAllowIncoming)
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;

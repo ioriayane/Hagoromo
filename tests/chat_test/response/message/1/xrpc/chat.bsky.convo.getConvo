@@ -1,0 +1,58 @@
+{
+    "convo": {
+        "id": "3ksrqt7eebs2b",
+        "rev": "222222222ecu5",
+        "members": [
+            {
+                "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+                "handle": "ioriayane.relog.tech",
+                "displayName": "IoriAYANE",
+                "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy@jpeg",
+                "associated": {
+                    "lists": 11,
+                    "feedgens": 2,
+                    "labeler": false,
+                    "chat": {
+                        "allowIncoming": "following"
+                    }
+                },
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false
+                },
+                "labels": []
+            },
+            {
+                "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                "handle": "ioriayane2.bsky.social",
+                "displayName": "iori2",
+                "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg",
+                "associated": {
+                    "lists": 3,
+                    "feedgens": 0,
+                    "labeler": false
+                },
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false,
+                    "following": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3k4odyt4qk42g",
+                    "followedBy": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.follow/3kq6sirdu6i2r"
+                },
+                "labels": []
+            }
+        ],
+        "lastMessage": {
+            "$type": "chat.bsky.convo.defs#messageView",
+            "id": "3kt5qzdatpk2r",
+            "rev": "222222222ecu5",
+            "sender": {
+                "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5"
+            },
+            "text": "from 2nd 2",
+            "facets": [],
+            "sentAt": "2024-05-23T11:56:42.341Z"
+        },
+        "unreadCount": 2,
+        "muted": false
+    }
+}

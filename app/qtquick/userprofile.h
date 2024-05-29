@@ -59,6 +59,8 @@ class UserProfile : public QObject
                        registrationDateChanged)
     Q_PROPERTY(QStringList handleHistory READ handleHistory WRITE setHandleHistory NOTIFY
                        handleHistoryChanged)
+    Q_PROPERTY(bool associatedChatAllow READ associatedChatAllow WRITE setAssociatedChatAllow NOTIFY
+                       associatedChatAllowChanged FINAL)
 
 public:
     explicit UserProfile(QObject *parent = nullptr);
@@ -120,9 +122,10 @@ public:
     void setServiceEndpoint(const QString &newServiceEndpoint);
     QString registrationDate() const;
     void setRegistrationDate(const QString &newRegistrationDate);
-
     QStringList handleHistory() const;
     void setHandleHistory(const QStringList &newHandleHistory);
+    bool associatedChatAllow() const;
+    void setAssociatedChatAllow(bool newAssociatedChatAllow);
 
 signals:
     void errorOccured(const QString &code, const QString &message);
@@ -152,8 +155,8 @@ signals:
     void pinnedPostChanged();
     void serviceEndpointChanged();
     void registrationDateChanged();
-
     void handleHistoryChanged();
+    void associatedChatAllowChanged();
 
 public slots:
     void updatedBelongingLists(const QString &account_did, const QString &user_did);
@@ -199,6 +202,7 @@ private:
     QString m_serviceEndpoint;
     QString m_registrationDate;
     QStringList m_handleHistory;
+    bool m_associatedChatAllow;
 };
 
 #endif // USERPROFILE_H

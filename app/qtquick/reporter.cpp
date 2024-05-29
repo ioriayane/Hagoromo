@@ -65,6 +65,28 @@ void Reporter::reportAccount(const QString &did, ReportReason reason)
     report->reportAccount(did, m_reasonHash[reason]);
 }
 
+void Reporter::reportMessage(const QString &did, const QString &convo_id, const QString &message_id,
+                             const QString &text, ReportReason reason)
+{
+    qDebug() << "reportMessage" << did << reason;
+    if (did.isEmpty() || convo_id.isEmpty() || message_id.isEmpty()
+        || !m_reasonHash.contains(reason))
+        return;
+    if (running())
+        return;
+    setRunning(true);
+
+    ComAtprotoModerationCreateReportEx *report = new ComAtprotoModerationCreateReportEx(this);
+    connect(report, &ComAtprotoModerationCreateReportEx::finished, [=](bool success) {
+        setRunning(false);
+        emit errorOccured(report->errorCode(), report->errorMessage());
+        emit finished(success);
+        report->deleteLater();
+    });
+    report->setAccount(m_account);
+    report->reportMessage(did, convo_id, message_id, text, m_reasonHash[reason]);
+}
+
 bool Reporter::running() const
 {
     return m_running;

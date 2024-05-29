@@ -40,6 +40,23 @@ SOURCES += \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationlistnotifications.cpp \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationupdateseen.cpp \
     $$PWD/atprotocol/app/bsky/unspecced/appbskyunspeccedgetpopularfeedgenerators.cpp \
+    $$PWD/atprotocol/chat/bsky/actor/chatbskyactordeleteaccount.cpp \
+    $$PWD/atprotocol/chat/bsky/actor/chatbskyactorexportaccountdata.cpp \
+    $$PWD/atprotocol/chat/bsky/convo/chatbskyconvodeletemessageforself.cpp \
+    $$PWD/atprotocol/chat/bsky/convo/chatbskyconvogetconvo.cpp \
+    $$PWD/atprotocol/chat/bsky/convo/chatbskyconvogetconvoformembers.cpp \
+    $$PWD/atprotocol/chat/bsky/convo/chatbskyconvogetlog.cpp \
+    $$PWD/atprotocol/chat/bsky/convo/chatbskyconvogetmessages.cpp \
+    $$PWD/atprotocol/chat/bsky/convo/chatbskyconvoleaveconvo.cpp \
+    $$PWD/atprotocol/chat/bsky/convo/chatbskyconvolistconvos.cpp \
+    $$PWD/atprotocol/chat/bsky/convo/chatbskyconvomuteconvo.cpp \
+    $$PWD/atprotocol/chat/bsky/convo/chatbskyconvosendmessage.cpp \
+    $$PWD/atprotocol/chat/bsky/convo/chatbskyconvosendmessagebatch.cpp \
+    $$PWD/atprotocol/chat/bsky/convo/chatbskyconvounmuteconvo.cpp \
+    $$PWD/atprotocol/chat/bsky/convo/chatbskyconvoupdateread.cpp \
+    $$PWD/atprotocol/chat/bsky/moderation/chatbskymoderationgetactormetadata.cpp \
+    $$PWD/atprotocol/chat/bsky/moderation/chatbskymoderationgetmessagecontext.cpp \
+    $$PWD/atprotocol/chat/bsky/moderation/chatbskymoderationupdateactoraccess.cpp \
     $$PWD/atprotocol/com/atproto/moderation/comatprotomoderationcreatereport.cpp \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepocreaterecord.cpp \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepodeleterecord.cpp \
@@ -70,6 +87,7 @@ SOURCES += \
     $$PWD/log/logmanager.cpp \
     $$PWD/tools/base32.cpp \
     $$PWD/tools/cardecoder.cpp \
+    $$PWD/tools/chatlogsubscriber.cpp \
     $$PWD/tools/configurablelabels.cpp \
     $$PWD/tools/imagecompressor.cpp \
     $$PWD/tools/leb128.cpp \
@@ -114,6 +132,23 @@ HEADERS += \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationlistnotifications.h \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationupdateseen.h \
     $$PWD/atprotocol/app/bsky/unspecced/appbskyunspeccedgetpopularfeedgenerators.h \
+    $$PWD/atprotocol/chat/bsky/actor/chatbskyactordeleteaccount.h \
+    $$PWD/atprotocol/chat/bsky/actor/chatbskyactorexportaccountdata.h \
+    $$PWD/atprotocol/chat/bsky/convo/chatbskyconvodeletemessageforself.h \
+    $$PWD/atprotocol/chat/bsky/convo/chatbskyconvogetconvo.h \
+    $$PWD/atprotocol/chat/bsky/convo/chatbskyconvogetconvoformembers.h \
+    $$PWD/atprotocol/chat/bsky/convo/chatbskyconvogetlog.h \
+    $$PWD/atprotocol/chat/bsky/convo/chatbskyconvogetmessages.h \
+    $$PWD/atprotocol/chat/bsky/convo/chatbskyconvoleaveconvo.h \
+    $$PWD/atprotocol/chat/bsky/convo/chatbskyconvolistconvos.h \
+    $$PWD/atprotocol/chat/bsky/convo/chatbskyconvomuteconvo.h \
+    $$PWD/atprotocol/chat/bsky/convo/chatbskyconvosendmessage.h \
+    $$PWD/atprotocol/chat/bsky/convo/chatbskyconvosendmessagebatch.h \
+    $$PWD/atprotocol/chat/bsky/convo/chatbskyconvounmuteconvo.h \
+    $$PWD/atprotocol/chat/bsky/convo/chatbskyconvoupdateread.h \
+    $$PWD/atprotocol/chat/bsky/moderation/chatbskymoderationgetactormetadata.h \
+    $$PWD/atprotocol/chat/bsky/moderation/chatbskymoderationgetmessagecontext.h \
+    $$PWD/atprotocol/chat/bsky/moderation/chatbskymoderationupdateactoraccess.h \
     $$PWD/atprotocol/com/atproto/moderation/comatprotomoderationcreatereport.h \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepocreaterecord.h \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepodeleterecord.h \
@@ -146,6 +181,7 @@ HEADERS += \
     $$PWD/search/search.h \
     $$PWD/tools/base32.h \
     $$PWD/tools/cardecoder.h \
+    $$PWD/tools/chatlogsubscriber.h \
     $$PWD/tools/configurablelabels.h \
     $$PWD/tools/imagecompressor.h \
     $$PWD/tools/leb128.h \

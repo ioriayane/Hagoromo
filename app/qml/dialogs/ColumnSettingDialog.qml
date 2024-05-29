@@ -90,6 +90,16 @@ Dialog {
                 when: columnSettingDialog.componentType === 6
                 PropertyChanges { target: imageLayoutLabel; visible: true }
                 PropertyChanges { target: imageLayoutCombobox; visible: true }
+            },
+            State { // ChatList
+                when: columnSettingDialog.componentType === 7
+                PropertyChanges { target: autoLoadingCheckbox; visible: false }
+                PropertyChanges { target: autoLoadingIntervalLayout; visible: false }
+            },
+            State { // ChatMessageList
+                when: columnSettingDialog.componentType === 8
+                PropertyChanges { target: autoLoadingCheckbox; visible: false }
+                PropertyChanges { target: autoLoadingIntervalLayout; visible: false }
             }
         ]
 
@@ -106,6 +116,7 @@ Dialog {
                     text: qsTr("Auto loading")
                 }
                 RowLayout {
+                    id: autoLoadingIntervalLayout
                     Layout.topMargin: 10
                     Label {
                         font.pointSize: AdjustedValues.f10

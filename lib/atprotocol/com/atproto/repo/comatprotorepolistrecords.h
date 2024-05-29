@@ -13,13 +13,13 @@ public:
     void listRecords(const QString &repo, const QString &collection, const int limit,
                      const QString &cursor, const bool reverse);
 
-    const QList<AtProtocolType::ComAtprotoRepoListRecords::Record> &recordList() const;
+    const QList<AtProtocolType::ComAtprotoRepoListRecords::Record> &recordsList() const;
 
 protected:
     virtual bool parseJson(bool success, const QString reply_json);
 
 private:
-    QList<AtProtocolType::ComAtprotoRepoListRecords::Record> m_recordList;
+    QList<AtProtocolType::ComAtprotoRepoListRecords::Record> m_recordsList;
 };
 
 }

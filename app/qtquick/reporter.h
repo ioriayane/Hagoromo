@@ -28,7 +28,9 @@ public:
     Q_INVOKABLE void reportPost(const QString &uri, const QString &cid,
                                 Reporter::ReportReason reason);
     Q_INVOKABLE void reportAccount(const QString &did, Reporter::ReportReason reason);
-
+    Q_INVOKABLE void reportMessage(const QString &did, const QString &convo_id,
+                                   const QString &message_id, const QString &text,
+                                   Reporter::ReportReason reason);
     bool running() const;
     void setRunning(bool newRunning);
 

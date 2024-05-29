@@ -12,6 +12,8 @@ public:
 
     void reportPost(const QString &uri, const QString &cid, const QString &reason);
     void reportAccount(const QString &did, const QString &reason);
+    void reportMessage(const QString &did, const QString &convo_id, const QString &message_id,
+                       const QString &text, const QString &reason);
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);

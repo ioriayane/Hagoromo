@@ -14,10 +14,13 @@ public:
 
     const AtProtocolType::DirectoryPlcDefs::PlcAuditLog &plcAuditLog() const;
 
+    QString defaultService() const;
+
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 
     AtProtocolType::DirectoryPlcDefs::PlcAuditLog m_plcAuditLog;
+    QString m_defaultService;
 };
 
 }

@@ -6,6 +6,9 @@ SOURCES += \
     main.cpp \
     tools/translatorchanger.cpp
 
+HEADERS += \
+    tools/translatorchanger.h
+
 QML_FILES = \
     qml/main.qml \
     qml/controls/ClickableFrame.qml \
@@ -14,6 +17,8 @@ QML_FILES = \
     qml/controls/IconButton.qml \
     qml/controls/IconLabelFrame.qml \
     qml/controls/ImageWithIndicator.qml \
+    qml/controls/MessageBubble.qml \
+    qml/controls/MoreButton.qml \
     qml/controls/RadioButtonEx.qml \
     qml/data/Account.qml \
     qml/data/AdjustedValues.qml \
@@ -39,6 +44,7 @@ QML_FILES = \
     qml/dialogs/MutedListsDialog.qml \
     qml/dialogs/PostDialog.qml \
     qml/dialogs/ReportAccountDialog.qml \
+    qml/dialogs/ReportMessageDialog.qml \
     qml/dialogs/ReportPostDialog.qml \
     qml/dialogs/SearchDialog.qml \
     qml/dialogs/SelectThreadGateDialog.qml \
@@ -49,6 +55,7 @@ QML_FILES = \
     qml/parts/ApplicationShortcut.qml \
     qml/parts/Author.qml \
     qml/parts/AvatarImage.qml \
+    qml/parts/ChatErrorMessage.qml \
     qml/parts/CoverFrame.qml \
     qml/parts/CursorRect.qml \
     qml/parts/CursorRectHandle.qml \
@@ -73,6 +80,8 @@ QML_FILES = \
     qml/parts/TagLabelLayout.qml \
     qml/parts/VersionInfomation.qml \
     qml/view/AnyProfileListView.qml \
+    qml/view/ChatListView.qml \
+    qml/view/ChatMessageListView.qml \
     qml/view/ColumnView.qml \
     qml/view/FeedGeneratorListView.qml \
     qml/view/ImageFullView.qml \
@@ -83,6 +92,7 @@ QML_FILES = \
     qml/view/PostThreadView.qml \
     qml/view/ProfileListView.qml \
     qml/view/ProfileView.qml \
+    qml/view/SuggestionProfileListView.qml \
     qml/view/TimelineView.qml
 
 IMAGE_FILES += \
@@ -100,6 +110,7 @@ IMAGE_FILES += \
     qml/images/database.png \
     qml/images/block.png \
     qml/images/bookmark_add.png \
+    qml/images/chat.png \
     qml/images/check.png \
     qml/images/close.png \
     qml/images/column.png \
@@ -115,6 +126,7 @@ IMAGE_FILES += \
     qml/images/label.png \
     qml/images/labeling.png \
     qml/images/language.png \
+    qml/images/leave.png \
     qml/images/like.png \
     qml/images/list.png \
     qml/images/logo.png \
@@ -130,6 +142,7 @@ IMAGE_FILES += \
     qml/images/report.png \
     qml/images/repost.png \
     qml/images/search.png \
+    qml/images/send.png \
     qml/images/settings.png \
     qml/images/tag.png \
     qml/images/terminal.png \
@@ -176,6 +189,3 @@ mac:translations.path = \
 translations.files = $$PWD/i18n/*.qm
 #qmファイルが存在しないとmakefileに追加されないので注意
 INSTALLS += translations
-
-HEADERS += \
-    tools/translatorchanger.h

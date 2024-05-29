@@ -10,6 +10,9 @@ SOURCES += \
     $$PWD/atpabstractlistmodel.cpp \
     $$PWD/authorfeedlistmodel.cpp \
     $$PWD/blockslistmodel.cpp \
+    $$PWD/chat/atpchatabstractlistmodel.cpp \
+    $$PWD/chat/chatlistmodel.cpp \
+    $$PWD/chat/chatmessagelistmodel.cpp \
     $$PWD/columnlistmodel.cpp \
     $$PWD/contentfiltersettinglistmodel.cpp \
     $$PWD/createsession.cpp \
@@ -57,6 +60,9 @@ HEADERS += \
     $$PWD/atpabstractlistmodel.h \
     $$PWD/authorfeedlistmodel.h \
     $$PWD/blockslistmodel.h \
+    $$PWD/chat/atpchatabstractlistmodel.h \
+    $$PWD/chat/chatlistmodel.h \
+    $$PWD/chat/chatmessagelistmodel.h \
     $$PWD/columnlistmodel.h \
     $$PWD/common.h \
     $$PWD/contentfiltersettinglistmodel.h \

@@ -81,6 +81,7 @@ public:
     QString cursor() const;
     void setCursor(const QString &newCursor);
 
+    void appendRawHeader(const QString &name, const QString &value);
 signals:
     void finished(bool success);
 
@@ -105,12 +106,16 @@ protected:
     QString m_listKey;
 
 private:
+    void setAdditionalRawHeader(QNetworkRequest &request);
+
     static HttpAccessManager *m_manager;
 
     QString m_replyJson;
     QString m_errorCode;
     QString m_errorMessage;
     QString m_cursor;
+
+    QHash<QString, QString> m_additionalRawHeaders;
 };
 }
 
