@@ -363,7 +363,7 @@ QString ChatMessageListModel::convoId() const
 
 void ChatMessageListModel::setConvoId(const QString &newConvoId)
 {
-    if (m_convoId == newConvoId)
+    if (!m_convoId.isEmpty() || m_convoId == newConvoId)
         return;
     m_convoId = newConvoId;
     emit convoIdChanged();
