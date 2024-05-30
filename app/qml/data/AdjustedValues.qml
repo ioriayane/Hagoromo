@@ -43,6 +43,7 @@ QtObject {
 
     // others
     property real v96: 96 * ratio
+    property real v72: 72 * ratio
     property real v48: 48 * ratio
     property real v24: 24 * ratio
 

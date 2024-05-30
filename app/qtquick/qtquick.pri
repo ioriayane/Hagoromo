@@ -37,6 +37,7 @@ SOURCES += \
     $$PWD/log/logmonthlylistmodel.cpp \
     $$PWD/log/logoperator.cpp \
     $$PWD/log/logstatisticslistmodel.cpp \
+    $$PWD/moderation/labelerlistmodel.cpp \
     $$PWD/mutedwordlistmodel.cpp \
     $$PWD/muteslistmodel.cpp \
     $$PWD/notificationlistmodel.cpp \
@@ -89,6 +90,7 @@ HEADERS += \
     $$PWD/log/logmonthlylistmodel.h \
     $$PWD/log/logoperator.h \
     $$PWD/log/logstatisticslistmodel.h \
+    $$PWD/moderation/labelerlistmodel.h \
     $$PWD/mutedwordlistmodel.h \
     $$PWD/muteslistmodel.h \
     $$PWD/notificationlistmodel.h \

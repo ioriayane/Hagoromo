@@ -10,8 +10,9 @@ class ComAtprotoModerationCreateReportEx : public ComAtprotoModerationCreateRepo
 public:
     explicit ComAtprotoModerationCreateReportEx(QObject *parent = nullptr);
 
-    void reportPost(const QString &uri, const QString &cid, const QString &reason);
-    void reportAccount(const QString &did, const QString &reason);
+    void reportPost(const QString &uri, const QString &cid, const QString &text,
+                    const QString &reason);
+    void reportAccount(const QString &did, const QString &text, const QString &reason);
     void reportMessage(const QString &did, const QString &convo_id, const QString &message_id,
                        const QString &text, const QString &reason);
 

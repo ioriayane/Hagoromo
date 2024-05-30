@@ -25,9 +25,10 @@ public:
     Q_INVOKABLE void setAccount(const QString &service, const QString &did, const QString &handle,
                                 const QString &email, const QString &accessJwt,
                                 const QString &refreshJwt);
-    Q_INVOKABLE void reportPost(const QString &uri, const QString &cid,
-                                Reporter::ReportReason reason);
-    Q_INVOKABLE void reportAccount(const QString &did, Reporter::ReportReason reason);
+    Q_INVOKABLE void reportPost(const QString &uri, const QString &cid, const QString &text,
+                                const QStringList &labelers, Reporter::ReportReason reason);
+    Q_INVOKABLE void reportAccount(const QString &did, const QString &text,
+                                   const QStringList &labelers, Reporter::ReportReason reason);
     Q_INVOKABLE void reportMessage(const QString &did, const QString &convo_id,
                                    const QString &message_id, const QString &text,
                                    Reporter::ReportReason reason);

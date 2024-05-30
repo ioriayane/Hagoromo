@@ -63,7 +63,7 @@ Dialog {
 
         Label {
             font.pointSize: AdjustedValues.f10
-            text: qsTr("Report this message\nWhy should this message be reviewed?")
+            text: qsTr("Why should this message be reviewed?")
         }
 
         RadioButtonEx {
@@ -108,15 +108,16 @@ Dialog {
             font.pointSize: AdjustedValues.f10
             text: qsTr("Optionally provide additional information below:")
         }
-        TextArea {
-            id: reportTextArea
-            Layout.fillWidth: true
-            Layout.preferredHeight: AdjustedValues.v96
-            property int realLength: systemTool.countText(reportTextArea.text)
-            wrapMode: TextInput.WordWrap
-            selectByMouse: true
-            font.pointSize: AdjustedValues.f10
-
+        ScrollView {
+            Layout.preferredWidth: reportTypeLayout.width
+            Layout.preferredHeight: AdjustedValues.v72
+            TextArea {
+                id: reportTextArea
+                property int realLength: systemTool.countText(reportTextArea.text)
+                wrapMode: TextInput.WordWrap
+                selectByMouse: true
+                font.pointSize: AdjustedValues.f10
+            }
         }
         Label {
             Layout.alignment: Qt.AlignRight
@@ -138,7 +139,9 @@ Dialog {
             }
             Button {
                 Layout.alignment: Qt.AlignRight
-                enabled: reportTypeButtonGroup.checkState === Qt.PartiallyChecked && !reporter.running
+                enabled: reportTypeButtonGroup.checkState === Qt.PartiallyChecked &&
+                         !reporter.running &&
+                         reportTextArea.realLength <= 300
                 font.pointSize: AdjustedValues.f10
                 text: qsTr("Send report")
                 onClicked: {

@@ -13,6 +13,8 @@ description: This is a multi-column Bluesky client.
   - Add the date of registration to account profile
   - Add the feature to view handle history from profile
   - Add chat feature
+- Update
+  - Change so that the moderation service to which reports are sent can be selected using the report function
 
 ### v0.30.0 - 2024/5/11
 
