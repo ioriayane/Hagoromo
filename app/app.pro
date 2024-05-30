@@ -64,6 +64,7 @@ QML_FILES = \
     qml/parts/FeedGeneratorLinkCard.qml \
     qml/parts/HandleHistoryPopup.qml \
     qml/parts/HashTagMenu.qml \
+    qml/parts/LabelerComboBox.qml \
     qml/parts/ListLinkCard.qml \
     qml/parts/MentionSuggestionView.qml \
     qml/parts/NotificationDelegate.qml \

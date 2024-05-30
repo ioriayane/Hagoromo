@@ -2790,42 +2790,57 @@ Please recreate AppPassword in the official application.</source>
         <translation>アカウントを通報</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ReportAccountDialog.qml" line="46"/>
+        <location filename="../qml/dialogs/ReportAccountDialog.qml" line="51"/>
+        <source>Why should this user be reviewed?</source>
+        <translation>なぜこのユーザーをレビューする必要がありますか？</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/ReportAccountDialog.qml" line="58"/>
         <source>Misleading Account</source>
         <translation>誤解を招くアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ReportAccountDialog.qml" line="47"/>
+        <location filename="../qml/dialogs/ReportAccountDialog.qml" line="59"/>
         <source>Impersonation or false claims about identity or affiliation</source>
         <translation>なりすましや身元や所属に関する虚偽の主張をしている</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ReportAccountDialog.qml" line="52"/>
+        <location filename="../qml/dialogs/ReportAccountDialog.qml" line="65"/>
         <source>Frequently Posts Unwanted Content</source>
         <translation>望まれないコンテンツを頻繁に投稿するアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ReportAccountDialog.qml" line="53"/>
+        <location filename="../qml/dialogs/ReportAccountDialog.qml" line="66"/>
         <source>Spam; excessive mentions or replies</source>
         <translation>スパム；過剰なメンションややリプライなどをしている</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ReportAccountDialog.qml" line="58"/>
+        <location filename="../qml/dialogs/ReportAccountDialog.qml" line="72"/>
         <source>Name or Description Violates Community Standards</source>
         <translation>名前または説明がコミュニティ基準違反</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ReportAccountDialog.qml" line="59"/>
+        <location filename="../qml/dialogs/ReportAccountDialog.qml" line="73"/>
         <source>Terms used violate community standards</source>
         <translation>使用されている用語がコミュニティ基準に違反している</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ReportAccountDialog.qml" line="67"/>
+        <location filename="../qml/dialogs/ReportAccountDialog.qml" line="80"/>
+        <source>Select the moderation service to report to</source>
+        <translation>報告先のモデレーションサービスを選択してください</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/ReportAccountDialog.qml" line="99"/>
+        <source>Optionally provide additional information below:</source>
+        <translation>オプションとして以下に追加情報を記入してください：</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/ReportAccountDialog.qml" line="123"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ReportAccountDialog.qml" line="78"/>
+        <location filename="../qml/dialogs/ReportAccountDialog.qml" line="136"/>
         <source>Send report</source>
         <translation>通報</translation>
     </message>
@@ -2838,11 +2853,15 @@ Please recreate AppPassword in the official application.</source>
         <translation>メッセージの通報</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ReportMessageDialog.qml" line="66"/>
         <source>Report this message
 Why should this message be reviewed?</source>
-        <translation>このメッセージを通報
+        <translation type="vanished">このメッセージを通報
 なぜこのメッセージをレビューする必要がありますか？</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/ReportMessageDialog.qml" line="66"/>
+        <source>Why should this message be reviewed?</source>
+        <translation>なぜこのメッセージをレビューする必要がありますか？</translation>
     </message>
     <message>
         <location filename="../qml/dialogs/ReportMessageDialog.qml" line="73"/>
@@ -2900,12 +2919,12 @@ Why should this message be reviewed?</source>
         <translation>オプションとして以下に追加情報を記入してください：</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ReportMessageDialog.qml" line="132"/>
+        <location filename="../qml/dialogs/ReportMessageDialog.qml" line="133"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ReportMessageDialog.qml" line="143"/>
+        <location filename="../qml/dialogs/ReportMessageDialog.qml" line="146"/>
         <source>Send report</source>
         <translation>通報</translation>
     </message>
@@ -2913,67 +2932,82 @@ Why should this message be reviewed?</source>
 <context>
     <name>ReportPostDialog</name>
     <message>
-        <location filename="../qml/dialogs/ReportPostDialog.qml" line="18"/>
+        <location filename="../qml/dialogs/ReportPostDialog.qml" line="19"/>
         <source>Report post</source>
         <translation>ポストの通報</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ReportPostDialog.qml" line="57"/>
+        <location filename="../qml/dialogs/ReportPostDialog.qml" line="63"/>
+        <source>Why should this post be reviewed?</source>
+        <translation>なぜこのポストをレビューする必要がありますか？</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/ReportPostDialog.qml" line="70"/>
         <source>Spam</source>
         <translation>スパム</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ReportPostDialog.qml" line="58"/>
+        <location filename="../qml/dialogs/ReportPostDialog.qml" line="71"/>
         <source>Excessive mentions or replies</source>
         <translation>過剰なメンションややリプライ</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ReportPostDialog.qml" line="63"/>
+        <location filename="../qml/dialogs/ReportPostDialog.qml" line="77"/>
         <source>Unwanted Sexual Content</source>
         <translation>望まれない性的コンテンツ</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ReportPostDialog.qml" line="64"/>
+        <location filename="../qml/dialogs/ReportPostDialog.qml" line="78"/>
         <source>Nudity or pornography not labeled as such</source>
         <translation>ヌードまたはポルノと表示（ラベリング）されていない</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ReportPostDialog.qml" line="69"/>
+        <location filename="../qml/dialogs/ReportPostDialog.qml" line="84"/>
         <source>Anti-Social Behavior</source>
         <translation>反社会的な行為</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ReportPostDialog.qml" line="70"/>
+        <location filename="../qml/dialogs/ReportPostDialog.qml" line="85"/>
         <source>Harassment, trolling, or intolerance</source>
         <translation>嫌がらせ、荒らし、不寛容</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ReportPostDialog.qml" line="75"/>
+        <location filename="../qml/dialogs/ReportPostDialog.qml" line="91"/>
         <source>Illegal and Urgent</source>
         <translation>違法かつ執拗</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ReportPostDialog.qml" line="76"/>
+        <location filename="../qml/dialogs/ReportPostDialog.qml" line="92"/>
         <source>Glaring violations of law or terms of service</source>
         <translation>法律または利用規約への明白な違反</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ReportPostDialog.qml" line="81"/>
+        <location filename="../qml/dialogs/ReportPostDialog.qml" line="98"/>
         <source>Other</source>
         <translation>その他</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ReportPostDialog.qml" line="82"/>
+        <location filename="../qml/dialogs/ReportPostDialog.qml" line="99"/>
         <source>An issue not included in these options</source>
         <translation>以上のオプションに含まれていない問題</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ReportPostDialog.qml" line="90"/>
+        <location filename="../qml/dialogs/ReportPostDialog.qml" line="108"/>
+        <source>Select the moderation service to report to</source>
+        <translation>報告先のモデレーションサービスを選択してください</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/ReportPostDialog.qml" line="129"/>
+        <source>Optionally provide additional information below:</source>
+        <translation>オプションとして以下に追加情報を記入してください：</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/ReportPostDialog.qml" line="153"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ReportPostDialog.qml" line="101"/>
+        <location filename="../qml/dialogs/ReportPostDialog.qml" line="166"/>
         <source>Send report</source>
         <translation>通報</translation>
     </message>

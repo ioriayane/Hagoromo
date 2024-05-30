@@ -25,9 +25,10 @@ void Reporter::setAccount(const QString &service, const QString &did, const QStr
     m_account.refreshJwt = refreshJwt;
 }
 
-void Reporter::reportPost(const QString &uri, const QString &cid, Reporter::ReportReason reason)
+void Reporter::reportPost(const QString &uri, const QString &cid, const QString &text,
+                          const QStringList &labelers, Reporter::ReportReason reason)
 {
-    qDebug() << "reportPost" << uri << cid << reason;
+    qDebug() << "reportPost" << uri << cid << reason << text;
     if (uri.isEmpty() || cid.isEmpty() || !m_reasonHash.contains(reason))
         return;
     if (running())
@@ -42,10 +43,14 @@ void Reporter::reportPost(const QString &uri, const QString &cid, Reporter::Repo
         report->deleteLater();
     });
     report->setAccount(m_account);
-    report->reportPost(uri, cid, m_reasonHash[reason]);
+    if (!labelers.isEmpty() && !labelers.first().isEmpty()) {
+        report->appendRawHeader("atproto-proxy", labelers.first() + "#atproto_labeler");
+    }
+    report->reportPost(uri, cid, text, m_reasonHash[reason]);
 }
 
-void Reporter::reportAccount(const QString &did, ReportReason reason)
+void Reporter::reportAccount(const QString &did, const QString &text, const QStringList &labelers,
+                             ReportReason reason)
 {
     qDebug() << "reportAccount" << did << reason;
     if (did.isEmpty() || !m_reasonHash.contains(reason))
@@ -62,7 +67,10 @@ void Reporter::reportAccount(const QString &did, ReportReason reason)
         report->deleteLater();
     });
     report->setAccount(m_account);
-    report->reportAccount(did, m_reasonHash[reason]);
+    if (!labelers.isEmpty() && !labelers.first().isEmpty()) {
+        report->appendRawHeader("atproto-proxy", labelers.first() + "#atproto_labeler");
+    }
+    report->reportAccount(did, text, m_reasonHash[reason]);
 }
 
 void Reporter::reportMessage(const QString &did, const QString &convo_id, const QString &message_id,
