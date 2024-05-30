@@ -497,43 +497,39 @@ void AccountListModel::getProfile(int row)
     if (row < 0 || row >= m_accountList.count())
         return;
 
-    DirectoryPlc *plc = new DirectoryPlc(this);
-    connect(plc, &DirectoryPlc::finished, this, [=](bool success) {
-        if (success && !plc->serviceEndpoint().isEmpty()) {
-            m_accountList[row].service_endpoint = plc->serviceEndpoint();
-        } else {
-            m_accountList[row].service_endpoint = m_accountList.at(row).service;
-        }
-        qDebug() << "Update service endpoint" << m_accountList.at(row).service_endpoint;
+    getServiceEndpoint(m_accountList.at(row).did, m_accountList.at(row).service,
+                       [=](const QString &service_endpoint) {
+                           m_accountList[row].service_endpoint = service_endpoint;
+                           qDebug().noquote()
+                                   << "Update service endpoint" << m_accountList.at(row).service
+                                   << "->" << m_accountList.at(row).service_endpoint;
 
-        AppBskyActorGetProfile *profile = new AppBskyActorGetProfile(this);
-        profile->setAccount(m_accountList.at(row));
-        connect(profile, &AppBskyActorGetProfile::finished, [=](bool success) {
-            if (success) {
-                AtProtocolType::AppBskyActorDefs::ProfileViewDetailed detail =
-                        profile->profileViewDetailed();
-                qDebug() << "Update profile detailed" << detail.displayName << detail.description;
-                m_accountList[row].displayName = detail.displayName;
-                m_accountList[row].description = detail.description;
-                m_accountList[row].avatar = detail.avatar;
-                m_accountList[row].banner = detail.banner;
+                           AppBskyActorGetProfile *profile = new AppBskyActorGetProfile(this);
+                           profile->setAccount(m_accountList.at(row));
+                           connect(profile, &AppBskyActorGetProfile::finished, [=](bool success) {
+                               if (success) {
+                                   AtProtocolType::AppBskyActorDefs::ProfileViewDetailed detail =
+                                           profile->profileViewDetailed();
+                                   qDebug() << "Update profile detailed" << detail.displayName
+                                            << detail.description;
+                                   m_accountList[row].displayName = detail.displayName;
+                                   m_accountList[row].description = detail.description;
+                                   m_accountList[row].avatar = detail.avatar;
+                                   m_accountList[row].banner = detail.banner;
 
-                save();
+                                   save();
 
-                emit updatedAccount(row, m_accountList[row].uuid);
-                emit dataChanged(index(row), index(row));
+                                   emit updatedAccount(row, m_accountList[row].uuid);
+                                   emit dataChanged(index(row), index(row));
 
-                getRawProfile(row);
-            } else {
-                emit errorOccured(profile->errorCode(), profile->errorMessage());
-            }
-            profile->deleteLater();
-        });
-        profile->getProfile(m_accountList.at(row).did);
-
-        plc->deleteLater();
-    });
-    plc->directory(m_accountList.at(row).did);
+                                   getRawProfile(row);
+                               } else {
+                                   emit errorOccured(profile->errorCode(), profile->errorMessage());
+                               }
+                               profile->deleteLater();
+                           });
+                           profile->getProfile(m_accountList.at(row).did);
+                       });
 }
 
 void AccountListModel::getRawProfile(int row)
@@ -557,6 +553,30 @@ void AccountListModel::getRawProfile(int row)
     });
     record->setAccount(m_accountList.at(row));
     record->profile(m_accountList.at(row).did);
+}
+
+void AccountListModel::getServiceEndpoint(const QString &did, const QString &service,
+                                          std::function<void(const QString &)> callback)
+{
+    if (did.isEmpty()) {
+        callback(service);
+        return;
+    }
+    if (!service.startsWith("https://bsky.social")) {
+        callback(service);
+        return;
+    }
+
+    DirectoryPlc *plc = new DirectoryPlc(this);
+    connect(plc, &DirectoryPlc::finished, this, [=](bool success) {
+        if (success) {
+            callback(plc->serviceEndpoint());
+        } else {
+            callback(service);
+        }
+        plc->deleteLater();
+    });
+    plc->directory(did);
 }
 
 int AccountListModel::count() const
