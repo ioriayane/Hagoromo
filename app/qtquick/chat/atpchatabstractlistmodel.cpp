@@ -81,6 +81,13 @@ void AtpChatAbstractListModel::getServiceEndpoint(std::function<void()> callback
         callback();
         return;
     }
+    if (!account().service.startsWith("https://bsky.social")) {
+        m_account.service_endpoint = m_account.service;
+        qDebug().noquote() << "Update service endpoint(chat)" << m_account.service << "->"
+                           << m_account.service_endpoint;
+        callback();
+        return;
+    }
 
     DirectoryPlc *plc = new DirectoryPlc(this);
     connect(plc, &DirectoryPlc::finished, this, [=](bool success) {
@@ -89,7 +96,8 @@ void AtpChatAbstractListModel::getServiceEndpoint(std::function<void()> callback
         } else {
             m_account.service_endpoint = m_account.service;
         }
-        qDebug() << "Update service endpoint" << m_account.service_endpoint;
+        qDebug().noquote() << "Update service endpoint(chat)" << m_account.service << "->"
+                           << m_account.service_endpoint;
         callback();
         plc->deleteLater();
     });
