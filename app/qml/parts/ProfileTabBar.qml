@@ -2,9 +2,10 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
-import QtGraphicalEffects 1.15
 
 import tech.relog.hagoromo.singleton 1.0
+
+import "../compat"
 
 ColumnLayout {
     id: tabBar
@@ -158,7 +159,7 @@ ColumnLayout {
                     Layout.preferredWidth: AdjustedValues.i16
                     Layout.preferredHeight: AdjustedValues.i16
                     layer.enabled: true
-                    layer.effect: ColorOverlay {
+                    layer.effect: ColorOverlayC {
                         color: Material.foreground
                     }
                     source: "../images/arrow_forward.png"
@@ -195,7 +196,7 @@ ColumnLayout {
                     Layout.preferredWidth: AdjustedValues.i16
                     Layout.preferredHeight: AdjustedValues.i16
                     layer.enabled: true
-                    layer.effect: ColorOverlay {
+                    layer.effect: ColorOverlayC {
                         color: Material.foreground
                     }
                     source: "../images/arrow_back.png"

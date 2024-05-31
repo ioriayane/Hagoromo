@@ -183,7 +183,7 @@ void ChatListModel::mute(int row)
 {
     if (row < 0 || row >= m_idList.count())
         return;
-    auto &current = m_convoHash.value(m_idList.at(row));
+    const auto &current = m_convoHash.value(m_idList.at(row));
     bool running = item(row, RunningRole).toBool();
     if (running)
         return;
@@ -225,7 +225,7 @@ void ChatListModel::leave(int row)
 {
     if (row < 0 || row >= m_idList.count())
         return;
-    auto &current = m_convoHash.value(m_idList.at(row));
+    const auto &current = m_convoHash.value(m_idList.at(row));
     bool running = item(row, RunningRole).toBool();
     if (running)
         return;

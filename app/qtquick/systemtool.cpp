@@ -99,14 +99,22 @@ QString SystemTool::markupText(const QString &text) const
         int pos;
         int start_pos = 0;
         while ((pos = match.capturedStart()) != -1) {
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
             temp += text.midRef(start_pos, pos - start_pos);
+#else
+            temp += text.mid(start_pos, pos - start_pos);
+#endif
             temp += QString("<a href=\"%1\">%1</a>").arg(match.captured());
 
             start_pos = pos + match.capturedLength();
             match = m_rxUrl.match(text, start_pos);
         }
         if (start_pos < text.length() - 1) {
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
             temp += text.midRef(start_pos, text.length() - start_pos);
+#else
+            temp += text.mid(start_pos, text.length() - start_pos);
+#endif
         }
     }
     temp.replace("\r\n", "<br/>");

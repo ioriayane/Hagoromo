@@ -2,8 +2,6 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
-import QtGraphicalEffects 1.15
-import Qt.labs.settings 1.1
 
 import tech.relog.hagoromo.accountlistmodel 1.0
 import tech.relog.hagoromo.columnlistmodel 1.0
@@ -15,6 +13,7 @@ import "controls"
 import "dialogs"
 import "view"
 import "parts"
+import "compat"
 
 ApplicationWindow {
     id: appWindow
@@ -64,7 +63,7 @@ ApplicationWindow {
         }
     }
 
-    Settings {
+    SettingsC {
         //        property alias x: appWindow.x
         //        property alias y: appWindow.y
         property alias width: appWindow.width
@@ -922,7 +921,7 @@ ApplicationWindow {
                 border.width: 1
                 border.color: Material.color(Material.LightBlue)
                 layer.enabled: true
-                layer.effect: Glow {
+                layer.effect: GlowC {
                     radius: 8
                     samples: 17
                     color: Material.color(Material.LightBlue)

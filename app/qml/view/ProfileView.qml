@@ -2,7 +2,6 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
-import QtGraphicalEffects 1.15
 
 import tech.relog.hagoromo.userprofile 1.0
 import tech.relog.hagoromo.authorfeedlistmodel 1.0
@@ -17,6 +16,7 @@ import tech.relog.hagoromo.singleton 1.0
 
 import "../parts"
 import "../controls"
+import "../compat"
 
 ColumnLayout {
     id: profileView
@@ -315,7 +315,7 @@ ColumnLayout {
                 Layout.preferredHeight: AdjustedValues.i12
                 source: "../images/database.png"
                 layer.enabled: true
-                layer.effect: ColorOverlay {
+                layer.effect: ColorOverlayC {
                     color: Material.color(Material.Grey)
                 }
             }

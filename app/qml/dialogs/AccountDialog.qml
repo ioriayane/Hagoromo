@@ -2,13 +2,13 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
-import QtGraphicalEffects 1.15
 
 import tech.relog.hagoromo.accountlistmodel 1.0
 import tech.relog.hagoromo.singleton 1.0
 
 import "../controls"
 import "../parts"
+import "../compat"
 
 Dialog {
     id: accountDialog
@@ -78,7 +78,7 @@ Dialog {
                     height: AdjustedValues.i24
                     source: "../images/add_user.png"
                     layer.enabled: true
-                    layer.effect: ColorOverlay {
+                    layer.effect: ColorOverlayC {
                         color: Material.accentColor // Material.color(Material.Grey)
                     }
                 }

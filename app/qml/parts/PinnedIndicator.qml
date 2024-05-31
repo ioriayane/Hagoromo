@@ -2,9 +2,10 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
-import QtGraphicalEffects 1.15
 
 import tech.relog.hagoromo.singleton 1.0
+
+import "../compat"
 
 Rectangle {
     color: Material.color(Material.Indigo)
@@ -18,7 +19,7 @@ Rectangle {
             Layout.preferredWidth: AdjustedValues.i12
             Layout.preferredHeight: AdjustedValues.i12
             layer.enabled: true
-            layer.effect: ColorOverlay {
+            layer.effect: ColorOverlayC {
                 color: "white"
             }
             source: "../images/pin.png"

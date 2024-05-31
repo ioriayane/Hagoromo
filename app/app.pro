@@ -1,4 +1,7 @@
 QT += quick network quickcontrols2
+greaterThan(QT_MAJOR_VERSION, 5) {
+QT += core5compat
+}
 
 TARGET = Hagoromo
 
@@ -11,6 +14,10 @@ HEADERS += \
 
 QML_FILES = \
     qml/main.qml \
+    qml/compat/ColorOverlayC.qml \
+    qml/compat/GlowC.qml \
+    qml/compat/OpacityMaskC.qml \
+    qml/compat/SettingsC.qml \
     qml/controls/ClickableFrame.qml \
     qml/controls/ComboBoxEx.qml \
     qml/controls/ProgressCircle.qml \
