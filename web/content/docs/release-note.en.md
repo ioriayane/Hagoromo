@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+### v0.31.0 - 2024/5/31
+
 - Add
   - Add the feature to switch the display language
   - Add the date of registration to account profile
