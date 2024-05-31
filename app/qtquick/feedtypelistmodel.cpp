@@ -83,7 +83,11 @@ void FeedTypeListModel::clear()
         m_feedTypeItemList.clear();
         endRemoveRows();
     }
-    beginInsertRows(QModelIndex(), 0, 1);
+
+    // デフォルトで追加した状態にするアイテムを増減させるときは
+    // AddColumnDialog.qmlのchangeColumnTypeView()を
+    // 修正しないとカスタムフィードなどが読み込まれない
+    beginInsertRows(QModelIndex(), 0, 2);
     {
         FeedTypeItem item;
         item.group = tr("Default Feeds");
@@ -96,6 +100,13 @@ void FeedTypeListModel::clear()
         item.group = tr("Default Feeds");
         item.type = FeedComponentType::Notification;
         item.generator.displayName = tr("Notification");
+        m_feedTypeItemList.append(item);
+    }
+    {
+        FeedTypeItem item;
+        item.group = tr("Chat");
+        item.type = FeedComponentType::ChatList;
+        item.generator.displayName = tr("Chat list");
         m_feedTypeItemList.append(item);
     }
     endInsertRows();
@@ -182,7 +193,7 @@ void FeedTypeListModel::getFeedDetails()
             // apiで渡した順番と逆順で結果が来るので元の順番で追加する
             // 結果の仕様がいつ変わるか分からないのでAPIに投げるuriの順番で制御しない
             for (const auto &uri : qAsConst(uris)) {
-                for (const auto &generator : generators->generatorViewList()) {
+                for (const auto &generator : generators->feedsList()) {
                     if (uri == generator.uri) {
                         FeedTypeItem item;
                         item.group = tr("My Feeds");
@@ -213,7 +224,7 @@ void FeedTypeListModel::getLists()
             if (m_cursor.isEmpty()) {
                 m_cursor = lists->cursor();
             }
-            for (const auto &list : lists->listViewList()) {
+            for (const auto &list : lists->listsList()) {
                 if (list.purpose == "app.bsky.graph.defs#modlist") {
                     continue;
                 }
@@ -228,6 +239,7 @@ void FeedTypeListModel::getLists()
         } else {
             emit errorOccured(lists->errorCode(), lists->errorMessage());
         }
+
         setRunning(false);
         lists->deleteLater();
     });

@@ -13,6 +13,8 @@ enum class FeedComponentType : int {
     CustomFeed = 4,
     AuthorFeed = 5,
     ListFeed = 6,
+    ChatList = 7,
+    ChatMessageList = 8,
 
     PostThread = 100,
     DiscoverFeeds = 101,
@@ -59,6 +61,9 @@ struct ColumnItem
     //  == CustomFeed : カスタムフィードのat-uri
     //  == AuthorFeed : ユーザーのDID
     QString value;
+    // component_type
+    //  == ChatMessageList : チャット相手のdidリスト
+    QStringList value_list;
 
     ColumnPostType type_visibility;
     bool aggregate_reactions = true;
@@ -82,6 +87,7 @@ public:
         ImageLayoutTypeRole,
         NameRole,
         ValueRole,
+        ValueListRole,
 
         SelectedRole,
 
@@ -117,13 +123,15 @@ public:
 
     Q_INVOKABLE void append(const QString &account_uuid, int component_type, bool auto_loading,
                             int interval, int width, int image_layout_type, const QString &name,
-                            const QString &value);
+                            const QString &value, const QStringList &value_list);
     Q_INVOKABLE void insert(int row, const QString &account_uuid, int component_type,
                             bool auto_loading, int interval, int width, int image_layout_type,
-                            const QString &name, const QString &value);
+                            const QString &name, const QString &value,
+                            const QStringList &value_list);
     Q_INVOKABLE int insertNext(const QString &key, const QString &account_uuid, int component_type,
                                bool auto_loading, int interval, int width, int image_layout_type,
-                               const QString &name, const QString &value);
+                               const QString &name, const QString &value,
+                               const QStringList &value_list);
     Q_INVOKABLE void move(const QString &key, const ColumnListModel::MoveDirection direction);
     Q_INVOKABLE int moveSelectionToLeft();
     Q_INVOKABLE int moveSelectionToRight();

@@ -1,0 +1,20 @@
+{
+    "cursor": "222222222dv3t",
+    "logs": [
+        {
+            "$type": "chat.bsky.convo.defs#logCreateMessage",
+            "convoId": "3ksrqt7eebs2b",
+            "rev": "222222222dv3t",
+            "message": {
+                "$type": "chat.bsky.convo.defs#messageView",
+                "id": "3kt5o6y7wmr2r",
+                "rev": "222222222dv3t",
+                "sender": {
+                    "did": "did:plc:ipj5qejfoqu6eukvt72uhyit"
+                },
+                "text": "test",
+                "sentAt": "2024-05-23T11:06:10.878Z"
+            }
+        }
+    ]
+}

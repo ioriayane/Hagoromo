@@ -44,6 +44,8 @@ class FunctionArgument:
             arg_def = f"const QJsonArray &{self._name}"
         elif self._type == 'object':
             arg_def = f"const QJsonObject &{self._name}"
+        elif self._type == 'json_object':
+            arg_def = f"const QJsonObject &{self._name}"
         return arg_def
 
     def to_string_query(self) -> str:
@@ -86,7 +88,7 @@ class FunctionArgument:
             # payload  = f"if({self._name})" + "{\n"
             payload += f"json_obj.insert(QStringLiteral(\"{self._name}\"), {self._name});\n"
             # payload += "}\n"
-        elif self._type == 'unknown' or self._type == 'json_array' or self._type == 'object':
+        elif self._type == 'unknown' or self._type == 'json_array' or self._type == 'object' or self._type == 'json_object':
             payload  = f"if(!{self._name}.isEmpty())" + "{\n"
             payload += f"json_obj.insert(QStringLiteral(\"{self._name}\"), {self._name});\n"
             payload += "}\n"
@@ -106,6 +108,7 @@ class Defs2Struct:
         self.namespace_stack = []
         self.pre_define = {} # [namespace] = <struct_name>
         self.history_type = {}  #[namespace#struct_name] = type
+        self.converted_extend_paths = []    # 処理済みの拡張lexiconのパス
 
         self.api_class = {}
 
@@ -145,6 +148,13 @@ class Defs2Struct:
                     'parent_header': ['atprotocol/app/bsky/graph/appbskygraphgetlists.h']
                 }
             }
+
+        self.rawHttpHeader = {
+            'chat.bsky.': {
+                'name': 'atproto-proxy',
+                'value': 'did:web:api.bsky.chat#bsky_chat'
+            }
+        }
 
         self.skip_api_class_id = [
             'tools.ozone.',
@@ -599,6 +609,13 @@ class Defs2Struct:
                 self.output_text[namespace].append('    // union end : %s' % (type_name, ))
                 self.output_text[namespace].append('};')
 
+            elif items_type == 'ref':
+                # refのときはその型を先に処理する
+                ref_path = obj.get('items', {}).get('ref', '')
+                self.output_ref_recursive(namespace, type_name, ref_path)
+
+                (ref_namespace, ref_type_name) = self.split_ref(ref_path)
+                self.output_text[namespace].append('typedef QList<%s> %s;%s' % (self.to_struct_style(ref_type_name), self.to_struct_style(type_name), obj_comment, ))
 
             elif items_type == 'integer':
                 self.output_text[namespace].append('typedef QList<int> %s;%s' % (self.to_struct_style(type_name), obj_comment, ))
@@ -681,7 +698,10 @@ class Defs2Struct:
                             extend_ns, self.to_struct_style(ref_type_name), property_name, convert_method, property_name,))
 
                 elif p_type == 'union':
-                    self.output_func_text[namespace].append('        QString %s_type = src.value("%s").toObject().value("$type").toString();' % (property_name, property_name, ))
+                    value_key: str = '$type'
+                    if properties[property_name].get('forceRerative') is not None:
+                        value_key = 'type'
+                    self.output_func_text[namespace].append('        QString %s_type = src.value("%s").toObject().value("%s").toString();' % (property_name, property_name, value_key, ))
                     for ref_path in properties[property_name].get('refs', []):
                         (ref_namespace, ref_type_name) = self.split_ref(ref_path)
                         if len(ref_type_name) == 0:
@@ -693,7 +713,11 @@ class Defs2Struct:
                             if len(ref_namespace) == 0:
                                 extend_ns = '%s::' % (self.to_namespace_style(namespace), )
                                 union_name = '%s_%s' % (property_name, self.to_struct_style(ref_type_name))
-                                ref_path_full = namespace + '#' + ref_type_name
+                                if properties[property_name].get('forceRerative', False):
+                                    # plc.directoryの解析専用
+                                    ref_path_full = ref_type_name
+                                else:
+                                    ref_path_full = namespace + '#' + ref_type_name
                             else:
                                 extend_ns = '%s::' % (self.to_namespace_style(ref_namespace), )
                                 union_name = '%s_%s_%s' % (property_name, self.to_namespace_style(ref_namespace), self.to_struct_style(ref_type_name))
@@ -894,6 +918,31 @@ class Defs2Struct:
                         if len(chain_if) == 0:
                             chain_if = '             else '
                 self.output_func_text[namespace].append('        }')
+            elif items_type == 'ref':
+                (ref_namespace, ref_type_name) = self.split_ref(obj.get('items', {}).get('ref', {}))
+                if len(ref_type_name) == 0:
+                    ref_type_name = 'main'
+                if len(ref_namespace) == 0:
+                    extend_ns = ''
+                else:
+                    extend_ns = '%s::' % (self.to_namespace_style(ref_namespace), )
+
+                func_name = '%scopy%s' % (extend_ns, self.to_struct_style(ref_type_name), )
+                self.output_func_text[namespace].append('        for (const auto &s : src) {')
+                if self.check_pointer(namespace, type_name, '', ref_namespace, ref_type_name):
+                    self.output_func_text[namespace].append('            QSharedPointer<%s%s> child = QSharedPointer<%s%s>(new %s%s());' % (extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), ))
+                    self.output_func_text[namespace].append('            %s(s.toObject(), *child);' % (func_name, ))
+                    self.output_func_text[namespace].append('            dest.%s.append(child);' % (property_name, ))
+                else:
+                    self.output_func_text[namespace].append('            %s%s child;' % (extend_ns, self.to_struct_style(ref_type_name), ))
+                    if self.check_object(ref_namespace, 'copy%s' % (self.to_struct_style(ref_type_name), )):
+                        self.output_func_text[namespace].append('            %s(s.toObject(), child);' % (func_name, ))
+                    else:
+                        self.output_func_text[namespace].append('            %s(s, child);' % (func_name, ))
+                    self.output_func_text[namespace].append('            dest.append(child);')
+                self.output_func_text[namespace].append('        }')
+
+
             elif items_type == 'integer':
                 pass
             elif items_type == 'boolean':
@@ -911,7 +960,7 @@ class Defs2Struct:
             if variant_obj is not None:
                 self.output_function(namespace, type_name, variant_obj)
 
-    def output_api_class_data(self, namespace: str, ref: str, var_type: str, key_name: str) -> dict:
+    def output_api_class_data(self, namespace: str, ref: str, var_type: str, property_name: str, key_name: str) -> dict:
         data: dict = {}
         (ref_namespace, ref_struct_name) = self.split_ref(ref)
 
@@ -928,11 +977,11 @@ class Defs2Struct:
         data['variable_type'] = 'AtProtocolType::%s::%s' % (self.to_namespace_style(ref_namespace),
                                                             self.to_struct_style(ref_struct_name), )
         if var_type.startswith('array_'):
-            data['method_getter'] = '%sList' % (ref_struct_name, )
-            data['variable_name'] = 'm_%sList' % (ref_struct_name, )
+            data['method_getter'] = '%sList' % (property_name, )
+            data['variable_name'] = 'm_%sList' % (property_name, )
         else:
-            data['method_getter'] = '%s' % (ref_struct_name, )
-            data['variable_name'] = 'm_%s' % (ref_struct_name, )
+            data['method_getter'] = '%s' % (property_name, )
+            data['variable_name'] = 'm_%s' % (property_name, )
         if self.history_type.get(ref, '') == 'array':
             data['variable_to'] = '.toArray()'
         else:
@@ -1008,6 +1057,16 @@ class Defs2Struct:
 
         return data
 
+    def output_api_class_raw_header(self, namespace: str) -> dict:
+        data: list = []
+
+        for key in self.rawHttpHeader:
+            if namespace.startswith(key):
+                data.append(self.rawHttpHeader.get(key))
+
+        return data
+
+
     def output_api_class(self, namespace: str, type_name: str):
         obj = self.get_defs_obj(namespace, type_name)
         data: dict = {}
@@ -1046,7 +1105,13 @@ class Defs2Struct:
                         pro_type = pro_value.get('type', '')
                         if pro_type == 'array':
                             pro_type = pro_value.get('items', {}).get('type', '')
-                            arguments.append(FunctionArgument(pro_type, pro_name, True))
+                            if pro_type == 'ref':
+                                pro_ref = pro_value.get('items', {}).get('ref', '')
+                                if pro_ref.startswith('#'):
+                                    pro_ref = namespace + pro_ref
+                                arguments.append(FunctionArgument('json_' + self.history_type.get(pro_ref, ''), pro_name, False))
+                            else:
+                                arguments.append(FunctionArgument(pro_type, pro_name, True))
                         elif pro_type == 'ref':
                             pro_ref = pro_value.get('ref', '')
                             arguments.append(FunctionArgument('json_' + self.history_type.get(pro_ref, ''), pro_name, False))
@@ -1096,7 +1161,8 @@ class Defs2Struct:
                 pass
             elif schema.get('type', '') == 'ref':
                 ref = schema.get('ref', '')
-                item_obj = self.output_api_class_data(namespace, ref, '', '')
+                (ref_namespace, ref_key_name) = self.split_ref(ref)
+                item_obj = self.output_api_class_data(namespace, ref, '', ref_key_name, '')
                 if len(item_obj) > 0:
                     data['members'] = data.get('members', [])
                     data['members'].append(item_obj)
@@ -1134,7 +1200,11 @@ class Defs2Struct:
                             if len(refs) == 0:
                                 refs = [namespace]
                             for ref in refs:
-                                item_obj = self.output_api_class_data(namespace, ref, var_type, key_name)
+                                (var_ref_namespace, var_ref_key_name) = self.split_ref(ref)
+                                if len(refs) > 1:
+                                    item_obj = self.output_api_class_data(namespace, ref, var_type, key_name + self.to_struct_style(var_ref_key_name), key_name)
+                                else:
+                                    item_obj = self.output_api_class_data(namespace, ref, var_type, key_name, key_name)
                                 if len(item_obj) > 0:
                                     data['members'] = data.get('members', [])
                                     data['members'].append(item_obj)
@@ -1165,7 +1235,7 @@ class Defs2Struct:
                                 data['has_primitive'] = True
                     elif pro_type == 'ref':
                         ref = property_obj.get('ref', '')
-                        item_obj = self.output_api_class_data(namespace, ref, 'obj', key_name)
+                        item_obj = self.output_api_class_data(namespace, ref, 'obj', key_name, key_name)
                         if len(item_obj) > 0:
                             data['members'] = data.get('members', [])
                             data['members'].append(item_obj)
@@ -1183,6 +1253,7 @@ class Defs2Struct:
             data['recv_image'] = data.get('recv_image', False)
             data['has_primitive'] = data.get('has_primitive', False)
             data['has_parent_class'] = data.get('has_parent_class', False)
+            data['raw_headers'] = self.output_api_class_raw_header(namespace)
             data['completed'] = True
             data['my_include_path'] = self.to_header_path(namespace)
             data['need_extension'] = (namespace in self.need_extension)
@@ -1312,6 +1383,7 @@ class Defs2Struct:
         for namespace, type_obj in self.json_obj.items():
             if not self.skip_spi_class(namespace):
                 # class
+                defs = self.json_obj[namespace].get('defs', {})
                 for type_name in defs.keys():
                     self.output_api_class(namespace, type_name)
 
@@ -1342,7 +1414,7 @@ class Defs2Struct:
                 dest[key] = src[key]
         return dest
 
-    def open(self, lexicons_path: str, base_path: str) -> None:
+    def open(self, lexicons_path: str, base_path: str, is_extend: bool = False) -> None:
         obj = None
         with open(lexicons_path, 'r') as fp:
             obj = json.load(fp)
@@ -1354,12 +1426,14 @@ class Defs2Struct:
             rel_path = rel_path[1:]
         namespace = rel_path.replace('/', '.')
 
-        extend_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'lexicons', namespace + '.json')
-        if os.path.isfile(extend_path):
-            # lexiconのユーザー拡張のJSONファイルがあれば合体する
-            with open(extend_path, 'r') as fp:
-                extend_obj = json.load(fp)
-                obj = self.json_deep_merge(obj, extend_obj)
+        if not is_extend:
+            extend_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'lexicons', namespace + '.json')
+            if os.path.isfile(extend_path):
+                # lexiconのユーザー拡張のJSONファイルがあれば合体する
+                with open(extend_path, 'r') as fp:
+                    extend_obj = json.load(fp)
+                    obj = self.json_deep_merge(obj, extend_obj)
+                self.converted_extend_paths.append(extend_path)
 
         self.json_obj[namespace] = obj
 
@@ -1371,6 +1445,13 @@ def main(lexicons_path: str, output_path: str) -> None:
     file_list = glob.glob(lexicons_path + '/**/*.json', recursive=True)
     for file in file_list:
         def2struct.open(file.replace('\\', '/'), lexicons_path)
+
+    # 既存のlexiconに合体していないファイルを処理
+    extend_base_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'lexicons')
+    file_list = glob.glob(extend_base_path + '/*.json')
+    for file in file_list:
+        if file not in def2struct.converted_extend_paths:
+            def2struct.open(file.replace('\\', '/'), extend_base_path.replace('\\', '/'), True)
 
     def2struct.output(output_path)
 

@@ -29,6 +29,9 @@ namespace AtProtocolInterface {
 
 void {{ class_name }}::{{ method_name }}({{ method_args }})
 {
+{%- for raw_header in raw_headers -%}
+    appendRawHeader("{{ raw_header.name }}", "{{ raw_header.value }}");
+{% endfor -%}
 {%- if access_type == "get" %}
     QUrlQuery url_query;
 {{ method_query }}

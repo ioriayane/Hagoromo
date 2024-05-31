@@ -22,7 +22,7 @@ bool AuthorFeedListModel::getLatest()
                 if (m_cidList.isEmpty() && m_cursor.isEmpty()) {
                     m_cursor = timeline->cursor();
                 }
-                copyFrom(timeline->feedViewPostList());
+                copyFrom(timeline->feedList());
             } else {
                 emit errorOccured(timeline->errorCode(), timeline->errorMessage());
             }
@@ -58,7 +58,7 @@ bool AuthorFeedListModel::getNext()
         connect(timeline, &AppBskyFeedGetAuthorFeed::finished, [=](bool success) {
             if (success) {
                 m_cursor = timeline->cursor();
-                copyFromNext(timeline->feedViewPostList());
+                copyFromNext(timeline->feedList());
             } else {
                 emit errorOccured(timeline->errorCode(), timeline->errorMessage());
             }

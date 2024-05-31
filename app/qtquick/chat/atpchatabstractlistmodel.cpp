@@ -1,0 +1,145 @@
+#include "atpchatabstractlistmodel.h"
+#include "extension/directory/plc/directoryplc.h"
+#include "atprotocol/chat/bsky/convo/chatbskyconvoupdateread.h"
+
+using AtProtocolInterface::ChatBskyConvoUpdateRead;
+using AtProtocolInterface::DirectoryPlc;
+
+AtpChatAbstractListModel::AtpChatAbstractListModel(QObject *parent)
+    : QAbstractListModel { parent }, m_running(false), m_loadingInterval(30000)
+{
+    connect(&m_timer, &QTimer::timeout, this, &AtpChatAbstractListModel::getLatest);
+}
+
+void AtpChatAbstractListModel::clear()
+{
+    //
+}
+
+AtProtocolInterface::AccountData AtpChatAbstractListModel::account() const
+{
+    return m_account;
+}
+
+void AtpChatAbstractListModel::setAccount(const QString &service, const QString &did,
+                                          const QString &handle, const QString &email,
+                                          const QString &accessJwt, const QString &refreshJwt)
+{
+    m_account.service = service;
+    m_account.did = did;
+    m_account.handle = handle;
+    m_account.email = email;
+    m_account.accessJwt = accessJwt;
+    m_account.refreshJwt = refreshJwt;
+}
+
+void AtpChatAbstractListModel::setServiceEndpoint(const QString &service_endpoint)
+{
+    m_account.service_endpoint = service_endpoint;
+}
+
+void AtpChatAbstractListModel::updateRead(const QString &convoId, const QString &messageId)
+{
+    if (convoId.isEmpty())
+        return;
+
+    ChatBskyConvoUpdateRead *read = new ChatBskyConvoUpdateRead(this);
+    connect(read, &ChatBskyConvoUpdateRead::finished, this, [=](bool success) {
+        if (success) {
+            qDebug() << "updateRead" << read->convo().unreadCount;
+        } else {
+            emit errorOccured(read->errorCode(), read->errorMessage());
+        }
+        emit finishUpdateRead(success);
+        read->deleteLater();
+    });
+    read->setAccount(account());
+    read->setService(account().service_endpoint);
+    read->updateRead(convoId, messageId);
+}
+
+bool AtpChatAbstractListModel::running() const
+{
+    return m_running;
+}
+
+void AtpChatAbstractListModel::setRunning(bool newRunning)
+{
+    if (m_running == newRunning)
+        return;
+    m_running = newRunning;
+    emit runningChanged();
+}
+
+void AtpChatAbstractListModel::getServiceEndpoint(std::function<void()> callback)
+{
+    if (!m_account.service_endpoint.isEmpty()) {
+        callback();
+        return;
+    }
+    if (account().did.isEmpty()) {
+        callback();
+        return;
+    }
+    if (!account().service.startsWith("https://bsky.social")) {
+        m_account.service_endpoint = m_account.service;
+        qDebug().noquote() << "Update service endpoint(chat)" << m_account.service << "->"
+                           << m_account.service_endpoint;
+        callback();
+        return;
+    }
+
+    DirectoryPlc *plc = new DirectoryPlc(this);
+    connect(plc, &DirectoryPlc::finished, this, [=](bool success) {
+        if (success && !plc->serviceEndpoint().isEmpty()) {
+            m_account.service_endpoint = plc->serviceEndpoint();
+        } else {
+            m_account.service_endpoint = m_account.service;
+        }
+        qDebug().noquote() << "Update service endpoint(chat)" << m_account.service << "->"
+                           << m_account.service_endpoint;
+        callback();
+        plc->deleteLater();
+    });
+    plc->directory(account().did);
+}
+
+void AtpChatAbstractListModel::checkScopeError(const QString &code, const QString &message)
+{
+    if (code == "InvalidToken" && message == "Bad token scope") {
+        setAutoLoading(false);
+    }
+}
+
+bool AtpChatAbstractListModel::autoLoading() const
+{
+    return m_timer.isActive();
+}
+
+void AtpChatAbstractListModel::setAutoLoading(bool newAutoLoading)
+{
+    if (newAutoLoading) {
+        // Off -> On
+        if (m_timer.isActive())
+            return;
+        m_timer.start(loadingInterval());
+    } else {
+        // * -> Off
+        m_timer.stop();
+    }
+    emit autoLoadingChanged();
+}
+
+int AtpChatAbstractListModel::loadingInterval() const
+{
+    return m_loadingInterval;
+}
+
+void AtpChatAbstractListModel::setLoadingInterval(int newLoadingInterval)
+{
+    if (m_loadingInterval == newLoadingInterval)
+        return;
+    m_loadingInterval = newLoadingInterval;
+    m_timer.setInterval(m_loadingInterval);
+    emit loadingIntervalChanged();
+}

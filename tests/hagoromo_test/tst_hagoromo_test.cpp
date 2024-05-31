@@ -155,10 +155,10 @@ void hagoromo_test::test_ColumnListModelMove()
 {
     ColumnListModel model;
 
-    model.append("uuid_1", 0, false, 10000, 400, 1, "column 1", "value 1");
-    model.append("uuid_2", 1, false, 20000, 500, 1, "column 2", "value 2");
-    model.append("uuid_3", 2, false, 30000, 600, 1, "column 3", "value 3");
-    model.append("uuid_4", 3, false, 40000, 700, 1, "column 4", "value 4");
+    model.append("uuid_1", 0, false, 10000, 400, 1, "column 1", "value 1", QStringList());
+    model.append("uuid_2", 1, false, 20000, 500, 1, "column 2", "value 2", QStringList());
+    model.append("uuid_3", 2, false, 30000, 600, 1, "column 3", "value 3", QStringList());
+    model.append("uuid_4", 3, false, 40000, 700, 1, "column 4", "value 4", QStringList());
 
     QVERIFY2(model.getPreviousRow(0) == -1,
              QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
@@ -252,10 +252,10 @@ void hagoromo_test::test_ColumnListModelRemove()
 {
     ColumnListModel model;
 
-    model.append("uuid_1", 0, false, 10000, 400, 1, "column 1", "value 1");
-    model.append("uuid_2", 1, false, 20000, 500, 1, "column 2", "value 2");
-    model.append("uuid_3", 2, false, 30000, 600, 1, "column 3", "value 3");
-    model.append("uuid_4", 3, false, 40000, 700, 1, "column 4", "value 4");
+    model.append("uuid_1", 0, false, 10000, 400, 1, "column 1", "value 1", QStringList());
+    model.append("uuid_2", 1, false, 20000, 500, 1, "column 2", "value 2", QStringList());
+    model.append("uuid_3", 2, false, 30000, 600, 1, "column 3", "value 3", QStringList());
+    model.append("uuid_4", 3, false, 40000, 700, 1, "column 4", "value 4", QStringList());
 
     model.move(model.item(1, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveLeft);
     model.move(model.item(2, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveLeft);
@@ -284,10 +284,10 @@ void hagoromo_test::test_ColumnListModelInsertNext()
 {
     ColumnListModel model;
 
-    model.append("uuid_1", 0, false, 10000, 400, 1, "column 1", "value 1");
-    model.append("uuid_2", 1, false, 20000, 500, 1, "column 2", "value 2");
-    model.append("uuid_3", 2, false, 30000, 600, 1, "column 3", "value 3");
-    model.append("uuid_4", 3, false, 40000, 700, 1, "column 4", "value 4");
+    model.append("uuid_1", 0, false, 10000, 400, 1, "column 1", "value 1", QStringList());
+    model.append("uuid_2", 1, false, 20000, 500, 1, "column 2", "value 2", QStringList());
+    model.append("uuid_3", 2, false, 30000, 600, 1, "column 3", "value 3", QStringList());
+    model.append("uuid_4", 3, false, 40000, 700, 1, "column 4", "value 4", QStringList());
 
     QVERIFY2(model.getPreviousRow(0) == -1,
              QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
@@ -300,7 +300,7 @@ void hagoromo_test::test_ColumnListModelInsertNext()
     QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 0 << 1 << 2 << 3);
 
     model.insertNext(model.item(0, ColumnListModel::KeyRole).toString(), "uuid_10", 10, false, 10,
-                     800, 1, "column 1 next", "value 10");
+                     800, 1, "column 1 next", "value 10", QStringList());
     QVERIFY2(model.getPreviousRow(0) == -1,
              QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
     QVERIFY2(model.getPreviousRow(1) == 4,
@@ -314,7 +314,7 @@ void hagoromo_test::test_ColumnListModelInsertNext()
     QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 0 << 4 << 1 << 2 << 3);
 
     model.insertNext(model.item(0, ColumnListModel::KeyRole).toString(), "uuid_11", 11, false, 11,
-                     900, 1, "column 1 next2", "value 11");
+                     900, 1, "column 1 next2", "value 11", QStringList());
     QVERIFY2(model.getPreviousRow(0) == -1,
              QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
     QVERIFY2(model.getPreviousRow(1) == 4,
@@ -330,7 +330,7 @@ void hagoromo_test::test_ColumnListModelInsertNext()
     QVERIFY(model.getRowListInOrderOfPosition() == QList<int>() << 0 << 5 << 4 << 1 << 2 << 3);
 
     model.insertNext(model.item(3, ColumnListModel::KeyRole).toString(), "uuid_12", 12, false, 12,
-                     1000, 1, "column 4 next", "value 12");
+                     1000, 1, "column 4 next", "value 12", QStringList());
     QVERIFY2(model.getPreviousRow(0) == -1,
              QString("left pos=%1").arg(model.getPreviousRow(0)).toLocal8Bit());
     QVERIFY2(model.getPreviousRow(1) == 4,
@@ -353,10 +353,10 @@ void hagoromo_test::test_ColumnListModelSelected()
     int row = 0;
     ColumnListModel model;
 
-    model.append("uuid_1", 0, false, 10000, 400, 1, "column 1", "value 1");
-    model.append("uuid_2", 1, false, 20000, 500, 1, "column 2", "value 2");
-    model.append("uuid_3", 2, false, 30000, 600, 1, "column 3", "value 3");
-    model.append("uuid_4", 3, false, 40000, 700, 1, "column 4", "value 4");
+    model.append("uuid_1", 0, false, 10000, 400, 1, "column 1", "value 1", QStringList());
+    model.append("uuid_2", 1, false, 20000, 500, 1, "column 2", "value 2", QStringList());
+    model.append("uuid_3", 2, false, 30000, 600, 1, "column 3", "value 3", QStringList());
+    model.append("uuid_4", 3, false, 40000, 700, 1, "column 4", "value 4", QStringList());
 
     model.move(model.item(1, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveLeft);
     model.move(model.item(2, ColumnListModel::KeyRole).toString(), ColumnListModel::MoveLeft);

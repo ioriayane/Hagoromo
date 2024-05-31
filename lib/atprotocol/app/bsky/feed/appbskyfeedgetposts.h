@@ -12,7 +12,7 @@ public:
 
     void getPosts(const QList<QString> &uris);
 
-    const QList<AtProtocolType::AppBskyFeedDefs::PostView> &postViewList() const;
+    const QList<AtProtocolType::AppBskyFeedDefs::PostView> &postsList() const;
 
 protected:
     QString m_listKey;
@@ -20,7 +20,7 @@ protected:
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 
-    QList<AtProtocolType::AppBskyFeedDefs::PostView> m_postViewList;
+    QList<AtProtocolType::AppBskyFeedDefs::PostView> m_postsList;
 };
 
 }

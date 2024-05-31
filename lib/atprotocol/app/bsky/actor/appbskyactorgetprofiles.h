@@ -12,13 +12,12 @@ public:
 
     void getProfiles(const QList<QString> &actors);
 
-    const QList<AtProtocolType::AppBskyActorDefs::ProfileViewDetailed> &
-    profileViewDetailedList() const;
+    const QList<AtProtocolType::AppBskyActorDefs::ProfileViewDetailed> &profilesList() const;
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 
-    QList<AtProtocolType::AppBskyActorDefs::ProfileViewDetailed> m_profileViewDetailedList;
+    QList<AtProtocolType::AppBskyActorDefs::ProfileViewDetailed> m_profilesList;
 };
 
 }

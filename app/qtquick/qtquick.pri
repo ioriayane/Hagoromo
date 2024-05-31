@@ -10,6 +10,9 @@ SOURCES += \
     $$PWD/atpabstractlistmodel.cpp \
     $$PWD/authorfeedlistmodel.cpp \
     $$PWD/blockslistmodel.cpp \
+    $$PWD/chat/atpchatabstractlistmodel.cpp \
+    $$PWD/chat/chatlistmodel.cpp \
+    $$PWD/chat/chatmessagelistmodel.cpp \
     $$PWD/columnlistmodel.cpp \
     $$PWD/contentfiltersettinglistmodel.cpp \
     $$PWD/createsession.cpp \
@@ -34,6 +37,7 @@ SOURCES += \
     $$PWD/log/logmonthlylistmodel.cpp \
     $$PWD/log/logoperator.cpp \
     $$PWD/log/logstatisticslistmodel.cpp \
+    $$PWD/moderation/labelerlistmodel.cpp \
     $$PWD/mutedwordlistmodel.cpp \
     $$PWD/muteslistmodel.cpp \
     $$PWD/notificationlistmodel.cpp \
@@ -57,6 +61,9 @@ HEADERS += \
     $$PWD/atpabstractlistmodel.h \
     $$PWD/authorfeedlistmodel.h \
     $$PWD/blockslistmodel.h \
+    $$PWD/chat/atpchatabstractlistmodel.h \
+    $$PWD/chat/chatlistmodel.h \
+    $$PWD/chat/chatmessagelistmodel.h \
     $$PWD/columnlistmodel.h \
     $$PWD/common.h \
     $$PWD/contentfiltersettinglistmodel.h \
@@ -83,6 +90,7 @@ HEADERS += \
     $$PWD/log/logmonthlylistmodel.h \
     $$PWD/log/logoperator.h \
     $$PWD/log/logstatisticslistmodel.h \
+    $$PWD/moderation/labelerlistmodel.h \
     $$PWD/mutedwordlistmodel.h \
     $$PWD/muteslistmodel.h \
     $$PWD/notificationlistmodel.h \

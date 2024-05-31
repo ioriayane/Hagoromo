@@ -1,4 +1,4 @@
-#include "plcdirectory.h"
+#include "directoryplc.h"
 #include "atprotocol/lexicons_func.h"
 
 #include <QJsonDocument>
@@ -7,23 +7,28 @@
 
 namespace AtProtocolInterface {
 
-PlcDirectory::PlcDirectory(QObject *parent) : AccessAtProtocol { parent } { }
+DirectoryPlc::DirectoryPlc(QObject *parent) : AccessAtProtocol { parent }
+{
+    m_defaultService = "https://plc.directory";
+}
 
-void PlcDirectory::directory(const QString &did)
+void DirectoryPlc::directory(const QString &did)
 {
     QUrlQuery url_query;
 
-    setService("https://plc.directory");
+    if (service().isEmpty()) {
+        setService(defaultService());
+    }
 
     get(did, url_query, false);
 }
 
-const AtProtocolType::ComAtprotoServerDefs::DidDoc &PlcDirectory::didDoc() const
+const AtProtocolType::DirectoryPlcDefs::DidDoc &DirectoryPlc::didDoc() const
 {
     return m_didDoc;
 }
 
-QString PlcDirectory::serviceEndpoint() const
+QString DirectoryPlc::serviceEndpoint() const
 {
     for (const auto &service : m_didDoc.service) {
         if (service.id == "#atproto_pds" && service.type == "AtprotoPersonalDataServer") {
@@ -33,16 +38,20 @@ QString PlcDirectory::serviceEndpoint() const
     return QString();
 }
 
-bool PlcDirectory::parseJson(bool success, const QString reply_json)
+bool DirectoryPlc::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
     if (json_doc.isEmpty()) {
         success = false;
     } else {
-        AtProtocolType::ComAtprotoServerDefs::copyDidDoc(json_doc.object(), m_didDoc);
+        AtProtocolType::DirectoryPlcDefs::copyDidDoc(json_doc.object(), m_didDoc);
     }
 
     return success;
 }
 
+QString DirectoryPlc::defaultService() const
+{
+    return m_defaultService;
+}
 }

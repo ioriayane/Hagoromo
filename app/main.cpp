@@ -51,6 +51,10 @@
 #include "qtquick/log/logdailylistmodel.h"
 #include "qtquick/log/logmonthlylistmodel.h"
 #include "qtquick/log/logfeedlistmodel.h"
+#include "qtquick/chat/chatlistmodel.h"
+#include "qtquick/chat/chatmessagelistmodel.h"
+#include "qtquick/moderation/labelerlistmodel.h"
+#include "tools/translatorchanger.h"
 
 void setAppFont(QGuiApplication &app)
 {
@@ -81,7 +85,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName(QStringLiteral("relog"));
     app.setOrganizationDomain(QStringLiteral("hagoromo.relog.tech"));
     app.setApplicationName(QStringLiteral("Hagoromo"));
-    app.setApplicationVersion(QStringLiteral("0.30.0"));
+    app.setApplicationVersion(QStringLiteral("0.31.0"));
 #ifndef HAGOROMO_RELEASE_BUILD
     app.setApplicationVersion(app.applicationVersion() + "d");
 #endif
@@ -164,20 +168,15 @@ int main(int argc, char *argv[])
     qmlRegisterType<LogFeedListModel>("tech.relog.hagoromo.logfeedlistmodel", 1, 0,
                                       "LogFeedListModel");
 
+    qmlRegisterType<ChatListModel>("tech.relog.hagoromo.chatlistmodel", 1, 0, "ChatListModel");
+    qmlRegisterType<ChatMessageListModel>("tech.relog.hagoromo.chatmessagelistmodel", 1, 0,
+                                          "ChatMessageListModel");
+
+    qmlRegisterType<LabelerListModel>("tech.relog.hagoromo.moderation.labelerlistmodel", 1, 0,
+                                      "LabelerListModel");
+
     qmlRegisterSingletonType(QUrl("qrc:/Hagoromo/qml/data/AdjustedValues.qml"),
                              "tech.relog.hagoromo.singleton", 1, 0, "AdjustedValues");
-
-    QString dir = QString("%1/translations").arg(QCoreApplication::applicationDirPath());
-    // 翻訳データ登録
-    QTranslator translator;
-    if (translator.load(QString("qt_%1").arg(QLocale::system().name()), dir)) {
-        app.installTranslator(&translator);
-    }
-    // Qt標準機能の日本語化
-    QTranslator translator2;
-    if (translator2.load(QString("qt_ja"), dir)) {
-        app.installTranslator(&translator2);
-    }
 
     setAppFont(app);
 
@@ -189,6 +188,9 @@ int main(int argc, char *argv[])
 #endif
 
     QQmlApplicationEngine engine;
+    TranslatorChanger changer;
+    changer.initialize(&app, &engine);
+    changer.setBySavedSetting();
 
     engine.addImageProvider(QStringLiteral("thumbnail"), new ThumbnailProvider);
 
@@ -201,6 +203,7 @@ int main(int argc, char *argv[])
             },
             Qt::QueuedConnection);
     engine.load(url);
+    changer.connect();
 
     return app.exec();
 }

@@ -54,6 +54,7 @@ LD_LIBRARY_PATH=$ROOT_FOLDER/openssl/lib
 export LD_LIBRARY_PATH
 
 do_test ./build-hagoromo/atprotocol_test/atprotocol_test
+do_test ./build-hagoromo/chat_test/chat_test
 do_test ./build-hagoromo/hagoromo_test/hagoromo_test
 do_test ./build-hagoromo/hagoromo_test2/hagoromo_test2
 do_test ./build-hagoromo/http_test/http_test

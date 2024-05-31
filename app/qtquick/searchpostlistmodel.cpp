@@ -20,7 +20,7 @@ bool SearchPostListModel::getLatest()
                     m_cursor = posts->cursor();
                 }
                 QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> feed_view_post_list;
-                for (const auto &post : qAsConst(posts->postViewList())) {
+                for (const auto &post : qAsConst(posts->postsList())) {
                     AtProtocolType::AppBskyFeedDefs::FeedViewPost feed_view_post;
                     feed_view_post.post = post;
                     feed_view_post_list.append(feed_view_post);
@@ -53,7 +53,7 @@ bool SearchPostListModel::getNext()
             if (success) {
                 m_cursor = posts->cursor();
                 QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> feed_view_post_list;
-                for (const auto &post : qAsConst(posts->postViewList())) {
+                for (const auto &post : qAsConst(posts->postsList())) {
                     AtProtocolType::AppBskyFeedDefs::FeedViewPost feed_view_post;
                     feed_view_post.post = post;
                     feed_view_post_list.append(feed_view_post);

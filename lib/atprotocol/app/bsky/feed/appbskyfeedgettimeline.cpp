@@ -29,10 +29,9 @@ void AppBskyFeedGetTimeline::getTimeline(const QString &algorithm, const int lim
     get(QStringLiteral("xrpc/app.bsky.feed.getTimeline"), url_query);
 }
 
-const QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> &
-AppBskyFeedGetTimeline::feedViewPostList() const
+const QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> &AppBskyFeedGetTimeline::feedList() const
 {
-    return m_feedViewPostList;
+    return m_feedList;
 }
 
 bool AppBskyFeedGetTimeline::parseJson(bool success, const QString reply_json)
@@ -45,7 +44,7 @@ bool AppBskyFeedGetTimeline::parseJson(bool success, const QString reply_json)
         for (const auto &value : json_doc.object().value(m_listKey).toArray()) {
             AtProtocolType::AppBskyFeedDefs::FeedViewPost data;
             AtProtocolType::AppBskyFeedDefs::copyFeedViewPost(value.toObject(), data);
-            m_feedViewPostList.append(data);
+            m_feedList.append(data);
         }
     }
 

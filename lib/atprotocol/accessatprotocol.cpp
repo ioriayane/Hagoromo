@@ -31,6 +31,7 @@ const AccountData &AtProtocolAccount::account() const
 void AtProtocolAccount::setAccount(const AccountData &account)
 {
     m_account.service = account.service;
+    m_account.service_endpoint = account.service_endpoint;
     m_account.identifier.clear();
     m_account.password.clear();
 
@@ -145,6 +146,7 @@ void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
                                  labelers().join(",").toUtf8());
         }
     }
+    setAdditionalRawHeader(request);
 
     QPointer<AccessAtProtocol> alive = this;
     HttpReply *reply = m_manager->get(request);
@@ -205,6 +207,7 @@ void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
         request.setRawHeader(QByteArray("Authorization"),
                              QByteArray("Bearer ") + accessJwt().toUtf8());
     }
+    setAdditionalRawHeader(request);
 
     QPointer<AccessAtProtocol> alive = this;
     HttpReply *reply = m_manager->post(request, json);
@@ -392,6 +395,15 @@ QJsonObject AccessAtProtocol::makeThreadGateJsonObject(
     return json_record;
 }
 
+void AccessAtProtocol::setAdditionalRawHeader(QNetworkRequest &request)
+{
+    QHashIterator<QString, QString> i(m_additionalRawHeaders);
+    while (i.hasNext()) {
+        i.next();
+        request.setRawHeader(i.key().toLocal8Bit(), i.value().toLocal8Bit());
+    }
+}
+
 QString AccessAtProtocol::cursor() const
 {
     return m_cursor;
@@ -400,6 +412,11 @@ QString AccessAtProtocol::cursor() const
 void AccessAtProtocol::setCursor(const QString &newCursor)
 {
     m_cursor = newCursor;
+}
+
+void AccessAtProtocol::appendRawHeader(const QString &name, const QString &value)
+{
+    m_additionalRawHeaders[name] = value;
 }
 
 QString AccessAtProtocol::errorMessage() const
