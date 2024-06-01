@@ -9,7 +9,7 @@
 #include <QJsonArray>
 #include <QDebug>
 
-CarDecoder::CarDecoder() { }
+CarDecoder::CarDecoder(bool forFirehose) : m_forFirehose(forFirehose) { }
 
 bool CarDecoder::setContent(const QByteArray &content)
 {
@@ -28,16 +28,16 @@ bool CarDecoder::setContent(const QByteArray &content)
     int leb_size = 0;
     int data_size = Leb128::decode_u(m_content.mid(offset), leb_size);
     offset += leb_size;
-    if (data_size <= 0 || leb_size <= 0) {
+    if (data_size <= 0 || leb_size <= 0 || (offset + data_size) >= m_content.length()) {
         return false;
     }
     QByteArray block = m_content.mid(offset, data_size);
-    if (!decodeCbor(block, "__header__")) {
+    if (decodeCbor(block, "__header__") < 0) {
         return false;
     }
 
-    // decode data
     offset += data_size;
+    // decode data
     do {
         int t = decodeData(offset);
         if (t < 0)
@@ -86,7 +86,7 @@ int CarDecoder::decodeData(int offset)
     int data_size = Leb128::decode_u(m_content.mid(offset), leb_size);
     offset += leb_size;
 
-    if (data_size <= 0 || leb_size <= 0) {
+    if (data_size <= 0 || leb_size <= 0 || data_size >= m_content.length()) {
         return m_content.length();
     }
 
@@ -99,7 +99,7 @@ int CarDecoder::decodeData(int offset)
 
     QByteArray block = m_content.mid(offset, data_size - cid_size);
 
-    if (!decodeCbor(block, cid)) {
+    if (decodeCbor(block, cid) < 0) {
         return m_content.length();
     }
 
@@ -129,7 +129,7 @@ QString CarDecoder::decodeCid(const QByteArray &data, int &offset) const
     }
 }
 
-bool CarDecoder::decodeCbor(const QByteArray &block, const QString &cid)
+int CarDecoder::decodeCbor(const QByteArray &block, const QString &cid)
 {
     QCborValue value = QCborValue::fromCbor(block);
 
@@ -145,7 +145,7 @@ bool CarDecoder::decodeCbor(const QByteArray &block, const QString &cid)
         decodeCarAddress(json);
     }
 
-    return true;
+    return value.toCbor().length();
 }
 
 bool CarDecoder::decodeCborObject(const QCborValue &value, QJsonObject &parent)
@@ -174,8 +174,28 @@ QVariant CarDecoder::decodeCborValue(const QCborValue &value)
     switch (value.type()) {
     case QCborValue::Integer:
         return value.toInteger();
-    case QCborValue::ByteArray:
-        return QString::fromUtf8(value.toByteArray());
+    case QCborValue::ByteArray: {
+        if (!m_forFirehose) {
+            return QString::fromUtf8(value.toByteArray());
+        } else {
+            CarDecoder decoder;
+            if (!decoder.setContent(value.toByteArray())) {
+                return QString::fromUtf8(value.toByteArray());
+            } else {
+                QJsonArray records;
+                for (const auto &cid : decoder.cids()) {
+                    QJsonObject record;
+                    if (decoder.type(cid) != "$car_address") {
+                        record.insert("cid", cid);
+                        record.insert("value", decoder.json(cid));
+                        record.insert("uri", decoder.uri(cid));
+                        records.append(record);
+                    }
+                }
+                return records;
+            }
+        }
+    }
     case QCborValue::String:
         return value.toString();
     case QCborValue::Array: {
