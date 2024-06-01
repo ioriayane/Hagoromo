@@ -2,7 +2,6 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
-import QtGraphicalEffects 1.15
 
 import tech.relog.hagoromo.timelinelistmodel 1.0
 import tech.relog.hagoromo.notificationlistmodel 1.0
@@ -21,6 +20,7 @@ import tech.relog.hagoromo.singleton 1.0
 import "../controls"
 import "../data"
 import "../parts"
+import "../compat"
 
 ColumnLayout {
     id: columnView
@@ -663,7 +663,7 @@ ColumnLayout {
                 Layout.alignment: Qt.AlignVCenter
                 source: "../images/auto.png"
                 layer.enabled: true
-                layer.effect: ColorOverlay {
+                layer.effect: ColorOverlayC {
                     color: settings.autoLoading ? Material.accentColor : Material.color(Material.Grey)
                 }
             }

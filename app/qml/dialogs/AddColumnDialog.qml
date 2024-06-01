@@ -2,7 +2,6 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
-import QtGraphicalEffects 1.15
 
 import tech.relog.hagoromo.accountlistmodel 1.0
 import tech.relog.hagoromo.feedtypelistmodel 1.0
@@ -10,6 +9,7 @@ import tech.relog.hagoromo.singleton 1.0
 
 import "../controls"
 import "../parts"
+import "../compat"
 
 Dialog {
     id: addColumnDialog
@@ -84,7 +84,7 @@ Dialog {
                 Layout.preferredWidth: AdjustedValues.i24
                 Layout.preferredHeight: AdjustedValues.i24
                 layer.enabled: true
-                layer.effect: ColorOverlay {
+                layer.effect: ColorOverlayC {
                     color: Material.color(Material.Grey)
                 }
             }

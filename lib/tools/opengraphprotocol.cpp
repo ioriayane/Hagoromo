@@ -100,16 +100,16 @@ QString OpenGraphProtocol::decodeHtml(const QString &encoded)
     int start_pos = 0;
     while ((pos = match.capturedStart()) != -1) {
         if (!htmlEntities.contains(match.captured())) {
-            decoded += encoded.midRef(start_pos, match.capturedEnd() - start_pos + 1);
+            decoded += encoded.mid(start_pos, match.capturedEnd() - start_pos + 1);
         } else {
-            decoded += encoded.midRef(start_pos, match.capturedStart() - start_pos);
+            decoded += encoded.mid(start_pos, match.capturedStart() - start_pos);
             decoded += htmlEntities.value(match.captured());
         }
 
         start_pos = pos + match.capturedLength();
         match = re.match(encoded, start_pos);
     }
-    decoded += encoded.midRef(start_pos, encoded.length() - start_pos);
+    decoded += encoded.mid(start_pos, encoded.length() - start_pos);
 
     return decoded;
 }
@@ -161,7 +161,11 @@ bool OpenGraphProtocol::parse(const QByteArray &data, const QString &src_uri)
     qDebug() << "charset" << charset;
 
     QTextStream ts(data);
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     ts.setCodec(charset.toLatin1());
+#else
+#    error Qt5CompatのQTextCodecを使うように変更しないとECU-JPなどに対応できないはず
+#endif
 
     QDomDocument doc;
     rebuildHtml(ts.readAll(), doc);

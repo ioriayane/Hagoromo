@@ -2,9 +2,10 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
-import QtGraphicalEffects 1.15
 
 import tech.relog.hagoromo.singleton 1.0
+
+import "../compat"
 
 Item {
     id: aggregatedAavatarImages
@@ -78,7 +79,7 @@ Item {
                 fillMode: Image.PreserveAspectFit
                 source: "../images/expand_more.png"
                 layer.enabled: true
-                layer.effect: ColorOverlay {
+                layer.effect: ColorOverlayC {
                     color: Material.foreground
                 }
             }
@@ -104,7 +105,7 @@ Item {
                     fillMode: Image.PreserveAspectFit
                     source: "../images/expand_less.png"
                     layer.enabled: true
-                    layer.effect: ColorOverlay {
+                    layer.effect: ColorOverlayC {
                         color: Material.foreground
                     }
                 }

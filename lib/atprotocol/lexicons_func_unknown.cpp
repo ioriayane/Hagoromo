@@ -263,11 +263,9 @@ void makeFacets(
 
         if (!mention.isEmpty()) {
             QStringList ids;
-            QMapIterator<QString, MentionData> i(mention);
-            while (i.hasNext()) {
-                i.next();
-                if (!ids.contains(i.key())) {
-                    ids.append(i.key());
+            for (const auto &key : mention.keys()) {
+                if (!ids.contains(key)) {
+                    ids.append(key);
                 }
             }
 

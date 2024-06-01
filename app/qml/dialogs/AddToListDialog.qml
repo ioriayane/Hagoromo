@@ -2,7 +2,6 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
-import QtGraphicalEffects 1.15
 
 import tech.relog.hagoromo.listslistmodel 1.0
 import tech.relog.hagoromo.singleton 1.0
@@ -10,6 +9,7 @@ import tech.relog.hagoromo.singleton 1.0
 import "../controls"
 import "../data"
 import "../parts"
+import "../compat"
 
 Dialog {
     id: addToListDialog
@@ -178,7 +178,7 @@ Dialog {
                         width: AdjustedValues.i18
                         height: AdjustedValues.i18
                         layer.enabled: true
-                        layer.effect: ColorOverlay {
+                        layer.effect: ColorOverlayC {
                             color: saveButton.foreground
                         }
                         property color foreground: Material.foreground

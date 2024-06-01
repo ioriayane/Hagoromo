@@ -1,9 +1,9 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
-import QtGraphicalEffects 1.15
 
 import "../controls"
+import "../compat"
 
 MouseArea {
     clip: true
@@ -21,7 +21,7 @@ MouseArea {
         source: "../images/icon_mask.png"
         visible: false
     }
-    OpacityMask {
+    OpacityMaskC {
         anchors.fill: parent
         source: avatorImage
         maskSource: mask
@@ -40,7 +40,7 @@ MouseArea {
         anchors.fill: parent
         fillMode: Image.PreserveAspectCrop
         layer.enabled: true
-        layer.effect: ColorOverlay {
+        layer.effect: ColorOverlayC {
             color: Material.color(Material.Grey)
         }
         source: "../images/account_icon.png"
