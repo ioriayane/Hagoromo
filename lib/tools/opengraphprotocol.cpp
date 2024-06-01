@@ -100,28 +100,16 @@ QString OpenGraphProtocol::decodeHtml(const QString &encoded)
     int start_pos = 0;
     while ((pos = match.capturedStart()) != -1) {
         if (!htmlEntities.contains(match.captured())) {
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-            decoded += encoded.midRef(start_pos, match.capturedEnd() - start_pos + 1);
-#else
             decoded += encoded.mid(start_pos, match.capturedEnd() - start_pos + 1);
-#endif
         } else {
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-            decoded += encoded.midRef(start_pos, match.capturedStart() - start_pos);
-#else
             decoded += encoded.mid(start_pos, match.capturedStart() - start_pos);
-#endif
             decoded += htmlEntities.value(match.captured());
         }
 
         start_pos = pos + match.capturedLength();
         match = re.match(encoded, start_pos);
     }
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    decoded += encoded.midRef(start_pos, encoded.length() - start_pos);
-#else
     decoded += encoded.mid(start_pos, encoded.length() - start_pos);
-#endif
 
     return decoded;
 }
@@ -175,6 +163,8 @@ bool OpenGraphProtocol::parse(const QByteArray &data, const QString &src_uri)
     QTextStream ts(data);
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     ts.setCodec(charset.toLatin1());
+#else
+#    error Qt5CompatのQTextCodecを使うように変更しないとECU-JPなどに対応できないはず
 #endif
 
     QDomDocument doc;

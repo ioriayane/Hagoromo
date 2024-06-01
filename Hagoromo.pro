@@ -2,5 +2,5 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     app \
-    # tests \
+    tests \
     tools/decodecar
