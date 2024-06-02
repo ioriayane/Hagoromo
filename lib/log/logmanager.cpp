@@ -136,7 +136,9 @@ void LogManager::getPosts()
     for (int i = 0; i < 25; i++) {
         if (m_cueGetPost.isEmpty())
             break;
-        uris.append(m_cueGetPost.first());
+        if (m_cueGetPost.first().contains("/app.bsky.feed.post/")) {
+            uris.append(m_cueGetPost.first());
+        }
         m_cueGetPost.removeFirst();
     }
 
