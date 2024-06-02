@@ -8,6 +8,9 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+- Fix
+  - Fix a bug that caused an error when reacting to unexpected records
+
 ### v0.31.0 - 2024/5/31
 
 - Add
