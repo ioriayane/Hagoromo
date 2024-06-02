@@ -3,4 +3,5 @@ TEMPLATE = subdirs
 SUBDIRS += \
     app \
     tests \
-    tools/decodecar
+    tools/decodecar \
+    tools/firehosereader
