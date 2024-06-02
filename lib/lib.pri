@@ -1,4 +1,4 @@
-QT += xml sql
+QT += xml sql websockets
 
 INCLUDEPATH += $$PWD \
     $$PWD/../3rdparty/cpp-httplib
@@ -80,6 +80,7 @@ SOURCES += \
     $$PWD/extension/com/atproto/repo/comatprotorepoputrecordex.cpp \
     $$PWD/extension/com/atproto/server/comatprotoservercreatesessionex.cpp \
     $$PWD/extension/com/atproto/server/comatprotoserverrefreshsessionex.cpp \
+    $$PWD/extension/com/atproto/sync/comatprotosyncsubscribereposex.cpp \
     $$PWD/extension/directory/plc/directoryplc.cpp \
     $$PWD/extension/directory/plc/directoryplclogaudit.cpp \
     $$PWD/http/httpaccess.cpp \
@@ -176,6 +177,7 @@ HEADERS += \
     $$PWD/extension/com/atproto/repo/comatprotorepoputrecordex.h \
     $$PWD/extension/com/atproto/server/comatprotoservercreatesessionex.h \
     $$PWD/extension/com/atproto/server/comatprotoserverrefreshsessionex.h \
+    $$PWD/extension/com/atproto/sync/comatprotosyncsubscribereposex.h \
     $$PWD/extension/directory/plc/directoryplc.h \
     $$PWD/extension/directory/plc/directoryplclogaudit.h \
     $$PWD/http/httpaccess.h \
