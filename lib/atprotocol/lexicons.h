@@ -1711,6 +1711,45 @@ struct RecordViewDetail
 };
 }
 
+// com.whtwnd.blog.defs
+namespace ComWhtwndBlogDefs {
+struct BlogEntry
+{
+    QString content;
+    QString createdAt; // datetime
+};
+struct Comment
+{
+    QString content;
+    QString entryUri; // at-uri
+};
+struct Ogp
+{
+    QString url; // uri
+    int width = 0;
+    int height = 0;
+};
+struct BlobMetadata
+{
+    Blob blobref;
+    QString name;
+};
+}
+
+// com.whtwnd.blog.entry
+namespace ComWhtwndBlogEntry {
+struct Main
+{
+    QString content;
+    QString createdAt; // datetime
+    QString title;
+    ComWhtwndBlogDefs::Ogp ogp;
+    QString theme;
+    QList<ComWhtwndBlogDefs::BlobMetadata> blobs;
+    QString visibility; // Tells the visibility of the article to AppView.
+};
+}
+
 // directory.plc.defs
 namespace DirectoryPlcDefs {
 enum class PlcAuditLogDetailOperationType : int {
@@ -1802,5 +1841,6 @@ Q_DECLARE_METATYPE(AtProtocolType::AppBskyGraphListitem::Main)
 Q_DECLARE_METATYPE(AtProtocolType::AppBskyActorProfile::Main)
 Q_DECLARE_METATYPE(AtProtocolType::AppBskyGraphList::Main)
 Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedThreadgate::Main)
+Q_DECLARE_METATYPE(AtProtocolType::ComWhtwndBlogEntry : Main)
 
 #endif // LEXICONS_H

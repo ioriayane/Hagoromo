@@ -2401,6 +2401,57 @@ void copyRecordViewDetail(const QJsonObject &src, ToolsOzoneModerationDefs::Reco
     }
 }
 }
+// com.whtwnd.blog.defs
+namespace ComWhtwndBlogDefs {
+void copyBlogEntry(const QJsonObject &src, ComWhtwndBlogDefs::BlogEntry &dest)
+{
+    if (!src.isEmpty()) {
+        dest.content = src.value("content").toString();
+        dest.createdAt = src.value("createdAt").toString();
+    }
+}
+void copyComment(const QJsonObject &src, ComWhtwndBlogDefs::Comment &dest)
+{
+    if (!src.isEmpty()) {
+        dest.content = src.value("content").toString();
+        dest.entryUri = src.value("entryUri").toString();
+    }
+}
+void copyOgp(const QJsonObject &src, ComWhtwndBlogDefs::Ogp &dest)
+{
+    if (!src.isEmpty()) {
+        dest.url = src.value("url").toString();
+        dest.width = src.value("width").toInt();
+        dest.height = src.value("height").toInt();
+    }
+}
+void copyBlobMetadata(const QJsonObject &src, ComWhtwndBlogDefs::BlobMetadata &dest)
+{
+    if (!src.isEmpty()) {
+        LexiconsTypeUnknown::copyBlob(src.value("blobref").toObject(), dest.blobref);
+        dest.name = src.value("name").toString();
+    }
+}
+}
+// com.whtwnd.blog.entry
+namespace ComWhtwndBlogEntry {
+void copyMain(const QJsonObject &src, ComWhtwndBlogEntry::Main &dest)
+{
+    if (!src.isEmpty()) {
+        dest.content = src.value("content").toString();
+        dest.createdAt = src.value("createdAt").toString();
+        dest.title = src.value("title").toString();
+        ComWhtwndBlogDefs::copyOgp(src.value("ogp").toObject(), dest.ogp);
+        dest.theme = src.value("theme").toString();
+        for (const auto &s : src.value("blobs").toArray()) {
+            ComWhtwndBlogDefs::BlobMetadata child;
+            ComWhtwndBlogDefs::copyBlobMetadata(s.toObject(), child);
+            dest.blobs.append(child);
+        }
+        dest.visibility = src.value("visibility").toString();
+    }
+}
+}
 // directory.plc.defs
 namespace DirectoryPlcDefs {
 void copyDidDocVerificationMethod(const QJsonObject &src,

@@ -121,6 +121,7 @@ class Defs2Struct:
                          'AppBskyActorProfile::Main',
                          'AppBskyGraphList::Main',
                          'AppBskyFeedThreadgate::Main',
+                         'ComWhtwndBlogEntry:Main'
                         )
         self.inheritance = {
                 'app.bsky.actor.defs#profileView': {
