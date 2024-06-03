@@ -9,6 +9,7 @@ import tech.relog.hagoromo.singleton 1.0
 
 import "../parts"
 import "../controls"
+import "../compat"
 
 ScrollView {
     id: timelineView
@@ -23,6 +24,7 @@ ScrollView {
 
     property alias listView: rootListView
     property alias model: rootListView.model
+    property var blogModel: undefined
 
     signal requestReply(string cid, string uri,
                         string reply_root_cid, string reply_root_uri,
@@ -61,18 +63,85 @@ ScrollView {
             id: systemTool
         }
 
-        header: ItemDelegate {
-            width: rootListView.width
-            height: AdjustedValues.h24
-            display: AbstractButton.IconOnly
-            icon.source: rootListView.model.running ? "" : "../images/expand_less.png"
-            onClicked: rootListView.model.getLatest()
+        header: ColumnLayout {
+            ListView {
+                id: blogListView
+                Layout.preferredWidth: rootListView.width
+                Layout.preferredHeight: currentItem ? currentItem.height : 50
+                visible: timelineView.blogModel !== undefined && blogListView.count > 0
+                orientation:ListView.Horizontal
+                clip: true
+                spacing: 2
+                model: timelineView.blogModel
+                onCountChanged: positionViewAtBeginning()
+                delegate: ClickableFrame {
+                    id: blogEntryFrame
+                    clip: true
+                    ColumnLayout {
+                        property int basisWidth: blogListView.width * 0.8 -
+                                                 blogEntryFrame.leftPadding - blogEntryFrame.rightPadding
+                        RowLayout {
+                            id: blogEntryServiceLayout
+                            // Label {
+                            //     font.pointSize: AdjustedValues.f8
+                            //     text: "Blog:"
+                            //     color: Material.color(Material.Grey)
+                            // }
+                            Image {
+                                Layout.preferredWidth: AdjustedValues.i12
+                                Layout.preferredHeight: AdjustedValues.i12
+                                Layout.alignment: Qt.AlignBaseline
+                                layer.enabled: true
+                                layer.effect: ColorOverlayC {
+                                    color: Material.color(Material.Blue)
+                                }
+                                source: "../images/open_in_other.png"
+                            }
 
-            BusyIndicator {
-                anchors.centerIn: parent
-                width: AdjustedValues.i24
-                height: AdjustedValues.i24
-                visible: rootListView.model.running
+                            Label {
+                                font.pointSize: AdjustedValues.f8
+                                text: model.serviceName
+                                color: Material.color(Material.Blue)
+                            }
+                            Label {
+                                visible: model.visibility.length > 0
+                                font.pointSize: AdjustedValues.f8
+                                text: "[" + model.visibility + "]"
+                                color: Material.color(Material.Yellow)
+                            }
+                        }
+                        Label {
+                            id: blogEntryTitleLabel
+                            font.pointSize: AdjustedValues.f10
+                            text: model.title
+                        }
+                        Label {
+                            Layout.preferredWidth: blogEntryServiceLayout.width > blogEntryTitleLabel.width ?
+                                                     blogEntryServiceLayout.width : blogEntryTitleLabel.width
+                            font.pointSize: AdjustedValues.f8
+                            elide: Text.ElideRight
+                            color: Material.color(Material.Grey)
+                            text: model.content.split("\n")[0]
+                        }
+                    }
+                    onClicked: (mouse) => {
+                                   console.log(model.title + ", " + model.permalink)
+                               }
+                }
+            }
+            ItemDelegate {
+                Layout.preferredWidth: rootListView.width
+                Layout.preferredHeight: AdjustedValues.h24
+                display: AbstractButton.IconOnly
+                icon.source: rootListView.model.running ? "" : "../images/expand_less.png"
+                onClicked: rootListView.model.getLatest()
+
+                BusyIndicator {
+                    anchors.centerIn: parent
+                    width: AdjustedValues.i24
+                    height: AdjustedValues.i24
+                    visible: rootListView.model.running
+                }
             }
         }
         footer: BusyIndicator {

@@ -22,6 +22,11 @@ void ComAtprotoRepoListRecordsEx::listListItems(const QString &repo, const QStri
     listRecords(repo, "app.bsky.graph.listitem", 100, cursor, false);
 }
 
+void ComAtprotoRepoListRecordsEx::listWhiteWindItems(const QString &repo, const QString &cursor)
+{
+    listRecords(repo, "com.whtwnd.blog.entry", 10, cursor, false);
+}
+
 bool ComAtprotoRepoListRecordsEx::parseJson(bool success, const QString reply_json)
 {
     success = ComAtprotoRepoListRecords::parseJson(success, reply_json);
