@@ -11,6 +11,7 @@ import tech.relog.hagoromo.followslistmodel 1.0
 import tech.relog.hagoromo.followerslistmodel 1.0
 import tech.relog.hagoromo.actorfeedgeneratorlistmodel 1.0
 import tech.relog.hagoromo.listslistmodel 1.0
+import tech.relog.hagoromo.blog.blogentrylistmodel 1.0
 import tech.relog.hagoromo.systemtool 1.0
 import tech.relog.hagoromo.singleton 1.0
 
@@ -123,6 +124,7 @@ ColumnLayout {
             recordOperator.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             userProfile.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             authorFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
+            authorBlogEntryListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             repostFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             likesFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
             authorMediaFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
@@ -575,6 +577,17 @@ ColumnLayout {
                              }
                 onErrorOccured: (code, message) => profileView.errorOccured(code, message)
             }
+            blogModel: BlogEntryListModel {
+                id: authorBlogEntryListModel
+                targetDid: profileView.userDid
+                targetServiceEndpoint: userProfile.serviceEndpoint
+                onTargetServiceEndpointChanged: {
+                    if(targetServiceEndpoint.length > 0){
+                        getLatest()
+                    }
+                }
+            }
+
             accountDid: profileView.accountDid
             imageLayoutType: settings.imageLayoutType
 

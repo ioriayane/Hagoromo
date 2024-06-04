@@ -10,6 +10,7 @@ SOURCES += \
     $$PWD/atpabstractlistmodel.cpp \
     $$PWD/authorfeedlistmodel.cpp \
     $$PWD/blockslistmodel.cpp \
+    $$PWD/blog/blogentrylistmodel.cpp \
     $$PWD/chat/atpchatabstractlistmodel.cpp \
     $$PWD/chat/chatlistmodel.cpp \
     $$PWD/chat/chatmessagelistmodel.cpp \
@@ -61,6 +62,7 @@ HEADERS += \
     $$PWD/atpabstractlistmodel.h \
     $$PWD/authorfeedlistmodel.h \
     $$PWD/blockslistmodel.h \
+    $$PWD/blog/blogentrylistmodel.h \
     $$PWD/chat/atpchatabstractlistmodel.h \
     $$PWD/chat/chatlistmodel.h \
     $$PWD/chat/chatmessagelistmodel.h \

@@ -88,6 +88,7 @@ QML_FILES = \
     qml/parts/TagLabelLayout.qml \
     qml/parts/VersionInfomation.qml \
     qml/view/AnyProfileListView.qml \
+    qml/view/BlogEntryListView.qml \
     qml/view/ChatListView.qml \
     qml/view/ChatMessageListView.qml \
     qml/view/ColumnView.qml \
