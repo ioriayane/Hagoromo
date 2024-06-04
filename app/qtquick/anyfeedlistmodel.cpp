@@ -66,6 +66,9 @@ bool AnyFeedListModel::getLatest()
             records->deleteLater();
         });
         records->setAccount(account());
+        if (!targetServiceEndpoint().isEmpty()) {
+            records->setService(targetServiceEndpoint());
+        }
         switch (feedType()) {
         case AnyFeedListModelFeedType::LikeFeedType:
             records->listLikes(targetDid(), QString());
@@ -131,6 +134,9 @@ bool AnyFeedListModel::getNext()
             records->deleteLater();
         });
         records->setAccount(account());
+        if (!targetServiceEndpoint().isEmpty()) {
+            records->setService(targetServiceEndpoint());
+        }
         switch (feedType()) {
         case AnyFeedListModelFeedType::LikeFeedType:
             records->listLikes(targetDid(), m_cursor);
@@ -245,4 +251,17 @@ QString AnyFeedListModel::getIndexedAt(const QVariant &record)
 {
     T data = AtProtocolType::LexiconsTypeUnknown::fromQVariant<T>(record);
     return data.createdAt;
+}
+
+QString AnyFeedListModel::targetServiceEndpoint() const
+{
+    return m_targetServiceEndpoint;
+}
+
+void AnyFeedListModel::setTargetServiceEndpoint(const QString &newTargetServiceEndpoint)
+{
+    if (m_targetServiceEndpoint == newTargetServiceEndpoint)
+        return;
+    m_targetServiceEndpoint = newTargetServiceEndpoint;
+    emit targetServiceEndpointChanged();
 }

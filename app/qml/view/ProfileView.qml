@@ -622,6 +622,7 @@ ColumnLayout {
                 autoLoading: false
                 displayInterval: 0
                 targetDid: profileView.userDid
+                targetServiceEndpoint: userProfile.serviceEndpoint
                 feedType: AnyFeedListModel.RepostFeedType
 
                 onErrorOccured: (code, message) => profileView.errorOccured(code, message)
@@ -660,6 +661,7 @@ ColumnLayout {
                 autoLoading: false
                 displayInterval: 0
                 targetDid: profileView.userDid
+                targetServiceEndpoint: userProfile.serviceEndpoint
                 feedType: AnyFeedListModel.LikeFeedType
 
                 onErrorOccured: (code, message) => profileView.errorOccured(code, message)
