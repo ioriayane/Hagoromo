@@ -68,7 +68,7 @@ ScrollView {
             BlogEntryListView {
                 id: blogListView
                 Layout.preferredWidth: rootListView.width
-                Layout.preferredHeight: (currentItem ? currentItem.height : 50)// + ScrollBar.horizontal.height
+                Layout.preferredHeight: (currentItem ? currentItem.height : 50)
                 visible: timelineView.blogModel !== undefined && blogListView.count > 0
                 model: timelineView.blogModel
             }

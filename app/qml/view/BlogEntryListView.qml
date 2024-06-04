@@ -18,7 +18,6 @@ ScrollView {
 
     ListView {
         id: blogListView
-        // anchors.fill: parent
         orientation:ListView.Horizontal
         clip: true
         spacing: 2
@@ -32,11 +31,6 @@ ScrollView {
                                          blogEntryFrame.leftPadding - blogEntryFrame.rightPadding
                 RowLayout {
                     id: blogEntryServiceLayout
-                    // Label {
-                    //     font.pointSize: AdjustedValues.f8
-                    //     text: "Blog:"
-                    //     color: Material.color(Material.Grey)
-                    // }
                     Image {
                         Layout.preferredWidth: AdjustedValues.i12
                         Layout.preferredHeight: AdjustedValues.i12
@@ -65,13 +59,22 @@ ScrollView {
                     font.pointSize: AdjustedValues.f10
                     text: model.title
                 }
-                Label {
+                RowLayout {
                     Layout.preferredWidth: blogEntryServiceLayout.width > blogEntryTitleLabel.width ?
                                                blogEntryServiceLayout.width : blogEntryTitleLabel.width
-                    font.pointSize: AdjustedValues.f8
-                    elide: Text.ElideRight
-                    color: Material.color(Material.Grey)
-                    text: model.content.split("\n")[0]
+                    Label {
+                        Layout.fillWidth: true
+                        font.pointSize: AdjustedValues.f8
+                        elide: Text.ElideRight
+                        color: Material.color(Material.Grey)
+                        text: model.content.split("\n")[0]
+                    }
+                    Label {
+                        Layout.minimumWidth: contentWidth
+                        font.pointSize: AdjustedValues.f8
+                        color: Material.color(Material.Grey)
+                        text: model.createdAt
+                    }
                 }
             }
             onClicked: (mouse) => Qt.openUrlExternally(model.permalink)

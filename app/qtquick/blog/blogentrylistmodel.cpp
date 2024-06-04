@@ -38,6 +38,8 @@ QVariant BlogEntryListModel::item(int row, BlogEntryListModelRoles role) const
         return current.title;
     else if (role == ContentRole)
         return current.content;
+    else if (role == CreatedAtRole)
+        return AtProtocolType::LexiconsTypeUnknown::formatDateTime(current.createdAt);
     else if (role == VisibilityRole) {
         if (current.visibility == "public") {
             return QString();
@@ -136,6 +138,7 @@ QHash<int, QByteArray> BlogEntryListModel::roleNames() const
     roles[ServiceNameRole] = "serviceName";
     roles[TitleRole] = "title";
     roles[ContentRole] = "content";
+    roles[CreatedAtRole] = "createdAt";
     roles[VisibilityRole] = "visibility";
     roles[PermalinkRole] = "permalink";
 

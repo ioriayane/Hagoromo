@@ -25,6 +25,7 @@ public:
         ServiceNameRole,
         TitleRole,
         ContentRole,
+        CreatedAtRole,
         VisibilityRole,
         PermalinkRole,
     };
