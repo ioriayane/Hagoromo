@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+- Add
+  - Display WhiteWind entries in user profile
 - Fix
   - Fix a bug that caused an error when reacting to unexpected records
 
