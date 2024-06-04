@@ -64,70 +64,13 @@ ScrollView {
         }
 
         header: ColumnLayout {
-            ListView {
+            spacing: 0
+            BlogEntryListView {
                 id: blogListView
                 Layout.preferredWidth: rootListView.width
-                Layout.preferredHeight: currentItem ? currentItem.height : 50
+                Layout.preferredHeight: (currentItem ? currentItem.height : 50)// + ScrollBar.horizontal.height
                 visible: timelineView.blogModel !== undefined && blogListView.count > 0
-                orientation:ListView.Horizontal
-                clip: true
-                spacing: 2
                 model: timelineView.blogModel
-                onCountChanged: positionViewAtBeginning()
-                delegate: ClickableFrame {
-                    id: blogEntryFrame
-                    clip: true
-                    ColumnLayout {
-                        property int basisWidth: blogListView.width * 0.8 -
-                                                 blogEntryFrame.leftPadding - blogEntryFrame.rightPadding
-                        RowLayout {
-                            id: blogEntryServiceLayout
-                            // Label {
-                            //     font.pointSize: AdjustedValues.f8
-                            //     text: "Blog:"
-                            //     color: Material.color(Material.Grey)
-                            // }
-                            Image {
-                                Layout.preferredWidth: AdjustedValues.i12
-                                Layout.preferredHeight: AdjustedValues.i12
-                                Layout.alignment: Qt.AlignBaseline
-                                layer.enabled: true
-                                layer.effect: ColorOverlayC {
-                                    color: Material.color(Material.Blue)
-                                }
-                                source: "../images/open_in_other.png"
-                            }
-
-                            Label {
-                                font.pointSize: AdjustedValues.f8
-                                text: model.serviceName
-                                color: Material.color(Material.Blue)
-                            }
-                            Label {
-                                visible: model.visibility.length > 0
-                                font.pointSize: AdjustedValues.f8
-                                text: "[" + model.visibility + "]"
-                                color: Material.color(Material.Yellow)
-                            }
-                        }
-                        Label {
-                            id: blogEntryTitleLabel
-                            font.pointSize: AdjustedValues.f10
-                            text: model.title
-                        }
-                        Label {
-                            Layout.preferredWidth: blogEntryServiceLayout.width > blogEntryTitleLabel.width ?
-                                                     blogEntryServiceLayout.width : blogEntryTitleLabel.width
-                            font.pointSize: AdjustedValues.f8
-                            elide: Text.ElideRight
-                            color: Material.color(Material.Grey)
-                            text: model.content.split("\n")[0]
-                        }
-                    }
-                    onClicked: (mouse) => {
-                                   console.log(model.title + ", " + model.permalink)
-                               }
-                }
             }
             ItemDelegate {
                 Layout.preferredWidth: rootListView.width
