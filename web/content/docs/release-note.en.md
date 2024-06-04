@@ -12,6 +12,7 @@ description: This is a multi-column Bluesky client.
   - Display WhiteWind entries in user profile
 - Fix
   - Fix a bug that caused an error when reacting to unexpected records
+  - Fix a bug that caused reposts and likes from other PDS users to fail
 
 ### v0.31.0 - 2024/5/31
 
