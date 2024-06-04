@@ -556,10 +556,6 @@ ColumnLayout {
             if(userProfile.handle.length === 0)
                 return
             currentItem.model.getLatest()
-
-            if(currentItem.blogModel !== undefined){
-                currentItem.blogModel.getLatest()
-            }
         }
 
         TimelineView {
@@ -584,6 +580,12 @@ ColumnLayout {
             blogModel: BlogEntryListModel {
                 id: authorBlogEntryListModel
                 targetDid: profileView.userDid
+                targetServiceEndpoint: userProfile.serviceEndpoint
+                onTargetServiceEndpointChanged: {
+                    if(targetServiceEndpoint.length > 0){
+                        getLatest()
+                    }
+                }
             }
 
             accountDid: profileView.accountDid

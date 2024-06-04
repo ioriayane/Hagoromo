@@ -218,6 +218,7 @@ class Defs2Struct:
         self.unuse_auth = [
             'com.atproto.server.createSession',
             'com.atproto.sync.getBlob',
+            'com.atproto.repo.listRecords'
         ]
         self.need_extension = [
             'com.atproto.moderation.createReport',

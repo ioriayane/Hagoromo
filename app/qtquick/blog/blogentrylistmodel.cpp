@@ -106,6 +106,9 @@ bool BlogEntryListModel::getLatest()
                     beginInsertRows(QModelIndex(), rowCount(), rowCount());
                     m_blogEntryRecordList.append(r);
                     endInsertRows();
+                    if (m_blogEntryRecordList.length() >= 5) {
+                        break;
+                    }
                 }
             }
         } else {
@@ -115,6 +118,9 @@ bool BlogEntryListModel::getLatest()
         record->deleteLater();
     });
     record->setAccount(account());
+    if (!targetServiceEndpoint().isEmpty()) {
+        record->setService(targetServiceEndpoint());
+    }
     record->listWhiteWindItems(targetDid(), QString());
 
     return true;
@@ -160,4 +166,17 @@ void BlogEntryListModel::setTargetDid(const QString &newTargetDid)
         return;
     m_targetDid = newTargetDid;
     emit targetDidChanged();
+}
+
+QString BlogEntryListModel::targetServiceEndpoint() const
+{
+    return m_targetServiceEndpoint;
+}
+
+void BlogEntryListModel::setTargetServiceEndpoint(const QString &newTargetServiceEndpoint)
+{
+    if (m_targetServiceEndpoint == newTargetServiceEndpoint)
+        return;
+    m_targetServiceEndpoint = newTargetServiceEndpoint;
+    emit targetServiceEndpointChanged();
 }

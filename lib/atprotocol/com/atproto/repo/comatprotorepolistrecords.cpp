@@ -32,7 +32,7 @@ void ComAtprotoRepoListRecords::listRecords(const QString &repo, const QString &
         url_query.addQueryItem(QStringLiteral("reverse"), "true");
     }
 
-    get(QStringLiteral("xrpc/com.atproto.repo.listRecords"), url_query);
+    get(QStringLiteral("xrpc/com.atproto.repo.listRecords"), url_query, false);
 }
 
 const QList<AtProtocolType::ComAtprotoRepoListRecords::Record> &
