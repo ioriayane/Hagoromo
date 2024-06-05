@@ -2,7 +2,6 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
-import QtGraphicalEffects 1.15
 
 import tech.relog.hagoromo.chatlistmodel 1.0
 import tech.relog.hagoromo.searchprofilelistmodel 1.0
@@ -10,6 +9,7 @@ import tech.relog.hagoromo.singleton 1.0
 
 import "../parts"
 import "../controls"
+import "../compat"
 
 Item {
     id: chatListView
@@ -154,7 +154,7 @@ Item {
                                 source: "../images/mute.png"
                                 visible: model.muted
                                 layer.enabled: true
-                                layer.effect: ColorOverlay {
+                                layer.effect: ColorOverlayC {
                                     color: Material.foreground
                                 }
                             }
@@ -288,7 +288,7 @@ Item {
                     Layout.alignment: Qt.AlignVCenter
                     Layout.leftMargin: 5
                     layer.enabled: true
-                    layer.effect: ColorOverlay {
+                    layer.effect: ColorOverlayC {
                         color: Material.foreground
                     }
                     source: "../images/search.png"

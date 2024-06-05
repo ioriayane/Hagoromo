@@ -2,13 +2,13 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
-import Qt.labs.settings 1.0
 
 import tech.relog.hagoromo.encryption 1.0
 import tech.relog.hagoromo.systemtool 1.0
 import tech.relog.hagoromo.singleton 1.0
 
 import "../controls"
+import "../compat"
 
 Dialog {
     id: settingDialog
@@ -27,7 +27,7 @@ Dialog {
         id: systemTool
     }
 
-    Settings {
+    SettingsC {
         id: settings
         // General
         property int theme: Material.Light

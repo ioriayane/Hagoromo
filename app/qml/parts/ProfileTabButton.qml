@@ -2,9 +2,10 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
-import QtGraphicalEffects 1.15
 
 import tech.relog.hagoromo.singleton 1.0
+
+import "../compat"
 
 TabButton {
     id: button
@@ -21,7 +22,7 @@ TabButton {
             height: AdjustedValues.i16
             anchors.centerIn: parent
             layer.enabled: true
-            layer.effect: ColorOverlay {
+            layer.effect: ColorOverlayC {
                 color: button.iconColor
             }
             source: button.source

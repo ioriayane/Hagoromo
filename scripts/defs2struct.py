@@ -121,6 +121,7 @@ class Defs2Struct:
                          'AppBskyActorProfile::Main',
                          'AppBskyGraphList::Main',
                          'AppBskyFeedThreadgate::Main',
+                         'ComWhtwndBlogEntry::Main'
                         )
         self.inheritance = {
                 'app.bsky.actor.defs#profileView': {
@@ -217,6 +218,7 @@ class Defs2Struct:
         self.unuse_auth = [
             'com.atproto.server.createSession',
             'com.atproto.sync.getBlob',
+            'com.atproto.repo.listRecords'
         ]
         self.need_extension = [
             'com.atproto.moderation.createReport',

@@ -2,11 +2,11 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
-import QtGraphicalEffects 1.15
 
 import tech.relog.hagoromo.singleton 1.0
 
 import "../controls"
+import "../compat"
 
 RowLayout {
     spacing: 10
@@ -107,7 +107,7 @@ RowLayout {
             visible: pinned
             source: "../images/pin.png"
             layer.enabled: true
-            layer.effect: ColorOverlay {
+            layer.effect: ColorOverlayC {
                 color: Material.foreground
             }
         }

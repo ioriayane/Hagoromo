@@ -346,6 +346,17 @@ void copyModerationDetail(const QJsonObject &src, ToolsOzoneModerationDefs::Mode
 void copyRepoViewDetail(const QJsonObject &src, ToolsOzoneModerationDefs::RepoViewDetail &dest);
 void copyRecordViewDetail(const QJsonObject &src, ToolsOzoneModerationDefs::RecordViewDetail &dest);
 }
+// com.whtwnd.blog.defs
+namespace ComWhtwndBlogDefs {
+void copyBlogEntry(const QJsonObject &src, ComWhtwndBlogDefs::BlogEntry &dest);
+void copyComment(const QJsonObject &src, ComWhtwndBlogDefs::Comment &dest);
+void copyOgp(const QJsonObject &src, ComWhtwndBlogDefs::Ogp &dest);
+void copyBlobMetadata(const QJsonObject &src, ComWhtwndBlogDefs::BlobMetadata &dest);
+}
+// com.whtwnd.blog.entry
+namespace ComWhtwndBlogEntry {
+void copyMain(const QJsonObject &src, ComWhtwndBlogEntry::Main &dest);
+}
 // directory.plc.defs
 namespace DirectoryPlcDefs {
 void copyDidDocVerificationMethod(const QJsonObject &src,

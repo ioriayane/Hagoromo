@@ -9,6 +9,7 @@ import tech.relog.hagoromo.singleton 1.0
 
 import "../parts"
 import "../controls"
+import "../compat"
 
 ScrollView {
     id: timelineView
@@ -23,6 +24,7 @@ ScrollView {
 
     property alias listView: rootListView
     property alias model: rootListView.model
+    property var blogModel: undefined
 
     signal requestReply(string cid, string uri,
                         string reply_root_cid, string reply_root_uri,
@@ -61,18 +63,28 @@ ScrollView {
             id: systemTool
         }
 
-        header: ItemDelegate {
-            width: rootListView.width
-            height: AdjustedValues.h24
-            display: AbstractButton.IconOnly
-            icon.source: rootListView.model.running ? "" : "../images/expand_less.png"
-            onClicked: rootListView.model.getLatest()
+        header: ColumnLayout {
+            spacing: 0
+            BlogEntryListView {
+                id: blogListView
+                Layout.preferredWidth: rootListView.width
+                Layout.preferredHeight: (currentItem ? currentItem.height : 50)
+                visible: timelineView.blogModel !== undefined && blogListView.count > 0
+                model: timelineView.blogModel
+            }
+            ItemDelegate {
+                Layout.preferredWidth: rootListView.width
+                Layout.preferredHeight: AdjustedValues.h24
+                display: AbstractButton.IconOnly
+                icon.source: rootListView.model.running ? "" : "../images/expand_less.png"
+                onClicked: rootListView.model.getLatest()
 
-            BusyIndicator {
-                anchors.centerIn: parent
-                width: AdjustedValues.i24
-                height: AdjustedValues.i24
-                visible: rootListView.model.running
+                BusyIndicator {
+                    anchors.centerIn: parent
+                    width: AdjustedValues.i24
+                    height: AdjustedValues.i24
+                    visible: rootListView.model.running
+                }
             }
         }
         footer: BusyIndicator {

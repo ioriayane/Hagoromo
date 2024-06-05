@@ -1007,7 +1007,7 @@ bool TimelineListModel::hasPinnedPost() const
 
 void TimelineListModel::getPinnedPost()
 {
-    if (pinnedPost().isEmpty()) {
+    if (pinnedPost().isEmpty() || !pinnedPost().contains("/app.bsky.feed.post/")) {
         setRunning(false);
         return;
     }

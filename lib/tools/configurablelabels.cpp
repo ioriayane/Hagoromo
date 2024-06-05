@@ -938,7 +938,7 @@ QJsonArray ConfigurableLabels::updatePreferencesJson(const QString &src_json)
 
 inline QString ConfigurableLabels::removeSharp(const QString &value) const
 {
-    return value.at(0) == "#" ? value.right(value.length() - 1) : value;
+    return value.at(0) == '#' ? value.right(value.length() - 1) : value;
 }
 
 ConfigurableLabelFoldableRange ConfigurableLabels::toLabelFoldableRange(const QString &blurs) const

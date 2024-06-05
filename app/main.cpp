@@ -54,6 +54,8 @@
 #include "qtquick/chat/chatlistmodel.h"
 #include "qtquick/chat/chatmessagelistmodel.h"
 #include "qtquick/moderation/labelerlistmodel.h"
+#include "qtquick/blog/blogentrylistmodel.h"
+
 #include "tools/translatorchanger.h"
 
 void setAppFont(QGuiApplication &app)
@@ -85,7 +87,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName(QStringLiteral("relog"));
     app.setOrganizationDomain(QStringLiteral("hagoromo.relog.tech"));
     app.setApplicationName(QStringLiteral("Hagoromo"));
-    app.setApplicationVersion(QStringLiteral("0.31.0"));
+    app.setApplicationVersion(QStringLiteral("0.32.0"));
 #ifndef HAGOROMO_RELEASE_BUILD
     app.setApplicationVersion(app.applicationVersion() + "d");
 #endif
@@ -174,6 +176,9 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<LabelerListModel>("tech.relog.hagoromo.moderation.labelerlistmodel", 1, 0,
                                       "LabelerListModel");
+
+    qmlRegisterType<BlogEntryListModel>("tech.relog.hagoromo.blog.blogentrylistmodel", 1, 0,
+                                        "BlogEntryListModel");
 
     qmlRegisterSingletonType(QUrl("qrc:/Hagoromo/qml/data/AdjustedValues.qml"),
                              "tech.relog.hagoromo.singleton", 1, 0, "AdjustedValues");

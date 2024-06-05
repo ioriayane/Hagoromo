@@ -50,6 +50,10 @@ void copyUnknown(const QJsonObject &src, QVariant &dest)
         AppBskyFeedThreadgate::Main record;
         AppBskyFeedThreadgate::copyMain(src, record);
         dest.setValue(record);
+    } else if (type == QStringLiteral("com.whtwnd.blog.entry")) {
+        ComWhtwndBlogEntry::Main record;
+        ComWhtwndBlogEntry::copyMain(src, record);
+        dest.setValue(record);
     }
 }
 
@@ -263,11 +267,9 @@ void makeFacets(
 
         if (!mention.isEmpty()) {
             QStringList ids;
-            QMapIterator<QString, MentionData> i(mention);
-            while (i.hasNext()) {
-                i.next();
-                if (!ids.contains(i.key())) {
-                    ids.append(i.key());
+            for (const auto &key : mention.keys()) {
+                if (!ids.contains(key)) {
+                    ids.append(key);
                 }
             }
 

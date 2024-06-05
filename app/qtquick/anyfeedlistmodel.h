@@ -10,6 +10,8 @@ class AnyFeedListModel : public TimelineListModel
     Q_PROPERTY(QString targetDid READ targetDid WRITE setTargetDid NOTIFY targetDidChanged)
     Q_PROPERTY(AnyFeedListModelFeedType feedType READ feedType WRITE setFeedType NOTIFY
                        feedTypeChanged)
+    Q_PROPERTY(QString targetServiceEndpoint READ targetServiceEndpoint WRITE
+                       setTargetServiceEndpoint NOTIFY targetServiceEndpointChanged FINAL)
 
 public:
     explicit AnyFeedListModel(QObject *parent = nullptr);
@@ -24,10 +26,13 @@ public:
     void setTargetDid(const QString &newTargetDid);
     AnyFeedListModelFeedType feedType() const;
     void setFeedType(AnyFeedListModelFeedType newFeedType);
+    QString targetServiceEndpoint() const;
+    void setTargetServiceEndpoint(const QString &newTargetServiceEndpoint);
 
 signals:
     void targetDidChanged();
     void feedTypeChanged();
+    void targetServiceEndpointChanged();
 
 protected:
     virtual void finishedDisplayingQueuedPosts();
@@ -38,6 +43,7 @@ private:
 
     QString m_targetDid;
     AnyFeedListModelFeedType m_feedType;
+    QString m_targetServiceEndpoint;
 
     void getPosts();
 
