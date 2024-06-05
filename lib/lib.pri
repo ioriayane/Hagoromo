@@ -88,6 +88,11 @@ SOURCES += \
     $$PWD/http/httpreply.cpp \
     $$PWD/log/logaccess.cpp \
     $$PWD/log/logmanager.cpp \
+    $$PWD/realtime/abstractpostselector.cpp \
+    $$PWD/realtime/andpostselector.cpp \
+    $$PWD/realtime/followerpostselector.cpp \
+    $$PWD/realtime/followingpostselector.cpp \
+    $$PWD/realtime/mepostselector.cpp \
     $$PWD/tools/base32.cpp \
     $$PWD/tools/cardecoder.cpp \
     $$PWD/tools/chatlogsubscriber.cpp \
@@ -185,6 +190,11 @@ HEADERS += \
     $$PWD/http/httpreply.h \
     $$PWD/log/logaccess.h \
     $$PWD/log/logmanager.h \
+    $$PWD/realtime/abstractpostselector.h \
+    $$PWD/realtime/andpostselector.h \
+    $$PWD/realtime/followerpostselector.h \
+    $$PWD/realtime/followingpostselector.h \
+    $$PWD/realtime/mepostselector.h \
     $$PWD/search/search.h \
     $$PWD/tools/base32.h \
     $$PWD/tools/cardecoder.h \

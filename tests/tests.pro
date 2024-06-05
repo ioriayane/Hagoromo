@@ -7,5 +7,6 @@ SUBDIRS += \
     hagoromo_test2 \
     http_test \
     log_test \
+    realtime_test \
     search_test \
     tools_test
