@@ -1,5 +1,7 @@
 #include "followingpostselector.h"
 
+namespace RealtimeFeed {
+
 FollowingPostSelector::FollowingPostSelector(QObject *parent) : AbstractPostSelector { parent } { }
 
 bool FollowingPostSelector::judge(const QJsonObject &object)
@@ -33,4 +35,6 @@ void FollowingPostSelector::setFollowing(const QStringList &following)
 QString FollowingPostSelector::toString()
 {
     return "{\"following\":{}}";
+}
+
 }

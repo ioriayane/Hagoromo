@@ -7,6 +7,8 @@
 
 #include "realtime/abstractpostselector.h"
 
+using namespace RealtimeFeed;
+
 class realtime_test : public QObject
 {
     Q_OBJECT

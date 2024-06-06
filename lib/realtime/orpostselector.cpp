@@ -1,5 +1,7 @@
 #include "orpostselector.h"
 
+namespace RealtimeFeed {
+
 OrPostSelector::OrPostSelector(QObject *parent) : AbstractPostSelector { parent } { }
 
 bool OrPostSelector::judge(const QJsonObject &object)
@@ -24,4 +26,6 @@ QString OrPostSelector::toString()
     }
     ret += "]}";
     return ret;
+}
+
 }

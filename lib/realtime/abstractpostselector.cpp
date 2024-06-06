@@ -11,6 +11,8 @@
 #include <QJsonArray>
 #include <QDebug>
 
+namespace RealtimeFeed {
+
 AbstractPostSelector::AbstractPostSelector(QObject *parent) : QObject { parent }
 {
     if (parent != nullptr && parent->metaObject()->superClass() != nullptr) {
@@ -159,4 +161,5 @@ void AbstractPostSelector::setDid(const QString &newDid)
         child->setDid(newDid);
     }
     m_did = newDid;
+}
 }

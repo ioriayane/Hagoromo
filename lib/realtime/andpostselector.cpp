@@ -1,5 +1,7 @@
 #include "andpostselector.h"
 
+namespace RealtimeFeed {
+
 AndPostSelector::AndPostSelector(QObject *parent) : AbstractPostSelector { parent } { }
 
 bool AndPostSelector::judge(const QJsonObject &object)
@@ -24,4 +26,6 @@ QString AndPostSelector::toString()
     }
     ret += "]}";
     return ret;
+}
+
 }

@@ -1,5 +1,7 @@
 #include "notpostselector.h"
 
+namespace RealtimeFeed {
+
 NotPostSelector::NotPostSelector(QObject *parent) : AbstractPostSelector { parent } { }
 
 bool NotPostSelector::judge(const QJsonObject &object)
@@ -19,4 +21,6 @@ QString NotPostSelector::toString()
 
     ret += "}";
     return ret;
+}
+
 }
