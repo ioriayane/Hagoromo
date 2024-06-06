@@ -3,6 +3,8 @@
 
 #include "abstractpostselector.h"
 
+namespace RealtimeFeed {
+
 class FollowersPostSelector : public AbstractPostSelector
 {
     Q_OBJECT
@@ -17,5 +19,7 @@ public:
 private:
     QStringList m_followers;
 };
+
+}
 
 #endif // FOLLOWERSPOSTSELECTOR_H

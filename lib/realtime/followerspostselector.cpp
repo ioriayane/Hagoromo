@@ -1,5 +1,7 @@
 #include "followerspostselector.h"
 
+namespace RealtimeFeed {
+
 FollowersPostSelector::FollowersPostSelector(QObject *parent) : AbstractPostSelector { parent } { }
 
 bool FollowersPostSelector::judge(const QJsonObject &object)
@@ -18,4 +20,6 @@ void FollowersPostSelector::setFollowers(const QStringList &followers)
 QString FollowersPostSelector::toString()
 {
     return "{\"followers\":{}}";
+}
+
 }

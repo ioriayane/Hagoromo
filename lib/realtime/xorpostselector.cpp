@@ -1,5 +1,7 @@
 #include "xorpostselector.h"
 
+namespace RealtimeFeed {
+
 XorPostSelector::XorPostSelector(QObject *parent) : AbstractPostSelector { parent } { }
 
 bool XorPostSelector::judge(const QJsonObject &object)
@@ -25,4 +27,6 @@ QString XorPostSelector::toString()
     }
     ret += "]}";
     return ret;
+}
+
 }

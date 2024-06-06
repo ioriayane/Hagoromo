@@ -1,5 +1,7 @@
 #include "mepostselector.h"
 
+namespace RealtimeFeed {
+
 MePostSelector::MePostSelector(QObject *parent) : AbstractPostSelector { parent } { }
 
 bool MePostSelector::judge(const QJsonObject &object)
@@ -10,4 +12,6 @@ bool MePostSelector::judge(const QJsonObject &object)
 QString MePostSelector::toString()
 {
     return "{\"me\":{}}";
+}
+
 }

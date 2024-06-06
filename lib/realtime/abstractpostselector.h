@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QJsonObject>
 
+namespace RealtimeFeed {
 class AbstractPostSelector : public QObject
 {
     Q_OBJECT
@@ -37,5 +38,6 @@ private:
     QList<AbstractPostSelector *> m_children;
     QString m_did;
 };
+}
 
 #endif // ABSTRACTPOSTSELECTOR_H

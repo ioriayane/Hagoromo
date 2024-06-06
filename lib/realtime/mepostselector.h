@@ -3,6 +3,8 @@
 
 #include "abstractpostselector.h"
 
+namespace RealtimeFeed {
+
 class MePostSelector : public AbstractPostSelector
 {
     Q_OBJECT
@@ -12,5 +14,7 @@ public:
     virtual bool judge(const QJsonObject &object);
     virtual QString toString();
 };
+
+}
 
 #endif // MEPOSTSELECTOR_H
