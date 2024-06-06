@@ -72,6 +72,7 @@ int main(int argc, char *argv[])
 
                 if (json.value("repo").toString() == stopper_did) {
                     qDebug() << "-- Stop --";
+                    qDebug().noquote() << QJsonDocument(json).toJson();
                     QCoreApplication::quit();
                 }
             });
