@@ -30,6 +30,8 @@ protected:
     bool isTarget(const QJsonObject &object) const;
     bool isMy(const QJsonObject &object) const;
     QString getRepo(const QJsonObject &object) const;
+    QJsonObject getOperation(const QJsonObject &object, const QString &id) const;
+    QJsonObject getBlock(const QJsonObject &object, const QString &path) const;
 
 private:
     QList<AbstractPostSelector *> m_children;

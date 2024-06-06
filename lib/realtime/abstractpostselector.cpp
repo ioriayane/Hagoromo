@@ -125,6 +125,29 @@ QString AbstractPostSelector::getRepo(const QJsonObject &object) const
     return object.value("repo").toString();
 }
 
+QJsonObject AbstractPostSelector::getOperation(const QJsonObject &object, const QString &id) const
+{
+    for (const auto item : object.value("ops").toArray()) {
+        QStringList path = item.toObject().value("path").toString().split("/");
+        if (!path.isEmpty() && path.at(0) == id) {
+            return item.toObject();
+        }
+    }
+    return QJsonObject();
+}
+
+QJsonObject AbstractPostSelector::getBlock(const QJsonObject &object, const QString &path) const
+{
+    QString uri = QString("at://%1/%2").arg(getRepo(object)).arg(path);
+
+    for (const auto item : object.value("blocks").toArray()) {
+        if (item.toObject().value("uri").toString() == uri) {
+            return item.toObject();
+        }
+    }
+    return QJsonObject();
+}
+
 QString AbstractPostSelector::did() const
 {
     return m_did;
