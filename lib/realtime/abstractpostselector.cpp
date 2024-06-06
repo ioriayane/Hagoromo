@@ -98,6 +98,28 @@ const QList<AbstractPostSelector *> &AbstractPostSelector::children() const
     return m_children;
 }
 
+bool AbstractPostSelector::isTarget(const QJsonObject &object) const
+{
+    QStringList targets;
+    targets << "app.bsky.feed.post"
+            << "app.bsky.feed.repost";
+    for (const auto item : object.value("ops").toArray()) {
+        if (item.toObject().value("action").toString() != "create") {
+            continue;
+        }
+        QStringList path = item.toObject().value("path").toString().split("/");
+        if (!path.isEmpty() && targets.contains(path.at(0))) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool AbstractPostSelector::isMy(const QJsonObject &object) const
+{
+    return (getRepo(object) == did());
+}
+
 QString AbstractPostSelector::getRepo(const QJsonObject &object) const
 {
     return object.value("repo").toString();

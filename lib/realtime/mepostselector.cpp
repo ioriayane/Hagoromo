@@ -4,7 +4,7 @@ MePostSelector::MePostSelector(QObject *parent) : AbstractPostSelector { parent 
 
 bool MePostSelector::judge(const QJsonObject &object)
 {
-    return (getRepo(object) == did());
+    return (isTarget(object) && isMy(object));
 }
 
 QString MePostSelector::toString()

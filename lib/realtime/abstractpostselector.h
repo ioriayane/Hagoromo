@@ -27,6 +27,8 @@ signals:
 protected:
     const QList<AbstractPostSelector *> &children() const;
 
+    bool isTarget(const QJsonObject &object) const;
+    bool isMy(const QJsonObject &object) const;
     QString getRepo(const QJsonObject &object) const;
 
 private:
