@@ -10,3 +10,18 @@ bool AndPostSelector::judge(const QJsonObject &object)
     }
     return true;
 }
+
+QString AndPostSelector::toString()
+{
+    QString ret = "{\"and\":[";
+    int i = 0;
+    for (auto child : children()) {
+        if (i > 0) {
+            ret += ",";
+        }
+        ret += child->toString();
+        i++;
+    }
+    ret += "]}";
+    return ret;
+}

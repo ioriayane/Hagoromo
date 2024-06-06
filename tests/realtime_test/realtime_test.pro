@@ -10,3 +10,6 @@ SOURCES +=  tst_realtime_test.cpp
 
 include(../../lib/lib.pri)
 include(../../openssl/openssl.pri)
+
+RESOURCES += \
+    realtime_test.qrc

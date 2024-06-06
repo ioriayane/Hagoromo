@@ -4,5 +4,18 @@ FollowingPostSelector::FollowingPostSelector(QObject *parent) : AbstractPostSele
 
 bool FollowingPostSelector::judge(const QJsonObject &object)
 {
-    return (object.value("following").toInt(0) == 1);
+    // 自分のフォローのデータのときリストに追加
+
+    return m_following.contains(getRepo(object));
+}
+
+void FollowingPostSelector::setFollowing(const QStringList &following)
+{
+    AbstractPostSelector::setFollowing(following);
+    m_following = following;
+}
+
+QString FollowingPostSelector::toString()
+{
+    return "{\"following\":{}}";
 }

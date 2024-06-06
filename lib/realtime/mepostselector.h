@@ -10,6 +10,7 @@ public:
     explicit MePostSelector(QObject *parent = nullptr);
 
     virtual bool judge(const QJsonObject &object);
+    virtual QString toString();
 };
 
 #endif // MEPOSTSELECTOR_H
