@@ -6,8 +6,6 @@ FollowingPostSelector::FollowingPostSelector(QObject *parent) : AbstractPostSele
 
 bool FollowingPostSelector::judge(const QJsonObject &object)
 {
-    // 自分のフォローのデータのときリストに追加
-    // deleteのときは消す
     if (isMy(object)) {
         QJsonObject op = getOperation(object, "app.bsky.graph.follow");
         if (!op.isEmpty()) {
@@ -20,9 +18,18 @@ bool FollowingPostSelector::judge(const QJsonObject &object)
                     UserInfo user;
                     user.did = subject;
                     user.rkey = extractRkey(path);
-                    m_following[subject] = user;
+                    m_following[user.did] = user;
                 }
             } else if (action == "delete") {
+                QString rkey = extractRkey(op.value("path").toString());
+                if (!rkey.isEmpty()) {
+                    for (const auto &user : qAsConst(m_following)) {
+                        if (user.rkey == rkey) {
+                            m_following.remove(user.did);
+                            break;
+                        }
+                    }
+                }
             }
         }
     }
