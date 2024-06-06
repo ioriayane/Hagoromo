@@ -2,13 +2,28 @@
     {
         "description": "following only",
         "following": [
-            "did:plc:user1",
-            "did:plc:user2"
+            {
+                "did": "did:plc:user1",
+                "rkey": "user1_rkey"
+            },
+            {
+                "did": "did:plc:user2",
+                "rkey": "user2_rkey"
+            }
         ],
         "followers": [
-            "did:plc:user2",
-            "did:plc:user3",
-            "did:plc:user4"
+            {
+                "did": "did:plc:user2",
+                "rkey": "user2_rkey"
+            },
+            {
+                "did": "did:plc:user3",
+                "rkey": "user3_rkey"
+            },
+            {
+                "did": "did:plc:user4",
+                "rkey": "user4_rkey"
+            }
         ],
         "selector": {
             "following": {}
@@ -118,9 +133,8 @@
                 "except": false
             },
             {
-                "payload":{
-                    "blobs": [
-                    ],
+                "payload": {
+                    "blobs": [],
                     "blocks": [
                         {
                             "cid": "bafyreigya6ktu5kflppqfkqw2jjy6ewivbkyt42lkyy4ia2kithercgccy",
@@ -198,13 +212,28 @@
     {
         "description": "followers only",
         "following": [
-            "did:plc:user1",
-            "did:plc:user2"
+            {
+                "did": "did:plc:user1",
+                "rkey": "user1_rkey"
+            },
+            {
+                "did": "did:plc:user2",
+                "rkey": "user2_rkey"
+            }
         ],
         "followers": [
-            "did:plc:user2",
-            "did:plc:user3",
-            "did:plc:user4"
+            {
+                "did": "did:plc:user2",
+                "rkey": "user2_rkey"
+            },
+            {
+                "did": "did:plc:user3",
+                "rkey": "user3_rkey"
+            },
+            {
+                "did": "did:plc:user4",
+                "rkey": "user4_rkey"
+            }
         ],
         "selector": {
             "followers": {}
@@ -318,13 +347,28 @@
     {
         "description": "me only",
         "following": [
-            "did:plc:user1",
-            "did:plc:user2"
+            {
+                "did": "did:plc:user1",
+                "rkey": "user1_rkey"
+            },
+            {
+                "did": "did:plc:user2",
+                "rkey": "user2_rkey"
+            }
         ],
         "followers": [
-            "did:plc:user2",
-            "did:plc:user3",
-            "did:plc:user4"
+            {
+                "did": "did:plc:user2",
+                "rkey": "user2_rkey"
+            },
+            {
+                "did": "did:plc:user3",
+                "rkey": "user3_rkey"
+            },
+            {
+                "did": "did:plc:user4",
+                "rkey": "user4_rkey"
+            }
         ],
         "selector": {
             "me": {}
@@ -476,13 +520,28 @@
     {
         "description": "following and followers",
         "following": [
-            "did:plc:user1",
-            "did:plc:user2"
+            {
+                "did": "did:plc:user1",
+                "rkey": "user1_rkey"
+            },
+            {
+                "did": "did:plc:user2",
+                "rkey": "user2_rkey"
+            }
         ],
         "followers": [
-            "did:plc:user2",
-            "did:plc:user3",
-            "did:plc:user4"
+            {
+                "did": "did:plc:user2",
+                "rkey": "user2_rkey"
+            },
+            {
+                "did": "did:plc:user3",
+                "rkey": "user3_rkey"
+            },
+            {
+                "did": "did:plc:user4",
+                "rkey": "user4_rkey"
+            }
         ],
         "selector": {
             "and": [
@@ -614,13 +673,28 @@
     {
         "description": "following or followers",
         "following": [
-            "did:plc:user1",
-            "did:plc:user2"
+            {
+                "did": "did:plc:user1",
+                "rkey": "user1_rkey"
+            },
+            {
+                "did": "did:plc:user2",
+                "rkey": "user2_rkey"
+            }
         ],
         "followers": [
-            "did:plc:user2",
-            "did:plc:user3",
-            "did:plc:user4"
+            {
+                "did": "did:plc:user2",
+                "rkey": "user2_rkey"
+            },
+            {
+                "did": "did:plc:user3",
+                "rkey": "user3_rkey"
+            },
+            {
+                "did": "did:plc:user4",
+                "rkey": "user4_rkey"
+            }
         ],
         "selector": {
             "or": [
@@ -790,13 +864,28 @@
     {
         "description": "following xor followers",
         "following": [
-            "did:plc:user1",
-            "did:plc:user2"
+            {
+                "did": "did:plc:user1",
+                "rkey": "user1_rkey"
+            },
+            {
+                "did": "did:plc:user2",
+                "rkey": "user2_rkey"
+            }
         ],
         "followers": [
-            "did:plc:user2",
-            "did:plc:user3",
-            "did:plc:user4"
+            {
+                "did": "did:plc:user2",
+                "rkey": "user2_rkey"
+            },
+            {
+                "did": "did:plc:user3",
+                "rkey": "user3_rkey"
+            },
+            {
+                "did": "did:plc:user4",
+                "rkey": "user4_rkey"
+            }
         ],
         "selector": {
             "xor": [
@@ -1004,13 +1093,28 @@
     {
         "description": "not followers",
         "following": [
-            "did:plc:user1",
-            "did:plc:user2"
+            {
+                "did": "did:plc:user1",
+                "rkey": "user1_rkey"
+            },
+            {
+                "did": "did:plc:user2",
+                "rkey": "user2_rkey"
+            }
         ],
         "followers": [
-            "did:plc:user2",
-            "did:plc:user3",
-            "did:plc:user4"
+            {
+                "did": "did:plc:user2",
+                "rkey": "user2_rkey"
+            },
+            {
+                "did": "did:plc:user3",
+                "rkey": "user3_rkey"
+            },
+            {
+                "did": "did:plc:user4",
+                "rkey": "user4_rkey"
+            }
         ],
         "selector": {
             "not": {
