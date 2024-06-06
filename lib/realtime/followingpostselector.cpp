@@ -13,10 +13,14 @@ bool FollowingPostSelector::judge(const QJsonObject &object)
         if (!op.isEmpty()) {
             QString action = op.value("action").toString();
             if (action == "create") {
-                QJsonObject block = getBlock(object, op.value("path").toString());
+                QString path = op.value("path").toString();
+                QJsonObject block = getBlock(object, path);
                 if (!block.isEmpty()) {
                     QString subject = block.value("value").toObject().value("subject").toString();
-                    m_following.append(subject);
+                    UserInfo user;
+                    user.did = subject;
+                    user.rkey = extractRkey(path);
+                    m_following[subject] = user;
                 }
             } else if (action == "delete") {
             }
@@ -26,10 +30,12 @@ bool FollowingPostSelector::judge(const QJsonObject &object)
     return isTarget(object) && m_following.contains(getRepo(object));
 }
 
-void FollowingPostSelector::setFollowing(const QStringList &following)
+void FollowingPostSelector::setFollowing(const QList<UserInfo> &following)
 {
     AbstractPostSelector::setFollowing(following);
-    m_following = following;
+    for (const auto &user : following) {
+        m_following[user.did] = user;
+    }
 }
 
 QString FollowingPostSelector::toString()

@@ -23,7 +23,7 @@ private slots:
     void test_FollowingPostSelector();
 
 private:
-    QStringList extractFromArray(const QJsonArray &array) const;
+    QList<UserInfo> extractFromArray(const QJsonArray &array) const;
 };
 
 realtime_test::realtime_test() { }
@@ -48,8 +48,10 @@ void realtime_test::test_FollowingPostSelector()
         QVERIFY(json_item.toObject().contains("followers"));
         QVERIFY(json_item.toObject().contains("selector"));
         QVERIFY(json_item.toObject().contains("data"));
-        QStringList following = extractFromArray(json_item.toObject().value("following").toArray());
-        QStringList followers = extractFromArray(json_item.toObject().value("followers").toArray());
+        QList<UserInfo> following =
+                extractFromArray(json_item.toObject().value("following").toArray());
+        QList<UserInfo> followers =
+                extractFromArray(json_item.toObject().value("followers").toArray());
         QVERIFY(following.isEmpty() == false);
         QVERIFY(followers.isEmpty() == false);
 
@@ -78,11 +80,14 @@ void realtime_test::test_FollowingPostSelector()
     }
 }
 
-QStringList realtime_test::extractFromArray(const QJsonArray &array) const
+QList<UserInfo> realtime_test::extractFromArray(const QJsonArray &array) const
 {
-    QStringList ret;
+    QList<UserInfo> ret;
     for (const auto item : array) {
-        ret.append(item.toString());
+        UserInfo user;
+        user.did = item.toObject().value("did").toString();
+        user.rkey = item.toObject().value("rkey").toString();
+        ret.append(user);
     }
     return ret;
 }

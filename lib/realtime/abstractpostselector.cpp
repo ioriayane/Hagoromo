@@ -81,14 +81,14 @@ void AbstractPostSelector::appendChildSelector(AbstractPostSelector *child)
     m_children.append(child);
 }
 
-void AbstractPostSelector::setFollowing(const QStringList &following)
+void AbstractPostSelector::setFollowing(const QList<UserInfo> &following)
 {
     for (auto child : children()) {
         child->setFollowing(following);
     }
 }
 
-void AbstractPostSelector::setFollowers(const QStringList &followers)
+void AbstractPostSelector::setFollowers(const QList<UserInfo> &followers)
 {
     for (auto child : children()) {
         child->setFollowers(followers);
@@ -148,6 +148,16 @@ QJsonObject AbstractPostSelector::getBlock(const QJsonObject &object, const QStr
         }
     }
     return QJsonObject();
+}
+
+QString AbstractPostSelector::extractRkey(const QString &path) const
+{
+    QStringList items = path.split("/");
+    if (items.length() > 1) {
+        return items.last();
+    } else {
+        return QString();
+    }
 }
 
 QString AbstractPostSelector::did() const

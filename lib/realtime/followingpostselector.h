@@ -12,12 +12,12 @@ public:
     explicit FollowingPostSelector(QObject *parent = nullptr);
 
     virtual bool judge(const QJsonObject &object);
-    virtual void setFollowing(const QStringList &following);
-    virtual void setFollowers(const QStringList &followers) { Q_UNUSED(followers) }
+    virtual void setFollowing(const QList<UserInfo> &following);
+    virtual void setFollowers(const QList<UserInfo> &followers) { Q_UNUSED(followers) }
     virtual QString toString();
 
 private:
-    QStringList m_following;
+    QHash<QString, UserInfo> m_following;
 };
 
 }
