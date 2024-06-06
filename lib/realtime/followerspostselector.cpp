@@ -5,8 +5,8 @@ FollowersPostSelector::FollowersPostSelector(QObject *parent) : AbstractPostSele
 bool FollowersPostSelector::judge(const QJsonObject &object)
 {
     // 他人の自分をフォローするデータのとき追加する
-
-    return m_followers.contains(getRepo(object));
+    // deleteのときは消す
+    return isTarget(object) && m_followers.contains(getRepo(object));
 }
 
 void FollowersPostSelector::setFollowers(const QStringList &followers)

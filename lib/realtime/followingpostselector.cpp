@@ -5,8 +5,10 @@ FollowingPostSelector::FollowingPostSelector(QObject *parent) : AbstractPostSele
 bool FollowingPostSelector::judge(const QJsonObject &object)
 {
     // 自分のフォローのデータのときリストに追加
+    // deleteのときは消す
+    if (isMy(object)) { }
 
-    return m_following.contains(getRepo(object));
+    return isTarget(object) && m_following.contains(getRepo(object));
 }
 
 void FollowingPostSelector::setFollowing(const QStringList &following)
