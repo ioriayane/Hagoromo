@@ -1,0 +1,16 @@
+#ifndef XORPOSTSELECTOR_H
+#define XORPOSTSELECTOR_H
+
+#include "abstractpostselector.h"
+
+class XorPostSelector : public AbstractPostSelector
+{
+    Q_OBJECT
+public:
+    explicit XorPostSelector(QObject *parent = nullptr);
+
+    virtual bool judge(const QJsonObject &object);
+    virtual QString toString();
+};
+
+#endif // XORPOSTSELECTOR_H

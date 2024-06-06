@@ -4,5 +4,10 @@ MePostSelector::MePostSelector(QObject *parent) : AbstractPostSelector { parent 
 
 bool MePostSelector::judge(const QJsonObject &object)
 {
-    return (object.value("did").toString() == did());
+    return (getRepo(object) == did());
+}
+
+QString MePostSelector::toString()
+{
+    return "{\"me\":{}}";
 }

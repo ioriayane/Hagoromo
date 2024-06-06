@@ -90,9 +90,12 @@ SOURCES += \
     $$PWD/log/logmanager.cpp \
     $$PWD/realtime/abstractpostselector.cpp \
     $$PWD/realtime/andpostselector.cpp \
-    $$PWD/realtime/followerpostselector.cpp \
+    $$PWD/realtime/followerspostselector.cpp \
     $$PWD/realtime/followingpostselector.cpp \
     $$PWD/realtime/mepostselector.cpp \
+    $$PWD/realtime/notpostselector.cpp \
+    $$PWD/realtime/orpostselector.cpp \
+    $$PWD/realtime/xorpostselector.cpp \
     $$PWD/tools/base32.cpp \
     $$PWD/tools/cardecoder.cpp \
     $$PWD/tools/chatlogsubscriber.cpp \
@@ -192,9 +195,12 @@ HEADERS += \
     $$PWD/log/logmanager.h \
     $$PWD/realtime/abstractpostselector.h \
     $$PWD/realtime/andpostselector.h \
-    $$PWD/realtime/followerpostselector.h \
+    $$PWD/realtime/followerspostselector.h \
     $$PWD/realtime/followingpostselector.h \
     $$PWD/realtime/mepostselector.h \
+    $$PWD/realtime/notpostselector.h \
+    $$PWD/realtime/orpostselector.h \
+    $$PWD/realtime/xorpostselector.h \
     $$PWD/search/search.h \
     $$PWD/tools/base32.h \
     $$PWD/tools/cardecoder.h \
