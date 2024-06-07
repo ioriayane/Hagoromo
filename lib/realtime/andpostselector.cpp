@@ -10,6 +10,9 @@ AndPostSelector::AndPostSelector(QObject *parent) : AbstractPostSelector { paren
 
 bool AndPostSelector::judge(const QJsonObject &object)
 {
+    if (!ready())
+        return false;
+
     for (auto child : children()) {
         if (!child->judge(object))
             return false;

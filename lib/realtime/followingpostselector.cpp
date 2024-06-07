@@ -9,6 +9,9 @@ FollowingPostSelector::FollowingPostSelector(QObject *parent) : AbstractPostSele
 
 bool FollowingPostSelector::judge(const QJsonObject &object)
 {
+    if (!ready())
+        return false;
+
     if (isMy(object)) {
         QJsonObject op = getOperation(object, "app.bsky.graph.follow");
         if (!op.isEmpty()) {

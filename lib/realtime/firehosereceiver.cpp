@@ -72,7 +72,7 @@ void FirehoseReceiver::removeSelector(QObject *parent)
     }
 }
 
-const AbstractPostSelector *FirehoseReceiver::getSelector(QObject *parent)
+AbstractPostSelector *FirehoseReceiver::getSelector(QObject *parent)
 {
     if (parent == nullptr)
         return nullptr;
@@ -80,6 +80,11 @@ const AbstractPostSelector *FirehoseReceiver::getSelector(QObject *parent)
         return m_selectorHash[parent];
     }
     return nullptr;
+}
+
+bool FirehoseReceiver::containsSelector(QObject *parent)
+{
+    return m_selectorHash.contains(parent);
 }
 
 int FirehoseReceiver::countSelector() const

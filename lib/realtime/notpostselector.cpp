@@ -9,6 +9,9 @@ NotPostSelector::NotPostSelector(QObject *parent) : AbstractPostSelector { paren
 
 bool NotPostSelector::judge(const QJsonObject &object)
 {
+    if (!ready())
+        return false;
+
     if (children().isEmpty())
         return false;
 

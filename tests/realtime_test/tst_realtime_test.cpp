@@ -63,6 +63,7 @@ void realtime_test::test_PostSelector()
         root->setFollowing(following);
         root->setFollowers(followers);
         root->setDid("did:plc:me");
+        root->setReady(true);
 
         QVERIFY(root->needFollowing()
                 == json_item.toObject().value("except").toObject().value("needFollowing").toBool());
@@ -117,6 +118,9 @@ void realtime_test::test_FirehoseReceiver()
 
     QVERIFY(recv->getSelector(&parent1) == nullptr);
     QVERIFY(recv->getSelector(&parent2) != nullptr);
+
+    QVERIFY(recv->containsSelector(&parent1) == false);
+    QVERIFY(recv->containsSelector(&parent2) == true);
 }
 
 QList<UserInfo> realtime_test::extractFromArray(const QJsonArray &array) const

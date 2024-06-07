@@ -44,6 +44,7 @@ SOURCES += \
     $$PWD/notificationlistmodel.cpp \
     $$PWD/postlink.cpp \
     $$PWD/postthreadlistmodel.cpp \
+    $$PWD/realtime/realtimefeedlistmodel.cpp \
     $$PWD/recordoperator.cpp \
     $$PWD/reporter.cpp \
     $$PWD/searchpostlistmodel.cpp \
@@ -98,6 +99,7 @@ HEADERS += \
     $$PWD/notificationlistmodel.h \
     $$PWD/postlink.h \
     $$PWD/postthreadlistmodel.h \
+    $$PWD/realtime/realtimefeedlistmodel.h \
     $$PWD/recordoperator.h \
     $$PWD/reporter.h \
     $$PWD/searchpostlistmodel.h \
