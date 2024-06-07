@@ -2,7 +2,11 @@
 
 namespace RealtimeFeed {
 
-AndPostSelector::AndPostSelector(QObject *parent) : AbstractPostSelector { parent } { }
+AndPostSelector::AndPostSelector(QObject *parent) : AbstractPostSelector { parent }
+{
+    setName("and");
+    setIsArray(true);
+}
 
 bool AndPostSelector::judge(const QJsonObject &object)
 {
@@ -11,21 +15,6 @@ bool AndPostSelector::judge(const QJsonObject &object)
             return false;
     }
     return true;
-}
-
-QString AndPostSelector::toString()
-{
-    QString ret = "{\"and\":[";
-    int i = 0;
-    for (auto child : children()) {
-        if (i > 0) {
-            ret += ",";
-        }
-        ret += child->toString();
-        i++;
-    }
-    ret += "]}";
-    return ret;
 }
 
 }

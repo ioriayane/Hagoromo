@@ -2,7 +2,10 @@
 
 namespace RealtimeFeed {
 
-FollowersPostSelector::FollowersPostSelector(QObject *parent) : AbstractPostSelector { parent } { }
+FollowersPostSelector::FollowersPostSelector(QObject *parent) : AbstractPostSelector { parent }
+{
+    setName("followers");
+}
 
 bool FollowersPostSelector::judge(const QJsonObject &object)
 {
@@ -47,11 +50,6 @@ void FollowersPostSelector::setFollowers(const QList<UserInfo> &followers)
     for (const auto &user : followers) {
         m_followers[user.did] = user;
     }
-}
-
-QString FollowersPostSelector::toString()
-{
-    return "{\"followers\":{}}";
 }
 
 bool FollowersPostSelector::needFollowers() const

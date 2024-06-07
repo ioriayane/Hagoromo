@@ -2,7 +2,10 @@
 
 namespace RealtimeFeed {
 
-FollowingPostSelector::FollowingPostSelector(QObject *parent) : AbstractPostSelector { parent } { }
+FollowingPostSelector::FollowingPostSelector(QObject *parent) : AbstractPostSelector { parent }
+{
+    setName("following");
+}
 
 bool FollowingPostSelector::judge(const QJsonObject &object)
 {
@@ -43,11 +46,6 @@ void FollowingPostSelector::setFollowing(const QList<UserInfo> &following)
     for (const auto &user : following) {
         m_following[user.did] = user;
     }
-}
-
-QString FollowingPostSelector::toString()
-{
-    return "{\"following\":{}}";
 }
 
 bool FollowingPostSelector::needFollowing() const

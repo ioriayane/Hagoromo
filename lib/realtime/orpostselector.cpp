@@ -2,7 +2,11 @@
 
 namespace RealtimeFeed {
 
-OrPostSelector::OrPostSelector(QObject *parent) : AbstractPostSelector { parent } { }
+OrPostSelector::OrPostSelector(QObject *parent) : AbstractPostSelector { parent }
+{
+    setName("or");
+    setIsArray(true);
+}
 
 bool OrPostSelector::judge(const QJsonObject &object)
 {
@@ -11,21 +15,6 @@ bool OrPostSelector::judge(const QJsonObject &object)
             return true;
     }
     return false;
-}
-
-QString OrPostSelector::toString()
-{
-    QString ret = "{\"or\":[";
-    int i = 0;
-    for (auto child : children()) {
-        if (i > 0) {
-            ret += ",";
-        }
-        ret += child->toString();
-        i++;
-    }
-    ret += "]}";
-    return ret;
 }
 
 }

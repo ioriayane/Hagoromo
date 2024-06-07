@@ -14,7 +14,6 @@ public:
     virtual bool judge(const QJsonObject &object);
     virtual void setFollowing(const QList<UserInfo> &following) { Q_UNUSED(following) }
     virtual void setFollowers(const QList<UserInfo> &followers);
-    virtual QString toString();
 
     virtual bool needFollowers() const;
 
