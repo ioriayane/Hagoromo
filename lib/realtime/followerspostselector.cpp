@@ -9,6 +9,9 @@ FollowersPostSelector::FollowersPostSelector(QObject *parent) : AbstractPostSele
 
 bool FollowersPostSelector::judge(const QJsonObject &object)
 {
+    if (!ready())
+        return false;
+
     // 他人の自分をフォローするデータのとき追加する
     // deleteのときは消す
     if (!isMy(object)) {

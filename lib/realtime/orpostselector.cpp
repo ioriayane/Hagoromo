@@ -10,6 +10,9 @@ OrPostSelector::OrPostSelector(QObject *parent) : AbstractPostSelector { parent 
 
 bool OrPostSelector::judge(const QJsonObject &object)
 {
+    if (!ready())
+        return false;
+
     for (auto child : children()) {
         if (child->judge(object))
             return true;

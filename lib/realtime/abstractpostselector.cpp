@@ -14,8 +14,13 @@
 namespace RealtimeFeed {
 
 AbstractPostSelector::AbstractPostSelector(QObject *parent)
-    : QObject { parent }, m_isArray(false), m_parentIsArray(true)
+    : QObject { parent }, m_isArray(false), m_parentIsArray(true), m_ready(false)
 {
+}
+
+AbstractPostSelector::~AbstractPostSelector()
+{
+    qDebug().noquote() << this << name() << did();
 }
 
 QString AbstractPostSelector::toString()
@@ -196,6 +201,19 @@ QString AbstractPostSelector::extractRkey(const QString &path) const
     } else {
         return QString();
     }
+}
+
+bool AbstractPostSelector::ready() const
+{
+    return m_ready;
+}
+
+void AbstractPostSelector::setReady(bool newReady)
+{
+    for (auto child : children()) {
+        child->setReady(newReady);
+    }
+    m_ready = newReady;
 }
 
 bool AbstractPostSelector::parentIsArray() const

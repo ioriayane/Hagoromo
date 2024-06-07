@@ -29,7 +29,8 @@ public:
 
     void appendSelector(AbstractPostSelector *selector);
     void removeSelector(QObject *parent);
-    const AbstractPostSelector *getSelector(QObject *parent);
+    AbstractPostSelector *getSelector(QObject *parent);
+    bool containsSelector(QObject *parent);
     int countSelector() const;
 
     QString serviceEndpoint() const;

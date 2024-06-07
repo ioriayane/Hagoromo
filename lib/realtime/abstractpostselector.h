@@ -17,6 +17,7 @@ class AbstractPostSelector : public QObject
     Q_OBJECT
 public:
     explicit AbstractPostSelector(QObject *parent = nullptr);
+    ~AbstractPostSelector();
 
     virtual bool judge(const QJsonObject &object) = 0;
     virtual QString toString();
@@ -33,12 +34,12 @@ public:
 
     QString name() const;
     void setName(const QString &newName);
-
     bool isArray() const;
     void setIsArray(bool newIsArray);
-
     bool parentIsArray() const;
     void setParentIsArray(bool newParentIsArray);
+    bool ready() const;
+    void setReady(bool newReady);
 
 signals:
     void selected(const QJsonObject &object);
@@ -60,6 +61,7 @@ private:
     QString m_name;
     bool m_isArray;
     bool m_parentIsArray;
+    bool m_ready;
 };
 }
 

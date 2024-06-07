@@ -10,6 +10,9 @@ XorPostSelector::XorPostSelector(QObject *parent) : AbstractPostSelector { paren
 
 bool XorPostSelector::judge(const QJsonObject &object)
 {
+    if (!ready())
+        return false;
+
     int count = 0;
     for (auto child : children()) {
         if (child->judge(object))
