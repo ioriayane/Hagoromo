@@ -81,6 +81,26 @@ void AbstractPostSelector::appendChildSelector(AbstractPostSelector *child)
     m_children.append(child);
 }
 
+bool AbstractPostSelector::needFollowing() const
+{
+    for (auto child : children()) {
+        if (child->needFollowing()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool AbstractPostSelector::needFollowers() const
+{
+    for (auto child : children()) {
+        if (child->needFollowers()) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void AbstractPostSelector::setFollowing(const QList<UserInfo> &following)
 {
     for (auto child : children()) {

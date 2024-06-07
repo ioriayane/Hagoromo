@@ -50,4 +50,8 @@ QString FollowingPostSelector::toString()
     return "{\"following\":{}}";
 }
 
+bool FollowingPostSelector::needFollowing() const
+{
+    return true;
+}
 }

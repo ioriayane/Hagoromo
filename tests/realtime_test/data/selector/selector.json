@@ -28,6 +28,10 @@
         "selector": {
             "following": {}
         },
+        "except": {
+            "needFollowing": true,
+            "needFollowers": false
+        },
         "data": [
             {
                 "payload": {
@@ -300,6 +304,10 @@
         ],
         "selector": {
             "followers": {}
+        },
+        "except": {
+            "needFollowing": false,
+            "needFollowers": true
         },
         "data": [
             {
@@ -574,6 +582,10 @@
         "selector": {
             "me": {}
         },
+        "except": {
+            "needFollowing": false,
+            "needFollowers": false
+        },
         "data": [
             {
                 "payload": {
@@ -754,6 +766,10 @@
                 }
             ]
         },
+        "except": {
+            "needFollowing": true,
+            "needFollowers": true
+        },
         "data": [
             {
                 "payload": {
@@ -906,6 +922,10 @@
                     "followers": {}
                 }
             ]
+        },
+        "except": {
+            "needFollowing": true,
+            "needFollowers": true
         },
         "data": [
             {
@@ -1097,6 +1117,10 @@
                     "followers": {}
                 }
             ]
+        },
+        "except": {
+            "needFollowing": true,
+            "needFollowers": true
         },
         "data": [
             {
@@ -1321,6 +1345,10 @@
             "not": {
                 "followers": {}
             }
+        },
+        "except": {
+            "needFollowing": false,
+            "needFollowers": true
         },
         "data": [
             {

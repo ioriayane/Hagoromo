@@ -23,6 +23,8 @@ public:
 
     static AbstractPostSelector *create(const QJsonObject &selector, QObject *parent);
     void appendChildSelector(AbstractPostSelector *child);
+    virtual bool needFollowing() const;
+    virtual bool needFollowers() const;
 
     virtual void setFollowing(const QList<UserInfo> &following);
     virtual void setFollowers(const QList<UserInfo> &followers);
