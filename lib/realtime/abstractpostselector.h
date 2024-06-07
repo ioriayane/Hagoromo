@@ -19,7 +19,7 @@ public:
     explicit AbstractPostSelector(QObject *parent = nullptr);
 
     virtual bool judge(const QJsonObject &object) = 0;
-    virtual QString toString() = 0;
+    virtual QString toString();
 
     static AbstractPostSelector *create(const QJsonObject &selector, QObject *parent);
     void appendChildSelector(AbstractPostSelector *child);
@@ -30,6 +30,15 @@ public:
     virtual void setFollowers(const QList<UserInfo> &followers);
     QString did() const;
     void setDid(const QString &newDid);
+
+    QString name() const;
+    void setName(const QString &newName);
+
+    bool isArray() const;
+    void setIsArray(bool newIsArray);
+
+    bool parentIsArray() const;
+    void setParentIsArray(bool newParentIsArray);
 
 signals:
     void selected(const QJsonObject &object);
@@ -48,6 +57,9 @@ protected:
 private:
     QList<AbstractPostSelector *> m_children;
     QString m_did;
+    QString m_name;
+    bool m_isArray;
+    bool m_parentIsArray;
 };
 }
 

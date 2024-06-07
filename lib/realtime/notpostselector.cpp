@@ -2,7 +2,10 @@
 
 namespace RealtimeFeed {
 
-NotPostSelector::NotPostSelector(QObject *parent) : AbstractPostSelector { parent } { }
+NotPostSelector::NotPostSelector(QObject *parent) : AbstractPostSelector { parent }
+{
+    setName("not");
+}
 
 bool NotPostSelector::judge(const QJsonObject &object)
 {
@@ -10,17 +13,6 @@ bool NotPostSelector::judge(const QJsonObject &object)
         return false;
 
     return !(children().at(0)->judge(object));
-}
-
-QString NotPostSelector::toString()
-{
-    QString ret = "{\"not\":";
-
-    if (!children().isEmpty())
-        ret += children().at(0)->toString();
-
-    ret += "}";
-    return ret;
 }
 
 }

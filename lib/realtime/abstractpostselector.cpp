@@ -13,13 +13,30 @@
 
 namespace RealtimeFeed {
 
-AbstractPostSelector::AbstractPostSelector(QObject *parent) : QObject { parent }
+AbstractPostSelector::AbstractPostSelector(QObject *parent)
+    : QObject { parent }, m_isArray(false), m_parentIsArray(true)
 {
-    if (parent != nullptr && parent->metaObject()->superClass() != nullptr) {
-        if (strcmp(parent->metaObject()->superClass()->className(), "AbstractPostSelector") == 0) {
-            setDid(reinterpret_cast<AbstractPostSelector *>(parent)->did());
+}
+
+QString AbstractPostSelector::toString()
+{
+
+    QString ret;
+    ret += parentIsArray() ? "{" : "";
+    ret += QString("\"%1\":").arg(name());
+    ret += isArray() ? "[" : "{";
+    int i = 0;
+    for (auto child : children()) {
+        if (i > 0) {
+            ret += ",";
         }
+        ret += child->toString();
+        i++;
     }
+    ret += isArray() ? "]" : "}";
+    ret += parentIsArray() ? "}" : "";
+
+    return ret;
 }
 
 AbstractPostSelector *AbstractPostSelector::create(const QJsonObject &selector, QObject *parent)
@@ -78,6 +95,7 @@ void AbstractPostSelector::appendChildSelector(AbstractPostSelector *child)
         return;
     if (m_children.contains(child))
         return;
+    child->setParentIsArray(isArray());
     m_children.append(child);
 }
 
@@ -178,6 +196,36 @@ QString AbstractPostSelector::extractRkey(const QString &path) const
     } else {
         return QString();
     }
+}
+
+bool AbstractPostSelector::parentIsArray() const
+{
+    return m_parentIsArray;
+}
+
+void AbstractPostSelector::setParentIsArray(bool newParentIsArray)
+{
+    m_parentIsArray = newParentIsArray;
+}
+
+bool AbstractPostSelector::isArray() const
+{
+    return m_isArray;
+}
+
+void AbstractPostSelector::setIsArray(bool newIsArray)
+{
+    m_isArray = newIsArray;
+}
+
+QString AbstractPostSelector::name() const
+{
+    return m_name;
+}
+
+void AbstractPostSelector::setName(const QString &newName)
+{
+    m_name = newName;
 }
 
 QString AbstractPostSelector::did() const
