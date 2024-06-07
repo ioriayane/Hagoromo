@@ -16,6 +16,8 @@ public:
     virtual void setFollowers(const QList<UserInfo> &followers) { Q_UNUSED(followers) }
     virtual QString toString();
 
+    virtual bool needFollowing() const;
+
 private:
     QHash<QString, UserInfo> m_following;
 };

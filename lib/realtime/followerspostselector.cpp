@@ -54,4 +54,8 @@ QString FollowersPostSelector::toString()
     return "{\"followers\":{}}";
 }
 
+bool FollowersPostSelector::needFollowers() const
+{
+    return true;
+}
 }

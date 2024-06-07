@@ -90,6 +90,7 @@ SOURCES += \
     $$PWD/log/logmanager.cpp \
     $$PWD/realtime/abstractpostselector.cpp \
     $$PWD/realtime/andpostselector.cpp \
+    $$PWD/realtime/firehosereceiver.cpp \
     $$PWD/realtime/followerspostselector.cpp \
     $$PWD/realtime/followingpostselector.cpp \
     $$PWD/realtime/mepostselector.cpp \
@@ -195,6 +196,7 @@ HEADERS += \
     $$PWD/log/logmanager.h \
     $$PWD/realtime/abstractpostselector.h \
     $$PWD/realtime/andpostselector.h \
+    $$PWD/realtime/firehosereceiver.h \
     $$PWD/realtime/followerspostselector.h \
     $$PWD/realtime/followingpostselector.h \
     $$PWD/realtime/mepostselector.h \

@@ -6,6 +6,7 @@
 #include <QJsonDocument>
 
 #include "realtime/abstractpostselector.h"
+#include "realtime/firehosereceiver.h"
 
 using namespace RealtimeFeed;
 
@@ -20,7 +21,8 @@ public:
 private slots:
     void initTestCase();
     void cleanupTestCase();
-    void test_FollowingPostSelector();
+    void test_PostSelector();
+    void test_FirehoseReceiver();
 
 private:
     QList<UserInfo> extractFromArray(const QJsonArray &array) const;
@@ -34,7 +36,7 @@ void realtime_test::initTestCase() { }
 
 void realtime_test::cleanupTestCase() { }
 
-void realtime_test::test_FollowingPostSelector()
+void realtime_test::test_PostSelector()
 {
     QFile file(":/data/selector/selector.json");
     QVERIFY(file.open(QFile::ReadOnly));
@@ -62,6 +64,11 @@ void realtime_test::test_FollowingPostSelector()
         root->setFollowers(followers);
         root->setDid("did:plc:me");
 
+        QVERIFY(root->needFollowing()
+                == json_item.toObject().value("except").toObject().value("needFollowing").toBool());
+        QVERIFY(root->needFollowers()
+                == json_item.toObject().value("except").toObject().value("needFollowers").toBool());
+
         bool equal = (QJsonDocument::fromJson(root->toString().toUtf8()).object()
                       == json_item.toObject().value("selector").toObject());
         if (!equal) {
@@ -78,6 +85,38 @@ void realtime_test::test_FollowingPostSelector()
 
         delete root;
     }
+}
+
+void realtime_test::test_FirehoseReceiver()
+{
+    FirehoseReceiver *recv = FirehoseReceiver::getInstance();
+
+    QObject parent1;
+    QObject parent2;
+
+    recv->appendSelector(AbstractPostSelector::create(
+            QJsonDocument::fromJson("{\"me\":{}}").object(), &parent1));
+    recv->appendSelector(AbstractPostSelector::create(
+            QJsonDocument::fromJson("{\"followers\":{}}").object(), &parent2));
+
+    QVERIFY(recv->countSelector() == 2);
+
+    const AbstractPostSelector *s1 = recv->getSelector(&parent1);
+    const AbstractPostSelector *s2 = recv->getSelector(&parent2);
+
+    QVERIFY(s1 != nullptr);
+    QVERIFY(s2 != nullptr);
+
+    QVERIFY(s1->needFollowers() == false);
+    QVERIFY(s1->needFollowing() == false);
+    QVERIFY(s2->needFollowers() == true);
+    QVERIFY(s2->needFollowing() == false);
+
+    recv->removeSelector(&parent1);
+    QVERIFY(recv->countSelector() == 1);
+
+    QVERIFY(recv->getSelector(&parent1) == nullptr);
+    QVERIFY(recv->getSelector(&parent2) != nullptr);
 }
 
 QList<UserInfo> realtime_test::extractFromArray(const QJsonArray &array) const
