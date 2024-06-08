@@ -15,6 +15,9 @@ bool NotPostSelector::judge(const QJsonObject &object)
     if (children().isEmpty())
         return false;
 
+    if (!isTarget(object))
+        return false;
+
     return !(children().at(0)->judge(object));
 }
 

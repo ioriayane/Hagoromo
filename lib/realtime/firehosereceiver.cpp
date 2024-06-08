@@ -1,6 +1,9 @@
 #include "firehosereceiver.h"
 
 #include <QDebug>
+// #include <QJsonArray>
+// #include <QJsonObject>
+#include <QJsonDocument>
 
 namespace RealtimeFeed {
 
@@ -8,24 +11,34 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent) : QObject { parent }
 {
     m_serviceEndpoint = "wss://bsky.network";
 
-    QObject::connect(&m_client, &ComAtprotoSyncSubscribeReposEx::errorOccured,
-                     [](const QString &error, const QString &message) {
-                         qDebug().noquote() << "Error:" << error << message;
-                     });
-    QObject::connect(&m_client, &ComAtprotoSyncSubscribeReposEx::received,
-                     [=](const QString &type, const QJsonObject &json) {
-                         qDebug().noquote() << "commitDataReceived:" << type << !json.isEmpty();
-                         for (auto s : qAsConst(m_selectorHash)) {
-                             if (s->judge(json)) {
-                                 emit s->selected(json);
-                             }
-                         }
-                     });
+    connect(&m_client, &ComAtprotoSyncSubscribeReposEx::errorOccured,
+            [](const QString &error, const QString &message) {
+                qDebug().noquote() << "Error:" << error << message;
+            });
+    connect(&m_client, &ComAtprotoSyncSubscribeReposEx::received,
+            [=](const QString &type, const QJsonObject &json) {
+                if (type != "#commit")
+                    return;
+                // qDebug().noquote() << "commitDataReceived:" << type << !json.isEmpty();
+                for (auto s : qAsConst(m_selectorHash)) {
+                    if (!s->ready()) {
+                        // no op
+                    } else if (s->judge(json)) {
+                        qDebug().noquote().nospace() << QJsonDocument(json).toJson();
+                        emit s->selected(json);
+                    }
+                }
+            });
+    connect(&m_client, &ComAtprotoSyncSubscribeReposEx::connectedToService,
+            [this]() { emit connectedToService(); });
+    connect(&m_client, &ComAtprotoSyncSubscribeReposEx::disconnectFromService,
+            [this]() { emit disconnectFromService(); });
 }
 
 FirehoseReceiver::~FirehoseReceiver()
 {
     qDebug() << this << "~FirehoseReceiver()";
+    stop();
 }
 
 FirehoseReceiver *FirehoseReceiver::getInstance()
@@ -43,7 +56,9 @@ void FirehoseReceiver::start()
     if (path.endsWith("/")) {
         path.resize(path.length() - 1);
     }
-    m_client.open(QUrl(path + "/xrpc/com.atproto.sync.subscribeRepos"));
+    QUrl url(path + "/xrpc/com.atproto.sync.subscribeRepos");
+    qDebug().noquote() << "Connect to" << url.toString();
+    m_client.open(url);
 }
 
 void FirehoseReceiver::stop()
@@ -65,11 +80,25 @@ void FirehoseReceiver::removeSelector(QObject *parent)
     if (parent == nullptr)
         return;
     if (m_selectorHash.contains(parent)) {
+        AbstractPostSelector *s = m_selectorHash[parent];
         m_selectorHash.remove(parent);
+        qDebug().quote() << "removeSelector" << s << s->name();
+        qDebug().quote() << "remain count" << m_selectorHash.count();
+        s->deleteLater();
     }
     if (m_selectorHash.isEmpty()) {
+        qDebug().quote() << "stop";
         stop();
     }
+}
+
+void FirehoseReceiver::removeAllSelector()
+{
+    for (auto s : qAsConst(m_selectorHash)) {
+        s->deleteLater();
+    }
+    m_selectorHash.clear();
+    stop();
 }
 
 AbstractPostSelector *FirehoseReceiver::getSelector(QObject *parent)

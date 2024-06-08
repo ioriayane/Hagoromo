@@ -20,7 +20,7 @@ AbstractPostSelector::AbstractPostSelector(QObject *parent)
 
 AbstractPostSelector::~AbstractPostSelector()
 {
-    qDebug().noquote() << this << name() << did();
+    qDebug().noquote() << this << "~AbstractPostSelector()" << name() << did();
 }
 
 QString AbstractPostSelector::toString()
@@ -162,7 +162,7 @@ bool AbstractPostSelector::isTarget(const QJsonObject &object) const
 
 bool AbstractPostSelector::isMy(const QJsonObject &object) const
 {
-    return (getRepo(object) == did());
+    return (!did().isEmpty() && getRepo(object) == did());
 }
 
 QString AbstractPostSelector::getRepo(const QJsonObject &object) const

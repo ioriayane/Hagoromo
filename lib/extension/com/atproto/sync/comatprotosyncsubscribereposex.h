@@ -18,6 +18,8 @@ public:
 signals:
     void errorOccured(const QString &code, const QString &message);
     void received(const QString &type, const QJsonObject &json);
+    void connectedToService();
+    void disconnectFromService();
 
 public slots:
     void onConnected();

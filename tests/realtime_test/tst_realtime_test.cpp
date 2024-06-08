@@ -4,6 +4,7 @@
 #include <QJsonArray>
 #include <QJsonValue>
 #include <QJsonDocument>
+#include <QWebSocketServer>
 
 #include "realtime/abstractpostselector.h"
 #include "realtime/firehosereceiver.h"
@@ -23,18 +24,61 @@ private slots:
     void cleanupTestCase();
     void test_PostSelector();
     void test_FirehoseReceiver();
+    void test_Websock();
 
 private:
     QList<UserInfo> extractFromArray(const QJsonArray &array) const;
+
+    QWebSocketServer m_server;
+    QList<QWebSocket *> m_clients;
 };
 
-realtime_test::realtime_test() { }
+realtime_test::realtime_test()
+    : m_server(QStringLiteral("name"), QWebSocketServer::SecureMode, this)
+{
+}
 
 realtime_test::~realtime_test() { }
 
-void realtime_test::initTestCase() { }
+void realtime_test::initTestCase()
+{
+    QCoreApplication::setOrganizationName(QStringLiteral("relog"));
+    QCoreApplication::setApplicationName(QStringLiteral("Hagoromo"));
 
-void realtime_test::cleanupTestCase() { }
+    // if (m_server.listen(QHostAddress::LocalHost, 0)) {
+    //     qDebug().noquote() << "Start WebSocket Server";
+    //     connect(&m_server, &QWebSocketServer::newConnection, this, [=]() {
+    //         QWebSocket *pSocket = m_server.nextPendingConnection();
+
+    //         qDebug() << "QWebSocketServer::newConnection";
+    //         qDebug() << "Client connected:" << pSocket->peerName() << pSocket->origin();
+
+    //         connect(pSocket, &QWebSocket::binaryMessageReceived, this,
+    //                 [=](const QByteArray &message) {
+    //                     qDebug().noquote() << "QWebSocket::binaryMessageReceived";
+    //                 });
+    //         connect(pSocket, &QWebSocket::disconnected, this, [=]() {
+    //             qDebug().noquote() << "QWebSocket::disconnected";
+    //             QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
+    //             qDebug() << "socketDisconnected:" << pClient;
+    //             if (pClient) {
+    //                 m_clients.removeAll(pClient);
+    //                 pClient->deleteLater();
+    //             }
+    //         });
+    //         m_clients << pSocket;
+    //     });
+    //     connect(&m_server, &QWebSocketServer::sslErrors, this,
+    //             [=](const QList<QSslError> &errors) { qDebug().noquote() << errors; });
+    // }
+}
+
+void realtime_test::cleanupTestCase()
+{
+    // m_server.close();
+    // qDeleteAll(m_clients.begin(), m_clients.end());
+    // m_clients.clear();
+}
 
 void realtime_test::test_PostSelector()
 {
@@ -121,6 +165,42 @@ void realtime_test::test_FirehoseReceiver()
 
     QVERIFY(recv->containsSelector(&parent1) == false);
     QVERIFY(recv->containsSelector(&parent2) == true);
+
+    recv->removeAllSelector(); //　これじゃなくても良いけどparent2の分を消し忘れるとゴミが残って例外になる
+}
+
+void realtime_test::test_Websock()
+{
+    qDebug().noquote() << m_server.serverAddress() << m_server.serverName() << m_server.serverPort()
+                       << m_server.serverUrl();
+
+    FirehoseReceiver *recv = FirehoseReceiver::getInstance();
+    QObject parent1;
+    recv->appendSelector(AbstractPostSelector::create(
+            QJsonDocument::fromJson("{\"not\":{\"me\":{}}}").object(), &parent1));
+    // recv->setServiceEndpoint(m_server.serverUrl().toString());
+    recv->getSelector(&parent1)->setDid("did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
+    recv->getSelector(&parent1)->setReady(true);
+
+    {
+        QSignalSpy spy(recv, SIGNAL(connectedToService()));
+        recv->start();
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+    }
+    {
+        QSignalSpy spy(recv->getSelector(&parent1), SIGNAL(selected(const QJsonObject &)));
+        spy.wait(60 * 1000);
+        qDebug().noquote() << "selected : spy.count" << spy.count();
+        QVERIFY2(spy.count() >= 1, QString::number(spy.count()).toLocal8Bit());
+    }
+    {
+        QSignalSpy spy(recv, SIGNAL(disconnectFromService()));
+        qDebug().noquote() << "before removeSelector";
+        recv->removeSelector(&parent1);
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+    }
 }
 
 QList<UserInfo> realtime_test::extractFromArray(const QJsonArray &array) const
