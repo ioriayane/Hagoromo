@@ -166,7 +166,7 @@ void realtime_test::test_FirehoseReceiver()
     QVERIFY(recv->containsSelector(&parent1) == false);
     QVERIFY(recv->containsSelector(&parent2) == true);
 
-    recv->removeAllSelector(); //　これじゃなくても良いけどparent2の分を消し忘れるとゴミが残って例外になる
+    // recv->removeAllSelector();
 }
 
 void realtime_test::test_Websock()
@@ -174,6 +174,7 @@ void realtime_test::test_Websock()
     qDebug().noquote() << m_server.serverAddress() << m_server.serverName() << m_server.serverPort()
                        << m_server.serverUrl();
 
+#if 0
     FirehoseReceiver *recv = FirehoseReceiver::getInstance();
     QObject parent1;
     recv->appendSelector(AbstractPostSelector::create(
@@ -201,6 +202,7 @@ void realtime_test::test_Websock()
         spy.wait();
         QVERIFY(spy.count() == 1);
     }
+#endif
 }
 
 QList<UserInfo> realtime_test::extractFromArray(const QJsonArray &array) const

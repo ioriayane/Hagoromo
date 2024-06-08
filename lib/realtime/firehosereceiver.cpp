@@ -21,7 +21,9 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent) : QObject { parent }
                     return;
                 // qDebug().noquote() << "commitDataReceived:" << type << !json.isEmpty();
                 for (auto s : qAsConst(m_selectorHash)) {
-                    if (!s->ready()) {
+                    if (!s) {
+                        // already deleted
+                    } else if (!s->ready()) {
                         // no op
                     } else if (s->judge(json)) {
                         qDebug().noquote().nospace() << QJsonDocument(json).toJson();
@@ -80,11 +82,19 @@ void FirehoseReceiver::removeSelector(QObject *parent)
     if (parent == nullptr)
         return;
     if (m_selectorHash.contains(parent)) {
-        AbstractPostSelector *s = m_selectorHash[parent];
+        auto s = m_selectorHash[parent];
         m_selectorHash.remove(parent);
-        qDebug().quote() << "removeSelector" << s << s->name();
+        if (s) {
+            qDebug().quote() << "removeSelector" << s << s->name();
+            s->deleteLater();
+        }
         qDebug().quote() << "remain count" << m_selectorHash.count();
-        s->deleteLater();
+    }
+    for (const auto key : m_selectorHash.keys()) {
+        if (!m_selectorHash[key]) {
+            qDebug() << "already deleted -> clean up";
+            m_selectorHash.remove(key);
+        }
     }
     if (m_selectorHash.isEmpty()) {
         qDebug().quote() << "stop";
@@ -95,7 +105,9 @@ void FirehoseReceiver::removeSelector(QObject *parent)
 void FirehoseReceiver::removeAllSelector()
 {
     for (auto s : qAsConst(m_selectorHash)) {
-        s->deleteLater();
+        if (s) {
+            s->deleteLater();
+        }
     }
     m_selectorHash.clear();
     stop();

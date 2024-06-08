@@ -5,6 +5,7 @@
 #include "extension/com/atproto/sync/comatprotosyncsubscribereposex.h"
 
 #include <QObject>
+#include <QPointer>
 
 namespace RealtimeFeed {
 
@@ -43,7 +44,7 @@ signals:
     void disconnectFromService();
 
 private:
-    QHash<QObject *, AbstractPostSelector *> m_selectorHash;
+    QHash<QObject *, QPointer<AbstractPostSelector>> m_selectorHash;
     ComAtprotoSyncSubscribeReposEx m_client;
 
     QString m_serviceEndpoint;
