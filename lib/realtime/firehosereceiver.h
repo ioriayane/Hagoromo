@@ -29,6 +29,7 @@ public:
 
     void appendSelector(AbstractPostSelector *selector);
     void removeSelector(QObject *parent);
+    void removeAllSelector();
     AbstractPostSelector *getSelector(QObject *parent);
     bool containsSelector(QObject *parent);
     int countSelector() const;
@@ -37,6 +38,9 @@ public:
     void setServiceEndpoint(const QString &newServiceEndpoint);
 
 signals:
+    void errorOccured(const QString &code, const QString &message);
+    void connectedToService();
+    void disconnectFromService();
 
 private:
     QHash<QObject *, AbstractPostSelector *> m_selectorHash;

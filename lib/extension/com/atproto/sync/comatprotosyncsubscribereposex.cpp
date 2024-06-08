@@ -68,12 +68,14 @@ void ComAtprotoSyncSubscribeReposEx::close()
 
 void ComAtprotoSyncSubscribeReposEx::onConnected()
 {
-    qDebug() << "WebSocket connected";
+    qDebug().noquote() << "WebSocket connected";
+    emit connectedToService();
 }
 
 void ComAtprotoSyncSubscribeReposEx::onDisconnected()
 {
-    qDebug() << "WebSocket disconnected";
+    qDebug().noquote() << "WebSocket disconnected";
+    emit disconnectFromService();
 }
 
 void ComAtprotoSyncSubscribeReposEx::onBinaryMessageReceived(const QByteArray &message)
