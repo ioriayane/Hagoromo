@@ -1,5 +1,9 @@
 <RCC>
     <qresource prefix="/">
         <file>data/selector/selector.json</file>
+        <file>response/realtime/1/xrpc/app.bsky.graph.getFollows</file>
+        <file>response/realtime/1/xrpc/app.bsky.graph.getFollows_3kubiyuudos2p</file>
+        <file>response/realtime/1/xrpc/app.bsky.graph.getFollowers</file>
+        <file>response/realtime/1/xrpc/app.bsky.graph.getFollowers_3km57slkrvu2v</file>
     </qresource>
 </RCC>

@@ -2,6 +2,7 @@
 #define REALTIMEFEEDLISTMODEL_H
 
 #include "timelinelistmodel.h"
+#include "realtime/firehosereceiver.h"
 
 class RealtimeFeedListModel : public TimelineListModel
 {
@@ -16,6 +17,7 @@ public:
 
     Q_INVOKABLE bool getLatest();
     Q_INVOKABLE bool getNext();
+
     QString selectorJson() const;
     void setSelectorJson(const QString &newSelectorJson);
 signals:
@@ -24,6 +26,12 @@ signals:
 private:
     void getFollowing();
     void getFollowers();
+    void finishGetting(RealtimeFeed::AbstractPostSelector *selector);
+    void copyFollows(const QList<AtProtocolType::AppBskyActorDefs::ProfileView> &follows,
+                     bool is_following);
+
+    QList<RealtimeFeed::UserInfo> m_followings;
+    QList<RealtimeFeed::UserInfo> m_followers;
 
     QString m_cursor;
     QString m_selectorJson;

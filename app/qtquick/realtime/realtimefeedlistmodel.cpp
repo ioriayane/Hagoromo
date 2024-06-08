@@ -1,6 +1,5 @@
 #include "realtimefeedlistmodel.h"
 
-#include "realtime/firehosereceiver.h"
 #include "atprotocol/app/bsky/graph/appbskygraphgetfollows.h"
 #include "atprotocol/app/bsky/graph/appbskygraphgetfollowers.h"
 
@@ -20,7 +19,7 @@ bool RealtimeFeedListModel::getLatest()
     FirehoseReceiver *receiver = FirehoseReceiver::getInstance();
     if (receiver->containsSelector(this)) {
         setRunning(false);
-        return false;
+        return true;
     }
     if (selectorJson().isEmpty()) {
         setRunning(false);
@@ -40,17 +39,21 @@ bool RealtimeFeedListModel::getLatest()
     }
     receiver->appendSelector(selector);
 
+    selector->setDid(account().did);
     connect(selector, &AbstractPostSelector::selected, this, [=](const QJsonObject &object) {
         qDebug().noquote() << QJsonDocument(object).toJson();
     });
 
-    if (selector->needFollowing() || selector->needFollowers()) {
-        m_cursor.clear();
+    m_followings.clear();
+    m_followers.clear();
+    if (selector->needFollowing()) {
+        m_cursor = "___start___";
         getFollowing();
+    } else if (selector->needFollowers()) {
+        m_cursor = "___start___";
+        getFollowers();
     } else {
-        selector->setReady(true);
-        receiver->start();
-        setRunning(false);
+        finishGetting(selector);
     }
 
     return true;
@@ -81,25 +84,29 @@ void RealtimeFeedListModel::getFollowing()
         setRunning(false);
         return;
     }
+    if (m_cursor.isEmpty()) {
+        if (selector->needFollowers()) {
+            m_cursor = "___start___";
+            getFollowers();
+        } else {
+            finishGetting(selector);
+        }
+        return;
+    } else if (m_cursor == "___start___") {
+        m_cursor.clear();
+    }
 
     AppBskyGraphGetFollows *profiles = new AppBskyGraphGetFollows(this);
     connect(profiles, &AppBskyGraphGetFollows::finished, this, [=](bool success) {
         m_cursor.clear();
         if (success) {
-            if (profiles->followsList().isEmpty()) {
-                // fin
-                if (selector->needFollowers()) {
-                    QTimer::singleShot(0, this, &RealtimeFeedListModel::getFollowers);
-                } else {
-                    setRunning(false);
-                    selector->setReady(true);
-                    FirehoseReceiver::getInstance()->start();
-                }
-            } else {
+            if (!profiles->followsList().isEmpty()) {
+                // copy DID and rkey
+                copyFollows(profiles->followsList(), true);
                 // next
                 m_cursor = profiles->cursor();
-                QTimer::singleShot(0, this, &RealtimeFeedListModel::getFollowing);
             }
+            QTimer::singleShot(0, this, &RealtimeFeedListModel::getFollowing);
         } else {
             emit errorOccured(profiles->errorCode(), profiles->errorMessage());
             setRunning(false);
@@ -107,7 +114,7 @@ void RealtimeFeedListModel::getFollowing()
         profiles->deleteLater();
     });
     profiles->setAccount(account());
-    profiles->getFollows(account().did, 0, m_cursor);
+    profiles->getFollows(account().did, 100, m_cursor);
 }
 
 void RealtimeFeedListModel::getFollowers()
@@ -117,21 +124,24 @@ void RealtimeFeedListModel::getFollowers()
         setRunning(false);
         return;
     }
+    if (m_cursor.isEmpty()) {
+        finishGetting(selector);
+        return;
+    } else if (m_cursor == "___start___") {
+        m_cursor.clear();
+    }
 
     AppBskyGraphGetFollowers *profiles = new AppBskyGraphGetFollowers(this);
     connect(profiles, &AppBskyGraphGetFollowers::finished, this, [=](bool success) {
         m_cursor.clear();
         if (success) {
-            if (profiles->followsList().isEmpty()) {
-                // fin
-                setRunning(false);
-                selector->setReady(true);
-                FirehoseReceiver::getInstance()->start();
-            } else {
+            if (!profiles->followsList().isEmpty()) {
+                // copy DID and rkey
+                copyFollows(profiles->followsList(), false);
                 // next
                 m_cursor = profiles->cursor();
-                QTimer::singleShot(0, this, &RealtimeFeedListModel::getFollowers);
             }
+            QTimer::singleShot(0, this, &RealtimeFeedListModel::getFollowers);
         } else {
             emit errorOccured(profiles->errorCode(), profiles->errorMessage());
             setRunning(false);
@@ -139,5 +149,39 @@ void RealtimeFeedListModel::getFollowers()
         profiles->deleteLater();
     });
     profiles->setAccount(account());
-    profiles->getFollowers(account().did, 0, m_cursor);
+    profiles->getFollowers(account().did, 100, m_cursor);
+}
+
+void RealtimeFeedListModel::finishGetting(RealtimeFeed::AbstractPostSelector *selector)
+{
+    setRunning(false);
+    if (selector != nullptr) {
+        selector->setFollowing(m_followings);
+        selector->setFollowers(m_followers);
+        selector->setReady(true);
+        FirehoseReceiver::getInstance()->start();
+    }
+}
+
+void RealtimeFeedListModel::copyFollows(
+        const QList<AtProtocolType::AppBskyActorDefs::ProfileView> &follows, bool is_following)
+{
+    for (const auto &follow : follows) {
+        RealtimeFeed::UserInfo user;
+        user.did = follow.did;
+        QString uri;
+        if (is_following) {
+            uri = follow.viewer.following;
+        } else {
+            uri = follow.viewer.followedBy;
+        }
+        if (uri.startsWith("at://")) {
+            user.rkey = uri.split("/").last();
+            if (is_following) {
+                m_followings.append(user);
+            } else {
+                m_followers.append(user);
+            }
+        }
+    }
 }

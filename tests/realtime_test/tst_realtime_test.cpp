@@ -6,8 +6,10 @@
 #include <QJsonDocument>
 #include <QWebSocketServer>
 
+#include "webserver.h"
 #include "realtime/abstractpostselector.h"
 #include "realtime/firehosereceiver.h"
+#include "realtime/realtimefeedlistmodel.h"
 
 using namespace RealtimeFeed;
 
@@ -25,25 +27,33 @@ private slots:
     void test_PostSelector();
     void test_FirehoseReceiver();
     void test_Websock();
+    void test_RealtimeFeedListModel();
 
 private:
     QList<UserInfo> extractFromArray(const QJsonArray &array) const;
 
-    QWebSocketServer m_server;
-    QList<QWebSocket *> m_clients;
+    // QWebSocketServer m_server;
+    // QList<QWebSocket *> m_clients;
+
+    WebServer m_mockServer;
+    quint16 m_listenPort;
+    QString m_service;
 };
 
 realtime_test::realtime_test()
-    : m_server(QStringLiteral("name"), QWebSocketServer::SecureMode, this)
+// : m_server(QStringLiteral("name"), QWebSocketServer::SecureMode, this)
 {
+    QCoreApplication::setOrganizationName(QStringLiteral("relog"));
+    QCoreApplication::setApplicationName(QStringLiteral("Hagoromo"));
+
+    m_listenPort = m_mockServer.listen(QHostAddress::LocalHost, 0);
+    m_service = QString("http://localhost:%1/response").arg(m_listenPort);
 }
 
 realtime_test::~realtime_test() { }
 
 void realtime_test::initTestCase()
 {
-    QCoreApplication::setOrganizationName(QStringLiteral("relog"));
-    QCoreApplication::setApplicationName(QStringLiteral("Hagoromo"));
 
     // if (m_server.listen(QHostAddress::LocalHost, 0)) {
     //     qDebug().noquote() << "Start WebSocket Server";
@@ -78,6 +88,14 @@ void realtime_test::cleanupTestCase()
     // m_server.close();
     // qDeleteAll(m_clients.begin(), m_clients.end());
     // m_clients.clear();
+
+    FirehoseReceiver *recv = FirehoseReceiver::getInstance();
+    {
+        QSignalSpy spy(recv, SIGNAL(disconnectFromService()));
+        recv->removeAllSelector();
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+    }
 }
 
 void realtime_test::test_PostSelector()
@@ -171,8 +189,6 @@ void realtime_test::test_FirehoseReceiver()
 
 void realtime_test::test_Websock()
 {
-    qDebug().noquote() << m_server.serverAddress() << m_server.serverName() << m_server.serverPort()
-                       << m_server.serverUrl();
 
 #if 0
     FirehoseReceiver *recv = FirehoseReceiver::getInstance();
@@ -203,6 +219,36 @@ void realtime_test::test_Websock()
         QVERIFY(spy.count() == 1);
     }
 #endif
+}
+
+void realtime_test::test_RealtimeFeedListModel()
+{
+    RealtimeFeedListModel model;
+    model.setAccount(m_service + "/realtime/1", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", QString(),
+                     QString(), "dummy", QString());
+
+    // model.setSelectorJson("{\"not\":{\"me\":{}}}");
+    // model.setSelectorJson("{\"not\":{\"following\":{}}}");
+    // model.setSelectorJson("{\"not\":{\"followers\":{}}}");
+    model.setSelectorJson("{\"or\": [{\"following\": {}},{\"followers\": {}}]}");
+    {
+        QSignalSpy spy(&model, SIGNAL(runningChanged()));
+        model.getLatest();
+        spy.wait(10 * 1000);
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    qDebug().noquote() << "---------------------------";
+    model.getLatest();
+
+    FirehoseReceiver *recv = FirehoseReceiver::getInstance();
+    AbstractPostSelector *s = recv->getSelector(&model);
+    QVERIFY(s != nullptr);
+
+    QVERIFY(s->did() == "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
+    QVERIFY(s->ready() == true);
+    QVERIFY(s->needFollowing() == true);
+    QVERIFY(s->needFollowers() == true);
 }
 
 QList<UserInfo> realtime_test::extractFromArray(const QJsonArray &array) const
