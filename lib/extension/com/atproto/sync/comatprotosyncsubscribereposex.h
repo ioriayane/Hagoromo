@@ -14,6 +14,7 @@ public:
 
     void open(const QUrl &url);
     void close();
+    QAbstractSocket::SocketState state() const;
 
 signals:
     void errorOccured(const QString &code, const QString &message);
