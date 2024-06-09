@@ -66,6 +66,11 @@ void ComAtprotoSyncSubscribeReposEx::close()
     m_webSocket.close();
 }
 
+QAbstractSocket::SocketState ComAtprotoSyncSubscribeReposEx::state() const
+{
+    return m_webSocket.state();
+}
+
 void ComAtprotoSyncSubscribeReposEx::onConnected()
 {
     qDebug().noquote() << "WebSocket connected";
