@@ -42,7 +42,7 @@ Dialog {
             var item = repeater.itemAt(i)
             item.visible = (i === index)
             if(i === index){
-                if(item.model.rowCount() === 3){
+                if(item.model.rowCount() === 4){
                     var service = accountModel.item(index, AccountListModel.ServiceRole)
                     var did = accountModel.item(index, AccountListModel.DidRole)
                     item.model.setAccount(service, did,

@@ -29,9 +29,11 @@ public:
 
     virtual void setFollowing(const QList<UserInfo> &following);
     virtual void setFollowers(const QList<UserInfo> &followers);
+
+    static QStringList getOperationUris(const QJsonObject &object);
+
     QString did() const;
     void setDid(const QString &newDid);
-
     QString name() const;
     void setName(const QString &newName);
     bool isArray() const;
