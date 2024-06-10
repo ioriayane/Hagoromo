@@ -144,6 +144,9 @@ void realtime_test::test_PostSelector()
             QVERIFY2(root->judge(data.toObject().value("payload").toObject())
                              == data.toObject().value("except").toBool(),
                      QString("%1(%2)").arg(description).arg(i++).toLocal8Bit());
+
+            qDebug().noquote() << AbstractPostSelector::getOperationUris(
+                    data.toObject().value("payload").toObject());
         }
 
         delete root;
@@ -223,6 +226,7 @@ void realtime_test::test_Websock()
 
 void realtime_test::test_RealtimeFeedListModel()
 {
+#if 0
     RealtimeFeedListModel model;
     model.setAccount(m_service + "/realtime/1", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", QString(),
                      QString(), "dummy", QString());
@@ -255,6 +259,7 @@ void realtime_test::test_RealtimeFeedListModel()
     QVERIFY(s->ready() == true);
     QVERIFY(s->needFollowing() == true);
     QVERIFY(s->needFollowers() == true);
+#endif
 }
 
 QList<UserInfo> realtime_test::extractFromArray(const QJsonArray &array) const

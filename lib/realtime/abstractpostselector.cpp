@@ -138,6 +138,25 @@ void AbstractPostSelector::setFollowers(const QList<UserInfo> &followers)
     }
 }
 
+QStringList AbstractPostSelector::getOperationUris(const QJsonObject &object)
+{
+    QStringList uris;
+    QString repo = object.value("repo").toString();
+    if (repo.isEmpty())
+        return uris;
+
+    for (const auto item : object.value("ops").toArray()) {
+        if (item.toObject().value("action").toString() != "create") {
+            continue;
+        }
+        QString path = item.toObject().value("path").toString();
+        if (!path.isEmpty()) {
+            uris.append(QString("at://%1/%2").arg(repo, path));
+        }
+    }
+    return uris;
+}
+
 const QList<AbstractPostSelector *> &AbstractPostSelector::children() const
 {
     return m_children;
@@ -183,7 +202,7 @@ QJsonObject AbstractPostSelector::getOperation(const QJsonObject &object, const 
 
 QJsonObject AbstractPostSelector::getBlock(const QJsonObject &object, const QString &path) const
 {
-    QString uri = QString("at://%1/%2").arg(getRepo(object)).arg(path);
+    QString uri = QString("at://%1/%2").arg(getRepo(object), path);
 
     for (const auto item : object.value("blocks").toArray()) {
         if (item.toObject().value("uri").toString() == uri) {
