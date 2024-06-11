@@ -1402,6 +1402,7 @@ struct RepoOp
 {
     QString action;
     QString path;
+    QString cid; // For creates and updates, the new record CID. For deletions, null.
 };
 struct Commit
 {
@@ -1410,6 +1411,7 @@ struct Commit
             false; // Indicates that this commit contained too many ops, or data size was too large.
                    // Consumers will need to make a separate request to get missing data.
     QString repo; // did , The repo this event comes from.
+    QString commit; // Repo commit object CID.
     QString rev; // The rev of the emitted commit. Note that this information is also in the commit
                  // object included in blocks, unless this is a tooBig event.
     QString since; // The rev of the last emitted commit from this repo (if any).
@@ -1460,6 +1462,11 @@ struct Info
 {
     QString name;
     QString message;
+};
+struct BlockHeader
+{
+    int op = 0;
+    QString t; // #commit, #identity, #handle, #migrate, #tombstone, #info
 };
 }
 
