@@ -45,7 +45,7 @@ signals:
 
 private:
     QHash<QObject *, QPointer<AbstractPostSelector>> m_selectorHash;
-    ComAtprotoSyncSubscribeReposEx m_client;
+    AtProtocolInterface::ComAtprotoSyncSubscribeReposEx m_client;
 
     QString m_serviceEndpoint;
 };
