@@ -5,6 +5,10 @@
 #include <QJsonArray>
 
 #include "comatprotosyncsubscribereposex.h"
+#include "atprotocol/lexicons_func_unknown.h"
+
+using AtProtocolInterface::ComAtprotoSyncSubscribeReposEx;
+using namespace AtProtocolType;
 
 int main(int argc, char *argv[])
 {
@@ -33,49 +37,52 @@ int main(int argc, char *argv[])
                          qDebug().noquote() << "Error:" << error << message;
                          QCoreApplication::quit();
                      });
-    QObject::connect(
-            &client, &ComAtprotoSyncSubscribeReposEx::received,
-            [=](const QString &type, const QJsonObject &json) {
-                // qDebug().noquote() << "commitDataReceived:" << !json.isEmpty();
+    QObject::connect(&client, &ComAtprotoSyncSubscribeReposEx::received,
+                     [=](const QString &type, const QCborValue &cbor) {
+                         // qDebug().noquote() << "commitDataReceived:" << !json.isEmpty();
 
-                if (type == "#commit") {
-                    for (const auto &op : json.value("ops").toArray()) {
-                        if (op.toObject().value("path").toString().startsWith(
-                                    "app.bsky.feed.like/")) {
-                            continue;
-                        }
-                        for (const auto &block : json.value("blocks").toArray()) {
-                            QJsonObject record = block.toObject().value("value").toObject();
-                            if (skipType.contains(record.value("$type").toString())) {
-                                continue;
-                            }
-                            qDebug().noquote()
-                                    << type << json.value("time").toString()
-                                    << json.value("repo").toString()
-                                    << op.toObject().value("action").toString()
-                                    << record.value("$type").toString()
-                                    << record.value("text").toString().replace("\n", " ").left(30);
-                        }
-                    }
+                         ComAtprotoSyncSubscribeRepos::Commit commit;
+                         ComAtprotoSyncSubscribeRepos::copyCommit(cbor, commit);
 
-                } else {
-                    qDebug().noquote() << type << json.value("time").toString()
-                                       << json.value("repo").toString()
-                                       << json.value("ops")
-                                                  .toArray()
-                                                  .first()
-                                                  .toObject()
-                                                  .value("action")
-                                                  .toString();
-                    qDebug().noquote() << QJsonDocument(json).toJson();
-                }
+                         if (type == "#commit") {
+                             for (const auto &op : commit.ops) {
+                                 if (op.path.startsWith("app.bsky.feed.like/")) {
+                                     continue;
+                                 }
 
-                if (json.value("repo").toString() == stopper_did) {
-                    qDebug() << "-- Stop --";
-                    qDebug().noquote() << QJsonDocument(json).toJson();
-                    QCoreApplication::quit();
-                }
-            });
+                                 // for (const auto &block : json.value("blocks").toArray()) {
+                                 //     QJsonObject record =
+                                 //     block.toObject().value("value").toObject(); if
+                                 //     (skipType.contains(record.value("$type").toString())) {
+                                 //         continue;
+                                 //     }
+                                 //     qDebug().noquote()
+                                 //             << type << json.value("time").toString()
+                                 //             << json.value("repo").toString()
+                                 //             << op.toObject().value("action").toString()
+                                 //             << record.value("$type").toString()
+                                 //             << record.value("text").toString().replace("\n", "
+                                 //             ").left(30);
+                                 // }
+                                 qDebug().noquote() << type << commit.time
+                                                    << QDateTime::currentDateTimeUtc().toString()
+                                                    << commit.repo << op.path;
+                             }
+
+                         } else {
+                             qDebug().noquote()
+                                     << type << commit.time << commit.repo
+                                     << (commit.ops.isEmpty() ? "" : commit.ops.first().action);
+                             // qDebug().noquote() << QJsonDocument(json).toJson();
+                         }
+
+                         if (commit.repo == stopper_did) {
+                             qDebug() << "-- Stop --";
+                             qDebug().noquote()
+                                     << QJsonDocument(cbor.toJsonValue().toObject()).toJson();
+                             QCoreApplication::quit();
+                         }
+                     });
     client.open(url);
 
     return a.exec();

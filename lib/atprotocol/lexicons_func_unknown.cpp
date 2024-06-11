@@ -5,6 +5,9 @@
 #include "lexicons_func_unknown.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofiles.h"
 
+#include <QCborMap>
+#include <QCborArray>
+
 using AtProtocolInterface::AppBskyActorGetProfiles;
 
 namespace AtProtocolType {
@@ -421,6 +424,56 @@ QString applyFacetsTo(const QString &text, const QList<AppBskyRichtextFacet::Mai
     }
 }
 }
+
+namespace ComAtprotoSyncSubscribeRepos {
+
+void copyRepoOp(const QCborValue &src, RepoOp &dest)
+{
+    if (src.isMap()) {
+        const auto &src_m = src.toMap();
+        dest.action = src_m.value("action").toString();
+        dest.path = src_m.value("path").toString();
+        if (src_m.value("cid").isMap()) {
+            dest.cid = src_m.value("cid").toMap().value("$link").toString();
+        }
+    }
+}
+
+void copyCommit(const QCborValue &src, Commit &dest)
+{
+    if (src.isMap()) {
+        const auto &src_m = src.toMap();
+        dest.seq = src_m.value("seq").toInteger();
+        dest.tooBig = src_m.value("tooBig").toBool();
+        dest.repo = src_m.value("repo").toString();
+        if (src_m.value("commit").isMap()) {
+            dest.commit = src_m.value("commit").toMap().value("$link").toString();
+        }
+        dest.rev = src_m.value("rev").toString();
+        dest.since = src_m.value("since").toString();
+        for (const auto &s : src_m.value("ops").toArray()) {
+            RepoOp child;
+            copyRepoOp(s, child);
+            dest.ops.append(child);
+        }
+        dest.time = src_m.value("time").toString();
+    }
+}
+
+void copyBlockHeader(const QCborValue &src, BlockHeader &dest)
+{
+    if (src.isMap()) {
+        const auto &src_m = src.toMap();
+        dest.op = src_m.value("op").toInteger(-1);
+        dest.t = src_m.value("t").toString();
+    } else {
+        dest.op = -1;
+        dest.t.clear();
+    }
+}
+
+}
+
 }
 
 #endif // LEXICONS_FUNC_UNKNOWN_CPP
