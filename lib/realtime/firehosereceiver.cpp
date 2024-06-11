@@ -18,20 +18,20 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent) : QObject { parent }
                 qDebug().noquote() << "Error:" << error << message;
             });
     connect(&m_client, &ComAtprotoSyncSubscribeReposEx::received,
-            [=](const QString &type, const QJsonObject &json) {
+            [=](const QString &type, const QCborValue &cbor) {
                 if (type != "#commit")
                     return;
                 // qDebug().noquote() << "commitDataReceived:" << type << !json.isEmpty();
-                for (auto s : qAsConst(m_selectorHash)) {
-                    if (!s) {
-                        // already deleted
-                    } else if (!s->ready()) {
-                        // no op
-                    } else if (s->judge(json)) {
-                        qDebug().noquote().nospace() << QJsonDocument(json).toJson();
-                        emit s->selected(json);
-                    }
-                }
+                // for (auto s : qAsConst(m_selectorHash)) {
+                //     if (!s) {
+                //         // already deleted
+                //     } else if (!s->ready()) {
+                //         // no op
+                //     } else if (s->judge(json)) {
+                //         qDebug().noquote().nospace() << QJsonDocument(json).toJson();
+                //         emit s->selected(json);
+                //     }
+                // }
             });
     connect(&m_client, &ComAtprotoSyncSubscribeReposEx::connectedToService,
             [this]() { emit connectedToService(); });

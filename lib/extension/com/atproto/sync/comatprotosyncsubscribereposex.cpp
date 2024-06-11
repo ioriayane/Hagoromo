@@ -98,37 +98,39 @@ void ComAtprotoSyncSubscribeReposEx::onBinaryMessageReceived(const QByteArray &m
     bool is_error_frame = false;
     QString payload_type;
     while (offset < message.length()) {
-        QJsonObject json;
-        offset += decodeCbor(message.mid(offset), json);
+        QCborValue cbor = QCborValue::fromCbor(message.mid(offset));
+        const auto &cbor_map = cbor.toMap();
+        offset += cbor.toCbor().length();
 
         // qDebug().noquote() << "decodeCbor" << offset;
         // qDebug().noquote() << QJsonDocument(json).toJson(QJsonDocument::Compact);
 
-        if (json.contains("op")) {
+        if (cbor_map.contains(QStringLiteral("op"))) {
             // header
             // qDebug().noquote() << QJsonDocument(json).toJson(QJsonDocument::Compact);
-            is_error_frame = (json.value("op").toInt() != 1);
-            payload_type = json.value("t").toString();
-        } else if (is_error_frame && json.contains("error")) {
+            is_error_frame = (cbor_map.value("op").toInteger(-1) != 1);
+            payload_type = cbor_map.value("t").toString();
+        } else if (is_error_frame && cbor_map.contains(QStringLiteral("error"))) {
             // error payload
-            qDebug().noquote() << QJsonDocument(json).toJson();
-            emit errorOccured(json.value("error").toString(), json.value("message").toString());
-            m_webSocket.close();
-        } else if (json.contains("seq")) {
+            qDebug().noquote() << QJsonDocument(cbor.toJsonValue().toObject()).toJson();
+            emit errorOccured(cbor_map.value("error").toString(),
+                              cbor_map.value("message").toString());
+            close();
+        } else if (cbor_map.contains(QStringLiteral("seq"))) {
             if (!m_payloadTypeList.contains(payload_type)) {
                 // unknown payload type
                 // skip
                 qDebug().noquote() << "Unknown payload type" << payload_type;
-                qDebug().noquote() << QJsonDocument(json).toJson();
+                qDebug().noquote() << QJsonDocument(cbor.toJsonValue().toObject()).toJson();
             } else {
                 // payload
-                emit received(payload_type, json);
+                emit received(payload_type, cbor);
             }
         } else {
             // decode error
-            qDebug().noquote() << QJsonDocument(json).toJson();
+            qDebug().noquote() << QJsonDocument(cbor.toJsonValue().toObject()).toJson();
             emit errorOccured("DecodeError", "Unknown data format.");
-            m_webSocket.close();
+            close();
         }
     }
 
@@ -136,7 +138,7 @@ void ComAtprotoSyncSubscribeReposEx::onBinaryMessageReceived(const QByteArray &m
         qDebug().noquote() << "Invalid offset ?";
         emit errorOccured("InvalidDataSize",
                           "The size of the decoded data does not match the total.");
-        m_webSocket.close();
+        close();
     }
 
     // qDebug().noquote() << "elapse" << et.nsecsElapsed();

@@ -21,7 +21,7 @@ public:
 
 signals:
     void errorOccured(const QString &code, const QString &message);
-    void received(const QString &type, const QJsonObject &json);
+    void received(const QString &type, const QCborValue &json);
     void connectedToService();
     void disconnectFromService();
 

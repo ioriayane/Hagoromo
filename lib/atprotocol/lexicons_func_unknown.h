@@ -4,6 +4,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QCborValue>
 #include <QList>
 #include <QString>
 #include <QVariant>
@@ -80,6 +81,13 @@ T fromQVariant(const QVariant &variant)
     }
 }
 
+}
+
+// com.atproto.sync.subscribeRepos
+namespace ComAtprotoSyncSubscribeRepos {
+void copyRepoOp(const QCborValue &src, ComAtprotoSyncSubscribeRepos::RepoOp &dest);
+void copyCommit(const QCborValue &src, ComAtprotoSyncSubscribeRepos::Commit &dest);
+void copyBlockHeader(const QCborValue &src, ComAtprotoSyncSubscribeRepos::BlockHeader &dest);
 }
 }
 

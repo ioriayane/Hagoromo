@@ -10,6 +10,7 @@
 #include "realtime/abstractpostselector.h"
 #include "realtime/firehosereceiver.h"
 #include "realtime/realtimefeedlistmodel.h"
+#include "atprotocol/lexicons_func_unknown.h"
 
 using namespace RealtimeFeed;
 
@@ -24,6 +25,7 @@ public:
 private slots:
     void initTestCase();
     void cleanupTestCase();
+    void test_StructCopy();
     void test_PostSelector();
     void test_FirehoseReceiver();
     void test_Websock();
@@ -95,6 +97,71 @@ void realtime_test::cleanupTestCase()
         recv->removeAllSelector();
         spy.wait();
         // QVERIFY(spy.count() == 1);
+    }
+}
+
+void realtime_test::test_StructCopy()
+{
+    {
+        AtProtocolType::ComAtprotoSyncSubscribeRepos::BlockHeader header;
+        AtProtocolType::ComAtprotoSyncSubscribeRepos::copyBlockHeader(
+                QCborValue::fromJsonValue(
+                        QJsonDocument::fromJson("{\"op\": 1,\"t\": \"#commit\"}").object()),
+                header);
+        QVERIFY2(header.op == 1, QString::number(header.op).toLocal8Bit());
+        QVERIFY2(header.t == "#commit", header.t.toLocal8Bit());
+    }
+
+    {
+        AtProtocolType::ComAtprotoSyncSubscribeRepos::BlockHeader header;
+        AtProtocolType::ComAtprotoSyncSubscribeRepos::copyBlockHeader(
+                QCborValue::fromJsonValue(
+                        QJsonDocument::fromJson("{\"op\": 1,\"t\": \"#identity\"}").object()),
+                header);
+        QVERIFY2(header.op == 1, QString::number(header.op).toLocal8Bit());
+        QVERIFY2(header.t == "#identity", header.t.toLocal8Bit());
+    }
+
+    {
+        AtProtocolType::ComAtprotoSyncSubscribeRepos::BlockHeader header;
+        AtProtocolType::ComAtprotoSyncSubscribeRepos::copyBlockHeader(
+                QCborValue::fromJsonValue(QJsonDocument::fromJson("{\"op\": -1}").object()),
+                header);
+        QVERIFY2(header.op == -1, QString::number(header.op).toLocal8Bit());
+        QVERIFY2(header.t == "", header.t.toLocal8Bit());
+    }
+
+    {
+        AtProtocolType::ComAtprotoSyncSubscribeRepos::Commit commit;
+        AtProtocolType::ComAtprotoSyncSubscribeRepos::copyCommit(
+                QCborValue::fromJsonValue(
+                        QJsonDocument::fromJson(
+                                "{\"blobs\": [],\"blocks\": [],\"commit\": {\"$link\": "
+                                "\"bafyreibj5esksh55hx3gjdaqcsfmdhbc6kcghhlkj7ikquoddnuwzueqde\"},"
+                                "\"ops\": [{\"action\": \"create\",\"cid\": {\"$link\": "
+                                "\"bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee\"},"
+                                "\"path\": \"app.bsky.feed.post/3ktudvq2ovc2k\"}],\"prev\": "
+                                "null,\"rebase\": false,\"repo\": \"did:plc:user1\",\"rev\": "
+                                "\"3ktudvq2uqs2k\",\"seq\": 557371054,\"since\": "
+                                "\"3ktuarhlcjc2z\",\"time\": "
+                                "\"2024-06-01T11:33:17.481Z\",\"tooBig\": false}")
+                                .object()),
+                commit);
+        QVERIFY2(commit.commit == "bafyreibj5esksh55hx3gjdaqcsfmdhbc6kcghhlkj7ikquoddnuwzueqde",
+                 commit.commit.toLocal8Bit());
+        QVERIFY2(commit.ops.length() == 1, QString::number(commit.ops.length()).toLocal8Bit());
+        QVERIFY2(commit.ops.at(0).action == "create", commit.ops.at(0).action.toLocal8Bit());
+        QVERIFY2(commit.ops.at(0).cid
+                         == "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee",
+                 commit.ops.at(0).cid.toLocal8Bit());
+        QVERIFY2(commit.ops.at(0).path == "app.bsky.feed.post/3ktudvq2ovc2k",
+                 commit.ops.at(0).path.toLocal8Bit());
+        QVERIFY2(commit.repo == "did:plc:user1", commit.repo.toLocal8Bit());
+        QVERIFY2(commit.rev == "3ktudvq2uqs2k", commit.rev.toLocal8Bit());
+        QVERIFY2(commit.seq == 557371054, QString::number(commit.seq).toLocal8Bit());
+        QVERIFY2(commit.since == "3ktuarhlcjc2z", commit.since.toLocal8Bit());
+        QVERIFY2(commit.time == "2024-06-01T11:33:17.481Z", commit.time.toLocal8Bit());
+        QVERIFY2(commit.tooBig == false, QString::number(commit.tooBig).toLocal8Bit());
     }
 }
 
