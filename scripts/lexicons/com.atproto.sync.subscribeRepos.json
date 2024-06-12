@@ -1,0 +1,20 @@
+{
+    "defs": {
+        "blockHeader": {
+            "type": "object",
+            "description": "Header in Firehose",
+            "required": [
+                "op"
+            ],
+            "properties": {
+                "op": {
+                    "type": "integer"
+                },
+                "t": {
+                    "type": "string",
+                    "format": "#commit, #identity, #handle, #migrate, #tombstone, #info"
+                }
+            }
+        }
+    }
+}

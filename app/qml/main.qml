@@ -435,20 +435,27 @@ ApplicationWindow {
                 return
             }
             var handle = accountListModel.item(currentAccountIndex, AccountListModel.HandleRole)
-            setAccount(accountListModel.item(currentAccountIndex, AccountListModel.ServiceRole),
-                       accountListModel.item(currentAccountIndex, AccountListModel.DidRole),
-                       handle,
-                       "email",
-                       accountListModel.item(currentAccountIndex, AccountListModel.AccessJwtRole),
-                       accountListModel.item(currentAccountIndex, AccountListModel.RefreshJwtRole)
-                       )
-            actor = did
-            searchTarget = "#cache"
-            if(listsListModel.getLatest()){
-                globalProgressFrame.text = qsTr("Loading lists") +
-                        " (" + handle + ") ... " + (row+1) + "/" + accountListModel.count
+            var accessJwt = accountListModel.item(currentAccountIndex, AccountListModel.AccessJwtRole)
+            if(accessJwt.length === 0){
+                console.log("Empty accessJwt. load next.")
+                currentAccountIndex -= 1
+                load(true)
             }else{
-                globalProgressFrame.text = ""
+                setAccount(accountListModel.item(currentAccountIndex, AccountListModel.ServiceRole),
+                           accountListModel.item(currentAccountIndex, AccountListModel.DidRole),
+                           handle,
+                           "email",
+                           accessJwt,
+                           accountListModel.item(currentAccountIndex, AccountListModel.RefreshJwtRole)
+                           )
+                actor = did
+                searchTarget = "#cache"
+                if(listsListModel.getLatest()){
+                    globalProgressFrame.text = qsTr("Loading lists") +
+                            " (" + handle + ") ... " + (row+1) + "/" + accountListModel.count
+                }else{
+                    globalProgressFrame.text = ""
+                }
             }
         }
 

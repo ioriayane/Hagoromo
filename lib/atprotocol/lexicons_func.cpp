@@ -1859,6 +1859,13 @@ void copyInfo(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Info &dest)
         dest.message = src.value("message").toString();
     }
 }
+void copyBlockHeader(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::BlockHeader &dest)
+{
+    if (!src.isEmpty()) {
+        dest.op = src.value("op").toInt();
+        dest.t = src.value("t").toString();
+    }
+}
 }
 // tools.ozone.communication.defs
 namespace ToolsOzoneCommunicationDefs {

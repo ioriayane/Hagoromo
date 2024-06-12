@@ -1,0 +1,42 @@
+{
+    "follows": [
+        {
+            "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+            "handle": "ioriayane.relog.tech",
+            "displayName": "IoriAYANE",
+            "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy@jpeg",
+            "associated": {
+                "chat": {
+                    "allowIncoming": "following"
+                }
+            },
+            "viewer": {
+                "muted": false,
+                "blockedBy": false,
+                "following": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.follow/3kq6sirdu6i2r",
+                "followedBy": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3k4odyt4qk42g"
+            },
+            "labels": [],
+            "description": "Blueskyクライアントの羽衣を作ってます。\nhttps://hagoromo.relog.tech/ja/\nepubを作るソフトのLeMEを作ってます。\nhttps://leme.style\nX:@ioriayane\nアイコンは X:@keikawagutiさん",
+            "indexedAt": "2024-04-30T16:44:00.040Z"
+        }
+    ],
+    "subject": {
+        "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+        "handle": "ioriayane2.bsky.social",
+        "displayName": "iori2",
+        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg",
+        "associated": {
+            "chat": {
+                "allowIncoming": "following"
+            }
+        },
+        "viewer": {
+            "muted": false,
+            "blockedBy": false
+        },
+        "labels": [],
+        "description": "ioriayane.relog.tech のテスト用アカウントの2つ目です",
+        "indexedAt": "2024-05-07T15:56:08.188Z"
+    }
+}

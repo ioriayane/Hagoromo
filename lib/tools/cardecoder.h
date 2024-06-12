@@ -20,6 +20,8 @@ public:
     QString did() const;
     QString uri(const QString &cid) const;
 
+    static QString decodeCid(const QByteArray &data, int &offset);
+
 private:
     QByteArray m_content;
     QString m_did;
@@ -29,7 +31,6 @@ private:
     QHash<QString, QString> m_cid2uri; // QHash<cid, uri>
 
     int decodeData(int offset);
-    QString decodeCid(const QByteArray &data, int &offset) const;
     bool decodeCbor(const QByteArray &block, const QString &cid);
     bool decodeCborObject(const QCborValue &value, QJsonObject &parent);
     QVariant decodeCborValue(const QCborValue &value);

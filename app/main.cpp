@@ -55,6 +55,7 @@
 #include "qtquick/chat/chatmessagelistmodel.h"
 #include "qtquick/moderation/labelerlistmodel.h"
 #include "qtquick/blog/blogentrylistmodel.h"
+#include "qtquick/realtime/realtimefeedlistmodel.h"
 
 #include "tools/translatorchanger.h"
 
@@ -176,9 +177,10 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<LabelerListModel>("tech.relog.hagoromo.moderation.labelerlistmodel", 1, 0,
                                       "LabelerListModel");
-
     qmlRegisterType<BlogEntryListModel>("tech.relog.hagoromo.blog.blogentrylistmodel", 1, 0,
                                         "BlogEntryListModel");
+    qmlRegisterType<RealtimeFeedListModel>("tech.relog.hagoromo.realtime.realtimefeedlistmodel", 1,
+                                           0, "RealtimeFeedListModel");
 
     qmlRegisterSingletonType(QUrl("qrc:/Hagoromo/qml/data/AdjustedValues.qml"),
                              "tech.relog.hagoromo.singleton", 1, 0, "AdjustedValues");

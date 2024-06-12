@@ -69,7 +69,9 @@ QVariant AccountListModel::item(int row, AccountListModelRoles role) const
     else if (role == EmailRole)
         return m_accountList.at(row).email;
     else if (role == AccessJwtRole)
-        return m_accountList.at(row).accessJwt;
+        return m_accountList.at(row).status == AccountStatus::Authorized
+                ? m_accountList.at(row).accessJwt
+                : QString();
     else if (role == RefreshJwtRole)
         return m_accountList.at(row).refreshJwt;
     else if (role == DisplayNameRole)
@@ -443,6 +445,7 @@ void AccountListModel::createSession(int row)
             // 詳細を取得
             getProfile(row);
         } else {
+            qDebug() << "Fail createSession.";
             m_accountList[row].status = AccountStatus::Unauthorized;
             emit errorOccured(session->errorCode(), session->errorMessage());
         }

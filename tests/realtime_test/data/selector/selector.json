@@ -1,0 +1,1432 @@
+[
+    {
+        "description": "following only",
+        "following": [
+            {
+                "did": "did:plc:user1",
+                "rkey": "user1_rkey"
+            },
+            {
+                "did": "did:plc:user2",
+                "rkey": "user2_rkey"
+            }
+        ],
+        "followers": [
+            {
+                "did": "did:plc:user2",
+                "rkey": "user2_to_me_rkey"
+            },
+            {
+                "did": "did:plc:user3",
+                "rkey": "user3_to_me_rkey"
+            },
+            {
+                "did": "did:plc:user4",
+                "rkey": "user4_to_me_rkey"
+            }
+        ],
+        "selector": {
+            "following": {}
+        },
+        "except": {
+            "needFollowing": true,
+            "needFollowers": false
+        },
+        "data": [
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [
+                        {
+                            "cid": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee",
+                            "uri": "at://did:plc:user1/app.bsky.feed.post/3ktudvq2ovc2k",
+                            "value": {
+                                "$type": "app.bsky.feed.post",
+                                "createdAt": "2024-06-01T11:33:15.313Z",
+                                "text": "decorded firehose",
+                                "via": "Hagoromo"
+                            }
+                        }
+                    ],
+                    "commit": {
+                        "$link": "bafyreibj5esksh55hx3gjdaqcsfmdhbc6kcghhlkj7ikquoddnuwzueqde"
+                    },
+                    "ops": [
+                        {
+                            "action": "create",
+                            "cid": {
+                                "$link": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee"
+                            },
+                            "path": "app.bsky.feed.post/3ktudvq2ovc2k"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:user1",
+                    "rev": "3ktudvq2uqs2k",
+                    "seq": 557371054,
+                    "since": "3ktuarhlcjc2z",
+                    "time": "2024-06-01T11:33:17.481Z",
+                    "tooBig": false
+                },
+                "except": true
+            },
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [
+                        {
+                            "cid": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee",
+                            "uri": "at://did:plc:user4/app.bsky.feed.post/3ktudvq2ovc2k",
+                            "value": {
+                                "$type": "app.bsky.feed.post",
+                                "createdAt": "2024-06-01T11:33:15.313Z",
+                                "text": "decorded firehose",
+                                "via": "Hagoromo"
+                            }
+                        }
+                    ],
+                    "commit": {
+                        "$link": "bafyreibj5esksh55hx3gjdaqcsfmdhbc6kcghhlkj7ikquoddnuwzueqde"
+                    },
+                    "ops": [
+                        {
+                            "action": "create",
+                            "cid": {
+                                "$link": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee"
+                            },
+                            "path": "app.bsky.feed.post/3ktudvq2ovc2k"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:user4",
+                    "rev": "3ktudvq2uqs2k",
+                    "seq": 557371054,
+                    "since": "3ktuarhlcjc2z",
+                    "time": "2024-06-01T11:33:17.481Z",
+                    "tooBig": false
+                },
+                "except": false
+            },
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [],
+                    "commit": {
+                        "$link": "bafyreibj5esksh55hx3gjdaqcsfmdhbc6kcghhlkj7ikquoddnuwzueqde"
+                    },
+                    "ops": [
+                        {
+                            "action": "create",
+                            "cid": {
+                                "$link": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee"
+                            },
+                            "path": "app.bsky.feed.like/3ktudvq2ovc2k"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:user1",
+                    "rev": "3ktudvq2uqs2k",
+                    "seq": 557371054,
+                    "since": "3ktuarhlcjc2z",
+                    "time": "2024-06-01T11:33:17.481Z",
+                    "tooBig": false
+                },
+                "except": false
+            },
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [
+                        {
+                            "cid": "bafyreigya6ktu5kflppqfkqw2jjy6ewivbkyt42lkyy4ia2kithercgccy",
+                            "uri": "at://did:plc:me/app.bsky.graph.follow/user4_rkey",
+                            "value": {
+                                "$type": "app.bsky.graph.follow",
+                                "createdAt": "2024-06-06T16:25:52.881Z",
+                                "subject": "did:plc:user4"
+                            }
+                        }
+                    ],
+                    "commit": {
+                        "$link": "bafyreiawsutzlnr7g53fixlfudt7g7nf6dyrsgfer3xm6w5yzttngdteji"
+                    },
+                    "ops": [
+                        {
+                            "action": "create",
+                            "cid": {
+                                "$link": "bafyreigya6ktu5kflppqfkqw2jjy6ewivbkyt42lkyy4ia2kithercgccy"
+                            },
+                            "path": "app.bsky.graph.follow/user4_rkey"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:me",
+                    "rev": "3kubglkwpus23",
+                    "seq": 581700395,
+                    "since": "3kubgiu5xgk2o",
+                    "time": "2024-06-06T16:25:53.840Z",
+                    "tooBig": false
+                },
+                "except": false
+            },
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [
+                        {
+                            "cid": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee",
+                            "uri": "at://did:plc:user4/app.bsky.feed.post/3ktudvq2ovc2k",
+                            "value": {
+                                "$type": "app.bsky.feed.post",
+                                "createdAt": "2024-06-01T11:33:15.313Z",
+                                "text": "decorded firehose",
+                                "via": "Hagoromo"
+                            }
+                        }
+                    ],
+                    "commit": {
+                        "$link": "bafyreibj5esksh55hx3gjdaqcsfmdhbc6kcghhlkj7ikquoddnuwzueqde"
+                    },
+                    "ops": [
+                        {
+                            "action": "create",
+                            "cid": {
+                                "$link": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee"
+                            },
+                            "path": "app.bsky.feed.post/3ktudvq2ovc2k"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:user4",
+                    "rev": "3ktudvq2uqs2k",
+                    "seq": 557371054,
+                    "since": "3ktuarhlcjc2z",
+                    "time": "2024-06-01T11:33:17.481Z",
+                    "tooBig": false
+                },
+                "except": true
+            },
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [],
+                    "commit": {
+                        "$link": "bafyreibaqomp3rjckrmgkhtxqdwnzubh7bozy2vg6uoptvezy5ule5xb4u"
+                    },
+                    "ops": [
+                        {
+                            "action": "delete",
+                            "cid": null,
+                            "path": "app.bsky.graph.follow/user4_rkey"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:me",
+                    "rev": "3kubgrf6uik2y",
+                    "seq": 581712308,
+                    "since": "3kubgnxflp22p",
+                    "time": "2024-06-06T16:29:09.152Z",
+                    "tooBig": false
+                },
+                "except": false
+            },
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [
+                        {
+                            "cid": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee",
+                            "uri": "at://did:plc:user4/app.bsky.feed.post/3ktudvq2ovc2k",
+                            "value": {
+                                "$type": "app.bsky.feed.post",
+                                "createdAt": "2024-06-01T11:33:15.313Z",
+                                "text": "decorded firehose",
+                                "via": "Hagoromo"
+                            }
+                        }
+                    ],
+                    "commit": {
+                        "$link": "bafyreibj5esksh55hx3gjdaqcsfmdhbc6kcghhlkj7ikquoddnuwzueqde"
+                    },
+                    "ops": [
+                        {
+                            "action": "create",
+                            "cid": {
+                                "$link": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee"
+                            },
+                            "path": "app.bsky.feed.post/3ktudvq2ovc2k"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:user4",
+                    "rev": "3ktudvq2uqs2k",
+                    "seq": 557371054,
+                    "since": "3ktuarhlcjc2z",
+                    "time": "2024-06-01T11:33:17.481Z",
+                    "tooBig": false
+                },
+                "except": false
+            }
+        ]
+    },
+    {
+        "description": "followers only",
+        "following": [
+            {
+                "did": "did:plc:user1",
+                "rkey": "user1_rkey"
+            },
+            {
+                "did": "did:plc:user2",
+                "rkey": "user2_rkey"
+            }
+        ],
+        "followers": [
+            {
+                "did": "did:plc:user2",
+                "rkey": "user2_to_me_rkey"
+            },
+            {
+                "did": "did:plc:user3",
+                "rkey": "user3_to_me_rkey"
+            },
+            {
+                "did": "did:plc:user4",
+                "rkey": "user4_to_me_rkey"
+            }
+        ],
+        "selector": {
+            "followers": {}
+        },
+        "except": {
+            "needFollowing": false,
+            "needFollowers": true
+        },
+        "data": [
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [
+                        {
+                            "cid": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee",
+                            "uri": "at://did:plc:user1/app.bsky.feed.post/3ktudvq2ovc2k",
+                            "value": {
+                                "$type": "app.bsky.feed.post",
+                                "createdAt": "2024-06-01T11:33:15.313Z",
+                                "text": "decorded firehose",
+                                "via": "Hagoromo"
+                            }
+                        }
+                    ],
+                    "commit": {
+                        "$link": "bafyreibj5esksh55hx3gjdaqcsfmdhbc6kcghhlkj7ikquoddnuwzueqde"
+                    },
+                    "ops": [
+                        {
+                            "action": "create",
+                            "cid": {
+                                "$link": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee"
+                            },
+                            "path": "app.bsky.feed.post/3ktudvq2ovc2k"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:user1",
+                    "rev": "3ktudvq2uqs2k",
+                    "seq": 557371054,
+                    "since": "3ktuarhlcjc2z",
+                    "time": "2024-06-01T11:33:17.481Z",
+                    "tooBig": false
+                },
+                "except": false
+            },
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [
+                        {
+                            "cid": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee",
+                            "uri": "at://did:plc:user3/app.bsky.feed.post/3ktudvq2ovc2k",
+                            "value": {
+                                "$type": "app.bsky.feed.post",
+                                "createdAt": "2024-06-01T11:33:15.313Z",
+                                "text": "decorded firehose",
+                                "via": "Hagoromo"
+                            }
+                        }
+                    ],
+                    "commit": {
+                        "$link": "bafyreibj5esksh55hx3gjdaqcsfmdhbc6kcghhlkj7ikquoddnuwzueqde"
+                    },
+                    "ops": [
+                        {
+                            "action": "create",
+                            "cid": {
+                                "$link": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee"
+                            },
+                            "path": "app.bsky.feed.post/3ktudvq2ovc2k"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:user3",
+                    "rev": "3ktudvq2uqs2k",
+                    "seq": 557371054,
+                    "since": "3ktuarhlcjc2z",
+                    "time": "2024-06-01T11:33:17.481Z",
+                    "tooBig": false
+                },
+                "except": true
+            },
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [],
+                    "commit": {
+                        "$link": "bafyreibj5esksh55hx3gjdaqcsfmdhbc6kcghhlkj7ikquoddnuwzueqde"
+                    },
+                    "ops": [
+                        {
+                            "action": "create",
+                            "cid": {
+                                "$link": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee"
+                            },
+                            "path": "app.bsky.feed.like/3ktudvq2ovc2k"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:user4",
+                    "rev": "3ktudvq2uqs2k",
+                    "seq": 557371054,
+                    "since": "3ktuarhlcjc2z",
+                    "time": "2024-06-01T11:33:17.481Z",
+                    "tooBig": false
+                },
+                "except": false
+            },
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [
+                        {
+                            "cid": "bafyreigya6ktu5kflppqfkqw2jjy6ewivbkyt42lkyy4ia2kithercgccy",
+                            "uri": "at://did:plc:user1/app.bsky.graph.follow/user1_to_me_rkey",
+                            "value": {
+                                "$type": "app.bsky.graph.follow",
+                                "createdAt": "2024-06-06T16:25:52.881Z",
+                                "subject": "did:plc:me"
+                            }
+                        }
+                    ],
+                    "commit": {
+                        "$link": "bafyreiawsutzlnr7g53fixlfudt7g7nf6dyrsgfer3xm6w5yzttngdteji"
+                    },
+                    "ops": [
+                        {
+                            "action": "create",
+                            "cid": {
+                                "$link": "bafyreigya6ktu5kflppqfkqw2jjy6ewivbkyt42lkyy4ia2kithercgccy"
+                            },
+                            "path": "app.bsky.graph.follow/user1_to_me_rkey"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:user1",
+                    "rev": "3kubglkwpus23",
+                    "seq": 581700395,
+                    "since": "3kubgiu5xgk2o",
+                    "time": "2024-06-06T16:25:53.840Z",
+                    "tooBig": false
+                },
+                "except": false
+            },
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [
+                        {
+                            "cid": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee",
+                            "uri": "at://did:plc:user1/app.bsky.feed.post/3ktudvq2ovc2k",
+                            "value": {
+                                "$type": "app.bsky.feed.post",
+                                "createdAt": "2024-06-01T11:33:15.313Z",
+                                "text": "decorded firehose",
+                                "via": "Hagoromo"
+                            }
+                        }
+                    ],
+                    "commit": {
+                        "$link": "bafyreibj5esksh55hx3gjdaqcsfmdhbc6kcghhlkj7ikquoddnuwzueqde"
+                    },
+                    "ops": [
+                        {
+                            "action": "create",
+                            "cid": {
+                                "$link": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee"
+                            },
+                            "path": "app.bsky.feed.post/3ktudvq2ovc2k"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:user1",
+                    "rev": "3ktudvq2uqs2k",
+                    "seq": 557371054,
+                    "since": "3ktuarhlcjc2z",
+                    "time": "2024-06-01T11:33:17.481Z",
+                    "tooBig": false
+                },
+                "except": true
+            },
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [],
+                    "commit": {
+                        "$link": "bafyreibaqomp3rjckrmgkhtxqdwnzubh7bozy2vg6uoptvezy5ule5xb4u"
+                    },
+                    "ops": [
+                        {
+                            "action": "delete",
+                            "cid": null,
+                            "path": "app.bsky.graph.follow/user1_to_me_rkey"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:user1",
+                    "rev": "3kubgrf6uik2y",
+                    "seq": 581712308,
+                    "since": "3kubgnxflp22p",
+                    "time": "2024-06-06T16:29:09.152Z",
+                    "tooBig": false
+                },
+                "except": false
+            },
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [
+                        {
+                            "cid": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee",
+                            "uri": "at://did:plc:user1/app.bsky.feed.post/3ktudvq2ovc2k",
+                            "value": {
+                                "$type": "app.bsky.feed.post",
+                                "createdAt": "2024-06-01T11:33:15.313Z",
+                                "text": "decorded firehose",
+                                "via": "Hagoromo"
+                            }
+                        }
+                    ],
+                    "commit": {
+                        "$link": "bafyreibj5esksh55hx3gjdaqcsfmdhbc6kcghhlkj7ikquoddnuwzueqde"
+                    },
+                    "ops": [
+                        {
+                            "action": "create",
+                            "cid": {
+                                "$link": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee"
+                            },
+                            "path": "app.bsky.feed.post/3ktudvq2ovc2k"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:user1",
+                    "rev": "3ktudvq2uqs2k",
+                    "seq": 557371054,
+                    "since": "3ktuarhlcjc2z",
+                    "time": "2024-06-01T11:33:17.481Z",
+                    "tooBig": false
+                },
+                "except": false
+            }
+        ]
+    },
+    {
+        "description": "me only",
+        "following": [
+            {
+                "did": "did:plc:user1",
+                "rkey": "user1_rkey"
+            },
+            {
+                "did": "did:plc:user2",
+                "rkey": "user2_rkey"
+            }
+        ],
+        "followers": [
+            {
+                "did": "did:plc:user2",
+                "rkey": "user2_to_me_rkey"
+            },
+            {
+                "did": "did:plc:user3",
+                "rkey": "user3_to_me_rkey"
+            },
+            {
+                "did": "did:plc:user4",
+                "rkey": "user4_to_me_rkey"
+            }
+        ],
+        "selector": {
+            "me": {}
+        },
+        "except": {
+            "needFollowing": false,
+            "needFollowers": false
+        },
+        "data": [
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [
+                        {
+                            "cid": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee",
+                            "uri": "at://did:plc:user1/app.bsky.feed.post/3ktudvq2ovc2k",
+                            "value": {
+                                "$type": "app.bsky.feed.post",
+                                "createdAt": "2024-06-01T11:33:15.313Z",
+                                "text": "decorded firehose",
+                                "via": "Hagoromo"
+                            }
+                        }
+                    ],
+                    "commit": {
+                        "$link": "bafyreibj5esksh55hx3gjdaqcsfmdhbc6kcghhlkj7ikquoddnuwzueqde"
+                    },
+                    "ops": [
+                        {
+                            "action": "create",
+                            "cid": {
+                                "$link": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee"
+                            },
+                            "path": "app.bsky.feed.post/3ktudvq2ovc2k"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:user1",
+                    "rev": "3ktudvq2uqs2k",
+                    "seq": 557371054,
+                    "since": "3ktuarhlcjc2z",
+                    "time": "2024-06-01T11:33:17.481Z",
+                    "tooBig": false
+                },
+                "except": false
+            },
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [
+                        {
+                            "cid": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee",
+                            "uri": "at://did:plc:me/app.bsky.feed.post/3ktudvq2ovc2k",
+                            "value": {
+                                "$type": "app.bsky.feed.post",
+                                "createdAt": "2024-06-01T11:33:15.313Z",
+                                "text": "decorded firehose",
+                                "via": "Hagoromo"
+                            }
+                        }
+                    ],
+                    "commit": {
+                        "$link": "bafyreibj5esksh55hx3gjdaqcsfmdhbc6kcghhlkj7ikquoddnuwzueqde"
+                    },
+                    "ops": [
+                        {
+                            "action": "create",
+                            "cid": {
+                                "$link": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee"
+                            },
+                            "path": "app.bsky.feed.post/3ktudvq2ovc2k"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:me",
+                    "rev": "3ktudvq2uqs2k",
+                    "seq": 557371054,
+                    "since": "3ktuarhlcjc2z",
+                    "time": "2024-06-01T11:33:17.481Z",
+                    "tooBig": false
+                },
+                "except": true
+            },
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [],
+                    "commit": {
+                        "$link": "bafyreibj5esksh55hx3gjdaqcsfmdhbc6kcghhlkj7ikquoddnuwzueqde"
+                    },
+                    "ops": [
+                        {
+                            "action": "create",
+                            "cid": {
+                                "$link": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee"
+                            },
+                            "path": "app.bsky.feed.like/3ktudvq2ovc2k"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:me",
+                    "rev": "3ktudvq2uqs2k",
+                    "seq": 557371054,
+                    "since": "3ktuarhlcjc2z",
+                    "time": "2024-06-01T11:33:17.481Z",
+                    "tooBig": false
+                },
+                "except": false
+            },
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [
+                        {
+                            "cid": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee",
+                            "uri": "at://did:plc:me/app.bsky.feed.post/3ktudvq2ovc2k",
+                            "value": {
+                                "$type": "app.bsky.feed.post",
+                                "createdAt": "2024-06-01T11:33:15.313Z",
+                                "text": "decorded firehose",
+                                "via": "Hagoromo"
+                            }
+                        }
+                    ],
+                    "commit": {
+                        "$link": "bafyreibj5esksh55hx3gjdaqcsfmdhbc6kcghhlkj7ikquoddnuwzueqde"
+                    },
+                    "ops": [
+                        {
+                            "action": "delete",
+                            "cid": {
+                                "$link": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee"
+                            },
+                            "path": "app.bsky.feed.post/3ktudvq2ovc2k"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:me",
+                    "rev": "3ktudvq2uqs2k",
+                    "seq": 557371054,
+                    "since": "3ktuarhlcjc2z",
+                    "time": "2024-06-01T11:33:17.481Z",
+                    "tooBig": false
+                },
+                "except": false
+            }
+        ]
+    },
+    {
+        "description": "following and followers",
+        "following": [
+            {
+                "did": "did:plc:user1",
+                "rkey": "user1_rkey"
+            },
+            {
+                "did": "did:plc:user2",
+                "rkey": "user2_rkey"
+            }
+        ],
+        "followers": [
+            {
+                "did": "did:plc:user2",
+                "rkey": "user2_to_me_rkey"
+            },
+            {
+                "did": "did:plc:user3",
+                "rkey": "user3_to_me_rkey"
+            },
+            {
+                "did": "did:plc:user4",
+                "rkey": "user4_to_me_rkey"
+            }
+        ],
+        "selector": {
+            "and": [
+                {
+                    "following": {}
+                },
+                {
+                    "followers": {}
+                }
+            ]
+        },
+        "except": {
+            "needFollowing": true,
+            "needFollowers": true
+        },
+        "data": [
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [
+                        {
+                            "cid": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee",
+                            "uri": "at://did:plc:user1/app.bsky.feed.post/3ktudvq2ovc2k",
+                            "value": {
+                                "$type": "app.bsky.feed.post",
+                                "createdAt": "2024-06-01T11:33:15.313Z",
+                                "text": "decorded firehose",
+                                "via": "Hagoromo"
+                            }
+                        }
+                    ],
+                    "commit": {
+                        "$link": "bafyreibj5esksh55hx3gjdaqcsfmdhbc6kcghhlkj7ikquoddnuwzueqde"
+                    },
+                    "ops": [
+                        {
+                            "action": "create",
+                            "cid": {
+                                "$link": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee"
+                            },
+                            "path": "app.bsky.feed.post/3ktudvq2ovc2k"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:user1",
+                    "rev": "3ktudvq2uqs2k",
+                    "seq": 557371054,
+                    "since": "3ktuarhlcjc2z",
+                    "time": "2024-06-01T11:33:17.481Z",
+                    "tooBig": false
+                },
+                "except": false
+            },
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [
+                        {
+                            "cid": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee",
+                            "uri": "at://did:plc:user4/app.bsky.feed.post/3ktudvq2ovc2k",
+                            "value": {
+                                "$type": "app.bsky.feed.post",
+                                "createdAt": "2024-06-01T11:33:15.313Z",
+                                "text": "decorded firehose",
+                                "via": "Hagoromo"
+                            }
+                        }
+                    ],
+                    "commit": {
+                        "$link": "bafyreibj5esksh55hx3gjdaqcsfmdhbc6kcghhlkj7ikquoddnuwzueqde"
+                    },
+                    "ops": [
+                        {
+                            "action": "create",
+                            "cid": {
+                                "$link": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee"
+                            },
+                            "path": "app.bsky.feed.post/3ktudvq2ovc2k"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:user4",
+                    "rev": "3ktudvq2uqs2k",
+                    "seq": 557371054,
+                    "since": "3ktuarhlcjc2z",
+                    "time": "2024-06-01T11:33:17.481Z",
+                    "tooBig": false
+                },
+                "except": false
+            },
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [
+                        {
+                            "cid": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee",
+                            "uri": "at://did:plc:user2/app.bsky.feed.post/3ktudvq2ovc2k",
+                            "value": {
+                                "$type": "app.bsky.feed.post",
+                                "createdAt": "2024-06-01T11:33:15.313Z",
+                                "text": "decorded firehose",
+                                "via": "Hagoromo"
+                            }
+                        }
+                    ],
+                    "commit": {
+                        "$link": "bafyreibj5esksh55hx3gjdaqcsfmdhbc6kcghhlkj7ikquoddnuwzueqde"
+                    },
+                    "ops": [
+                        {
+                            "action": "create",
+                            "cid": {
+                                "$link": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee"
+                            },
+                            "path": "app.bsky.feed.post/3ktudvq2ovc2k"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:user2",
+                    "rev": "3ktudvq2uqs2k",
+                    "seq": 557371054,
+                    "since": "3ktuarhlcjc2z",
+                    "time": "2024-06-01T11:33:17.481Z",
+                    "tooBig": false
+                },
+                "except": true
+            }
+        ]
+    },
+    {
+        "description": "following or followers",
+        "following": [
+            {
+                "did": "did:plc:user1",
+                "rkey": "user1_rkey"
+            },
+            {
+                "did": "did:plc:user2",
+                "rkey": "user2_rkey"
+            }
+        ],
+        "followers": [
+            {
+                "did": "did:plc:user2",
+                "rkey": "user2_to_me_rkey"
+            },
+            {
+                "did": "did:plc:user3",
+                "rkey": "user3_to_me_rkey"
+            },
+            {
+                "did": "did:plc:user4",
+                "rkey": "user4_to_me_rkey"
+            }
+        ],
+        "selector": {
+            "or": [
+                {
+                    "following": {}
+                },
+                {
+                    "followers": {}
+                }
+            ]
+        },
+        "except": {
+            "needFollowing": true,
+            "needFollowers": true
+        },
+        "data": [
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [
+                        {
+                            "cid": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee",
+                            "uri": "at://did:plc:user1/app.bsky.feed.post/3ktudvq2ovc2k",
+                            "value": {
+                                "$type": "app.bsky.feed.post",
+                                "createdAt": "2024-06-01T11:33:15.313Z",
+                                "text": "decorded firehose",
+                                "via": "Hagoromo"
+                            }
+                        }
+                    ],
+                    "commit": {
+                        "$link": "bafyreibj5esksh55hx3gjdaqcsfmdhbc6kcghhlkj7ikquoddnuwzueqde"
+                    },
+                    "ops": [
+                        {
+                            "action": "create",
+                            "cid": {
+                                "$link": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee"
+                            },
+                            "path": "app.bsky.feed.post/3ktudvq2ovc2k"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:user1",
+                    "rev": "3ktudvq2uqs2k",
+                    "seq": 557371054,
+                    "since": "3ktuarhlcjc2z",
+                    "time": "2024-06-01T11:33:17.481Z",
+                    "tooBig": false
+                },
+                "except": true
+            },
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [
+                        {
+                            "cid": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee",
+                            "uri": "at://did:plc:user4/app.bsky.feed.post/3ktudvq2ovc2k",
+                            "value": {
+                                "$type": "app.bsky.feed.post",
+                                "createdAt": "2024-06-01T11:33:15.313Z",
+                                "text": "decorded firehose",
+                                "via": "Hagoromo"
+                            }
+                        }
+                    ],
+                    "commit": {
+                        "$link": "bafyreibj5esksh55hx3gjdaqcsfmdhbc6kcghhlkj7ikquoddnuwzueqde"
+                    },
+                    "ops": [
+                        {
+                            "action": "create",
+                            "cid": {
+                                "$link": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee"
+                            },
+                            "path": "app.bsky.feed.post/3ktudvq2ovc2k"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:user4",
+                    "rev": "3ktudvq2uqs2k",
+                    "seq": 557371054,
+                    "since": "3ktuarhlcjc2z",
+                    "time": "2024-06-01T11:33:17.481Z",
+                    "tooBig": false
+                },
+                "except": true
+            },
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [
+                        {
+                            "cid": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee",
+                            "uri": "at://did:plc:user2/app.bsky.feed.post/3ktudvq2ovc2k",
+                            "value": {
+                                "$type": "app.bsky.feed.post",
+                                "createdAt": "2024-06-01T11:33:15.313Z",
+                                "text": "decorded firehose",
+                                "via": "Hagoromo"
+                            }
+                        }
+                    ],
+                    "commit": {
+                        "$link": "bafyreibj5esksh55hx3gjdaqcsfmdhbc6kcghhlkj7ikquoddnuwzueqde"
+                    },
+                    "ops": [
+                        {
+                            "action": "create",
+                            "cid": {
+                                "$link": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee"
+                            },
+                            "path": "app.bsky.feed.post/3ktudvq2ovc2k"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:user2",
+                    "rev": "3ktudvq2uqs2k",
+                    "seq": 557371054,
+                    "since": "3ktuarhlcjc2z",
+                    "time": "2024-06-01T11:33:17.481Z",
+                    "tooBig": false
+                },
+                "except": true
+            },
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [
+                        {
+                            "cid": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee",
+                            "uri": "at://did:plc:me/app.bsky.feed.post/3ktudvq2ovc2k",
+                            "value": {
+                                "$type": "app.bsky.feed.post",
+                                "createdAt": "2024-06-01T11:33:15.313Z",
+                                "text": "decorded firehose",
+                                "via": "Hagoromo"
+                            }
+                        }
+                    ],
+                    "commit": {
+                        "$link": "bafyreibj5esksh55hx3gjdaqcsfmdhbc6kcghhlkj7ikquoddnuwzueqde"
+                    },
+                    "ops": [
+                        {
+                            "action": "create",
+                            "cid": {
+                                "$link": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee"
+                            },
+                            "path": "app.bsky.feed.post/3ktudvq2ovc2k"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:me",
+                    "rev": "3ktudvq2uqs2k",
+                    "seq": 557371054,
+                    "since": "3ktuarhlcjc2z",
+                    "time": "2024-06-01T11:33:17.481Z",
+                    "tooBig": false
+                },
+                "except": false
+            }
+        ]
+    },
+    {
+        "description": "following xor followers",
+        "following": [
+            {
+                "did": "did:plc:user1",
+                "rkey": "user1_rkey"
+            },
+            {
+                "did": "did:plc:user2",
+                "rkey": "user2_rkey"
+            }
+        ],
+        "followers": [
+            {
+                "did": "did:plc:user2",
+                "rkey": "user2_to_me_rkey"
+            },
+            {
+                "did": "did:plc:user3",
+                "rkey": "user3_to_me_rkey"
+            },
+            {
+                "did": "did:plc:user4",
+                "rkey": "user4_to_me_rkey"
+            }
+        ],
+        "selector": {
+            "xor": [
+                {
+                    "following": {}
+                },
+                {
+                    "followers": {}
+                }
+            ]
+        },
+        "except": {
+            "needFollowing": true,
+            "needFollowers": true
+        },
+        "data": [
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [
+                        {
+                            "cid": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee",
+                            "uri": "at://did:plc:user1/app.bsky.feed.post/3ktudvq2ovc2k",
+                            "value": {
+                                "$type": "app.bsky.feed.post",
+                                "createdAt": "2024-06-01T11:33:15.313Z",
+                                "text": "decorded firehose",
+                                "via": "Hagoromo"
+                            }
+                        }
+                    ],
+                    "commit": {
+                        "$link": "bafyreibj5esksh55hx3gjdaqcsfmdhbc6kcghhlkj7ikquoddnuwzueqde"
+                    },
+                    "ops": [
+                        {
+                            "action": "create",
+                            "cid": {
+                                "$link": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee"
+                            },
+                            "path": "app.bsky.feed.post/3ktudvq2ovc2k"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:user1",
+                    "rev": "3ktudvq2uqs2k",
+                    "seq": 557371054,
+                    "since": "3ktuarhlcjc2z",
+                    "time": "2024-06-01T11:33:17.481Z",
+                    "tooBig": false
+                },
+                "except": true
+            },
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [
+                        {
+                            "cid": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee",
+                            "uri": "at://did:plc:user2/app.bsky.feed.post/3ktudvq2ovc2k",
+                            "value": {
+                                "$type": "app.bsky.feed.post",
+                                "createdAt": "2024-06-01T11:33:15.313Z",
+                                "text": "decorded firehose",
+                                "via": "Hagoromo"
+                            }
+                        }
+                    ],
+                    "commit": {
+                        "$link": "bafyreibj5esksh55hx3gjdaqcsfmdhbc6kcghhlkj7ikquoddnuwzueqde"
+                    },
+                    "ops": [
+                        {
+                            "action": "create",
+                            "cid": {
+                                "$link": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee"
+                            },
+                            "path": "app.bsky.feed.post/3ktudvq2ovc2k"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:user2",
+                    "rev": "3ktudvq2uqs2k",
+                    "seq": 557371054,
+                    "since": "3ktuarhlcjc2z",
+                    "time": "2024-06-01T11:33:17.481Z",
+                    "tooBig": false
+                },
+                "except": false
+            },
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [
+                        {
+                            "cid": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee",
+                            "uri": "at://did:plc:user3/app.bsky.feed.post/3ktudvq2ovc2k",
+                            "value": {
+                                "$type": "app.bsky.feed.post",
+                                "createdAt": "2024-06-01T11:33:15.313Z",
+                                "text": "decorded firehose",
+                                "via": "Hagoromo"
+                            }
+                        }
+                    ],
+                    "commit": {
+                        "$link": "bafyreibj5esksh55hx3gjdaqcsfmdhbc6kcghhlkj7ikquoddnuwzueqde"
+                    },
+                    "ops": [
+                        {
+                            "action": "create",
+                            "cid": {
+                                "$link": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee"
+                            },
+                            "path": "app.bsky.feed.post/3ktudvq2ovc2k"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:user3",
+                    "rev": "3ktudvq2uqs2k",
+                    "seq": 557371054,
+                    "since": "3ktuarhlcjc2z",
+                    "time": "2024-06-01T11:33:17.481Z",
+                    "tooBig": false
+                },
+                "except": true
+            },
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [
+                        {
+                            "cid": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee",
+                            "uri": "at://did:plc:user4/app.bsky.feed.post/3ktudvq2ovc2k",
+                            "value": {
+                                "$type": "app.bsky.feed.post",
+                                "createdAt": "2024-06-01T11:33:15.313Z",
+                                "text": "decorded firehose",
+                                "via": "Hagoromo"
+                            }
+                        }
+                    ],
+                    "commit": {
+                        "$link": "bafyreibj5esksh55hx3gjdaqcsfmdhbc6kcghhlkj7ikquoddnuwzueqde"
+                    },
+                    "ops": [
+                        {
+                            "action": "create",
+                            "cid": {
+                                "$link": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee"
+                            },
+                            "path": "app.bsky.feed.post/3ktudvq2ovc2k"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:user4",
+                    "rev": "3ktudvq2uqs2k",
+                    "seq": 557371054,
+                    "since": "3ktuarhlcjc2z",
+                    "time": "2024-06-01T11:33:17.481Z",
+                    "tooBig": false
+                },
+                "except": true
+            },
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [
+                        {
+                            "cid": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee",
+                            "uri": "at://did:plc:me/app.bsky.feed.post/3ktudvq2ovc2k",
+                            "value": {
+                                "$type": "app.bsky.feed.post",
+                                "createdAt": "2024-06-01T11:33:15.313Z",
+                                "text": "decorded firehose",
+                                "via": "Hagoromo"
+                            }
+                        }
+                    ],
+                    "commit": {
+                        "$link": "bafyreibj5esksh55hx3gjdaqcsfmdhbc6kcghhlkj7ikquoddnuwzueqde"
+                    },
+                    "ops": [
+                        {
+                            "action": "create",
+                            "cid": {
+                                "$link": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee"
+                            },
+                            "path": "app.bsky.feed.post/3ktudvq2ovc2k"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:me",
+                    "rev": "3ktudvq2uqs2k",
+                    "seq": 557371054,
+                    "since": "3ktuarhlcjc2z",
+                    "time": "2024-06-01T11:33:17.481Z",
+                    "tooBig": false
+                },
+                "except": false
+            }
+        ]
+    },
+    {
+        "description": "not followers",
+        "following": [
+            {
+                "did": "did:plc:user1",
+                "rkey": "user1_rkey"
+            },
+            {
+                "did": "did:plc:user2",
+                "rkey": "user2_rkey"
+            }
+        ],
+        "followers": [
+            {
+                "did": "did:plc:user2",
+                "rkey": "user2_to_me_rkey"
+            },
+            {
+                "did": "did:plc:user3",
+                "rkey": "user3_to_me_rkey"
+            },
+            {
+                "did": "did:plc:user4",
+                "rkey": "user4_to_me_rkey"
+            }
+        ],
+        "selector": {
+            "not": {
+                "followers": {}
+            }
+        },
+        "except": {
+            "needFollowing": false,
+            "needFollowers": true
+        },
+        "data": [
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [
+                        {
+                            "cid": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee",
+                            "uri": "at://did:plc:user1/app.bsky.feed.post/3ktudvq2ovc2k",
+                            "value": {
+                                "$type": "app.bsky.feed.post",
+                                "createdAt": "2024-06-01T11:33:15.313Z",
+                                "text": "decorded firehose",
+                                "via": "Hagoromo"
+                            }
+                        }
+                    ],
+                    "commit": {
+                        "$link": "bafyreibj5esksh55hx3gjdaqcsfmdhbc6kcghhlkj7ikquoddnuwzueqde"
+                    },
+                    "ops": [
+                        {
+                            "action": "create",
+                            "cid": {
+                                "$link": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee"
+                            },
+                            "path": "app.bsky.feed.post/3ktudvq2ovc2k"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:user1",
+                    "rev": "3ktudvq2uqs2k",
+                    "seq": 557371054,
+                    "since": "3ktuarhlcjc2z",
+                    "time": "2024-06-01T11:33:17.481Z",
+                    "tooBig": false
+                },
+                "except": true
+            },
+            {
+                "payload": {
+                    "blobs": [],
+                    "blocks": [
+                        {
+                            "cid": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee",
+                            "uri": "at://did:plc:user3/app.bsky.feed.post/3ktudvq2ovc2k",
+                            "value": {
+                                "$type": "app.bsky.feed.post",
+                                "createdAt": "2024-06-01T11:33:15.313Z",
+                                "text": "decorded firehose",
+                                "via": "Hagoromo"
+                            }
+                        }
+                    ],
+                    "commit": {
+                        "$link": "bafyreibj5esksh55hx3gjdaqcsfmdhbc6kcghhlkj7ikquoddnuwzueqde"
+                    },
+                    "ops": [
+                        {
+                            "action": "create",
+                            "cid": {
+                                "$link": "bafyreihj7nokeio7tw4krnuqmuj6htykx7i4fscgcajbvkrmbuqvh22pee"
+                            },
+                            "path": "app.bsky.feed.post/3ktudvq2ovc2k"
+                        }
+                    ],
+                    "prev": null,
+                    "rebase": false,
+                    "repo": "did:plc:user3",
+                    "rev": "3ktudvq2uqs2k",
+                    "seq": 557371054,
+                    "since": "3ktuarhlcjc2z",
+                    "time": "2024-06-01T11:33:17.481Z",
+                    "tooBig": false
+                },
+                "except": false
+            }
+        ]
+    }
+]
