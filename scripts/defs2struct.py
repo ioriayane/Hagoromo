@@ -545,7 +545,9 @@ class Defs2Struct:
                 elif p_type == 'string':
                     self.output_text[namespace].append('    QString %s;%s' % (property_name, p_comment, ))
                 elif p_type == 'cid-link':
-                    self.output_text[namespace].append('    QString %s;%s' % (property_name, p_comment, ))
+                    self.output_text[namespace].append('    QByteArray %s;%s' % (property_name, p_comment, ))
+                elif p_type == 'bytes':
+                    self.output_text[namespace].append('    QByteArray %s;%s' % (property_name, p_comment, ))
                 elif p_type == 'array':
                     items_type = properties[property_name].get('items', {}).get('type', '')
                     if items_type == 'ref':
@@ -755,7 +757,12 @@ class Defs2Struct:
                     self.output_func_text[namespace].append('        dest.%s = src.value("%s").toString();' % (property_name, property_name, ))
 
                 elif p_type == 'cid-link':
-                    self.output_func_text[namespace].append('        dest.%s = src.value("%s").toObject().value("$link").toString();' % (property_name, property_name, ))
+                    # jsonにバイナリはないのでコピーコードは生成しない
+                    pass
+
+                elif p_type == 'bytes':
+                    # jsonにバイナリはないのでコピーコードは生成しない
+                    pass
 
                 elif p_type == 'array':
                     items_type = properties[property_name].get('items', {}).get('type', '')

@@ -3,9 +3,11 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QCborMap>
 
 #include "comatprotosyncsubscribereposex.h"
 #include "atprotocol/lexicons_func_unknown.h"
+#include "tools/cardecoder.h"
 
 using AtProtocolInterface::ComAtprotoSyncSubscribeReposEx;
 using namespace AtProtocolType;
@@ -37,52 +39,63 @@ int main(int argc, char *argv[])
                          qDebug().noquote() << "Error:" << error << message;
                          QCoreApplication::quit();
                      });
-    QObject::connect(&client, &ComAtprotoSyncSubscribeReposEx::received,
-                     [=](const QString &type, const QCborValue &cbor) {
-                         // qDebug().noquote() << "commitDataReceived:" << !json.isEmpty();
+    QObject::connect(
+            &client, &ComAtprotoSyncSubscribeReposEx::received,
+            [=](const QString &type, const QCborValue &cbor) {
+                // qDebug().noquote() << "commitDataReceived:" << !json.isEmpty();
 
-                         ComAtprotoSyncSubscribeRepos::Commit commit;
-                         ComAtprotoSyncSubscribeRepos::copyCommit(cbor, commit);
+                ComAtprotoSyncSubscribeRepos::Commit commit;
+                ComAtprotoSyncSubscribeRepos::copyCommit(cbor, commit);
 
-                         if (type == "#commit") {
-                             for (const auto &op : commit.ops) {
-                                 if (op.path.startsWith("app.bsky.feed.like/")) {
-                                     continue;
-                                 }
+                if (type == "#commit") {
+                    CarDecoder decorder;
+                    if (!commit.blocks.isEmpty()) {
+                        if (decorder.setContent(commit.blocks)) { }
+                    }
+                    for (const auto &op : commit.ops) {
+                        if (op.path.startsWith("app.bsky.feed.like/")) {
+                            continue;
+                        }
 
-                                 // for (const auto &block : json.value("blocks").toArray()) {
-                                 //     QJsonObject record =
-                                 //     block.toObject().value("value").toObject(); if
-                                 //     (skipType.contains(record.value("$type").toString())) {
-                                 //         continue;
-                                 //     }
-                                 //     qDebug().noquote()
-                                 //             << type << json.value("time").toString()
-                                 //             << json.value("repo").toString()
-                                 //             << op.toObject().value("action").toString()
-                                 //             << record.value("$type").toString()
-                                 //             << record.value("text").toString().replace("\n", "
-                                 //             ").left(30);
-                                 // }
-                                 qDebug().noquote() << type << commit.time
-                                                    << QDateTime::currentDateTimeUtc().toString()
-                                                    << commit.repo << op.path;
-                             }
+                        QString op_cid;
+                        {
+                            int offset = 0;
+                            op_cid = CarDecoder::decodeCid(op.cid, offset);
+                        }
+                        if (decorder.cids().contains(op_cid)) {
+                            QJsonObject record = decorder.json(op_cid);
+                            if (skipType.contains(record.value("$type").toString())) {
+                                continue;
+                            }
+                            qDebug().noquote()
+                                    << type << commit.time
+                                    << QDateTime::currentDateTimeUtc().toString(
+                                               "yyyy/MM/dd hh:mm:ss.zzz")
+                                    << commit.repo << op.action << record.value("$type").toString()
+                                    << record.value("text").toString().replace("\n", "").left(30);
 
-                         } else {
-                             qDebug().noquote()
-                                     << type << commit.time << commit.repo
-                                     << (commit.ops.isEmpty() ? "" : commit.ops.first().action);
-                             // qDebug().noquote() << QJsonDocument(json).toJson();
-                         }
+                        } else {
+                            qDebug().noquote() << type << commit.time
+                                               << QDateTime::currentDateTimeUtc().toString(
+                                                          "yyyy/MM/dd hh:mm:ss.zzz")
+                                               << commit.repo << op.path;
+                        }
+                    }
 
-                         if (commit.repo == stopper_did) {
-                             qDebug() << "-- Stop --";
-                             qDebug().noquote()
-                                     << QJsonDocument(cbor.toJsonValue().toObject()).toJson();
-                             QCoreApplication::quit();
-                         }
-                     });
+                    // } else {
+                    //     qDebug().noquote()
+                    //             << type << commit.time << commit.repo
+                    //             << (commit.ops.isEmpty() ? "" :
+                    //             commit.ops.first().action);
+                    // qDebug().noquote() << QJsonDocument(json).toJson();
+                }
+
+                if (commit.repo == stopper_did) {
+                    qDebug() << "-- Stop --";
+                    qDebug().noquote() << QJsonDocument(cbor.toJsonValue().toObject()).toJson();
+                    QCoreApplication::quit();
+                }
+            });
     client.open(url);
 
     return a.exec();
