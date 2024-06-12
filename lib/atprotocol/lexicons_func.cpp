@@ -1913,7 +1913,6 @@ void copyRepoOp(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::RepoOp &de
     if (!src.isEmpty()) {
         dest.action = src.value("action").toString();
         dest.path = src.value("path").toString();
-        dest.cid = src.value("cid").toObject().value("$link").toString();
     }
 }
 void copyCommit(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Commit &dest)
@@ -1922,7 +1921,6 @@ void copyCommit(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Commit &de
         dest.seq = src.value("seq").toInt();
         dest.tooBig = src.value("tooBig").toBool();
         dest.repo = src.value("repo").toString();
-        dest.commit = src.value("commit").toObject().value("$link").toString();
         dest.rev = src.value("rev").toString();
         dest.since = src.value("since").toString();
         for (const auto &s : src.value("ops").toArray()) {

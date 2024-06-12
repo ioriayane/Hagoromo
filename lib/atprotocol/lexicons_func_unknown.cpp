@@ -433,8 +433,9 @@ void copyRepoOp(const QCborValue &src, RepoOp &dest)
         const auto &src_m = src.toMap();
         dest.action = src_m.value("action").toString();
         dest.path = src_m.value("path").toString();
-        if (src_m.value("cid").isMap()) {
-            dest.cid = src_m.value("cid").toMap().value("$link").toString();
+        if (src_m.value("cid").isTag() && static_cast<int>(src_m.value("cid").tag()) == 42
+            && src_m.value("cid").taggedValue().isByteArray()) {
+            dest.cid = src_m.value("cid").taggedValue().toByteArray().mid(1);
         }
     }
 }
@@ -446,8 +447,9 @@ void copyCommit(const QCborValue &src, Commit &dest)
         dest.seq = src_m.value("seq").toInteger();
         dest.tooBig = src_m.value("tooBig").toBool();
         dest.repo = src_m.value("repo").toString();
-        if (src_m.value("commit").isMap()) {
-            dest.commit = src_m.value("commit").toMap().value("$link").toString();
+        if (src_m.value("commit").isTag() && static_cast<int>(src_m.value("commit").tag()) == 42
+            && src_m.value("commit").taggedValue().isByteArray()) {
+            dest.commit = src_m.value("commit").taggedValue().toByteArray().mid(1);
         }
         dest.rev = src_m.value("rev").toString();
         dest.since = src_m.value("since").toString();
@@ -456,6 +458,7 @@ void copyCommit(const QCborValue &src, Commit &dest)
             copyRepoOp(s, child);
             dest.ops.append(child);
         }
+        dest.blocks = src_m.value("blocks").toByteArray();
         dest.time = src_m.value("time").toString();
     }
 }

@@ -65,6 +65,7 @@ struct Label
     bool neg = false; // If true, this is a negation label, overwriting a previous label.
     QString cts; // datetime , Timestamp when this label was created.
     QString exp; // datetime , Timestamp at which this label expires (no longer applies).
+    QByteArray sig; // Signature of dag-cbor encoded label.
 };
 struct SelfLabel
 {
@@ -1402,7 +1403,7 @@ struct RepoOp
 {
     QString action;
     QString path;
-    QString cid; // For creates and updates, the new record CID. For deletions, null.
+    QByteArray cid; // For creates and updates, the new record CID. For deletions, null.
 };
 struct Commit
 {
@@ -1411,10 +1412,12 @@ struct Commit
             false; // Indicates that this commit contained too many ops, or data size was too large.
                    // Consumers will need to make a separate request to get missing data.
     QString repo; // did , The repo this event comes from.
-    QString commit; // Repo commit object CID.
+    QByteArray commit; // Repo commit object CID.
     QString rev; // The rev of the emitted commit. Note that this information is also in the commit
                  // object included in blocks, unless this is a tooBig event.
     QString since; // The rev of the last emitted commit from this repo (if any).
+    QByteArray
+            blocks; // CAR file containing relevant blocks, as a diff since the previous repo state.
     QList<RepoOp> ops;
     QString time; // datetime , Timestamp of when this message was originally broadcast.
 };
