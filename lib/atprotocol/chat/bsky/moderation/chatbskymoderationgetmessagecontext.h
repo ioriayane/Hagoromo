@@ -10,7 +10,8 @@ class ChatBskyModerationGetMessageContext : public AccessAtProtocol
 public:
     explicit ChatBskyModerationGetMessageContext(QObject *parent = nullptr);
 
-    void getMessageContext(const QString &messageId, const int before, const int after);
+    void getMessageContext(const QString &convoId, const QString &messageId, const int before,
+                           const int after);
 
     const QList<AtProtocolType::ChatBskyConvoDefs::MessageView> &messagesMessageViewList() const;
     const QList<AtProtocolType::ChatBskyConvoDefs::DeletedMessageView> &

@@ -12,12 +12,16 @@ ChatBskyModerationGetMessageContext::ChatBskyModerationGetMessageContext(QObject
 {
 }
 
-void ChatBskyModerationGetMessageContext::getMessageContext(const QString &messageId,
+void ChatBskyModerationGetMessageContext::getMessageContext(const QString &convoId,
+                                                            const QString &messageId,
                                                             const int before, const int after)
 {
     appendRawHeader("atproto-proxy", "did:web:api.bsky.chat#bsky_chat");
 
     QUrlQuery url_query;
+    if (!convoId.isEmpty()) {
+        url_query.addQueryItem(QStringLiteral("convoId"), convoId);
+    }
     if (!messageId.isEmpty()) {
         url_query.addQueryItem(QStringLiteral("messageId"), messageId);
     }

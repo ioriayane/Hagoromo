@@ -73,6 +73,16 @@ const bool &ComAtprotoServerCreateSession::emailAuthFactor() const
     return m_emailAuthFactor;
 }
 
+const bool &ComAtprotoServerCreateSession::active() const
+{
+    return m_active;
+}
+
+const QString &ComAtprotoServerCreateSession::status() const
+{
+    return m_status;
+}
+
 bool ComAtprotoServerCreateSession::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
@@ -93,6 +103,9 @@ bool ComAtprotoServerCreateSession::parseJson(bool success, const QString reply_
                                                       m_emailConfirmed);
         AtProtocolType::LexiconsTypeUnknown::copyBool(json_doc.object().value("emailAuthFactor"),
                                                       m_emailAuthFactor);
+        AtProtocolType::LexiconsTypeUnknown::copyBool(json_doc.object().value("active"), m_active);
+        AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("status"),
+                                                        m_status);
     }
 
     return success;

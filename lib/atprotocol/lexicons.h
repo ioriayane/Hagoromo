@@ -37,6 +37,7 @@ struct ThreadGateAllow
 
 namespace AppBskyActorDefs {
 struct ProfileView;
+struct ProfileViewBasic;
 }
 namespace AppBskyEmbedRecord {
 struct Main;
@@ -162,6 +163,11 @@ struct ProfileAssociated
     bool labeler = false;
     ProfileAssociatedChat chat;
 };
+struct KnownFollowers
+{
+    int count = 0;
+    QList<QSharedPointer<ProfileViewBasic>> followers;
+};
 struct ViewerState
 {
     bool muted = false;
@@ -171,6 +177,7 @@ struct ViewerState
     AppBskyGraphDefs::ListViewBasic blockingByList;
     QString following; // at-uri
     QString followedBy; // at-uri
+    KnownFollowers knownFollowers;
 };
 struct ProfileViewBasic
 {
@@ -1058,24 +1065,24 @@ enum class ConvoViewLastMessageType : int {
 };
 enum class MessageViewEmbedType : int {
     none,
-    embed_AppBskyEmbedRecord_Main,
+    embed_AppBskyEmbedRecord_View,
 };
-enum class MessageEmbedType : int {
+enum class MessageInputEmbedType : int {
     none,
     embed_AppBskyEmbedRecord_Main,
 };
 struct MessageRef
 {
     QString did; // did
+    QString convoId;
     QString messageId;
 };
-struct Message
+struct MessageInput
 {
-    QString id;
     QString text;
     QList<AppBskyRichtextFacet::Main> facets;
     // union start : embed
-    MessageEmbedType embed_type = MessageEmbedType::none;
+    MessageInputEmbedType embed_type = MessageInputEmbedType::none;
     AppBskyEmbedRecord::Main embed_AppBskyEmbedRecord_Main;
     // union end : embed
 };
@@ -1091,7 +1098,7 @@ struct MessageView
     QList<AppBskyRichtextFacet::Main> facets;
     // union start : embed
     MessageViewEmbedType embed_type = MessageViewEmbedType::none;
-    AppBskyEmbedRecord::Main embed_AppBskyEmbedRecord_Main;
+    AppBskyEmbedRecord::View embed_AppBskyEmbedRecord_View;
     // union end : embed
     MessageViewSender sender;
     QString sentAt; // datetime
@@ -1153,7 +1160,7 @@ namespace ChatBskyConvoSendMessageBatch {
 struct BatchItem
 {
     QString convoId;
-    ChatBskyConvoDefs::Message message;
+    ChatBskyConvoDefs::MessageInput message;
 };
 }
 
@@ -1205,6 +1212,7 @@ struct AccountView
     bool invitesDisabled = false;
     QString emailConfirmedAt; // datetime
     QString inviteNote;
+    QString deactivatedAt; // datetime
 };
 struct RepoRef
 {
@@ -1284,6 +1292,7 @@ struct AppPassword
     QString name;
     QString password;
     QString createdAt; // datetime
+    bool privileged = false;
 };
 }
 
@@ -1315,6 +1324,7 @@ struct AppPassword
 {
     QString name;
     QString createdAt; // datetime
+    bool privileged = false;
 };
 }
 
@@ -1325,6 +1335,10 @@ struct Repo
     QString did; // did
     QString head; // cid , Current repo commit CID
     QString rev;
+    bool active = false;
+    QString status; // If active=false, this optional field indicates a possible reason for why the
+                    // account is not active. If active=false and no status is supplied, then the
+                    // host makes no claim for why the repository is no longer being hosted.
 };
 }
 
@@ -1353,6 +1367,20 @@ struct Identity
     int seq = 0;
     QString did; // did
     QString time; // datetime
+    QString handle; // handle , The current handle for the account, or 'handle.invalid' if
+                    // validation fails. This field is optional, might have been validated or
+                    // passed-through from an upstream source. Semantics and behaviors for PDS vs
+                    // Relay may evolve in the future; see atproto specs for more details.
+};
+struct Account
+{
+    int seq = 0;
+    QString did; // did
+    QString time; // datetime
+    bool active = false; // Indicates that the account has a repository which can be fetched from
+                         // the host that emitted this event.
+    QString status; // If active=false, this optional field indicates a reason for why the account
+                    // is not active.
 };
 struct Handle
 {
@@ -1453,6 +1481,7 @@ enum class ModEventViewSubjectType : int {
     none,
     subject_ComAtprotoAdminDefs_RepoRef,
     subject_ComAtprotoRepoStrongRef_Main,
+    subject_ChatBskyConvoDefs_MessageRef,
 };
 struct ModEventTakedown
 {
@@ -1547,6 +1576,7 @@ struct ModEventView
     ModEventViewSubjectType subject_type = ModEventViewSubjectType::none;
     ComAtprotoAdminDefs::RepoRef subject_ComAtprotoAdminDefs_RepoRef;
     ComAtprotoRepoStrongRef::Main subject_ComAtprotoRepoStrongRef_Main;
+    ChatBskyConvoDefs::MessageRef subject_ChatBskyConvoDefs_MessageRef;
     // union end : subject
     QList<QString> subjectBlobCids;
     QString createdBy; // did
@@ -1599,6 +1629,7 @@ struct RepoView
     ComAtprotoServerDefs::InviteCode invitedBy;
     bool invitesDisabled = false;
     QString inviteNote;
+    QString deactivatedAt; // datetime
 };
 struct RepoViewNotFound
 {
@@ -1697,6 +1728,7 @@ struct RepoViewDetail
     bool invitesDisabled = false;
     QString inviteNote;
     QString emailConfirmedAt; // datetime
+    QString deactivatedAt; // datetime
 };
 struct RecordViewDetail
 {
@@ -1708,6 +1740,18 @@ struct RecordViewDetail
     QString indexedAt; // datetime
     ModerationDetail moderation;
     RepoView repo;
+};
+}
+
+// tools.ozone.server.getConfig
+namespace ToolsOzoneServerGetConfig {
+struct ServiceConfig
+{
+    QString url; // uri
+};
+struct ViewerConfig
+{
+    QString role;
 };
 }
 
