@@ -8,7 +8,6 @@
 #include "atprotocol/chat/bsky/convo/chatbskyconvolistconvos.h"
 #include "atprotocol/chat/bsky/convo/chatbskyconvosendmessage.h"
 #include "atprotocol/lexicons_func_unknown.h"
-#include "tools/chatlogsubscriber.h"
 
 using AtProtocolInterface::ChatBskyConvoDeleteMessageForSelf;
 using AtProtocolInterface::ChatBskyConvoGetConvo;
@@ -21,19 +20,25 @@ using namespace AtProtocolType::ChatBskyConvoDefs;
 using namespace AtProtocolType;
 
 ChatMessageListModel::ChatMessageListModel(QObject *parent)
-    : AtpChatAbstractListModel { parent }, m_runSending(false), m_ready(false)
+    : AtpChatAbstractListModel { parent },
+      m_chatLogConnector(this),
+      m_runSending(false),
+      m_ready(false)
 {
-    ChatLogSubscriber *log = ChatLogSubscriber::getInstance();
-    connect(log, &ChatLogSubscriber::receiveLogs, this, &ChatMessageListModel::receiveLogs);
-    connect(log, &ChatLogSubscriber::errorOccured, this, &ChatMessageListModel::errorLogs);
+    connect(&m_chatLogConnector, &ChatLogConnector::receiveLogs, this,
+            &ChatMessageListModel::receiveLogs);
+    connect(&m_chatLogConnector, &ChatLogConnector::errorOccured, this,
+            &ChatMessageListModel::errorLogs);
 }
 
 ChatMessageListModel::~ChatMessageListModel()
 {
+    disconnect(&m_chatLogConnector, &ChatLogConnector::receiveLogs, this,
+               &ChatMessageListModel::receiveLogs);
+    disconnect(&m_chatLogConnector, &ChatLogConnector::errorOccured, this,
+               &ChatMessageListModel::errorLogs);
     ChatLogSubscriber *log = ChatLogSubscriber::getInstance();
     log->stop(account());
-    disconnect(log, &ChatLogSubscriber::receiveLogs, this, &ChatMessageListModel::receiveLogs);
-    disconnect(log, &ChatLogSubscriber::errorOccured, this, &ChatMessageListModel::errorLogs);
 }
 
 int ChatMessageListModel::rowCount(const QModelIndex &parent) const
@@ -170,7 +175,7 @@ bool ChatMessageListModel::getLatest()
                     messages->getMessages(convoId(), 0, QString());
                 } else {
                     ChatLogSubscriber *log = ChatLogSubscriber::getInstance();
-                    log->setAccount(account());
+                    log->setAccount(account(), &m_chatLogConnector);
                     if (autoLoading()) {
                         log->start(account(), m_logCursor);
                     }
@@ -467,12 +472,10 @@ void ChatMessageListModel::setReady(bool newReady)
     emit readyChanged();
 }
 
-void ChatMessageListModel::receiveLogs(const QString &key,
-                                       const AtProtocolInterface::ChatBskyConvoGetLog &log)
+void ChatMessageListModel::receiveLogs(const AtProtocolInterface::ChatBskyConvoGetLog &log)
 {
-    qDebug().quote() << "receiveLogs" << this << key << log.logsLogCreateMessageList().length();
-    if (!ChatLogSubscriber::isMine(account(), key))
-        return;
+    qDebug().quote() << "receiveLogs" << this << account().did
+                     << log.logsLogCreateMessageList().length();
 
     // 別カラムで同一アカウントのチャットを閉じると再スタートさせるので、そのときにチャットを開いたときの古いものをしようしないようにする
     if (!log.cursor().isEmpty())
@@ -497,13 +500,9 @@ void ChatMessageListModel::receiveLogs(const QString &key,
     copyFrom(messages, deleted_messages, true);
 }
 
-void ChatMessageListModel::errorLogs(const QString &key, const QString &code,
-                                     const QString &message)
+void ChatMessageListModel::errorLogs(const QString &code, const QString &message)
 {
-    qDebug().quote() << "errorLogs" << this << key << code << message;
-    ChatLogSubscriber *log = ChatLogSubscriber::getInstance();
-    if (!log->isMine(account(), key))
-        return;
+    qDebug().quote() << "errorLogs" << this << account().did << code << message;
 
     emit errorOccured(code, message);
 }

@@ -1,6 +1,7 @@
 #include "chatlogsubscriber.h"
 
 #include <QDebug>
+#include <QPointer>
 #include <QTimer>
 
 using namespace AtProtocolInterface;
@@ -21,8 +22,12 @@ public:
     void stop();
     void getLatest();
 
+    void appendConnector(ChatLogConnector *connector);
+    void cleanConnector();
+
 private:
     ChatLogSubscriber *q;
+    QHash<QObject *, QPointer<ChatLogConnector>> m_connector;
 
     QTimer m_timer;
     bool m_running;
@@ -76,6 +81,8 @@ void ChatLogSubscriber::Private::getLatest()
         return;
     m_running = true;
 
+    cleanConnector();
+
     qDebug().noquote() << this << "getLatest" << m_cursor << &m_cursor;
     ChatBskyConvoGetLog *log = new ChatBskyConvoGetLog(this);
     connect(log, &ChatBskyConvoGetLog::finished, this, [=](bool success) {
@@ -89,9 +96,21 @@ void ChatLogSubscriber::Private::getLatest()
                 this->m_cursor = log->cursor();
             }
 
-            emit q->receiveLogs(key, *log);
+            for (auto connector : qAsConst(m_connector)) {
+                if (!connector) {
+                    // already deleted
+                } else {
+                    emit connector->receiveLogs(*log);
+                }
+            }
         } else {
-            emit q->errorOccured(key, log->errorCode(), log->errorMessage());
+            for (auto connector : qAsConst(m_connector)) {
+                if (!connector) {
+                    // already deleted
+                } else {
+                    emit connector->errorOccured(log->errorCode(), log->errorMessage());
+                }
+            }
         }
         m_running = false;
         log->deleteLater();
@@ -100,6 +119,26 @@ void ChatLogSubscriber::Private::getLatest()
     log->setAccount(account());
     log->setService(account().service_endpoint);
     log->getLog(m_cursor);
+}
+
+void ChatLogSubscriber::Private::appendConnector(ChatLogConnector *connector)
+{
+    if (connector == nullptr)
+        return;
+    if (m_connector.contains(connector->parent())) {
+        return;
+    }
+    m_connector[connector->parent()] = connector;
+}
+
+void ChatLogSubscriber::Private::cleanConnector()
+{
+    for (const auto key : m_connector.keys()) {
+        if (!m_connector[key]) {
+            m_connector.remove(key);
+            qDebug() << "clean up connector" << account().did << m_connector.count();
+        }
+    }
 }
 
 ChatLogSubscriber::ChatLogSubscriber(QObject *parent) : QObject { parent }
@@ -121,7 +160,8 @@ ChatLogSubscriber *ChatLogSubscriber::getInstance()
     return &instance;
 }
 
-void ChatLogSubscriber::setAccount(const AtProtocolInterface::AccountData &account)
+void ChatLogSubscriber::setAccount(const AtProtocolInterface::AccountData &account,
+                                   ChatLogConnector *connector)
 {
     if (!ChatLogSubscriber::Private::validateAccount(account))
         return;
@@ -130,6 +170,7 @@ void ChatLogSubscriber::setAccount(const AtProtocolInterface::AccountData &accou
         d[key] = new ChatLogSubscriber::Private(this);
     }
     d[key]->setAccount(account);
+    d[key]->appendConnector(connector);
 }
 
 void ChatLogSubscriber::start(const AtProtocolInterface::AccountData &account,
@@ -151,11 +192,4 @@ void ChatLogSubscriber::stop(const AtProtocolInterface::AccountData &account)
     if (d.contains(key)) {
         d[key]->stop();
     }
-}
-
-bool ChatLogSubscriber::isMine(const AtProtocolInterface::AccountData &account, const QString &key)
-{
-    if (!ChatLogSubscriber::Private::validateAccount(account) || key.isEmpty())
-        return false;
-    return (ChatLogSubscriber::Private::accountKey(account) == key);
 }

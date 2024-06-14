@@ -7,6 +7,18 @@
 #include <QObject>
 #include <QHash>
 
+class ChatLogConnector : public QObject
+{
+    Q_OBJECT
+public:
+    explicit ChatLogConnector(QObject *parent) : QObject(parent) { }
+    ~ChatLogConnector() { }
+
+signals:
+    void receiveLogs(const AtProtocolInterface::ChatBskyConvoGetLog &log);
+    void errorOccured(const QString &code, const QString &message);
+};
+
 class ChatLogSubscriber : public QObject
 {
     Q_OBJECT
@@ -16,15 +28,9 @@ class ChatLogSubscriber : public QObject
 public:
     static ChatLogSubscriber *getInstance();
 
-    void setAccount(const AtProtocolInterface::AccountData &account);
+    void setAccount(const AtProtocolInterface::AccountData &account, ChatLogConnector *connector);
     void start(const AtProtocolInterface::AccountData &account, const QString &cursor);
     void stop(const AtProtocolInterface::AccountData &account);
-
-    static bool isMine(const AtProtocolInterface::AccountData &account, const QString &key);
-signals:
-    // シグナルは全アカウント全チャットにブロードキャストされるので自分の分か判断すること！
-    void receiveLogs(const QString &key, const AtProtocolInterface::ChatBskyConvoGetLog &log);
-    void errorOccured(const QString &key, const QString &code, const QString &message);
 
 private:
     class Private;

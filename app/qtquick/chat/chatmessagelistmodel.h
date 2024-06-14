@@ -3,6 +3,7 @@
 
 #include "atpchatabstractlistmodel.h"
 #include "atprotocol/chat/bsky/convo/chatbskyconvogetlog.h"
+#include "tools/chatlogsubscriber.h"
 
 class ChatMessageListModel : public AtpChatAbstractListModel
 {
@@ -81,8 +82,8 @@ signals:
     void readyChanged();
 
 public slots:
-    void receiveLogs(const QString &key, const AtProtocolInterface::ChatBskyConvoGetLog &log);
-    void errorLogs(const QString &key, const QString &code, const QString &message);
+    void receiveLogs(const AtProtocolInterface::ChatBskyConvoGetLog &log);
+    void errorLogs(const QString &code, const QString &message);
 
 protected:
     QHash<int, QByteArray> roleNames() const;
@@ -99,6 +100,7 @@ private:
 
     QHash<QString, AtProtocolType::ChatBskyConvoDefs::MessageView> m_messageHash;
     AtProtocolType::ChatBskyConvoDefs::ConvoView m_convo;
+    ChatLogConnector m_chatLogConnector;
     QString m_logCursor;
     QString m_convoId;
     bool m_runSending;
