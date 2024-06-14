@@ -31,6 +31,21 @@ public:
         TextPlainRole,
         SentAtRole,
 
+        HasQuoteRecordRole,
+        QuoteRecordCidRole,
+        QuoteRecordUriRole,
+        QuoteRecordDisplayNameRole,
+        QuoteRecordHandleRole,
+        QuoteRecordAvatarRole,
+        QuoteRecordRecordTextRole,
+        QuoteRecordIndexedAtRole,
+        QuoteRecordEmbedImagesRole,
+        QuoteRecordEmbedImagesFullRole,
+        QuoteRecordEmbedImagesAltRole,
+        QuoteRecordBlockedRole,
+
+        QuoteFilterMatchedRole,
+
         RunningRole,
     };
     Q_ENUM(ChatMessageListModelRoles);

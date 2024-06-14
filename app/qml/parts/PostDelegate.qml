@@ -35,10 +35,10 @@ ClickableFrame {
     property alias postImagePreview: postImagePreview
     property alias quoteFilterFrame: quoteFilterFrame
     property alias quoteRecordFrame: quoteRecordFrame
-    property alias quoteRecordAvatarImage: quoteRecordAvatarImage
-    property alias quoteRecordAuthor: quoteRecordAuthor
-    property alias quoteRecordRecordText: quoteRecordRecordText
-    property alias quoteRecordImagePreview: quoteRecordImagePreview
+    property alias quoteRecordAvatarImage: quoteRecordFrame.quoteRecordAvatarImage
+    property alias quoteRecordAuthor: quoteRecordFrame.quoteRecordAuthor
+    property alias quoteRecordRecordText: quoteRecordFrame.quoteRecordRecordText
+    property alias quoteRecordImagePreview: quoteRecordFrame.quoteRecordImagePreview
     property alias blockedQuoteFrame: blockedQuoteFrame
     property alias externalLinkFrame: externalLinkFrame
     property alias feedGeneratorFrame: feedGeneratorFrame
@@ -252,49 +252,16 @@ ClickableFrame {
                         Layout.topMargin: 5
                         visible: false
                     }
-                    ClickableFrame {
+                    QuoteRecord {
                         id: quoteRecordFrame
                         Layout.preferredWidth: parent.width
                         Layout.topMargin: 5
                         visible: postFrame.hasQuote &&
                                  quoteFilterFrame.showContent &&
                                  contentMediaFilterFrame.showContent
-                        RowLayout {
-                            id: quoteRecordLayout
-                            spacing: 10
-                            AvatarImage {
-                                id: quoteRecordAvatarImage
-                                Layout.preferredWidth: AdjustedValues.i16
-                                Layout.preferredHeight: AdjustedValues.i16
-                                Layout.alignment: Qt.AlignTop
-                            }
-                            ColumnLayout {
-                                Layout.fillWidth: true
-                                property int basisWidth: bodyLayout.basisWidth - quoteRecordFrame.padding * 2 -
-                                                         quoteRecordLayout.spacing - quoteRecordAvatarImage.Layout.preferredWidth
-                                Author {
-                                    id: quoteRecordAuthor
-                                    layoutWidth: parent.basisWidth
-                                }
-                                Label {
-                                    id: quoteRecordRecordText
-                                    Layout.preferredWidth: parent.basisWidth
-                                    Layout.maximumWidth: parent.basisWidth
-                                    visible: text.length > 0
-                                    textFormat: Text.StyledText
-                                    wrapMode: Text.WrapAnywhere
-                                    font.pointSize: AdjustedValues.f10
-                                    lineHeight: 1.3
-                                    onLinkActivated: (url) => openLink(url)
-                                    onHoveredLinkChanged: displayLink(hoveredLink)
-                                }
-                                ImagePreview {
-                                    id: quoteRecordImagePreview
-                                    layoutWidth: parent.basisWidth
-                                    Layout.topMargin: 5
-                                }
-                            }
-                        }
+                        basisWidth: bodyLayout.basisWidth
+                        onOpenLink: (url) => postFrame.openLink(url)
+                        onDisplayLink: (url) => postFrame.displayLink(url)
                     }
                     Frame {
                         id: blockedQuoteFrame

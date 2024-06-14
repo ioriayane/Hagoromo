@@ -53,6 +53,7 @@ QVariant ChatMessageListModel::item(int row, ChatMessageListModelRoles role) con
         return QVariant();
 
     const auto &current = m_messageHash[m_idList.at(row)];
+    const auto &view_record = current.embed_AppBskyEmbedRecord_View.record_ViewRecord;
 
     if (role == IdRole)
         return current.id;
@@ -74,7 +75,47 @@ QVariant ChatMessageListModel::item(int row, ChatMessageListModelRoles role) con
     else if (role == SentAtRole)
         return LexiconsTypeUnknown::formatDateTime(current.sentAt);
 
-    else if (role == RunningRole)
+    else if (role == HasQuoteRecordRole)
+        return (current.embed_type == MessageViewEmbedType::embed_AppBskyEmbedRecord_View
+                && (current.embed_AppBskyEmbedRecord_View.record_type
+                            == AppBskyEmbedRecord::ViewRecordType::record_ViewRecord
+                    || current.embed_AppBskyEmbedRecord_View.record_type
+                            == AppBskyEmbedRecord::ViewRecordType::record_ViewNotFound
+                    || current.embed_AppBskyEmbedRecord_View.record_type
+                            == AppBskyEmbedRecord::ViewRecordType::record_ViewBlocked));
+    else if (role == QuoteRecordCidRole)
+        return view_record.cid;
+    else if (role == QuoteRecordUriRole)
+        return view_record.uri;
+    else if (role == QuoteRecordDisplayNameRole)
+        return view_record.author.displayName;
+    else if (role == QuoteRecordHandleRole)
+        return view_record.author.handle;
+    else if (role == QuoteRecordAvatarRole)
+        return view_record.author.avatar;
+    else if (role == QuoteRecordRecordTextRole)
+        return LexiconsTypeUnknown::copyRecordText(view_record.value);
+    else if (role == QuoteRecordIndexedAtRole)
+        return LexiconsTypeUnknown::formatDateTime(view_record.indexedAt);
+    else if (role == QuoteRecordEmbedImagesRole)
+        return LexiconsTypeUnknown::copyImagesFromRecord(view_record,
+                                                         LexiconsTypeUnknown::CopyImageType::Thumb);
+    else if (role == QuoteRecordEmbedImagesFullRole)
+        return LexiconsTypeUnknown::copyImagesFromRecord(
+                view_record, LexiconsTypeUnknown::CopyImageType::FullSize);
+    else if (role == QuoteRecordEmbedImagesAltRole)
+        return LexiconsTypeUnknown::copyImagesFromRecord(view_record,
+                                                         LexiconsTypeUnknown::CopyImageType::Alt);
+    else if (role == QuoteRecordBlockedRole) {
+        return (current.embed_AppBskyEmbedRecord_View.record_type
+                        == AppBskyEmbedRecord::ViewRecordType::record_ViewNotFound
+                || current.embed_AppBskyEmbedRecord_View.record_type
+                        == AppBskyEmbedRecord::ViewRecordType::record_ViewBlocked);
+        // ラベラーの情報を取得できるようにする
+    } else if (role == QuoteFilterMatchedRole) {
+        return false;
+
+    } else if (role == RunningRole)
         return m_itemRunningHash.value(m_idList.at(row), false);
 
     return QVariant();
@@ -242,6 +283,21 @@ QHash<int, QByteArray> ChatMessageListModel::roleNames() const
     roles[TextRole] = "text";
     roles[TextPlainRole] = "textPlain";
     roles[SentAtRole] = "sentAt";
+
+    roles[HasQuoteRecordRole] = "hasQuoteRecord";
+    roles[QuoteRecordCidRole] = "quoteRecordCid";
+    roles[QuoteRecordUriRole] = "quoteRecordUri";
+    roles[QuoteRecordDisplayNameRole] = "quoteRecordDisplayName";
+    roles[QuoteRecordHandleRole] = "quoteRecordHandle";
+    roles[QuoteRecordAvatarRole] = "quoteRecordAvatar";
+    roles[QuoteRecordRecordTextRole] = "quoteRecordRecordText";
+    roles[QuoteRecordIndexedAtRole] = "quoteRecordIndexedAt";
+    roles[QuoteRecordEmbedImagesRole] = "quoteRecordEmbedImages";
+    roles[QuoteRecordEmbedImagesFullRole] = "quoteRecordEmbedImagesFull";
+    roles[QuoteRecordEmbedImagesAltRole] = "quoteRecordEmbedImagesAlt";
+    roles[QuoteRecordBlockedRole] = "quoteRecordBlocked";
+
+    roles[QuoteFilterMatchedRole] = "quoteFilterMatched";
 
     roles[RunningRole] = "running";
 
