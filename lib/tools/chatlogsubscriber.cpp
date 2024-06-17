@@ -15,9 +15,6 @@ public:
     explicit Private(ChatLogSubscriber *parent);
     ~Private();
 
-    static bool validateAccount(const AccountData &account);
-    static QString accountKey(const AccountData &account);
-
     void start(const QString &cursor);
     void stop();
     void getLatest();
@@ -45,17 +42,6 @@ ChatLogSubscriber::Private::~Private()
 {
     qDebug() << this << "ChatLogSubscriber::~Private()";
     stop();
-}
-
-bool ChatLogSubscriber::Private::validateAccount(const AccountData &account)
-{
-    return (account.service.startsWith("http") && account.service_endpoint.startsWith("http")
-            && account.did.startsWith("did:") && !account.accessJwt.isEmpty());
-}
-
-QString ChatLogSubscriber::Private::accountKey(const AccountData &account)
-{
-    return QString("%1_%2").arg(account.service_endpoint).arg(account.did);
 }
 
 void ChatLogSubscriber::Private::start(const QString &cursor)
@@ -86,7 +72,7 @@ void ChatLogSubscriber::Private::getLatest()
     qDebug().noquote() << this << "getLatest" << m_cursor << &m_cursor;
     ChatBskyConvoGetLog *log = new ChatBskyConvoGetLog(this);
     connect(log, &ChatBskyConvoGetLog::finished, this, [=](bool success) {
-        const QString key = ChatLogSubscriber::Private::accountKey(account());
+        const QString key = account().accountKey();
 
         qDebug().noquote() << this << "receive" << success << this->m_cursor << "->"
                            << log->cursor() << key;
@@ -163,9 +149,9 @@ ChatLogSubscriber *ChatLogSubscriber::getInstance()
 void ChatLogSubscriber::setAccount(const AtProtocolInterface::AccountData &account,
                                    ChatLogConnector *connector)
 {
-    if (!ChatLogSubscriber::Private::validateAccount(account))
+    if (!account.isValid())
         return;
-    const QString key = ChatLogSubscriber::Private::accountKey(account);
+    const QString key = account.accountKey();
     if (!d.contains(key)) {
         d[key] = new ChatLogSubscriber::Private(this);
     }
@@ -176,9 +162,9 @@ void ChatLogSubscriber::setAccount(const AtProtocolInterface::AccountData &accou
 void ChatLogSubscriber::start(const AtProtocolInterface::AccountData &account,
                               const QString &cursor)
 {
-    if (!ChatLogSubscriber::Private::validateAccount(account))
+    if (!account.isValid())
         return;
-    const QString key = ChatLogSubscriber::Private::accountKey(account);
+    const QString key = account.accountKey();
     if (d.contains(key)) {
         d[key]->start(cursor);
     }
@@ -186,9 +172,9 @@ void ChatLogSubscriber::start(const AtProtocolInterface::AccountData &account,
 
 void ChatLogSubscriber::stop(const AtProtocolInterface::AccountData &account)
 {
-    if (!ChatLogSubscriber::Private::validateAccount(account))
+    if (!account.isValid())
         return;
-    const QString key = ChatLogSubscriber::Private::accountKey(account);
+    const QString key = account.accountKey();
     if (d.contains(key)) {
         d[key]->stop();
     }
