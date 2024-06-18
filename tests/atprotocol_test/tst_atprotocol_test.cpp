@@ -27,6 +27,7 @@
 #include "atprotocol/lexicons_func_unknown.h"
 #include "tools/opengraphprotocol.h"
 #include "tools/configurablelabels.h"
+#include "tools/labelerprovider.h"
 #include "tools/listitemscache.h"
 #include "tools/pinnedpostcache.h"
 #include "unittest_common.h"
@@ -56,6 +57,7 @@ private slots:
     void test_ConfigurableLabels_save();
     void test_ConfigurableLabels_mutedword();
     void test_ConfigurableLabels_contains_mutedword();
+    void test_LabelerProvider();
     void test_ComAtprotoRepoCreateRecord_post();
     void test_ComAtprotoRepoCreateRecord_threadgate();
     void test_AppBskyFeedGetFeedGenerator();
@@ -1489,6 +1491,91 @@ void atprotocol_test::test_ConfigurableLabels_contains_mutedword()
                                       QStringList() << "FUGA"
                                                     << "word4",
                                       false)
+            == true);
+}
+
+void atprotocol_test::test_LabelerProvider()
+{
+    AtProtocolInterface::AccountData account = m_account;
+    LabelerProvider *provider = LabelerProvider::getInstance();
+    LabelerConnector *connector = new LabelerConnector(this);
+
+    account.did = "did:plc:user";
+    account.handle = "user_handle";
+    account.accessJwt = "dummy_jwt";
+    account.service_endpoint =
+            QString("http://localhost:%1/response/labels/provider").arg(m_listenPort);
+
+    qDebug().noquote() << "-- 1 ----------------------------------------";
+
+    account.service = QString("http://localhost:%1/response/labels/provider/1").arg(m_listenPort);
+    provider->setAccount(account);
+    {
+        QSignalSpy spy(connector, SIGNAL(finished(bool)));
+        provider->update(account, connector, LabelerProvider::RefleshMode::RefleshAuto);
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    QVERIFY(provider->labelerDids(account)
+            == QStringList() << "__globally__"
+                             << "did:plc:ar7c4by46qjdydhdevvrndac"
+                             << "did:plc:original_labeler_did");
+
+    delete connector;
+    connector = new LabelerConnector(this);
+
+    qDebug().noquote() << "-- 2 ----------------------------------------";
+
+    account.service = QString("http://localhost:%1/response/labels/provider/2").arg(m_listenPort);
+    provider->setAccount(account);
+    {
+        QSignalSpy spy(connector, SIGNAL(finished(bool)));
+        provider->update(account, connector, LabelerProvider::RefleshMode::RefleshAuto);
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    QVERIFY2(provider->labelerDids(account)
+                     == QStringList() << "__globally__"
+                                      << "did:plc:ar7c4by46qjdydhdevvrndac"
+                                      << "did:plc:original_labeler_did",
+             QString(provider->labelerDids(account).join(",")).toLocal8Bit());
+
+    qDebug().noquote() << "-- 3 ----------------------------------------";
+
+    provider->setRefreshInterval(account, 0);
+
+    {
+        QSignalSpy spy(connector, SIGNAL(finished(bool)));
+        provider->update(account, connector, LabelerProvider::RefleshMode::RefleshAuto);
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    QVERIFY2(provider->labelerDids(account)
+                     == QStringList() << "__globally__"
+                                      << "did:plc:ar7c4by46qjdydhdevvrndac"
+                                      << "did:plc:original_labeler_did",
+             QString(provider->labelerDids(account).join(",")).toLocal8Bit());
+
+    QVERIFY(provider->visibility(account, "hoge", true) == ConfigurableLabelStatus::Show);
+    QVERIFY(provider->visibility(account, "porn", true) == ConfigurableLabelStatus::Show);
+    QVERIFY(provider->visibility(account, "sexual", true) == ConfigurableLabelStatus::Warning);
+    QVERIFY(provider->visibility(account, "graphic-media", true) == ConfigurableLabelStatus::Hide);
+    QVERIFY(provider->visibility(account, "nudity", true) == ConfigurableLabelStatus::Warning);
+
+    QString labeler_did = "did:plc:ar7c4by46qjdydhdevvrndac";
+    QVERIFY(provider->visibility(account, "rumor", false, labeler_did)
+            == ConfigurableLabelStatus::Hide);
+
+    QVERIFY(provider->message(account, "porn", true) == "Sexually Explicit");
+    QVERIFY(provider->message(account, "sexual", true) == "Sexually Suggestive");
+    QVERIFY(provider->message(account, "graphic-media", true) == "Graphic Media");
+    QVERIFY(provider->message(account, "nudity", true) == "Non-sexual Nudity");
+
+    QVERIFY(provider->containsMutedWords(account, "hoge\ntest3-4 fuga\tpiyo foooo",
+                                         QStringList() << "hoge", false)
             == true);
 }
 

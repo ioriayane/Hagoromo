@@ -90,6 +90,7 @@ SOURCES += \
     $$PWD/tools/chatlogsubscriber.cpp \
     $$PWD/tools/configurablelabels.cpp \
     $$PWD/tools/imagecompressor.cpp \
+    $$PWD/tools/labelerprovider.cpp \
     $$PWD/tools/leb128.cpp \
     $$PWD/tools/listitemscache.cpp \
     $$PWD/tools/opengraphprotocol.cpp \
@@ -184,6 +185,7 @@ HEADERS += \
     $$PWD/tools/chatlogsubscriber.h \
     $$PWD/tools/configurablelabels.h \
     $$PWD/tools/imagecompressor.h \
+    $$PWD/tools/labelerprovider.h \
     $$PWD/tools/leb128.h \
     $$PWD/tools/listitemscache.h \
     $$PWD/tools/opengraphprotocol.h \

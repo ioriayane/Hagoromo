@@ -46,10 +46,9 @@ struct AccountData
 
     bool isValid() const
     {
-        return (service.startsWith("http") && service_endpoint.startsWith("http")
-                && did.startsWith("did:") && !accessJwt.isEmpty());
+        return (service.startsWith("http") && did.startsWith("did:") && !accessJwt.isEmpty());
     }
-    QString accountKey() const { return QString("%1_%2").arg(service_endpoint).arg(did); }
+    QString accountKey() const { return QString("%1_%2").arg(QUrl(service).host()).arg(did); }
 };
 
 class AtProtocolAccount : public QObject
