@@ -226,7 +226,6 @@ private:
     QTimer m_timer;
     AtProtocolInterface::AccountData m_account;
     int m_contentFilterRefreshCounter;
-    ConfigurableLabels m_contentFilterLabels;
 
     bool m_running;
     int m_loadingInterval;

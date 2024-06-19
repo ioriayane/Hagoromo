@@ -1,6 +1,7 @@
 #include "atpabstractlistmodel.h"
 #include "atprotocol/com/atproto/sync/comatprotosyncgetblob.h"
 #include "atprotocol/lexicons_func_unknown.h"
+#include "tools/labelerprovider.h"
 #include "common.h"
 #include "translator.h"
 
@@ -279,26 +280,16 @@ int AtpAbstractListModel::searchInsertPosition(const QString &cid)
 
 void AtpAbstractListModel::updateContentFilterLabels(std::function<void()> callback)
 {
-    ConfigurableLabels *labels = new ConfigurableLabels(this);
-    *labels = m_contentFilterLabels;
-    if (m_contentFilterRefreshCounter == 0) {
-        labels->setRefreshLabelers(true);
-    }
-    m_contentFilterRefreshCounter++;
-    if (m_contentFilterRefreshCounter > 10) {
-        m_contentFilterRefreshCounter = 0;
-    }
-    qDebug().nospace() << "m_contentFilterRefreshCounter=" << m_contentFilterRefreshCounter;
+    LabelerProvider *provider = LabelerProvider::getInstance();
+    LabelerConnector *connector = new LabelerConnector(this);
 
-    connect(labels, &ConfigurableLabels::finished, this, [=](bool success) {
-        if (success) {
-            m_contentFilterLabels = *labels;
-        }
+    connect(connector, &LabelerConnector::finished, this, [=](bool success) {
+        if (success) { }
         callback();
-        labels->deleteLater();
+        connector->deleteLater();
     });
-    labels->setAccount(account());
-    labels->load();
+    provider->setAccount(account());
+    provider->update(account(), connector, LabelerProvider::RefleshAuto);
 }
 
 ConfigurableLabelStatus AtpAbstractListModel::getContentFilterStatus(
@@ -809,26 +800,26 @@ QString AtpAbstractListModel::atUriToOfficialUrl(const QString &uri, const QStri
 
 QStringList AtpAbstractListModel::labelerDids() const
 {
-    return m_contentFilterLabels.labelerDids();
+    return LabelerProvider::getInstance()->labelerDids(account());
 }
 
 ConfigurableLabelStatus AtpAbstractListModel::visibilityBylabeler(const QString &label,
                                                                   const bool for_image,
                                                                   const QString &labeler_did) const
 {
-    return m_contentFilterLabels.visibility(label, for_image, labeler_did);
+    return LabelerProvider::getInstance()->visibility(account(), label, for_image, labeler_did);
 }
 
 bool AtpAbstractListModel::containsMutedWords(const QString &text, const QStringList &tags,
                                               const bool partial_match) const
 {
-    return m_contentFilterLabels.containsMutedWords(text, tags, partial_match);
+    return LabelerProvider::getInstance()->containsMutedWords(account(), text, tags, partial_match);
 }
 
 QString AtpAbstractListModel::contentFilterMessage(const QString &label, const bool for_image,
                                                    const QString &labeler_did) const
 {
-    return m_contentFilterLabels.message(label, for_image, labeler_did);
+    return LabelerProvider::getInstance()->message(account(), label, for_image, labeler_did);
 }
 
 QString AtpAbstractListModel::cursor() const

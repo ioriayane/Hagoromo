@@ -45,6 +45,8 @@ public:
                                        const QString &labeler_did = QString()) const;
     QString message(const AtProtocolInterface::AccountData &account, const QString &label,
                     const bool for_image, const QString &labeler_did = QString()) const;
+    QString title(const AtProtocolInterface::AccountData &account, const QString &label,
+                  const bool for_image, const QString &labeler_did = QString()) const;
     bool containsMutedWords(const AtProtocolInterface::AccountData &account, const QString &text,
                             const QStringList &tags, const bool partial_match) const;
 

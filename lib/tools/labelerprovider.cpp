@@ -19,6 +19,8 @@ public:
                                        const QString &labeler_did = QString()) const;
     QString message(const QString &label, const bool for_image,
                     const QString &labeler_did = QString()) const;
+    QString title(const QString &label, const bool for_image,
+                  const QString &labeler_did = QString()) const;
     bool containsMutedWords(const QString &text, const QStringList &tags,
                             const bool partial_match) const;
 
@@ -117,6 +119,12 @@ QString LabelerProvider::Private::message(const QString &label, const bool for_i
                                           const QString &labeler_did) const
 {
     return m_labels.message(label, for_image, labeler_did);
+}
+
+QString LabelerProvider::Private::title(const QString &label, const bool for_image,
+                                        const QString &labeler_did) const
+{
+    return m_labels.title(label, for_image, labeler_did);
 }
 
 bool LabelerProvider::Private::containsMutedWords(const QString &text, const QStringList &tags,
@@ -248,6 +256,17 @@ QString LabelerProvider::message(const AtProtocolInterface::AccountData &account
         return QString();
     }
     return d[key]->message(label, for_image, labeler_did);
+}
+
+QString LabelerProvider::title(const AtProtocolInterface::AccountData &account,
+                               const QString &label, const bool for_image,
+                               const QString &labeler_did) const
+{
+    const QString key = getAccountKey(account);
+    if (key.isEmpty()) {
+        return QString();
+    }
+    return d[key]->title(label, for_image, labeler_did);
 }
 
 bool LabelerProvider::containsMutedWords(const AtProtocolInterface::AccountData &account,
