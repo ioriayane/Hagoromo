@@ -305,8 +305,7 @@ ConfigurableLabelStatus AtpAbstractListModel::getContentFilterStatus(
         const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels, const bool for_media) const
 {
     for (const auto &label : labels) {
-        ConfigurableLabelStatus status =
-                m_contentFilterLabels.visibility(label.val, for_media, label.src);
+        ConfigurableLabelStatus status = visibilityBylabeler(label.val, for_media, label.src);
         if (status != ConfigurableLabelStatus::Show) {
             return status;
         }
@@ -325,7 +324,7 @@ QString AtpAbstractListModel::getContentFilterMessage(
 {
     QString message;
     for (const auto &label : labels) {
-        message = m_contentFilterLabels.message(label.val, for_media, label.src);
+        message = contentFilterMessage(label.val, for_media, label.src);
         if (!message.isEmpty()) {
             break;
         }
@@ -634,7 +633,7 @@ bool AtpAbstractListModel::cachePostsContainingMutedWords(
     QStringList targets = LexiconsTypeUnknown::copyTagsFromFacets(record.facets);
     targets.append(record.tags);
 
-    bool contains = m_contentFilterLabels.containsMutedWords(
+    bool contains = containsMutedWords(
             record.text, targets, LexiconsTypeUnknown::checkPartialMatchLanguage(record.langs));
     if (contains) {
         qDebug() << "Contains muted words" << cid << record.text << targets << record.langs;
@@ -806,6 +805,30 @@ QString AtpAbstractListModel::atUriToOfficialUrl(const QString &uri, const QStri
     } else {
         return QString();
     }
+}
+
+QStringList AtpAbstractListModel::labelerDids() const
+{
+    return m_contentFilterLabels.labelerDids();
+}
+
+ConfigurableLabelStatus AtpAbstractListModel::visibilityBylabeler(const QString &label,
+                                                                  const bool for_image,
+                                                                  const QString &labeler_did) const
+{
+    return m_contentFilterLabels.visibility(label, for_image, labeler_did);
+}
+
+bool AtpAbstractListModel::containsMutedWords(const QString &text, const QStringList &tags,
+                                              const bool partial_match) const
+{
+    return m_contentFilterLabels.containsMutedWords(text, tags, partial_match);
+}
+
+QString AtpAbstractListModel::contentFilterMessage(const QString &label, const bool for_image,
+                                                   const QString &labeler_did) const
+{
+    return m_contentFilterLabels.message(label, for_image, labeler_did);
 }
 
 QString AtpAbstractListModel::cursor() const

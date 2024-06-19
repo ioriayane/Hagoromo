@@ -93,7 +93,7 @@ bool SearchProfileListModel::getLatest()
             profiles->deleteLater();
         });
         profiles->setAccount(account());
-        profiles->setLabelers(m_contentFilterLabels.labelerDids());
+        profiles->setLabelers(labelerDids());
         profiles->searchActors(text(), 50, QString());
     });
     return true;
@@ -118,7 +118,7 @@ bool SearchProfileListModel::getNext()
             profiles->deleteLater();
         });
         profiles->setAccount(account());
-        profiles->setLabelers(m_contentFilterLabels.labelerDids());
+        profiles->setLabelers(labelerDids());
         profiles->searchActors(text(), 50, m_cursor);
     });
     return true;

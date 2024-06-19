@@ -27,7 +27,7 @@ bool ActorLikeListModel::getLatest()
             likes->deleteLater();
         });
         likes->setAccount(account());
-        likes->setLabelers(m_contentFilterLabels.labelerDids());
+        likes->setLabelers(labelerDids());
         likes->getActorLikes(actor(), 0, QString());
     });
     return true;
@@ -52,7 +52,7 @@ bool ActorLikeListModel::getNext()
             likes->deleteLater();
         });
         likes->setAccount(account());
-        likes->setLabelers(m_contentFilterLabels.labelerDids());
+        likes->setLabelers(labelerDids());
         likes->getActorLikes(actor(), 0, m_cursor);
     });
     return true;

@@ -198,6 +198,14 @@ protected:
 
     QString atUriToOfficialUrl(const QString &uri, const QString &name) const;
 
+    QStringList labelerDids() const;
+    ConfigurableLabelStatus visibilityBylabeler(const QString &label, const bool for_image,
+                                                const QString &labeler_did = QString()) const;
+    bool containsMutedWords(const QString &text, const QStringList &tags,
+                            const bool partial_match) const;
+    QString contentFilterMessage(const QString &label, const bool for_image,
+                                 const QString &labeler_did = QString()) const;
+
     // これで取得したポストの順番を管理して実態はm_viewPostHashで管理
     // checkVisibility(cid)の結果次第で間引かれる
     QList<QString> m_cidList;
@@ -214,12 +222,11 @@ protected:
 
     QList<BlobCueItem> m_cueExtendMedia;
 
-    ConfigurableLabels m_contentFilterLabels;
-
 private:
     QTimer m_timer;
     AtProtocolInterface::AccountData m_account;
     int m_contentFilterRefreshCounter;
+    ConfigurableLabels m_contentFilterLabels;
 
     bool m_running;
     int m_loadingInterval;
