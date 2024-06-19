@@ -118,6 +118,17 @@ QVariant ChatMessageListModel::item(int row, ChatMessageListModelRoles role) con
                         == AppBskyEmbedRecord::ViewRecordType::record_ViewBlocked);
         // ラベラーの情報を取得できるようにする
     } else if (role == QuoteFilterMatchedRole) {
+        if (view_record.author.viewer.muted)
+            return true;
+        if (view_record.author.did == account().did) // 自分のポストはそのまま表示
+            return false;
+        if (getContentFilterStatus(view_record.author.labels, false)
+            != ConfigurableLabelStatus::Show)
+            return true;
+        if (getContentFilterStatus(view_record.labels, false) != ConfigurableLabelStatus::Show)
+            return true;
+        if (getContentFilterStatus(view_record.labels, true) != ConfigurableLabelStatus::Show)
+            return true;
         return false;
 
     } else if (role == RunningRole)
@@ -172,6 +183,7 @@ bool ChatMessageListModel::getLatest()
                     });
                     messages->setAccount(account());
                     messages->setService(account().service_endpoint);
+                    messages->setLabelers(labelerDids());
                     messages->getMessages(convoId(), 0, QString());
                 } else {
                     ChatLogSubscriber *log = ChatLogSubscriber::getInstance();
@@ -210,6 +222,7 @@ bool ChatMessageListModel::getNext()
         });
         messages->setAccount(account());
         messages->setService(account().service_endpoint);
+        messages->setLabelers(labelerDids());
         messages->getMessages(convoId(), 0, m_cursor);
     });
 

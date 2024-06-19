@@ -49,6 +49,10 @@ public:
                   const bool for_image, const QString &labeler_did = QString()) const;
     bool containsMutedWords(const AtProtocolInterface::AccountData &account, const QString &text,
                             const QStringList &tags, const bool partial_match) const;
+    ConfigurableLabelStatus
+    getContentFilterStatus(const AtProtocolInterface::AccountData &account,
+                           const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels,
+                           const bool for_media) const;
 
 signals:
 

@@ -155,7 +155,9 @@ Item {
                             id: quoteRecordFrame
                             Layout.alignment: chatItemLayout.me ? Qt.AlignRight : Qt.AlignLeft
                             Layout.preferredWidth: chatItemLayout.width * 0.8
-                            visible: model.hasQuoteRecord && !model.quoteRecordBlocked
+                            visible: model.hasQuoteRecord &&
+                                     quoteFilterFrame.showContent &&
+                                     !model.quoteRecordBlocked
 
                             onClicked: (mouse) => {
                                            // if(model.quoteRecordUri.length > 0){

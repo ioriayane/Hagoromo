@@ -129,24 +129,27 @@ bool ChatListModel::getLatest()
     setRunning(true);
 
     getServiceEndpoint([=]() {
-        ChatBskyConvoListConvos *convos = new ChatBskyConvoListConvos(this);
-        connect(convos, &ChatBskyConvoListConvos::finished, this, [=](bool success) {
-            if (success) {
-                if (m_idList.isEmpty() && m_cursor.isEmpty()) {
-                    m_cursor = convos->cursor();
-                }
+        updateContentFilterLabels([=]() {
+            ChatBskyConvoListConvos *convos = new ChatBskyConvoListConvos(this);
+            connect(convos, &ChatBskyConvoListConvos::finished, this, [=](bool success) {
+                if (success) {
+                    if (m_idList.isEmpty() && m_cursor.isEmpty()) {
+                        m_cursor = convos->cursor();
+                    }
 
-                copyFrom(convos, true);
-            } else {
-                emit errorOccured(convos->errorCode(), convos->errorMessage());
-                checkScopeError(convos->errorCode(), convos->errorMessage());
-            }
-            setRunning(false);
-            convos->deleteLater();
+                    copyFrom(convos, true);
+                } else {
+                    emit errorOccured(convos->errorCode(), convos->errorMessage());
+                    checkScopeError(convos->errorCode(), convos->errorMessage());
+                }
+                setRunning(false);
+                convos->deleteLater();
+            });
+            convos->setAccount(account());
+            convos->setService(account().service_endpoint);
+            convos->setLabelers(labelerDids());
+            convos->listConvos(0, QString());
         });
-        convos->setAccount(account());
-        convos->setService(account().service_endpoint);
-        convos->listConvos(0, QString());
     });
 
     return true;

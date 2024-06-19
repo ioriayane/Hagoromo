@@ -1,4 +1,5 @@
 #include "chatlogsubscriber.h"
+#include "tools/labelerprovider.h"
 
 #include <QDebug>
 #include <QPointer>
@@ -25,6 +26,9 @@ public:
 private:
     ChatLogSubscriber *q;
     QHash<QObject *, QPointer<ChatLogConnector>> m_connector;
+
+    void updateContentFilterLabels(std::function<void()> callback);
+    QStringList labelerDids();
 
     QTimer m_timer;
     bool m_running;
@@ -70,41 +74,63 @@ void ChatLogSubscriber::Private::getLatest()
     cleanConnector();
 
     qDebug().noquote() << this << "getLatest" << m_cursor << &m_cursor;
-    ChatBskyConvoGetLog *log = new ChatBskyConvoGetLog(this);
-    connect(log, &ChatBskyConvoGetLog::finished, this, [=](bool success) {
-        const QString key = account().accountKey();
+    updateContentFilterLabels([=]() {
+        ChatBskyConvoGetLog *log = new ChatBskyConvoGetLog(this);
+        connect(log, &ChatBskyConvoGetLog::finished, this, [=](bool success) {
+            const QString key = account().accountKey();
 
-        qDebug().noquote() << this << "receive" << success << this->m_cursor << "->"
-                           << log->cursor() << key;
-        qDebug().noquote() << log->replyJson();
-        if (success) {
-            if (!log->cursor().isEmpty()) {
-                this->m_cursor = log->cursor();
-            }
+            qDebug().noquote() << this << "receive" << success << this->m_cursor << "->"
+                               << log->cursor() << key;
+            qDebug().noquote() << log->replyJson();
+            if (success) {
+                if (!log->cursor().isEmpty()) {
+                    this->m_cursor = log->cursor();
+                }
 
-            for (auto connector : qAsConst(m_connector)) {
-                if (!connector) {
-                    // already deleted
-                } else {
-                    emit connector->receiveLogs(*log);
+                for (auto connector : qAsConst(m_connector)) {
+                    if (!connector) {
+                        // already deleted
+                    } else {
+                        emit connector->receiveLogs(*log);
+                    }
+                }
+            } else {
+                for (auto connector : qAsConst(m_connector)) {
+                    if (!connector) {
+                        // already deleted
+                    } else {
+                        emit connector->errorOccured(log->errorCode(), log->errorMessage());
+                    }
                 }
             }
-        } else {
-            for (auto connector : qAsConst(m_connector)) {
-                if (!connector) {
-                    // already deleted
-                } else {
-                    emit connector->errorOccured(log->errorCode(), log->errorMessage());
-                }
-            }
-        }
-        m_running = false;
-        log->deleteLater();
+            m_running = false;
+            log->deleteLater();
+        });
+
+        log->setAccount(account());
+        log->setLabelers(labelerDids());
+        log->setService(account().service_endpoint);
+        log->getLog(m_cursor);
     });
+}
 
-    log->setAccount(account());
-    log->setService(account().service_endpoint);
-    log->getLog(m_cursor);
+void ChatLogSubscriber::Private::updateContentFilterLabels(std::function<void()> callback)
+{
+    LabelerProvider *provider = LabelerProvider::getInstance();
+    LabelerConnector *connector = new LabelerConnector(this);
+
+    connect(connector, &LabelerConnector::finished, this, [=](bool success) {
+        if (success) { }
+        callback();
+        connector->deleteLater();
+    });
+    provider->setAccount(account());
+    provider->update(account(), connector, LabelerProvider::RefleshMode::None);
+}
+
+QStringList ChatLogSubscriber::Private::labelerDids()
+{
+    return LabelerProvider::getInstance()->labelerDids(account());
 }
 
 void ChatLogSubscriber::Private::appendConnector(ChatLogConnector *connector)

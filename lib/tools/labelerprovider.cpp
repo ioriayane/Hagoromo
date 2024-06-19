@@ -23,6 +23,9 @@ public:
                   const QString &labeler_did = QString()) const;
     bool containsMutedWords(const QString &text, const QStringList &tags,
                             const bool partial_match) const;
+    ConfigurableLabelStatus
+    getContentFilterStatus(const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels,
+                           const bool for_media) const;
 
     int refreshInterval() const;
     void setRefreshInterval(qint64 newRefreshInterval);
@@ -87,10 +90,12 @@ void LabelerProvider::Private::update(LabelerConnector *connector, const Reflesh
 
     if (m_labels.running()) {
         // すでに実行中の場合はコネクタだけ登録して抜ける
+        qDebug().noquote() << this << "already running";
         appendConnector(connector);
         return;
     }
     if (m_initialized && mode == RefleshMode::None) {
+        qDebug().noquote() << this << "don't update labeler and filter";
         emit connector->finished(true);
         return;
     }
@@ -131,6 +136,18 @@ bool LabelerProvider::Private::containsMutedWords(const QString &text, const QSt
                                                   const bool partial_match) const
 {
     return m_labels.containsMutedWords(text, tags, partial_match);
+}
+
+ConfigurableLabelStatus LabelerProvider::Private::getContentFilterStatus(
+        const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels, const bool for_media) const
+{
+    for (const auto &label : labels) {
+        ConfigurableLabelStatus status = m_labels.visibility(label.val, for_media, label.src);
+        if (status != ConfigurableLabelStatus::Show) {
+            return status;
+        }
+    }
+    return ConfigurableLabelStatus::Show;
 }
 
 int LabelerProvider::Private::refreshInterval() const
@@ -278,6 +295,17 @@ bool LabelerProvider::containsMutedWords(const AtProtocolInterface::AccountData 
         return false;
     }
     return d[key]->containsMutedWords(text, tags, partial_match);
+}
+
+ConfigurableLabelStatus LabelerProvider::getContentFilterStatus(
+        const AtProtocolInterface::AccountData &account,
+        const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels, const bool for_media) const
+{
+    const QString key = getAccountKey(account);
+    if (key.isEmpty()) {
+        return ConfigurableLabelStatus::Show;
+    }
+    return d[key]->getContentFilterStatus(labels, for_media);
 }
 
 QString LabelerProvider::getAccountKey(const AtProtocolInterface::AccountData &account) const

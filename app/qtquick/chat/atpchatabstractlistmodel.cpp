@@ -1,6 +1,7 @@
 #include "atpchatabstractlistmodel.h"
 #include "extension/directory/plc/directoryplc.h"
 #include "atprotocol/chat/bsky/convo/chatbskyconvoupdateread.h"
+#include "tools/labelerprovider.h"
 
 using AtProtocolInterface::ChatBskyConvoUpdateRead;
 using AtProtocolInterface::DirectoryPlc;
@@ -109,6 +110,31 @@ void AtpChatAbstractListModel::checkScopeError(const QString &code, const QStrin
     if (code == "InvalidToken" && message == "Bad token scope") {
         setAutoLoading(false);
     }
+}
+
+void AtpChatAbstractListModel::updateContentFilterLabels(std::function<void()> callback)
+{
+    LabelerProvider *provider = LabelerProvider::getInstance();
+    LabelerConnector *connector = new LabelerConnector(this);
+
+    connect(connector, &LabelerConnector::finished, this, [=](bool success) {
+        if (success) { }
+        callback();
+        connector->deleteLater();
+    });
+    provider->setAccount(account());
+    provider->update(account(), connector, LabelerProvider::RefleshAuto);
+}
+
+QStringList AtpChatAbstractListModel::labelerDids() const
+{
+    return LabelerProvider::getInstance()->labelerDids(account());
+}
+
+ConfigurableLabelStatus AtpChatAbstractListModel::getContentFilterStatus(
+        const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels, const bool for_media) const
+{
+    return LabelerProvider::getInstance()->getContentFilterStatus(account(), labels, for_media);
 }
 
 bool AtpChatAbstractListModel::autoLoading() const
