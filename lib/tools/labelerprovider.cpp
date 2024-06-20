@@ -171,7 +171,7 @@ bool LabelerProvider::Private::checkRefleshAll(const RefleshMode mode)
             // ループしたときは面倒なので即時
             ret = true;
         } else {
-            ret = ((m_lastUpdatedTime - now) >= m_refreshInterval);
+            ret = ((now - m_lastUpdatedTime) >= m_refreshInterval);
         }
     } else {
         // 初期化前はつねにフルスペックで取得
