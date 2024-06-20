@@ -517,6 +517,12 @@ ColumnLayout {
             }
 
             onRequestReportMessage: (did, convo_id, message_id) => columnView.requestReportMessage(account.uuid, did, convo_id, message_id)
+            onRequestViewThread: (uri) => {
+                                     // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
+                                     // これはPostThreadViewのプロパティにダイレクトに設定する
+                                     columnStackView.push(postThreadComponent, { "postThreadUri": uri })
+                                 }
+            onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
             onRequestAddMutedWord: (text) => columnView.requestAddMutedWord(account.uuid, text)

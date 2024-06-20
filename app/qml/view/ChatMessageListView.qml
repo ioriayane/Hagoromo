@@ -19,6 +19,7 @@ Item {
     property alias errorMessageOnChatMessageList: errorMessageOnChatMessageList
 
     signal requestReportMessage(string did, string convo_id, string message_id)
+    signal requestViewThread(string uri)
     signal requestViewImages(int index, var paths, var alts)
     signal requestViewProfile(string did)
     signal requestViewSearchPosts(string text)
@@ -27,6 +28,7 @@ Item {
     function finishSent(success) {
         if(success){
             messageTextArea.text = ""
+            quoteUrlTextArea.text = ""
         }else{
             console.log("Fail send")
         }
@@ -160,9 +162,9 @@ Item {
                                      !model.quoteRecordBlocked
 
                             onClicked: (mouse) => {
-                                           // if(model.quoteRecordUri.length > 0){
-                                           //     requestViewThread(model.quoteRecordUri)
-                                           // }
+                                           if(model.quoteRecordUri.length > 0){
+                                               requestViewThread(model.quoteRecordUri)
+                                           }
                                        }
                             quoteRecordAvatarImage.source: model.quoteRecordAvatar
                             quoteRecordAuthor.displayName: model.quoteRecordDisplayName
@@ -272,28 +274,49 @@ Item {
                 }
             }
         }
-        RowLayout {
+        ColumnLayout {
             TextArea {
-                id: messageTextArea
+                id: quoteUrlTextArea
                 Layout.fillWidth: parent
                 Layout.leftMargin: 5
                 enabled: !rootListView.model.runSending
-                wrapMode: Text.WrapAnywhere
                 selectByMouse: true
                 font.pointSize: AdjustedValues.f10
-                placeholderText: qsTr("Write a message")
+                placeholderText: qsTr("Write a post url or at-uri")
+                visible: false
             }
-            IconButton {
-                id: sendButton
-                font.pointSize: AdjustedValues.f10
-                iconSource: "../images/send.png"
-                enabled: messageTextArea.text.length > 0 && !rootListView.model.runSending && rootListView.model.ready
-                onClicked: {
-                    rootListView.model.send(messageTextArea.text)
+            RowLayout {
+                IconButton {
+                    id: addButton
+                    font.pointSize: AdjustedValues.f10
+                    iconSource: "../images/add.png"
+                    flat: true
+                    enabled: !rootListView.model.runSending && rootListView.model.ready
+                    onClicked: {
+                        quoteUrlTextArea.visible = !quoteUrlTextArea.visible
+                    }
                 }
-                BusyIndicator {
-                    anchors.fill: parent
-                    visible: rootListView.model.runSending
+                TextArea {
+                    id: messageTextArea
+                    Layout.fillWidth: parent
+                    enabled: !rootListView.model.runSending
+                    wrapMode: Text.WrapAnywhere
+                    selectByMouse: true
+                    font.pointSize: AdjustedValues.f10
+                    placeholderText: qsTr("Write a message")
+                }
+                IconButton {
+                    id: sendButton
+                    font.pointSize: AdjustedValues.f10
+                    iconSource: "../images/send.png"
+                    enabled: messageTextArea.text.length > 0 && !rootListView.model.runSending && rootListView.model.ready
+                    onClicked: {
+                        rootListView.model.send(messageTextArea.text)
+                    }
+                    BusyIndicator {
+                        anchors.fill: parent
+                        visible: rootListView.model.runSending
+                    }
                 }
             }
         }
