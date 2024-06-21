@@ -39,6 +39,7 @@
 #include "qtquick/thumbnailprovider.h"
 #include "qtquick/encryption.h"
 #include "qtquick/userprofile.h"
+#include "qtquick/userpost.h"
 #include "qtquick/systemtool.h"
 #include "qtquick/externallink.h"
 #include "qtquick/reporter.h"
@@ -149,6 +150,7 @@ int main(int argc, char *argv[])
                                         "ListMutesListModel");
     qmlRegisterType<Encryption>("tech.relog.hagoromo.encryption", 1, 0, "Encryption");
     qmlRegisterType<UserProfile>("tech.relog.hagoromo.userprofile", 1, 0, "UserProfile");
+    qmlRegisterType<UserPost>("tech.relog.hagoromo.userpost", 1, 0, "UserPost");
     qmlRegisterType<SystemTool>("tech.relog.hagoromo.systemtool", 1, 0, "SystemTool");
     qmlRegisterType<ExternalLink>("tech.relog.hagoromo.externallink", 1, 0, "ExternalLink");
     qmlRegisterType<Reporter>("tech.relog.hagoromo.reporter", 1, 0, "Reporter");

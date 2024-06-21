@@ -229,9 +229,11 @@ bool ChatMessageListModel::getNext()
     return true;
 }
 
-void ChatMessageListModel::send(const QString &message)
+void ChatMessageListModel::send(const QString &message, const QString &embed_uri,
+                                const QString &embed_cid)
 {
-    if (runSending() || convoId().isEmpty() || message.trimmed().isEmpty())
+    if (runSending() || convoId().isEmpty()
+        || (message.trimmed().isEmpty() && embed_uri.isEmpty() && embed_cid.isEmpty()))
         return;
     setRunSending(true);
 
@@ -241,6 +243,15 @@ void ChatMessageListModel::send(const QString &message)
                 QJsonObject obj;
                 obj.insert("text", message.trimmed());
                 LexiconsTypeUnknown::insertFacetsJson(obj, facets);
+                if (!embed_uri.isEmpty() && !embed_cid.isEmpty()) {
+                    QJsonObject json_quote;
+                    json_quote.insert("cid", embed_cid);
+                    json_quote.insert("uri", embed_uri);
+                    QJsonObject json_embed;
+                    json_embed.insert("$type", "app.bsky.embed.record");
+                    json_embed.insert("record", json_quote);
+                    obj.insert("embed", json_embed);
+                }
 
                 ChatBskyConvoSendMessage *convo = new ChatBskyConvoSendMessage(this);
                 connect(convo, &ChatBskyConvoSendMessage::finished, this, [=](bool success) {

@@ -62,7 +62,8 @@ public:
     virtual Q_INVOKABLE bool getLatest();
     virtual Q_INVOKABLE bool getNext();
 
-    Q_INVOKABLE void send(const QString &message);
+    Q_INVOKABLE void send(const QString &message, const QString &embed_uri,
+                          const QString &embed_cid);
     Q_INVOKABLE void deleteMessage(int row);
 
     QString convoId() const;

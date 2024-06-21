@@ -501,7 +501,7 @@ ColumnLayout {
         ChatMessageListView {
             id: chatMesssageListView
             accountDid: account.did
-            model: ChatMessageListModel {
+            listView.model: ChatMessageListModel {
                 convoId: settings.columnValue
                 memberDids: settings.columnValueList
                 autoLoading: true

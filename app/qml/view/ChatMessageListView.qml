@@ -3,6 +3,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 
+import tech.relog.hagoromo.userpost 1.0
 import tech.relog.hagoromo.singleton 1.0
 
 import "../parts"
@@ -15,7 +16,8 @@ Item {
     property string accountDid: ""   // 取得するユーザー
 
     property alias listView: rootListView
-    property alias model: rootListView.model
+    // property alias model: rootListView.model
+    property alias model: relayObject
     property alias errorMessageOnChatMessageList: errorMessageOnChatMessageList
 
     signal requestReportMessage(string did, string convo_id, string message_id)
@@ -29,6 +31,8 @@ Item {
         if(success){
             messageTextArea.text = ""
             quoteUrlTextArea.text = ""
+            quoteUrlInputLayout.visible = false
+            userPost.clear()
         }else{
             console.log("Fail send")
         }
@@ -53,10 +57,14 @@ Item {
         }
         function setAccount(service, did, handle, email, accessJwt, refreshJwt) {
             rootListView.model.setAccount(service, did, handle, email, accessJwt, refreshJwt)
+            userPost.setAccount(service, did, handle, email, accessJwt, refreshJwt)
         }
         function getLatest() {
             rootListView.model.getLatest()
         }
+    }
+    UserPost {
+        id: userPost
     }
 
     ColumnLayout {
@@ -275,15 +283,58 @@ Item {
             }
         }
         ColumnLayout {
-            TextArea {
-                id: quoteUrlTextArea
-                Layout.fillWidth: parent
-                Layout.leftMargin: 5
-                enabled: !rootListView.model.runSending
-                selectByMouse: true
-                font.pointSize: AdjustedValues.f10
-                placeholderText: qsTr("Write a post url or at-uri")
+            RowLayout {
+                visible: userPost.cid.length > 0
+                QuoteRecord {
+                    id: sendPostFrame
+                    Layout.fillWidth: true
+
+                    quoteRecordAvatarImage.source: userPost.authorAvatar
+                    quoteRecordAuthor.displayName: userPost.authorDisplayName
+                    quoteRecordAuthor.handle: userPost.authorHandle
+                    quoteRecordAuthor.indexedAt: userPost.indexedAt
+                    quoteRecordRecordText.text: userPost.recordText
+                    quoteRecordImagePreview.layoutType: 1
+                    quoteRecordImagePreview.embedImages: userPost.embedImages
+                    quoteRecordImagePreview.embedAlts: userPost.embedImagesAlt
+                }
+                IconButton {
+                    id: deleteSendPostButton
+                    Layout.alignment: Qt.AlignTop
+                    font.pointSize: AdjustedValues.f10
+                    iconSource: "../images/close.png"
+                    enabled: userPost.cid.length > 0
+                    flat: true
+                    onClicked: userPost.clear()
+                }
+            }
+
+            RowLayout {
+                id: quoteUrlInputLayout
                 visible: false
+                TextArea {
+                    id: quoteUrlTextArea
+                    Layout.fillWidth: parent
+                    Layout.leftMargin: 5
+                    enabled: !rootListView.model.runSending
+                    selectByMouse: true
+                    font.pointSize: AdjustedValues.f10
+                    placeholderText: qsTr("Post url or at-uri")
+                }
+                IconButton {
+                    id: addPostButton
+                    font.pointSize: AdjustedValues.f10
+                    iconSource: "../images/add.png"
+                    enabled: !rootListView.model.runSending &&
+                             rootListView.model.ready &&
+                             quoteUrlTextArea.text.length > 0 &&
+                             !userPost.running
+                    onClicked: userPost.getPost(quoteUrlTextArea.text)
+                    BusyIndicator {
+                        anchors.fill: parent
+                        visible: userPost.running
+                    }
+                }
             }
             RowLayout {
                 IconButton {
@@ -291,9 +342,10 @@ Item {
                     font.pointSize: AdjustedValues.f10
                     iconSource: "../images/add.png"
                     flat: true
-                    enabled: !rootListView.model.runSending && rootListView.model.ready
+                    enabled: !rootListView.model.runSending &&
+                             rootListView.model.ready
                     onClicked: {
-                        quoteUrlTextArea.visible = !quoteUrlTextArea.visible
+                        quoteUrlInputLayout.visible = !quoteUrlInputLayout.visible
                     }
                 }
                 TextArea {
@@ -309,9 +361,12 @@ Item {
                     id: sendButton
                     font.pointSize: AdjustedValues.f10
                     iconSource: "../images/send.png"
-                    enabled: messageTextArea.text.length > 0 && !rootListView.model.runSending && rootListView.model.ready
+                    enabled: (messageTextArea.text.length > 0 || userPost.cid.length > 0) &&
+                             !rootListView.model.runSending &&
+                             rootListView.model.ready &&
+                             !userPost.running
                     onClicked: {
-                        rootListView.model.send(messageTextArea.text)
+                        rootListView.model.send(messageTextArea.text, userPost.uri, userPost.cid)
                     }
                     BusyIndicator {
                         anchors.fill: parent
