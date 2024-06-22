@@ -21,6 +21,8 @@ public:
     const QString &email() const;
     const bool &emailConfirmed() const;
     const bool &emailAuthFactor() const;
+    const bool &active() const;
+    const QString &status() const;
 
 protected:
     virtual bool parseJson(bool success, const QString reply_json);
@@ -34,6 +36,8 @@ private:
     QString m_email;
     bool m_emailConfirmed;
     bool m_emailAuthFactor;
+    bool m_active;
+    QString m_status;
 };
 
 }

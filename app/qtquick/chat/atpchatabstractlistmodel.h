@@ -2,6 +2,7 @@
 #define ATPCHATABSTRACTLISTMODEL_H
 
 #include "atprotocol/accessatprotocol.h"
+#include "tools/configurablelabels.h"
 
 #include <QAbstractListModel>
 #include <QTimer>
@@ -47,6 +48,12 @@ signals:
 protected:
     void getServiceEndpoint(std::function<void()> callback);
     void checkScopeError(const QString &code, const QString &message);
+
+    void updateContentFilterLabels(std::function<void()> callback);
+    QStringList labelerDids() const;
+    ConfigurableLabelStatus
+    getContentFilterStatus(const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels,
+                           const bool for_media) const;
 
     QStringList m_idList;
     QString m_cursor;

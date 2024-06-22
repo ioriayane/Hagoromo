@@ -385,7 +385,7 @@ bool TimelineListModel::getLatest()
             timeline->deleteLater();
         });
         timeline->setAccount(account());
-        timeline->setLabelers(m_contentFilterLabels.labelerDids());
+        timeline->setLabelers(labelerDids());
         timeline->getTimeline(QString(), 0, QString());
     });
     return true;
@@ -411,7 +411,7 @@ bool TimelineListModel::getNext()
             timeline->deleteLater();
         });
         timeline->setAccount(account());
-        timeline->setLabelers(m_contentFilterLabels.labelerDids());
+        timeline->setLabelers(labelerDids());
         timeline->getTimeline(QString(), 0, m_cursor);
     });
     return true;
@@ -694,15 +694,13 @@ bool TimelineListModel::checkVisibility(const QString &cid)
     }
 
     for (const auto &label : current.post.author.labels) {
-        if (m_contentFilterLabels.visibility(label.val, false, label.src)
-            == ConfigurableLabelStatus::Hide) {
+        if (visibilityBylabeler(label.val, false, label.src) == ConfigurableLabelStatus::Hide) {
             qDebug() << "Hide post by user's label. " << current.post.author.handle << cid;
             return false;
         }
     }
     for (const auto &label : current.post.labels) {
-        if (m_contentFilterLabels.visibility(label.val, true, label.src)
-            == ConfigurableLabelStatus::Hide) {
+        if (visibilityBylabeler(label.val, true, label.src) == ConfigurableLabelStatus::Hide) {
             qDebug() << "Hide post by post's label. " << current.post.author.handle << cid;
             return false;
         }

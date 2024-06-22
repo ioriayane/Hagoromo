@@ -3,6 +3,8 @@
 
 #include "atpchatabstractlistmodel.h"
 #include "atprotocol/chat/bsky/convo/chatbskyconvogetlog.h"
+#include "tools/chatlogsubscriber.h"
+#include "tools/configurablelabels.h"
 
 class ChatMessageListModel : public AtpChatAbstractListModel
 {
@@ -31,6 +33,21 @@ public:
         TextPlainRole,
         SentAtRole,
 
+        HasQuoteRecordRole,
+        QuoteRecordCidRole,
+        QuoteRecordUriRole,
+        QuoteRecordDisplayNameRole,
+        QuoteRecordHandleRole,
+        QuoteRecordAvatarRole,
+        QuoteRecordRecordTextRole,
+        QuoteRecordIndexedAtRole,
+        QuoteRecordEmbedImagesRole,
+        QuoteRecordEmbedImagesFullRole,
+        QuoteRecordEmbedImagesAltRole,
+        QuoteRecordBlockedRole,
+
+        QuoteFilterMatchedRole,
+
         RunningRole,
     };
     Q_ENUM(ChatMessageListModelRoles);
@@ -45,7 +62,8 @@ public:
     virtual Q_INVOKABLE bool getLatest();
     virtual Q_INVOKABLE bool getNext();
 
-    Q_INVOKABLE void send(const QString &message);
+    Q_INVOKABLE void send(const QString &message, const QString &embed_uri,
+                          const QString &embed_cid);
     Q_INVOKABLE void deleteMessage(int row);
 
     QString convoId() const;
@@ -66,8 +84,8 @@ signals:
     void readyChanged();
 
 public slots:
-    void receiveLogs(const QString &key, const AtProtocolInterface::ChatBskyConvoGetLog &log);
-    void errorLogs(const QString &key, const QString &code, const QString &message);
+    void receiveLogs(const AtProtocolInterface::ChatBskyConvoGetLog &log);
+    void errorLogs(const QString &code, const QString &message);
 
 protected:
     QHash<int, QByteArray> roleNames() const;
@@ -84,6 +102,7 @@ private:
 
     QHash<QString, AtProtocolType::ChatBskyConvoDefs::MessageView> m_messageHash;
     AtProtocolType::ChatBskyConvoDefs::ConvoView m_convo;
+    ChatLogConnector m_chatLogConnector;
     QString m_logCursor;
     QString m_convoId;
     bool m_runSending;

@@ -43,6 +43,12 @@ struct AccountData
     QStringList labeler_dids; // ラベラーのdid
 
     AccountStatus status = AccountStatus::Unknown;
+
+    bool isValid() const
+    {
+        return (service.startsWith("http") && did.startsWith("did:") && !accessJwt.isEmpty());
+    }
+    QString accountKey() const { return QString("%1_%2").arg(QUrl(service).host()).arg(did); }
 };
 
 class AtProtocolAccount : public QObject

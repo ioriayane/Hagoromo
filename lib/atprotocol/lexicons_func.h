@@ -19,6 +19,7 @@ namespace AppBskyActorDefs {
 void copyProfileAssociatedChat(const QJsonObject &src,
                                AppBskyActorDefs::ProfileAssociatedChat &dest);
 void copyProfileAssociated(const QJsonObject &src, AppBskyActorDefs::ProfileAssociated &dest);
+void copyKnownFollowers(const QJsonObject &src, AppBskyActorDefs::KnownFollowers &dest);
 void copyViewerState(const QJsonObject &src, AppBskyActorDefs::ViewerState &dest);
 void copyProfileViewBasic(const QJsonObject &src, AppBskyActorDefs::ProfileViewBasic &dest);
 void copyProfileView(const QJsonObject &src, AppBskyActorDefs::ProfileView &dest);
@@ -215,7 +216,7 @@ void copyProfileViewBasic(const QJsonObject &src, ChatBskyActorDefs::ProfileView
 // chat.bsky.convo.defs
 namespace ChatBskyConvoDefs {
 void copyMessageRef(const QJsonObject &src, ChatBskyConvoDefs::MessageRef &dest);
-void copyMessage(const QJsonObject &src, ChatBskyConvoDefs::Message &dest);
+void copyMessageInput(const QJsonObject &src, ChatBskyConvoDefs::MessageInput &dest);
 void copyMessageViewSender(const QJsonObject &src, ChatBskyConvoDefs::MessageViewSender &dest);
 void copyMessageView(const QJsonObject &src, ChatBskyConvoDefs::MessageView &dest);
 void copyDeletedMessageView(const QJsonObject &src, ChatBskyConvoDefs::DeletedMessageView &dest);
@@ -295,6 +296,7 @@ namespace ComAtprotoSyncSubscribeRepos {
 void copyRepoOp(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::RepoOp &dest);
 void copyCommit(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Commit &dest);
 void copyIdentity(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Identity &dest);
+void copyAccount(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Account &dest);
 void copyHandle(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Handle &dest);
 void copyMigrate(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Migrate &dest);
 void copyTombstone(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Tombstone &dest);
@@ -345,6 +347,11 @@ void copyModEventTag(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventT
 void copyModerationDetail(const QJsonObject &src, ToolsOzoneModerationDefs::ModerationDetail &dest);
 void copyRepoViewDetail(const QJsonObject &src, ToolsOzoneModerationDefs::RepoViewDetail &dest);
 void copyRecordViewDetail(const QJsonObject &src, ToolsOzoneModerationDefs::RecordViewDetail &dest);
+}
+// tools.ozone.server.getConfig
+namespace ToolsOzoneServerGetConfig {
+void copyServiceConfig(const QJsonObject &src, ToolsOzoneServerGetConfig::ServiceConfig &dest);
+void copyViewerConfig(const QJsonObject &src, ToolsOzoneServerGetConfig::ViewerConfig &dest);
 }
 // com.whtwnd.blog.defs
 namespace ComWhtwndBlogDefs {

@@ -171,9 +171,12 @@ private:
                     callback);
     void getRawProfile();
 
+    QString labelsTitle(const QString &label, const bool for_image,
+                        const QString &labeler_did = QString()) const;
+    QStringList labelerDids() const;
+
     SystemTool m_systemTool;
     AtProtocolInterface::AccountData m_account;
-    ConfigurableLabels m_contentFilterLabels;
     //    AtProtocolType::AppBskyActorDefs::ProfileViewDetailed m_profile;
     bool m_running;
     QString m_formattedDescription;

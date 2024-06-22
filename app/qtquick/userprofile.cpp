@@ -5,6 +5,7 @@
 #include "atprotocol/lexicons_func_unknown.h"
 #include "extension/directory/plc/directoryplc.h"
 #include "extension/directory/plc/directoryplclogaudit.h"
+#include "tools/labelerprovider.h"
 
 #include <QPointer>
 
@@ -92,7 +93,7 @@ void UserProfile::getProfile(const QString &did)
                         if (label.val == QStringLiteral("!no-unauthenticated"))
                             continue;
                         val = label.val;
-                        title = m_contentFilterLabels.title(label.val, false);
+                        title = labelsTitle(label.val, false);
                         break;
                     }
                     if (val.isEmpty()) {
@@ -130,7 +131,7 @@ void UserProfile::getProfile(const QString &did)
             profile->deleteLater();
         });
         profile->setAccount(m_account);
-        profile->setLabelers(m_contentFilterLabels.labelerDids());
+        profile->setLabelers(labelerDids());
         profile->getProfile(did);
     });
 }
@@ -411,16 +412,16 @@ void UserProfile::updatedBelongingLists(const QString &account_did, const QStrin
 
 void UserProfile::updateContentFilterLabels(std::function<void()> callback)
 {
-    ConfigurableLabels *labels = new ConfigurableLabels(this);
-    connect(labels, &ConfigurableLabels::finished, this, [=](bool success) {
-        if (success) {
-            m_contentFilterLabels = *labels;
-        }
+    LabelerProvider *provider = LabelerProvider::getInstance();
+    LabelerConnector *connector = new LabelerConnector(this);
+
+    connect(connector, &LabelerConnector::finished, this, [=](bool success) {
+        if (success) { }
         callback();
-        labels->deleteLater();
+        connector->deleteLater();
     });
-    labels->setAccount(m_account);
-    labels->load();
+    provider->setAccount(m_account);
+    provider->update(m_account, connector, LabelerProvider::RefleshAuto);
 }
 
 void UserProfile::getServiceEndpoint(const QString &did,
@@ -539,6 +540,17 @@ void UserProfile::getRawProfile()
                 setHandleHistory(history);
                 record->profile(did());
             });
+}
+
+QString UserProfile::labelsTitle(const QString &label, const bool for_image,
+                                 const QString &labeler_did) const
+{
+    return LabelerProvider::getInstance()->title(m_account, label, for_image, labeler_did);
+}
+
+QStringList UserProfile::labelerDids() const
+{
+    return LabelerProvider::getInstance()->labelerDids(m_account);
 }
 
 QStringList UserProfile::belongingLists() const

@@ -1,0 +1,64 @@
+{
+    "preferences": [
+        {
+            "$type": "app.bsky.actor.defs#savedFeedsPref",
+            "saved": [
+                "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/bsky-team",
+                "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/with-friends",
+                "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/whats-hot",
+                "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/hot-classic"
+            ],
+            "pinned": [
+                "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/whats-hot",
+                "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/with-friends"
+            ]
+        },
+        {
+            "$type": "app.bsky.actor.defs#adultContentPref",
+            "enabled": true
+        },
+        {
+            "$type": "app.bsky.actor.defs#contentLabelPref",
+            "label": "nsfw",
+            "visibility": "warn"
+        },
+        {
+            "$type": "app.bsky.actor.defs#contentLabelPref",
+            "label": "nudity",
+            "visibility": "warn"
+        },
+        {
+            "$type": "app.bsky.actor.defs#contentLabelPref",
+            "label": "suggestive",
+            "visibility": "warn"
+        },
+        {
+            "$type": "app.bsky.actor.defs#contentLabelPref",
+            "label": "gore",
+            "visibility": "warn"
+        },
+        {
+            "$type": "app.bsky.actor.defs#contentLabelPref",
+            "label": "hate",
+            "visibility": "warn"
+        },
+        {
+            "$type": "app.bsky.actor.defs#contentLabelPref",
+            "label": "spam",
+            "visibility": "warn"
+        },
+        {
+            "$type": "app.bsky.actor.defs#contentLabelPref",
+            "label": "impersonation",
+            "visibility": "warn"
+        },
+        {
+            "$type": "app.bsky.actor.defs#labelersPref",
+            "labelers": [
+                {
+                    "did": "did:plc:original_labeler_did"
+                }
+            ]
+        }
+    ]
+}

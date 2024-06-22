@@ -26,6 +26,18 @@ void copyProfileAssociated(const QJsonObject &src, AppBskyActorDefs::ProfileAsso
         copyProfileAssociatedChat(src.value("chat").toObject(), dest.chat);
     }
 }
+void copyKnownFollowers(const QJsonObject &src, AppBskyActorDefs::KnownFollowers &dest)
+{
+    if (!src.isEmpty()) {
+        dest.count = src.value("count").toInt();
+        for (const auto &s : src.value("followers").toArray()) {
+            QSharedPointer<ProfileViewBasic> child =
+                    QSharedPointer<ProfileViewBasic>(new ProfileViewBasic());
+            copyProfileViewBasic(s.toObject(), *child);
+            dest.followers.append(child);
+        }
+    }
+}
 void copyViewerState(const QJsonObject &src, AppBskyActorDefs::ViewerState &dest)
 {
     if (!src.isEmpty()) {
@@ -37,6 +49,7 @@ void copyViewerState(const QJsonObject &src, AppBskyActorDefs::ViewerState &dest
                                             dest.blockingByList);
         dest.following = src.value("following").toString();
         dest.followedBy = src.value("followedBy").toString();
+        copyKnownFollowers(src.value("knownFollowers").toObject(), dest.knownFollowers);
     }
 }
 void copyProfileViewBasic(const QJsonObject &src, AppBskyActorDefs::ProfileViewBasic &dest)
@@ -1430,13 +1443,13 @@ void copyMessageRef(const QJsonObject &src, ChatBskyConvoDefs::MessageRef &dest)
 {
     if (!src.isEmpty()) {
         dest.did = src.value("did").toString();
+        dest.convoId = src.value("convoId").toString();
         dest.messageId = src.value("messageId").toString();
     }
 }
-void copyMessage(const QJsonObject &src, ChatBskyConvoDefs::Message &dest)
+void copyMessageInput(const QJsonObject &src, ChatBskyConvoDefs::MessageInput &dest)
 {
     if (!src.isEmpty()) {
-        dest.id = src.value("id").toString();
         dest.text = src.value("text").toString();
         for (const auto &s : src.value("facets").toArray()) {
             AppBskyRichtextFacet::Main child;
@@ -1445,7 +1458,8 @@ void copyMessage(const QJsonObject &src, ChatBskyConvoDefs::Message &dest)
         }
         QString embed_type = src.value("embed").toObject().value("$type").toString();
         if (embed_type == QStringLiteral("app.bsky.embed.record")) {
-            dest.embed_type = ChatBskyConvoDefs::MessageEmbedType::embed_AppBskyEmbedRecord_Main;
+            dest.embed_type =
+                    ChatBskyConvoDefs::MessageInputEmbedType::embed_AppBskyEmbedRecord_Main;
             AppBskyEmbedRecord::copyMain(src.value("embed").toObject(),
                                          dest.embed_AppBskyEmbedRecord_Main);
         }
@@ -1469,11 +1483,11 @@ void copyMessageView(const QJsonObject &src, ChatBskyConvoDefs::MessageView &des
             dest.facets.append(child);
         }
         QString embed_type = src.value("embed").toObject().value("$type").toString();
-        if (embed_type == QStringLiteral("app.bsky.embed.record")) {
+        if (embed_type == QStringLiteral("app.bsky.embed.record#view")) {
             dest.embed_type =
-                    ChatBskyConvoDefs::MessageViewEmbedType::embed_AppBskyEmbedRecord_Main;
-            AppBskyEmbedRecord::copyMain(src.value("embed").toObject(),
-                                         dest.embed_AppBskyEmbedRecord_Main);
+                    ChatBskyConvoDefs::MessageViewEmbedType::embed_AppBskyEmbedRecord_View;
+            AppBskyEmbedRecord::copyView(src.value("embed").toObject(),
+                                         dest.embed_AppBskyEmbedRecord_View);
         }
         copyMessageViewSender(src.value("sender").toObject(), dest.sender);
         dest.sentAt = src.value("sentAt").toString();
@@ -1574,7 +1588,7 @@ void copyBatchItem(const QJsonObject &src, ChatBskyConvoSendMessageBatch::BatchI
 {
     if (!src.isEmpty()) {
         dest.convoId = src.value("convoId").toString();
-        ChatBskyConvoDefs::copyMessage(src.value("message").toObject(), dest.message);
+        ChatBskyConvoDefs::copyMessageInput(src.value("message").toObject(), dest.message);
     }
 }
 }
@@ -1615,6 +1629,7 @@ void copyAccountView(const QJsonObject &src, ComAtprotoAdminDefs::AccountView &d
         dest.invitesDisabled = src.value("invitesDisabled").toBool();
         dest.emailConfirmedAt = src.value("emailConfirmedAt").toString();
         dest.inviteNote = src.value("inviteNote").toString();
+        dest.deactivatedAt = src.value("deactivatedAt").toString();
     }
 }
 void copyRepoRef(const QJsonObject &src, ComAtprotoAdminDefs::RepoRef &dest)
@@ -1741,6 +1756,7 @@ void copyAppPassword(const QJsonObject &src, ComAtprotoServerCreateAppPassword::
         dest.name = src.value("name").toString();
         dest.password = src.value("password").toString();
         dest.createdAt = src.value("createdAt").toString();
+        dest.privileged = src.value("privileged").toBool();
     }
 }
 }
@@ -1779,6 +1795,7 @@ void copyAppPassword(const QJsonObject &src, ComAtprotoServerListAppPasswords::A
     if (!src.isEmpty()) {
         dest.name = src.value("name").toString();
         dest.createdAt = src.value("createdAt").toString();
+        dest.privileged = src.value("privileged").toBool();
     }
 }
 }
@@ -1790,6 +1807,8 @@ void copyRepo(const QJsonObject &src, ComAtprotoSyncListRepos::Repo &dest)
         dest.did = src.value("did").toString();
         dest.head = src.value("head").toString();
         dest.rev = src.value("rev").toString();
+        dest.active = src.value("active").toBool();
+        dest.status = src.value("status").toString();
     }
 }
 }
@@ -1824,6 +1843,17 @@ void copyIdentity(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Identity
         dest.seq = src.value("seq").toInt();
         dest.did = src.value("did").toString();
         dest.time = src.value("time").toString();
+        dest.handle = src.value("handle").toString();
+    }
+}
+void copyAccount(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Account &dest)
+{
+    if (!src.isEmpty()) {
+        dest.seq = src.value("seq").toInt();
+        dest.did = src.value("did").toString();
+        dest.time = src.value("time").toString();
+        dest.active = src.value("active").toBool();
+        dest.status = src.value("status").toString();
     }
 }
 void copyHandle(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Handle &dest)
@@ -2077,6 +2107,12 @@ void copyModEventView(const QJsonObject &src, ToolsOzoneModerationDefs::ModEvent
             ComAtprotoRepoStrongRef::copyMain(src.value("subject").toObject(),
                                               dest.subject_ComAtprotoRepoStrongRef_Main);
         }
+        if (subject_type == QStringLiteral("chat.bsky.convo.defs#messageRef")) {
+            dest.subject_type = ToolsOzoneModerationDefs::ModEventViewSubjectType::
+                    subject_ChatBskyConvoDefs_MessageRef;
+            ChatBskyConvoDefs::copyMessageRef(src.value("subject").toObject(),
+                                              dest.subject_ChatBskyConvoDefs_MessageRef);
+        }
         for (const auto &value : src.value("subjectBlobCids").toArray()) {
             dest.subjectBlobCids.append(value.toString());
         }
@@ -2148,6 +2184,7 @@ void copyRepoView(const QJsonObject &src, ToolsOzoneModerationDefs::RepoView &de
         ComAtprotoServerDefs::copyInviteCode(src.value("invitedBy").toObject(), dest.invitedBy);
         dest.invitesDisabled = src.value("invitesDisabled").toBool();
         dest.inviteNote = src.value("inviteNote").toString();
+        dest.deactivatedAt = src.value("deactivatedAt").toString();
     }
 }
 void copyRepoViewNotFound(const QJsonObject &src, ToolsOzoneModerationDefs::RepoViewNotFound &dest)
@@ -2377,6 +2414,7 @@ void copyRepoViewDetail(const QJsonObject &src, ToolsOzoneModerationDefs::RepoVi
         dest.invitesDisabled = src.value("invitesDisabled").toBool();
         dest.inviteNote = src.value("inviteNote").toString();
         dest.emailConfirmedAt = src.value("emailConfirmedAt").toString();
+        dest.deactivatedAt = src.value("deactivatedAt").toString();
     }
 }
 void copyRecordViewDetail(const QJsonObject &src, ToolsOzoneModerationDefs::RecordViewDetail &dest)
@@ -2398,6 +2436,21 @@ void copyRecordViewDetail(const QJsonObject &src, ToolsOzoneModerationDefs::Reco
         dest.indexedAt = src.value("indexedAt").toString();
         copyModerationDetail(src.value("moderation").toObject(), dest.moderation);
         copyRepoView(src.value("repo").toObject(), dest.repo);
+    }
+}
+}
+// tools.ozone.server.getConfig
+namespace ToolsOzoneServerGetConfig {
+void copyServiceConfig(const QJsonObject &src, ToolsOzoneServerGetConfig::ServiceConfig &dest)
+{
+    if (!src.isEmpty()) {
+        dest.url = src.value("url").toString();
+    }
+}
+void copyViewerConfig(const QJsonObject &src, ToolsOzoneServerGetConfig::ViewerConfig &dest)
+{
+    if (!src.isEmpty()) {
+        dest.role = src.value("role").toString();
     }
 }
 }
