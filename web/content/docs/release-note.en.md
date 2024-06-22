@@ -10,6 +10,8 @@ description: This is a multi-column Bluesky client.
 
 - Update
   - Support for quoting posts in chat
+- Fix
+  - Fix the initial settings when adding a timeline column
 
 ### v0.32.0 - 2024/6/5
 
