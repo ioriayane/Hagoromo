@@ -41,7 +41,7 @@ struct ColumnPostType
     bool repost_of_following_users = true;
     bool repost_of_unfollowing_users = true;
     bool repost_of_mine = true;
-    bool repost_by_me = false;
+    bool repost_by_me = true;
 };
 
 struct ColumnItem
