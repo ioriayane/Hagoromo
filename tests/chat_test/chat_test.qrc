@@ -12,5 +12,9 @@
         <file>response/message/2/xrpc/chat.bsky.convo.getMessages</file>
         <file>response/message/1/xrpc/chat.bsky.convo.listConvos</file>
         <file>response/message/2/xrpc/chat.bsky.convo.listConvos</file>
+        <file>response/message/1/xrpc/app.bsky.actor.getPreferences</file>
+        <file>response/message/2/xrpc/app.bsky.actor.getPreferences</file>
+        <file>response/message/1/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/message/2/xrpc/app.bsky.labeler.getServices</file>
     </qresource>
 </RCC>

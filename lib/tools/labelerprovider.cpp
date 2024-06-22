@@ -189,15 +189,21 @@ LabelerProvider::LabelerProvider(QObject *parent) : QObject { parent } { }
 LabelerProvider::~LabelerProvider()
 {
     qDebug().noquote() << this << "~LabelerProvider()";
-    for (const auto &key : d.keys()) {
-        delete d[key];
-    }
+    clear();
 }
 
 LabelerProvider *LabelerProvider::getInstance()
 {
     static LabelerProvider instance;
     return &instance;
+}
+
+void LabelerProvider::clear()
+{
+    for (const auto &key : d.keys()) {
+        delete d[key];
+    }
+    d.clear();
 }
 
 void LabelerProvider::setAccount(const AtProtocolInterface::AccountData &account)

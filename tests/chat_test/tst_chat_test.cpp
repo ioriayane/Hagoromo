@@ -313,6 +313,7 @@ void chat_test::test_ChatLogSubscriber()
         log->start(account, "2222222222aa6");
         spy.wait();
         spy.wait();
+        spy.wait();
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
         log->stop(account);
     }

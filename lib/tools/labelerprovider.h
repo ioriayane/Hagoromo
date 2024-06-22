@@ -32,6 +32,7 @@ public:
     };
 
     static LabelerProvider *getInstance();
+    void clear();
     void setAccount(const AtProtocolInterface::AccountData &account);
     void update(const AtProtocolInterface::AccountData &account, LabelerConnector *connector,
                 const RefleshMode mode);

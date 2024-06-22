@@ -28,6 +28,7 @@ class ChatLogSubscriber : public QObject
 public:
     static ChatLogSubscriber *getInstance();
 
+    void clear();
     void setAccount(const AtProtocolInterface::AccountData &account, ChatLogConnector *connector);
     void start(const AtProtocolInterface::AccountData &account, const QString &cursor);
     void stop(const AtProtocolInterface::AccountData &account);

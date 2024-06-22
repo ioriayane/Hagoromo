@@ -161,15 +161,21 @@ ChatLogSubscriber::ChatLogSubscriber(QObject *parent) : QObject { parent }
 ChatLogSubscriber::~ChatLogSubscriber()
 {
     qDebug() << this << "~ChatLogSubscriber()";
-    for (const auto &key : d.keys()) {
-        delete d[key];
-    }
+    clear();
 }
 
 ChatLogSubscriber *ChatLogSubscriber::getInstance()
 {
     static ChatLogSubscriber instance;
     return &instance;
+}
+
+void ChatLogSubscriber::clear()
+{
+    for (const auto &key : d.keys()) {
+        delete d[key];
+    }
+    d.clear();
 }
 
 void ChatLogSubscriber::setAccount(const AtProtocolInterface::AccountData &account,

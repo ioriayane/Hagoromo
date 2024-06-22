@@ -17,6 +17,7 @@
 #include "searchprofilelistmodel.h"
 #include "searchpostlistmodel.h"
 #include "contentfiltersettinglistmodel.h"
+#include "tools/labelerprovider.h"
 
 class hagoromo_test : public QObject
 {
@@ -1515,9 +1516,11 @@ void hagoromo_test::test_TimelineListModel_quote_warn()
 {
     int row = 0;
     TimelineListModel model;
-    model.setAccount(m_service + "/timeline/warn", QString(), QString(), QString(), "dummy",
+    model.setAccount(m_service + "/timeline/warn", "did:plc:test", QString(), QString(), "dummy",
                      QString());
     model.setDisplayInterval(0);
+
+    LabelerProvider::getInstance()->clear();
 
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     model.getLatest();
@@ -2301,6 +2304,8 @@ void hagoromo_test::test_TimelineListModel_labelers()
                      "ioriayane.bsky.social", QString(), "dummy", QString());
     model.setDisplayInterval(0);
 
+    LabelerProvider::getInstance()->clear();
+
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     QVERIFY(model.getLatest());
     spy.wait(10 * 1000);
@@ -2629,9 +2634,11 @@ void hagoromo_test::test_NotificationListModel_warn()
 {
     int row = 0;
     NotificationListModel model;
-    model.setAccount(m_service + "/notifications/warn", QString(), QString(), QString(), "dummy",
-                     QString());
+    model.setAccount(m_service + "/notifications/warn", "did:plc:test", QString(), QString(),
+                     "dummy", QString());
     model.setDisplayInterval(0);
+
+    LabelerProvider::getInstance()->clear();
 
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     model.getLatest();
