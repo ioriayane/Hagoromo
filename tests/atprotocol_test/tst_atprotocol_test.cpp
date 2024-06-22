@@ -1556,7 +1556,8 @@ void atprotocol_test::test_LabelerProvider()
     QVERIFY2(provider->labelerDids(account)
                      == QStringList() << "__globally__"
                                       << "did:plc:ar7c4by46qjdydhdevvrndac"
-                                      << "did:plc:original_labeler_did",
+                                      << "did:plc:original_labeler_did"
+                                      << "did:plc:original_labeler_did_2",
              QString(provider->labelerDids(account).join(",")).toLocal8Bit());
 
     QVERIFY(provider->visibility(account, "hoge", true) == ConfigurableLabelStatus::Show);
