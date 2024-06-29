@@ -67,36 +67,41 @@ Dialog {
     ColumnLayout {
         spacing: AdjustedValues.s5
 
-        RowLayout {
-            AvatarImage {
-                id: accountAvatarImage
-                Layout.preferredWidth: AdjustedValues.i24
-                Layout.preferredHeight: AdjustedValues.i24
-                //                source:
-            }
-
-            ComboBox {
-                id: accountCombo
-                Layout.preferredWidth: 200 * AdjustedValues.ratio
-                Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
+        ComboBox {
+            id: accountCombo
+            Layout.preferredWidth: 200 * AdjustedValues.ratio + AdjustedValues.i24
+            Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
+            font.pointSize: AdjustedValues.f10
+            textRole: "handle"
+            valueRole: "did"
+            delegate: ItemDelegate {
+                width: parent.width
+                height: implicitHeight * AdjustedValues.ratio
                 font.pointSize: AdjustedValues.f10
-                textRole: "handle"
-                valueRole: "did"
-                delegate: ItemDelegate {
-                    width: parent.width
-                    height: implicitHeight * AdjustedValues.ratio
-                    font.pointSize: AdjustedValues.f10
-                    text: model.handle
-                    onClicked: accountCombo.currentIndex = model.index
+                onClicked: accountCombo.currentIndex = model.index
+                AccountLayout {
+                    anchors.fill: parent
+                    anchors.margins: 10
+                    source: model.avatar
+                    handle: model.handle
                 }
-                onCurrentIndexChanged: {
-                    if(accountCombo.currentIndex >= 0){
-                        accountAvatarImage.source =
-                                searchDialog.accountModel.item(accountCombo.currentIndex, AccountListModel.AvatarRole)
-                    }
+            }
+            contentItem: AccountLayout {
+                id: accountAvatarLayout
+                width: parent.width
+                height: parent.height
+                leftMargin: 10
+                handle: accountCombo.displayText
+            }
+            onCurrentIndexChanged: {
+                var row = accountCombo.currentIndex
+                if(row >= 0){
+                    accountAvatarLayout.source =
+                            postDialog.accountModel.item(row, AccountListModel.AvatarRole)
                 }
             }
         }
+
 
         RowLayout {
             id: searchTypeRowlayout
@@ -151,6 +156,8 @@ Dialog {
                 text: calendarPicker.since
                 onClicked: {
                     calendarPicker.target = "since"
+                    calendarPickerPopup.x = x
+                    calendarPickerPopup.y = y
                     calendarPickerPopup.open()
                 }
             }
@@ -174,28 +181,29 @@ Dialog {
                 text: calendarPicker.until
                 onClicked: {
                     calendarPicker.target = "until"
+                    calendarPickerPopup.x = x
+                    calendarPickerPopup.y = y
                     calendarPickerPopup.open()
                 }
             }
-        }
-        Popup {
-            id: calendarPickerPopup
-            CalendarPicker {
-                id: calendarPicker
-                enableSince: sinceCheckBox.checked
-                enableUntil: untilCheckBox.checked
-                onDateChanged: (year, month, day) => {
-                                   if(target === "since"){
-                                       calendarPicker.setSince(year, month, day)
-                                   }else{
-                                       calendarPicker.setUntil(year, month, day)
+            Popup {
+                id: calendarPickerPopup
+                CalendarPicker {
+                    id: calendarPicker
+                    enableSince: sinceCheckBox.checked
+                    enableUntil: untilCheckBox.checked
+                    onDateChanged: (year, month, day) => {
+                                       if(target === "since"){
+                                           calendarPicker.setSince(year, month, day)
+                                       }else{
+                                           calendarPicker.setUntil(year, month, day)
+                                       }
+                                       target = ""
+                                       calendarPickerPopup.close()
                                    }
-                                   target = ""
-                                   calendarPickerPopup.close()
-                               }
+                }
             }
         }
-
 
         RowLayout {
             //            Layout.alignment: Qt.AlignRight
