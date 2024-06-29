@@ -3,7 +3,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 
-import tech.relog.hagoromo.calendartablemodel 1.0
+import tech.relog.hagoromo.controls.calendartablemodel 1.0
 import tech.relog.hagoromo.singleton 1.0
 
 import "../controls"
@@ -11,7 +11,22 @@ import "../controls"
 Frame {
     id: root
 
-    signal dateChanged(string date)
+    property alias since: calendarTableModel.since
+    property alias until: calendarTableModel.until
+    property alias enableSince: calendarTableModel.enableSince
+    property alias enableUntil: calendarTableModel.enableUntil
+
+    signal dateChanged(int year, int month, int day)
+
+    function setSince(year, month, day) {
+        calendarTableModel.setSinceDate(year, month, day)
+    }
+    function setUntil(year, month, day) {
+        calendarTableModel.setUntilDate(year, month, day)
+    }
+    function clear() {
+        calendarTableModel.clear()
+    }
 
     ColumnLayout {
         RowLayout {
@@ -66,13 +81,15 @@ Frame {
                 rightInset: 0
                 flat: true
                 visible: model.day.length > 0
+                enabled: model.outOfRange
                 Label {
                     anchors.centerIn: parent
                     font.pointSize: AdjustedValues.f10
                     text: model.day
-                    color: model.isCurrentMonth ? Material.foreground : Material.color(Material.Grey)
+                    color: !model.outOfRange ? Material.color(Material.Grey) :
+                                               (model.isCurrentMonth ? Material.foreground : Material.color(Material.BlueGrey))
                 }
-                onClicked: dateChanged(model.year + "/" + model.month + "/" + model.day)
+                onClicked: dateChanged(model.year, model.month, model.day)
             }
             model: CalendarTableModel {
                 id: calendarTableModel

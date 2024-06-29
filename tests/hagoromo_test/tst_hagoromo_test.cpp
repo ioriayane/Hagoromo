@@ -3357,6 +3357,23 @@ void hagoromo_test::test_CalendarTableModel()
                          .arg(data.toString())
                          .toLocal8Bit());
     }
+
+    model.setYear(2024);
+    model.setMonth(6);
+
+    model.setSinceDate(2024, 6, 10);
+    model.setUntilDate(2024, 6, 10);
+    model.setEnableSince(true);
+    model.setEnableUntil(false);
+    QVERIFY(model.item(2, 0, CalendarTableModel::EnabledRole).toBool() == false); // 6/9
+    QVERIFY(model.item(2, 1, CalendarTableModel::EnabledRole).toBool() == true); // 6/10
+
+    model.setSinceDate(2024, 6, 10);
+    model.setUntilDate(2024, 6, 10);
+    model.setEnableSince(false);
+    model.setEnableUntil(true);
+    QVERIFY(model.item(2, 1, CalendarTableModel::EnabledRole).toBool() == true); // 6/10
+    QVERIFY(model.item(2, 2, CalendarTableModel::EnabledRole).toBool() == false); // 6/11
 }
 
 void hagoromo_test::verifyStr(const QString &expect, const QString &actual)

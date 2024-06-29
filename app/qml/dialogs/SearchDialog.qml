@@ -116,6 +116,82 @@ Dialog {
         }
 
         RowLayout {
+            spacing: 0
+            CheckBox {
+                topPadding: 5
+                bottomPadding: 5
+                font.pointSize: AdjustedValues.f8
+                text: qsTr("by me")
+            }
+            CheckBox {
+                id: sinceCheckBox
+                topPadding: 5
+                bottomPadding: 5
+                rightPadding: 0
+                font.pointSize: AdjustedValues.f8
+                text: qsTr("Since") + ":"
+            }
+            Button {
+                id: sinceButton
+                topInset: 0
+                bottomInset: 0
+                leftPadding: 3
+                rightPadding: 3
+                flat: true
+                enabled: sinceCheckBox.checked
+                font.pointSize: AdjustedValues.f8
+                text: calendarPicker.since
+                onClicked: {
+                    calendarPicker.target = "since"
+                    calendarPickerPopup.open()
+                }
+            }
+            CheckBox {
+                id: untilCheckBox
+                topPadding: 5
+                bottomPadding: 5
+                rightPadding: 0
+                font.pointSize: AdjustedValues.f8
+                text: qsTr("Until") + ":"
+            }
+            Button {
+                id: untilButton
+                topInset: 0
+                bottomInset: 0
+                leftPadding: 3
+                rightPadding: 3
+                flat: true
+                enabled: untilCheckBox.checked
+                font.pointSize: AdjustedValues.f8
+                text: calendarPicker.until
+                onClicked: {
+                    calendarPicker.target = "until"
+                    calendarPickerPopup.open()
+                }
+            }
+        }
+        Popup {
+            id: calendarPickerPopup
+            CalendarPicker {
+                id: calendarPicker
+                property string target: ""
+                enableSince: sinceCheckBox.checked
+                enableUntil: untilCheckBox.checked
+                onDateChanged: (year, month, day) => {
+                                   if(target === "since"){
+                                       calendarPicker.setSince(year, month, day)
+                                   }else{
+                                       calendarPicker.setUntil(year, month, day)
+                                   }
+                                   target = ""
+                                   calendarPickerPopup.close()
+                                   calendarPicker.clear()
+                               }
+            }
+        }
+
+
+        RowLayout {
             //            Layout.alignment: Qt.AlignRight
             Button {
                 font.pointSize: AdjustedValues.f10
