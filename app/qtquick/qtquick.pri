@@ -16,6 +16,7 @@ SOURCES += \
     $$PWD/chat/chatmessagelistmodel.cpp \
     $$PWD/columnlistmodel.cpp \
     $$PWD/contentfiltersettinglistmodel.cpp \
+    $$PWD/controls/calendartablemodel.cpp \
     $$PWD/createsession.cpp \
     $$PWD/customfeedlistmodel.cpp \
     $$PWD/embedimagelistmodel.cpp \
@@ -70,6 +71,7 @@ HEADERS += \
     $$PWD/columnlistmodel.h \
     $$PWD/common.h \
     $$PWD/contentfiltersettinglistmodel.h \
+    $$PWD/controls/calendartablemodel.h \
     $$PWD/createsession.h \
     $$PWD/customfeedlistmodel.h \
     $$PWD/embedimagelistmodel.h \

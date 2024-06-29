@@ -56,6 +56,7 @@
 #include "qtquick/chat/chatmessagelistmodel.h"
 #include "qtquick/moderation/labelerlistmodel.h"
 #include "qtquick/blog/blogentrylistmodel.h"
+#include "qtquick/controls/calendartablemodel.h"
 
 #include "tools/translatorchanger.h"
 
@@ -181,6 +182,9 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<BlogEntryListModel>("tech.relog.hagoromo.blog.blogentrylistmodel", 1, 0,
                                         "BlogEntryListModel");
+
+    qmlRegisterType<CalendarTableModel>("tech.relog.hagoromo.controls.calendartablemodel", 1, 0,
+                                        "CalendarTableModel");
 
     qmlRegisterSingletonType(QUrl("qrc:/Hagoromo/qml/data/AdjustedValues.qml"),
                              "tech.relog.hagoromo.singleton", 1, 0, "AdjustedValues");
