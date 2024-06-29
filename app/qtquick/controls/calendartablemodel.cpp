@@ -2,6 +2,7 @@
 
 #include <QCalendar>
 #include <QDate>
+#include <QDateTime>
 #include <QDebug>
 
 CalendarTableModel::CalendarTableModel(QObject *parent)
@@ -36,15 +37,10 @@ QVariant CalendarTableModel::item(int row, int column, CalendarTableModelRoles r
     QDate index_date;
     QDate until_date;
 
-    // qDebug().noquote() << "r=" << index.row() << "c=" << index.column() << "day of weed"
-    //                    << start_date.dayOfWeek();
-
     int total = start_date.daysInMonth()
             + (start_date.dayOfWeek() == 7 ? 0 : (start_date.dayOfWeek() + 1));
     int enable_row_count =
             ((total % 7 == 0) ? static_cast<int>(total / 7) : static_cast<int>(total / 7) + 1);
-    // qDebug().noquote() << "rowCount" << int(total / 7) << total << start_date.daysInMonth()
-    //                    << QCalendar().daysInMonth(month(), year()) << enable_row_count;
 
     if (row >= enable_row_count)
         return QString();
@@ -67,8 +63,6 @@ QVariant CalendarTableModel::item(int row, int column, CalendarTableModelRoles r
     case IsCurrentMonthRole:
         return index_date.month() == month();
     case EnabledRole: {
-        qDebug().noquote() << "enableSince" << enableSince() << m_since;
-        qDebug().noquote() << "enableUntil" << enableUntil() << m_until;
         if (enableSince() && m_since.isValid()) {
             if (index_date < m_since) {
                 return false;
@@ -127,10 +121,11 @@ void CalendarTableModel::addMonths(int months)
 
 void CalendarTableModel::clear()
 {
-    setYear(QDate::currentDate().year());
-    setMonth(QDate::currentDate().month());
-    // m_since = QDate::currentDate();
-    // m_until = QDate::currentDate();
+    QDate current = QDate::currentDate();
+    setYear(current.year());
+    setMonth(current.month());
+    setSinceDate(current.year(), current.month(), current.day());
+    setUntilDate(current.year(), current.month(), current.day());
 }
 
 int CalendarTableModel::year() const
@@ -174,6 +169,13 @@ void CalendarTableModel::setSince(const QString &newSince)
 void CalendarTableModel::setSinceDate(int year, int month, int day)
 {
     QDate new_date(year, month, day);
+    if (m_until.isValid() && m_until < new_date) {
+        if (enableUntil()) {
+            new_date = m_until;
+        } else {
+            setUntilDate(year, month, day);
+        }
+    }
     if (m_since == new_date)
         return;
     m_since = new_date;
@@ -194,11 +196,56 @@ void CalendarTableModel::setUntil(const QString &newUntil)
 void CalendarTableModel::setUntilDate(int year, int month, int day)
 {
     QDate new_date(year, month, day);
+    if (m_since.isValid() && new_date < m_since) {
+        if (enableSince()) {
+            new_date = m_since;
+        } else {
+            setSinceDate(year, month, day);
+        }
+    }
     if (m_until == new_date)
         return;
     m_until = new_date;
     emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1));
     emit untilChanged();
+}
+
+void CalendarTableModel::setCurrentFromSince()
+{
+    if (m_since.isValid()) {
+        setYear(m_since.year());
+        setMonth(m_since.month());
+    }
+}
+
+void CalendarTableModel::setCurrentFromUntil()
+{
+    if (m_until.isValid()) {
+        setYear(m_until.year());
+        setMonth(m_until.month());
+    }
+}
+
+QString CalendarTableModel::sinceUtc() const
+{
+    if (enableSince() && m_since.isValid()) {
+        return QDateTime(m_since, QTime(0, 0, 0), Qt::LocalTime)
+                .toUTC()
+                .toString("yyyy-MM-ddTHH:mm:ssZ");
+    } else {
+        return QString();
+    }
+}
+
+QString CalendarTableModel::untilUtc() const
+{
+    if (enableUntil() && m_until.isValid()) {
+        return QDateTime(m_since, QTime(23, 59, 59), Qt::LocalTime)
+                .toUTC()
+                .toString("yyyy-MM-ddTHH:mm:ssZ");
+    } else {
+        return QString();
+    }
 }
 
 bool CalendarTableModel::enableSince() const

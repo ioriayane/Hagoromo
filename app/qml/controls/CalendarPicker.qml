@@ -11,6 +11,7 @@ import "../controls"
 Frame {
     id: root
 
+    property string target: ""  // since or until
     property alias since: calendarTableModel.since
     property alias until: calendarTableModel.until
     property alias enableSince: calendarTableModel.enableSince
@@ -24,8 +25,21 @@ Frame {
     function setUntil(year, month, day) {
         calendarTableModel.setUntilDate(year, month, day)
     }
+    function sinceUtc() {
+        return calendarTableModel.sinceUtc()
+    }
+    function untilUtc() {
+        return calendarTableModel.untilUtc()
+    }
     function clear() {
         calendarTableModel.clear()
+    }
+    onTargetChanged: {
+        if(target === "since"){
+            calendarTableModel.setCurrentFromSince()
+        }else{
+            calendarTableModel.setCurrentFromUntil()
+        }
     }
 
     ColumnLayout {
@@ -81,7 +95,6 @@ Frame {
                 rightInset: 0
                 flat: true
                 visible: model.day.length > 0
-                enabled: model.outOfRange
                 Label {
                     anchors.centerIn: parent
                     font.pointSize: AdjustedValues.f10

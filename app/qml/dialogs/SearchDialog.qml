@@ -23,7 +23,7 @@ Dialog {
 
     property string defaultAccountUuid: ""
     property string searchType: "posts"
-    property string searchText: searchText.text
+    property string searchText: ""
 
     onOpened: {
         var i = accountModel.indexAt(defaultAccountUuid)
@@ -33,16 +33,21 @@ Dialog {
         } else {
             accountCombo.currentIndex = accountModel.getMainAccountIndex()
         }
-        searchText.forceActiveFocus()
+        searchTextField.forceActiveFocus()
     }
     onClosed: {
         defaultAccountUuid = ""
         searchType = "posts"
-        searchText.clear()
+        searchText = ""
+        searchTextField.clear()
+        byMeCheckBox.checked = false
+        sinceCheckBox.checked = false
+        untilCheckBox.checked = false
+        calendarPicker.clear()
     }
 
     Shortcut {  // Post
-        enabled: searchDialog.visible && postButton.enabled && searchText.focus
+        enabled: searchDialog.visible && postButton.enabled && searchTextField.focus
         sequence: "Ctrl+Return"
         onActivated: postButton.clicked()
     }
@@ -109,15 +114,18 @@ Dialog {
         }
 
         TextField  {
-            id: searchText
-            Layout.preferredWidth: 300 * AdjustedValues.ratio
+            id: searchTextField
+            Layout.preferredWidth: 350 * AdjustedValues.ratio
             selectByMouse: true
             font.pointSize: AdjustedValues.f10
         }
 
         RowLayout {
+            id: detailConditionsLayout
+            visible: (searchTypeButtonGroup.checkedButton.value === "posts")
             spacing: 0
             CheckBox {
+                id: byMeCheckBox
                 topPadding: 5
                 bottomPadding: 5
                 font.pointSize: AdjustedValues.f8
@@ -174,7 +182,6 @@ Dialog {
             id: calendarPickerPopup
             CalendarPicker {
                 id: calendarPicker
-                property string target: ""
                 enableSince: sinceCheckBox.checked
                 enableUntil: untilCheckBox.checked
                 onDateChanged: (year, month, day) => {
@@ -185,7 +192,6 @@ Dialog {
                                    }
                                    target = ""
                                    calendarPickerPopup.close()
-                                   calendarPicker.clear()
                                }
             }
         }
@@ -206,11 +212,17 @@ Dialog {
             Button {
                 id: postButton
                 Layout.alignment: Qt.AlignRight
-                enabled: searchText.text.length > 0
+                enabled: searchTextField.text.length > 0
                 font.pointSize: AdjustedValues.f10
                 text: qsTr("Search")
                 onClicked: {
                     searchDialog.searchType = searchTypeButtonGroup.checkedButton.value
+                    searchDialog.searchText = searchTextField.text
+                    if(searchDialog.searchType === "posts"){
+                        searchDialog.searchText += byMeCheckBox.checked ? " from:me" : ""
+                        searchDialog.searchText += sinceCheckBox.checked ? (" since:" + calendarPicker.sinceUtc()) : ""
+                        searchDialog.searchText += untilCheckBox.checked ? (" until:" + calendarPicker.untilUtc()) : ""
+                    }
                     searchDialog.accept()
                 }
             }

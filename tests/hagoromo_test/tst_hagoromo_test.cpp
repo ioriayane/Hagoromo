@@ -3374,6 +3374,41 @@ void hagoromo_test::test_CalendarTableModel()
     model.setEnableUntil(true);
     QVERIFY(model.item(2, 1, CalendarTableModel::EnabledRole).toBool() == true); // 6/10
     QVERIFY(model.item(2, 2, CalendarTableModel::EnabledRole).toBool() == false); // 6/11
+
+    model.setEnableSince(true);
+    model.setEnableUntil(true);
+    model.setSinceDate(2024, 6, 1);
+    model.setUntilDate(2024, 6, 10);
+    model.setSinceDate(2024, 6, 11);
+    QVERIFY(model.since() == "2024/06/10");
+    QVERIFY(model.until() == "2024/06/10");
+
+    model.setSinceDate(2024, 6, 1);
+    model.setUntilDate(2024, 6, 10);
+    model.setUntilDate(2024, 5, 31);
+    QVERIFY(model.since() == "2024/06/01");
+    QVERIFY(model.until() == "2024/06/01");
+
+    model.setEnableSince(true);
+    model.setEnableUntil(false);
+    model.setSinceDate(2024, 6, 1);
+    model.setUntilDate(2024, 6, 10);
+    model.setSinceDate(2024, 6, 11);
+    QVERIFY(model.since() == "2024/06/11");
+    QVERIFY(model.until() == "2024/06/11");
+
+    model.setEnableSince(false);
+    model.setEnableUntil(true);
+    model.setSinceDate(2024, 6, 1);
+    model.setUntilDate(2024, 6, 10);
+    model.setUntilDate(2024, 5, 31);
+    QVERIFY(model.since() == "2024/05/31");
+    QVERIFY(model.until() == "2024/05/31");
+
+    model.setEnableSince(true);
+    model.setEnableUntil(true);
+    QVERIFY(model.sinceUtc() == "2024-05-30T15:00:00Z");
+    QVERIFY(model.untilUtc() == "2024-05-31T14:59:59Z");
 }
 
 void hagoromo_test::verifyStr(const QString &expect, const QString &actual)

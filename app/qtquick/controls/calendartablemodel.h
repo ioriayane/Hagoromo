@@ -44,6 +44,10 @@ public:
     Q_INVOKABLE void clear();
     Q_INVOKABLE void setSinceDate(int year, int month, int day);
     Q_INVOKABLE void setUntilDate(int year, int month, int day);
+    Q_INVOKABLE void setCurrentFromSince();
+    Q_INVOKABLE void setCurrentFromUntil();
+    Q_INVOKABLE QString sinceUtc() const;
+    Q_INVOKABLE QString untilUtc() const;
 
     int year() const;
     void setYear(int newYear);
