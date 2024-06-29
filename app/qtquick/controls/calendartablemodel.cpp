@@ -258,6 +258,7 @@ void CalendarTableModel::setEnableSince(bool newEnableSince)
     if (m_enableSince == newEnableSince)
         return;
     m_enableSince = newEnableSince;
+    emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1));
     emit enableSinceChanged();
 }
 
@@ -271,5 +272,6 @@ void CalendarTableModel::setEnableUntil(bool newEnableUntil)
     if (m_enableUntil == newEnableUntil)
         return;
     m_enableUntil = newEnableUntil;
+    emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1));
     emit enableUntilChanged();
 }
