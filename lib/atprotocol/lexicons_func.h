@@ -46,8 +46,10 @@ namespace AppBskyGraphDefs {
 void copyListPurpose(const QJsonValue &src, AppBskyGraphDefs::ListPurpose &dest);
 void copyListViewerState(const QJsonObject &src, AppBskyGraphDefs::ListViewerState &dest);
 void copyListViewBasic(const QJsonObject &src, AppBskyGraphDefs::ListViewBasic &dest);
+void copyStarterPackViewBasic(const QJsonObject &src, AppBskyGraphDefs::StarterPackViewBasic &dest);
 void copyListView(const QJsonObject &src, AppBskyGraphDefs::ListView &dest);
 void copyListItemView(const QJsonObject &src, AppBskyGraphDefs::ListItemView &dest);
+void copyStarterPackView(const QJsonObject &src, AppBskyGraphDefs::StarterPackView &dest);
 void copyNotFoundActor(const QJsonObject &src, AppBskyGraphDefs::NotFoundActor &dest);
 void copyRelationship(const QJsonObject &src, AppBskyGraphDefs::Relationship &dest);
 }
@@ -61,6 +63,10 @@ void copyLabelValueDefinitionStrings(const QJsonObject &src,
                                      ComAtprotoLabelDefs::LabelValueDefinitionStrings &dest);
 void copyLabelValueDefinition(const QJsonObject &src,
                               ComAtprotoLabelDefs::LabelValueDefinition &dest);
+}
+// com.atproto.repo.strongRef
+namespace ComAtprotoRepoStrongRef {
+void copyMain(const QJsonObject &src, ComAtprotoRepoStrongRef::Main &dest);
 }
 // app.bsky.actor.profile
 namespace AppBskyActorProfile {
@@ -80,10 +86,6 @@ void copyImage(const QJsonObject &src, AppBskyEmbedImages::Image &dest);
 void copyMain(const QJsonObject &src, AppBskyEmbedImages::Main &dest);
 void copyViewImage(const QJsonObject &src, AppBskyEmbedImages::ViewImage &dest);
 void copyView(const QJsonObject &src, AppBskyEmbedImages::View &dest);
-}
-// com.atproto.repo.strongRef
-namespace ComAtprotoRepoStrongRef {
-void copyMain(const QJsonObject &src, ComAtprotoRepoStrongRef::Main &dest);
 }
 // app.bsky.embed.record
 namespace AppBskyEmbedRecord {
@@ -185,6 +187,11 @@ void copyMain(const QJsonObject &src, AppBskyGraphListblock::Main &dest);
 // app.bsky.graph.listitem
 namespace AppBskyGraphListitem {
 void copyMain(const QJsonObject &src, AppBskyGraphListitem::Main &dest);
+}
+// app.bsky.graph.starterpack
+namespace AppBskyGraphStarterpack {
+void copyFeedItem(const QJsonObject &src, AppBskyGraphStarterpack::FeedItem &dest);
+void copyMain(const QJsonObject &src, AppBskyGraphStarterpack::Main &dest);
 }
 // app.bsky.labeler.service
 namespace AppBskyLabelerService {
@@ -352,6 +359,10 @@ void copyRecordViewDetail(const QJsonObject &src, ToolsOzoneModerationDefs::Reco
 namespace ToolsOzoneServerGetConfig {
 void copyServiceConfig(const QJsonObject &src, ToolsOzoneServerGetConfig::ServiceConfig &dest);
 void copyViewerConfig(const QJsonObject &src, ToolsOzoneServerGetConfig::ViewerConfig &dest);
+}
+// tools.ozone.team.defs
+namespace ToolsOzoneTeamDefs {
+void copyMember(const QJsonObject &src, ToolsOzoneTeamDefs::Member &dest);
 }
 // com.whtwnd.blog.defs
 namespace ComWhtwndBlogDefs {
