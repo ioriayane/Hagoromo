@@ -14,6 +14,7 @@ description: This is a multi-column Bluesky client.
   - Support for Starter Pack notifications
 - Fix
   - Fix the initial settings when adding a timeline column
+  - Fixed so that the URL is displayed when the mouse cursor is moved over the WhiteWind article
 
 ### v0.32.0 - 2024/6/5
 
