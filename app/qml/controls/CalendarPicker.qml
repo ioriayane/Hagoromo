@@ -34,6 +34,9 @@ Frame {
     function clear() {
         calendarTableModel.clear()
     }
+    function forceLayout(){
+        calendarTable.forceLayout()
+    }
     onTargetChanged: {
         if(target === "since"){
             calendarTableModel.setCurrentFromSince()
@@ -44,6 +47,7 @@ Frame {
 
     ColumnLayout {
         RowLayout {
+            id: controlLayout
             Layout.alignment: Qt.AlignHCenter
             spacing: 0
             property int buttonSize: yearMonthLabel.height * 1.5
@@ -81,12 +85,14 @@ Frame {
         }
         TableView {
             id: calendarTable
-            width: 200 * AdjustedValues.ratio
-            height: 150 * AdjustedValues.ratio
+            Layout.preferredWidth: 200 * AdjustedValues.ratio
+            Layout.preferredHeight: 150 * AdjustedValues.ratio
             clip: true
             columnSpacing: 0
             rowSpacing: 0
             delegate: Button {
+                width: implicitWidth
+                height: implicitHeight
                 implicitWidth: calendarTable.width / 7
                 implicitHeight: calendarTable.height / 6
                 topInset: 0
