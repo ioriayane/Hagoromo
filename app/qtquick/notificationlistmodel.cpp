@@ -220,6 +220,8 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             return NotificationListModelReason::ReasonReply;
         } else if (current.reason == "quote") {
             return NotificationListModelReason::ReasonQuote;
+        } else if (current.reason == "starterpack-joined") {
+            return NotificationListModelReason::ReasonStaterPack;
         } else {
             return NotificationListModelReason::ReasonUnknown;
         }
@@ -571,6 +573,7 @@ bool NotificationListModel::getLatest()
                         if (!m_cueGetPost.contains(item->uri)) {
                             m_cueGetPost.append(item->uri);
                         }
+                    } else if (item->reason == "starterpack-joined") {
                     }
                 }
 
@@ -717,6 +720,7 @@ bool NotificationListModel::getNext()
                         if (!m_cueGetPost.contains(item->uri)) {
                             m_cueGetPost.append(item->uri);
                         }
+                    } else if (item->reason == "starterpack-joined") {
                     }
                 }
             } else {
@@ -1383,6 +1387,8 @@ bool NotificationListModel::enableReason(const QString &reason) const
     else if (reason == "reply" && visibleReply())
         return true;
     else if (reason == "quote" && visibleQuote())
+        return true;
+    else if (reason == "starterpack-joined")
         return true;
 
     return false;

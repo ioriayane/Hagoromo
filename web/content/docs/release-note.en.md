@@ -11,6 +11,7 @@ description: This is a multi-column Bluesky client.
 - Update
   - Support for quoting posts in chat
   - Add conditions such as dates to the post search
+  - Support for Starter Pack notifications
 - Fix
   - Fix the initial settings when adding a timeline column
 
