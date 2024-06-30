@@ -121,6 +121,7 @@ public:
         ReasonMention,
         ReasonReply,
         ReasonQuote,
+        ReasonStaterPack,
     };
     Q_ENUM(NotificationListModelReason)
 

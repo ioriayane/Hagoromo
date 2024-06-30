@@ -2299,9 +2299,14 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>NotificationDelegate</name>
     <message>
-        <location filename="../qml/parts/NotificationDelegate.qml" line="152"/>
+        <location filename="../qml/parts/NotificationDelegate.qml" line="156"/>
         <source>Post from an account you muted.</source>
         <translation>ミュートしているアカウントのポスト</translation>
+    </message>
+    <message>
+        <location filename="../qml/parts/NotificationDelegate.qml" line="369"/>
+        <source>signed up with your starter pack</source>
+        <translation>あなたのスターターパックで登録しました</translation>
     </message>
 </context>
 <context>
@@ -3030,37 +3035,37 @@ Why should this message be reviewed?</source>
 <context>
     <name>SearchDialog</name>
     <message>
-        <location filename="../qml/dialogs/SearchDialog.qml" line="106"/>
+        <location filename="../qml/dialogs/SearchDialog.qml" line="111"/>
         <source>Posts</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SearchDialog.qml" line="112"/>
+        <location filename="../qml/dialogs/SearchDialog.qml" line="117"/>
         <source>Users</source>
         <translation>ユーザー</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SearchDialog.qml" line="132"/>
+        <location filename="../qml/dialogs/SearchDialog.qml" line="137"/>
         <source>by me</source>
         <translation>自分</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SearchDialog.qml" line="140"/>
+        <location filename="../qml/dialogs/SearchDialog.qml" line="145"/>
         <source>Since</source>
         <translation>開始</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SearchDialog.qml" line="163"/>
+        <location filename="../qml/dialogs/SearchDialog.qml" line="170"/>
         <source>Until</source>
         <translation>終了</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SearchDialog.qml" line="205"/>
+        <location filename="../qml/dialogs/SearchDialog.qml" line="214"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/SearchDialog.qml" line="217"/>
+        <location filename="../qml/dialogs/SearchDialog.qml" line="226"/>
         <source>Search</source>
         <translation>検索</translation>
     </message>

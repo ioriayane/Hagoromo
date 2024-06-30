@@ -44,6 +44,7 @@ struct Main;
 struct View;
 }
 namespace AppBskyFeedDefs {
+struct GeneratorView;
 struct ThreadViewPost;
 }
 namespace AppBskyRichtextFacet {
@@ -112,8 +113,21 @@ struct ListViewBasic
     QString name;
     ListPurpose purpose;
     QString avatar; // uri
+    int listItemCount = 0;
     QList<ComAtprotoLabelDefs::Label> labels;
     ListViewerState viewer;
+    QString indexedAt; // datetime
+};
+struct StarterPackViewBasic
+{
+    QString uri; // at-uri
+    QString cid; // cid
+    QVariant record;
+    QSharedPointer<AppBskyActorDefs::ProfileViewBasic> creator;
+    int listItemCount = 0;
+    int joinedWeekCount = 0;
+    int joinedAllTimeCount = 0;
+    QList<ComAtprotoLabelDefs::Label> labels;
     QString indexedAt; // datetime
 };
 struct ListView
@@ -126,6 +140,7 @@ struct ListView
     QString description;
     QList<QSharedPointer<AppBskyRichtextFacet::Main>> descriptionFacets;
     QString avatar; // uri
+    int listItemCount = 0;
     QList<ComAtprotoLabelDefs::Label> labels;
     ListViewerState viewer;
     QString indexedAt; // datetime
@@ -134,6 +149,20 @@ struct ListItemView
 {
     QString uri; // at-uri
     QSharedPointer<AppBskyActorDefs::ProfileView> subject;
+};
+struct StarterPackView
+{
+    QString uri; // at-uri
+    QString cid; // cid
+    QVariant record;
+    QSharedPointer<AppBskyActorDefs::ProfileViewBasic> creator;
+    ListViewBasic list;
+    QList<ListItemView> listItemsSample;
+    QList<QSharedPointer<AppBskyFeedDefs::GeneratorView>> feeds;
+    int joinedWeekCount = 0;
+    int joinedAllTimeCount = 0;
+    QList<ComAtprotoLabelDefs::Label> labels;
+    QString indexedAt; // datetime
 };
 struct NotFoundActor
 {
@@ -160,6 +189,7 @@ struct ProfileAssociated
 {
     int lists = 0;
     int feedgens = 0;
+    int starterPacks = 0;
     bool labeler = false;
     ProfileAssociatedChat chat;
 };
@@ -188,6 +218,7 @@ struct ProfileViewBasic
     ProfileAssociated associated;
     ViewerState viewer;
     QList<ComAtprotoLabelDefs::Label> labels;
+    QString createdAt; // datetime
 };
 struct ProfileView
 {
@@ -198,6 +229,7 @@ struct ProfileView
     QString avatar; // uri
     ProfileAssociated associated;
     QString indexedAt; // datetime
+    QString createdAt; // datetime
     ViewerState viewer;
     QList<ComAtprotoLabelDefs::Label> labels;
 };
@@ -213,7 +245,9 @@ struct ProfileViewDetailed
     int followsCount = 0;
     int postsCount = 0;
     ProfileAssociated associated;
+    AppBskyGraphDefs::StarterPackViewBasic joinedViaStarterPack;
     QString indexedAt; // datetime
+    QString createdAt; // datetime
     ViewerState viewer;
     QList<ComAtprotoLabelDefs::Label> labels;
 };
@@ -310,6 +344,16 @@ struct Preferences
 };
 }
 
+// com.atproto.repo.strongRef
+namespace ComAtprotoRepoStrongRef {
+struct Main
+{
+    QString uri; // at-uri
+    QString cid; // cid
+};
+// A URI with a content-hash fingerprint.
+}
+
 // app.bsky.actor.profile
 namespace AppBskyActorProfile {
 enum class MainLabelsType : int {
@@ -328,6 +372,8 @@ struct Main
             labels_ComAtprotoLabelDefs_SelfLabels; // Self-label values, specific to the Bluesky
                                                    // application, on the overall account.
     // union end : labels
+    ComAtprotoRepoStrongRef::Main joinedViaStarterPack;
+    QString createdAt; // datetime
     QString pinnedPost; // at-uri , (Unofficial field)
 };
 }
@@ -390,16 +436,6 @@ struct View
 {
     QList<ViewImage> images;
 };
-}
-
-// com.atproto.repo.strongRef
-namespace ComAtprotoRepoStrongRef {
-struct Main
-{
-    QString uri; // at-uri
-    QString cid; // cid
-};
-// A URI with a content-hash fingerprint.
 }
 
 // app.bsky.embed.recordWithMedia
@@ -543,6 +579,7 @@ struct ViewerState
 {
     QString repost; // at-uri
     QString like; // at-uri
+    bool threadMuted = false;
     bool replyDisabled = false;
 };
 struct ThreadgateView
@@ -966,6 +1003,23 @@ struct Main
 };
 }
 
+// app.bsky.graph.starterpack
+namespace AppBskyGraphStarterpack {
+struct FeedItem
+{
+    QString uri; // at-uri
+};
+struct Main
+{
+    QString name; // Display name for starter pack; can not be empty.
+    QString description;
+    QList<AppBskyRichtextFacet::Main> descriptionFacets;
+    QString list; // at-uri , Reference (AT-URI) to the list record.
+    QList<FeedItem> feeds;
+    QString createdAt; // datetime
+};
+}
+
 // app.bsky.labeler.service
 namespace AppBskyLabelerService {
 enum class MainLabelsType : int {
@@ -990,8 +1044,8 @@ struct Notification
     QString uri; // at-uri
     QString cid; // cid
     AppBskyActorDefs::ProfileView author;
-    QString reason; // Expected values are 'like', 'repost', 'follow', 'mention', 'reply', and
-                    // 'quote'.
+    QString reason; // Expected values are 'like', 'repost', 'follow', 'mention', 'reply', 'quote',
+                    // and 'starterpack-joined'.
     QString reasonSubject; // at-uri
     QVariant record;
     bool isRead = false;
@@ -1751,6 +1805,20 @@ struct ServiceConfig
 };
 struct ViewerConfig
 {
+    QString role;
+};
+}
+
+// tools.ozone.team.defs
+namespace ToolsOzoneTeamDefs {
+struct Member
+{
+    QString did; // did
+    bool disabled = false;
+    AppBskyActorDefs::ProfileViewDetailed profile;
+    QString createdAt; // datetime
+    QString updatedAt; // datetime
+    QString lastUpdatedBy;
     QString role;
 };
 }

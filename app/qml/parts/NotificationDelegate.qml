@@ -137,8 +137,12 @@ ClickableFrame {
 
             PropertyChanges { target: postControls; visible: true }
             PropertyChanges { target: notificationFrame; bottomPadding: 2 }
+        },
+        State {
+            when: notificationFrame.reason === NotificationListModel.ReasonStaterPack
+            PropertyChanges { target: reasonImage; source: "../images/starterpack.png" }
+            PropertyChanges { target: joinedViaStaterPackText; visible: true }
         }
-
     ]
 
     ColumnLayout {
@@ -199,6 +203,10 @@ ClickableFrame {
                         State {
                             when: notificationFrame.reason === NotificationListModel.ReasonQuote
                             PropertyChanges { target: reasonImageEffect; color: Material.color(Material.Lime) }
+                        },
+                        State {
+                            when: notificationFrame.reason === NotificationListModel.ReasonStaterPack
+                            PropertyChanges { target: reasonImageEffect; color: Material.color(Material.LightBlue) }
                         }
                     ]
                 }
@@ -349,6 +357,16 @@ ClickableFrame {
                                 Layout.topMargin: 5
                             }
                         }
+                    }
+
+                    Label {
+                        id: joinedViaStaterPackText
+                        Layout.preferredWidth: parent.width
+                        Layout.leftMargin: postAvatarImage.width + 5
+                        visible: false
+                        font.pointSize: AdjustedValues.f8
+                        color: Material.color(Material.Grey)
+                        text: qsTr("signed up with your starter pack")
                     }
 
                     PostControls {

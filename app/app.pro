@@ -157,6 +157,7 @@ IMAGE_FILES += \
     qml/images/search.png \
     qml/images/send.png \
     qml/images/settings.png \
+    qml/images/starterpack.png \
     qml/images/tag.png \
     qml/images/terminal.png \
     qml/images/thread.png \

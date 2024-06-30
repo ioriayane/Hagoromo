@@ -188,6 +188,7 @@ Dialog {
             }
             Popup {
                 id: calendarPickerPopup
+                onOpened: calendarPicker.forceLayout()
                 CalendarPicker {
                     id: calendarPicker
                     enableSince: sinceCheckBox.checked
