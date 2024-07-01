@@ -171,7 +171,7 @@ Item {
                             elide: Text.ElideRight
                             font.pointSize: AdjustedValues.f8
                             color: Material.color(Material.Grey)
-                            text: "@" + (model.memberHandles.length > 0 ? model.memberHandles[0] : "")
+                            text: model.memberHandles.length > 0 ? ("@" + model.memberHandles[0]) : ""
                         }
 
                         Label {

@@ -69,6 +69,38 @@ Item {
 
     ColumnLayout {
         anchors.fill: parent
+        spacing: 0
+
+        ClickableFrame {
+            Layout.fillWidth: true
+            Layout.topMargin: 1
+            topPadding: 5
+            bottomPadding: 5
+            visible: rootListView.model.memberHandles.length > 0
+            RowLayout {
+                AvatarImage {
+                    id: memberAvatarsImage
+                    Layout.preferredWidth: AdjustedValues.i24
+                    Layout.preferredHeight: AdjustedValues.i24
+                    source: rootListView.model.memberAvatars.length > 0 ?
+                                rootListView.model.memberAvatars[0] : "../images/account_icon.png"
+                }
+                ColumnLayout {
+                    spacing: 1
+                    Label {
+                        font.pointSize: AdjustedValues.f8
+                        text: rootListView.model.memberDisplayNames.length > 0 ?
+                                  rootListView.model.memberDisplayNames[0] : ""
+                    }
+                    Label {
+                        font.pointSize: AdjustedValues.f8
+                        color: Material.color(Material.Grey)
+                        text: rootListView.model.memberHandles.length > 0 ?
+                                  ("@" + rootListView.model.memberHandles[0]) : ""
+                    }
+                }
+            }
+        }
 
         ScrollView {
             Layout.fillWidth: true
