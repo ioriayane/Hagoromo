@@ -389,6 +389,7 @@ void ChatMessageListModel::getConvo(const QString &convoId, const QStringList &m
         connect(convo, &ChatBskyConvoGetConvo::finished, [=](bool success) {
             if (success) {
                 m_convo = convo->convo();
+                setMembers(m_convo);
             } else {
                 m_convo.id.clear();
                 emit errorOccured(convo->errorCode(), convo->errorMessage());
@@ -407,6 +408,7 @@ void ChatMessageListModel::getConvo(const QString &convoId, const QStringList &m
             if (success) {
                 m_convo = convo->convo();
                 setConvoId(m_convo.id);
+                setMembers(m_convo);
             } else {
                 m_convo.id.clear();
                 emit errorOccured(convo->errorCode(), convo->errorMessage());
@@ -442,6 +444,23 @@ void ChatMessageListModel::getLogCursor(std::function<void()> callback)
     convos->setAccount(account());
     convos->setService(account().service_endpoint);
     convos->listConvos(1, QString());
+}
+
+void ChatMessageListModel::setMembers(const AtProtocolType::ChatBskyConvoDefs::ConvoView &convo)
+{
+    QStringList avatars;
+    QStringList handles;
+    QStringList displaynames;
+    for (const auto &member : convo.members) {
+        if (member.did == account().did)
+            continue;
+        avatars.append(member.avatar);
+        handles.append(member.handle);
+        displaynames.append(member.displayName);
+    }
+    setMemberAvatars(avatars);
+    setMemberHandles(handles);
+    setMemberDisplayNames(displaynames);
 }
 
 QString ChatMessageListModel::convoId() const
@@ -529,4 +548,43 @@ void ChatMessageListModel::errorLogs(const QString &code, const QString &message
     qDebug().quote() << "errorLogs" << this << account().did << code << message;
 
     emit errorOccured(code, message);
+}
+
+QStringList ChatMessageListModel::memberAvatars() const
+{
+    return m_memberAvatars;
+}
+
+void ChatMessageListModel::setMemberAvatars(const QStringList &newMemberAvatars)
+{
+    if (m_memberAvatars == newMemberAvatars)
+        return;
+    m_memberAvatars = newMemberAvatars;
+    emit memberAvatarsChanged();
+}
+
+QStringList ChatMessageListModel::memberHandles() const
+{
+    return m_memberHandles;
+}
+
+void ChatMessageListModel::setMemberHandles(const QStringList &newMemberHandles)
+{
+    if (m_memberHandles == newMemberHandles)
+        return;
+    m_memberHandles = newMemberHandles;
+    emit memberHandlesChanged();
+}
+
+QStringList ChatMessageListModel::memberDisplayNames() const
+{
+    return m_memberDisplayNames;
+}
+
+void ChatMessageListModel::setMemberDisplayNames(const QStringList &newMemberDisplayNames)
+{
+    if (m_memberDisplayNames == newMemberDisplayNames)
+        return;
+    m_memberDisplayNames = newMemberDisplayNames;
+    emit memberDisplayNamesChanged();
 }

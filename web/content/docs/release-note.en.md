@@ -8,6 +8,9 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+- Update
+  - Change so that the member's information is displayed at the top of the chat message screen
+
 ### v0.33.0 - 2024/7/1
 
 - Update

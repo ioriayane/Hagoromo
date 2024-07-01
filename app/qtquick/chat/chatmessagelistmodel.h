@@ -16,6 +16,12 @@ class ChatMessageListModel : public AtpChatAbstractListModel
     Q_PROPERTY(bool runSending READ runSending WRITE setRunSending NOTIFY runSendingChanged FINAL)
     Q_PROPERTY(bool ready READ ready NOTIFY readyChanged FINAL)
 
+    Q_PROPERTY(QStringList memberAvatars READ memberAvatars WRITE setMemberAvatars NOTIFY
+                       memberAvatarsChanged FINAL)
+    Q_PROPERTY(QStringList memberHandles READ memberHandles WRITE setMemberHandles NOTIFY
+                       memberHandlesChanged FINAL)
+    Q_PROPERTY(QStringList memberDisplayNames READ memberDisplayNames WRITE setMemberDisplayNames
+                       NOTIFY memberDisplayNamesChanged FINAL)
 public:
     explicit ChatMessageListModel(QObject *parent = nullptr);
     ~ChatMessageListModel();
@@ -74,6 +80,12 @@ public:
     void setMemberDids(const QStringList &newMemberDids);
     bool ready() const;
     void setReady(bool newReady);
+    QStringList memberAvatars() const;
+    void setMemberAvatars(const QStringList &newMemberAvatars);
+    QStringList memberHandles() const;
+    void setMemberHandles(const QStringList &newMemberHandles);
+    QStringList memberDisplayNames() const;
+    void setMemberDisplayNames(const QStringList &newMemberDisplayNames);
 
 signals:
     void finishSent(bool success);
@@ -82,6 +94,9 @@ signals:
     void runSendingChanged();
     void memberDidsChanged();
     void readyChanged();
+    void memberAvatarsChanged();
+    void memberHandlesChanged();
+    void memberDisplayNamesChanged();
 
 public slots:
     void receiveLogs(const AtProtocolInterface::ChatBskyConvoGetLog &log);
@@ -99,6 +114,7 @@ private:
     void getConvo(const QString &convoId, const QStringList &memberDids,
                   std::function<void()> callback);
     void getLogCursor(std::function<void()> callback);
+    void setMembers(const AtProtocolType::ChatBskyConvoDefs::ConvoView &convo);
 
     QHash<QString, AtProtocolType::ChatBskyConvoDefs::MessageView> m_messageHash;
     AtProtocolType::ChatBskyConvoDefs::ConvoView m_convo;
@@ -108,6 +124,9 @@ private:
     bool m_runSending;
     QStringList m_memberDids;
     bool m_ready;
+    QStringList m_memberAvatars;
+    QStringList m_memberHandles;
+    QStringList m_memberDisplayNames;
 };
 
 #endif // CHATMESSAGELISTMODEL_H
