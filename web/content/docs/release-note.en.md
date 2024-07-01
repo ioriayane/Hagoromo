@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+### v0.33.0 - 2024/7/1
+
 - Update
   - Support for quoting posts in chat
   - Add conditions such as dates to the post search
