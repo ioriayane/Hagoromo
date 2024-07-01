@@ -1,6 +1,8 @@
 #include "chatlogsubscriber.h"
+#include "tools/labelerprovider.h"
 
 #include <QDebug>
+#include <QPointer>
 #include <QTimer>
 
 using namespace AtProtocolInterface;
@@ -14,15 +16,19 @@ public:
     explicit Private(ChatLogSubscriber *parent);
     ~Private();
 
-    static bool validateAccount(const AccountData &account);
-    static QString accountKey(const AccountData &account);
-
     void start(const QString &cursor);
     void stop();
     void getLatest();
 
+    void appendConnector(ChatLogConnector *connector);
+    void cleanConnector();
+
 private:
     ChatLogSubscriber *q;
+    QHash<QObject *, QPointer<ChatLogConnector>> m_connector;
+
+    void updateContentFilterLabels(std::function<void()> callback);
+    QStringList labelerDids();
 
     QTimer m_timer;
     bool m_running;
@@ -40,17 +46,6 @@ ChatLogSubscriber::Private::~Private()
 {
     qDebug() << this << "ChatLogSubscriber::~Private()";
     stop();
-}
-
-bool ChatLogSubscriber::Private::validateAccount(const AccountData &account)
-{
-    return (account.service.startsWith("http") && account.service_endpoint.startsWith("http")
-            && account.did.startsWith("did:") && !account.accessJwt.isEmpty());
-}
-
-QString ChatLogSubscriber::Private::accountKey(const AccountData &account)
-{
-    return QString("%1_%2").arg(account.service_endpoint).arg(account.did);
 }
 
 void ChatLogSubscriber::Private::start(const QString &cursor)
@@ -76,30 +71,86 @@ void ChatLogSubscriber::Private::getLatest()
         return;
     m_running = true;
 
+    cleanConnector();
+
     qDebug().noquote() << this << "getLatest" << m_cursor << &m_cursor;
-    ChatBskyConvoGetLog *log = new ChatBskyConvoGetLog(this);
-    connect(log, &ChatBskyConvoGetLog::finished, this, [=](bool success) {
-        const QString key = ChatLogSubscriber::Private::accountKey(account());
+    updateContentFilterLabels([=]() {
+        ChatBskyConvoGetLog *log = new ChatBskyConvoGetLog(this);
+        connect(log, &ChatBskyConvoGetLog::finished, this, [=](bool success) {
+            const QString key = account().accountKey();
 
-        qDebug().noquote() << this << "receive" << success << this->m_cursor << "->"
-                           << log->cursor() << key;
-        qDebug().noquote() << log->replyJson();
-        if (success) {
-            if (!log->cursor().isEmpty()) {
-                this->m_cursor = log->cursor();
+            qDebug().noquote() << this << "receive" << success << this->m_cursor << "->"
+                               << log->cursor() << key;
+            qDebug().noquote() << log->replyJson();
+            if (success) {
+                if (!log->cursor().isEmpty()) {
+                    this->m_cursor = log->cursor();
+                }
+
+                for (auto connector : qAsConst(m_connector)) {
+                    if (!connector) {
+                        // already deleted
+                    } else {
+                        emit connector->receiveLogs(*log);
+                    }
+                }
+            } else {
+                for (auto connector : qAsConst(m_connector)) {
+                    if (!connector) {
+                        // already deleted
+                    } else {
+                        emit connector->errorOccured(log->errorCode(), log->errorMessage());
+                    }
+                }
             }
+            m_running = false;
+            log->deleteLater();
+        });
 
-            emit q->receiveLogs(key, *log);
-        } else {
-            emit q->errorOccured(key, log->errorCode(), log->errorMessage());
-        }
-        m_running = false;
-        log->deleteLater();
+        log->setAccount(account());
+        log->setLabelers(labelerDids());
+        log->setService(account().service_endpoint);
+        log->getLog(m_cursor);
     });
+}
 
-    log->setAccount(account());
-    log->setService(account().service_endpoint);
-    log->getLog(m_cursor);
+void ChatLogSubscriber::Private::updateContentFilterLabels(std::function<void()> callback)
+{
+    LabelerProvider *provider = LabelerProvider::getInstance();
+    LabelerConnector *connector = new LabelerConnector(this);
+
+    connect(connector, &LabelerConnector::finished, this, [=](bool success) {
+        if (success) { }
+        callback();
+        connector->deleteLater();
+    });
+    provider->setAccount(account());
+    provider->update(account(), connector, LabelerProvider::RefleshMode::None);
+}
+
+QStringList ChatLogSubscriber::Private::labelerDids()
+{
+    return LabelerProvider::getInstance()->labelerDids(account());
+}
+
+void ChatLogSubscriber::Private::appendConnector(ChatLogConnector *connector)
+{
+    if (connector == nullptr)
+        return;
+    if (m_connector.contains(connector->parent())) {
+        return;
+    }
+    m_connector[connector->parent()] = connector;
+}
+
+void ChatLogSubscriber::Private::cleanConnector()
+{
+    for (const auto key : m_connector.keys()) {
+        if (!m_connector[key]) {
+            m_connector.remove(key);
+            qDebug() << "clean up connector" << account().did << m_connector.count();
+        }
+    }
 }
 
 ChatLogSubscriber::ChatLogSubscriber(QObject *parent) : QObject { parent }
@@ -110,9 +161,7 @@ ChatLogSubscriber::ChatLogSubscriber(QObject *parent) : QObject { parent }
 ChatLogSubscriber::~ChatLogSubscriber()
 {
     qDebug() << this << "~ChatLogSubscriber()";
-    for (const auto &key : d.keys()) {
-        delete d[key];
-    }
+    clear();
 }
 
 ChatLogSubscriber *ChatLogSubscriber::getInstance()
@@ -121,23 +170,33 @@ ChatLogSubscriber *ChatLogSubscriber::getInstance()
     return &instance;
 }
 
-void ChatLogSubscriber::setAccount(const AtProtocolInterface::AccountData &account)
+void ChatLogSubscriber::clear()
 {
-    if (!ChatLogSubscriber::Private::validateAccount(account))
+    for (const auto &key : d.keys()) {
+        delete d[key];
+    }
+    d.clear();
+}
+
+void ChatLogSubscriber::setAccount(const AtProtocolInterface::AccountData &account,
+                                   ChatLogConnector *connector)
+{
+    if (!account.isValid())
         return;
-    const QString key = ChatLogSubscriber::Private::accountKey(account);
+    const QString key = account.accountKey();
     if (!d.contains(key)) {
         d[key] = new ChatLogSubscriber::Private(this);
     }
     d[key]->setAccount(account);
+    d[key]->appendConnector(connector);
 }
 
 void ChatLogSubscriber::start(const AtProtocolInterface::AccountData &account,
                               const QString &cursor)
 {
-    if (!ChatLogSubscriber::Private::validateAccount(account))
+    if (!account.isValid())
         return;
-    const QString key = ChatLogSubscriber::Private::accountKey(account);
+    const QString key = account.accountKey();
     if (d.contains(key)) {
         d[key]->start(cursor);
     }
@@ -145,17 +204,10 @@ void ChatLogSubscriber::start(const AtProtocolInterface::AccountData &account,
 
 void ChatLogSubscriber::stop(const AtProtocolInterface::AccountData &account)
 {
-    if (!ChatLogSubscriber::Private::validateAccount(account))
+    if (!account.isValid())
         return;
-    const QString key = ChatLogSubscriber::Private::accountKey(account);
+    const QString key = account.accountKey();
     if (d.contains(key)) {
         d[key]->stop();
     }
-}
-
-bool ChatLogSubscriber::isMine(const AtProtocolInterface::AccountData &account, const QString &key)
-{
-    if (!ChatLogSubscriber::Private::validateAccount(account) || key.isEmpty())
-        return false;
-    return (ChatLogSubscriber::Private::accountKey(account) == key);
 }

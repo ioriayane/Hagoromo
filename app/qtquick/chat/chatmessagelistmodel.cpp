@@ -8,7 +8,6 @@
 #include "atprotocol/chat/bsky/convo/chatbskyconvolistconvos.h"
 #include "atprotocol/chat/bsky/convo/chatbskyconvosendmessage.h"
 #include "atprotocol/lexicons_func_unknown.h"
-#include "tools/chatlogsubscriber.h"
 
 using AtProtocolInterface::ChatBskyConvoDeleteMessageForSelf;
 using AtProtocolInterface::ChatBskyConvoGetConvo;
@@ -21,19 +20,25 @@ using namespace AtProtocolType::ChatBskyConvoDefs;
 using namespace AtProtocolType;
 
 ChatMessageListModel::ChatMessageListModel(QObject *parent)
-    : AtpChatAbstractListModel { parent }, m_runSending(false), m_ready(false)
+    : AtpChatAbstractListModel { parent },
+      m_chatLogConnector(this),
+      m_runSending(false),
+      m_ready(false)
 {
-    ChatLogSubscriber *log = ChatLogSubscriber::getInstance();
-    connect(log, &ChatLogSubscriber::receiveLogs, this, &ChatMessageListModel::receiveLogs);
-    connect(log, &ChatLogSubscriber::errorOccured, this, &ChatMessageListModel::errorLogs);
+    connect(&m_chatLogConnector, &ChatLogConnector::receiveLogs, this,
+            &ChatMessageListModel::receiveLogs);
+    connect(&m_chatLogConnector, &ChatLogConnector::errorOccured, this,
+            &ChatMessageListModel::errorLogs);
 }
 
 ChatMessageListModel::~ChatMessageListModel()
 {
+    disconnect(&m_chatLogConnector, &ChatLogConnector::receiveLogs, this,
+               &ChatMessageListModel::receiveLogs);
+    disconnect(&m_chatLogConnector, &ChatLogConnector::errorOccured, this,
+               &ChatMessageListModel::errorLogs);
     ChatLogSubscriber *log = ChatLogSubscriber::getInstance();
     log->stop(account());
-    disconnect(log, &ChatLogSubscriber::receiveLogs, this, &ChatMessageListModel::receiveLogs);
-    disconnect(log, &ChatLogSubscriber::errorOccured, this, &ChatMessageListModel::errorLogs);
 }
 
 int ChatMessageListModel::rowCount(const QModelIndex &parent) const
@@ -53,6 +58,7 @@ QVariant ChatMessageListModel::item(int row, ChatMessageListModelRoles role) con
         return QVariant();
 
     const auto &current = m_messageHash[m_idList.at(row)];
+    const auto &view_record = current.embed_AppBskyEmbedRecord_View.record_ViewRecord;
 
     if (role == IdRole)
         return current.id;
@@ -74,7 +80,58 @@ QVariant ChatMessageListModel::item(int row, ChatMessageListModelRoles role) con
     else if (role == SentAtRole)
         return LexiconsTypeUnknown::formatDateTime(current.sentAt);
 
-    else if (role == RunningRole)
+    else if (role == HasQuoteRecordRole)
+        return (current.embed_type == MessageViewEmbedType::embed_AppBskyEmbedRecord_View
+                && (current.embed_AppBskyEmbedRecord_View.record_type
+                            == AppBskyEmbedRecord::ViewRecordType::record_ViewRecord
+                    || current.embed_AppBskyEmbedRecord_View.record_type
+                            == AppBskyEmbedRecord::ViewRecordType::record_ViewNotFound
+                    || current.embed_AppBskyEmbedRecord_View.record_type
+                            == AppBskyEmbedRecord::ViewRecordType::record_ViewBlocked));
+    else if (role == QuoteRecordCidRole)
+        return view_record.cid;
+    else if (role == QuoteRecordUriRole)
+        return view_record.uri;
+    else if (role == QuoteRecordDisplayNameRole)
+        return view_record.author.displayName;
+    else if (role == QuoteRecordHandleRole)
+        return view_record.author.handle;
+    else if (role == QuoteRecordAvatarRole)
+        return view_record.author.avatar;
+    else if (role == QuoteRecordRecordTextRole)
+        return LexiconsTypeUnknown::copyRecordText(view_record.value);
+    else if (role == QuoteRecordIndexedAtRole)
+        return LexiconsTypeUnknown::formatDateTime(view_record.indexedAt);
+    else if (role == QuoteRecordEmbedImagesRole)
+        return LexiconsTypeUnknown::copyImagesFromRecord(view_record,
+                                                         LexiconsTypeUnknown::CopyImageType::Thumb);
+    else if (role == QuoteRecordEmbedImagesFullRole)
+        return LexiconsTypeUnknown::copyImagesFromRecord(
+                view_record, LexiconsTypeUnknown::CopyImageType::FullSize);
+    else if (role == QuoteRecordEmbedImagesAltRole)
+        return LexiconsTypeUnknown::copyImagesFromRecord(view_record,
+                                                         LexiconsTypeUnknown::CopyImageType::Alt);
+    else if (role == QuoteRecordBlockedRole) {
+        return (current.embed_AppBskyEmbedRecord_View.record_type
+                        == AppBskyEmbedRecord::ViewRecordType::record_ViewNotFound
+                || current.embed_AppBskyEmbedRecord_View.record_type
+                        == AppBskyEmbedRecord::ViewRecordType::record_ViewBlocked);
+        // ラベラーの情報を取得できるようにする
+    } else if (role == QuoteFilterMatchedRole) {
+        if (view_record.author.viewer.muted)
+            return true;
+        if (view_record.author.did == account().did) // 自分のポストはそのまま表示
+            return false;
+        if (getContentFilterStatus(view_record.author.labels, false)
+            != ConfigurableLabelStatus::Show)
+            return true;
+        if (getContentFilterStatus(view_record.labels, false) != ConfigurableLabelStatus::Show)
+            return true;
+        if (getContentFilterStatus(view_record.labels, true) != ConfigurableLabelStatus::Show)
+            return true;
+        return false;
+
+    } else if (role == RunningRole)
         return m_itemRunningHash.value(m_idList.at(row), false);
 
     return QVariant();
@@ -126,10 +183,11 @@ bool ChatMessageListModel::getLatest()
                     });
                     messages->setAccount(account());
                     messages->setService(account().service_endpoint);
+                    messages->setLabelers(labelerDids());
                     messages->getMessages(convoId(), 0, QString());
                 } else {
                     ChatLogSubscriber *log = ChatLogSubscriber::getInstance();
-                    log->setAccount(account());
+                    log->setAccount(account(), &m_chatLogConnector);
                     if (autoLoading()) {
                         log->start(account(), m_logCursor);
                     }
@@ -164,15 +222,18 @@ bool ChatMessageListModel::getNext()
         });
         messages->setAccount(account());
         messages->setService(account().service_endpoint);
+        messages->setLabelers(labelerDids());
         messages->getMessages(convoId(), 0, m_cursor);
     });
 
     return true;
 }
 
-void ChatMessageListModel::send(const QString &message)
+void ChatMessageListModel::send(const QString &message, const QString &embed_uri,
+                                const QString &embed_cid)
 {
-    if (runSending() || convoId().isEmpty() || message.trimmed().isEmpty())
+    if (runSending() || convoId().isEmpty()
+        || (message.trimmed().isEmpty() && embed_uri.isEmpty() && embed_cid.isEmpty()))
         return;
     setRunSending(true);
 
@@ -182,6 +243,15 @@ void ChatMessageListModel::send(const QString &message)
                 QJsonObject obj;
                 obj.insert("text", message.trimmed());
                 LexiconsTypeUnknown::insertFacetsJson(obj, facets);
+                if (!embed_uri.isEmpty() && !embed_cid.isEmpty()) {
+                    QJsonObject json_quote;
+                    json_quote.insert("cid", embed_cid);
+                    json_quote.insert("uri", embed_uri);
+                    QJsonObject json_embed;
+                    json_embed.insert("$type", "app.bsky.embed.record");
+                    json_embed.insert("record", json_quote);
+                    obj.insert("embed", json_embed);
+                }
 
                 ChatBskyConvoSendMessage *convo = new ChatBskyConvoSendMessage(this);
                 connect(convo, &ChatBskyConvoSendMessage::finished, this, [=](bool success) {
@@ -242,6 +312,21 @@ QHash<int, QByteArray> ChatMessageListModel::roleNames() const
     roles[TextRole] = "text";
     roles[TextPlainRole] = "textPlain";
     roles[SentAtRole] = "sentAt";
+
+    roles[HasQuoteRecordRole] = "hasQuoteRecord";
+    roles[QuoteRecordCidRole] = "quoteRecordCid";
+    roles[QuoteRecordUriRole] = "quoteRecordUri";
+    roles[QuoteRecordDisplayNameRole] = "quoteRecordDisplayName";
+    roles[QuoteRecordHandleRole] = "quoteRecordHandle";
+    roles[QuoteRecordAvatarRole] = "quoteRecordAvatar";
+    roles[QuoteRecordRecordTextRole] = "quoteRecordRecordText";
+    roles[QuoteRecordIndexedAtRole] = "quoteRecordIndexedAt";
+    roles[QuoteRecordEmbedImagesRole] = "quoteRecordEmbedImages";
+    roles[QuoteRecordEmbedImagesFullRole] = "quoteRecordEmbedImagesFull";
+    roles[QuoteRecordEmbedImagesAltRole] = "quoteRecordEmbedImagesAlt";
+    roles[QuoteRecordBlockedRole] = "quoteRecordBlocked";
+
+    roles[QuoteFilterMatchedRole] = "quoteFilterMatched";
 
     roles[RunningRole] = "running";
 
@@ -411,12 +496,10 @@ void ChatMessageListModel::setReady(bool newReady)
     emit readyChanged();
 }
 
-void ChatMessageListModel::receiveLogs(const QString &key,
-                                       const AtProtocolInterface::ChatBskyConvoGetLog &log)
+void ChatMessageListModel::receiveLogs(const AtProtocolInterface::ChatBskyConvoGetLog &log)
 {
-    qDebug().quote() << "receiveLogs" << this << key << log.logsLogCreateMessageList().length();
-    if (!ChatLogSubscriber::isMine(account(), key))
-        return;
+    qDebug().quote() << "receiveLogs" << this << account().did
+                     << log.logsLogCreateMessageList().length();
 
     // 別カラムで同一アカウントのチャットを閉じると再スタートさせるので、そのときにチャットを開いたときの古いものをしようしないようにする
     if (!log.cursor().isEmpty())
@@ -441,13 +524,9 @@ void ChatMessageListModel::receiveLogs(const QString &key,
     copyFrom(messages, deleted_messages, true);
 }
 
-void ChatMessageListModel::errorLogs(const QString &key, const QString &code,
-                                     const QString &message)
+void ChatMessageListModel::errorLogs(const QString &code, const QString &message)
 {
-    qDebug().quote() << "errorLogs" << this << key << code << message;
-    ChatLogSubscriber *log = ChatLogSubscriber::getInstance();
-    if (!log->isMine(account(), key))
-        return;
+    qDebug().quote() << "errorLogs" << this << account().did << code << message;
 
     emit errorOccured(code, message);
 }

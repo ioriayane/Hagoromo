@@ -18,6 +18,7 @@ QML_FILES = \
     qml/compat/GlowC.qml \
     qml/compat/OpacityMaskC.qml \
     qml/compat/SettingsC.qml \
+    qml/controls/CalendarPicker.qml \
     qml/controls/ClickableFrame.qml \
     qml/controls/ComboBoxEx.qml \
     qml/controls/ProgressCircle.qml \
@@ -81,6 +82,7 @@ QML_FILES = \
     qml/parts/PostInformation.qml \
     qml/parts/ProfileTabBar.qml \
     qml/parts/ProfileTabButton.qml \
+    qml/parts/QuoteRecord.qml \
     qml/parts/ReactionAuthor.qml \
     qml/parts/SelfLabelPopup.qml \
     qml/parts/SideBar.qml \
@@ -115,6 +117,8 @@ IMAGE_FILES += \
     qml/images/arrow_forward.png \
     qml/images/arrow_left_double.png \
     qml/images/arrow_left_single.png \
+    qml/images/arrow_right_double.png \
+    qml/images/arrow_right_single.png \
     qml/images/auto.png \
     qml/images/database.png \
     qml/images/block.png \
@@ -153,6 +157,7 @@ IMAGE_FILES += \
     qml/images/search.png \
     qml/images/send.png \
     qml/images/settings.png \
+    qml/images/starterpack.png \
     qml/images/tag.png \
     qml/images/terminal.png \
     qml/images/thread.png \

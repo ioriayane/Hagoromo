@@ -12,6 +12,9 @@ import "../compat"
 ScrollView {
     id: blogScrollView
     ScrollBar.vertical.policy: ScrollBar.AlwaysOff
+
+    property string hoveredLink: ""
+
     property alias model: blogListView.model
     property alias currentItem: blogListView.currentItem
     property alias count: blogListView.count
@@ -25,6 +28,7 @@ ScrollView {
         delegate: ClickableFrame {
             id: blogEntryFrame
             clip: true
+            hoverEnabled: true
 
             ColumnLayout {
                 property int basisWidth: blogListView.width * 0.8 -
@@ -78,6 +82,13 @@ ScrollView {
                 }
             }
             onClicked: (mouse) => Qt.openUrlExternally(model.permalink)
+            onHoveredChanged: {
+                if(hovered){
+                    blogScrollView.hoveredLink = model.permalink
+                }else{
+                    blogScrollView.hoveredLink = ""
+                }
+            }
         }
     }
 }

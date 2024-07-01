@@ -220,6 +220,8 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             return NotificationListModelReason::ReasonReply;
         } else if (current.reason == "quote") {
             return NotificationListModelReason::ReasonQuote;
+        } else if (current.reason == "starterpack-joined") {
+            return NotificationListModelReason::ReasonStaterPack;
         } else {
             return NotificationListModelReason::ReasonUnknown;
         }
@@ -571,6 +573,7 @@ bool NotificationListModel::getLatest()
                         if (!m_cueGetPost.contains(item->uri)) {
                             m_cueGetPost.append(item->uri);
                         }
+                    } else if (item->reason == "starterpack-joined") {
                     }
                 }
 
@@ -599,7 +602,7 @@ bool NotificationListModel::getLatest()
             notification->deleteLater();
         });
         notification->setAccount(account());
-        notification->setLabelers(m_contentFilterLabels.labelerDids());
+        notification->setLabelers(labelerDids());
         notification->listNotifications(0, QString(), QString());
     });
     return true;
@@ -717,6 +720,7 @@ bool NotificationListModel::getNext()
                         if (!m_cueGetPost.contains(item->uri)) {
                             m_cueGetPost.append(item->uri);
                         }
+                    } else if (item->reason == "starterpack-joined") {
                     }
                 }
             } else {
@@ -726,7 +730,7 @@ bool NotificationListModel::getNext()
             notification->deleteLater();
         });
         notification->setAccount(account());
-        notification->setLabelers(m_contentFilterLabels.labelerDids());
+        notification->setLabelers(labelerDids());
         notification->listNotifications(0, m_cursor, QString());
     });
     return true;
@@ -907,15 +911,13 @@ bool NotificationListModel::checkVisibility(const QString &cid)
         return false;
 
     for (const auto &label : current.author.labels) {
-        if (m_contentFilterLabels.visibility(label.val, false, label.src)
-            == ConfigurableLabelStatus::Hide) {
+        if (visibilityBylabeler(label.val, false, label.src) == ConfigurableLabelStatus::Hide) {
             qDebug() << "Hide notification by user's label. " << current.author.handle << cid;
             return false;
         }
     }
     for (const auto &label : current.labels) {
-        if (m_contentFilterLabels.visibility(label.val, true, label.src)
-            == ConfigurableLabelStatus::Hide) {
+        if (visibilityBylabeler(label.val, true, label.src) == ConfigurableLabelStatus::Hide) {
             qDebug() << "Hide notification by post's label. " << current.author.handle << cid;
             return false;
         }
@@ -1257,7 +1259,7 @@ void NotificationListModel::getPosts()
         posts->deleteLater();
     });
     posts->setAccount(account());
-    posts->setLabelers(m_contentFilterLabels.labelerDids());
+    posts->setLabelers(labelerDids());
     posts->getPosts(uris);
 }
 
@@ -1385,6 +1387,8 @@ bool NotificationListModel::enableReason(const QString &reason) const
     else if (reason == "reply" && visibleReply())
         return true;
     else if (reason == "quote" && visibleQuote())
+        return true;
+    else if (reason == "starterpack-joined")
         return true;
 
     return false;

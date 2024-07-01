@@ -27,7 +27,7 @@ bool MutesListModel::getLatest()
             profiles->deleteLater();
         });
         profiles->setAccount(account());
-        profiles->setLabelers(m_contentFilterLabels.labelerDids());
+        profiles->setLabelers(labelerDids());
         profiles->getMutes(50, QString());
     });
     return true;
@@ -52,7 +52,7 @@ bool MutesListModel::getNext()
             profiles->deleteLater();
         });
         profiles->setAccount(account());
-        profiles->setLabelers(m_contentFilterLabels.labelerDids());
+        profiles->setLabelers(labelerDids());
         profiles->getMutes(50, m_cursor);
     });
     return true;

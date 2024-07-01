@@ -68,5 +68,9 @@
         <file>response/xrpc/app.bsky.graph.getListBlocks</file>
         <file>response/xrpc/app.bsky.graph.getMutes</file>
         <file>response/xrpc/com.atproto.server.refreshSession</file>
+        <file>response/labels/provider/1/xrpc/app.bsky.actor.getPreferences</file>
+        <file>response/labels/provider/1/xrpc/app.bsky.labeler.getServices</file>
+        <file>response/labels/provider/2/xrpc/app.bsky.actor.getPreferences</file>
+        <file>response/labels/provider/2/xrpc/app.bsky.labeler.getServices</file>
     </qresource>
 </RCC>

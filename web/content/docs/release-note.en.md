@@ -8,6 +8,16 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+### v0.33.0 - 2024/7/1
+
+- Update
+  - Support for quoting posts in chat
+  - Add conditions such as dates to the post search
+  - Support for Starter Pack notifications
+- Fix
+  - Fix the initial settings when adding a timeline column
+  - Fixed so that the URL is displayed when the mouse cursor is moved over the WhiteWind article
+
 ### v0.32.0 - 2024/6/5
 
 - Add

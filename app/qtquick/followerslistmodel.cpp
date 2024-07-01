@@ -27,7 +27,7 @@ bool FollowersListModel::getLatest()
             profiles->deleteLater();
         });
         profiles->setAccount(account());
-        profiles->setLabelers(m_contentFilterLabels.labelerDids());
+        profiles->setLabelers(labelerDids());
         profiles->getFollowers(targetDid(), 50, QString());
     });
     return true;
@@ -52,7 +52,7 @@ bool FollowersListModel::getNext()
             profiles->deleteLater();
         });
         profiles->setAccount(account());
-        profiles->setLabelers(m_contentFilterLabels.labelerDids());
+        profiles->setLabelers(labelerDids());
         profiles->getFollowers(targetDid(), 50, m_cursor);
     });
     return true;

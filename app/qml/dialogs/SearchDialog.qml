@@ -23,7 +23,7 @@ Dialog {
 
     property string defaultAccountUuid: ""
     property string searchType: "posts"
-    property string searchText: searchText.text
+    property string searchText: ""
 
     onOpened: {
         var i = accountModel.indexAt(defaultAccountUuid)
@@ -33,16 +33,21 @@ Dialog {
         } else {
             accountCombo.currentIndex = accountModel.getMainAccountIndex()
         }
-        searchText.forceActiveFocus()
+        searchTextField.forceActiveFocus()
     }
     onClosed: {
         defaultAccountUuid = ""
         searchType = "posts"
-        searchText.clear()
+        searchText = ""
+        searchTextField.clear()
+        byMeCheckBox.checked = false
+        sinceCheckBox.checked = false
+        untilCheckBox.checked = false
+        calendarPicker.clear()
     }
 
     Shortcut {  // Post
-        enabled: searchDialog.visible && postButton.enabled && searchText.focus
+        enabled: searchDialog.visible && postButton.enabled && searchTextField.focus
         sequence: "Ctrl+Return"
         onActivated: postButton.clicked()
     }
@@ -62,36 +67,41 @@ Dialog {
     ColumnLayout {
         spacing: AdjustedValues.s5
 
-        RowLayout {
-            AvatarImage {
-                id: accountAvatarImage
-                Layout.preferredWidth: AdjustedValues.i24
-                Layout.preferredHeight: AdjustedValues.i24
-                //                source:
-            }
-
-            ComboBox {
-                id: accountCombo
-                Layout.preferredWidth: 200 * AdjustedValues.ratio
-                Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
+        ComboBox {
+            id: accountCombo
+            Layout.preferredWidth: 200 * AdjustedValues.ratio + AdjustedValues.i24
+            Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
+            font.pointSize: AdjustedValues.f10
+            textRole: "handle"
+            valueRole: "did"
+            delegate: ItemDelegate {
+                width: parent.width
+                height: implicitHeight * AdjustedValues.ratio
                 font.pointSize: AdjustedValues.f10
-                textRole: "handle"
-                valueRole: "did"
-                delegate: ItemDelegate {
-                    width: parent.width
-                    height: implicitHeight * AdjustedValues.ratio
-                    font.pointSize: AdjustedValues.f10
-                    text: model.handle
-                    onClicked: accountCombo.currentIndex = model.index
+                onClicked: accountCombo.currentIndex = model.index
+                AccountLayout {
+                    anchors.fill: parent
+                    anchors.margins: 10
+                    source: model.avatar
+                    handle: model.handle
                 }
-                onCurrentIndexChanged: {
-                    if(accountCombo.currentIndex >= 0){
-                        accountAvatarImage.source =
-                                searchDialog.accountModel.item(accountCombo.currentIndex, AccountListModel.AvatarRole)
-                    }
+            }
+            contentItem: AccountLayout {
+                id: accountAvatarLayout
+                width: parent.width
+                height: parent.height
+                leftMargin: 10
+                handle: accountCombo.displayText
+            }
+            onCurrentIndexChanged: {
+                var row = accountCombo.currentIndex
+                if(row >= 0){
+                    accountAvatarLayout.source =
+                            postDialog.accountModel.item(row, AccountListModel.AvatarRole)
                 }
             }
         }
+
 
         RowLayout {
             id: searchTypeRowlayout
@@ -109,10 +119,91 @@ Dialog {
         }
 
         TextField  {
-            id: searchText
-            Layout.preferredWidth: 300 * AdjustedValues.ratio
+            id: searchTextField
+            Layout.preferredWidth: 350 * AdjustedValues.ratio
             selectByMouse: true
             font.pointSize: AdjustedValues.f10
+        }
+
+        RowLayout {
+            id: detailConditionsLayout
+            visible: (searchTypeButtonGroup.checkedButton.value === "posts")
+            spacing: 0
+            CheckBox {
+                id: byMeCheckBox
+                topPadding: 5
+                bottomPadding: 5
+                font.pointSize: AdjustedValues.f8
+                text: qsTr("by me")
+            }
+            CheckBox {
+                id: sinceCheckBox
+                topPadding: 5
+                bottomPadding: 5
+                rightPadding: 0
+                font.pointSize: AdjustedValues.f8
+                text: qsTr("Since") + ":"
+            }
+            Button {
+                id: sinceButton
+                topInset: 0
+                bottomInset: 0
+                leftPadding: 3
+                rightPadding: 3
+                flat: true
+                enabled: sinceCheckBox.checked
+                font.pointSize: AdjustedValues.f8
+                text: calendarPicker.since
+                onClicked: {
+                    calendarPicker.target = "since"
+                    calendarPickerPopup.x = x
+                    calendarPickerPopup.y = y
+                    calendarPickerPopup.open()
+                }
+            }
+            CheckBox {
+                id: untilCheckBox
+                topPadding: 5
+                bottomPadding: 5
+                rightPadding: 0
+                font.pointSize: AdjustedValues.f8
+                text: qsTr("Until") + ":"
+            }
+            Button {
+                id: untilButton
+                topInset: 0
+                bottomInset: 0
+                leftPadding: 3
+                rightPadding: 3
+                flat: true
+                enabled: untilCheckBox.checked
+                font.pointSize: AdjustedValues.f8
+                text: calendarPicker.until
+                onClicked: {
+                    calendarPicker.target = "until"
+                    calendarPickerPopup.x = x
+                    calendarPickerPopup.y = y
+                    calendarPickerPopup.open()
+                }
+            }
+            Popup {
+                id: calendarPickerPopup
+                onOpened: calendarPicker.forceLayout()
+                CalendarPicker {
+                    id: calendarPicker
+                    enableSince: sinceCheckBox.checked
+                    enableUntil: untilCheckBox.checked
+                    onDateChanged: (year, month, day) => {
+                                       if(target === "since"){
+                                           calendarPicker.setSince(year, month, day)
+                                       }else{
+                                           calendarPicker.setUntil(year, month, day)
+                                       }
+                                       target = ""
+                                       calendarPickerPopup.close()
+                                   }
+                }
+            }
         }
 
         RowLayout {
@@ -130,11 +221,17 @@ Dialog {
             Button {
                 id: postButton
                 Layout.alignment: Qt.AlignRight
-                enabled: searchText.text.length > 0
+                enabled: searchTextField.text.length > 0
                 font.pointSize: AdjustedValues.f10
                 text: qsTr("Search")
                 onClicked: {
                     searchDialog.searchType = searchTypeButtonGroup.checkedButton.value
+                    searchDialog.searchText = searchTextField.text
+                    if(searchDialog.searchType === "posts"){
+                        searchDialog.searchText += byMeCheckBox.checked ? " from:me" : ""
+                        searchDialog.searchText += sinceCheckBox.checked ? (" since:" + calendarPicker.sinceUtc()) : ""
+                        searchDialog.searchText += untilCheckBox.checked ? (" until:" + calendarPicker.untilUtc()) : ""
+                    }
                     searchDialog.accept()
                 }
             }

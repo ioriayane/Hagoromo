@@ -37,12 +37,14 @@ struct ThreadGateAllow
 
 namespace AppBskyActorDefs {
 struct ProfileView;
+struct ProfileViewBasic;
 }
 namespace AppBskyEmbedRecord {
 struct Main;
 struct View;
 }
 namespace AppBskyFeedDefs {
+struct GeneratorView;
 struct ThreadViewPost;
 }
 namespace AppBskyRichtextFacet {
@@ -111,8 +113,21 @@ struct ListViewBasic
     QString name;
     ListPurpose purpose;
     QString avatar; // uri
+    int listItemCount = 0;
     QList<ComAtprotoLabelDefs::Label> labels;
     ListViewerState viewer;
+    QString indexedAt; // datetime
+};
+struct StarterPackViewBasic
+{
+    QString uri; // at-uri
+    QString cid; // cid
+    QVariant record;
+    QSharedPointer<AppBskyActorDefs::ProfileViewBasic> creator;
+    int listItemCount = 0;
+    int joinedWeekCount = 0;
+    int joinedAllTimeCount = 0;
+    QList<ComAtprotoLabelDefs::Label> labels;
     QString indexedAt; // datetime
 };
 struct ListView
@@ -125,6 +140,7 @@ struct ListView
     QString description;
     QList<QSharedPointer<AppBskyRichtextFacet::Main>> descriptionFacets;
     QString avatar; // uri
+    int listItemCount = 0;
     QList<ComAtprotoLabelDefs::Label> labels;
     ListViewerState viewer;
     QString indexedAt; // datetime
@@ -133,6 +149,20 @@ struct ListItemView
 {
     QString uri; // at-uri
     QSharedPointer<AppBskyActorDefs::ProfileView> subject;
+};
+struct StarterPackView
+{
+    QString uri; // at-uri
+    QString cid; // cid
+    QVariant record;
+    QSharedPointer<AppBskyActorDefs::ProfileViewBasic> creator;
+    ListViewBasic list;
+    QList<ListItemView> listItemsSample;
+    QList<QSharedPointer<AppBskyFeedDefs::GeneratorView>> feeds;
+    int joinedWeekCount = 0;
+    int joinedAllTimeCount = 0;
+    QList<ComAtprotoLabelDefs::Label> labels;
+    QString indexedAt; // datetime
 };
 struct NotFoundActor
 {
@@ -159,8 +189,14 @@ struct ProfileAssociated
 {
     int lists = 0;
     int feedgens = 0;
+    int starterPacks = 0;
     bool labeler = false;
     ProfileAssociatedChat chat;
+};
+struct KnownFollowers
+{
+    int count = 0;
+    QList<QSharedPointer<ProfileViewBasic>> followers;
 };
 struct ViewerState
 {
@@ -171,6 +207,7 @@ struct ViewerState
     AppBskyGraphDefs::ListViewBasic blockingByList;
     QString following; // at-uri
     QString followedBy; // at-uri
+    KnownFollowers knownFollowers;
 };
 struct ProfileViewBasic
 {
@@ -181,6 +218,7 @@ struct ProfileViewBasic
     ProfileAssociated associated;
     ViewerState viewer;
     QList<ComAtprotoLabelDefs::Label> labels;
+    QString createdAt; // datetime
 };
 struct ProfileView
 {
@@ -191,6 +229,7 @@ struct ProfileView
     QString avatar; // uri
     ProfileAssociated associated;
     QString indexedAt; // datetime
+    QString createdAt; // datetime
     ViewerState viewer;
     QList<ComAtprotoLabelDefs::Label> labels;
 };
@@ -206,7 +245,9 @@ struct ProfileViewDetailed
     int followsCount = 0;
     int postsCount = 0;
     ProfileAssociated associated;
+    AppBskyGraphDefs::StarterPackViewBasic joinedViaStarterPack;
     QString indexedAt; // datetime
+    QString createdAt; // datetime
     ViewerState viewer;
     QList<ComAtprotoLabelDefs::Label> labels;
 };
@@ -303,6 +344,16 @@ struct Preferences
 };
 }
 
+// com.atproto.repo.strongRef
+namespace ComAtprotoRepoStrongRef {
+struct Main
+{
+    QString uri; // at-uri
+    QString cid; // cid
+};
+// A URI with a content-hash fingerprint.
+}
+
 // app.bsky.actor.profile
 namespace AppBskyActorProfile {
 enum class MainLabelsType : int {
@@ -321,6 +372,8 @@ struct Main
             labels_ComAtprotoLabelDefs_SelfLabels; // Self-label values, specific to the Bluesky
                                                    // application, on the overall account.
     // union end : labels
+    ComAtprotoRepoStrongRef::Main joinedViaStarterPack;
+    QString createdAt; // datetime
     QString pinnedPost; // at-uri , (Unofficial field)
 };
 }
@@ -383,16 +436,6 @@ struct View
 {
     QList<ViewImage> images;
 };
-}
-
-// com.atproto.repo.strongRef
-namespace ComAtprotoRepoStrongRef {
-struct Main
-{
-    QString uri; // at-uri
-    QString cid; // cid
-};
-// A URI with a content-hash fingerprint.
 }
 
 // app.bsky.embed.recordWithMedia
@@ -536,6 +579,7 @@ struct ViewerState
 {
     QString repost; // at-uri
     QString like; // at-uri
+    bool threadMuted = false;
     bool replyDisabled = false;
 };
 struct ThreadgateView
@@ -959,6 +1003,23 @@ struct Main
 };
 }
 
+// app.bsky.graph.starterpack
+namespace AppBskyGraphStarterpack {
+struct FeedItem
+{
+    QString uri; // at-uri
+};
+struct Main
+{
+    QString name; // Display name for starter pack; can not be empty.
+    QString description;
+    QList<AppBskyRichtextFacet::Main> descriptionFacets;
+    QString list; // at-uri , Reference (AT-URI) to the list record.
+    QList<FeedItem> feeds;
+    QString createdAt; // datetime
+};
+}
+
 // app.bsky.labeler.service
 namespace AppBskyLabelerService {
 enum class MainLabelsType : int {
@@ -983,8 +1044,8 @@ struct Notification
     QString uri; // at-uri
     QString cid; // cid
     AppBskyActorDefs::ProfileView author;
-    QString reason; // Expected values are 'like', 'repost', 'follow', 'mention', 'reply', and
-                    // 'quote'.
+    QString reason; // Expected values are 'like', 'repost', 'follow', 'mention', 'reply', 'quote',
+                    // and 'starterpack-joined'.
     QString reasonSubject; // at-uri
     QVariant record;
     bool isRead = false;
@@ -1058,24 +1119,24 @@ enum class ConvoViewLastMessageType : int {
 };
 enum class MessageViewEmbedType : int {
     none,
-    embed_AppBskyEmbedRecord_Main,
+    embed_AppBskyEmbedRecord_View,
 };
-enum class MessageEmbedType : int {
+enum class MessageInputEmbedType : int {
     none,
     embed_AppBskyEmbedRecord_Main,
 };
 struct MessageRef
 {
     QString did; // did
+    QString convoId;
     QString messageId;
 };
-struct Message
+struct MessageInput
 {
-    QString id;
     QString text;
     QList<AppBskyRichtextFacet::Main> facets;
     // union start : embed
-    MessageEmbedType embed_type = MessageEmbedType::none;
+    MessageInputEmbedType embed_type = MessageInputEmbedType::none;
     AppBskyEmbedRecord::Main embed_AppBskyEmbedRecord_Main;
     // union end : embed
 };
@@ -1091,7 +1152,7 @@ struct MessageView
     QList<AppBskyRichtextFacet::Main> facets;
     // union start : embed
     MessageViewEmbedType embed_type = MessageViewEmbedType::none;
-    AppBskyEmbedRecord::Main embed_AppBskyEmbedRecord_Main;
+    AppBskyEmbedRecord::View embed_AppBskyEmbedRecord_View;
     // union end : embed
     MessageViewSender sender;
     QString sentAt; // datetime
@@ -1153,7 +1214,7 @@ namespace ChatBskyConvoSendMessageBatch {
 struct BatchItem
 {
     QString convoId;
-    ChatBskyConvoDefs::Message message;
+    ChatBskyConvoDefs::MessageInput message;
 };
 }
 
@@ -1205,6 +1266,7 @@ struct AccountView
     bool invitesDisabled = false;
     QString emailConfirmedAt; // datetime
     QString inviteNote;
+    QString deactivatedAt; // datetime
 };
 struct RepoRef
 {
@@ -1284,6 +1346,7 @@ struct AppPassword
     QString name;
     QString password;
     QString createdAt; // datetime
+    bool privileged = false;
 };
 }
 
@@ -1315,6 +1378,7 @@ struct AppPassword
 {
     QString name;
     QString createdAt; // datetime
+    bool privileged = false;
 };
 }
 
@@ -1325,6 +1389,10 @@ struct Repo
     QString did; // did
     QString head; // cid , Current repo commit CID
     QString rev;
+    bool active = false;
+    QString status; // If active=false, this optional field indicates a possible reason for why the
+                    // account is not active. If active=false and no status is supplied, then the
+                    // host makes no claim for why the repository is no longer being hosted.
 };
 }
 
@@ -1353,6 +1421,20 @@ struct Identity
     int seq = 0;
     QString did; // did
     QString time; // datetime
+    QString handle; // handle , The current handle for the account, or 'handle.invalid' if
+                    // validation fails. This field is optional, might have been validated or
+                    // passed-through from an upstream source. Semantics and behaviors for PDS vs
+                    // Relay may evolve in the future; see atproto specs for more details.
+};
+struct Account
+{
+    int seq = 0;
+    QString did; // did
+    QString time; // datetime
+    bool active = false; // Indicates that the account has a repository which can be fetched from
+                         // the host that emitted this event.
+    QString status; // If active=false, this optional field indicates a reason for why the account
+                    // is not active.
 };
 struct Handle
 {
@@ -1453,6 +1535,7 @@ enum class ModEventViewSubjectType : int {
     none,
     subject_ComAtprotoAdminDefs_RepoRef,
     subject_ComAtprotoRepoStrongRef_Main,
+    subject_ChatBskyConvoDefs_MessageRef,
 };
 struct ModEventTakedown
 {
@@ -1547,6 +1630,7 @@ struct ModEventView
     ModEventViewSubjectType subject_type = ModEventViewSubjectType::none;
     ComAtprotoAdminDefs::RepoRef subject_ComAtprotoAdminDefs_RepoRef;
     ComAtprotoRepoStrongRef::Main subject_ComAtprotoRepoStrongRef_Main;
+    ChatBskyConvoDefs::MessageRef subject_ChatBskyConvoDefs_MessageRef;
     // union end : subject
     QList<QString> subjectBlobCids;
     QString createdBy; // did
@@ -1599,6 +1683,7 @@ struct RepoView
     ComAtprotoServerDefs::InviteCode invitedBy;
     bool invitesDisabled = false;
     QString inviteNote;
+    QString deactivatedAt; // datetime
 };
 struct RepoViewNotFound
 {
@@ -1697,6 +1782,7 @@ struct RepoViewDetail
     bool invitesDisabled = false;
     QString inviteNote;
     QString emailConfirmedAt; // datetime
+    QString deactivatedAt; // datetime
 };
 struct RecordViewDetail
 {
@@ -1708,6 +1794,32 @@ struct RecordViewDetail
     QString indexedAt; // datetime
     ModerationDetail moderation;
     RepoView repo;
+};
+}
+
+// tools.ozone.server.getConfig
+namespace ToolsOzoneServerGetConfig {
+struct ServiceConfig
+{
+    QString url; // uri
+};
+struct ViewerConfig
+{
+    QString role;
+};
+}
+
+// tools.ozone.team.defs
+namespace ToolsOzoneTeamDefs {
+struct Member
+{
+    QString did; // did
+    bool disabled = false;
+    AppBskyActorDefs::ProfileViewDetailed profile;
+    QString createdAt; // datetime
+    QString updatedAt; // datetime
+    QString lastUpdatedBy;
+    QString role;
 };
 }
 

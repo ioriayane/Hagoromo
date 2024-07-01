@@ -71,6 +71,7 @@ ScrollView {
                 Layout.preferredHeight: (currentItem ? currentItem.height : 50)
                 visible: timelineView.blogModel !== undefined && blogListView.count > 0
                 model: timelineView.blogModel
+                onHoveredLinkChanged: timelineView.hoveredLink = hoveredLink
             }
             ItemDelegate {
                 Layout.preferredWidth: rootListView.width

@@ -12,6 +12,7 @@ IconLabelFrame {
     controlButton.visible: true
     controlButton.iconText: showContent ? qsTr("Hide") : qsTr("Show")
     controlButton.onClicked: showContent = !showContent
+    visible: false
     onVisibleChanged: {
         if(visible){
             showContent = false

@@ -17,6 +17,8 @@
 #include "searchprofilelistmodel.h"
 #include "searchpostlistmodel.h"
 #include "contentfiltersettinglistmodel.h"
+#include "tools/labelerprovider.h"
+#include "controls/calendartablemodel.h"
 
 class hagoromo_test : public QObject
 {
@@ -62,6 +64,7 @@ private slots:
     void test_SearchProfileListModel_suggestion();
     void test_SearchPostListModel_text();
     void test_ContentFilterSettingListModel();
+    void test_CalendarTableModel();
 
 private:
     WebServer m_mockServer;
@@ -1515,9 +1518,11 @@ void hagoromo_test::test_TimelineListModel_quote_warn()
 {
     int row = 0;
     TimelineListModel model;
-    model.setAccount(m_service + "/timeline/warn", QString(), QString(), QString(), "dummy",
+    model.setAccount(m_service + "/timeline/warn", "did:plc:test", QString(), QString(), "dummy",
                      QString());
     model.setDisplayInterval(0);
+
+    LabelerProvider::getInstance()->clear();
 
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     model.getLatest();
@@ -2301,6 +2306,8 @@ void hagoromo_test::test_TimelineListModel_labelers()
                      "ioriayane.bsky.social", QString(), "dummy", QString());
     model.setDisplayInterval(0);
 
+    LabelerProvider::getInstance()->clear();
+
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     QVERIFY(model.getLatest());
     spy.wait(10 * 1000);
@@ -2629,9 +2636,11 @@ void hagoromo_test::test_NotificationListModel_warn()
 {
     int row = 0;
     NotificationListModel model;
-    model.setAccount(m_service + "/notifications/warn", QString(), QString(), QString(), "dummy",
-                     QString());
+    model.setAccount(m_service + "/notifications/warn", "did:plc:test", QString(), QString(),
+                     "dummy", QString());
     model.setDisplayInterval(0);
+
+    LabelerProvider::getInstance()->clear();
 
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
     model.getLatest();
@@ -3225,6 +3234,181 @@ void hagoromo_test::test_ContentFilterSettingListModel()
 
     model.setLabelerDid("did:plc:unknown");
     QVERIFY2(model.rowCount() == 0, QString::number(model.rowCount()).toLocal8Bit());
+}
+
+struct CalendarTableModelTestData
+{
+    CalendarTableModelTestData(int p_year, int p_month, int r, int c, int a_year, int a_month,
+                               int e_year, int e_month, int e_day)
+    {
+        this->p_year = p_year;
+        this->p_month = p_month;
+        this->row = r;
+        this->column = c;
+        this->a_year = a_year;
+        this->a_month = a_month;
+        this->e_year = e_year;
+        this->e_month = e_month;
+        this->e_day = e_day;
+    }
+    int p_year;
+    int p_month;
+    int row;
+    int column;
+    int a_year;
+    int a_month;
+    int e_year;
+    int e_month;
+    int e_day;
+
+    QString toString() const
+    {
+        return QString("%1/%2, r=%3, c=%4, Add(y=%5, m=%6), %7/%8/%9")
+                .arg(this->p_year)
+                .arg(this->p_month)
+                .arg(this->row)
+                .arg(this->column)
+                .arg(this->a_year)
+                .arg(this->a_month)
+                .arg(this->e_year)
+                .arg(this->e_month)
+                .arg(this->e_day);
+    }
+};
+
+void hagoromo_test::test_CalendarTableModel()
+{
+    int row, column;
+    CalendarTableModel model;
+
+    int e_year, e_month, e_day;
+    bool ok;
+    QList<CalendarTableModelTestData> list;
+    list.append(CalendarTableModelTestData(2024, 6, 0, 5, 0, 0, 2024, 5, 31));
+    list.append(CalendarTableModelTestData(2024, 6, 0, 6, 0, 0, 2024, 6, 1));
+    list.append(CalendarTableModelTestData(2024, 6, 5, 0, 0, 0, 2024, 6, 30));
+    list.append(CalendarTableModelTestData(2024, 6, 5, 1, 0, 0, 2024, 7, 1));
+    list.append(CalendarTableModelTestData(2024, 7, 0, 1, 0, 0, 2024, 7, 1));
+    list.append(CalendarTableModelTestData(2024, 12, 4, 2, 0, 0, 2024, 12, 31));
+    list.append(CalendarTableModelTestData(2024, 12, 4, 3, 0, 0, 2025, 1, 1));
+    list.append(CalendarTableModelTestData(2025, 1, 0, 2, 0, 0, 2024, 12, 31));
+    list.append(CalendarTableModelTestData(2025, 1, 0, 3, 0, 0, 2025, 1, 1));
+
+    list.append(CalendarTableModelTestData(2023, 6, 0, 5, 1, 0, 2024, 5, 31));
+    list.append(CalendarTableModelTestData(2023, 6, 0, 6, 1, 0, 2024, 6, 1));
+    list.append(CalendarTableModelTestData(2023, 6, 5, 0, 1, 0, 2024, 6, 30));
+    list.append(CalendarTableModelTestData(2023, 6, 5, 1, 1, 0, 2024, 7, 1));
+    list.append(CalendarTableModelTestData(2023, 7, 0, 1, 1, 0, 2024, 7, 1));
+    list.append(CalendarTableModelTestData(2023, 12, 4, 2, 1, 0, 2024, 12, 31));
+    list.append(CalendarTableModelTestData(2023, 12, 4, 3, 1, 0, 2025, 1, 1));
+    list.append(CalendarTableModelTestData(2024, 1, 0, 2, 1, 0, 2024, 12, 31));
+    list.append(CalendarTableModelTestData(2024, 1, 0, 3, 1, 0, 2025, 1, 1));
+
+    list.append(CalendarTableModelTestData(2024, 5, 0, 5, 0, 1, 2024, 5, 31));
+    list.append(CalendarTableModelTestData(2024, 5, 0, 6, 0, 1, 2024, 6, 1));
+    list.append(CalendarTableModelTestData(2024, 5, 5, 0, 0, 1, 2024, 6, 30));
+    list.append(CalendarTableModelTestData(2024, 5, 5, 1, 0, 1, 2024, 7, 1));
+    list.append(CalendarTableModelTestData(2024, 6, 0, 1, 0, 1, 2024, 7, 1));
+    list.append(CalendarTableModelTestData(2024, 11, 4, 2, 0, 1, 2024, 12, 31));
+    list.append(CalendarTableModelTestData(2024, 11, 4, 3, 0, 1, 2025, 1, 1));
+    list.append(CalendarTableModelTestData(2024, 12, 0, 2, 0, 1, 2024, 12, 31));
+    list.append(CalendarTableModelTestData(2024, 12, 0, 3, 0, 1, 2025, 1, 1));
+
+    list.append(CalendarTableModelTestData(1, 1, 0, 0, 0, 0, -1, -1, -1));
+    list.append(CalendarTableModelTestData(1, 1, 0, 1, 0, 0, 1, 1, 1));
+    list.append(CalendarTableModelTestData(1, 2, 0, 4, 0, 0, 1, 2, 1));
+
+    list.append(CalendarTableModelTestData(1, 2, 0, 4, -1, 0, 1, 2, 1));
+    list.append(CalendarTableModelTestData(1, 2, 0, 4, 0, -2, 1, 1, 4));
+
+    for (const auto &data : list) {
+        model.setYear(data.p_year);
+        model.setMonth(data.p_month);
+        model.addYears(data.a_year);
+        model.addMonths(data.a_month);
+        e_year = model.item(data.row, data.column, CalendarTableModel::YearRole).toInt(&ok);
+        if (!ok)
+            e_year = -1;
+        e_month = model.item(data.row, data.column, CalendarTableModel::MonthRole).toInt(&ok);
+        if (!ok)
+            e_month = -1;
+        e_day = model.item(data.row, data.column, CalendarTableModel::DayRole).toInt(&ok);
+        if (!ok)
+            e_day = -1;
+        QVERIFY2(e_year == data.e_year,
+                 QString("e=%1/%2/%3, %4")
+                         .arg(e_year)
+                         .arg(e_month)
+                         .arg(e_day)
+                         .arg(data.toString())
+                         .toLocal8Bit());
+        QVERIFY2(e_month == data.e_month,
+                 QString("e=%1/%2/%3, %4")
+                         .arg(e_year)
+                         .arg(e_month)
+                         .arg(e_day)
+                         .arg(data.toString())
+                         .toLocal8Bit());
+        QVERIFY2(e_day == data.e_day,
+                 QString("e=%1/%2/%3, %4")
+                         .arg(e_year)
+                         .arg(e_month)
+                         .arg(e_day)
+                         .arg(data.toString())
+                         .toLocal8Bit());
+    }
+
+    model.setYear(2024);
+    model.setMonth(6);
+
+    model.setSinceDate(2024, 6, 10);
+    model.setUntilDate(2024, 6, 10);
+    model.setEnableSince(true);
+    model.setEnableUntil(false);
+    QVERIFY(model.item(2, 0, CalendarTableModel::EnabledRole).toBool() == false); // 6/9
+    QVERIFY(model.item(2, 1, CalendarTableModel::EnabledRole).toBool() == true); // 6/10
+
+    model.setSinceDate(2024, 6, 10);
+    model.setUntilDate(2024, 6, 10);
+    model.setEnableSince(false);
+    model.setEnableUntil(true);
+    QVERIFY(model.item(2, 1, CalendarTableModel::EnabledRole).toBool() == true); // 6/10
+    QVERIFY(model.item(2, 2, CalendarTableModel::EnabledRole).toBool() == false); // 6/11
+
+    model.setEnableSince(true);
+    model.setEnableUntil(true);
+    model.setSinceDate(2024, 6, 1);
+    model.setUntilDate(2024, 6, 10);
+    model.setSinceDate(2024, 6, 11);
+    QVERIFY(model.since() == "2024/06/10");
+    QVERIFY(model.until() == "2024/06/10");
+
+    model.setSinceDate(2024, 6, 1);
+    model.setUntilDate(2024, 6, 10);
+    model.setUntilDate(2024, 5, 31);
+    QVERIFY(model.since() == "2024/06/01");
+    QVERIFY(model.until() == "2024/06/01");
+
+    model.setEnableSince(true);
+    model.setEnableUntil(false);
+    model.setSinceDate(2024, 6, 1);
+    model.setUntilDate(2024, 6, 10);
+    model.setSinceDate(2024, 6, 11);
+    QVERIFY(model.since() == "2024/06/11");
+    QVERIFY(model.until() == "2024/06/11");
+
+    model.setEnableSince(false);
+    model.setEnableUntil(true);
+    model.setSinceDate(2024, 6, 1);
+    model.setUntilDate(2024, 6, 10);
+    model.setUntilDate(2024, 5, 31);
+    QVERIFY(model.since() == "2024/05/31");
+    QVERIFY(model.until() == "2024/05/31");
+
+    model.setEnableSince(true);
+    model.setEnableUntil(true);
+    QVERIFY(model.sinceUtc() == "2024-05-30T15:00:00Z");
+    QVERIFY(model.untilUtc() == "2024-05-31T14:59:59Z");
 }
 
 void hagoromo_test::verifyStr(const QString &expect, const QString &actual)

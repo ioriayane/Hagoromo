@@ -16,6 +16,7 @@ SOURCES += \
     $$PWD/chat/chatmessagelistmodel.cpp \
     $$PWD/columnlistmodel.cpp \
     $$PWD/contentfiltersettinglistmodel.cpp \
+    $$PWD/controls/calendartablemodel.cpp \
     $$PWD/createsession.cpp \
     $$PWD/customfeedlistmodel.cpp \
     $$PWD/embedimagelistmodel.cpp \
@@ -51,6 +52,7 @@ SOURCES += \
     $$PWD/systemtool.cpp \
     $$PWD/timelinelistmodel.cpp \
     $$PWD/translator.cpp \
+    $$PWD/userpost.cpp \
     $$PWD/userprofile.cpp
 
 HEADERS += \
@@ -69,6 +71,7 @@ HEADERS += \
     $$PWD/columnlistmodel.h \
     $$PWD/common.h \
     $$PWD/contentfiltersettinglistmodel.h \
+    $$PWD/controls/calendartablemodel.h \
     $$PWD/createsession.h \
     $$PWD/customfeedlistmodel.h \
     $$PWD/embedimagelistmodel.h \
@@ -106,4 +109,5 @@ HEADERS += \
     $$PWD/thumbnailprovider.h \
     $$PWD/timelinelistmodel.h \
     $$PWD/translator.h \
+    $$PWD/userpost.h \
     $$PWD/userprofile.h

@@ -27,7 +27,7 @@ bool BlocksListModel::getLatest()
             profiles->deleteLater();
         });
         profiles->setAccount(account());
-        profiles->setLabelers(m_contentFilterLabels.labelerDids());
+        profiles->setLabelers(labelerDids());
         profiles->getBlocks(50, QString());
     });
     return true;
@@ -52,7 +52,7 @@ bool BlocksListModel::getNext()
             profiles->deleteLater();
         });
         profiles->setAccount(account());
-        profiles->setLabelers(m_contentFilterLabels.labelerDids());
+        profiles->setLabelers(labelerDids());
         profiles->getBlocks(50, m_cursor);
     });
     return true;

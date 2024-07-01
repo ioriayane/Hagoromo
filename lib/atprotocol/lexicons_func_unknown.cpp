@@ -341,7 +341,9 @@ void insertFacetsJson(QJsonObject &parent, const QList<AppBskyRichtextFacet::Mai
         json_facet.insert("features", json_features);
         json_facets.append(json_facet);
     }
-    parent.insert("facets", json_facets);
+    if (!json_facets.isEmpty()) {
+        parent.insert("facets", json_facets);
+    }
 }
 
 QString applyFacetsTo(const QString &text, const QList<AppBskyRichtextFacet::Main> &text_facets)

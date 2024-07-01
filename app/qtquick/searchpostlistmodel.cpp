@@ -33,7 +33,7 @@ bool SearchPostListModel::getLatest()
             posts->deleteLater();
         });
         posts->setAccount(account());
-        posts->setLabelers(m_contentFilterLabels.labelerDids());
+        posts->setLabelers(labelerDids());
         posts->searchPosts(replaceSearchCommand(text()), QString(), QString(), QString(), QString(),
                            QString(), QString(), QString(), QString(), QStringList(), 10,
                            QString());
@@ -67,7 +67,7 @@ bool SearchPostListModel::getNext()
         });
 
         posts->setAccount(account());
-        posts->setLabelers(m_contentFilterLabels.labelerDids());
+        posts->setLabelers(labelerDids());
         posts->searchPosts(replaceSearchCommand(text()), QString(), QString(), QString(), QString(),
                            QString(), QString(), QString(), QString(), QStringList(), 10, m_cursor);
     });

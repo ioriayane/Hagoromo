@@ -42,6 +42,16 @@ const QVariant &ComAtprotoServerRefreshSession::didDoc() const
     return m_didDoc;
 }
 
+const bool &ComAtprotoServerRefreshSession::active() const
+{
+    return m_active;
+}
+
+const QString &ComAtprotoServerRefreshSession::status() const
+{
+    return m_status;
+}
+
 bool ComAtprotoServerRefreshSession::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
@@ -57,6 +67,9 @@ bool ComAtprotoServerRefreshSession::parseJson(bool success, const QString reply
         AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("did"), m_did);
         AtProtocolType::LexiconsTypeUnknown::copyUnknown(
                 json_doc.object().value("didDoc").toObject(), m_didDoc);
+        AtProtocolType::LexiconsTypeUnknown::copyBool(json_doc.object().value("active"), m_active);
+        AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("status"),
+                                                        m_status);
     }
 
     return success;

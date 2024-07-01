@@ -39,6 +39,7 @@
 #include "qtquick/thumbnailprovider.h"
 #include "qtquick/encryption.h"
 #include "qtquick/userprofile.h"
+#include "qtquick/userpost.h"
 #include "qtquick/systemtool.h"
 #include "qtquick/externallink.h"
 #include "qtquick/reporter.h"
@@ -55,6 +56,7 @@
 #include "qtquick/chat/chatmessagelistmodel.h"
 #include "qtquick/moderation/labelerlistmodel.h"
 #include "qtquick/blog/blogentrylistmodel.h"
+#include "qtquick/controls/calendartablemodel.h"
 
 #include "tools/translatorchanger.h"
 
@@ -87,7 +89,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName(QStringLiteral("relog"));
     app.setOrganizationDomain(QStringLiteral("hagoromo.relog.tech"));
     app.setApplicationName(QStringLiteral("Hagoromo"));
-    app.setApplicationVersion(QStringLiteral("0.32.0"));
+    app.setApplicationVersion(QStringLiteral("0.33.0"));
 #ifndef HAGOROMO_RELEASE_BUILD
     app.setApplicationVersion(app.applicationVersion() + "d");
 #endif
@@ -149,6 +151,7 @@ int main(int argc, char *argv[])
                                         "ListMutesListModel");
     qmlRegisterType<Encryption>("tech.relog.hagoromo.encryption", 1, 0, "Encryption");
     qmlRegisterType<UserProfile>("tech.relog.hagoromo.userprofile", 1, 0, "UserProfile");
+    qmlRegisterType<UserPost>("tech.relog.hagoromo.userpost", 1, 0, "UserPost");
     qmlRegisterType<SystemTool>("tech.relog.hagoromo.systemtool", 1, 0, "SystemTool");
     qmlRegisterType<ExternalLink>("tech.relog.hagoromo.externallink", 1, 0, "ExternalLink");
     qmlRegisterType<Reporter>("tech.relog.hagoromo.reporter", 1, 0, "Reporter");
@@ -179,6 +182,9 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<BlogEntryListModel>("tech.relog.hagoromo.blog.blogentrylistmodel", 1, 0,
                                         "BlogEntryListModel");
+
+    qmlRegisterType<CalendarTableModel>("tech.relog.hagoromo.controls.calendartablemodel", 1, 0,
+                                        "CalendarTableModel");
 
     qmlRegisterSingletonType(QUrl("qrc:/Hagoromo/qml/data/AdjustedValues.qml"),
                              "tech.relog.hagoromo.singleton", 1, 0, "AdjustedValues");

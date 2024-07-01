@@ -17,6 +17,8 @@ public:
     const QString &handle() const;
     const QString &did() const;
     const QVariant &didDoc() const;
+    const bool &active() const;
+    const QString &status() const;
 
 protected:
     virtual bool parseJson(bool success, const QString reply_json);
@@ -27,6 +29,8 @@ private:
     QString m_handle;
     QString m_did;
     QVariant m_didDoc;
+    bool m_active;
+    QString m_status;
 };
 
 }
