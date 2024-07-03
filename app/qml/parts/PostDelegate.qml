@@ -159,9 +159,9 @@ ClickableFrame {
 
                 property int basisWidth: postFrame.layoutWidth - postFrame.leftPadding - postFrame.rightPadding -
                                          postLayout.spacing - postAvatarImage.Layout.preferredWidth
-
                 Author {
                     id: postAuthor
+                    Layout.preferredWidth: parent.basisWidth
                     layoutWidth: parent.basisWidth
                 }
 
@@ -216,6 +216,8 @@ ClickableFrame {
                     }
                     ImagePreview {
                         id: postImagePreview
+                        Layout.preferredWidth: parent.width
+                        Layout.preferredHeight: implicitHeight
                         layoutWidth: parent.width
                         Layout.topMargin: 5
                         visible: contentMediaFilterFrame.showContent
@@ -282,6 +284,7 @@ ClickableFrame {
 
                     PostControls {
                         id: postControls
+                        Layout.preferredWidth: parent.width
                     }
                 }
             }
