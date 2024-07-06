@@ -90,16 +90,3 @@ QHash<int, QByteArray> MutedWordListModel::roleNames() const
 
     return roles;
 }
-
-bool MutedWordListModel::modified() const
-{
-    return m_modified;
-}
-
-void MutedWordListModel::setModified(bool newModified)
-{
-    if (m_modified == newModified)
-        return;
-    m_modified = newModified;
-    emit modifiedChanged();
-}
