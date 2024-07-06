@@ -217,10 +217,8 @@ ClickableFrame {
                     ImagePreview {
                         id: postImagePreview
                         Layout.preferredWidth: parent.width
-                        Layout.preferredHeight: implicitHeight
                         layoutWidth: parent.width
                         Layout.topMargin: 5
-                        visible: contentMediaFilterFrame.showContent
                     }
 
                     ExternalLinkCard {

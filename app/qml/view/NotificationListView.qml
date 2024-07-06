@@ -111,6 +111,7 @@ ScrollView {
             contentFilterFrame.labelText: model.contentFilterMessage
             contentMediaFilterFrame.visible: model.contentMediaFilterMatched
             contentMediaFilterFrame.labelText: model.contentMediaFilterMessage
+            postImagePreview.visible: contentMediaFilterFrame.showContent && model.embedImages.length > 0
             postImagePreview.layoutType: notificationListView.imageLayoutType
             postImagePreview.embedImages: model.embedImages
             postImagePreview.embedAlts: model.embedImagesAlt
