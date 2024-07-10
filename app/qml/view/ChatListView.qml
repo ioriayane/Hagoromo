@@ -210,16 +210,12 @@ Item {
                         onClicked: myMorePopup.open()
                         Menu {
                             id: myMorePopup
-                            width: muteMenuItem.implicitWidth > leaveMenuItem.implicitWidth ?
-                                       muteMenuItem.implicitWidth : leaveMenuItem.implicitWidth
-                            MenuItem {
-                                id: muteMenuItem
+                            MenuItemEx {
                                 text: model.muted ? qsTr("Unmute conversation") : qsTr("Mute conversation")
                                 icon.source: "../images/mute.png"
                                 onTriggered: rootListView.model.mute(model.index)
                             }
-                            MenuItem {
-                                id: leaveMenuItem
+                            MenuItemEx {
                                 text: qsTr("Leave conversation")
                                 icon.source: "../images/leave.png"
                                 onTriggered: rootListView.model.leave(model.index)

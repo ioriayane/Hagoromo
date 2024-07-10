@@ -1,6 +1,8 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 
+import "../controls"
+
 Menu {
     id: tagMenu
     width: tagMenuItem.implicitWidth
@@ -10,13 +12,13 @@ Menu {
     signal requestViewSearchPosts(string text)
     signal requestAddMutedWord(string text)
 
-    MenuItem {
+    MenuItemEx {
         enabled: !logMode
         icon.source: "../images/search.png"
         text: qsTr("Search %s posts").replace("%s", tagMenu.tagText)
         onTriggered: requestViewSearchPosts(tagMenu.tagText)
     }
-    MenuItem {
+    MenuItemEx {
         id: tagMenuItem
         enabled: !logMode
         icon.source: "../images/account.png"
@@ -24,7 +26,7 @@ Menu {
         onTriggered: requestViewSearchPosts(tagMenu.tagText + " from:" + postAuthor.handle)
     }
     MenuSeparator {}
-    MenuItem {
+    MenuItemEx {
         icon.source: "../images/mute.png"
         text: qsTr("Mute %s posts").replace("%s", tagMenu.tagText)
         onTriggered: {

@@ -393,60 +393,59 @@ ColumnLayout {
                 onClicked: morePopup.open()
                 Menu {
                     id: morePopup
-                    width: 240
-                    MenuItem {
+                    MenuItemEx {
                         text: qsTr("Send mention")
                         icon.source: "../images/reply.png"
                         enabled: userProfile.handle.length > 0
                         onTriggered: requestMention("@" + userProfile.handle)
                     }
-                    MenuItem {
+                    MenuItemEx {
                         text: qsTr("Send message")
                         icon.source: "../images/chat.png"
                         enabled: userProfile.handle.length > 0 && userProfile.associatedChatAllow
                         onTriggered: requestMessage(userProfile.did)
                     }
                     MenuSeparator {}
-                    MenuItem {
+                    MenuItemEx {
                         text: qsTr("Copy handle")
                         icon.source: "../images/copy.png"
                         enabled: userProfile.handle.length > 0
                         onTriggered: systemTool.copyToClipboard("@" + userProfile.handle)
                     }
-                    MenuItem {
+                    MenuItemEx {
                         text: qsTr("Copy DID")
                         icon.source: "../images/copy.png"
                         enabled: userProfile.did.length > 0
                         onTriggered: systemTool.copyToClipboard(userProfile.did)
                     }
-                    MenuItem {
+                    MenuItemEx {
                         text: qsTr("Copy Official Url")
                         icon.source: "../images/copy.png"
                         enabled: userProfile.did.length > 0
                         onTriggered: systemTool.copyToClipboard(getOfficialUrl(userProfile.did))
                     }
                     MenuSeparator {}
-                    MenuItem {
+                    MenuItemEx {
                         text: qsTr("Open in new col")
                         icon.source: "../images/add.png"
                         enabled: userProfile.handle.length > 0
                         onTriggered: requestViewAuthorFeed(userProfile.did, "@" + userProfile.handle)
                     }
-                    MenuItem {
+                    MenuItemEx {
                         text: qsTr("Open in Official")
                         icon.source: "../images/open_in_other.png"
                         enabled: userProfile.did.length > 0
                         onTriggered: openInOhters(userProfile.did)
                     }
                     MenuSeparator {}
-                    MenuItem {
+                    MenuItemEx {
                         text: qsTr("Add/Remove from lists")
                         icon.source: "../images/list.png"
                         enabled: userProfile.handle.length > 0
                         onTriggered: requestAddRemoveFromLists(userProfile.did)
                     }
                     MenuSeparator {}
-                    MenuItem {
+                    MenuItemEx {
                         text: userProfile.muted ? qsTr("Unmute account") : qsTr("Mute account")
                         icon.source: userProfile.muted ? "../images/visibility_on.png" : "../images/visibility_off.png"
                         enabled: userProfile.handle.length > 0 && profileView.userDid !== profileView.accountDid
@@ -458,7 +457,7 @@ ColumnLayout {
                             }
                         }
                     }
-                    MenuItem {
+                    MenuItemEx {
                         text: userProfile.blocking ? qsTr("Unblock account") : qsTr("Block account")
                         icon.source: userProfile.blocking ? "../images/block.png" : "../images/block.png"
                         enabled: userProfile.handle.length > 0 && profileView.userDid !== profileView.accountDid
@@ -470,7 +469,7 @@ ColumnLayout {
                             }
                         }
                     }
-                    MenuItem {
+                    MenuItemEx {
                         text: qsTr("Report account")
                         icon.source: "../images/report.png"
                         enabled: userProfile.handle.length > 0 && profileView.userDid !== profileView.accountDid

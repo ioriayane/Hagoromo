@@ -1,6 +1,8 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 
+import "../controls"
+
 Menu {
     id: selfLabelPopup
     // メニューをウインドウのセンターに表示する
@@ -11,28 +13,28 @@ Menu {
 
     signal triggered(string value, string text)
 
-    MenuItem {
+    MenuItemEx {
         text: qsTr("Sexually Explicit")
         property string value: "porn"
         onTriggered: selfLabelPopup.triggered(value, text)
     }
-    MenuItem {
+    MenuItemEx {
         text: qsTr("Nudity")
         property string value: "nudity"
         onTriggered: selfLabelPopup.triggered(value, text)
     }
-    MenuItem {
+    MenuItemEx {
         text: qsTr("Sexually Suggestive")
         property string value: "sexual"
         onTriggered: selfLabelPopup.triggered(value, text)
     }
-    MenuItem {
+    MenuItemEx {
         text: qsTr("Gore")
         property string value: "graphic-media"
         onTriggered: selfLabelPopup.triggered(value, text)
     }
     MenuSeparator { }
-    MenuItem {
+    MenuItemEx {
         text: qsTr("Remove")
         property string value: ""
         onTriggered: selfLabelPopup.triggered(value, text)

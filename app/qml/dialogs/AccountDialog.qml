@@ -132,29 +132,18 @@ Dialog {
                         onClicked: moreMenu.open()
                         Menu {
                             id: moreMenu
-                            width: {
-                                var w = mutedWordMenuItem.implicitWidth
-                                if(threadGateMenuItem.implicitWidth > w){
-                                    w = threadGateMenuItem.implicitWidth
-                                }
-                                if(statsAndLogsMenutItem.implicitWidth > w){
-                                    w = statsAndLogsMenutItem.implicitWidth
-                                }
-                                return w
-                            }
-                            MenuItem {
+                            MenuItemEx {
                                 icon.source: "../images/account_icon.png"
                                 text: qsTr("Set as main")
                                 onTriggered: accountList.model.setMainAccount(model.index)
                             }
-                            MenuItem {
-                                id: statsAndLogsMenutItem
+                            MenuItemEx {
                                 icon.source: "../images/database.png"
                                 text: qsTr("Statistics and logs")
                                 onTriggered: accountDialog.requestStatisticsAndLogs(model.uuid)
                             }
                             MenuSeparator {}
-                            MenuItem {
+                            MenuItemEx {
                                 icon.source: "../images/visibility_on.png"
                                 text: qsTr("Content filter")
                                 onTriggered: {
@@ -165,15 +154,12 @@ Dialog {
                             }
                             Menu {
                                 title: qsTr("Mute")
-                                width: mutedAccountsMenuItem.implicitWidth
-                                MenuItem {
-                                    id: mutedWordMenuItem
+                                MenuItemEx {
                                     icon.source: "../images/mute.png"
                                     text: qsTr("Muted words and tags")
                                     onTriggered: accountDialog.requestAddMutedWords(model.uuid)
                                 }
-                                MenuItem {
-                                    id: mutedAccountsMenuItem
+                                MenuItemEx {
                                     icon.source: "../images/account_off.png"
                                     text: qsTr("Muted accounts")
                                     onTriggered: {
@@ -182,8 +168,7 @@ Dialog {
                                         }
                                     }
                                 }
-                                MenuItem {
-                                    id: mutedlistsMenuItem
+                                MenuItemEx {
                                     icon.source: "../images/account_off.png"
                                     text: qsTr("Muted lists")
                                     onTriggered: {
@@ -195,9 +180,7 @@ Dialog {
                             }
                             Menu {
                                 title: qsTr("Block")
-                                width: blockedAccountsMenuItem.implicitWidth
-                                MenuItem {
-                                    id: blockedAccountsMenuItem
+                                MenuItemEx {
                                     icon.source: "../images/block.png"
                                     text: qsTr("Blocked accounts")
                                     onTriggered: {
@@ -206,8 +189,7 @@ Dialog {
                                         }
                                     }
                                 }
-                                MenuItem {
-                                    id: blockedlistsMenuItem
+                                MenuItemEx {
                                     icon.source: "../images/block.png"
                                     text: qsTr("Blocked lists")
                                     onTriggered: {
@@ -218,8 +200,7 @@ Dialog {
                                 }
                             }
                             MenuSeparator {}
-                            MenuItem {
-                                id: threadGateMenuItem
+                            MenuItemEx {
                                 icon.source: "../images/thread.png"
                                 text: qsTr("Who can reply")
                                 onTriggered: {
@@ -233,7 +214,7 @@ Dialog {
                                 }
                             }
                             MenuSeparator {}
-                            MenuItem {
+                            MenuItemEx {
                                 icon.source: "../images/delete.png"
                                 text: qsTr("Remove account")
                                 onTriggered: accountList.model.removeAccount(model.index)
