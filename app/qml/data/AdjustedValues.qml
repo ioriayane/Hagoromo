@@ -37,7 +37,7 @@ QtObject {
 
     // for spacing
     property real s20: 20 * ratio
-    property real s14: 14 * ratio
+    property real s15: 15 * ratio
     property real s10: 10 * ratio
     property real s5: 5 * ratio
 
