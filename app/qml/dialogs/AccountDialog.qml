@@ -130,20 +130,20 @@ Dialog {
                         Layout.preferredHeight: AdjustedValues.b26
                         iconSource: "../images/more.png"
                         onClicked: moreMenu.open()
-                        Menu {
+                        MenuEx {
                             id: moreMenu
-                            MenuItemEx {
+                            Action {
                                 icon.source: "../images/account_icon.png"
                                 text: qsTr("Set as main")
                                 onTriggered: accountList.model.setMainAccount(model.index)
                             }
-                            MenuItemEx {
+                            Action {
                                 icon.source: "../images/database.png"
                                 text: qsTr("Statistics and logs")
                                 onTriggered: accountDialog.requestStatisticsAndLogs(model.uuid)
                             }
                             MenuSeparator {}
-                            MenuItemEx {
+                            Action {
                                 icon.source: "../images/visibility_on.png"
                                 text: qsTr("Content filter")
                                 onTriggered: {
@@ -152,14 +152,14 @@ Dialog {
                                     }
                                 }
                             }
-                            Menu {
+                            MenuEx {
                                 title: qsTr("Mute")
-                                MenuItemEx {
+                                Action {
                                     icon.source: "../images/mute.png"
                                     text: qsTr("Muted words and tags")
                                     onTriggered: accountDialog.requestAddMutedWords(model.uuid)
                                 }
-                                MenuItemEx {
+                                Action {
                                     icon.source: "../images/account_off.png"
                                     text: qsTr("Muted accounts")
                                     onTriggered: {
@@ -168,7 +168,7 @@ Dialog {
                                         }
                                     }
                                 }
-                                MenuItemEx {
+                                Action {
                                     icon.source: "../images/account_off.png"
                                     text: qsTr("Muted lists")
                                     onTriggered: {
@@ -178,9 +178,9 @@ Dialog {
                                     }
                                 }
                             }
-                            Menu {
+                            MenuEx {
                                 title: qsTr("Block")
-                                MenuItemEx {
+                                Action {
                                     icon.source: "../images/block.png"
                                     text: qsTr("Blocked accounts")
                                     onTriggered: {
@@ -189,7 +189,7 @@ Dialog {
                                         }
                                     }
                                 }
-                                MenuItemEx {
+                                Action {
                                     icon.source: "../images/block.png"
                                     text: qsTr("Blocked lists")
                                     onTriggered: {
@@ -200,7 +200,7 @@ Dialog {
                                 }
                             }
                             MenuSeparator {}
-                            MenuItemEx {
+                            Action {
                                 icon.source: "../images/thread.png"
                                 text: qsTr("Who can reply")
                                 onTriggered: {
@@ -214,7 +214,7 @@ Dialog {
                                 }
                             }
                             MenuSeparator {}
-                            MenuItemEx {
+                            Action {
                                 icon.source: "../images/delete.png"
                                 text: qsTr("Remove account")
                                 onTriggered: accountList.model.removeAccount(model.index)

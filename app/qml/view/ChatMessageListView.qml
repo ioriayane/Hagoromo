@@ -283,19 +283,19 @@ Item {
                                     text: model.sentAt
                                 }
                             }
-                            Menu {
+                            MenuEx {
                                 id: morePopup
-                                MenuItemEx {
+                                Action {
                                     icon.source: "../images/copy.png"
                                     text: qsTr("Copy message")
                                     onTriggered: systemTool.copyToClipboard(model.textPlain)
                                 }
-                                MenuItemEx {
+                                Action {
                                     text: qsTr("Delete for me")
                                     icon.source: "../images/delete.png"
                                     onTriggered: rootListView.model.deleteMessage(model.index)
                                 }
-                                MenuItemEx {
+                                Action {
                                     enabled: !chatItemLayout.me
                                     text: qsTr("Report message")
                                     icon.source: "../images/report.png"

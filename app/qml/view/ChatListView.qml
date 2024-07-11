@@ -208,14 +208,14 @@ Item {
                         foreground: Material.color(Material.Grey)
                         flat: true
                         onClicked: myMorePopup.open()
-                        Menu {
+                        MenuEx {
                             id: myMorePopup
-                            MenuItemEx {
+                            Action {
                                 text: model.muted ? qsTr("Unmute conversation") : qsTr("Mute conversation")
                                 icon.source: "../images/mute.png"
                                 onTriggered: rootListView.model.mute(model.index)
                             }
-                            MenuItemEx {
+                            Action {
                                 text: qsTr("Leave conversation")
                                 icon.source: "../images/leave.png"
                                 onTriggered: rootListView.model.leave(model.index)

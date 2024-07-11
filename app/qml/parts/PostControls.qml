@@ -63,14 +63,14 @@ RowLayout {
         foreground: isReposted ? Material.color(Material.Green) : Material.color(Material.Grey)
         flat: true
         onClicked: popup.open()
-        Menu {
+        MenuEx {
             id: popup
-            MenuItemEx {
+            Action {
                 id: repostMenuItem
                 icon.source: "../images/repost.png"
                 text: qsTr("Repost")
             }
-            MenuItemEx {
+            Action {
                 id: quoteMenuItem
                 icon.source: "../images/quote.png"
                 text: qsTr("Quote")
@@ -134,106 +134,106 @@ RowLayout {
                 theirMorePopup.open()
             }
         }
-        Menu {
+        MenuEx {
             id: myMorePopup
-            MenuItemEx {
+            Action {
                 icon.source: "../images/translate.png"
                 text: qsTr("Translate")
                 onTriggered: triggeredTranslate()
             }
-            MenuItemEx {
+            Action {
                 icon.source: "../images/copy.png"
                 text: qsTr("Copy post text")
                 onTriggered: triggeredCopyToClipboard()
             }
-            MenuItemEx {
+            Action {
                 text: qsTr("Copy url")
                 icon.source: "../images/copy.png"
                 onTriggered: triggeredCopyPostUrlToClipboard()
             }
-            MenuItemEx {
+            Action {
                 text: qsTr("Open in Official")
                 enabled: postUri.length > 0 && handle.length > 0
                 icon.source: "../images/open_in_other.png"
                 onTriggered: openInOhters(postUri, handle)
             }
             MenuSeparator {}
-            MenuItemEx {
+            Action {
                 text: qsTr("Reposted by")
                 enabled: repostButton.iconText > 0 && !logMode
                 icon.source: "../images/repost.png"
                 onTriggered: triggeredRequestViewRepostedBy()
             }
-            MenuItemEx {
+            Action {
                 text: qsTr("Liked by")
                 enabled: likeButton.iconText > 0 && !logMode
                 icon.source: "../images/like.png"
                 onTriggered: triggeredRequestViewLikedBy()
             }
             MenuSeparator {}
-            MenuItemEx {
+            Action {
                 text: pinned ? qsTr("Unpin this post") : qsTr("Pin this post")
                 icon.source: "../images/pin.png"
                 onTriggered: triggeredRequestPin()
             }
-            MenuItemEx {
+            Action {
                 text: qsTr("Who can reply")
                 enabled: mine
                 icon.source: "../images/thread.png"
                 onTriggered: triggeredRequestUpdateThreadGate()
             }
-            MenuItemEx {
+            Action {
                 text: qsTr("Delete post")
                 enabled: mine
                 icon.source: "../images/delete.png"
                 onTriggered: triggeredDeletePost()
             }
         }
-        Menu {
+        MenuEx {
             id: theirMorePopup
             width: 230
-            MenuItemEx {
+            Action {
                 icon.source: "../images/translate.png"
                 text: qsTr("Translate")
                 onTriggered: triggeredTranslate()
             }
-            MenuItemEx {
+            Action {
                 icon.source: "../images/copy.png"
                 text: qsTr("Copy post text")
                 onTriggered: triggeredCopyToClipboard()
             }
-            MenuItemEx {
+            Action {
                 text: qsTr("Copy url")
                 icon.source: "../images/copy.png"
                 onTriggered: triggeredCopyPostUrlToClipboard()
             }
-            MenuItemEx {
+            Action {
                 text: qsTr("Open in Official")
                 enabled: postUri.length > 0 && handle.length > 0
                 icon.source: "../images/open_in_other.png"
                 onTriggered: openInOhters(postUri, handle)
             }
             MenuSeparator {}
-            MenuItemEx {
+            Action {
                 text: qsTr("Reposted by")
                 enabled: repostButton.iconText > 0
                 icon.source: "../images/repost.png"
                 onTriggered: triggeredRequestViewRepostedBy()
             }
-            MenuItemEx {
+            Action {
                 text: qsTr("Liked by")
                 enabled: likeButton.iconText > 0
                 icon.source: "../images/like.png"
                 onTriggered: triggeredRequestViewLikedBy()
             }
             MenuSeparator {}
-            MenuItemEx {
+            Action {
                 text: pinned ? qsTr("Unpin this post") : qsTr("Pin this post")
                 icon.source: "../images/pin.png"
                 onTriggered: triggeredRequestPin()
             }
             MenuSeparator {}
-            MenuItemEx {
+            Action {
                 text: qsTr("Report post")
                 icon.source: "../images/report.png"
                 onTriggered: triggeredRequestReport()

@@ -173,37 +173,37 @@ ColumnLayout {
                     iconSize: AdjustedValues.i16
                     foreground: Material.color(Material.Grey)
                     onClicked: morePopup.open()
-                    Menu {
+                    MenuEx {
                         id: morePopup
-                        MenuItemEx {
+                        Action {
                             text: qsTr("Copy Official Url")
                             icon.source: "../images/copy.png"
                             onTriggered: systemTool.copyToClipboard(listItemListModel.getOfficialUrl())
                         }
-                        MenuItemEx {
+                        Action {
                             text: qsTr("Open in new col")
                             icon.source: "../images/add.png"
                             onTriggered: listDetailView.requestViewListFeed(listDetailView.listUri, listItemListModel.name)
                         }
-                        MenuItemEx {
+                        Action {
                             text: qsTr("Open in Official")
                             icon.source: "../images/open_in_other.png"
                             onTriggered: Qt.openUrlExternally(listItemListModel.getOfficialUrl())
                         }
                         MenuSeparator {}
-                        MenuItemEx {
+                        Action {
                             enabled: listItemListModel.mine
                             text: qsTr("Delete list")
                             icon.source: "../images/delete.png"
                             onTriggered: recordOperator.deleteList(listDetailView.listUri)
                         }
                         MenuSeparator {}
-                        MenuItemEx {
+                        Action {
                             text: listItemListModel.muted ? qsTr("Unmute list") : qsTr("Mute list")
                             icon.source: "../images/account_off.png"
                             onTriggered: listItemListModel.mute()
                         }
-                        MenuItemEx {
+                        Action {
                             text: listItemListModel.blocked ? qsTr("Unblock list") : qsTr("Block list")
                             icon.source: "../images/block.png"
                             onTriggered: listItemListModel.block()

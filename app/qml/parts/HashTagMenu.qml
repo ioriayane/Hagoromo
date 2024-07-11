@@ -3,7 +3,7 @@ import QtQuick.Controls 2.15
 
 import "../controls"
 
-Menu {
+MenuEx {
     id: tagMenu
     width: tagMenuItem.implicitWidth
     property string tagText: ""
@@ -12,13 +12,13 @@ Menu {
     signal requestViewSearchPosts(string text)
     signal requestAddMutedWord(string text)
 
-    MenuItemEx {
+    Action {
         enabled: !logMode
         icon.source: "../images/search.png"
         text: qsTr("Search %s posts").replace("%s", tagMenu.tagText)
         onTriggered: requestViewSearchPosts(tagMenu.tagText)
     }
-    MenuItemEx {
+    Action {
         id: tagMenuItem
         enabled: !logMode
         icon.source: "../images/account.png"
@@ -26,7 +26,7 @@ Menu {
         onTriggered: requestViewSearchPosts(tagMenu.tagText + " from:" + postAuthor.handle)
     }
     MenuSeparator {}
-    MenuItemEx {
+    Action {
         icon.source: "../images/mute.png"
         text: qsTr("Mute %s posts").replace("%s", tagMenu.tagText)
         onTriggered: {

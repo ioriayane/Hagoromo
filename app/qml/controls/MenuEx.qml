@@ -69,7 +69,7 @@ Menu {
         }
 
         contentItem: Label {
-            leftPadding: menuItem.indicator.width / 2
+            leftPadding: 14 + 22 * (AdjustedValues.ratio - 1)
             rightPadding: menuItem.arrow.implicitWidth * 2
             text: menuItem.text
             font: menuItem.font

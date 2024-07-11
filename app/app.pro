@@ -25,7 +25,6 @@ QML_FILES = \
     qml/controls/IconLabelFrame.qml \
     qml/controls/ImageWithIndicator.qml \
     qml/controls/MenuEx.qml \
-    qml/controls/MenuItemEx.qml \
     qml/controls/MessageBubble.qml \
     qml/controls/MoreButton.qml \
     qml/controls/ProgressCircle.qml \
