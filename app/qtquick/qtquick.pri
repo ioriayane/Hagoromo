@@ -6,10 +6,8 @@ SOURCES += \
     $$PWD/actorfeedgeneratorlistmodel.cpp \
     $$PWD/actorlikelistmodel.cpp \
     $$PWD/anyfeedlistmodel.cpp \
-    $$PWD/anyprofilelistmodel.cpp \
     $$PWD/atpabstractlistmodel.cpp \
     $$PWD/authorfeedlistmodel.cpp \
-    $$PWD/blockslistmodel.cpp \
     $$PWD/blog/blogentrylistmodel.cpp \
     $$PWD/chat/atpchatabstractlistmodel.cpp \
     $$PWD/chat/chatlistmodel.cpp \
@@ -25,8 +23,6 @@ SOURCES += \
     $$PWD/feedgeneratorlink.cpp \
     $$PWD/feedgeneratorlistmodel.cpp \
     $$PWD/feedtypelistmodel.cpp \
-    $$PWD/followerslistmodel.cpp \
-    $$PWD/followslistmodel.cpp \
     $$PWD/languagelistmodel.cpp \
     $$PWD/listblockslistmodel.cpp \
     $$PWD/listfeedlistmodel.cpp \
@@ -41,14 +37,18 @@ SOURCES += \
     $$PWD/log/logstatisticslistmodel.cpp \
     $$PWD/moderation/labelerlistmodel.cpp \
     $$PWD/mutedwordlistmodel.cpp \
-    $$PWD/muteslistmodel.cpp \
     $$PWD/notificationlistmodel.cpp \
     $$PWD/postlink.cpp \
     $$PWD/postthreadlistmodel.cpp \
+    $$PWD/profile/anyprofilelistmodel.cpp \
+    $$PWD/profile/blockslistmodel.cpp \
+    $$PWD/profile/followerslistmodel.cpp \
+    $$PWD/profile/followslistmodel.cpp \
+    $$PWD/profile/muteslistmodel.cpp \
+    $$PWD/profile/searchprofilelistmodel.cpp \
     $$PWD/recordoperator.cpp \
     $$PWD/reporter.cpp \
     $$PWD/searchpostlistmodel.cpp \
-    $$PWD/searchprofilelistmodel.cpp \
     $$PWD/systemtool.cpp \
     $$PWD/timelinelistmodel.cpp \
     $$PWD/translator.cpp \
@@ -60,10 +60,8 @@ HEADERS += \
     $$PWD/actorfeedgeneratorlistmodel.h \
     $$PWD/actorlikelistmodel.h \
     $$PWD/anyfeedlistmodel.h \
-    $$PWD/anyprofilelistmodel.h \
     $$PWD/atpabstractlistmodel.h \
     $$PWD/authorfeedlistmodel.h \
-    $$PWD/blockslistmodel.h \
     $$PWD/blog/blogentrylistmodel.h \
     $$PWD/chat/atpchatabstractlistmodel.h \
     $$PWD/chat/chatlistmodel.h \
@@ -81,8 +79,6 @@ HEADERS += \
     $$PWD/feedgeneratorlink.h \
     $$PWD/feedgeneratorlistmodel.h \
     $$PWD/feedtypelistmodel.h \
-    $$PWD/followerslistmodel.h \
-    $$PWD/followslistmodel.h \
     $$PWD/languagelistmodel.h \
     $$PWD/listblockslistmodel.h \
     $$PWD/listfeedlistmodel.h \
@@ -97,14 +93,18 @@ HEADERS += \
     $$PWD/log/logstatisticslistmodel.h \
     $$PWD/moderation/labelerlistmodel.h \
     $$PWD/mutedwordlistmodel.h \
-    $$PWD/muteslistmodel.h \
     $$PWD/notificationlistmodel.h \
     $$PWD/postlink.h \
     $$PWD/postthreadlistmodel.h \
+    $$PWD/profile/anyprofilelistmodel.h \
+    $$PWD/profile/blockslistmodel.h \
+    $$PWD/profile/followerslistmodel.h \
+    $$PWD/profile/followslistmodel.h \
+    $$PWD/profile/muteslistmodel.h \
+    $$PWD/profile/searchprofilelistmodel.h \
     $$PWD/recordoperator.h \
     $$PWD/reporter.h \
     $$PWD/searchpostlistmodel.h \
-    $$PWD/searchprofilelistmodel.h \
     $$PWD/systemtool.h \
     $$PWD/thumbnailprovider.h \
     $$PWD/timelinelistmodel.h \
