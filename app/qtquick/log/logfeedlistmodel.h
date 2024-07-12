@@ -1,7 +1,7 @@
 #ifndef LOGFEEDLISTMODEL_H
 #define LOGFEEDLISTMODEL_H
 
-#include <timelinelistmodel.h>
+#include "../timeline/timelinelistmodel.h"
 
 class LogFeedListModel : public TimelineListModel
 {

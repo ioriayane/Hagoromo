@@ -4,10 +4,7 @@ INCLUDEPATH += $$PWD
 SOURCES += \
     $$PWD/accountlistmodel.cpp \
     $$PWD/actorfeedgeneratorlistmodel.cpp \
-    $$PWD/actorlikelistmodel.cpp \
-    $$PWD/anyfeedlistmodel.cpp \
     $$PWD/atpabstractlistmodel.cpp \
-    $$PWD/authorfeedlistmodel.cpp \
     $$PWD/blog/blogentrylistmodel.cpp \
     $$PWD/chat/atpchatabstractlistmodel.cpp \
     $$PWD/chat/chatlistmodel.cpp \
@@ -16,7 +13,6 @@ SOURCES += \
     $$PWD/contentfiltersettinglistmodel.cpp \
     $$PWD/controls/calendartablemodel.cpp \
     $$PWD/createsession.cpp \
-    $$PWD/customfeedlistmodel.cpp \
     $$PWD/embedimagelistmodel.cpp \
     $$PWD/encryption.cpp \
     $$PWD/externallink.cpp \
@@ -39,7 +35,6 @@ SOURCES += \
     $$PWD/mutedwordlistmodel.cpp \
     $$PWD/notificationlistmodel.cpp \
     $$PWD/postlink.cpp \
-    $$PWD/postthreadlistmodel.cpp \
     $$PWD/profile/anyprofilelistmodel.cpp \
     $$PWD/profile/blockslistmodel.cpp \
     $$PWD/profile/followerslistmodel.cpp \
@@ -48,9 +43,14 @@ SOURCES += \
     $$PWD/profile/searchprofilelistmodel.cpp \
     $$PWD/recordoperator.cpp \
     $$PWD/reporter.cpp \
-    $$PWD/searchpostlistmodel.cpp \
     $$PWD/systemtool.cpp \
-    $$PWD/timelinelistmodel.cpp \
+    $$PWD/timeline/actorlikelistmodel.cpp \
+    $$PWD/timeline/anyfeedlistmodel.cpp \
+    $$PWD/timeline/authorfeedlistmodel.cpp \
+    $$PWD/timeline/customfeedlistmodel.cpp \
+    $$PWD/timeline/postthreadlistmodel.cpp \
+    $$PWD/timeline/searchpostlistmodel.cpp \
+    $$PWD/timeline/timelinelistmodel.cpp \
     $$PWD/translator.cpp \
     $$PWD/userpost.cpp \
     $$PWD/userprofile.cpp
@@ -58,10 +58,7 @@ SOURCES += \
 HEADERS += \
     $$PWD/accountlistmodel.h \
     $$PWD/actorfeedgeneratorlistmodel.h \
-    $$PWD/actorlikelistmodel.h \
-    $$PWD/anyfeedlistmodel.h \
     $$PWD/atpabstractlistmodel.h \
-    $$PWD/authorfeedlistmodel.h \
     $$PWD/blog/blogentrylistmodel.h \
     $$PWD/chat/atpchatabstractlistmodel.h \
     $$PWD/chat/chatlistmodel.h \
@@ -71,7 +68,6 @@ HEADERS += \
     $$PWD/contentfiltersettinglistmodel.h \
     $$PWD/controls/calendartablemodel.h \
     $$PWD/createsession.h \
-    $$PWD/customfeedlistmodel.h \
     $$PWD/embedimagelistmodel.h \
     $$PWD/encryption.h \
     $$PWD/encryption_seed.h \
@@ -95,7 +91,6 @@ HEADERS += \
     $$PWD/mutedwordlistmodel.h \
     $$PWD/notificationlistmodel.h \
     $$PWD/postlink.h \
-    $$PWD/postthreadlistmodel.h \
     $$PWD/profile/anyprofilelistmodel.h \
     $$PWD/profile/blockslistmodel.h \
     $$PWD/profile/followerslistmodel.h \
@@ -104,10 +99,15 @@ HEADERS += \
     $$PWD/profile/searchprofilelistmodel.h \
     $$PWD/recordoperator.h \
     $$PWD/reporter.h \
-    $$PWD/searchpostlistmodel.h \
     $$PWD/systemtool.h \
     $$PWD/thumbnailprovider.h \
-    $$PWD/timelinelistmodel.h \
+    $$PWD/timeline/actorlikelistmodel.h \
+    $$PWD/timeline/anyfeedlistmodel.h \
+    $$PWD/timeline/authorfeedlistmodel.h \
+    $$PWD/timeline/customfeedlistmodel.h \
+    $$PWD/timeline/postthreadlistmodel.h \
+    $$PWD/timeline/searchpostlistmodel.h \
+    $$PWD/timeline/timelinelistmodel.h \
     $$PWD/translator.h \
     $$PWD/userpost.h \
     $$PWD/userprofile.h
