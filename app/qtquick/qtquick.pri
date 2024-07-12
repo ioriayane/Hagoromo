@@ -20,12 +20,12 @@ SOURCES += \
     $$PWD/feedgeneratorlink.cpp \
     $$PWD/feedtypelistmodel.cpp \
     $$PWD/languagelistmodel.cpp \
-    $$PWD/listblockslistmodel.cpp \
-    $$PWD/listfeedlistmodel.cpp \
-    $$PWD/listitemlistmodel.cpp \
     $$PWD/listlink.cpp \
-    $$PWD/listmuteslistmodel.cpp \
-    $$PWD/listslistmodel.cpp \
+    $$PWD/list/listblockslistmodel.cpp \
+    $$PWD/list/listfeedlistmodel.cpp \
+    $$PWD/list/listitemlistmodel.cpp \
+    $$PWD/list/listmuteslistmodel.cpp \
+    $$PWD/list/listslistmodel.cpp \
     $$PWD/log/logdailylistmodel.cpp \
     $$PWD/log/logfeedlistmodel.cpp \
     $$PWD/log/logmonthlylistmodel.cpp \
@@ -76,12 +76,12 @@ HEADERS += \
     $$PWD/feedgeneratorlink.h \
     $$PWD/feedtypelistmodel.h \
     $$PWD/languagelistmodel.h \
-    $$PWD/listblockslistmodel.h \
-    $$PWD/listfeedlistmodel.h \
-    $$PWD/listitemlistmodel.h \
     $$PWD/listlink.h \
-    $$PWD/listmuteslistmodel.h \
-    $$PWD/listslistmodel.h \
+    $$PWD/list/listblockslistmodel.h \
+    $$PWD/list/listfeedlistmodel.h \
+    $$PWD/list/listitemlistmodel.h \
+    $$PWD/list/listmuteslistmodel.h \
+    $$PWD/list/listslistmodel.h \
     $$PWD/log/logdailylistmodel.h \
     $$PWD/log/logfeedlistmodel.h \
     $$PWD/log/logmonthlylistmodel.h \

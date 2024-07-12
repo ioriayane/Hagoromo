@@ -12,9 +12,9 @@
 #include "feedgeneratorlink.h"
 #include "accountlistmodel.h"
 #include "common.h"
-#include "listslistmodel.h"
-#include "listitemlistmodel.h"
-#include "listfeedlistmodel.h"
+#include "list/listslistmodel.h"
+#include "list/listitemlistmodel.h"
+#include "list/listfeedlistmodel.h"
 
 class hagoromo_test : public QObject
 {
