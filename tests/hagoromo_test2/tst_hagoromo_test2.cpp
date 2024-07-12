@@ -8,7 +8,7 @@
 #include "unittest_common.h"
 #include "timeline/timelinelistmodel.h"
 #include "recordoperator.h"
-#include "feedgeneratorlistmodel.h"
+#include "feedgenerator/feedgeneratorlistmodel.h"
 #include "feedgeneratorlink.h"
 #include "accountlistmodel.h"
 #include "common.h"

@@ -3,7 +3,6 @@ INCLUDEPATH += $$PWD
 
 SOURCES += \
     $$PWD/accountlistmodel.cpp \
-    $$PWD/actorfeedgeneratorlistmodel.cpp \
     $$PWD/atpabstractlistmodel.cpp \
     $$PWD/blog/blogentrylistmodel.cpp \
     $$PWD/chat/atpchatabstractlistmodel.cpp \
@@ -16,8 +15,9 @@ SOURCES += \
     $$PWD/embedimagelistmodel.cpp \
     $$PWD/encryption.cpp \
     $$PWD/externallink.cpp \
+    $$PWD/feedgenerator/actorfeedgeneratorlistmodel.cpp \
+    $$PWD/feedgenerator/feedgeneratorlistmodel.cpp \
     $$PWD/feedgeneratorlink.cpp \
-    $$PWD/feedgeneratorlistmodel.cpp \
     $$PWD/feedtypelistmodel.cpp \
     $$PWD/languagelistmodel.cpp \
     $$PWD/listblockslistmodel.cpp \
@@ -57,7 +57,6 @@ SOURCES += \
 
 HEADERS += \
     $$PWD/accountlistmodel.h \
-    $$PWD/actorfeedgeneratorlistmodel.h \
     $$PWD/atpabstractlistmodel.h \
     $$PWD/blog/blogentrylistmodel.h \
     $$PWD/chat/atpchatabstractlistmodel.h \
@@ -72,8 +71,9 @@ HEADERS += \
     $$PWD/encryption.h \
     $$PWD/encryption_seed.h \
     $$PWD/externallink.h \
+    $$PWD/feedgenerator/actorfeedgeneratorlistmodel.h \
+    $$PWD/feedgenerator/feedgeneratorlistmodel.h \
     $$PWD/feedgeneratorlink.h \
-    $$PWD/feedgeneratorlistmodel.h \
     $$PWD/feedtypelistmodel.h \
     $$PWD/languagelistmodel.h \
     $$PWD/listblockslistmodel.h \
