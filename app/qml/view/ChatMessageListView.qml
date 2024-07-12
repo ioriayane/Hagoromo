@@ -283,23 +283,19 @@ Item {
                                     text: model.sentAt
                                 }
                             }
-                            Menu {
+                            MenuEx {
                                 id: morePopup
-                                width: deleteMenuItem.implicitWidth > reportMenuItem.implicitWidth ?
-                                           deleteMenuItem.implicitWidth : reportMenuItem.implicitWidth
-                                MenuItem {
+                                Action {
                                     icon.source: "../images/copy.png"
                                     text: qsTr("Copy message")
                                     onTriggered: systemTool.copyToClipboard(model.textPlain)
                                 }
-                                MenuItem {
-                                    id: deleteMenuItem
+                                Action {
                                     text: qsTr("Delete for me")
                                     icon.source: "../images/delete.png"
                                     onTriggered: rootListView.model.deleteMessage(model.index)
                                 }
-                                MenuItem {
-                                    id: reportMenuItem
+                                Action {
                                     enabled: !chatItemLayout.me
                                     text: qsTr("Report message")
                                     icon.source: "../images/report.png"

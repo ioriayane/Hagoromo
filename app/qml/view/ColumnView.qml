@@ -680,29 +680,30 @@ ColumnLayout {
                 iconSource: "../images/settings.png"
                 iconSize: AdjustedValues.i16
                 onClicked: popup.open()
-                Menu {
+                MenuEx {
                     id: popup
-                    MenuItem {
+                    Action {
                         icon.source: "../images/arrow_back.png"
                         text: qsTr("Move to left")
                         onTriggered: requestMoveToLeft(columnKey)
                     }
-                    MenuItem {
+                    Action {
                         icon.source: "../images/arrow_forward.png"
                         text: qsTr("Move to right")
                         onTriggered: requestMoveToRight(columnKey)
                     }
-                    MenuItem {
+                    Action {
                         icon.source: "../images/delete.png"
                         text: qsTr("Delete column")
                         onTriggered: requestRemove(columnKey)
                     }
                     MenuSeparator {}
-                    Menu {
+                    MenuEx {
                         id: feedMenu
                         title: qsTr("Feed")
                         enabled: (componentType === 4) && columnStackView.depth == 1
-                        MenuItem {
+                        font.pointSize: AdjustedValues.f8
+                        Action {
                             text: qsTr("Copy url")
                             icon.source: "../images/copy.png"
                             onTriggered: {
@@ -711,7 +712,7 @@ ColumnLayout {
                                 }
                             }
                         }
-                        MenuItem {
+                        Action {
                             text: qsTr("Open in Official")
                             icon.source: "../images/open_in_other.png"
                             onTriggered: {
@@ -720,7 +721,7 @@ ColumnLayout {
                                 }
                             }
                         }
-                        MenuItem {
+                        Action {
                             id: saveFeedMenuItem
                             icon.source: "../images/bookmark_add.png"
                             text: saving ? qsTr("Drop") : qsTr("Save")
@@ -739,7 +740,7 @@ ColumnLayout {
                         }
                     }
                     MenuSeparator {}
-                    MenuItem {
+                    Action {
                         icon.source: "../images/settings.png"
                         text: qsTr("Settings")
                         onTriggered: requestDisplayOfColumnSetting(columnKey)

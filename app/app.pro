@@ -21,12 +21,13 @@ QML_FILES = \
     qml/controls/CalendarPicker.qml \
     qml/controls/ClickableFrame.qml \
     qml/controls/ComboBoxEx.qml \
-    qml/controls/ProgressCircle.qml \
     qml/controls/IconButton.qml \
     qml/controls/IconLabelFrame.qml \
     qml/controls/ImageWithIndicator.qml \
+    qml/controls/MenuEx.qml \
     qml/controls/MessageBubble.qml \
     qml/controls/MoreButton.qml \
+    qml/controls/ProgressCircle.qml \
     qml/controls/RadioButtonEx.qml \
     qml/data/Account.qml \
     qml/data/AdjustedValues.qml \

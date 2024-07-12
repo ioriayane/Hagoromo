@@ -1,7 +1,9 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 
-Menu {
+import "../controls"
+
+MenuEx {
     id: selfLabelPopup
     // メニューをウインドウのセンターに表示する
     // 本当は親のボタン基準で出したいが2回目の表示から画面外にはみ出ないようにする
@@ -11,28 +13,28 @@ Menu {
 
     signal triggered(string value, string text)
 
-    MenuItem {
+    Action {
         text: qsTr("Sexually Explicit")
         property string value: "porn"
         onTriggered: selfLabelPopup.triggered(value, text)
     }
-    MenuItem {
+    Action {
         text: qsTr("Nudity")
         property string value: "nudity"
         onTriggered: selfLabelPopup.triggered(value, text)
     }
-    MenuItem {
+    Action {
         text: qsTr("Sexually Suggestive")
         property string value: "sexual"
         onTriggered: selfLabelPopup.triggered(value, text)
     }
-    MenuItem {
+    Action {
         text: qsTr("Gore")
         property string value: "graphic-media"
         onTriggered: selfLabelPopup.triggered(value, text)
     }
     MenuSeparator { }
-    MenuItem {
+    Action {
         text: qsTr("Remove")
         property string value: ""
         onTriggered: selfLabelPopup.triggered(value, text)
