@@ -3,7 +3,7 @@
 #include "atprotocol/lexicons_func_unknown.h"
 #include "tools/labelerprovider.h"
 #include "common.h"
-#include "translator.h"
+#include "operation/translator.h"
 
 #include <QDesktopServices>
 #include <QUrlQuery>

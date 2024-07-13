@@ -1,7 +1,7 @@
 #include "timelinelistmodel.h"
 #include "atprotocol/app/bsky/feed/appbskyfeedgetposts.h"
 #include "atprotocol/lexicons_func_unknown.h"
-#include "recordoperator.h"
+#include "operation/recordoperator.h"
 #include "tools/pinnedpostcache.h"
 
 #include <QDebug>

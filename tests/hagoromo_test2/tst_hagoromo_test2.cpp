@@ -6,15 +6,15 @@
 
 #include "webserver.h"
 #include "unittest_common.h"
-#include "timelinelistmodel.h"
-#include "recordoperator.h"
-#include "feedgeneratorlistmodel.h"
-#include "feedgeneratorlink.h"
-#include "accountlistmodel.h"
+#include "timeline/timelinelistmodel.h"
+#include "operation/recordoperator.h"
+#include "feedgenerator/feedgeneratorlistmodel.h"
+#include "link/feedgeneratorlink.h"
+#include "account/accountlistmodel.h"
 #include "common.h"
-#include "listslistmodel.h"
-#include "listitemlistmodel.h"
-#include "listfeedlistmodel.h"
+#include "list/listslistmodel.h"
+#include "list/listitemlistmodel.h"
+#include "list/listfeedlistmodel.h"
 
 class hagoromo_test : public QObject
 {

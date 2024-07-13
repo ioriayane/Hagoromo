@@ -1,7 +1,7 @@
 #ifndef LISTFEEDLISTMODEL_H
 #define LISTFEEDLISTMODEL_H
 
-#include "timelinelistmodel.h"
+#include "timeline/timelinelistmodel.h"
 
 class ListFeedListModel : public TimelineListModel
 {
