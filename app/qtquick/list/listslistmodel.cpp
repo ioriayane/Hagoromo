@@ -1,12 +1,11 @@
 #include "listslistmodel.h"
-#include "recordoperator.h"
+#include "operation/recordoperator.h"
 #include "tools/listitemscache.h"
 
 #include "atprotocol/app/bsky/graph/appbskygraphgetlists.h"
 #include "extension/com/atproto/repo/comatprotorepolistrecordsex.h"
 #include "atprotocol/app/bsky/graph/appbskygraphmuteactorlist.h"
 #include "atprotocol/app/bsky/graph/appbskygraphunmuteactorlist.h"
-#include "recordoperator.h"
 
 using AtProtocolInterface::AppBskyGraphGetLists;
 using AtProtocolInterface::AppBskyGraphMuteActorList;

@@ -35,14 +35,16 @@ SOURCES += \
     $$PWD/moderation/labelerlistmodel.cpp \
     $$PWD/moderation/mutedwordlistmodel.cpp \
     $$PWD/moderation/reporter.cpp \
-    $$PWD/notificationlistmodel.cpp \
+    $$PWD/notification/notificationlistmodel.cpp \
     $$PWD/profile/anyprofilelistmodel.cpp \
     $$PWD/profile/blockslistmodel.cpp \
     $$PWD/profile/followerslistmodel.cpp \
     $$PWD/profile/followslistmodel.cpp \
     $$PWD/profile/muteslistmodel.cpp \
     $$PWD/profile/searchprofilelistmodel.cpp \
-    $$PWD/recordoperator.cpp \
+    $$PWD/profile/userprofile.cpp \
+    $$PWD/operation/recordoperator.cpp \
+    $$PWD/operation/translator.cpp \
     $$PWD/systemtool.cpp \
     $$PWD/timeline/actorlikelistmodel.cpp \
     $$PWD/timeline/anyfeedlistmodel.cpp \
@@ -51,9 +53,7 @@ SOURCES += \
     $$PWD/timeline/postthreadlistmodel.cpp \
     $$PWD/timeline/searchpostlistmodel.cpp \
     $$PWD/timeline/timelinelistmodel.cpp \
-    $$PWD/translator.cpp \
-    $$PWD/userpost.cpp \
-    $$PWD/userprofile.cpp
+    $$PWD/timeline/userpost.cpp
 
 HEADERS += \
     $$PWD/account/accountlistmodel.h \
@@ -91,14 +91,16 @@ HEADERS += \
     $$PWD/moderation/labelerlistmodel.h \
     $$PWD/moderation/mutedwordlistmodel.h \
     $$PWD/moderation/reporter.h \
-    $$PWD/notificationlistmodel.h \
+    $$PWD/notification/notificationlistmodel.h \
     $$PWD/profile/anyprofilelistmodel.h \
     $$PWD/profile/blockslistmodel.h \
     $$PWD/profile/followerslistmodel.h \
     $$PWD/profile/followslistmodel.h \
     $$PWD/profile/muteslistmodel.h \
     $$PWD/profile/searchprofilelistmodel.h \
-    $$PWD/recordoperator.h \
+    $$PWD/profile/userprofile.h \
+    $$PWD/operation/recordoperator.h \
+    $$PWD/operation/translator.h \
     $$PWD/systemtool.h \
     $$PWD/thumbnailprovider.h \
     $$PWD/timeline/actorlikelistmodel.h \
@@ -108,6 +110,4 @@ HEADERS += \
     $$PWD/timeline/postthreadlistmodel.h \
     $$PWD/timeline/searchpostlistmodel.h \
     $$PWD/timeline/timelinelistmodel.h \
-    $$PWD/translator.h \
-    $$PWD/userpost.h \
-    $$PWD/userprofile.h
+    $$PWD/timeline/userpost.h

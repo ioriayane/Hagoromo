@@ -4,7 +4,7 @@
 #include "atprotocol/app/bsky/feed/appbskyfeedgetposts.h"
 #include "atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerators.h"
 #include "atprotocol/app/bsky/notification/appbskynotificationupdateseen.h"
-#include "recordoperator.h"
+#include "operation/recordoperator.h"
 
 #include <QTimer>
 

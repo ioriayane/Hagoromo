@@ -8,7 +8,7 @@
 #include <QtQuickControls2/QQuickStyle>
 
 #include "qtquick/account/createsession.h"
-#include "qtquick/recordoperator.h"
+#include "qtquick/operation/recordoperator.h"
 #include "qtquick/account/accountlistmodel.h"
 #include "qtquick/column/columnlistmodel.h"
 #include "qtquick/notificationlistmodel.h"
@@ -38,8 +38,8 @@
 #include "qtquick/list/listmuteslistmodel.h"
 #include "qtquick/thumbnailprovider.h"
 #include "qtquick/encryption.h"
-#include "qtquick/userprofile.h"
-#include "qtquick/userpost.h"
+#include "qtquick/profile/userprofile.h"
+#include "qtquick/timeline/userpost.h"
 #include "qtquick/systemtool.h"
 #include "qtquick/link/externallink.h"
 #include "qtquick/moderation/reporter.h"

@@ -9,7 +9,7 @@
 #include "timeline/timelinelistmodel.h"
 #include "column/columnlistmodel.h"
 #include "notificationlistmodel.h"
-#include "userprofile.h"
+#include "profile/userprofile.h"
 #include "tools/qstringex.h"
 #include "profile/anyprofilelistmodel.h"
 #include "common.h"

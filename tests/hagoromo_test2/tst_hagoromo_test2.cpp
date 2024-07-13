@@ -7,7 +7,7 @@
 #include "webserver.h"
 #include "unittest_common.h"
 #include "timeline/timelinelistmodel.h"
-#include "recordoperator.h"
+#include "operation/recordoperator.h"
 #include "feedgenerator/feedgeneratorlistmodel.h"
 #include "link/feedgeneratorlink.h"
 #include "account/accountlistmodel.h"
