@@ -8,7 +8,7 @@
 #include "unittest_common.h"
 #include "timeline/timelinelistmodel.h"
 #include "column/columnlistmodel.h"
-#include "notificationlistmodel.h"
+#include "notification/notificationlistmodel.h"
 #include "profile/userprofile.h"
 #include "tools/qstringex.h"
 #include "profile/anyprofilelistmodel.h"

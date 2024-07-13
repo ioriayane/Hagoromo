@@ -11,7 +11,7 @@
 #include "qtquick/operation/recordoperator.h"
 #include "qtquick/account/accountlistmodel.h"
 #include "qtquick/column/columnlistmodel.h"
-#include "qtquick/notificationlistmodel.h"
+#include "qtquick/notification/notificationlistmodel.h"
 #include "qtquick/timeline/postthreadlistmodel.h"
 #include "qtquick/timeline/timelinelistmodel.h"
 #include "qtquick/timeline/authorfeedlistmodel.h"
