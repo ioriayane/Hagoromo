@@ -2,21 +2,21 @@
 INCLUDEPATH += $$PWD
 
 SOURCES += \
-    $$PWD/accountlistmodel.cpp \
+    $$PWD/account/accountlistmodel.cpp \
+    $$PWD/account/createsession.cpp \
     $$PWD/atpabstractlistmodel.cpp \
     $$PWD/blog/blogentrylistmodel.cpp \
     $$PWD/chat/atpchatabstractlistmodel.cpp \
     $$PWD/chat/chatlistmodel.cpp \
     $$PWD/chat/chatmessagelistmodel.cpp \
-    $$PWD/columnlistmodel.cpp \
+    $$PWD/column/columnlistmodel.cpp \
+    $$PWD/column/feedtypelistmodel.cpp \
     $$PWD/controls/calendartablemodel.cpp \
-    $$PWD/createsession.cpp \
-    $$PWD/embedimagelistmodel.cpp \
+    $$PWD/controls/embedimagelistmodel.cpp \
+    $$PWD/controls/languagelistmodel.cpp \
     $$PWD/encryption.cpp \
     $$PWD/feedgenerator/actorfeedgeneratorlistmodel.cpp \
     $$PWD/feedgenerator/feedgeneratorlistmodel.cpp \
-    $$PWD/feedtypelistmodel.cpp \
-    $$PWD/languagelistmodel.cpp \
     $$PWD/link/externallink.cpp \
     $$PWD/link/feedgeneratorlink.cpp \
     $$PWD/link/listlink.cpp \
@@ -56,23 +56,23 @@ SOURCES += \
     $$PWD/userprofile.cpp
 
 HEADERS += \
-    $$PWD/accountlistmodel.h \
+    $$PWD/account/accountlistmodel.h \
+    $$PWD/account/createsession.h \
     $$PWD/atpabstractlistmodel.h \
     $$PWD/blog/blogentrylistmodel.h \
     $$PWD/chat/atpchatabstractlistmodel.h \
     $$PWD/chat/chatlistmodel.h \
     $$PWD/chat/chatmessagelistmodel.h \
-    $$PWD/columnlistmodel.h \
+    $$PWD/column/columnlistmodel.h \
+    $$PWD/column/feedtypelistmodel.h \
     $$PWD/common.h \
     $$PWD/controls/calendartablemodel.h \
-    $$PWD/createsession.h \
-    $$PWD/embedimagelistmodel.h \
+    $$PWD/controls/embedimagelistmodel.h \
+    $$PWD/controls/languagelistmodel.h \
     $$PWD/encryption.h \
     $$PWD/encryption_seed.h \
     $$PWD/feedgenerator/actorfeedgeneratorlistmodel.h \
     $$PWD/feedgenerator/feedgeneratorlistmodel.h \
-    $$PWD/feedtypelistmodel.h \
-    $$PWD/languagelistmodel.h \
     $$PWD/link/externallink.h \
     $$PWD/link/feedgeneratorlink.h \
     $$PWD/link/listlink.h \

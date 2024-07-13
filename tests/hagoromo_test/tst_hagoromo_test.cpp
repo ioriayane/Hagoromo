@@ -7,7 +7,7 @@
 #include "webserver.h"
 #include "unittest_common.h"
 #include "timeline/timelinelistmodel.h"
-#include "columnlistmodel.h"
+#include "column/columnlistmodel.h"
 #include "notificationlistmodel.h"
 #include "userprofile.h"
 #include "tools/qstringex.h"
