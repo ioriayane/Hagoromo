@@ -28,7 +28,7 @@
 #include "qtquick/feedgenerator/feedgeneratorlistmodel.h"
 #include "qtquick/feedgenerator/actorfeedgeneratorlistmodel.h"
 #include "qtquick/languagelistmodel.h"
-#include "qtquick/contentfiltersettinglistmodel.h"
+#include "qtquick/moderation/contentfiltersettinglistmodel.h"
 #include "qtquick/mutedwordlistmodel.h"
 #include "qtquick/profile/anyprofilelistmodel.h"
 #include "qtquick/list/listslistmodel.h"

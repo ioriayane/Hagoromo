@@ -9,7 +9,6 @@ SOURCES += \
     $$PWD/chat/chatlistmodel.cpp \
     $$PWD/chat/chatmessagelistmodel.cpp \
     $$PWD/columnlistmodel.cpp \
-    $$PWD/contentfiltersettinglistmodel.cpp \
     $$PWD/controls/calendartablemodel.cpp \
     $$PWD/createsession.cpp \
     $$PWD/embedimagelistmodel.cpp \
@@ -31,6 +30,7 @@ SOURCES += \
     $$PWD/log/logmonthlylistmodel.cpp \
     $$PWD/log/logoperator.cpp \
     $$PWD/log/logstatisticslistmodel.cpp \
+    $$PWD/moderation/contentfiltersettinglistmodel.cpp \
     $$PWD/moderation/labelerlistmodel.cpp \
     $$PWD/mutedwordlistmodel.cpp \
     $$PWD/notificationlistmodel.cpp \
@@ -64,7 +64,6 @@ HEADERS += \
     $$PWD/chat/chatmessagelistmodel.h \
     $$PWD/columnlistmodel.h \
     $$PWD/common.h \
-    $$PWD/contentfiltersettinglistmodel.h \
     $$PWD/controls/calendartablemodel.h \
     $$PWD/createsession.h \
     $$PWD/embedimagelistmodel.h \
@@ -87,6 +86,7 @@ HEADERS += \
     $$PWD/log/logmonthlylistmodel.h \
     $$PWD/log/logoperator.h \
     $$PWD/log/logstatisticslistmodel.h \
+    $$PWD/moderation/contentfiltersettinglistmodel.h \
     $$PWD/moderation/labelerlistmodel.h \
     $$PWD/mutedwordlistmodel.h \
     $$PWD/notificationlistmodel.h \

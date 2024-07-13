@@ -1,7 +1,7 @@
 #ifndef MUTEDWORDLISTMODEL_H
 #define MUTEDWORDLISTMODEL_H
 
-#include "contentfiltersettinglistmodel.h"
+#include "moderation/contentfiltersettinglistmodel.h"
 
 class MutedWordListModel : public ContentFilterSettingListModel
 {

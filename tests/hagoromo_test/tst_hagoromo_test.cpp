@@ -16,7 +16,7 @@
 #include "timeline/postthreadlistmodel.h"
 #include "profile/searchprofilelistmodel.h"
 #include "timeline/searchpostlistmodel.h"
-#include "contentfiltersettinglistmodel.h"
+#include "moderation/contentfiltersettinglistmodel.h"
 #include "tools/labelerprovider.h"
 #include "controls/calendartablemodel.h"
 
