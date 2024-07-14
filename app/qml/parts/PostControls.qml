@@ -14,6 +14,7 @@ RowLayout {
     property bool isReposted: false
     property bool isLiked: false
     property bool pinned: false
+    property bool threadMuted: false
     property string postUri: ""
     property string handle: ""
     property bool mine: false
@@ -35,7 +36,7 @@ RowLayout {
     signal triggeredRequestViewRepostedBy()
     signal triggeredRequestUpdateThreadGate()
     signal triggeredRequestPin()
-
+    signal triggeredRequestMuteThread()
 
     function openInOhters(uri, handle){
         if(uri.length === 0 || uri.startsWith("at://") === false){
@@ -176,12 +177,19 @@ RowLayout {
                 icon.source: "../images/pin.png"
                 onTriggered: triggeredRequestPin()
             }
+            MenuSeparator {}
+            Action {
+                text: threadMuted ? qsTr("Unmute thread") : qsTr("Mute thread")
+                icon.source: "../images/mute.png"
+                onTriggered: triggeredRequestMuteThread()
+            }
             Action {
                 text: qsTr("Who can reply")
                 enabled: mine
                 icon.source: "../images/thread.png"
                 onTriggered: triggeredRequestUpdateThreadGate()
             }
+            MenuSeparator {}
             Action {
                 text: qsTr("Delete post")
                 enabled: mine
@@ -231,6 +239,12 @@ RowLayout {
                 text: pinned ? qsTr("Unpin this post") : qsTr("Pin this post")
                 icon.source: "../images/pin.png"
                 onTriggered: triggeredRequestPin()
+            }
+            MenuSeparator {}
+            Action {
+                text: threadMuted ? qsTr("Unmute thread") : qsTr("Mute thread")
+                icon.source: "../images/mute.png"
+                onTriggered: triggeredRequestMuteThread()
             }
             MenuSeparator {}
             Action {

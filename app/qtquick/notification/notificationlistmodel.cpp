@@ -3,6 +3,8 @@
 #include "atprotocol/lexicons_func_unknown.h"
 #include "atprotocol/app/bsky/feed/appbskyfeedgetposts.h"
 #include "atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerators.h"
+#include "atprotocol/app/bsky/graph/appbskygraphmutethread.h"
+#include "atprotocol/app/bsky/graph/appbskygraphunmutethread.h"
 #include "atprotocol/app/bsky/notification/appbskynotificationupdateseen.h"
 #include "operation/recordoperator.h"
 
@@ -10,6 +12,8 @@
 
 using AtProtocolInterface::AppBskyFeedGetFeedGenerators;
 using AtProtocolInterface::AppBskyFeedGetPosts;
+using AtProtocolInterface::AppBskyGraphMuteThread;
+using AtProtocolInterface::AppBskyGraphUnmuteThread;
 using AtProtocolInterface::AppBskyNotificationListNotifications;
 using AtProtocolInterface::AppBskyNotificationUpdateSeen;
 using namespace AtProtocolType::AppBskyFeedDefs;
@@ -156,6 +160,11 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             return m_postHash[current.cid].viewer.like.contains(account().did);
         else
             return QString();
+    } else if (role == ThreadMutedRole) {
+        if (m_postHash.contains(current.cid))
+            return m_postHash[current.cid].viewer.threadMuted;
+        else
+            return false;
     } else if (role == RepostedUriRole) {
         if (m_postHash.contains(current.cid))
             return m_postHash[current.cid].viewer.repost;
@@ -801,6 +810,54 @@ bool NotificationListModel::like(int row)
     return true;
 }
 
+bool NotificationListModel::muteThread(int row)
+{
+    if (row < 0 || row >= m_cidList.count())
+        return false;
+
+    if (!m_postHash.contains(m_cidList.at(row)))
+        return false;
+
+    const auto &current = m_postHash.value(m_cidList.at(row));
+
+    const AtProtocolType::AppBskyFeedPost::Main record =
+            AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                    AtProtocolType::AppBskyFeedPost::Main>(current.record);
+    QString root_uri = record.reply.root.uri;
+    if (root_uri.isEmpty() || !root_uri.startsWith("at://")) {
+        return false;
+    }
+
+    bool muted = item(row, ThreadMutedRole).toBool();
+    if (muted) {
+        // true -> false
+        AppBskyGraphUnmuteThread *thread = new AppBskyGraphUnmuteThread(this);
+        connect(thread, &AppBskyGraphUnmuteThread::finished, this, [=](bool success) {
+            if (success) {
+                update(row, ThreadMutedRole, false);
+            } else {
+                emit errorOccured(thread->errorCode(), thread->errorMessage());
+            }
+            thread->deleteLater();
+        });
+        thread->setAccount(account());
+        thread->unmuteThread(root_uri);
+    } else {
+        // false -> true
+        AppBskyGraphMuteThread *thread = new AppBskyGraphMuteThread(this);
+        connect(thread, &AppBskyGraphMuteThread::finished, this, [=](bool success) {
+            if (success) {
+                update(row, ThreadMutedRole, true);
+            } else {
+                emit errorOccured(thread->errorCode(), thread->errorMessage());
+            }
+            thread->deleteLater();
+        });
+        thread->setAccount(account());
+        thread->muteThread(root_uri);
+    }
+}
+
 QHash<int, QByteArray> NotificationListModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
@@ -826,6 +883,7 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
 
     roles[IsRepostedRole] = "isReposted";
     roles[IsLikedRole] = "isLiked";
+    roles[ThreadMutedRole] = "threadMuted";
     roles[RepostedUriRole] = "repostedUri";
     roles[LikedUriRole] = "likedUri";
     roles[RunningRepostRole] = "runningRepost";

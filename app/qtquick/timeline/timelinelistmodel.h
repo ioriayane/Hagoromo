@@ -61,12 +61,17 @@ public:
 
         IsRepostedRole,
         IsLikedRole,
+        PinnedRole,
+        PinnedByMeRole,
+        ThreadMutedRole,
         RepostedUriRole,
         LikedUriRole,
+
         RunningRepostRole,
         RunningLikeRole,
         RunningdeletePostRole,
         RunningPostPinningRole,
+        RunningThreadMuteRole,
 
         HasQuoteRecordRole,
         QuoteRecordCidRole,
@@ -109,8 +114,6 @@ public:
         IsRepostedByRole,
         RepostedByDisplayNameRole,
         RepostedByHandleRole,
-        PinnedRole,
-        PinnedByMeRole,
 
         UserFilterMatchedRole,
         UserFilterMessageRole,
@@ -152,6 +155,7 @@ public:
     Q_INVOKABLE bool repost(int row);
     Q_INVOKABLE bool like(int row);
     Q_INVOKABLE bool pin(int row);
+    Q_INVOKABLE bool muteThread(int row);
 
     bool visibleReplyToUnfollowedUsers() const;
     void setVisibleReplyToUnfollowedUsers(bool newVisibleReplyToUnfollowedUser);
@@ -228,6 +232,7 @@ private:
     QString m_runningLikeCid;
     QString m_runningDeletePostCid;
     QString m_runningPostPinningCid;
+    QString m_runningThreadMuteCid;
 };
 
 #endif // TIMELINELISTMODEL_H
