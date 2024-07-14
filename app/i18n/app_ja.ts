@@ -9,7 +9,7 @@
         <translation>アカウント管理</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="147"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="137"/>
         <source>Set as main</source>
         <translation>メインに設定</translation>
     </message>
@@ -18,7 +18,7 @@
         <translation type="vanished">ポストの統計とログ</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="159"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="148"/>
         <source>Content filter</source>
         <translation>コンテンツフィルター</translation>
     </message>
@@ -27,17 +27,17 @@
         <translation type="vanished">ミュート中</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="172"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="159"/>
         <source>Muted words and tags</source>
         <translation>ミュートワードの編集</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="178"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="164"/>
         <source>Muted accounts</source>
         <translation>ミュート中のアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="188"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="173"/>
         <source>Muted lists</source>
         <translation>ミュート中のリスト</translation>
     </message>
@@ -46,42 +46,42 @@
         <translation type="vanished">ブロック中</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="153"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="142"/>
         <source>Statistics and logs</source>
         <translation>統計とログ</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="167"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="156"/>
         <source>Mute</source>
         <translation>ミュート</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="197"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="182"/>
         <source>Block</source>
         <translation>ブロック</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="202"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="185"/>
         <source>Blocked accounts</source>
         <translation>ブロック中のアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="212"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="194"/>
         <source>Blocked lists</source>
         <translation>ブロック中のリスト</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="224"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="205"/>
         <source>Who can reply</source>
         <translation>リプライできるユーザー</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="238"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="219"/>
         <source>Remove account</source>
         <translation>アカウントを削除</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="248"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="229"/>
         <source>Close</source>
         <translation>閉じる</translation>
     </message>
@@ -305,27 +305,27 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>ChatListView</name>
     <message>
-        <location filename="../qml/view/ChatListView.qml" line="217"/>
+        <location filename="../qml/view/ChatListView.qml" line="214"/>
         <source>Unmute conversation</source>
         <translation>チャットのミュートを解除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ChatListView.qml" line="217"/>
+        <location filename="../qml/view/ChatListView.qml" line="214"/>
         <source>Mute conversation</source>
         <translation>チャットをミュート</translation>
     </message>
     <message>
-        <location filename="../qml/view/ChatListView.qml" line="223"/>
+        <location filename="../qml/view/ChatListView.qml" line="219"/>
         <source>Leave conversation</source>
         <translation>チャットを離脱</translation>
     </message>
     <message>
-        <location filename="../qml/view/ChatListView.qml" line="275"/>
+        <location filename="../qml/view/ChatListView.qml" line="271"/>
         <source>Start a new chat</source>
         <translation>新しいチャットを開始</translation>
     </message>
     <message>
-        <location filename="../qml/view/ChatListView.qml" line="304"/>
+        <location filename="../qml/view/ChatListView.qml" line="300"/>
         <source>Search</source>
         <translation>検索</translation>
     </message>
@@ -333,37 +333,37 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>ChatMessageListView</name>
     <message>
-        <location filename="../qml/view/ChatMessageListView.qml" line="162"/>
+        <location filename="../qml/view/ChatMessageListView.qml" line="194"/>
         <source>Quoted content warning</source>
         <translation>閲覧注意な引用</translation>
     </message>
     <message>
-        <location filename="../qml/view/ChatMessageListView.qml" line="193"/>
+        <location filename="../qml/view/ChatMessageListView.qml" line="225"/>
         <source>Blocked</source>
         <translation>ブロック中</translation>
     </message>
     <message>
-        <location filename="../qml/view/ChatMessageListView.qml" line="260"/>
+        <location filename="../qml/view/ChatMessageListView.qml" line="290"/>
         <source>Copy message</source>
         <translation>メッセージをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ChatMessageListView.qml" line="265"/>
+        <location filename="../qml/view/ChatMessageListView.qml" line="294"/>
         <source>Delete for me</source>
         <translation>自分宛を削除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ChatMessageListView.qml" line="272"/>
+        <location filename="../qml/view/ChatMessageListView.qml" line="300"/>
         <source>Report message</source>
         <translation>メッセージを通報</translation>
     </message>
     <message>
-        <location filename="../qml/view/ChatMessageListView.qml" line="322"/>
+        <location filename="../qml/view/ChatMessageListView.qml" line="350"/>
         <source>Post url or at-uri</source>
         <translation>ポストのURLまたはat-uri</translation>
     </message>
     <message>
-        <location filename="../qml/view/ChatMessageListView.qml" line="358"/>
+        <location filename="../qml/view/ChatMessageListView.qml" line="386"/>
         <source>Write a message</source>
         <translation>メッセージを書く</translation>
     </message>
@@ -371,22 +371,22 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>ColumnListModel</name>
     <message>
-        <location filename="../qtquick/columnlistmodel.cpp" line="506"/>
+        <location filename="../qtquick/column/columnlistmodel.cpp" line="506"/>
         <source>Following</source>
         <translation>タイムライン</translation>
     </message>
     <message>
-        <location filename="../qtquick/columnlistmodel.cpp" line="509"/>
+        <location filename="../qtquick/column/columnlistmodel.cpp" line="509"/>
         <source>Notification</source>
         <translation>通知</translation>
     </message>
     <message>
-        <location filename="../qtquick/columnlistmodel.cpp" line="512"/>
+        <location filename="../qtquick/column/columnlistmodel.cpp" line="512"/>
         <source>Search posts</source>
         <translation>検索(ポスト)</translation>
     </message>
     <message>
-        <location filename="../qtquick/columnlistmodel.cpp" line="515"/>
+        <location filename="../qtquick/column/columnlistmodel.cpp" line="515"/>
         <source>Search users</source>
         <translation>検索(ユーザー)</translation>
     </message>
@@ -626,27 +626,27 @@ Please recreate AppPassword in the official application.</source>
         <translation>削除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="706"/>
+        <location filename="../qml/view/ColumnView.qml" line="707"/>
         <source>Copy url</source>
         <translation>URLをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="715"/>
+        <location filename="../qml/view/ColumnView.qml" line="716"/>
         <source>Open in Official</source>
         <translation>公式で開く</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="726"/>
+        <location filename="../qml/view/ColumnView.qml" line="727"/>
         <source>Drop</source>
         <translation>解除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="726"/>
+        <location filename="../qml/view/ColumnView.qml" line="727"/>
         <source>Save</source>
         <translation>保存</translation>
     </message>
     <message>
-        <location filename="../qml/view/ColumnView.qml" line="744"/>
+        <location filename="../qml/view/ColumnView.qml" line="745"/>
         <source>Settings</source>
         <translation>設定</translation>
     </message>
@@ -931,44 +931,44 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>FeedTypeListModel</name>
     <message>
-        <location filename="../qtquick/feedtypelistmodel.cpp" line="93"/>
-        <location filename="../qtquick/feedtypelistmodel.cpp" line="100"/>
+        <location filename="../qtquick/column/feedtypelistmodel.cpp" line="93"/>
+        <location filename="../qtquick/column/feedtypelistmodel.cpp" line="100"/>
         <source>Default Feeds</source>
         <translation>標準フィード</translation>
     </message>
     <message>
-        <location filename="../qtquick/feedtypelistmodel.cpp" line="95"/>
+        <location filename="../qtquick/column/feedtypelistmodel.cpp" line="95"/>
         <source>Following</source>
         <translation>タイムライン</translation>
     </message>
     <message>
-        <location filename="../qtquick/feedtypelistmodel.cpp" line="102"/>
+        <location filename="../qtquick/column/feedtypelistmodel.cpp" line="102"/>
         <source>Notification</source>
         <translation>通知</translation>
     </message>
     <message>
-        <location filename="../qtquick/feedtypelistmodel.cpp" line="107"/>
+        <location filename="../qtquick/column/feedtypelistmodel.cpp" line="107"/>
         <source>Chat</source>
         <translation>チャット</translation>
     </message>
     <message>
-        <location filename="../qtquick/feedtypelistmodel.cpp" line="109"/>
+        <location filename="../qtquick/column/feedtypelistmodel.cpp" line="109"/>
         <source>Chat list</source>
         <translation>チャット一覧</translation>
     </message>
     <message>
-        <location filename="../qtquick/feedtypelistmodel.cpp" line="170"/>
-        <location filename="../qtquick/feedtypelistmodel.cpp" line="199"/>
+        <location filename="../qtquick/column/feedtypelistmodel.cpp" line="170"/>
+        <location filename="../qtquick/column/feedtypelistmodel.cpp" line="199"/>
         <source>My Feeds</source>
         <translation>カスタムフィード</translation>
     </message>
     <message>
-        <location filename="../qtquick/feedtypelistmodel.cpp" line="172"/>
+        <location filename="../qtquick/column/feedtypelistmodel.cpp" line="172"/>
         <source>Discover Feeds</source>
         <translation>カスタムフィードの検索</translation>
     </message>
     <message>
-        <location filename="../qtquick/feedtypelistmodel.cpp" line="232"/>
+        <location filename="../qtquick/column/feedtypelistmodel.cpp" line="232"/>
         <source>My Lists</source>
         <translation>リスト</translation>
     </message>
@@ -984,17 +984,17 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>HashTagMenu</name>
     <message>
-        <location filename="../qml/parts/HashTagMenu.qml" line="16"/>
+        <location filename="../qml/parts/HashTagMenu.qml" line="18"/>
         <source>Search %s posts</source>
         <translation>%s を検索</translation>
     </message>
     <message>
-        <location filename="../qml/parts/HashTagMenu.qml" line="23"/>
+        <location filename="../qml/parts/HashTagMenu.qml" line="25"/>
         <source>Search %s posts by this user</source>
         <translation>このユーザーによる %s を検索</translation>
     </message>
     <message>
-        <location filename="../qml/parts/HashTagMenu.qml" line="29"/>
+        <location filename="../qml/parts/HashTagMenu.qml" line="31"/>
         <source>Mute %s posts</source>
         <translation>%s をミュートする</translation>
     </message>
@@ -1015,927 +1015,927 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>LanguageListModel</name>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="7"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="7"/>
         <source>Afar</source>
         <translation>アファル語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="8"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="8"/>
         <source>Abkhazian</source>
         <translation>アブハズ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="9"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="9"/>
         <source>Avestan</source>
         <translation>アヴェスター語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="10"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="10"/>
         <source>Afrikaans</source>
         <translation>アフリカーンス語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="11"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="11"/>
         <source>Akan</source>
         <translation>アカン語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="12"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="12"/>
         <source>Amharic</source>
         <translation>アムハラ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="13"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="13"/>
         <source>Aragonese</source>
         <translation>アラゴン語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="14"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="14"/>
         <source>Arabic</source>
         <translation>アラビア語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="15"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="15"/>
         <source>Assamese</source>
         <translation>アッサム語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="16"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="16"/>
         <source>Avaric</source>
         <translation>アヴァル語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="17"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="17"/>
         <source>Aymara</source>
         <translation>アイマラ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="18"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="18"/>
         <source>Azerbaijani</source>
         <translation>アゼルバイジャン語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="19"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="19"/>
         <source>Bashkir</source>
         <translation>バシキール語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="20"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="20"/>
         <source>Belarusian</source>
         <translation>ベラルーシ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="21"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="21"/>
         <source>Bulgarian</source>
         <translation>ブルガリア語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="22"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="22"/>
         <source>Bihari languages</source>
         <translation>ビハール語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="23"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="23"/>
         <source>Bislama</source>
         <translation>ビスラマ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="24"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="24"/>
         <source>Bambara</source>
         <translation>バンバラ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="25"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="25"/>
         <source>Bengali</source>
         <translation>ベンガル語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="26"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="26"/>
         <source>Tibetan</source>
         <translation>チベット語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="27"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="27"/>
         <source>Breton</source>
         <translation>ブルトン語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="28"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="28"/>
         <source>Bosnian</source>
         <translation>ボスニア語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="29"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="29"/>
         <source>Catalan</source>
         <translation>カタルーニャ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="30"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="30"/>
         <source>Chechen</source>
         <translation>チェチェン語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="31"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="31"/>
         <source>Chamorro</source>
         <translation>チャモロ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="32"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="32"/>
         <source>Corsican</source>
         <translation>コルシカ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="33"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="33"/>
         <source>Cree</source>
         <translation>クリー語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="34"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="34"/>
         <source>Czech</source>
         <translation>チェコ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="35"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="35"/>
         <source>Old&#xa0;Church&#xa0;Slavonic</source>
         <translation>古代教会スラヴ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="36"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="36"/>
         <source>Chuvash</source>
         <translation>チュヴァシ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="37"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="37"/>
         <source>Welsh</source>
         <translation>ウェールズ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="38"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="38"/>
         <source>Danish</source>
         <translation>デンマーク語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="39"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="39"/>
         <source>German</source>
         <translation>ドイツ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="40"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="40"/>
         <source>Divehi</source>
         <translation>ディベヒ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="41"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="41"/>
         <source>Dzongkha</source>
         <translation>ゾンカ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="42"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="42"/>
         <source>Ewe</source>
         <translation>エウェ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="43"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="43"/>
         <source>Greek</source>
         <translation>ギリシア語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="44"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="44"/>
         <source>English</source>
         <translation>英語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="45"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="45"/>
         <source>Esperanto</source>
         <translation>エスペラント</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="46"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="46"/>
         <source>Spanish</source>
         <translation>スペイン語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="47"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="47"/>
         <source>Estonian</source>
         <translation>エストニア語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="48"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="48"/>
         <source>Basque</source>
         <translation>バスク語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="49"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="49"/>
         <source>Persian</source>
         <translation>ペルシア語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="50"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="50"/>
         <source>Fulah</source>
         <translation>フラニ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="51"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="51"/>
         <source>Finnish</source>
         <translation>フィンランド語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="52"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="52"/>
         <source>Fijian</source>
         <translation>フィジー語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="53"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="53"/>
         <source>Faroese</source>
         <translation>フェロー語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="54"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="54"/>
         <source>French</source>
         <translation>フランス語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="55"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="55"/>
         <source>Western Frisian</source>
         <translation>西フリジア語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="56"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="56"/>
         <source>Irish</source>
         <translation>アイルランド語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="57"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="57"/>
         <source>Scottish Gaelic</source>
         <translation>スコットランド・ゲール語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="58"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="58"/>
         <source>Galician</source>
         <translation>ガリシア語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="59"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="59"/>
         <source>Guarani</source>
         <translation>グアラニー語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="60"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="60"/>
         <source>Gujarati</source>
         <translation>グジャラート語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="61"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="61"/>
         <source>Manx</source>
         <translation>マン島語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="62"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="62"/>
         <source>Hausa</source>
         <translation>ハウサ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="63"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="63"/>
         <source>Hebrew</source>
         <translation>ヘブライ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="64"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="64"/>
         <source>Hindi</source>
         <translation>ヒンディー語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="65"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="65"/>
         <source>Hiri Motu</source>
         <translation>ヒリモツ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="66"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="66"/>
         <source>Croatian</source>
         <translation>クロアチア語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="67"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="67"/>
         <source>Haitian</source>
         <translation>ハイチ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="68"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="68"/>
         <source>Hungarian</source>
         <translation>ハンガリー語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="69"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="69"/>
         <source>Armenian</source>
         <translation>アルメニア語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="70"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="70"/>
         <source>Herero</source>
         <translation>ヘレロ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="71"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="71"/>
         <source>Interlingua&#xa0;(International Auxiliary Language Association)</source>
         <translation>インターリングア</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="73"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="73"/>
         <source>Indonesian</source>
         <translation>インドネシア語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="74"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="74"/>
         <source>Interlingue</source>
         <translation>インターリング</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="75"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="75"/>
         <source>Igbo</source>
         <translation>イボ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="76"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="76"/>
         <source>Sichuan Yi</source>
         <translation>四川彝語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="77"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="77"/>
         <source>Inupiaq</source>
         <translation>イヌピアック語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="78"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="78"/>
         <source>Ido</source>
         <translation>イド語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="79"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="79"/>
         <source>Icelandic</source>
         <translation>アイスランド語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="80"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="80"/>
         <source>Italian</source>
         <translation>イタリア語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="81"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="81"/>
         <source>Inuktitut</source>
         <translation>イヌクティトゥット語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="82"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="82"/>
         <source>Japanese</source>
         <translation>日本語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="83"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="83"/>
         <source>Javanese</source>
         <translation>ジャワ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="84"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="84"/>
         <source>Georgian</source>
         <translation>グルジア語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="85"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="85"/>
         <source>Kongo</source>
         <translation>コンゴ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="86"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="86"/>
         <source>Kikuyu</source>
         <translation>キクユ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="87"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="87"/>
         <source>Kuanyama</source>
         <translation>クワニャマ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="88"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="88"/>
         <source>Kazakh</source>
         <translation>カザフスタン語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="89"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="89"/>
         <source>Greenlandic</source>
         <translation>グリーンランド語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="90"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="90"/>
         <source>Central Khmer</source>
         <translation>クメール語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="91"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="91"/>
         <source>Kannada</source>
         <translation>カンナダ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="92"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="92"/>
         <source>Korean</source>
         <translation>朝鮮語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="93"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="93"/>
         <source>Kanuri</source>
         <translation>カヌリ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="94"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="94"/>
         <source>Kashmiri</source>
         <translation>カシミール語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="95"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="95"/>
         <source>Kurdish</source>
         <translation>クルド語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="96"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="96"/>
         <source>Komi</source>
         <translation>コミ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="97"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="97"/>
         <source>Cornish</source>
         <translation>コーンウォール語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="98"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="98"/>
         <source>Kirghiz</source>
         <translation>キルギス語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="99"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="99"/>
         <source>Latin</source>
         <translation>ラテン語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="100"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="100"/>
         <source>Luxembourgish</source>
         <translation>ルクセンブルク語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="101"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="101"/>
         <source>Ganda</source>
         <translation>ルガンダ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="102"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="102"/>
         <source>Limburgan</source>
         <translation>リンブルフ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="103"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="103"/>
         <source>Lingala</source>
         <translation>リンガラ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="104"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="104"/>
         <source>Lao</source>
         <translation>ラーオ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="105"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="105"/>
         <source>Lithuanian</source>
         <translation>リトアニア語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="106"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="106"/>
         <source>Luba-Katanga</source>
         <translation>ルバ・カタンガ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="107"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="107"/>
         <source>Latvian</source>
         <translation>ラトビア語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="108"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="108"/>
         <source>Malagasy</source>
         <translation>マダガスカル語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="109"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="109"/>
         <source>Marshallese</source>
         <translation>マーシャル語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="110"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="110"/>
         <source>Maori</source>
         <translation>マオリ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="111"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="111"/>
         <source>Macedonian</source>
         <translation>マケドニア語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="112"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="112"/>
         <source>Malayalam</source>
         <translation>マラヤーラム語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="113"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="113"/>
         <source>Mongolian</source>
         <translation>モンゴル語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="114"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="114"/>
         <source>Marathi</source>
         <translation>マラーティー語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="115"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="115"/>
         <source>Malay</source>
         <translation>マレー語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="116"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="116"/>
         <source>Maltese</source>
         <translation>マルタ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="117"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="117"/>
         <source>Burmese</source>
         <translation>ビルマ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="118"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="118"/>
         <source>Nauru</source>
         <translation>ナウル語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="119"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="119"/>
         <source>Norwegian Bokmål</source>
         <translation>ノルウェー語（ブークモール）</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="120"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="120"/>
         <source>North Ndebele</source>
         <translation>北ンデベレ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="121"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="121"/>
         <source>Nepali</source>
         <translation>ネパール語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="122"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="122"/>
         <source>Ndonga</source>
         <translation>ンドンガ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="123"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="123"/>
         <source>Dutch</source>
         <translation>オランダ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="124"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="124"/>
         <source>Norwegian Nynorsk</source>
         <translation>ノルウェー語（ニーノシュク）</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="125"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="125"/>
         <source>Norwegian</source>
         <translation>ノルウェー語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="126"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="126"/>
         <source>South Ndebele</source>
         <translation>南ンデベレ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="127"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="127"/>
         <source>Navajo</source>
         <translation>ナバホ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="128"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="128"/>
         <source>Chichewa</source>
         <translation>チェワ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="129"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="129"/>
         <source>Occitan</source>
         <translation>オック語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="130"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="130"/>
         <source>Ojibwa</source>
         <translation>オジブウェー語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="131"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="131"/>
         <source>Oromo</source>
         <translation>オロモ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="132"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="132"/>
         <source>Oriya</source>
         <translation>オリヤー語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="133"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="133"/>
         <source>Ossetian</source>
         <translation>オセット語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="134"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="134"/>
         <source>Punjabi</source>
         <translation>パンジャーブ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="135"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="135"/>
         <source>Pali</source>
         <translation>パーリ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="136"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="136"/>
         <source>Polish</source>
         <translation>ポーランド語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="137"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="137"/>
         <source>Pashto</source>
         <translation>パシュトー語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="138"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="138"/>
         <source>Portuguese</source>
         <translation>ポルトガル語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="139"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="139"/>
         <source>Quechua</source>
         <translation>ケチュア語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="140"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="140"/>
         <source>Romansh</source>
         <translation>ロマンシュ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="141"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="141"/>
         <source>Rundi</source>
         <translation>ルンディ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="142"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="142"/>
         <source>Romanian</source>
         <translation>ルーマニア語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="143"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="143"/>
         <source>Russian</source>
         <translation>ロシア語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="144"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="144"/>
         <source>Kinyarwanda</source>
         <translation>ルワンダ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="145"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="145"/>
         <source>Sanskrit</source>
         <translation>サンスクリット語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="146"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="146"/>
         <source>Sardinian</source>
         <translation>サルデーニャ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="147"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="147"/>
         <source>Sindhi</source>
         <translation>シンド語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="148"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="148"/>
         <source>Northern Sami</source>
         <translation>北部サーミ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="149"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="149"/>
         <source>Sango</source>
         <translation>サンゴ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="150"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="150"/>
         <source>Sinhala</source>
         <translation>シンハラ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="151"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="151"/>
         <source>Slovak</source>
         <translation>スロバキア語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="152"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="152"/>
         <source>Slovenian</source>
         <translation>スロベニア語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="153"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="153"/>
         <source>Samoan</source>
         <translation>サモア語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="154"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="154"/>
         <source>Shona</source>
         <translation>ショナ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="155"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="155"/>
         <source>Somali</source>
         <translation>ソマリ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="156"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="156"/>
         <source>Albanian</source>
         <translation>アルバニア語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="157"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="157"/>
         <source>Serbian</source>
         <translation>セルビア語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="158"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="158"/>
         <source>Swati</source>
         <translation>スワジ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="159"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="159"/>
         <source>Southern Sotho</source>
         <translation>ソト語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="160"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="160"/>
         <source>Sundanese</source>
         <translation>スンダ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="161"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="161"/>
         <source>Swedish</source>
         <translation>スウェーデン語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="162"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="162"/>
         <source>Swahili</source>
         <translation>スワヒリ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="163"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="163"/>
         <source>Tamil</source>
         <translation>タミル語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="164"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="164"/>
         <source>Telugu</source>
         <translation>テルグ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="165"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="165"/>
         <source>Tajik</source>
         <translation>タジク語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="166"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="166"/>
         <source>Thai</source>
         <translation>タイ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="167"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="167"/>
         <source>Tigrinya</source>
         <translation>ティグリニャ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="168"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="168"/>
         <source>Turkmen</source>
         <translation>トルクメン語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="169"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="169"/>
         <source>Tagalog</source>
         <translation>タガログ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="170"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="170"/>
         <source>Tswana</source>
         <translation>ツワナ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="171"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="171"/>
         <source>Tonga&#xa0;(Tonga Islands)</source>
         <translation>トンガ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="172"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="172"/>
         <source>Turkish</source>
         <translation>トルコ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="173"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="173"/>
         <source>Tsonga</source>
         <translation>ツォンガ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="174"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="174"/>
         <source>Tatar</source>
         <translation>タタール語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="175"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="175"/>
         <source>Twi</source>
         <translation>トウィ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="176"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="176"/>
         <source>Tahitian</source>
         <translation>タヒチ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="177"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="177"/>
         <source>Uighur</source>
         <translation>ウイグル語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="178"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="178"/>
         <source>Ukrainian</source>
         <translation>ウクライナ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="179"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="179"/>
         <source>Urdu</source>
         <translation>ウルドゥー語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="180"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="180"/>
         <source>Uzbek</source>
         <translation>ウズベク語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="181"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="181"/>
         <source>Venda</source>
         <translation>ヴェンダ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="182"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="182"/>
         <source>Vietnamese</source>
         <translation>ベトナム語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="183"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="183"/>
         <source>Volapük</source>
         <translation>ヴォラピュク</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="184"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="184"/>
         <source>Walloon</source>
         <translation>ワロン語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="185"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="185"/>
         <source>Wolof</source>
         <translation>ウォロフ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="186"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="186"/>
         <source>Xhosa</source>
         <translation>コサ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="187"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="187"/>
         <source>Yiddish</source>
         <translation>イディッシュ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="188"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="188"/>
         <source>Yoruba</source>
         <translation>ヨルバ語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="189"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="189"/>
         <source>Zhuang</source>
         <translation>チワン語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="190"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="190"/>
         <source>Chinese</source>
         <translation>中国語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="191"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="191"/>
         <source>Zulu</source>
         <translation>ズールー語</translation>
     </message>
     <message>
-        <location filename="../qtquick/languagelistmodel.cpp" line="192"/>
+        <location filename="../qtquick/controls/languagelistmodel.cpp" line="192"/>
         <source>Angika</source>
         <translation>アンギカ語</translation>
     </message>
@@ -1981,47 +1981,47 @@ Please recreate AppPassword in the official application.</source>
         <translation>ブロック中</translation>
     </message>
     <message>
-        <location filename="../qml/view/ListDetailView.qml" line="181"/>
+        <location filename="../qml/view/ListDetailView.qml" line="179"/>
         <source>Copy Official Url</source>
         <translation>公式のURLをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ListDetailView.qml" line="186"/>
+        <location filename="../qml/view/ListDetailView.qml" line="184"/>
         <source>Open in new col</source>
         <translation>新しいカラムで開く</translation>
     </message>
     <message>
-        <location filename="../qml/view/ListDetailView.qml" line="191"/>
+        <location filename="../qml/view/ListDetailView.qml" line="189"/>
         <source>Open in Official</source>
         <translation>公式で開く</translation>
     </message>
     <message>
-        <location filename="../qml/view/ListDetailView.qml" line="198"/>
+        <location filename="../qml/view/ListDetailView.qml" line="196"/>
         <source>Delete list</source>
         <translation>リストを削除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ListDetailView.qml" line="204"/>
+        <location filename="../qml/view/ListDetailView.qml" line="202"/>
         <source>Unmute list</source>
         <translation>リストのミュート解除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ListDetailView.qml" line="204"/>
+        <location filename="../qml/view/ListDetailView.qml" line="202"/>
         <source>Mute list</source>
         <translation>リストをミュート</translation>
     </message>
     <message>
-        <location filename="../qml/view/ListDetailView.qml" line="209"/>
+        <location filename="../qml/view/ListDetailView.qml" line="207"/>
         <source>Unblock list</source>
         <translation>リストのブロック解除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ListDetailView.qml" line="209"/>
+        <location filename="../qml/view/ListDetailView.qml" line="207"/>
         <source>Block list</source>
         <translation>リストのブロック</translation>
     </message>
     <message>
-        <location filename="../qml/view/ListDetailView.qml" line="256"/>
+        <location filename="../qml/view/ListDetailView.qml" line="254"/>
         <source>Users</source>
         <translation>ユーザー</translation>
     </message>
@@ -2312,7 +2312,7 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>NotificationListModel</name>
     <message>
-        <location filename="../qtquick/notificationlistmodel.cpp" line="200"/>
+        <location filename="../qtquick/notification/notificationlistmodel.cpp" line="209"/>
         <source>Post hidden by muted word</source>
         <translation>ミュートワードを含む</translation>
     </message>
@@ -2328,75 +2328,87 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>PostControls</name>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="71"/>
+        <location filename="../qml/parts/PostControls.qml" line="72"/>
         <source>Repost</source>
         <translation>リポスト</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="76"/>
+        <location filename="../qml/parts/PostControls.qml" line="77"/>
         <source>Quote</source>
         <translation>引用</translation>
     </message>
     <message>
         <location filename="../qml/parts/PostControls.qml" line="142"/>
-        <location filename="../qml/parts/PostControls.qml" line="198"/>
+        <location filename="../qml/parts/PostControls.qml" line="205"/>
         <source>Translate</source>
         <translation>翻訳</translation>
     </message>
     <message>
         <location filename="../qml/parts/PostControls.qml" line="147"/>
-        <location filename="../qml/parts/PostControls.qml" line="203"/>
+        <location filename="../qml/parts/PostControls.qml" line="210"/>
         <source>Copy post text</source>
         <translation>ポストをコピー</translation>
     </message>
     <message>
         <location filename="../qml/parts/PostControls.qml" line="151"/>
-        <location filename="../qml/parts/PostControls.qml" line="207"/>
+        <location filename="../qml/parts/PostControls.qml" line="214"/>
         <source>Copy url</source>
         <translation>URLをコピー</translation>
     </message>
     <message>
         <location filename="../qml/parts/PostControls.qml" line="156"/>
-        <location filename="../qml/parts/PostControls.qml" line="212"/>
+        <location filename="../qml/parts/PostControls.qml" line="219"/>
         <source>Open in Official</source>
         <translation>公式で開く</translation>
     </message>
     <message>
         <location filename="../qml/parts/PostControls.qml" line="163"/>
-        <location filename="../qml/parts/PostControls.qml" line="219"/>
+        <location filename="../qml/parts/PostControls.qml" line="226"/>
         <source>Reposted by</source>
         <translation>リポストしたアカウント</translation>
     </message>
     <message>
         <location filename="../qml/parts/PostControls.qml" line="169"/>
-        <location filename="../qml/parts/PostControls.qml" line="225"/>
+        <location filename="../qml/parts/PostControls.qml" line="232"/>
         <source>Liked by</source>
         <translation>いいねしたアカウント</translation>
     </message>
     <message>
         <location filename="../qml/parts/PostControls.qml" line="176"/>
-        <location filename="../qml/parts/PostControls.qml" line="232"/>
+        <location filename="../qml/parts/PostControls.qml" line="239"/>
         <source>Unpin this post</source>
         <translation>固定ポストを解除</translation>
     </message>
     <message>
         <location filename="../qml/parts/PostControls.qml" line="176"/>
-        <location filename="../qml/parts/PostControls.qml" line="232"/>
+        <location filename="../qml/parts/PostControls.qml" line="239"/>
         <source>Pin this post</source>
         <translation>固定ポストにする</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="181"/>
+        <location filename="../qml/parts/PostControls.qml" line="182"/>
+        <location filename="../qml/parts/PostControls.qml" line="245"/>
+        <source>Unmute thread</source>
+        <translation>シュレッドミュートの解除</translation>
+    </message>
+    <message>
+        <location filename="../qml/parts/PostControls.qml" line="182"/>
+        <location filename="../qml/parts/PostControls.qml" line="245"/>
+        <source>Mute thread</source>
+        <translation>スレッドをミュート</translation>
+    </message>
+    <message>
+        <location filename="../qml/parts/PostControls.qml" line="187"/>
         <source>Who can reply</source>
         <translation>リプライできるユーザー</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="187"/>
+        <location filename="../qml/parts/PostControls.qml" line="194"/>
         <source>Delete post</source>
         <translation>ポストを削除</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="238"/>
+        <location filename="../qml/parts/PostControls.qml" line="251"/>
         <source>Report post</source>
         <translation>ポストを通報</translation>
     </message>
@@ -2478,7 +2490,7 @@ Please recreate AppPassword in the official application.</source>
         <translation>ポストスレッド</translation>
     </message>
     <message>
-        <location filename="../qml/view/PostThreadView.qml" line="156"/>
+        <location filename="../qml/view/PostThreadView.qml" line="157"/>
         <source>Quoted content warning</source>
         <translation>閲覧注意な引用</translation>
     </message>
@@ -2564,87 +2576,87 @@ Please recreate AppPassword in the official application.</source>
         <translation>登録日 :</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="398"/>
+        <location filename="../qml/view/ProfileView.qml" line="397"/>
         <source>Send mention</source>
         <translation>メンションを送る</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="404"/>
+        <location filename="../qml/view/ProfileView.qml" line="403"/>
         <source>Send message</source>
         <translation>メッセージを送る</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="411"/>
+        <location filename="../qml/view/ProfileView.qml" line="410"/>
         <source>Copy handle</source>
         <translation>ハンドルをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="417"/>
+        <location filename="../qml/view/ProfileView.qml" line="416"/>
         <source>Copy DID</source>
         <translation>DIDをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="423"/>
+        <location filename="../qml/view/ProfileView.qml" line="422"/>
         <source>Copy Official Url</source>
         <translation>公式のURLをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="430"/>
+        <location filename="../qml/view/ProfileView.qml" line="429"/>
         <source>Open in new col</source>
         <translation>新しいカラムで開く</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="436"/>
+        <location filename="../qml/view/ProfileView.qml" line="435"/>
         <source>Open in Official</source>
         <translation>公式で開く</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="443"/>
+        <location filename="../qml/view/ProfileView.qml" line="442"/>
         <source>Add/Remove from lists</source>
         <translation>リストへ追加/削除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="450"/>
+        <location filename="../qml/view/ProfileView.qml" line="449"/>
         <source>Unmute account</source>
         <translation>ミュート解除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="450"/>
+        <location filename="../qml/view/ProfileView.qml" line="449"/>
         <source>Mute account</source>
         <translation>ミュート</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="462"/>
+        <location filename="../qml/view/ProfileView.qml" line="461"/>
         <source>Unblock account</source>
         <translation>ブロック解除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="462"/>
+        <location filename="../qml/view/ProfileView.qml" line="461"/>
         <source>Block account</source>
         <translation>ブロック</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="474"/>
+        <location filename="../qml/view/ProfileView.qml" line="473"/>
         <source>Report account</source>
         <translation>通報</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="495"/>
+        <location filename="../qml/view/ProfileView.qml" line="494"/>
         <source>Account blocked</source>
         <translation>ブロックしたアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="506"/>
+        <location filename="../qml/view/ProfileView.qml" line="505"/>
         <source>Account muted</source>
         <translation>ミュートしたアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="519"/>
+        <location filename="../qml/view/ProfileView.qml" line="518"/>
         <source>This account has been flagged : </source>
         <translation>このアカウントに設定されたラベル : </translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="529"/>
+        <location filename="../qml/view/ProfileView.qml" line="528"/>
         <source>This account has blocked you</source>
         <translation>あなたをブロックしているアカウント</translation>
     </message>
@@ -2676,128 +2688,128 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>RecordOperator</name>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="151"/>
-        <location filename="../qtquick/recordoperator.cpp" line="156"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="151"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="156"/>
         <source>Posting ... %1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="158"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="158"/>
         <source>Posting ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="257"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="257"/>
         <source>Repost ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="281"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="281"/>
         <source>Like ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="305"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="305"/>
         <source>Follow ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="327"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="327"/>
         <source>Mute ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="350"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="350"/>
         <source>Block ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="372"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="372"/>
         <source>Block list ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="396"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="396"/>
         <source>Create list ... (%1)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="432"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="432"/>
         <source>Add to list ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="457"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="457"/>
         <source>Delete post ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="481"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="481"/>
         <source>Delete like ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="505"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="505"/>
         <source>Delete repost ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="529"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="529"/>
         <source>Unfollow ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="551"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="551"/>
         <source>Unmute ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="576"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="576"/>
         <source>Unblock ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="600"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="600"/>
         <source>Unblock block list ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="621"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="621"/>
         <source>Delete list ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="683"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="683"/>
         <source>Delete list item ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="707"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="707"/>
         <source>Update profile ... (%1)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="779"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="779"/>
         <source>Update post pinning ... (%1)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="822"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="822"/>
         <source>Update list ... (%1)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="885"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="885"/>
         <source>Update who can reply ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="945"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="945"/>
         <source>Uploading images ... (%1/%2)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/recordoperator.cpp" line="1031"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="1031"/>
         <source>Delete list item ... (%1)</source>
         <translation></translation>
     </message>
@@ -3126,22 +3138,22 @@ Why should this message be reviewed?</source>
 <context>
     <name>SelfLabelPopup</name>
     <message>
-        <location filename="../qml/parts/SelfLabelPopup.qml" line="15"/>
+        <location filename="../qml/parts/SelfLabelPopup.qml" line="17"/>
         <source>Sexually Explicit</source>
         <translation>露骨な性的表現</translation>
     </message>
     <message>
-        <location filename="../qml/parts/SelfLabelPopup.qml" line="20"/>
+        <location filename="../qml/parts/SelfLabelPopup.qml" line="22"/>
         <source>Nudity</source>
         <translation>ヌード（芸術など）</translation>
     </message>
     <message>
-        <location filename="../qml/parts/SelfLabelPopup.qml" line="25"/>
+        <location filename="../qml/parts/SelfLabelPopup.qml" line="27"/>
         <source>Sexually Suggestive</source>
         <translation>性的な示唆</translation>
     </message>
     <message>
-        <location filename="../qml/parts/SelfLabelPopup.qml" line="30"/>
+        <location filename="../qml/parts/SelfLabelPopup.qml" line="32"/>
         <source>Gore</source>
         <translation>ゴア表現</translation>
     </message>
@@ -3154,7 +3166,7 @@ Why should this message be reviewed?</source>
         <translation type="vanished">閲覧警告</translation>
     </message>
     <message>
-        <location filename="../qml/parts/SelfLabelPopup.qml" line="36"/>
+        <location filename="../qml/parts/SelfLabelPopup.qml" line="38"/>
         <source>Remove</source>
         <translation>解除</translation>
     </message>
@@ -3553,7 +3565,7 @@ Why should this message be reviewed?</source>
 <context>
     <name>TimelineListModel</name>
     <message>
-        <location filename="../qtquick/timelinelistmodel.cpp" line="227"/>
+        <location filename="../qtquick/timeline/timelinelistmodel.cpp" line="235"/>
         <source>Post hidden by muted word</source>
         <translation>ミュートワードを含む</translation>
     </message>
@@ -3561,7 +3573,7 @@ Why should this message be reviewed?</source>
 <context>
     <name>TimelineView</name>
     <message>
-        <location filename="../qml/view/TimelineView.qml" line="144"/>
+        <location filename="../qml/view/TimelineView.qml" line="146"/>
         <source>Quoted content warning</source>
         <translation>閲覧注意な引用</translation>
     </message>

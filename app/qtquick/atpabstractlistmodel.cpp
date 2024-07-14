@@ -1,5 +1,6 @@
 #include "atpabstractlistmodel.h"
 #include "atprotocol/com/atproto/sync/comatprotosyncgetblob.h"
+#include "atprotocol/app/bsky/feed/appbskyfeedgetpostthread.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "tools/labelerprovider.h"
 #include "common.h"
@@ -9,6 +10,7 @@
 #include <QUrlQuery>
 
 using namespace AtProtocolType;
+using AtProtocolInterface::AppBskyFeedGetPostThread;
 using AtProtocolInterface::ComAtprotoSyncGetBlob;
 
 AtpAbstractListModel::AtpAbstractListModel(QObject *parent)
@@ -708,6 +710,43 @@ void AtpAbstractListModel::removePinnedPost() { }
 bool AtpAbstractListModel::isPinnedPost(const QString &cid) const
 {
     return (displayPinnedPost() && !m_currentPinnedPost.isEmpty() && cid == m_currentPinnedPost);
+}
+
+void AtpAbstractListModel::getPostThreadCids(const QString &root_uri,
+                                             std::function<void(const QStringList &cids)> callback)
+{
+    if (root_uri.isEmpty()) {
+        callback(QStringList());
+        return;
+    }
+
+    AppBskyFeedGetPostThread *thread = new AppBskyFeedGetPostThread(this);
+    connect(thread, &AppBskyFeedGetPostThread::finished, this, [=](bool success) {
+        if (success) {
+            QStringList cids;
+            cids << thread->threadViewPost().post.cid;
+            cids << copyPostThreadCids(thread->threadViewPost().replies_ThreadViewPost);
+            callback(cids);
+        } else {
+            emit errorOccured(thread->errorCode(), thread->errorMessage());
+        }
+        thread->deleteLater();
+    });
+    thread->setAccount(account());
+    thread->getPostThread(root_uri, 0, 0);
+}
+
+QStringList AtpAbstractListModel::copyPostThreadCids(
+        const QList<QSharedPointer<AtProtocolType::AppBskyFeedDefs::ThreadViewPost>> &replies)
+{
+    QStringList cids;
+    for (const auto &post : replies) {
+        if (!post)
+            continue;
+        cids << post.data()->post.cid;
+        cids << copyPostThreadCids(post.data()->replies_ThreadViewPost);
+    }
+    return cids;
 }
 
 // 画像URLを取得する
