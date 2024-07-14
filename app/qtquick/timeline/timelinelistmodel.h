@@ -200,6 +200,8 @@ protected:
     void getPinnedPost();
     virtual void removePinnedPost();
 
+    void updateMuteThread(const QStringList &cids, bool new_value);
+
     QHash<QString, AtProtocolType::AppBskyFeedDefs::FeedViewPost> m_viewPostHash;
     QHash<QString, ThreadConnector> m_threadConnectorHash;
 

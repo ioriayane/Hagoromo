@@ -430,6 +430,16 @@ void NotificationListModel::update(int row, NotificationListModelRoles role, con
                 m_postHash[current.cid].likeCount++;
             emit dataChanged(index(row), index(row));
         }
+    } else if (role == ThreadMutedRole) {
+        if (m_postHash.contains(current.cid)) {
+            qDebug().noquote() << "update Thread Mute" << row
+                               << m_postHash[current.cid].viewer.threadMuted << "->"
+                               << value.toString();
+            if (m_postHash[current.cid].viewer.threadMuted != value.toBool()) {
+                m_postHash[current.cid].viewer.threadMuted = value.toBool();
+                emit dataChanged(index(row), index(row), QVector<int>() << role);
+            }
+        }
     } else if (role == RunningRepostRole) {
         if (value.toBool()) {
             m_runningRepostCid = current.cid;
@@ -834,7 +844,8 @@ bool NotificationListModel::muteThread(int row)
         AppBskyGraphUnmuteThread *thread = new AppBskyGraphUnmuteThread(this);
         connect(thread, &AppBskyGraphUnmuteThread::finished, this, [=](bool success) {
             if (success) {
-                update(row, ThreadMutedRole, false);
+                getPostThreadCids(root_uri,
+                                  [=](const QStringList &cids) { updateMuteThread(cids, false); });
             } else {
                 emit errorOccured(thread->errorCode(), thread->errorMessage());
             }
@@ -847,7 +858,8 @@ bool NotificationListModel::muteThread(int row)
         AppBskyGraphMuteThread *thread = new AppBskyGraphMuteThread(this);
         connect(thread, &AppBskyGraphMuteThread::finished, this, [=](bool success) {
             if (success) {
-                update(row, ThreadMutedRole, true);
+                getPostThreadCids(root_uri,
+                                  [=](const QStringList &cids) { updateMuteThread(cids, true); });
             } else {
                 emit errorOccured(thread->errorCode(), thread->errorMessage());
             }
@@ -1388,6 +1400,17 @@ void NotificationListModel::updateSeen()
     });
     seen->setAccount(account());
     seen->updateSeen(QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
+}
+
+void NotificationListModel::updateMuteThread(const QStringList &cids, bool new_value)
+{
+    int row = -1;
+    for (const auto &cid : cids) {
+        row = m_cidList.indexOf(cid);
+        if (row >= 0) {
+            update(row, ThreadMutedRole, new_value);
+        }
+    }
 }
 
 QStringList NotificationListModel::getAggregatedItems(

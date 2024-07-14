@@ -213,6 +213,8 @@ private:
     void getFeedGenerators();
     void updateSeen();
 
+    void updateMuteThread(const QStringList &cids, bool new_value);
+
     QStringList getAggregatedItems(
             const AtProtocolType::AppBskyNotificationListNotifications::Notification &data,
             const NotificationListModel::NotificationListModelRoles role) const;

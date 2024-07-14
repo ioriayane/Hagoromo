@@ -594,7 +594,8 @@ bool TimelineListModel::muteThread(int row)
         AppBskyGraphUnmuteThread *thread = new AppBskyGraphUnmuteThread(this);
         connect(thread, &AppBskyGraphUnmuteThread::finished, this, [=](bool success) {
             if (success) {
-                update(row, ThreadMutedRole, false);
+                getPostThreadCids(root_uri,
+                                  [=](const QStringList &cids) { updateMuteThread(cids, false); });
             } else {
                 emit errorOccured(thread->errorCode(), thread->errorMessage());
             }
@@ -607,7 +608,8 @@ bool TimelineListModel::muteThread(int row)
         AppBskyGraphMuteThread *thread = new AppBskyGraphMuteThread(this);
         connect(thread, &AppBskyGraphMuteThread::finished, this, [=](bool success) {
             if (success) {
-                update(row, ThreadMutedRole, true);
+                getPostThreadCids(root_uri,
+                                  [=](const QStringList &cids) { updateMuteThread(cids, true); });
             } else {
                 emit errorOccured(thread->errorCode(), thread->errorMessage());
             }
@@ -1124,6 +1126,17 @@ void TimelineListModel::removePinnedPost()
         m_currentPinnedPost.clear();
         m_cidList.pop_front();
         endRemoveRows();
+    }
+}
+
+void TimelineListModel::updateMuteThread(const QStringList &cids, bool new_value)
+{
+    int row = -1;
+    for (const auto &cid : cids) {
+        row = m_cidList.indexOf(cid);
+        if (row >= 0) {
+            update(row, ThreadMutedRole, new_value);
+        }
     }
 }
 

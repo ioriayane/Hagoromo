@@ -190,6 +190,10 @@ protected:
     virtual bool hasPinnedPost() const;
     virtual void removePinnedPost();
     bool isPinnedPost(const QString &cid) const;
+    void getPostThreadCids(const QString &root_uri,
+                           std::function<void(const QStringList &)> callback);
+    QStringList copyPostThreadCids(
+            const QList<QSharedPointer<AtProtocolType::AppBskyFeedDefs::ThreadViewPost>> &replies);
 
     QStringList
     copyImagesFromPostView(const AtProtocolType::AppBskyFeedDefs::PostView &post,
