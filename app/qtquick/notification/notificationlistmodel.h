@@ -55,6 +55,7 @@ public:
 
         IsRepostedRole,
         IsLikedRole,
+        ThreadMutedRole,
         RepostedUriRole,
         LikedUriRole,
         RunningRepostRole,
@@ -143,6 +144,7 @@ public:
     Q_INVOKABLE bool getNext();
     Q_INVOKABLE bool repost(int row);
     Q_INVOKABLE bool like(int row);
+    Q_INVOKABLE bool muteThread(int row);
 
     bool visibleLike() const;
     void setVisibleLike(bool newVisibleLike);
@@ -210,6 +212,8 @@ private:
     void getPosts();
     void getFeedGenerators();
     void updateSeen();
+
+    void updateMuteThread(const QStringList &cids, bool new_value);
 
     QStringList getAggregatedItems(
             const AtProtocolType::AppBskyNotificationListNotifications::Notification &data,

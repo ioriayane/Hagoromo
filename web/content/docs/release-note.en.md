@@ -8,6 +8,14 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+### v0.34.0 - 2024/7/16
+
+- Add
+  - Support for thread mute
+- Update
+  - Change so that the member's information is displayed at the top of the chat message screen
+  - Change the context menu to a compact design
+
 ### v0.33.0 - 2024/7/1
 
 - Update

@@ -111,6 +111,7 @@ ScrollView {
             contentFilterFrame.labelText: model.contentFilterMessage
             contentMediaFilterFrame.visible: model.contentMediaFilterMatched
             contentMediaFilterFrame.labelText: model.contentMediaFilterMessage
+            postImagePreview.visible: contentMediaFilterFrame.showContent && model.embedImages.length > 0
             postImagePreview.layoutType: notificationListView.imageLayoutType
             postImagePreview.embedImages: model.embedImages
             postImagePreview.embedAlts: model.embedImagesAlt
@@ -163,6 +164,7 @@ ScrollView {
             postControls.onTriggeredTranslate: rootListView.model.translate(model.cid)
             postControls.isReposted: model.isReposted
             postControls.isLiked: model.isLiked
+            postControls.threadMuted: model.threadMuted
             postControls.postUri: model.uri
             postControls.handle: model.handle
             postControls.onTriggeredCopyToClipboard: systemTool.copyToClipboard(model.recordTextPlain)
@@ -170,6 +172,7 @@ ScrollView {
             postControls.onTriggeredRequestViewLikedBy: notificationListView.requestViewLikedBy(model.uri)
             postControls.onTriggeredRequestViewRepostedBy: notificationListView.requestViewRepostedBy(model.uri)
             postControls.onTriggeredRequestReport: notificationListView.requestReportPost(model.uri, model.cid)
+            postControls.onTriggeredRequestMuteThread: rootListView.model.muteThread(model.index)
 
             onClicked: {
                 if(model.reason === NotificationListModel.ReasonLike ||

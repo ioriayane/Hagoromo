@@ -1,7 +1,7 @@
 #include "listitemlistmodel.h"
 #include "atprotocol/app/bsky/graph/appbskygraphmuteactorlist.h"
 #include "atprotocol/app/bsky/graph/appbskygraphunmuteactorlist.h"
-#include "recordoperator.h"
+#include "operation/recordoperator.h"
 
 using AtProtocolInterface::AppBskyGraphGetList;
 using AtProtocolInterface::AppBskyGraphMuteActorList;

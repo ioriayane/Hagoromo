@@ -1,7 +1,9 @@
 #include "timelinelistmodel.h"
 #include "atprotocol/app/bsky/feed/appbskyfeedgetposts.h"
+#include "atprotocol/app/bsky/graph/appbskygraphmutethread.h"
+#include "atprotocol/app/bsky/graph/appbskygraphunmutethread.h"
 #include "atprotocol/lexicons_func_unknown.h"
-#include "recordoperator.h"
+#include "operation/recordoperator.h"
 #include "tools/pinnedpostcache.h"
 
 #include <QDebug>
@@ -9,6 +11,8 @@
 using AtProtocolInterface::AccountData;
 using AtProtocolInterface::AppBskyFeedGetPosts;
 using AtProtocolInterface::AppBskyFeedGetTimeline;
+using AtProtocolInterface::AppBskyGraphMuteThread;
+using AtProtocolInterface::AppBskyGraphUnmuteThread;
 using namespace AtProtocolType;
 
 TimelineListModel::TimelineListModel(QObject *parent)
@@ -138,6 +142,8 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return isPinnedPost(current.post.cid) && row == 0;
     else if (role == PinnedByMeRole)
         return PinnedPostCache::getInstance()->pinned(account().did, current.post.uri);
+    else if (role == ThreadMutedRole)
+        return current.post.viewer.threadMuted;
     else if (role == RepostedUriRole)
         return current.post.viewer.repost;
     else if (role == LikedUriRole)
@@ -150,6 +156,8 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return !current.post.cid.isEmpty() && (current.post.cid == m_runningDeletePostCid);
     else if (role == RunningPostPinningRole)
         return !current.post.cid.isEmpty() && (current.post.cid == m_runningPostPinningCid);
+    else if (role == RunningThreadMuteRole)
+        return !current.post.cid.isEmpty() && (current.post.cid == m_runningThreadMuteCid);
 
     else if (role == HasQuoteRecordRole || role == QuoteRecordCidRole || role == QuoteRecordUriRole
              || role == QuoteRecordDisplayNameRole || role == QuoteRecordHandleRole
@@ -296,7 +304,8 @@ void TimelineListModel::update(int row, TimelineListModelRoles role, const QVari
             current.post.repostCount--;
         else
             current.post.repostCount++;
-        emit dataChanged(index(row), index(row));
+        emit dataChanged(index(row), index(row),
+                         QVector<int>() << role << IsRepostedRole << RepostCountRole);
     } else if (role == LikedUriRole) {
         qDebug() << "update LIKE" << value.toString();
         current.post.viewer.like = value.toString();
@@ -304,41 +313,55 @@ void TimelineListModel::update(int row, TimelineListModelRoles role, const QVari
             current.post.likeCount--;
         else
             current.post.likeCount++;
-        emit dataChanged(index(row), index(row));
+        emit dataChanged(index(row), index(row),
+                         QVector<int>() << role << IsLikedRole << LikeCountRole);
     } else if (role == PinnedByMeRole) {
         qDebug() << "update Pinned by me:" << value.toString();
-        emit dataChanged(index(row), index(row));
+        emit dataChanged(index(row), index(row), QVector<int>() << role << PinnedRole);
+    } else if (role == ThreadMutedRole) {
+        bool muted = value.toBool();
+        if (current.post.viewer.threadMuted != muted) {
+            current.post.viewer.threadMuted = muted;
+            emit dataChanged(index(row), index(row), QVector<int>() << role);
+        }
     } else if (role == RunningRepostRole) {
         if (value.toBool()) {
             m_runningRepostCid = current.post.cid;
         } else {
             m_runningRepostCid.clear();
         }
-        emit dataChanged(index(row), index(row));
+        emit dataChanged(index(row), index(row), QVector<int>() << role);
     } else if (role == RunningLikeRole) {
         if (value.toBool()) {
             m_runningLikeCid = current.post.cid;
         } else {
             m_runningLikeCid.clear();
         }
-        emit dataChanged(index(row), index(row));
+        emit dataChanged(index(row), index(row), QVector<int>() << role);
     } else if (role == RunningdeletePostRole) {
         if (value.toBool()) {
             m_runningDeletePostCid = current.post.cid;
         } else {
             m_runningDeletePostCid.clear();
         }
-        emit dataChanged(index(row), index(row));
+        emit dataChanged(index(row), index(row), QVector<int>() << role);
     } else if (role == RunningPostPinningRole) {
         if (value.toBool()) {
             m_runningPostPinningCid = current.post.cid;
         } else {
             m_runningPostPinningCid.clear();
         }
-        emit dataChanged(index(row), index(row));
+        emit dataChanged(index(row), index(row), QVector<int>() << role);
+    } else if (role == RunningThreadMuteRole) {
+        if (value.toBool()) {
+            m_runningThreadMuteCid = current.post.cid;
+        } else {
+            m_runningThreadMuteCid.clear();
+        }
+        emit dataChanged(index(row), index(row), QVector<int>() << role);
     } else if (m_toThreadGateRoles.contains(role)) {
         updateThreadGateItem(current.post, m_toThreadGateRoles[role], value);
-        emit dataChanged(index(row), index(row));
+        emit dataChanged(index(row), index(row), QVector<int>() << role);
     }
 
     return;
@@ -537,7 +560,8 @@ bool TimelineListModel::pin(int row)
                     PinnedPostCache::getInstance()->update(account().did, pin_uri);
                     // 新しい方の表示
                     m_pinnedUriCid[pin_uri] = current.post.cid;
-                    emit dataChanged(index(row), index(row));
+                    emit dataChanged(index(row), index(row),
+                                     QVector<int>() << PinnedRole << PinnedByMeRole);
                     // 古い方の表示の更新はPinnedPostCacheからの更新シグナルで実施
                     emit updatePin(pin_uri);
                 }
@@ -549,6 +573,51 @@ bool TimelineListModel::pin(int row)
     ope->updatePostPinning(pin_uri);
 
     return true;
+}
+
+bool TimelineListModel::muteThread(int row)
+{
+    if (row < 0 || row >= m_cidList.count())
+        return false;
+
+    const AppBskyFeedDefs::FeedViewPost &current = m_viewPostHash.value(m_cidList.at(row));
+    const AppBskyFeedPost::Main record =
+            LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(current.post.record);
+    QString root_uri = record.reply.root.uri;
+    if (root_uri.isEmpty() || !root_uri.startsWith("at://")) {
+        return false;
+    }
+
+    bool muted = item(row, ThreadMutedRole).toBool();
+    if (muted) {
+        // true -> false
+        AppBskyGraphUnmuteThread *thread = new AppBskyGraphUnmuteThread(this);
+        connect(thread, &AppBskyGraphUnmuteThread::finished, this, [=](bool success) {
+            if (success) {
+                getPostThreadCids(root_uri,
+                                  [=](const QStringList &cids) { updateMuteThread(cids, false); });
+            } else {
+                emit errorOccured(thread->errorCode(), thread->errorMessage());
+            }
+            thread->deleteLater();
+        });
+        thread->setAccount(account());
+        thread->unmuteThread(root_uri);
+    } else {
+        // false -> true
+        AppBskyGraphMuteThread *thread = new AppBskyGraphMuteThread(this);
+        connect(thread, &AppBskyGraphMuteThread::finished, this, [=](bool success) {
+            if (success) {
+                getPostThreadCids(root_uri,
+                                  [=](const QStringList &cids) { updateMuteThread(cids, true); });
+            } else {
+                emit errorOccured(thread->errorCode(), thread->errorMessage());
+            }
+            thread->deleteLater();
+        });
+        thread->setAccount(account());
+        thread->muteThread(root_uri);
+    }
 }
 
 QHash<int, QByteArray> TimelineListModel::roleNames() const
@@ -579,6 +648,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[IsLikedRole] = "isLiked";
     roles[PinnedRole] = "pinned";
     roles[PinnedByMeRole] = "pinnedByMe";
+    roles[ThreadMutedRole] = "threadMuted";
     roles[RepostedUriRole] = "repostedUri";
     roles[LikedUriRole] = "likedUri";
     roles[RunningRepostRole] = "runningRepost";
@@ -1059,6 +1129,17 @@ void TimelineListModel::removePinnedPost()
     }
 }
 
+void TimelineListModel::updateMuteThread(const QStringList &cids, bool new_value)
+{
+    int row = -1;
+    for (const auto &cid : cids) {
+        row = m_cidList.indexOf(cid);
+        if (row >= 0) {
+            update(row, ThreadMutedRole, new_value);
+        }
+    }
+}
+
 bool TimelineListModel::runningRepost(int row) const
 {
     return item(row, RunningRepostRole).toBool();
@@ -1194,7 +1275,7 @@ void TimelineListModel::updatedPin(const QString &did, const QString &new_uri,
     int row = m_cidList.indexOf(m_pinnedUriCid.value(old_uri));
     while (row >= 0) {
         qDebug() << "updatedPin(old)" << row << old_uri << this;
-        emit dataChanged(index(row), index(row));
+        emit dataChanged(index(row), index(row), QVector<int>() << PinnedRole << PinnedByMeRole);
         row = m_cidList.indexOf(m_pinnedUriCid.value(old_uri), ++row);
     }
 }

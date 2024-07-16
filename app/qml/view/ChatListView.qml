@@ -171,7 +171,7 @@ Item {
                             elide: Text.ElideRight
                             font.pointSize: AdjustedValues.f8
                             color: Material.color(Material.Grey)
-                            text: "@" + (model.memberHandles.length > 0 ? model.memberHandles[0] : "")
+                            text: model.memberHandles.length > 0 ? ("@" + model.memberHandles[0]) : ""
                         }
 
                         Label {
@@ -208,18 +208,14 @@ Item {
                         foreground: Material.color(Material.Grey)
                         flat: true
                         onClicked: myMorePopup.open()
-                        Menu {
+                        MenuEx {
                             id: myMorePopup
-                            width: muteMenuItem.implicitWidth > leaveMenuItem.implicitWidth ?
-                                       muteMenuItem.implicitWidth : leaveMenuItem.implicitWidth
-                            MenuItem {
-                                id: muteMenuItem
+                            Action {
                                 text: model.muted ? qsTr("Unmute conversation") : qsTr("Mute conversation")
                                 icon.source: "../images/mute.png"
                                 onTriggered: rootListView.model.mute(model.index)
                             }
-                            MenuItem {
-                                id: leaveMenuItem
+                            Action {
                                 text: qsTr("Leave conversation")
                                 icon.source: "../images/leave.png"
                                 onTriggered: rootListView.model.leave(model.index)

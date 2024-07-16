@@ -147,6 +147,7 @@ ColumnLayout {
                 contentFilterFrame.labelText: model.contentFilterMessage
                 contentMediaFilterFrame.visible: model.contentMediaFilterMatched
                 contentMediaFilterFrame.labelText: model.contentMediaFilterMessage
+                postImagePreview.visible: contentMediaFilterFrame.showContent && model.embedImages.length > 0
                 postImagePreview.layoutType: postThreadView.imageLayoutType
                 postImagePreview.embedImages: model.embedImages
                 postImagePreview.embedAlts: model.embedImagesAlt
@@ -216,6 +217,7 @@ ColumnLayout {
                 postControls.isReposted: model.isReposted
                 postControls.isLiked: model.isLiked
                 postControls.pinned: model.pinnedByMe
+                postControls.threadMuted: model.threadMuted
                 postControls.postUri: model.uri
                 postControls.handle: model.handle
                 postControls.mine: model.did === postThreadView.accountDid
@@ -227,6 +229,7 @@ ColumnLayout {
                 postControls.onTriggeredRequestViewRepostedBy: postThreadView.requestViewRepostedBy(model.uri)
                 postControls.onTriggeredRequestUpdateThreadGate: postThreadView.requestUpdateThreadGate(model.uri, model.threadGateUri, model.threadGateType, model.threadGateRules, updatedThreadGate)
                 postControls.onTriggeredRequestPin: rootListView.model.pin(model.index)
+                postControls.onTriggeredRequestMuteThread: rootListView.model.muteThread(model.index)
 
                 threadConnected: model.threadConnected
                 threadConnectorTop.visible:  model.threadConnectorTop

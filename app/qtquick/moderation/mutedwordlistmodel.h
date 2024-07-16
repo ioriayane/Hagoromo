@@ -1,13 +1,12 @@
 #ifndef MUTEDWORDLISTMODEL_H
 #define MUTEDWORDLISTMODEL_H
 
-#include "contentfiltersettinglistmodel.h"
+#include "moderation/contentfiltersettinglistmodel.h"
 
 class MutedWordListModel : public ContentFilterSettingListModel
 {
     Q_OBJECT
 
-    Q_PROPERTY(bool modified READ modified WRITE setModified NOTIFY modifiedChanged FINAL)
 public:
     explicit MutedWordListModel(QObject *parent = nullptr);
 
@@ -30,9 +29,6 @@ public:
     bool enableAdultContent() const = delete;
     void setEnableAdultContent(bool newEnableAdultContent) = delete;
 
-    bool modified() const;
-    void setModified(bool newModified);
-
 public slots:
 
 signals:
@@ -43,7 +39,6 @@ protected:
     QHash<int, QByteArray> roleNames() const;
 
 private:
-    bool m_modified;
 };
 
 #endif // MUTEDWORDLISTMODEL_H

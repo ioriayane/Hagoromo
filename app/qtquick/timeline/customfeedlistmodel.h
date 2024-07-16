@@ -2,7 +2,7 @@
 #define CUSTOMFEEDLISTMODEL_H
 
 #include "timelinelistmodel.h"
-#include "feedgeneratorlistmodel.h"
+#include "../feedgenerator/feedgeneratorlistmodel.h"
 
 class CustomFeedListModel : public TimelineListModel
 {

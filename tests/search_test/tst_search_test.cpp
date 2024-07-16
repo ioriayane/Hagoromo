@@ -4,8 +4,8 @@
 
 #include "webserver.h"
 
-#include "searchpostlistmodel.h"
-#include "searchprofilelistmodel.h"
+#include "timeline/searchpostlistmodel.h"
+#include "profile/searchprofilelistmodel.h"
 
 class search_test : public QObject
 {
