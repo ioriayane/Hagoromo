@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+### v0.34.0 - 2024/7/16
+
 - Add
   - Support for thread mute
 - Update
