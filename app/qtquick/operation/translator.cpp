@@ -1,6 +1,7 @@
 #include "translator.h"
 #include "encryption.h"
 
+#include <QLocale>
 #include <QSettings>
 #include <QDebug>
 #include <QNetworkAccessManager>
@@ -13,14 +14,21 @@
 
 Translator::Translator(QObject *parent) : QObject { parent }
 {
-    Encryption encryption;
-    QSettings settings;
-    setApiUrl(settings.value("translateApiUrl").toString());
-    setApiKey(encryption.decrypt(settings.value("translateApiKey").toString()));
-    setTargetLanguage(settings.value("translateTargetLanguage").toString());
+    qDebug().noquote() << this << "Translator()";
 }
 
-void Translator::translate(const QString &text)
+Translator::~Translator()
+{
+    qDebug().noquote() << this << "~Translator()";
+}
+
+Translator *Translator::getInstance()
+{
+    static Translator instance;
+    return &instance;
+}
+
+void Translator::translate(const QString &cid, const QString &text)
 {
     QNetworkRequest request((QUrl(apiUrl())));
     request.setRawHeader(QByteArray("Authorization"),
@@ -51,16 +59,30 @@ void Translator::translate(const QString &text)
             }
         }
 
-        emit finished(text);
+        m_translations[cid] = text;
+        emit finished(cid, text);
         reply->deleteLater();
         manager->deleteLater();
     });
     manager->post(request, params.toString(QUrl::FullyEncoded).toUtf8());
+
+    m_translations[cid] = "Now translating ...";
 }
 
 bool Translator::validSettings()
 {
+    Encryption encryption;
+    QSettings settings;
+    setApiUrl(settings.value("translateApiUrl").toString());
+    setApiKey(encryption.decrypt(settings.value("translateApiKey").toString()));
+    setTargetLanguage(settings.value("translateTargetLanguage").toString());
+
     return !(apiKey().isEmpty() || apiUrl().isEmpty() || targetLanguage().isEmpty());
+}
+
+QString Translator::getTranslation(const QString &cid) const
+{
+    return m_translations.value(cid, QString());
 }
 
 const QString Translator::apiUrl() const
@@ -92,6 +114,12 @@ void Translator::setApiKey(const QString &newApiKey)
 const QString Translator::targetLanguage() const
 {
     return m_targetLanguage;
+}
+
+const QString Translator::targetLanguageBcp47() const
+{
+    QLocale l(m_targetLanguage);
+    return l.bcp47Name();
 }
 
 void Translator::setTargetLanguage(const QString &newTargetLanguage)
