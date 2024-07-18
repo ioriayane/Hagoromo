@@ -8,6 +8,9 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+- Update
+  - Change so that the translation results are shared throughout the app
+
 ### v0.34.0 - 2024/7/16
 
 - Add

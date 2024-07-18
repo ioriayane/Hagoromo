@@ -60,7 +60,8 @@ class AtpAbstractListModel : public QAbstractListModel
     Q_PROPERTY(QString refreshJwt READ refreshJwt CONSTANT)
 
 public:
-    explicit AtpAbstractListModel(QObject *parent = nullptr);
+    explicit AtpAbstractListModel(QObject *parent = nullptr, bool use_translator = false);
+    ~AtpAbstractListModel();
 
     enum ExternalLinkRoles {
         HasExternalLinkRole,
@@ -104,6 +105,7 @@ public:
     virtual Q_INVOKABLE QString getOfficialUrl() const = 0;
     virtual Q_INVOKABLE QString getItemOfficialUrl(int row) const = 0;
 
+    QString getTranslation(const QString &cid) const;
     Q_INVOKABLE void translate(const QString &cid);
     Q_INVOKABLE void reflectVisibility();
 
@@ -145,6 +147,7 @@ signals:
 public slots:
     virtual Q_INVOKABLE bool getLatest() = 0;
     virtual Q_INVOKABLE bool getNext() = 0;
+    void finishedTransration(const QString &cid, const QString text);
 
 protected:
     void displayQueuedPosts();
@@ -219,7 +222,7 @@ protected:
     QList<PostCueItem> m_cuePost;
     QString m_cursor;
 
-    QHash<QString, QString> m_translations; // QHash<cid, translation>
+    // QHash<QString, QString> m_translations; // QHash<cid, translation>
     QHash<QString, QString> m_mutedPosts; // QHash<cid, cid>
     QString m_currentPinnedPost; // リストに入れているピン止めしたポストのcid（実際にピンできているかとは関係ない）
     QHash<QString, QString> m_pinnedUriCid; // QHash<uri, cid> ピンとして扱ったURIのCIDの記録
@@ -230,6 +233,7 @@ private:
     QTimer m_timer;
     AtProtocolInterface::AccountData m_account;
     int m_contentFilterRefreshCounter;
+    bool m_useTranslator;
 
     bool m_running;
     int m_loadingInterval;

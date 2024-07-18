@@ -16,7 +16,7 @@ using AtProtocolInterface::AppBskyGraphUnmuteThread;
 using namespace AtProtocolType;
 
 TimelineListModel::TimelineListModel(QObject *parent)
-    : AtpAbstractListModel { parent },
+    : AtpAbstractListModel { parent, true },
       m_visibleReplyToUnfollowedUsers(true),
       m_visibleRepostOfOwn(true),
       m_visibleRepostOfFollowingUsers(true),
@@ -112,8 +112,7 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     else if (role == RecordTextPlainRole)
         return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(current.post.record).text;
     else if (role == RecordTextTranslationRole)
-        return m_translations.contains(current.post.cid) ? m_translations[current.post.cid]
-                                                         : QString();
+        return getTranslation(current.post.cid);
     else if (role == ReplyCountRole)
         return current.post.replyCount;
     else if (role == RepostCountRole)
