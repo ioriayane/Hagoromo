@@ -1,7 +1,7 @@
 #ifndef REALTIMEFEEDLISTMODEL_H
 #define REALTIMEFEEDLISTMODEL_H
 
-#include "timelinelistmodel.h"
+#include "timeline/timelinelistmodel.h"
 #include "realtime/firehosereceiver.h"
 
 class RealtimeFeedListModel : public TimelineListModel
