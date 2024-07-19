@@ -45,6 +45,7 @@ SOURCES += \
     $$PWD/profile/userprofile.cpp \
     $$PWD/operation/recordoperator.cpp \
     $$PWD/operation/translator.cpp \
+    $$PWD/realtime/realtimefeedlistmodel.cpp \
     $$PWD/systemtool.cpp \
     $$PWD/timeline/actorlikelistmodel.cpp \
     $$PWD/timeline/anyfeedlistmodel.cpp \
@@ -101,6 +102,7 @@ HEADERS += \
     $$PWD/profile/userprofile.h \
     $$PWD/operation/recordoperator.h \
     $$PWD/operation/translator.h \
+    $$PWD/realtime/realtimefeedlistmodel.h \
     $$PWD/systemtool.h \
     $$PWD/thumbnailprovider.h \
     $$PWD/timeline/actorlikelistmodel.h \

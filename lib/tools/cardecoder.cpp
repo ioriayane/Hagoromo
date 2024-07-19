@@ -91,7 +91,7 @@ int CarDecoder::decodeData(int offset)
     }
 
     int cid_size = 0;
-    QString cid = decodeCid(m_content.mid(offset, data_size), cid_size);
+    QString cid = CarDecoder::decodeCid(m_content.mid(offset, data_size), cid_size);
     if (cid.isEmpty())
         return m_content.length();
     m_cids.append(cid);
@@ -106,7 +106,7 @@ int CarDecoder::decodeData(int offset)
     return leb_size + data_size;
 }
 
-QString CarDecoder::decodeCid(const QByteArray &data, int &offset) const
+QString CarDecoder::decodeCid(const QByteArray &data, int &offset)
 {
     offset = 0;
     if (data.length() < 2) {
@@ -207,7 +207,8 @@ QVariant CarDecoder::decodeCborValue(const QCborValue &value)
             // tag 42のときのbinaryをcidとしてデコードして良いのは42だからなのでここで処理する
             int offset = 0;
             QJsonObject obj;
-            obj.insert("$link", decodeCid(value.taggedValue().toByteArray().mid(1), offset));
+            obj.insert("$link",
+                       CarDecoder::decodeCid(value.taggedValue().toByteArray().mid(1), offset));
             return obj;
         }
         break;

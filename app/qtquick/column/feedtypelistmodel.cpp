@@ -87,7 +87,7 @@ void FeedTypeListModel::clear()
     // デフォルトで追加した状態にするアイテムを増減させるときは
     // AddColumnDialog.qmlのchangeColumnTypeView()を
     // 修正しないとカスタムフィードなどが読み込まれない
-    beginInsertRows(QModelIndex(), 0, 2);
+    beginInsertRows(QModelIndex(), 0, 3);
     {
         FeedTypeItem item;
         item.group = tr("Default Feeds");
@@ -100,6 +100,13 @@ void FeedTypeListModel::clear()
         item.group = tr("Default Feeds");
         item.type = FeedComponentType::Notification;
         item.generator.displayName = tr("Notification");
+        m_feedTypeItemList.append(item);
+    }
+    {
+        FeedTypeItem item;
+        item.group = tr("Original Feeds");
+        item.type = FeedComponentType::RealtimeFeed;
+        item.generator.displayName = tr("Realtime");
         m_feedTypeItemList.append(item);
     }
     {

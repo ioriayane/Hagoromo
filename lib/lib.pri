@@ -1,4 +1,4 @@
-QT += xml sql
+QT += xml sql websockets
 
 INCLUDEPATH += $$PWD \
     $$PWD/../3rdparty/cpp-httplib
@@ -80,6 +80,7 @@ SOURCES += \
     $$PWD/extension/com/atproto/repo/comatprotorepoputrecordex.cpp \
     $$PWD/extension/com/atproto/server/comatprotoservercreatesessionex.cpp \
     $$PWD/extension/com/atproto/server/comatprotoserverrefreshsessionex.cpp \
+    $$PWD/extension/com/atproto/sync/comatprotosyncsubscribereposex.cpp \
     $$PWD/extension/directory/plc/directoryplc.cpp \
     $$PWD/extension/directory/plc/directoryplclogaudit.cpp \
     $$PWD/http/httpaccess.cpp \
@@ -87,6 +88,15 @@ SOURCES += \
     $$PWD/http/httpreply.cpp \
     $$PWD/log/logaccess.cpp \
     $$PWD/log/logmanager.cpp \
+    $$PWD/realtime/abstractpostselector.cpp \
+    $$PWD/realtime/andpostselector.cpp \
+    $$PWD/realtime/firehosereceiver.cpp \
+    $$PWD/realtime/followerspostselector.cpp \
+    $$PWD/realtime/followingpostselector.cpp \
+    $$PWD/realtime/mepostselector.cpp \
+    $$PWD/realtime/notpostselector.cpp \
+    $$PWD/realtime/orpostselector.cpp \
+    $$PWD/realtime/xorpostselector.cpp \
     $$PWD/tools/base32.cpp \
     $$PWD/tools/cardecoder.cpp \
     $$PWD/tools/chatlogsubscriber.cpp \
@@ -176,6 +186,7 @@ HEADERS += \
     $$PWD/extension/com/atproto/repo/comatprotorepoputrecordex.h \
     $$PWD/extension/com/atproto/server/comatprotoservercreatesessionex.h \
     $$PWD/extension/com/atproto/server/comatprotoserverrefreshsessionex.h \
+    $$PWD/extension/com/atproto/sync/comatprotosyncsubscribereposex.h \
     $$PWD/extension/directory/plc/directoryplc.h \
     $$PWD/extension/directory/plc/directoryplclogaudit.h \
     $$PWD/http/httpaccess.h \
@@ -183,6 +194,15 @@ HEADERS += \
     $$PWD/http/httpreply.h \
     $$PWD/log/logaccess.h \
     $$PWD/log/logmanager.h \
+    $$PWD/realtime/abstractpostselector.h \
+    $$PWD/realtime/andpostselector.h \
+    $$PWD/realtime/firehosereceiver.h \
+    $$PWD/realtime/followerspostselector.h \
+    $$PWD/realtime/followingpostselector.h \
+    $$PWD/realtime/mepostselector.h \
+    $$PWD/realtime/notpostselector.h \
+    $$PWD/realtime/orpostselector.h \
+    $$PWD/realtime/xorpostselector.h \
     $$PWD/search/search.h \
     $$PWD/tools/base32.h \
     $$PWD/tools/cardecoder.h \

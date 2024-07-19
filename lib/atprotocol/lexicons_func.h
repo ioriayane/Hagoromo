@@ -308,6 +308,7 @@ void copyHandle(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Handle &de
 void copyMigrate(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Migrate &dest);
 void copyTombstone(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Tombstone &dest);
 void copyInfo(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Info &dest);
+void copyBlockHeader(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::BlockHeader &dest);
 }
 // tools.ozone.communication.defs
 namespace ToolsOzoneCommunicationDefs {
