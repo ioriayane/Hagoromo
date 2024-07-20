@@ -13,6 +13,8 @@
 #include <QFile>
 #include <QMetaEnum>
 
+namespace AtProtocolInterface {
+
 ComAtprotoSyncSubscribeReposEx::ComAtprotoSyncSubscribeReposEx(QObject *parent) : QObject { parent }
 {
     qDebug().noquote() << "ComAtprotoSyncSubscribeReposEx";
@@ -132,4 +134,5 @@ void ComAtprotoSyncSubscribeReposEx::onBinaryMessageReceived(const QByteArray &m
                           "The size of the decoded data does not match the total.");
         m_webSocket.close();
     }
+}
 }

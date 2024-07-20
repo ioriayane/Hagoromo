@@ -6,6 +6,8 @@
 
 #include <QtWebSockets/QWebSocket>
 
+namespace AtProtocolInterface {
+
 class ComAtprotoSyncSubscribeReposEx : public QObject
 {
     Q_OBJECT
@@ -31,5 +33,7 @@ private:
     QWebSocket m_webSocket;
     QStringList m_payloadTypeList;
 };
+
+}
 
 #endif // COMATPROTOSYNCSUBSCRIBEREPOSEX_H

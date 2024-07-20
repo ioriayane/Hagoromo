@@ -6,6 +6,8 @@
 
 #include "comatprotosyncsubscribereposex.h"
 
+using AtProtocolInterface::ComAtprotoSyncSubscribeReposEx;
+
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
@@ -51,6 +53,8 @@ int main(int argc, char *argv[])
                             }
                             qDebug().noquote()
                                     << type << json.value("time").toString()
+                                    << QDateTime::currentDateTimeUtc().toString(
+                                               "yyyy/MM/dd hh:mm:ss.zzz")
                                     << json.value("repo").toString()
                                     << op.toObject().value("action").toString()
                                     << record.value("$type").toString()
@@ -58,16 +62,19 @@ int main(int argc, char *argv[])
                         }
                     }
 
-                } else {
-                    qDebug().noquote() << type << json.value("time").toString()
-                                       << json.value("repo").toString()
-                                       << json.value("ops")
-                                                  .toArray()
-                                                  .first()
-                                                  .toObject()
-                                                  .value("action")
-                                                  .toString();
-                    qDebug().noquote() << QJsonDocument(json).toJson();
+                    // } else {
+                    //     qDebug().noquote()
+                    //             << type << json.value("time").toString()
+                    //             << QDateTime::currentDateTimeUtc().toString("yyyy/MM/dd
+                    //             hh:mm:ss.zzz")
+                    //             << json.value("repo").toString()
+                    //             << json.value("ops")
+                    //                        .toArray()
+                    //                        .first()
+                    //                        .toObject()
+                    //                        .value("action")
+                    //                        .toString();
+                    //     qDebug().noquote() << QJsonDocument(json).toJson();
                 }
 
                 if (json.value("repo").toString() == stopper_did) {

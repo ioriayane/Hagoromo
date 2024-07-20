@@ -5,6 +5,8 @@
 // #include <QJsonObject>
 #include <QJsonDocument>
 
+using AtProtocolInterface::ComAtprotoSyncSubscribeReposEx;
+
 namespace RealtimeFeed {
 
 FirehoseReceiver::FirehoseReceiver(QObject *parent) : QObject { parent }
