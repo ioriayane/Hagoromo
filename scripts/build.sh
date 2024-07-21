@@ -14,7 +14,7 @@ build_openssl(){
     make_dir "build-openssl"
     cd "build-openssl"
 
-    ../openssl/config --prefix="${ROOT_FOLDER}/openssl" --openssldir="${ROOT_FOLDER}/openssl"
+    ../openssl/Configure darwin64-x86_64-cc --prefix="${ROOT_FOLDER}/openssl" --openssldir="${ROOT_FOLDER}/openssl"
     make -j4
     make install
 
@@ -106,4 +106,4 @@ VERSION_NO=$(cat app/main.cpp | grep "app.setApplicationVersion" | grep -oE "[0-
 build_openssl
 build_hagoromo
 deploy_hagoromo
-update_web
+# update_web
