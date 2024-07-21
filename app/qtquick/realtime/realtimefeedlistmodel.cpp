@@ -176,7 +176,12 @@ void RealtimeFeedListModel::finishGetting(RealtimeFeed::AbstractPostSelector *se
         selector->setFollowing(m_followings);
         selector->setFollowers(m_followers);
         selector->setReady(true);
+#ifdef HAGOROMO_UNIT_TEST
+        qDebug().noquote()
+                << "FirehoseReceiver::getInstance()->start() --- No start on unit test mode";
+#else
         FirehoseReceiver::getInstance()->start();
+#endif
     }
 }
 

@@ -5,5 +5,9 @@
         <file>response/realtime/1/xrpc/app.bsky.graph.getFollows_3kubiyuudos2p</file>
         <file>response/realtime/1/xrpc/app.bsky.graph.getFollowers</file>
         <file>response/realtime/1/xrpc/app.bsky.graph.getFollowers_3km57slkrvu2v</file>
+        <file>data/realtimemodel/recv_data_1.json</file>
+        <file>response/realtime/1/xrpc/app.bsky.feed.getPosts</file>
+        <file>data/realtimemodel/recv_data_2.json</file>
+        <file>response/realtime/2/xrpc/app.bsky.feed.getPosts</file>
     </qresource>
 </RCC>

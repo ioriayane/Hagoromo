@@ -35,6 +35,10 @@ public:
     bool containsSelector(QObject *parent);
     int countSelector() const;
 
+#ifdef HAGOROMO_UNIT_TEST
+    void testReceived(const QJsonObject &json);
+#endif
+
     QString serviceEndpoint() const;
     void setServiceEndpoint(const QString &newServiceEndpoint);
 

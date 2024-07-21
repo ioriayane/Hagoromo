@@ -56,6 +56,7 @@ void FirehoseReceiver::start()
     if (m_selectorHash.isEmpty())
         return;
 
+#ifndef HAGOROMO_UNIT_TEST
     QString path = serviceEndpoint();
     if (path.endsWith("/")) {
         path.resize(path.length() - 1);
@@ -63,6 +64,10 @@ void FirehoseReceiver::start()
     QUrl url(path + "/xrpc/com.atproto.sync.subscribeRepos");
     qDebug().noquote() << "Connect to" << url.toString();
     m_client.open(url);
+#else
+    qDebug().noquote() << "Connect to dummy --- no start on unit test mode";
+    emit connectedToService();
+#endif
 }
 
 void FirehoseReceiver::stop()
@@ -137,6 +142,22 @@ int FirehoseReceiver::countSelector() const
 {
     return m_selectorHash.count();
 }
+
+#ifdef HAGOROMO_UNIT_TEST
+void FirehoseReceiver::testReceived(const QJsonObject &json)
+{
+    for (auto s : qAsConst(m_selectorHash)) {
+        if (!s) {
+            // already deleted
+        } else if (!s->ready()) {
+            // no op
+        } else if (s->judge(json)) {
+            qDebug().noquote().nospace() << QJsonDocument(json).toJson();
+            emit s->selected(json);
+        }
+    }
+}
+#endif
 
 QString FirehoseReceiver::serviceEndpoint() const
 {

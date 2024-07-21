@@ -31,6 +31,7 @@ private slots:
 
 private:
     QList<UserInfo> extractFromArray(const QJsonArray &array) const;
+    QJsonDocument loadJson(const QString &path);
 
     // QWebSocketServer m_server;
     // QList<QWebSocket *> m_clients;
@@ -226,7 +227,6 @@ void realtime_test::test_Websock()
 
 void realtime_test::test_RealtimeFeedListModel()
 {
-#if 0
     RealtimeFeedListModel model;
     model.setAccount(m_service + "/realtime/1", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", QString(),
                      QString(), "dummy", QString());
@@ -251,6 +251,7 @@ void realtime_test::test_RealtimeFeedListModel()
 
     {
         QSignalSpy spy(recv, SIGNAL(connectedToService()));
+        recv->start();
         spy.wait();
         QVERIFY(spy.count() == 1);
     }
@@ -259,7 +260,37 @@ void realtime_test::test_RealtimeFeedListModel()
     QVERIFY(s->ready() == true);
     QVERIFY(s->needFollowing() == true);
     QVERIFY(s->needFollowers() == true);
-#endif
+
+    QJsonDocument json_doc;
+
+    qDebug().noquote() << "---------------------------";
+    json_doc = loadJson(":/data/realtimemodel/recv_data_1.json");
+    QVERIFY(json_doc.isObject());
+    QVERIFY2(model.rowCount() == 0, QString::number(model.rowCount()).toLocal8Bit());
+    {
+        QSignalSpy spy(&model, SIGNAL(rowsInserted(const QModelIndex &, int, int)));
+        recv->testReceived(json_doc.object());
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+    }
+    QVERIFY2(model.rowCount() == 1, QString::number(model.rowCount()).toLocal8Bit());
+
+    QVERIFY(model.item(0, TimelineListModel::CidRole).toString()
+            == "bafyreigoon4vpg3axqlvrzyxcpmwh4ihra4hbqd5uh3e774bbjjnla5ajq");
+    QVERIFY(model.item(0, TimelineListModel::RecordTextPlainRole).toString() == "reply3");
+
+    qDebug().noquote() << "---------------------------";
+    model.setAccount(m_service + "/realtime/2", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", QString(),
+                     QString(), "dummy", QString());
+    json_doc = loadJson(":/data/realtimemodel/recv_data_2.json");
+    QVERIFY(json_doc.isObject());
+    {
+        QSignalSpy spy(&model, SIGNAL(rowsInserted(const QModelIndex &, int, int)));
+        recv->testReceived(json_doc.object());
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+    }
+    QVERIFY2(model.rowCount() == 2, QString::number(model.rowCount()).toLocal8Bit());
 }
 
 QList<UserInfo> realtime_test::extractFromArray(const QJsonArray &array) const
@@ -272,6 +303,16 @@ QList<UserInfo> realtime_test::extractFromArray(const QJsonArray &array) const
         ret.append(user);
     }
     return ret;
+}
+
+QJsonDocument realtime_test::loadJson(const QString &path)
+{
+    QFile file(path);
+    if (file.open(QFile::ReadOnly)) {
+        return QJsonDocument::fromJson(file.readAll());
+    } else {
+        return QJsonDocument();
+    }
 }
 
 QTEST_MAIN(realtime_test)
