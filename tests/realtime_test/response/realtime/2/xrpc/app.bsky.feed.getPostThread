@@ -1,0 +1,70 @@
+{
+    "thread": {
+        "$type": "app.bsky.feed.defs#threadViewPost",
+        "post": {
+            "uri": "at://did:plc:73l5atmh7p3fn3xigbp6ao5x/app.bsky.feed.post/3kxfojryix22r",
+            "cid": "bafyreiadfsi4feaygror6ekk5j7mlhquau7zbf3jlxasmjjcsdjs75zbjq",
+            "author": {
+                "did": "did:plc:73l5atmh7p3fn3xigbp6ao5x",
+                "handle": "hagoromo.relog.tech",
+                "displayName": "羽衣 -Hagoromo-",
+                "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:73l5atmh7p3fn3xigbp6ao5x/bafkreif42yycinokltjrfizxgvyyw4z63a264jc4ws723pauxtc7vqo7la@jpeg",
+                "associated": {
+                    "chat": {
+                        "allowIncoming": "none"
+                    }
+                },
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false,
+                    "following": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.follow/3kugiohvrl22h"
+                },
+                "labels": [],
+                "createdAt": "2023-06-20T16:13:34.464Z"
+            },
+            "record": {
+                "$type": "app.bsky.feed.post",
+                "createdAt": "2024-07-16T13:14:16.078Z",
+                "embed": {
+                    "$type": "app.bsky.embed.external",
+                    "external": {
+                        "description": "This is a multi-column Bluesky client.",
+                        "thumb": {
+                            "$type": "blob",
+                            "ref": {
+                                "$link": "bafkreia2wg5kjzhzo42zu7fii4o5j6uxyefznpns25j7bf66w5t5ewrcbu"
+                            },
+                            "mimeType": "image/jpeg",
+                            "size": 50502
+                        },
+                        "title": "羽衣 -Hagoromo-",
+                        "uri": "https://hagoromo.relog.tech/ja/"
+                    }
+                },
+                "langs": [
+                    "ja",
+                    "en"
+                ],
+                "text": "update hagoromo",
+                "via": "Hagoromo"
+            },
+            "embed": {
+                "$type": "app.bsky.embed.external#view",
+                "external": {
+                    "uri": "https://hagoromo.relog.tech/ja/",
+                    "title": "羽衣 -Hagoromo-",
+                    "description": "This is a multi-column Bluesky client.",
+                    "thumb": "https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:73l5atmh7p3fn3xigbp6ao5x/bafkreia2wg5kjzhzo42zu7fii4o5j6uxyefznpns25j7bf66w5t5ewrcbu@jpeg"
+                }
+            },
+            "replyCount": 0,
+            "repostCount": 5,
+            "likeCount": 7,
+            "indexedAt": "2024-07-16T13:14:16.078Z",
+            "viewer": {
+                "threadMuted": false
+            },
+            "labels": []
+        }
+    }
+}

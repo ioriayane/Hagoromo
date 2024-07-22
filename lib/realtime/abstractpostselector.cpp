@@ -157,6 +157,52 @@ QStringList AbstractPostSelector::getOperationUris(const QJsonObject &object)
     return uris;
 }
 
+QList<OperationInfo> AbstractPostSelector::getOperationInfos(const QJsonObject &object)
+{
+    QList<OperationInfo> infos;
+    QString repo = getRepo(object);
+    if (repo.isEmpty())
+        return infos;
+
+    for (const auto item : object.value("ops").toArray()) {
+        if (item.toObject().value("action").toString() != "create") {
+            continue;
+        }
+        OperationInfo info;
+        QString path = item.toObject().value("path").toString();
+        QString cid = item.toObject().value("cid").toObject().value("$link").toString();
+        if (!path.isEmpty() && !cid.isEmpty()) {
+            if (path.startsWith("app.bsky.feed.repost/")) {
+                QJsonObject block = getBlock(object, path);
+                if (!block.isEmpty()) {
+                    info.cid = block.value("value")
+                                       .toObject()
+                                       .value("subject")
+                                       .toObject()
+                                       .value("cid")
+                                       .toString();
+                    info.uri = block.value("value")
+                                       .toObject()
+                                       .value("subject")
+                                       .toObject()
+                                       .value("uri")
+                                       .toString();
+                    if (!info.cid.isEmpty() && !info.uri.isEmpty()) {
+                        info.is_repost = true;
+                        info.reposted_by = repo;
+                        infos.append(info);
+                    }
+                }
+            } else {
+                info.cid = cid;
+                info.uri = QString("at://%1/%2").arg(repo, path);
+                infos.append(info);
+            }
+        }
+    }
+    return infos;
+}
+
 const QList<AbstractPostSelector *> &AbstractPostSelector::children() const
 {
     return m_children;

@@ -291,6 +291,16 @@ void realtime_test::test_RealtimeFeedListModel()
         QVERIFY(spy.count() == 1);
     }
     QVERIFY2(model.rowCount() == 2, QString::number(model.rowCount()).toLocal8Bit());
+
+    QVERIFY(model.item(0, TimelineListModel::CidRole).toString()
+            == "bafyreiadfsi4feaygror6ekk5j7mlhquau7zbf3jlxasmjjcsdjs75zbjq");
+    QVERIFY(model.item(0, TimelineListModel::RecordTextPlainRole).toString() == "update hagoromo");
+    QVERIFY(model.item(0, TimelineListModel::IsRepostedByRole).toBool() == true);
+
+    QVERIFY(model.item(1, TimelineListModel::CidRole).toString()
+            == "bafyreigoon4vpg3axqlvrzyxcpmwh4ihra4hbqd5uh3e774bbjjnla5ajq");
+    QVERIFY(model.item(1, TimelineListModel::RecordTextPlainRole).toString() == "reply3");
+    QVERIFY(model.item(1, TimelineListModel::IsRepostedByRole).toBool() == false);
 }
 
 QList<UserInfo> realtime_test::extractFromArray(const QJsonArray &array) const

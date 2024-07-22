@@ -3,9 +3,11 @@
 #include "atprotocol/app/bsky/feed/appbskyfeedgetposts.h"
 #include "atprotocol/app/bsky/graph/appbskygraphgetfollows.h"
 #include "atprotocol/app/bsky/graph/appbskygraphgetfollowers.h"
+#include "atprotocol/app/bsky/feed/appbskyfeedgetpostthread.h"
 
 using namespace RealtimeFeed;
 using AtProtocolInterface::AppBskyFeedGetPosts;
+using AtProtocolInterface::AppBskyFeedGetPostThread;
 using AtProtocolInterface::AppBskyGraphGetFollowers;
 using AtProtocolInterface::AppBskyGraphGetFollows;
 
@@ -44,10 +46,10 @@ bool RealtimeFeedListModel::getLatest()
     selector->setDid(account().did);
     connect(selector, &AbstractPostSelector::selected, this, [=](const QJsonObject &object) {
         // qDebug().noquote() << QJsonDocument(object).toJson();
-        QStringList uris = AbstractPostSelector::getOperationUris(object);
-        if (!uris.isEmpty()) {
-            m_cueGetPost.append(uris);
-            getPosts();
+
+        m_cueGetPostThread.append(selector->getOperationInfos(object));
+        if (!m_cueGetPostThread.isEmpty()) {
+            getPostThread();
         }
     });
 
@@ -268,4 +270,49 @@ void RealtimeFeedListModel::getPosts()
     posts->setAccount(account());
     posts->setLabelers(labelerDids());
     posts->getPosts(uris);
+}
+
+void RealtimeFeedListModel::getPostThread()
+{
+    if (m_cueGetPostThread.isEmpty()) {
+        m_runningCue = false;
+        return;
+    }
+
+    RealtimeFeed::OperationInfo ope_info = m_cueGetPostThread.first();
+    m_cueGetPostThread.removeFirst();
+
+    m_runningCue = true;
+
+    AppBskyFeedGetPostThread *post_thread = new AppBskyFeedGetPostThread(this);
+    connect(post_thread, &AppBskyFeedGetPostThread::finished, [=](bool success) {
+        if (success) {
+
+            AtProtocolType::AppBskyFeedDefs::FeedViewPost view_post;
+            view_post.post = post_thread->threadViewPost().post;
+            if (ope_info.is_repost) {
+                view_post.reason_type = AtProtocolType::AppBskyFeedDefs::FeedViewPostReasonType::
+                        reason_ReasonRepost;
+                view_post.reason_ReasonRepost.by.did = ope_info.reposted_by;
+                view_post.reason_ReasonRepost.by.handle = ope_info.reposted_by;
+            }
+            m_viewPostHash[view_post.post.cid] = view_post;
+            bool visible = checkVisibility(view_post.post.cid);
+            if (visible) {
+                beginInsertRows(QModelIndex(), 0, 0);
+                m_cidList.insert(0, view_post.post.cid);
+                endInsertRows();
+            }
+            m_originalCidList.insert(0, view_post.post.cid);
+
+        } else {
+            emit errorOccured(post_thread->errorCode(), post_thread->errorMessage());
+        }
+        // 残ってたらもう1回
+        QTimer::singleShot(0, this, &RealtimeFeedListModel::getPostThread);
+        post_thread->deleteLater();
+    });
+    post_thread->setAccount(account());
+    post_thread->setLabelers(labelerDids());
+    post_thread->getPostThread(ope_info.uri, 0, 1);
 }

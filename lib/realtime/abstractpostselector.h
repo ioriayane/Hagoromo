@@ -12,6 +12,14 @@ struct UserInfo
     QString rkey;
 };
 
+struct OperationInfo
+{
+    QString cid;
+    QString uri;
+    bool is_repost = false;
+    QString reposted_by; // did
+};
+
 class AbstractPostSelector : public QObject
 {
     Q_OBJECT
@@ -31,6 +39,7 @@ public:
     virtual void setFollowers(const QList<UserInfo> &followers);
 
     static QStringList getOperationUris(const QJsonObject &object);
+    QList<OperationInfo> getOperationInfos(const QJsonObject &object);
 
     QString did() const;
     void setDid(const QString &newDid);

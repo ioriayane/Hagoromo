@@ -9,5 +9,7 @@
         <file>response/realtime/1/xrpc/app.bsky.feed.getPosts</file>
         <file>data/realtimemodel/recv_data_2.json</file>
         <file>response/realtime/2/xrpc/app.bsky.feed.getPosts</file>
+        <file>response/realtime/2/xrpc/app.bsky.feed.getPostThread</file>
+        <file>response/realtime/1/xrpc/app.bsky.feed.getPostThread</file>
     </qresource>
 </RCC>
