@@ -126,6 +126,8 @@ void realtime_test::test_PostSelector()
         root->setFollowing(following);
         root->setFollowers(followers);
         root->setDid("did:plc:me");
+        root->setHandle("handle.example.com");
+        root->setDisplayName("my display name");
         root->setReady(true);
 
         QVERIFY(root->needFollowing()
@@ -296,6 +298,9 @@ void realtime_test::test_RealtimeFeedListModel()
             == "bafyreiadfsi4feaygror6ekk5j7mlhquau7zbf3jlxasmjjcsdjs75zbjq");
     QVERIFY(model.item(0, TimelineListModel::RecordTextPlainRole).toString() == "update hagoromo");
     QVERIFY(model.item(0, TimelineListModel::IsRepostedByRole).toBool() == true);
+    QVERIFY(model.item(0, TimelineListModel::RepostedByDisplayNameRole).toString() == "");
+    QVERIFY(model.item(0, TimelineListModel::RepostedByHandleRole).toString()
+            == "ioriayane.bsky.social");
 
     QVERIFY(model.item(1, TimelineListModel::CidRole).toString()
             == "bafyreigoon4vpg3axqlvrzyxcpmwh4ihra4hbqd5uh3e774bbjjnla5ajq");

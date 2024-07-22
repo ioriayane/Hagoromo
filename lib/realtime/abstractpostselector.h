@@ -10,6 +10,8 @@ struct UserInfo
 {
     QString did;
     QString rkey;
+    QString handle;
+    QString display_name;
 };
 
 struct OperationInfo
@@ -18,6 +20,8 @@ struct OperationInfo
     QString uri;
     bool is_repost = false;
     QString reposted_by; // did
+    QString reposted_by_handle;
+    QString reposted_by_display_name;
 };
 
 class AbstractPostSelector : public QObject
@@ -37,11 +41,12 @@ public:
 
     virtual void setFollowing(const QList<UserInfo> &following);
     virtual void setFollowers(const QList<UserInfo> &followers);
+    virtual UserInfo getUser(const QString &did) const;
 
     static QStringList getOperationUris(const QJsonObject &object);
     QList<OperationInfo> getOperationInfos(const QJsonObject &object);
 
-    QString did() const;
+    QString did() const; // account did
     void setDid(const QString &newDid);
     QString name() const;
     void setName(const QString &newName);
@@ -51,6 +56,12 @@ public:
     void setParentIsArray(bool newParentIsArray);
     bool ready() const;
     void setReady(bool newReady);
+
+    QString handle() const;
+    void setHandle(const QString &newHandle);
+
+    QString displayName() const;
+    void setDisplayName(const QString &newDisplayName);
 
 signals:
     void selected(const QJsonObject &object);
@@ -68,7 +79,9 @@ protected:
 
 private:
     QList<AbstractPostSelector *> m_children;
-    QString m_did;
+    QString m_did; // of account
+    QString m_handle; // of account
+    QString m_displayName; // of account
     QString m_name;
     bool m_isArray;
     bool m_parentIsArray;

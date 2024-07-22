@@ -29,11 +29,9 @@ private:
     void finishGetting(RealtimeFeed::AbstractPostSelector *selector);
     void copyFollows(const QList<AtProtocolType::AppBskyActorDefs::ProfileView> &follows,
                      bool is_following);
-    void getPosts();
     void getPostThread();
 
     bool m_runningCue;
-    QStringList m_cueGetPost; // uri
     QList<RealtimeFeed::OperationInfo> m_cueGetPostThread;
     QList<RealtimeFeed::UserInfo> m_followings;
     QList<RealtimeFeed::UserInfo> m_followers;

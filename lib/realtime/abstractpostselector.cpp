@@ -138,6 +138,26 @@ void AbstractPostSelector::setFollowers(const QList<UserInfo> &followers)
     }
 }
 
+UserInfo AbstractPostSelector::getUser(const QString &did) const
+{
+    UserInfo info;
+
+    if (did == this->did()) {
+        info.did = did;
+        info.handle = handle();
+        info.display_name = displayName();
+    } else {
+        for (auto child : children()) {
+            info = child->getUser(did);
+            if (!info.did.isEmpty()) {
+                return info;
+            }
+        }
+    }
+
+    return info;
+}
+
 QStringList AbstractPostSelector::getOperationUris(const QJsonObject &object)
 {
     QStringList uris;
@@ -187,9 +207,13 @@ QList<OperationInfo> AbstractPostSelector::getOperationInfos(const QJsonObject &
                                        .toObject()
                                        .value("uri")
                                        .toString();
+                    UserInfo user_info = getUser(repo);
+
                     if (!info.cid.isEmpty() && !info.uri.isEmpty()) {
                         info.is_repost = true;
                         info.reposted_by = repo;
+                        info.reposted_by_handle = user_info.handle;
+                        info.reposted_by_display_name = user_info.display_name;
                         infos.append(info);
                     }
                 }
@@ -323,4 +347,31 @@ void AbstractPostSelector::setDid(const QString &newDid)
     }
     m_did = newDid;
 }
+
+QString AbstractPostSelector::displayName() const
+{
+    return m_displayName;
+}
+
+void AbstractPostSelector::setDisplayName(const QString &newDisplayName)
+{
+    for (auto child : children()) {
+        child->setDisplayName(newDisplayName);
+    }
+    m_displayName = newDisplayName;
+}
+
+QString AbstractPostSelector::handle() const
+{
+    return m_handle;
+}
+
+void AbstractPostSelector::setHandle(const QString &newHandle)
+{
+    for (auto child : children()) {
+        child->setHandle(newHandle);
+    }
+    m_handle = newHandle;
+}
+
 }

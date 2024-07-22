@@ -55,6 +55,15 @@ void FollowersPostSelector::setFollowers(const QList<UserInfo> &followers)
     }
 }
 
+UserInfo FollowersPostSelector::getUser(const QString &did) const
+{
+    if (m_followers.contains(did)) {
+        return m_followers.value(did);
+    } else {
+        return AbstractPostSelector::getUser(did);
+    }
+}
+
 bool FollowersPostSelector::needFollowers() const
 {
     return true;
