@@ -251,6 +251,7 @@ bool AbstractPostSelector::isTarget(const QJsonObject &object) const
 
 bool AbstractPostSelector::isMy(const QJsonObject &object) const
 {
+    qDebug().noquote() << this << "isMy" << getRepo(object) << did();
     return (!did().isEmpty() && getRepo(object) == did());
 }
 

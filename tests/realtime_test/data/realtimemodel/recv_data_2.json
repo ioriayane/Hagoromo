@@ -16,7 +16,7 @@
         }
     ],
     "commit": {
-        "$link": "bafyreibdx423sxf42w3y7e4lyxjvozbrupptsqj4l2gqrrkzkwkfypzz4m"
+        "$link": "bafyreibdx423sxf42w3y7e4lyxjvozbrupptsqj4l2gqrrkzkwkfypzz4m2"
     },
     "ops": [
         {
@@ -30,8 +30,8 @@
     "prev": null,
     "rebase": false,
     "repo": "did:plc:l4fsx4ujos7uw7n4ijq2ulgs",
-    "rev": "3kuheywuboc2y",
-    "seq": 598557559,
+    "rev": "3kuheywuboc2y2",
+    "seq": 557371055,
     "since": "3kugiohvxgk2h",
     "time": "2024-06-09T01:13:34.275Z",
     "tooBig": false

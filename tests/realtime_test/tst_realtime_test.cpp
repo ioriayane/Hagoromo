@@ -306,6 +306,33 @@ void realtime_test::test_RealtimeFeedListModel()
             == "bafyreigoon4vpg3axqlvrzyxcpmwh4ihra4hbqd5uh3e774bbjjnla5ajq");
     QVERIFY(model.item(1, TimelineListModel::RecordTextPlainRole).toString() == "reply3");
     QVERIFY(model.item(1, TimelineListModel::IsRepostedByRole).toBool() == false);
+
+    qDebug().noquote() << "---------------------------";
+    model.setAccount(m_service + "/realtime/3", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", QString(),
+                     QString(), "dummy", QString());
+    json_doc = loadJson(":/data/realtimemodel/recv_data_3.json");
+    recv->testReceived(json_doc.object());
+    QVERIFY2(model.rowCount() == 2, QString::number(model.rowCount()).toLocal8Bit());
+
+    qDebug().noquote() << "---------------------------";
+    json_doc = loadJson(":/data/realtimemodel/recv_data_4.json");
+    recv->testReceived(json_doc.object());
+    QVERIFY2(model.rowCount() == 2, QString::number(model.rowCount()).toLocal8Bit());
+
+    qDebug().noquote() << "---------------------------";
+    json_doc = loadJson(":/data/realtimemodel/recv_data_3.json");
+    QVERIFY(json_doc.isObject());
+    {
+        QSignalSpy spy(&model, SIGNAL(rowsInserted(const QModelIndex &, int, int)));
+        recv->testReceived(json_doc.object());
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+    }
+    QVERIFY2(model.rowCount() == 3, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.item(0, TimelineListModel::CidRole).toString()
+            == "bafyreigoon4vpg3axqlvrzyxcpmwh4ihra4hbqd5uh3e774bbjjnla5ajq3");
+    QVERIFY(model.item(0, TimelineListModel::RecordTextPlainRole).toString() == "post 3");
+    QVERIFY(model.item(0, TimelineListModel::IsRepostedByRole).toBool() == false);
 }
 
 QList<UserInfo> realtime_test::extractFromArray(const QJsonArray &array) const
