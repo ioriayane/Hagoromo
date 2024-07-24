@@ -239,6 +239,15 @@ void RealtimeFeedListModel::getPostThread()
                 view_post.reason_ReasonRepost.by.handle = ope_info.reposted_by_handle;
                 view_post.reason_ReasonRepost.by.displayName = ope_info.reposted_by_display_name;
             }
+            if (post_thread->threadViewPost().parent_type
+                        == AtProtocolType::AppBskyFeedDefs::ThreadViewPostParentType::
+                                parent_ThreadViewPost
+                && post_thread->threadViewPost().parent_ThreadViewPost) {
+                view_post.reply.parent_type =
+                        AtProtocolType::AppBskyFeedDefs::ReplyRefParentType::parent_PostView;
+                view_post.reply.parent_PostView =
+                        post_thread->threadViewPost().parent_ThreadViewPost->post;
+            }
             m_viewPostHash[view_post.post.cid] = view_post;
             bool visible = checkVisibility(view_post.post.cid);
             if (visible) {
