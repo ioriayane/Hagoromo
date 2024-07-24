@@ -535,8 +535,9 @@ ColumnLayout {
         id: realtimeFeedComponent
         TimelineView {
             model: RealtimeFeedListModel {
-                selectorJson: "{\"or\": [{\"following\": {}},{\"me\": {}}]}"
+                // selectorJson: "{\"or\": [{\"following\": {}},{\"me\": {}}]}"
                 // selectorJson: "{\"not\": {\"me\": {}}}"
+                selectorJson: settings.columnValue
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             }
             accountDid: account.did
@@ -599,7 +600,7 @@ ColumnLayout {
             componentTypeLabel.addText = ""
         }else if(componentType === 9){
             columnStackView.push(realtimeFeedComponent)
-            componentTypeLabel.addText = ""
+            componentTypeLabel.addText = " : " + settings.columnName
         }else{
             columnStackView.push(timelineComponent)
             componentTypeLabel.addText = ""
