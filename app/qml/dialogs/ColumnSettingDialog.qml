@@ -99,6 +99,13 @@ Dialog {
                 when: columnSettingDialog.componentType === 8
                 PropertyChanges { target: autoLoadingCheckbox; visible: false }
                 PropertyChanges { target: autoLoadingIntervalLayout; visible: false }
+            },
+            State { // RealtimeFeed
+                when: columnSettingDialog.componentType === 9
+                PropertyChanges { target: autoLoadingCheckbox; visible: false }
+                PropertyChanges { target: autoLoadingIntervalLayout; visible: false }
+                PropertyChanges { target: imageLayoutLabel; visible: true }
+                PropertyChanges { target: imageLayoutCombobox; visible: true }
             }
         ]
 

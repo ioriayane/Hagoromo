@@ -687,7 +687,7 @@ ColumnLayout {
                         qsTr("List"),
                         qsTr("Chat"),
                         qsTr("Chat"),
-                        qsTr("Original"),
+                        qsTr("Realtime"),
                         qsTr("Unknown")
                     ]
                     property string addText: ""
