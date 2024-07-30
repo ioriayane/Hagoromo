@@ -24,6 +24,12 @@ public:
     FirehoseReceiver(FirehoseReceiver &&) = delete;
     FirehoseReceiver &operator=(FirehoseReceiver &&) = delete;
 
+    enum FirehoseReceiverStatus {
+        Disconnected,
+        Connected,
+        Error,
+    };
+
     static FirehoseReceiver *getInstance();
 
     void start();
@@ -35,6 +41,7 @@ public:
     AbstractPostSelector *getSelector(QObject *parent);
     bool containsSelector(QObject *parent);
     int countSelector() const;
+    bool selectorIsReady(QObject *parent);
 
 #ifdef HAGOROMO_UNIT_TEST
     void testReceived(const QJsonObject &json);
@@ -43,11 +50,15 @@ public:
     QString serviceEndpoint() const;
     void setServiceEndpoint(const QString &newServiceEndpoint);
 
+    FirehoseReceiverStatus status() const;
+    void setStatus(FirehoseReceiverStatus newStatus);
+
 signals:
     void errorOccured(const QString &code, const QString &message);
     void connectedToService();
     void disconnectFromService();
-    void receiving(bool status);
+    void receivingChanged(bool status);
+    void statusChanged(FirehoseReceiverStatus newStatus);
 
 private:
     QHash<QObject *, QPointer<AbstractPostSelector>> m_selectorHash;
@@ -55,6 +66,7 @@ private:
     QTimer m_wdgTimer;
 
     QString m_serviceEndpoint;
+    FirehoseReceiverStatus m_status;
 };
 
 }

@@ -9,7 +9,8 @@ using AtProtocolInterface::ComAtprotoSyncSubscribeReposEx;
 
 namespace RealtimeFeed {
 
-FirehoseReceiver::FirehoseReceiver(QObject *parent) : QObject { parent }
+FirehoseReceiver::FirehoseReceiver(QObject *parent)
+    : QObject { parent }, m_status(FirehoseReceiverStatus::Disconnected)
 {
     m_serviceEndpoint = "wss://bsky.network";
     m_wdgTimer.setInterval(60 * 1000);
@@ -17,14 +18,15 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent) : QObject { parent }
     connect(&m_client, &ComAtprotoSyncSubscribeReposEx::errorOccured,
             [this](const QString &error, const QString &message) {
                 qDebug().noquote() << "Error:" << error << message;
+                setStatus(FirehoseReceiverStatus::Error);
                 emit errorOccured(error, message);
-                emit receiving(false);
+                emit receivingChanged(false);
             });
     connect(&m_client, &ComAtprotoSyncSubscribeReposEx::received,
             [=](const QString &type, const QJsonObject &json) {
                 m_wdgTimer.stop();
                 m_wdgTimer.start();
-                emit receiving(true);
+                emit receivingChanged(true);
 
                 if (type != "#commit")
                     return;
@@ -40,19 +42,23 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent) : QObject { parent }
                     }
                 }
             });
-    connect(&m_client, &ComAtprotoSyncSubscribeReposEx::connectedToService,
-            [this]() { emit connectedToService(); });
+    connect(&m_client, &ComAtprotoSyncSubscribeReposEx::connectedToService, [this]() {
+        setStatus(FirehoseReceiverStatus::Connected);
+        emit connectedToService();
+    });
     connect(&m_client, &ComAtprotoSyncSubscribeReposEx::disconnectFromService, [this]() {
-        emit receiving(false);
+        setStatus(FirehoseReceiverStatus::Disconnected);
+        emit receivingChanged(false);
         emit disconnectFromService();
     });
 
     connect(&m_wdgTimer, &QTimer::timeout, [this]() {
         qDebug().noquote() << "FirehoseTimeout : Nothing was received via Websocket within the "
                               "specified time.";
+        setStatus(FirehoseReceiverStatus::Error);
         emit errorOccured("FirehoseTimeout",
                           "Nothing was received via Websocket within the specified time.");
-        emit receiving(false);
+        emit receivingChanged(false);
         stop();
     });
 }
@@ -162,6 +168,15 @@ int FirehoseReceiver::countSelector() const
     return m_selectorHash.count();
 }
 
+bool FirehoseReceiver::selectorIsReady(QObject *parent)
+{
+    AbstractPostSelector *selector = getSelector(parent);
+    if (selector == nullptr) {
+        return false;
+    }
+    return selector->ready();
+}
+
 #ifdef HAGOROMO_UNIT_TEST
 void FirehoseReceiver::testReceived(const QJsonObject &json)
 {
@@ -186,5 +201,18 @@ QString FirehoseReceiver::serviceEndpoint() const
 void FirehoseReceiver::setServiceEndpoint(const QString &newServiceEndpoint)
 {
     m_serviceEndpoint = newServiceEndpoint;
+}
+
+FirehoseReceiver::FirehoseReceiverStatus FirehoseReceiver::status() const
+{
+    return m_status;
+}
+
+void FirehoseReceiver::setStatus(FirehoseReceiver::FirehoseReceiverStatus newStatus)
+{
+    if (m_status == newStatus)
+        return;
+    m_status = newStatus;
+    emit statusChanged(m_status);
 }
 }

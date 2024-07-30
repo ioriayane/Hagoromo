@@ -15,13 +15,15 @@ RealtimeFeedListModel::RealtimeFeedListModel(QObject *parent)
     : TimelineListModel { parent }, m_receiving(false)
 {
     FirehoseReceiver *receiver = FirehoseReceiver::getInstance();
-    connect(receiver, &FirehoseReceiver::receiving, this, &RealtimeFeedListModel::setReceiving);
+    connect(receiver, &FirehoseReceiver::receivingChanged, this,
+            &RealtimeFeedListModel::setReceiving);
 }
 
 RealtimeFeedListModel::~RealtimeFeedListModel()
 {
     FirehoseReceiver *receiver = FirehoseReceiver::getInstance();
-    disconnect(receiver, &FirehoseReceiver::receiving, this, &RealtimeFeedListModel::setReceiving);
+    disconnect(receiver, &FirehoseReceiver::receivingChanged, this,
+               &RealtimeFeedListModel::setReceiving);
     receiver->removeSelector(this);
 }
 
@@ -29,6 +31,16 @@ bool RealtimeFeedListModel::getLatest()
 {
     FirehoseReceiver *receiver = FirehoseReceiver::getInstance();
     if (receiver->containsSelector(this)) {
+        qDebug().noquote() << "FirehoseReceiver::status :" << receiver->status()
+                           << ", selectorIsReady :" << receiver->selectorIsReady(this);
+        if (receiver->selectorIsReady(this)) {
+            if (receiver->status() != FirehoseReceiver::FirehoseReceiverStatus::Connected) {
+                qDebug().noquote() << "Restart firehose(stop)";
+                receiver->stop();
+            }
+            qDebug().noquote() << "Restart firehose(start)";
+            receiver->start();
+        }
         setRunning(false);
         return true;
     }
@@ -184,6 +196,8 @@ void RealtimeFeedListModel::finishGetting(RealtimeFeed::AbstractPostSelector *se
         //     users.append(item.did);
         // }
         // qDebug().noquote() << "Followers" << users;
+        qDebug().noquote() << "Following count : " << m_followings.count();
+        qDebug().noquote() << "Followers count : " << m_followers.count();
         selector->setFollowing(m_followings);
         selector->setFollowers(m_followers);
         selector->setReady(true);

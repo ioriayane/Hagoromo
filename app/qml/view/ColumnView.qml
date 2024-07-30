@@ -535,8 +535,6 @@ ColumnLayout {
         id: realtimeFeedComponent
         TimelineView {
             model: RealtimeFeedListModel {
-                // selectorJson: "{\"or\": [{\"following\": {}},{\"me\": {}}]}"
-                // selectorJson: "{\"not\": {\"me\": {}}}"
                 selectorJson: settings.columnValue
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
                 onReceivingChanged: {
