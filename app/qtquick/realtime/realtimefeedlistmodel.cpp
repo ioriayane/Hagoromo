@@ -11,11 +11,18 @@ using AtProtocolInterface::AppBskyFeedGetPostThread;
 using AtProtocolInterface::AppBskyGraphGetFollowers;
 using AtProtocolInterface::AppBskyGraphGetFollows;
 
-RealtimeFeedListModel::RealtimeFeedListModel(QObject *parent) : TimelineListModel { parent } { }
+RealtimeFeedListModel::RealtimeFeedListModel(QObject *parent)
+    : TimelineListModel { parent }, m_receiving(false)
+{
+    FirehoseReceiver *receiver = FirehoseReceiver::getInstance();
+    connect(receiver, &FirehoseReceiver::receiving, this, &RealtimeFeedListModel::setReceiving);
+}
 
 RealtimeFeedListModel::~RealtimeFeedListModel()
 {
-    FirehoseReceiver::getInstance()->removeSelector(this);
+    FirehoseReceiver *receiver = FirehoseReceiver::getInstance();
+    disconnect(receiver, &FirehoseReceiver::receiving, this, &RealtimeFeedListModel::setReceiving);
+    receiver->removeSelector(this);
 }
 
 bool RealtimeFeedListModel::getLatest()
@@ -267,4 +274,17 @@ void RealtimeFeedListModel::getPostThread()
     post_thread->setAccount(account());
     post_thread->setLabelers(labelerDids());
     post_thread->getPostThread(ope_info.uri, 0, 1);
+}
+
+bool RealtimeFeedListModel::receiving() const
+{
+    return m_receiving;
+}
+
+void RealtimeFeedListModel::setReceiving(bool newReceiving)
+{
+    if (m_receiving == newReceiving)
+        return;
+    m_receiving = newReceiving;
+    emit receivingChanged();
 }

@@ -12,13 +12,20 @@ namespace RealtimeFeed {
 FirehoseReceiver::FirehoseReceiver(QObject *parent) : QObject { parent }
 {
     m_serviceEndpoint = "wss://bsky.network";
+    m_wdgTimer.setInterval(60 * 1000);
 
     connect(&m_client, &ComAtprotoSyncSubscribeReposEx::errorOccured,
-            [](const QString &error, const QString &message) {
+            [this](const QString &error, const QString &message) {
                 qDebug().noquote() << "Error:" << error << message;
+                emit errorOccured(error, message);
+                emit receiving(false);
             });
     connect(&m_client, &ComAtprotoSyncSubscribeReposEx::received,
             [=](const QString &type, const QJsonObject &json) {
+                m_wdgTimer.stop();
+                m_wdgTimer.start();
+                emit receiving(true);
+
                 if (type != "#commit")
                     return;
                 // qDebug().noquote() << "commitDataReceived:" << type << !json.isEmpty();
@@ -35,8 +42,19 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent) : QObject { parent }
             });
     connect(&m_client, &ComAtprotoSyncSubscribeReposEx::connectedToService,
             [this]() { emit connectedToService(); });
-    connect(&m_client, &ComAtprotoSyncSubscribeReposEx::disconnectFromService,
-            [this]() { emit disconnectFromService(); });
+    connect(&m_client, &ComAtprotoSyncSubscribeReposEx::disconnectFromService, [this]() {
+        emit receiving(false);
+        emit disconnectFromService();
+    });
+
+    connect(&m_wdgTimer, &QTimer::timeout, [this]() {
+        qDebug().noquote() << "FirehoseTimeout : Nothing was received via Websocket within the "
+                              "specified time.";
+        emit errorOccured("FirehoseTimeout",
+                          "Nothing was received via Websocket within the specified time.");
+        emit receiving(false);
+        stop();
+    });
 }
 
 FirehoseReceiver::~FirehoseReceiver()
@@ -64,6 +82,7 @@ void FirehoseReceiver::start()
     QUrl url(path + "/xrpc/com.atproto.sync.subscribeRepos");
     qDebug().noquote() << "Connect to" << url.toString();
     m_client.open(url);
+    m_wdgTimer.start();
 #else
     qDebug().noquote() << "Connect to dummy --- no start on unit test mode";
     emit connectedToService();

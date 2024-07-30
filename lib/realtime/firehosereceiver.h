@@ -6,6 +6,7 @@
 
 #include <QObject>
 #include <QPointer>
+#include <QTimer>
 
 namespace RealtimeFeed {
 
@@ -46,10 +47,12 @@ signals:
     void errorOccured(const QString &code, const QString &message);
     void connectedToService();
     void disconnectFromService();
+    void receiving(bool status);
 
 private:
     QHash<QObject *, QPointer<AbstractPostSelector>> m_selectorHash;
     AtProtocolInterface::ComAtprotoSyncSubscribeReposEx m_client;
+    QTimer m_wdgTimer;
 
     QString m_serviceEndpoint;
 };

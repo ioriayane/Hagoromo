@@ -539,6 +539,10 @@ ColumnLayout {
                 // selectorJson: "{\"not\": {\"me\": {}}}"
                 selectorJson: settings.columnValue
                 onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
+                onReceivingChanged: {
+                    autoIconImage.iconColor = Material.color(Material.Green)
+                    autoIconImage.enabled = receiving
+                }
             }
             accountDid: account.did
             imageLayoutType: settings.imageLayoutType
@@ -710,11 +714,13 @@ ColumnLayout {
                 Layout.preferredHeight: AdjustedValues.i16
                 Layout.rightMargin: 3
                 Layout.alignment: Qt.AlignVCenter
+                enabled: settings.autoLoading
                 source: "../images/auto.png"
                 layer.enabled: true
                 layer.effect: ColorOverlayC {
-                    color: settings.autoLoading ? Material.accentColor : Material.color(Material.Grey)
+                    color: autoIconImage.enabled ? autoIconImage.iconColor : Material.color(Material.Grey)
                 }
+                property color iconColor: Material.accentColor
             }
             IconButton {
                 id: settingButton
