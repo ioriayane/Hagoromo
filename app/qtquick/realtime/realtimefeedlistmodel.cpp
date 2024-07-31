@@ -138,7 +138,12 @@ void RealtimeFeedListModel::getFollowing()
             }
             QTimer::singleShot(0, this, &RealtimeFeedListModel::getFollowing);
         } else {
-            emit errorOccured(profiles->errorCode(), profiles->errorMessage());
+            if (!(profiles->errorCode() == "NotFound"
+                  && profiles->errorMessage().startsWith("Post not found:"))) {
+                emit errorOccured(profiles->errorCode(), profiles->errorMessage());
+            } else {
+                qDebug().noquote() << "Error:" << profiles->errorCode() << profiles->errorMessage();
+            }
             setRunning(false);
         }
         profiles->deleteLater();
