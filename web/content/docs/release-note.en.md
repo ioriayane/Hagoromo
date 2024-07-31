@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+- Add
+  - Support for real-time feeds (technical preview)
 - Update
   - Change so that the translation results are shared throughout the app
 
