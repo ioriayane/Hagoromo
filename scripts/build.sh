@@ -106,4 +106,4 @@ VERSION_NO=$(cat app/main.cpp | grep "app.setApplicationVersion" | grep -oE "[0-
 build_openssl
 build_hagoromo
 deploy_hagoromo
-update_web
+# update_web
