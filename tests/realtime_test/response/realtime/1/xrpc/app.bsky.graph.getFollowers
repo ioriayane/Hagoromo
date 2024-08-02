@@ -1,0 +1,41 @@
+{
+    "followers": [
+        {
+            "did": "did:plc:l4fsx4ujos7uw7n4ijq2ulgs",
+            "handle": "ioriayane.bsky.social",
+            "associated": {
+                "chat": {
+                    "allowIncoming": "following"
+                }
+            },
+            "viewer": {
+                "muted": false,
+                "blockedBy": false,
+                "following": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.follow/3kubiyuudos2p",
+                "followedBy": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.graph.follow/3km57slkrvu2v"
+            },
+            "labels": [],
+            "description": "@ioriayane.relog.tech のテスト用のサブアカウントです。\nhttps://github.com/ioriayane/Hagoromo/blob/main/README.md#%E6%A6%82%E8%A6%81",
+            "indexedAt": "2024-05-02T04:33:31.638Z"
+        }
+    ],
+    "subject": {
+        "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+        "handle": "ioriayane2.bsky.social",
+        "displayName": "iori2",
+        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg",
+        "associated": {
+            "chat": {
+                "allowIncoming": "following"
+            }
+        },
+        "viewer": {
+            "muted": false,
+            "blockedBy": false
+        },
+        "labels": [],
+        "description": "ioriayane.relog.tech のテスト用アカウントの2つ目です",
+        "indexedAt": "2024-05-07T15:56:08.188Z"
+    },
+    "cursor": "3km57slkrvu2v"
+}

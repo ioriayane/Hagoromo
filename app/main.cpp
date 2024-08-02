@@ -57,6 +57,7 @@
 #include "qtquick/moderation/labelerlistmodel.h"
 #include "qtquick/blog/blogentrylistmodel.h"
 #include "qtquick/controls/calendartablemodel.h"
+#include "qtquick/realtime/realtimefeedlistmodel.h"
 
 #include "tools/translatorchanger.h"
 
@@ -179,9 +180,10 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<LabelerListModel>("tech.relog.hagoromo.moderation.labelerlistmodel", 1, 0,
                                       "LabelerListModel");
-
     qmlRegisterType<BlogEntryListModel>("tech.relog.hagoromo.blog.blogentrylistmodel", 1, 0,
                                         "BlogEntryListModel");
+    qmlRegisterType<RealtimeFeedListModel>("tech.relog.hagoromo.realtime.realtimefeedlistmodel", 1,
+                                           0, "RealtimeFeedListModel");
 
     qmlRegisterType<CalendarTableModel>("tech.relog.hagoromo.controls.calendartablemodel", 1, 0,
                                         "CalendarTableModel");

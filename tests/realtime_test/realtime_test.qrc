@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/">
+        <file>data/selector/selector.json</file>
+        <file>response/realtime/1/xrpc/app.bsky.graph.getFollows</file>
+        <file>response/realtime/1/xrpc/app.bsky.graph.getFollows_3kubiyuudos2p</file>
+        <file>response/realtime/1/xrpc/app.bsky.graph.getFollowers</file>
+        <file>response/realtime/1/xrpc/app.bsky.graph.getFollowers_3km57slkrvu2v</file>
+        <file>data/realtimemodel/recv_data_1.json</file>
+        <file>response/realtime/1/xrpc/app.bsky.feed.getPosts</file>
+        <file>data/realtimemodel/recv_data_2.json</file>
+        <file>response/realtime/2/xrpc/app.bsky.feed.getPosts</file>
+        <file>response/realtime/2/xrpc/app.bsky.feed.getPostThread</file>
+        <file>response/realtime/1/xrpc/app.bsky.feed.getPostThread</file>
+        <file>data/realtimemodel/recv_data_3.json</file>
+        <file>response/realtime/3/xrpc/app.bsky.feed.getPostThread</file>
+        <file>data/realtimemodel/recv_data_4.json</file>
+    </qresource>
+</RCC>

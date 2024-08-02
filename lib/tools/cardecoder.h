@@ -10,7 +10,7 @@
 class CarDecoder
 {
 public:
-    CarDecoder();
+    CarDecoder(bool forFirehose = false);
 
     bool setContent(const QByteArray &content);
     QStringList cids() const;
@@ -20,6 +20,8 @@ public:
     QString did() const;
     QString uri(const QString &cid) const;
 
+    int decodeCbor(const QByteArray &block, const QString &cid);
+
 private:
     QByteArray m_content;
     QString m_did;
@@ -27,10 +29,10 @@ private:
     QHash<QString, QString> m_cid2type;
     QHash<QString, QJsonObject> m_cid2Json;
     QHash<QString, QString> m_cid2uri; // QHash<cid, uri>
+    bool m_forFirehose;
 
     int decodeData(int offset);
     QString decodeCid(const QByteArray &data, int &offset) const;
-    bool decodeCbor(const QByteArray &block, const QString &cid);
     bool decodeCborObject(const QCborValue &value, QJsonObject &parent);
     QVariant decodeCborValue(const QCborValue &value);
     void decodeCarAddress(const QJsonObject &json);
