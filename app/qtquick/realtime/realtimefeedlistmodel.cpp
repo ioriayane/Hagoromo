@@ -138,11 +138,7 @@ void RealtimeFeedListModel::getFollowing()
             }
             QTimer::singleShot(0, this, &RealtimeFeedListModel::getFollowing);
         } else {
-            if (profiles->errorCode() == "NotFound") {
-                qDebug().noquote() << "Error:" << profiles->errorCode() << profiles->errorMessage();
-            } else {
-                emit errorOccured(profiles->errorCode(), profiles->errorMessage());
-            }
+            emit errorOccured(profiles->errorCode(), profiles->errorMessage());
             setRunning(false);
         }
         profiles->deleteLater();
@@ -283,7 +279,12 @@ void RealtimeFeedListModel::getPostThread()
             m_originalCidList.insert(0, view_post.post.cid);
 
         } else {
-            emit errorOccured(post_thread->errorCode(), post_thread->errorMessage());
+            if (post_thread->errorCode() == "NotFound") {
+                qDebug().noquote()
+                        << "Error:" << post_thread->errorCode() << post_thread->errorMessage();
+            } else {
+                emit errorOccured(post_thread->errorCode(), post_thread->errorMessage());
+            }
         }
         // 残ってたらもう1回
         QTimer::singleShot(0, this, &RealtimeFeedListModel::getPostThread);
