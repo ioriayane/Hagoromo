@@ -12,6 +12,7 @@ description: This is a multi-column Bluesky client.
   - Support for real-time feeds (technical preview)
 - Update
   - Change so that the translation results are shared throughout the app
+  - Change OGP character code judgment process
 
 ### v0.34.0 - 2024/7/16
 
