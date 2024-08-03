@@ -5,6 +5,7 @@
 #include <QDomElement>
 #include <QFile>
 #include <QUrl>
+#include <QTextCodec>
 
 // https://ogp.me/
 
@@ -157,18 +158,24 @@ void OpenGraphProtocol::setThumb(const QString &newThumb)
 bool OpenGraphProtocol::parse(const QByteArray &data, const QString &src_uri)
 {
     bool ret = false;
+#if 0
     QString charset = extractCharset(QString::fromUtf8(data));
     qDebug() << "charset" << charset;
 
     QTextStream ts(data);
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+#    if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     ts.setCodec(charset.toLatin1());
-#else
-#    error Qt5CompatのQTextCodecを使うように変更しないとECU-JPなどに対応できないはず
-#endif
+#    else
+#        error Qt5CompatのQTextCodecを使うように変更しないとECU-JPなどに対応できないはず
+#    endif
 
     QDomDocument doc;
     rebuildHtml(ts.readAll(), doc);
+#else
+    QTextCodec *codec = QTextCodec::codecForHtml(data, QTextCodec::codecForName("utf-8"));
+    QDomDocument doc;
+    rebuildHtml(codec->toUnicode(data), doc);
+#endif
     qDebug().noquote().nospace() << doc.toString();
 
     QDomElement root = doc.documentElement();

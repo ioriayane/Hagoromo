@@ -13,9 +13,10 @@ using namespace AtProtocolType;
 using AtProtocolInterface::AppBskyFeedGetPostThread;
 using AtProtocolInterface::ComAtprotoSyncGetBlob;
 
-AtpAbstractListModel::AtpAbstractListModel(QObject *parent)
+AtpAbstractListModel::AtpAbstractListModel(QObject *parent, bool use_translator)
     : QAbstractListModel { parent },
       m_contentFilterRefreshCounter(0),
+      m_useTranslator(use_translator),
       m_running(false),
       m_loadingInterval(5 * 60 * 1000),
       m_displayInterval(400),
@@ -23,6 +24,22 @@ AtpAbstractListModel::AtpAbstractListModel(QObject *parent)
       m_displayPinnedPost(false)
 {
     connect(&m_timer, &QTimer::timeout, this, &AtpAbstractListModel::getLatest);
+    if (m_useTranslator) {
+        Translator *translator = Translator::getInstance();
+        connect(translator, &Translator::finished, this,
+                &AtpAbstractListModel::finishedTransration);
+    }
+}
+
+AtpAbstractListModel::~AtpAbstractListModel()
+{
+    qDebug().noquote() << "~AtpAbstractListModel()" << this;
+
+    if (m_useTranslator) {
+        Translator *translator = Translator::getInstance();
+        disconnect(translator, &Translator::finished, this,
+                   &AtpAbstractListModel::finishedTransration);
+    }
 }
 
 void AtpAbstractListModel::clear()
@@ -33,7 +50,7 @@ void AtpAbstractListModel::clear()
         endRemoveRows();
     }
     m_originalCidList.clear();
-    m_translations.clear();
+    // m_translations.clear();
     m_mutedPosts.clear();
     m_cursor.clear();
     m_currentPinnedPost.clear();
@@ -58,6 +75,12 @@ void AtpAbstractListModel::setAccount(const QString &service, const QString &did
     m_account.refreshJwt = refreshJwt;
 }
 
+QString AtpAbstractListModel::getTranslation(const QString &cid) const
+{
+    Translator *translator = Translator::getInstance();
+    return translator->getTranslation(cid);
+}
+
 void AtpAbstractListModel::translate(const QString &cid)
 {
     // indexで指定しないと同じcidが複数含まれる場合に正しく対応できない
@@ -70,30 +93,32 @@ void AtpAbstractListModel::translate(const QString &cid)
     if (row == -1)
         return;
 
-    Translator *translator = new Translator(this);
-    if (!translator->validSettings()) {
+    Translator *translator = Translator::getInstance();
+    if (!translator->validSettings() || !m_useTranslator) {
         // 設定画無いときはGoogle翻訳へ飛ばす
         QUrl url("https://translate.google.com/");
         QUrlQuery query;
         query.addQueryItem("sl", "auto");
         if (!translator->targetLanguage().isEmpty()) {
-            query.addQueryItem("tl", translator->targetLanguage().toLower());
+            query.addQueryItem("tl", translator->targetLanguageBcp47().toLower());
         }
         query.addQueryItem("text", record_text);
         url.setQuery(query);
         QDesktopServices::openUrl(url);
     } else {
-        connect(translator, &Translator::finished, [=](const QString text) {
-            if (!text.isEmpty()) {
-                m_translations[cid] = text;
-                emit dataChanged(index(row), index(row));
-            }
-            translator->deleteLater();
-        });
-        m_translations[cid] = "Now translating ...";
+        translator->translate(cid, record_text);
         emit dataChanged(index(row), index(row));
-        translator->translate(record_text);
     }
+}
+
+void AtpAbstractListModel::finishedTransration(const QString &cid, const QString text)
+{
+    qDebug().noquote() << "finishedTransration" << this << cid << text;
+    int row = indexOf(cid);
+    if (row == -1)
+        return;
+
+    emit dataChanged(index(row), index(row));
 }
 
 void AtpAbstractListModel::reflectVisibility()

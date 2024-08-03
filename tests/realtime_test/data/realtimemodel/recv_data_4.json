@@ -1,0 +1,35 @@
+{
+    "blobs": [
+    ],
+    "blocks": [
+        {
+            "cid": "bafyreigya6ktu5kflppqfkqw2jjy6ewivbkyt42lkyy4ia2kithercgccy4",
+            "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.follow/3kubglkwjzc234",
+            "value": {
+                "$type": "app.bsky.graph.follow",
+                "createdAt": "2024-06-06T16:25:52.881Z",
+                "subject": "did:plc:new_follow_user"
+            }
+        }
+    ],
+    "commit": {
+        "$link": "bafyreiawsutzlnr7g53fixlfudt7g7nf6dyrsgfer3xm6w5yzttngdteji4"
+    },
+    "ops": [
+        {
+            "action": "create",
+            "cid": {
+                "$link": "bafyreigya6ktu5kflppqfkqw2jjy6ewivbkyt42lkyy4ia2kithercgccy4"
+            },
+            "path": "app.bsky.graph.follow/3kubglkwjzc234"
+        }
+    ],
+    "prev": null,
+    "rebase": false,
+    "repo": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+    "rev": "3kubglkwpus234",
+    "seq": 557371057,
+    "since": "3kubgiu5xgk2o",
+    "time": "2024-06-06T16:25:53.840Z",
+    "tooBig": false
+}

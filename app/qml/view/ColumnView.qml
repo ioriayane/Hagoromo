@@ -14,6 +14,7 @@ import tech.relog.hagoromo.anyprofilelistmodel 1.0
 import tech.relog.hagoromo.listfeedlistmodel 1.0
 import tech.relog.hagoromo.chatlistmodel 1.0
 import tech.relog.hagoromo.chatmessagelistmodel 1.0
+import tech.relog.hagoromo.realtime.realtimefeedlistmodel 1.0
 import tech.relog.hagoromo.systemtool 1.0
 import tech.relog.hagoromo.singleton 1.0
 
@@ -530,6 +531,46 @@ ColumnLayout {
         }
     }
 
+    Component {
+        id: realtimeFeedComponent
+        TimelineView {
+            model: RealtimeFeedListModel {
+                selectorJson: settings.columnValue
+                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
+                onReceivingChanged: {
+                    autoIconImage.iconColor = Material.color(Material.Green)
+                    autoIconImage.enabled = receiving
+                }
+            }
+            accountDid: account.did
+            imageLayoutType: settings.imageLayoutType
+
+            onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
+                            columnView.requestReply(columnView.account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+            onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
+                            columnView.requestQuote(columnView.account.uuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+
+            onRequestViewThread: (uri) => {
+                                     // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
+                                     // これはPostThreadViewのプロパティにダイレクトに設定する
+                                     columnStackView.push(postThreadComponent, { "postThreadUri": uri })
+                                 }
+
+            onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
+
+            onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+            onRequestViewFeedGenerator: (name, uri) => columnView.requestViewFeedGenerator(account.uuid, name, uri)
+            onRequestViewListFeed: (uri, name) => columnView.requestViewListFeed(account.uuid, uri, name)
+            onRequestViewLikedBy: (uri) => columnStackView.push(likesProfilesComponent, { "targetUri": uri })
+            onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
+            onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
+            onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
+            onRequestAddMutedWord: (text) => columnView.requestAddMutedWord(account.uuid, text)
+            onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) => columnView.requestUpdateThreadGate(account.uuid, uri, threadgate_uri, type, rules, callback)
+            onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
+        }
+    }
+
     function load(){
         console.log("ColumnLayout:componentType=" + componentType)
         if(componentType === 0){
@@ -559,6 +600,9 @@ ColumnLayout {
         }else if(componentType === 8){
             columnStackView.push(chatMessageListComponent)
             componentTypeLabel.addText = ""
+        }else if(componentType === 9){
+            columnStackView.push(realtimeFeedComponent)
+            componentTypeLabel.addText = " : " + settings.columnName
         }else{
             columnStackView.push(timelineComponent)
             componentTypeLabel.addText = ""
@@ -645,6 +689,7 @@ ColumnLayout {
                         qsTr("List"),
                         qsTr("Chat"),
                         qsTr("Chat"),
+                        qsTr("Realtime"),
                         qsTr("Unknown")
                     ]
                     property string addText: ""
@@ -667,11 +712,13 @@ ColumnLayout {
                 Layout.preferredHeight: AdjustedValues.i16
                 Layout.rightMargin: 3
                 Layout.alignment: Qt.AlignVCenter
+                enabled: settings.autoLoading
                 source: "../images/auto.png"
                 layer.enabled: true
                 layer.effect: ColorOverlayC {
-                    color: settings.autoLoading ? Material.accentColor : Material.color(Material.Grey)
+                    color: autoIconImage.enabled ? autoIconImage.iconColor : Material.color(Material.Grey)
                 }
+                property color iconColor: Material.accentColor
             }
             IconButton {
                 id: settingButton

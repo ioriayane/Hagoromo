@@ -1,0 +1,88 @@
+{
+    "thread": {
+        "$type": "app.bsky.feed.defs#threadViewPost",
+        "post": {
+            "uri": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3kx6ffqxzkj2u",
+            "cid": "bafyreigoon4vpg3axqlvrzyxcpmwh4ihra4hbqd5uh3e774bbjjnla5ajq",
+            "author": {
+                "did": "did:plc:l4fsx4ujos7uw7n4ijq2ulgs",
+                "handle": "ioriayane.bsky.social",
+                "associated": {
+                    "chat": {
+                        "allowIncoming": "following"
+                    }
+                },
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false,
+                    "following": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.follow/3kubiyuudos2p",
+                    "followedBy": "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.graph.follow/3km57slkrvu2v"
+                },
+                "labels": [],
+                "createdAt": "2023-05-09T10:03:30.995Z"
+            },
+            "record": {
+                "$type": "app.bsky.feed.post",
+                "createdAt": "2024-07-13T15:42:18.723Z",
+                "reply": {
+                    "parent": {
+                        "cid": "bafyreicnfsasuzrazpahg2x6ephugy7y6repbo2mhzjdlkmmhzgl7xgcla",
+                        "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kx6eow2kyr25"
+                    },
+                    "root": {
+                        "cid": "bafyreicnfsasuzrazpahg2x6ephugy7y6repbo2mhzjdlkmmhzgl7xgcla",
+                        "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kx6eow2kyr25"
+                    }
+                },
+                "text": "reply3",
+                "via": "Hagoromo"
+            },
+            "replyCount": 0,
+            "repostCount": 0,
+            "likeCount": 0,
+            "indexedAt": "2024-07-13T15:42:18.723Z",
+            "viewer": {
+                "threadMuted": false
+            },
+            "labels": []
+        },
+        "parent": {
+            "$type": "app.bsky.feed.defs#threadViewPost",
+            "post": {
+                "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kx6eow2kyr25",
+                "cid": "bafyreicnfsasuzrazpahg2x6ephugy7y6repbo2mhzjdlkmmhzgl7xgcla",
+                "author": {
+                    "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+                    "handle": "ioriayane2.bsky.social",
+                    "displayName": "iori2",
+                    "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg",
+                    "associated": {
+                        "chat": {
+                            "allowIncoming": "following"
+                        }
+                    },
+                    "viewer": {
+                        "muted": false,
+                        "blockedBy": false
+                    },
+                    "labels": [],
+                    "createdAt": "2023-07-13T14:28:42.522Z"
+                },
+                "record": {
+                    "$type": "app.bsky.feed.post",
+                    "createdAt": "2024-07-13T15:29:32.320Z",
+                    "langs": [],
+                    "text": "てｓｔ"
+                },
+                "replyCount": 3,
+                "repostCount": 0,
+                "likeCount": 0,
+                "indexedAt": "2024-07-13T15:29:32.320Z",
+                "viewer": {
+                    "threadMuted": false
+                },
+                "labels": []
+            }
+        }
+    }
+}

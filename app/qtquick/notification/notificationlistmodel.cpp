@@ -19,7 +19,7 @@ using AtProtocolInterface::AppBskyNotificationUpdateSeen;
 using namespace AtProtocolType::AppBskyFeedDefs;
 
 NotificationListModel::NotificationListModel(QObject *parent)
-    : AtpAbstractListModel { parent },
+    : AtpAbstractListModel { parent, true },
       m_hasUnread(false),
       m_visibleLike(true),
       m_visibleRepost(true),
@@ -104,7 +104,7 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
                        AtProtocolType::AppBskyFeedPost::Main>(current.record)
                 .text;
     else if (role == RecordTextTranslationRole)
-        return m_translations.contains(current.cid) ? m_translations[current.cid] : QString();
+        return getTranslation(current.cid);
     else if (role == IndexedAtRole)
         return AtProtocolType::LexiconsTypeUnknown::formatDateTime(current.indexedAt);
     else if (role == EmbedImagesRole) {

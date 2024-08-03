@@ -87,7 +87,7 @@ void FeedTypeListModel::clear()
     // デフォルトで追加した状態にするアイテムを増減させるときは
     // AddColumnDialog.qmlのchangeColumnTypeView()を
     // 修正しないとカスタムフィードなどが読み込まれない
-    beginInsertRows(QModelIndex(), 0, 2);
+    beginInsertRows(QModelIndex(), 0, 6);
     {
         FeedTypeItem item;
         item.group = tr("Default Feeds");
@@ -100,6 +100,39 @@ void FeedTypeListModel::clear()
         item.group = tr("Default Feeds");
         item.type = FeedComponentType::Notification;
         item.generator.displayName = tr("Notification");
+        m_feedTypeItemList.append(item);
+    }
+    {
+        FeedTypeItem item;
+        item.group = tr("Realtime Feeds");
+        item.type = FeedComponentType::RealtimeFeed;
+        item.generator.displayName = tr("Following");
+        item.generator.uri = "{\"or\": [{\"following\": {}},{\"me\": {}}]}";
+        m_feedTypeItemList.append(item);
+    }
+    {
+        FeedTypeItem item;
+        item.group = tr("Realtime Feeds");
+        item.type = FeedComponentType::RealtimeFeed;
+        item.generator.displayName = tr("Followers");
+        item.generator.uri = "{\"followers\": {}}";
+        m_feedTypeItemList.append(item);
+    }
+    {
+        FeedTypeItem item;
+        item.group = tr("Realtime Feeds");
+        item.type = FeedComponentType::RealtimeFeed;
+        item.generator.displayName = tr("Mutual following");
+        item.generator.uri =
+                "{\"or\": [{\"and\": [{\"following\": {}},{\"followers\": {}}]},{\"me\": {}}]}";
+        m_feedTypeItemList.append(item);
+    }
+    {
+        FeedTypeItem item;
+        item.group = tr("Realtime Feeds");
+        item.type = FeedComponentType::RealtimeFeed;
+        item.generator.displayName = tr("Following and Followers");
+        item.generator.uri = "{\"or\": [{\"following\": {}},{\"followers\": {}},{\"me\": {}}]}";
         m_feedTypeItemList.append(item);
     }
     {
