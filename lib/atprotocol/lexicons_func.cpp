@@ -198,12 +198,15 @@ void copyMutedWordTarget(const QJsonValue &src, AppBskyActorDefs::MutedWordTarge
 void copyMutedWord(const QJsonObject &src, AppBskyActorDefs::MutedWord &dest)
 {
     if (!src.isEmpty()) {
+        dest.id = src.value("id").toString();
         dest.value = src.value("value").toString();
         for (const auto &s : src.value("targets").toArray()) {
             AppBskyActorDefs::MutedWordTarget child;
             AppBskyActorDefs::copyMutedWordTarget(s, child);
             dest.targets.append(child);
         }
+        dest.actorTarget = src.value("actorTarget").toString();
+        dest.expiresAt = src.value("expiresAt").toString();
     }
 }
 void copyMutedWordsPref(const QJsonObject &src, AppBskyActorDefs::MutedWordsPref &dest)
@@ -221,6 +224,22 @@ void copyHiddenPostsPref(const QJsonObject &src, AppBskyActorDefs::HiddenPostsPr
     if (!src.isEmpty()) {
         for (const auto &value : src.value("items").toArray()) {
             dest.items.append(value.toString());
+        }
+    }
+}
+void copyBskyAppProgressGuide(const QJsonObject &src, AppBskyActorDefs::BskyAppProgressGuide &dest)
+{
+    if (!src.isEmpty()) {
+        dest.guide = src.value("guide").toString();
+    }
+}
+void copyBskyAppStatePref(const QJsonObject &src, AppBskyActorDefs::BskyAppStatePref &dest)
+{
+    if (!src.isEmpty()) {
+        copyBskyAppProgressGuide(src.value("activeProgressGuide").toObject(),
+                                 dest.activeProgressGuide);
+        for (const auto &value : src.value("queuedNudges").toArray()) {
+            dest.queuedNudges.append(value.toString());
         }
     }
 }
@@ -285,6 +304,10 @@ void copyPreferences(const QJsonArray &src, AppBskyActorDefs::Preferences &dest)
                 AppBskyActorDefs::HiddenPostsPref child;
                 AppBskyActorDefs::copyHiddenPostsPref(value.toObject(), child);
                 dest.hiddenPostsPref.append(child);
+            } else if (value_type == QStringLiteral("app.bsky.actor.defs#bskyAppStatePref")) {
+                AppBskyActorDefs::BskyAppStatePref child;
+                AppBskyActorDefs::copyBskyAppStatePref(value.toObject(), child);
+                dest.bskyAppStatePref.append(child);
             } else if (value_type == QStringLiteral("app.bsky.actor.defs#labelersPref")) {
                 AppBskyActorDefs::LabelersPref child;
                 AppBskyActorDefs::copyLabelersPref(value.toObject(), child);
@@ -718,6 +741,13 @@ void copyView(const QJsonObject &src, AppBskyEmbedRecord::View &dest)
                     AppBskyEmbedRecord::ViewRecordType::record_AppBskyLabelerDefs_LabelerView;
             AppBskyLabelerDefs::copyLabelerView(src.value("record").toObject(),
                                                 dest.record_AppBskyLabelerDefs_LabelerView);
+        }
+        if (record_type == QStringLiteral("app.bsky.graph.defs#starterPackViewBasic")) {
+            dest.record_type = AppBskyEmbedRecord::ViewRecordType::
+                    record_AppBskyGraphDefs_StarterPackViewBasic;
+            AppBskyGraphDefs::copyStarterPackViewBasic(
+                    src.value("record").toObject(),
+                    dest.record_AppBskyGraphDefs_StarterPackViewBasic);
         }
     }
 }
@@ -2105,6 +2135,18 @@ void copyModEventDivert(const QJsonObject &src, ToolsOzoneModerationDefs::ModEve
         dest.comment = src.value("comment").toString();
     }
 }
+void copyModEventTag(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventTag &dest)
+{
+    if (!src.isEmpty()) {
+        for (const auto &value : src.value("add").toArray()) {
+            dest.add.append(value.toString());
+        }
+        for (const auto &value : src.value("remove").toArray()) {
+            dest.remove.append(value.toString());
+        }
+        dest.comment = src.value("comment").toString();
+    }
+}
 void copyModEventView(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventView &dest)
 {
     if (!src.isEmpty()) {
@@ -2187,6 +2229,11 @@ void copyModEventView(const QJsonObject &src, ToolsOzoneModerationDefs::ModEvent
             dest.event_type = ToolsOzoneModerationDefs::ModEventViewEventType::event_ModEventDivert;
             ToolsOzoneModerationDefs::copyModEventDivert(src.value("event").toObject(),
                                                          dest.event_ModEventDivert);
+        }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#modEventTag")) {
+            dest.event_type = ToolsOzoneModerationDefs::ModEventViewEventType::event_ModEventTag;
+            ToolsOzoneModerationDefs::copyModEventTag(src.value("event").toObject(),
+                                                      dest.event_ModEventTag);
         }
         QString subject_type = src.value("subject").toObject().value("$type").toString();
         if (subject_type == QStringLiteral("com.atproto.admin.defs#repoRef")) {
@@ -2434,6 +2481,12 @@ void copyModEventViewDetail(const QJsonObject &src,
             ToolsOzoneModerationDefs::copyModEventDivert(src.value("event").toObject(),
                                                          dest.event_ModEventDivert);
         }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#modEventTag")) {
+            dest.event_type =
+                    ToolsOzoneModerationDefs::ModEventViewDetailEventType::event_ModEventTag;
+            ToolsOzoneModerationDefs::copyModEventTag(src.value("event").toObject(),
+                                                      dest.event_ModEventTag);
+        }
         QString subject_type = src.value("subject").toObject().value("$type").toString();
         if (subject_type == QStringLiteral("tools.ozone.moderation.defs#repoView")) {
             dest.subject_type =
@@ -2466,18 +2519,6 @@ void copyModEventViewDetail(const QJsonObject &src,
         }
         dest.createdBy = src.value("createdBy").toString();
         dest.createdAt = src.value("createdAt").toString();
-    }
-}
-void copyModEventTag(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventTag &dest)
-{
-    if (!src.isEmpty()) {
-        for (const auto &value : src.value("add").toArray()) {
-            dest.add.append(value.toString());
-        }
-        for (const auto &value : src.value("remove").toArray()) {
-            dest.remove.append(value.toString());
-        }
-        dest.comment = src.value("comment").toString();
     }
 }
 void copyModerationDetail(const QJsonObject &src, ToolsOzoneModerationDefs::ModerationDetail &dest)
