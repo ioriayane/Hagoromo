@@ -37,6 +37,8 @@ void copyMutedWordTarget(const QJsonValue &src, AppBskyActorDefs::MutedWordTarge
 void copyMutedWord(const QJsonObject &src, AppBskyActorDefs::MutedWord &dest);
 void copyMutedWordsPref(const QJsonObject &src, AppBskyActorDefs::MutedWordsPref &dest);
 void copyHiddenPostsPref(const QJsonObject &src, AppBskyActorDefs::HiddenPostsPref &dest);
+void copyBskyAppProgressGuide(const QJsonObject &src, AppBskyActorDefs::BskyAppProgressGuide &dest);
+void copyBskyAppStatePref(const QJsonObject &src, AppBskyActorDefs::BskyAppStatePref &dest);
 void copyLabelerPrefItem(const QJsonObject &src, AppBskyActorDefs::LabelerPrefItem &dest);
 void copyLabelersPref(const QJsonObject &src, AppBskyActorDefs::LabelersPref &dest);
 void copyPreferences(const QJsonArray &src, AppBskyActorDefs::Preferences &dest);
@@ -334,6 +336,7 @@ void copyModEventEmail(const QJsonObject &src, ToolsOzoneModerationDefs::ModEven
 void copyModEventResolveAppeal(const QJsonObject &src,
                                ToolsOzoneModerationDefs::ModEventResolveAppeal &dest);
 void copyModEventDivert(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventDivert &dest);
+void copyModEventTag(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventTag &dest);
 void copyModEventView(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventView &dest);
 void copySubjectReviewState(const QJsonValue &src,
                             ToolsOzoneModerationDefs::SubjectReviewState &dest);
@@ -350,7 +353,6 @@ void copyVideoDetails(const QJsonObject &src, ToolsOzoneModerationDefs::VideoDet
 void copyBlobView(const QJsonObject &src, ToolsOzoneModerationDefs::BlobView &dest);
 void copyModEventViewDetail(const QJsonObject &src,
                             ToolsOzoneModerationDefs::ModEventViewDetail &dest);
-void copyModEventTag(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventTag &dest);
 void copyModerationDetail(const QJsonObject &src, ToolsOzoneModerationDefs::ModerationDetail &dest);
 void copyRepoViewDetail(const QJsonObject &src, ToolsOzoneModerationDefs::RepoViewDetail &dest);
 void copyRecordViewDetail(const QJsonObject &src, ToolsOzoneModerationDefs::RecordViewDetail &dest);

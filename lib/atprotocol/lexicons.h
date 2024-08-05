@@ -307,8 +307,13 @@ struct InterestsPref
 typedef QString MutedWordTarget;
 struct MutedWord
 {
+    QString id;
     QString value; // The muted word itself.
     QList<AppBskyActorDefs::MutedWordTarget> targets;
+    QString actorTarget; // Groups of users to apply the muted word to. If undefined, applies to all
+                         // users.
+    QString expiresAt; // datetime , The date and time at which the muted word will expire and no
+                       // longer be applied.
 };
 struct MutedWordsPref
 {
@@ -317,6 +322,16 @@ struct MutedWordsPref
 struct HiddenPostsPref
 {
     QList<QString> items; // A list of URIs of posts the account owner has hidden.
+};
+struct BskyAppProgressGuide
+{
+    QString guide;
+};
+struct BskyAppStatePref
+{
+    BskyAppProgressGuide activeProgressGuide;
+    QList<QString> queuedNudges; // An array of tokens which identify nudges (modals, popups, tours,
+                                 // highlight dots) that should be shown to the user.
 };
 struct LabelerPrefItem
 {
@@ -339,6 +354,7 @@ struct Preferences
     QList<AppBskyActorDefs::InterestsPref> interestsPref;
     QList<AppBskyActorDefs::MutedWordsPref> mutedWordsPref;
     QList<AppBskyActorDefs::HiddenPostsPref> hiddenPostsPref;
+    QList<AppBskyActorDefs::BskyAppStatePref> bskyAppStatePref;
     QList<AppBskyActorDefs::LabelersPref> labelersPref;
     // union end : preferences
 };
@@ -736,6 +752,7 @@ enum class ViewRecordType : int {
     record_AppBskyFeedDefs_GeneratorView,
     record_AppBskyGraphDefs_ListView,
     record_AppBskyLabelerDefs_LabelerView,
+    record_AppBskyGraphDefs_StarterPackViewBasic,
 };
 enum class ViewRecordEmbedsType : int {
     none,
@@ -790,6 +807,7 @@ struct View
     AppBskyFeedDefs::GeneratorView record_AppBskyFeedDefs_GeneratorView;
     AppBskyGraphDefs::ListView record_AppBskyGraphDefs_ListView;
     AppBskyLabelerDefs::LabelerView record_AppBskyLabelerDefs_LabelerView;
+    AppBskyGraphDefs::StarterPackViewBasic record_AppBskyGraphDefs_StarterPackViewBasic;
     // union end : record
 };
 }
@@ -1496,6 +1514,7 @@ enum class ModEventViewDetailEventType : int {
     event_ModEventEmail,
     event_ModEventResolveAppeal,
     event_ModEventDivert,
+    event_ModEventTag,
 };
 enum class ModEventViewDetailSubjectType : int {
     none,
@@ -1530,6 +1549,7 @@ enum class ModEventViewEventType : int {
     event_ModEventEmail,
     event_ModEventResolveAppeal,
     event_ModEventDivert,
+    event_ModEventTag,
 };
 enum class ModEventViewSubjectType : int {
     none,
@@ -1606,6 +1626,13 @@ struct ModEventDivert
 {
     QString comment;
 };
+struct ModEventTag
+{
+    QList<QString> add; // Tags to be added to the subject. If already exists, won't be duplicated.
+    QList<QString> remove; // Tags to be removed to the subject. Ignores a tag If it doesn't exist,
+                           // won't be duplicated.
+    QString comment; // Additional comment about added/removed tags.
+};
 struct ModEventView
 {
     int id = 0;
@@ -1625,6 +1652,7 @@ struct ModEventView
     ModEventEmail event_ModEventEmail;
     ModEventResolveAppeal event_ModEventResolveAppeal;
     ModEventDivert event_ModEventDivert;
+    ModEventTag event_ModEventTag;
     // union end : event
     // union start : subject
     ModEventViewSubjectType subject_type = ModEventViewSubjectType::none;
@@ -1746,6 +1774,7 @@ struct ModEventViewDetail
     ModEventEmail event_ModEventEmail;
     ModEventResolveAppeal event_ModEventResolveAppeal;
     ModEventDivert event_ModEventDivert;
+    ModEventTag event_ModEventTag;
     // union end : event
     // union start : subject
     ModEventViewDetailSubjectType subject_type = ModEventViewDetailSubjectType::none;
@@ -1757,13 +1786,6 @@ struct ModEventViewDetail
     QList<BlobView> subjectBlobs;
     QString createdBy; // did
     QString createdAt; // datetime
-};
-struct ModEventTag
-{
-    QList<QString> add; // Tags to be added to the subject. If already exists, won't be duplicated.
-    QList<QString> remove; // Tags to be removed to the subject. Ignores a tag If it doesn't exist,
-                           // won't be duplicated.
-    QString comment; // Additional comment about added/removed tags.
 };
 struct ModerationDetail
 {

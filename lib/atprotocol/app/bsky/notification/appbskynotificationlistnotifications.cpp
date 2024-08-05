@@ -13,12 +13,16 @@ AppBskyNotificationListNotifications::AppBskyNotificationListNotifications(QObje
 {
 }
 
-void AppBskyNotificationListNotifications::listNotifications(const int limit, const QString &cursor,
+void AppBskyNotificationListNotifications::listNotifications(const int limit, const bool priority,
+                                                             const QString &cursor,
                                                              const QString &seenAt)
 {
     QUrlQuery url_query;
     if (limit > 0) {
         url_query.addQueryItem(QStringLiteral("limit"), QString::number(limit));
+    }
+    if (priority) {
+        url_query.addQueryItem(QStringLiteral("priority"), "true");
     }
     if (!cursor.isEmpty()) {
         url_query.addQueryItem(QStringLiteral("cursor"), cursor);
@@ -34,6 +38,11 @@ const QList<AtProtocolType::AppBskyNotificationListNotifications::Notification> 
 AppBskyNotificationListNotifications::notificationsList() const
 {
     return m_notificationsList;
+}
+
+const bool &AppBskyNotificationListNotifications::priority() const
+{
+    return m_priority;
 }
 
 const QString &AppBskyNotificationListNotifications::seenAt() const
@@ -54,6 +63,8 @@ bool AppBskyNotificationListNotifications::parseJson(bool success, const QString
                                                                                    data);
             m_notificationsList.append(data);
         }
+        AtProtocolType::LexiconsTypeUnknown::copyBool(json_doc.object().value("priority"),
+                                                      m_priority);
         AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("seenAt"),
                                                         m_seenAt);
     }
