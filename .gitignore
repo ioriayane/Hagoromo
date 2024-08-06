@@ -71,6 +71,8 @@ openssl/share
 openssl/*.cnf
 openssl/*.cnf.dist
 
+.DS_Store
+
 # Hugo
 web/public/*
 web/.hugo_build.lock
