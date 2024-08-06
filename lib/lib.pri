@@ -1,4 +1,7 @@
 QT += xml sql websockets
+greaterThan(QT_MAJOR_VERSION, 5) {
+QT += core5compat
+}
 
 INCLUDEPATH += $$PWD \
     $$PWD/../3rdparty/cpp-httplib
