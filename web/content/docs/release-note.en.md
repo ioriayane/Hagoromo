@@ -8,8 +8,13 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+### v0.35.0 - 2024/8/3
+
+- Add
+  - Support for real-time feeds (technical preview)
 - Update
   - Change so that the translation results are shared throughout the app
+  - Change OGP character code judgment process
 
 ### v0.34.0 - 2024/7/16
 

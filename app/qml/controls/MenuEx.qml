@@ -69,6 +69,7 @@ Menu {
         }
 
         contentItem: Label {
+            id: contentItemLabel
             leftPadding: 14 + 22 * (AdjustedValues.ratio - 1)
             rightPadding: menuItem.arrow.implicitWidth * 2
             text: menuItem.text
@@ -80,7 +81,7 @@ Menu {
                 if(!menuItem.menu){
                     return
                 }
-                var w = leftPadding + rightPadding + contentWidth
+                var w = leftPadding + rightPadding + contentItemLabel.contentWidth
                 if(menuItem.menu.width < w){
                     // console.log("update width " + menuItem.menu.width + "->" + w + "(" + text + ")")
                     menuItem.implicitWidth = w
