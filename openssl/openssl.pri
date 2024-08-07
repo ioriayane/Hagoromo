@@ -1,6 +1,6 @@
 
 bin_dir=$$dirname(QMAKE_QMAKE)
-open_ssl_dir=$${bin_dir}/../../../Tools/OpenSSL
+open_ssl_dir=$${bin_dir}/../../../Tools/OpenSSLv3
 open_ssl_dir=$$clean_path($$open_ssl_dir)
 
 win32:{
@@ -15,8 +15,8 @@ win32:{
 
     depend_files.path = $$install_dir
     depend_files.files = \
-        $${open_ssl_dir}/bin/libcrypto-1_1-x64.dll \
-        $${open_ssl_dir}/bin/libssl-1_1-x64.dll
+        $${open_ssl_dir}/bin/libcrypto-3-x64.dll \
+        $${open_ssl_dir}/bin/libssl-3-x64.dll
 
     INSTALLS += depend_files
     QMAKE_POST_LINK += nmake -f $(MAKEFILE) install
