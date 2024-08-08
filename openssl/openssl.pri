@@ -1,9 +1,7 @@
-
-bin_dir=$$dirname(QMAKE_QMAKE)
-open_ssl_dir=$${bin_dir}/../../../Tools/OpenSSLv3
-open_ssl_dir=$$clean_path($$open_ssl_dir)
-
 win32:{
+    bin_dir=$$dirname(QMAKE_QMAKE)
+    open_ssl_dir=$${bin_dir}/../../../Tools/OpenSSLv3
+    open_ssl_dir=$$clean_path($$open_ssl_dir)
     open_ssl_dir=$${open_ssl_dir}/Win_x64
 
     LIBS += $${open_ssl_dir}/lib/libssl.lib \
@@ -20,9 +18,13 @@ win32:{
 
     INSTALLS += depend_files
     QMAKE_POST_LINK += nmake -f $(MAKEFILE) install
-}
-unix: {
+
+}else{
     open_ssl_dir=$${PWD}
     INCLUDEPATH += $${open_ssl_dir}/include
-    LIBS += -L$${open_ssl_dir}/lib -lssl -lcrypto
+    mac:{
+        LIBS += -L$${open_ssl_dir}/lib -lssl -lcrypto
+    }else{
+        LIBS += -L$${open_ssl_dir}/lib64 -lssl -lcrypto
+    }
 }
