@@ -58,8 +58,8 @@ deploy_hagoromo(){
 
         cp ${build_dir}/Hagoromo ${work_dir}/bin
         cp ${SCRIPT_FOLDER}/deploy/Hagoromo.sh ${work_dir}
-        cp "openssl/lib/libcrypto.so.1.1" ${work_dir}/lib
-        cp "openssl/lib/libssl.so.1.1" ${work_dir}/lib
+        cp "openssl/lib64/libcrypto.so.3" ${work_dir}/lib
+        cp "openssl/lib64/libssl.so.3" ${work_dir}/lib
         cp "app/i18n/app_ja.qm" ${work_dir}/bin/translations
         cp ${QT_BIN_FOLDER}/../translations/qt_ja.qm ${work_dir}/bin/translations
 
