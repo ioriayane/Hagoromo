@@ -74,10 +74,13 @@ Item {
         ClickableFrame {
             Layout.fillWidth: true
             Layout.topMargin: 1
+            contentWidth: contentRootLayout.implicitWidth
+            contentHeight: contentRootLayout.implicitHeight
             topPadding: 5
             bottomPadding: 5
             visible: rootListView.model.memberHandles.length > 0
             RowLayout {
+                id: contentRootLayout
                 AvatarImage {
                     id: memberAvatarsImage
                     Layout.preferredWidth: AdjustedValues.i24

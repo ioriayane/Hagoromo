@@ -10,6 +10,8 @@ import "../controls"
 
 ClickableFrame {
     id: postFrame
+    contentWidth: contentRootLayout.implicitWidth
+    contentHeight: contentRootLayout.implicitHeight
     topPadding: 10
     leftPadding: 10
     rightPadding: 10
@@ -79,6 +81,7 @@ ClickableFrame {
     }
 
     ColumnLayout {
+        id: contentRootLayout
         states: [
             State {
                 when: moderationFrame.showContent === false

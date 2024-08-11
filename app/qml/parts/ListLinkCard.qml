@@ -8,12 +8,16 @@ import tech.relog.hagoromo.singleton 1.0
 import "../controls"
 
 ClickableFrame {
+    contentWidth: contentRootLayout.implicitWidth
+    contentHeight: contentRootLayout.implicitHeight
+
     property alias avatarImage: avatarImage
     property alias displayNameLabel: displayNameLabel
     property alias creatorHandleLabel: creatorHandleLabel
     property alias descriptionLabel: descriptionLabel
 
     ColumnLayout {
+        id: contentRootLayout
         GridLayout {
             columns: 2
             rowSpacing: 3

@@ -29,8 +29,11 @@ ScrollView {
             id: blogEntryFrame
             clip: true
             hoverEnabled: true
+            contentWidth: contentRootLayout.implicitWidth
+            contentHeight: contentRootLayout.implicitHeight
 
             ColumnLayout {
+                id: contentRootLayout
                 property int basisWidth: blogListView.width * 0.8 -
                                          blogEntryFrame.leftPadding - blogEntryFrame.rightPadding
                 RowLayout {

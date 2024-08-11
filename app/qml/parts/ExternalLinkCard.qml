@@ -9,6 +9,8 @@ import "../controls"
 
 ClickableFrame {
     id: externalLinkFrame
+    contentWidth: contentRootLayout.implicitWidth
+    contentHeight: contentRootLayout.implicitHeight
     topInset: 0
     leftInset: 0
     rightInset: 0
@@ -24,6 +26,7 @@ ClickableFrame {
     property alias descriptionLabel: descriptionLabel
 
     ColumnLayout {
+        id: contentRootLayout
         spacing: 3
         ImageWithIndicator {
             id: thumbImage
