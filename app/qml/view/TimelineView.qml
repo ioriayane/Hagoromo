@@ -101,6 +101,7 @@ ScrollView {
 
         delegate: PostDelegate {
             Layout.preferredWidth: rootListView.width
+            layoutWidth: rootListView.width
 
             logMode: timelineView.logMode
 

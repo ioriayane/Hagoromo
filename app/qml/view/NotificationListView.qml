@@ -89,6 +89,14 @@ ScrollView {
             userFilterMatched: model.userFilterMatched
             userFilterMessage: model.userFilterMessage
 
+            contentFilterFrame.visible: model.contentFilterMatched
+            contentMediaFilterFrame.visible: model.contentMediaFilterMatched
+            postImagePreview.visible: contentMediaFilterFrame.showContent && model.embedImages.length > 0
+
+            externalLinkFrame.visible: model.hasExternalLink && contentMediaFilterFrame.showContent
+            feedGeneratorFrame.visible: model.hasFeedGenerator && contentMediaFilterFrame.showContent
+            listLinkCardFrame.visible: model.hasListLink && contentMediaFilterFrame.showContent
+
             reason: model.reason
             postAvatarImage.source: model.avatar
             postAvatarImage.onClicked: requestViewProfile(model.did)
@@ -108,11 +116,8 @@ ScrollView {
                 }
                 return text
             }
-            contentFilterFrame.visible: model.contentFilterMatched
             contentFilterFrame.labelText: model.contentFilterMessage
-            contentMediaFilterFrame.visible: model.contentMediaFilterMatched
             contentMediaFilterFrame.labelText: model.contentMediaFilterMessage
-            postImagePreview.visible: contentMediaFilterFrame.showContent && model.embedImages.length > 0
             postImagePreview.layoutType: notificationListView.imageLayoutType
             postImagePreview.embedImages: model.embedImages
             postImagePreview.embedAlts: model.embedImagesAlt
@@ -128,21 +133,18 @@ ScrollView {
             quoteRecordImagePreview.embedAlts: model.quoteRecordEmbedImagesAlt
             quoteRecordImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.quoteRecordEmbedImagesFull, model.quoteRecordEmbedImagesAlt)
 
-            externalLinkFrame.visible: model.hasExternalLink && contentMediaFilterFrame.showContent
             externalLinkFrame.onClicked: Qt.openUrlExternally(model.externalLinkUri)
             externalLinkFrame.thumbImage.source: model.externalLinkThumb
             externalLinkFrame.titleLabel.text: model.externalLinkTitle
             externalLinkFrame.uriLabel.text: model.externalLinkUri
             externalLinkFrame.descriptionLabel.text: model.externalLinkDescription
 
-            feedGeneratorFrame.visible: model.hasFeedGenerator && contentMediaFilterFrame.showContent
             feedGeneratorFrame.onClicked: requestViewFeedGenerator(model.feedGeneratorDisplayName, model.feedGeneratorUri)
             feedGeneratorFrame.avatarImage.source: model.feedGeneratorAvatar
             feedGeneratorFrame.displayNameLabel.text: model.feedGeneratorDisplayName
             feedGeneratorFrame.creatorHandleLabel.text: model.feedGeneratorCreatorHandle
             feedGeneratorFrame.likeCountLabel.text: model.feedGeneratorLikeCount
 
-            listLinkCardFrame.visible: model.hasListLink && contentMediaFilterFrame.showContent
             listLinkCardFrame.onClicked: requestViewListFeed(model.listLinkUri, model.listLinkDisplayName)
             listLinkCardFrame.avatarImage.source: model.listLinkAvatar
             listLinkCardFrame.displayNameLabel.text: model.listLinkDisplayName

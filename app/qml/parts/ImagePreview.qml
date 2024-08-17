@@ -12,6 +12,8 @@ GridLayout {
     columnSpacing: 6
     rowSpacing: 6
     columns: 2
+    implicitWidth: imagePreviewLayout.width
+    implicitHeight: imagePreviewLayout.height
 
     // 0:compact, 1:normal, 2:when one is whole, 3:all whole
     property int layoutType: 1
