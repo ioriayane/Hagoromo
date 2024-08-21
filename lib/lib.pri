@@ -1,4 +1,4 @@
-QT += xml sql websockets
+QT += xml sql websockets httpserver
 
 INCLUDEPATH += $$PWD \
     $$PWD/../3rdparty/cpp-httplib
@@ -87,6 +87,7 @@ SOURCES += \
     $$PWD/http/httpaccess.cpp \
     $$PWD/http/httpaccessmanager.cpp \
     $$PWD/http/httpreply.cpp \
+    $$PWD/http/simplehttpserver.cpp \
     $$PWD/log/logaccess.cpp \
     $$PWD/log/logmanager.cpp \
     $$PWD/realtime/abstractpostselector.cpp \
@@ -194,6 +195,7 @@ HEADERS += \
     $$PWD/http/httpaccess.h \
     $$PWD/http/httpaccessmanager.h \
     $$PWD/http/httpreply.h \
+    $$PWD/http/simplehttpserver.h \
     $$PWD/log/logaccess.h \
     $$PWD/log/logmanager.h \
     $$PWD/realtime/abstractpostselector.h \

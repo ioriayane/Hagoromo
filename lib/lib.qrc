@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>tools/oauth/oauth_fail.html</file>
+        <file>tools/oauth/oauth_success.html</file>
+    </qresource>
+</RCC>
