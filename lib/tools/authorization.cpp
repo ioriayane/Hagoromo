@@ -18,8 +18,27 @@ Authorization::Authorization(QObject *parent) : QObject { parent } { }
 
 void Authorization::reset()
 {
+    m_redirectUri.clear();
+    m_clientId.clear();
     m_codeChallenge.clear();
     m_codeVerifier.clear();
+    m_state.clear();
+    m_parPayload.clear();
+    m_requestTokenPayload.clear();
+}
+
+void Authorization::makeClientId()
+{
+    QString port;
+    if (!m_listenPort.isEmpty()) {
+        port.append(":");
+        port.append(m_listenPort);
+    }
+    m_redirectUri.append("http://127.0.0.1");
+    m_redirectUri.append(port);
+    m_redirectUri.append("/tech/relog/hagoromo/oauth-callback");
+    m_clientId.append("http://localhost/tech/relog/hagoromo?redirect_uri=");
+    m_clientId.append(simplyEncode(m_redirectUri));
 }
 
 void Authorization::makeCodeChallenge()
@@ -33,14 +52,11 @@ void Authorization::makeCodeChallenge()
 
 void Authorization::makeParPayload()
 {
+    makeClientId();
     makeCodeChallenge();
     m_state = QCryptographicHash::hash(m_codeVerifier, QCryptographicHash::Sha256)
                       .toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
 
-    QString redirect_uri = "http://127.0.0.1:8080/tech/relog/hagoromo/oauth-callback";
-    QString client_id = "http://localhost/tech/relog/"
-                        "hagoromo?redirect_uri="
-            + simplyEncode(redirect_uri);
     QStringList scopes_supported;
     scopes_supported << "offline_access"
                      << "openid"
@@ -53,18 +69,18 @@ void Authorization::makeParPayload()
     query.addQueryItem("response_type", "code");
     query.addQueryItem("code_challenge", m_codeChallenge);
     query.addQueryItem("code_challenge_method", "S256");
-    query.addQueryItem("client_id", simplyEncode(client_id));
+    query.addQueryItem("client_id", simplyEncode(m_clientId));
     query.addQueryItem("state", m_state);
-    query.addQueryItem("redirect_uri", simplyEncode(redirect_uri));
+    query.addQueryItem("redirect_uri", simplyEncode(m_redirectUri));
     query.addQueryItem("scope", scopes_supported.join(" "));
     query.addQueryItem("login_hint", simplyEncode(login_hint));
 
-    m_parPlayload = query.query(QUrl::FullyEncoded).toLocal8Bit();
+    m_parPayload = query.query(QUrl::FullyEncoded).toLocal8Bit();
 }
 
 void Authorization::par()
 {
-    if (m_parPlayload.isEmpty())
+    if (m_parPayload.isEmpty())
         return;
 
     QString endpoint = "https://bsky.social/oauth/par";
@@ -76,13 +92,13 @@ void Authorization::par()
     HttpReply *reply = new HttpReply(access);
     reply->setOperation(HttpReply::Operation::PostOperation);
     reply->setRequest(request);
-    reply->setSendData(m_parPlayload);
+    reply->setSendData(m_parPayload);
     connect(access, &HttpAccess::finished, this, [access, alive, this](HttpReply *reply) {
         if (alive && reply != nullptr) {
             qDebug().noquote() << reply->error() << reply->url().toString();
-            // emit finished(success);
             qDebug().noquote() << reply->contentType();
             qDebug().noquote() << reply->readAll();
+
             if (reply->error() == HttpReply::Success) {
                 QJsonDocument json_doc = QJsonDocument::fromJson(reply->readAll());
 
@@ -92,6 +108,7 @@ void Authorization::par()
             } else {
                 // error
                 qDebug() << "PAR Error";
+                emit finished(false);
             }
         } else {
             qDebug().noquote() << "Parent is deleted or reply null !!!!!!!!!!";
@@ -129,12 +146,26 @@ void Authorization::startRedirectServer()
     connect(server, &SimpleHttpServer::received, this,
             [=](const QHttpServerRequest &request, bool &result, QByteArray &data,
                 QByteArray &mime_type) {
-                SimpleHttpServer::readFile(":/tools/oauth/oauth_success.html", data);
+                if (request.query().hasQueryItem("iss") && request.query().hasQueryItem("state")
+                    && request.query().hasQueryItem("code")) {
+                    // authorize
+                    QString state = request.query().queryItemValue("state");
+                    result = (state.toUtf8() == m_state);
+                    if (result) {
+                        m_code = request.query().queryItemValue("code").toUtf8();
+                        // requestToken();
+                    } else {
+                        qDebug().noquote() << "Unknown state in authorization redirect :" << state;
+                        emit finished(false);
+                        m_code.clear();
+                    }
+                }
+                if (result) {
+                    SimpleHttpServer::readFile(":/tools/oauth/oauth_success.html", data);
+                } else {
+                    SimpleHttpServer::readFile(":/tools/oauth/oauth_fail.html", data);
+                }
                 mime_type = "text/html";
-                result = true;
-
-                // TODO : verify url and parameters
-                requestToken();
 
                 // delete after 10 sec.
                 QTimer::singleShot(10 * 1000, [=]() {
@@ -155,10 +186,58 @@ void Authorization::startRedirectServer()
     qDebug().noquote() << "Listen" << m_listenPort;
 }
 
-void Authorization::requestToken()
+void Authorization::makeRequestTokenPayload()
+{
+    QUrlQuery query;
+
+    query.addQueryItem("grant_type", "authorization_code");
+    query.addQueryItem("code", m_code);
+    query.addQueryItem("code_verifier", m_codeVerifier);
+    query.addQueryItem("client_id", simplyEncode(m_clientId));
+    query.addQueryItem("redirect_uri", simplyEncode(m_redirectUri));
+
+    m_requestTokenPayload = query.query(QUrl::FullyEncoded).toLocal8Bit();
+}
+
+bool Authorization::requestToken()
 {
 
-    //
+    QString endpoint = "https://bsky.social/oauth/token";
+    QNetworkRequest request((QUrl(endpoint)));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    request.setRawHeader(QByteArray("DPoP"), QByteArray(""));
+
+    QPointer<Authorization> alive = this;
+    HttpAccess *access = new HttpAccess(this);
+    HttpReply *reply = new HttpReply(access);
+    reply->setOperation(HttpReply::Operation::PostOperation);
+    reply->setRequest(request);
+    // reply->setSendData(m_parPayload);
+    connect(access, &HttpAccess::finished, this, [access, alive, this](HttpReply *reply) {
+        if (alive && reply != nullptr) {
+            qDebug().noquote() << reply->error() << reply->url().toString();
+
+            qDebug().noquote() << reply->contentType();
+            qDebug().noquote() << reply->readAll();
+            if (reply->error() == HttpReply::Success) {
+                QJsonDocument json_doc = QJsonDocument::fromJson(reply->readAll());
+
+                qDebug().noquote()
+                        << "request_uri" << json_doc.object().value("request_uri").toString();
+            } else {
+                // error
+                qDebug() << "Request token Error";
+            }
+        } else {
+            qDebug().noquote() << "Parent is deleted or reply null !!!!!!!!!!";
+        }
+        access->deleteLater();
+    });
+    qDebug() << "request token 1";
+    access->process(reply);
+    qDebug() << "request token 2";
+
+    return true;
 }
 
 QByteArray Authorization::generateRandomValues() const
@@ -184,9 +263,9 @@ QString Authorization::simplyEncode(QString text) const
     return text.replace("%", "%25").replace(":", "%3A").replace("/", "%2F").replace("?", "%3F");
 }
 
-QByteArray Authorization::ParPlayload() const
+QByteArray Authorization::ParPayload() const
 {
-    return m_parPlayload;
+    return m_parPayload;
 }
 
 QByteArray Authorization::codeChallenge() const
