@@ -13,8 +13,8 @@
 
 QByteArray base64UrlEncode(const QByteArray &data)
 {
-    QByteArray encoded = data.toBase64();
-    encoded = encoded.replace('+', '-').replace('/', '_').replace("=", "");
+    QByteArray encoded =
+            data.toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
     return encoded;
 }
 
@@ -67,19 +67,19 @@ QJsonObject createJwk(EVP_PKEY *pkey)
     return jwk;
 }
 
-QString JsonWebToken::generate(const QString &endpoint)
+QByteArray JsonWebToken::generate(const QString &endpoint)
 {
     // OpenSSLで秘密鍵を読み込む
     FILE *fp = fopen("c:\\temp\\private_key.pem", "r");
     if (!fp) {
         qWarning() << "Failed to open private key file";
-        return QString();
+        return QByteArray();
     }
     EVP_PKEY *pkey = PEM_read_PrivateKey(fp, nullptr, nullptr, nullptr);
     fclose(fp);
     if (!pkey) {
         qWarning() << "Failed to read private key";
-        return QString();
+        return QByteArray();
     }
 
     // JWKを生成
@@ -108,7 +108,7 @@ QString JsonWebToken::generate(const QString &endpoint)
     QByteArray signatureBase64 = base64UrlEncode(signature);
 
     // JWTトークン
-    QString jwt = headerBase64 + "." + payloadBase64 + "." + signatureBase64;
+    QByteArray jwt = headerBase64 + "." + payloadBase64 + "." + signatureBase64;
     return jwt;
 }
 
