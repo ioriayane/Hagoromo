@@ -18,6 +18,14 @@ QByteArray base64UrlEncode(const QByteArray &data)
     return encoded;
 }
 
+QByteArray bn2ba(const BIGNUM *bn)
+{
+    QByteArray ba;
+    ba.resize(BN_num_bytes(bn));
+    BN_bn2bin(bn, reinterpret_cast<unsigned char *>(ba.data()));
+    return ba;
+}
+
 QJsonObject createJwk(EVP_PKEY *pkey)
 {
     QJsonObject jwk;
@@ -151,49 +159,32 @@ QByteArray JsonWebToken::sign(const QByteArray &data, const QString &privateKeyP
     if (EVP_DigestSignFinal(mdctx, reinterpret_cast<unsigned char *>(signature.data()), &sigLen)
         <= 0) {
         qWarning() << "Failed to finalize digest sign";
+        return QByteArray();
     }
 
-    ////////
-    ///
-
-    /// Convert from ASN1 to DER format
-    EC_KEY *ec_key = EVP_PKEY_get1_EC_KEY(pkey);
-    if (ec_key == NULL)
-        return QByteArray();
-
-    int degree = EC_GROUP_get_degree(EC_KEY_get0_group(ec_key));
-    EC_KEY_free(ec_key);
-
-    /* Get the sig from the DER encoded version. */
+    // Convert DER to IEEE P1363
+    const int ec_sig_len = 64; // ES256のときの値
     const unsigned char *temp = reinterpret_cast<const unsigned char *>(signature.constData());
     ECDSA_SIG *ec_sig = d2i_ECDSA_SIG(NULL, &temp, signature.length());
-    if (ec_sig == NULL)
+    if (ec_sig == NULL) {
         return QByteArray();
+    }
 
     const BIGNUM *ec_sig_r = NULL;
     const BIGNUM *ec_sig_s = NULL;
     ECDSA_SIG_get0(ec_sig, &ec_sig_r, &ec_sig_s);
-    int r_len = BN_num_bytes(ec_sig_r);
-    int s_len = BN_num_bytes(ec_sig_s);
-    int bn_len = (degree + 7) / 8;
-    if ((r_len > bn_len) || (s_len > bn_len))
+
+    QByteArray rr = bn2ba(ec_sig_r);
+    QByteArray ss = bn2ba(ec_sig_s);
+
+    if (rr.size() > (ec_sig_len / 2) || ss.size() > (ec_sig_len / 2)) {
         return QByteArray();
-
-    /// Attention!!! std::vector<std::byte> from C++17, you can use unsigned char* but this C-style
-    /// char's array need allocate zeros, how I member it's memset function. Or use
-    /// std::vector<unsigned char*>.
-    std::vector<unsigned char *> raw_buf(static_cast<size_t>(bn_len) * 2);
-    BN_bn2bin(ec_sig_r, reinterpret_cast<unsigned char *>(raw_buf.data()) + bn_len - r_len);
-    BN_bn2bin(ec_sig_s, reinterpret_cast<unsigned char *>(raw_buf.data()) + raw_buf.size() - s_len);
-
-    std::string str(reinterpret_cast<char *>(raw_buf.data()), raw_buf.size());
-
-    qDebug().noquote() << "sig" << base64UrlEncode(QByteArray::fromStdString(str));
-    ///
-    /// ////
+    }
+    rr.insert(0, ec_sig_len / 2 - rr.size(), '\0');
+    ss.insert(0, ec_sig_len / 2 - ss.size(), '\0');
 
     EVP_MD_CTX_free(mdctx);
     EVP_PKEY_free(pkey);
 
-    return signature;
+    return rr + ss;
 }
