@@ -6,7 +6,7 @@
 class JsonWebToken
 {
 public:
-    static QString generate(const QString &endpoint);
+    static QByteArray generate(const QString &endpoint);
 
     static QByteArray sign(const QByteArray &data, const QString &privateKeyPath);
 };

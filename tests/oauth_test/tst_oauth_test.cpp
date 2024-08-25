@@ -1,6 +1,12 @@
 #include <QtTest>
 #include <QCoreApplication>
 
+#include <openssl/ec.h>
+#include <openssl/ecdsa.h>
+#include <openssl/evp.h>
+#include <openssl/pem.h>
+#include <openssl/bn.h>
+
 #include "tools/authorization.h"
 #include "tools/jsonwebtoken.h"
 #include "http/simplehttpserver.h"
@@ -23,6 +29,8 @@ private slots:
 private:
     SimpleHttpServer m_server;
     quint16 m_listenPort;
+
+    void verify_jwt(const QByteArray &jwt);
 };
 
 oauth_test::oauth_test()
@@ -99,11 +107,47 @@ void oauth_test::test_oauth_server()
 
 void oauth_test::test_jwt()
 {
-    QString jwt = JsonWebToken::generate("https://hoge");
+    QByteArray jwt = JsonWebToken::generate("https://hoge");
 
     qDebug().noquote() << jwt;
 
+    verify_jwt(jwt);
+
     QVERIFY(true);
+}
+
+void oauth_test::verify_jwt(const QByteArray &jwt)
+{
+    const QByteArrayList jwt_parts = jwt.split('.');
+    QVERIFY2(jwt_parts.length() == 3, jwt);
+
+    QByteArray sig = QByteArray::fromBase64(
+            jwt_parts.last(), QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
+    QVERIFY2(sig.length() == 64, QString::number(sig.length()).toLocal8Bit());
+    QByteArray sig_rr = sig.left(32);
+    QByteArray sig_ss = sig.right(32);
+
+    BIGNUM *ec_sig_r = NULL;
+    BIGNUM *ec_sig_s = NULL;
+    ec_sig_r = BN_bin2bn(reinterpret_cast<const unsigned char *>(sig_rr.constData()),
+                         sig_rr.length(), NULL);
+    ec_sig_s = BN_bin2bn(reinterpret_cast<const unsigned char *>(sig_ss.constData()),
+                         sig_ss.length(), NULL);
+    QVERIFY(ec_sig_r != NULL);
+    QVERIFY(ec_sig_s != NULL);
+
+    ECDSA_SIG *ec_sig = ECDSA_SIG_new();
+
+    QVERIFY(ECDSA_SIG_set0(ec_sig, ec_sig_r, ec_sig_s) == 1);
+
+    unsigned char *der_sig;
+    int sig_len = i2d_ECDSA_SIG(ec_sig, &der_sig);
+    QVERIFY(sig_len > 0);
+
+    BN_free(ec_sig_r);
+    BN_free(ec_sig_s);
+    OPENSSL_free(der_sig);
+    ECDSA_SIG_free(ec_sig);
 }
 
 QTEST_MAIN(oauth_test)
