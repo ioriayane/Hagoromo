@@ -9,6 +9,7 @@
 
 #include "tools/authorization.h"
 #include "tools/jsonwebtoken.h"
+#include "tools/es256.h"
 #include "http/simplehttpserver.h"
 
 class oauth_test : public QObject
@@ -25,16 +26,19 @@ private slots:
     void test_oauth_process();
     void test_oauth_server();
     void test_jwt();
+    void test_es256();
 
 private:
     SimpleHttpServer m_server;
     quint16 m_listenPort;
 
-    void verify_jwt(const QByteArray &jwt);
+    void verify_jwt(const QByteArray &jwt, EVP_PKEY *pkey);
 };
 
 oauth_test::oauth_test()
 {
+    QCoreApplication::setOrganizationName(QStringLiteral("relog"));
+    QCoreApplication::setApplicationName(QStringLiteral("Hagoromo"));
 
     m_listenPort = m_server.listen(QHostAddress::LocalHost, 0);
     connect(&m_server, &SimpleHttpServer::received, this,
@@ -111,12 +115,44 @@ void oauth_test::test_jwt()
 
     qDebug().noquote() << jwt;
 
-    verify_jwt(jwt);
+    verify_jwt(jwt, Es256::getInstance()->pKey());
 
     QVERIFY(true);
 }
 
-void oauth_test::verify_jwt(const QByteArray &jwt)
+void oauth_test::test_es256()
+{
+    QString private_key_path =
+            QString("%1/%2/%3%4/private_key.pem")
+                    .arg(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation))
+                    .arg(QCoreApplication::organizationName())
+                    .arg(QCoreApplication::applicationName())
+                    .arg(QStringLiteral("_unittest"));
+    QFile::remove(private_key_path);
+    Es256::getInstance()->clear();
+
+    {
+        QString message = "header.payload";
+        QByteArray sign = Es256::getInstance()->sign(message.toUtf8());
+        QByteArray jwt = message.toUtf8() + '.'
+                + sign.toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
+
+        QVERIFY(QFile::exists(private_key_path));
+        verify_jwt(jwt, Es256::getInstance()->pKey());
+    }
+    QFile::remove(private_key_path);
+    QVERIFY(!QFile::exists(private_key_path));
+    {
+        QString message = "header2.payload2";
+        QByteArray sign = Es256::getInstance()->sign(message.toUtf8());
+        QByteArray jwt = message.toUtf8() + '.'
+                + sign.toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
+
+        verify_jwt(jwt, Es256::getInstance()->pKey());
+    }
+}
+
+void oauth_test::verify_jwt(const QByteArray &jwt, EVP_PKEY *pkey)
 {
     const QByteArrayList jwt_parts = jwt.split('.');
     QVERIFY2(jwt_parts.length() == 3, jwt);
@@ -125,9 +161,10 @@ void oauth_test::verify_jwt(const QByteArray &jwt)
     QByteArray sig = QByteArray::fromBase64(
             jwt_parts.last(), QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
     QVERIFY2(sig.length() == 64, QString::number(sig.length()).toLocal8Bit());
+
+    // convert IEEE P1363 to DER
     QByteArray sig_rr = sig.left(32);
     QByteArray sig_ss = sig.right(32);
-
     BIGNUM *ec_sig_r = NULL;
     BIGNUM *ec_sig_s = NULL;
     ec_sig_r = BN_bin2bn(reinterpret_cast<const unsigned char *>(sig_rr.constData()),
@@ -144,25 +181,18 @@ void oauth_test::verify_jwt(const QByteArray &jwt)
     int der_sig_len = i2d_ECDSA_SIG(ec_sig, &der_sig);
     QVERIFY(der_sig_len > 0);
 
-    FILE *fp = fopen("c:\\temp\\public_key.pem", "r");
-    QVERIFY(fp != NULL);
-    EVP_PKEY *pkey = PEM_read_PUBKEY(fp, nullptr, nullptr, nullptr);
-    fclose(fp);
-    QVERIFY(pkey != NULL);
-
     // ECDSA署名の検証
     EVP_MD_CTX *mdctx = EVP_MD_CTX_new();
+    QVERIFY(pkey != nullptr);
     QVERIFY(EVP_DigestVerifyInit(mdctx, nullptr, EVP_sha256(), nullptr, pkey) > 0);
     QVERIFY(EVP_DigestVerifyUpdate(mdctx, message.constData(), message.length()) > 0);
     QVERIFY(EVP_DigestVerifyFinal(mdctx, der_sig, der_sig_len) > 0);
-
     EVP_MD_CTX_free(mdctx);
-    EVP_PKEY_free(pkey);
 
-    BN_free(ec_sig_r);
-    BN_free(ec_sig_s);
     OPENSSL_free(der_sig);
     ECDSA_SIG_free(ec_sig);
+    BN_free(ec_sig_s);
+    BN_free(ec_sig_r);
 }
 
 QTEST_MAIN(oauth_test)
