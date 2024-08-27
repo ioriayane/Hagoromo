@@ -100,7 +100,6 @@ void Es256::getAffineCoordinates(QByteArray &x_coord, QByteArray &y_coord)
 {
     loadKey();
 
-    // ECキーの抽出
     EC_KEY *ec_key = EVP_PKEY_get1_EC_KEY(m_pKey);
     if (!ec_key) {
         qWarning() << "Failed to get EC key from EVP_PKEY";
@@ -108,22 +107,15 @@ void Es256::getAffineCoordinates(QByteArray &x_coord, QByteArray &y_coord)
 
     const EC_GROUP *group = EC_KEY_get0_group(ec_key);
     const EC_POINT *point = EC_KEY_get0_public_key(ec_key);
-
-    // X, Y座標の抽出
     BIGNUM *x = BN_new();
     BIGNUM *y = BN_new();
-    if (!EC_POINT_get_affine_coordinates_GFp(group, point, x, y, nullptr)) {
+    if (!EC_POINT_get_affine_coordinates(group, point, x, y, nullptr)) {
         qWarning() << "Failed to get affine coordinates";
         x_coord.clear();
         y_coord.clear();
     } else {
-        // X, Y座標をBase64URLエンコード
-        x_coord = QByteArray::fromRawData(reinterpret_cast<const char *>(BN_bn2hex(x)),
-                                          BN_num_bytes(x))
-                          .toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
-        y_coord = QByteArray::fromRawData(reinterpret_cast<const char *>(BN_bn2hex(y)),
-                                          BN_num_bytes(y))
-                          .toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
+        x_coord = bn2ba(x).toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
+        y_coord = bn2ba(y).toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
     }
     BN_free(x);
     BN_free(y);
