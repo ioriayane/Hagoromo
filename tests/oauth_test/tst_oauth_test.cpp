@@ -1,5 +1,7 @@
 #include <QtTest>
 #include <QCoreApplication>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 #include <openssl/ec.h>
 #include <openssl/ecdsa.h>
@@ -154,6 +156,8 @@ void oauth_test::test_es256()
 
 void oauth_test::verify_jwt(const QByteArray &jwt, EVP_PKEY *pkey)
 {
+    EC_KEY *ec_key = nullptr;
+
     const QByteArrayList jwt_parts = jwt.split('.');
     QVERIFY2(jwt_parts.length() == 3, jwt);
 
@@ -161,6 +165,41 @@ void oauth_test::verify_jwt(const QByteArray &jwt, EVP_PKEY *pkey)
     QByteArray sig = QByteArray::fromBase64(
             jwt_parts.last(), QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
     QVERIFY2(sig.length() == 64, QString::number(sig.length()).toLocal8Bit());
+    QByteArray header = QByteArray::fromBase64(
+            jwt_parts.first(), QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
+
+    bool use_jwk = false;
+    QJsonDocument json_doc = QJsonDocument::fromJson(header);
+    if (json_doc.object().contains("jwk")) {
+        QJsonObject jwk_obj = json_doc.object().value("jwk").toObject();
+        QByteArray x_coord = QByteArray::fromBase64(jwk_obj.value("x").toString().toUtf8(),
+                                                    QByteArray::Base64UrlEncoding
+                                                            | QByteArray::OmitTrailingEquals);
+        QByteArray y_coord = QByteArray::fromBase64(jwk_obj.value("y").toString().toUtf8(),
+                                                    QByteArray::Base64UrlEncoding
+                                                            | QByteArray::OmitTrailingEquals);
+        QVERIFY(!x_coord.isEmpty());
+        QVERIFY(!y_coord.isEmpty());
+
+        BIGNUM *x = BN_bin2bn(reinterpret_cast<const unsigned char *>(x_coord.constData()),
+                              x_coord.length(), nullptr);
+        BIGNUM *y = BN_bin2bn(reinterpret_cast<const unsigned char *>(y_coord.constData()),
+                              y_coord.length(), nullptr);
+        QVERIFY(x);
+        QVERIFY(y);
+
+        ec_key = EC_KEY_new_by_curve_name(NID_X9_62_prime256v1);
+        QVERIFY(ec_key);
+        QVERIFY(EC_KEY_set_public_key_affine_coordinates(ec_key, x, y));
+
+        pkey = EVP_PKEY_new();
+        QVERIFY(EVP_PKEY_assign_EC_KEY(pkey, ec_key));
+
+        BN_free(y);
+        BN_free(x);
+
+        use_jwk = true;
+    }
 
     // convert IEEE P1363 to DER
     QByteArray sig_rr = sig.left(32);
@@ -193,6 +232,11 @@ void oauth_test::verify_jwt(const QByteArray &jwt, EVP_PKEY *pkey)
     ECDSA_SIG_free(ec_sig);
     BN_free(ec_sig_s);
     BN_free(ec_sig_r);
+
+    if (use_jwk) {
+        EVP_PKEY_free(pkey);
+        // EC_KEY_free(ec_key); EVP_PKEY_freeで解放される
+    }
 }
 
 QTEST_MAIN(oauth_test)
