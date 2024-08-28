@@ -1,6 +1,8 @@
 #include "authorization.h"
 #include "http/httpaccess.h"
 #include "http/simplehttpserver.h"
+#include "atprotocol/com/atproto/repo/comatprotorepodescriberepo.h"
+#include "atprotocol/lexicons_func_unknown.h"
 
 #include <QCryptographicHash>
 #include <QRandomGenerator>
@@ -14,10 +16,13 @@
 #include <QDesktopServices>
 #include <QTimer>
 
+using AtProtocolInterface::ComAtprotoRepoDescribeRepo;
+
 Authorization::Authorization(QObject *parent) : QObject { parent } { }
 
 void Authorization::reset()
 {
+    m_serviceEndpoint.clear();
     m_redirectUri.clear();
     m_clientId.clear();
     m_codeChallenge.clear();
@@ -25,6 +30,33 @@ void Authorization::reset()
     m_state.clear();
     m_parPayload.clear();
     m_requestTokenPayload.clear();
+}
+
+void Authorization::start(const QString &pds, const QString &handle)
+{
+    if (pds.isEmpty() || handle.isEmpty())
+        return;
+
+    AtProtocolInterface::AccountData account;
+    account.service = pds;
+
+    ComAtprotoRepoDescribeRepo *repo = new ComAtprotoRepoDescribeRepo(this);
+    connect(repo, &ComAtprotoRepoDescribeRepo::finished, this, [=](bool success) {
+        if (success) {
+            auto did_doc = AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                    AtProtocolType::DirectoryPlcDefs::DidDoc>(repo->didDoc());
+            if (!did_doc.service.isEmpty()) {
+                setServiceEndpoint(did_doc.service.first().serviceEndpoint);
+
+                // next step
+            }
+        } else {
+            emit errorOccured(repo->errorCode(), repo->errorMessage());
+        }
+        repo->deleteLater();
+    });
+    repo->setAccount(account);
+    repo->describeRepo(handle);
 }
 
 void Authorization::makeClientId()
@@ -261,6 +293,19 @@ QByteArray Authorization::generateRandomValues() const
 QString Authorization::simplyEncode(QString text) const
 {
     return text.replace("%", "%25").replace(":", "%3A").replace("/", "%2F").replace("?", "%3F");
+}
+
+void Authorization::setServiceEndpoint(const QString &newServiceEndpoint)
+{
+    if (m_serviceEndpoint == newServiceEndpoint)
+        return;
+    m_serviceEndpoint = newServiceEndpoint;
+    emit serviceEndpointChanged();
+}
+
+QString Authorization::serviceEndpoint() const
+{
+    return m_serviceEndpoint;
 }
 
 QByteArray Authorization::ParPayload() const
