@@ -63,6 +63,7 @@ SOURCES += \
     $$PWD/atprotocol/com/atproto/moderation/comatprotomoderationcreatereport.cpp \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepocreaterecord.cpp \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepodeleterecord.cpp \
+    $$PWD/atprotocol/com/atproto/repo/comatprotorepodescriberepo.cpp \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepogetrecord.cpp \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepolistrecords.cpp \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepoputrecord.cpp \
@@ -173,6 +174,7 @@ HEADERS += \
     $$PWD/atprotocol/com/atproto/moderation/comatprotomoderationcreatereport.h \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepocreaterecord.h \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepodeleterecord.h \
+    $$PWD/atprotocol/com/atproto/repo/comatprotorepodescriberepo.h \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepogetrecord.h \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepolistrecords.h \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepoputrecord.h \

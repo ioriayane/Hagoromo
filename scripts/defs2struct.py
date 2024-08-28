@@ -121,7 +121,8 @@ class Defs2Struct:
                          'AppBskyActorProfile::Main',
                          'AppBskyGraphList::Main',
                          'AppBskyFeedThreadgate::Main',
-                         'ComWhtwndBlogEntry::Main'
+                         'ComWhtwndBlogEntry::Main',
+                         'DirectoryPlcDefs::DidDoc',
                         )
         self.inheritance = {
                 'app.bsky.actor.defs#profileView': {
@@ -163,7 +164,6 @@ class Defs2Struct:
             'com.atproto.identity.',
             'com.atproto.label.',
             'com.atproto.repo.applyWrites',
-            'com.atproto.repo.describeRepo',
             'com.atproto.repo.importRepo',
             'com.atproto.repo.uploadBlob',
             'com.atproto.repo.listMissingBlobs',
@@ -218,6 +218,7 @@ class Defs2Struct:
         self.unuse_auth = [
             'com.atproto.server.createSession',
             'com.atproto.sync.getBlob',
+            'com.atproto.repo.describeRepo',
             'com.atproto.repo.listRecords'
         ]
         self.need_extension = [
