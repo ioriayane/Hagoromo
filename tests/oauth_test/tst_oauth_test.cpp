@@ -27,6 +27,7 @@ private slots:
     void cleanupTestCase();
     void test_oauth_process();
     void test_oauth_server();
+    void test_oauth();
     void test_jwt();
     void test_es256();
 
@@ -47,6 +48,16 @@ oauth_test::oauth_test()
             [=](const QHttpServerRequest &request, bool &result, QByteArray &data,
                 QByteArray &mime_type) {
                 //
+                qDebug().noquote() << request.url();
+                QString path = SimpleHttpServer::convertResoucePath(request.url());
+                qDebug().noquote() << " res path =" << path;
+                if (!QFile::exists(path)) {
+                    result = false;
+                } else {
+                    mime_type = "application/json";
+                    result = SimpleHttpServer::readFile(path, data);
+                    qDebug().noquote() << " result =" << result;
+                }
             });
 }
 
@@ -109,6 +120,25 @@ void oauth_test::test_oauth_server()
     //     QList<QVariant> arguments = spy.takeFirst();
     //     QVERIFY(arguments.at(0).toBool());
     // }
+}
+
+void oauth_test::test_oauth()
+{
+
+    Authorization oauth;
+    QString pds = QString("http://localhost:%1/response/2").arg(m_listenPort);
+    QString handle = "ioriayane.relog.tech";
+
+    oauth.reset();
+    {
+        QSignalSpy spy(&oauth, SIGNAL(serviceEndpointChanged()));
+        oauth.start(pds, handle);
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+    oauth.setServiceEndpoint(oauth.serviceEndpoint().arg(m_listenPort));
+
+    QVERIFY(oauth.serviceEndpoint() == QString("http://localhost:%1/response/1").arg(m_listenPort));
 }
 
 void oauth_test::test_jwt()
