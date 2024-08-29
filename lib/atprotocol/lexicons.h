@@ -394,6 +394,15 @@ struct Main
 };
 }
 
+// app.bsky.embed.defs
+namespace AppBskyEmbedDefs {
+struct AspectRatio
+{
+    int width = 0;
+    int height = 0;
+};
+}
+
 // app.bsky.embed.external
 namespace AppBskyEmbedExternal {
 struct External
@@ -423,16 +432,11 @@ struct View
 // app.bsky.embed.images
 namespace AppBskyEmbedImages {
 // A set of images embedded in a Bluesky record (eg, a post).
-struct AspectRatio
-{
-    int width = 0;
-    int height = 0;
-};
 struct Image
 {
     Blob image;
     QString alt; // Alt text description of the image, for accessibility.
-    AspectRatio aspectRatio;
+    AppBskyEmbedDefs::AspectRatio aspectRatio;
 };
 struct Main
 {
@@ -446,7 +450,7 @@ struct ViewImage
                       // fetched. May or may not be the exact original blob. For example, CDN
                       // location provided by the App View.
     QString alt; // Alt text description of the image, for accessibility.
-    AspectRatio aspectRatio;
+    AppBskyEmbedDefs::AspectRatio aspectRatio;
 };
 struct View
 {
@@ -454,16 +458,43 @@ struct View
 };
 }
 
+// app.bsky.embed.video
+namespace AppBskyEmbedVideo {
+struct View
+{
+    QString cid; // cid
+    QString playlist; // uri
+    QString thumbnail; // uri
+    QString alt;
+    AppBskyEmbedDefs::AspectRatio aspectRatio;
+};
+struct Caption
+{
+    QString lang; // language
+    Blob file;
+};
+struct Main
+{
+    Blob video;
+    QList<Caption> captions;
+    QString alt; // Alt text description of the video, for accessibility.
+    AppBskyEmbedDefs::AspectRatio aspectRatio;
+};
+// A video embedded in a Bluesky record (eg, a post).
+}
+
 // app.bsky.embed.recordWithMedia
 namespace AppBskyEmbedRecordWithMedia {
 enum class MainMediaType : int {
     none,
     media_AppBskyEmbedImages_Main,
+    media_AppBskyEmbedVideo_Main,
     media_AppBskyEmbedExternal_Main,
 };
 enum class ViewMediaType : int {
     none,
     media_AppBskyEmbedImages_View,
+    media_AppBskyEmbedVideo_View,
     media_AppBskyEmbedExternal_View,
 };
 struct View
@@ -472,6 +503,7 @@ struct View
     // union start : media
     ViewMediaType media_type = ViewMediaType::none;
     AppBskyEmbedImages::View media_AppBskyEmbedImages_View;
+    AppBskyEmbedVideo::View media_AppBskyEmbedVideo_View;
     AppBskyEmbedExternal::View media_AppBskyEmbedExternal_View;
     // union end : media
 };
@@ -483,6 +515,7 @@ struct Main
     // union start : media
     MainMediaType media_type = MainMediaType::none;
     AppBskyEmbedImages::Main media_AppBskyEmbedImages_Main;
+    AppBskyEmbedVideo::Main media_AppBskyEmbedVideo_Main;
     AppBskyEmbedExternal::Main media_AppBskyEmbedExternal_Main;
     // union end : media
 };
@@ -562,6 +595,7 @@ enum class ReplyRefParentType : int {
 enum class PostViewEmbedType : int {
     none,
     embed_AppBskyEmbedImages_View,
+    embed_AppBskyEmbedVideo_View,
     embed_AppBskyEmbedExternal_View,
     embed_AppBskyEmbedRecord_View,
     embed_AppBskyEmbedRecordWithMedia_View,
@@ -597,6 +631,7 @@ struct ViewerState
     QString like; // at-uri
     bool threadMuted = false;
     bool replyDisabled = false;
+    bool embeddingDisabled = false;
 };
 struct ThreadgateView
 {
@@ -614,6 +649,7 @@ struct PostView
     // union start : embed
     PostViewEmbedType embed_type = PostViewEmbedType::none;
     AppBskyEmbedImages::View embed_AppBskyEmbedImages_View;
+    AppBskyEmbedVideo::View embed_AppBskyEmbedVideo_View;
     AppBskyEmbedExternal::View embed_AppBskyEmbedExternal_View;
     QSharedPointer<AppBskyEmbedRecord::View> embed_AppBskyEmbedRecord_View;
     AppBskyEmbedRecordWithMedia::View embed_AppBskyEmbedRecordWithMedia_View;
@@ -621,6 +657,7 @@ struct PostView
     int replyCount = 0;
     int repostCount = 0;
     int likeCount = 0;
+    int quoteCount = 0;
     QString indexedAt; // datetime
     ViewerState viewer;
     QList<ComAtprotoLabelDefs::Label> labels;
@@ -703,8 +740,8 @@ struct Interaction
 {
     QString item; // at-uri
     QString event;
-    QString feedContext; // Context on a feed item that was orginally supplied by the feed generator
-                         // on getFeedSkeleton.
+    QString feedContext; // Context on a feed item that was originally supplied by the feed
+                         // generator on getFeedSkeleton.
 };
 }
 
@@ -749,6 +786,7 @@ enum class ViewRecordType : int {
     record_ViewRecord,
     record_ViewNotFound,
     record_ViewBlocked,
+    record_ViewDetached,
     record_AppBskyFeedDefs_GeneratorView,
     record_AppBskyGraphDefs_ListView,
     record_AppBskyLabelerDefs_LabelerView,
@@ -757,6 +795,7 @@ enum class ViewRecordType : int {
 enum class ViewRecordEmbedsType : int {
     none,
     embeds_AppBskyEmbedImages_View,
+    embeds_AppBskyEmbedVideo_View,
     embeds_AppBskyEmbedExternal_View,
     embeds_AppBskyEmbedRecord_View,
     embeds_AppBskyEmbedRecordWithMedia_View,
@@ -777,9 +816,11 @@ struct ViewRecord
     int replyCount = 0;
     int repostCount = 0;
     int likeCount = 0;
+    int quoteCount = 0;
     // union start : embeds
     ViewRecordEmbedsType embeds_type = ViewRecordEmbedsType::none;
     QList<AppBskyEmbedImages::View> embeds_AppBskyEmbedImages_View;
+    QList<AppBskyEmbedVideo::View> embeds_AppBskyEmbedVideo_View;
     QList<AppBskyEmbedExternal::View> embeds_AppBskyEmbedExternal_View;
     QList<QSharedPointer<AppBskyEmbedRecord::View>> embeds_AppBskyEmbedRecord_View;
     QList<AppBskyEmbedRecordWithMedia::View> embeds_AppBskyEmbedRecordWithMedia_View;
@@ -797,6 +838,11 @@ struct ViewBlocked
     bool blocked = false;
     AppBskyFeedDefs::BlockedAuthor author;
 };
+struct ViewDetached
+{
+    QString uri; // at-uri
+    bool detached = false;
+};
 struct View
 {
     // union start : record
@@ -804,6 +850,7 @@ struct View
     ViewRecord record_ViewRecord;
     ViewNotFound record_ViewNotFound;
     ViewBlocked record_ViewBlocked;
+    ViewDetached record_ViewDetached;
     AppBskyFeedDefs::GeneratorView record_AppBskyFeedDefs_GeneratorView;
     AppBskyGraphDefs::ListView record_AppBskyGraphDefs_ListView;
     AppBskyLabelerDefs::LabelerView record_AppBskyLabelerDefs_LabelerView;
@@ -872,6 +919,7 @@ namespace AppBskyFeedPost {
 enum class MainEmbedType : int {
     none,
     embed_AppBskyEmbedImages_Main,
+    embed_AppBskyEmbedVideo_Main,
     embed_AppBskyEmbedExternal_Main,
     embed_AppBskyEmbedRecord_Main,
     embed_AppBskyEmbedRecordWithMedia_Main,
@@ -904,6 +952,7 @@ struct Main
     // union start : embed
     MainEmbedType embed_type = MainEmbedType::none;
     AppBskyEmbedImages::Main embed_AppBskyEmbedImages_Main;
+    AppBskyEmbedVideo::Main embed_AppBskyEmbedVideo_Main;
     AppBskyEmbedExternal::Main embed_AppBskyEmbedExternal_Main;
     AppBskyEmbedRecord::Main embed_AppBskyEmbedRecord_Main;
     AppBskyEmbedRecordWithMedia::Main embed_AppBskyEmbedRecordWithMedia_Main;
@@ -920,6 +969,28 @@ struct Main
     QString createdAt; // datetime , Client-declared timestamp when this post was originally
                        // created.
     QString via; // client name(Unofficial field)
+};
+}
+
+// app.bsky.feed.postgate
+namespace AppBskyFeedPostgate {
+enum class MainEmbeddingRulesType : int {
+    none,
+    embeddingRules_DisableRule,
+};
+struct DisableRule
+{
+};
+struct Main
+{
+    QString createdAt; // datetime
+    QString post; // at-uri , Reference (AT-URI) to the post record.
+    QList<QString> detachedEmbeddingUris; // List of AT-URIs embedding this post that the author has
+                                          // detached from.
+    // union start : embeddingRules
+    MainEmbeddingRulesType embeddingRules_type = MainEmbeddingRulesType::none;
+    QList<DisableRule> embeddingRules_DisableRule;
+    // union end : embeddingRules
 };
 }
 
@@ -960,6 +1031,7 @@ struct Main
     QList<ListRule> allow_ListRule;
     // union end : allow
     QString createdAt; // datetime
+    QList<QString> hiddenReplies; // List of hidden reply URIs.
 };
 }
 
@@ -1091,6 +1163,21 @@ struct Suggestion
     QString tag;
     QString subjectType;
     QString subject; // uri
+};
+}
+
+// app.bsky.video.defs
+namespace AppBskyVideoDefs {
+struct JobStatus
+{
+    QString jobId;
+    QString did; // did
+    QString state; // The state of the video processing job. All values not listed as a known value
+                   // indicate that the job is in process.
+    int progress = 0; // Progress within the current processing state.
+    Blob blob;
+    QString error;
+    QString message;
 };
 }
 
