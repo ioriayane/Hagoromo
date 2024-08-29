@@ -183,12 +183,13 @@ ScrollView {
             listLinkCardFrame.descriptionLabel.text: model.listLinkDescription
 
             postControls.replyButton.iconText: model.replyCount
-            postControls.repostButton.iconText: model.repostCount
+            postControls.repostButton.iconText: model.repostCount + (model.quoteCount > 0 ? "+" + model.quoteCount : "")
             postControls.likeButton.iconText: model.likeCount
             postControls.replyButton.enabled: !model.replyDisabled
             postControls.repostButton.enabled: !model.runningRepost
             postControls.likeButton.enabled: !model.runningLike
             postControls.pinnedImage.enabled: !model.runningPostPinning
+            postControls.quoteMenuItem.enabled: !model.quoteDisabled
             postControls.replyButton.onClicked: requestReply(model.cid, model.uri,
                                                              model.replyRootCid, model.replyRootUri,
                                                              model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)

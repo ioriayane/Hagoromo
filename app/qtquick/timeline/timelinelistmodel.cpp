@@ -117,10 +117,14 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return current.post.replyCount;
     else if (role == RepostCountRole)
         return current.post.repostCount;
+    else if (role == QuoteCountRole)
+        return current.post.quoteCount;
     else if (role == LikeCountRole)
         return current.post.likeCount;
     else if (role == ReplyDisabledRole)
         return current.post.viewer.replyDisabled;
+    else if (role == QuoteDisabledRole)
+        return current.post.viewer.embeddingDisabled;
     else if (role == IndexedAtRole)
         return LexiconsTypeUnknown::formatDateTime(current.post.indexedAt);
     else if (role == IndexedAtLongRole)
@@ -305,6 +309,12 @@ void TimelineListModel::update(int row, TimelineListModelRoles role, const QVari
             current.post.repostCount++;
         emit dataChanged(index(row), index(row),
                          QVector<int>() << role << IsRepostedRole << RepostCountRole);
+    } else if (role == QuoteCountRole) {
+        qDebug() << "update QUOTE" << value.toInt();
+        current.post.quoteCount += value.toInt();
+        emit dataChanged(index(row), index(row),
+                         QVector<int>() << role << IsRepostedRole << QuoteCountRole);
+
     } else if (role == LikedUriRole) {
         qDebug() << "update LIKE" << value.toString();
         current.post.viewer.like = value.toString();
@@ -635,8 +645,10 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[RecordTextTranslationRole] = "recordTextTranslation";
     roles[ReplyCountRole] = "replyCount";
     roles[RepostCountRole] = "repostCount";
+    roles[QuoteCountRole] = "quoteCount";
     roles[LikeCountRole] = "likeCount";
     roles[ReplyDisabledRole] = "replyDisabled";
+    roles[QuoteDisabledRole] = "quoteDisabled";
     roles[IndexedAtRole] = "indexedAt";
     roles[IndexedAtLongRole] = "indexedAtLong";
     roles[EmbedImagesRole] = "embedImages";

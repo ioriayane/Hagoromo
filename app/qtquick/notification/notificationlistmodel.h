@@ -46,6 +46,7 @@ public:
         RecordTextTranslationRole,
         ReplyCountRole,
         RepostCountRole,
+        QuoteCountRole,
         LikeCountRole,
         ReplyDisabledRole,
         IndexedAtRole,

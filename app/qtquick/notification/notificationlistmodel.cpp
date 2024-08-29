@@ -140,6 +140,11 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             return m_postHash[current.cid].repostCount;
         else
             return 0;
+    } else if (role == QuoteCountRole) {
+        if (m_postHash.contains(current.cid))
+            return m_postHash[current.cid].quoteCount;
+        else
+            return 0;
     } else if (role == LikeCountRole) {
         if (m_postHash.contains(current.cid))
             return m_postHash[current.cid].likeCount;
@@ -886,6 +891,7 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[RecordTextTranslationRole] = "recordTextTranslation";
     roles[ReplyCountRole] = "replyCount";
     roles[RepostCountRole] = "repostCount";
+    roles[QuoteCountRole] = "quoteCount";
     roles[LikeCountRole] = "likeCount";
     roles[ReplyDisabledRole] = "replyDisabled";
     roles[IndexedAtRole] = "indexedAt";
