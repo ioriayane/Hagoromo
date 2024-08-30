@@ -51,14 +51,19 @@ int main(int argc, char *argv[])
                             if (skipType.contains(record.value("$type").toString())) {
                                 continue;
                             }
+                            QDateTime date = QDateTime::fromString(json.value("time").toString(),
+                                                                   Qt::ISODateWithMs);
                             qDebug().noquote()
                                     << type << json.value("time").toString()
-                                    << QDateTime::currentDateTimeUtc().toString(
-                                               "yyyy/MM/dd hh:mm:ss.zzz")
+                                    << date.msecsTo(QDateTime::currentDateTimeUtc())
                                     << json.value("repo").toString()
                                     << op.toObject().value("action").toString()
                                     << record.value("$type").toString()
                                     << record.value("text").toString().replace("\n", " ").left(30);
+                            if (record.contains("via")) {
+                                qDebug().noquote() << "                                        "
+                                                   << "via:" << record.value("via").toString();
+                            }
                         }
                     }
 

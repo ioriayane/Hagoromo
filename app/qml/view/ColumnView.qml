@@ -12,6 +12,8 @@ import tech.relog.hagoromo.customfeedlistmodel 1.0
 import tech.relog.hagoromo.authorfeedlistmodel 1.0
 import tech.relog.hagoromo.anyprofilelistmodel 1.0
 import tech.relog.hagoromo.listfeedlistmodel 1.0
+import tech.relog.hagoromo.postthreadlistmodel 1.0
+import tech.relog.hagoromo.quotedpostlistmodel 1.0
 import tech.relog.hagoromo.chatlistmodel 1.0
 import tech.relog.hagoromo.chatmessagelistmodel 1.0
 import tech.relog.hagoromo.realtime.realtimefeedlistmodel 1.0
@@ -116,8 +118,9 @@ ColumnLayout {
             onRequestViewThread: (uri) => {
                                      // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
                                      // これはPostThreadViewのプロパティにダイレクトに設定する
-                                     columnStackView.push(postThreadComponent, { "postThreadUri": uri })
+                                     columnStackView.push(postThreadComponent, { "postUri": uri })
                                  }
+            onRequestViewQuotes: (uri) => columnStackView.push(quotedPostsComponent, { "postUri": uri })
 
             onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
 
@@ -161,8 +164,9 @@ ColumnLayout {
             onRequestViewThread: (uri) => {
                                      // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
                                      // これはPostThreadViewのプロパティにダイレクトに設定する
-                                     columnStackView.push(postThreadComponent, { "postThreadUri": uri })
+                                     columnStackView.push(postThreadComponent, { "postUri": uri })
                                  }
+            onRequestViewQuotes: (uri) => columnStackView.push(quotedPostsComponent, { "postUri": uri })
             onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onRequestViewFeedGenerator: (name, uri) => columnView.requestViewFeedGenerator(account.uuid, name, uri)
@@ -179,8 +183,16 @@ ColumnLayout {
     Component {
         id: postThreadComponent
         PostThreadView {
+            id: postThreadView
+            model: PostThreadListModel {
+                autoLoading: false
+                postThreadUri: postThreadView.postUri
+
+                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
+            }
             accountDid: account.did
             imageLayoutType: settings.imageLayoutType
+            subTitle: qsTr("Post thread")
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -190,8 +202,9 @@ ColumnLayout {
             onRequestViewThread: (uri) => {
                                      // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
                                      // これはPostThreadViewのプロパティにダイレクトに設定する
-                                     columnStackView.push(postThreadComponent, { "postThreadUri": uri })
+                                     columnStackView.push(postThreadComponent, { "postUri": uri })
                                  }
+            onRequestViewQuotes: (uri) => columnStackView.push(quotedPostsComponent, { "postUri": uri })
             onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
             onRequestViewFeedGenerator: (name, uri) => columnView.requestViewFeedGenerator(account.uuid, name, uri)
@@ -204,7 +217,6 @@ ColumnLayout {
             onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) => columnView.requestUpdateThreadGate(account.uuid, uri, threadgate_uri, type, rules, callback)
 
             onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
-            onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
             onBack: {
                 if(!columnStackView.empty){
                     columnStackView.pop()
@@ -212,6 +224,53 @@ ColumnLayout {
             }
         }
     }
+    Component {
+        id: quotedPostsComponent
+        PostThreadView {
+            id: quotedPostsView
+            model: QuotedPostListModel {
+                autoLoading: fase
+                displayInterval: 0
+                postUri: quotedPostsView.postUri
+
+                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
+            }
+            accountDid: account.did
+            imageLayoutType: settings.imageLayoutType
+            subTitle: qsTr("Quotes")
+
+            onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
+                            columnView.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+            onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
+                            columnView.requestQuote(account.uuid, cid, uri, avatar, display_name, handle, indexed_at, text)
+
+            onRequestViewThread: (uri) => {
+                                     // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
+                                     // これはPostThreadViewのプロパティにダイレクトに設定する
+                                     columnStackView.push(postThreadComponent, { "postUri": uri })
+                                 }
+            onRequestViewQuotes: (uri) => columnStackView.push(quotedPostsComponent, { "postUri": uri })
+
+            onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
+            onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+            onRequestViewFeedGenerator: (name, uri) => columnView.requestViewFeedGenerator(account.uuid, name, uri)
+            onRequestViewListFeed: (uri, name) => columnView.requestViewListFeed(account.uuid, uri, name)
+            onRequestViewLikedBy: (uri) => columnStackView.push(likesProfilesComponent, { "targetUri": uri })
+            onRequestViewRepostedBy: (uri) => columnStackView.push(repostsProfilesComponent, { "targetUri": uri })
+            onRequestViewSearchPosts: (text) => columnView.requestViewSearchPosts(account.uuid, text, columnView.columnKey)
+            onRequestReportPost: (uri, cid) => columnView.requestReportPost(account.uuid, uri, cid)
+            onRequestAddMutedWord: (text) => columnView.requestAddMutedWord(account.uuid, text)
+            onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) => columnView.requestUpdateThreadGate(account.uuid, uri, threadgate_uri, type, rules, callback)
+
+            onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
+            onBack: {
+                if(!columnStackView.empty){
+                    columnStackView.pop()
+                }
+            }
+        }
+    }
+
     Component {
         id: profileComponent
         ProfileView {
@@ -227,8 +286,9 @@ ColumnLayout {
             onRequestViewThread: (uri) => {
                                      // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
                                      // これはPostThreadViewのプロパティにダイレクトに設定する
-                                     columnStackView.push(postThreadComponent, { "postThreadUri": uri })
+                                     columnStackView.push(postThreadComponent, { "postUri": uri })
                                  }
+            onRequestViewQuotes: (uri) => columnStackView.push(quotedPostsComponent, { "postUri": uri })
             onRequestViewAuthorFeed: (did, handle) =>
                                      columnView.requestViewAuthorFeed(account.uuid, did, handle)
 
@@ -280,8 +340,9 @@ ColumnLayout {
             onRequestViewThread: (uri) => {
                                      // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
                                      // これはPostThreadViewのプロパティにダイレクトに設定する
-                                     columnStackView.push(postThreadComponent, { "postThreadUri": uri })
+                                     columnStackView.push(postThreadComponent, { "postUri": uri })
                                  }
+            onRequestViewQuotes: (uri) => columnStackView.push(quotedPostsComponent, { "postUri": uri })
 
             onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
@@ -337,8 +398,9 @@ ColumnLayout {
             onRequestViewThread: (uri) => {
                                      // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
                                      // これはPostThreadViewのプロパティにダイレクトに設定する
-                                     columnStackView.push(postThreadComponent, { "postThreadUri": uri })
+                                     columnStackView.push(postThreadComponent, { "postUri": uri })
                                  }
+            onRequestViewQuotes: (uri) => columnStackView.push(quotedPostsComponent, { "postUri": uri })
 
             onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
@@ -377,8 +439,9 @@ ColumnLayout {
             onRequestViewThread: (uri) => {
                                      // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
                                      // これはPostThreadViewのプロパティにダイレクトに設定する
-                                     columnStackView.push(postThreadComponent, { "postThreadUri": uri })
+                                     columnStackView.push(postThreadComponent, { "postUri": uri })
                                  }
+            onRequestViewQuotes: (uri) => columnStackView.push(quotedPostsComponent, { "postUri": uri })
 
             onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
@@ -467,8 +530,9 @@ ColumnLayout {
             onRequestViewThread: (uri) => {
                                      // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
                                      // これはPostThreadViewのプロパティにダイレクトに設定する
-                                     columnStackView.push(postThreadComponent, { "postThreadUri": uri })
+                                     columnStackView.push(postThreadComponent, { "postUri": uri })
                                  }
+            onRequestViewQuotes: (uri) => columnStackView.push(quotedPostsComponent, { "postUri": uri })
 
             onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
 
@@ -521,7 +585,7 @@ ColumnLayout {
             onRequestViewThread: (uri) => {
                                      // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
                                      // これはPostThreadViewのプロパティにダイレクトに設定する
-                                     columnStackView.push(postThreadComponent, { "postThreadUri": uri })
+                                     columnStackView.push(postThreadComponent, { "postUri": uri })
                                  }
             onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
@@ -553,8 +617,9 @@ ColumnLayout {
             onRequestViewThread: (uri) => {
                                      // スレッドを表示する基準PostのURIはpush()の引数のJSONで設定する
                                      // これはPostThreadViewのプロパティにダイレクトに設定する
-                                     columnStackView.push(postThreadComponent, { "postThreadUri": uri })
+                                     columnStackView.push(postThreadComponent, { "postUri": uri })
                                  }
+            onRequestViewQuotes: (uri) => columnStackView.push(quotedPostsComponent, { "postUri": uri })
 
             onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
 

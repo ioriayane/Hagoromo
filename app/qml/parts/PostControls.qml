@@ -19,6 +19,8 @@ RowLayout {
     property string handle: ""
     property bool mine: false
     property bool logMode: false
+    property int repostCount: 0
+    property int quoteCount: 0
 
     property alias replyButton: replyButton
     property alias repostButton: repostButton
@@ -34,6 +36,7 @@ RowLayout {
     signal triggeredRequestReport()
     signal triggeredRequestViewLikedBy()
     signal triggeredRequestViewRepostedBy()
+    signal triggeredRequestViewQuotes()
     signal triggeredRequestUpdateThreadGate()
     signal triggeredRequestPin()
     signal triggeredRequestMuteThread()
@@ -63,6 +66,7 @@ RowLayout {
         iconSize: AdjustedValues.i16
         foreground: isReposted ? Material.color(Material.Green) : Material.color(Material.Grey)
         flat: true
+        iconText: repostCount + (quoteCount > 0 ? "+" + quoteCount : "")
         onClicked: popup.open()
         MenuEx {
             id: popup
@@ -161,7 +165,7 @@ RowLayout {
             MenuSeparator {}
             Action {
                 text: qsTr("Reposted by")
-                enabled: repostButton.iconText > 0 && !logMode
+                enabled: repostCount > 0 && !logMode
                 icon.source: "../images/repost.png"
                 onTriggered: triggeredRequestViewRepostedBy()
             }
@@ -170,6 +174,12 @@ RowLayout {
                 enabled: likeButton.iconText > 0 && !logMode
                 icon.source: "../images/like.png"
                 onTriggered: triggeredRequestViewLikedBy()
+            }
+            Action {
+                text: qsTr("Quotes")
+                enabled: quoteCount > 0 && !logMode
+                icon.source: "../images/quote.png"
+                onTriggered: triggeredRequestViewQuotes()
             }
             MenuSeparator {}
             Action {
@@ -224,7 +234,7 @@ RowLayout {
             MenuSeparator {}
             Action {
                 text: qsTr("Reposted by")
-                enabled: repostButton.iconText > 0
+                enabled: repostCount > 0
                 icon.source: "../images/repost.png"
                 onTriggered: triggeredRequestViewRepostedBy()
             }
@@ -233,6 +243,12 @@ RowLayout {
                 enabled: likeButton.iconText > 0
                 icon.source: "../images/like.png"
                 onTriggered: triggeredRequestViewLikedBy()
+            }
+            Action {
+                text: qsTr("Quotes")
+                enabled: quoteCount > 0
+                icon.source: "../images/quote.png"
+                onTriggered: triggeredRequestViewQuotes()
             }
             MenuSeparator {}
             Action {
