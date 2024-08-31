@@ -11,6 +11,8 @@ description: This is a multi-column Bluesky client.
 - Add
   - Supports displaying a list of quotations
   - Displays the number of quotations in a post
+- Fix
+  - Fix the auto-update item that was hidden in the column settings.
 
 ### v0.35.0 - 2024/8/3
 
