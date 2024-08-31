@@ -146,6 +146,7 @@ ScrollView {
             quoteFilterFrame.visible: model.quoteFilterMatched && !model.quoteRecordBlocked
             quoteFilterFrame.labelText: qsTr("Quoted content warning")
             blockedQuoteFrame.visible: model.quoteRecordBlocked
+            quoteRecordStatus: model.quoteRecordBlockedStatus
             hasQuote: model.hasQuoteRecord && !model.quoteRecordBlocked
             quoteRecordFrame.onClicked: (mouse) => {
                                             if(model.quoteRecordUri.length > 0){

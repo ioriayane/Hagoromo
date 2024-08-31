@@ -167,7 +167,7 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
              || role == QuoteRecordAvatarRole || role == QuoteRecordRecordTextRole
              || role == QuoteRecordIndexedAtRole || role == QuoteRecordEmbedImagesRole
              || role == QuoteRecordEmbedImagesFullRole || role == QuoteRecordEmbedImagesAltRole
-             || role == QuoteRecordBlockedRole)
+             || role == QuoteRecordBlockedRole || role == QuoteRecordBlockedStatusRole)
         return getQuoteItem(current.post, role);
 
     else if (m_toExternalLinkRoles.contains(role))
@@ -679,6 +679,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[QuoteRecordEmbedImagesFullRole] = "quoteRecordEmbedImagesFull";
     roles[QuoteRecordEmbedImagesAltRole] = "quoteRecordEmbedImagesAlt";
     roles[QuoteRecordBlockedRole] = "quoteRecordBlocked";
+    roles[QuoteRecordBlockedStatusRole] = "quoteRecordBlockedStatus";
 
     roles[HasExternalLinkRole] = "hasExternalLink";
     roles[ExternalLinkUriRole] = "externalLinkUri";
@@ -1025,7 +1026,9 @@ QVariant TimelineListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDefs::
         // 付与されているラベルがHide設定の場合block表示をする
         if (has_record) {
             if (post.embed_AppBskyEmbedRecord_View->record_type
-                == AppBskyEmbedRecord::ViewRecordType::record_ViewBlocked)
+                        == AppBskyEmbedRecord::ViewRecordType::record_ViewBlocked
+                || post.embed_AppBskyEmbedRecord_View->record_type
+                        == AppBskyEmbedRecord::ViewRecordType::record_ViewDetached)
                 return true;
 
             if (post.embed_AppBskyEmbedRecord_View->record_ViewRecord.author.did != account().did) {
@@ -1059,6 +1062,20 @@ QVariant TimelineListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDefs::
             }
         }
         return false;
+    } else if (role == QuoteRecordBlockedStatusRole) {
+        if (has_record) {
+            if (post.embed_AppBskyEmbedRecord_View->record_type
+                == AppBskyEmbedRecord::ViewRecordType::record_ViewBlocked)
+                return QuoteRecordBlockedStatusType::QuoteRecordBlocked;
+            else if (post.embed_AppBskyEmbedRecord_View->record_type
+                     == AppBskyEmbedRecord::ViewRecordType::record_ViewDetached)
+                return QuoteRecordBlockedStatusType::QuoteRecordDetached;
+        } else if (has_with_image) {
+            if (post.embed_AppBskyEmbedRecordWithMedia_View.record->record_type
+                == AppBskyEmbedRecord::ViewRecordType::record_ViewBlocked)
+                return QuoteRecordBlockedStatusType::QuoteRecordBlocked;
+        }
+        return QuoteRecordBlockedStatusType::QuoteRecordNonBlocked;
     }
 
     return QVariant();

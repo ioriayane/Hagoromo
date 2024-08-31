@@ -3,6 +3,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QElapsedTimer>
 
 #include "comatprotosyncsubscribereposex.h"
 
@@ -23,11 +24,18 @@ int main(int argc, char *argv[])
     qDebug().noquote() << "Stopper" << stopper_did;
     // wss://bsky.network/xrpc/com.atproto.sync.subscribeRepos
 
+    QElapsedTimer timer;
+    timer.start();
+
     QStringList skipType;
 
     skipType << "app.bsky.feed.like"
              << "app.bsky.feed.repost"
-             << "app.bsky.graph.follow";
+             << "app.bsky.graph.follow"
+             << "app.bsky.graph.block"
+             << "app.bsky.actor.profile"
+             << "app.bsky.graph.listitem"
+             << "chat.bsky.actor.declaration";
 
     ComAtprotoSyncSubscribeReposEx client;
     QObject::connect(&client, &ComAtprotoSyncSubscribeReposEx::errorOccured,
@@ -39,7 +47,16 @@ int main(int argc, char *argv[])
             &client, &ComAtprotoSyncSubscribeReposEx::received,
             [=](const QString &type, const QJsonObject &json) {
                 // qDebug().noquote() << "commitDataReceived:" << !json.isEmpty();
-
+                static unsigned long count = 0;
+                static qint64 prev_time = 0;
+                qint64 cur_time = timer.elapsed();
+                if ((cur_time - prev_time) > 1000) {
+                    qDebug().noquote() << "rate:" << count; // << static_cast<int>(count / 10);
+                    count = 0;
+                    prev_time = cur_time;
+                } else {
+                    count++;
+                }
                 if (type == "#commit") {
                     for (const auto &op : json.value("ops").toArray()) {
                         if (op.toObject().value("path").toString().startsWith(
