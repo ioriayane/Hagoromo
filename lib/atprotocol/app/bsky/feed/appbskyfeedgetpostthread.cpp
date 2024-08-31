@@ -43,6 +43,11 @@ const AtProtocolType::AppBskyFeedDefs::BlockedPost &AppBskyFeedGetPostThread::bl
     return m_blockedPost;
 }
 
+const AtProtocolType::AppBskyFeedDefs::ThreadgateView &AppBskyFeedGetPostThread::threadgate() const
+{
+    return m_threadgate;
+}
+
 bool AppBskyFeedGetPostThread::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
@@ -61,6 +66,8 @@ bool AppBskyFeedGetPostThread::parseJson(bool success, const QString reply_json)
             AtProtocolType::AppBskyFeedDefs::copyBlockedPost(
                     json_doc.object().value("thread").toObject(), m_blockedPost);
         }
+        AtProtocolType::AppBskyFeedDefs::copyThreadgateView(
+                json_doc.object().value("threadgate").toObject(), m_threadgate);
     }
 
     return success;

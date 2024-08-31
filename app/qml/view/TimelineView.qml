@@ -37,6 +37,7 @@ ScrollView {
     signal requestViewListFeed(string uri, string name)
     signal requestViewLikedBy(string uri)
     signal requestViewRepostedBy(string uri)
+    signal requestViewQuotes(string uri)
     signal requestViewSearchPosts(string text)
     signal requestAddMutedWord(string text)
     signal requestUpdateThreadGate(string uri, string threadgate_uri, string type, var rules, var callback)
@@ -145,6 +146,7 @@ ScrollView {
             quoteFilterFrame.visible: model.quoteFilterMatched && !model.quoteRecordBlocked
             quoteFilterFrame.labelText: qsTr("Quoted content warning")
             blockedQuoteFrame.visible: model.quoteRecordBlocked
+            quoteRecordStatus: model.quoteRecordBlockedStatus
             hasQuote: model.hasQuoteRecord && !model.quoteRecordBlocked
             quoteRecordFrame.onClicked: (mouse) => {
                                             if(model.quoteRecordUri.length > 0){
@@ -182,13 +184,16 @@ ScrollView {
             listLinkCardFrame.creatorHandleLabel.text: model.listLinkCreatorHandle
             listLinkCardFrame.descriptionLabel.text: model.listLinkDescription
 
+            postControls.repostCount: model.repostCount
+            postControls.quoteCount: model.quoteCount
             postControls.replyButton.iconText: model.replyCount
-            postControls.repostButton.iconText: model.repostCount
+            postControls.repostButton.iconText: model.repostCount + (model.quoteCount > 0 ? "+" + model.quoteCount : "")
             postControls.likeButton.iconText: model.likeCount
             postControls.replyButton.enabled: !model.replyDisabled
             postControls.repostButton.enabled: !model.runningRepost
             postControls.likeButton.enabled: !model.runningLike
             postControls.pinnedImage.enabled: !model.runningPostPinning
+            postControls.quoteMenuItem.enabled: !model.quoteDisabled
             postControls.replyButton.onClicked: requestReply(model.cid, model.uri,
                                                              model.replyRootCid, model.replyRootUri,
                                                              model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
@@ -211,6 +216,7 @@ ScrollView {
             postControls.onTriggeredRequestReport: timelineView.requestReportPost(model.uri, model.cid)
             postControls.onTriggeredRequestViewLikedBy: timelineView.requestViewLikedBy(model.uri)
             postControls.onTriggeredRequestViewRepostedBy: timelineView.requestViewRepostedBy(model.uri)
+            postControls.onTriggeredRequestViewQuotes: timelineView.requestViewQuotes(model.uri)
             postControls.onTriggeredRequestUpdateThreadGate: timelineView.requestUpdateThreadGate(model.uri, model.threadGateUri, model.threadGateType, model.threadGateRules, updatedThreadGate)
             postControls.onTriggeredRequestPin: rootListView.model.pin(model.index)
             postControls.onTriggeredRequestMuteThread: rootListView.model.muteThread(model.index)

@@ -117,10 +117,14 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return current.post.replyCount;
     else if (role == RepostCountRole)
         return current.post.repostCount;
+    else if (role == QuoteCountRole)
+        return current.post.quoteCount;
     else if (role == LikeCountRole)
         return current.post.likeCount;
     else if (role == ReplyDisabledRole)
         return current.post.viewer.replyDisabled;
+    else if (role == QuoteDisabledRole)
+        return current.post.viewer.embeddingDisabled;
     else if (role == IndexedAtRole)
         return LexiconsTypeUnknown::formatDateTime(current.post.indexedAt);
     else if (role == IndexedAtLongRole)
@@ -163,7 +167,7 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
              || role == QuoteRecordAvatarRole || role == QuoteRecordRecordTextRole
              || role == QuoteRecordIndexedAtRole || role == QuoteRecordEmbedImagesRole
              || role == QuoteRecordEmbedImagesFullRole || role == QuoteRecordEmbedImagesAltRole
-             || role == QuoteRecordBlockedRole)
+             || role == QuoteRecordBlockedRole || role == QuoteRecordBlockedStatusRole)
         return getQuoteItem(current.post, role);
 
     else if (m_toExternalLinkRoles.contains(role))
@@ -305,6 +309,12 @@ void TimelineListModel::update(int row, TimelineListModelRoles role, const QVari
             current.post.repostCount++;
         emit dataChanged(index(row), index(row),
                          QVector<int>() << role << IsRepostedRole << RepostCountRole);
+    } else if (role == QuoteCountRole) {
+        qDebug() << "update QUOTE" << value.toInt();
+        current.post.quoteCount += value.toInt();
+        emit dataChanged(index(row), index(row),
+                         QVector<int>() << role << IsRepostedRole << QuoteCountRole);
+
     } else if (role == LikedUriRole) {
         qDebug() << "update LIKE" << value.toString();
         current.post.viewer.like = value.toString();
@@ -635,8 +645,10 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[RecordTextTranslationRole] = "recordTextTranslation";
     roles[ReplyCountRole] = "replyCount";
     roles[RepostCountRole] = "repostCount";
+    roles[QuoteCountRole] = "quoteCount";
     roles[LikeCountRole] = "likeCount";
     roles[ReplyDisabledRole] = "replyDisabled";
+    roles[QuoteDisabledRole] = "quoteDisabled";
     roles[IndexedAtRole] = "indexedAt";
     roles[IndexedAtLongRole] = "indexedAtLong";
     roles[EmbedImagesRole] = "embedImages";
@@ -667,6 +679,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[QuoteRecordEmbedImagesFullRole] = "quoteRecordEmbedImagesFull";
     roles[QuoteRecordEmbedImagesAltRole] = "quoteRecordEmbedImagesAlt";
     roles[QuoteRecordBlockedRole] = "quoteRecordBlocked";
+    roles[QuoteRecordBlockedStatusRole] = "quoteRecordBlockedStatus";
 
     roles[HasExternalLinkRole] = "hasExternalLink";
     roles[ExternalLinkUriRole] = "externalLinkUri";
@@ -1013,7 +1026,9 @@ QVariant TimelineListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDefs::
         // 付与されているラベルがHide設定の場合block表示をする
         if (has_record) {
             if (post.embed_AppBskyEmbedRecord_View->record_type
-                == AppBskyEmbedRecord::ViewRecordType::record_ViewBlocked)
+                        == AppBskyEmbedRecord::ViewRecordType::record_ViewBlocked
+                || post.embed_AppBskyEmbedRecord_View->record_type
+                        == AppBskyEmbedRecord::ViewRecordType::record_ViewDetached)
                 return true;
 
             if (post.embed_AppBskyEmbedRecord_View->record_ViewRecord.author.did != account().did) {
@@ -1047,6 +1062,20 @@ QVariant TimelineListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDefs::
             }
         }
         return false;
+    } else if (role == QuoteRecordBlockedStatusRole) {
+        if (has_record) {
+            if (post.embed_AppBskyEmbedRecord_View->record_type
+                == AppBskyEmbedRecord::ViewRecordType::record_ViewBlocked)
+                return QuoteRecordBlockedStatusType::QuoteRecordBlocked;
+            else if (post.embed_AppBskyEmbedRecord_View->record_type
+                     == AppBskyEmbedRecord::ViewRecordType::record_ViewDetached)
+                return QuoteRecordBlockedStatusType::QuoteRecordDetached;
+        } else if (has_with_image) {
+            if (post.embed_AppBskyEmbedRecordWithMedia_View.record->record_type
+                == AppBskyEmbedRecord::ViewRecordType::record_ViewBlocked)
+                return QuoteRecordBlockedStatusType::QuoteRecordBlocked;
+        }
+        return QuoteRecordBlockedStatusType::QuoteRecordNonBlocked;
     }
 
     return QVariant();

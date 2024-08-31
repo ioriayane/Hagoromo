@@ -4,7 +4,6 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 
 import tech.relog.hagoromo.timelinelistmodel 1.0
-import tech.relog.hagoromo.postthreadlistmodel 1.0
 import tech.relog.hagoromo.systemtool 1.0
 import tech.relog.hagoromo.singleton 1.0
 
@@ -17,10 +16,11 @@ ColumnLayout {
     property string hoveredLink: ""
     property string accountDid: ""   // 取得するユーザー
     property int imageLayoutType: 1
+    property string subTitle: ""
+    property string postUri: ""
 
-    property alias postThreadUri: postThreadListModel.postThreadUri
     property alias listView: rootListView
-    property alias model: postThreadListModel
+    property alias model: rootListView.model
 
     signal requestReply(string cid, string uri,
                         string reply_root_cid, string reply_root_uri,
@@ -33,12 +33,12 @@ ColumnLayout {
     signal requestViewListFeed(string uri, string name)
     signal requestViewLikedBy(string uri)
     signal requestViewRepostedBy(string uri)
+    signal requestViewQuotes(string uri)
     signal requestViewSearchPosts(string text)
     signal requestAddMutedWord(string text)
     signal requestUpdateThreadGate(string uri, string threadgate_uri, string type, var rules, var callback)
     signal requestReportPost(string uri, string cid)
 
-    signal errorOccured(string code, string message)
     signal back()
 
     Frame {
@@ -60,7 +60,7 @@ ColumnLayout {
                 Layout.fillWidth: true
                 Layout.leftMargin: 10
                 font.pointSize: AdjustedValues.f10
-                text: qsTr("Post thread")
+                text: postThreadView.subTitle
             }
         }
     }
@@ -83,13 +83,6 @@ ColumnLayout {
                 id: systemTool
             }
 
-            model: PostThreadListModel {
-                id: postThreadListModel
-                autoLoading: false
-
-                onErrorOccured: (code, message) => profileView.errorOccured(code, message)
-            }
-
             header: Item {
                 width: rootListView.width
                 height: AdjustedValues.h24
@@ -98,7 +91,7 @@ ColumnLayout {
                     anchors.centerIn: parent
                     width: AdjustedValues.i24
                     height: AdjustedValues.i24
-                    visible: postThreadListModel.running
+                    visible: rootListView.model.running
                 }
             }
 
@@ -111,7 +104,7 @@ ColumnLayout {
 
                 //自分から自分へは移動しない
                 onClicked: (mouse) => {
-                               if(postThreadUri !== model.uri){
+                               if(postThreadView.postUri !== model.uri){
                                    requestViewThread(model.uri)
                                }
                            }
@@ -135,7 +128,7 @@ ColumnLayout {
                 postAvatarImage.onClicked: requestViewProfile(model.did)
                 postAuthor.displayName: model.displayName
                 postAuthor.handle: model.handle
-                postAuthor.indexedAt: (postThreadUri === model.uri) ? "" : model.indexedAt
+                postAuthor.indexedAt: (postThreadView.postUri === model.uri) ? "" : model.indexedAt
                 recordText.text: {
                     var text = model.recordText
                     if(model.recordTextTranslation.length > 0){
@@ -156,6 +149,7 @@ ColumnLayout {
                 quoteFilterFrame.visible: model.quoteFilterMatched && !model.quoteRecordBlocked
                 quoteFilterFrame.labelText: qsTr("Quoted content warning")
                 blockedQuoteFrame.visible: model.quoteRecordBlocked
+                quoteRecordStatus: model.quoteRecordBlockedStatus
                 hasQuote: model.hasQuoteRecord && !model.quoteRecordBlocked
                 quoteRecordFrame.onClicked: (mouse) => {
                                                 if(model.quoteRecordUri.length > 0){
@@ -193,19 +187,21 @@ ColumnLayout {
                 listLinkCardFrame.creatorHandleLabel.text: model.listLinkCreatorHandle
                 listLinkCardFrame.descriptionLabel.text: model.listLinkDescription
 
-                postInformation.visible: (postThreadUri === model.uri)
+                postInformation.visible: (postThreadView.postUri === model.uri)
                 postInformation.tagsLayout.model: postInformation.visible ? model.tags : []
                 postInformation.labelsLayout.model: postInformation.visible ? model.labels : []
                 postInformation.languagesLayout.model: postInformation.visible ? model.languages : []
                 postInformation.indexedAtLongLabel.text: postInformation.visible ? model.indexedAtLong : ""
                 postInformation.viaTagLabel.text: (postInformation.visible && model.via.length > 0) ? ("via:" + model.via) : ""
 
+                postControls.repostCount: model.repostCount
+                postControls.quoteCount: model.quoteCount
                 postControls.replyButton.iconText: model.replyCount
-                postControls.repostButton.iconText: model.repostCount
                 postControls.likeButton.iconText: model.likeCount
                 postControls.replyButton.enabled: !model.replyDisabled
                 postControls.repostButton.enabled: !model.runningRepost
                 postControls.likeButton.enabled: !model.runningLike
+                postControls.quoteMenuItem.enabled: !model.quoteDisabled
                 postControls.replyButton.onClicked: requestReply(model.cid, model.uri,
                                                                  model.replyRootCid, model.replyRootUri,
                                                                  model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
@@ -227,6 +223,7 @@ ColumnLayout {
                 postControls.onTriggeredRequestReport: postThreadView.requestReportPost(model.uri, model.cid)
                 postControls.onTriggeredRequestViewLikedBy: postThreadView.requestViewLikedBy(model.uri)
                 postControls.onTriggeredRequestViewRepostedBy: postThreadView.requestViewRepostedBy(model.uri)
+                postControls.onTriggeredRequestViewQuotes: postThreadView.requestViewQuotes(model.uri)
                 postControls.onTriggeredRequestUpdateThreadGate: postThreadView.requestUpdateThreadGate(model.uri, model.threadGateUri, model.threadGateType, model.threadGateRules, updatedThreadGate)
                 postControls.onTriggeredRequestPin: rootListView.model.pin(model.index)
                 postControls.onTriggeredRequestMuteThread: rootListView.model.muteThread(model.index)

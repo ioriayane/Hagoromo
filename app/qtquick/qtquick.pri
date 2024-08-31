@@ -52,6 +52,7 @@ SOURCES += \
     $$PWD/timeline/authorfeedlistmodel.cpp \
     $$PWD/timeline/customfeedlistmodel.cpp \
     $$PWD/timeline/postthreadlistmodel.cpp \
+    $$PWD/timeline/quotedpostlistmodel.cpp \
     $$PWD/timeline/searchpostlistmodel.cpp \
     $$PWD/timeline/timelinelistmodel.cpp \
     $$PWD/timeline/userpost.cpp
@@ -110,6 +111,7 @@ HEADERS += \
     $$PWD/timeline/authorfeedlistmodel.h \
     $$PWD/timeline/customfeedlistmodel.h \
     $$PWD/timeline/postthreadlistmodel.h \
+    $$PWD/timeline/quotedpostlistmodel.h \
     $$PWD/timeline/searchpostlistmodel.h \
     $$PWD/timeline/timelinelistmodel.h \
     $$PWD/timeline/userpost.h

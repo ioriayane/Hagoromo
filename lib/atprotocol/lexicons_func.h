@@ -74,6 +74,10 @@ void copyMain(const QJsonObject &src, ComAtprotoRepoStrongRef::Main &dest);
 namespace AppBskyActorProfile {
 void copyMain(const QJsonObject &src, AppBskyActorProfile::Main &dest);
 }
+// app.bsky.embed.defs
+namespace AppBskyEmbedDefs {
+void copyAspectRatio(const QJsonObject &src, AppBskyEmbedDefs::AspectRatio &dest);
+}
 // app.bsky.embed.external
 namespace AppBskyEmbedExternal {
 void copyExternal(const QJsonObject &src, AppBskyEmbedExternal::External &dest);
@@ -83,7 +87,6 @@ void copyView(const QJsonObject &src, AppBskyEmbedExternal::View &dest);
 }
 // app.bsky.embed.images
 namespace AppBskyEmbedImages {
-void copyAspectRatio(const QJsonObject &src, AppBskyEmbedImages::AspectRatio &dest);
 void copyImage(const QJsonObject &src, AppBskyEmbedImages::Image &dest);
 void copyMain(const QJsonObject &src, AppBskyEmbedImages::Main &dest);
 void copyViewImage(const QJsonObject &src, AppBskyEmbedImages::ViewImage &dest);
@@ -95,7 +98,14 @@ void copyMain(const QJsonObject &src, AppBskyEmbedRecord::Main &dest);
 void copyViewRecord(const QJsonObject &src, AppBskyEmbedRecord::ViewRecord &dest);
 void copyViewNotFound(const QJsonObject &src, AppBskyEmbedRecord::ViewNotFound &dest);
 void copyViewBlocked(const QJsonObject &src, AppBskyEmbedRecord::ViewBlocked &dest);
+void copyViewDetached(const QJsonObject &src, AppBskyEmbedRecord::ViewDetached &dest);
 void copyView(const QJsonObject &src, AppBskyEmbedRecord::View &dest);
+}
+// app.bsky.embed.video
+namespace AppBskyEmbedVideo {
+void copyView(const QJsonObject &src, AppBskyEmbedVideo::View &dest);
+void copyCaption(const QJsonObject &src, AppBskyEmbedVideo::Caption &dest);
+void copyMain(const QJsonObject &src, AppBskyEmbedVideo::Main &dest);
 }
 // app.bsky.embed.recordWithMedia
 namespace AppBskyEmbedRecordWithMedia {
@@ -159,6 +169,11 @@ void copyEntity(const QJsonObject &src, AppBskyFeedPost::Entity &dest);
 void copyReplyRef(const QJsonObject &src, AppBskyFeedPost::ReplyRef &dest);
 void copyMain(const QJsonObject &src, AppBskyFeedPost::Main &dest);
 }
+// app.bsky.feed.postgate
+namespace AppBskyFeedPostgate {
+void copyDisableRule(const QJsonObject &src, AppBskyFeedPostgate::DisableRule &dest);
+void copyMain(const QJsonObject &src, AppBskyFeedPostgate::Main &dest);
+}
 // app.bsky.feed.repost
 namespace AppBskyFeedRepost {
 void copyMain(const QJsonObject &src, AppBskyFeedRepost::Main &dest);
@@ -213,6 +228,10 @@ void copySkeletonSearchActor(const QJsonObject &src,
 // app.bsky.unspecced.getTaggedSuggestions
 namespace AppBskyUnspeccedGetTaggedSuggestions {
 void copySuggestion(const QJsonObject &src, AppBskyUnspeccedGetTaggedSuggestions::Suggestion &dest);
+}
+// app.bsky.video.defs
+namespace AppBskyVideoDefs {
+void copyJobStatus(const QJsonObject &src, AppBskyVideoDefs::JobStatus &dest);
 }
 // chat.bsky.actor.declaration
 namespace ChatBskyActorDeclaration {

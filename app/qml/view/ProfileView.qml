@@ -40,6 +40,7 @@ ColumnLayout {
     signal requestMention(string handle)
     signal requestMessage(string did)
     signal requestViewThread(string uri)
+    signal requestViewQuotes(string uri)
     signal requestViewImages(int index, var paths, var alts)
     signal requestViewProfile(string did)
     signal requestViewFeedGenerator(string name, string uri)
@@ -596,6 +597,7 @@ ColumnLayout {
                             profileView.requestQuote(cid, uri, avatar, display_name, handle, indexed_at, text)
 
             onRequestViewThread: (uri) => profileView.requestViewThread(uri)
+            onRequestViewQuotes: (uri) => profileView.requestViewQuotes(uri)
             onRequestViewImages: (index, paths, alts) => profileView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => {
                                       if(did !== profileView.userDid){
@@ -635,6 +637,7 @@ ColumnLayout {
                             profileView.requestQuote(cid, uri, avatar, display_name, handle, indexed_at, text)
 
             onRequestViewThread: (uri) => profileView.requestViewThread(uri)
+            onRequestViewQuotes: (uri) => profileView.requestViewQuotes(uri)
             onRequestViewImages: (index, paths, alts) => profileView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => {
                                       if(did !== profileView.userDid){
@@ -674,6 +677,7 @@ ColumnLayout {
                             profileView.requestQuote(cid, uri, avatar, display_name, handle, indexed_at, text)
 
             onRequestViewThread: (uri) => profileView.requestViewThread(uri)
+            onRequestViewQuotes: (uri) => profileView.requestViewQuotes(uri)
             onRequestViewImages: (index, paths, alts) => profileView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => {
                                       if(did !== profileView.userDid){
@@ -712,6 +716,7 @@ ColumnLayout {
                             profileView.requestQuote(cid, uri, avatar, display_name, handle, indexed_at, text)
 
             onRequestViewThread: (uri) => profileView.requestViewThread(uri)
+            onRequestViewQuotes: (uri) => profileView.requestViewQuotes(uri)
             onRequestViewImages: (index, paths, alts) => profileView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => {
                                       if(did !== profileView.userDid){

@@ -17,6 +17,7 @@
 #include "qtquick/timeline/authorfeedlistmodel.h"
 #include "qtquick/timeline/anyfeedlistmodel.h"
 #include "qtquick/timeline/actorlikelistmodel.h"
+#include "qtquick/timeline/quotedpostlistmodel.h"
 #include "qtquick/profile/followslistmodel.h"
 #include "qtquick/profile/followerslistmodel.h"
 #include "qtquick/profile/blockslistmodel.h"
@@ -132,6 +133,8 @@ int main(int argc, char *argv[])
                                             "FeedGeneratorListModel");
     qmlRegisterType<ActorFeedGeneratorListModel>("tech.relog.hagoromo.actorfeedgeneratorlistmodel",
                                                  1, 0, "ActorFeedGeneratorListModel");
+    qmlRegisterType<QuotedPostListModel>("tech.relog.hagoromo.quotedpostlistmodel", 1, 0,
+                                         "QuotedPostListModel");
     qmlRegisterType<LanguageListModel>("tech.relog.hagoromo.languagelistmodel", 1, 0,
                                        "LanguageListModel");
     qmlRegisterType<ContentFilterSettingListModel>(

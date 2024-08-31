@@ -51,8 +51,10 @@ public:
         RecordTextTranslationRole,
         ReplyCountRole,
         RepostCountRole,
+        QuoteCountRole,
         LikeCountRole,
         ReplyDisabledRole,
+        QuoteDisabledRole,
         IndexedAtRole,
         IndexedAtLongRole,
         EmbedImagesRole,
@@ -85,6 +87,7 @@ public:
         QuoteRecordEmbedImagesFullRole,
         QuoteRecordEmbedImagesAltRole,
         QuoteRecordBlockedRole,
+        QuoteRecordBlockedStatusRole,
 
         HasExternalLinkRole,
         ExternalLinkUriRole,
@@ -137,6 +140,13 @@ public:
         ThreadConnectorBottomRole,
     };
     Q_ENUM(TimelineListModelRoles)
+
+    enum QuoteRecordBlockedStatusType {
+        QuoteRecordNonBlocked,
+        QuoteRecordBlocked,
+        QuoteRecordDetached,
+    };
+    Q_ENUM(QuoteRecordBlockedStatusType);
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
