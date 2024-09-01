@@ -15,6 +15,7 @@ public:
     const AtProtocolType::AppBskyFeedDefs::ThreadViewPost &threadViewPost() const;
     const AtProtocolType::AppBskyFeedDefs::NotFoundPost &notFoundPost() const;
     const AtProtocolType::AppBskyFeedDefs::BlockedPost &blockedPost() const;
+    const AtProtocolType::AppBskyFeedDefs::ThreadgateView &threadgate() const;
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);
@@ -22,6 +23,7 @@ private:
     AtProtocolType::AppBskyFeedDefs::ThreadViewPost m_threadViewPost;
     AtProtocolType::AppBskyFeedDefs::NotFoundPost m_notFoundPost;
     AtProtocolType::AppBskyFeedDefs::BlockedPost m_blockedPost;
+    AtProtocolType::AppBskyFeedDefs::ThreadgateView m_threadgate;
 };
 
 }

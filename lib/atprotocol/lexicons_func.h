@@ -37,6 +37,8 @@ void copyMutedWordTarget(const QJsonValue &src, AppBskyActorDefs::MutedWordTarge
 void copyMutedWord(const QJsonObject &src, AppBskyActorDefs::MutedWord &dest);
 void copyMutedWordsPref(const QJsonObject &src, AppBskyActorDefs::MutedWordsPref &dest);
 void copyHiddenPostsPref(const QJsonObject &src, AppBskyActorDefs::HiddenPostsPref &dest);
+void copyBskyAppProgressGuide(const QJsonObject &src, AppBskyActorDefs::BskyAppProgressGuide &dest);
+void copyBskyAppStatePref(const QJsonObject &src, AppBskyActorDefs::BskyAppStatePref &dest);
 void copyLabelerPrefItem(const QJsonObject &src, AppBskyActorDefs::LabelerPrefItem &dest);
 void copyLabelersPref(const QJsonObject &src, AppBskyActorDefs::LabelersPref &dest);
 void copyPreferences(const QJsonArray &src, AppBskyActorDefs::Preferences &dest);
@@ -72,6 +74,10 @@ void copyMain(const QJsonObject &src, ComAtprotoRepoStrongRef::Main &dest);
 namespace AppBskyActorProfile {
 void copyMain(const QJsonObject &src, AppBskyActorProfile::Main &dest);
 }
+// app.bsky.embed.defs
+namespace AppBskyEmbedDefs {
+void copyAspectRatio(const QJsonObject &src, AppBskyEmbedDefs::AspectRatio &dest);
+}
 // app.bsky.embed.external
 namespace AppBskyEmbedExternal {
 void copyExternal(const QJsonObject &src, AppBskyEmbedExternal::External &dest);
@@ -81,7 +87,6 @@ void copyView(const QJsonObject &src, AppBskyEmbedExternal::View &dest);
 }
 // app.bsky.embed.images
 namespace AppBskyEmbedImages {
-void copyAspectRatio(const QJsonObject &src, AppBskyEmbedImages::AspectRatio &dest);
 void copyImage(const QJsonObject &src, AppBskyEmbedImages::Image &dest);
 void copyMain(const QJsonObject &src, AppBskyEmbedImages::Main &dest);
 void copyViewImage(const QJsonObject &src, AppBskyEmbedImages::ViewImage &dest);
@@ -93,7 +98,14 @@ void copyMain(const QJsonObject &src, AppBskyEmbedRecord::Main &dest);
 void copyViewRecord(const QJsonObject &src, AppBskyEmbedRecord::ViewRecord &dest);
 void copyViewNotFound(const QJsonObject &src, AppBskyEmbedRecord::ViewNotFound &dest);
 void copyViewBlocked(const QJsonObject &src, AppBskyEmbedRecord::ViewBlocked &dest);
+void copyViewDetached(const QJsonObject &src, AppBskyEmbedRecord::ViewDetached &dest);
 void copyView(const QJsonObject &src, AppBskyEmbedRecord::View &dest);
+}
+// app.bsky.embed.video
+namespace AppBskyEmbedVideo {
+void copyView(const QJsonObject &src, AppBskyEmbedVideo::View &dest);
+void copyCaption(const QJsonObject &src, AppBskyEmbedVideo::Caption &dest);
+void copyMain(const QJsonObject &src, AppBskyEmbedVideo::Main &dest);
 }
 // app.bsky.embed.recordWithMedia
 namespace AppBskyEmbedRecordWithMedia {
@@ -157,6 +169,11 @@ void copyEntity(const QJsonObject &src, AppBskyFeedPost::Entity &dest);
 void copyReplyRef(const QJsonObject &src, AppBskyFeedPost::ReplyRef &dest);
 void copyMain(const QJsonObject &src, AppBskyFeedPost::Main &dest);
 }
+// app.bsky.feed.postgate
+namespace AppBskyFeedPostgate {
+void copyDisableRule(const QJsonObject &src, AppBskyFeedPostgate::DisableRule &dest);
+void copyMain(const QJsonObject &src, AppBskyFeedPostgate::Main &dest);
+}
 // app.bsky.feed.repost
 namespace AppBskyFeedRepost {
 void copyMain(const QJsonObject &src, AppBskyFeedRepost::Main &dest);
@@ -211,6 +228,10 @@ void copySkeletonSearchActor(const QJsonObject &src,
 // app.bsky.unspecced.getTaggedSuggestions
 namespace AppBskyUnspeccedGetTaggedSuggestions {
 void copySuggestion(const QJsonObject &src, AppBskyUnspeccedGetTaggedSuggestions::Suggestion &dest);
+}
+// app.bsky.video.defs
+namespace AppBskyVideoDefs {
+void copyJobStatus(const QJsonObject &src, AppBskyVideoDefs::JobStatus &dest);
 }
 // chat.bsky.actor.declaration
 namespace ChatBskyActorDeclaration {
@@ -334,6 +355,7 @@ void copyModEventEmail(const QJsonObject &src, ToolsOzoneModerationDefs::ModEven
 void copyModEventResolveAppeal(const QJsonObject &src,
                                ToolsOzoneModerationDefs::ModEventResolveAppeal &dest);
 void copyModEventDivert(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventDivert &dest);
+void copyModEventTag(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventTag &dest);
 void copyModEventView(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventView &dest);
 void copySubjectReviewState(const QJsonValue &src,
                             ToolsOzoneModerationDefs::SubjectReviewState &dest);
@@ -350,7 +372,6 @@ void copyVideoDetails(const QJsonObject &src, ToolsOzoneModerationDefs::VideoDet
 void copyBlobView(const QJsonObject &src, ToolsOzoneModerationDefs::BlobView &dest);
 void copyModEventViewDetail(const QJsonObject &src,
                             ToolsOzoneModerationDefs::ModEventViewDetail &dest);
-void copyModEventTag(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventTag &dest);
 void copyModerationDetail(const QJsonObject &src, ToolsOzoneModerationDefs::ModerationDetail &dest);
 void copyRepoViewDetail(const QJsonObject &src, ToolsOzoneModerationDefs::RepoViewDetail &dest);
 void copyRecordViewDetail(const QJsonObject &src, ToolsOzoneModerationDefs::RecordViewDetail &dest);

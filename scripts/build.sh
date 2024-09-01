@@ -14,7 +14,12 @@ build_openssl(){
     make_dir "build-openssl"
     cd "build-openssl"
 
-    ../openssl/config --prefix="${ROOT_FOLDER}/openssl" --openssldir="${ROOT_FOLDER}/openssl"
+    if [ "${PLATFORM_TYPE}" == "linux" ]; then
+        ../openssl/config --prefix="${ROOT_FOLDER}/openssl" --openssldir="${ROOT_FOLDER}/openssl"
+    elif [ "${PLATFORM_TYPE}" == "mac" ]; then
+        ../openssl/Configure darwin64-x86_64-cc --prefix="${ROOT_FOLDER}/openssl" --openssldir="${ROOT_FOLDER}/openssl"
+    fi
+
     make -j4
     make install
 

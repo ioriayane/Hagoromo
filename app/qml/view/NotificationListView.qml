@@ -33,6 +33,7 @@ ScrollView {
     signal requestViewListFeed(string uri, string name)
     signal requestViewLikedBy(string uri)
     signal requestViewRepostedBy(string uri)
+    signal requestViewQuotes(string uri)
     signal requestViewSearchPosts(string text)
     signal requestReportPost(string uri, string cid)
     signal requestAddMutedWord(string text)
@@ -148,12 +149,14 @@ ScrollView {
             listLinkCardFrame.creatorHandleLabel.text: model.listLinkCreatorHandle
             listLinkCardFrame.descriptionLabel.text: model.listLinkDescription
 
+            postControls.repostCount: model.repostCount
+            postControls.quoteCount: model.quoteCount
             postControls.replyButton.iconText: model.replyCount
-            postControls.repostButton.iconText: model.repostCount
             postControls.likeButton.iconText: model.likeCount
             postControls.replyButton.enabled: !model.replyDisabled
             postControls.repostButton.enabled: !model.runningRepost
             postControls.likeButton.enabled: !model.runningLike
+            postControls.quoteMenuItem.enabled: !model.quoteDisabled
             postControls.replyButton.onClicked: requestReply(model.cid, model.uri,
                                                                model.replyRootCid, model.replyRootUri,
                                                                model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
@@ -171,6 +174,7 @@ ScrollView {
             postControls.onTriggeredCopyPostUrlToClipboard: systemTool.copyToClipboard(rootListView.model.getItemOfficialUrl(model.index))
             postControls.onTriggeredRequestViewLikedBy: notificationListView.requestViewLikedBy(model.uri)
             postControls.onTriggeredRequestViewRepostedBy: notificationListView.requestViewRepostedBy(model.uri)
+            postControls.onTriggeredRequestViewQuotes: notificationListView.requestViewQuotes(model.uri)
             postControls.onTriggeredRequestReport: notificationListView.requestReportPost(model.uri, model.cid)
             postControls.onTriggeredRequestMuteThread: rootListView.model.muteThread(model.index)
 

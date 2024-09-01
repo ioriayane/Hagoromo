@@ -42,6 +42,8 @@ Dialog {
         states: [
             State { // Timeline
                 when: columnSettingDialog.componentType === 0
+                PropertyChanges { target: autoLoadingCheckbox; visible: true }
+                PropertyChanges { target: autoLoadingIntervalLayout; visible: true }
                 PropertyChanges { target: displayFrame; visible: true }
                 PropertyChanges { target: visibleReplyToUnfollowedUsersCheckBox; visible: true }
                 PropertyChanges { target: visibleRepostOfOwnCheckBox; visible: true }
@@ -54,6 +56,8 @@ Dialog {
             },
             State { // Notification
                 when: columnSettingDialog.componentType === 1
+                PropertyChanges { target: autoLoadingCheckbox; visible: true }
+                PropertyChanges { target: autoLoadingIntervalLayout; visible: true }
                 PropertyChanges { target: displayFrame; visible: true }
                 PropertyChanges { target: visibleLikeCheckBox; visible: true }
                 PropertyChanges { target: visibleRepostCheckBox; visible: true }
@@ -67,16 +71,22 @@ Dialog {
             },
             State { // SearchPosts
                 when: columnSettingDialog.componentType === 2
+                PropertyChanges { target: autoLoadingCheckbox; visible: true }
+                PropertyChanges { target: autoLoadingIntervalLayout; visible: true }
                 PropertyChanges { target: imageLayoutLabel; visible: true }
                 PropertyChanges { target: imageLayoutCombobox; visible: true }
             },
             State { // SearchProfiles
                 when: columnSettingDialog.componentType === 3
+                PropertyChanges { target: autoLoadingCheckbox; visible: true }
+                PropertyChanges { target: autoLoadingIntervalLayout; visible: true }
                 PropertyChanges { target: imageLayoutLabel; visible: false }
                 PropertyChanges { target: imageLayoutCombobox; visible: false }
             },
             State { // CustomFeed
                 when: columnSettingDialog.componentType === 4
+                PropertyChanges { target: autoLoadingCheckbox; visible: true }
+                PropertyChanges { target: autoLoadingIntervalLayout; visible: true }
                 PropertyChanges { target: imageLayoutLabel; visible: true }
                 PropertyChanges { target: imageLayoutCombobox; visible: true }
             },
@@ -87,6 +97,8 @@ Dialog {
             },
             State { // ListFeed
                 when: columnSettingDialog.componentType === 6
+                PropertyChanges { target: autoLoadingCheckbox; visible: true }
+                PropertyChanges { target: autoLoadingIntervalLayout; visible: true }
                 PropertyChanges { target: imageLayoutLabel; visible: true }
                 PropertyChanges { target: imageLayoutCombobox; visible: true }
             },
