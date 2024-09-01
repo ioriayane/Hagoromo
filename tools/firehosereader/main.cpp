@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
                 static qint64 prev_time = 0;
                 qint64 cur_time = timer.elapsed();
                 if ((cur_time - prev_time) > 1000) {
-                    qDebug().noquote() << "rate:" << count; // << static_cast<int>(count / 10);
+                    qDebug().noquote() << "RATE :" << count << "/sec";
                     count = 0;
                     prev_time = cur_time;
                 } else {

@@ -32,6 +32,7 @@ public slots:
 private:
     QWebSocket m_webSocket;
     QStringList m_payloadTypeList;
+    QStringList m_operationTypeList;
 };
 
 }
