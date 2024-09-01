@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+### v0.36.0 - 2024/9/1
+
 - Add
   - Supports displaying a list of quotations
   - Displays the number of quotations in a post
