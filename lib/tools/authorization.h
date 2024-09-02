@@ -27,6 +27,9 @@ public:
     void setServiceEndpoint(const QString &newServiceEndpoint);
     QString authorizationServer() const;
     void setAuthorizationServer(const QString &newAuthorizationServer);
+    QString pushedAuthorizationRequestEndpoint() const;
+    void
+    setPushedAuthorizationRequestEndpoint(const QString &newPushedAuthorizationRequestEndpoint);
     QByteArray codeVerifier() const;
     QByteArray codeChallenge() const;
     QByteArray ParPayload() const;
@@ -35,6 +38,7 @@ signals:
     void errorOccured(const QString &code, const QString &message);
     void serviceEndpointChanged();
     void authorizationServerChanged();
+    void pushedAuthorizationRequestEndpointChanged();
     void finished(bool success);
 
 private:
@@ -48,6 +52,7 @@ private:
     // server info
     QString m_serviceEndpoint;
     QString m_authorizationServer;
+    QString m_pushedAuthorizationRequestEndpoint;
     //
     QString m_redirectUri;
     QString m_clientId;

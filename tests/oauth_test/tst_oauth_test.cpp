@@ -148,6 +148,14 @@ void oauth_test::test_oauth()
     }
     QVERIFY(oauth.authorizationServer()
             == QString("http://localhost:%1/response/2").arg(m_listenPort));
+
+    {
+        QSignalSpy spy(&oauth, SIGNAL(pushedAuthorizationRequestEndpointChanged()));
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+    QVERIFY(oauth.pushedAuthorizationRequestEndpoint()
+            == QString("http://localhost:%1/response/2/oauth/par").arg(m_listenPort));
 }
 
 void oauth_test::test_jwt()
