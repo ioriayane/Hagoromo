@@ -12,14 +12,13 @@ public:
 
     void resource();
 
-    const AtProtocolType::WellKnownOauthProtectedResource::OAuthProtectedResource &
-    OAuthProtectedResource() const;
+    const AtProtocolType::WellKnownOauthProtectedResourceDefs::ResourceMetadata &
+    resourceMetadata() const;
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 
-    AtProtocolType::WellKnownOauthProtectedResource::OAuthProtectedResource
-            m_OAuthProtectedResource;
+    AtProtocolType::WellKnownOauthProtectedResourceDefs::ResourceMetadata m_resourceMetadata;
 };
 
 }
