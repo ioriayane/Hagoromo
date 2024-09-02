@@ -25,6 +25,8 @@ public:
 
     QString serviceEndpoint() const;
     void setServiceEndpoint(const QString &newServiceEndpoint);
+    QString authorizationServer() const;
+    void setAuthorizationServer(const QString &newAuthorizationServer);
     QByteArray codeVerifier() const;
     QByteArray codeChallenge() const;
     QByteArray ParPayload() const;
@@ -32,14 +34,20 @@ public:
 signals:
     void errorOccured(const QString &code, const QString &message);
     void serviceEndpointChanged();
+    void authorizationServerChanged();
     void finished(bool success);
 
 private:
     QByteArray generateRandomValues() const;
     QString simplyEncode(QString text) const;
 
-    // server
+    // server info
+    void requestOauthProtectedResource();
+    void requestOauthAuthorizationServer();
+
+    // server info
     QString m_serviceEndpoint;
+    QString m_authorizationServer;
     //
     QString m_redirectUri;
     QString m_clientId;

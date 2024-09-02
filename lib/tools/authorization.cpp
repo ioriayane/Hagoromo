@@ -2,6 +2,7 @@
 #include "http/httpaccess.h"
 #include "http/simplehttpserver.h"
 #include "atprotocol/com/atproto/repo/comatprotorepodescriberepo.h"
+#include "extension/well-known/wellknownoauthprotectedresource.h"
 #include "atprotocol/lexicons_func_unknown.h"
 
 #include <QCryptographicHash>
@@ -17,6 +18,7 @@
 #include <QTimer>
 
 using AtProtocolInterface::ComAtprotoRepoDescribeRepo;
+using AtProtocolInterface::WellKnownOauthProtectedResource;
 
 Authorization::Authorization(QObject *parent) : QObject { parent } { }
 
@@ -49,6 +51,10 @@ void Authorization::start(const QString &pds, const QString &handle)
                 setServiceEndpoint(did_doc.service.first().serviceEndpoint);
 
                 // next step
+                requestOauthProtectedResource();
+            } else {
+                emit errorOccured("Invalid oauth-protected-resource",
+                                  "authorization_servers is empty.");
             }
         } else {
             emit errorOccured(repo->errorCode(), repo->errorMessage());
@@ -57,6 +63,40 @@ void Authorization::start(const QString &pds, const QString &handle)
     });
     repo->setAccount(account);
     repo->describeRepo(handle);
+}
+
+void Authorization::requestOauthProtectedResource()
+{
+    // /.well-known/oauth-protected-resource
+    if (serviceEndpoint().isEmpty())
+        return;
+
+    AtProtocolInterface::AccountData account;
+    account.service = serviceEndpoint();
+
+    WellKnownOauthProtectedResource *resource = new WellKnownOauthProtectedResource(this);
+    connect(resource, &WellKnownOauthProtectedResource::finished, this, [=](bool success) {
+        if (success) {
+            if (!resource->OAuthProtectedResource().authorization_servers.isEmpty()) {
+                setAuthorizationServer(
+                        resource->OAuthProtectedResource().authorization_servers.first());
+                // next step
+            } else {
+                emit errorOccured("Invalid oauth-protected-resource",
+                                  "authorization_servers is empty.");
+            }
+        } else {
+            emit errorOccured(resource->errorCode(), resource->errorMessage());
+        }
+        resource->deleteLater();
+    });
+    resource->setAccount(account);
+    resource->resource();
+}
+
+void Authorization::requestOauthAuthorizationServer()
+{
+    // /.well-known/oauth-authorization-server
 }
 
 void Authorization::makeClientId()
@@ -295,6 +335,11 @@ QString Authorization::simplyEncode(QString text) const
     return text.replace("%", "%25").replace(":", "%3A").replace("/", "%2F").replace("?", "%3F");
 }
 
+QString Authorization::serviceEndpoint() const
+{
+    return m_serviceEndpoint;
+}
+
 void Authorization::setServiceEndpoint(const QString &newServiceEndpoint)
 {
     if (m_serviceEndpoint == newServiceEndpoint)
@@ -303,9 +348,17 @@ void Authorization::setServiceEndpoint(const QString &newServiceEndpoint)
     emit serviceEndpointChanged();
 }
 
-QString Authorization::serviceEndpoint() const
+QString Authorization::authorizationServer() const
 {
-    return m_serviceEndpoint;
+    return m_authorizationServer;
+}
+
+void Authorization::setAuthorizationServer(const QString &newAuthorizationServer)
+{
+    if (m_authorizationServer == newAuthorizationServer)
+        return;
+    m_authorizationServer = newAuthorizationServer;
+    emit authorizationServerChanged();
 }
 
 QByteArray Authorization::ParPayload() const

@@ -2054,6 +2054,18 @@ struct PlcAuditLogDetail
 typedef QList<PlcAuditLogDetail> PlcAuditLog;
 }
 
+// well.known.oauth.protected.resource
+namespace WellKnownOauthProtectedResource {
+struct OAuthProtectedResource
+{
+    QString resource;
+    QList<QString> authorization_servers;
+    QList<QString> scopes_supported;
+    QList<QString> bearer_methods_supported;
+    QString resource_documentation;
+};
+}
+
 }
 Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedPost::Main)
 Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedLike::Main)

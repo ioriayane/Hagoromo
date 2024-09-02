@@ -412,6 +412,11 @@ void copyCreate(const QJsonObject &src, DirectoryPlcDefs::Create &dest);
 void copyPlcAuditLogDetail(const QJsonObject &src, DirectoryPlcDefs::PlcAuditLogDetail &dest);
 void copyPlcAuditLog(const QJsonArray &src, DirectoryPlcDefs::PlcAuditLog &dest);
 }
+// well.known.oauth.protected.resource
+namespace WellKnownOauthProtectedResource {
+void copyOAuthProtectedResource(const QJsonObject &src,
+                                WellKnownOauthProtectedResource::OAuthProtectedResource &dest);
+}
 
 }
 

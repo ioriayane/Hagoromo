@@ -1,7 +1,7 @@
 {
-    "resource": "http://localhost:%1/response/2",
+    "resource": "http://localhost:{{SERVER_PORT_NO}}/response/2",
     "authorization_servers": [
-        "http://localhost:%1/response/2"
+        "http://localhost:{{SERVER_PORT_NO}}/response/2"
     ],
     "scopes_supported": [
         "profile",
