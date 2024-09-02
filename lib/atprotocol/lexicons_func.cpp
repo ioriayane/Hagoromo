@@ -2907,6 +2907,26 @@ void copyPlcAuditLog(const QJsonArray &src, DirectoryPlcDefs::PlcAuditLog &dest)
     }
 }
 }
+// well.known.oauth.protected.resource
+namespace WellKnownOauthProtectedResource {
+void copyOAuthProtectedResource(const QJsonObject &src,
+                                WellKnownOauthProtectedResource::OAuthProtectedResource &dest)
+{
+    if (!src.isEmpty()) {
+        dest.resource = src.value("resource").toString();
+        for (const auto &value : src.value("authorization_servers").toArray()) {
+            dest.authorization_servers.append(value.toString());
+        }
+        for (const auto &value : src.value("scopes_supported").toArray()) {
+            dest.scopes_supported.append(value.toString());
+        }
+        for (const auto &value : src.value("bearer_methods_supported").toArray()) {
+            dest.bearer_methods_supported.append(value.toString());
+        }
+        dest.resource_documentation = src.value("resource_documentation").toString();
+    }
+}
+}
 
 }
 

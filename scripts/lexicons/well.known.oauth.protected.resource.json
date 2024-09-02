@@ -1,0 +1,35 @@
+{
+    "lexicon": 1,
+    "id": "well.known.oauth.protected.resource",
+    "defs": {
+        "OAuthProtectedResource": {
+            "type": "object",
+            "properties": {
+                "resource": {
+                    "type": "string"
+                },
+                "authorization_servers": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "scopes_supported": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "bearer_methods_supported": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "resource_documentation": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

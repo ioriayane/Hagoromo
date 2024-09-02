@@ -56,6 +56,7 @@ oauth_test::oauth_test()
                 } else {
                     mime_type = "application/json";
                     result = SimpleHttpServer::readFile(path, data);
+                    data.replace("{{SERVER_PORT_NO}}", QString::number(m_listenPort).toLocal8Bit());
                     qDebug().noquote() << " result =" << result;
                 }
             });
@@ -124,6 +125,8 @@ void oauth_test::test_oauth_server()
 
 void oauth_test::test_oauth()
 {
+    // response/1 : pds
+    // response/2 : entry-way
 
     Authorization oauth;
     QString pds = QString("http://localhost:%1/response/2").arg(m_listenPort);
@@ -136,9 +139,15 @@ void oauth_test::test_oauth()
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
-    oauth.setServiceEndpoint(oauth.serviceEndpoint().arg(m_listenPort));
-
     QVERIFY(oauth.serviceEndpoint() == QString("http://localhost:%1/response/1").arg(m_listenPort));
+
+    {
+        QSignalSpy spy(&oauth, SIGNAL(authorizationServerChanged()));
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+    QVERIFY(oauth.authorizationServer()
+            == QString("http://localhost:%1/response/2").arg(m_listenPort));
 }
 
 void oauth_test::test_jwt()

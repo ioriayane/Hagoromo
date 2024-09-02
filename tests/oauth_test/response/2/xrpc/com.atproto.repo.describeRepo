@@ -23,7 +23,7 @@
             {
                 "id": "#atproto_pds",
                 "type": "AtprotoPersonalDataServer",
-                "serviceEndpoint": "http://localhost:%1/response/1"
+                "serviceEndpoint": "http://localhost:{{SERVER_PORT_NO}}/response/1"
             }
         ]
     },

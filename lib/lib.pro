@@ -92,6 +92,7 @@ SOURCES += \
     $$PWD/extension/com/atproto/sync/comatprotosyncsubscribereposex.cpp \
     $$PWD/extension/directory/plc/directoryplc.cpp \
     $$PWD/extension/directory/plc/directoryplclogaudit.cpp \
+    $$PWD/extension/well-known/wellknownoauthprotectedresource.cpp \
     $$PWD/http/httpaccess.cpp \
     $$PWD/http/httpaccessmanager.cpp \
     $$PWD/http/httpreply.cpp \
@@ -204,6 +205,7 @@ HEADERS += \
     $$PWD/extension/com/atproto/sync/comatprotosyncsubscribereposex.h \
     $$PWD/extension/directory/plc/directoryplc.h \
     $$PWD/extension/directory/plc/directoryplclogaudit.h \
+    $$PWD/extension/well-known/wellknownoauthprotectedresource.h \
     $$PWD/http/httpaccess.h \
     $$PWD/http/httpaccessmanager.h \
     $$PWD/http/httpreply.h \
