@@ -79,9 +79,8 @@ void Authorization::requestOauthProtectedResource()
     WellKnownOauthProtectedResource *resource = new WellKnownOauthProtectedResource(this);
     connect(resource, &WellKnownOauthProtectedResource::finished, this, [=](bool success) {
         if (success) {
-            if (!resource->OAuthProtectedResource().authorization_servers.isEmpty()) {
-                setAuthorizationServer(
-                        resource->OAuthProtectedResource().authorization_servers.first());
+            if (!resource->resourceMetadata().authorization_servers.isEmpty()) {
+                setAuthorizationServer(resource->resourceMetadata().authorization_servers.first());
                 // next step
                 requestOauthAuthorizationServer();
             } else {

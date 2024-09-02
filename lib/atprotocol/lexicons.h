@@ -2075,9 +2075,9 @@ struct ServerMetadata
 };
 }
 
-// well.known.oauth.protected.resource
-namespace WellKnownOauthProtectedResource {
-struct OAuthProtectedResource
+// well.known.oauth.protected.resource.defs
+namespace WellKnownOauthProtectedResourceDefs {
+struct ResourceMetadata
 {
     QString resource;
     QList<QString> authorization_servers;

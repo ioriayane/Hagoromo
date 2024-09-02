@@ -1,8 +1,8 @@
 {
     "lexicon": 1,
-    "id": "well.known.oauth.protected.resource",
+    "id": "well.known.oauth.protected.resource.defs",
     "defs": {
-        "OAuthProtectedResource": {
+        "resourceMetadata": {
             "type": "object",
             "properties": {
                 "resource": {

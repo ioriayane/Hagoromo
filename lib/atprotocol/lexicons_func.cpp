@@ -2952,10 +2952,10 @@ void copyServerMetadata(const QJsonObject &src,
     }
 }
 }
-// well.known.oauth.protected.resource
-namespace WellKnownOauthProtectedResource {
-void copyOAuthProtectedResource(const QJsonObject &src,
-                                WellKnownOauthProtectedResource::OAuthProtectedResource &dest)
+// well.known.oauth.protected.resource.defs
+namespace WellKnownOauthProtectedResourceDefs {
+void copyResourceMetadata(const QJsonObject &src,
+                          WellKnownOauthProtectedResourceDefs::ResourceMetadata &dest)
 {
     if (!src.isEmpty()) {
         dest.resource = src.value("resource").toString();

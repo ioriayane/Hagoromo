@@ -417,10 +417,10 @@ namespace WellKnownOauthAuthorizationServerDefs {
 void copyServerMetadata(const QJsonObject &src,
                         WellKnownOauthAuthorizationServerDefs::ServerMetadata &dest);
 }
-// well.known.oauth.protected.resource
-namespace WellKnownOauthProtectedResource {
-void copyOAuthProtectedResource(const QJsonObject &src,
-                                WellKnownOauthProtectedResource::OAuthProtectedResource &dest);
+// well.known.oauth.protected.resource.defs
+namespace WellKnownOauthProtectedResourceDefs {
+void copyResourceMetadata(const QJsonObject &src,
+                          WellKnownOauthProtectedResourceDefs::ResourceMetadata &dest);
 }
 
 }
