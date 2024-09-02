@@ -2054,6 +2054,27 @@ struct PlcAuditLogDetail
 typedef QList<PlcAuditLogDetail> PlcAuditLog;
 }
 
+// well.known.oauth.authorization.server.defs
+namespace WellKnownOauthAuthorizationServerDefs {
+struct ServerMetadata
+{
+    QString issuer;
+    QList<QString> response_types_supported;
+    QList<QString> grant_types_supported;
+    QList<QString> code_challenge_methods_supported;
+    QList<QString> token_endpoint_auth_methods_supported;
+    QList<QString> token_endpoint_auth_signing_alg_values_supported;
+    QList<QString> scopes_supported;
+    QList<QString> subject_types_supported;
+    bool authorization_response_iss_parameter_supported = false;
+    QString pushed_authorization_request_endpoint;
+    bool require_pushed_authorization_requests = false;
+    QList<QString> dpop_signing_alg_values_supported;
+    bool require_request_uri_registration = false;
+    bool client_id_metadata_document_supported = false;
+};
+}
+
 // well.known.oauth.protected.resource
 namespace WellKnownOauthProtectedResource {
 struct OAuthProtectedResource

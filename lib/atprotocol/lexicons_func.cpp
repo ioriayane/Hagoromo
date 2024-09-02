@@ -2907,6 +2907,51 @@ void copyPlcAuditLog(const QJsonArray &src, DirectoryPlcDefs::PlcAuditLog &dest)
     }
 }
 }
+// well.known.oauth.authorization.server.defs
+namespace WellKnownOauthAuthorizationServerDefs {
+void copyServerMetadata(const QJsonObject &src,
+                        WellKnownOauthAuthorizationServerDefs::ServerMetadata &dest)
+{
+    if (!src.isEmpty()) {
+        dest.issuer = src.value("issuer").toString();
+        for (const auto &value : src.value("response_types_supported").toArray()) {
+            dest.response_types_supported.append(value.toString());
+        }
+        for (const auto &value : src.value("grant_types_supported").toArray()) {
+            dest.grant_types_supported.append(value.toString());
+        }
+        for (const auto &value : src.value("code_challenge_methods_supported").toArray()) {
+            dest.code_challenge_methods_supported.append(value.toString());
+        }
+        for (const auto &value : src.value("token_endpoint_auth_methods_supported").toArray()) {
+            dest.token_endpoint_auth_methods_supported.append(value.toString());
+        }
+        for (const auto &value :
+             src.value("token_endpoint_auth_signing_alg_values_supported").toArray()) {
+            dest.token_endpoint_auth_signing_alg_values_supported.append(value.toString());
+        }
+        for (const auto &value : src.value("scopes_supported").toArray()) {
+            dest.scopes_supported.append(value.toString());
+        }
+        for (const auto &value : src.value("subject_types_supported").toArray()) {
+            dest.subject_types_supported.append(value.toString());
+        }
+        dest.authorization_response_iss_parameter_supported =
+                src.value("authorization_response_iss_parameter_supported").toBool();
+        dest.pushed_authorization_request_endpoint =
+                src.value("pushed_authorization_request_endpoint").toString();
+        dest.require_pushed_authorization_requests =
+                src.value("require_pushed_authorization_requests").toBool();
+        for (const auto &value : src.value("dpop_signing_alg_values_supported").toArray()) {
+            dest.dpop_signing_alg_values_supported.append(value.toString());
+        }
+        dest.require_request_uri_registration =
+                src.value("require_request_uri_registration").toBool();
+        dest.client_id_metadata_document_supported =
+                src.value("client_id_metadata_document_supported").toBool();
+    }
+}
+}
 // well.known.oauth.protected.resource
 namespace WellKnownOauthProtectedResource {
 void copyOAuthProtectedResource(const QJsonObject &src,
