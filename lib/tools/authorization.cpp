@@ -27,13 +27,21 @@ Authorization::Authorization(QObject *parent) : QObject { parent } { }
 void Authorization::reset()
 {
     m_serviceEndpoint.clear();
+    m_authorizationServer.clear();
+    m_pushedAuthorizationRequestEndpoint.clear();
+    //
     m_redirectUri.clear();
     m_clientId.clear();
+    // par
     m_codeChallenge.clear();
     m_codeVerifier.clear();
     m_state.clear();
     m_parPayload.clear();
+    // request token
+    m_code.clear();
     m_requestTokenPayload.clear();
+    //
+    m_listenPort.clear();
 }
 
 void Authorization::start(const QString &pds, const QString &handle)
@@ -109,23 +117,80 @@ void Authorization::requestOauthAuthorizationServer()
     WellKnownOauthAuthorizationServer *server = new WellKnownOauthAuthorizationServer(this);
     connect(server, &WellKnownOauthAuthorizationServer::finished, this, [=](bool success) {
         if (success) {
-            // TODO: Validate serverMetadata
-
-            if (!server->serverMetadata().pushed_authorization_request_endpoint.isEmpty()) {
+            QString error_message;
+            if (validateServerMetadata(server->serverMetadata(), error_message)) {
                 setPushedAuthorizationRequestEndpoint(
                         server->serverMetadata().pushed_authorization_request_endpoint);
 
                 // next step
             } else {
-                emit errorOccured("Invalid oauth-authorization-server",
-                                  "pushed_authorization_request_endpoint is empty.");
+                qDebug().noquote() << error_message;
+                emit errorOccured("Invalid oauth-authorization-server", error_message);
             }
         } else {
             emit errorOccured(server->errorCode(), server->errorMessage());
         }
+        server->deleteLater();
     });
     server->setAccount(account);
     server->server();
+}
+
+bool Authorization::validateServerMetadata(
+        const AtProtocolType::WellKnownOauthAuthorizationServerDefs::ServerMetadata
+                &server_metadata,
+        QString &error_message)
+{
+    bool ret = false;
+    if (QUrl(server_metadata.issuer).host() != QUrl(authorizationServer()).host()) {
+        // リダイレクトされると変わるので対応しないといけない
+        error_message = QString("'issuer' is an invalid value(%1).").arg(server_metadata.issuer);
+    } else if (!server_metadata.response_types_supported.contains("code")) {
+        error_message = QStringLiteral("'response_types_supported' must contain 'code'.");
+    } else if (!server_metadata.grant_types_supported.contains("authorization_code")) {
+        error_message =
+                QStringLiteral("'grant_types_supported' must contain 'authorization_code'.");
+    } else if (!server_metadata.grant_types_supported.contains("refresh_token")) {
+        error_message = QStringLiteral("'grant_types_supported' must contain 'refresh_token'.");
+    } else if (!server_metadata.code_challenge_methods_supported.contains("S256")) {
+        error_message = QStringLiteral("'code_challenge_methods_supported' must contain 'S256'.");
+    } else if (!server_metadata.token_endpoint_auth_methods_supported.contains("private_key_jwt")) {
+        error_message = QStringLiteral(
+                "'token_endpoint_auth_methods_supported' must contain 'private_key_jwt'.");
+    } else if (!server_metadata.token_endpoint_auth_methods_supported.contains("none")) {
+        error_message =
+                QStringLiteral("'token_endpoint_auth_methods_supported' must contain 'none'.");
+    } else if (!server_metadata.token_endpoint_auth_signing_alg_values_supported.contains(
+                       "ES256")) {
+        error_message = QStringLiteral(
+                "'token_endpoint_auth_signing_alg_values_supported' must contain 'ES256'.");
+    } else if (!server_metadata.scopes_supported.contains("atproto")) {
+        error_message = QStringLiteral("'scopes_supported' must contain 'atproto'.");
+    } else if (!(server_metadata.subject_types_supported.isEmpty()
+                 || (!server_metadata.subject_types_supported.isEmpty()
+                     && server_metadata.subject_types_supported.contains("public")))) {
+        error_message = QStringLiteral("'subject_types_supported' must contain 'public'.");
+    } else if (!server_metadata.authorization_response_iss_parameter_supported) {
+        error_message =
+                QString("'authorization_response_iss_parameter_supported' is an invalid value(%1).")
+                        .arg(server_metadata.authorization_response_iss_parameter_supported);
+    } else if (server_metadata.pushed_authorization_request_endpoint.isEmpty()) {
+        error_message = QStringLiteral("pushed_authorization_request_endpoint must be set'.");
+    } else if (!server_metadata.require_pushed_authorization_requests) {
+        error_message = QString("'require_pushed_authorization_requests' is an invalid value(%1).")
+                                .arg(server_metadata.require_pushed_authorization_requests);
+    } else if (!server_metadata.dpop_signing_alg_values_supported.contains("ES256")) {
+        error_message = QStringLiteral("'dpop_signing_alg_values_supported' must contain 'ES256'.");
+    } else if (!server_metadata.require_request_uri_registration) {
+        error_message = QString("'require_request_uri_registration' is an invalid value(%1).")
+                                .arg(server_metadata.require_request_uri_registration);
+    } else if (!server_metadata.client_id_metadata_document_supported) {
+        error_message = QString("'client_id_metadata_document_supported' is an invalid value(%1).")
+                                .arg(server_metadata.client_id_metadata_document_supported);
+    } else {
+        ret = true;
+    }
+    return ret;
 }
 
 void Authorization::makeClientId()
