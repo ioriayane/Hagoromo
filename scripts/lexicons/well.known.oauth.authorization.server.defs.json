@@ -70,6 +70,9 @@
                 },
                 "client_id_metadata_document_supported": {
                     "type": "boolean"
+                },
+                "authorization_endpoint": {
+                    "type": "string"
                 }
             }
         }

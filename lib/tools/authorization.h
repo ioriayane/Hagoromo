@@ -31,6 +31,9 @@ public:
     QString pushedAuthorizationRequestEndpoint() const;
     void
     setPushedAuthorizationRequestEndpoint(const QString &newPushedAuthorizationRequestEndpoint);
+    QString authorizationEndpoint() const;
+    void setAuthorizationEndpoint(const QString &newAuthorizationEndpoint);
+
     QByteArray codeVerifier() const;
     QByteArray codeChallenge() const;
     QByteArray ParPayload() const;
@@ -40,6 +43,7 @@ signals:
     void serviceEndpointChanged();
     void authorizationServerChanged();
     void pushedAuthorizationRequestEndpointChanged();
+    void authorizationEndpointChanged();
     void finished(bool success);
 
 private:
@@ -54,10 +58,15 @@ private:
                     &server_metadata,
             QString &error_message);
 
+    // user
+    QString m_handle;
     // server info
     QString m_serviceEndpoint;
     QString m_authorizationServer;
+    // server meta data
     QString m_pushedAuthorizationRequestEndpoint;
+    QString m_authorizationEndpoint;
+    QStringList m_scopesSupported;
     //
     QString m_redirectUri;
     QString m_clientId;

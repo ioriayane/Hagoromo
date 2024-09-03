@@ -26,9 +26,15 @@ Authorization::Authorization(QObject *parent) : QObject { parent } { }
 
 void Authorization::reset()
 {
+    // user
+    m_handle.clear();
+    // server info
     m_serviceEndpoint.clear();
     m_authorizationServer.clear();
+    // server meta data
     m_pushedAuthorizationRequestEndpoint.clear();
+    m_authorizationEndpoint.clear();
+    m_scopesSupported.clear();
     //
     m_redirectUri.clear();
     m_clientId.clear();
@@ -121,8 +127,12 @@ void Authorization::requestOauthAuthorizationServer()
             if (validateServerMetadata(server->serverMetadata(), error_message)) {
                 setPushedAuthorizationRequestEndpoint(
                         server->serverMetadata().pushed_authorization_request_endpoint);
+                setAuthorizationEndpoint(server->serverMetadata().authorization_endpoint);
+                m_scopesSupported = server->serverMetadata().scopes_supported;
 
                 // next step
+                makeParPayload();
+                par();
             } else {
                 qDebug().noquote() << error_message;
                 emit errorOccured("Invalid oauth-authorization-server", error_message);
@@ -223,12 +233,6 @@ void Authorization::makeParPayload()
     m_state = QCryptographicHash::hash(m_codeVerifier, QCryptographicHash::Sha256)
                       .toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
 
-    QStringList scopes_supported;
-    scopes_supported << "offline_access"
-                     << "openid"
-                     // << "email"
-                     // << "phone"
-                     << "profile";
     QString login_hint = "ioriayane2.bsky.social";
 
     QUrlQuery query;
@@ -238,7 +242,7 @@ void Authorization::makeParPayload()
     query.addQueryItem("client_id", simplyEncode(m_clientId));
     query.addQueryItem("state", m_state);
     query.addQueryItem("redirect_uri", simplyEncode(m_redirectUri));
-    query.addQueryItem("scope", scopes_supported.join(" "));
+    query.addQueryItem("scope", m_scopesSupported.join(" "));
     query.addQueryItem("login_hint", simplyEncode(login_hint));
 
     m_parPayload = query.query(QUrl::FullyEncoded).toLocal8Bit();
@@ -246,11 +250,10 @@ void Authorization::makeParPayload()
 
 void Authorization::par()
 {
-    if (m_parPayload.isEmpty())
+    if (m_parPayload.isEmpty() || pushedAuthorizationRequestEndpoint().isEmpty())
         return;
 
-    QString endpoint = "https://bsky.social/oauth/par";
-    QNetworkRequest request((QUrl(endpoint)));
+    QNetworkRequest request((QUrl(pushedAuthorizationRequestEndpoint())));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
     QPointer<Authorization> alive = this;
@@ -468,6 +471,20 @@ void Authorization::setPushedAuthorizationRequestEndpoint(
     m_pushedAuthorizationRequestEndpoint = newPushedAuthorizationRequestEndpoint;
     emit pushedAuthorizationRequestEndpointChanged();
 }
+
+QString Authorization::authorizationEndpoint() const
+{
+    return m_authorizationEndpoint;
+}
+
+void Authorization::setAuthorizationEndpoint(const QString &newAuthorizationEndpoint)
+{
+    if (m_authorizationEndpoint == newAuthorizationEndpoint)
+        return;
+    m_authorizationEndpoint = newAuthorizationEndpoint;
+    emit authorizationEndpointChanged();
+}
+
 QByteArray Authorization::ParPayload() const
 {
     return m_parPayload;

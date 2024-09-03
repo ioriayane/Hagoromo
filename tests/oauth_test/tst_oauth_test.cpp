@@ -156,6 +156,8 @@ void oauth_test::test_oauth()
     }
     QVERIFY(oauth.pushedAuthorizationRequestEndpoint()
             == QString("http://localhost:%1/response/2/oauth/par").arg(m_listenPort));
+    QVERIFY(oauth.authorizationEndpoint()
+            == QString("http://localhost:%1/response/2/oauth/authorize").arg(m_listenPort));
 }
 
 void oauth_test::test_jwt()

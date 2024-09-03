@@ -2072,6 +2072,7 @@ struct ServerMetadata
     QList<QString> dpop_signing_alg_values_supported;
     bool require_request_uri_registration = false;
     bool client_id_metadata_document_supported = false;
+    QString authorization_endpoint;
 };
 }
 
