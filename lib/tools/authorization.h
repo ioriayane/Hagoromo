@@ -45,6 +45,9 @@ signals:
     void pushedAuthorizationRequestEndpointChanged();
     void authorizationEndpointChanged();
     void finished(bool success);
+#ifdef HAGOROMO_UNIT_TEST
+    void madeRedirectUrl(const QString &url);
+#endif
 
 private:
     QByteArray generateRandomValues() const;

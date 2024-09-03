@@ -158,6 +158,31 @@ void oauth_test::test_oauth()
             == QString("http://localhost:%1/response/2/oauth/par").arg(m_listenPort));
     QVERIFY(oauth.authorizationEndpoint()
             == QString("http://localhost:%1/response/2/oauth/authorize").arg(m_listenPort));
+
+    //
+    {
+        QSignalSpy spy(&oauth, SIGNAL(madeRedirectUrl(const QString &)));
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY2(arguments.at(0).toString()
+                         == "https://bsky.social/oauth/"
+                            "authorize?client_id=http%3A%2F%2Flocalhost%2Ftech%2Frelog%2Fhagoromo%"
+                            "3Fredirect_uri%3Dhttp%253A%252F%252F127.0.0.1%253A8080%252Ftech%"
+                            "252Frelog%"
+                            "252Fhagoromo%252Foauth-callback&request_uri=urn%3Aietf%3Aparams%"
+                            "3Aoauth%"
+                            "3Arequest_uri%3Areq-05650c01604941dc674f0af9cb032aca",
+                 arguments.at(0).toString().toLocal8Bit());
+    }
+
+    // {
+    //     QSignalSpy spy(&oauth, SIGNAL(finished(bool)));
+    //     spy.wait();
+    //     QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    //     QList<QVariant> arguments = spy.takeFirst();
+    //     QVERIFY(arguments.at(0).toBool());
+    // }
 }
 
 void oauth_test::test_jwt()

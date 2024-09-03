@@ -4,6 +4,7 @@
 #include "atprotocol/com/atproto/repo/comatprotorepodescriberepo.h"
 #include "extension/well-known/wellknownoauthprotectedresource.h"
 #include "extension/well-known/wellknownoauthauthorizationserver.h"
+#include "extension/oauth/oauthpushedauthorizationrequest.h"
 #include "atprotocol/lexicons_func_unknown.h"
 
 #include <QCryptographicHash>
@@ -19,6 +20,7 @@
 #include <QTimer>
 
 using AtProtocolInterface::ComAtprotoRepoDescribeRepo;
+using AtProtocolInterface::OauthPushedAuthorizationRequest;
 using AtProtocolInterface::WellKnownOauthAuthorizationServer;
 using AtProtocolInterface::WellKnownOauthProtectedResource;
 
@@ -252,38 +254,26 @@ void Authorization::par()
     if (m_parPayload.isEmpty() || pushedAuthorizationRequestEndpoint().isEmpty())
         return;
 
-    QNetworkRequest request((QUrl(pushedAuthorizationRequestEndpoint())));
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    AtProtocolInterface::AccountData account;
+    account.service = pushedAuthorizationRequestEndpoint();
 
-    QPointer<Authorization> alive = this;
-    HttpAccess *access = new HttpAccess(this);
-    HttpReply *reply = new HttpReply(access);
-    reply->setOperation(HttpReply::Operation::PostOperation);
-    reply->setRequest(request);
-    reply->setSendData(m_parPayload);
-    connect(access, &HttpAccess::finished, this, [access, alive, this](HttpReply *reply) {
-        if (alive && reply != nullptr) {
-            qDebug().noquote() << reply->error() << reply->url().toString();
-            qDebug().noquote() << reply->contentType();
-            qDebug().noquote() << reply->readAll();
-
-            if (reply->error() == HttpReply::Success) {
-                QJsonDocument json_doc = QJsonDocument::fromJson(reply->readAll());
-
-                qDebug().noquote()
-                        << "request_uri" << json_doc.object().value("request_uri").toString();
-                authorization(json_doc.object().value("request_uri").toString());
+    OauthPushedAuthorizationRequest *req = new OauthPushedAuthorizationRequest(this);
+    connect(req, &OauthPushedAuthorizationRequest::finished, this, [=](bool success) {
+        if (success) {
+            if (!req->pushedAuthorizationResponse().request_uri.isEmpty()) {
+                qDebug().noquote() << req->pushedAuthorizationResponse().request_uri;
+                authorization(req->pushedAuthorizationResponse().request_uri);
             } else {
-                // error
-                qDebug() << "PAR Error";
-                emit finished(false);
+                emit errorOccured("Invalid Pushed Authorization Request",
+                                  "'request_uri' is empty.");
             }
         } else {
-            qDebug().noquote() << "Parent is deleted or reply null !!!!!!!!!!";
+            emit errorOccured(req->errorCode(), req->errorMessage());
         }
-        access->deleteLater();
+        req->deleteLater();
     });
-    access->process(reply);
+    req->setAccount(account);
+    req->pushedAuthorizationRequest(m_parPayload);
 }
 
 void Authorization::authorization(const QString &request_uri)
@@ -305,7 +295,11 @@ void Authorization::authorization(const QString &request_uri)
 
     qDebug().noquote() << "redirect" << url.toEncoded();
 
+#ifdef HAGOROMO_UNIT_TEST
+    emit madeRedirectUrl(url.toString());
+#else
     QDesktopServices::openUrl(url);
+#endif
 }
 
 void Authorization::startRedirectServer()

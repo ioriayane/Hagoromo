@@ -2054,6 +2054,15 @@ struct PlcAuditLogDetail
 typedef QList<PlcAuditLogDetail> PlcAuditLog;
 }
 
+// oauth.defs
+namespace OauthDefs {
+struct PushedAuthorizationResponse
+{
+    QString request_uri;
+    int expires_in = 0;
+};
+}
+
 // wellKnown.defs
 namespace WellKnownDefs {
 struct ResourceMetadata
