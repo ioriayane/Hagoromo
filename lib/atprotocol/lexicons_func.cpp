@@ -2907,10 +2907,25 @@ void copyPlcAuditLog(const QJsonArray &src, DirectoryPlcDefs::PlcAuditLog &dest)
     }
 }
 }
-// well.known.oauth.authorization.server.defs
-namespace WellKnownOauthAuthorizationServerDefs {
-void copyServerMetadata(const QJsonObject &src,
-                        WellKnownOauthAuthorizationServerDefs::ServerMetadata &dest)
+// wellKnown.defs
+namespace WellKnownDefs {
+void copyResourceMetadata(const QJsonObject &src, WellKnownDefs::ResourceMetadata &dest)
+{
+    if (!src.isEmpty()) {
+        dest.resource = src.value("resource").toString();
+        for (const auto &value : src.value("authorization_servers").toArray()) {
+            dest.authorization_servers.append(value.toString());
+        }
+        for (const auto &value : src.value("scopes_supported").toArray()) {
+            dest.scopes_supported.append(value.toString());
+        }
+        for (const auto &value : src.value("bearer_methods_supported").toArray()) {
+            dest.bearer_methods_supported.append(value.toString());
+        }
+        dest.resource_documentation = src.value("resource_documentation").toString();
+    }
+}
+void copyServerMetadata(const QJsonObject &src, WellKnownDefs::ServerMetadata &dest)
 {
     if (!src.isEmpty()) {
         dest.issuer = src.value("issuer").toString();
@@ -2950,26 +2965,6 @@ void copyServerMetadata(const QJsonObject &src,
         dest.client_id_metadata_document_supported =
                 src.value("client_id_metadata_document_supported").toBool();
         dest.authorization_endpoint = src.value("authorization_endpoint").toString();
-    }
-}
-}
-// well.known.oauth.protected.resource.defs
-namespace WellKnownOauthProtectedResourceDefs {
-void copyResourceMetadata(const QJsonObject &src,
-                          WellKnownOauthProtectedResourceDefs::ResourceMetadata &dest)
-{
-    if (!src.isEmpty()) {
-        dest.resource = src.value("resource").toString();
-        for (const auto &value : src.value("authorization_servers").toArray()) {
-            dest.authorization_servers.append(value.toString());
-        }
-        for (const auto &value : src.value("scopes_supported").toArray()) {
-            dest.scopes_supported.append(value.toString());
-        }
-        for (const auto &value : src.value("bearer_methods_supported").toArray()) {
-            dest.bearer_methods_supported.append(value.toString());
-        }
-        dest.resource_documentation = src.value("resource_documentation").toString();
     }
 }
 }

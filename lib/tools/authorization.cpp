@@ -107,7 +107,7 @@ void Authorization::requestOauthProtectedResource()
         resource->deleteLater();
     });
     resource->setAccount(account);
-    resource->resource();
+    resource->oauthProtectedResource();
 }
 
 void Authorization::requestOauthAuthorizationServer()
@@ -143,12 +143,11 @@ void Authorization::requestOauthAuthorizationServer()
         server->deleteLater();
     });
     server->setAccount(account);
-    server->server();
+    server->oauthAuthorizationServer();
 }
 
 bool Authorization::validateServerMetadata(
-        const AtProtocolType::WellKnownOauthAuthorizationServerDefs::ServerMetadata
-                &server_metadata,
+        const AtProtocolType::WellKnownDefs::ServerMetadata &server_metadata,
         QString &error_message)
 {
     bool ret = false;

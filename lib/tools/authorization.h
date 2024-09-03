@@ -53,10 +53,9 @@ private:
     // server info
     void requestOauthProtectedResource();
     void requestOauthAuthorizationServer();
-    bool validateServerMetadata(
-            const AtProtocolType::WellKnownOauthAuthorizationServerDefs::ServerMetadata
-                    &server_metadata,
-            QString &error_message);
+    bool
+    validateServerMetadata(const AtProtocolType::WellKnownDefs::ServerMetadata &server_metadata,
+                           QString &error_message);
 
     // user
     QString m_handle;

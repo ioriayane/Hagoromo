@@ -12,14 +12,14 @@ WellKnownOauthAuthorizationServer::WellKnownOauthAuthorizationServer(QObject *pa
 {
 }
 
-void WellKnownOauthAuthorizationServer::server()
+void WellKnownOauthAuthorizationServer::oauthAuthorizationServer()
 {
     QUrlQuery url_query;
 
     get(QStringLiteral(".well-known/oauth-authorization-server"), url_query, false);
 }
 
-const AtProtocolType::WellKnownOauthAuthorizationServerDefs::ServerMetadata &
+const AtProtocolType::WellKnownDefs::ServerMetadata &
 WellKnownOauthAuthorizationServer::serverMetadata() const
 {
     return m_serverMetadata;
@@ -31,8 +31,7 @@ bool WellKnownOauthAuthorizationServer::parseJson(bool success, const QString re
     if (json_doc.isEmpty()) {
         success = false;
     } else {
-        AtProtocolType::WellKnownOauthAuthorizationServerDefs::copyServerMetadata(json_doc.object(),
-                                                                                  m_serverMetadata);
+        AtProtocolType::WellKnownDefs::copyServerMetadata(json_doc.object(), m_serverMetadata);
     }
 
     return success;

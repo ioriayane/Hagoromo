@@ -12,14 +12,14 @@ WellKnownOauthProtectedResource::WellKnownOauthProtectedResource(QObject *parent
 {
 }
 
-void WellKnownOauthProtectedResource::resource()
+void WellKnownOauthProtectedResource::oauthProtectedResource()
 {
     QUrlQuery url_query;
 
     get(QStringLiteral(".well-known/oauth-protected-resource"), url_query, false);
 }
 
-const AtProtocolType::WellKnownOauthProtectedResourceDefs::ResourceMetadata &
+const AtProtocolType::WellKnownDefs::ResourceMetadata &
 WellKnownOauthProtectedResource::resourceMetadata() const
 {
     return m_resourceMetadata;
@@ -31,8 +31,7 @@ bool WellKnownOauthProtectedResource::parseJson(bool success, const QString repl
     if (json_doc.isEmpty()) {
         success = false;
     } else {
-        AtProtocolType::WellKnownOauthProtectedResourceDefs::copyResourceMetadata(
-                json_doc.object(), m_resourceMetadata);
+        AtProtocolType::WellKnownDefs::copyResourceMetadata(json_doc.object(), m_resourceMetadata);
     }
 
     return success;
