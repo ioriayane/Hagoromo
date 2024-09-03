@@ -134,7 +134,12 @@ void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
     qDebug().noquote() << LOG_DATETIME << "   " << endpoint;
     qDebug().noquote() << LOG_DATETIME << "   " << query.toString();
 
-    QUrl url = QString("%1/%2").arg(service(), endpoint);
+    QUrl url;
+    if (endpoint.isEmpty()) {
+        url = service();
+    } else {
+        url = QString("%1/%2").arg(service(), endpoint);
+    }
     url.setQuery(query);
     QNetworkRequest request(url);
     request.setRawHeader(QByteArray("Cache-Control"), QByteArray("no-cache"));
@@ -191,7 +196,13 @@ void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
     qDebug().noquote() << LOG_DATETIME << "   " << endpoint;
     qDebug().noquote() << LOG_DATETIME << "   " << json;
 
-    QNetworkRequest request(QUrl(QString("%1/%2").arg(service(), endpoint)));
+    QUrl url;
+    if (endpoint.isEmpty()) {
+        url = service();
+    } else {
+        url = QString("%1/%2").arg(service(), endpoint);
+    }
+    QNetworkRequest request(url);
     request.setRawHeader(QByteArray("Cache-Control"), QByteArray("no-cache"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     if (with_auth_header) {

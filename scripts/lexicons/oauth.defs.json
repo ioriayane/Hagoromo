@@ -1,0 +1,17 @@
+{
+    "lexicon": 1,
+    "id": "oauth.defs",
+    "defs": {
+        "pushedAuthorizationResponse": {
+            "type": "object",
+            "properties": {
+                "request_uri": {
+                    "type": "string"
+                },
+                "expires_in": {
+                    "type": "integer"
+                }
+            }
+        }
+    }
+}

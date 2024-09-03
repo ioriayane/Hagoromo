@@ -2907,6 +2907,17 @@ void copyPlcAuditLog(const QJsonArray &src, DirectoryPlcDefs::PlcAuditLog &dest)
     }
 }
 }
+// oauth.defs
+namespace OauthDefs {
+void copyPushedAuthorizationResponse(const QJsonObject &src,
+                                     OauthDefs::PushedAuthorizationResponse &dest)
+{
+    if (!src.isEmpty()) {
+        dest.request_uri = src.value("request_uri").toString();
+        dest.expires_in = src.value("expires_in").toInt();
+    }
+}
+}
 // wellKnown.defs
 namespace WellKnownDefs {
 void copyResourceMetadata(const QJsonObject &src, WellKnownDefs::ResourceMetadata &dest)
