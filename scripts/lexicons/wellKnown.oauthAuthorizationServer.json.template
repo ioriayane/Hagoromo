@@ -1,6 +1,6 @@
 {
     "lexicon": 1,
-    "id": "well.known.oauth.protected.resource",
+    "id": "wellKnown.oauthAuthorizationServer",
     "defs": {
         "main": {
             "type": "query",
@@ -15,7 +15,7 @@
                 "encoding": "application/json",
                 "schema": {
                     "type": "ref",
-                    "ref": "well.known.oauth.protected.resource.defs#resourceMetadata"
+                    "ref": "wellKnown.defs#serverMetadata"
                 }
             }
         }

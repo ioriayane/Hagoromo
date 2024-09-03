@@ -2054,8 +2054,16 @@ struct PlcAuditLogDetail
 typedef QList<PlcAuditLogDetail> PlcAuditLog;
 }
 
-// well.known.oauth.authorization.server.defs
-namespace WellKnownOauthAuthorizationServerDefs {
+// wellKnown.defs
+namespace WellKnownDefs {
+struct ResourceMetadata
+{
+    QString resource;
+    QList<QString> authorization_servers;
+    QList<QString> scopes_supported;
+    QList<QString> bearer_methods_supported;
+    QString resource_documentation;
+};
 struct ServerMetadata
 {
     QString issuer;
@@ -2073,18 +2081,6 @@ struct ServerMetadata
     bool require_request_uri_registration = false;
     bool client_id_metadata_document_supported = false;
     QString authorization_endpoint;
-};
-}
-
-// well.known.oauth.protected.resource.defs
-namespace WellKnownOauthProtectedResourceDefs {
-struct ResourceMetadata
-{
-    QString resource;
-    QList<QString> authorization_servers;
-    QList<QString> scopes_supported;
-    QList<QString> bearer_methods_supported;
-    QString resource_documentation;
 };
 }
 

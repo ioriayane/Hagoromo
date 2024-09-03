@@ -10,15 +10,14 @@ class WellKnownOauthProtectedResource : public AccessAtProtocol
 public:
     explicit WellKnownOauthProtectedResource(QObject *parent = nullptr);
 
-    void resource();
+    void oauthProtectedResource();
 
-    const AtProtocolType::WellKnownOauthProtectedResourceDefs::ResourceMetadata &
-    resourceMetadata() const;
+    const AtProtocolType::WellKnownDefs::ResourceMetadata &resourceMetadata() const;
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 
-    AtProtocolType::WellKnownOauthProtectedResourceDefs::ResourceMetadata m_resourceMetadata;
+    AtProtocolType::WellKnownDefs::ResourceMetadata m_resourceMetadata;
 };
 
 }

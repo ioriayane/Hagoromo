@@ -10,15 +10,14 @@ class WellKnownOauthAuthorizationServer : public AccessAtProtocol
 public:
     explicit WellKnownOauthAuthorizationServer(QObject *parent = nullptr);
 
-    void server();
+    void oauthAuthorizationServer();
 
-    const AtProtocolType::WellKnownOauthAuthorizationServerDefs::ServerMetadata &
-    serverMetadata() const;
+    const AtProtocolType::WellKnownDefs::ServerMetadata &serverMetadata() const;
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);
 
-    AtProtocolType::WellKnownOauthAuthorizationServerDefs::ServerMetadata m_serverMetadata;
+    AtProtocolType::WellKnownDefs::ServerMetadata m_serverMetadata;
 };
 
 }
