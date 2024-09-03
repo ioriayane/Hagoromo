@@ -2,6 +2,7 @@
 #define AUTHORIZATION_H
 
 #include <QObject>
+#include "atprotocol/lexicons.h"
 
 class Authorization : public QObject
 {
@@ -48,6 +49,10 @@ private:
     // server info
     void requestOauthProtectedResource();
     void requestOauthAuthorizationServer();
+    bool validateServerMetadata(
+            const AtProtocolType::WellKnownOauthAuthorizationServerDefs::ServerMetadata
+                    &server_metadata,
+            QString &error_message);
 
     // server info
     QString m_serviceEndpoint;
