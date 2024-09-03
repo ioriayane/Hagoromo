@@ -2949,6 +2949,7 @@ void copyServerMetadata(const QJsonObject &src,
                 src.value("require_request_uri_registration").toBool();
         dest.client_id_metadata_document_supported =
                 src.value("client_id_metadata_document_supported").toBool();
+        dest.authorization_endpoint = src.value("authorization_endpoint").toString();
     }
 }
 }
