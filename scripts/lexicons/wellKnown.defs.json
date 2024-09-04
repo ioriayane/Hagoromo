@@ -85,6 +85,9 @@
                 "pushed_authorization_request_endpoint": {
                     "type": "string"
                 },
+                "token_endpoint": {
+                    "type": "string"
+                },
                 "require_pushed_authorization_requests": {
                     "type": "boolean"
                 },

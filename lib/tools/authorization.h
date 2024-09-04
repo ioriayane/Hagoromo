@@ -22,7 +22,7 @@ public:
     void startRedirectServer();
 
     void makeRequestTokenPayload();
-    bool requestToken();
+    void requestToken();
 
     QString serviceEndpoint() const;
     void setServiceEndpoint(const QString &newServiceEndpoint);
@@ -33,10 +33,18 @@ public:
     setPushedAuthorizationRequestEndpoint(const QString &newPushedAuthorizationRequestEndpoint);
     QString authorizationEndpoint() const;
     void setAuthorizationEndpoint(const QString &newAuthorizationEndpoint);
+    QString tokenEndopoint() const;
+    void setTokenEndopoint(const QString &newTokenEndopoint);
+    int redirectTimeout() const;
+    void setRedirectTimeout(int newRedirectTimeout);
 
     QByteArray codeVerifier() const;
     QByteArray codeChallenge() const;
     QByteArray ParPayload() const;
+
+    QString listenPort() const;
+
+    QByteArray state() const;
 
 signals:
     void errorOccured(const QString &code, const QString &message);
@@ -44,9 +52,10 @@ signals:
     void authorizationServerChanged();
     void pushedAuthorizationRequestEndpointChanged();
     void authorizationEndpointChanged();
+    void tokenEndopointChanged();
     void finished(bool success);
 #ifdef HAGOROMO_UNIT_TEST
-    void madeRedirectUrl(const QString &url);
+    void madeRequestUrl(const QString &url);
 #endif
 
 private:
@@ -68,6 +77,7 @@ private:
     // server meta data
     QString m_pushedAuthorizationRequestEndpoint;
     QString m_authorizationEndpoint;
+    QString m_tokenEndopoint;
     QStringList m_scopesSupported;
     //
     QString m_redirectUri;
@@ -82,6 +92,7 @@ private:
     QByteArray m_requestTokenPayload;
 
     QString m_listenPort;
+    int m_redirectTimeout;
 };
 
 #endif // AUTHORIZATION_H

@@ -2085,6 +2085,7 @@ struct ServerMetadata
     QList<QString> subject_types_supported;
     bool authorization_response_iss_parameter_supported = false;
     QString pushed_authorization_request_endpoint;
+    QString token_endpoint;
     bool require_pushed_authorization_requests = false;
     QList<QString> dpop_signing_alg_values_supported;
     bool require_request_uri_registration = false;
