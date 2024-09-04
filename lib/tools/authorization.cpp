@@ -24,7 +24,7 @@ using AtProtocolInterface::OauthPushedAuthorizationRequest;
 using AtProtocolInterface::WellKnownOauthAuthorizationServer;
 using AtProtocolInterface::WellKnownOauthProtectedResource;
 
-Authorization::Authorization(QObject *parent) : QObject { parent } { }
+Authorization::Authorization(QObject *parent) : QObject { parent }, m_redirectTimeout(300) { }
 
 void Authorization::reset()
 {
@@ -36,6 +36,7 @@ void Authorization::reset()
     // server meta data
     m_pushedAuthorizationRequestEndpoint.clear();
     m_authorizationEndpoint.clear();
+    m_tokenEndopoint.clear();
     m_scopesSupported.clear();
     //
     m_redirectUri.clear();
@@ -130,6 +131,7 @@ void Authorization::requestOauthAuthorizationServer()
                 setPushedAuthorizationRequestEndpoint(
                         server->serverMetadata().pushed_authorization_request_endpoint);
                 setAuthorizationEndpoint(server->serverMetadata().authorization_endpoint);
+                setTokenEndopoint(server->serverMetadata().token_endpoint);
                 m_scopesSupported = server->serverMetadata().scopes_supported;
 
                 // next step
@@ -204,6 +206,16 @@ bool Authorization::validateServerMetadata(
     return ret;
 }
 
+QByteArray Authorization::state() const
+{
+    return m_state;
+}
+
+QString Authorization::listenPort() const
+{
+    return m_listenPort;
+}
+
 void Authorization::makeClientId()
 {
     QString port;
@@ -261,7 +273,8 @@ void Authorization::par()
     connect(req, &OauthPushedAuthorizationRequest::finished, this, [=](bool success) {
         if (success) {
             if (!req->pushedAuthorizationResponse().request_uri.isEmpty()) {
-                qDebug().noquote() << req->pushedAuthorizationResponse().request_uri;
+                // next step
+                startRedirectServer();
                 authorization(req->pushedAuthorizationResponse().request_uri);
             } else {
                 emit errorOccured("Invalid Pushed Authorization Request",
@@ -278,11 +291,12 @@ void Authorization::par()
 
 void Authorization::authorization(const QString &request_uri)
 {
-    if (request_uri.isEmpty())
+    if (request_uri.isEmpty() || authorizationEndpoint().isEmpty() || m_listenPort.isEmpty())
         return;
 
-    QString authorization_endpoint = "https://bsky.social/oauth/authorize";
-    QString redirect_uri = "http://127.0.0.1:8080/tech/relog/hagoromo/oauth-callback";
+    QString authorization_endpoint = authorizationEndpoint();
+    QString redirect_uri =
+            QString("http://127.0.0.1:%1/tech/relog/hagoromo/oauth-callback").arg(m_listenPort);
     QString client_id = "http://localhost/tech/relog/"
                         "hagoromo?redirect_uri="
             + simplyEncode(redirect_uri);
@@ -296,7 +310,7 @@ void Authorization::authorization(const QString &request_uri)
     qDebug().noquote() << "redirect" << url.toEncoded();
 
 #ifdef HAGOROMO_UNIT_TEST
-    emit madeRedirectUrl(url.toString());
+    emit madeRequestUrl(url.toString());
 #else
     QDesktopServices::openUrl(url);
 #endif
@@ -308,6 +322,8 @@ void Authorization::startRedirectServer()
     connect(server, &SimpleHttpServer::received, this,
             [=](const QHttpServerRequest &request, bool &result, QByteArray &data,
                 QByteArray &mime_type) {
+                qDebug().noquote() << "receive by startRedirectServer";
+
                 if (request.query().hasQueryItem("iss") && request.query().hasQueryItem("state")
                     && request.query().hasQueryItem("code")) {
                     // authorize
@@ -315,7 +331,7 @@ void Authorization::startRedirectServer()
                     result = (state.toUtf8() == m_state);
                     if (result) {
                         m_code = request.query().queryItemValue("code").toUtf8();
-                        // requestToken();
+                        requestToken();
                     } else {
                         qDebug().noquote() << "Unknown state in authorization redirect :" << state;
                         emit finished(false);
@@ -337,11 +353,13 @@ void Authorization::startRedirectServer()
             });
     connect(server, &SimpleHttpServer::timeout, this, [=]() {
         // token取得に進んでたらfinishedは発火しない
-        qDebug().noquote() << "Authorization timeout";
-        emit finished(false);
+        if (m_code.isEmpty()) {
+            qDebug().noquote() << "Authorization timeout";
+            emit finished(false);
+        }
         server->deleteLater();
     });
-    server->setTimeout(50); // 300);
+    server->setTimeout(redirectTimeout());
     quint16 port = server->listen(QHostAddress::LocalHost, 0);
     m_listenPort = QString::number(port);
 
@@ -361,45 +379,49 @@ void Authorization::makeRequestTokenPayload()
     m_requestTokenPayload = query.query(QUrl::FullyEncoded).toLocal8Bit();
 }
 
-bool Authorization::requestToken()
+void Authorization::requestToken()
 {
+    if (tokenEndopoint().isEmpty())
+        return;
 
-    QString endpoint = "https://bsky.social/oauth/token";
+    QString endpoint = tokenEndopoint();
     QNetworkRequest request((QUrl(endpoint)));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     request.setRawHeader(QByteArray("DPoP"), QByteArray(""));
 
-    QPointer<Authorization> alive = this;
-    HttpAccess *access = new HttpAccess(this);
-    HttpReply *reply = new HttpReply(access);
-    reply->setOperation(HttpReply::Operation::PostOperation);
-    reply->setRequest(request);
-    // reply->setSendData(m_parPayload);
-    connect(access, &HttpAccess::finished, this, [access, alive, this](HttpReply *reply) {
-        if (alive && reply != nullptr) {
-            qDebug().noquote() << reply->error() << reply->url().toString();
+    emit finished(true); // temporary
 
-            qDebug().noquote() << reply->contentType();
-            qDebug().noquote() << reply->readAll();
-            if (reply->error() == HttpReply::Success) {
-                QJsonDocument json_doc = QJsonDocument::fromJson(reply->readAll());
+    // QPointer<Authorization> alive = this;
+    // HttpAccess *access = new HttpAccess(this);
+    // HttpReply *reply = new HttpReply(access);
+    // reply->setOperation(HttpReply::Operation::PostOperation);
+    // reply->setRequest(request);
+    // // reply->setSendData(m_parPayload);
+    // connect(access, &HttpAccess::finished, this, [access, alive, this](HttpReply *reply) {
+    //     if (alive && reply != nullptr) {
+    //         qDebug().noquote() << reply->error() << reply->url().toString();
 
-                qDebug().noquote()
-                        << "request_uri" << json_doc.object().value("request_uri").toString();
-            } else {
-                // error
-                qDebug() << "Request token Error";
-            }
-        } else {
-            qDebug().noquote() << "Parent is deleted or reply null !!!!!!!!!!";
-        }
-        access->deleteLater();
-    });
-    qDebug() << "request token 1";
-    access->process(reply);
-    qDebug() << "request token 2";
+    //         qDebug().noquote() << reply->contentType();
+    //         qDebug().noquote() << reply->readAll();
+    //         if (reply->error() == HttpReply::Success) {
+    //             QJsonDocument json_doc = QJsonDocument::fromJson(reply->readAll());
 
-    return true;
+    //             qDebug().noquote()
+    //                     << "request_uri" << json_doc.object().value("request_uri").toString();
+    //         } else {
+    //             // error
+    //             qDebug() << "Request token Error";
+    //         }
+    //     } else {
+    //         qDebug().noquote() << "Parent is deleted or reply null !!!!!!!!!!";
+    //     }
+    //     access->deleteLater();
+    // });
+    // qDebug() << "request token 1";
+    // access->process(reply);
+    // qDebug() << "request token 2";
+
+    return;
 }
 
 QByteArray Authorization::generateRandomValues() const
@@ -476,6 +498,29 @@ void Authorization::setAuthorizationEndpoint(const QString &newAuthorizationEndp
         return;
     m_authorizationEndpoint = newAuthorizationEndpoint;
     emit authorizationEndpointChanged();
+}
+
+QString Authorization::tokenEndopoint() const
+{
+    return m_tokenEndopoint;
+}
+
+void Authorization::setTokenEndopoint(const QString &newTokenEndopoint)
+{
+    if (m_tokenEndopoint == newTokenEndopoint)
+        return;
+    m_tokenEndopoint = newTokenEndopoint;
+    emit tokenEndopointChanged();
+}
+
+int Authorization::redirectTimeout() const
+{
+    return m_redirectTimeout;
+}
+
+void Authorization::setRedirectTimeout(int newRedirectTimeout)
+{
+    m_redirectTimeout = newRedirectTimeout;
 }
 
 QByteArray Authorization::ParPayload() const

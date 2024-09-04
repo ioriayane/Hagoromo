@@ -12,6 +12,7 @@
 #include "tools/authorization.h"
 #include "tools/jsonwebtoken.h"
 #include "tools/es256.h"
+#include "http/httpaccess.h"
 #include "http/simplehttpserver.h"
 
 class oauth_test : public QObject
@@ -35,6 +36,7 @@ private:
     SimpleHttpServer m_server;
     quint16 m_listenPort;
 
+    void test_get(const QString &url, const QByteArray &except_data);
     void verify_jwt(const QByteArray &jwt, EVP_PKEY *pkey);
 };
 
@@ -51,6 +53,7 @@ oauth_test::oauth_test()
                 qDebug().noquote() << request.url();
                 QString path = SimpleHttpServer::convertResoucePath(request.url());
                 qDebug().noquote() << " res path =" << path;
+
                 if (!QFile::exists(path)) {
                     result = false;
                 } else {
@@ -129,6 +132,8 @@ void oauth_test::test_oauth()
     // response/2 : entry-way
 
     Authorization oauth;
+    oauth.setRedirectTimeout(3);
+
     QString pds = QString("http://localhost:%1/response/2").arg(m_listenPort);
     QString handle = "ioriayane.relog.tech";
 
@@ -160,29 +165,65 @@ void oauth_test::test_oauth()
             == QString("http://localhost:%1/response/2/oauth/authorize").arg(m_listenPort));
 
     //
+    QString request_url;
     {
-        QSignalSpy spy(&oauth, SIGNAL(madeRedirectUrl(const QString &)));
+        QSignalSpy spy(&oauth, SIGNAL(madeRequestUrl(const QString &)));
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
         QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY2(arguments.at(0).toString()
-                         == "https://bsky.social/oauth/"
-                            "authorize?client_id=http%3A%2F%2Flocalhost%2Ftech%2Frelog%2Fhagoromo%"
-                            "3Fredirect_uri%3Dhttp%253A%252F%252F127.0.0.1%253A8080%252Ftech%"
-                            "252Frelog%"
-                            "252Fhagoromo%252Foauth-callback&request_uri=urn%3Aietf%3Aparams%"
-                            "3Aoauth%"
-                            "3Arequest_uri%3Areq-05650c01604941dc674f0af9cb032aca",
-                 arguments.at(0).toString().toLocal8Bit());
+        request_url = arguments.at(0).toString();
+        QVERIFY2(
+                request_url
+                        == (QStringLiteral("http://localhost:") + QString::number(m_listenPort)
+                            + QStringLiteral(
+                                    "/response/2/oauth/"
+                                    "authorize?client_id=http%3A%2F%2Flocalhost%2Ftech%2Frelog%"
+                                    "2Fhagoromo%3Fredirect_uri%3Dhttp%253A%252F%252F127.0.0.1%253A")
+                            + oauth.listenPort()
+                            + QStringLiteral(
+                                    "%252Ftech%252Frelog%"
+                                    "252Fhagoromo%252Foauth-callback&request_uri=urn%3Aietf%"
+                                    "3Aparams%3Aoauth%3Arequest_uri%3Areq-"
+                                    "05650c01604941dc674f0af9cb032aca")),
+                request_url.toLocal8Bit());
     }
 
-    // {
-    //     QSignalSpy spy(&oauth, SIGNAL(finished(bool)));
-    //     spy.wait();
-    //     QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
-    //     QList<QVariant> arguments = spy.takeFirst();
-    //     QVERIFY(arguments.at(0).toBool());
-    // }
+    {
+        // ブラウザで認証ができないのでタイムアウトしてくるのを確認
+        QSignalSpy spy(&oauth, SIGNAL(finished(bool)));
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(!arguments.at(0).toBool());
+    }
+
+    // ブラウザに認証しにいくURLからリダイレクトURLを取り出す
+    QUrl redirect_url;
+    {
+        QUrl request(request_url);
+        QUrlQuery request_query(request.query());
+        QUrl client_id(request_query.queryItemValue("client_id", QUrl::FullyDecoded));
+        QUrlQuery client_query(client_id.query());
+        redirect_url = client_query.queryItemValue("redirect_uri", QUrl::FullyDecoded);
+        QUrlQuery redirect_query;
+        redirect_query.addQueryItem("iss", "iss-hogehoge");
+        redirect_query.addQueryItem("state", oauth.state());
+        redirect_query.addQueryItem("code", "code-hogehoge");
+        redirect_url.setQuery(redirect_query);
+        qDebug().noquote() << "extract to " << redirect_url;
+    }
+    // 認証終了したていで続き
+    {
+        QSignalSpy spy(&oauth, SIGNAL(finished(bool)));
+        oauth.startRedirectServer();
+        redirect_url.setPort(oauth.listenPort().toInt());
+        qDebug().noquote() << "port updated " << redirect_url;
+        test_get(redirect_url.toString(), QByteArray()); // ブラウザへのアクセスを模擬
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
 }
 
 void oauth_test::test_jwt()
@@ -226,6 +267,26 @@ void oauth_test::test_es256()
 
         verify_jwt(jwt, Es256::getInstance()->pKey());
     }
+}
+
+void oauth_test::test_get(const QString &url, const QByteArray &except_data)
+{
+    QNetworkRequest request((QUrl(url)));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+
+    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+    connect(manager, &QNetworkAccessManager::finished, [=](QNetworkReply *reply) {
+        qDebug() << "test_get reply" << reply->error() << reply->url();
+
+        QJsonDocument json_doc = QJsonDocument::fromJson(reply->readAll());
+
+        QVERIFY(reply->error() == QNetworkReply::NoError);
+        QVERIFY2(reply->readAll() == except_data, json_doc.toJson());
+
+        reply->deleteLater();
+        manager->deleteLater();
+    });
+    manager->get(request);
 }
 
 void oauth_test::verify_jwt(const QByteArray &jwt, EVP_PKEY *pkey)
