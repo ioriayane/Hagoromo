@@ -2061,6 +2061,13 @@ struct PushedAuthorizationResponse
     QString request_uri;
     int expires_in = 0;
 };
+struct TokenResponse
+{
+    QString access_token;
+    QString token_type;
+    QString refresh_token;
+    int expires_in = 0;
+};
 }
 
 // wellKnown.defs

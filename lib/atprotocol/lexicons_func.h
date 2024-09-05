@@ -416,6 +416,7 @@ void copyPlcAuditLog(const QJsonArray &src, DirectoryPlcDefs::PlcAuditLog &dest)
 namespace OauthDefs {
 void copyPushedAuthorizationResponse(const QJsonObject &src,
                                      OauthDefs::PushedAuthorizationResponse &dest);
+void copyTokenResponse(const QJsonObject &src, OauthDefs::TokenResponse &dest);
 }
 // wellKnown.defs
 namespace WellKnownDefs {

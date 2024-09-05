@@ -32,7 +32,7 @@ inline QJsonObject createJwk()
     return jwk;
 }
 
-QByteArray JsonWebToken::generate(const QString &endpoint)
+QByteArray JsonWebToken::generate(const QString &handle)
 {
     // ヘッダー
     QJsonObject header;
@@ -44,8 +44,7 @@ QByteArray JsonWebToken::generate(const QString &endpoint)
 
     // ペイロード
     QJsonObject payload;
-    payload["sub"] = "1234567890"; // ユーザーIDなど
-    payload["name"] = "John Doe";
+    payload["sub"] = handle; // ユーザーIDなど
     payload["iat"] = QDateTime::currentSecsSinceEpoch(); // 発行時間
     QByteArray payloadJson = QJsonDocument(payload).toJson(QJsonDocument::Compact);
     QByteArray payloadBase64 = base64UrlEncode(payloadJson);

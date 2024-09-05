@@ -5,7 +5,9 @@
 #include "extension/well-known/wellknownoauthprotectedresource.h"
 #include "extension/well-known/wellknownoauthauthorizationserver.h"
 #include "extension/oauth/oauthpushedauthorizationrequest.h"
+#include "extension/oauth/oauthrequesttoken.h"
 #include "atprotocol/lexicons_func_unknown.h"
+#include "tools/jsonwebtoken.h"
 
 #include <QCryptographicHash>
 #include <QRandomGenerator>
@@ -21,6 +23,7 @@
 
 using AtProtocolInterface::ComAtprotoRepoDescribeRepo;
 using AtProtocolInterface::OauthPushedAuthorizationRequest;
+using AtProtocolInterface::OauthRequestToken;
 using AtProtocolInterface::WellKnownOauthAuthorizationServer;
 using AtProtocolInterface::WellKnownOauthProtectedResource;
 
@@ -49,6 +52,7 @@ void Authorization::reset()
     // request token
     m_code.clear();
     m_requestTokenPayload.clear();
+    m_token = AtProtocolType::OauthDefs::TokenResponse();
     //
     m_listenPort.clear();
 }
@@ -60,6 +64,7 @@ void Authorization::start(const QString &pds, const QString &handle)
 
     AtProtocolInterface::AccountData account;
     account.service = pds;
+    m_handle = handle;
 
     ComAtprotoRepoDescribeRepo *repo = new ComAtprotoRepoDescribeRepo(this);
     connect(repo, &ComAtprotoRepoDescribeRepo::finished, this, [=](bool success) {
@@ -74,9 +79,11 @@ void Authorization::start(const QString &pds, const QString &handle)
             } else {
                 emit errorOccured("Invalid oauth-protected-resource",
                                   "authorization_servers is empty.");
+                emit finished(false);
             }
         } else {
             emit errorOccured(repo->errorCode(), repo->errorMessage());
+            emit finished(false);
         }
         repo->deleteLater();
     });
@@ -103,9 +110,11 @@ void Authorization::requestOauthProtectedResource()
             } else {
                 emit errorOccured("Invalid oauth-protected-resource",
                                   "authorization_servers is empty.");
+                emit finished(false);
             }
         } else {
             emit errorOccured(resource->errorCode(), resource->errorMessage());
+            emit finished(false);
         }
         resource->deleteLater();
     });
@@ -140,9 +149,11 @@ void Authorization::requestOauthAuthorizationServer()
             } else {
                 qDebug().noquote() << error_message;
                 emit errorOccured("Invalid oauth-authorization-server", error_message);
+                emit finished(false);
             }
         } else {
             emit errorOccured(server->errorCode(), server->errorMessage());
+            emit finished(false);
         }
         server->deleteLater();
     });
@@ -279,9 +290,11 @@ void Authorization::par()
             } else {
                 emit errorOccured("Invalid Pushed Authorization Request",
                                   "'request_uri' is empty.");
+                emit finished(false);
             }
         } else {
             emit errorOccured(req->errorCode(), req->errorMessage());
+            emit finished(false);
         }
         req->deleteLater();
     });
@@ -346,10 +359,7 @@ void Authorization::startRedirectServer()
                 mime_type = "text/html";
 
                 // delete after 10 sec.
-                QTimer::singleShot(10 * 1000, [=]() {
-                    emit finished(true); // temporary
-                    server->deleteLater();
-                });
+                QTimer::singleShot(10 * 1000, [=]() { server->deleteLater(); });
             });
     connect(server, &SimpleHttpServer::timeout, this, [=]() {
         // token取得に進んでたらfinishedは発火しない
@@ -384,44 +394,40 @@ void Authorization::requestToken()
     if (tokenEndopoint().isEmpty())
         return;
 
-    QString endpoint = tokenEndopoint();
-    QNetworkRequest request((QUrl(endpoint)));
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-    request.setRawHeader(QByteArray("DPoP"), QByteArray(""));
+    makeRequestTokenPayload();
 
-    emit finished(true); // temporary
+    AtProtocolInterface::AccountData account;
+    account.service = tokenEndopoint();
 
-    // QPointer<Authorization> alive = this;
-    // HttpAccess *access = new HttpAccess(this);
-    // HttpReply *reply = new HttpReply(access);
-    // reply->setOperation(HttpReply::Operation::PostOperation);
-    // reply->setRequest(request);
-    // // reply->setSendData(m_parPayload);
-    // connect(access, &HttpAccess::finished, this, [access, alive, this](HttpReply *reply) {
-    //     if (alive && reply != nullptr) {
-    //         qDebug().noquote() << reply->error() << reply->url().toString();
+    OauthRequestToken *req = new OauthRequestToken(this);
+    connect(req, &OauthRequestToken::finished, this, [=](bool success) {
+        bool ret = false;
+        if (success) {
+            if (!req->tokenResponse().access_token.isEmpty()
+                && !req->tokenResponse().refresh_token.isEmpty()
+                && req->tokenResponse().token_type.toLower() == "dpop") {
 
-    //         qDebug().noquote() << reply->contentType();
-    //         qDebug().noquote() << reply->readAll();
-    //         if (reply->error() == HttpReply::Success) {
-    //             QJsonDocument json_doc = QJsonDocument::fromJson(reply->readAll());
+                setToken(req->tokenResponse());
 
-    //             qDebug().noquote()
-    //                     << "request_uri" << json_doc.object().value("request_uri").toString();
-    //         } else {
-    //             // error
-    //             qDebug() << "Request token Error";
-    //         }
-    //     } else {
-    //         qDebug().noquote() << "Parent is deleted or reply null !!!!!!!!!!";
-    //     }
-    //     access->deleteLater();
-    // });
-    // qDebug() << "request token 1";
-    // access->process(reply);
-    // qDebug() << "request token 2";
+                qDebug().noquote() << "--- Success oauth ----";
+                qDebug().noquote() << "  handle :" << m_handle;
+                qDebug().noquote() << "  access :" << m_token.access_token;
+                qDebug().noquote() << "  refresh:" << m_token.refresh_token;
 
-    return;
+                // finish oauth sequence
+                ret = true;
+            } else {
+                emit errorOccured("Invalid token response", req->replyJson());
+            }
+        } else {
+            emit errorOccured(req->errorCode(), req->errorMessage());
+        }
+        emit finished(ret);
+        req->deleteLater();
+    });
+    req->appendRawHeader("DPoP", JsonWebToken::generate(m_handle));
+    req->setAccount(account);
+    req->requestToken(m_requestTokenPayload);
 }
 
 QByteArray Authorization::generateRandomValues() const
@@ -521,6 +527,21 @@ int Authorization::redirectTimeout() const
 void Authorization::setRedirectTimeout(int newRedirectTimeout)
 {
     m_redirectTimeout = newRedirectTimeout;
+}
+
+AtProtocolType::OauthDefs::TokenResponse Authorization::token() const
+{
+    return m_token;
+}
+
+void Authorization::setToken(const AtProtocolType::OauthDefs::TokenResponse &newToken)
+{
+    if (m_token.access_token == newToken.access_token && m_token.expires_in == newToken.expires_in
+        && m_token.refresh_token == newToken.refresh_token
+        && m_token.token_type == newToken.token_type)
+        return;
+    m_token = newToken;
+    emit tokenChanged();
 }
 
 QByteArray Authorization::ParPayload() const
