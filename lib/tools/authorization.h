@@ -37,6 +37,8 @@ public:
     void setTokenEndopoint(const QString &newTokenEndopoint);
     int redirectTimeout() const;
     void setRedirectTimeout(int newRedirectTimeout);
+    AtProtocolType::OauthDefs::TokenResponse token() const;
+    void setToken(const AtProtocolType::OauthDefs::TokenResponse &newToken);
 
     QByteArray codeVerifier() const;
     QByteArray codeChallenge() const;
@@ -53,6 +55,7 @@ signals:
     void pushedAuthorizationRequestEndpointChanged();
     void authorizationEndpointChanged();
     void tokenEndopointChanged();
+    void tokenChanged();
     void finished(bool success);
 #ifdef HAGOROMO_UNIT_TEST
     void madeRequestUrl(const QString &url);
@@ -90,6 +93,7 @@ private:
     // request token
     QByteArray m_code;
     QByteArray m_requestTokenPayload;
+    AtProtocolType::OauthDefs::TokenResponse m_token;
 
     QString m_listenPort;
     int m_redirectTimeout;

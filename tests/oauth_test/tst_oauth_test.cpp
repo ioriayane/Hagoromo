@@ -12,7 +12,6 @@
 #include "tools/authorization.h"
 #include "tools/jsonwebtoken.h"
 #include "tools/es256.h"
-#include "http/httpaccess.h"
 #include "http/simplehttpserver.h"
 
 class oauth_test : public QObject
@@ -53,6 +52,12 @@ oauth_test::oauth_test()
                 qDebug().noquote() << request.url();
                 QString path = SimpleHttpServer::convertResoucePath(request.url());
                 qDebug().noquote() << " res path =" << path;
+
+                if (path.endsWith("/oauth/token")) {
+                    qDebug().noquote() << "Verify jwt";
+                    QVERIFY(request.headers().contains("DPoP"));
+                    verify_jwt(request.headers().value("DPoP").toByteArray(), nullptr);
+                }
 
                 if (!QFile::exists(path)) {
                     result = false;
@@ -214,16 +219,22 @@ void oauth_test::test_oauth()
     }
     // 認証終了したていで続き
     {
-        QSignalSpy spy(&oauth, SIGNAL(finished(bool)));
+        QSignalSpy spy(&oauth, SIGNAL(tokenChanged()));
         oauth.startRedirectServer();
         redirect_url.setPort(oauth.listenPort().toInt());
         qDebug().noquote() << "port updated " << redirect_url;
         test_get(redirect_url.toString(), QByteArray()); // ブラウザへのアクセスを模擬
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
-        QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY(arguments.at(0).toBool());
     }
+
+    QVERIFY2(oauth.token().access_token == "access token",
+             oauth.token().access_token.toLocal8Bit());
+    QVERIFY2(oauth.token().token_type == "DPoP", oauth.token().token_type.toLocal8Bit());
+    QVERIFY2(oauth.token().refresh_token == "refresh token",
+             oauth.token().refresh_token.toLocal8Bit());
+    QVERIFY2(oauth.token().expires_in == 2677,
+             QString::number(oauth.token().expires_in).toLocal8Bit());
 }
 
 void oauth_test::test_jwt()
