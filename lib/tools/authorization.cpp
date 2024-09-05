@@ -257,7 +257,7 @@ void Authorization::makeParPayload()
     m_state = QCryptographicHash::hash(m_codeVerifier, QCryptographicHash::Sha256)
                       .toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
 
-    QString login_hint = "ioriayane2.bsky.social";
+    QString login_hint = m_handle;
 
     QUrlQuery query;
     query.addQueryItem("response_type", "code");
@@ -298,6 +298,7 @@ void Authorization::par()
         }
         req->deleteLater();
     });
+    req->setContentType("application/x-www-form-urlencoded");
     req->setAccount(account);
     req->pushedAuthorizationRequest(m_parPayload);
 }
@@ -413,7 +414,8 @@ void Authorization::requestToken()
                 qDebug().noquote() << "  handle :" << m_handle;
                 qDebug().noquote() << "  access :" << m_token.access_token;
                 qDebug().noquote() << "  refresh:" << m_token.refresh_token;
-
+                qDebug().noquote() << req->replyJson();
+                qDebug().noquote() << "----------------------";
                 // finish oauth sequence
                 ret = true;
             } else {
@@ -426,6 +428,7 @@ void Authorization::requestToken()
         req->deleteLater();
     });
     req->appendRawHeader("DPoP", JsonWebToken::generate(m_handle));
+    req->setContentType("application/x-www-form-urlencoded");
     req->setAccount(account);
     req->requestToken(m_requestTokenPayload);
 }
