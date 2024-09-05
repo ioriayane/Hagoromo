@@ -107,7 +107,8 @@ QString AtProtocolAccount::refreshJwt() const
     return m_account.refreshJwt;
 }
 
-AccessAtProtocol::AccessAtProtocol(QObject *parent) : AtProtocolAccount { parent }
+AccessAtProtocol::AccessAtProtocol(QObject *parent)
+    : AtProtocolAccount { parent }, m_contentType("application/json")
 {
     qDebug().noquote() << LOG_DATETIME << "AccessAtProtocol::AccessAtProtocol()" << this;
     if (m_manager == nullptr) {
@@ -204,7 +205,7 @@ void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
     }
     QNetworkRequest request(url);
     request.setRawHeader(QByteArray("Cache-Control"), QByteArray("no-cache"));
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    request.setHeader(QNetworkRequest::ContentTypeHeader, m_contentType);
     if (with_auth_header) {
         if (accessJwt().isEmpty()) {
             qCritical() << LOG_DATETIME << "AccessAtProtocol::post()"
@@ -413,6 +414,11 @@ void AccessAtProtocol::setAdditionalRawHeader(QNetworkRequest &request)
         i.next();
         request.setRawHeader(i.key().toLocal8Bit(), i.value().toLocal8Bit());
     }
+}
+
+void AccessAtProtocol::setContentType(const QString &newContentType)
+{
+    m_contentType = newContentType;
 }
 
 QString AccessAtProtocol::cursor() const

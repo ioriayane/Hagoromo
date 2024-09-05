@@ -123,8 +123,8 @@ void oauth_test::test_oauth_server()
 
     // {
     //     QSignalSpy spy(&oauth, SIGNAL(finished(bool)));
-    //     oauth.startRedirectServer();
-    //     spy.wait(60 * 1000);
+    //     oauth.start("https://bsky.social", "ioriayane2.bsky.social");
+    //     spy.wait(300 * 1000);
     //     QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     //     QList<QVariant> arguments = spy.takeFirst();
     //     QVERIFY(arguments.at(0).toBool());
