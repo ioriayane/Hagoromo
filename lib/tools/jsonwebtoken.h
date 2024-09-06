@@ -6,7 +6,8 @@
 class JsonWebToken
 {
 public:
-    static QByteArray generate(const QString &handle);
+    static QByteArray generate(const QString &endpoint, const QString &client_id,
+                               const QString &method, const QString &nonce);
 };
 
 #endif // JSONWEBTOKEN_H

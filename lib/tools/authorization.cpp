@@ -62,6 +62,8 @@ void Authorization::start(const QString &pds, const QString &handle)
     if (pds.isEmpty() || handle.isEmpty())
         return;
 
+    startRedirectServer();
+
     AtProtocolInterface::AccountData account;
     account.service = pds;
     m_handle = handle;
@@ -243,10 +245,10 @@ void Authorization::makeClientId()
 
 void Authorization::makeCodeChallenge()
 {
-    m_codeChallenge = generateRandomValues().toBase64(QByteArray::Base64UrlEncoding
-                                                      | QByteArray::OmitTrailingEquals);
-    m_codeVerifier =
-            QCryptographicHash::hash(m_codeChallenge, QCryptographicHash::Sha256)
+    m_codeVerifier = generateRandomValues().toBase64(QByteArray::Base64UrlEncoding
+                                                     | QByteArray::OmitTrailingEquals);
+    m_codeChallenge =
+            QCryptographicHash::hash(m_codeVerifier, QCryptographicHash::Sha256)
                     .toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
 }
 
@@ -285,7 +287,7 @@ void Authorization::par()
         if (success) {
             if (!req->pushedAuthorizationResponse().request_uri.isEmpty()) {
                 // next step
-                startRedirectServer();
+                setDPopNonce(req->dPopNonce());
                 authorization(req->pushedAuthorizationResponse().request_uri);
             } else {
                 emit errorOccured("Invalid Pushed Authorization Request",
@@ -309,15 +311,10 @@ void Authorization::authorization(const QString &request_uri)
         return;
 
     QString authorization_endpoint = authorizationEndpoint();
-    QString redirect_uri =
-            QString("http://127.0.0.1:%1/tech/relog/hagoromo/oauth-callback").arg(m_listenPort);
-    QString client_id = "http://localhost/tech/relog/"
-                        "hagoromo?redirect_uri="
-            + simplyEncode(redirect_uri);
 
     QUrl url(authorization_endpoint);
     QUrlQuery query;
-    query.addQueryItem("client_id", simplyEncode(client_id));
+    query.addQueryItem("client_id", simplyEncode(m_clientId));
     query.addQueryItem("request_uri", simplyEncode(request_uri));
     url.setQuery(query);
 
@@ -337,6 +334,10 @@ void Authorization::startRedirectServer()
             [=](const QHttpServerRequest &request, bool &result, QByteArray &data,
                 QByteArray &mime_type) {
                 qDebug().noquote() << "receive by startRedirectServer";
+                qDebug().noquote() << "  " << request.url().toString();
+                qDebug().noquote() << "  " << request.url().path();
+
+                if (request.url().path() == "/tech/relog/hagoromo/oauth-callback") { }
 
                 if (request.query().hasQueryItem("iss") && request.query().hasQueryItem("state")
                     && request.query().hasQueryItem("code")) {
@@ -408,6 +409,9 @@ void Authorization::requestToken()
                 && !req->tokenResponse().refresh_token.isEmpty()
                 && req->tokenResponse().token_type.toLower() == "dpop") {
 
+                if (!req->dPopNonce().isEmpty()) {
+                    setDPopNonce(req->dPopNonce());
+                }
                 setToken(req->tokenResponse());
 
                 qDebug().noquote() << "--- Success oauth ----";
@@ -427,7 +431,8 @@ void Authorization::requestToken()
         emit finished(ret);
         req->deleteLater();
     });
-    req->appendRawHeader("DPoP", JsonWebToken::generate(m_handle));
+    req->appendRawHeader("DPoP",
+                         JsonWebToken::generate(tokenEndopoint(), m_clientId, "POST", dPopNonce()));
     req->setContentType("application/x-www-form-urlencoded");
     req->setAccount(account);
     req->requestToken(m_requestTokenPayload);
@@ -436,7 +441,7 @@ void Authorization::requestToken()
 QByteArray Authorization::generateRandomValues() const
 {
     QByteArray values;
-#ifdef HAGOROMO_UNIT_TEST1
+#ifdef HAGOROMO_UNIT_TEST_
     const uint8_t base[] = { 116, 24,  223, 180, 151, 153, 224, 37,  79,  250, 96,
                              125, 216, 173, 187, 186, 22,  212, 37,  77,  105, 214,
                              191, 240, 91,  88,  5,   88,  83,  132, 141, 121 };
@@ -547,6 +552,15 @@ void Authorization::setToken(const AtProtocolType::OauthDefs::TokenResponse &new
     emit tokenChanged();
 }
 
+QString Authorization::dPopNonce() const
+{
+    return m_dPopNonce;
+}
+
+void Authorization::setDPopNonce(const QString &newDPopNonce)
+{
+    m_dPopNonce = newDPopNonce;
+}
 QByteArray Authorization::ParPayload() const
 {
     return m_parPayload;
