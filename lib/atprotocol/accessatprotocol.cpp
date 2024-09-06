@@ -306,19 +306,21 @@ bool AccessAtProtocol::checkReply(HttpReply *reply)
     m_errorCode.clear();
     m_errorMessage.clear();
 
-#ifdef QT_DEBUG
+    QByteArray header_key;
     for (const auto &header : reply->rawHeaderPairs()) {
-        if (header.first.toLower().startsWith("ratelimit-")) {
-            if (header.first.toLower() == "ratelimit-reset") {
+        header_key = header.first.toLower();
+        if (header_key.startsWith("ratelimit-")) {
+            if (header_key == "ratelimit-reset") {
                 qDebug().noquote() << LOG_DATETIME << header.first
                                    << QDateTime::fromSecsSinceEpoch(header.second.toInt())
                                               .toString("yyyy/MM/dd hh:mm:ss");
             } else {
                 qDebug().noquote() << LOG_DATETIME << header.first << header.second;
             }
+        } else if (header_key == "dpop-nonce") {
+            m_dPopNonce = header.second;
         }
     }
-#endif
 
     QJsonDocument json_doc = QJsonDocument::fromJson(m_replyJson.toUtf8());
     if (reply->error() != HttpReply::Success) {
@@ -414,6 +416,11 @@ void AccessAtProtocol::setAdditionalRawHeader(QNetworkRequest &request)
         i.next();
         request.setRawHeader(i.key().toLocal8Bit(), i.value().toLocal8Bit());
     }
+}
+
+QString AccessAtProtocol::dPopNonce() const
+{
+    return m_dPopNonce;
 }
 
 void AccessAtProtocol::setContentType(const QString &newContentType)

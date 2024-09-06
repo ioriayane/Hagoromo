@@ -32,7 +32,8 @@ inline QJsonObject createJwk()
     return jwk;
 }
 
-QByteArray JsonWebToken::generate(const QString &handle)
+QByteArray JsonWebToken::generate(const QString &endpoint, const QString &client_id,
+                                  const QString &method, const QString &nonce)
 {
     // ヘッダー
     QJsonObject header;
@@ -43,9 +44,18 @@ QByteArray JsonWebToken::generate(const QString &handle)
     QByteArray headerBase64 = base64UrlEncode(headerJson);
 
     // ペイロード
+    qint64 epoch = QDateTime::currentSecsSinceEpoch();
     QJsonObject payload;
-    payload["sub"] = handle; // ユーザーIDなど
-    payload["iat"] = QDateTime::currentSecsSinceEpoch(); // 発行時間
+    payload["iss"] = "tech/relog/hagoromo";
+    payload["sub"] = client_id;
+    payload["htu"] = endpoint;
+    payload["htm"] = method;
+    payload["exp"] = epoch + 60000;
+    payload["jti"] = QString(QString::number(epoch).toUtf8().toBase64());
+    payload["iat"] = epoch; // 発行時間
+    if (!nonce.isEmpty()) {
+        payload["nonce"] = nonce;
+    }
     QByteArray payloadJson = QJsonDocument(payload).toJson(QJsonDocument::Compact);
     QByteArray payloadBase64 = base64UrlEncode(payloadJson);
 

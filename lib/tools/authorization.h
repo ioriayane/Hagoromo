@@ -40,12 +40,14 @@ public:
     AtProtocolType::OauthDefs::TokenResponse token() const;
     void setToken(const AtProtocolType::OauthDefs::TokenResponse &newToken);
 
+    QString dPopNonce() const;
+    void setDPopNonce(const QString &newDPopNonce);
+
     QByteArray codeVerifier() const;
     QByteArray codeChallenge() const;
     QByteArray ParPayload() const;
 
     QString listenPort() const;
-
     QByteArray state() const;
 
 signals:
@@ -85,6 +87,7 @@ private:
     //
     QString m_redirectUri;
     QString m_clientId;
+    QString m_dPopNonce;
     // par
     QByteArray m_codeChallenge;
     QByteArray m_codeVerifier;

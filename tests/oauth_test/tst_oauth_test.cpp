@@ -2,6 +2,7 @@
 #include <QCoreApplication>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QDesktopServices>
 
 #include <openssl/ec.h>
 #include <openssl/ecdsa.h>
@@ -87,7 +88,7 @@ void oauth_test::test_oauth_process()
     for (int i = 0; i < sizeof(base); i++) {
         base_ba.append(base[i]);
     }
-    qDebug() << sizeof(base) << base_ba.size()
+    qDebug() << "codeVerifier" << sizeof(base) << base_ba.size()
              << base_ba.toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
 
     QString msg;
@@ -98,7 +99,8 @@ void oauth_test::test_oauth_process()
         msg += QString::number(static_cast<unsigned char>(s)) + ", ";
     }
     qDebug() << msg;
-    qDebug() << sha256.toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
+    qDebug() << "codeChallenge"
+             << sha256.toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
 
     Authorization oauth;
     oauth.makeCodeChallenge();
@@ -106,9 +108,9 @@ void oauth_test::test_oauth_process()
     qDebug() << "codeVerifier" << oauth.codeVerifier();
 
     // QVERIFY(oauth.codeChallenge()
-    //         == base_ba.toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals));
-    // QVERIFY(oauth.codeVerifier()
     //         == sha256.toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals));
+    // QVERIFY(oauth.codeVerifier()
+    //         == base_ba.toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals));
 
     oauth.makeParPayload();
     qDebug() << "ParPlayload" << oauth.ParPayload();
@@ -118,17 +120,27 @@ void oauth_test::test_oauth_process()
 
 void oauth_test::test_oauth_server()
 {
-
+#if 0
     Authorization oauth;
 
-    // {
-    //     QSignalSpy spy(&oauth, SIGNAL(finished(bool)));
-    //     oauth.start("https://bsky.social", "ioriayane2.bsky.social");
-    //     spy.wait(300 * 1000);
-    //     QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
-    //     QList<QVariant> arguments = spy.takeFirst();
-    //     QVERIFY(arguments.at(0).toBool());
-    // }
+    {
+        QSignalSpy spy(&oauth, SIGNAL(madeRequestUrl(const QString &)));
+        oauth.start("https://bsky.social", "ioriayane.bsky.social");
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QString request_url = arguments.at(0).toString();
+        qDebug().noquote() << "request url:" << request_url;
+        QDesktopServices::openUrl(request_url);
+    }
+    {
+        QSignalSpy spy(&oauth, SIGNAL(finished(bool)));
+        spy.wait(5 * 60 * 1000);
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+#endif
 }
 
 void oauth_test::test_oauth()
@@ -137,7 +149,7 @@ void oauth_test::test_oauth()
     // response/2 : entry-way
 
     Authorization oauth;
-    oauth.setRedirectTimeout(3);
+    oauth.setRedirectTimeout(20);
 
     QString pds = QString("http://localhost:%1/response/2").arg(m_listenPort);
     QString handle = "ioriayane.relog.tech";
@@ -196,7 +208,7 @@ void oauth_test::test_oauth()
     {
         // ブラウザで認証ができないのでタイムアウトしてくるのを確認
         QSignalSpy spy(&oauth, SIGNAL(finished(bool)));
-        spy.wait();
+        spy.wait(20 * 1000);
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(!arguments.at(0).toBool());
@@ -239,7 +251,8 @@ void oauth_test::test_oauth()
 
 void oauth_test::test_jwt()
 {
-    QByteArray jwt = JsonWebToken::generate("https://hoge");
+    QByteArray jwt = JsonWebToken::generate("https://hoge", "client_id", "GET",
+                                            "O_m5dyvKO7jNfnsfuYwB5GflhTuVaqCub4x3xVKqJ9Y");
 
     qDebug().noquote() << jwt;
 
