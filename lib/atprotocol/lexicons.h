@@ -2066,6 +2066,8 @@ struct TokenResponse
     QString access_token;
     QString token_type;
     QString refresh_token;
+    QString scope;
+    QString sub;
     int expires_in = 0;
 };
 }

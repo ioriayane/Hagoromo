@@ -546,7 +546,8 @@ void Authorization::setToken(const AtProtocolType::OauthDefs::TokenResponse &new
 {
     if (m_token.access_token == newToken.access_token && m_token.expires_in == newToken.expires_in
         && m_token.refresh_token == newToken.refresh_token
-        && m_token.token_type == newToken.token_type)
+        && m_token.token_type == newToken.token_type && m_token.sub == newToken.sub
+        && m_token.scope == newToken.scope)
         return;
     m_token = newToken;
     emit tokenChanged();

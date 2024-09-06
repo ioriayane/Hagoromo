@@ -25,6 +25,12 @@
                 "refresh_token": {
                     "type": "string"
                 },
+                "scope": {
+                    "type": "string"
+                },
+                "sub": {
+                    "type": "string"
+                },
                 "expires_in": {
                     "type": "integer"
                 }
