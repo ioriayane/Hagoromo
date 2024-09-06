@@ -2923,6 +2923,8 @@ void copyTokenResponse(const QJsonObject &src, OauthDefs::TokenResponse &dest)
         dest.access_token = src.value("access_token").toString();
         dest.token_type = src.value("token_type").toString();
         dest.refresh_token = src.value("refresh_token").toString();
+        dest.scope = src.value("scope").toString();
+        dest.sub = src.value("sub").toString();
         dest.expires_in = src.value("expires_in").toInt();
     }
 }
