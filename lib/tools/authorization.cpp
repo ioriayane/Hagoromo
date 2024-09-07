@@ -48,10 +48,8 @@ void Authorization::reset()
     m_codeChallenge.clear();
     m_codeVerifier.clear();
     m_state.clear();
-    m_parPayload.clear();
     // request token
     m_code.clear();
-    m_requestTokenPayload.clear();
     m_token = AtProtocolType::OauthDefs::TokenResponse();
     //
     m_listenPort.clear();
@@ -146,7 +144,6 @@ void Authorization::requestOauthAuthorizationServer()
                 m_scopesSupported = server->serverMetadata().scopes_supported;
 
                 // next step
-                makeParPayload();
                 par();
             } else {
                 qDebug().noquote() << error_message;
@@ -224,6 +221,11 @@ QByteArray Authorization::state() const
     return m_state;
 }
 
+void Authorization::setListenPort(const QString &newListenPort)
+{
+    m_listenPort = newListenPort;
+}
+
 QString Authorization::listenPort() const
 {
     return m_listenPort;
@@ -252,7 +254,7 @@ void Authorization::makeCodeChallenge()
                     .toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
 }
 
-void Authorization::makeParPayload()
+QByteArray Authorization::makeParPayload()
 {
     makeClientId();
     makeCodeChallenge();
@@ -271,12 +273,12 @@ void Authorization::makeParPayload()
     query.addQueryItem("scope", m_scopesSupported.join(" "));
     query.addQueryItem("login_hint", simplyEncode(login_hint));
 
-    m_parPayload = query.query(QUrl::FullyEncoded).toLocal8Bit();
+    return query.query(QUrl::FullyEncoded).toLocal8Bit();
 }
 
 void Authorization::par()
 {
-    if (m_parPayload.isEmpty() || pushedAuthorizationRequestEndpoint().isEmpty())
+    if (pushedAuthorizationRequestEndpoint().isEmpty())
         return;
 
     AtProtocolInterface::AccountData account;
@@ -302,7 +304,7 @@ void Authorization::par()
     });
     req->setContentType("application/x-www-form-urlencoded");
     req->setAccount(account);
-    req->pushedAuthorizationRequest(m_parPayload);
+    req->pushedAuthorizationRequest(makeParPayload());
 }
 
 void Authorization::authorization(const QString &request_uri)
@@ -371,6 +373,11 @@ void Authorization::startRedirectServer()
         }
         server->deleteLater();
     });
+    connect(server, &QObject::destroyed, [this]() {
+        qDebug().noquote() << "Destory webserver";
+        m_listenPort.clear();
+    });
+
     server->setTimeout(redirectTimeout());
     quint16 port = server->listen(QHostAddress::LocalHost, 0);
     m_listenPort = QString::number(port);
@@ -378,25 +385,29 @@ void Authorization::startRedirectServer()
     qDebug().noquote() << "Listen" << m_listenPort;
 }
 
-void Authorization::makeRequestTokenPayload()
+QByteArray Authorization::makeRequestTokenPayload(bool refresh)
 {
     QUrlQuery query;
 
-    query.addQueryItem("grant_type", "authorization_code");
-    query.addQueryItem("code", m_code);
-    query.addQueryItem("code_verifier", m_codeVerifier);
-    query.addQueryItem("client_id", simplyEncode(m_clientId));
-    query.addQueryItem("redirect_uri", simplyEncode(m_redirectUri));
+    if (refresh) {
+        query.addQueryItem("grant_type", "refresh_token");
+        query.addQueryItem("refresh_token", token().refresh_token);
+        query.addQueryItem("client_id", simplyEncode(m_clientId));
+    } else {
+        query.addQueryItem("grant_type", "authorization_code");
+        query.addQueryItem("code", m_code);
+        query.addQueryItem("code_verifier", m_codeVerifier);
+        query.addQueryItem("client_id", simplyEncode(m_clientId));
+        query.addQueryItem("redirect_uri", simplyEncode(m_redirectUri));
+    }
 
-    m_requestTokenPayload = query.query(QUrl::FullyEncoded).toLocal8Bit();
+    return query.query(QUrl::FullyEncoded).toLocal8Bit();
 }
 
-void Authorization::requestToken()
+void Authorization::requestToken(bool refresh)
 {
     if (tokenEndopoint().isEmpty())
         return;
-
-    makeRequestTokenPayload();
 
     AtProtocolInterface::AccountData account;
     account.service = tokenEndopoint();
@@ -435,7 +446,7 @@ void Authorization::requestToken()
                          JsonWebToken::generate(tokenEndopoint(), m_clientId, "POST", dPopNonce()));
     req->setContentType("application/x-www-form-urlencoded");
     req->setAccount(account);
-    req->requestToken(m_requestTokenPayload);
+    req->requestToken(makeRequestTokenPayload(refresh));
 }
 
 QByteArray Authorization::generateRandomValues() const
@@ -553,6 +564,16 @@ void Authorization::setToken(const AtProtocolType::OauthDefs::TokenResponse &new
     emit tokenChanged();
 }
 
+QString Authorization::clientId() const
+{
+    return m_clientId;
+}
+
+void Authorization::setClientId(const QString &newClientId)
+{
+    m_clientId = newClientId;
+}
+
 QString Authorization::dPopNonce() const
 {
     return m_dPopNonce;
@@ -561,10 +582,6 @@ QString Authorization::dPopNonce() const
 void Authorization::setDPopNonce(const QString &newDPopNonce)
 {
     m_dPopNonce = newDPopNonce;
-}
-QByteArray Authorization::ParPayload() const
-{
-    return m_parPayload;
 }
 
 QByteArray Authorization::codeChallenge() const

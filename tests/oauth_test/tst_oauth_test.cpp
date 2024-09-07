@@ -111,18 +111,12 @@ void oauth_test::test_oauth_process()
     //         == sha256.toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals));
     // QVERIFY(oauth.codeVerifier()
     //         == base_ba.toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals));
-
-    oauth.makeParPayload();
-    qDebug() << "ParPlayload" << oauth.ParPayload();
-
-    // oauth.par();
 }
 
 void oauth_test::test_oauth_server()
 {
-#if 0
     Authorization oauth;
-
+#if 0
     {
         QSignalSpy spy(&oauth, SIGNAL(madeRequestUrl(const QString &)));
         oauth.start("https://bsky.social", "ioriayane.bsky.social");
@@ -136,6 +130,22 @@ void oauth_test::test_oauth_server()
     {
         QSignalSpy spy(&oauth, SIGNAL(finished(bool)));
         spy.wait(5 * 60 * 1000);
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+#elif 0
+    AtProtocolType::OauthDefs::TokenResponse token;
+    token.refresh_token = "ref-121f89618c436ad99cbb792b5bd2b003fdc829dde32d73e02486b4ddb0c7bd99";
+    oauth.setToken(token);
+    oauth.setTokenEndopoint("https://bsky.social/oauth/token");
+    oauth.setDPopNonce("8mo0kjoyQ64_uOCBrZ4Q8M8-RT0BkfgAMDB7no5DkmU");
+    oauth.setListenPort("65073");
+    oauth.makeClientId();
+    {
+        QSignalSpy spy(&oauth, SIGNAL(finished(bool)));
+        oauth.requestToken(true);
+        spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());

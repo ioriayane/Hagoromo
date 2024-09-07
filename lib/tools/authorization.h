@@ -16,13 +16,13 @@ public:
 
     void makeClientId();
     void makeCodeChallenge();
-    void makeParPayload();
+    QByteArray makeParPayload();
     void par();
     void authorization(const QString &request_uri);
     void startRedirectServer();
 
-    void makeRequestTokenPayload();
-    void requestToken();
+    QByteArray makeRequestTokenPayload(bool refresh);
+    void requestToken(bool refresh = false);
 
     QString serviceEndpoint() const;
     void setServiceEndpoint(const QString &newServiceEndpoint);
@@ -40,14 +40,16 @@ public:
     AtProtocolType::OauthDefs::TokenResponse token() const;
     void setToken(const AtProtocolType::OauthDefs::TokenResponse &newToken);
 
+    QString clientId() const;
+    void setClientId(const QString &newClientId);
     QString dPopNonce() const;
     void setDPopNonce(const QString &newDPopNonce);
 
     QByteArray codeVerifier() const;
     QByteArray codeChallenge() const;
-    QByteArray ParPayload() const;
 
     QString listenPort() const;
+    void setListenPort(const QString &newListenPort);
     QByteArray state() const;
 
 signals:
@@ -92,10 +94,8 @@ private:
     QByteArray m_codeChallenge;
     QByteArray m_codeVerifier;
     QByteArray m_state;
-    QByteArray m_parPayload;
     // request token
     QByteArray m_code;
-    QByteArray m_requestTokenPayload;
     AtProtocolType::OauthDefs::TokenResponse m_token;
 
     QString m_listenPort;
