@@ -3,8 +3,6 @@ QT += xml sql websockets httpserver
 TEMPLATE = lib
 CONFIG += staticlib
 
-CONFIG += c++11
-
 include(../openssl/openssl.pri)
 
 INCLUDEPATH += $$PWD \

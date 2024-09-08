@@ -61,9 +61,7 @@ signals:
     void tokenEndopointChanged();
     void tokenChanged();
     void finished(bool success);
-#ifdef HAGOROMO_UNIT_TEST
-    void madeRequestUrl(const QString &url);
-#endif
+    void madeRequestUrl(const QString &url); // このシグナルを受けてブラウザに飛ばすなりする
 
 private:
     QByteArray generateRandomValues() const;

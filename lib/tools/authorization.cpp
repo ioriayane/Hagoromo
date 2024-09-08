@@ -322,11 +322,8 @@ void Authorization::authorization(const QString &request_uri)
 
     qDebug().noquote() << "redirect" << url.toEncoded();
 
-#ifdef HAGOROMO_UNIT_TEST
     emit madeRequestUrl(url.toString());
-#else
-    QDesktopServices::openUrl(url);
-#endif
+    // QDesktopServices::openUrl(url);
 }
 
 void Authorization::startRedirectServer()
@@ -360,6 +357,7 @@ void Authorization::startRedirectServer()
                 } else {
                     SimpleHttpServer::readFile(":/tools/oauth/oauth_fail.html", data);
                 }
+                qDebug().noquote() << "Result html:" << data;
                 mime_type = "text/html";
 
                 // delete after 10 sec.
