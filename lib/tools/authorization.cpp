@@ -329,6 +329,7 @@ void Authorization::authorization(const QString &request_uri)
 void Authorization::startRedirectServer()
 {
     SimpleHttpServer *server = new SimpleHttpServer(this);
+    QPointer<SimpleHttpServer> alive = server;
     connect(server, &SimpleHttpServer::received, this,
             [=](const QHttpServerRequest &request, bool &result, QByteArray &data,
                 QByteArray &mime_type) {
@@ -360,8 +361,15 @@ void Authorization::startRedirectServer()
                 qDebug().noquote() << "Result html:" << data;
                 mime_type = "text/html";
 
-                // delete after 10 sec.
-                QTimer::singleShot(10 * 1000, [=]() { server->deleteLater(); });
+                server->clearTimeout();
+                // delete after 5 sec.
+                QTimer::singleShot(5 * 1000, [=]() {
+                    if (alive) {
+                        server->deleteLater();
+                    } else {
+                        qDebug().noquote() << "Already deleted server";
+                    }
+                });
             });
     connect(server, &SimpleHttpServer::timeout, this, [=]() {
         // token取得に進んでたらfinishedは発火しない

@@ -1,11 +1,27 @@
 #include "simplehttpserver.h"
-#include <QTimer>
 
-SimpleHttpServer::SimpleHttpServer(QObject *parent) : QAbstractHttpServer { parent } { }
+SimpleHttpServer::SimpleHttpServer(QObject *parent) : QAbstractHttpServer { parent }
+{
+    connect(&m_timeout, &QTimer::timeout, this, [=]() { emit timeout(); });
+}
 
 void SimpleHttpServer::setTimeout(int sec)
 {
-    QTimer::singleShot(sec * 1000, [=]() { emit timeout(); });
+    if (m_timeout.isActive()) {
+        qDebug().noquote() << "SimpleHttpServer::Restart timeout:" << sec;
+        m_timeout.stop();
+    } else {
+        qDebug().noquote() << "SimpleHttpServer::Start timeout:" << sec;
+    }
+    m_timeout.start(sec * 1000);
+}
+
+void SimpleHttpServer::clearTimeout()
+{
+    if (m_timeout.isActive()) {
+        qDebug().noquote() << "SimpleHttpServer::Stop timeout";
+        m_timeout.stop();
+    }
 }
 
 bool SimpleHttpServer::handleRequest(const QHttpServerRequest &request, QTcpSocket *socket)
