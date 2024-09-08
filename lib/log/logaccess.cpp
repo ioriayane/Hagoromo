@@ -12,6 +12,8 @@
 #include <QThread>
 
 #include <QDateTime>
+#include <QDir>
+#include <QFileInfo>
 #define LOG_DATETIME QDateTime::currentDateTime().toString("yyyy/MM/dd hh:mm:ss.zzz")
 
 #define DB_VERSION 1
@@ -227,21 +229,28 @@ int LogAccess::getVersion(const QString &did)
 QString LogAccess::dbPath(QString did) const
 {
     did.replace(":", "_");
-    return QString("%1/%2/%3%4/%5.db")
-            .arg(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation))
-            .arg(QCoreApplication::organizationName())
-            .arg(QCoreApplication::applicationName())
-            .arg(
+    QString path =
+            QString("%1/%2/%3%4/%5.db")
+                    .arg(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation))
+                    .arg(QCoreApplication::organizationName())
+                    .arg(QCoreApplication::applicationName())
+                    .arg(
 // #if defined(HAGOROMO_UNIT_TEST)
 //                     QStringLiteral("_unittest")
 // #elif defined(QT_DEBUG)
 #if defined(QT_DEBUG)
-                    QStringLiteral("_debug")
+                            QStringLiteral("_debug")
 #else
-                    QString()
+                            QString()
 #endif
-                            )
-            .arg(did);
+                                    )
+                    .arg(did);
+    QFileInfo file(path);
+    QDir dir(file.absolutePath());
+    if (!dir.exists()) {
+        dir.mkpath(file.absolutePath());
+    }
+    return path;
 }
 
 void LogAccess::dbInit()
