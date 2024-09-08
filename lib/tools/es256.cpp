@@ -133,9 +133,7 @@ void Es256::loadKey()
                     .arg(QCoreApplication::organizationName())
                     .arg(QCoreApplication::applicationName())
                     .arg(
-#if defined(HAGOROMO_UNIT_TEST)
-                            QStringLiteral("_unittest")
-#elif defined(QT_DEBUG)
+#if defined(QT_DEBUG)
                             QStringLiteral("_debug")
 #else
                             QString()

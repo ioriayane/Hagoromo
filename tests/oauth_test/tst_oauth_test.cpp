@@ -278,7 +278,7 @@ void oauth_test::test_es256()
                     .arg(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation))
                     .arg(QCoreApplication::organizationName())
                     .arg(QCoreApplication::applicationName())
-                    .arg(QStringLiteral("_unittest"));
+                    .arg(QStringLiteral("_debug"));
     QFile::remove(private_key_path);
     Es256::getInstance()->clear();
 
