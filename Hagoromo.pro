@@ -3,9 +3,13 @@ TEMPLATE = subdirs
 SUBDIRS += \
     app \
     lib \
-    tests \
     tools/decodecar \
     tools/firehosereader
 
 app.depends = lib
+
+CONFIG(debug, debug|release):{
+SUBDIRS += \
+    tests
 tests.depends = lib
+}
