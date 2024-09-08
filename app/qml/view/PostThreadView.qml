@@ -209,7 +209,7 @@ ColumnLayout {
                 postControls.quoteMenuItem.onTriggered: requestQuote(model.cid, model.uri,
                                                                      model.avatar, model.displayName, model.handle, model.indexedAt, model.recordText)
                 postControls.likeButton.onClicked: rootListView.model.like(model.index)
-                postControls.onTriggeredTranslate: postThreadListModel.translate(model.cid)
+                postControls.onTriggeredTranslate: rootListView.model.translate(model.cid)
                 postControls.isReposted: model.isReposted
                 postControls.isLiked: model.isLiked
                 postControls.pinned: model.pinnedByMe
