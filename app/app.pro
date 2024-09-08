@@ -186,10 +186,9 @@ QML_IMPORT_PATH =
 # Additional import path used to resolve QML modules just for Qt Quick Designer
 QML_DESIGNER_IMPORT_PATH =
 
-include(../lib/lib.pri)
+include(deps.pri)
 include(qtquick/qtquick.pri)
 include(../openssl/openssl.pri)
-
 
 win32:{
     CONFIG(debug,debug|release):install_dir = $$OUT_PWD/debug

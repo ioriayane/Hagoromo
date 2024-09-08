@@ -1,5 +1,12 @@
 QT += xml sql websockets
 
+TEMPLATE = lib
+CONFIG += staticlib
+
+CONFIG += c++11
+
+include(../openssl/openssl.pri)
+
 INCLUDEPATH += $$PWD \
     $$PWD/../3rdparty/cpp-httplib
 

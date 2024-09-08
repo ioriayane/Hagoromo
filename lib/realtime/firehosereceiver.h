@@ -43,7 +43,8 @@ public:
     int countSelector() const;
     bool selectorIsReady(QObject *parent);
 
-#ifdef HAGOROMO_UNIT_TEST
+#ifdef QT_DEBUG // HAGOROMO_UNIT_TEST
+    bool forUnittest;
     void testReceived(const QJsonObject &json);
 #endif
 
