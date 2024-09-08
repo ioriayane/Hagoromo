@@ -8,6 +8,9 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+- Fix
+  - Fix a bug that prevented the translation function from working in post threads
+
 ### v0.36.0 - 2024/9/1
 
 - Add
