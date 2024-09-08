@@ -34,7 +34,7 @@ build_hagoromo(){
     make_dir $work_dir
     cd $work_dir
 
-    ${QT_BIN_FOLDER}/qmake ../app/app.pro CONFIG+=HAGOROMO_RELEASE_BUILD
+    ${QT_BIN_FOLDER}/qmake ../Hagoromo.pro CONFIG+=HAGOROMO_RELEASE_BUILD
     make -j4
 
     popd
@@ -56,7 +56,7 @@ deploy_hagoromo(){
         mkdir -p ${work_dir}/bin/translations
         mkdir -p ${work_dir}/lib
 
-        cp ${build_dir}/Hagoromo ${work_dir}/bin
+        cp ${build_dir}/app/Hagoromo ${work_dir}/bin
         cp ${SCRIPT_FOLDER}/deploy/Hagoromo.sh ${work_dir}
         cp "openssl/lib/libcrypto.so.1.1" ${work_dir}/lib
         cp "openssl/lib/libssl.so.1.1" ${work_dir}/lib
@@ -70,7 +70,7 @@ deploy_hagoromo(){
         cat ${SCRIPT_FOLDER}/deploy/linux_qml.txt | xargs -i{} cp -P ${QT_BIN_FOLDER}/../qml/{} ${work_dir}/bin/{}
 
     elif [ "${PLATFORM_TYPE}" == "mac" ]; then
-        cp -r build-hagoromo/Hagoromo.app ${work_dir}/
+        cp -r ${build_dir}/app/Hagoromo.app ${work_dir}/
         ${QT_BIN_FOLDER}/macdeployqt ${work_dir}/Hagoromo.app -qmldir=app/qml
 
         mkdir -p ${work_dir}/Hagoromo.app/Contents/MacOS/translations
