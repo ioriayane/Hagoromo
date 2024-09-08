@@ -9,7 +9,7 @@ DEFINES += HAGOROMO_UNIT_TEST
 SOURCES +=  tst_log_test.cpp
 
 include(../common/common.pri)
-include(../../lib/lib.pri)
+include(../deps.pri)
 include(../../openssl/openssl.pri)
 include(../../app/qtquick/qtquick.pri)
 
