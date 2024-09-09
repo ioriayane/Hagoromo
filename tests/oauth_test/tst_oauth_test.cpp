@@ -399,8 +399,8 @@ void oauth_test::verify_jwt(const QByteArray &jwt, EVP_PKEY *pkey)
 
     OPENSSL_free(der_sig);
     ECDSA_SIG_free(ec_sig);
-    BN_free(ec_sig_s);
-    BN_free(ec_sig_r);
+    // BN_free(ec_sig_s); // ECDSA_SIG_freeで解放される
+    // BN_free(ec_sig_r); // ECDSA_SIG_freeで解放される
 
     if (use_jwk) {
         EVP_PKEY_free(pkey);
