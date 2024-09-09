@@ -134,6 +134,9 @@ void oauth_test::test_oauth_server()
         QList<QVariant> arguments = spy.takeFirst();
         QVERIFY(arguments.at(0).toBool());
     }
+    qDebug().noquote() << "DPoP for test";
+    qDebug().noquote() << JsonWebToken::generate(oauth.tokenEndopoint(), oauth.clientId(), "GET",
+                                                 oauth.dPopNonce());
 #elif 0
     AtProtocolType::OauthDefs::TokenResponse token;
     token.refresh_token = "ref-121f89618c436ad99cbb792b5bd2b003fdc829dde32d73e02486b4ddb0c7bd99";

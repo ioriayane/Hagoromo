@@ -449,7 +449,7 @@ void Authorization::requestToken(bool refresh)
         req->deleteLater();
     });
     req->appendRawHeader("DPoP",
-                         JsonWebToken::generate(tokenEndopoint(), m_clientId, "POST", dPopNonce()));
+                         JsonWebToken::generate(tokenEndopoint(), clientId(), "POST", dPopNonce()));
     req->setContentType("application/x-www-form-urlencoded");
     req->setAccount(account);
     req->requestToken(makeRequestTokenPayload(refresh));
