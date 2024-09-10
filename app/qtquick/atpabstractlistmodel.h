@@ -63,6 +63,13 @@ public:
     explicit AtpAbstractListModel(QObject *parent = nullptr, bool use_translator = false);
     ~AtpAbstractListModel();
 
+    enum EmbedVideoRoles {
+        HasVideoRole,
+        VideoPlaylistRole,
+        VideoThumbRole,
+        VideoAltRole,
+    };
+
     enum ExternalLinkRoles {
         HasExternalLinkRole,
         ExternalLinkUriRole,
@@ -169,6 +176,8 @@ protected:
     QStringList getLabels(const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels) const;
     QStringList getLaunguages(const QVariant &record) const;
     QString getVia(const QVariant &record) const;
+    QVariant getEmbedVideoItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
+                               const AtpAbstractListModel::EmbedVideoRoles role) const;
     QVariant getExternalLinkItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
                                  const AtpAbstractListModel::ExternalLinkRoles role) const;
     QVariant getFeedGeneratorItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,

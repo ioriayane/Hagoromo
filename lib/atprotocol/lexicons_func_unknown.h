@@ -58,6 +58,8 @@ enum class CopyImageType : int {
 QStringList copyImagesFromPostView(const AppBskyFeedDefs::PostView &post, const CopyImageType type);
 QStringList copyImagesFromRecord(const AppBskyEmbedRecord::ViewRecord &record,
                                  const CopyImageType type);
+QString copyVideoFromPostView(const AtProtocolType::AppBskyFeedDefs::PostView &post,
+                              const CopyImageType type);
 QStringList copyTagsFromFacets(const QList<AppBskyRichtextFacet::Main> &facets);
 bool checkPartialMatchLanguage(const QStringList &langs);
 QString copyRecordText(const QVariant &value);

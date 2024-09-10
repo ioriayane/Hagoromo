@@ -24,6 +24,12 @@ TimelineListModel::TimelineListModel(QObject *parent)
       m_visibleRepostOfMine(true),
       m_visibleRepostByMe(true)
 {
+    m_toEmbedVideoRoles[HasVideoRole] = AtpAbstractListModel::EmbedVideoRoles::HasVideoRole;
+    m_toEmbedVideoRoles[VideoPlaylistRole] =
+            AtpAbstractListModel::EmbedVideoRoles::VideoPlaylistRole;
+    m_toEmbedVideoRoles[VideoThumbRole] = AtpAbstractListModel::EmbedVideoRoles::VideoThumbRole;
+    m_toEmbedVideoRoles[VideoAltRole] = AtpAbstractListModel::EmbedVideoRoles::VideoAltRole;
+
     m_toExternalLinkRoles[HasExternalLinkRole] =
             AtpAbstractListModel::ExternalLinkRoles::HasExternalLinkRole;
     m_toExternalLinkRoles[ExternalLinkUriRole] =
@@ -169,6 +175,9 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
              || role == QuoteRecordEmbedImagesFullRole || role == QuoteRecordEmbedImagesAltRole
              || role == QuoteRecordBlockedRole || role == QuoteRecordBlockedStatusRole)
         return getQuoteItem(current.post, role);
+
+    else if (m_toEmbedVideoRoles.contains(role))
+        return getEmbedVideoItem(current.post, m_toEmbedVideoRoles[role]);
 
     else if (m_toExternalLinkRoles.contains(role))
         return getExternalLinkItem(current.post, m_toExternalLinkRoles[role]);
@@ -680,6 +689,11 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[QuoteRecordEmbedImagesAltRole] = "quoteRecordEmbedImagesAlt";
     roles[QuoteRecordBlockedRole] = "quoteRecordBlocked";
     roles[QuoteRecordBlockedStatusRole] = "quoteRecordBlockedStatus";
+
+    roles[HasVideoRole] = "hasVideo";
+    roles[VideoPlaylistRole] = "videoPlaylist";
+    roles[VideoThumbRole] = "videoThumbUri";
+    roles[VideoAltRole] = "videoAlt";
 
     roles[HasExternalLinkRole] = "hasExternalLink";
     roles[ExternalLinkUriRole] = "externalLinkUri";
