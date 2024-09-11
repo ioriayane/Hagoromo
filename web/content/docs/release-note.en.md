@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+- Add
+  - Supports thumbnail display of videos (click to go to the official site)
 - Fix
   - Fix a bug that prevented the translation function from working in post threads
 
