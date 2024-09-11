@@ -88,6 +88,10 @@ public:
         QuoteRecordEmbedImagesAltRole,
         QuoteRecordBlockedRole,
         QuoteRecordBlockedStatusRole,
+        QuoteRecordHasVideoRole,
+        QuoteRecordVideoPlaylistRole,
+        QuoteRecordVideoThumbRole,
+        QuoteRecordVideoAltRole,
 
         HasVideoRole,
         VideoPlaylistRole,
