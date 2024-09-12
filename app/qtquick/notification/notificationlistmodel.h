@@ -82,6 +82,15 @@ public:
         QuoteRecordEmbedImagesAltRole,
         QuoteRecordIsRepostedRole,
         QuoteRecordIsLikedRole,
+        QuoteRecordHasVideoRole,
+        QuoteRecordVideoPlaylistRole,
+        QuoteRecordVideoThumbRole,
+        QuoteRecordVideoAltRole,
+
+        HasVideoRole,
+        VideoPlaylistRole,
+        VideoThumbRole,
+        VideoAltRole,
 
         HasExternalLinkRole,
         ExternalLinkUriRole,
@@ -197,6 +206,10 @@ private:
     QHash<QString, QStringList> m_follow2Notification;
 
     bool m_hasUnread; // 今回の読み込みで未読がある
+    QHash<NotificationListModel::NotificationListModelRoles, AtpAbstractListModel::EmbedVideoRoles>
+            m_toEmbedVideoRoles;
+    QHash<NotificationListModel::NotificationListModelRoles, AtpAbstractListModel::EmbedVideoRoles>
+            m_toQuoteRecordVideoRoles;
     QHash<NotificationListModel::NotificationListModelRoles,
           AtpAbstractListModel::ExternalLinkRoles>
             m_toExternalLinkRoles;

@@ -417,6 +417,26 @@ QString AtpAbstractListModel::getVia(const QVariant &record) const
 }
 
 QVariant
+AtpAbstractListModel::getEmbedVideoItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
+                                        const EmbedVideoRoles role) const
+{
+    if (role == HasVideoRole) {
+        return (post.embed_type
+                == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedVideo_View);
+    } else if (role == VideoPlaylistRole) {
+        return LexiconsTypeUnknown::copyVideoFromPostView(
+                post, LexiconsTypeUnknown::CopyImageType::FullSize);
+    } else if (role == VideoThumbRole) {
+        return LexiconsTypeUnknown::copyVideoFromPostView(
+                post, LexiconsTypeUnknown::CopyImageType::Thumb);
+    } else if (role == VideoAltRole) {
+        return LexiconsTypeUnknown::copyVideoFromPostView(post,
+                                                          LexiconsTypeUnknown::CopyImageType::Alt);
+    }
+    return QVariant();
+}
+
+QVariant
 AtpAbstractListModel::getExternalLinkItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
                                           const ExternalLinkRoles role) const
 {

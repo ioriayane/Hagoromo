@@ -41,8 +41,10 @@ ClickableFrame {
     property alias contentFilterFrame: contentFilterFrame
     property alias contentMediaFilterFrame: contentMediaFilterFrame
     property alias postImagePreview: postImagePreview
+    property alias embedVideoFrame: embedVideoFrame
     property alias quoteRecordFrame: quoteRecordFrame
     property alias quoteRecordImagePreview: quoteRecordImagePreview
+    property alias quoteRecordEmbedVideoFrame: quoteRecordEmbedVideoFrame
     property alias feedGeneratorFrame: feedGeneratorFrame
     property alias listLinkCardFrame: listLinkCardFrame
     property alias externalLinkFrame: externalLinkFrame
@@ -294,6 +296,12 @@ ClickableFrame {
                         Layout.topMargin: 5
                     }
 
+                    VideoFrame {
+                        id: embedVideoFrame
+                        Layout.preferredWidth: parent.width
+                        Layout.topMargin: 5
+                    }
+
                     ExternalLinkCard {
                         id: externalLinkFrame
                         Layout.preferredWidth: parent.width
@@ -356,7 +364,11 @@ ClickableFrame {
                                 layoutWidth: quoteRecordFrame.basisWidth
                                 Layout.topMargin: 5
                             }
-                        }
+                            VideoFrame {
+                                id: quoteRecordEmbedVideoFrame
+                                Layout.preferredWidth: parent.width
+                                Layout.topMargin: 5
+                            }                        }
                     }
 
                     Label {

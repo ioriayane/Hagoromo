@@ -24,6 +24,12 @@ TimelineListModel::TimelineListModel(QObject *parent)
       m_visibleRepostOfMine(true),
       m_visibleRepostByMe(true)
 {
+    m_toEmbedVideoRoles[HasVideoRole] = AtpAbstractListModel::EmbedVideoRoles::HasVideoRole;
+    m_toEmbedVideoRoles[VideoPlaylistRole] =
+            AtpAbstractListModel::EmbedVideoRoles::VideoPlaylistRole;
+    m_toEmbedVideoRoles[VideoThumbRole] = AtpAbstractListModel::EmbedVideoRoles::VideoThumbRole;
+    m_toEmbedVideoRoles[VideoAltRole] = AtpAbstractListModel::EmbedVideoRoles::VideoAltRole;
+
     m_toExternalLinkRoles[HasExternalLinkRole] =
             AtpAbstractListModel::ExternalLinkRoles::HasExternalLinkRole;
     m_toExternalLinkRoles[ExternalLinkUriRole] =
@@ -167,8 +173,13 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
              || role == QuoteRecordAvatarRole || role == QuoteRecordRecordTextRole
              || role == QuoteRecordIndexedAtRole || role == QuoteRecordEmbedImagesRole
              || role == QuoteRecordEmbedImagesFullRole || role == QuoteRecordEmbedImagesAltRole
-             || role == QuoteRecordBlockedRole || role == QuoteRecordBlockedStatusRole)
+             || role == QuoteRecordBlockedRole || role == QuoteRecordBlockedStatusRole
+             || role == QuoteRecordHasVideoRole || role == QuoteRecordVideoPlaylistRole
+             || role == QuoteRecordVideoThumbRole || role == QuoteRecordVideoAltRole)
         return getQuoteItem(current.post, role);
+
+    else if (m_toEmbedVideoRoles.contains(role))
+        return getEmbedVideoItem(current.post, m_toEmbedVideoRoles[role]);
 
     else if (m_toExternalLinkRoles.contains(role))
         return getExternalLinkItem(current.post, m_toExternalLinkRoles[role]);
@@ -680,6 +691,15 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[QuoteRecordEmbedImagesAltRole] = "quoteRecordEmbedImagesAlt";
     roles[QuoteRecordBlockedRole] = "quoteRecordBlocked";
     roles[QuoteRecordBlockedStatusRole] = "quoteRecordBlockedStatus";
+    roles[QuoteRecordHasVideoRole] = "quoteRecordHasVideo";
+    roles[QuoteRecordVideoPlaylistRole] = "quoteRecordVideoPlaylist";
+    roles[QuoteRecordVideoThumbRole] = "quoteRecordVideoThumb";
+    roles[QuoteRecordVideoAltRole] = "quoteRecordVideoAlt";
+
+    roles[HasVideoRole] = "hasVideo";
+    roles[VideoPlaylistRole] = "videoPlaylist";
+    roles[VideoThumbRole] = "videoThumbUri";
+    roles[VideoAltRole] = "videoAlt";
 
     roles[HasExternalLinkRole] = "hasExternalLink";
     roles[ExternalLinkUriRole] = "externalLinkUri";
@@ -1076,6 +1096,55 @@ QVariant TimelineListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDefs::
                 return QuoteRecordBlockedStatusType::QuoteRecordBlocked;
         }
         return QuoteRecordBlockedStatusType::QuoteRecordNonBlocked;
+
+    } else if (role == QuoteRecordHasVideoRole) {
+        if (has_record) {
+            return !post.embed_AppBskyEmbedRecord_View->record_ViewRecord
+                            .embeds_AppBskyEmbedVideo_View.isEmpty();
+        } else if (has_with_image) {
+            return (post.embed_AppBskyEmbedRecordWithMedia_View.media_type
+                    == AppBskyEmbedRecordWithMedia::ViewMediaType::media_AppBskyEmbedVideo_View);
+        } else {
+            return false;
+        }
+    } else if (role == QuoteRecordVideoPlaylistRole) {
+        if (has_record
+            && !post.embed_AppBskyEmbedRecord_View->record_ViewRecord.embeds_AppBskyEmbedVideo_View
+                        .isEmpty()) {
+            return post.embed_AppBskyEmbedRecord_View->record_ViewRecord
+                    .embeds_AppBskyEmbedVideo_View.first()
+                    .playlist;
+        } else if (has_with_image) {
+            return post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedVideo_View
+                    .playlist;
+        } else {
+            return QString();
+        }
+    } else if (role == QuoteRecordVideoThumbRole) {
+        if (has_record
+            && !post.embed_AppBskyEmbedRecord_View->record_ViewRecord.embeds_AppBskyEmbedVideo_View
+                        .isEmpty()) {
+            return post.embed_AppBskyEmbedRecord_View->record_ViewRecord
+                    .embeds_AppBskyEmbedVideo_View.first()
+                    .thumbnail;
+        } else if (has_with_image) {
+            return post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedVideo_View
+                    .thumbnail;
+        } else {
+            return QString();
+        }
+    } else if (role == QuoteRecordVideoAltRole) {
+        if (has_record
+            && !post.embed_AppBskyEmbedRecord_View->record_ViewRecord.embeds_AppBskyEmbedVideo_View
+                        .isEmpty()) {
+            return post.embed_AppBskyEmbedRecord_View->record_ViewRecord
+                    .embeds_AppBskyEmbedVideo_View.first()
+                    .alt;
+        } else if (has_with_image) {
+            return post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedVideo_View.alt;
+        } else {
+            return QString();
+        }
     }
 
     return QVariant();

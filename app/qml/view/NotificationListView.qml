@@ -127,6 +127,12 @@ ScrollView {
             quoteRecordImagePreview.embedImages: model.quoteRecordEmbedImages
             quoteRecordImagePreview.embedAlts: model.quoteRecordEmbedImagesAlt
             quoteRecordImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.quoteRecordEmbedImagesFull, model.quoteRecordEmbedImagesAlt)
+            quoteRecordEmbedVideoFrame.visible: model.quoteRecordHasVideo
+            quoteRecordEmbedVideoFrame.thumbImage.source: model.quoteRecordVideoThumb
+            quoteRecordEmbedVideoFrame.onClicked: Qt.openUrlExternally(rootListView.model.getItemOfficialUrl(model.index))
+            embedVideoFrame.visible: model.hasVideo
+            embedVideoFrame.onClicked: Qt.openUrlExternally(rootListView.model.getItemOfficialUrl(model.index))
+            embedVideoFrame.thumbImage.source: model.videoThumbUri
 
             externalLinkFrame.visible: model.hasExternalLink && contentMediaFilterFrame.showContent
             externalLinkFrame.onClicked: Qt.openUrlExternally(model.externalLinkUri)

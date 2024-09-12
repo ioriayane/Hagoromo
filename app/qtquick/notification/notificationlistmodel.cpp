@@ -30,6 +30,21 @@ NotificationListModel::NotificationListModel(QObject *parent)
       m_updateSeenNotification(true),
       m_aggregateReactions(true)
 {
+    m_toEmbedVideoRoles[HasVideoRole] = AtpAbstractListModel::EmbedVideoRoles::HasVideoRole;
+    m_toEmbedVideoRoles[VideoPlaylistRole] =
+            AtpAbstractListModel::EmbedVideoRoles::VideoPlaylistRole;
+    m_toEmbedVideoRoles[VideoThumbRole] = AtpAbstractListModel::EmbedVideoRoles::VideoThumbRole;
+    m_toEmbedVideoRoles[VideoAltRole] = AtpAbstractListModel::EmbedVideoRoles::VideoAltRole;
+
+    m_toQuoteRecordVideoRoles[QuoteRecordHasVideoRole] =
+            AtpAbstractListModel::EmbedVideoRoles::HasVideoRole;
+    m_toQuoteRecordVideoRoles[QuoteRecordVideoPlaylistRole] =
+            AtpAbstractListModel::EmbedVideoRoles::VideoPlaylistRole;
+    m_toQuoteRecordVideoRoles[QuoteRecordVideoThumbRole] =
+            AtpAbstractListModel::EmbedVideoRoles::VideoThumbRole;
+    m_toQuoteRecordVideoRoles[QuoteRecordVideoAltRole] =
+            AtpAbstractListModel::EmbedVideoRoles::VideoAltRole;
+
     m_toExternalLinkRoles[HasExternalLinkRole] =
             AtpAbstractListModel::ExternalLinkRoles::HasExternalLinkRole;
     m_toExternalLinkRoles[ExternalLinkUriRole] =
@@ -240,6 +255,9 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
             return NotificationListModelReason::ReasonUnknown;
         }
 
+    } else if (m_toEmbedVideoRoles.contains(role)) {
+        return getEmbedVideoItem(m_postHash.value(current.cid), m_toEmbedVideoRoles[role]);
+
     } else if (m_toExternalLinkRoles.contains(role)) {
         return AtpAbstractListModel::getExternalLinkItem(m_postHash.value(current.cid),
                                                          m_toExternalLinkRoles[role]);
@@ -362,6 +380,13 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
                 return m_postHash[record_cid].viewer.like.contains(account().did);
             else
                 return false;
+
+        } else if (m_toQuoteRecordVideoRoles.contains(role)) {
+            if (m_postHash.contains(record_cid))
+                return getEmbedVideoItem(m_postHash.value(record_cid),
+                                         m_toQuoteRecordVideoRoles[role]);
+            else
+                return QString();
 
         } else if (role == HasFeedGeneratorRole) { // カスタムフィードに対するいいね
             if (m_feedGeneratorHash.contains(record_cid)) {
@@ -927,6 +952,15 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[QuoteRecordEmbedImagesAltRole] = "quoteRecordEmbedImagesAlt";
     roles[QuoteRecordIsRepostedRole] = "quoteRecordIsReposted";
     roles[QuoteRecordIsLikedRole] = "quoteRecordIsLiked";
+    roles[QuoteRecordHasVideoRole] = "quoteRecordHasVideo";
+    roles[QuoteRecordVideoPlaylistRole] = "quoteRecordVideoPlaylist";
+    roles[QuoteRecordVideoThumbRole] = "quoteRecordVideoThumb";
+    roles[QuoteRecordVideoAltRole] = "quoteRecordVideoAlt";
+
+    roles[HasVideoRole] = "hasVideo";
+    roles[VideoPlaylistRole] = "videoPlaylist";
+    roles[VideoThumbRole] = "videoThumbUri";
+    roles[VideoAltRole] = "videoAlt";
 
     roles[HasExternalLinkRole] = "hasExternalLink";
     roles[ExternalLinkUriRole] = "externalLinkUri";
