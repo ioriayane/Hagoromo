@@ -90,6 +90,7 @@ QML_FILES = \
     qml/parts/TagLabel.qml \
     qml/parts/TagLabelLayout.qml \
     qml/parts/VersionInfomation.qml \
+    qml/parts/VideoFrame.qml \
     qml/view/AnyProfileListView.qml \
     qml/view/BlogEntryListView.qml \
     qml/view/ChatListView.qml \
@@ -150,6 +151,7 @@ IMAGE_FILES += \
     qml/images/notification.png \
     qml/images/open_in_other.png \
     qml/images/pin.png \
+    qml/images/play_large.png \
     qml/images/quote.png \
     qml/images/refresh.png \
     qml/images/reply.png \

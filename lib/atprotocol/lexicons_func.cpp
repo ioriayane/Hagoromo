@@ -233,6 +233,15 @@ void copyBskyAppProgressGuide(const QJsonObject &src, AppBskyActorDefs::BskyAppP
         dest.guide = src.value("guide").toString();
     }
 }
+void copyNux(const QJsonObject &src, AppBskyActorDefs::Nux &dest)
+{
+    if (!src.isEmpty()) {
+        dest.id = src.value("id").toString();
+        dest.completed = src.value("completed").toBool();
+        dest.data = src.value("data").toString();
+        dest.expiresAt = src.value("expiresAt").toString();
+    }
+}
 void copyBskyAppStatePref(const QJsonObject &src, AppBskyActorDefs::BskyAppStatePref &dest)
 {
     if (!src.isEmpty()) {
@@ -240,6 +249,11 @@ void copyBskyAppStatePref(const QJsonObject &src, AppBskyActorDefs::BskyAppState
                                  dest.activeProgressGuide);
         for (const auto &value : src.value("queuedNudges").toArray()) {
             dest.queuedNudges.append(value.toString());
+        }
+        for (const auto &s : src.value("nuxs").toArray()) {
+            AppBskyActorDefs::Nux child;
+            AppBskyActorDefs::copyNux(s.toObject(), child);
+            dest.nuxs.append(child);
         }
     }
 }
@@ -1975,6 +1989,36 @@ void copyDelete(const QJsonObject &src, ComAtprotoRepoApplyWrites::Delete &dest)
         dest.rkey = src.value("rkey").toString();
     }
 }
+void copyCreateResult(const QJsonObject &src, ComAtprotoRepoApplyWrites::CreateResult &dest)
+{
+    if (!src.isEmpty()) {
+        dest.uri = src.value("uri").toString();
+        dest.cid = src.value("cid").toString();
+        dest.validationStatus = src.value("validationStatus").toString();
+    }
+}
+void copyUpdateResult(const QJsonObject &src, ComAtprotoRepoApplyWrites::UpdateResult &dest)
+{
+    if (!src.isEmpty()) {
+        dest.uri = src.value("uri").toString();
+        dest.cid = src.value("cid").toString();
+        dest.validationStatus = src.value("validationStatus").toString();
+    }
+}
+void copyDeleteResult(const QJsonObject &src, ComAtprotoRepoApplyWrites::DeleteResult &dest)
+{
+    if (!src.isEmpty()) { }
+}
+}
+// com.atproto.repo.defs
+namespace ComAtprotoRepoDefs {
+void copyCommitMeta(const QJsonObject &src, ComAtprotoRepoDefs::CommitMeta &dest)
+{
+    if (!src.isEmpty()) {
+        dest.cid = src.value("cid").toString();
+        dest.rev = src.value("rev").toString();
+    }
+}
 }
 // com.atproto.repo.listMissingBlobs
 namespace ComAtprotoRepoListMissingBlobs {
@@ -2149,6 +2193,7 @@ void copyTemplateView(const QJsonObject &src, ToolsOzoneCommunicationDefs::Templ
         dest.subject = src.value("subject").toString();
         dest.contentMarkdown = src.value("contentMarkdown").toString();
         dest.disabled = src.value("disabled").toBool();
+        dest.lang = src.value("lang").toString();
         dest.lastUpdatedBy = src.value("lastUpdatedBy").toString();
         dest.createdAt = src.value("createdAt").toString();
         dest.updatedAt = src.value("updatedAt").toString();
@@ -2162,6 +2207,7 @@ void copyModEventTakedown(const QJsonObject &src, ToolsOzoneModerationDefs::ModE
     if (!src.isEmpty()) {
         dest.comment = src.value("comment").toString();
         dest.durationInHours = src.value("durationInHours").toInt();
+        dest.acknowledgeAccountSubjects = src.value("acknowledgeAccountSubjects").toBool();
     }
 }
 void copyModEventReverseTakedown(const QJsonObject &src,

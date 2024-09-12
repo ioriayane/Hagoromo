@@ -42,6 +42,7 @@ ClickableFrame {
     property alias quoteRecordRecordText: quoteRecordFrame.quoteRecordRecordText
     property alias quoteRecordImagePreview: quoteRecordFrame.quoteRecordImagePreview
     property alias blockedQuoteFrame: blockedQuoteFrame
+    property alias embedVideoFrame: embedVideoFrame
     property alias externalLinkFrame: externalLinkFrame
     property alias feedGeneratorFrame: feedGeneratorFrame
     property alias listLinkCardFrame: listLinkCardFrame
@@ -220,6 +221,12 @@ ClickableFrame {
                         id: postImagePreview
                         Layout.preferredWidth: parent.width
                         layoutWidth: parent.width
+                        Layout.topMargin: 5
+                    }
+
+                    VideoFrame {
+                        id: embedVideoFrame
+                        Layout.preferredWidth: parent.width
                         Layout.topMargin: 5
                     }
 

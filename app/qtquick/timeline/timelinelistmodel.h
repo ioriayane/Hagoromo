@@ -88,6 +88,15 @@ public:
         QuoteRecordEmbedImagesAltRole,
         QuoteRecordBlockedRole,
         QuoteRecordBlockedStatusRole,
+        QuoteRecordHasVideoRole,
+        QuoteRecordVideoPlaylistRole,
+        QuoteRecordVideoThumbRole,
+        QuoteRecordVideoAltRole,
+
+        HasVideoRole,
+        VideoPlaylistRole,
+        VideoThumbRole,
+        VideoAltRole,
 
         HasExternalLinkRole,
         ExternalLinkUriRole,
@@ -225,6 +234,8 @@ private:
     bool runningPostPinning(int row) const;
     void setRunningPostPinning(int row, bool running);
 
+    QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::EmbedVideoRoles>
+            m_toEmbedVideoRoles;
     QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::ExternalLinkRoles>
             m_toExternalLinkRoles;
     QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::FeedGeneratorRoles>

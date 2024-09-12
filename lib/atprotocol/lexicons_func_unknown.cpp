@@ -136,6 +136,23 @@ QStringList copyImagesFromPostView(const AppBskyFeedDefs::PostView &post, const 
     }
 }
 
+QString copyVideoFromPostView(const AppBskyFeedDefs::PostView &post, const CopyImageType type)
+{
+    if (post.embed_type == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedVideo_View) {
+        switch (type) {
+        case AtProtocolType::LexiconsTypeUnknown::CopyImageType::Thumb:
+            return post.embed_AppBskyEmbedVideo_View.thumbnail;
+        case AtProtocolType::LexiconsTypeUnknown::CopyImageType::Alt:
+            return post.embed_AppBskyEmbedVideo_View.alt;
+        case AtProtocolType::LexiconsTypeUnknown::CopyImageType::FullSize:
+            return post.embed_AppBskyEmbedVideo_View.playlist;
+        default:
+            return QString();
+        }
+    }
+    return QString();
+}
+
 QStringList copyImagesFromRecord(const AppBskyEmbedRecord::ViewRecord &record,
                                  const CopyImageType type)
 {
