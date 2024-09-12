@@ -327,11 +327,21 @@ struct BskyAppProgressGuide
 {
     QString guide;
 };
+struct Nux
+{
+    QString id;
+    bool completed = false;
+    QString data; // Arbitrary data for the NUX. The structure is defined by the NUX itself. Limited
+                  // to 300 characters.
+    QString expiresAt; // datetime , The date and time at which the NUX will expire and should be
+                       // considered completed.
+};
 struct BskyAppStatePref
 {
     BskyAppProgressGuide activeProgressGuide;
     QList<QString> queuedNudges; // An array of tokens which identify nudges (modals, popups, tours,
                                  // highlight dots) that should be shown to the user.
+    QList<AppBskyActorDefs::Nux> nuxs;
 };
 struct LabelerPrefItem
 {
@@ -1423,6 +1433,30 @@ struct Delete
     QString collection; // nsid
     QString rkey;
 };
+struct CreateResult
+{
+    QString uri; // at-uri
+    QString cid; // cid
+    QString validationStatus;
+};
+struct UpdateResult
+{
+    QString uri; // at-uri
+    QString cid; // cid
+    QString validationStatus;
+};
+struct DeleteResult
+{
+};
+}
+
+// com.atproto.repo.defs
+namespace ComAtprotoRepoDefs {
+struct CommitMeta
+{
+    QString cid; // cid
+    QString rev;
+};
 }
 
 // com.atproto.repo.listMissingBlobs
@@ -1577,6 +1611,7 @@ struct TemplateView
     QString subject; // Content of the template, can contain markdown and variable placeholders.
     QString contentMarkdown; // Subject of the message, used in emails.
     bool disabled = false;
+    QString lang; // language , Message language.
     QString lastUpdatedBy; // did , DID of the user who last updated the template.
     QString createdAt; // datetime
     QString updatedAt; // datetime
@@ -1649,6 +1684,8 @@ struct ModEventTakedown
     QString comment;
     int durationInHours =
             0; // Indicates how long the takedown should be in effect before automatically expiring.
+    bool acknowledgeAccountSubjects = false; // If true, all other reports on content authored by
+                                             // this account will be resolved (acknowledged).
 };
 struct ModEventReverseTakedown
 {
