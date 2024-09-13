@@ -10,8 +10,8 @@ import "../compat"
 
 ClickableFrame {
     id: videoFrame
-    contentWidth: thumbImage.paintedWidth
-    contentHeight: thumbImage.paintedHeight
+    contentWidth: thumbImage.width
+    contentHeight: thumbImage.height
 
     topInset: 0
     leftInset: 0
@@ -22,12 +22,27 @@ ClickableFrame {
     rightPadding: 0
     bottomPadding: 0
 
-    property alias thumbImage: thumbImage
+    property string thumbImageSource: ""
+    onThumbImageSourceChanged: {
+        if(thumbImage.status != Image.Ready){
+            thumbImage.source = thumbImageSource
+        }
+    }
 
     ImageWithIndicator {
         id: thumbImage
         width: videoFrame.width
-        height: status !== Image.Null ? (width / sourceSize.width) * sourceSize.height : 5
+        height: {
+            if(status !== Image.Null) {
+                if(sourceSize.width > sourceSize.height){
+                    return (width / sourceSize.width) * sourceSize.height
+                }else{
+                    return width * 9 / 16
+                }
+            }else{
+                return 0
+            }
+        }
         fillMode: Image.PreserveAspectCrop
 
         Image {

@@ -1124,12 +1124,14 @@ QVariant TimelineListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDefs::
         if (has_record
             && !post.embed_AppBskyEmbedRecord_View->record_ViewRecord.embeds_AppBskyEmbedVideo_View
                         .isEmpty()) {
-            return post.embed_AppBskyEmbedRecord_View->record_ViewRecord
-                    .embeds_AppBskyEmbedVideo_View.first()
-                    .thumbnail;
+            return AtProtocolType::LexiconsTypeUnknown::convertVideoThumb(
+                    post.embed_AppBskyEmbedRecord_View->record_ViewRecord
+                            .embeds_AppBskyEmbedVideo_View.first()
+                            .thumbnail);
         } else if (has_with_image) {
-            return post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedVideo_View
-                    .thumbnail;
+            return AtProtocolType::LexiconsTypeUnknown::convertVideoThumb(
+                    post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedVideo_View
+                            .thumbnail);
         } else {
             return QString();
         }

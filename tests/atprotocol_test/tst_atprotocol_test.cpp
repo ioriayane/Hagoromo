@@ -84,6 +84,8 @@ private slots:
     void test_DirectoryPlcLogAudit();
     void test_PinnedPostCache();
 
+    void test_convertVideoThumb();
+
 private:
     void test_putPreferences(const QString &path, const QByteArray &body);
     void test_putRecord(const QString &path, const QByteArray &body);
@@ -2370,6 +2372,22 @@ void atprotocol_test::test_PinnedPostCache()
     //
     PinnedPostCache::getInstance()->update("did2", "");
     QVERIFY(PinnedPostCache::getInstance()->pinned("did2", "") == false);
+}
+
+void atprotocol_test::test_convertVideoThumb()
+{
+
+    QString url;
+
+    url = AtProtocolType::LexiconsTypeUnknown::convertVideoThumb(
+            "https://video.bsky.app/watch/did%3Aplc%3Aipj5qejfoqu6eukvt72uhyit/"
+            "bafkreie2dwcpkwtx4jqjh4qwcvgf3zs4eis3gt6wjgtd2smrheh5m3s62i/thumbnail.jpg");
+#if 0
+    QVERIFY2(url
+                     == "https://video.cdn.bsky.app/hls/did:plc:ipj5qejfoqu6eukvt72uhyit/"
+                        "bafkreie2dwcpkwtx4jqjh4qwcvgf3zs4eis3gt6wjgtd2smrheh5m3s62i/thumbnail.jpg",
+             url.toLocal8Bit());
+#endif
 }
 
 void atprotocol_test::test_putPreferences(const QString &path, const QByteArray &body)
