@@ -232,9 +232,11 @@ Dialog {
                             postLanguagesButton.setLanguageText(
                                         postDialog.accountModel.item(row, AccountListModel.PostLanguagesRole)
                                         )
+                            selectThreadGateDialog.initialQuoteEnabled = true
                             selectThreadGateDialog.initialType = postDialog.accountModel.item(row, AccountListModel.ThreadGateTypeRole)
                             selectThreadGateDialog.initialOptions = postDialog.accountModel.item(row, AccountListModel.ThreadGateOptionsRole)
                             // リプライ制限のダイアログを開かずにポストするときのため選択済みにも設定する
+                            selectThreadGateDialog.selectedQuoteEnabled = selectThreadGateDialog.initialQuoteEnabled
                             selectThreadGateDialog.selectedType = selectThreadGateDialog.initialType
                             selectThreadGateDialog.selectedOptions = selectThreadGateDialog.initialOptions
                             // 入力中にアカウントを切り替えるかもなので選んだ時に設定する
@@ -255,7 +257,8 @@ Dialog {
                     iconSource: "../images/thread.png"
                     iconSize: AdjustedValues.i18
                     flat: true
-                    foreground: selectThreadGateDialog.selectedType !== "everybody" ? Material.accent : Material.foreground
+                    foreground: (selectThreadGateDialog.selectedType !== "everybody" || !selectThreadGateDialog.selectedQuoteEnabled)
+                                ? Material.accent : Material.foreground
                     onClicked: {
                         var row = accountCombo.currentIndex;
                         selectThreadGateDialog.account.service = postDialog.accountModel.item(row, AccountListModel.ServiceRole)
@@ -264,6 +267,7 @@ Dialog {
                         selectThreadGateDialog.account.email = postDialog.accountModel.item(row, AccountListModel.EmailRole)
                         selectThreadGateDialog.account.accessJwt = postDialog.accountModel.item(row, AccountListModel.AccessJwtRole)
                         selectThreadGateDialog.account.refreshJwt = postDialog.accountModel.item(row, AccountListModel.RefreshJwtRole)
+                        selectThreadGateDialog.initialQuoteEnabled = selectThreadGateDialog.selectedQuoteEnabled
                         selectThreadGateDialog.initialType = selectThreadGateDialog.selectedType
                         selectThreadGateDialog.initialOptions = selectThreadGateDialog.selectedOptions
                         selectThreadGateDialog.open()
@@ -680,6 +684,7 @@ Dialog {
                         if(postType !== "reply"){
                             // replyのときは制限の設定はできない
                             createRecord.setThreadGate(selectThreadGateDialog.selectedType, selectThreadGateDialog.selectedOptions)
+                            createRecord.setPostGate(selectThreadGateDialog.selectedQuoteEnabled, [])
                         }
                         if(postType === "reply"){
                             createRecord.setReply(replyCid, replyUri, replyRootCid, replyRootUri)

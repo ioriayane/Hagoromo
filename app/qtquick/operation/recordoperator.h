@@ -43,6 +43,7 @@ public:
     Q_INVOKABLE void setFeedGeneratorLink(const QString &uri, const QString &cid);
     Q_INVOKABLE void setSelfLabels(const QStringList &labels);
     Q_INVOKABLE void setThreadGate(const QString &type, const QStringList &rules);
+    Q_INVOKABLE void setPostGate(const bool quote_enabled, const QStringList &uris);
 
     Q_INVOKABLE void clear();
 
@@ -94,6 +95,8 @@ private:
     void deleteAllListItems(std::function<void(bool)> callback);
     bool threadGate(const QString &uri,
                     std::function<void(bool, const QString &, const QString &)> callback);
+    void postGate(const QString &uri,
+                  std::function<void(bool, const QString &, const QString &)> callback);
 
     AtProtocolInterface::AccountData m_account;
     int m_sequentialPostsTotal;
@@ -117,6 +120,8 @@ private:
     QStringList m_listItems;
     QString m_threadGateType;
     QStringList m_threadGateRules;
+    QString m_postGateEmbeddingRule;
+    QStringList m_postGateDetachedEmbeddingUris;
 
     bool m_running;
     QString m_progressMessage;

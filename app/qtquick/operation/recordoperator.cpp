@@ -113,6 +113,18 @@ void RecordOperator::setThreadGate(const QString &type, const QStringList &rules
     m_threadGateRules = rules;
 }
 
+// rule = disableRule
+// uris = at://uri
+void RecordOperator::setPostGate(const bool quote_enabled, const QStringList &uris)
+{
+    if (quote_enabled) {
+        m_postGateEmbeddingRule.clear();
+    } else {
+        m_postGateEmbeddingRule = "disableRule";
+    }
+    m_postGateDetachedEmbeddingUris = uris;
+}
+
 void RecordOperator::clear()
 {
     m_text.clear();
@@ -133,6 +145,9 @@ void RecordOperator::clear()
 
     m_threadGateType = "everybody";
     m_threadGateRules.clear();
+
+    m_postGateEmbeddingRule.clear();
+    m_postGateDetachedEmbeddingUris.clear();
 }
 
 void RecordOperator::post()
@@ -176,24 +191,30 @@ void RecordOperator::post()
                         QString last_post_uri = create_record->uri();
                         QString last_post_cid = create_record->cid();
                         bool ret = threadGate(
-                                create_record->uri(),
+                                last_post_uri,
                                 [=](bool success2, const QString &uri, const QString &cid) {
-                                    m_sequentialPostsCurrent++;
-                                    if (m_sequentialPostsCurrent >= m_sequentialPostsTotal) {
-                                        setProgressMessage(QString());
-                                        emit finished(success2, uri, cid);
-                                        setRunning(false);
-                                    } else {
-                                        m_threadGateType = "everybody";
-                                        if (m_sequentialPostsCurrent == 1
-                                            && m_replyRoot.uri.isEmpty()) {
-                                            m_replyRoot.uri = last_post_uri;
-                                            m_replyRoot.cid = last_post_cid;
-                                        }
-                                        m_replyParent.uri = last_post_uri;
-                                        m_replyParent.cid = last_post_cid;
-                                        post();
-                                    }
+                                    postGate(last_post_uri,
+                                             [=](bool success3, const QString &uri3,
+                                                 const QString &cid3) {
+                                                 m_sequentialPostsCurrent++;
+                                                 if (m_sequentialPostsCurrent
+                                                     >= m_sequentialPostsTotal) {
+                                                     setProgressMessage(QString());
+                                                     emit finished(success2, uri3, cid3);
+                                                     setRunning(false);
+                                                 } else {
+                                                     setPostGate(true, QStringList());
+                                                     m_threadGateType = "everybody";
+                                                     if (m_sequentialPostsCurrent == 1
+                                                         && m_replyRoot.uri.isEmpty()) {
+                                                         m_replyRoot.uri = last_post_uri;
+                                                         m_replyRoot.cid = last_post_cid;
+                                                     }
+                                                     m_replyParent.uri = last_post_uri;
+                                                     m_replyParent.cid = last_post_cid;
+                                                     post();
+                                                 }
+                                             });
                                 });
                         if (!ret) {
                             setProgressMessage(QString());
@@ -1054,6 +1075,7 @@ bool RecordOperator::threadGate(
     AtProtocolType::ThreadGateAllow rule;
 
     if (m_threadGateType == "everybody") {
+        qDebug().noquote() << "Not set thread gate.";
         callback(true, QString(), QString());
         return true;
     } else if (m_threadGateType == "nobody") {
@@ -1093,6 +1115,35 @@ bool RecordOperator::threadGate(
     create_record->setAccount(m_account);
     create_record->threadGate(uri, type, rules);
     return true;
+}
+
+void RecordOperator::postGate(const QString &uri,
+                              std::function<void(bool, const QString &, const QString &)> callback)
+{
+    const QString rule = "disableRule";
+
+    if (m_postGateEmbeddingRule != rule && m_postGateDetachedEmbeddingUris.isEmpty()) {
+        qDebug().noquote() << "Not set post gate.";
+        callback(true, QString(), QString());
+    }
+
+    AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType type =
+            AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType::none;
+    if (m_postGateEmbeddingRule == rule) {
+        type = AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType::
+                embeddingRules_DisableRule;
+    }
+
+    ComAtprotoRepoCreateRecordEx *create_record = new ComAtprotoRepoCreateRecordEx(this);
+    connect(create_record, &ComAtprotoRepoCreateRecordEx::finished, [=](bool success) {
+        if (!success) {
+            emit errorOccured(create_record->errorCode(), create_record->errorMessage());
+        }
+        callback(success, create_record->uri(), create_record->cid());
+        create_record->deleteLater();
+    });
+    create_record->setAccount(m_account);
+    create_record->postGate(uri, type, m_postGateDetachedEmbeddingUris);
 }
 
 QString RecordOperator::progressMessage() const

@@ -15,12 +15,16 @@ Dialog {
     modal: true
     x: (parent.width - width) * 0.5
     y: (parent.height - height) * 0.5
-    title: qsTr("Who can reply") + (defaultSettingMode ? qsTr("(default value)") : "")
+    title: qsTr("Post interaction settings") + (defaultSettingMode ? qsTr("(default value)") : "")
+
+    bottomPadding: AdjustedValues.s10
 
     property bool defaultSettingMode: false
 
+    property bool initialQuoteEnabled: true
     property string initialType: "everybody"
     property variant initialOptions: []
+    property bool selectedQuoteEnabled: true
     property string selectedType: "everybody"
     property variant selectedOptions: []
 
@@ -31,6 +35,7 @@ Dialog {
     signal errorOccured(string account_uuid, string code, string message)
 
     onOpened: {
+        quoteEanbled.checked = initialQuoteEnabled
         var i
         choiceRadioButton.checked = true
         for(i=0; i<group.buttons.length; i++){
@@ -53,6 +58,7 @@ Dialog {
         listsListModel.getLatest()
     }
     onClosed: {
+        quoteEanbled.checked = true
         listsListModel.clear()
         var i
         for(i=0; i<group.buttons.length; i++){
@@ -64,6 +70,7 @@ Dialog {
     }
 
     function clear(){
+        selectedQuoteEnabled = true
         selectedType = "everybody"
         selectedOptions = []
     }
@@ -74,17 +81,33 @@ Dialog {
     }
 
     ColumnLayout {
-        spacing: AdjustedValues.s20
+        spacing: AdjustedValues.s10
+        Label {
+            font.pointSize: AdjustedValues.f10
+            bottomPadding: 2
+            text: qsTr("Quote settings")
+        }
+        Switch {
+            id: quoteEanbled
+            verticalPadding: 0
+            font.pointSize: AdjustedValues.f10
+            text: qsTr("Quote posts enabled")
+        }
+        Label {
+            font.pointSize: AdjustedValues.f10
+            bottomPadding: 2
+            text: qsTr("Reply settings")
+        }
         RadioButton {
             ButtonGroup.group: group
-            verticalPadding: 0
+            verticalPadding: 3
             font.pointSize: AdjustedValues.f10
             text: qsTr("Everybody")
             property string value: "everybody"
         }
         RadioButton {
             ButtonGroup.group: group
-            verticalPadding: 0
+            verticalPadding: 3
             font.pointSize: AdjustedValues.f10
             text: qsTr("Nobody")
             property string value: "nobody"
@@ -93,7 +116,7 @@ Dialog {
             label: RadioButton {
                 id: choiceRadioButton
                 ButtonGroup.group: group
-                topPadding: 0
+                topPadding: 5
                 bottomPadding: 5
                 font.pointSize: AdjustedValues.f10
                 text: qsTr("Combine these options")
@@ -200,6 +223,7 @@ Dialog {
                 font.pointSize: AdjustedValues.f10
                 text: qsTr("Cancel")
                 onClicked: {
+                    selectThreadGateDialog.selectedQuoteEnabled = selectThreadGateDialog.initialQuoteEnabled
                     selectThreadGateDialog.selectedType = selectThreadGateDialog.initialType
                     selectThreadGateDialog.selectedOptions = selectThreadGateDialog.initialOptions
                     selectThreadGateDialog.reject()
@@ -213,6 +237,7 @@ Dialog {
                 font.pointSize: AdjustedValues.f10
                 text: qsTr("Apply")
                 onClicked: {
+                    selectThreadGateDialog.selectedQuoteEnabled = quoteEanbled.checked
                     selectThreadGateDialog.selectedType = "everybody"
                     selectThreadGateDialog.selectedOptions = []
                     var i
