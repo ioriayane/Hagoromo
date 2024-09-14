@@ -108,6 +108,10 @@ protected:
     QJsonObject makeThreadGateJsonObject(const QString &uri,
                                          const AtProtocolType::ThreadGateType type,
                                          const QList<AtProtocolType::ThreadGateAllow> &allow_rules);
+    QJsonObject
+    makePostGateJsonObject(const QString &uri,
+                           const AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType type,
+                           const QStringList &detached_uris);
 
     QString m_listKey;
 

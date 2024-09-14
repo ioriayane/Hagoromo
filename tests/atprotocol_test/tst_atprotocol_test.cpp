@@ -60,6 +60,7 @@ private slots:
     void test_LabelerProvider();
     void test_ComAtprotoRepoCreateRecord_post();
     void test_ComAtprotoRepoCreateRecord_threadgate();
+    void test_ComAtprotoRepoCreateRecord_postgate();
     void test_AppBskyFeedGetFeedGenerator();
     void test_ServiceUrl();
     void test_ComAtprotoRepoGetRecord_profile();
@@ -1685,6 +1686,45 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_threadgate()
         createrecord.threadGate(
                 "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kggopmh3kd2s",
                 AtProtocolType::ThreadGateType::Choice, rules);
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+}
+
+void atprotocol_test::test_ComAtprotoRepoCreateRecord_postgate()
+{
+
+    QString temp_did = m_account.did;
+    m_account.did = "did:plc:mqxsuw5b5rhpwo4lw6iwlid5";
+    AtProtocolInterface::ComAtprotoRepoCreateRecordEx createrecord;
+    createrecord.setAccount(m_account);
+
+    {
+        createrecord.setService(
+                QString("http://localhost:%1/response/postgate/1").arg(m_listenPort));
+        QSignalSpy spy(&createrecord, SIGNAL(finished(bool)));
+        createrecord.postGate(
+                "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3l44kjwogjq2q",
+                AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType::
+                        embeddingRules_DisableRule,
+                QStringList());
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+
+    {
+        createrecord.setService(
+                QString("http://localhost:%1/response/postgate/2").arg(m_listenPort));
+        QSignalSpy spy(&createrecord, SIGNAL(finished(bool)));
+        createrecord.postGate(
+                "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3l2zk2fehlz24",
+                AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType::none,
+                QStringList() << "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/"
+                                 "3l44nnbwfcq2q");
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
         QList<QVariant> arguments = spy.takeFirst();

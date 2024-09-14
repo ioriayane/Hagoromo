@@ -266,6 +266,25 @@ void ComAtprotoRepoCreateRecordEx::threadGate(
                  makeThreadGateJsonObject(uri, type, allow_rules), QString());
 }
 
+void ComAtprotoRepoCreateRecordEx::postGate(
+        const QString &uri, const AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType type,
+        const QStringList &detached_uris)
+{
+    if (!uri.startsWith("at://")) {
+        emit finished(false);
+        return;
+    }
+    if (type == AppBskyFeedPostgate::MainEmbeddingRulesType::none && detached_uris.isEmpty()) {
+        emit finished(false);
+        return;
+    }
+
+    QString rkey = uri.split("/").last();
+
+    createRecord(this->did(), QStringLiteral("app.bsky.feed.postgate"), rkey, true,
+                 makePostGateJsonObject(uri, type, detached_uris), QString());
+}
+
 void ComAtprotoRepoCreateRecordEx::setReply(const QString &parent_cid, const QString &parent_uri,
                                             const QString &root_cid, const QString &root_uri)
 {
