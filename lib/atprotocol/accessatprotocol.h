@@ -40,6 +40,7 @@ struct AccountData
     QStringList post_languages; // BCP47形式で3つまで
     QString thread_gate_type; // everybody, nobody, choice
     QStringList thread_gate_options; // mentioned, followed, at://uri
+    bool post_gate_quote_enabled = true;
     QStringList labeler_dids; // ラベラーのdid
 
     AccountStatus status = AccountStatus::Unknown;

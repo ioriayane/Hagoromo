@@ -15,6 +15,7 @@ RowLayout {
     property bool isLiked: false
     property bool pinned: false
     property bool threadMuted: false
+    property bool quoteDetached: false
     property string postUri: ""
     property string handle: ""
     property bool mine: false
@@ -194,7 +195,7 @@ RowLayout {
                 onTriggered: triggeredRequestMuteThread()
             }
             Action {
-                text: qsTr("Who can reply")
+                text: qsTr("Edit interaction settings")
                 enabled: mine
                 icon.source: "../images/thread.png"
                 onTriggered: triggeredRequestUpdateThreadGate()
@@ -261,6 +262,11 @@ RowLayout {
                 text: threadMuted ? qsTr("Unmute thread") : qsTr("Mute thread")
                 icon.source: "../images/mute.png"
                 onTriggered: triggeredRequestMuteThread()
+            }
+            Action {
+                text: quoteDetached ? qsTr("Re-attach quote") : qsTr("Detach quote")
+                icon.source: "../images/visibility_off.png"
+                // onTriggered: triggeredRequestUpdateThreadGate()
             }
             MenuSeparator {}
             Action {

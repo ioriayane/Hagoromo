@@ -232,7 +232,7 @@ Dialog {
                             postLanguagesButton.setLanguageText(
                                         postDialog.accountModel.item(row, AccountListModel.PostLanguagesRole)
                                         )
-                            selectThreadGateDialog.initialQuoteEnabled = true
+                            selectThreadGateDialog.initialQuoteEnabled = postDialog.accountModel.item(row, AccountListModel.PostGateQuoteEnabledRole)
                             selectThreadGateDialog.initialType = postDialog.accountModel.item(row, AccountListModel.ThreadGateTypeRole)
                             selectThreadGateDialog.initialOptions = postDialog.accountModel.item(row, AccountListModel.ThreadGateOptionsRole)
                             // リプライ制限のダイアログを開かずにポストするときのため選択済みにも設定する
