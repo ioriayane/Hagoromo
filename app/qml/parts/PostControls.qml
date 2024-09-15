@@ -16,6 +16,7 @@ RowLayout {
     property bool pinned: false
     property bool threadMuted: false
     property bool quoteDetached: false
+    property bool quoteIsMine: false
     property string postUri: ""
     property string handle: ""
     property bool mine: false
@@ -41,6 +42,7 @@ RowLayout {
     signal triggeredRequestUpdateThreadGate()
     signal triggeredRequestPin()
     signal triggeredRequestMuteThread()
+    signal triggeredRequestDetachQuote()
 
     function openInOhters(uri, handle){
         if(uri.length === 0 || uri.startsWith("at://") === false){
@@ -266,7 +268,8 @@ RowLayout {
             Action {
                 text: quoteDetached ? qsTr("Re-attach quote") : qsTr("Detach quote")
                 icon.source: "../images/visibility_off.png"
-                // onTriggered: triggeredRequestUpdateThreadGate()
+                enabled: quoteIsMine
+                onTriggered: triggeredRequestDetachQuote()
             }
             MenuSeparator {}
             Action {

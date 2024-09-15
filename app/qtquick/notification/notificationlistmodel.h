@@ -155,6 +155,7 @@ public:
     Q_INVOKABLE bool repost(int row);
     Q_INVOKABLE bool like(int row);
     Q_INVOKABLE bool muteThread(int row);
+    Q_INVOKABLE bool detachQuote(int row);
 
     bool visibleLike() const;
     void setVisibleLike(bool newVisibleLike);

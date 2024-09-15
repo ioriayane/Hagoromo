@@ -220,6 +220,8 @@ ColumnLayout {
                 postControls.isLiked: model.isLiked
                 postControls.pinned: model.pinnedByMe
                 postControls.threadMuted: model.threadMuted
+                postControls.quoteDetached: model.quoteRecordDetatched
+                postControls.quoteIsMine: model.quoteRecordIsMine
                 postControls.postUri: model.uri
                 postControls.handle: model.handle
                 postControls.mine: model.did === postThreadView.accountDid
@@ -233,6 +235,7 @@ ColumnLayout {
                 postControls.onTriggeredRequestUpdateThreadGate: postThreadView.requestUpdateThreadGate(model.uri, model.threadGateUri, model.threadGateType, model.threadGateRules, updatedThreadGate)
                 postControls.onTriggeredRequestPin: rootListView.model.pin(model.index)
                 postControls.onTriggeredRequestMuteThread: rootListView.model.muteThread(model.index)
+                postControls.onTriggeredRequestDetachQuote: rootListView.model.detachQuote(model.index)
 
                 threadConnected: model.threadConnected
                 threadConnectorTop.visible:  model.threadConnectorTop

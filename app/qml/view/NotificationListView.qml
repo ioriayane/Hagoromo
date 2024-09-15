@@ -174,6 +174,8 @@ ScrollView {
             postControls.isReposted: model.isReposted
             postControls.isLiked: model.isLiked
             postControls.threadMuted: model.threadMuted
+            postControls.quoteDetached: false //model.quoteRecordDetatched
+            postControls.quoteIsMine: false //model.quoteRecordIsMine
             postControls.postUri: model.uri
             postControls.handle: model.handle
             postControls.onTriggeredCopyToClipboard: systemTool.copyToClipboard(model.recordTextPlain)
@@ -183,6 +185,7 @@ ScrollView {
             postControls.onTriggeredRequestViewQuotes: notificationListView.requestViewQuotes(model.uri)
             postControls.onTriggeredRequestReport: notificationListView.requestReportPost(model.uri, model.cid)
             postControls.onTriggeredRequestMuteThread: rootListView.model.muteThread(model.index)
+            postControls.onTriggeredRequestDetachQuote: rootListView.model.detachQuote(model.index)
 
             onClicked: {
                 if(model.reason === NotificationListModel.ReasonLike ||

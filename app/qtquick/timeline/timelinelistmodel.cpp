@@ -168,14 +168,16 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     else if (role == RunningThreadMuteRole)
         return !current.post.cid.isEmpty() && (current.post.cid == m_runningThreadMuteCid);
 
-    else if (role == HasQuoteRecordRole || role == QuoteRecordCidRole || role == QuoteRecordUriRole
+    else if (role == HasQuoteRecordRole || role == QuoteRecordIsMineRole
+             || role == QuoteRecordCidRole || role == QuoteRecordUriRole
              || role == QuoteRecordDisplayNameRole || role == QuoteRecordHandleRole
              || role == QuoteRecordAvatarRole || role == QuoteRecordRecordTextRole
              || role == QuoteRecordIndexedAtRole || role == QuoteRecordEmbedImagesRole
              || role == QuoteRecordEmbedImagesFullRole || role == QuoteRecordEmbedImagesAltRole
-             || role == QuoteRecordBlockedRole || role == QuoteRecordBlockedStatusRole
-             || role == QuoteRecordHasVideoRole || role == QuoteRecordVideoPlaylistRole
-             || role == QuoteRecordVideoThumbRole || role == QuoteRecordVideoAltRole)
+             || role == QuoteRecordDetatchedRole || role == QuoteRecordBlockedRole
+             || role == QuoteRecordBlockedStatusRole || role == QuoteRecordHasVideoRole
+             || role == QuoteRecordVideoPlaylistRole || role == QuoteRecordVideoThumbRole
+             || role == QuoteRecordVideoAltRole)
         return getQuoteItem(current.post, role);
 
     else if (m_toEmbedVideoRoles.contains(role))
@@ -638,6 +640,12 @@ bool TimelineListModel::muteThread(int row)
         thread->setAccount(account());
         thread->muteThread(root_uri);
     }
+    return true;
+}
+
+bool TimelineListModel::detachQuote(int row)
+{
+    return true;
 }
 
 QHash<int, QByteArray> TimelineListModel::roleNames() const
@@ -679,6 +687,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[RunningPostPinningRole] = "runningPostPinning";
 
     roles[HasQuoteRecordRole] = "hasQuoteRecord";
+    roles[QuoteRecordIsMineRole] = "quoteRecordIsMine";
     roles[QuoteRecordCidRole] = "quoteRecordCid";
     roles[QuoteRecordUriRole] = "quoteRecordUri";
     roles[QuoteRecordDisplayNameRole] = "quoteRecordDisplayName";
@@ -689,6 +698,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[QuoteRecordEmbedImagesRole] = "quoteRecordEmbedImages";
     roles[QuoteRecordEmbedImagesFullRole] = "quoteRecordEmbedImagesFull";
     roles[QuoteRecordEmbedImagesAltRole] = "quoteRecordEmbedImagesAlt";
+    roles[QuoteRecordDetatchedRole] = "quoteRecordDetatched";
     roles[QuoteRecordBlockedRole] = "quoteRecordBlocked";
     roles[QuoteRecordBlockedStatusRole] = "quoteRecordBlockedStatus";
     roles[QuoteRecordHasVideoRole] = "quoteRecordHasVideo";
@@ -949,6 +959,31 @@ QVariant TimelineListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDefs::
                     == AppBskyEmbedRecord::ViewRecordType::record_ViewRecord;
         else
             return false;
+    } else if (role == QuoteRecordIsMineRole) {
+        if (has_record) {
+            if (post.embed_AppBskyEmbedRecord_View->record_type
+                == AppBskyEmbedRecord::ViewRecordType::record_ViewDetached) {
+                // デタッチされている場合はauthorがないので。
+                return post.embed_AppBskyEmbedRecord_View->record_ViewDetached.uri.contains(
+                        account().did);
+            } else {
+                return (post.embed_AppBskyEmbedRecord_View->record_ViewRecord.author.did
+                        == account().did);
+            }
+        } else if (has_with_image) {
+            if (post.embed_AppBskyEmbedRecordWithMedia_View.record->record_type
+                == AppBskyEmbedRecord::ViewRecordType::record_ViewDetached) {
+                // デタッチされている場合はauthorがないので。
+                return post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewDetached.uri
+                        .contains(account().did);
+            } else {
+                return (post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.author
+                                .did
+                        == account().did);
+            }
+        } else {
+            return false;
+        }
     } else if (role == QuoteRecordCidRole) {
         if (has_record)
             return post.embed_AppBskyEmbedRecord_View->record_ViewRecord.cid;
@@ -1041,6 +1076,15 @@ QVariant TimelineListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDefs::
                     LexiconsTypeUnknown::CopyImageType::Alt);
         else
             return QStringList();
+    } else if (role == QuoteRecordDetatchedRole) {
+        if (has_record) {
+            return (post.embed_AppBskyEmbedRecord_View->record_type
+                    == AppBskyEmbedRecord::ViewRecordType::record_ViewDetached);
+        } else if (has_with_image) {
+            return (post.embed_AppBskyEmbedRecordWithMedia_View.record->record_type
+                    == AppBskyEmbedRecord::ViewRecordType::record_ViewDetached);
+        }
+        return false;
     } else if (role == QuoteRecordBlockedRole) {
         // 引用しているポストがブロックしているユーザーのモノか
         // 付与されているラベルがHide設定の場合block表示をする
@@ -1064,7 +1108,9 @@ QVariant TimelineListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDefs::
             }
         } else if (has_with_image) {
             if (post.embed_AppBskyEmbedRecordWithMedia_View.record->record_type
-                == AppBskyEmbedRecord::ViewRecordType::record_ViewBlocked)
+                        == AppBskyEmbedRecord::ViewRecordType::record_ViewBlocked
+                || post.embed_AppBskyEmbedRecordWithMedia_View.record->record_type
+                        == AppBskyEmbedRecord::ViewRecordType::record_ViewDetached)
                 return true;
             if (post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.author.did
                 != account().did) {

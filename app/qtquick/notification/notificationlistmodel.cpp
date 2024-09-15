@@ -898,6 +898,12 @@ bool NotificationListModel::muteThread(int row)
         thread->setAccount(account());
         thread->muteThread(root_uri);
     }
+    return true;
+}
+
+bool NotificationListModel::detachQuote(int row)
+{
+    return true;
 }
 
 QHash<int, QByteArray> NotificationListModel::roleNames() const

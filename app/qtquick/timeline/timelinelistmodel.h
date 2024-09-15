@@ -76,6 +76,7 @@ public:
         RunningThreadMuteRole,
 
         HasQuoteRecordRole,
+        QuoteRecordIsMineRole,
         QuoteRecordCidRole,
         QuoteRecordUriRole,
         QuoteRecordDisplayNameRole,
@@ -86,6 +87,7 @@ public:
         QuoteRecordEmbedImagesRole,
         QuoteRecordEmbedImagesFullRole,
         QuoteRecordEmbedImagesAltRole,
+        QuoteRecordDetatchedRole,
         QuoteRecordBlockedRole,
         QuoteRecordBlockedStatusRole,
         QuoteRecordHasVideoRole,
@@ -175,6 +177,7 @@ public:
     Q_INVOKABLE bool like(int row);
     Q_INVOKABLE bool pin(int row);
     Q_INVOKABLE bool muteThread(int row);
+    Q_INVOKABLE bool detachQuote(int row);
 
     bool visibleReplyToUnfollowedUsers() const;
     void setVisibleReplyToUnfollowedUsers(bool newVisibleReplyToUnfollowedUser);

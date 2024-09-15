@@ -212,6 +212,8 @@ ScrollView {
             postControls.isLiked: model.isLiked
             postControls.pinned: model.pinnedByMe
             postControls.threadMuted: model.threadMuted
+            postControls.quoteDetached: model.quoteRecordDetatched
+            postControls.quoteIsMine: model.quoteRecordIsMine
             postControls.postUri: model.uri
             postControls.handle: model.handle
             postControls.mine: model.did === timelineView.accountDid
@@ -226,6 +228,7 @@ ScrollView {
             postControls.onTriggeredRequestUpdateThreadGate: timelineView.requestUpdateThreadGate(model.uri, model.threadGateUri, model.threadGateType, model.threadGateRules, updatedThreadGate)
             postControls.onTriggeredRequestPin: rootListView.model.pin(model.index)
             postControls.onTriggeredRequestMuteThread: rootListView.model.muteThread(model.index)
+            postControls.onTriggeredRequestDetachQuote: rootListView.model.detachQuote(model.index)
             onHoveredLinkChanged: timelineView.hoveredLink = hoveredLink
 
             function updatedThreadGate(threadgate_uri, type, rules){
