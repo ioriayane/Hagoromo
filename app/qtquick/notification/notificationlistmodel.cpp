@@ -758,6 +758,22 @@ bool NotificationListModel::muteThread(int row)
 
 bool NotificationListModel::detachQuote(int row)
 {
+    bool detached = item(row, QuoteRecordDetatchedRole).toBool();
+    QString target_uri = item(row, QuoteRecordUriRole).toString();
+    QString detach_uri = item(row, UriRole).toString();
+
+    if (detach_uri.isEmpty() || !detach_uri.startsWith("at://") || target_uri.isEmpty()
+        || !target_uri.startsWith("at://")) {
+        return false;
+    }
+
+    if (detached) {
+        // re-attach
+        qDebug() << __func__ << "re-attach" << detach_uri;
+    } else {
+        // detach
+        qDebug() << __func__ << "detach" << detach_uri;
+    }
     return true;
 }
 

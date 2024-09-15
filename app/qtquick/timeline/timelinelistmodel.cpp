@@ -689,19 +689,13 @@ bool TimelineListModel::muteThread(int row)
 bool TimelineListModel::detachQuote(int row)
 {
     bool detached = item(row, QuoteRecordDetatchedRole).toBool();
-    QString detach_uri = item(row, QuoteRecordUriRole).toString();
+    QString target_uri = item(row, QuoteRecordUriRole).toString();
+    QString detach_uri = item(row, UriRole).toString();
 
-    if (detach_uri.isEmpty() || !detach_uri.startsWith("at://")) {
-        return false;
-    }
+    updateDetachedStatusOfQuote(detached, target_uri, detach_uri, [=](bool success) {
+        //
+    });
 
-    if (detached) {
-        // re-attach
-        qDebug() << __func__ << "re-attach" << detach_uri;
-    } else {
-        // detach
-        qDebug() << __func__ << "detach" << detach_uri;
-    }
     return true;
 }
 

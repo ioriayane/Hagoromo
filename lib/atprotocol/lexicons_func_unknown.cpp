@@ -50,6 +50,10 @@ void copyUnknown(const QJsonObject &src, QVariant &dest)
         AppBskyFeedThreadgate::Main record;
         AppBskyFeedThreadgate::copyMain(src, record);
         dest.setValue(record);
+    } else if (type == QStringLiteral("app.bsky.feed.postgate")) {
+        AppBskyFeedPostgate::Main record;
+        AppBskyFeedPostgate::copyMain(src, record);
+        dest.setValue(record);
     } else if (type == QStringLiteral("com.whtwnd.blog.entry")) {
         ComWhtwndBlogEntry::Main record;
         ComWhtwndBlogEntry::copyMain(src, record);
@@ -454,6 +458,15 @@ QString convertVideoThumb(const QString &url)
 #endif
     return url;
 }
+
+QString extractRkey(const QString &uri)
+{
+    if (!uri.startsWith("at://"))
+        return QString();
+
+    return uri.split("/").last();
+}
+
 }
 }
 

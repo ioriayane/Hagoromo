@@ -254,7 +254,8 @@ protected:
     QString contentFilterMessage(const QString &label, const bool for_image,
                                  const QString &labeler_did = QString()) const;
 
-    bool updateThreadMuted(const AtProtocolType::AppBskyFeedPost::Main record, bool muted);
+    void updateDetachedStatusOfQuote(bool detached, QString target_uri, QString detach_uri,
+                                     std::function<void(const bool)> callback);
 
     // これで取得したポストの順番を管理して実態はm_viewPostHashで管理
     // checkVisibility(cid)の結果次第で間引かれる

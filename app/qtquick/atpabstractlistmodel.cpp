@@ -2,6 +2,8 @@
 #include "atprotocol/com/atproto/sync/comatprotosyncgetblob.h"
 #include "atprotocol/app/bsky/feed/appbskyfeedgetpostthread.h"
 #include "atprotocol/lexicons_func_unknown.h"
+#include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
+#include "extension/com/atproto/repo/comatprotorepoputrecordex.h"
 #include "tools/labelerprovider.h"
 #include "common.h"
 #include "operation/translator.h"
@@ -11,6 +13,8 @@
 
 using namespace AtProtocolType;
 using AtProtocolInterface::AppBskyFeedGetPostThread;
+using AtProtocolInterface::ComAtprotoRepoGetRecordEx;
+using AtProtocolInterface::ComAtprotoRepoPutRecordEx;
 using AtProtocolInterface::ComAtprotoSyncGetBlob;
 
 AtpAbstractListModel::AtpAbstractListModel(QObject *parent, bool use_translator)
@@ -1174,6 +1178,61 @@ QString AtpAbstractListModel::contentFilterMessage(const QString &label, const b
                                                    const QString &labeler_did) const
 {
     return LabelerProvider::getInstance()->message(account(), label, for_image, labeler_did);
+}
+
+void AtpAbstractListModel::updateDetachedStatusOfQuote(bool detached, QString target_uri,
+                                                       QString detach_uri,
+                                                       std::function<void(const bool)> callback)
+{
+    // RecordOperatorに実装した方が良いかも
+
+    if (detach_uri.isEmpty() || !detach_uri.startsWith("at://") || target_uri.isEmpty()
+        || !target_uri.startsWith("at://")) {
+        callback(false);
+        return;
+    }
+    QString target_rkey = AtProtocolType::LexiconsTypeUnknown::extractRkey(target_uri);
+    ComAtprotoRepoGetRecordEx *record = new ComAtprotoRepoGetRecordEx(this);
+    connect(record, &ComAtprotoRepoGetRecordEx::finished, this, [=](bool success) {
+        qDebug().noquote() << __func__ << "get post_gate" << success << record->value().isValid();
+        // レコードがないときはエラーになるので継続
+
+        AppBskyFeedPostgate::Main old_record =
+                LexiconsTypeUnknown::fromQVariant<AppBskyFeedPostgate::Main>(record->value());
+
+        AppBskyFeedPostgate::MainEmbeddingRulesType rule =
+                AppBskyFeedPostgate::MainEmbeddingRulesType::none;
+        if (!old_record.embeddingRules_DisableRule.isEmpty()) {
+            rule = AppBskyFeedPostgate::MainEmbeddingRulesType::embeddingRules_DisableRule;
+        }
+        if (detached) {
+            // re-attach
+            qDebug() << __func__ << "re-attach" << detach_uri;
+            if (old_record.detachedEmbeddingUris.contains(detach_uri)) {
+                old_record.detachedEmbeddingUris.removeAll(detach_uri);
+            }
+        } else {
+            // detach
+            qDebug() << __func__ << "detach" << detach_uri;
+            if (!old_record.detachedEmbeddingUris.contains(detach_uri)) {
+                old_record.detachedEmbeddingUris.append(detach_uri);
+            }
+        }
+
+        ComAtprotoRepoPutRecordEx *put = new ComAtprotoRepoPutRecordEx(this);
+        connect(put, &ComAtprotoRepoPutRecordEx::finished, this, [=](bool success2) {
+            qDebug().noquote() << __func__ << "put post gate" << success2
+                               << "quoted:" << detach_uri;
+            callback(success2);
+            put->deleteLater();
+        });
+        put->setAccount(account());
+        put->postGate(target_uri, rule, old_record.detachedEmbeddingUris);
+
+        record->deleteLater();
+    });
+    record->setAccount(account());
+    record->postGate(account().did, target_rkey);
 }
 
 QString AtpAbstractListModel::cursor() const
