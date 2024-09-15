@@ -30,6 +30,49 @@ NotificationListModel::NotificationListModel(QObject *parent)
       m_updateSeenNotification(true),
       m_aggregateReactions(true)
 {
+    m_toQuoteRecordRoles[HasQuoteRecordRole] =
+            AtpAbstractListModel::QuoteRecordRoles::HasQuoteRecordRole;
+    m_toQuoteRecordRoles[QuoteRecordIsMineRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordIsMineRole;
+    m_toQuoteRecordRoles[QuoteRecordCidRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordCidRole;
+    m_toQuoteRecordRoles[QuoteRecordUriRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordUriRole;
+    m_toQuoteRecordRoles[QuoteRecordDisplayNameRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordDisplayNameRole;
+    m_toQuoteRecordRoles[QuoteRecordHandleRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordHandleRole;
+    m_toQuoteRecordRoles[QuoteRecordAvatarRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordAvatarRole;
+    m_toQuoteRecordRoles[QuoteRecordRecordTextRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordRecordTextRole;
+    m_toQuoteRecordRoles[QuoteRecordIndexedAtRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordIndexedAtRole;
+    m_toQuoteRecordRoles[QuoteRecordEmbedImagesRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordEmbedImagesRole;
+    m_toQuoteRecordRoles[QuoteRecordEmbedImagesFullRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordEmbedImagesFullRole;
+    m_toQuoteRecordRoles[QuoteRecordEmbedImagesAltRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordEmbedImagesAltRole;
+    m_toQuoteRecordRoles[QuoteRecordIsRepostedRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordIsRepostedRole;
+    m_toQuoteRecordRoles[QuoteRecordIsLikedRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordIsLikedRole;
+    m_toQuoteRecordRoles[QuoteRecordDetatchedRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordDetatchedRole;
+    m_toQuoteRecordRoles[QuoteRecordBlockedRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordBlockedRole;
+    m_toQuoteRecordRoles[QuoteRecordBlockedStatusRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordBlockedStatusRole;
+    m_toQuoteRecordRoles[QuoteRecordHasVideoRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordHasVideoRole;
+    m_toQuoteRecordRoles[QuoteRecordVideoPlaylistRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordVideoPlaylistRole;
+    m_toQuoteRecordRoles[QuoteRecordVideoThumbRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordVideoThumbRole;
+    m_toQuoteRecordRoles[QuoteRecordVideoAltRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordVideoAltRole;
+
     m_toEmbedVideoRoles[HasVideoRole] = AtpAbstractListModel::EmbedVideoRoles::HasVideoRole;
     m_toEmbedVideoRoles[VideoPlaylistRole] =
             AtpAbstractListModel::EmbedVideoRoles::VideoPlaylistRole;
@@ -270,6 +313,23 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
     } else if (m_toListLinkRoles.contains(role)) {
         return getListLinkItem(m_postHash.value(current.cid), m_toListLinkRoles[role]);
 
+    } else if (role == HasQuoteRecordRole || role == QuoteRecordIsMineRole
+               || role == QuoteRecordCidRole || role == QuoteRecordUriRole
+               || role == QuoteRecordDisplayNameRole || role == QuoteRecordHandleRole
+               || role == QuoteRecordAvatarRole || role == QuoteRecordRecordTextRole
+               || role == QuoteRecordIndexedAtRole || role == QuoteRecordEmbedImagesRole
+               || role == QuoteRecordEmbedImagesFullRole || role == QuoteRecordEmbedImagesAltRole
+               || role == QuoteRecordIsRepostedRole || role == QuoteRecordIsLikedRole
+               || role == QuoteRecordDetatchedRole || role == QuoteRecordBlockedRole
+               || role == QuoteRecordBlockedStatusRole || role == QuoteRecordHasVideoRole
+               || role == QuoteRecordVideoPlaylistRole || role == QuoteRecordVideoThumbRole
+               || role == QuoteRecordVideoAltRole) {
+        // 引用はしたがわのポストの本体も保持しているので。
+        return getQuoteItem(
+                m_postHash.value(current.cid),
+                m_toQuoteRecordRoles.value(
+                        role, AtpAbstractListModel::QuoteRecordRoles::HasQuoteRecordRole));
+
     } else {
         QString record_cid;
         if (current.reason == "like") {
@@ -286,109 +346,9 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
         } else if (current.reason == "mention") {
         } else if (current.reason == "reply") {
         } else if (current.reason == "quote") {
-            AtProtocolType::AppBskyFeedPost::Main post =
-                    AtProtocolType::LexiconsTypeUnknown::fromQVariant<
-                            AtProtocolType::AppBskyFeedPost::Main>(current.record);
-            switch (post.embed_type) {
-            case AtProtocolType::AppBskyFeedPost::MainEmbedType::embed_AppBskyEmbedImages_Main:
-                //                post.embed_AppBskyEmbedImages_Main.images;
-                // LexiconsTypeUnknown::copyImagesFromPostView(current.post, true)
-                break;
-            case AtProtocolType::AppBskyFeedPost::MainEmbedType::embed_AppBskyEmbedExternal_Main:
-                break;
-            case AtProtocolType::AppBskyFeedPost::MainEmbedType::embed_AppBskyEmbedRecord_Main:
-                record_cid = post.embed_AppBskyEmbedRecord_Main.record.cid;
-                break;
-            case AtProtocolType::AppBskyFeedPost::MainEmbedType::
-                    embed_AppBskyEmbedRecordWithMedia_Main:
-                if (!post.embed_AppBskyEmbedRecordWithMedia_Main.record.isNull()) {
-                    record_cid = post.embed_AppBskyEmbedRecordWithMedia_Main.record->record.cid;
-                    //                    record_cid = current.reasonSubject;
-                }
-                break;
-            default:
-                break;
-            }
         }
 
-        //----------------------------------------
-        if (role == QuoteRecordCidRole) {
-            if (m_postHash.contains(record_cid))
-                return m_postHash[record_cid].cid;
-            else
-                return QString();
-        } else if (role == QuoteRecordUriRole) {
-            if (m_postHash.contains(record_cid))
-                return m_postHash[record_cid].uri;
-            else
-                return QString();
-        } else if (role == QuoteRecordDisplayNameRole) {
-            if (m_postHash.contains(record_cid))
-                return m_postHash[record_cid].author.displayName;
-            else
-                return QString();
-        } else if (role == QuoteRecordHandleRole) {
-            if (m_postHash.contains(record_cid))
-                return m_postHash[record_cid].author.handle;
-            else
-                return QString();
-        } else if (role == QuoteRecordAvatarRole) {
-            if (m_postHash.contains(record_cid))
-                return m_postHash[record_cid].author.avatar;
-            else
-                return QString();
-        } else if (role == QuoteRecordIndexedAtRole) {
-            if (m_postHash.contains(record_cid))
-                return AtProtocolType::LexiconsTypeUnknown::formatDateTime(
-                        m_postHash[record_cid].indexedAt);
-            else
-                return QString();
-        } else if (role == QuoteRecordRecordTextRole) {
-            if (m_postHash.contains(record_cid))
-                return AtProtocolType::LexiconsTypeUnknown::copyRecordText(
-                        m_postHash[record_cid].record);
-            else
-                return QString();
-        } else if (role == QuoteRecordEmbedImagesRole) {
-            if (m_postHash.contains(record_cid))
-                return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
-                        m_postHash[record_cid],
-                        AtProtocolType::LexiconsTypeUnknown::CopyImageType::Thumb);
-            else
-                return QStringList();
-        } else if (role == QuoteRecordEmbedImagesFullRole) {
-            if (m_postHash.contains(record_cid))
-                return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
-                        m_postHash[record_cid],
-                        AtProtocolType::LexiconsTypeUnknown::CopyImageType::FullSize);
-            else
-                return QStringList();
-        } else if (role == QuoteRecordEmbedImagesAltRole) {
-            if (m_postHash.contains(record_cid))
-                return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
-                        m_postHash[record_cid],
-                        AtProtocolType::LexiconsTypeUnknown::CopyImageType::Alt);
-            else
-                return QStringList();
-        } else if (role == QuoteRecordIsRepostedRole) {
-            if (m_postHash.contains(record_cid))
-                return m_postHash[record_cid].viewer.repost.contains(account().did);
-            else
-                return false;
-        } else if (role == QuoteRecordIsLikedRole) {
-            if (m_postHash.contains(record_cid))
-                return m_postHash[record_cid].viewer.like.contains(account().did);
-            else
-                return false;
-
-        } else if (m_toQuoteRecordVideoRoles.contains(role)) {
-            if (m_postHash.contains(record_cid))
-                return getEmbedVideoItem(m_postHash.value(record_cid),
-                                         m_toQuoteRecordVideoRoles[role]);
-            else
-                return QString();
-
-        } else if (role == HasFeedGeneratorRole) { // カスタムフィードに対するいいね
+        if (role == HasFeedGeneratorRole) { // カスタムフィードに対するいいね
             if (m_feedGeneratorHash.contains(record_cid)) {
                 return true;
             } else {
@@ -565,60 +525,12 @@ bool NotificationListModel::getLatest()
                             appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(item->record);
                         }
                     } else if (item->reason == "quote") {
-                        AtProtocolType::AppBskyFeedPost::Main quote_post =
-                                AtProtocolType::LexiconsTypeUnknown::fromQVariant<
-                                        AtProtocolType::AppBskyFeedPost::Main>(item->record);
-                        switch (quote_post.embed_type) {
-                        case AtProtocolType::AppBskyFeedPost::MainEmbedType::
-                                embed_AppBskyEmbedImages_Main:
-                            break;
-                        case AtProtocolType::AppBskyFeedPost::MainEmbedType::
-                                embed_AppBskyEmbedExternal_Main:
-                            break;
-                        case AtProtocolType::AppBskyFeedPost::MainEmbedType::
-                                embed_AppBskyEmbedRecord_Main:
-                            if (!quote_post.embed_AppBskyEmbedRecord_Main.record.cid.isEmpty()
-                                && !m_cueGetPost.contains(
-                                        quote_post.embed_AppBskyEmbedRecord_Main.record.uri)) {
-                                m_cueGetPost.append(
-                                        quote_post.embed_AppBskyEmbedRecord_Main.record.uri);
-                            }
-                            // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
-                            if (!m_cueGetPost.contains(item->uri)) {
-                                m_cueGetPost.append(item->uri);
-                            }
-                            break;
-                        case AtProtocolType::AppBskyFeedPost::MainEmbedType::
-                                embed_AppBskyEmbedRecordWithMedia_Main:
-                            if (quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record.isNull()) {
-                            } else if (quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record
-                                               ->record.uri.contains("/app.bsky.feed.generator/")) {
-                                if (!m_cueGetFeedGenerator.contains(
-                                            quote_post.embed_AppBskyEmbedRecordWithMedia_Main
-                                                    .record->record.uri)) {
-                                    m_cueGetFeedGenerator.append(
-                                            quote_post.embed_AppBskyEmbedRecordWithMedia_Main
-                                                    .record->record.uri);
-                                }
-                            } else if (!quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record
-                                                ->record.uri.isEmpty()
-                                       && !m_cueGetPost.contains(
-                                               quote_post.embed_AppBskyEmbedRecordWithMedia_Main
-                                                       .record->record.uri)) {
-                                m_cueGetPost.append(
-                                        quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record
-                                                ->record.uri);
-                            }
-                            // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
-                            if (!m_cueGetPost.contains(item->uri)) {
-                                m_cueGetPost.append(item->uri);
-                            }
-                            break;
-                        default:
-                            break;
+                        // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
+                        if (!m_cueGetPost.contains(item->uri)) {
+                            m_cueGetPost.append(item->uri);
                         }
                     } else if (item->reason == "reply" || item->reason == "mention") {
-                        // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
+                        // replyしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
                         if (!m_cueGetPost.contains(item->uri)) {
                             m_cueGetPost.append(item->uri);
                         }
@@ -703,69 +615,12 @@ bool NotificationListModel::getNext()
                             appendGetPostCue<AtProtocolType::AppBskyFeedRepost::Main>(item->record);
                         }
                     } else if (item->reason == "quote") {
-                        AtProtocolType::AppBskyFeedPost::Main quote_post =
-                                AtProtocolType::LexiconsTypeUnknown::fromQVariant<
-                                        AtProtocolType::AppBskyFeedPost::Main>(item->record);
-                        switch (quote_post.embed_type) {
-                        case AtProtocolType::AppBskyFeedPost::MainEmbedType::
-                                embed_AppBskyEmbedImages_Main:
-                            break;
-                        case AtProtocolType::AppBskyFeedPost::MainEmbedType::
-                                embed_AppBskyEmbedExternal_Main:
-                            break;
-                        case AtProtocolType::AppBskyFeedPost::MainEmbedType::
-                                embed_AppBskyEmbedRecord_Main:
-                            if (quote_post.embed_AppBskyEmbedRecord_Main.record.uri.contains(
-                                        "/app.bsky.feed.generator/")) {
-                                if (!m_cueGetFeedGenerator.contains(
-                                            quote_post.embed_AppBskyEmbedRecord_Main.record.uri)) {
-                                    m_cueGetFeedGenerator.append(
-                                            quote_post.embed_AppBskyEmbedRecord_Main.record.uri);
-                                }
-                            } else if (!quote_post.embed_AppBskyEmbedRecord_Main.record.cid
-                                                .isEmpty()
-                                       && !m_cueGetPost.contains(
-                                               quote_post.embed_AppBskyEmbedRecord_Main.record
-                                                       .uri)) {
-                                m_cueGetPost.append(
-                                        quote_post.embed_AppBskyEmbedRecord_Main.record.uri);
-                            }
-                            // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
-                            if (!m_cueGetPost.contains(item->uri)) {
-                                m_cueGetPost.append(item->uri);
-                            }
-                            break;
-                        case AtProtocolType::AppBskyFeedPost::MainEmbedType::
-                                embed_AppBskyEmbedRecordWithMedia_Main:
-                            if (quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record.isNull()) {
-                            } else if (quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record
-                                               ->record.uri.contains("/app.bsky.feed.generator/")) {
-                                if (!m_cueGetFeedGenerator.contains(
-                                            quote_post.embed_AppBskyEmbedRecordWithMedia_Main
-                                                    .record->record.uri)) {
-                                    m_cueGetFeedGenerator.append(
-                                            quote_post.embed_AppBskyEmbedRecordWithMedia_Main
-                                                    .record->record.uri);
-                                }
-                            } else if (!quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record
-                                                ->record.uri.isEmpty()
-                                       && !m_cueGetPost.contains(
-                                               quote_post.embed_AppBskyEmbedRecordWithMedia_Main
-                                                       .record->record.uri)) {
-                                m_cueGetPost.append(
-                                        quote_post.embed_AppBskyEmbedRecordWithMedia_Main.record
-                                                ->record.uri);
-                            }
-                            // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
-                            if (!m_cueGetPost.contains(item->uri)) {
-                                m_cueGetPost.append(item->uri);
-                            }
-                            break;
-                        default:
-                            break;
+                        // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
+                        if (!m_cueGetPost.contains(item->uri)) {
+                            m_cueGetPost.append(item->uri);
                         }
                     } else if (item->reason == "reply" || item->reason == "mention") {
-                        // quoteしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
+                        // replyしてくれたユーザーのPostの情報も取得できるようにするためキューに入れる
                         if (!m_cueGetPost.contains(item->uri)) {
                             m_cueGetPost.append(item->uri);
                         }
@@ -946,6 +801,8 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
 
     roles[ReasonRole] = "reason";
 
+    roles[HasQuoteRecordRole] = "hasQuoteRecord";
+    roles[QuoteRecordIsMineRole] = "quoteRecordIsMine";
     roles[QuoteRecordCidRole] = "quoteRecordCid";
     roles[QuoteRecordUriRole] = "quoteRecordUri";
     roles[QuoteRecordDisplayNameRole] = "quoteRecordDisplayName";
@@ -958,6 +815,9 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[QuoteRecordEmbedImagesAltRole] = "quoteRecordEmbedImagesAlt";
     roles[QuoteRecordIsRepostedRole] = "quoteRecordIsReposted";
     roles[QuoteRecordIsLikedRole] = "quoteRecordIsLiked";
+    roles[QuoteRecordDetatchedRole] = "quoteRecordDetatched";
+    roles[QuoteRecordBlockedRole] = "quoteRecordBlocked";
+    roles[QuoteRecordBlockedStatusRole] = "quoteRecordBlockedStatus";
     roles[QuoteRecordHasVideoRole] = "quoteRecordHasVideo";
     roles[QuoteRecordVideoPlaylistRole] = "quoteRecordVideoPlaylist";
     roles[QuoteRecordVideoThumbRole] = "quoteRecordVideoThumb";

@@ -70,6 +70,8 @@ public:
 
         ReasonRole,
 
+        HasQuoteRecordRole,
+        QuoteRecordIsMineRole,
         QuoteRecordCidRole,
         QuoteRecordUriRole,
         QuoteRecordDisplayNameRole,
@@ -82,6 +84,9 @@ public:
         QuoteRecordEmbedImagesAltRole,
         QuoteRecordIsRepostedRole,
         QuoteRecordIsLikedRole,
+        QuoteRecordDetatchedRole,
+        QuoteRecordBlockedRole,
+        QuoteRecordBlockedStatusRole,
         QuoteRecordHasVideoRole,
         QuoteRecordVideoPlaylistRole,
         QuoteRecordVideoThumbRole,
@@ -207,6 +212,8 @@ private:
     QHash<QString, QStringList> m_follow2Notification;
 
     bool m_hasUnread; // 今回の読み込みで未読がある
+    QHash<NotificationListModel::NotificationListModelRoles, AtpAbstractListModel::QuoteRecordRoles>
+            m_toQuoteRecordRoles;
     QHash<NotificationListModel::NotificationListModelRoles, AtpAbstractListModel::EmbedVideoRoles>
             m_toEmbedVideoRoles;
     QHash<NotificationListModel::NotificationListModelRoles, AtpAbstractListModel::EmbedVideoRoles>

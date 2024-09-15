@@ -63,13 +63,36 @@ public:
     explicit AtpAbstractListModel(QObject *parent = nullptr, bool use_translator = false);
     ~AtpAbstractListModel();
 
+    enum QuoteRecordRoles {
+        HasQuoteRecordRole,
+        QuoteRecordIsMineRole,
+        QuoteRecordCidRole,
+        QuoteRecordUriRole,
+        QuoteRecordDisplayNameRole,
+        QuoteRecordHandleRole,
+        QuoteRecordAvatarRole,
+        QuoteRecordRecordTextRole,
+        QuoteRecordIndexedAtRole,
+        QuoteRecordEmbedImagesRole,
+        QuoteRecordEmbedImagesFullRole,
+        QuoteRecordEmbedImagesAltRole,
+        QuoteRecordIsRepostedRole,
+        QuoteRecordIsLikedRole,
+        QuoteRecordDetatchedRole,
+        QuoteRecordBlockedRole,
+        QuoteRecordBlockedStatusRole,
+        QuoteRecordHasVideoRole,
+        QuoteRecordVideoPlaylistRole,
+        QuoteRecordVideoThumbRole,
+        QuoteRecordVideoAltRole,
+    };
+
     enum EmbedVideoRoles {
         HasVideoRole,
         VideoPlaylistRole,
         VideoThumbRole,
         VideoAltRole,
     };
-
     enum ExternalLinkRoles {
         HasExternalLinkRole,
         ExternalLinkUriRole,
@@ -99,6 +122,12 @@ public:
         ThreadGateUriRole,
         ThreadGateTypeRole,
         ThreadGateRulesRole,
+    };
+
+    enum QuoteRecordBlockedStatusType {
+        QuoteRecordNonBlocked,
+        QuoteRecordBlocked,
+        QuoteRecordDetached,
     };
 
     Q_INVOKABLE void clear();
@@ -176,6 +205,9 @@ protected:
     QStringList getLabels(const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels) const;
     QStringList getLaunguages(const QVariant &record) const;
     QString getVia(const QVariant &record) const;
+
+    QVariant getQuoteItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
+                          const AtpAbstractListModel::QuoteRecordRoles role) const;
     QVariant getEmbedVideoItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
                                const AtpAbstractListModel::EmbedVideoRoles role) const;
     QVariant getExternalLinkItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
@@ -221,6 +253,8 @@ protected:
                             const bool partial_match) const;
     QString contentFilterMessage(const QString &label, const bool for_image,
                                  const QString &labeler_did = QString()) const;
+
+    bool updateThreadMuted(const AtProtocolType::AppBskyFeedPost::Main record, bool muted);
 
     // これで取得したポストの順番を管理して実態はm_viewPostHashで管理
     // checkVisibility(cid)の結果次第で間引かれる

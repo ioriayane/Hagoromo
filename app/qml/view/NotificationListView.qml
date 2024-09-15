@@ -117,6 +117,8 @@ ScrollView {
             postImagePreview.embedImages: model.embedImages
             postImagePreview.embedAlts: model.embedImagesAlt
             postImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.embedImagesFull, model.embedImagesAlt)
+            blockedQuoteFrame.visible: model.quoteRecordBlocked
+            blockedQuoteFrameLabel.text: model.quoteRecordBlockedStatus
 
             quoteRecordDisplayName: model.quoteRecordDisplayName
             quoteRecordHandle: model.quoteRecordHandle
@@ -174,8 +176,8 @@ ScrollView {
             postControls.isReposted: model.isReposted
             postControls.isLiked: model.isLiked
             postControls.threadMuted: model.threadMuted
-            postControls.quoteDetached: false //model.quoteRecordDetatched
-            postControls.quoteIsMine: false //model.quoteRecordIsMine
+            postControls.quoteDetached: model.quoteRecordDetatched
+            postControls.quoteIsMine: model.quoteRecordIsMine
             postControls.postUri: model.uri
             postControls.handle: model.handle
             postControls.onTriggeredCopyToClipboard: systemTool.copyToClipboard(model.recordTextPlain)
