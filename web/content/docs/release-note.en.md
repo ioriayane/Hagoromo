@@ -12,6 +12,7 @@ description: This is a multi-column Bluesky client.
   - Supports thumbnail display of videos (click to go to the official site)
 - Fix
   - Fix a bug that prevented the translation function from working in post threads
+  - Fix a bug that only allowed thread muting to be done in posts in the middle of a thread
 
 ### v0.36.0 - 2024/9/1
 

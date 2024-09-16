@@ -722,6 +722,10 @@ bool NotificationListModel::muteThread(int row)
     if (!m_postHash.contains(m_cidList.at(row)))
         return false;
 
+    if (runningOtherPrcessing(row))
+        return true;
+    setRunningOtherPrcessing(row, true);
+
     const auto &current = m_postHash.value(m_cidList.at(row));
 
     const AtProtocolType::AppBskyFeedPost::Main record =
@@ -729,7 +733,8 @@ bool NotificationListModel::muteThread(int row)
                     AtProtocolType::AppBskyFeedPost::Main>(current.record);
     QString root_uri = record.reply.root.uri;
     if (root_uri.isEmpty() || !root_uri.startsWith("at://")) {
-        return false;
+        // 親がないときは自身をミュートする
+        root_uri = current.uri;
     }
 
     bool muted = item(row, ThreadMutedRole).toBool();
@@ -743,6 +748,7 @@ bool NotificationListModel::muteThread(int row)
             } else {
                 emit errorOccured(thread->errorCode(), thread->errorMessage());
             }
+            setRunningOtherPrcessing(row, false);
             thread->deleteLater();
         });
         thread->setAccount(account());
@@ -757,6 +763,7 @@ bool NotificationListModel::muteThread(int row)
             } else {
                 emit errorOccured(thread->errorCode(), thread->errorMessage());
             }
+            setRunningOtherPrcessing(row, false);
             thread->deleteLater();
         });
         thread->setAccount(account());

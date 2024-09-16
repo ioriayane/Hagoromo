@@ -650,7 +650,8 @@ bool TimelineListModel::muteThread(int row)
             LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(current.post.record);
     QString root_uri = record.reply.root.uri;
     if (root_uri.isEmpty() || !root_uri.startsWith("at://")) {
-        return false;
+        // 親がないときは自身をミュートする
+        root_uri = current.post.uri;
     }
 
     if (runningOtherPrcessing(row))
