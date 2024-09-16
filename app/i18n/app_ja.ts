@@ -2370,7 +2370,7 @@ Please recreate AppPassword in the official application.</source>
         <location filename="../qml/parts/PostControls.qml" line="192"/>
         <location filename="../qml/parts/PostControls.qml" line="261"/>
         <source>Unmute thread</source>
-        <translation>シュレッドミュートの解除</translation>
+        <translation>スレッドミュートの解除</translation>
     </message>
     <message>
         <location filename="../qml/parts/PostControls.qml" line="192"/>

@@ -164,6 +164,7 @@ ScrollView {
             postControls.replyButton.enabled: !model.replyDisabled
             postControls.repostButton.enabled: !model.runningRepost
             postControls.likeButton.enabled: !model.runningLike
+            postControls.moreButton.enabled: !model.runningOtherPrcessing
             postControls.quoteMenuItem.enabled: !model.quoteDisabled
             postControls.replyButton.onClicked: requestReply(model.cid, model.uri,
                                                                model.replyRootCid, model.replyRootUri,

@@ -242,6 +242,8 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
         return !current.cid.isEmpty() && (current.cid == m_runningRepostCid);
     } else if (role == RunningLikeRole) {
         return !current.cid.isEmpty() && (current.cid == m_runningLikeCid);
+    } else if (role == RunningOtherPrcessingRole) {
+        return !current.cid.isEmpty() && (current.cid == m_runningOtherProcessingCid);
 
     } else if (role == AggregatedAvatarsRole || role == AggregatedDisplayNamesRole
                || role == AggregatedDidsRole || role == AggregatedHandlesRole
@@ -442,6 +444,13 @@ void NotificationListModel::update(int row, NotificationListModelRoles role, con
             m_runningLikeCid = current.cid;
         } else {
             m_runningLikeCid.clear();
+        }
+        emit dataChanged(index(row), index(row));
+    } else if (role == RunningOtherPrcessingRole) {
+        if (value.toBool()) {
+            m_runningOtherProcessingCid = current.cid;
+        } else {
+            m_runningOtherProcessingCid.clear();
         }
         emit dataChanged(index(row), index(row));
     }
@@ -808,6 +817,7 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[LikedUriRole] = "likedUri";
     roles[RunningRepostRole] = "runningRepost";
     roles[RunningLikeRole] = "runningLike";
+    roles[RunningOtherPrcessingRole] = "runningOtherPrcessing";
 
     roles[AggregatedAvatarsRole] = "aggregatedAvatars";
     roles[AggregatedDisplayNamesRole] = "aggregatedDisplayNames";
@@ -1412,6 +1422,16 @@ bool NotificationListModel::runningLike(int row) const
 void NotificationListModel::setRunningLike(int row, bool running)
 {
     update(row, RunningLikeRole, running);
+}
+
+bool NotificationListModel::runningOtherPrcessing(int row) const
+{
+    return item(row, RunningOtherPrcessingRole).toBool();
+}
+
+void NotificationListModel::setRunningOtherPrcessing(int row, bool running)
+{
+    update(row, RunningOtherPrcessingRole, running);
 }
 
 template<typename T>

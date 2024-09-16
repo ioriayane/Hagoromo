@@ -981,6 +981,9 @@ void RecordOperator::updateDetachedStatusOfQuote(bool detached, QString target_u
         connect(put, &ComAtprotoRepoPutRecordEx::finished, this, [=](bool success2) {
             qDebug().noquote() << __func__ << "put post gate" << success2
                                << "quoted:" << detach_uri;
+            if (!success2) {
+                emit errorOccured(put->errorCode(), put->errorMessage());
+            }
             emit finished(success2, put->uri(), put->cid());
             put->deleteLater();
         });

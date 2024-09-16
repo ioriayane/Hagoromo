@@ -61,6 +61,7 @@ public:
         LikedUriRole,
         RunningRepostRole,
         RunningLikeRole,
+        RunningOtherPrcessingRole,
 
         AggregatedAvatarsRole,
         AggregatedDisplayNamesRole,
@@ -255,6 +256,8 @@ private:
     void setRunningRepost(int row, bool running);
     bool runningLike(int row) const;
     void setRunningLike(int row, bool running);
+    bool runningOtherPrcessing(int row) const;
+    void setRunningOtherPrcessing(int row, bool running);
 
     bool m_visibleLike;
     bool m_visibleRepost;
@@ -265,6 +268,7 @@ private:
     bool m_updateSeenNotification;
     QString m_runningRepostCid;
     QString m_runningLikeCid;
+    QString m_runningOtherProcessingCid;
     bool m_aggregateReactions;
 };
 

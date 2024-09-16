@@ -30,6 +30,7 @@ RowLayout {
     property alias quoteMenuItem: quoteMenuItem
     property alias likeButton: likeButton
     property alias pinnedImage: pinnedImage
+    property alias moreButton: moreButton
 
     signal triggeredTranslate()
     signal triggeredCopyToClipboard()
@@ -141,6 +142,10 @@ RowLayout {
             }else{
                 theirMorePopup.open()
             }
+        }
+        BusyIndicator {
+            anchors.fill: parent
+            visible: !parent.enabled
         }
         MenuEx {
             id: myMorePopup

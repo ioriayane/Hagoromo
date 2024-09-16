@@ -73,7 +73,7 @@ public:
         RunningLikeRole,
         RunningdeletePostRole,
         RunningPostPinningRole,
-        RunningThreadMuteRole,
+        RunningOtherPrcessingRole,
 
         HasQuoteRecordRole,
         QuoteRecordIsMineRole,
@@ -229,6 +229,8 @@ private:
     void setRunningdeletePost(int row, bool running);
     bool runningPostPinning(int row) const;
     void setRunningPostPinning(int row, bool running);
+    bool runningOtherPrcessing(int row) const;
+    void setRunningOtherPrcessing(int row, bool running);
 
     QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::QuoteRecordRoles>
             m_toQuoteRecordRoles;
@@ -253,7 +255,7 @@ private:
     QString m_runningLikeCid;
     QString m_runningDeletePostCid;
     QString m_runningPostPinningCid;
-    QString m_runningThreadMuteCid;
+    QString m_runningOtherProcessingCid;
 };
 
 #endif // TIMELINELISTMODEL_H

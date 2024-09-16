@@ -204,8 +204,8 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return !current.post.cid.isEmpty() && (current.post.cid == m_runningDeletePostCid);
     else if (role == RunningPostPinningRole)
         return !current.post.cid.isEmpty() && (current.post.cid == m_runningPostPinningCid);
-    else if (role == RunningThreadMuteRole)
-        return !current.post.cid.isEmpty() && (current.post.cid == m_runningThreadMuteCid);
+    else if (role == RunningOtherPrcessingRole)
+        return !current.post.cid.isEmpty() && (current.post.cid == m_runningOtherProcessingCid);
 
     else if (role == HasQuoteRecordRole || role == QuoteRecordIsMineRole
              || role == QuoteRecordCidRole || role == QuoteRecordUriRole
@@ -417,11 +417,11 @@ void TimelineListModel::update(int row, TimelineListModelRoles role, const QVari
             m_runningPostPinningCid.clear();
         }
         emit dataChanged(index(row), index(row), QVector<int>() << role);
-    } else if (role == RunningThreadMuteRole) {
+    } else if (role == RunningOtherPrcessingRole) {
         if (value.toBool()) {
-            m_runningThreadMuteCid = current.post.cid;
+            m_runningOtherProcessingCid = current.post.cid;
         } else {
-            m_runningThreadMuteCid.clear();
+            m_runningOtherProcessingCid.clear();
         }
         emit dataChanged(index(row), index(row), QVector<int>() << role);
     } else if (m_toThreadGateRoles.contains(role)) {
@@ -653,6 +653,10 @@ bool TimelineListModel::muteThread(int row)
         return false;
     }
 
+    if (runningOtherPrcessing(row))
+        return true;
+    setRunningOtherPrcessing(row, true);
+
     bool muted = item(row, ThreadMutedRole).toBool();
     if (muted) {
         // true -> false
@@ -664,6 +668,7 @@ bool TimelineListModel::muteThread(int row)
             } else {
                 emit errorOccured(thread->errorCode(), thread->errorMessage());
             }
+            setRunningOtherPrcessing(row, false);
             thread->deleteLater();
         });
         thread->setAccount(account());
@@ -678,6 +683,7 @@ bool TimelineListModel::muteThread(int row)
             } else {
                 emit errorOccured(thread->errorCode(), thread->errorMessage());
             }
+            setRunningOtherPrcessing(row, false);
             thread->deleteLater();
         });
         thread->setAccount(account());
@@ -692,6 +698,10 @@ bool TimelineListModel::detachQuote(int row)
     QString target_uri = item(row, QuoteRecordUriRole).toString();
     QString detach_uri = item(row, UriRole).toString();
 
+    if (runningOtherPrcessing(row))
+        return true;
+    setRunningOtherPrcessing(row, true);
+
     RecordOperator *ope = new RecordOperator(this);
     connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
     connect(ope, &RecordOperator::finished, this,
@@ -704,7 +714,7 @@ bool TimelineListModel::detachQuote(int row)
                     // emit dataChanged(index(row), index(row),
                     //                  QVector<int>() << PinnedRole << PinnedByMeRole);
                 }
-                setRunningPostPinning(row, false);
+                setRunningOtherPrcessing(row, false);
                 ope->deleteLater();
             });
     ope->setAccount(account().service, account().did, account().handle, account().email,
@@ -750,6 +760,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[RunningLikeRole] = "runningLike";
     roles[RunningdeletePostRole] = "runningdeletePost";
     roles[RunningPostPinningRole] = "runningPostPinning";
+    roles[RunningOtherPrcessingRole] = "runningOtherPrcessing";
 
     roles[HasQuoteRecordRole] = "hasQuoteRecord";
     roles[QuoteRecordIsMineRole] = "quoteRecordIsMine";
@@ -1129,6 +1140,16 @@ bool TimelineListModel::runningPostPinning(int row) const
 void TimelineListModel::setRunningPostPinning(int row, bool running)
 {
     update(row, RunningPostPinningRole, running);
+}
+
+bool TimelineListModel::runningOtherPrcessing(int row) const
+{
+    return item(row, RunningOtherPrcessingRole).toBool();
+}
+
+void TimelineListModel::setRunningOtherPrcessing(int row, bool running)
+{
+    update(row, RunningOtherPrcessingRole, running);
 }
 
 bool TimelineListModel::visibleReplyToUnfollowedUsers() const
