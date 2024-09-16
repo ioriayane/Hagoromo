@@ -940,6 +940,59 @@ void RecordOperator::updateThreadGate(const QString &uri, const QString &threadg
     delete_record->deleteThreadGate(r_key);
 }
 
+void RecordOperator::updateDetachedStatusOfQuote(bool detached, QString target_uri,
+                                                 QString detach_uri)
+{
+    // 引用のデタッチのみ更新
+    if (detach_uri.isEmpty() || !detach_uri.startsWith("at://") || target_uri.isEmpty()
+        || !target_uri.startsWith("at://")) {
+        emit finished(false, QString(), QString());
+        return;
+    }
+    QString target_rkey = AtProtocolType::LexiconsTypeUnknown::extractRkey(target_uri);
+    ComAtprotoRepoGetRecordEx *record = new ComAtprotoRepoGetRecordEx(this);
+    connect(record, &ComAtprotoRepoGetRecordEx::finished, this, [=](bool success) {
+        qDebug().noquote() << __func__ << "get post_gate" << success << record->value().isValid();
+        // レコードがないときはエラーになるので継続
+
+        AppBskyFeedPostgate::Main old_record =
+                LexiconsTypeUnknown::fromQVariant<AppBskyFeedPostgate::Main>(record->value());
+
+        AppBskyFeedPostgate::MainEmbeddingRulesType rule =
+                AppBskyFeedPostgate::MainEmbeddingRulesType::none;
+        if (!old_record.embeddingRules_DisableRule.isEmpty()) {
+            rule = AppBskyFeedPostgate::MainEmbeddingRulesType::embeddingRules_DisableRule;
+        }
+        if (detached) {
+            // re-attach
+            qDebug() << __func__ << "re-attach" << detach_uri;
+            if (old_record.detachedEmbeddingUris.contains(detach_uri)) {
+                old_record.detachedEmbeddingUris.removeAll(detach_uri);
+            }
+        } else {
+            // detach
+            qDebug() << __func__ << "detach" << detach_uri;
+            if (!old_record.detachedEmbeddingUris.contains(detach_uri)) {
+                old_record.detachedEmbeddingUris.append(detach_uri);
+            }
+        }
+
+        ComAtprotoRepoPutRecordEx *put = new ComAtprotoRepoPutRecordEx(this);
+        connect(put, &ComAtprotoRepoPutRecordEx::finished, this, [=](bool success2) {
+            qDebug().noquote() << __func__ << "put post gate" << success2
+                               << "quoted:" << detach_uri;
+            emit finished(success2, put->uri(), put->cid());
+            put->deleteLater();
+        });
+        put->setAccount(m_account);
+        put->postGate(target_uri, rule, old_record.detachedEmbeddingUris);
+
+        record->deleteLater();
+    });
+    record->setAccount(m_account);
+    record->postGate(m_account.did, target_rkey);
+}
+
 bool RecordOperator::running() const
 {
     return m_running;

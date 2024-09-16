@@ -516,7 +516,7 @@ bool TimelineListModel::deletePost(int row)
 
     RecordOperator *ope = new RecordOperator(this);
     connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
-    connect(ope, &RecordOperator::finished,
+    connect(ope, &RecordOperator::finished, this,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(uri)
                 Q_UNUSED(cid)
@@ -548,7 +548,7 @@ bool TimelineListModel::repost(int row)
 
     RecordOperator *ope = new RecordOperator(this);
     connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
-    connect(ope, &RecordOperator::finished,
+    connect(ope, &RecordOperator::finished, this,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(cid)
                 if (success) {
@@ -580,7 +580,7 @@ bool TimelineListModel::like(int row)
 
     RecordOperator *ope = new RecordOperator(this);
     connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
-    connect(ope, &RecordOperator::finished,
+    connect(ope, &RecordOperator::finished, this,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(cid)
 
@@ -617,7 +617,7 @@ bool TimelineListModel::pin(int row)
 
     RecordOperator *ope = new RecordOperator(this);
     connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
-    connect(ope, &RecordOperator::finished,
+    connect(ope, &RecordOperator::finished, this,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(uri)
                 Q_UNUSED(cid)
@@ -692,10 +692,24 @@ bool TimelineListModel::detachQuote(int row)
     QString target_uri = item(row, QuoteRecordUriRole).toString();
     QString detach_uri = item(row, UriRole).toString();
 
-    updateDetachedStatusOfQuote(detached, target_uri, detach_uri, [=](bool success) {
-        //
-    });
+    RecordOperator *ope = new RecordOperator(this);
+    connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
+    connect(ope, &RecordOperator::finished, this,
+            [=](bool success, const QString &uri, const QString &cid) {
+                Q_UNUSED(uri)
+                Q_UNUSED(cid)
+                if (success) {
+                    // 更新後のポストを取得
 
+                    // emit dataChanged(index(row), index(row),
+                    //                  QVector<int>() << PinnedRole << PinnedByMeRole);
+                }
+                setRunningPostPinning(row, false);
+                ope->deleteLater();
+            });
+    ope->setAccount(account().service, account().did, account().handle, account().email,
+                    account().accessJwt, account().refreshJwt);
+    ope->updateDetachedStatusOfQuote(detached, target_uri, detach_uri);
     return true;
 }
 

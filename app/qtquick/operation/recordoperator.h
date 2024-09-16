@@ -76,6 +76,9 @@ public:
                                 const QString &description, const QString &name);
     Q_INVOKABLE void updateThreadGate(const QString &uri, const QString &threadgate_uri,
                                       const QString &type, const QStringList &rules);
+    Q_INVOKABLE void updateDetachedStatusOfQuote(bool detached, QString target_uri,
+                                                 QString detach_uri);
+
     bool running() const;
     void setRunning(bool newRunning);
 
