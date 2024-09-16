@@ -710,11 +710,24 @@ bool TimelineListModel::detachQuote(int row)
                 Q_UNUSED(cid)
                 if (success) {
                     // 更新後のポストを取得
-
-                    // emit dataChanged(index(row), index(row),
-                    //                  QVector<int>() << PinnedRole << PinnedByMeRole);
+                    AppBskyFeedGetPosts *post = new AppBskyFeedGetPosts(this);
+                    connect(post, &AppBskyFeedGetPosts::finished, [=](bool success) {
+                        if (success && !post->postsList().isEmpty()) {
+                            QString new_cid = post->postsList().at(0).cid;
+                            if (m_viewPostHash.contains(new_cid)) {
+                                // 操作できたということは表示しているので確認するまでもないはずだけど
+                                AppBskyFeedDefs::FeedViewPost feed_view_post;
+                                feed_view_post.post = post->postsList().at(0);
+                                m_viewPostHash[new_cid] = feed_view_post;
+                                emit dataChanged(index(row), index(row));
+                            }
+                        }
+                        setRunningOtherPrcessing(row, false);
+                        post->deleteLater();
+                    });
+                    post->setAccount(account());
+                    post->getPosts(QStringList() << detach_uri);
                 }
-                setRunningOtherPrcessing(row, false);
                 ope->deleteLater();
             });
     ope->setAccount(account().service, account().did, account().handle, account().email,
