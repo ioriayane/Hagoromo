@@ -727,6 +727,8 @@ bool TimelineListModel::detachQuote(int row)
                     });
                     post->setAccount(account());
                     post->getPosts(QStringList() << detach_uri);
+                } else {
+                    setRunningOtherPrcessing(row, false);
                 }
                 ope->deleteLater();
             });

@@ -771,18 +771,41 @@ bool NotificationListModel::detachQuote(int row)
     QString target_uri = item(row, QuoteRecordUriRole).toString();
     QString detach_uri = item(row, UriRole).toString();
 
-    if (detach_uri.isEmpty() || !detach_uri.startsWith("at://") || target_uri.isEmpty()
-        || !target_uri.startsWith("at://")) {
-        return false;
-    }
+    if (runningOtherPrcessing(row))
+        return true;
+    setRunningOtherPrcessing(row, true);
 
-    if (detached) {
-        // re-attach
-        qDebug() << __func__ << "re-attach" << detach_uri;
-    } else {
-        // detach
-        qDebug() << __func__ << "detach" << detach_uri;
-    }
+    RecordOperator *ope = new RecordOperator(this);
+    connect(ope, &RecordOperator::errorOccured, this, &NotificationListModel::errorOccured);
+    connect(ope, &RecordOperator::finished, this,
+            [=](bool success, const QString &uri, const QString &cid) {
+                Q_UNUSED(uri)
+                Q_UNUSED(cid)
+                if (success) {
+                    // 更新後のポストを取得
+                    AppBskyFeedGetPosts *post = new AppBskyFeedGetPosts(this);
+                    connect(post, &AppBskyFeedGetPosts::finished, [=](bool success) {
+                        if (success && !post->postsList().isEmpty()) {
+                            QString new_cid = post->postsList().at(0).cid;
+                            if (m_postHash.contains(new_cid)) {
+                                // 操作できたということは表示しているので確認するまでもないはずだけど
+                                m_postHash[new_cid] = post->postsList().at(0);
+                                emit dataChanged(index(row), index(row));
+                            }
+                        }
+                        setRunningOtherPrcessing(row, false);
+                        post->deleteLater();
+                    });
+                    post->setAccount(account());
+                    post->getPosts(QStringList() << detach_uri);
+                } else {
+                    setRunningOtherPrcessing(row, false);
+                }
+                ope->deleteLater();
+            });
+    ope->setAccount(account().service, account().did, account().handle, account().email,
+                    account().accessJwt, account().refreshJwt);
+    ope->updateDetachedStatusOfQuote(detached, target_uri, detach_uri);
     return true;
 }
 
