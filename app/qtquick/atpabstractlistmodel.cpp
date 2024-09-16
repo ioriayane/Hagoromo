@@ -632,6 +632,9 @@ QVariant AtpAbstractListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDef
             if (post.embed_AppBskyEmbedRecordWithMedia_View.record->record_type
                 == AppBskyEmbedRecord::ViewRecordType::record_ViewBlocked)
                 return tr("Blocked");
+            else if (post.embed_AppBskyEmbedRecordWithMedia_View.record->record_type
+                     == AppBskyEmbedRecord::ViewRecordType::record_ViewDetached)
+                return tr("Detached by author");
         }
         return QString();
 
