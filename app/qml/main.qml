@@ -288,6 +288,20 @@ ApplicationWindow {
         onAccepted: {
             console.log("Update threadgate\n  uri=" + postUri + "\n  tg_uri=" + threadgateUri +
                         "\n  type=" + selectedType + "\n  options=" + selectedOptions)
+            console.log("\n  initialType=" + initialType + "\n  initialOptions=" + initialOptions)
+            if(initialOptions.length === selectedOptions.length){
+                var same=true
+                for(var i=0; i<initialOptions.length; i++){
+                    if(initialOptions[i] !== selectedOptions[i]){
+                        same=false
+                        break
+                    }
+                }
+                if(same && initialType === selectedType){
+                    console.log("No change threadgate.")
+                    return
+                }
+            }
             postDialog.recordOperator.setAccount(selectThreadGateDialog.account.service,
                                                  selectThreadGateDialog.account.did,
                                                  selectThreadGateDialog.account.handle,

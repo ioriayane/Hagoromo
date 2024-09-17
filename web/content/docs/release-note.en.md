@@ -13,6 +13,7 @@ description: This is a multi-column Bluesky client.
 - Fix
   - Fix a bug that prevented the translation function from working in post threads
   - Fix a bug that only allowed thread muting to be done in posts in the middle of a thread
+  - Fix a bug that only posts with reply restrictions already set could have their settings changed later
 
 ### v0.36.0 - 2024/9/1
 

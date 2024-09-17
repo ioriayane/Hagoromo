@@ -901,18 +901,15 @@ void RecordOperator::updateThreadGate(const QString &uri, const QString &threadg
         return;
     setRunning(true);
 
-    QString r_key = threadgate_uri.split("/").last();
+    QString r_key = AtProtocolType::LexiconsTypeUnknown::extractRkey(threadgate_uri);
 
     setProgressMessage(tr("Update who can reply ..."));
 
     ComAtprotoRepoDeleteRecordEx *delete_record = new ComAtprotoRepoDeleteRecordEx(this);
     connect(delete_record, &ComAtprotoRepoDeleteRecordEx::finished, [=](bool success) {
-        if (!success) {
-            emit errorOccured(delete_record->errorCode(), delete_record->errorMessage());
-            setProgressMessage(QString());
-            setRunning(false);
-            emit finished(success, QString(), QString());
-        } else if (type == "everybody") {
+        // レコードがないときはエラーになるので継続
+
+        if (type == "everybody") {
             // delete only
             setProgressMessage(QString());
             setRunning(false);
@@ -949,6 +946,9 @@ void RecordOperator::updateDetachedStatusOfQuote(bool detached, QString target_u
         emit finished(false, QString(), QString());
         return;
     }
+
+    setProgressMessage(tr("Update quote status ..."));
+
     QString target_rkey = AtProtocolType::LexiconsTypeUnknown::extractRkey(target_uri);
     ComAtprotoRepoGetRecordEx *record = new ComAtprotoRepoGetRecordEx(this);
     connect(record, &ComAtprotoRepoGetRecordEx::finished, this, [=](bool success) {
@@ -981,6 +981,7 @@ void RecordOperator::updateDetachedStatusOfQuote(bool detached, QString target_u
         connect(put, &ComAtprotoRepoPutRecordEx::finished, this, [=](bool success2) {
             qDebug().noquote() << __func__ << "put post gate" << success2
                                << "quoted:" << detach_uri;
+            setProgressMessage(QString());
             if (!success2) {
                 emit errorOccured(put->errorCode(), put->errorMessage());
             }
