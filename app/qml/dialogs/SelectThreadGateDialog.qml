@@ -20,6 +20,7 @@ Dialog {
     bottomPadding: AdjustedValues.s10
 
     property bool defaultSettingMode: false
+    property bool ready: true   // 後から変更する時はfalseにしてAcceptさせないようにする
 
     property bool initialQuoteEnabled: true
     property string initialType: "everybody"
@@ -34,8 +35,8 @@ Dialog {
     }
     signal errorOccured(string account_uuid, string code, string message)
 
+    onInitialQuoteEnabledChanged: quoteEanbled.checked = initialQuoteEnabled
     onOpened: {
-        quoteEanbled.checked = initialQuoteEnabled
         var i
         choiceRadioButton.checked = true
         for(i=0; i<group.buttons.length; i++){
@@ -91,6 +92,7 @@ Dialog {
             id: quoteEanbled
             verticalPadding: 0
             font.pointSize: AdjustedValues.f10
+            enabled: selectThreadGateDialog.ready
             text: qsTr("Quote posts enabled")
         }
         Label {
@@ -236,6 +238,7 @@ Dialog {
             Button {
                 font.pointSize: AdjustedValues.f10
                 text: qsTr("Apply")
+                enabled: selectThreadGateDialog.ready
                 onClicked: {
                     selectThreadGateDialog.selectedQuoteEnabled = quoteEanbled.checked
                     selectThreadGateDialog.selectedType = "everybody"

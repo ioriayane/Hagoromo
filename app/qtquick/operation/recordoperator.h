@@ -79,6 +79,8 @@ public:
     Q_INVOKABLE void updateDetachedStatusOfQuote(bool detached, QString target_uri,
                                                  QString detach_uri);
 
+    Q_INVOKABLE void requestPostGate(const QString &uri);
+
     bool running() const;
     void setRunning(bool newRunning);
 
@@ -88,6 +90,7 @@ public:
 signals:
     void errorOccured(const QString &code, const QString &message);
     void finished(bool success, const QString &uri, const QString &cid);
+    void finishedRequestPostGate(bool success, const bool quote_enabled, const QStringList &uris);
     void runningChanged();
 
     void progressMessageChanged();

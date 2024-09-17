@@ -997,6 +997,33 @@ void RecordOperator::updateDetachedStatusOfQuote(bool detached, QString target_u
     record->postGate(m_account.did, target_rkey);
 }
 
+void RecordOperator::requestPostGate(const QString &uri)
+{
+    QString rkey = AtProtocolType::LexiconsTypeUnknown::extractRkey(uri);
+    if (rkey.isEmpty()) {
+        emit finishedRequestPostGate(false, false, QStringList());
+        return;
+    }
+
+    ComAtprotoRepoGetRecordEx *record = new ComAtprotoRepoGetRecordEx(this);
+    connect(record, &ComAtprotoRepoGetRecordEx::finished, this, [=](bool success) {
+        bool enabled = true;
+        QStringList uris;
+        if (success) {
+            AppBskyFeedPostgate::Main postgate =
+                    LexiconsTypeUnknown::fromQVariant<AppBskyFeedPostgate::Main>(record->value());
+            enabled = postgate.embeddingRules_DisableRule.isEmpty();
+            uris = postgate.detachedEmbeddingUris;
+        } else {
+            // 未設定状態
+        }
+        emit finishedRequestPostGate(success, enabled, uris);
+        record->deleteLater();
+    });
+    record->setAccount(m_account);
+    record->postGate(m_account.did, rkey);
+}
+
 bool RecordOperator::running() const
 {
     return m_running;
