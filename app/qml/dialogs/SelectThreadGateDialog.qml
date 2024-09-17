@@ -38,6 +38,7 @@ Dialog {
     onInitialQuoteEnabledChanged: quoteEanbled.checked = initialQuoteEnabled
     onOpened: {
         var i
+        quoteEanbled.checked = initialQuoteEnabled
         choiceRadioButton.checked = true
         for(i=0; i<group.buttons.length; i++){
             group.buttons[i].checked = (group.buttons[i].value === initialType)

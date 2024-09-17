@@ -937,6 +937,46 @@ void RecordOperator::updateThreadGate(const QString &uri, const QString &threadg
     delete_record->deleteThreadGate(r_key);
 }
 
+void RecordOperator::updateQuoteEnabled(const QString &uri, bool enabled)
+{
+    if (uri.isEmpty() || !uri.startsWith("at://")) {
+        emit finished(false, QString(), QString());
+        return;
+    }
+    setProgressMessage(tr("Update quote status ..."));
+
+    QString target_rkey = AtProtocolType::LexiconsTypeUnknown::extractRkey(uri);
+    ComAtprotoRepoGetRecordEx *record = new ComAtprotoRepoGetRecordEx(this);
+    connect(record, &ComAtprotoRepoGetRecordEx::finished, this, [=](bool success) {
+        qDebug().noquote() << __func__ << "get post_gate" << success << record->value().isValid();
+        // レコードがないときはエラーになるので継続
+        AppBskyFeedPostgate::Main old_record =
+                LexiconsTypeUnknown::fromQVariant<AppBskyFeedPostgate::Main>(record->value());
+        AppBskyFeedPostgate::MainEmbeddingRulesType rule =
+                AppBskyFeedPostgate::MainEmbeddingRulesType::none;
+        if (!enabled) {
+            rule = AppBskyFeedPostgate::MainEmbeddingRulesType::embeddingRules_DisableRule;
+        }
+
+        ComAtprotoRepoPutRecordEx *put = new ComAtprotoRepoPutRecordEx(this);
+        connect(put, &ComAtprotoRepoPutRecordEx::finished, this, [=](bool success2) {
+            qDebug().noquote() << __func__ << "put post gate" << success2 << "enabled:" << enabled;
+            setProgressMessage(QString());
+            if (!success2) {
+                emit errorOccured(put->errorCode(), put->errorMessage());
+            }
+            emit finished(success2, put->uri(), put->cid());
+            put->deleteLater();
+        });
+        put->setAccount(m_account);
+        put->postGate(uri, rule, old_record.detachedEmbeddingUris);
+
+        record->deleteLater();
+    });
+    record->setAccount(m_account);
+    record->postGate(m_account.did, target_rkey);
+}
+
 void RecordOperator::updateDetachedStatusOfQuote(bool detached, QString target_uri,
                                                  QString detach_uri)
 {
