@@ -409,6 +409,33 @@ QJsonObject AccessAtProtocol::makeThreadGateJsonObject(
     return json_record;
 }
 
+QJsonObject AccessAtProtocol::makePostGateJsonObject(
+        const QString &uri, const AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType type,
+        const QStringList &detached_uris)
+{
+    QJsonArray json_rules;
+    if (type == AppBskyFeedPostgate::MainEmbeddingRulesType::embeddingRules_DisableRule) {
+        QJsonObject json_rule;
+        json_rule.insert("$type", "app.bsky.feed.postgate#disableRule");
+        json_rules.append(json_rule);
+    }
+    QJsonArray json_detached_uris;
+    for (const auto &detached_uri : detached_uris) {
+        // QJsonObject json_detached_uri;
+        // json_detached_uri.insert("", "");
+        json_detached_uris.append(QJsonValue::fromVariant(detached_uri));
+    }
+
+    QJsonObject json_record;
+    json_record.insert("$type", "app.bsky.feed.postgate");
+    json_record.insert("post", uri);
+    json_record.insert("createdAt", QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
+    json_record.insert("embeddingRules", json_rules);
+    json_record.insert("detachedEmbeddingUris", json_detached_uris);
+
+    return json_record;
+}
+
 void AccessAtProtocol::setAdditionalRawHeader(QNetworkRequest &request)
 {
     QHashIterator<QString, QString> i(m_additionalRawHeaders);

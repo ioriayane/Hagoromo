@@ -65,12 +65,16 @@ bool checkPartialMatchLanguage(const QStringList &langs);
 QString copyRecordText(const QVariant &value);
 QString formatDateTime(const QString &value, const bool is_long = false);
 
+QString convertVideoThumb(const QString &url);
+
 void makeFacets(QObject *parent, AtProtocolInterface::AccountData account, const QString &text,
                 std::function<void(const QList<AtProtocolType::AppBskyRichtextFacet::Main> &facets)>
                         callback);
 void insertFacetsJson(QJsonObject &parent,
                       const QList<AtProtocolType::AppBskyRichtextFacet::Main> &facets);
 QString applyFacetsTo(const QString &text, const QList<AppBskyRichtextFacet::Main> &text_facets);
+
+QString extractRkey(const QString &uri);
 
 template<typename T>
 T fromQVariant(const QVariant &variant)

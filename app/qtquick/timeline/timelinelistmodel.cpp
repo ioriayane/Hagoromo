@@ -24,6 +24,45 @@ TimelineListModel::TimelineListModel(QObject *parent)
       m_visibleRepostOfMine(true),
       m_visibleRepostByMe(true)
 {
+    m_toQuoteRecordRoles[HasQuoteRecordRole] =
+            AtpAbstractListModel::QuoteRecordRoles::HasQuoteRecordRole;
+    m_toQuoteRecordRoles[QuoteRecordIsMineRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordIsMineRole;
+    m_toQuoteRecordRoles[QuoteRecordCidRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordCidRole;
+    m_toQuoteRecordRoles[QuoteRecordUriRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordUriRole;
+    m_toQuoteRecordRoles[QuoteRecordDisplayNameRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordDisplayNameRole;
+    m_toQuoteRecordRoles[QuoteRecordHandleRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordHandleRole;
+    m_toQuoteRecordRoles[QuoteRecordAvatarRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordAvatarRole;
+    m_toQuoteRecordRoles[QuoteRecordRecordTextRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordRecordTextRole;
+    m_toQuoteRecordRoles[QuoteRecordIndexedAtRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordIndexedAtRole;
+    m_toQuoteRecordRoles[QuoteRecordEmbedImagesRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordEmbedImagesRole;
+    m_toQuoteRecordRoles[QuoteRecordEmbedImagesFullRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordEmbedImagesFullRole;
+    m_toQuoteRecordRoles[QuoteRecordEmbedImagesAltRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordEmbedImagesAltRole;
+    m_toQuoteRecordRoles[QuoteRecordDetatchedRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordDetatchedRole;
+    m_toQuoteRecordRoles[QuoteRecordBlockedRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordBlockedRole;
+    m_toQuoteRecordRoles[QuoteRecordBlockedStatusRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordBlockedStatusRole;
+    m_toQuoteRecordRoles[QuoteRecordHasVideoRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordHasVideoRole;
+    m_toQuoteRecordRoles[QuoteRecordVideoPlaylistRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordVideoPlaylistRole;
+    m_toQuoteRecordRoles[QuoteRecordVideoThumbRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordVideoThumbRole;
+    m_toQuoteRecordRoles[QuoteRecordVideoAltRole] =
+            AtpAbstractListModel::QuoteRecordRoles::QuoteRecordVideoAltRole;
+
     m_toEmbedVideoRoles[HasVideoRole] = AtpAbstractListModel::EmbedVideoRoles::HasVideoRole;
     m_toEmbedVideoRoles[VideoPlaylistRole] =
             AtpAbstractListModel::EmbedVideoRoles::VideoPlaylistRole;
@@ -165,18 +204,23 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return !current.post.cid.isEmpty() && (current.post.cid == m_runningDeletePostCid);
     else if (role == RunningPostPinningRole)
         return !current.post.cid.isEmpty() && (current.post.cid == m_runningPostPinningCid);
-    else if (role == RunningThreadMuteRole)
-        return !current.post.cid.isEmpty() && (current.post.cid == m_runningThreadMuteCid);
+    else if (role == RunningOtherPrcessingRole)
+        return !current.post.cid.isEmpty() && (current.post.cid == m_runningOtherProcessingCid);
 
-    else if (role == HasQuoteRecordRole || role == QuoteRecordCidRole || role == QuoteRecordUriRole
+    else if (role == HasQuoteRecordRole || role == QuoteRecordIsMineRole
+             || role == QuoteRecordCidRole || role == QuoteRecordUriRole
              || role == QuoteRecordDisplayNameRole || role == QuoteRecordHandleRole
              || role == QuoteRecordAvatarRole || role == QuoteRecordRecordTextRole
              || role == QuoteRecordIndexedAtRole || role == QuoteRecordEmbedImagesRole
              || role == QuoteRecordEmbedImagesFullRole || role == QuoteRecordEmbedImagesAltRole
-             || role == QuoteRecordBlockedRole || role == QuoteRecordBlockedStatusRole
-             || role == QuoteRecordHasVideoRole || role == QuoteRecordVideoPlaylistRole
-             || role == QuoteRecordVideoThumbRole || role == QuoteRecordVideoAltRole)
-        return getQuoteItem(current.post, role);
+             || role == QuoteRecordDetatchedRole || role == QuoteRecordBlockedRole
+             || role == QuoteRecordBlockedStatusRole || role == QuoteRecordHasVideoRole
+             || role == QuoteRecordVideoPlaylistRole || role == QuoteRecordVideoThumbRole
+             || role == QuoteRecordVideoAltRole)
+        return getQuoteItem(
+                current.post,
+                m_toQuoteRecordRoles.value(
+                        role, AtpAbstractListModel::QuoteRecordRoles::HasQuoteRecordRole));
 
     else if (m_toEmbedVideoRoles.contains(role))
         return getEmbedVideoItem(current.post, m_toEmbedVideoRoles[role]);
@@ -260,7 +304,8 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         // if (!quote_cid.isEmpty() && m_mutedPosts.contains(quote_cid)) {
         //     return true;
         // } else
-        if (getQuoteItem(current.post, HasQuoteRecordRole).toBool())
+        if (getQuoteItem(current.post, AtpAbstractListModel::QuoteRecordRoles::HasQuoteRecordRole)
+                    .toBool())
             return getQuoteFilterMatched(current.post);
         else
             return false;
@@ -372,11 +417,11 @@ void TimelineListModel::update(int row, TimelineListModelRoles role, const QVari
             m_runningPostPinningCid.clear();
         }
         emit dataChanged(index(row), index(row), QVector<int>() << role);
-    } else if (role == RunningThreadMuteRole) {
+    } else if (role == RunningOtherPrcessingRole) {
         if (value.toBool()) {
-            m_runningThreadMuteCid = current.post.cid;
+            m_runningOtherProcessingCid = current.post.cid;
         } else {
-            m_runningThreadMuteCid.clear();
+            m_runningOtherProcessingCid.clear();
         }
         emit dataChanged(index(row), index(row), QVector<int>() << role);
     } else if (m_toThreadGateRoles.contains(role)) {
@@ -471,7 +516,7 @@ bool TimelineListModel::deletePost(int row)
 
     RecordOperator *ope = new RecordOperator(this);
     connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
-    connect(ope, &RecordOperator::finished,
+    connect(ope, &RecordOperator::finished, this,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(uri)
                 Q_UNUSED(cid)
@@ -503,7 +548,7 @@ bool TimelineListModel::repost(int row)
 
     RecordOperator *ope = new RecordOperator(this);
     connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
-    connect(ope, &RecordOperator::finished,
+    connect(ope, &RecordOperator::finished, this,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(cid)
                 if (success) {
@@ -535,7 +580,7 @@ bool TimelineListModel::like(int row)
 
     RecordOperator *ope = new RecordOperator(this);
     connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
-    connect(ope, &RecordOperator::finished,
+    connect(ope, &RecordOperator::finished, this,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(cid)
 
@@ -572,7 +617,7 @@ bool TimelineListModel::pin(int row)
 
     RecordOperator *ope = new RecordOperator(this);
     connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
-    connect(ope, &RecordOperator::finished,
+    connect(ope, &RecordOperator::finished, this,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(uri)
                 Q_UNUSED(cid)
@@ -605,8 +650,13 @@ bool TimelineListModel::muteThread(int row)
             LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(current.post.record);
     QString root_uri = record.reply.root.uri;
     if (root_uri.isEmpty() || !root_uri.startsWith("at://")) {
-        return false;
+        // 親がないときは自身をミュートする
+        root_uri = current.post.uri;
     }
+
+    if (runningOtherPrcessing(row))
+        return true;
+    setRunningOtherPrcessing(row, true);
 
     bool muted = item(row, ThreadMutedRole).toBool();
     if (muted) {
@@ -619,6 +669,7 @@ bool TimelineListModel::muteThread(int row)
             } else {
                 emit errorOccured(thread->errorCode(), thread->errorMessage());
             }
+            setRunningOtherPrcessing(row, false);
             thread->deleteLater();
         });
         thread->setAccount(account());
@@ -633,11 +684,59 @@ bool TimelineListModel::muteThread(int row)
             } else {
                 emit errorOccured(thread->errorCode(), thread->errorMessage());
             }
+            setRunningOtherPrcessing(row, false);
             thread->deleteLater();
         });
         thread->setAccount(account());
         thread->muteThread(root_uri);
     }
+    return true;
+}
+
+bool TimelineListModel::detachQuote(int row)
+{
+    bool detached = item(row, QuoteRecordDetatchedRole).toBool();
+    QString target_uri = item(row, QuoteRecordUriRole).toString();
+    QString detach_uri = item(row, UriRole).toString();
+
+    if (runningOtherPrcessing(row))
+        return true;
+    setRunningOtherPrcessing(row, true);
+
+    RecordOperator *ope = new RecordOperator(this);
+    connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
+    connect(ope, &RecordOperator::finished, this,
+            [=](bool success, const QString &uri, const QString &cid) {
+                Q_UNUSED(uri)
+                Q_UNUSED(cid)
+                if (success) {
+                    // 更新後のポストを取得
+                    AppBskyFeedGetPosts *post = new AppBskyFeedGetPosts(this);
+                    connect(post, &AppBskyFeedGetPosts::finished, [=](bool success) {
+                        if (success && !post->postsList().isEmpty()) {
+                            QString new_cid = post->postsList().at(0).cid;
+                            if (m_viewPostHash.contains(new_cid)) {
+                                // 操作できたということは表示しているので確認するまでもないはずだけど
+                                AppBskyFeedDefs::FeedViewPost feed_view_post;
+                                feed_view_post.post = post->postsList().at(0);
+                                m_viewPostHash[new_cid] = feed_view_post;
+                                emit dataChanged(index(row), index(row));
+                            }
+                        }
+                        setRunningOtherPrcessing(row, false);
+                        post->deleteLater();
+                    });
+                    post->setAccount(account());
+                    post->getPosts(QStringList() << detach_uri);
+                } else {
+                    setRunningOtherPrcessing(row, false);
+                }
+                ope->deleteLater();
+            });
+    ope->setAccount(account().service, account().did, account().handle, account().email,
+                    account().accessJwt, account().refreshJwt);
+    ope->updateDetachedStatusOfQuote(detached, target_uri, detach_uri);
+    return true;
 }
 
 QHash<int, QByteArray> TimelineListModel::roleNames() const
@@ -677,8 +776,10 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[RunningLikeRole] = "runningLike";
     roles[RunningdeletePostRole] = "runningdeletePost";
     roles[RunningPostPinningRole] = "runningPostPinning";
+    roles[RunningOtherPrcessingRole] = "runningOtherPrcessing";
 
     roles[HasQuoteRecordRole] = "hasQuoteRecord";
+    roles[QuoteRecordIsMineRole] = "quoteRecordIsMine";
     roles[QuoteRecordCidRole] = "quoteRecordCid";
     roles[QuoteRecordUriRole] = "quoteRecordUri";
     roles[QuoteRecordDisplayNameRole] = "quoteRecordDisplayName";
@@ -689,6 +790,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[QuoteRecordEmbedImagesRole] = "quoteRecordEmbedImages";
     roles[QuoteRecordEmbedImagesFullRole] = "quoteRecordEmbedImagesFull";
     roles[QuoteRecordEmbedImagesAltRole] = "quoteRecordEmbedImagesAlt";
+    roles[QuoteRecordDetatchedRole] = "quoteRecordDetatched";
     roles[QuoteRecordBlockedRole] = "quoteRecordBlocked";
     roles[QuoteRecordBlockedStatusRole] = "quoteRecordBlockedStatus";
     roles[QuoteRecordHasVideoRole] = "quoteRecordHasVideo";
@@ -930,226 +1032,6 @@ TimelineListModel::getReferenceTime(const AtProtocolType::AppBskyFeedDefs::FeedV
     }
 }
 
-QVariant TimelineListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
-                                         const TimelineListModelRoles role) const
-{
-    bool has_record = !post.embed_AppBskyEmbedRecord_View.isNull();
-    bool has_with_image = !post.embed_AppBskyEmbedRecordWithMedia_View.record.isNull();
-
-    if (role == HasQuoteRecordRole) {
-        if (has_record)
-            return post.embed_type
-                    == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecord_View
-                    && post.embed_AppBskyEmbedRecord_View->record_type
-                    == AppBskyEmbedRecord::ViewRecordType::record_ViewRecord;
-        else if (has_with_image)
-            return post.embed_type
-                    == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecordWithMedia_View
-                    && post.embed_AppBskyEmbedRecordWithMedia_View.record->record_type
-                    == AppBskyEmbedRecord::ViewRecordType::record_ViewRecord;
-        else
-            return false;
-    } else if (role == QuoteRecordCidRole) {
-        if (has_record)
-            return post.embed_AppBskyEmbedRecord_View->record_ViewRecord.cid;
-        else if (has_with_image)
-            return post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.cid;
-        else
-            return QString();
-    } else if (role == QuoteRecordUriRole) {
-        if (has_record)
-            return post.embed_AppBskyEmbedRecord_View->record_ViewRecord.uri;
-        else if (has_with_image)
-            return post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.uri;
-        else
-            return QString();
-    } else if (role == QuoteRecordDisplayNameRole) {
-        if (has_record)
-            return post.embed_AppBskyEmbedRecord_View->record_ViewRecord.author.displayName;
-        else if (has_with_image)
-            return post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.author
-                    .displayName;
-        else
-            return QString();
-    } else if (role == QuoteRecordHandleRole) {
-        if (has_record)
-            return post.embed_AppBskyEmbedRecord_View->record_ViewRecord.author.handle;
-        else if (has_with_image)
-            return post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.author
-                    .handle;
-        else
-            return QString();
-    } else if (role == QuoteRecordAvatarRole) {
-        if (has_record)
-            return post.embed_AppBskyEmbedRecord_View->record_ViewRecord.author.avatar;
-        else if (has_with_image)
-            return post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.author
-                    .avatar;
-        else
-            return QString();
-    } else if (role == QuoteRecordRecordTextRole) {
-        if (has_record)
-            return LexiconsTypeUnknown::copyRecordText(
-                    post.embed_AppBskyEmbedRecord_View->record_ViewRecord.value);
-        else if (has_with_image)
-            return LexiconsTypeUnknown::copyRecordText(
-                    post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.value);
-        else
-            return QString();
-    } else if (role == QuoteRecordIndexedAtRole) {
-        if (has_record)
-            return LexiconsTypeUnknown::formatDateTime(
-                    post.embed_AppBskyEmbedRecord_View->record_ViewRecord.indexedAt);
-        else if (has_with_image)
-            return LexiconsTypeUnknown::formatDateTime(
-                    post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
-                            .indexedAt);
-        else
-            return QString();
-    } else if (role == QuoteRecordEmbedImagesRole) {
-        // unionの配列で読み込んでない
-        if (has_record)
-            return LexiconsTypeUnknown::copyImagesFromRecord(
-                    post.embed_AppBskyEmbedRecord_View->record_ViewRecord,
-                    LexiconsTypeUnknown::CopyImageType::Thumb);
-        else if (has_with_image)
-            return LexiconsTypeUnknown::copyImagesFromRecord(
-                    post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord,
-                    LexiconsTypeUnknown::CopyImageType::Thumb);
-        else
-            return QStringList();
-    } else if (role == QuoteRecordEmbedImagesFullRole) {
-        // unionの配列で読み込んでない
-        if (has_record)
-            return LexiconsTypeUnknown::copyImagesFromRecord(
-                    post.embed_AppBskyEmbedRecord_View->record_ViewRecord,
-                    LexiconsTypeUnknown::CopyImageType::FullSize);
-        else if (has_with_image)
-            return LexiconsTypeUnknown::copyImagesFromRecord(
-                    post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord,
-                    LexiconsTypeUnknown::CopyImageType::FullSize);
-        else
-            return QStringList();
-    } else if (role == QuoteRecordEmbedImagesAltRole) {
-        if (has_record)
-            return LexiconsTypeUnknown::copyImagesFromRecord(
-                    post.embed_AppBskyEmbedRecord_View->record_ViewRecord,
-                    LexiconsTypeUnknown::CopyImageType::Alt);
-        else if (has_with_image)
-            return LexiconsTypeUnknown::copyImagesFromRecord(
-                    post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord,
-                    LexiconsTypeUnknown::CopyImageType::Alt);
-        else
-            return QStringList();
-    } else if (role == QuoteRecordBlockedRole) {
-        // 引用しているポストがブロックしているユーザーのモノか
-        // 付与されているラベルがHide設定の場合block表示をする
-        if (has_record) {
-            if (post.embed_AppBskyEmbedRecord_View->record_type
-                        == AppBskyEmbedRecord::ViewRecordType::record_ViewBlocked
-                || post.embed_AppBskyEmbedRecord_View->record_type
-                        == AppBskyEmbedRecord::ViewRecordType::record_ViewDetached)
-                return true;
-
-            if (post.embed_AppBskyEmbedRecord_View->record_ViewRecord.author.did != account().did) {
-                // 引用されているポストが他人のポストのみ判断する（自分のものの場合は隠さない）
-                if (getContentFilterStatus(
-                            post.embed_AppBskyEmbedRecord_View->record_ViewRecord.labels, false)
-                    == ConfigurableLabelStatus::Hide)
-                    return true;
-                if (getContentFilterStatus(
-                            post.embed_AppBskyEmbedRecord_View->record_ViewRecord.labels, true)
-                    == ConfigurableLabelStatus::Hide)
-                    return true;
-            }
-        } else if (has_with_image) {
-            if (post.embed_AppBskyEmbedRecordWithMedia_View.record->record_type
-                == AppBskyEmbedRecord::ViewRecordType::record_ViewBlocked)
-                return true;
-            if (post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord.author.did
-                != account().did) {
-                // 引用されているポストが他人のポストのみ判断する（自分のものの場合は隠さない）
-                if (getContentFilterStatus(post.embed_AppBskyEmbedRecordWithMedia_View.record
-                                                   ->record_ViewRecord.labels,
-                                           false)
-                    == ConfigurableLabelStatus::Hide)
-                    return true;
-                if (getContentFilterStatus(post.embed_AppBskyEmbedRecordWithMedia_View.record
-                                                   ->record_ViewRecord.labels,
-                                           true)
-                    == ConfigurableLabelStatus::Hide)
-                    return true;
-            }
-        }
-        return false;
-    } else if (role == QuoteRecordBlockedStatusRole) {
-        if (has_record) {
-            if (post.embed_AppBskyEmbedRecord_View->record_type
-                == AppBskyEmbedRecord::ViewRecordType::record_ViewBlocked)
-                return QuoteRecordBlockedStatusType::QuoteRecordBlocked;
-            else if (post.embed_AppBskyEmbedRecord_View->record_type
-                     == AppBskyEmbedRecord::ViewRecordType::record_ViewDetached)
-                return QuoteRecordBlockedStatusType::QuoteRecordDetached;
-        } else if (has_with_image) {
-            if (post.embed_AppBskyEmbedRecordWithMedia_View.record->record_type
-                == AppBskyEmbedRecord::ViewRecordType::record_ViewBlocked)
-                return QuoteRecordBlockedStatusType::QuoteRecordBlocked;
-        }
-        return QuoteRecordBlockedStatusType::QuoteRecordNonBlocked;
-
-    } else if (role == QuoteRecordHasVideoRole) {
-        if (has_record) {
-            return !post.embed_AppBskyEmbedRecord_View->record_ViewRecord
-                            .embeds_AppBskyEmbedVideo_View.isEmpty();
-        } else if (has_with_image) {
-            return (post.embed_AppBskyEmbedRecordWithMedia_View.media_type
-                    == AppBskyEmbedRecordWithMedia::ViewMediaType::media_AppBskyEmbedVideo_View);
-        } else {
-            return false;
-        }
-    } else if (role == QuoteRecordVideoPlaylistRole) {
-        if (has_record
-            && !post.embed_AppBskyEmbedRecord_View->record_ViewRecord.embeds_AppBskyEmbedVideo_View
-                        .isEmpty()) {
-            return post.embed_AppBskyEmbedRecord_View->record_ViewRecord
-                    .embeds_AppBskyEmbedVideo_View.first()
-                    .playlist;
-        } else if (has_with_image) {
-            return post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedVideo_View
-                    .playlist;
-        } else {
-            return QString();
-        }
-    } else if (role == QuoteRecordVideoThumbRole) {
-        if (has_record
-            && !post.embed_AppBskyEmbedRecord_View->record_ViewRecord.embeds_AppBskyEmbedVideo_View
-                        .isEmpty()) {
-            return post.embed_AppBskyEmbedRecord_View->record_ViewRecord
-                    .embeds_AppBskyEmbedVideo_View.first()
-                    .thumbnail;
-        } else if (has_with_image) {
-            return post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedVideo_View
-                    .thumbnail;
-        } else {
-            return QString();
-        }
-    } else if (role == QuoteRecordVideoAltRole) {
-        if (has_record
-            && !post.embed_AppBskyEmbedRecord_View->record_ViewRecord.embeds_AppBskyEmbedVideo_View
-                        .isEmpty()) {
-            return post.embed_AppBskyEmbedRecord_View->record_ViewRecord
-                    .embeds_AppBskyEmbedVideo_View.first()
-                    .alt;
-        } else if (has_with_image) {
-            return post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedVideo_View.alt;
-        } else {
-            return QString();
-        }
-    }
-
-    return QVariant();
-}
-
 void TimelineListModel::updateExtendMediaFile(const QString &parent_cid)
 {
     const AppBskyFeedDefs::FeedViewPost &current = m_viewPostHash.value(parent_cid);
@@ -1274,6 +1156,16 @@ bool TimelineListModel::runningPostPinning(int row) const
 void TimelineListModel::setRunningPostPinning(int row, bool running)
 {
     update(row, RunningPostPinningRole, running);
+}
+
+bool TimelineListModel::runningOtherPrcessing(int row) const
+{
+    return item(row, RunningOtherPrcessingRole).toBool();
+}
+
+void TimelineListModel::setRunningOtherPrcessing(int row, bool running)
+{
+    update(row, RunningOtherPrcessingRole, running);
 }
 
 bool TimelineListModel::visibleReplyToUnfollowedUsers() const

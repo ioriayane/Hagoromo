@@ -60,6 +60,7 @@ private slots:
     void test_LabelerProvider();
     void test_ComAtprotoRepoCreateRecord_post();
     void test_ComAtprotoRepoCreateRecord_threadgate();
+    void test_ComAtprotoRepoCreateRecord_postgate();
     void test_AppBskyFeedGetFeedGenerator();
     void test_ServiceUrl();
     void test_ComAtprotoRepoGetRecord_profile();
@@ -83,6 +84,8 @@ private slots:
     void test_PlcDirectory();
     void test_DirectoryPlcLogAudit();
     void test_PinnedPostCache();
+
+    void test_convertVideoThumb();
 
 private:
     void test_putPreferences(const QString &path, const QByteArray &body);
@@ -1690,6 +1693,45 @@ void atprotocol_test::test_ComAtprotoRepoCreateRecord_threadgate()
     }
 }
 
+void atprotocol_test::test_ComAtprotoRepoCreateRecord_postgate()
+{
+
+    QString temp_did = m_account.did;
+    m_account.did = "did:plc:mqxsuw5b5rhpwo4lw6iwlid5";
+    AtProtocolInterface::ComAtprotoRepoCreateRecordEx createrecord;
+    createrecord.setAccount(m_account);
+
+    {
+        createrecord.setService(
+                QString("http://localhost:%1/response/postgate/1").arg(m_listenPort));
+        QSignalSpy spy(&createrecord, SIGNAL(finished(bool)));
+        createrecord.postGate(
+                "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3l44kjwogjq2q",
+                AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType::
+                        embeddingRules_DisableRule,
+                QStringList());
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+
+    {
+        createrecord.setService(
+                QString("http://localhost:%1/response/postgate/2").arg(m_listenPort));
+        QSignalSpy spy(&createrecord, SIGNAL(finished(bool)));
+        createrecord.postGate(
+                "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3l2zk2fehlz24",
+                AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType::none,
+                QStringList() << "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/"
+                                 "3l44nnbwfcq2q");
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+    }
+}
+
 void atprotocol_test::test_AppBskyFeedGetFeedGenerator()
 {
     AtProtocolInterface::AppBskyFeedGetFeedGenerator generator;
@@ -2370,6 +2412,22 @@ void atprotocol_test::test_PinnedPostCache()
     //
     PinnedPostCache::getInstance()->update("did2", "");
     QVERIFY(PinnedPostCache::getInstance()->pinned("did2", "") == false);
+}
+
+void atprotocol_test::test_convertVideoThumb()
+{
+
+    QString url;
+
+    url = AtProtocolType::LexiconsTypeUnknown::convertVideoThumb(
+            "https://video.bsky.app/watch/did%3Aplc%3Aipj5qejfoqu6eukvt72uhyit/"
+            "bafkreie2dwcpkwtx4jqjh4qwcvgf3zs4eis3gt6wjgtd2smrheh5m3s62i/thumbnail.jpg");
+#if 0
+    QVERIFY2(url
+                     == "https://video.cdn.bsky.app/hls/did:plc:ipj5qejfoqu6eukvt72uhyit/"
+                        "bafkreie2dwcpkwtx4jqjh4qwcvgf3zs4eis3gt6wjgtd2smrheh5m3s62i/thumbnail.jpg",
+             url.toLocal8Bit());
+#endif
 }
 
 void atprotocol_test::test_putPreferences(const QString &path, const QByteArray &body)

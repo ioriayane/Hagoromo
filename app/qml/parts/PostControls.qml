@@ -15,6 +15,8 @@ RowLayout {
     property bool isLiked: false
     property bool pinned: false
     property bool threadMuted: false
+    property bool quoteDetached: false
+    property bool quoteIsMine: false
     property string postUri: ""
     property string handle: ""
     property bool mine: false
@@ -28,6 +30,7 @@ RowLayout {
     property alias quoteMenuItem: quoteMenuItem
     property alias likeButton: likeButton
     property alias pinnedImage: pinnedImage
+    property alias moreButton: moreButton
 
     signal triggeredTranslate()
     signal triggeredCopyToClipboard()
@@ -40,6 +43,7 @@ RowLayout {
     signal triggeredRequestUpdateThreadGate()
     signal triggeredRequestPin()
     signal triggeredRequestMuteThread()
+    signal triggeredRequestDetachQuote()
 
     function openInOhters(uri, handle){
         if(uri.length === 0 || uri.startsWith("at://") === false){
@@ -139,6 +143,10 @@ RowLayout {
                 theirMorePopup.open()
             }
         }
+        BusyIndicator {
+            anchors.fill: parent
+            visible: !parent.enabled
+        }
         MenuEx {
             id: myMorePopup
             Action {
@@ -194,7 +202,7 @@ RowLayout {
                 onTriggered: triggeredRequestMuteThread()
             }
             Action {
-                text: qsTr("Who can reply")
+                text: qsTr("Edit interaction settings")
                 enabled: mine
                 icon.source: "../images/thread.png"
                 onTriggered: triggeredRequestUpdateThreadGate()
@@ -261,6 +269,12 @@ RowLayout {
                 text: threadMuted ? qsTr("Unmute thread") : qsTr("Mute thread")
                 icon.source: "../images/mute.png"
                 onTriggered: triggeredRequestMuteThread()
+            }
+            Action {
+                text: quoteDetached ? qsTr("Re-attach quote") : qsTr("Detach quote")
+                icon.source: "../images/visibility_off.png"
+                enabled: quoteIsMine
+                onTriggered: triggeredRequestDetachQuote()
             }
             MenuSeparator {}
             Action {

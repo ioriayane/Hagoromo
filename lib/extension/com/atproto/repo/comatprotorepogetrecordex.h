@@ -12,6 +12,7 @@ public:
 
     void profile(const QString &did);
     void list(const QString &did, const QString &rkey);
+    void postGate(const QString &did, const QString &rkey);
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);

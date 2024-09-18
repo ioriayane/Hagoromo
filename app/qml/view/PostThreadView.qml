@@ -149,7 +149,7 @@ ColumnLayout {
                 quoteFilterFrame.visible: model.quoteFilterMatched && !model.quoteRecordBlocked
                 quoteFilterFrame.labelText: qsTr("Quoted content warning")
                 blockedQuoteFrame.visible: model.quoteRecordBlocked
-                quoteRecordStatus: model.quoteRecordBlockedStatus
+                blockedQuoteFrameLabel.text: model.quoteRecordBlockedStatus
                 hasQuote: model.hasQuoteRecord && !model.quoteRecordBlocked
                 quoteRecordFrame.onClicked: (mouse) => {
                                                 if(model.quoteRecordUri.length > 0){
@@ -166,11 +166,11 @@ ColumnLayout {
                 quoteRecordImagePreview.embedAlts: model.quoteRecordEmbedImagesAlt
                 quoteRecordImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.quoteRecordEmbedImagesFull, model.quoteRecordEmbedImagesAlt)
                 quoteRecordFrame.quoteRecordEmbedVideoFrame.visible: model.quoteRecordHasVideo
-                quoteRecordFrame.quoteRecordEmbedVideoFrame.thumbImage.source: model.quoteRecordVideoThumb
+                quoteRecordFrame.quoteRecordEmbedVideoFrame.thumbImageSource: model.quoteRecordVideoThumb
                 quoteRecordFrame.quoteRecordEmbedVideoFrame.onClicked: Qt.openUrlExternally(rootListView.model.getItemOfficialUrl(model.index))
                 embedVideoFrame.visible: model.hasVideo
                 embedVideoFrame.onClicked: Qt.openUrlExternally(rootListView.model.getItemOfficialUrl(model.index))
-                embedVideoFrame.thumbImage.source: model.videoThumbUri
+                embedVideoFrame.thumbImageSource: model.videoThumbUri
 
                 externalLinkFrame.visible: model.hasExternalLink && contentMediaFilterFrame.showContent
                 externalLinkFrame.onClicked: Qt.openUrlExternally(model.externalLinkUri)
@@ -207,6 +207,8 @@ ColumnLayout {
                 postControls.replyButton.enabled: !model.replyDisabled
                 postControls.repostButton.enabled: !model.runningRepost
                 postControls.likeButton.enabled: !model.runningLike
+                postControls.pinnedImage.enabled: !model.runningPostPinning
+                postControls.moreButton.enabled: !model.runningOtherPrcessing
                 postControls.quoteMenuItem.enabled: !model.quoteDisabled
                 postControls.replyButton.onClicked: requestReply(model.cid, model.uri,
                                                                  model.replyRootCid, model.replyRootUri,
@@ -220,6 +222,8 @@ ColumnLayout {
                 postControls.isLiked: model.isLiked
                 postControls.pinned: model.pinnedByMe
                 postControls.threadMuted: model.threadMuted
+                postControls.quoteDetached: model.quoteRecordDetatched
+                postControls.quoteIsMine: model.quoteRecordIsMine
                 postControls.postUri: model.uri
                 postControls.handle: model.handle
                 postControls.mine: model.did === postThreadView.accountDid
@@ -233,6 +237,7 @@ ColumnLayout {
                 postControls.onTriggeredRequestUpdateThreadGate: postThreadView.requestUpdateThreadGate(model.uri, model.threadGateUri, model.threadGateType, model.threadGateRules, updatedThreadGate)
                 postControls.onTriggeredRequestPin: rootListView.model.pin(model.index)
                 postControls.onTriggeredRequestMuteThread: rootListView.model.muteThread(model.index)
+                postControls.onTriggeredRequestDetachQuote: rootListView.model.detachQuote(model.index)
 
                 threadConnected: model.threadConnected
                 threadConnectorTop.visible:  model.threadConnectorTop

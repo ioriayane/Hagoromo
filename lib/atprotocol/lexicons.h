@@ -2148,6 +2148,7 @@ Q_DECLARE_METATYPE(AtProtocolType::AppBskyGraphListitem::Main)
 Q_DECLARE_METATYPE(AtProtocolType::AppBskyActorProfile::Main)
 Q_DECLARE_METATYPE(AtProtocolType::AppBskyGraphList::Main)
 Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedThreadgate::Main)
+Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedPostgate::Main)
 Q_DECLARE_METATYPE(AtProtocolType::ComWhtwndBlogEntry::Main)
 Q_DECLARE_METATYPE(AtProtocolType::DirectoryPlcDefs::DidDoc)
 
