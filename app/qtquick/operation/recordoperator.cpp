@@ -1249,6 +1249,7 @@ void RecordOperator::postGate(const QString &uri,
     if (m_postGateEmbeddingRule != rule && m_postGateDetachedEmbeddingUris.isEmpty()) {
         qDebug().noquote() << "Not set post gate.";
         callback(true, QString(), QString());
+        return;
     }
 
     AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType type =
