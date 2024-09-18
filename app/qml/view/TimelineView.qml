@@ -146,7 +146,7 @@ ScrollView {
             quoteFilterFrame.visible: model.quoteFilterMatched && !model.quoteRecordBlocked
             quoteFilterFrame.labelText: qsTr("Quoted content warning")
             blockedQuoteFrame.visible: model.quoteRecordBlocked
-            quoteRecordStatus: model.quoteRecordBlockedStatus
+            blockedQuoteFrameLabel.text: model.quoteRecordBlockedStatus
             hasQuote: model.hasQuoteRecord && !model.quoteRecordBlocked
             quoteRecordFrame.onClicked: (mouse) => {
                                             if(model.quoteRecordUri.length > 0){
@@ -199,6 +199,7 @@ ScrollView {
             postControls.repostButton.enabled: !model.runningRepost
             postControls.likeButton.enabled: !model.runningLike
             postControls.pinnedImage.enabled: !model.runningPostPinning
+            postControls.moreButton.enabled: !model.runningOtherPrcessing
             postControls.quoteMenuItem.enabled: !model.quoteDisabled
             postControls.replyButton.onClicked: requestReply(model.cid, model.uri,
                                                              model.replyRootCid, model.replyRootUri,
@@ -212,6 +213,8 @@ ScrollView {
             postControls.isLiked: model.isLiked
             postControls.pinned: model.pinnedByMe
             postControls.threadMuted: model.threadMuted
+            postControls.quoteDetached: model.quoteRecordDetatched
+            postControls.quoteIsMine: model.quoteRecordIsMine
             postControls.postUri: model.uri
             postControls.handle: model.handle
             postControls.mine: model.did === timelineView.accountDid
@@ -226,6 +229,7 @@ ScrollView {
             postControls.onTriggeredRequestUpdateThreadGate: timelineView.requestUpdateThreadGate(model.uri, model.threadGateUri, model.threadGateType, model.threadGateRules, updatedThreadGate)
             postControls.onTriggeredRequestPin: rootListView.model.pin(model.index)
             postControls.onTriggeredRequestMuteThread: rootListView.model.muteThread(model.index)
+            postControls.onTriggeredRequestDetachQuote: rootListView.model.detachQuote(model.index)
             onHoveredLinkChanged: timelineView.hoveredLink = hoveredLink
 
             function updatedThreadGate(threadgate_uri, type, rules){

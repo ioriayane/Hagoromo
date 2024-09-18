@@ -25,6 +25,9 @@ public:
     void listItem(const QString &uri, const QString &did);
     void threadGate(const QString &uri, const AtProtocolType::ThreadGateType type,
                     const QList<AtProtocolType::ThreadGateAllow> &allow_rules);
+    void postGate(const QString &uri,
+                  const AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType type,
+                  const QStringList &detached_uris);
 
     void setReply(const QString &parent_cid, const QString &parent_uri, const QString &root_cid,
                   const QString &root_uri);

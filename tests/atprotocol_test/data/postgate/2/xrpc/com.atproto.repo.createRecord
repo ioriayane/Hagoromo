@@ -1,0 +1,16 @@
+
+{
+    "repo": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+    "collection": "app.bsky.feed.postgate",
+    "rkey": "3l2zk2fehlz24",
+    "record": {
+        "$type": "app.bsky.feed.postgate",
+        "createdAt": "2024-09-14T14:10:40.739Z",
+        "post": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3l2zk2fehlz24",
+        "detachedEmbeddingUris": [
+            "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3l44nnbwfcq2q"
+        ],
+        "embeddingRules": []
+    },
+    "validate": true
+}

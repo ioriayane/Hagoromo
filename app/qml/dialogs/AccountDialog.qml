@@ -55,6 +55,7 @@ Dialog {
         defaultSettingMode: true
         property int accountIndex: -1
         onAccepted: {
+            accountList.model.update(accountIndex, AccountListModel.PostGateQuoteEnabledRole, selectedQuoteEnabled)
             accountList.model.update(accountIndex, AccountListModel.ThreadGateTypeRole, selectedType)
             accountList.model.update(accountIndex, AccountListModel.ThreadGateOptionsRole, selectedOptions)
         }
@@ -202,10 +203,11 @@ Dialog {
                             MenuSeparator {}
                             Action {
                                 icon.source: "../images/thread.png"
-                                text: qsTr("Who can reply")
+                                text: qsTr("Post interaction settings")
                                 onTriggered: {
                                     if(selectThreadGateDialog.account.set(accountList.model, model.uuid)){
                                         var i = model.index
+                                        selectThreadGateDialog.initialQuoteEnabled = accountList.model.item(i, AccountListModel.PostGateQuoteEnabledRole)
                                         selectThreadGateDialog.initialType = accountList.model.item(i, AccountListModel.ThreadGateTypeRole)
                                         selectThreadGateDialog.initialOptions = accountList.model.item(i, AccountListModel.ThreadGateOptionsRole)
                                         selectThreadGateDialog.accountIndex = i

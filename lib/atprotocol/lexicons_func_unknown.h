@@ -74,6 +74,8 @@ void insertFacetsJson(QJsonObject &parent,
                       const QList<AtProtocolType::AppBskyRichtextFacet::Main> &facets);
 QString applyFacetsTo(const QString &text, const QList<AppBskyRichtextFacet::Main> &text_facets);
 
+QString extractRkey(const QString &uri);
+
 template<typename T>
 T fromQVariant(const QVariant &variant)
 {

@@ -88,6 +88,9 @@ QVariant AccountListModel::item(int row, AccountListModelRoles role) const
     else if (role == ThreadGateOptionsRole)
         return m_accountList[row].thread_gate_options;
 
+    else if (role == PostGateQuoteEnabledRole)
+        return m_accountList[row].post_gate_quote_enabled;
+
     else if (role == StatusRole)
         return static_cast<int>(m_accountList.at(row).status);
 
@@ -134,6 +137,8 @@ void AccountListModel::update(int row, AccountListModelRoles role, const QVarian
     } else if (role == ThreadGateOptionsRole) {
         m_accountList[row].thread_gate_options = value.toStringList();
         save();
+    } else if (role == PostGateQuoteEnabledRole) {
+        m_accountList[row].post_gate_quote_enabled = value.toBool();
     }
 
     emit dataChanged(index(row), index(row));
@@ -314,6 +319,7 @@ void AccountListModel::save() const
             }
             account_item["thread_gate_options"] = thread_gate_options;
         }
+        account_item["post_gate_quote_enabled"] = item.post_gate_quote_enabled;
 
         account_array.append(account_item);
     }
@@ -363,6 +369,8 @@ void AccountListModel::load()
                      doc.array().at(i).toObject().value("thread_gate_options").toArray()) {
                     item.thread_gate_options.append(value.toString());
                 }
+                item.post_gate_quote_enabled =
+                        doc.array().at(i).toObject().value("post_gate_quote_enabled").toBool(true);
 
                 beginInsertRows(QModelIndex(), count(), count());
                 m_accountList.append(item);
@@ -415,6 +423,7 @@ QHash<int, QByteArray> AccountListModel::roleNames() const
     roles[PostLanguagesRole] = "postLanguages";
     roles[ThreadGateTypeRole] = "threadGateType";
     roles[ThreadGateOptionsRole] = "threadGateOptions";
+    roles[PostGateQuoteEnabledRole] = "postGateQuoteEnabled";
     roles[StatusRole] = "status";
 
     return roles;
