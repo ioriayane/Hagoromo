@@ -12,6 +12,8 @@ description: This is a multi-column Bluesky client.
   - Supports thumbnail display of videos (click to go to the official site)
   - Support for setting whether or not to allow quotations (when posting, after posting)
   - Handling of basic settings for whether or not to allow quotations
+- Update
+  - Improved the layout of the buttons that operate the post
 - Fix
   - Fix a bug that prevented the translation function from working in post threads
   - Fix a bug that only allowed thread muting to be done in posts in the middle of a thread
