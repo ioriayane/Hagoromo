@@ -19,6 +19,7 @@
 - [Qt 5.15.2](https://www.qt.io/)
 - [OpenSSL 1.1.1q](http://www.openssl.org/)
 - [cpp-httplib](https://github.com/yhirose/cpp-httplib)
+- [zlib](https://github.com/madler/zlib)
 - [Qt HTTP Server](https://code.qt.io/cgit/qt-extensions/qthttpserver.git/)(for unit test only)
 
 ## ダウンロード

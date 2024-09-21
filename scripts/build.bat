@@ -23,6 +23,8 @@ set VS_REDIST_FOLDER="C:\Program Files (x86)\Microsoft Visual Studio\2019\Commun
 set BUILD_FOLDER=build-hagoromo
 set DEPLOY_FOLDER=deploy-hagoromo
 
+REM --- build deps -------
+cmd.exe /c %CWD%/scripts/build_zlib.bat
 
 REM --- check path -------
 qmake -v

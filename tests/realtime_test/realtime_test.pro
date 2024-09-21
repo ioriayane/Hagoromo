@@ -12,6 +12,7 @@ include(../common/common.pri)
 include(../deps.pri)
 include(../../app/qtquick/qtquick.pri)
 include(../../openssl/openssl.pri)
+include(../../zlib/zlib.pri)
 
 RESOURCES += \
     realtime_test.qrc
