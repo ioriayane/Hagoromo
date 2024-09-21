@@ -12,6 +12,7 @@ include(../common/common.pri)
 include(../deps.pri)
 include(../../openssl/openssl.pri)
 include(../../app/qtquick/qtquick.pri)
+include(../../zlib/zlib.pri)
 
 RESOURCES += \
     log_test.qrc

@@ -3,10 +3,15 @@ QT += xml sql websockets httpserver
 TEMPLATE = lib
 CONFIG += staticlib
 
-include(../openssl/openssl.pri)
+CONFIG += c++11
 
 INCLUDEPATH += $$PWD \
-    $$PWD/../3rdparty/cpp-httplib
+    $$PWD/../3rdparty/cpp-httplib \
+    $$PWD/../zlib/include
+win32:INCLUDEPATH += $$dirname(QMAKE_QMAKE)/../../../Tools/OpenSSL/Win_x64/include
+unix:INCLUDEPATH += ../openssl/include
+
+DEFINES += CPPHTTPLIB_ZLIB_SUPPORT # zlib support for cpp-httplib
 
 SOURCES += \
     $$PWD/atprotocol/accessatprotocol.cpp \

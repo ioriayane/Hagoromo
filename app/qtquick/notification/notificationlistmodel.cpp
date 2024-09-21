@@ -315,17 +315,18 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
     } else if (m_toListLinkRoles.contains(role)) {
         return getListLinkItem(m_postHash.value(current.cid), m_toListLinkRoles[role]);
 
-    } else if (role == HasQuoteRecordRole || role == QuoteRecordIsMineRole
-               || role == QuoteRecordCidRole || role == QuoteRecordUriRole
-               || role == QuoteRecordDisplayNameRole || role == QuoteRecordHandleRole
-               || role == QuoteRecordAvatarRole || role == QuoteRecordRecordTextRole
-               || role == QuoteRecordIndexedAtRole || role == QuoteRecordEmbedImagesRole
-               || role == QuoteRecordEmbedImagesFullRole || role == QuoteRecordEmbedImagesAltRole
-               || role == QuoteRecordIsRepostedRole || role == QuoteRecordIsLikedRole
-               || role == QuoteRecordDetatchedRole || role == QuoteRecordBlockedRole
-               || role == QuoteRecordBlockedStatusRole || role == QuoteRecordHasVideoRole
-               || role == QuoteRecordVideoPlaylistRole || role == QuoteRecordVideoThumbRole
-               || role == QuoteRecordVideoAltRole) {
+    } else if ((current.reason == "quote")
+               && (role == HasQuoteRecordRole || role == QuoteRecordIsMineRole
+                   || role == QuoteRecordCidRole || role == QuoteRecordUriRole
+                   || role == QuoteRecordDisplayNameRole || role == QuoteRecordHandleRole
+                   || role == QuoteRecordAvatarRole || role == QuoteRecordRecordTextRole
+                   || role == QuoteRecordIndexedAtRole || role == QuoteRecordEmbedImagesRole
+                   || role == QuoteRecordEmbedImagesFullRole
+                   || role == QuoteRecordEmbedImagesAltRole || role == QuoteRecordIsRepostedRole
+                   || role == QuoteRecordIsLikedRole || role == QuoteRecordDetatchedRole
+                   || role == QuoteRecordBlockedRole || role == QuoteRecordBlockedStatusRole
+                   || role == QuoteRecordHasVideoRole || role == QuoteRecordVideoPlaylistRole
+                   || role == QuoteRecordVideoThumbRole || role == QuoteRecordVideoAltRole)) {
         // 引用はしたがわのポストの本体も保持しているので。
         return getQuoteItem(
                 m_postHash.value(current.cid),
@@ -350,7 +351,95 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
         } else if (current.reason == "quote") {
         }
 
-        if (role == HasFeedGeneratorRole) { // カスタムフィードに対するいいね
+        //----------------------------------------
+        // like, repostされた自分のポストはQMLで引用扱いされている
+        if (role == QuoteRecordCidRole) {
+            return false;
+        } else if (role == QuoteRecordIsMineRole) {
+            return true;
+        } else if (role == QuoteRecordDetatchedRole) {
+            return false;
+        } else if (role == QuoteRecordBlockedRole) {
+            return false;
+        } else if (role == QuoteRecordBlockedStatusRole) {
+            return QString();
+        } else if (role == QuoteRecordCidRole) {
+            if (m_postHash.contains(record_cid))
+                return m_postHash[record_cid].cid;
+            else
+                return QString();
+        } else if (role == QuoteRecordUriRole) {
+            if (m_postHash.contains(record_cid))
+                return m_postHash[record_cid].uri;
+            else
+                return QString();
+        } else if (role == QuoteRecordDisplayNameRole) {
+            if (m_postHash.contains(record_cid))
+                return m_postHash[record_cid].author.displayName;
+            else
+                return QString();
+        } else if (role == QuoteRecordHandleRole) {
+            if (m_postHash.contains(record_cid))
+                return m_postHash[record_cid].author.handle;
+            else
+                return QString();
+        } else if (role == QuoteRecordAvatarRole) {
+            if (m_postHash.contains(record_cid))
+                return m_postHash[record_cid].author.avatar;
+            else
+                return QString();
+        } else if (role == QuoteRecordIndexedAtRole) {
+            if (m_postHash.contains(record_cid))
+                return AtProtocolType::LexiconsTypeUnknown::formatDateTime(
+                        m_postHash[record_cid].indexedAt);
+            else
+                return QString();
+        } else if (role == QuoteRecordRecordTextRole) {
+            if (m_postHash.contains(record_cid))
+                return AtProtocolType::LexiconsTypeUnknown::copyRecordText(
+                        m_postHash[record_cid].record);
+            else
+                return QString();
+        } else if (role == QuoteRecordEmbedImagesRole) {
+            if (m_postHash.contains(record_cid))
+                return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
+                        m_postHash[record_cid],
+                        AtProtocolType::LexiconsTypeUnknown::CopyImageType::Thumb);
+            else
+                return QStringList();
+        } else if (role == QuoteRecordEmbedImagesFullRole) {
+            if (m_postHash.contains(record_cid))
+                return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
+                        m_postHash[record_cid],
+                        AtProtocolType::LexiconsTypeUnknown::CopyImageType::FullSize);
+            else
+                return QStringList();
+        } else if (role == QuoteRecordEmbedImagesAltRole) {
+            if (m_postHash.contains(record_cid))
+                return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
+                        m_postHash[record_cid],
+                        AtProtocolType::LexiconsTypeUnknown::CopyImageType::Alt);
+            else
+                return QStringList();
+        } else if (role == QuoteRecordIsRepostedRole) {
+            if (m_postHash.contains(record_cid))
+                return m_postHash[record_cid].viewer.repost.contains(account().did);
+            else
+                return false;
+        } else if (role == QuoteRecordIsLikedRole) {
+            if (m_postHash.contains(record_cid))
+                return m_postHash[record_cid].viewer.like.contains(account().did);
+            else
+                return false;
+
+        } else if (m_toQuoteRecordVideoRoles.contains(role)) {
+            if (m_postHash.contains(record_cid))
+                return getEmbedVideoItem(m_postHash.value(record_cid),
+                                         m_toQuoteRecordVideoRoles[role]);
+            else
+                return QString();
+
+        } else if (role == HasFeedGeneratorRole) { // カスタムフィードに対するいいね
             if (m_feedGeneratorHash.contains(record_cid)) {
                 return true;
             } else {

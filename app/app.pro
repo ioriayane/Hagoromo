@@ -191,6 +191,7 @@ QML_DESIGNER_IMPORT_PATH =
 include(deps.pri)
 include(qtquick/qtquick.pri)
 include(../openssl/openssl.pri)
+include(../zlib/zlib.pri)
 
 win32:{
     CONFIG(debug,debug|release):install_dir = $$OUT_PWD/debug
@@ -205,3 +206,6 @@ mac:translations.path = \
 translations.files = $$PWD/i18n/*.qm
 #qmファイルが存在しないとmakefileに追加されないので注意
 INSTALLS += translations
+
+# openssl.priなどで追加した依存ファイルのコピーに必要
+win32:QMAKE_POST_LINK += nmake -f $(MAKEFILE) install

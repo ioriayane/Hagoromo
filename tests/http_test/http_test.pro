@@ -11,6 +11,7 @@ SOURCES +=  tst_http_test.cpp
 include(../common/common.pri)
 include(../deps.pri)
 include(../../openssl/openssl.pri)
+include(../../zlib/zlib.pri)
 
 RESOURCES += \
     http_test.qrc

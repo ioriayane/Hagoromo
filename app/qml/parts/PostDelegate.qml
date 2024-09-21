@@ -291,6 +291,7 @@ ClickableFrame {
                     PostControls {
                         id: postControls
                         Layout.preferredWidth: parent.width
+                        Layout.maximumWidth: parent.width
                     }
                 }
             }
