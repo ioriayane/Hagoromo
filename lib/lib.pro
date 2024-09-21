@@ -9,7 +9,7 @@ INCLUDEPATH += $$PWD \
     $$PWD/../3rdparty/cpp-httplib \
     $$PWD/../zlib/include
 win32:INCLUDEPATH += $$dirname(QMAKE_QMAKE)/../../../Tools/OpenSSL/Win_x64/include
-linux:INCLUDEPATH += ../openssl/include
+unix:INCLUDEPATH += ../openssl/include
 
 DEFINES += CPPHTTPLIB_ZLIB_SUPPORT # zlib support for cpp-httplib
 

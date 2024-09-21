@@ -33,7 +33,12 @@ build_zlib(){
     make_dir "build-zlib"
     cd "build-zlib"
 
-    cmake ../zlib -DCMAKE_INSTALL_PREFIX="../../zlib"
+    if [ "${PLATFORM_TYPE}" == "linux" ]; then
+        cmake ../zlib -DCMAKE_INSTALL_PREFIX="../../zlib"
+    elif [ "${PLATFORM_TYPE}" == "mac" ]; then
+        PATH=$PATH:$QT_BIN_FOLDER/../../../Tools/CMake/CMake.app/Contents/bin/
+        cmake ../zlib -DCMAKE_INSTALL_PREFIX="../../zlib" -DCMAKE_OSX_ARCHITECTURES="x86_64"
+    fi
     cmake --build . --config RELEASE --target install
     cmake --build . --config DEBUG --target install
 
@@ -95,7 +100,7 @@ deploy_hagoromo(){
         mkdir -p ${work_dir}/Hagoromo.app/Contents/MacOS/translations
         cp "app/i18n/app_ja.qm" ${work_dir}/Hagoromo.app/Contents/MacOS/translations
         cp ${QT_BIN_FOLDER}/../translations/qt_ja.qm ${work_dir}/Hagoromo.app/Contents/MacOS/translations
-
+        cp -RL "zlib/lib/libz.1.dylib" ${work_dir}/Hagoromo.app/Contents/Frameworks
     fi
 
     cd ${work_root_dir}
