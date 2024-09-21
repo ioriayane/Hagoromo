@@ -5,9 +5,9 @@ set CWD=%CD%
 REM --- main -----------------------------
 
 set VS_SETUP_BAT="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
-set SRC_FOLDER=../3rdparty/zlib
+set SRC_FOLDER=../zlib
 set BUILD_FOLDER=build-zlib
-set DEPLOY_FOLDER=../zlib
+set DEPLOY_FOLDER=../../zlib
 set CMAKE_PLATFORM=x64
 
 
@@ -16,6 +16,7 @@ nmake /? /c
 if ERRORLEVEL 1 call %VS_SETUP_BAT%
 
 REM --- make folder -------
+cd 3rdparty
 if EXIST %BUILD_FOLDER% rmdir /s /q %BUILD_FOLDER%
 if NOT ERRORLEVEL 0 goto QUIT
 mkdir %BUILD_FOLDER%

@@ -12,7 +12,7 @@
 
 - Windows 11 Profesional
 - Ubuntu 22.04
-- Mac 10.13
+- Mac 10.15
 
 ## 使用ソフトウェア
 
@@ -164,7 +164,7 @@ This is a multi-column [Bluesky](https://blueskyweb.xyz/) client.
 
 - Windows 11 Profesional
 - Ubuntu 22.04
-- Mac 10.13
+- Mac 10.15
 
 ## Software used
 
