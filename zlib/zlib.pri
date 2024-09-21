@@ -20,5 +20,5 @@ win32:{
 }
 unix: {
     INCLUDEPATH += $${zlib_dir}/include
-    LIBS += -L$${zlib_dir}/lib -lssl -lcrypto
+    LIBS += -L$${zlib_dir}/lib -lz
 }

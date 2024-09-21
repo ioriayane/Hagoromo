@@ -208,4 +208,4 @@ translations.files = $$PWD/i18n/*.qm
 INSTALLS += translations
 
 # openssl.priなどで追加した依存ファイルのコピーに必要
-QMAKE_POST_LINK += nmake -f $(MAKEFILE) install
+win32:QMAKE_POST_LINK += nmake -f $(MAKEFILE) install

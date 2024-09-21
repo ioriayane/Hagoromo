@@ -26,6 +26,23 @@ build_openssl(){
     popd
 }
 
+build_zlib(){
+    pushd $(pwd)
+
+    cd "3rdparty"
+    make_dir "build-zlib"
+    cd "build-zlib"
+
+    cmake ../zlib -DCMAKE_INSTALL_PREFIX="../../zlib"
+    cmake --build . --config RELEASE --target install
+    cmake --build . --config DEBUG --target install
+
+    cd ../zlib
+    git checkout .
+
+    popd
+}
+
 build_hagoromo(){
     pushd $(pwd)
 
@@ -60,6 +77,8 @@ deploy_hagoromo(){
         cp ${SCRIPT_FOLDER}/deploy/Hagoromo.sh ${work_dir}
         cp "openssl/lib/libcrypto.so.1.1" ${work_dir}/lib
         cp "openssl/lib/libssl.so.1.1" ${work_dir}/lib
+        cp "zlib/lib/libz.so.1.3.1" ${work_dir}/lib
+        cp "zlib/lib/libz.so.1" ${work_dir}/lib
         cp "app/i18n/app_ja.qm" ${work_dir}/bin/translations
         cp ${QT_BIN_FOLDER}/../translations/qt_ja.qm ${work_dir}/bin/translations
 
@@ -109,6 +128,7 @@ fi
 VERSION_NO=$(cat app/main.cpp | grep "app.setApplicationVersion" | grep -oE "[0-9]+.[0-9]+.[0-9]+")
 
 build_openssl
+build_zlib
 build_hagoromo
 deploy_hagoromo
 # update_web
