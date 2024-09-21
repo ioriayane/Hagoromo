@@ -26,6 +26,28 @@ build_openssl(){
     popd
 }
 
+build_zlib(){
+    pushd $(pwd)
+
+    cd "3rdparty"
+    make_dir "build-zlib"
+    cd "build-zlib"
+
+    if [ "${PLATFORM_TYPE}" == "linux" ]; then
+        cmake ../zlib -DCMAKE_INSTALL_PREFIX="../../zlib"
+    elif [ "${PLATFORM_TYPE}" == "mac" ]; then
+        PATH=$PATH:$QT_BIN_FOLDER/../../../Tools/CMake/CMake.app/Contents/bin/
+        cmake ../zlib -DCMAKE_INSTALL_PREFIX="../../zlib" -DCMAKE_OSX_ARCHITECTURES="x86_64"
+    fi
+    cmake --build . --config RELEASE --target install
+    cmake --build . --config DEBUG --target install
+
+    cd ../zlib
+    git checkout .
+
+    popd
+}
+
 build_hagoromo(){
     pushd $(pwd)
 
@@ -60,6 +82,8 @@ deploy_hagoromo(){
         cp ${SCRIPT_FOLDER}/deploy/Hagoromo.sh ${work_dir}
         cp "openssl/lib/libcrypto.so.1.1" ${work_dir}/lib
         cp "openssl/lib/libssl.so.1.1" ${work_dir}/lib
+        cp "zlib/lib/libz.so.1.3.1" ${work_dir}/lib
+        cp "zlib/lib/libz.so.1" ${work_dir}/lib
         cp "app/i18n/app_ja.qm" ${work_dir}/bin/translations
         cp ${QT_BIN_FOLDER}/../translations/qt_ja.qm ${work_dir}/bin/translations
 
@@ -76,7 +100,7 @@ deploy_hagoromo(){
         mkdir -p ${work_dir}/Hagoromo.app/Contents/MacOS/translations
         cp "app/i18n/app_ja.qm" ${work_dir}/Hagoromo.app/Contents/MacOS/translations
         cp ${QT_BIN_FOLDER}/../translations/qt_ja.qm ${work_dir}/Hagoromo.app/Contents/MacOS/translations
-
+        cp -RL "zlib/lib/libz.1.dylib" ${work_dir}/Hagoromo.app/Contents/Frameworks
     fi
 
     cd ${work_root_dir}
@@ -109,6 +133,7 @@ fi
 VERSION_NO=$(cat app/main.cpp | grep "app.setApplicationVersion" | grep -oE "[0-9]+.[0-9]+.[0-9]+")
 
 build_openssl
+build_zlib
 build_hagoromo
 deploy_hagoromo
 # update_web
