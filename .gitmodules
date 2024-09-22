@@ -13,3 +13,6 @@
 [submodule "web/themes/hugo-book"]
 	path = web/themes/hugo-book
 	url = https://github.com/alex-shpak/hugo-book
+[submodule "3rdparty/zlib"]
+	path = 3rdparty/zlib
+	url = https://github.com/madler/zlib.git

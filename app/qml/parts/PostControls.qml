@@ -9,12 +9,14 @@ import "../controls"
 import "../compat"
 
 RowLayout {
-    spacing: 10
+    spacing: 0
 
     property bool isReposted: false
     property bool isLiked: false
     property bool pinned: false
     property bool threadMuted: false
+    property bool quoteDetached: false
+    property bool quoteIsMine: false
     property string postUri: ""
     property string handle: ""
     property bool mine: false
@@ -28,6 +30,7 @@ RowLayout {
     property alias quoteMenuItem: quoteMenuItem
     property alias likeButton: likeButton
     property alias pinnedImage: pinnedImage
+    property alias moreButton: moreButton
 
     signal triggeredTranslate()
     signal triggeredCopyToClipboard()
@@ -40,6 +43,7 @@ RowLayout {
     signal triggeredRequestUpdateThreadGate()
     signal triggeredRequestPin()
     signal triggeredRequestMuteThread()
+    signal triggeredRequestDetachQuote()
 
     function openInOhters(uri, handle){
         if(uri.length === 0 || uri.startsWith("at://") === false){
@@ -51,79 +55,84 @@ RowLayout {
         Qt.openUrlExternally(url)
     }
 
-    IconButton {
-        id: replyButton
-        Layout.preferredHeight: AdjustedValues.b24
-        iconSource: "../images/reply.png"
-        iconSize: AdjustedValues.i16
-        foreground: Material.color(Material.Grey)
-        flat: true
-    }
-    IconButton {
-        id: repostButton
-        Layout.preferredHeight: AdjustedValues.b24
-        iconSource: "../images/repost.png"
-        iconSize: AdjustedValues.i16
-        foreground: isReposted ? Material.color(Material.Green) : Material.color(Material.Grey)
-        flat: true
-        iconText: repostCount + (quoteCount > 0 ? "+" + quoteCount : "")
-        onClicked: popup.open()
-        MenuEx {
-            id: popup
-            Action {
-                id: repostMenuItem
-                icon.source: "../images/repost.png"
-                text: qsTr("Repost")
+    RowLayout {
+        Layout.maximumWidth: parent.width - moreButton.width
+        spacing: 10 //((parent.width - moreButton.width) === width) ? 0 : 10
+        clip: true
+        IconButton {
+            id: replyButton
+            Layout.preferredHeight: AdjustedValues.b24
+            iconSource: "../images/reply.png"
+            iconSize: AdjustedValues.i16
+            foreground: Material.color(Material.Grey)
+            flat: true
+        }
+        IconButton {
+            id: repostButton
+            Layout.preferredHeight: AdjustedValues.b24
+            iconSource: "../images/repost.png"
+            iconSize: AdjustedValues.i16
+            foreground: isReposted ? Material.color(Material.Green) : Material.color(Material.Grey)
+            flat: true
+            iconText: repostCount + (quoteCount > 0 ? "+" + quoteCount : "")
+            onClicked: popup.open()
+            MenuEx {
+                id: popup
+                Action {
+                    id: repostMenuItem
+                    icon.source: "../images/repost.png"
+                    text: qsTr("Repost")
+                }
+                Action {
+                    id: quoteMenuItem
+                    icon.source: "../images/quote.png"
+                    text: qsTr("Quote")
+                }
             }
-            Action {
-                id: quoteMenuItem
-                icon.source: "../images/quote.png"
-                text: qsTr("Quote")
-            }
-        }
-        BusyIndicator {
-            anchors.fill: parent
-            visible: !parent.enabled
-        }
-    }
-    IconButton {
-        id: likeButton
-        Layout.preferredHeight: AdjustedValues.b24
-        iconSource: "../images/like.png"
-        iconSize: AdjustedValues.i16
-        foreground: isLiked ? Material.color(Material.Pink) : Material.color(Material.Grey)
-        flat: true
-        BusyIndicator {
-            anchors.fill: parent
-            visible: !parent.enabled
-        }
-    }
-    Item {
-        id: pinnedImage
-        Layout.preferredWidth: AdjustedValues.b24
-        Layout.preferredHeight: AdjustedValues.b24
-        Layout.leftMargin: 5
-        Layout.rightMargin: 5
-        Layout.alignment: Qt.AlignVCenter
-        Image {
-            width: AdjustedValues.i16
-            height: AdjustedValues.i16
-            anchors.centerIn: parent
-            visible: pinned
-            source: "../images/pin.png"
-            layer.enabled: true
-            layer.effect: ColorOverlayC {
-                color: Material.foreground
+            BusyIndicator {
+                anchors.fill: parent
+                visible: !parent.enabled
             }
         }
-        BusyIndicator {
-            anchors.fill: parent
-            visible: !parent.enabled
+        IconButton {
+            id: likeButton
+            Layout.preferredHeight: AdjustedValues.b24
+            iconSource: "../images/like.png"
+            iconSize: AdjustedValues.i16
+            foreground: isLiked ? Material.color(Material.Pink) : Material.color(Material.Grey)
+            flat: true
+            BusyIndicator {
+                anchors.fill: parent
+                visible: !parent.enabled
+            }
         }
-    }
-    Item {
-        Layout.fillWidth: true
-        height: 1
+        Item {
+            id: pinnedImage
+            Layout.preferredWidth: AdjustedValues.b24
+            Layout.preferredHeight: AdjustedValues.b24
+            Layout.leftMargin: 5
+            Layout.rightMargin: 5
+            Layout.alignment: Qt.AlignVCenter
+            Image {
+                width: AdjustedValues.i16
+                height: AdjustedValues.i16
+                anchors.centerIn: parent
+                visible: pinned
+                source: "../images/pin.png"
+                layer.enabled: true
+                layer.effect: ColorOverlayC {
+                    color: Material.foreground
+                }
+            }
+            BusyIndicator {
+                anchors.fill: parent
+                visible: !parent.enabled
+            }
+        }
+        Item {
+            Layout.fillWidth: true
+            height: 1
+        }
     }
     IconButton {
         id: moreButton
@@ -138,6 +147,10 @@ RowLayout {
             }else{
                 theirMorePopup.open()
             }
+        }
+        BusyIndicator {
+            anchors.fill: parent
+            visible: !parent.enabled
         }
         MenuEx {
             id: myMorePopup
@@ -194,7 +207,7 @@ RowLayout {
                 onTriggered: triggeredRequestMuteThread()
             }
             Action {
-                text: qsTr("Who can reply")
+                text: qsTr("Edit interaction settings")
                 enabled: mine
                 icon.source: "../images/thread.png"
                 onTriggered: triggeredRequestUpdateThreadGate()
@@ -261,6 +274,12 @@ RowLayout {
                 text: threadMuted ? qsTr("Unmute thread") : qsTr("Mute thread")
                 icon.source: "../images/mute.png"
                 onTriggered: triggeredRequestMuteThread()
+            }
+            Action {
+                text: quoteDetached ? qsTr("Re-attach quote") : qsTr("Detach quote")
+                icon.source: "../images/visibility_off.png"
+                enabled: quoteIsMine
+                onTriggered: triggeredRequestDetachQuote()
             }
             MenuSeparator {}
             Action {

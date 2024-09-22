@@ -49,6 +49,8 @@ realtime_test::realtime_test()
 
     m_listenPort = m_mockServer.listen(QHostAddress::LocalHost, 0);
     m_service = QString("http://localhost:%1/response").arg(m_listenPort);
+
+    FirehoseReceiver::getInstance()->forUnittest = true;
 }
 
 realtime_test::~realtime_test() { }

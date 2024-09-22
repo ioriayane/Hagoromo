@@ -38,6 +38,7 @@ void copyMutedWord(const QJsonObject &src, AppBskyActorDefs::MutedWord &dest);
 void copyMutedWordsPref(const QJsonObject &src, AppBskyActorDefs::MutedWordsPref &dest);
 void copyHiddenPostsPref(const QJsonObject &src, AppBskyActorDefs::HiddenPostsPref &dest);
 void copyBskyAppProgressGuide(const QJsonObject &src, AppBskyActorDefs::BskyAppProgressGuide &dest);
+void copyNux(const QJsonObject &src, AppBskyActorDefs::Nux &dest);
 void copyBskyAppStatePref(const QJsonObject &src, AppBskyActorDefs::BskyAppStatePref &dest);
 void copyLabelerPrefItem(const QJsonObject &src, AppBskyActorDefs::LabelerPrefItem &dest);
 void copyLabelersPref(const QJsonObject &src, AppBskyActorDefs::LabelersPref &dest);
@@ -288,6 +289,13 @@ namespace ComAtprotoRepoApplyWrites {
 void copyCreate(const QJsonObject &src, ComAtprotoRepoApplyWrites::Create &dest);
 void copyUpdate(const QJsonObject &src, ComAtprotoRepoApplyWrites::Update &dest);
 void copyDelete(const QJsonObject &src, ComAtprotoRepoApplyWrites::Delete &dest);
+void copyCreateResult(const QJsonObject &src, ComAtprotoRepoApplyWrites::CreateResult &dest);
+void copyUpdateResult(const QJsonObject &src, ComAtprotoRepoApplyWrites::UpdateResult &dest);
+void copyDeleteResult(const QJsonObject &src, ComAtprotoRepoApplyWrites::DeleteResult &dest);
+}
+// com.atproto.repo.defs
+namespace ComAtprotoRepoDefs {
+void copyCommitMeta(const QJsonObject &src, ComAtprotoRepoDefs::CommitMeta &dest);
 }
 // com.atproto.repo.listMissingBlobs
 namespace ComAtprotoRepoListMissingBlobs {

@@ -38,9 +38,21 @@ void ComAtprotoRepoDeleteRecord::deleteRecord(const QString &repo, const QString
          json_doc.toJson(QJsonDocument::Compact));
 }
 
+const AtProtocolType::ComAtprotoRepoDefs::CommitMeta &ComAtprotoRepoDeleteRecord::commit() const
+{
+    return m_commit;
+}
+
 bool ComAtprotoRepoDeleteRecord::parseJson(bool success, const QString reply_json)
 {
-    Q_UNUSED(reply_json)
+    QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
+    if (json_doc.isEmpty()) {
+        success = false;
+    } else {
+        AtProtocolType::ComAtprotoRepoDefs::copyCommitMeta(
+                json_doc.object().value("commit").toObject(), m_commit);
+    }
+
     return success;
 }
 

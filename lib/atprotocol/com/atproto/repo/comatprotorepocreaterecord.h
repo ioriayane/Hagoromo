@@ -15,6 +15,8 @@ public:
 
     const QString &uri() const;
     const QString &cid() const;
+    const AtProtocolType::ComAtprotoRepoDefs::CommitMeta &commit() const;
+    const QString &validationStatus() const;
 
 protected:
     virtual bool parseJson(bool success, const QString reply_json);
@@ -22,6 +24,8 @@ protected:
 private:
     QString m_uri;
     QString m_cid;
+    AtProtocolType::ComAtprotoRepoDefs::CommitMeta m_commit;
+    QString m_validationStatus;
 };
 
 }

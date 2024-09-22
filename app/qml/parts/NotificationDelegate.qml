@@ -3,6 +3,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 
+import tech.relog.hagoromo.timelinelistmodel 1.0
 import tech.relog.hagoromo.notificationlistmodel 1.0
 import tech.relog.hagoromo.singleton 1.0
 
@@ -41,8 +42,12 @@ ClickableFrame {
     property alias contentFilterFrame: contentFilterFrame
     property alias contentMediaFilterFrame: contentMediaFilterFrame
     property alias postImagePreview: postImagePreview
+    property alias embedVideoFrame: embedVideoFrame
     property alias quoteRecordFrame: quoteRecordFrame
     property alias quoteRecordImagePreview: quoteRecordImagePreview
+    property alias quoteRecordEmbedVideoFrame: quoteRecordEmbedVideoFrame
+    property alias blockedQuoteFrame: blockedQuoteFrame
+    property alias blockedQuoteFrameLabel: blockedQuoteFrameLabel
     property alias feedGeneratorFrame: feedGeneratorFrame
     property alias listLinkCardFrame: listLinkCardFrame
     property alias externalLinkFrame: externalLinkFrame
@@ -294,6 +299,12 @@ ClickableFrame {
                         Layout.topMargin: 5
                     }
 
+                    VideoFrame {
+                        id: embedVideoFrame
+                        Layout.preferredWidth: parent.width
+                        Layout.topMargin: 5
+                    }
+
                     ExternalLinkCard {
                         id: externalLinkFrame
                         Layout.preferredWidth: parent.width
@@ -356,6 +367,21 @@ ClickableFrame {
                                 layoutWidth: quoteRecordFrame.basisWidth
                                 Layout.topMargin: 5
                             }
+                            VideoFrame {
+                                id: quoteRecordEmbedVideoFrame
+                                Layout.preferredWidth: parent.width
+                                Layout.topMargin: 5
+                            }
+                        }
+                    }
+                    Frame {
+                        id: blockedQuoteFrame
+                        Layout.preferredWidth: parent.width
+                        Layout.topMargin: 5
+                        visible: false
+                        Label {
+                            id: blockedQuoteFrameLabel
+                            font.pointSize: AdjustedValues.f10
                         }
                     }
 

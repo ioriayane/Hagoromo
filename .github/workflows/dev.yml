@@ -3,6 +3,9 @@ on:
   pull_request:
     branches:
       - dev
+concurrency:
+    group: unit_test
+    cancel-in-progress: true
 jobs:
   unit_test:
     runs-on: ubuntu-latest

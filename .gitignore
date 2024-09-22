@@ -70,6 +70,10 @@ openssl/private
 openssl/share
 openssl/*.cnf
 openssl/*.cnf.dist
+zlib/bin
+zlib/include
+zlib/lib
+zlib/share
 
 .DS_Store
 

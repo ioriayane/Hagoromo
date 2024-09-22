@@ -1,0 +1,17 @@
+{
+    "repo": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+    "collection": "app.bsky.feed.postgate",
+    "rkey": "3l44kjwogjq2q",
+    "record": {
+        "$type": "app.bsky.feed.postgate",
+        "createdAt": "2024-09-14T13:14:40.139Z",
+        "post": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3l44kjwogjq2q",
+        "detachedEmbeddingUris": [],
+        "embeddingRules": [
+            {
+                "$type": "app.bsky.feed.postgate#disableRule"
+            }
+        ]
+    },
+    "validate": true
+}
