@@ -13,13 +13,13 @@ jobs:
       - name: Install dependencies (linux)
         run: sudo apt install ninja-build
       - name: Install Qt
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
-          version: '5.15.2'
+          version: '6.7.2'
           host: 'linux'
           target: 'desktop'
           arch: 'gcc_64'
-          modules: 'qtwebglplugin'
+          modules: 'qt5compat qtwebsockets qthttpserver'
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -34,14 +34,8 @@ jobs:
         with:
           extra_args: --all-files
       - name: Build
-        run: scripts/build.sh linux ${Qt5_DIR}/bin
-      - name: Build httpserver
-        run: |
-          mkdir 3rdparty/build-qthttpserver
-          cd 3rdparty/build-qthttpserver
-          qmake CONFIG+=debug_and_release ../qthttpserver/qthttpserver.pro
-          make -j4 && make install
+        run: scripts/build.sh linux ${QT_ROOT_DIR}/bin
       - name: Unit test
         env:
           TZ: "Asia/Tokyo"
-        run: scripts/unittest.sh linux ${Qt5_DIR}/bin
+        run: scripts/unittest.sh linux ${QT_ROOT_DIR}/bin
