@@ -33,8 +33,8 @@ jobs:
         with:
           extra_args: --all-files
       - name: Build
-        run: scripts/build.sh linux ${Qt5_DIR}/bin
+        run: scripts/build.sh linux ${QT_ROOT_DIR}/bin
       - name: Unit test
         env:
           TZ: "Asia/Tokyo"
-        run: scripts/unittest.sh linux ${Qt5_DIR}/bin
+        run: scripts/unittest.sh linux ${QT_ROOT_DIR}/bin
