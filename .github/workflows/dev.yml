@@ -19,7 +19,6 @@ jobs:
           host: 'linux'
           target: 'desktop'
           arch: 'gcc_64'
-          modules: 'qtwebglplugin'
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
