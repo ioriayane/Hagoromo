@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+### v0.37.0 - 2024/9/22
+
 - Add
   - Supports thumbnail display of videos (click to go to the official site)
   - Support for setting whether or not to allow quotations (when posting, after posting)
