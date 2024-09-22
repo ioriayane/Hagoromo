@@ -40,7 +40,7 @@ if ERRORLEVEL 1 goto QUIT
 REM --- build -------
 cd %BUILD_FOLDER%
 
-qmake ..\tests\tests.pro CONFIG+=debug
+qmake ..\Hagoromo.pro CONFIG+=debug
 if ERRORLEVEL 1 goto QUIT
 
 jom
@@ -53,21 +53,21 @@ REM --- deploy -------
 REM windeployqt --qmldir app\qml %BUILD_FOLDER%\atprotocol_test\debug\atprotocol_test.exe
 
 REM --- run -------
-%BUILD_FOLDER%\atprotocol_test\debug\atprotocol_test.exe
+%BUILD_FOLDER%\tests\atprotocol_test\debug\atprotocol_test.exe
 if ERRORLEVEL 1 goto TEST_FAIL
-%BUILD_FOLDER%\chat_test\debug\chat_test.exe
+%BUILD_FOLDER%\tests\chat_test\debug\chat_test.exe
 if ERRORLEVEL 1 goto TEST_FAIL
-%BUILD_FOLDER%\hagoromo_test\debug\hagoromo_test.exe
+%BUILD_FOLDER%\tests\hagoromo_test\debug\hagoromo_test.exe
 if ERRORLEVEL 1 goto TEST_FAIL
-%BUILD_FOLDER%\hagoromo_test2\debug\hagoromo_test2.exe
+%BUILD_FOLDER%\tests\hagoromo_test2\debug\hagoromo_test2.exe
 if ERRORLEVEL 1 goto TEST_FAIL
-%BUILD_FOLDER%\http_test\debug\http_test.exe
+%BUILD_FOLDER%\tests\http_test\debug\http_test.exe
 if ERRORLEVEL 1 goto TEST_FAIL
-%BUILD_FOLDER%\search_test\debug\search_test.exe
+%BUILD_FOLDER%\tests\search_test\debug\search_test.exe
 if ERRORLEVEL 1 goto TEST_FAIL
-%BUILD_FOLDER%\log_test\debug\log_test.exe
+%BUILD_FOLDER%\tests\log_test\debug\log_test.exe
 if ERRORLEVEL 1 goto TEST_FAIL
-%BUILD_FOLDER%\tools_test\debug\tools_test.exe
+%BUILD_FOLDER%\tests\tools_test\debug\tools_test.exe
 if ERRORLEVEL 1 goto TEST_FAIL
 
 goto QUIT

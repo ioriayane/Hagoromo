@@ -10,7 +10,13 @@ using AtProtocolInterface::ComAtprotoSyncSubscribeReposEx;
 namespace RealtimeFeed {
 
 FirehoseReceiver::FirehoseReceiver(QObject *parent)
-    : QObject { parent }, m_status(FirehoseReceiverStatus::Disconnected)
+    : QObject(parent)
+#ifdef QT_DEBUG // HAGOROMO_UNIT_TEST
+      ,
+      forUnittest(false)
+#endif
+      ,
+      m_status(FirehoseReceiverStatus::Disconnected)
 {
     m_serviceEndpoint = "wss://bsky.network";
     m_wdgTimer.setInterval(60 * 1000);
@@ -80,7 +86,13 @@ void FirehoseReceiver::start()
     if (m_selectorHash.isEmpty())
         return;
 
-#ifndef HAGOROMO_UNIT_TEST
+#ifdef QT_DEBUG // HAGOROMO_UNIT_TEST
+    if (forUnittest) {
+        qDebug().noquote() << "Connect to dummy --- no start on unit test mode";
+        emit connectedToService();
+        return;
+    }
+#endif
     QString path = serviceEndpoint();
     if (path.endsWith("/")) {
         path.resize(path.length() - 1);
@@ -89,10 +101,6 @@ void FirehoseReceiver::start()
     qDebug().noquote() << "Connect to" << url.toString();
     m_client.open(url);
     m_wdgTimer.start();
-#else
-    qDebug().noquote() << "Connect to dummy --- no start on unit test mode";
-    emit connectedToService();
-#endif
 }
 
 void FirehoseReceiver::stop()
@@ -177,7 +185,7 @@ bool FirehoseReceiver::selectorIsReady(QObject *parent)
     return selector->ready();
 }
 
-#ifdef HAGOROMO_UNIT_TEST
+#ifdef QT_DEBUG // HAGOROMO_UNIT_TEST
 void FirehoseReceiver::testReceived(const QJsonObject &json)
 {
     for (auto s : qAsConst(m_selectorHash)) {

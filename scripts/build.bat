@@ -23,6 +23,8 @@ set VS_REDIST_FOLDER="C:\Program Files (x86)\Microsoft Visual Studio\2019\Commun
 set BUILD_FOLDER=build-hagoromo
 set DEPLOY_FOLDER=deploy-hagoromo
 
+REM --- build deps -------
+cmd.exe /c %CWD%/scripts/build_zlib.bat
 
 REM --- check path -------
 qmake -v
@@ -48,7 +50,7 @@ if NOT ERRORLEVEL 0 goto QUIT
 REM --- build -------
 cd %BUILD_FOLDER%
 
-qmake ..\app\app.pro CONFIG+=HAGOROMO_RELEASE_BUILD
+qmake ..\Hagoromo.pro CONFIG+=HAGOROMO_RELEASE_BUILD
 if NOT ERRORLEVEL 0 goto QUIT
 
 jom
@@ -58,12 +60,12 @@ cd %CWD%
 
 
 REM --- deploy -------
-copy %BUILD_FOLDER%\release\Hagoromo.exe %DEPLOY_FOLDER%\hagoromo\
-copy %BUILD_FOLDER%\release\*.dll %DEPLOY_FOLDER%\hagoromo\
+copy %BUILD_FOLDER%\app\release\Hagoromo.exe %DEPLOY_FOLDER%\hagoromo\
+copy %BUILD_FOLDER%\app\release\*.dll %DEPLOY_FOLDER%\hagoromo\
 windeployqt --qmldir app\qml %DEPLOY_FOLDER%\hagoromo\Hagoromo.exe
 python3 scripts\copymsvcfiles.py %VS_REDIST_FOLDER% %DEPLOY_FOLDER%\hagoromo\
 
-copy %BUILD_FOLDER%\release\translations\*.qm %DEPLOY_FOLDER%\hagoromo\translations\
+copy %BUILD_FOLDER%\app\release\translations\*.qm %DEPLOY_FOLDER%\hagoromo\translations\
 
 for /f "usebackq delims=" %%A in (`PowerShell -Command "((Get-Content app/main.cpp) -match 'app.setApplicationVersion' | Select-String -Pattern '[0-9]+\.[0-9]+\.[0-9]+' -AllMatches).Matches.Value"`) do set VERSION_NO=%%A
 PowerShell -Command "Compress-Archive -Path deploy-hagoromo\hagoromo -DestinationPath deploy-hagoromo\hagoromo_%VERSION_NO%_windows.zip"

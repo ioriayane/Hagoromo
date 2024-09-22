@@ -61,6 +61,7 @@ public:
         LikedUriRole,
         RunningRepostRole,
         RunningLikeRole,
+        RunningOtherPrcessingRole,
 
         AggregatedAvatarsRole,
         AggregatedDisplayNamesRole,
@@ -70,6 +71,8 @@ public:
 
         ReasonRole,
 
+        HasQuoteRecordRole,
+        QuoteRecordIsMineRole,
         QuoteRecordCidRole,
         QuoteRecordUriRole,
         QuoteRecordDisplayNameRole,
@@ -82,6 +85,18 @@ public:
         QuoteRecordEmbedImagesAltRole,
         QuoteRecordIsRepostedRole,
         QuoteRecordIsLikedRole,
+        QuoteRecordDetatchedRole,
+        QuoteRecordBlockedRole,
+        QuoteRecordBlockedStatusRole,
+        QuoteRecordHasVideoRole,
+        QuoteRecordVideoPlaylistRole,
+        QuoteRecordVideoThumbRole,
+        QuoteRecordVideoAltRole,
+
+        HasVideoRole,
+        VideoPlaylistRole,
+        VideoThumbRole,
+        VideoAltRole,
 
         HasExternalLinkRole,
         ExternalLinkUriRole,
@@ -146,6 +161,7 @@ public:
     Q_INVOKABLE bool repost(int row);
     Q_INVOKABLE bool like(int row);
     Q_INVOKABLE bool muteThread(int row);
+    Q_INVOKABLE bool detachQuote(int row);
 
     bool visibleLike() const;
     void setVisibleLike(bool newVisibleLike);
@@ -197,6 +213,12 @@ private:
     QHash<QString, QStringList> m_follow2Notification;
 
     bool m_hasUnread; // 今回の読み込みで未読がある
+    QHash<NotificationListModel::NotificationListModelRoles, AtpAbstractListModel::QuoteRecordRoles>
+            m_toQuoteRecordRoles;
+    QHash<NotificationListModel::NotificationListModelRoles, AtpAbstractListModel::EmbedVideoRoles>
+            m_toEmbedVideoRoles;
+    QHash<NotificationListModel::NotificationListModelRoles, AtpAbstractListModel::EmbedVideoRoles>
+            m_toQuoteRecordVideoRoles;
     QHash<NotificationListModel::NotificationListModelRoles,
           AtpAbstractListModel::ExternalLinkRoles>
             m_toExternalLinkRoles;
@@ -234,6 +256,8 @@ private:
     void setRunningRepost(int row, bool running);
     bool runningLike(int row) const;
     void setRunningLike(int row, bool running);
+    bool runningOtherPrcessing(int row) const;
+    void setRunningOtherPrcessing(int row, bool running);
 
     bool m_visibleLike;
     bool m_visibleRepost;
@@ -244,6 +268,7 @@ private:
     bool m_updateSeenNotification;
     QString m_runningRepostCid;
     QString m_runningLikeCid;
+    QString m_runningOtherProcessingCid;
     bool m_aggregateReactions;
 };
 

@@ -122,6 +122,8 @@ ScrollView {
             postImagePreview.embedImages: model.embedImages
             postImagePreview.embedAlts: model.embedImagesAlt
             postImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.embedImagesFull, model.embedImagesAlt)
+            blockedQuoteFrame.visible: model.quoteRecordBlocked
+            blockedQuoteFrameLabel.text: model.quoteRecordBlockedStatus
 
             quoteRecordDisplayName: model.quoteRecordDisplayName
             quoteRecordHandle: model.quoteRecordHandle
@@ -132,6 +134,12 @@ ScrollView {
             quoteRecordImagePreview.embedImages: model.quoteRecordEmbedImages
             quoteRecordImagePreview.embedAlts: model.quoteRecordEmbedImagesAlt
             quoteRecordImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.quoteRecordEmbedImagesFull, model.quoteRecordEmbedImagesAlt)
+            quoteRecordEmbedVideoFrame.visible: model.quoteRecordHasVideo
+            quoteRecordEmbedVideoFrame.thumbImageSource: model.quoteRecordVideoThumb
+            quoteRecordEmbedVideoFrame.onClicked: Qt.openUrlExternally(rootListView.model.getItemOfficialUrl(model.index))
+            embedVideoFrame.visible: model.hasVideo
+            embedVideoFrame.onClicked: Qt.openUrlExternally(rootListView.model.getItemOfficialUrl(model.index))
+            embedVideoFrame.thumbImageSource: model.videoThumbUri
 
             externalLinkFrame.onClicked: Qt.openUrlExternally(model.externalLinkUri)
             externalLinkFrame.thumbImage.source: model.externalLinkThumb
@@ -158,6 +166,7 @@ ScrollView {
             postControls.replyButton.enabled: !model.replyDisabled
             postControls.repostButton.enabled: !model.runningRepost
             postControls.likeButton.enabled: !model.runningLike
+            postControls.moreButton.enabled: !model.runningOtherPrcessing
             postControls.quoteMenuItem.enabled: !model.quoteDisabled
             postControls.replyButton.onClicked: requestReply(model.cid, model.uri,
                                                                model.replyRootCid, model.replyRootUri,
@@ -170,6 +179,8 @@ ScrollView {
             postControls.isReposted: model.isReposted
             postControls.isLiked: model.isLiked
             postControls.threadMuted: model.threadMuted
+            postControls.quoteDetached: model.quoteRecordDetatched
+            postControls.quoteIsMine: model.quoteRecordIsMine
             postControls.postUri: model.uri
             postControls.handle: model.handle
             postControls.onTriggeredCopyToClipboard: systemTool.copyToClipboard(model.recordTextPlain)
@@ -179,6 +190,7 @@ ScrollView {
             postControls.onTriggeredRequestViewQuotes: notificationListView.requestViewQuotes(model.uri)
             postControls.onTriggeredRequestReport: notificationListView.requestReportPost(model.uri, model.cid)
             postControls.onTriggeredRequestMuteThread: rootListView.model.muteThread(model.index)
+            postControls.onTriggeredRequestDetachQuote: rootListView.model.detachQuote(model.index)
 
             onClicked: {
                 if(model.reason === NotificationListModel.ReasonLike ||

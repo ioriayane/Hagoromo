@@ -50,6 +50,10 @@ void copyUnknown(const QJsonObject &src, QVariant &dest)
         AppBskyFeedThreadgate::Main record;
         AppBskyFeedThreadgate::copyMain(src, record);
         dest.setValue(record);
+    } else if (type == QStringLiteral("app.bsky.feed.postgate")) {
+        AppBskyFeedPostgate::Main record;
+        AppBskyFeedPostgate::copyMain(src, record);
+        dest.setValue(record);
     } else if (type == QStringLiteral("com.whtwnd.blog.entry")) {
         ComWhtwndBlogEntry::Main record;
         ComWhtwndBlogEntry::copyMain(src, record);
@@ -124,6 +128,23 @@ QStringList copyImagesFromPostView(const AppBskyFeedDefs::PostView &post, const 
     } else {
         return QStringList();
     }
+}
+
+QString copyVideoFromPostView(const AppBskyFeedDefs::PostView &post, const CopyImageType type)
+{
+    if (post.embed_type == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedVideo_View) {
+        switch (type) {
+        case AtProtocolType::LexiconsTypeUnknown::CopyImageType::Thumb:
+            return convertVideoThumb(post.embed_AppBskyEmbedVideo_View.thumbnail);
+        case AtProtocolType::LexiconsTypeUnknown::CopyImageType::Alt:
+            return post.embed_AppBskyEmbedVideo_View.alt;
+        case AtProtocolType::LexiconsTypeUnknown::CopyImageType::FullSize:
+            return post.embed_AppBskyEmbedVideo_View.playlist;
+        default:
+            return QString();
+        }
+    }
+    return QString();
 }
 
 QStringList copyImagesFromRecord(const AppBskyEmbedRecord::ViewRecord &record,
@@ -420,6 +441,32 @@ QString applyFacetsTo(const QString &text, const QList<AppBskyRichtextFacet::Mai
         return text;
     }
 }
+
+QString convertVideoThumb(const QString &url)
+{
+#if 0
+    if (url.startsWith("https://video.bsky.app/watch/")) {
+        QStringList items = url.split("/");
+        if (items.length() == 7 && items.last() == "thumbnail.jpg" && items.at(4).startsWith("did")
+            && items.at(4).contains("%3A")) {
+            QString t = items.at(4);
+            t.replace("%3A", ":");
+            return QString("https://video.cdn.bsky.app/hls/%1/%2/thumbnail.jpg")
+                    .arg(t, items.at(5));
+        }
+    }
+#endif
+    return url;
+}
+
+QString extractRkey(const QString &uri)
+{
+    if (!uri.startsWith("at://"))
+        return QString();
+
+    return uri.split("/").last();
+}
+
 }
 }
 

@@ -90,6 +90,7 @@ QML_FILES = \
     qml/parts/TagLabel.qml \
     qml/parts/TagLabelLayout.qml \
     qml/parts/VersionInfomation.qml \
+    qml/parts/VideoFrame.qml \
     qml/view/AnyProfileListView.qml \
     qml/view/BlogEntryListView.qml \
     qml/view/ChatListView.qml \
@@ -150,6 +151,7 @@ IMAGE_FILES += \
     qml/images/notification.png \
     qml/images/open_in_other.png \
     qml/images/pin.png \
+    qml/images/play_large.png \
     qml/images/quote.png \
     qml/images/refresh.png \
     qml/images/reply.png \
@@ -186,10 +188,10 @@ QML_IMPORT_PATH =
 # Additional import path used to resolve QML modules just for Qt Quick Designer
 QML_DESIGNER_IMPORT_PATH =
 
-include(../lib/lib.pri)
+include(deps.pri)
 include(qtquick/qtquick.pri)
 include(../openssl/openssl.pri)
-
+include(../zlib/zlib.pri)
 
 win32:{
     CONFIG(debug,debug|release):install_dir = $$OUT_PWD/debug
@@ -204,3 +206,6 @@ mac:translations.path = \
 translations.files = $$PWD/i18n/*.qm
 #qmファイルが存在しないとmakefileに追加されないので注意
 INSTALLS += translations
+
+# openssl.priなどで追加した依存ファイルのコピーに必要
+win32:QMAKE_POST_LINK += nmake -f $(MAKEFILE) install

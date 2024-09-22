@@ -1,4 +1,5 @@
 #include "comatprotorepoputrecordex.h"
+#include "atprotocol/lexicons_func_unknown.h"
 
 namespace AtProtocolInterface {
 
@@ -60,6 +61,27 @@ void ComAtprotoRepoPutRecordEx::list(const AtProtocolType::Blob &avatar, const Q
     }
 
     putRecord(this->did(), type, rkey, true, json_record, QString(), QString());
+}
+
+void ComAtprotoRepoPutRecordEx::postGate(
+        const QString &uri, const AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType type,
+        const QStringList &detached_uris)
+{
+    if (!uri.startsWith("at://")) {
+        emit finished(false);
+        return;
+    }
+    // ruleの設定もdetach uriも空で送信したい
+    // if (type == AtProtocolType::AppBskyFeedPostgate::MainEmbeddingRulesType::none
+    //     && detached_uris.isEmpty()) {
+    //     emit finished(false);
+    //     return;
+    // }
+
+    QString rkey = AtProtocolType::LexiconsTypeUnknown::extractRkey(uri);
+
+    putRecord(this->did(), QStringLiteral("app.bsky.feed.postgate"), rkey, true,
+              makePostGateJsonObject(uri, type, detached_uris), QString(), QString());
 }
 
 bool ComAtprotoRepoPutRecordEx::parseJson(bool success, const QString reply_json)

@@ -73,9 +73,10 @@ public:
         RunningLikeRole,
         RunningdeletePostRole,
         RunningPostPinningRole,
-        RunningThreadMuteRole,
+        RunningOtherPrcessingRole,
 
         HasQuoteRecordRole,
+        QuoteRecordIsMineRole,
         QuoteRecordCidRole,
         QuoteRecordUriRole,
         QuoteRecordDisplayNameRole,
@@ -86,8 +87,18 @@ public:
         QuoteRecordEmbedImagesRole,
         QuoteRecordEmbedImagesFullRole,
         QuoteRecordEmbedImagesAltRole,
+        QuoteRecordDetatchedRole,
         QuoteRecordBlockedRole,
         QuoteRecordBlockedStatusRole,
+        QuoteRecordHasVideoRole,
+        QuoteRecordVideoPlaylistRole,
+        QuoteRecordVideoThumbRole,
+        QuoteRecordVideoAltRole,
+
+        HasVideoRole,
+        VideoPlaylistRole,
+        VideoThumbRole,
+        VideoAltRole,
 
         HasExternalLinkRole,
         ExternalLinkUriRole,
@@ -141,11 +152,6 @@ public:
     };
     Q_ENUM(TimelineListModelRoles)
 
-    enum QuoteRecordBlockedStatusType {
-        QuoteRecordNonBlocked,
-        QuoteRecordBlocked,
-        QuoteRecordDetached,
-    };
     Q_ENUM(QuoteRecordBlockedStatusType);
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
@@ -166,6 +172,7 @@ public:
     Q_INVOKABLE bool like(int row);
     Q_INVOKABLE bool pin(int row);
     Q_INVOKABLE bool muteThread(int row);
+    Q_INVOKABLE bool detachQuote(int row);
 
     bool visibleReplyToUnfollowedUsers() const;
     void setVisibleReplyToUnfollowedUsers(bool newVisibleReplyToUnfollowedUser);
@@ -202,8 +209,6 @@ protected:
     void
     copyFromNext(const QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> &feed_view_post_list);
     QString getReferenceTime(const AtProtocolType::AppBskyFeedDefs::FeedViewPost &view_post);
-    QVariant getQuoteItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,
-                          const TimelineListModel::TimelineListModelRoles role) const;
 
     virtual void updateExtendMediaFile(const QString &parent_cid);
     virtual bool hasPinnedPost() const;
@@ -224,7 +229,13 @@ private:
     void setRunningdeletePost(int row, bool running);
     bool runningPostPinning(int row) const;
     void setRunningPostPinning(int row, bool running);
+    bool runningOtherPrcessing(int row) const;
+    void setRunningOtherPrcessing(int row, bool running);
 
+    QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::QuoteRecordRoles>
+            m_toQuoteRecordRoles;
+    QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::EmbedVideoRoles>
+            m_toEmbedVideoRoles;
     QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::ExternalLinkRoles>
             m_toExternalLinkRoles;
     QHash<TimelineListModel::TimelineListModelRoles, AtpAbstractListModel::FeedGeneratorRoles>
@@ -244,7 +255,7 @@ private:
     QString m_runningLikeCid;
     QString m_runningDeletePostCid;
     QString m_runningPostPinningCid;
-    QString m_runningThreadMuteCid;
+    QString m_runningOtherProcessingCid;
 };
 
 #endif // TIMELINELISTMODEL_H

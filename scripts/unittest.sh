@@ -16,7 +16,7 @@ build_hagoromo(){
     make_dir $work_dir
     cd $work_dir
 
-    ${QT_BIN_FOLDER}/qmake ../tests/tests.pro CONFIG+=debug
+    ${QT_BIN_FOLDER}/qmake ../Hagoromo.pro CONFIG+=debug
     make -j4
     if [ $? -ne 0 ]; then
         exit 1
@@ -53,11 +53,12 @@ build_hagoromo
 LD_LIBRARY_PATH=$ROOT_FOLDER/openssl/lib
 export LD_LIBRARY_PATH
 
-do_test ./build-hagoromo/atprotocol_test/atprotocol_test
-do_test ./build-hagoromo/chat_test/chat_test
-do_test ./build-hagoromo/hagoromo_test/hagoromo_test
-do_test ./build-hagoromo/hagoromo_test2/hagoromo_test2
-do_test ./build-hagoromo/http_test/http_test
-do_test ./build-hagoromo/search_test/search_test
-do_test ./build-hagoromo/log_test/log_test
-do_test ./build-hagoromo/tools_test/tools_test
+work_dir="./build-hagoromo/tests"
+do_test ${work_dir}/atprotocol_test/atprotocol_test
+do_test ${work_dir}/chat_test/chat_test
+do_test ${work_dir}/hagoromo_test/hagoromo_test
+do_test ${work_dir}/hagoromo_test2/hagoromo_test2
+do_test ${work_dir}/http_test/http_test
+do_test ${work_dir}/search_test/search_test
+do_test ${work_dir}/log_test/log_test
+do_test ${work_dir}/tools_test/tools_test

@@ -121,6 +121,7 @@ class Defs2Struct:
                          'AppBskyActorProfile::Main',
                          'AppBskyGraphList::Main',
                          'AppBskyFeedThreadgate::Main',
+                         'AppBskyFeedPostgate::Main',
                          'ComWhtwndBlogEntry::Main'
                         )
         self.inheritance = {

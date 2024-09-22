@@ -51,6 +51,16 @@ const QString &ComAtprotoRepoPutRecord::cid() const
     return m_cid;
 }
 
+const AtProtocolType::ComAtprotoRepoDefs::CommitMeta &ComAtprotoRepoPutRecord::commit() const
+{
+    return m_commit;
+}
+
+const QString &ComAtprotoRepoPutRecord::validationStatus() const
+{
+    return m_validationStatus;
+}
+
 bool ComAtprotoRepoPutRecord::parseJson(bool success, const QString reply_json)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(reply_json.toUtf8());
@@ -59,6 +69,10 @@ bool ComAtprotoRepoPutRecord::parseJson(bool success, const QString reply_json)
     } else {
         AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("uri"), m_uri);
         AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("cid"), m_cid);
+        AtProtocolType::ComAtprotoRepoDefs::copyCommitMeta(
+                json_doc.object().value("commit").toObject(), m_commit);
+        AtProtocolType::LexiconsTypeUnknown::copyString(json_doc.object().value("validationStatus"),
+                                                        m_validationStatus);
     }
 
     return success;

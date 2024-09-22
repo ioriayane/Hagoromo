@@ -4,7 +4,6 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 
 import tech.relog.hagoromo.singleton 1.0
-import tech.relog.hagoromo.timelinelistmodel 1.0
 
 import "../controls"
 
@@ -25,7 +24,6 @@ ClickableFrame {
     property bool hasQuote: false
     property bool threadConnected: false
     property bool logMode: false
-    property int quoteRecordStatus: TimelineListModel.QuoteRecordBlocked
 
     property alias moderationFrame: moderationFrame
     property alias repostReactionAuthor: repostReactionAuthor
@@ -44,6 +42,8 @@ ClickableFrame {
     property alias quoteRecordRecordText: quoteRecordFrame.quoteRecordRecordText
     property alias quoteRecordImagePreview: quoteRecordFrame.quoteRecordImagePreview
     property alias blockedQuoteFrame: blockedQuoteFrame
+    property alias blockedQuoteFrameLabel: blockedQuoteFrameLabel
+    property alias embedVideoFrame: embedVideoFrame
     property alias externalLinkFrame: externalLinkFrame
     property alias feedGeneratorFrame: feedGeneratorFrame
     property alias listLinkCardFrame: listLinkCardFrame
@@ -232,6 +232,12 @@ ClickableFrame {
                         Layout.topMargin: 5
                     }
 
+                    VideoFrame {
+                        id: embedVideoFrame
+                        Layout.preferredWidth: parent.width
+                        Layout.topMargin: 5
+                    }
+
                     ExternalLinkCard {
                         id: externalLinkFrame
                         Layout.preferredWidth: parent.width
@@ -282,8 +288,6 @@ ClickableFrame {
                         Label {
                             id: blockedQuoteFrameLabel
                             font.pointSize: AdjustedValues.f10
-                            text: (postFrame.quoteRecordStatus === TimelineListModel.QuoteRecordDetached
-                                   ? qsTr("detached by author") : qsTr("blocked"))
                         }
                     }
 
@@ -296,6 +300,7 @@ ClickableFrame {
                     PostControls {
                         id: postControls
                         Layout.preferredWidth: parent.width
+                        Layout.maximumWidth: parent.width
                     }
                 }
             }

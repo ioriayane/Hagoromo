@@ -17,7 +17,7 @@ win32:{
         $${open_ssl_dir}/bin/libssl-3-x64.dll
 
     INSTALLS += depend_files
-    QMAKE_POST_LINK += nmake -f $(MAKEFILE) install
+    # QMAKE_POST_LINK += nmake -f $(MAKEFILE) install
 
 }else{
     open_ssl_dir=$${PWD}

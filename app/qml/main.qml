@@ -285,9 +285,9 @@ ApplicationWindow {
         property string postUri: ""
         property string threadgateUri: ""
         property var callback
-        onAccepted: {
-            console.log("Update threadgate\n  uri=" + postUri + "\n  tg_uri=" + threadgateUri +
-                        "\n  type=" + selectedType + "\n  options=" + selectedOptions)
+        property string updateSequence: "" // threadgate, postgate
+        onOpened: {
+            selectThreadGateDialog.ready = false
             postDialog.recordOperator.setAccount(selectThreadGateDialog.account.service,
                                                  selectThreadGateDialog.account.did,
                                                  selectThreadGateDialog.account.handle,
@@ -295,24 +295,88 @@ ApplicationWindow {
                                                  selectThreadGateDialog.account.accessJwt,
                                                  selectThreadGateDialog.account.refreshJwt)
             postDialog.recordOperator.clear()
-            postDialog.recordOperator.updateThreadGate(postUri,
-                                                       threadgateUri,
-                                                       selectedType,
-                                                       selectedOptions)
-            globalProgressFrame.text = qsTr("Updating 'Who can reply' ...")
+            postDialog.recordOperator.requestPostGate(postUri)
+        }
+        onAccepted: {
+            console.log("Update threadgate\n  uri=" + postUri + "\n  tg_uri=" + threadgateUri +
+                        "\n  type=" + selectedType + "\n  options=" + selectedOptions +
+                        "\n  quoteEnabled=" + selectedQuoteEnabled)
+            console.log("\n  initialType=" + initialType + "\n  initialOptions=" + initialOptions +
+                        "\n  initialQuoteEnabled=" + initialQuoteEnabled)
+            var no_change_threadgate=false
+            var no_change_postgate=(initialQuoteEnabled === selectedQuoteEnabled)
+            if(initialOptions.length === selectedOptions.length){
+                no_change_threadgate=true
+                for(var i=0; i<initialOptions.length; i++){
+                    if(initialOptions[i] !== selectedOptions[i]){
+                        no_change_threadgate=false
+                        break
+                    }
+                }
+                no_change_threadgate = (no_change_threadgate && initialType === selectedType)
+            }
+            if(no_change_threadgate && no_change_postgate){
+                console.log("No change threadgate and postgate.")
+                updateSequence = ""
+            }else if(no_change_threadgate){
+                console.log("No change threadgate.")
+                updateSequence = "postgate"
+            }else if(no_change_postgate){
+                console.log("No change postgate.")
+                updateSequence = "threadgate"
+            }else{
+                updateSequence = "threadgate"
+            }
+
+            postDialog.recordOperator.setAccount(selectThreadGateDialog.account.service,
+                                                 selectThreadGateDialog.account.did,
+                                                 selectThreadGateDialog.account.handle,
+                                                 selectThreadGateDialog.account.email,
+                                                 selectThreadGateDialog.account.accessJwt,
+                                                 selectThreadGateDialog.account.refreshJwt)
+            postDialog.recordOperator.clear()
+            if(updateSequence === "threadgate"){
+                console.log("Update threadgate")
+                postDialog.recordOperator.updateThreadGate(postUri,
+                                                           threadgateUri,
+                                                           selectedType,
+                                                           selectedOptions)
+                globalProgressFrame.text = qsTr("Updating 'Edit interaction settings' ...")
+            }else if(updateSequence === "postgate"){
+                console.log("Update postgate")
+                postDialog.recordOperator.updateQuoteEnabled(postUri,
+                                                             selectedQuoteEnabled)
+                globalProgressFrame.text = qsTr("Updating 'Edit interaction settings' ...")
+            }
         }
         Connections {
             target: postDialog.recordOperator
             function onFinished(success, uri, cid) {
                 if(success && selectThreadGateDialog.postUri.length > 0){
-                    globalProgressFrame.text = ""
-                    selectThreadGateDialog.postUri = ""
-                    selectThreadGateDialog.threadgateUri = ""
-                    if(selectThreadGateDialog.callback){
-                        selectThreadGateDialog.callback(uri, selectThreadGateDialog.selectedType, selectThreadGateDialog.selectedOptions)
+                    if(selectThreadGateDialog.updateSequence === "threadgate"
+                            && (selectThreadGateDialog.initialQuoteEnabled !== selectThreadGateDialog.selectedQuoteEnabled)){
+                        console.log("Update postgate")
+                        selectThreadGateDialog.updateSequence = "postgate"
+                        postDialog.recordOperator.updateQuoteEnabled(selectThreadGateDialog.postUri,
+                                                                     selectThreadGateDialog.selectedQuoteEnabled)
+                    }else{
+                        globalProgressFrame.text = ""
+                        selectThreadGateDialog.postUri = ""
+                        selectThreadGateDialog.threadgateUri = ""
+                        selectThreadGateDialog.updateSequence = ""
+                        if(selectThreadGateDialog.callback){
+                            selectThreadGateDialog.callback(uri, selectThreadGateDialog.selectedType, selectThreadGateDialog.selectedOptions)
+                        }
+                        selectThreadGateDialog.clear()
                     }
-                    selectThreadGateDialog.clear()
                 }
+            }
+            function onFinishedRequestPostGate(success, quote_enabled, uris){
+                console.log("Get init quote enabled:" + quote_enabled + ", " + success)
+                if(success){
+                    selectThreadGateDialog.initialQuoteEnabled = quote_enabled
+                }
+                selectThreadGateDialog.ready = true
             }
         }
     }
@@ -365,6 +429,7 @@ ApplicationWindow {
                                        if(selectThreadGateDialog.account.set(accountListModel, account_uuid)){
                                            selectThreadGateDialog.postUri = uri
                                            selectThreadGateDialog.threadgateUri = threadgate_uri
+                                           selectThreadGateDialog.initialQuoteEnabled = true
                                            selectThreadGateDialog.initialType = type
                                            selectThreadGateDialog.initialOptions = rules
                                            selectThreadGateDialog.callback = callback

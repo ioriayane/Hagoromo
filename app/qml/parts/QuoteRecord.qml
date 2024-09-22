@@ -17,6 +17,7 @@ ClickableFrame {
     property alias quoteRecordAuthor: quoteRecordAuthor
     property alias quoteRecordRecordText: quoteRecordRecordText
     property alias quoteRecordImagePreview: quoteRecordImagePreview
+    property alias quoteRecordEmbedVideoFrame: quoteRecordEmbedVideoFrame
 
     signal openLink(string url)
     signal displayLink(string url)
@@ -53,6 +54,11 @@ ClickableFrame {
             ImagePreview {
                 id: quoteRecordImagePreview
                 layoutWidth: parent.basisWidth
+                Layout.topMargin: 5
+            }
+            VideoFrame {
+                id: quoteRecordEmbedVideoFrame
+                Layout.preferredWidth: parent.width
                 Layout.topMargin: 5
             }
         }

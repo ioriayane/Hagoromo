@@ -156,7 +156,7 @@ ScrollView {
             postImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.embedImagesFull, model.embedImagesAlt)
 
             quoteFilterFrame.labelText: qsTr("Quoted content warning")
-            quoteRecordStatus: model.quoteRecordBlockedStatus
+            blockedQuoteFrameLabel.text: model.quoteRecordBlockedStatus
             hasQuote: model.hasQuoteRecord && !model.quoteRecordBlocked
             quoteRecordFrame.onClicked: (mouse) => {
                                             if(model.quoteRecordUri.length > 0){
@@ -172,6 +172,12 @@ ScrollView {
             quoteRecordImagePreview.embedImages: model.quoteRecordEmbedImages
             quoteRecordImagePreview.embedAlts: model.quoteRecordEmbedImagesAlt
             quoteRecordImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.quoteRecordEmbedImagesFull, model.quoteRecordEmbedImagesAlt)
+            quoteRecordFrame.quoteRecordEmbedVideoFrame.visible: model.quoteRecordHasVideo
+            quoteRecordFrame.quoteRecordEmbedVideoFrame.thumbImageSource: model.quoteRecordVideoThumb
+            quoteRecordFrame.quoteRecordEmbedVideoFrame.onClicked: Qt.openUrlExternally(rootListView.model.getItemOfficialUrl(model.index))
+            embedVideoFrame.visible: model.hasVideo
+            embedVideoFrame.onClicked: Qt.openUrlExternally(rootListView.model.getItemOfficialUrl(model.index))
+            embedVideoFrame.thumbImageSource: model.videoThumbUri
 
             externalLinkFrame.onClicked: Qt.openUrlExternally(model.externalLinkUri)
             externalLinkFrame.thumbImage.source: model.externalLinkThumb
@@ -200,6 +206,7 @@ ScrollView {
             postControls.repostButton.enabled: !model.runningRepost
             postControls.likeButton.enabled: !model.runningLike
             postControls.pinnedImage.enabled: !model.runningPostPinning
+            postControls.moreButton.enabled: !model.runningOtherPrcessing
             postControls.quoteMenuItem.enabled: !model.quoteDisabled
             postControls.replyButton.onClicked: requestReply(model.cid, model.uri,
                                                              model.replyRootCid, model.replyRootUri,
@@ -213,6 +220,8 @@ ScrollView {
             postControls.isLiked: model.isLiked
             postControls.pinned: model.pinnedByMe
             postControls.threadMuted: model.threadMuted
+            postControls.quoteDetached: model.quoteRecordDetatched
+            postControls.quoteIsMine: model.quoteRecordIsMine
             postControls.postUri: model.uri
             postControls.handle: model.handle
             postControls.mine: model.did === timelineView.accountDid
@@ -227,6 +236,7 @@ ScrollView {
             postControls.onTriggeredRequestUpdateThreadGate: timelineView.requestUpdateThreadGate(model.uri, model.threadGateUri, model.threadGateType, model.threadGateRules, updatedThreadGate)
             postControls.onTriggeredRequestPin: rootListView.model.pin(model.index)
             postControls.onTriggeredRequestMuteThread: rootListView.model.muteThread(model.index)
+            postControls.onTriggeredRequestDetachQuote: rootListView.model.detachQuote(model.index)
             onHoveredLinkChanged: timelineView.hoveredLink = hoveredLink
 
             function updatedThreadGate(threadgate_uri, type, rules){

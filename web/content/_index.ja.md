@@ -27,7 +27,7 @@ type: docs
 
 - Windows 11
 - Ubuntu 22.04
-- MacOS 10.13
+- MacOS 10.15
 
 ## ダウンロード
 
