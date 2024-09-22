@@ -15,7 +15,7 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
         with:
-          version: '5.15.2'
+          version: '6.7.2'
           host: 'linux'
           target: 'desktop'
           arch: 'gcc_64'
@@ -35,12 +35,6 @@ jobs:
           extra_args: --all-files
       - name: Build
         run: scripts/build.sh linux ${Qt5_DIR}/bin
-      - name: Build httpserver
-        run: |
-          mkdir 3rdparty/build-qthttpserver
-          cd 3rdparty/build-qthttpserver
-          qmake CONFIG+=debug_and_release ../qthttpserver/qthttpserver.pro
-          make -j4 && make install
       - name: Unit test
         env:
           TZ: "Asia/Tokyo"
