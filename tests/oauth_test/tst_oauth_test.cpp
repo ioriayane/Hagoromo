@@ -139,10 +139,10 @@ void oauth_test::test_oauth_server()
                                                  oauth.dPopNonce());
 #elif 0
     AtProtocolType::OauthDefs::TokenResponse token;
-    token.refresh_token = "ref-121f89618c436ad99cbb792b5bd2b003fdc829dde32d73e02486b4ddb0c7bd99";
+    token.refresh_token = "ref-121f89618c436";
     oauth.setToken(token);
     oauth.setTokenEndopoint("https://bsky.social/oauth/token");
-    oauth.setDPopNonce("8mo0kjoyQ64_uOCBrZ4Q8M8-RT0BkfgAMDB7no5DkmU");
+    oauth.setDPopNonce("8mo0kjo");
     oauth.setListenPort("65073");
     oauth.makeClientId();
     {

@@ -333,11 +333,18 @@ void Authorization::startRedirectServer()
     connect(server, &SimpleHttpServer::received, this,
             [=](const QHttpServerRequest &request, bool &result, QByteArray &data,
                 QByteArray &mime_type) {
-                qDebug().noquote() << "receive by startRedirectServer";
+                qDebug().noquote() << "received by startRedirectServer";
                 qDebug().noquote() << "  " << request.url().toString();
                 qDebug().noquote() << "  " << request.url().path();
 
-                if (request.url().path() == "/tech/relog/hagoromo/oauth-callback") { }
+                if (request.url().path() != "/tech/relog/hagoromo/oauth-callback") {
+                    result = SimpleHttpServer::readFile(":/tools/oauth/" + request.url().fileName(),
+                                                        data);
+                    mime_type = m_MimeDb.mimeTypeForFile(request.url().fileName()).name().toUtf8();
+                    qDebug().noquote() << "Other file:" << result << request.url().fileName()
+                                       << ", " << mime_type;
+                    return;
+                }
 
                 if (request.query().hasQueryItem("iss") && request.query().hasQueryItem("state")
                     && request.query().hasQueryItem("code")) {
@@ -358,6 +365,7 @@ void Authorization::startRedirectServer()
                 } else {
                     SimpleHttpServer::readFile(":/tools/oauth/oauth_fail.html", data);
                 }
+                data.replace("%HANDLE%", m_handle.toLocal8Bit());
                 qDebug().noquote() << "Result html:" << data;
                 mime_type = "text/html";
 

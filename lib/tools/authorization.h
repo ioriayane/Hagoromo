@@ -2,6 +2,7 @@
 #define AUTHORIZATION_H
 
 #include <QObject>
+#include <QMimeDatabase>
 #include "atprotocol/lexicons.h"
 
 class Authorization : public QObject
@@ -98,6 +99,7 @@ private:
 
     QString m_listenPort;
     int m_redirectTimeout;
+    QMimeDatabase m_MimeDb;
 };
 
 #endif // AUTHORIZATION_H
