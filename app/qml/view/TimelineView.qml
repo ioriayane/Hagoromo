@@ -143,7 +143,9 @@ ScrollView {
             postImagePreview.embedAlts: model.embedImagesAlt
             postImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.embedImagesFull, model.embedImagesAlt)
 
-            quoteFilterFrame.visible: model.quoteFilterMatched && !model.quoteRecordBlocked
+            quoteFilterFrame.visible: model.quoteFilterMatched &&
+                                      !model.quoteRecordBlocked &&
+                                      contentMediaFilterFrame.showContent
             quoteFilterFrame.labelText: qsTr("Quoted content warning")
             blockedQuoteFrame.visible: model.quoteRecordBlocked
             blockedQuoteFrameLabel.text: model.quoteRecordBlockedStatus

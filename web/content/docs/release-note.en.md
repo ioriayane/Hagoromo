@@ -8,6 +8,9 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+- Fix
+  - Fix the display of posts quoted from labeled posts
+
 ### v0.37.0 - 2024/9/22
 
 - Add
