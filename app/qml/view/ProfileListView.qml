@@ -87,6 +87,8 @@ ScrollView {
 
         delegate: ClickableFrame {
             id: profileLayout
+            contentWidth: contentRootLayout.implicitWidth
+            contentHeight: contentRootLayout.implicitHeight
             clip: true
             style: "Post"
             topPadding: 10
@@ -169,6 +171,7 @@ ScrollView {
             ]
 
             RowLayout{
+                id: contentRootLayout
                 AvatarImage {
                     id: postAvatarImage
                     Layout.preferredWidth: AdjustedValues.i36

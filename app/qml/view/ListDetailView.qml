@@ -261,6 +261,8 @@ ColumnLayout {
 
             delegate: ClickableFrame {
                 id: listItemLayout
+                contentWidth: contentRootLayout.implicitWidth
+                contentHeight: contentRootLayout.implicitHeight
                 clip: true
                 style: "Post"
                 topPadding: 10
@@ -273,6 +275,7 @@ ColumnLayout {
 
 
                 RowLayout{
+                    id: contentRootLayout
                     AvatarImage {
                         id: postAvatarImage
                         Layout.preferredWidth: AdjustedValues.i36

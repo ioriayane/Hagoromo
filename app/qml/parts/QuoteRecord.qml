@@ -9,6 +9,8 @@ import "../controls"
 
 ClickableFrame {
     id: quoteRecordFrame
+    contentWidth: quoteRecordLayout.implicitWidth
+    contentHeight: quoteRecordLayout.implicitHeight
 
     property int basisWidth: width
     property alias quoteRecordAvatarImage: quoteRecordAvatarImage

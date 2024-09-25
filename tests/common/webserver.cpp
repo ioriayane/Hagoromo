@@ -2,12 +2,18 @@
 
 WebServer::WebServer(QObject *parent) : QAbstractHttpServer(parent) { }
 
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
 bool WebServer::handleRequest(const QHttpServerRequest &request, QTcpSocket *socket)
+#    define MAKE_RESPONDER makeResponder(request, socket)
+#else
+#    define MAKE_RESPONDER responder
+bool WebServer::handleRequest(const QHttpServerRequest &request, QHttpServerResponder &responder)
+#endif
 {
     if (!verifyHttpHeader(request)) {
-        makeResponder(request, socket).write(QHttpServerResponder::StatusCode::BadRequest);
+        MAKE_RESPONDER.write(QHttpServerResponder::StatusCode::BadRequest);
     } else if (request.url().path().contains("//")) {
-        makeResponder(request, socket).write(QHttpServerResponder::StatusCode::NotFound);
+        MAKE_RESPONDER.write(QHttpServerResponder::StatusCode::NotFound);
     } else if (request.method() == QHttpServerRequest::Method::Post) {
         bool result = false;
         QString json;
@@ -23,22 +29,19 @@ bool WebServer::handleRequest(const QHttpServerRequest &request, QTcpSocket *soc
                     std::make_pair(QByteArray("ratelimit-policy"), QByteArray("30;w=300"))
                 };
                 if (request.url().path().endsWith("/limit/xrpc/com.atproto.server.createSession")) {
-                    makeResponder(request, socket)
-                            .write(json.toUtf8(), headers,
-                                   QHttpServerResponder::StatusCode::Unauthorized);
+                    MAKE_RESPONDER.write(json.toUtf8(), headers,
+                                         QHttpServerResponder::StatusCode::Unauthorized);
                 } else {
-                    makeResponder(request, socket)
-                            .write(json.toUtf8(), headers, QHttpServerResponder::StatusCode::Ok);
+                    MAKE_RESPONDER.write(json.toUtf8(), headers,
+                                         QHttpServerResponder::StatusCode::Ok);
                 }
             } else {
-                makeResponder(request, socket)
-                        .write(json.toUtf8(),
-                               m_MimeDb.mimeTypeForFile("result.json").name().toUtf8(),
-                               QHttpServerResponder::StatusCode::Ok);
+                MAKE_RESPONDER.write(json.toUtf8(),
+                                     m_MimeDb.mimeTypeForFile("result.json").name().toUtf8(),
+                                     QHttpServerResponder::StatusCode::Ok);
             }
         } else {
-            makeResponder(request, socket)
-                    .write(QHttpServerResponder::StatusCode::InternalServerError);
+            MAKE_RESPONDER.write(QHttpServerResponder::StatusCode::InternalServerError);
         }
     } else {
         QString path = WebServer::convertResoucePath(request.url());
@@ -56,7 +59,7 @@ bool WebServer::handleRequest(const QHttpServerRequest &request, QTcpSocket *soc
         }
         qDebug().noquote() << "SERVER PATH=" << path;
         if (!QFile::exists(path)) {
-            makeResponder(request, socket).write(QHttpServerResponder::StatusCode::NotFound);
+            MAKE_RESPONDER.write(QHttpServerResponder::StatusCode::NotFound);
         } else {
             QFileInfo file_info(request.url().path());
             QByteArray data;
@@ -65,16 +68,24 @@ bool WebServer::handleRequest(const QHttpServerRequest &request, QTcpSocket *soc
                 mime_type = "application/vnd.ipld.car";
             }
             if (WebServer::readFile(path, data)) {
-                makeResponder(request, socket)
-                        .write(data, mime_type.toUtf8(), QHttpServerResponder::StatusCode::Ok);
+                MAKE_RESPONDER.write(data, mime_type.toUtf8(),
+                                     QHttpServerResponder::StatusCode::Ok);
             } else {
-                makeResponder(request, socket)
-                        .write(QHttpServerResponder::StatusCode::InternalServerError);
+                MAKE_RESPONDER.write(QHttpServerResponder::StatusCode::InternalServerError);
             }
         }
     }
     return true;
 }
+
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+#else
+void WebServer::missingHandler(const QHttpServerRequest &request, QHttpServerResponder &&responder)
+{
+    Q_UNUSED(request)
+    Q_UNUSED(responder)
+}
+#endif
 
 QString WebServer::convertResoucePath(const QUrl &url)
 {
@@ -96,6 +107,7 @@ bool WebServer::readFile(const QString &path, QByteArray &data)
 
 bool WebServer::verifyHttpHeader(const QHttpServerRequest &request) const
 {
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     if (request.headers().contains("atproto-accept-labelers")) {
         QStringList dids = request.headers().value("atproto-accept-labelers").toString().split(",");
         for (const auto &did : dids) {
@@ -104,5 +116,17 @@ bool WebServer::verifyHttpHeader(const QHttpServerRequest &request) const
             }
         }
     }
+#else
+    for (const auto &header : request.headers()) {
+        if (header.first.contains("atproto-accept-labelers")) {
+            QList<QByteArray> dids = header.second.split(',');
+            for (const auto &did : dids) {
+                if (!did.startsWith("did:")) {
+                    return false;
+                }
+            }
+        }
+    }
+#endif
     return true;
 }

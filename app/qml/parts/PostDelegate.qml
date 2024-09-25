@@ -9,6 +9,8 @@ import "../controls"
 
 ClickableFrame {
     id: postFrame
+    contentWidth: contentRootLayout.implicitWidth
+    contentHeight: contentRootLayout.implicitHeight
     topPadding: 10
     leftPadding: 10
     rightPadding: 10
@@ -79,6 +81,8 @@ ClickableFrame {
     }
 
     ColumnLayout {
+        id: contentRootLayout
+        implicitWidth: postFrame.layoutWidth - postFrame.leftPadding - postFrame.rightPadding
         states: [
             State {
                 when: moderationFrame.showContent === false
@@ -92,7 +96,8 @@ ClickableFrame {
 
         CoverFrame {
             id: moderationFrame
-            Layout.preferredWidth: postFrame.layoutWidth - postFrame.leftPadding - postFrame.rightPadding
+            Layout.fillWidth: true
+            // Layout.preferredWidth: postFrame.layoutWidth - postFrame.leftPadding - postFrame.rightPadding
             Layout.bottomMargin: 8
             visible: false
             labelText: qsTr("Post from an account you muted.")
@@ -111,16 +116,19 @@ ClickableFrame {
         PinnedIndicator {
             id: pinnedIndicatorLabel
             Layout.fillWidth: true
+            Layout.maximumWidth: postFrame.layoutWidth
             Layout.preferredHeight: AdjustedValues.i12 * 1.2
         }
         ReactionAuthor {
             id: repostReactionAuthor
+            Layout.fillWidth: true
             Layout.maximumWidth: postFrame.layoutWidth
             source: "../images/repost.png"
             color: Material.color(Material.Green)
         }
         ReactionAuthor {
             id: replyReactionAuthor
+            Layout.fillWidth: true
             Layout.maximumWidth: postFrame.layoutWidth
             source: "../images/reply.png"
             color: Material.color(Material.Blue)
@@ -129,6 +137,7 @@ ClickableFrame {
         RowLayout {
             id: postLayout
             spacing: 10
+            Layout.maximumWidth: parent.implicitWidth
             AvatarImage {
                 id: postAvatarImage
                 Layout.preferredWidth: AdjustedValues.i36
@@ -160,7 +169,7 @@ ClickableFrame {
                 spacing: 0
 
                 property int basisWidth: postFrame.layoutWidth - postFrame.leftPadding - postFrame.rightPadding -
-                                         postLayout.spacing - postAvatarImage.Layout.preferredWidth
+                                         postLayout.spacing - AdjustedValues.i36 //postAvatarImage.Layout.preferredWidth
                 Author {
                     id: postAuthor
                     Layout.preferredWidth: parent.basisWidth

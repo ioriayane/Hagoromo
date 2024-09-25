@@ -12,7 +12,11 @@ Frame {
     property string style: "Normal"
     property color borderColor: Material.color(Material.Grey, Material.Shade600)
 
-    background: MouseArea {
+    contentItem: MouseArea {
+        onClicked: (mouse) => clickableFrame.clicked(mouse)
+    }
+
+    background: Item {
         Rectangle {
             id: backgroundRect
             states: [
@@ -65,7 +69,5 @@ Frame {
             color: "transparent"
             radius: 2
         }
-
-        onClicked: (mouse) => clickableFrame.clicked(mouse)
     }
 }

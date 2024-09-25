@@ -114,6 +114,8 @@ Item {
 
             delegate: ClickableFrame {
                 id: chatItemLayout
+                contentWidth: contentRootLayout.implicitWidth
+                contentHeight: contentRootLayout.implicitHeight
                 clip: true
                 topPadding: 10
                 leftPadding: 10
@@ -130,6 +132,7 @@ Item {
                 }
 
                 RowLayout {
+                    id: contentRootLayout
                     AvatarImage {
                         id: postAvatarImage
                         Layout.preferredWidth: AdjustedValues.i36

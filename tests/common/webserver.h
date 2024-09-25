@@ -9,7 +9,13 @@ class WebServer : public QAbstractHttpServer
 public:
     explicit WebServer(QObject *parent = nullptr);
 
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     bool handleRequest(const QHttpServerRequest &request, QTcpSocket *socket) override;
+#else
+    virtual bool handleRequest(const QHttpServerRequest &request, QHttpServerResponder &responder);
+    virtual void missingHandler(const QHttpServerRequest &request,
+                                QHttpServerResponder &&responder);
+#endif
 
     static QString convertResoucePath(const QUrl &url);
     static bool readFile(const QString &path, QByteArray &data);

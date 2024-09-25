@@ -80,8 +80,8 @@ deploy_hagoromo(){
 
         cp ${build_dir}/app/Hagoromo ${work_dir}/bin
         cp ${SCRIPT_FOLDER}/deploy/Hagoromo.sh ${work_dir}
-        cp "openssl/lib/libcrypto.so.1.1" ${work_dir}/lib
-        cp "openssl/lib/libssl.so.1.1" ${work_dir}/lib
+        cp "openssl/lib64/libcrypto.so.3" ${work_dir}/lib
+        cp "openssl/lib64/libssl.so.3" ${work_dir}/lib
         cp "zlib/lib/libz.so.1.3.1" ${work_dir}/lib
         cp "zlib/lib/libz.so.1" ${work_dir}/lib
         cp "app/i18n/app_ja.qm" ${work_dir}/bin/translations
@@ -128,6 +128,18 @@ if [ -z "${QT_BIN_FOLDER}" ] || [ -z "${PLATFORM_TYPE}" ]; then
     echo " PLATFORM_TYPE   linux or mac"
     echo " QT_BIN_FOLDER   ex: ~/Qt/5.15.2/gcc_64/bin/"
     exit 1
+fi
+
+if [ "${PLATFORM_TYPE}" = "mac" ]; then
+    if [ "$(uname -m)" != "x86_64" ]; then
+        echo "============ Warning ================"
+        echo "  Requires startup in x86_64 mode"
+        echo "====================================="
+        echo "usage arch -x86_64 $(basename $0) PLATFORM_TYPE QT_BIN_FOLDER"
+        echo " PLATFORM_TYPE   linux or mac"
+        echo " QT_BIN_FOLDER   ex: ~/Qt/5.15.2/gcc_64/bin/"
+        exit 1
+    fi
 fi
 
 VERSION_NO=$(cat app/main.cpp | grep "app.setApplicationVersion" | grep -oE "[0-9]+.[0-9]+.[0-9]+")

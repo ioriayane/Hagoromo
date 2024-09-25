@@ -64,6 +64,8 @@ ScrollView {
 
         delegate: ClickableFrame {
             id: listsLayout
+            contentWidth: contentRootLayout.implicitWidth
+            contentHeight: contentRootLayout.implicitHeight
             clip: true
             style: "Post"
             topPadding: 10
@@ -111,6 +113,7 @@ ScrollView {
             ]
 
             RowLayout{
+                id: contentRootLayout
                 spacing: 10
                 AvatarImage {
                     id: postAvatarImage

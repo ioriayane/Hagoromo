@@ -1,4 +1,7 @@
 QT += xml sql websockets
+greaterThan(QT_MAJOR_VERSION, 5) {
+QT += core5compat
+}
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../lib/release/ -llib
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../lib/debug/ -llib

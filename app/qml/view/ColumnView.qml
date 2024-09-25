@@ -692,6 +692,8 @@ ColumnLayout {
         id: profileFrame
         Layout.fillWidth: true
         Layout.topMargin: 1
+        contentWidth: headerLayout.implicitWidth
+        contentHeight: headerLayout.implicitHeight
         leftPadding: 0
         topPadding: 0
         rightPadding: 10

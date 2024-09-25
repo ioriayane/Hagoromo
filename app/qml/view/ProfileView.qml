@@ -378,7 +378,7 @@ ColumnLayout {
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
             onLinkActivated: (url) => Qt.openUrlExternally(url)
 
-            onContentHeightChanged: Layout.preferredHeight = contentHeight
+            onContentHeightChanged: Layout.preferredHeight = descriptionLabel.contentHeight
             Behavior on Layout.preferredHeight {
                 NumberAnimation { duration: 500 }
             }

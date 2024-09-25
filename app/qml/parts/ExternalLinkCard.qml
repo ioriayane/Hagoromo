@@ -11,7 +11,6 @@ ClickableFrame {
     id: externalLinkFrame
     contentWidth: contentRootLayout.implicitWidth
     contentHeight: contentRootLayout.implicitHeight
-
     topInset: 0
     leftInset: 0
     rightInset: 0
