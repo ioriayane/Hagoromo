@@ -181,6 +181,9 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     else if (role == EmbedImagesAltRole)
         return LexiconsTypeUnknown::copyImagesFromPostView(current.post,
                                                            LexiconsTypeUnknown::CopyImageType::Alt);
+    else if (role == EmbedImagesRatioRole)
+        return LexiconsTypeUnknown::copyImagesFromPostView(
+                current.post, LexiconsTypeUnknown::CopyImageType::Ratio);
 
     else if (role == IsRepostedRole)
         return current.post.viewer.repost.contains(account().did);
@@ -764,6 +767,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[EmbedImagesRole] = "embedImages";
     roles[EmbedImagesFullRole] = "embedImagesFull";
     roles[EmbedImagesAltRole] = "embedImagesAlt";
+    roles[EmbedImagesRatioRole] = "embedImagesRatio";
 
     roles[IsRepostedRole] = "isReposted";
     roles[IsLikedRole] = "isLiked";

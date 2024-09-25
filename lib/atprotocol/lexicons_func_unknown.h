@@ -53,6 +53,7 @@ enum class CopyImageType : int {
     Thumb,
     FullSize,
     Alt,
+    Ratio,
 };
 
 QStringList copyImagesFromPostView(const AppBskyFeedDefs::PostView &post, const CopyImageType type);

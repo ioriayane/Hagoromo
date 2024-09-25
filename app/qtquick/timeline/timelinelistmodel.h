@@ -60,6 +60,7 @@ public:
         EmbedImagesRole,
         EmbedImagesFullRole,
         EmbedImagesAltRole,
+        EmbedImagesRatioRole,
 
         IsRepostedRole,
         IsLikedRole,
