@@ -141,6 +141,7 @@ ScrollView {
             postImagePreview.layoutType: timelineView.imageLayoutType
             postImagePreview.embedImages: model.embedImages
             postImagePreview.embedAlts: model.embedImagesAlt
+            postImagePreview.embedImageRatios: model.embedImagesRatio
             postImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.embedImagesFull, model.embedImagesAlt)
 
             quoteFilterFrame.visible: model.quoteFilterMatched && !model.quoteRecordBlocked
