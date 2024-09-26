@@ -186,6 +186,13 @@ QVariant NotificationListModel::item(int row, NotificationListModelRoles role) c
                     AtProtocolType::LexiconsTypeUnknown::CopyImageType::Alt);
         else
             return QStringList();
+    } else if (role == EmbedImagesRatioRole) {
+        if (m_postHash.contains(current.cid))
+            return AtProtocolType::LexiconsTypeUnknown::copyImagesFromPostView(
+                    m_postHash[current.cid],
+                    AtProtocolType::LexiconsTypeUnknown::CopyImageType::Ratio);
+        else
+            return QStringList();
 
         //----------------------------------------
     } else if (role == ReplyCountRole) {
@@ -928,6 +935,7 @@ QHash<int, QByteArray> NotificationListModel::roleNames() const
     roles[EmbedImagesRole] = "embedImages";
     roles[EmbedImagesFullRole] = "embedImagesFull";
     roles[EmbedImagesAltRole] = "embedImagesAlt";
+    roles[EmbedImagesRatioRole] = "embedImagesRatio";
 
     roles[IsRepostedRole] = "isReposted";
     roles[IsLikedRole] = "isLiked";
