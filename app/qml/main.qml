@@ -478,6 +478,8 @@ ApplicationWindow {
         onFinished: {
             console.log("onFinished:" + allAccountsReady + ", count=" + columnManageModel.rowCount())
             if(columnManageModel.rowCount() === 0){
+                accountDialog.open()
+            }else if(columnManageModel.rowCount() === 0){
                 if(allAccountsReady){
                     // すべてのアカウント情報の認証が終わったのでカラムを復元
                     console.log("start loading columns")

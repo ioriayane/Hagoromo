@@ -399,6 +399,10 @@ void AccountListModel::load()
             m_accountList[0].is_main = true;
         }
     }
+
+    if (m_accountList.isEmpty()) {
+        emit finished();
+    }
 }
 
 QVariant AccountListModel::account(int row) const
