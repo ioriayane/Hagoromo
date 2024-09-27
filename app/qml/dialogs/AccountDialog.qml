@@ -123,6 +123,14 @@ Dialog {
                         fontPointSize: AdjustedValues.f8
                         visible: model.isMain
                     }
+                    TagLabel {
+                        source: ""
+                        text: " Please login"
+                        color: Material.color(Material.Red)
+                        fontPointSize: AdjustedValues.f8
+                        visible: !model.authorized
+                    }
+
                     Item {
                         Layout.fillWidth: true
                         Layout.preferredHeight: 1
