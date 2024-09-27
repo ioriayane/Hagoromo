@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+- Update
+  - Change the flow when there are unauthenticated accounts
 - Fix
   - Fix the display of posts quoted from labeled posts
 

@@ -24,7 +24,8 @@ using AtProtocolInterface::ComAtprotoServerCreateSessionEx;
 using AtProtocolInterface::ComAtprotoServerRefreshSessionEx;
 using AtProtocolInterface::DirectoryPlc;
 
-AccountListModel::AccountListModel(QObject *parent) : QAbstractListModel { parent }
+AccountListModel::AccountListModel(QObject *parent)
+    : QAbstractListModel { parent }, m_allAccountsReady(false)
 {
     connect(&m_timer, &QTimer::timeout, [=]() {
         for (int row = 0; row < m_accountList.count(); row++) {
@@ -93,6 +94,8 @@ QVariant AccountListModel::item(int row, AccountListModelRoles role) const
 
     else if (role == StatusRole)
         return static_cast<int>(m_accountList.at(row).status);
+    else if (role == AuthorizedRole)
+        return m_accountList.at(row).status == AccountStatus::Authorized;
 
     return QVariant();
 }
@@ -189,6 +192,7 @@ void AccountListModel::updateAccount(const QString &service, const QString &iden
         emit countChanged();
     }
 
+    checkAllAccountsReady();
     save();
 }
 
@@ -202,6 +206,7 @@ void AccountListModel::removeAccount(int row)
     endRemoveRows();
     emit countChanged();
 
+    checkAllAccountsReady();
     save();
 }
 
@@ -257,16 +262,16 @@ void AccountListModel::setMainAccount(int row)
     save();
 }
 
-bool AccountListModel::allAccountsReady() const
+bool AccountListModel::checkAllAccountsReady()
 {
-    bool ready = true;
+    int ready_count = 0;
     for (const AccountData &item : qAsConst(m_accountList)) {
-        if (item.status == AccountStatus::Unknown) {
-            ready = false;
-            break;
+        if (item.status == AccountStatus::Authorized) {
+            ready_count++;
         }
     }
-    return ready;
+    setAllAccountsReady(!m_accountList.isEmpty() && m_accountList.count() == ready_count);
+    return allAccountsReady();
 }
 
 void AccountListModel::refreshAccountSession(const QString &uuid)
@@ -352,6 +357,7 @@ void AccountListModel::load()
                 item.password = m_encryption.decrypt(
                         doc.array().at(i).toObject().value("password").toString());
                 item.refreshJwt = m_encryption.decrypt(temp_refresh);
+                item.handle = item.identifier;
                 for (const auto &value :
                      doc.array().at(i).toObject().value("post_languages").toArray()) {
                     item.post_languages.append(value.toString());
@@ -393,6 +399,10 @@ void AccountListModel::load()
             m_accountList[0].is_main = true;
         }
     }
+
+    if (m_accountList.isEmpty()) {
+        emit finished();
+    }
 }
 
 QVariant AccountListModel::account(int row) const
@@ -425,6 +435,7 @@ QHash<int, QByteArray> AccountListModel::roleNames() const
     roles[ThreadGateOptionsRole] = "threadGateOptions";
     roles[PostGateQuoteEnabledRole] = "postGateQuoteEnabled";
     roles[StatusRole] = "status";
+    roles[AuthorizedRole] = "authorized";
 
     return roles;
 }
@@ -459,6 +470,10 @@ void AccountListModel::createSession(int row)
             emit errorOccured(session->errorCode(), session->errorMessage());
         }
         emit dataChanged(index(row), index(row));
+        if (allAccountTried()) {
+            emit finished();
+        }
+        checkAllAccountsReady();
         session->deleteLater();
     });
     session->setAccount(m_accountList.at(row));
@@ -488,16 +503,21 @@ void AccountListModel::refreshSession(int row, bool initial)
             // 詳細を取得
             getProfile(row);
         } else {
-            m_accountList[row].status = AccountStatus::Unauthorized;
             if (initial) {
                 // 初期化時のみ（つまりloadから呼ばれたときだけは失敗したらcreateSessionで再スタート）
                 qDebug() << "Initial refresh session fail.";
+                m_accountList[row].status = AccountStatus::Unknown;
                 createSession(row);
             } else {
+                m_accountList[row].status = AccountStatus::Unauthorized;
                 emit errorOccured(session->errorCode(), session->errorMessage());
             }
         }
         emit dataChanged(index(row), index(row));
+        if (allAccountTried()) {
+            emit finished();
+        }
+        checkAllAccountsReady();
         session->deleteLater();
     });
     session->setAccount(m_accountList.at(row));
@@ -591,7 +611,31 @@ void AccountListModel::getServiceEndpoint(const QString &did, const QString &ser
     plc->directory(did);
 }
 
+bool AccountListModel::allAccountTried() const
+{
+    int count = 0;
+    for (const AccountData &item : qAsConst(m_accountList)) {
+        if (item.status != AccountStatus::Unknown) {
+            count++;
+        }
+    }
+    return (m_accountList.count() == count);
+}
+
 int AccountListModel::count() const
 {
     return m_accountList.count();
+}
+
+bool AccountListModel::allAccountsReady() const
+{
+    return m_allAccountsReady;
+}
+
+void AccountListModel::setAllAccountsReady(bool newAllAccountsReady)
+{
+    if (m_allAccountsReady == newAllAccountsReady)
+        return;
+    m_allAccountsReady = newAllAccountsReady;
+    emit allAccountsReadyChanged();
 }

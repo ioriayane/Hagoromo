@@ -161,8 +161,27 @@ ApplicationWindow {
 
     AccountDialog {
         id: accountDialog
+        property bool showLogainAgainMessage: false
         accountModel: accountListModel
-        onClosed: accountListModel.syncColumn()
+        onOpened: {
+            if(showLogainAgainMessage){
+                messageDialog.show("error", qsTr("Authentication error"),
+                                   qsTr("Some accounts require you to log in again."))
+            }
+            showLogainAgainMessage = false
+        }
+        onClosed: {
+            if(columnManageModel.rowCount() === 0){
+                if(accountListModel.allAccountsReady){
+                    // すべてのアカウント情報の認証が終わったのでカラムを復元
+                    console.log("start loading columns")
+                    columnManageModel.load()
+                    listsListModel.load()
+                }
+            }else{
+                accountListModel.syncColumn()
+            }
+        }
         onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
         onRequestAddMutedWords: (account_uuid) => {
                                     if(addMutedWordDialog.account.set(accountListModel, account_uuid)){
@@ -450,18 +469,31 @@ ApplicationWindow {
         id: accountListModel
         onUpdatedSession: (row, uuid) => {
                               console.log("onUpdatedSession:" + row + ", " + uuid)
-                              if(columnManageModel.rowCount() === 0 && allAccountsReady()){
-                                  // すべてのアカウント情報の認証が終わったのでカラムを復元
-                                  console.log("start loading columns")
-                                  columnManageModel.load()
-                                  listsListModel.load()
-                              }
                           }
         onUpdatedAccount: (row, uuid) => {
                               console.log("onUpdatedAccount:" + row + ", " + uuid)
                               // カラムを更新しにいく
                               repeater.updateAccount(uuid)
                           }
+        onFinished: {
+            console.log("onFinished:" + allAccountsReady + ", count=" + columnManageModel.rowCount())
+            if(columnManageModel.rowCount() === 0){
+                accountDialog.open()
+            }else if(columnManageModel.rowCount() === 0){
+                if(allAccountsReady){
+                    // すべてのアカウント情報の認証が終わったのでカラムを復元
+                    console.log("start loading columns")
+                    columnManageModel.load()
+                    listsListModel.load()
+                }else{
+                    // 失敗しているアカウントがあるのでダイアログを出す
+                    messageDialog.close()
+                    accountDialog.showLogainAgainMessage = true
+                    accountDialog.open()
+                }
+            }
+        }
+
         onErrorOccured: (code, message) => appWindow.errorHandler("", code, message)
 
         function syncColumn(){
@@ -717,6 +749,7 @@ ApplicationWindow {
             SideBar {
                 anchors.fill: parent
                 anchors.margins: 1
+                ready: accountListModel.allAccountsReady
                 post.onClicked: postDialog.open()
                 search.onClicked: searchDialog.open()
                 addColumn.onClicked: addColumnDialog.open()
