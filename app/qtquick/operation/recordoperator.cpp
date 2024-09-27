@@ -816,9 +816,12 @@ void RecordOperator::updatePostPinning(const QString &post_uri)
                 setRunning(false);
                 new_profile->deleteLater();
             });
+            ComAtprotoRepoStrongRef::Main pinned_post;
+            pinned_post.uri = post_uri;
+            pinned_post.cid = "";
             new_profile->setAccount(m_account);
             new_profile->profile(old_record.avatar, old_record.banner, old_record.description,
-                                 old_record.displayName, post_uri, old_cid);
+                                 old_record.displayName, pinned_post, old_cid);
         } else {
             setProgressMessage(QString());
             emit errorOccured(old_profile->errorCode(), old_profile->errorMessage());

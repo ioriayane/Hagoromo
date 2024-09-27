@@ -517,7 +517,7 @@ void UserProfile::getRawProfile()
                         AtProtocolType::AppBskyActorProfile::Main profile =
                                 AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                                         AtProtocolType::AppBskyActorProfile::Main>(record->value());
-                        setPinnedPost(profile.pinnedPost);
+                        setPinnedPost(profile.pinnedPost.uri);
                     }
                     setRunning(false);
                     record->deleteLater();

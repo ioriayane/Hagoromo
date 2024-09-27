@@ -575,8 +575,9 @@ void AccountListModel::getRawProfile(int row)
             AtProtocolType::AppBskyActorProfile::Main profile =
                     AtProtocolType::LexiconsTypeUnknown::fromQVariant<
                             AtProtocolType::AppBskyActorProfile::Main>(record->value());
-            qDebug() << "Update pinned post" << profile.pinnedPost;
-            PinnedPostCache::getInstance()->update(m_accountList.at(row).did, profile.pinnedPost);
+            qDebug() << "Update pinned post" << profile.pinnedPost.uri;
+            PinnedPostCache::getInstance()->update(m_accountList.at(row).did,
+                                                   profile.pinnedPost.uri);
 
         } else {
             emit errorOccured(record->errorCode(), record->errorMessage());
