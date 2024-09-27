@@ -791,7 +791,7 @@ void RecordOperator::updateProfile(const QString &avatar_url, const QString &ban
     old_profile->profile(m_account.did);
 }
 
-void RecordOperator::updatePostPinning(const QString &post_uri)
+void RecordOperator::updatePostPinning(const QString &post_uri, const QString &post_cid)
 {
     if (running())
         return;
@@ -818,7 +818,7 @@ void RecordOperator::updatePostPinning(const QString &post_uri)
             });
             ComAtprotoRepoStrongRef::Main pinned_post;
             pinned_post.uri = post_uri;
-            pinned_post.cid = "";
+            pinned_post.cid = post_cid;
             new_profile->setAccount(m_account);
             new_profile->profile(old_record.avatar, old_record.banner, old_record.description,
                                  old_record.displayName, pinned_post, old_cid);

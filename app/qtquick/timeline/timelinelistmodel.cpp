@@ -610,8 +610,10 @@ bool TimelineListModel::pin(int row)
 
     const AppBskyFeedDefs::FeedViewPost &current = m_viewPostHash.value(m_cidList.at(row));
     QString pin_uri;
+    QString pin_cid;
     if (!item(row, PinnedByMeRole).toBool()) {
         pin_uri = current.post.uri;
+        pin_cid = current.post.cid;
     }
 
     if (runningPostPinning(row))
@@ -638,7 +640,7 @@ bool TimelineListModel::pin(int row)
             });
     ope->setAccount(account().service, account().did, account().handle, account().email,
                     account().accessJwt, account().refreshJwt);
-    ope->updatePostPinning(pin_uri);
+    ope->updatePostPinning(pin_uri, pin_cid);
 
     return true;
 }
