@@ -10,7 +10,8 @@ AppBskyFeedGetAuthorFeed::AppBskyFeedGetAuthorFeed(QObject *parent)
 }
 
 void AppBskyFeedGetAuthorFeed::getAuthorFeed(const QString &actor, const int limit,
-                                             const QString &cursor, const QString &filter)
+                                             const QString &cursor, const QString &filter,
+                                             const bool includePins)
 {
     QUrlQuery url_query;
     if (!actor.isEmpty()) {
@@ -24,6 +25,9 @@ void AppBskyFeedGetAuthorFeed::getAuthorFeed(const QString &actor, const int lim
     }
     if (!filter.isEmpty()) {
         url_query.addQueryItem(QStringLiteral("filter"), filter);
+    }
+    if (includePins) {
+        url_query.addQueryItem(QStringLiteral("includePins"), "true");
     }
 
     get(QStringLiteral("xrpc/app.bsky.feed.getAuthorFeed"), url_query);
