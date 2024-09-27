@@ -477,7 +477,7 @@ ApplicationWindow {
                           }
         onFinished: {
             console.log("onFinished:" + allAccountsReady + ", count=" + columnManageModel.rowCount())
-            if(columnManageModel.rowCount() === 0){
+            if(rowCount() === 0){
                 accountDialog.open()
             }else if(columnManageModel.rowCount() === 0){
                 if(allAccountsReady){

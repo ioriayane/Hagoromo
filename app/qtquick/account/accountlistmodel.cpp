@@ -400,6 +400,7 @@ void AccountListModel::load()
         }
     }
 
+    checkAllAccountsReady();
     if (m_accountList.isEmpty()) {
         emit finished();
     }
@@ -470,10 +471,10 @@ void AccountListModel::createSession(int row)
             emit errorOccured(session->errorCode(), session->errorMessage());
         }
         emit dataChanged(index(row), index(row));
+        checkAllAccountsReady();
         if (allAccountTried()) {
             emit finished();
         }
-        checkAllAccountsReady();
         session->deleteLater();
     });
     session->setAccount(m_accountList.at(row));
@@ -514,10 +515,10 @@ void AccountListModel::refreshSession(int row, bool initial)
             }
         }
         emit dataChanged(index(row), index(row));
+        checkAllAccountsReady();
         if (allAccountTried()) {
             emit finished();
         }
-        checkAllAccountsReady();
         session->deleteLater();
     });
     session->setAccount(m_accountList.at(row));
