@@ -116,6 +116,7 @@ ScrollView {
             postImagePreview.layoutType: notificationListView.imageLayoutType
             postImagePreview.embedImages: model.embedImages
             postImagePreview.embedAlts: model.embedImagesAlt
+            postImagePreview.embedImageRatios: model.embedImagesRatio
             postImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.embedImagesFull, model.embedImagesAlt)
             blockedQuoteFrame.visible: model.quoteRecordBlocked
             blockedQuoteFrameLabel.text: model.quoteRecordBlockedStatus

@@ -112,6 +112,11 @@ void copyProfileViewDetailed(const QJsonObject &src, AppBskyActorDefs::ProfileVi
             ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
             dest.labels.append(child);
         }
+        if (src.value("pinnedPost").isString()) {
+            dest.pinnedPost.uri = src.value("pinnedPost").toString();
+        } else {
+            ComAtprotoRepoStrongRef::copyMain(src.value("pinnedPost").toObject(), dest.pinnedPost);
+        }
     }
 }
 void copyAdultContentPref(const QJsonObject &src, AppBskyActorDefs::AdultContentPref &dest)
@@ -560,8 +565,8 @@ void copyMain(const QJsonObject &src, AppBskyActorProfile::Main &dest)
         }
         ComAtprotoRepoStrongRef::copyMain(src.value("joinedViaStarterPack").toObject(),
                                           dest.joinedViaStarterPack);
+        ComAtprotoRepoStrongRef::copyMain(src.value("pinnedPost").toObject(), dest.pinnedPost);
         dest.createdAt = src.value("createdAt").toString();
-        dest.pinnedPost = src.value("pinnedPost").toString();
     }
 }
 }
@@ -929,6 +934,7 @@ void copyViewerState(const QJsonObject &src, AppBskyFeedDefs::ViewerState &dest)
         dest.threadMuted = src.value("threadMuted").toBool();
         dest.replyDisabled = src.value("replyDisabled").toBool();
         dest.embeddingDisabled = src.value("embeddingDisabled").toBool();
+        dest.pinned = src.value("pinned").toBool();
     }
 }
 void copyThreadgateView(const QJsonObject &src, AppBskyFeedDefs::ThreadgateView &dest)
@@ -1053,6 +1059,10 @@ void copyReasonRepost(const QJsonObject &src, AppBskyFeedDefs::ReasonRepost &des
         dest.indexedAt = src.value("indexedAt").toString();
     }
 }
+void copyReasonPin(const QJsonObject &src, AppBskyFeedDefs::ReasonPin &dest)
+{
+    if (!src.isEmpty()) { }
+}
 void copyFeedViewPost(const QJsonObject &src, AppBskyFeedDefs::FeedViewPost &dest)
 {
     if (!src.isEmpty()) {
@@ -1063,6 +1073,10 @@ void copyFeedViewPost(const QJsonObject &src, AppBskyFeedDefs::FeedViewPost &des
             dest.reason_type = AppBskyFeedDefs::FeedViewPostReasonType::reason_ReasonRepost;
             AppBskyFeedDefs::copyReasonRepost(src.value("reason").toObject(),
                                               dest.reason_ReasonRepost);
+        }
+        if (reason_type == QStringLiteral("app.bsky.feed.defs#reasonPin")) {
+            dest.reason_type = AppBskyFeedDefs::FeedViewPostReasonType::reason_ReasonPin;
+            AppBskyFeedDefs::copyReasonPin(src.value("reason").toObject(), dest.reason_ReasonPin);
         }
         dest.feedContext = src.value("feedContext").toString();
     }
@@ -1126,6 +1140,10 @@ void copySkeletonReasonRepost(const QJsonObject &src, AppBskyFeedDefs::SkeletonR
         dest.repost = src.value("repost").toString();
     }
 }
+void copySkeletonReasonPin(const QJsonObject &src, AppBskyFeedDefs::SkeletonReasonPin &dest)
+{
+    if (!src.isEmpty()) { }
+}
 void copySkeletonFeedPost(const QJsonObject &src, AppBskyFeedDefs::SkeletonFeedPost &dest)
 {
     if (!src.isEmpty()) {
@@ -1136,6 +1154,12 @@ void copySkeletonFeedPost(const QJsonObject &src, AppBskyFeedDefs::SkeletonFeedP
                     AppBskyFeedDefs::SkeletonFeedPostReasonType::reason_SkeletonReasonRepost;
             AppBskyFeedDefs::copySkeletonReasonRepost(src.value("reason").toObject(),
                                                       dest.reason_SkeletonReasonRepost);
+        }
+        if (reason_type == QStringLiteral("app.bsky.feed.defs#skeletonReasonPin")) {
+            dest.reason_type =
+                    AppBskyFeedDefs::SkeletonFeedPostReasonType::reason_SkeletonReasonPin;
+            AppBskyFeedDefs::copySkeletonReasonPin(src.value("reason").toObject(),
+                                                   dest.reason_SkeletonReasonPin);
         }
         dest.feedContext = src.value("feedContext").toString();
     }

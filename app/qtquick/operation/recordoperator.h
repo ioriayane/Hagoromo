@@ -71,7 +71,7 @@ public:
 
     Q_INVOKABLE void updateProfile(const QString &avatar_url, const QString &banner_url,
                                    const QString &description, const QString &display_name);
-    Q_INVOKABLE void updatePostPinning(const QString &post_uri);
+    Q_INVOKABLE void updatePostPinning(const QString &post_uri, const QString &post_cid);
     Q_INVOKABLE void updateList(const QString &uri, const QString &avatar_url,
                                 const QString &description, const QString &name);
     Q_INVOKABLE void updateThreadGate(const QString &uri, const QString &threadgate_uri,

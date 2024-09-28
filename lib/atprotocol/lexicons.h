@@ -179,6 +179,16 @@ struct Relationship
 };
 }
 
+// com.atproto.repo.strongRef
+namespace ComAtprotoRepoStrongRef {
+struct Main
+{
+    QString uri; // at-uri
+    QString cid; // cid
+};
+// A URI with a content-hash fingerprint.
+}
+
 // app.bsky.actor.defs
 namespace AppBskyActorDefs {
 struct ProfileAssociatedChat
@@ -250,6 +260,7 @@ struct ProfileViewDetailed
     QString createdAt; // datetime
     ViewerState viewer;
     QList<ComAtprotoLabelDefs::Label> labels;
+    ComAtprotoRepoStrongRef::Main pinnedPost;
 };
 struct AdultContentPref
 {
@@ -370,16 +381,6 @@ struct Preferences
 };
 }
 
-// com.atproto.repo.strongRef
-namespace ComAtprotoRepoStrongRef {
-struct Main
-{
-    QString uri; // at-uri
-    QString cid; // cid
-};
-// A URI with a content-hash fingerprint.
-}
-
 // app.bsky.actor.profile
 namespace AppBskyActorProfile {
 enum class MainLabelsType : int {
@@ -399,8 +400,8 @@ struct Main
                                                    // application, on the overall account.
     // union end : labels
     ComAtprotoRepoStrongRef::Main joinedViaStarterPack;
+    ComAtprotoRepoStrongRef::Main pinnedPost;
     QString createdAt; // datetime
-    QString pinnedPost; // at-uri , (Unofficial field)
 };
 }
 
@@ -573,6 +574,7 @@ namespace AppBskyFeedDefs {
 enum class SkeletonFeedPostReasonType : int {
     none,
     reason_SkeletonReasonRepost,
+    reason_SkeletonReasonPin,
 };
 enum class ThreadViewPostParentType : int {
     none,
@@ -589,6 +591,7 @@ enum class ThreadViewPostRepliesType : int {
 enum class FeedViewPostReasonType : int {
     none,
     reason_ReasonRepost,
+    reason_ReasonPin,
 };
 enum class ReplyRefRootType : int {
     none,
@@ -642,6 +645,7 @@ struct ViewerState
     bool threadMuted = false;
     bool replyDisabled = false;
     bool embeddingDisabled = false;
+    bool pinned = false;
 };
 struct ThreadgateView
 {
@@ -705,6 +709,9 @@ struct ReasonRepost
     AppBskyActorDefs::ProfileViewBasic by;
     QString indexedAt; // datetime
 };
+struct ReasonPin
+{
+};
 struct FeedViewPost
 {
     PostView post;
@@ -712,6 +719,7 @@ struct FeedViewPost
     // union start : reason
     FeedViewPostReasonType reason_type = FeedViewPostReasonType::none;
     ReasonRepost reason_ReasonRepost;
+    ReasonPin reason_ReasonPin;
     // union end : reason
     QString feedContext; // Context provided by feed generator that may be passed back alongside
                          // interactions.
@@ -736,12 +744,16 @@ struct SkeletonReasonRepost
 {
     QString repost; // at-uri
 };
+struct SkeletonReasonPin
+{
+};
 struct SkeletonFeedPost
 {
     QString post; // at-uri
     // union start : reason
     SkeletonFeedPostReasonType reason_type = SkeletonFeedPostReasonType::none;
     SkeletonReasonRepost reason_SkeletonReasonRepost;
+    SkeletonReasonPin reason_SkeletonReasonPin;
     // union end : reason
     QString feedContext; // Context that will be passed through to client and may be passed to feed
                          // generator back alongside interactions.

@@ -8,6 +8,17 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+- Fix
+  - Fix the layout when there is no thumbnail image on the link card
+
+### v0.38.0 - 2024/9/28
+
+- Update
+  - Make the implementation of pinned posts officially compliant
+  - Change the flow when there are unauthenticated accounts
+- Fix
+  - Fix the display of posts quoted from labeled posts
+
 ### v0.37.0 - 2024/9/22
 
 - Add

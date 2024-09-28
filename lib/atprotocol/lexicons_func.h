@@ -125,9 +125,11 @@ void copyNotFoundPost(const QJsonObject &src, AppBskyFeedDefs::NotFoundPost &des
 void copyBlockedPost(const QJsonObject &src, AppBskyFeedDefs::BlockedPost &dest);
 void copyReplyRef(const QJsonObject &src, AppBskyFeedDefs::ReplyRef &dest);
 void copyReasonRepost(const QJsonObject &src, AppBskyFeedDefs::ReasonRepost &dest);
+void copyReasonPin(const QJsonObject &src, AppBskyFeedDefs::ReasonPin &dest);
 void copyFeedViewPost(const QJsonObject &src, AppBskyFeedDefs::FeedViewPost &dest);
 void copyThreadViewPost(const QJsonObject &src, AppBskyFeedDefs::ThreadViewPost &dest);
 void copySkeletonReasonRepost(const QJsonObject &src, AppBskyFeedDefs::SkeletonReasonRepost &dest);
+void copySkeletonReasonPin(const QJsonObject &src, AppBskyFeedDefs::SkeletonReasonPin &dest);
 void copySkeletonFeedPost(const QJsonObject &src, AppBskyFeedDefs::SkeletonFeedPost &dest);
 void copyInteraction(const QJsonObject &src, AppBskyFeedDefs::Interaction &dest);
 }
