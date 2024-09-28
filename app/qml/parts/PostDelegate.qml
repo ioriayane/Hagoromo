@@ -265,8 +265,7 @@ ClickableFrame {
                         Layout.preferredWidth: parent.width
                         Layout.topMargin: 5
                         visible: postFrame.hasQuote &&
-                                 quoteFilterFrame.showContent &&
-                                 contentMediaFilterFrame.showContent
+                                 quoteFilterFrame.showContent
                         basisWidth: bodyLayout.basisWidth
                         onOpenLink: (url) => postFrame.openLink(url)
                         onDisplayLink: (url) => postFrame.displayLink(url)

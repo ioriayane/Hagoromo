@@ -153,7 +153,8 @@ void hagoromo_test::test_RecordOperator_profile()
     {
         QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
         ope.updatePostPinning(
-                "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3k5ml2mujje2n");
+                "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3k5ml2mujje2n",
+                "cid_after");
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
@@ -166,7 +167,7 @@ void hagoromo_test::test_RecordOperator_profile()
                    QString(), "dummy", QString());
     {
         QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
-        ope.updatePostPinning(QString());
+        ope.updatePostPinning(QString(), QString());
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 

@@ -107,6 +107,14 @@ QStringList copyImagesFromPostView(const AppBskyFeedDefs::PostView &post, const 
                 images.append(image.fullsize);
             else if (type == CopyImageType::Alt)
                 images.append(image.alt);
+            else if (type == CopyImageType::Ratio) {
+                if (image.aspectRatio.width == 0) {
+                    images.append("1");
+                } else {
+                    images.append(QString::number(static_cast<double>(image.aspectRatio.height)
+                                                  / static_cast<double>(image.aspectRatio.width)));
+                }
+            }
         }
         return images;
     } else if (post.embed_type
@@ -123,6 +131,14 @@ QStringList copyImagesFromPostView(const AppBskyFeedDefs::PostView &post, const 
                 images.append(image.fullsize);
             else if (type == CopyImageType::Alt)
                 images.append(image.alt);
+            else if (type == CopyImageType::Ratio) {
+                if (image.aspectRatio.width == 0) {
+                    images.append("1");
+                } else {
+                    images.append(QString::number(static_cast<double>(image.aspectRatio.height)
+                                                  / static_cast<double>(image.aspectRatio.width)));
+                }
+            }
         }
         return images;
     } else {
