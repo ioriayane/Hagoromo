@@ -192,6 +192,7 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
     else if (role == PinnedRole)
         return isPinnedPost(current.post.cid) && row == 0;
     else if (role == PinnedByMeRole)
+        // return current.post.viewer.pinned;
         return PinnedPostCache::getInstance()->pinned(account().did, current.post.uri);
     else if (role == ThreadMutedRole)
         return current.post.viewer.threadMuted;
@@ -385,6 +386,7 @@ void TimelineListModel::update(int row, TimelineListModelRoles role, const QVari
                          QVector<int>() << role << IsLikedRole << LikeCountRole);
     } else if (role == PinnedByMeRole) {
         qDebug() << "update Pinned by me:" << value.toString();
+        current.post.viewer.pinned = value.toBool();
         emit dataChanged(index(row), index(row), QVector<int>() << role << PinnedRole);
     } else if (role == ThreadMutedRole) {
         bool muted = value.toBool();
@@ -610,8 +612,10 @@ bool TimelineListModel::pin(int row)
 
     const AppBskyFeedDefs::FeedViewPost &current = m_viewPostHash.value(m_cidList.at(row));
     QString pin_uri;
+    QString pin_cid;
     if (!item(row, PinnedByMeRole).toBool()) {
         pin_uri = current.post.uri;
+        pin_cid = current.post.cid;
     }
 
     if (runningPostPinning(row))
@@ -638,7 +642,7 @@ bool TimelineListModel::pin(int row)
             });
     ope->setAccount(account().service, account().did, account().handle, account().email,
                     account().accessJwt, account().refreshJwt);
-    ope->updatePostPinning(pin_uri);
+    ope->updatePostPinning(pin_uri, pin_cid);
 
     return true;
 }

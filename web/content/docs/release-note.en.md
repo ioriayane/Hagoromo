@@ -9,6 +9,7 @@ description: This is a multi-column Bluesky client.
 ## 2024
 
 - Update
+  - Make the implementation of pinned posts officially compliant
   - Change the flow when there are unauthenticated accounts
 - Fix
   - Fix the display of posts quoted from labeled posts

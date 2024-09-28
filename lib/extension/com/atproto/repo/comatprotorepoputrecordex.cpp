@@ -8,10 +8,10 @@ ComAtprotoRepoPutRecordEx::ComAtprotoRepoPutRecordEx(QObject *parent)
 {
 }
 
-void ComAtprotoRepoPutRecordEx::profile(const AtProtocolType::Blob &avatar,
-                                        const AtProtocolType::Blob &banner,
-                                        const QString &description, const QString &display_name,
-                                        const QString &pinned_post_uri, const QString &cid)
+void ComAtprotoRepoPutRecordEx::profile(
+        const AtProtocolType::Blob &avatar, const AtProtocolType::Blob &banner,
+        const QString &description, const QString &display_name,
+        const AtProtocolType::ComAtprotoRepoStrongRef::Main &pinned_post, const QString &cid)
 {
     QString type = QStringLiteral("app.bsky.actor.profile");
     QJsonObject json_record;
@@ -32,8 +32,11 @@ void ComAtprotoRepoPutRecordEx::profile(const AtProtocolType::Blob &avatar,
         setJsonBlob(banner, json_banner);
         json_record.insert("banner", json_banner);
     }
-    if (!pinned_post_uri.isEmpty()) {
-        json_record.insert("pinnedPost", pinned_post_uri);
+    if (!pinned_post.uri.isEmpty()) {
+        QJsonObject json_subject;
+        json_subject.insert("cid", pinned_post.cid);
+        json_subject.insert("uri", pinned_post.uri);
+        json_record.insert("pinnedPost", json_subject);
     }
 
     putRecord(this->did(), type, QStringLiteral("self"), true, json_record, cid, QString());

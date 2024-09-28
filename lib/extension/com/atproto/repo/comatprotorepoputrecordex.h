@@ -12,7 +12,8 @@ public:
 
     void profile(const AtProtocolType::Blob &avatar, const AtProtocolType::Blob &banner,
                  const QString &description, const QString &display_name,
-                 const QString &pinned_post_uri, const QString &cid);
+                 const AtProtocolType::ComAtprotoRepoStrongRef::Main &pinned_post,
+                 const QString &cid);
     void list(const AtProtocolType::Blob &avatar, const QString &purpose,
               const QString &description, const QString &name, const QString &rkey);
     void postGate(const QString &uri,

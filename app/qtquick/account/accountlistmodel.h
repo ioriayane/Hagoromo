@@ -98,7 +98,6 @@ private:
     void createSession(int row);
     void refreshSession(int row, bool initial = false);
     void getProfile(int row);
-    void getRawProfile(int row);
     void getServiceEndpoint(const QString &did, const QString &service,
                             std::function<void(const QString &service_endpoint)> callback);
     bool allAccountTried() const;

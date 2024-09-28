@@ -400,6 +400,7 @@ void AccountListModel::load()
         }
     }
 
+    checkAllAccountsReady();
     if (m_accountList.isEmpty()) {
         emit finished();
     }
@@ -470,10 +471,10 @@ void AccountListModel::createSession(int row)
             emit errorOccured(session->errorCode(), session->errorMessage());
         }
         emit dataChanged(index(row), index(row));
+        checkAllAccountsReady();
         if (allAccountTried()) {
             emit finished();
         }
-        checkAllAccountsReady();
         session->deleteLater();
     });
     session->setAccount(m_accountList.at(row));
@@ -514,10 +515,10 @@ void AccountListModel::refreshSession(int row, bool initial)
             }
         }
         emit dataChanged(index(row), index(row));
+        checkAllAccountsReady();
         if (allAccountTried()) {
             emit finished();
         }
-        checkAllAccountsReady();
         session->deleteLater();
     });
     session->setAccount(m_accountList.at(row));
@@ -554,7 +555,9 @@ void AccountListModel::getProfile(int row)
                                    emit updatedAccount(row, m_accountList[row].uuid);
                                    emit dataChanged(index(row), index(row));
 
-                                   getRawProfile(row);
+                                   qDebug() << "Update pinned post" << detail.pinnedPost.uri;
+                                   PinnedPostCache::getInstance()->update(m_accountList.at(row).did,
+                                                                          detail.pinnedPost.uri);
                                } else {
                                    emit errorOccured(profile->errorCode(), profile->errorMessage());
                                }
@@ -562,29 +565,6 @@ void AccountListModel::getProfile(int row)
                            });
                            profile->getProfile(m_accountList.at(row).did);
                        });
-}
-
-void AccountListModel::getRawProfile(int row)
-{
-    if (row < 0 || row >= m_accountList.count())
-        return;
-
-    ComAtprotoRepoGetRecordEx *record = new ComAtprotoRepoGetRecordEx(this);
-    connect(record, &ComAtprotoRepoGetRecordEx::finished, this, [=](bool success) {
-        if (success) {
-            AtProtocolType::AppBskyActorProfile::Main profile =
-                    AtProtocolType::LexiconsTypeUnknown::fromQVariant<
-                            AtProtocolType::AppBskyActorProfile::Main>(record->value());
-            qDebug() << "Update pinned post" << profile.pinnedPost;
-            PinnedPostCache::getInstance()->update(m_accountList.at(row).did, profile.pinnedPost);
-
-        } else {
-            emit errorOccured(record->errorCode(), record->errorMessage());
-        }
-        record->deleteLater();
-    });
-    record->setAccount(m_accountList.at(row));
-    record->profile(m_accountList.at(row).did);
 }
 
 void AccountListModel::getServiceEndpoint(const QString &did, const QString &service,

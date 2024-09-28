@@ -110,6 +110,7 @@ void UserProfile::getProfile(const QString &did)
                 }
                 setBelongingLists(
                         ListItemsCache::getInstance()->getListNames(m_account.did, detail.did));
+                setPinnedPost(detail.pinnedPost.uri);
 
                 if (detail.associated.chat.allowIncoming == "none") {
                     setAssociatedChatAllow(false);
@@ -507,39 +508,25 @@ void UserProfile::getRawProfile()
         return;
     }
 
-    getRawInformation(
-            did(),
-            [=](const QString &service_endpoint, const QString &registration_date,
-                const QList<HistoryItem> &handle_history) {
-                ComAtprotoRepoGetRecordEx *record = new ComAtprotoRepoGetRecordEx(this);
-                connect(record, &ComAtprotoRepoGetRecordEx::finished, this, [=](bool success) {
-                    if (success) {
-                        AtProtocolType::AppBskyActorProfile::Main profile =
-                                AtProtocolType::LexiconsTypeUnknown::fromQVariant<
-                                        AtProtocolType::AppBskyActorProfile::Main>(record->value());
-                        setPinnedPost(profile.pinnedPost);
-                    }
-                    setRunning(false);
-                    record->deleteLater();
-                });
-                record->setAccount(m_account);
-                if (!service_endpoint.isEmpty()) {
-                    record->setService(service_endpoint);
-                    setServiceEndpoint(service_endpoint);
-                } else {
-                    // プロフィールを参照されるユーザーのサービスが参照する側と同じとは限らない（bsky.socialだったとしても）
-                    setServiceEndpoint(QString());
-                }
-                setRegistrationDate(registration_date);
-                QStringList history;
-                for (const auto &item : handle_history) {
-                    history.append(item.date);
-                    history.append(item.handle);
-                    history.append(item.endpoint);
-                }
-                setHandleHistory(history);
-                record->profile(did());
-            });
+    getRawInformation(did(),
+                      [=](const QString &service_endpoint, const QString &registration_date,
+                          const QList<HistoryItem> &handle_history) {
+                          if (!service_endpoint.isEmpty()) {
+                              setServiceEndpoint(service_endpoint);
+                          } else {
+                              // プロフィールを参照されるユーザーのサービスが参照する側と同じとは限らない（bsky.socialだったとしても）
+                              setServiceEndpoint(QString());
+                          }
+                          setRegistrationDate(registration_date);
+                          QStringList history;
+                          for (const auto &item : handle_history) {
+                              history.append(item.date);
+                              history.append(item.handle);
+                              history.append(item.endpoint);
+                          }
+                          setHandleHistory(history);
+                          setRunning(false);
+                      });
 }
 
 QString UserProfile::labelsTitle(const QString &label, const bool for_image,
