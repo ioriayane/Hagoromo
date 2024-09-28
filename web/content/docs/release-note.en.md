@@ -8,6 +8,9 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+- Fix
+  - Fix the layout when there is no thumbnail image on the link card
+
 ### v0.38.0 - 2024/9/28
 
 - Update
