@@ -47,11 +47,7 @@ class UserProfile : public QObject
     Q_PROPERTY(bool blocking READ blocking WRITE setBlocking NOTIFY blockingChanged)
     Q_PROPERTY(QString blockingUri READ blockingUri WRITE setBlockingUri NOTIFY blockingUriChanged)
 
-    Q_PROPERTY(bool userFilterMatched READ userFilterMatched WRITE setUserFilterMatched NOTIFY
-                       userFilterMatchedChanged)
-    Q_PROPERTY(QString userFilterTitle READ userFilterTitle WRITE setUserFilterTitle NOTIFY
-                       userFilterTitleChanged)
-
+    Q_PROPERTY(QStringList labels READ labels WRITE setLabels NOTIFY labelsChanged FINAL)
     Q_PROPERTY(QStringList belongingLists READ belongingLists WRITE setBelongingLists NOTIFY
                        belongingListsChanged)
     Q_PROPERTY(QString pinnedPost READ pinnedPost WRITE setPinnedPost NOTIFY pinnedPostChanged)
@@ -107,10 +103,8 @@ public:
     void setBlocking(bool newBlocking);
     QString blockingUri() const;
     void setBlockingUri(const QString &newBlockingUri);
-    bool userFilterMatched() const;
-    void setUserFilterMatched(bool newUserFilterMatched);
-    QString userFilterTitle() const;
-    void setUserFilterTitle(const QString &newUserFilterTitle);
+    QStringList labels() const;
+    void setLabels(const QStringList &newLabels);
     QStringList belongingLists() const;
     void setBelongingLists(const QStringList &newBelongingLists);
 
@@ -149,8 +143,9 @@ signals:
     void blockingUriChanged();
     void userFilterMatchedChanged();
     void userFilterTitleChanged();
-    void belongingListsChanged();
 
+    void labelsChanged();
+    void belongingListsChanged();
     void formattedDescriptionChanged();
     void pinnedPostChanged();
     void serviceEndpointChanged();
@@ -206,6 +201,7 @@ private:
     QString m_registrationDate;
     QStringList m_handleHistory;
     bool m_associatedChatAllow;
+    QStringList m_labels;
 };
 
 #endif // USERPROFILE_H
