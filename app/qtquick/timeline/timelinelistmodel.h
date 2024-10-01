@@ -45,6 +45,7 @@ public:
         DisplayNameRole,
         HandleRole,
         AvatarRole,
+        AuthorLabelsRole,
         MutedRole,
         RecordTextRole,
         RecordTextPlainRole,
