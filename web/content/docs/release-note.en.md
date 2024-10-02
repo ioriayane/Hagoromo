@@ -8,6 +8,10 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+- Add
+  - Add labels set for the account to the post thread
+- Update
+  - Change the display format of the profile label
 - Fix
   - Fix the layout when there is no thumbnail image on the link card
 

@@ -29,6 +29,7 @@ ClickableFrame {
     property alias pinnedIndicatorLabel: pinnedIndicatorLabel
     property alias postAvatarImage: postAvatarImage
     property alias postAuthor: postAuthor
+    property alias authorLabels: authorLabels
     property alias recordText: recordText
     property alias contentFilterFrame: contentFilterFrame
     property alias contentMediaFilterFrame: contentMediaFilterFrame
@@ -166,6 +167,16 @@ ClickableFrame {
                     Layout.preferredWidth: parent.basisWidth
                     layoutWidth: parent.basisWidth
                 }
+                TagLabelLayout {
+                    id: authorLabels
+                    Layout.preferredWidth: parent.width
+                    visible: count > 0
+                    tagSpacing: 2
+                    tagColor: "transparent"
+                    tagBorderWidth: 1
+                    fontPointSize: AdjustedValues.f8
+                }
+
 
                 CoverFrame {
                     id: contentFilterFrame
