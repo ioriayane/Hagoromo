@@ -406,7 +406,7 @@ AtpAbstractListModel::getLabels(const QList<AtProtocolType::ComAtprotoLabelDefs:
 {
     QStringList ret;
     for (const auto &label : labels) {
-        if ((exclude_no_unauth && label.val == "!no-unauthenticated") || label.ver == 0)
+        if (exclude_no_unauth && label.val == "!no-unauthenticated")
             continue;
         ret.append(label.val);
     }
