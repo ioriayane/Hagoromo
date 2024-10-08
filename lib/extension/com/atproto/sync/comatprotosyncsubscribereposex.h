@@ -33,6 +33,7 @@ public slots:
     void onConnected();
     void onDisconnected();
     void onBinaryMessageReceived(const QByteArray &message);
+    void onTextMessageReceived(const QString &message);
 
 private:
     void messageReceivedFromFirehose(const QByteArray &message);

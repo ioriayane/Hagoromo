@@ -32,6 +32,8 @@ ComAtprotoSyncSubscribeReposEx::ComAtprotoSyncSubscribeReposEx(QObject *parent)
             &ComAtprotoSyncSubscribeReposEx::onConnected);
     connect(&m_webSocket, &QWebSocket::binaryMessageReceived, this,
             &ComAtprotoSyncSubscribeReposEx::onBinaryMessageReceived);
+    connect(&m_webSocket, &QWebSocket::textMessageReceived, this,
+            &ComAtprotoSyncSubscribeReposEx::onTextMessageReceived);
     connect(&m_webSocket, &QWebSocket::disconnected, this,
             &ComAtprotoSyncSubscribeReposEx::onDisconnected);
 
@@ -90,10 +92,15 @@ void ComAtprotoSyncSubscribeReposEx::onDisconnected()
 void ComAtprotoSyncSubscribeReposEx::onBinaryMessageReceived(const QByteArray &message)
 {
     // qDebug().noquote() << "onBinaryMessageReceived" << message.length();
-    if (m_subscribeMode == SubScribeMode::JetStream) {
-        messageReceivedFromJetStream(message);
-    } else {
+    if (m_subscribeMode == SubScribeMode::Firehose) {
         messageReceivedFromFirehose(message);
+    }
+}
+
+void ComAtprotoSyncSubscribeReposEx::onTextMessageReceived(const QString &message)
+{
+    if (m_subscribeMode == SubScribeMode::JetStream) {
+        messageReceivedFromJetStream(message.toUtf8());
     }
 }
 
@@ -159,27 +166,27 @@ void ComAtprotoSyncSubscribeReposEx::messageReceivedFromJetStream(const QByteArr
     commit_type_to["u"] = "update";
     commit_type_to["d"] = "delete";
 
-    if (doc.isNull()) {
+    if (doc.isNull() || json_src.isEmpty()) {
         qDebug().noquote() << "Invalid data";
         qDebug().noquote() << "message:" << message;
         emit errorOccured("InvalidData", "Unreadable JSON data.");
         m_webSocket.close();
     } else if (!json_src.contains("type") || !json_src.contains("did")
                || !json_src.contains("commit")) {
-        qDebug().noquote() << "Invalid data";
-        qDebug().noquote() << "message:" << message;
-        emit errorOccured("InvalidData", "Unanticipated data structure.");
-        m_webSocket.close();
+        qDebug().noquote() << "Unsupport data:" << message;
+        // emit errorOccured("InvalidData", "Unanticipated data structure.");
+        // m_webSocket.close();
     } else {
         payload_type = "#commit";
 
         QJsonObject json_src_commit = json_src.value("commit").toObject();
         QJsonObject json_dest;
-        qDebug().noquote() << "message:" << message;
+
         json_dest.insert("repo", json_src.value("did").toString());
         json_dest.insert("rev", json_src_commit.value("rev").toString());
         json_dest.insert("time",
-                         QDateTime::fromMSecsSinceEpoch(json_src.value("time_us").toInt() / 1000)
+                         QDateTime::fromMSecsSinceEpoch(
+                                 static_cast<qint64>(json_src.value("time_us").toDouble() / 1000))
                                  .toString(Qt::ISODateWithMs));
 
         QJsonObject json_dest_commit;
