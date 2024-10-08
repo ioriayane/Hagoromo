@@ -194,26 +194,32 @@ void ComAtprotoSyncSubscribeReposEx::messageReceivedFromJetStream(const QByteArr
         json_dest.insert("commit", json_dest_commit);
 
         QJsonObject json_dest_op;
-        json_dest_op.insert("action",
-                            commit_type_to.value(json_src_commit.value("type").toString()));
+        QString commit_type = commit_type_to.value(json_src_commit.value("type").toString());
+        json_dest_op.insert("action", commit_type);
         json_dest_op.insert("path",
                             QString("%1/%2").arg(json_src_commit.value("collection").toString(),
                                                  json_src_commit.value("rkey").toString()));
-        json_dest_op.insert("cid", json_dest_commit);
+        if (commit_type == "delete") {
+            json_dest_op.insert("cid", QJsonValue());
+        } else {
+            json_dest_op.insert("cid", json_dest_commit);
+        }
         QJsonArray json_dest_ops;
         json_dest_ops.append(json_dest_op);
         json_dest.insert("ops", json_dest_ops);
 
-        QJsonObject json_dest_block;
         QJsonArray json_dest_blocks;
-        json_dest_block.insert("cid", json_src_commit.value("cid").toString());
-        json_dest_block.insert("uri",
-                               QString("at://%1/%2/%3")
-                                       .arg(json_src.value("did").toString(),
-                                            json_src_commit.value("collection").toString(),
-                                            json_src_commit.value("rkey").toString()));
-        json_dest_block.insert("value", json_src_commit.value("record").toObject());
-        json_dest_blocks.append(json_dest_block);
+        if (json_src_commit.contains("record")) {
+            QJsonObject json_dest_block;
+            json_dest_block.insert("cid", json_src_commit.value("cid").toString());
+            json_dest_block.insert("uri",
+                                   QString("at://%1/%2/%3")
+                                           .arg(json_src.value("did").toString(),
+                                                json_src_commit.value("collection").toString(),
+                                                json_src_commit.value("rkey").toString()));
+            json_dest_block.insert("value", json_src_commit.value("record").toObject());
+            json_dest_blocks.append(json_dest_block);
+        }
         json_dest.insert("blocks", json_dest_blocks);
 
         emit received(payload_type, json_dest);
