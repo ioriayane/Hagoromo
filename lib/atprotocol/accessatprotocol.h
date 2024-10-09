@@ -89,6 +89,9 @@ public:
     void setCursor(const QString &newCursor);
 
     void appendRawHeader(const QString &name, const QString &value);
+    void setContentType(const QString &newContentType);
+    QString dPopNonce() const;
+
 signals:
     void finished(bool success);
 
@@ -126,7 +129,9 @@ private:
     QString m_errorMessage;
     QString m_cursor;
 
+    QString m_contentType;
     QHash<QString, QString> m_additionalRawHeaders;
+    QString m_dPopNonce;
 };
 }
 

@@ -22,6 +22,12 @@ void copyUnknown(const QJsonObject &src, QVariant &dest)
         return;
 
     QString type = src.value("$type").toString();
+    QStringList context;
+    if (src.contains("@context")) {
+        for (const auto item : src.value("@context").toArray()) {
+            context.append(item.toString());
+        }
+    }
     if (type == QStringLiteral("app.bsky.feed.post")) {
         AppBskyFeedPost::Main record;
         AppBskyFeedPost::copyMain(src, record);
@@ -58,6 +64,10 @@ void copyUnknown(const QJsonObject &src, QVariant &dest)
         ComWhtwndBlogEntry::Main record;
         ComWhtwndBlogEntry::copyMain(src, record);
         dest.setValue(record);
+    } else if (context.contains("https://www.w3.org/ns/did/v1")) {
+        DirectoryPlcDefs::DidDoc doc;
+        DirectoryPlcDefs::copyDidDoc(src, doc);
+        dest.setValue(doc);
     }
 }
 

@@ -1,0 +1,112 @@
+{
+    "lexicon": 1,
+    "id": "wellKnown.defs",
+    "defs": {
+        "resourceMetadata": {
+            "type": "object",
+            "properties": {
+                "resource": {
+                    "type": "string"
+                },
+                "authorization_servers": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "scopes_supported": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "bearer_methods_supported": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "resource_documentation": {
+                    "type": "string"
+                }
+            }
+        },
+        "serverMetadata": {
+            "type": "object",
+            "properties": {
+                "issuer": {
+                    "type": "string"
+                },
+                "response_types_supported": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "grant_types_supported": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "code_challenge_methods_supported": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "token_endpoint_auth_methods_supported": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "token_endpoint_auth_signing_alg_values_supported": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "scopes_supported": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "subject_types_supported": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "authorization_response_iss_parameter_supported": {
+                    "type": "boolean"
+                },
+                "pushed_authorization_request_endpoint": {
+                    "type": "string"
+                },
+                "token_endpoint": {
+                    "type": "string"
+                },
+                "require_pushed_authorization_requests": {
+                    "type": "boolean"
+                },
+                "dpop_signing_alg_values_supported": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "require_request_uri_registration": {
+                    "type": "boolean"
+                },
+                "client_id_metadata_document_supported": {
+                    "type": "boolean"
+                },
+                "authorization_endpoint": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

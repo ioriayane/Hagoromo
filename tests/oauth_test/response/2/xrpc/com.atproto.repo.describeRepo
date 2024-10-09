@@ -1,0 +1,46 @@
+{
+    "handle": "ioriayane.relog.tech",
+    "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+    "didDoc": {
+        "@context": [
+            "https://www.w3.org/ns/did/v1",
+            "https://w3id.org/security/multikey/v1",
+            "https://w3id.org/security/suites/secp256k1-2019/v1"
+        ],
+        "id": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+        "alsoKnownAs": [
+            "at://ioriayane.relog.tech"
+        ],
+        "verificationMethod": [
+            {
+                "id": "did:plc:ipj5qejfoqu6eukvt72uhyit#atproto",
+                "type": "Multikey",
+                "controller": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+                "publicKeyMultibase": "zQ3shYNo9wSChjqSMPZUmgwjEFMgsk5efZX5UYm8SFrXR5YUd"
+            }
+        ],
+        "service": [
+            {
+                "id": "#atproto_pds",
+                "type": "AtprotoPersonalDataServer",
+                "serviceEndpoint": "http://localhost:{{SERVER_PORT_NO}}/response/1"
+            }
+        ]
+    },
+    "collections": [
+        "app.bsky.actor.profile",
+        "app.bsky.feed.generator",
+        "app.bsky.feed.like",
+        "app.bsky.feed.post",
+        "app.bsky.feed.repost",
+        "app.bsky.feed.threadgate",
+        "app.bsky.graph.block",
+        "app.bsky.graph.follow",
+        "app.bsky.graph.list",
+        "app.bsky.graph.listitem",
+        "app.bsky.graph.starterpack",
+        "chat.bsky.actor.declaration",
+        "com.whtwnd.blog.entry"
+    ],
+    "handleIsCorrect": true
+}

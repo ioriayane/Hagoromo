@@ -1,0 +1,15 @@
+{
+    "resource": "http://localhost:{{SERVER_PORT_NO}}/response/2",
+    "authorization_servers": [
+        "http://localhost:{{SERVER_PORT_NO}}/response/2"
+    ],
+    "scopes_supported": [
+        "profile",
+        "email",
+        "phone"
+    ],
+    "bearer_methods_supported": [
+        "header"
+    ],
+    "resource_documentation": "https://atproto.com"
+}

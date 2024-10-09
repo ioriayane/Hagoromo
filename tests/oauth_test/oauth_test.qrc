@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>response/1/.well-known/oauth-protected-resource</file>
+        <file>response/2/xrpc/com.atproto.repo.describeRepo</file>
+        <file>response/2/.well-known/oauth-authorization-server</file>
+        <file>response/2/oauth/par</file>
+        <file>response/2/oauth/authorize</file>
+        <file>response/2/oauth/token</file>
+    </qresource>
+</RCC>

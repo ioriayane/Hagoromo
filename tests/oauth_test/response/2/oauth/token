@@ -1,0 +1,6 @@
+{
+    "access_token": "access token",
+    "token_type": "DPoP",
+    "expires_in": 2677,
+    "refresh_token": "refresh token"
+}
