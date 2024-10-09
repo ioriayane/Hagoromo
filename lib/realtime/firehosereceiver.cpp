@@ -5,6 +5,8 @@
 // #include <QJsonObject>
 #include <QJsonDocument>
 
+#define USE_JETSTREAM
+
 using AtProtocolInterface::ComAtprotoSyncSubscribeReposEx;
 
 namespace RealtimeFeed {
@@ -18,7 +20,11 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
       ,
       m_status(FirehoseReceiverStatus::Disconnected)
 {
+#ifdef USE_JETSTREAM
+    m_serviceEndpoint = "wss://jetstream2.us-west.bsky.network";
+#else
     m_serviceEndpoint = "wss://bsky.network";
+#endif
     m_wdgTimer.setInterval(60 * 1000);
 
     connect(&m_client, &ComAtprotoSyncSubscribeReposEx::errorOccured,
@@ -97,9 +103,19 @@ void FirehoseReceiver::start()
     if (path.endsWith("/")) {
         path.resize(path.length() - 1);
     }
+#ifdef USE_JETSTREAM
+    ComAtprotoSyncSubscribeReposEx::SubScribeMode mode =
+            ComAtprotoSyncSubscribeReposEx::SubScribeMode::JetStream;
+    QUrl url(path
+             + "/subscribe?wantedCollections=app.bsky.feed.post&wantedCollections=app.bsky.feed."
+               "repost&wantedCollections=app.bsky.graph.follow");
+#else
+    ComAtprotoSyncSubscribeReposEx::SubScribeMode mode =
+            ComAtprotoSyncSubscribeReposEx::SubScribeMode::Firehose;
     QUrl url(path + "/xrpc/com.atproto.sync.subscribeRepos");
+#endif
     qDebug().noquote() << "Connect to" << url.toString();
-    m_client.open(url);
+    m_client.open(url, mode);
     m_wdgTimer.start();
 }
 
