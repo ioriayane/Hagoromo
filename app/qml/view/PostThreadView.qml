@@ -102,6 +102,8 @@ ColumnLayout {
             delegate: PostDelegate {
                 Layout.preferredWidth: rootListView.width
 
+                property bool isBasisPost: (postThreadView.postUri === model.uri)
+
                 //自分から自分へは移動しない
                 onClicked: (mouse) => {
                                if(postThreadView.postUri !== model.uri){
@@ -128,7 +130,8 @@ ColumnLayout {
                 postAvatarImage.onClicked: requestViewProfile(model.did)
                 postAuthor.displayName: model.displayName
                 postAuthor.handle: model.handle
-                postAuthor.indexedAt: (postThreadView.postUri === model.uri) ? "" : model.indexedAt
+                postAuthor.indexedAt: isBasisPost ? "" : model.indexedAt
+                authorLabels.model: isBasisPost ? model.authorLabels : []
                 recordText.text: {
                     var text = model.recordText
                     if(model.recordTextTranslation.length > 0){
@@ -194,7 +197,7 @@ ColumnLayout {
                 listLinkCardFrame.creatorHandleLabel.text: model.listLinkCreatorHandle
                 listLinkCardFrame.descriptionLabel.text: model.listLinkDescription
 
-                postInformation.visible: (postThreadView.postUri === model.uri)
+                postInformation.visible: isBasisPost
                 postInformation.tagsLayout.model: postInformation.visible ? model.tags : []
                 postInformation.labelsLayout.model: postInformation.visible ? model.labels : []
                 postInformation.languagesLayout.model: postInformation.visible ? model.languages : []

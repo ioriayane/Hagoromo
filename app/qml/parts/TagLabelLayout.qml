@@ -3,7 +3,10 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 
+import tech.relog.hagoromo.singleton 1.0
+
 Item {
+    id: tagLabelLayout
     clip: true
     implicitHeight: {
         if(repeater.count === 0){
@@ -23,6 +26,7 @@ Item {
     property alias model: repeater.model
     property alias count: repeater.count
     property string iconSource: "../images/label.png"
+    property real fontPointSize: AdjustedValues.f10
 
     Repeater {
         id: repeater
@@ -73,6 +77,7 @@ Item {
             text: model.modelData
             source: repeater.parent.iconSource
             spacing: repeater.parent.tagSpacing
+            fontPointSize: tagLabelLayout.fontPointSize
         }
     }
 }

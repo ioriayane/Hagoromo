@@ -4,6 +4,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QElapsedTimer>
+#include <QUrl>
 
 #include "comatprotosyncsubscribereposex.h"
 
@@ -18,11 +19,22 @@ int main(int argc, char *argv[])
         qWarning() << "  usage: firehosereader URL STOPER_USER_DID";
         return 1;
     }
+    ComAtprotoSyncSubscribeReposEx::SubScribeMode mode =
+            ComAtprotoSyncSubscribeReposEx::SubScribeMode::Firehose;
     QUrl url(a.arguments().at(1));
     QString stopper_did = a.arguments().at(2);
     qDebug().noquote() << "url" << url.toString();
+    qDebug().noquote() << "  " << url.scheme();
+    qDebug().noquote() << "  " << url.host();
+    qDebug().noquote() << "  " << url.path();
+    qDebug().noquote() << "  " << url.query();
     qDebug().noquote() << "Stopper" << stopper_did;
     // wss://bsky.network/xrpc/com.atproto.sync.subscribeRepos
+    // wss://jetstream2.us-west.bsky.network/subscribe?wantedCollections=app.bsky.feed.post&wantedCollections=app.bsky.feed.repost&wantedCollections=app.bsky.graph.follow
+
+    if (url.host().startsWith("jetstream")) {
+        mode = ComAtprotoSyncSubscribeReposEx::SubScribeMode::JetStream;
+    }
 
     QElapsedTimer timer;
     timer.start();
@@ -105,7 +117,10 @@ int main(int argc, char *argv[])
                     QCoreApplication::quit();
                 }
             });
-    client.open(url);
+    client.open(url, mode);
+
+    QNetworkRequest req(url);
+    qDebug().noquote() << req.url().toString() << req.url().query();
 
     return a.exec();
 }

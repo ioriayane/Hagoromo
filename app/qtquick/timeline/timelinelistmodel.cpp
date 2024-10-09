@@ -150,6 +150,8 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return current.post.author.handle;
     else if (role == AvatarRole)
         return current.post.author.avatar;
+    else if (role == AuthorLabelsRole)
+        return getLabels(current.post.author.labels, true);
     else if (role == MutedRole)
         return current.post.author.viewer.muted;
     else if (role == RecordTextRole)
@@ -756,6 +758,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[DisplayNameRole] = "displayName";
     roles[HandleRole] = "handle";
     roles[AvatarRole] = "avatar";
+    roles[AuthorLabelsRole] = "authorLabels";
     roles[MutedRole] = "muted";
     roles[RecordTextRole] = "recordText";
     roles[RecordTextPlainRole] = "recordTextPlain";
