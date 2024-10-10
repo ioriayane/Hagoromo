@@ -85,6 +85,7 @@ deploy_hagoromo(){
         cp "zlib/lib/libz.so.1.3.1" ${work_dir}/lib
         cp "zlib/lib/libz.so.1" ${work_dir}/lib
         cp "app/i18n/app_ja.qm" ${work_dir}/bin/translations
+        cp "app/i18n/lib_ja.qm" ${work_dir}/bin/translations
         cp ${QT_BIN_FOLDER}/../translations/qt_ja.qm ${work_dir}/bin/translations
 
         cat ${SCRIPT_FOLDER}/deploy/linux_lib.txt | xargs -i{} cp -P ${QT_BIN_FOLDER}/../lib/{} ${work_dir}/lib
@@ -99,6 +100,7 @@ deploy_hagoromo(){
 
         mkdir -p ${work_dir}/Hagoromo.app/Contents/MacOS/translations
         cp "app/i18n/app_ja.qm" ${work_dir}/Hagoromo.app/Contents/MacOS/translations
+        cp "app/i18n/lib_ja.qm" ${work_dir}/Hagoromo.app/Contents/MacOS/translations
         cp ${QT_BIN_FOLDER}/../translations/qt_ja.qm ${work_dir}/Hagoromo.app/Contents/MacOS/translations
         cp -RL "zlib/lib/libz.1.dylib" ${work_dir}/Hagoromo.app/Contents/Frameworks
     fi
