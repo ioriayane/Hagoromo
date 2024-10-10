@@ -25,6 +25,7 @@ private:
     QCoreApplication *m_app;
     QQmlApplicationEngine *m_engine;
     QHash<QString, QTranslator *> m_translatorApp;
+    QHash<QString, QTranslator *> m_translatorLib;
     QHash<QString, QTranslator *> m_translatorSys;
     QString m_currentLang;
 };
