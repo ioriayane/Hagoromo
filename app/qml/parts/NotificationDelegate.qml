@@ -56,6 +56,7 @@ ClickableFrame {
     signal requestViewProfile(string did)
     signal requestViewSearchPosts(string text)
     signal requestAddMutedWord(string text)
+    signal requestCopyTagToClipboard(string text)
 
     function openLink(url){
         if(url.indexOf("did:") === 0){
@@ -282,6 +283,7 @@ ClickableFrame {
                                 id: tagMenu
                                 onRequestViewSearchPosts: (text) => notificationFrame.requestViewSearchPosts(text)
                                 onRequestAddMutedWord: (text) => notificationFrame.requestAddMutedWord(text)
+                                onRequestCopyTagToClipboard: (text) => notificationFrame.requestCopyTagToClipboard(text)
                             }
                         }
                     }

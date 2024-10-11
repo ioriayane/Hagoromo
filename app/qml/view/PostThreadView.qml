@@ -113,6 +113,7 @@ ColumnLayout {
                 onRequestViewProfile: (did) => postThreadView.requestViewProfile(did)
                 onRequestViewSearchPosts: (text) => postThreadView.requestViewSearchPosts(text)
                 onRequestAddMutedWord: (text) => postThreadView.requestAddMutedWord(text)
+                onRequestCopyTagToClipboard: (text) => systemTool.copyToClipboard(text)
 
                 moderationFrame.visible: model.muted
                 userFilterMatched: model.userFilterMatched
