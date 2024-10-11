@@ -441,6 +441,28 @@ void atprotocol_test::test_OpenGraphProtocol()
                                     .arg(QString::number(m_listenPort)),
                  ogp.thumb().toLocal8Bit());
     }
+
+    {
+        QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
+        ogp.getData(m_service + "/ogp/file7.html");
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+
+        QVERIFY2(ogp.uri()
+                         == QString("http://localhost:%1/response/ogp/file7.html")
+                                    .arg(QString::number(m_listenPort)),
+                 ogp.uri().toLocal8Bit());
+        QVERIFY2(ogp.title() == QString("file7 TITLE"), ogp.title().toLocal8Bit());
+        QVERIFY2(ogp.description() == QString("file7 ").append(QChar(0x8a73)).append(QChar(0x7d30)),
+                 ogp.description().toLocal8Bit());
+        QVERIFY2(ogp.thumb()
+                         == QString("http://localhost:%1/response/ogp/images/file7.png")
+                                    .arg(QString::number(m_listenPort)),
+                 ogp.thumb().toLocal8Bit());
+    }
 }
 
 void atprotocol_test::test_ogpDecodeHtml()
