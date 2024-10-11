@@ -10,6 +10,7 @@ description: This is a multi-column Bluesky client.
 
 - Add
   - Add labels set for the account to the post thread
+  - Added a function to copy hashtags
 - Update
   - Change the display format of the profile label
   - Reduces the amount of data transmitted in real-time feeds

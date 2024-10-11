@@ -84,6 +84,7 @@ ScrollView {
             onRequestViewProfile: (did) => notificationListView.requestViewProfile(did)
             onRequestViewSearchPosts: (text) => notificationListView.requestViewSearchPosts(text)
             onRequestAddMutedWord: (text) => notificationListView.requestAddMutedWord(text)
+            onRequestCopyTagToClipboard: (text) => systemTool.copyToClipboard(text)
 
             moderationFrame.visible: model.muted
             userFilterMatched: model.userFilterMatched
