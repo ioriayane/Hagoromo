@@ -84,32 +84,20 @@ void UserProfile::getProfile(const QString &did)
                 setBlocking(detail.viewer.blocking.contains(m_account.did));
                 setBlockingUri(detail.viewer.blocking);
                 if (detail.labels.isEmpty()) {
-                    setUserFilterMatched(false);
-                    setUserFilterTitle(QString());
+                    setLabels(QStringList());
                 } else {
-                    QString title;
-                    QString val;
-                    for (const auto &label : detail.labels) {
+                    QStringList labels;
+                    for (const auto &label : qAsConst(detail.labels)) {
                         if (label.val == QStringLiteral("!no-unauthenticated"))
                             continue;
-                        val = label.val;
-                        title = labelsTitle(label.val, false);
+                        labels.append(label.val);
                         break;
                     }
-                    if (val.isEmpty()) {
-                        setUserFilterMatched(false);
-                        setUserFilterTitle(QString());
-                    } else {
-                        setUserFilterMatched(true);
-                        if (title.isEmpty()) {
-                            setUserFilterTitle(val);
-                        } else {
-                            setUserFilterTitle(title);
-                        }
-                    }
+                    setLabels(labels);
                 }
                 setBelongingLists(
                         ListItemsCache::getInstance()->getListNames(m_account.did, detail.did));
+                setPinnedPost(detail.pinnedPost.uri);
 
                 if (detail.associated.chat.allowIncoming == "none") {
                     setAssociatedChatAllow(false);
@@ -372,32 +360,6 @@ void UserProfile::setBlockingUri(const QString &newBlockingUri)
     emit blockingUriChanged();
 }
 
-bool UserProfile::userFilterMatched() const
-{
-    return m_userFilterMatched;
-}
-
-void UserProfile::setUserFilterMatched(bool newUserFilterMatched)
-{
-    if (m_userFilterMatched == newUserFilterMatched)
-        return;
-    m_userFilterMatched = newUserFilterMatched;
-    emit userFilterMatchedChanged();
-}
-
-QString UserProfile::userFilterTitle() const
-{
-    return m_userFilterTitle;
-}
-
-void UserProfile::setUserFilterTitle(const QString &newUserFilterTitle)
-{
-    if (m_userFilterTitle == newUserFilterTitle)
-        return;
-    m_userFilterTitle = newUserFilterTitle;
-    emit userFilterTitleChanged();
-}
-
 QString UserProfile::formattedDescription() const
 {
     return m_formattedDescription;
@@ -507,39 +469,25 @@ void UserProfile::getRawProfile()
         return;
     }
 
-    getRawInformation(
-            did(),
-            [=](const QString &service_endpoint, const QString &registration_date,
-                const QList<HistoryItem> &handle_history) {
-                ComAtprotoRepoGetRecordEx *record = new ComAtprotoRepoGetRecordEx(this);
-                connect(record, &ComAtprotoRepoGetRecordEx::finished, this, [=](bool success) {
-                    if (success) {
-                        AtProtocolType::AppBskyActorProfile::Main profile =
-                                AtProtocolType::LexiconsTypeUnknown::fromQVariant<
-                                        AtProtocolType::AppBskyActorProfile::Main>(record->value());
-                        setPinnedPost(profile.pinnedPost);
-                    }
-                    setRunning(false);
-                    record->deleteLater();
-                });
-                record->setAccount(m_account);
-                if (!service_endpoint.isEmpty()) {
-                    record->setService(service_endpoint);
-                    setServiceEndpoint(service_endpoint);
-                } else {
-                    // プロフィールを参照されるユーザーのサービスが参照する側と同じとは限らない（bsky.socialだったとしても）
-                    setServiceEndpoint(QString());
-                }
-                setRegistrationDate(registration_date);
-                QStringList history;
-                for (const auto &item : handle_history) {
-                    history.append(item.date);
-                    history.append(item.handle);
-                    history.append(item.endpoint);
-                }
-                setHandleHistory(history);
-                record->profile(did());
-            });
+    getRawInformation(did(),
+                      [=](const QString &service_endpoint, const QString &registration_date,
+                          const QList<HistoryItem> &handle_history) {
+                          if (!service_endpoint.isEmpty()) {
+                              setServiceEndpoint(service_endpoint);
+                          } else {
+                              // プロフィールを参照されるユーザーのサービスが参照する側と同じとは限らない（bsky.socialだったとしても）
+                              setServiceEndpoint(QString());
+                          }
+                          setRegistrationDate(registration_date);
+                          QStringList history;
+                          for (const auto &item : handle_history) {
+                              history.append(item.date);
+                              history.append(item.handle);
+                              history.append(item.endpoint);
+                          }
+                          setHandleHistory(history);
+                          setRunning(false);
+                      });
 }
 
 QString UserProfile::labelsTitle(const QString &label, const bool for_image,
@@ -551,6 +499,19 @@ QString UserProfile::labelsTitle(const QString &label, const bool for_image,
 QStringList UserProfile::labelerDids() const
 {
     return LabelerProvider::getInstance()->labelerDids(m_account);
+}
+
+QStringList UserProfile::labels() const
+{
+    return m_labels;
+}
+
+void UserProfile::setLabels(const QStringList &newLabels)
+{
+    if (m_labels == newLabels)
+        return;
+    m_labels = newLabels;
+    emit labelsChanged();
 }
 
 QStringList UserProfile::belongingLists() const

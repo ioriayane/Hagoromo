@@ -9,7 +9,7 @@
         <translation>アカウント管理</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="138"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="146"/>
         <source>Set as main</source>
         <translation>メインに設定</translation>
     </message>
@@ -18,7 +18,7 @@
         <translation type="vanished">ポストの統計とログ</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="149"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="157"/>
         <source>Content filter</source>
         <translation>コンテンツフィルター</translation>
     </message>
@@ -27,17 +27,17 @@
         <translation type="vanished">ミュート中</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="160"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="168"/>
         <source>Muted words and tags</source>
         <translation>ミュートワードの編集</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="165"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="173"/>
         <source>Muted accounts</source>
         <translation>ミュート中のアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="174"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="182"/>
         <source>Muted lists</source>
         <translation>ミュート中のリスト</translation>
     </message>
@@ -46,32 +46,32 @@
         <translation type="vanished">ブロック中</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="143"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="151"/>
         <source>Statistics and logs</source>
         <translation>統計とログ</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="157"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="165"/>
         <source>Mute</source>
         <translation>ミュート</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="183"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="191"/>
         <source>Block</source>
         <translation>ブロック</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="186"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="194"/>
         <source>Blocked accounts</source>
         <translation>ブロック中のアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="195"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="203"/>
         <source>Blocked lists</source>
         <translation>ブロック中のリスト</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="206"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="214"/>
         <source>Post interaction settings</source>
         <translation>投稿への反応の設定</translation>
     </message>
@@ -80,12 +80,12 @@
         <translation type="vanished">リプライできるユーザー</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="221"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="229"/>
         <source>Remove account</source>
         <translation>アカウントを削除</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AccountDialog.qml" line="231"/>
+        <location filename="../qml/dialogs/AccountDialog.qml" line="239"/>
         <source>Close</source>
         <translation>閉じる</translation>
     </message>
@@ -273,14 +273,14 @@
 <context>
     <name>AtpAbstractListModel</name>
     <message>
-        <location filename="../qtquick/atpabstractlistmodel.cpp" line="627"/>
-        <location filename="../qtquick/atpabstractlistmodel.cpp" line="634"/>
+        <location filename="../qtquick/atpabstractlistmodel.cpp" line="630"/>
+        <location filename="../qtquick/atpabstractlistmodel.cpp" line="637"/>
         <source>Blocked</source>
         <translation>ブロック中</translation>
     </message>
     <message>
-        <location filename="../qtquick/atpabstractlistmodel.cpp" line="630"/>
-        <location filename="../qtquick/atpabstractlistmodel.cpp" line="637"/>
+        <location filename="../qtquick/atpabstractlistmodel.cpp" line="633"/>
+        <location filename="../qtquick/atpabstractlistmodel.cpp" line="640"/>
         <source>Detached by author</source>
         <translation>投稿者によって切り離し済み</translation>
     </message>
@@ -686,137 +686,6 @@ Please recreate AppPassword in the official application.</source>
     </message>
 </context>
 <context>
-    <name>ConfigurableLabels</name>
-    <message>
-        <source>Content hidden</source>
-        <translation type="vanished">閲覧不可</translation>
-    </message>
-    <message>
-        <source>Moderator overrides for special cases.</source>
-        <translation type="vanished">特別な場合のためのモデレーターによるオーバーライド。</translation>
-    </message>
-    <message>
-        <source>Content warning</source>
-        <translation type="vanished">閲覧警告</translation>
-    </message>
-    <message>
-        <source>Legal</source>
-        <translation type="vanished">法的</translation>
-    </message>
-    <message>
-        <source>Content removed for legal reasons.</source>
-        <translation type="vanished">法的な理由で削除されたコンテンツ。</translation>
-    </message>
-    <message>
-        <source>Explicit Sexual Images</source>
-        <translation type="vanished">露骨な性的な画像</translation>
-    </message>
-    <message>
-        <source>i.e. pornography</source>
-        <translation type="vanished">例えばポルノ</translation>
-    </message>
-    <message>
-        <source>Sexually Explicit</source>
-        <translation type="vanished">露骨な性的表現</translation>
-    </message>
-    <message>
-        <source>Other Nudity</source>
-        <translation type="vanished">その他ヌード</translation>
-    </message>
-    <message>
-        <source>Including non-sexual and artistic</source>
-        <translation type="vanished">ノンセクシャルや芸術的なものも含む</translation>
-    </message>
-    <message>
-        <source>Nudity</source>
-        <translation type="vanished">ヌード</translation>
-    </message>
-    <message>
-        <source>Basic Moderation</source>
-        <translation type="vanished">基本モデレーション</translation>
-    </message>
-    <message>
-        <source>Basic configuration independent of moderation services.</source>
-        <translation type="vanished">モデレーションサービスに依存しない基本設定。</translation>
-    </message>
-    <message>
-        <source>Pornography</source>
-        <translation type="vanished">ポルノ</translation>
-    </message>
-    <message>
-        <source>Explicit sexual images.</source>
-        <translation type="vanished">露骨な性的な画像。</translation>
-    </message>
-    <message>
-        <source>Sexually Suggestive</source>
-        <translation type="vanished">性的な示唆</translation>
-    </message>
-    <message>
-        <source>Does not include nudity</source>
-        <translation type="vanished">ヌードは含まない</translation>
-    </message>
-    <message>
-        <source>Graphic Media</source>
-        <translation type="vanished">グラフィックメディア</translation>
-    </message>
-    <message>
-        <source>Explicit or potentially disturbing media.</source>
-        <translation type="vanished">露骨な、あるいは不穏なメディア。</translation>
-    </message>
-    <message>
-        <source>Non-sexual Nudity</source>
-        <translation type="vanished">性的でないヌード</translation>
-    </message>
-    <message>
-        <source>E.g. artistic nudes.</source>
-        <translation type="vanished">例：芸術的なヌード</translation>
-    </message>
-    <message>
-        <source>Violent / Bloody</source>
-        <translation type="vanished">暴力 / 流血</translation>
-    </message>
-    <message>
-        <source>Gore, self-harm, torture</source>
-        <translation type="vanished">血糊、自傷行為、拷問</translation>
-    </message>
-    <message>
-        <source>Violence</source>
-        <translation type="vanished">暴力</translation>
-    </message>
-    <message>
-        <source>Hate Group Iconography</source>
-        <translation type="vanished">ヘイトグループの象徴</translation>
-    </message>
-    <message>
-        <source>Images of terror groups, articles covering events, etc.</source>
-        <translation type="vanished">テロ集団の画像、事件を取り上げた記事など</translation>
-    </message>
-    <message>
-        <source>Hate Groups</source>
-        <translation type="vanished">ヘイトグループ</translation>
-    </message>
-    <message>
-        <source>Spam</source>
-        <translation type="vanished">スパム</translation>
-    </message>
-    <message>
-        <source>Excessive unwanted interactions</source>
-        <translation type="vanished">過剰な不要な干渉</translation>
-    </message>
-    <message>
-        <source>Impersonation / Scam</source>
-        <translation type="vanished">なりすまし / 詐欺</translation>
-    </message>
-    <message>
-        <source>Impersonation</source>
-        <translation type="vanished">なりすまし</translation>
-    </message>
-    <message>
-        <source>Accounts falsely claiming to be people or orgs</source>
-        <translation type="vanished">個人や団体を偽ったアカウント</translation>
-    </message>
-</context>
-<context>
     <name>ContentFilterSettingDialog</name>
     <message>
         <location filename="../qml/dialogs/ContentFilterSettingDialog.qml" line="18"/>
@@ -1007,17 +876,22 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>HashTagMenu</name>
     <message>
-        <location filename="../qml/parts/HashTagMenu.qml" line="18"/>
+        <location filename="../qml/parts/HashTagMenu.qml" line="19"/>
         <source>Search %s posts</source>
         <translation>%s を検索</translation>
     </message>
     <message>
-        <location filename="../qml/parts/HashTagMenu.qml" line="25"/>
+        <location filename="../qml/parts/HashTagMenu.qml" line="26"/>
         <source>Search %s posts by this user</source>
         <translation>このユーザーによる %s を検索</translation>
     </message>
     <message>
-        <location filename="../qml/parts/HashTagMenu.qml" line="31"/>
+        <location filename="../qml/parts/HashTagMenu.qml" line="32"/>
+        <source>Copy %s</source>
+        <translation>%sをコピー</translation>
+    </message>
+    <message>
+        <location filename="../qml/parts/HashTagMenu.qml" line="38"/>
         <source>Mute %s posts</source>
         <translation>%s をミュートする</translation>
     </message>
@@ -2083,93 +1957,6 @@ Please recreate AppPassword in the official application.</source>
     </message>
 </context>
 <context>
-    <name>LogAccess</name>
-    <message>
-        <source>Post</source>
-        <translation type="vanished">ポスト</translation>
-    </message>
-    <message>
-        <source>Total number of posts</source>
-        <translation type="vanished">総ポスト数</translation>
-    </message>
-    <message>
-        <source>Number of days posts</source>
-        <translation type="vanished">ポストした日数</translation>
-    </message>
-    <message>
-        <source>Average number of daily posts</source>
-        <translation type="vanished">1日あたりの平均ポスト数</translation>
-    </message>
-    <message>
-        <source>Like</source>
-        <translation type="vanished">いいね</translation>
-    </message>
-    <message>
-        <source>Total number of likes</source>
-        <translation type="vanished">総いいね数</translation>
-    </message>
-    <message>
-        <source>Number of days likes</source>
-        <translation type="vanished">いいねした日数</translation>
-    </message>
-    <message>
-        <source>Average number of daily likes</source>
-        <translation type="vanished">1日あたりの平均いいね数</translation>
-    </message>
-    <message>
-        <source>Repost</source>
-        <translation type="vanished">リポスト</translation>
-    </message>
-    <message>
-        <source>Total number of reposts</source>
-        <translation type="vanished">総リポスト数</translation>
-    </message>
-    <message>
-        <source>Number of days reposts</source>
-        <translation type="vanished">リポストした日数</translation>
-    </message>
-    <message>
-        <source>Average number of daily reposts</source>
-        <translation type="vanished">1日あたりの平均リポスト数</translation>
-    </message>
-    <message>
-        <source>List</source>
-        <translation type="vanished">リスト</translation>
-    </message>
-    <message>
-        <source>Total number of lists</source>
-        <translation type="vanished">リストの数</translation>
-    </message>
-    <message>
-        <source>Total number of list items</source>
-        <translation type="vanished">リストに登録している総アカウント数</translation>
-    </message>
-    <message>
-        <source>Other</source>
-        <translation type="vanished">その他</translation>
-    </message>
-    <message>
-        <source>Total number of follows</source>
-        <translation type="vanished">フォロー数</translation>
-    </message>
-    <message>
-        <source>Total number of who can reply</source>
-        <translation type="vanished">リプライ制限をした数</translation>
-    </message>
-    <message>
-        <source>Total number of blocks</source>
-        <translation type="vanished">総ブロック数</translation>
-    </message>
-    <message>
-        <source>Number of registrations for list</source>
-        <translation type="vanished">リストに登録しているアカウント数</translation>
-    </message>
-    <message>
-        <source>Number of registrations for &apos;%1&apos;</source>
-        <translation type="vanished">&apos;%1&apos;に登録しているアカウント数</translation>
-    </message>
-</context>
-<context>
     <name>LogViewDialog</name>
     <message>
         <source>Post statistics and logs</source>
@@ -2293,12 +2080,12 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>NotificationDelegate</name>
     <message>
-        <location filename="../qml/parts/NotificationDelegate.qml" line="161"/>
+        <location filename="../qml/parts/NotificationDelegate.qml" line="162"/>
         <source>Post from an account you muted.</source>
         <translation>ミュートしているアカウントのポスト</translation>
     </message>
     <message>
-        <location filename="../qml/parts/NotificationDelegate.qml" line="395"/>
+        <location filename="../qml/parts/NotificationDelegate.qml" line="397"/>
         <source>signed up with your starter pack</source>
         <translation>あなたのスターターパックで登録しました</translation>
     </message>
@@ -2306,7 +2093,7 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>NotificationListModel</name>
     <message>
-        <location filename="../qtquick/notification/notificationlistmodel.cpp" line="274"/>
+        <location filename="../qtquick/notification/notificationlistmodel.cpp" line="281"/>
         <source>Post hidden by muted word</source>
         <translation>ミュートワードを含む</translation>
     </message>
@@ -2322,83 +2109,83 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>PostControls</name>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="80"/>
+        <location filename="../qml/parts/PostControls.qml" line="84"/>
         <source>Repost</source>
         <translation>リポスト</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="85"/>
+        <location filename="../qml/parts/PostControls.qml" line="89"/>
         <source>Quote</source>
         <translation>引用</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="154"/>
-        <location filename="../qml/parts/PostControls.qml" line="223"/>
+        <location filename="../qml/parts/PostControls.qml" line="159"/>
+        <location filename="../qml/parts/PostControls.qml" line="228"/>
         <source>Translate</source>
         <translation>翻訳</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="159"/>
-        <location filename="../qml/parts/PostControls.qml" line="228"/>
+        <location filename="../qml/parts/PostControls.qml" line="164"/>
+        <location filename="../qml/parts/PostControls.qml" line="233"/>
         <source>Copy post text</source>
         <translation>ポストをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="163"/>
-        <location filename="../qml/parts/PostControls.qml" line="232"/>
+        <location filename="../qml/parts/PostControls.qml" line="168"/>
+        <location filename="../qml/parts/PostControls.qml" line="237"/>
         <source>Copy url</source>
         <translation>URLをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="168"/>
-        <location filename="../qml/parts/PostControls.qml" line="237"/>
+        <location filename="../qml/parts/PostControls.qml" line="173"/>
+        <location filename="../qml/parts/PostControls.qml" line="242"/>
         <source>Open in Official</source>
         <translation>公式で開く</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="175"/>
-        <location filename="../qml/parts/PostControls.qml" line="244"/>
+        <location filename="../qml/parts/PostControls.qml" line="180"/>
+        <location filename="../qml/parts/PostControls.qml" line="249"/>
         <source>Reposted by</source>
         <translation>リポストしたアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="181"/>
-        <location filename="../qml/parts/PostControls.qml" line="250"/>
+        <location filename="../qml/parts/PostControls.qml" line="186"/>
+        <location filename="../qml/parts/PostControls.qml" line="255"/>
         <source>Liked by</source>
         <translation>いいねしたアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="187"/>
-        <location filename="../qml/parts/PostControls.qml" line="256"/>
+        <location filename="../qml/parts/PostControls.qml" line="192"/>
+        <location filename="../qml/parts/PostControls.qml" line="261"/>
         <source>Quotes</source>
         <translation>引用したポスト</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="194"/>
-        <location filename="../qml/parts/PostControls.qml" line="263"/>
+        <location filename="../qml/parts/PostControls.qml" line="199"/>
+        <location filename="../qml/parts/PostControls.qml" line="268"/>
         <source>Unpin this post</source>
         <translation>固定ポストを解除</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="194"/>
-        <location filename="../qml/parts/PostControls.qml" line="263"/>
+        <location filename="../qml/parts/PostControls.qml" line="199"/>
+        <location filename="../qml/parts/PostControls.qml" line="268"/>
         <source>Pin this post</source>
         <translation>固定ポストにする</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="200"/>
-        <location filename="../qml/parts/PostControls.qml" line="269"/>
+        <location filename="../qml/parts/PostControls.qml" line="205"/>
+        <location filename="../qml/parts/PostControls.qml" line="274"/>
         <source>Unmute thread</source>
         <translation>スレッドミュートの解除</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="200"/>
-        <location filename="../qml/parts/PostControls.qml" line="269"/>
+        <location filename="../qml/parts/PostControls.qml" line="205"/>
+        <location filename="../qml/parts/PostControls.qml" line="274"/>
         <source>Mute thread</source>
         <translation>スレッドをミュート</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="205"/>
+        <location filename="../qml/parts/PostControls.qml" line="210"/>
         <source>Edit interaction settings</source>
         <translation>投稿への反応の設定</translation>
     </message>
@@ -2407,22 +2194,22 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">リプライできるユーザー</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="212"/>
+        <location filename="../qml/parts/PostControls.qml" line="217"/>
         <source>Delete post</source>
         <translation>ポストを削除</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="274"/>
+        <location filename="../qml/parts/PostControls.qml" line="279"/>
         <source>Re-attach quote</source>
         <translation>引用を再接続</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="274"/>
+        <location filename="../qml/parts/PostControls.qml" line="279"/>
         <source>Detach quote</source>
         <translation>引用を切断</translation>
     </message>
     <message>
-        <location filename="../qml/parts/PostControls.qml" line="281"/>
+        <location filename="../qml/parts/PostControls.qml" line="286"/>
         <source>Report post</source>
         <translation>ポストを通報</translation>
     </message>
@@ -2430,7 +2217,7 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>PostDelegate</name>
     <message>
-        <location filename="../qml/parts/PostDelegate.qml" line="98"/>
+        <location filename="../qml/parts/PostDelegate.qml" line="100"/>
         <source>Post from an account you muted.</source>
         <translation>ミュートしているアカウントのポスト</translation>
     </message>
@@ -2506,7 +2293,7 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">ポストスレッド</translation>
     </message>
     <message>
-        <location filename="../qml/view/PostThreadView.qml" line="150"/>
+        <location filename="../qml/view/PostThreadView.qml" line="155"/>
         <source>Quoted content warning</source>
         <translation>閲覧注意な引用</translation>
     </message>
@@ -2592,87 +2379,86 @@ Please recreate AppPassword in the official application.</source>
         <translation>登録日 :</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="398"/>
+        <location filename="../qml/view/ProfileView.qml" line="407"/>
         <source>Send mention</source>
         <translation>メンションを送る</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="404"/>
+        <location filename="../qml/view/ProfileView.qml" line="413"/>
         <source>Send message</source>
         <translation>メッセージを送る</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="411"/>
+        <location filename="../qml/view/ProfileView.qml" line="420"/>
         <source>Copy handle</source>
         <translation>ハンドルをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="417"/>
+        <location filename="../qml/view/ProfileView.qml" line="426"/>
         <source>Copy DID</source>
         <translation>DIDをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="423"/>
+        <location filename="../qml/view/ProfileView.qml" line="432"/>
         <source>Copy Official Url</source>
         <translation>公式のURLをコピー</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="430"/>
+        <location filename="../qml/view/ProfileView.qml" line="439"/>
         <source>Open in new col</source>
         <translation>新しいカラムで開く</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="436"/>
+        <location filename="../qml/view/ProfileView.qml" line="445"/>
         <source>Open in Official</source>
         <translation>公式で開く</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="443"/>
+        <location filename="../qml/view/ProfileView.qml" line="452"/>
         <source>Add/Remove from lists</source>
         <translation>リストへ追加/削除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="450"/>
+        <location filename="../qml/view/ProfileView.qml" line="459"/>
         <source>Unmute account</source>
         <translation>ミュート解除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="450"/>
+        <location filename="../qml/view/ProfileView.qml" line="459"/>
         <source>Mute account</source>
         <translation>ミュート</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="462"/>
+        <location filename="../qml/view/ProfileView.qml" line="471"/>
         <source>Unblock account</source>
         <translation>ブロック解除</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="462"/>
+        <location filename="../qml/view/ProfileView.qml" line="471"/>
         <source>Block account</source>
         <translation>ブロック</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="474"/>
+        <location filename="../qml/view/ProfileView.qml" line="483"/>
         <source>Report account</source>
         <translation>通報</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="495"/>
+        <location filename="../qml/view/ProfileView.qml" line="504"/>
         <source>Account blocked</source>
         <translation>ブロックしたアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="506"/>
+        <location filename="../qml/view/ProfileView.qml" line="515"/>
         <source>Account muted</source>
         <translation>ミュートしたアカウント</translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="519"/>
         <source>This account has been flagged : </source>
-        <translation>このアカウントに設定されたラベル : </translation>
+        <translation type="vanished">このアカウントに設定されたラベル : </translation>
     </message>
     <message>
-        <location filename="../qml/view/ProfileView.qml" line="529"/>
+        <location filename="../qml/view/ProfileView.qml" line="528"/>
         <source>This account has blocked you</source>
         <translation>あなたをブロックしているアカウント</translation>
     </message>
@@ -2810,28 +2596,28 @@ Please recreate AppPassword in the official application.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/operation/recordoperator.cpp" line="843"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="846"/>
         <source>Update list ... (%1)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/operation/recordoperator.cpp" line="906"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="909"/>
         <source>Update who can reply ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/operation/recordoperator.cpp" line="946"/>
-        <location filename="../qtquick/operation/recordoperator.cpp" line="990"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="949"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="993"/>
         <source>Update quote status ...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/operation/recordoperator.cpp" line="1090"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="1093"/>
         <source>Uploading images ... (%1/%2)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtquick/operation/recordoperator.cpp" line="1176"/>
+        <location filename="../qtquick/operation/recordoperator.cpp" line="1179"/>
         <source>Delete list item ... (%1)</source>
         <translation></translation>
     </message>
@@ -3606,7 +3392,7 @@ Why should this message be reviewed?</source>
 <context>
     <name>TimelineListModel</name>
     <message>
-        <location filename="../qtquick/timeline/timelinelistmodel.cpp" line="293"/>
+        <location filename="../qtquick/timeline/timelinelistmodel.cpp" line="299"/>
         <source>Post hidden by muted word</source>
         <translation>ミュートワードを含む</translation>
     </message>
@@ -3614,7 +3400,7 @@ Why should this message be reviewed?</source>
 <context>
     <name>TimelineView</name>
     <message>
-        <location filename="../qml/view/TimelineView.qml" line="147"/>
+        <location filename="../qml/view/TimelineView.qml" line="149"/>
         <source>Quoted content warning</source>
         <translation>閲覧注意な引用</translation>
     </message>
@@ -3627,7 +3413,7 @@ Why should this message be reviewed?</source>
     </message>
     <message>
         <location filename="../qml/main.qml" line="121"/>
-        <location filename="../qml/main.qml" line="600"/>
+        <location filename="../qml/main.qml" line="632"/>
         <source>Search posts</source>
         <translation>検索(ポスト)</translation>
     </message>
@@ -3641,23 +3427,33 @@ Why should this message be reviewed?</source>
         <translation type="vanished">リプライできるユーザーの更新中 ...</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="344"/>
-        <location filename="../qml/main.qml" line="349"/>
+        <location filename="../qml/main.qml" line="168"/>
+        <source>Authentication error</source>
+        <translation>認証エラー</translation>
+    </message>
+    <message>
+        <location filename="../qml/main.qml" line="169"/>
+        <source>Some accounts require you to log in again.</source>
+        <translation>いくつかのアカウントでログインが必要です。</translation>
+    </message>
+    <message>
+        <location filename="../qml/main.qml" line="363"/>
+        <location filename="../qml/main.qml" line="368"/>
         <source>Updating &apos;Edit interaction settings&apos; ...</source>
         <translation>投稿への反応の設定を更新中 ...</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="519"/>
+        <location filename="../qml/main.qml" line="551"/>
         <source>Loading lists</source>
         <translation>リストの読み込み中</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="580"/>
+        <location filename="../qml/main.qml" line="612"/>
         <source>Chat</source>
         <translation>チャット</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="1076"/>
+        <location filename="../qml/main.qml" line="1109"/>
         <source>Loading account(s) ...</source>
         <translation>アカウント情報の読み込み中 ...</translation>
     </message>

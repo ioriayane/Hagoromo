@@ -42,7 +42,7 @@ bool AuthorFeedListModel::getLatest()
         }
         timeline->setAccount(account());
         timeline->setLabelers(labelerDids());
-        timeline->getAuthorFeed(authorDid(), -1, QString(), filter_type);
+        timeline->getAuthorFeed(authorDid(), -1, QString(), filter_type, false);
     });
     return true;
 }
@@ -78,7 +78,7 @@ bool AuthorFeedListModel::getNext()
         }
         timeline->setAccount(account());
         timeline->setLabelers(labelerDids());
-        timeline->getAuthorFeed(authorDid(), -1, m_cursor, filter_type);
+        timeline->getAuthorFeed(authorDid(), -1, m_cursor, filter_type, false);
     });
     return true;
 }

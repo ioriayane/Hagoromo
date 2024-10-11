@@ -45,6 +45,7 @@ public:
         DisplayNameRole,
         HandleRole,
         AvatarRole,
+        AuthorLabelsRole,
         MutedRole,
         RecordTextRole,
         RecordTextPlainRole,
@@ -60,6 +61,7 @@ public:
         EmbedImagesRole,
         EmbedImagesFullRole,
         EmbedImagesAltRole,
+        EmbedImagesRatioRole,
 
         IsRepostedRole,
         IsLikedRole,

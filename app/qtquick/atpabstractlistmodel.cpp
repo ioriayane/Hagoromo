@@ -400,11 +400,14 @@ bool AtpAbstractListModel::getQuoteFilterMatched(
     return false;
 }
 
-QStringList AtpAbstractListModel::getLabels(
-        const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels) const
+QStringList
+AtpAbstractListModel::getLabels(const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels,
+                                bool exclude_no_unauth) const
 {
     QStringList ret;
     for (const auto &label : labels) {
+        if (exclude_no_unauth && label.val == "!no-unauthenticated")
+            continue;
         ret.append(label.val);
     }
     return ret;

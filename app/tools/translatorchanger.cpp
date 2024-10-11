@@ -27,13 +27,20 @@ void TranslatorChanger::initialize(QCoreApplication *app, QQmlApplicationEngine 
             t->deleteLater();
         }
         t = new QTranslator(this);
+        if (t->load(QString("lib_%1").arg(lang), dir)) {
+            m_translatorLib[lang] = t;
+        } else {
+            t->deleteLater();
+        }
+        t = new QTranslator(this);
         if (t->load(QString("qt_%1").arg(lang), dir)) {
             m_translatorSys[lang] = t;
         } else {
             t->deleteLater();
         }
     }
-    qDebug() << "Loaded languages" << m_translatorApp.keys();
+    qDebug() << "Loaded languages" << m_translatorApp.keys() << m_translatorLib.keys()
+             << m_translatorSys.keys();
 }
 
 void TranslatorChanger::connect()
@@ -81,6 +88,9 @@ void TranslatorChanger::change(const QString &lang)
         if (m_translatorApp.contains(m_currentLang)) {
             m_app->removeTranslator(m_translatorApp[m_currentLang]);
         }
+        if (m_translatorLib.contains(m_currentLang)) {
+            m_app->removeTranslator(m_translatorLib[m_currentLang]);
+        }
         if (m_translatorSys.contains(m_currentLang)) {
             m_app->removeTranslator(m_translatorSys[m_currentLang]);
         }
@@ -89,6 +99,9 @@ void TranslatorChanger::change(const QString &lang)
         qDebug() << "Install translator =" << lang;
         if (m_translatorApp.contains(lang)) {
             m_app->installTranslator(m_translatorApp[lang]);
+        }
+        if (m_translatorLib.contains(lang)) {
+            m_app->installTranslator(m_translatorLib[lang]);
         }
         if (m_translatorSys.contains(lang)) {
             m_app->installTranslator(m_translatorSys[lang]);

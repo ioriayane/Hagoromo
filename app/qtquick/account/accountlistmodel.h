@@ -13,6 +13,8 @@ class AccountListModel : public QAbstractListModel
     Q_OBJECT
 
     Q_PROPERTY(int count READ count NOTIFY countChanged CONSTANT)
+    Q_PROPERTY(bool allAccountsReady READ allAccountsReady WRITE setAllAccountsReady NOTIFY
+                       allAccountsReadyChanged FINAL)
 public:
     explicit AccountListModel(QObject *parent = nullptr);
 
@@ -38,6 +40,7 @@ public:
         ThreadGateOptionsRole,
         PostGateQuoteEnabledRole,
         StatusRole,
+        AuthorizedRole,
     };
     Q_ENUM(AccountListModelRoles)
 
@@ -58,7 +61,7 @@ public:
     Q_INVOKABLE int indexAt(const QString &uuid);
     Q_INVOKABLE int getMainAccountIndex() const;
     Q_INVOKABLE void setMainAccount(int row);
-    Q_INVOKABLE bool allAccountsReady() const;
+    Q_INVOKABLE bool checkAllAccountsReady();
     Q_INVOKABLE void refreshAccountSession(const QString &uuid);
     Q_INVOKABLE void refreshAccountProfile(const QString &uuid);
 
@@ -68,12 +71,17 @@ public:
     Q_INVOKABLE QVariant account(int row) const;
 
     int count() const;
+    bool allAccountsReady() const;
+    void setAllAccountsReady(bool newAllAccountsReady);
 
 signals:
     void errorOccured(const QString &code, const QString &message);
     void updatedSession(int row, const QString &uuid);
     void updatedAccount(int row, const QString &uuid);
     void countChanged();
+    void finished();
+
+    void allAccountsReadyChanged();
 
 protected:
     QHash<int, QByteArray> roleNames() const;
@@ -83,15 +91,16 @@ private:
     QVariant m_accountTemp;
     QTimer m_timer;
     Encryption m_encryption;
+    bool m_allAccountsReady;
 
     QString appDataFolder() const;
 
     void createSession(int row);
     void refreshSession(int row, bool initial = false);
     void getProfile(int row);
-    void getRawProfile(int row);
     void getServiceEndpoint(const QString &did, const QString &service,
                             std::function<void(const QString &service_endpoint)> callback);
+    bool allAccountTried() const;
 };
 
 #endif // ACCOUNTLISTMODEL_H

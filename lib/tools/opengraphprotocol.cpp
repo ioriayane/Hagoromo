@@ -28,6 +28,16 @@ void OpenGraphProtocol::getData(const QString &url)
     m_thumb.clear();
 
     QNetworkRequest request((QUrl(url)));
+    request.setRawHeader(QByteArray("accept"), QByteArray("*/*"));
+    request.setRawHeader(QByteArray("sec-ch-ua-platform"), QByteArray("Windows"));
+    request.setRawHeader(QByteArray("sec-fetch-dest"), QByteArray("document"));
+    request.setRawHeader(QByteArray("sec-fetch-mode"), QByteArray("navigate"));
+    request.setRawHeader(QByteArray("sec-fetch-site"), QByteArray("none"));
+    request.setRawHeader(QByteArray("sec-fetch-user"), QByteArray("?1"));
+    request.setHeader(QNetworkRequest::UserAgentHeader,
+                      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, "
+                      "like Gecko) Chrome/129.0.0.0 Safari/537.36");
+    request.setTransferTimeout(60 * 1000);
 
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     connect(manager, &QNetworkAccessManager::finished, [=](QNetworkReply *reply) {
@@ -53,6 +63,9 @@ void OpenGraphProtocol::getData(const QString &url)
         } else if (m_listOfRedirectAllowed.value(b_url.host()) == r_url.host()) {
             emit reply->redirectAllowed();
         }
+    });
+    connect(reply, &QNetworkReply::errorOccurred, [=](QNetworkReply::NetworkError code) {
+        qDebug() << "Reply error:" << code << reply->request().url();
     });
 }
 
@@ -172,7 +185,8 @@ bool OpenGraphProtocol::parse(const QByteArray &data, const QString &src_uri)
     QDomDocument doc;
     rebuildHtml(ts.readAll(), doc);
 #else
-    QTextCodec *codec = QTextCodec::codecForHtml(data, QTextCodec::codecForName("utf-8"));
+    QString charset = extractCharset(QString::fromUtf8(data));
+    QTextCodec *codec = QTextCodec::codecForHtml(data, QTextCodec::codecForName(charset.toUtf8()));
     QDomDocument doc;
     rebuildHtml(codec->toUnicode(data), doc);
 #endif

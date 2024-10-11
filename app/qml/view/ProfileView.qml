@@ -362,6 +362,15 @@ ColumnLayout {
             tagBorderWidth: 1
             model: userProfile.belongingLists
         }
+        TagLabelLayout {
+            Layout.preferredWidth: profileView.width - 10
+            Layout.maximumWidth: profileView.width
+            Layout.topMargin: 5
+            Layout.leftMargin: 5
+            Layout.rightMargin: 5
+            visible: count > 0
+            model: userProfile.labels
+        }
         Label {
             id: descriptionLabel
             Layout.topMargin: 5
@@ -507,16 +516,6 @@ ColumnLayout {
                     }
                 }
             ]
-        }
-        IconLabelFrame {
-            id: moderationFrame3
-            Layout.topMargin: 2
-            Layout.preferredWidth: profileView.width
-            visible: userProfile.userFilterMatched
-            backgroundColor: Material.color(Material.Red)
-            borderWidth: 0
-            iconSource: "../images/labeling.png"
-            labelText: qsTr("This account has been flagged : ") + userProfile.userFilterTitle
         }
         IconLabelFrame {
             id: moderationFrame2

@@ -33,7 +33,7 @@ ClickableFrame {
         id: thumbImage
         width: videoFrame.width
         height: {
-            if(status !== Image.Null) {
+            if((thumbImage.source + "") !== "") {
                 if(sourceSize.width > sourceSize.height){
                     return (width / sourceSize.width) * sourceSize.height
                 }else{

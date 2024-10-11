@@ -441,6 +441,28 @@ void atprotocol_test::test_OpenGraphProtocol()
                                     .arg(QString::number(m_listenPort)),
                  ogp.thumb().toLocal8Bit());
     }
+
+    {
+        QSignalSpy spy(&ogp, SIGNAL(finished(bool)));
+        ogp.getData(m_service + "/ogp/file7.html");
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+
+        QList<QVariant> arguments = spy.takeFirst();
+        QVERIFY(arguments.at(0).toBool());
+
+        QVERIFY2(ogp.uri()
+                         == QString("http://localhost:%1/response/ogp/file7.html")
+                                    .arg(QString::number(m_listenPort)),
+                 ogp.uri().toLocal8Bit());
+        QVERIFY2(ogp.title() == QString("file7 TITLE"), ogp.title().toLocal8Bit());
+        QVERIFY2(ogp.description() == QString("file7 ").append(QChar(0x8a73)).append(QChar(0x7d30)),
+                 ogp.description().toLocal8Bit());
+        QVERIFY2(ogp.thumb()
+                         == QString("http://localhost:%1/response/ogp/images/file7.png")
+                                    .arg(QString::number(m_listenPort)),
+                 ogp.thumb().toLocal8Bit());
+    }
 }
 
 void atprotocol_test::test_ogpDecodeHtml()
@@ -1809,6 +1831,7 @@ void atprotocol_test::test_ComAtprotoRepoGetRecord_profile()
 void atprotocol_test::test_ComAtprotoRepoPutRecord_profile()
 {
     AtProtocolInterface::ComAtprotoRepoPutRecordEx record;
+    AtProtocolType::ComAtprotoRepoStrongRef::Main pinned_post;
 
     AtProtocolType::Blob avatar;
     AtProtocolType::Blob banner;
@@ -1821,7 +1844,7 @@ void atprotocol_test::test_ComAtprotoRepoPutRecord_profile()
     avatar.size = 52880;
     {
         QSignalSpy spy(&record, SIGNAL(finished(bool)));
-        record.profile(avatar, banner, "description", "display name", QString(),
+        record.profile(avatar, banner, "description", "display name", pinned_post,
                        "bafyreie3ckzfk5xadlunbotovrffkhsfb2hdnr7bujofy2bb5ro45elcmy");
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
@@ -1840,7 +1863,7 @@ void atprotocol_test::test_ComAtprotoRepoPutRecord_profile()
     banner.size = 51567;
     {
         QSignalSpy spy(&record, SIGNAL(finished(bool)));
-        record.profile(avatar, banner, "epub\nLeME", "IoriAYANE", QString(),
+        record.profile(avatar, banner, "epub\nLeME", "IoriAYANE", pinned_post,
                        "bafyreif4chy7iugq3blmvqt6sgqeo72pxkkr4v4fnzjqii2yriijh545ei");
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
@@ -2089,7 +2112,7 @@ void atprotocol_test::test_AppBskyFeedGetAuthorFeed()
 
     {
         QSignalSpy spy(&api, SIGNAL(finished(bool)));
-        api.getAuthorFeed("", 0, QString(), QString());
+        api.getAuthorFeed("", 0, QString(), QString(), false);
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
         QList<QVariant> arguments = spy.takeFirst();

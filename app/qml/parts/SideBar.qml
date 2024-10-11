@@ -11,6 +11,7 @@ ColumnLayout {
     anchors.margins: 1
     spacing: 0
 
+    property bool ready: false
     property alias post: post
     property alias search: search
     property alias addColumn: addColumn
@@ -23,7 +24,7 @@ ColumnLayout {
         width: parent.width
         Layout.preferredWidth: parent.width
         Layout.preferredHeight: AdjustedValues.b36
-        enabled: accountListModel.count > 0
+        enabled: parent.ready
         display: AbstractButton.IconOnly
         iconSource: "../images/edit.png"
         //                    iconText: qsTr("New Post")
@@ -35,7 +36,7 @@ ColumnLayout {
         width: parent.width
         Layout.preferredWidth: parent.width
         Layout.preferredHeight: AdjustedValues.b36
-        enabled: accountListModel.count > 0
+        enabled: parent.ready
         display: AbstractButton.IconOnly
         iconSource: "../images/search.png"
         onWidthChanged: console.log("search:" + width)
@@ -51,7 +52,7 @@ ColumnLayout {
         width: parent.width
         Layout.preferredWidth: parent.width
         Layout.preferredHeight: AdjustedValues.b36
-        enabled: accountListModel.count > 0
+        enabled: parent.ready
         display: AbstractButton.IconOnly
         iconSource: "../images/column.png"
         //                    iconText: qsTr("Add column")
@@ -63,7 +64,7 @@ ColumnLayout {
         Layout.preferredWidth: parent.width
         Layout.preferredHeight: AdjustedValues.b36
         visible: false
-        enabled: accountListModel.count > 0
+        enabled: parent.ready
         display: AbstractButton.IconOnly
         iconSource: "../images/hand.png"
     }

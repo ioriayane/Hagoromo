@@ -19,7 +19,10 @@
             "mimeType": "image/jpeg",
             "size": 51567
         },
-        "pinnedPost": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3k5ml2mujje2n",
+        "pinnedPost": {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3k5ml2mujje2n",
+            "cid": "cid_hoge_before"
+        },
         "description": "epub\nLeME",
         "displayName": "IoriAYANE"
     }

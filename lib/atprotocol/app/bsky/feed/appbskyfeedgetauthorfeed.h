@@ -11,7 +11,7 @@ public:
     explicit AppBskyFeedGetAuthorFeed(QObject *parent = nullptr);
 
     void getAuthorFeed(const QString &actor, const int limit, const QString &cursor,
-                       const QString &filter);
+                       const QString &filter, const bool includePins);
 };
 
 }

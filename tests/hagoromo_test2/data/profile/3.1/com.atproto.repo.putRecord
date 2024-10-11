@@ -22,7 +22,10 @@
         },
         "description": "epub\nLeME",
         "displayName": "IoriAYANE",
-        "pinnedPost": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3k5ml2mujje2n"
+        "pinnedPost": {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3k5ml2mujje2n",
+            "cid": "cid_after"
+        }
     },
     "swapRecord": "bafyreif4chy7iugq3blmvqt6sgqeo72pxkkr4v4fnzjqii2yriijh545ei",
     "validate": true
