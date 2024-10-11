@@ -65,6 +65,7 @@ openssl/bin
 openssl/certs
 openssl/include
 openssl/lib
+openssl/lib64
 openssl/misc
 openssl/private
 openssl/share
