@@ -56,12 +56,12 @@ ClickableFrame {
     signal requestAddMutedWord(string text)
     signal requestCopyTagToClipboard(string text)
 
-    function openLink(url){
+    function openLink(url, x, y){
         if(url.indexOf("did:") === 0){
             requestViewProfile(url)
         }else if(url.indexOf("search://") === 0){
-            tagMenu.x = recrdTextMouseArea.mouseX
-            tagMenu.y = recrdTextMouseArea.mouseY
+            tagMenu.x = x
+            tagMenu.y = y
             tagMenu.tagText = url.substring(9)
             if(tagMenu.tagText.charAt(0) !== "#"){
                 tagMenu.tagText = "#" + tagMenu.tagText
@@ -210,7 +210,7 @@ ClickableFrame {
                             wrapMode: Text.WrapAnywhere
                             font.pointSize: AdjustedValues.f10
                             lineHeight: 1.3
-                            onLinkActivated: (url) => openLink(url)
+                            onLinkActivated: (url) => openLink(url, recrdTextMouseArea.mouseX, recrdTextMouseArea.mouseY)
                             onHoveredLinkChanged: displayLink(hoveredLink)
 
                             HashTagMenu {
@@ -280,7 +280,9 @@ ClickableFrame {
                         visible: postFrame.hasQuote &&
                                  quoteFilterFrame.showContent
                         basisWidth: bodyLayout.basisWidth
-                        onOpenLink: (url) => postFrame.openLink(url)
+                        onOpenLink: (url) => postFrame.openLink(url,
+                                                                quoteRecordFrame.x + quoteRecordFrame.width / 4,
+                                                                quoteRecordFrame.y + quoteRecordFrame.height / 2)
                         onDisplayLink: (url) => postFrame.displayLink(url)
                     }
                     Frame {
