@@ -16,6 +16,8 @@ unix:INCLUDEPATH += ../openssl/include
 
 DEFINES += CPPHTTPLIB_ZLIB_SUPPORT # zlib support for cpp-httplib
 
+TRANSLATIONS += i18n/lib_ja.ts
+
 SOURCES += \
     $$PWD/atprotocol/accessatprotocol.cpp \
     $$PWD/atprotocol/app/bsky/actor/appbskyactorgetpreferences.cpp \

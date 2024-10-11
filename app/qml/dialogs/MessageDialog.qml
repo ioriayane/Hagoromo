@@ -17,7 +17,7 @@ Dialog {
     property int parentWidth: parent.width
     property alias text: messageTextArea.text
 
-    property string status: "normal"
+    property string status: "normal"    // normal, error
     property bool useCancel: false
 
     function show(status, title, message){

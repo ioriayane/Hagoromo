@@ -84,6 +84,7 @@ ScrollView {
             onRequestViewProfile: (did) => notificationListView.requestViewProfile(did)
             onRequestViewSearchPosts: (text) => notificationListView.requestViewSearchPosts(text)
             onRequestAddMutedWord: (text) => notificationListView.requestAddMutedWord(text)
+            onRequestCopyTagToClipboard: (text) => systemTool.copyToClipboard(text)
 
             moderationFrame.visible: model.muted
             userFilterMatched: model.userFilterMatched
@@ -121,6 +122,7 @@ ScrollView {
             postImagePreview.layoutType: notificationListView.imageLayoutType
             postImagePreview.embedImages: model.embedImages
             postImagePreview.embedAlts: model.embedImagesAlt
+            postImagePreview.embedImageRatios: model.embedImagesRatio
             postImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.embedImagesFull, model.embedImagesAlt)
             blockedQuoteFrame.visible: model.quoteRecordBlocked
             blockedQuoteFrameLabel.text: model.quoteRecordBlockedStatus

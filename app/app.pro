@@ -203,7 +203,8 @@ win32:{
 translations.path = $$install_dir/translations
 mac:translations.path = \
           $$install_dir/$${TARGET}.app/Contents/MacOS/translations
-translations.files = $$PWD/i18n/*.qm
+translations.files = $$PWD/i18n/*.qm \
+                    $$PWD/../lib/i18n/*.qm
 #qmファイルが存在しないとmakefileに追加されないので注意
 INSTALLS += translations
 

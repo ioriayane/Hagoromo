@@ -102,6 +102,8 @@ ColumnLayout {
             delegate: PostDelegate {
                 Layout.preferredWidth: rootListView.width
 
+                property bool isBasisPost: (postThreadView.postUri === model.uri)
+
                 //自分から自分へは移動しない
                 onClicked: (mouse) => {
                                if(postThreadView.postUri !== model.uri){
@@ -111,6 +113,7 @@ ColumnLayout {
                 onRequestViewProfile: (did) => postThreadView.requestViewProfile(did)
                 onRequestViewSearchPosts: (text) => postThreadView.requestViewSearchPosts(text)
                 onRequestAddMutedWord: (text) => postThreadView.requestAddMutedWord(text)
+                onRequestCopyTagToClipboard: (text) => systemTool.copyToClipboard(text)
 
                 moderationFrame.visible: model.muted
                 userFilterMatched: model.userFilterMatched
@@ -128,7 +131,8 @@ ColumnLayout {
                 postAvatarImage.onClicked: requestViewProfile(model.did)
                 postAuthor.displayName: model.displayName
                 postAuthor.handle: model.handle
-                postAuthor.indexedAt: (postThreadView.postUri === model.uri) ? "" : model.indexedAt
+                postAuthor.indexedAt: isBasisPost ? "" : model.indexedAt
+                authorLabels.model: isBasisPost ? model.authorLabels : []
                 recordText.text: {
                     var text = model.recordText
                     if(model.recordTextTranslation.length > 0){
@@ -144,6 +148,7 @@ ColumnLayout {
                 postImagePreview.layoutType: postThreadView.imageLayoutType
                 postImagePreview.embedImages: model.embedImages
                 postImagePreview.embedAlts: model.embedImagesAlt
+                postImagePreview.embedImageRatios: model.embedImagesRatio
                 postImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.embedImagesFull, model.embedImagesAlt)
 
                 quoteFilterFrame.visible: model.quoteFilterMatched && !model.quoteRecordBlocked
@@ -193,7 +198,7 @@ ColumnLayout {
                 listLinkCardFrame.creatorHandleLabel.text: model.listLinkCreatorHandle
                 listLinkCardFrame.descriptionLabel.text: model.listLinkDescription
 
-                postInformation.visible: (postThreadView.postUri === model.uri)
+                postInformation.visible: isBasisPost
                 postInformation.tagsLayout.model: postInformation.visible ? model.tags : []
                 postInformation.labelsLayout.model: postInformation.visible ? model.labels : []
                 postInformation.languagesLayout.model: postInformation.visible ? model.languages : []

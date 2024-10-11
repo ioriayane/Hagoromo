@@ -8,6 +8,24 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+- Add
+  - Add labels set for the account to the post thread
+  - Added a function to copy hashtags
+- Update
+  - Change the display format of the profile label
+  - Reduces the amount of data transmitted in real-time feeds
+- Fix
+  - Fix the layout when there is no thumbnail image on the link card
+  - Fix a case where the information on the link card could not be obtained
+
+### v0.38.0 - 2024/9/28
+
+- Update
+  - Make the implementation of pinned posts officially compliant
+  - Change the flow when there are unauthenticated accounts
+- Fix
+  - Fix the display of posts quoted from labeled posts
+
 ### v0.37.0 - 2024/9/22
 
 - Add

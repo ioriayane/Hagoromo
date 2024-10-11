@@ -109,6 +109,7 @@ ScrollView {
             onRequestViewProfile: (did) => timelineView.requestViewProfile(did)
             onRequestViewSearchPosts: (text) => timelineView.requestViewSearchPosts(text)
             onRequestAddMutedWord: (text) => timelineView.requestAddMutedWord(text)
+            onRequestCopyTagToClipboard: (text) => systemTool.copyToClipboard(text)
 
 
             moderationFrame.visible: model.muted
@@ -153,6 +154,7 @@ ScrollView {
             postImagePreview.layoutType: timelineView.imageLayoutType
             postImagePreview.embedImages: model.embedImages
             postImagePreview.embedAlts: model.embedImagesAlt
+            postImagePreview.embedImageRatios: model.embedImagesRatio
             postImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.embedImagesFull, model.embedImagesAlt)
 
             quoteFilterFrame.labelText: qsTr("Quoted content warning")
