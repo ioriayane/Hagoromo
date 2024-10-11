@@ -876,17 +876,22 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>HashTagMenu</name>
     <message>
-        <location filename="../qml/parts/HashTagMenu.qml" line="18"/>
+        <location filename="../qml/parts/HashTagMenu.qml" line="19"/>
         <source>Search %s posts</source>
         <translation>%s を検索</translation>
     </message>
     <message>
-        <location filename="../qml/parts/HashTagMenu.qml" line="25"/>
+        <location filename="../qml/parts/HashTagMenu.qml" line="26"/>
         <source>Search %s posts by this user</source>
         <translation>このユーザーによる %s を検索</translation>
     </message>
     <message>
-        <location filename="../qml/parts/HashTagMenu.qml" line="31"/>
+        <location filename="../qml/parts/HashTagMenu.qml" line="32"/>
+        <source>Copy %s</source>
+        <translation>%sをコピー</translation>
+    </message>
+    <message>
+        <location filename="../qml/parts/HashTagMenu.qml" line="38"/>
         <source>Mute %s posts</source>
         <translation>%s をミュートする</translation>
     </message>
@@ -2075,12 +2080,12 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>NotificationDelegate</name>
     <message>
-        <location filename="../qml/parts/NotificationDelegate.qml" line="161"/>
+        <location filename="../qml/parts/NotificationDelegate.qml" line="162"/>
         <source>Post from an account you muted.</source>
         <translation>ミュートしているアカウントのポスト</translation>
     </message>
     <message>
-        <location filename="../qml/parts/NotificationDelegate.qml" line="395"/>
+        <location filename="../qml/parts/NotificationDelegate.qml" line="397"/>
         <source>signed up with your starter pack</source>
         <translation>あなたのスターターパックで登録しました</translation>
     </message>
@@ -2212,7 +2217,7 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>PostDelegate</name>
     <message>
-        <location filename="../qml/parts/PostDelegate.qml" line="99"/>
+        <location filename="../qml/parts/PostDelegate.qml" line="100"/>
         <source>Post from an account you muted.</source>
         <translation>ミュートしているアカウントのポスト</translation>
     </message>
@@ -2288,7 +2293,7 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">ポストスレッド</translation>
     </message>
     <message>
-        <location filename="../qml/view/PostThreadView.qml" line="154"/>
+        <location filename="../qml/view/PostThreadView.qml" line="155"/>
         <source>Quoted content warning</source>
         <translation>閲覧注意な引用</translation>
     </message>
@@ -3395,7 +3400,7 @@ Why should this message be reviewed?</source>
 <context>
     <name>TimelineView</name>
     <message>
-        <location filename="../qml/view/TimelineView.qml" line="148"/>
+        <location filename="../qml/view/TimelineView.qml" line="149"/>
         <source>Quoted content warning</source>
         <translation>閲覧注意な引用</translation>
     </message>
