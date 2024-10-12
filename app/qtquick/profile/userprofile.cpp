@@ -84,29 +84,16 @@ void UserProfile::getProfile(const QString &did)
                 setBlocking(detail.viewer.blocking.contains(m_account.did));
                 setBlockingUri(detail.viewer.blocking);
                 if (detail.labels.isEmpty()) {
-                    setUserFilterMatched(false);
-                    setUserFilterTitle(QString());
+                    setLabels(QStringList());
                 } else {
-                    QString title;
-                    QString val;
-                    for (const auto &label : detail.labels) {
+                    QStringList labels;
+                    for (const auto &label : qAsConst(detail.labels)) {
                         if (label.val == QStringLiteral("!no-unauthenticated"))
                             continue;
-                        val = label.val;
-                        title = labelsTitle(label.val, false);
+                        labels.append(label.val);
                         break;
                     }
-                    if (val.isEmpty()) {
-                        setUserFilterMatched(false);
-                        setUserFilterTitle(QString());
-                    } else {
-                        setUserFilterMatched(true);
-                        if (title.isEmpty()) {
-                            setUserFilterTitle(val);
-                        } else {
-                            setUserFilterTitle(title);
-                        }
-                    }
+                    setLabels(labels);
                 }
                 setBelongingLists(
                         ListItemsCache::getInstance()->getListNames(m_account.did, detail.did));
@@ -373,32 +360,6 @@ void UserProfile::setBlockingUri(const QString &newBlockingUri)
     emit blockingUriChanged();
 }
 
-bool UserProfile::userFilterMatched() const
-{
-    return m_userFilterMatched;
-}
-
-void UserProfile::setUserFilterMatched(bool newUserFilterMatched)
-{
-    if (m_userFilterMatched == newUserFilterMatched)
-        return;
-    m_userFilterMatched = newUserFilterMatched;
-    emit userFilterMatchedChanged();
-}
-
-QString UserProfile::userFilterTitle() const
-{
-    return m_userFilterTitle;
-}
-
-void UserProfile::setUserFilterTitle(const QString &newUserFilterTitle)
-{
-    if (m_userFilterTitle == newUserFilterTitle)
-        return;
-    m_userFilterTitle = newUserFilterTitle;
-    emit userFilterTitleChanged();
-}
-
 QString UserProfile::formattedDescription() const
 {
     return m_formattedDescription;
@@ -538,6 +499,19 @@ QString UserProfile::labelsTitle(const QString &label, const bool for_image,
 QStringList UserProfile::labelerDids() const
 {
     return LabelerProvider::getInstance()->labelerDids(m_account);
+}
+
+QStringList UserProfile::labels() const
+{
+    return m_labels;
+}
+
+void UserProfile::setLabels(const QStringList &newLabels)
+{
+    if (m_labels == newLabels)
+        return;
+    m_labels = newLabels;
+    emit labelsChanged();
 }
 
 QStringList UserProfile::belongingLists() const

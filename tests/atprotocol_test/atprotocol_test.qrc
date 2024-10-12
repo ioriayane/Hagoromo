@@ -74,5 +74,6 @@
         <file>response/labels/provider/2/xrpc/app.bsky.labeler.getServices</file>
         <file>data/postgate/1/xrpc/com.atproto.repo.createRecord</file>
         <file>data/postgate/2/xrpc/com.atproto.repo.createRecord</file>
+        <file>response/ogp/file7.html</file>
     </qresource>
 </RCC>

@@ -12,9 +12,14 @@ class ComAtprotoSyncSubscribeReposEx : public QObject
 {
     Q_OBJECT
 public:
+    enum SubScribeMode : int {
+        Firehose,
+        JetStream,
+    };
+
     explicit ComAtprotoSyncSubscribeReposEx(QObject *parent = nullptr);
 
-    void open(const QUrl &url);
+    void open(const QUrl &url, SubScribeMode mode = SubScribeMode::Firehose);
     void close();
     QAbstractSocket::SocketState state() const;
 
@@ -28,10 +33,15 @@ public slots:
     void onConnected();
     void onDisconnected();
     void onBinaryMessageReceived(const QByteArray &message);
+    void onTextMessageReceived(const QString &message);
 
 private:
+    void messageReceivedFromFirehose(const QByteArray &message);
+    void messageReceivedFromJetStream(const QByteArray &message);
+
     QWebSocket m_webSocket;
     QStringList m_payloadTypeList;
+    SubScribeMode m_subscribeMode;
 };
 
 }

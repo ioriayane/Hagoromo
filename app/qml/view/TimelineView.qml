@@ -108,6 +108,7 @@ ScrollView {
             onRequestViewProfile: (did) => timelineView.requestViewProfile(did)
             onRequestViewSearchPosts: (text) => timelineView.requestViewSearchPosts(text)
             onRequestAddMutedWord: (text) => timelineView.requestAddMutedWord(text)
+            onRequestCopyTagToClipboard: (text) => systemTool.copyToClipboard(text)
 
             moderationFrame.visible: model.muted
             userFilterMatched: model.userFilterMatched

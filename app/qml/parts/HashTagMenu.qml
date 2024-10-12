@@ -11,6 +11,7 @@ MenuEx {
 
     signal requestViewSearchPosts(string text)
     signal requestAddMutedWord(string text)
+    signal requestCopyTagToClipboard(string text)
 
     Action {
         enabled: !logMode
@@ -24,6 +25,12 @@ MenuEx {
         icon.source: "../images/account.png"
         text: qsTr("Search %s posts by this user").replace("%s", tagMenu.tagText)
         onTriggered: requestViewSearchPosts(tagMenu.tagText + " from:" + postAuthor.handle)
+    }
+    Action {
+        enabled: !logMode
+        icon.source: "../images/copy.png"
+        text: qsTr("Copy %s").replace("%s", tagMenu.tagText)
+        onTriggered: requestCopyTagToClipboard(tagMenu.tagText)
     }
     MenuSeparator {}
     Action {
