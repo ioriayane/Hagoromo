@@ -11,7 +11,11 @@ CONFIG += c++11
 INCLUDEPATH += $$PWD \
     $$PWD/../3rdparty/cpp-httplib \
     $$PWD/../zlib/include
+greaterThan(QT_MAJOR_VERSION, 5) {
 win32:INCLUDEPATH += $$dirname(QMAKE_QMAKE)/../../../Tools/OpenSSLv3/Win_x64/include
+}else{
+win32:INCLUDEPATH += $$dirname(QMAKE_QMAKE)/../../../Tools/OpenSSL/Win_x64/include
+}
 unix:INCLUDEPATH += ../openssl/include
 
 DEFINES += CPPHTTPLIB_ZLIB_SUPPORT # zlib support for cpp-httplib

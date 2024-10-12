@@ -15,7 +15,8 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
-          version: '6.2.*'
+          version: '5.15.2'
+          # version: '6.2.*'
           host: 'linux'
           target: 'desktop'
           arch: 'gcc_64'
@@ -40,8 +41,10 @@ jobs:
           qmake CONFIG+=debug_and_release ../qthttpserver/qthttpserver.pro
           make -j4 && make install
       - name: Build
-        run: scripts/build.sh linux ${QT_ROOT_DIR}/bin
+        run: scripts/build.sh linux ${Qt5_DIR}/bin
+        # run: scripts/build.sh linux ${QT_ROOT_DIR}/bin
       - name: Unit test
         env:
           TZ: "Asia/Tokyo"
-        run: scripts/unittest.sh linux ${QT_ROOT_DIR}/bin
+        run: scripts/unittest.sh linux ${Qt5_DIR}/bin
+        # run: scripts/unittest.sh linux ${QT_ROOT_DIR}/bin
