@@ -1,4 +1,4 @@
-QT += xml sql websockets
+QT += xml sql websockets httpserver
 greaterThan(QT_MAJOR_VERSION, 5) {
 QT += core5compat
 }
@@ -78,6 +78,7 @@ SOURCES += \
     $$PWD/atprotocol/com/atproto/moderation/comatprotomoderationcreatereport.cpp \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepocreaterecord.cpp \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepodeleterecord.cpp \
+    $$PWD/atprotocol/com/atproto/repo/comatprotorepodescriberepo.cpp \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepogetrecord.cpp \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepolistrecords.cpp \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepoputrecord.cpp \
@@ -99,9 +100,14 @@ SOURCES += \
     $$PWD/extension/com/atproto/sync/comatprotosyncsubscribereposex.cpp \
     $$PWD/extension/directory/plc/directoryplc.cpp \
     $$PWD/extension/directory/plc/directoryplclogaudit.cpp \
+    $$PWD/extension/oauth/oauthpushedauthorizationrequest.cpp \
+    $$PWD/extension/oauth/oauthrequesttoken.cpp \
+    $$PWD/extension/well-known/wellknownoauthauthorizationserver.cpp \
+    $$PWD/extension/well-known/wellknownoauthprotectedresource.cpp \
     $$PWD/http/httpaccess.cpp \
     $$PWD/http/httpaccessmanager.cpp \
     $$PWD/http/httpreply.cpp \
+    $$PWD/http/simplehttpserver.cpp \
     $$PWD/log/logaccess.cpp \
     $$PWD/log/logmanager.cpp \
     $$PWD/realtime/abstractpostselector.cpp \
@@ -113,11 +119,14 @@ SOURCES += \
     $$PWD/realtime/notpostselector.cpp \
     $$PWD/realtime/orpostselector.cpp \
     $$PWD/realtime/xorpostselector.cpp \
+    $$PWD/tools/authorization.cpp \
     $$PWD/tools/base32.cpp \
     $$PWD/tools/cardecoder.cpp \
     $$PWD/tools/chatlogsubscriber.cpp \
     $$PWD/tools/configurablelabels.cpp \
+    $$PWD/tools/es256.cpp \
     $$PWD/tools/imagecompressor.cpp \
+    $$PWD/tools/jsonwebtoken.cpp \
     $$PWD/tools/labelerprovider.cpp \
     $$PWD/tools/leb128.cpp \
     $$PWD/tools/listitemscache.cpp \
@@ -184,6 +193,7 @@ HEADERS += \
     $$PWD/atprotocol/com/atproto/moderation/comatprotomoderationcreatereport.h \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepocreaterecord.h \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepodeleterecord.h \
+    $$PWD/atprotocol/com/atproto/repo/comatprotorepodescriberepo.h \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepogetrecord.h \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepolistrecords.h \
     $$PWD/atprotocol/com/atproto/repo/comatprotorepoputrecord.h \
@@ -206,9 +216,14 @@ HEADERS += \
     $$PWD/extension/com/atproto/sync/comatprotosyncsubscribereposex.h \
     $$PWD/extension/directory/plc/directoryplc.h \
     $$PWD/extension/directory/plc/directoryplclogaudit.h \
+    $$PWD/extension/oauth/oauthpushedauthorizationrequest.h \
+    $$PWD/extension/oauth/oauthrequesttoken.h \
+    $$PWD/extension/well-known/wellknownoauthauthorizationserver.h \
+    $$PWD/extension/well-known/wellknownoauthprotectedresource.h \
     $$PWD/http/httpaccess.h \
     $$PWD/http/httpaccessmanager.h \
     $$PWD/http/httpreply.h \
+    $$PWD/http/simplehttpserver.h \
     $$PWD/log/logaccess.h \
     $$PWD/log/logmanager.h \
     $$PWD/realtime/abstractpostselector.h \
@@ -221,14 +236,20 @@ HEADERS += \
     $$PWD/realtime/orpostselector.h \
     $$PWD/realtime/xorpostselector.h \
     $$PWD/search/search.h \
+    $$PWD/tools/authorization.h \
     $$PWD/tools/base32.h \
     $$PWD/tools/cardecoder.h \
     $$PWD/tools/chatlogsubscriber.h \
     $$PWD/tools/configurablelabels.h \
+    $$PWD/tools/es256.h \
     $$PWD/tools/imagecompressor.h \
+    $$PWD/tools/jsonwebtoken.h \
     $$PWD/tools/labelerprovider.h \
     $$PWD/tools/leb128.h \
     $$PWD/tools/listitemscache.h \
     $$PWD/tools/opengraphprotocol.h \
     $$PWD/tools/pinnedpostcache.h \
     $$PWD/tools/qstringex.h
+
+RESOURCES += \
+    $$PWD/lib.qrc

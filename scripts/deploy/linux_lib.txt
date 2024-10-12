@@ -8,6 +8,8 @@ libQt6Gui.so.6
 libQt6Gui.so.6.7.2
 libQt6Network.so.6
 libQt6Network.so.6.7.2
+libQt6HttpServer.so.6
+libQt6HttpServer.so.6.7.2
 libQt6OpenGL.so.6
 libQt6OpenGL.so.6.7.2
 libQt6Qml.so.6

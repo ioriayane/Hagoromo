@@ -59,6 +59,8 @@ do_test ${work_dir}/chat_test/chat_test
 do_test ${work_dir}/hagoromo_test/hagoromo_test
 do_test ${work_dir}/hagoromo_test2/hagoromo_test2
 do_test ${work_dir}/http_test/http_test
-do_test ${work_dir}/search_test/search_test
 do_test ${work_dir}/log_test/log_test
+do_test ${work_dir}/oauth_test/oauth_test
+do_test ${work_dir}/realtime_test/realtime_test
+do_test ${work_dir}/search_test/search_test
 do_test ${work_dir}/tools_test/tools_test

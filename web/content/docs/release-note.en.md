@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+### v0.39.0 - 2024/10/12
+
 - Add
   - Add labels set for the account to the post thread
   - Added a function to copy hashtags

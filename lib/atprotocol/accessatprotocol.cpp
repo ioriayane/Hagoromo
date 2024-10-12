@@ -107,7 +107,8 @@ QString AtProtocolAccount::refreshJwt() const
     return m_account.refreshJwt;
 }
 
-AccessAtProtocol::AccessAtProtocol(QObject *parent) : AtProtocolAccount { parent }
+AccessAtProtocol::AccessAtProtocol(QObject *parent)
+    : AtProtocolAccount { parent }, m_contentType("application/json")
 {
     qDebug().noquote() << LOG_DATETIME << "AccessAtProtocol::AccessAtProtocol()" << this;
     if (m_manager == nullptr) {
@@ -134,7 +135,12 @@ void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
     qDebug().noquote() << LOG_DATETIME << "   " << endpoint;
     qDebug().noquote() << LOG_DATETIME << "   " << query.toString();
 
-    QUrl url = QString("%1/%2").arg(service(), endpoint);
+    QUrl url;
+    if (endpoint.isEmpty()) {
+        url = service();
+    } else {
+        url = QString("%1/%2").arg(service(), endpoint);
+    }
     url.setQuery(query);
     QNetworkRequest request(url);
     request.setRawHeader(QByteArray("Cache-Control"), QByteArray("no-cache"));
@@ -191,9 +197,15 @@ void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
     qDebug().noquote() << LOG_DATETIME << "   " << endpoint;
     qDebug().noquote() << LOG_DATETIME << "   " << json;
 
-    QNetworkRequest request(QUrl(QString("%1/%2").arg(service(), endpoint)));
+    QUrl url;
+    if (endpoint.isEmpty()) {
+        url = service();
+    } else {
+        url = QString("%1/%2").arg(service(), endpoint);
+    }
+    QNetworkRequest request(url);
     request.setRawHeader(QByteArray("Cache-Control"), QByteArray("no-cache"));
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    request.setHeader(QNetworkRequest::ContentTypeHeader, m_contentType);
     if (with_auth_header) {
         if (accessJwt().isEmpty()) {
             qCritical() << LOG_DATETIME << "AccessAtProtocol::post()"
@@ -294,19 +306,21 @@ bool AccessAtProtocol::checkReply(HttpReply *reply)
     m_errorCode.clear();
     m_errorMessage.clear();
 
-#ifdef QT_DEBUG
+    QByteArray header_key;
     for (const auto &header : reply->rawHeaderPairs()) {
-        if (header.first.toLower().startsWith("ratelimit-")) {
-            if (header.first.toLower() == "ratelimit-reset") {
+        header_key = header.first.toLower();
+        if (header_key.startsWith("ratelimit-")) {
+            if (header_key == "ratelimit-reset") {
                 qDebug().noquote() << LOG_DATETIME << header.first
                                    << QDateTime::fromSecsSinceEpoch(header.second.toInt())
                                               .toString("yyyy/MM/dd hh:mm:ss");
             } else {
                 qDebug().noquote() << LOG_DATETIME << header.first << header.second;
             }
+        } else if (header_key == "dpop-nonce") {
+            m_dPopNonce = header.second;
         }
     }
-#endif
 
     QJsonDocument json_doc = QJsonDocument::fromJson(m_replyJson.toUtf8());
     if (reply->error() != HttpReply::Success) {
@@ -429,6 +443,16 @@ void AccessAtProtocol::setAdditionalRawHeader(QNetworkRequest &request)
         i.next();
         request.setRawHeader(i.key().toLocal8Bit(), i.value().toLocal8Bit());
     }
+}
+
+QString AccessAtProtocol::dPopNonce() const
+{
+    return m_dPopNonce;
+}
+
+void AccessAtProtocol::setContentType(const QString &newContentType)
+{
+    m_contentType = newContentType;
 }
 
 QString AccessAtProtocol::cursor() const
