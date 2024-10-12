@@ -4,6 +4,8 @@ open_ssl_dir=$${bin_dir}/../../../Tools/OpenSSL
 open_ssl_dir=$$clean_path($$open_ssl_dir)
 
 win32:{
+    SOURCES += $${open_ssl_dir}/src/ms/applink.c
+
     open_ssl_dir=$${open_ssl_dir}/Win_x64
 
     LIBS += $${open_ssl_dir}/lib/libssl.lib \

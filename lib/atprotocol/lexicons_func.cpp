@@ -2977,6 +2977,90 @@ void copyPlcAuditLog(const QJsonArray &src, DirectoryPlcDefs::PlcAuditLog &dest)
     }
 }
 }
+// oauth.defs
+namespace OauthDefs {
+void copyPushedAuthorizationResponse(const QJsonObject &src,
+                                     OauthDefs::PushedAuthorizationResponse &dest)
+{
+    if (!src.isEmpty()) {
+        dest.request_uri = src.value("request_uri").toString();
+        dest.expires_in = src.value("expires_in").toInt();
+    }
+}
+void copyTokenResponse(const QJsonObject &src, OauthDefs::TokenResponse &dest)
+{
+    if (!src.isEmpty()) {
+        dest.access_token = src.value("access_token").toString();
+        dest.token_type = src.value("token_type").toString();
+        dest.refresh_token = src.value("refresh_token").toString();
+        dest.scope = src.value("scope").toString();
+        dest.sub = src.value("sub").toString();
+        dest.expires_in = src.value("expires_in").toInt();
+    }
+}
+}
+// wellKnown.defs
+namespace WellKnownDefs {
+void copyResourceMetadata(const QJsonObject &src, WellKnownDefs::ResourceMetadata &dest)
+{
+    if (!src.isEmpty()) {
+        dest.resource = src.value("resource").toString();
+        for (const auto &value : src.value("authorization_servers").toArray()) {
+            dest.authorization_servers.append(value.toString());
+        }
+        for (const auto &value : src.value("scopes_supported").toArray()) {
+            dest.scopes_supported.append(value.toString());
+        }
+        for (const auto &value : src.value("bearer_methods_supported").toArray()) {
+            dest.bearer_methods_supported.append(value.toString());
+        }
+        dest.resource_documentation = src.value("resource_documentation").toString();
+    }
+}
+void copyServerMetadata(const QJsonObject &src, WellKnownDefs::ServerMetadata &dest)
+{
+    if (!src.isEmpty()) {
+        dest.issuer = src.value("issuer").toString();
+        for (const auto &value : src.value("response_types_supported").toArray()) {
+            dest.response_types_supported.append(value.toString());
+        }
+        for (const auto &value : src.value("grant_types_supported").toArray()) {
+            dest.grant_types_supported.append(value.toString());
+        }
+        for (const auto &value : src.value("code_challenge_methods_supported").toArray()) {
+            dest.code_challenge_methods_supported.append(value.toString());
+        }
+        for (const auto &value : src.value("token_endpoint_auth_methods_supported").toArray()) {
+            dest.token_endpoint_auth_methods_supported.append(value.toString());
+        }
+        for (const auto &value :
+             src.value("token_endpoint_auth_signing_alg_values_supported").toArray()) {
+            dest.token_endpoint_auth_signing_alg_values_supported.append(value.toString());
+        }
+        for (const auto &value : src.value("scopes_supported").toArray()) {
+            dest.scopes_supported.append(value.toString());
+        }
+        for (const auto &value : src.value("subject_types_supported").toArray()) {
+            dest.subject_types_supported.append(value.toString());
+        }
+        dest.authorization_response_iss_parameter_supported =
+                src.value("authorization_response_iss_parameter_supported").toBool();
+        dest.pushed_authorization_request_endpoint =
+                src.value("pushed_authorization_request_endpoint").toString();
+        dest.token_endpoint = src.value("token_endpoint").toString();
+        dest.require_pushed_authorization_requests =
+                src.value("require_pushed_authorization_requests").toBool();
+        for (const auto &value : src.value("dpop_signing_alg_values_supported").toArray()) {
+            dest.dpop_signing_alg_values_supported.append(value.toString());
+        }
+        dest.require_request_uri_registration =
+                src.value("require_request_uri_registration").toBool();
+        dest.client_id_metadata_document_supported =
+                src.value("client_id_metadata_document_supported").toBool();
+        dest.authorization_endpoint = src.value("authorization_endpoint").toString();
+    }
+}
+}
 
 }
 

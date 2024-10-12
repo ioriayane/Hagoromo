@@ -422,6 +422,17 @@ void copyCreate(const QJsonObject &src, DirectoryPlcDefs::Create &dest);
 void copyPlcAuditLogDetail(const QJsonObject &src, DirectoryPlcDefs::PlcAuditLogDetail &dest);
 void copyPlcAuditLog(const QJsonArray &src, DirectoryPlcDefs::PlcAuditLog &dest);
 }
+// oauth.defs
+namespace OauthDefs {
+void copyPushedAuthorizationResponse(const QJsonObject &src,
+                                     OauthDefs::PushedAuthorizationResponse &dest);
+void copyTokenResponse(const QJsonObject &src, OauthDefs::TokenResponse &dest);
+}
+// wellKnown.defs
+namespace WellKnownDefs {
+void copyResourceMetadata(const QJsonObject &src, WellKnownDefs::ResourceMetadata &dest);
+void copyServerMetadata(const QJsonObject &src, WellKnownDefs::ServerMetadata &dest);
+}
 
 }
 
