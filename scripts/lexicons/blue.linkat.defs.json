@@ -1,6 +1,6 @@
 {
     "lexicon": 1,
-    "id": "com.whtwnd.blog.defs",
+    "id": "blue.linkat.defs",
     "defs": {
         "linkItem": {
             "type": "object",
