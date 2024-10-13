@@ -80,8 +80,13 @@ deploy_hagoromo(){
 
         cp ${build_dir}/app/Hagoromo ${work_dir}/bin
         cp ${SCRIPT_FOLDER}/deploy/Hagoromo.sh ${work_dir}
-        cp "openssl/lib/libcrypto.so.1.1" ${work_dir}/lib
-        cp "openssl/lib/libssl.so.1.1" ${work_dir}/lib
+        if [ $QT_VERSION == 6 ]; then
+            cp "openssl/lib64/libcrypto.so.3" ${work_dir}/lib
+            cp "openssl/lib64/libssl.so.3" ${work_dir}/lib
+        else
+            cp "openssl/lib/libcrypto.so.1.1" ${work_dir}/lib
+            cp "openssl/lib/libssl.so.1.1" ${work_dir}/lib
+        fi
         cp "zlib/lib/libz.so.1.3.1" ${work_dir}/lib
         cp "zlib/lib/libz.so.1" ${work_dir}/lib
         cp "app/i18n/app_ja.qm" ${work_dir}/bin/translations
@@ -124,6 +129,12 @@ ROOT_FOLDER=$(pwd)
 
 PLATFORM_TYPE=$1
 QT_BIN_FOLDER=$2
+
+if [[ "$QT_BIN_FOLDER" == */6.* ]]; then
+QT_VERSION=6
+else
+QT_VERSION=5
+fi
 
 if [ -z "${QT_BIN_FOLDER}" ] || [ -z "${PLATFORM_TYPE}" ]; then
     echo "usage $(basename $0) PLATFORM_TYPE QT_BIN_FOLDER"

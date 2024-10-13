@@ -13,6 +13,8 @@ import "../compat"
 
 ClickableFrame {
     id: notificationFrame
+    contentWidth: contentRootLayout.implicitWidth
+    contentHeight: contentRootLayout.implicitHeight
     topPadding: 10
     leftPadding: 10
     rightPadding: 10
@@ -152,6 +154,7 @@ ClickableFrame {
     ]
 
     ColumnLayout {
+        id: contentRootLayout
         spacing: 0
 
         CoverFrame {
@@ -338,10 +341,13 @@ ClickableFrame {
                         Layout.preferredWidth: parent.width
                         Layout.topMargin: 5
                         visible: false
+                        contentWidth: quoteRecordContentLayout.implicitWidth
+                        contentHeight: quoteRecordContentLayout.implicitHeight
 
                         property int basisWidth: parent.width - padding * 2
 
                         ColumnLayout {
+                            id: quoteRecordContentLayout
                             RowLayout {
                                 id: quoteRecordAuthorLayout
                                 AvatarImage {
