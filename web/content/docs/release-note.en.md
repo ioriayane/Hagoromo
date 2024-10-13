@@ -8,6 +8,9 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+- Add
+  - Add a link to user's profile if user is registered with Linkat
+
 ### v0.39.0 - 2024/10/12
 
 - Add
