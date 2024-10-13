@@ -395,6 +395,14 @@ void copyViewerConfig(const QJsonObject &src, ToolsOzoneServerGetConfig::ViewerC
 namespace ToolsOzoneTeamDefs {
 void copyMember(const QJsonObject &src, ToolsOzoneTeamDefs::Member &dest);
 }
+// blue.linkat.defs
+namespace BlueLinkatDefs {
+void copyLinkItem(const QJsonObject &src, BlueLinkatDefs::LinkItem &dest);
+}
+// blue.linkat.board
+namespace BlueLinkatBoard {
+void copyMain(const QJsonObject &src, BlueLinkatBoard::Main &dest);
+}
 // com.whtwnd.blog.defs
 namespace ComWhtwndBlogDefs {
 void copyBlogEntry(const QJsonObject &src, ComWhtwndBlogDefs::BlogEntry &dest);

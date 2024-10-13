@@ -123,6 +123,7 @@ class Defs2Struct:
                          'AppBskyFeedThreadgate::Main',
                          'AppBskyFeedPostgate::Main',
                          'ComWhtwndBlogEntry::Main',
+                         'BlueLinkatBoard::Main',
                          'DirectoryPlcDefs::DidDoc',
                         )
         self.inheritance = {

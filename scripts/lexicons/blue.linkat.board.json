@@ -1,0 +1,26 @@
+{
+    "lexicon": 1,
+    "id": "blue.linkat.board",
+    "defs": {
+        "main": {
+            "type": "record",
+            "description": "A declaration of links.",
+            "key": "tid",
+            "record": {
+                "type": "object",
+                "required": [
+                    "cards"
+                ],
+                "properties": {
+                    "cards": {
+                        "type": "array",
+                        "items": {
+                            "type": "ref",
+                            "ref": "blue.linkat.defs#linkItem"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

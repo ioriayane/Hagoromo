@@ -64,6 +64,10 @@ void copyUnknown(const QJsonObject &src, QVariant &dest)
         ComWhtwndBlogEntry::Main record;
         ComWhtwndBlogEntry::copyMain(src, record);
         dest.setValue(record);
+    } else if (type == QStringLiteral("blue.linkat.board")) {
+        BlueLinkatBoard::Main record;
+        BlueLinkatBoard::copyMain(src, record);
+        dest.setValue(record);
     } else if (context.contains("https://www.w3.org/ns/did/v1")) {
         DirectoryPlcDefs::DidDoc doc;
         DirectoryPlcDefs::copyDidDoc(src, doc);
