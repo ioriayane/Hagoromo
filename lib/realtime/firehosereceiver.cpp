@@ -121,6 +121,7 @@ void FirehoseReceiver::start()
 
 void FirehoseReceiver::stop()
 {
+    m_wdgTimer.stop();
     if (m_client.state() == QAbstractSocket::SocketState::UnconnectedState
         || m_client.state() == QAbstractSocket::SocketState::ClosingState)
         return;
