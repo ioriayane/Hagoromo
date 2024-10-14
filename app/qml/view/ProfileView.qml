@@ -488,6 +488,7 @@ ColumnLayout {
                 }
             }
         }
+
         IconLabelFrame {
             id: moderationFrame
             Layout.preferredWidth: profileView.width
@@ -578,6 +579,7 @@ ColumnLayout {
             }
             blogModel: BlogEntryListModel {
                 id: authorBlogEntryListModel
+                targetHandle: userProfile.handle
                 targetDid: profileView.userDid
                 targetServiceEndpoint: userProfile.serviceEndpoint
                 onTargetServiceEndpointChanged: {

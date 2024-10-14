@@ -2799,6 +2799,29 @@ void copyMember(const QJsonObject &src, ToolsOzoneTeamDefs::Member &dest)
     }
 }
 }
+// blue.linkat.defs
+namespace BlueLinkatDefs {
+void copyLinkItem(const QJsonObject &src, BlueLinkatDefs::LinkItem &dest)
+{
+    if (!src.isEmpty()) {
+        dest.url = src.value("url").toString();
+        dest.text = src.value("text").toString();
+    }
+}
+}
+// blue.linkat.board
+namespace BlueLinkatBoard {
+void copyMain(const QJsonObject &src, BlueLinkatBoard::Main &dest)
+{
+    if (!src.isEmpty()) {
+        for (const auto &s : src.value("cards").toArray()) {
+            BlueLinkatDefs::LinkItem child;
+            BlueLinkatDefs::copyLinkItem(s.toObject(), child);
+            dest.cards.append(child);
+        }
+    }
+}
+}
 // com.whtwnd.blog.defs
 namespace ComWhtwndBlogDefs {
 void copyBlogEntry(const QJsonObject &src, ComWhtwndBlogDefs::BlogEntry &dest)

@@ -25,6 +25,77 @@ QVariant BlogEntryListModel::item(int row, BlogEntryListModelRoles role) const
     if (row < 0 || row >= m_blogEntryRecordList.count())
         return QVariant();
 
+    if (m_blogEntryRecordList.at(row).uri.split("/").contains("blue.linkat.board")) {
+        return itemFromLinkat(row, role);
+    } else {
+        return itemFromWhiteWind(row, role);
+    }
+
+    return QVariant();
+}
+
+AtProtocolInterface::AccountData BlogEntryListModel::account() const
+{
+    return m_account;
+}
+
+void BlogEntryListModel::setAccount(const QString &service, const QString &did,
+                                    const QString &handle, const QString &email,
+                                    const QString &accessJwt, const QString &refreshJwt)
+{
+    m_account.service = service;
+    m_account.did = did;
+    m_account.handle = handle;
+    m_account.email = email;
+    m_account.accessJwt = accessJwt;
+    m_account.refreshJwt = refreshJwt;
+}
+
+bool BlogEntryListModel::getLatest()
+{
+    if (running() || targetDid().isEmpty())
+        return false;
+    setRunning(true);
+
+    if (!m_blogEntryRecordList.isEmpty()) {
+        beginRemoveRows(QModelIndex(), 0, m_blogEntryRecordList.count() - 1);
+        m_blogEntryRecordList.clear();
+        endRemoveRows();
+    }
+
+    getLatestFromLinkat([=](bool success) {
+        if (success) {
+            getLatestFromWhiteWind([=](bool success) { setRunning(false); });
+        } else {
+            setRunning(false);
+        }
+    });
+
+    return true;
+}
+
+QHash<int, QByteArray> BlogEntryListModel::roleNames() const
+{
+    QHash<int, QByteArray> roles;
+
+    roles[CidRole] = "cid";
+    roles[UriRole] = "uri";
+
+    roles[ServiceNameRole] = "serviceName";
+    roles[TitleRole] = "title";
+    roles[ContentRole] = "content";
+    roles[CreatedAtRole] = "createdAt";
+    roles[VisibilityRole] = "visibility";
+    roles[PermalinkRole] = "permalink";
+
+    return roles;
+}
+
+QVariant BlogEntryListModel::itemFromWhiteWind(int row, BlogEntryListModelRoles role) const
+{
+    if (row < 0 || row >= m_blogEntryRecordList.count())
+        return QVariant();
+
     const auto &current = AtProtocolType::LexiconsTypeUnknown::fromQVariant<
             AtProtocolType::ComWhtwndBlogEntry::Main>(m_blogEntryRecordList.at(row).value);
 
@@ -69,35 +140,48 @@ QVariant BlogEntryListModel::item(int row, BlogEntryListModelRoles role) const
     return QVariant();
 }
 
-AtProtocolInterface::AccountData BlogEntryListModel::account() const
+QVariant BlogEntryListModel::itemFromLinkat(int row, BlogEntryListModelRoles role) const
 {
-    return m_account;
-}
+    if (row < 0 || row >= m_blogEntryRecordList.count())
+        return QVariant();
 
-void BlogEntryListModel::setAccount(const QString &service, const QString &did,
-                                    const QString &handle, const QString &email,
-                                    const QString &accessJwt, const QString &refreshJwt)
-{
-    m_account.service = service;
-    m_account.did = did;
-    m_account.handle = handle;
-    m_account.email = email;
-    m_account.accessJwt = accessJwt;
-    m_account.refreshJwt = refreshJwt;
-}
+    const auto &current = AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+            AtProtocolType::BlueLinkatBoard::Main>(m_blogEntryRecordList.at(row).value);
 
-bool BlogEntryListModel::getLatest()
-{
-    if (running() || targetDid().isEmpty())
-        return false;
-    setRunning(true);
+    if (current.cards.isEmpty())
+        return QVariant();
 
-    if (!m_blogEntryRecordList.isEmpty()) {
-        beginRemoveRows(QModelIndex(), 0, m_blogEntryRecordList.count() - 1);
-        m_blogEntryRecordList.clear();
-        endRemoveRows();
+    if (role == CidRole)
+        return m_blogEntryRecordList.at(row).cid;
+    else if (role == UriRole)
+        return m_blogEntryRecordList.at(row).uri;
+    else if (role == ServiceNameRole)
+        return "Linkat";
+    else if (role == TitleRole) {
+        if (current.cards.first().text.isEmpty()) {
+            return current.cards.first().url;
+        } else {
+            return current.cards.first().text;
+        }
+    } else if (role == ContentRole)
+        if (current.cards.length() > 1) {
+            return "and more ...";
+        } else {
+            return QString();
+        }
+    else if (role == CreatedAtRole)
+        return QString();
+    else if (role == VisibilityRole) {
+        return QString();
+    } else if (role == PermalinkRole) {
+        return QStringLiteral("https://linkat.blue/") + targetHandle();
     }
 
+    return QVariant();
+}
+
+void BlogEntryListModel::getLatestFromWhiteWind(std::function<void(const bool &)> callback)
+{
     ComAtprotoRepoListRecordsEx *record = new ComAtprotoRepoListRecordsEx(this);
     connect(record, &ComAtprotoRepoListRecordsEx::finished, this, [=](bool success) {
         if (success) {
@@ -116,7 +200,7 @@ bool BlogEntryListModel::getLatest()
         } else {
             emit errorOccured(record->errorCode(), record->errorMessage());
         }
-        setRunning(false);
+        callback(success);
         record->deleteLater();
     });
     record->setAccount(account());
@@ -124,25 +208,34 @@ bool BlogEntryListModel::getLatest()
         record->setService(targetServiceEndpoint());
     }
     record->listWhiteWindItems(targetDid(), QString());
-
-    return true;
 }
 
-QHash<int, QByteArray> BlogEntryListModel::roleNames() const
+void BlogEntryListModel::getLatestFromLinkat(std::function<void(const bool &)> callback)
 {
-    QHash<int, QByteArray> roles;
-
-    roles[CidRole] = "cid";
-    roles[UriRole] = "uri";
-
-    roles[ServiceNameRole] = "serviceName";
-    roles[TitleRole] = "title";
-    roles[ContentRole] = "content";
-    roles[CreatedAtRole] = "createdAt";
-    roles[VisibilityRole] = "visibility";
-    roles[PermalinkRole] = "permalink";
-
-    return roles;
+    ComAtprotoRepoListRecordsEx *record = new ComAtprotoRepoListRecordsEx(this);
+    connect(record, &ComAtprotoRepoListRecordsEx::finished, this, [=](bool success) {
+        if (success) {
+            for (const auto &r : record->recordsList()) {
+                const auto &current = AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                        AtProtocolType::BlueLinkatBoard::Main>(r.value);
+                if (!current.cards.isEmpty()) {
+                    beginInsertRows(QModelIndex(), rowCount(), rowCount());
+                    m_blogEntryRecordList.append(r);
+                    endInsertRows();
+                    break;
+                }
+            }
+        } else {
+            emit errorOccured(record->errorCode(), record->errorMessage());
+        }
+        callback(success);
+        record->deleteLater();
+    });
+    record->setAccount(account());
+    if (!targetServiceEndpoint().isEmpty()) {
+        record->setService(targetServiceEndpoint());
+    }
+    record->listLinkatItems(targetDid(), QString());
 }
 
 bool BlogEntryListModel::running() const
@@ -182,4 +275,17 @@ void BlogEntryListModel::setTargetServiceEndpoint(const QString &newTargetServic
         return;
     m_targetServiceEndpoint = newTargetServiceEndpoint;
     emit targetServiceEndpointChanged();
+}
+
+QString BlogEntryListModel::targetHandle() const
+{
+    return m_targetHandle;
+}
+
+void BlogEntryListModel::setTargetHandle(const QString &newTargetHandle)
+{
+    if (m_targetHandle == newTargetHandle)
+        return;
+    m_targetHandle = newTargetHandle;
+    emit targetHandleChanged();
 }

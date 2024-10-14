@@ -1981,6 +1981,23 @@ struct Member
 };
 }
 
+// blue.linkat.defs
+namespace BlueLinkatDefs {
+struct LinkItem
+{
+    QString url;
+    QString text;
+};
+}
+
+// blue.linkat.board
+namespace BlueLinkatBoard {
+struct Main
+{
+    QList<BlueLinkatDefs::LinkItem> cards;
+};
+}
+
 // com.whtwnd.blog.defs
 namespace ComWhtwndBlogDefs {
 struct BlogEntry
@@ -2162,6 +2179,7 @@ Q_DECLARE_METATYPE(AtProtocolType::AppBskyGraphList::Main)
 Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedThreadgate::Main)
 Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedPostgate::Main)
 Q_DECLARE_METATYPE(AtProtocolType::ComWhtwndBlogEntry::Main)
+Q_DECLARE_METATYPE(AtProtocolType::BlueLinkatBoard::Main)
 Q_DECLARE_METATYPE(AtProtocolType::DirectoryPlcDefs::DidDoc)
 
 #endif // LEXICONS_H

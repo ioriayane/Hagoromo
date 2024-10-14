@@ -14,6 +14,7 @@ public:
     void listReposts(const QString &repo, const QString &cursor);
     void listListItems(const QString &repo, const QString &cursor);
     void listWhiteWindItems(const QString &repo, const QString &cursor);
+    void listLinkatItems(const QString &repo, const QString &cursor);
 
 private:
     virtual bool parseJson(bool success, const QString reply_json);

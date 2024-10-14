@@ -1,0 +1,21 @@
+{
+    "lexicon": 1,
+    "id": "blue.linkat.defs",
+    "defs": {
+        "linkItem": {
+            "type": "object",
+            "required": [
+                "url",
+                "text"
+            ],
+            "properties": {
+                "url": {
+                    "type": "string"
+                },
+                "text": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

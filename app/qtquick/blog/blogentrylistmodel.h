@@ -9,6 +9,8 @@ class BlogEntryListModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
+    Q_PROPERTY(QString targetHandle READ targetHandle WRITE setTargetHandle NOTIFY
+                       targetHandleChanged FINAL)
     Q_PROPERTY(QString targetDid READ targetDid WRITE setTargetDid NOTIFY targetDidChanged)
     Q_PROPERTY(QString targetServiceEndpoint READ targetServiceEndpoint WRITE
                        setTargetServiceEndpoint NOTIFY targetServiceEndpointChanged FINAL)
@@ -50,6 +52,9 @@ public:
     QString targetServiceEndpoint() const;
     void setTargetServiceEndpoint(const QString &newTargetServiceEndpoint);
 
+    QString targetHandle() const;
+    void setTargetHandle(const QString &newTargetHandle);
+
 signals:
     void errorOccured(const QString &code, const QString &message);
     void runningChanged();
@@ -57,15 +62,23 @@ signals:
     void countChanged();
     void targetServiceEndpointChanged();
 
+    void targetHandleChanged();
+
 protected:
     QHash<int, QByteArray> roleNames() const;
 
 private:
+    QVariant itemFromWhiteWind(int row, BlogEntryListModel::BlogEntryListModelRoles role) const;
+    QVariant itemFromLinkat(int row, BlogEntryListModel::BlogEntryListModelRoles role) const;
+    void getLatestFromWhiteWind(std::function<void(const bool &)> callback);
+    void getLatestFromLinkat(std::function<void(const bool &)> callback);
+
     QList<AtProtocolType::ComAtprotoRepoListRecords::Record> m_blogEntryRecordList;
     AtProtocolInterface::AccountData m_account;
     bool m_running;
     QString m_targetDid;
     QString m_targetServiceEndpoint;
+    QString m_targetHandle;
 };
 
 #endif // BLOGENTRYLISTMODEL_H
