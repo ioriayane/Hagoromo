@@ -128,6 +128,7 @@ SOURCES += \
     $$PWD/tools/cardecoder.cpp \
     $$PWD/tools/chatlogsubscriber.cpp \
     $$PWD/tools/configurablelabels.cpp \
+    $$PWD/tools/encryption.cpp \
     $$PWD/tools/es256.cpp \
     $$PWD/tools/imagecompressor.cpp \
     $$PWD/tools/jsonwebtoken.cpp \
@@ -245,6 +246,8 @@ HEADERS += \
     $$PWD/tools/cardecoder.h \
     $$PWD/tools/chatlogsubscriber.h \
     $$PWD/tools/configurablelabels.h \
+    $$PWD/tools/encryption.h \
+    $$PWD/tools/encryption_seed.h \
     $$PWD/tools/es256.h \
     $$PWD/tools/imagecompressor.h \
     $$PWD/tools/jsonwebtoken.h \

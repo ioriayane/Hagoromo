@@ -38,7 +38,6 @@
 #include "qtquick/list/listblockslistmodel.h"
 #include "qtquick/list/listmuteslistmodel.h"
 #include "qtquick/thumbnailprovider.h"
-#include "qtquick/encryption.h"
 #include "qtquick/profile/userprofile.h"
 #include "qtquick/timeline/userpost.h"
 #include "qtquick/systemtool.h"
@@ -60,6 +59,7 @@
 #include "qtquick/controls/calendartablemodel.h"
 #include "qtquick/realtime/realtimefeedlistmodel.h"
 
+#include "tools/encryption.h"
 #include "tools/translatorchanger.h"
 
 void setAppFont(QGuiApplication &app)

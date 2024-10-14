@@ -14,7 +14,6 @@ SOURCES += \
     $$PWD/controls/calendartablemodel.cpp \
     $$PWD/controls/embedimagelistmodel.cpp \
     $$PWD/controls/languagelistmodel.cpp \
-    $$PWD/encryption.cpp \
     $$PWD/feedgenerator/actorfeedgeneratorlistmodel.cpp \
     $$PWD/feedgenerator/feedgeneratorlistmodel.cpp \
     $$PWD/link/externallink.cpp \
@@ -71,8 +70,6 @@ HEADERS += \
     $$PWD/controls/calendartablemodel.h \
     $$PWD/controls/embedimagelistmodel.h \
     $$PWD/controls/languagelistmodel.h \
-    $$PWD/encryption.h \
-    $$PWD/encryption_seed.h \
     $$PWD/feedgenerator/actorfeedgeneratorlistmodel.h \
     $$PWD/feedgenerator/feedgeneratorlistmodel.h \
     $$PWD/link/externallink.h \
