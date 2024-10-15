@@ -30,7 +30,8 @@ signals:
 
 private:
     class Private;
-    QHash<QString, Private *> d;
+    QList<Private *> dList;
+    QHash<QString, int> dIndex;
     Q_DISABLE_COPY_MOVE(AccountManager)
 };
 

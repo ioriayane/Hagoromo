@@ -213,28 +213,23 @@ void tools_test::test_AccountManager()
 
     QVERIFY(uuids.count() == 2);
 
-    actuals.append(manager->getAccount(uuids.at(0)));
-    actuals.append(manager->getAccount(uuids.at(1)));
+    account = manager->getAccount(uuids.at(0));
+    QVERIFY(account.service == "/account/account1");
+    QVERIFY(account.password == "password1");
+    QVERIFY(account.did == "did:plc:account1");
+    QVERIFY(account.handle == "account1.relog.tech");
+    QVERIFY(account.email == "account1@relog.tech");
+    QVERIFY(account.accessJwt == "accessJwt_account1");
+    QVERIFY(account.refreshJwt == "refreshJwt_account1");
 
-    for (const auto &actual : actuals) {
-        if (actual.identifier == "id1") {
-            QVERIFY(actual.service == "/account/account1");
-            QVERIFY(actual.password == "password1");
-            QVERIFY(actual.did == "did:plc:account1");
-            QVERIFY(actual.handle == "account1.relog.tech");
-            QVERIFY(actual.email == "account1@relog.tech");
-            QVERIFY(actual.accessJwt == "accessJwt_account1");
-            QVERIFY(actual.refreshJwt == "refreshJwt_account1");
-        } else if (actual.identifier == "id2") {
-            QVERIFY(actual.service == "/account/account2");
-            QVERIFY(actual.password == "password2");
-            QVERIFY(actual.did == "did:plc:account2");
-            QVERIFY(actual.handle == "account2.relog.tech");
-            QVERIFY(actual.email == "account2@relog.tech");
-            QVERIFY(actual.accessJwt == "accessJwt_account2");
-            QVERIFY(actual.refreshJwt == "refreshJwt_account2");
-        }
-    }
+    account = manager->getAccount(uuids.at(1));
+    QVERIFY(account.service == "/account/account2");
+    QVERIFY(account.password == "password2");
+    QVERIFY(account.did == "did:plc:account2");
+    QVERIFY(account.handle == "account2.relog.tech");
+    QVERIFY(account.email == "account2@relog.tech");
+    QVERIFY(account.accessJwt == "accessJwt_account2");
+    QVERIFY(account.refreshJwt == "refreshJwt_account2");
 
     QJsonDocument doc = manager->save();
 

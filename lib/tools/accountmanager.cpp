@@ -33,12 +33,12 @@ private:
 
 AccountManager::Private::Private(AccountManager *parent)
 {
-    qDebug().noquote() << __func__;
+    qDebug().noquote() << this << "AccountManager::Private()";
 }
 
 AccountManager::Private::~Private()
 {
-    qDebug().noquote() << __func__;
+    qDebug().noquote() << this << "AccountManager::~Private()";
 }
 
 QJsonObject AccountManager::Private::save() const
@@ -136,12 +136,13 @@ void AccountManager::Private::updateAccount(const QString &uuid, const QString &
 
 AccountManager::AccountManager(QObject *parent) : QObject { parent }
 {
-    qDebug().noquote() << __func__;
+    qDebug().noquote() << this << "AccountManager()";
 }
 
 AccountManager::~AccountManager()
 {
-    qDebug().noquote() << __func__;
+    qDebug().noquote() << this << "~AccountManager()";
+    clear();
 }
 
 AccountManager *AccountManager::getInstance()
@@ -152,20 +153,19 @@ AccountManager *AccountManager::getInstance()
 
 void AccountManager::clear()
 {
-    for (const auto &key : d.keys()) {
-        delete d[key];
+    for (const auto d : dList) {
+        delete d;
     }
-    d.clear();
+    dList.clear();
+    dIndex.clear();
 }
 
 QJsonDocument AccountManager::save() const
 {
-    QStringList uuids = d.keys();
-    uuids.sort();
-
     QJsonArray account_array;
-    for (const auto &uuid : uuids) {
-        account_array.append(d[uuid]->save());
+
+    for (const auto d : dList) {
+        account_array.append(d->save());
     }
 
     return QJsonDocument(account_array);
@@ -177,10 +177,11 @@ void AccountManager::load(QJsonDocument &doc)
         bool has_main = false;
         for (const auto &item : doc.array()) {
             QString uuid = item.toObject().value("uuid").toString();
-            if (!d.contains(uuid)) {
-                d[uuid] = new AccountManager::Private(this);
+            if (!dIndex.contains(uuid)) {
+                dList.append(new AccountManager::Private(this));
+                dIndex[uuid] = dList.count() - 1;
             }
-            d[uuid]->load(item.toObject());
+            dList.last()->load(item.toObject());
         }
         if (!has_main) {
             // mainになっているものがない
@@ -190,10 +191,10 @@ void AccountManager::load(QJsonDocument &doc)
 
 AccountData AccountManager::getAccount(const QString &uuid) const
 {
-    if (!d.contains(uuid)) {
+    if (!dIndex.contains(uuid)) {
         return AccountData();
     }
-    return d[uuid]->getAccount();
+    return dList.at(dIndex.value(uuid))->getAccount();
 }
 
 void AccountManager::updateAccount(const QString &service, const QString &identifier,
@@ -203,20 +204,21 @@ void AccountManager::updateAccount(const QString &service, const QString &identi
                                    const bool authorized)
 {
     bool updated = false;
-    for (const auto &uuid : d.keys()) {
-        AccountData account = d[uuid]->getAccount();
+    for (const auto d : dList) {
+        // for (const auto &uuid : d.keys()) {
+        AccountData account = d->getAccount();
         if (account.service == service && account.identifier == identifier) {
-            d[uuid]->updateAccount(uuid, service, identifier, password, did, handle, email,
-                                   accessJwt, refreshJwt, account.thread_gate_type,
-                                   authorized ? AccountStatus::Authorized
-                                              : AccountStatus::Unauthorized);
+            d->updateAccount(account.uuid, service, identifier, password, did, handle, email,
+                             accessJwt, refreshJwt, account.thread_gate_type,
+                             authorized ? AccountStatus::Authorized : AccountStatus::Unauthorized);
         }
     }
     if (!updated) {
         // append
         QString uuid = QUuid::createUuid().toString(QUuid::WithoutBraces);
-        d[uuid] = new AccountManager::Private(this);
-        d[uuid]->updateAccount(
+        dList.append(new AccountManager::Private(this));
+        dIndex[uuid] = dList.count() - 1;
+        dList.last()->updateAccount(
                 uuid, service, identifier, password, did, handle, email, accessJwt, refreshJwt,
                 "everybody", authorized ? AccountStatus::Authorized : AccountStatus::Unauthorized);
     }
@@ -224,5 +226,9 @@ void AccountManager::updateAccount(const QString &service, const QString &identi
 
 QStringList AccountManager::getUuids() const
 {
-    return d.keys();
+    QStringList uuids;
+    for (const auto d : dList) {
+        uuids.append(d->getAccount().uuid);
+    }
+    return uuids;
 }
