@@ -123,6 +123,7 @@ SOURCES += \
     $$PWD/realtime/notpostselector.cpp \
     $$PWD/realtime/orpostselector.cpp \
     $$PWD/realtime/xorpostselector.cpp \
+    $$PWD/tools/accountmanager.cpp \
     $$PWD/tools/authorization.cpp \
     $$PWD/tools/base32.cpp \
     $$PWD/tools/cardecoder.cpp \
@@ -241,6 +242,7 @@ HEADERS += \
     $$PWD/realtime/orpostselector.h \
     $$PWD/realtime/xorpostselector.h \
     $$PWD/search/search.h \
+    $$PWD/tools/accountmanager.h \
     $$PWD/tools/authorization.h \
     $$PWD/tools/base32.h \
     $$PWD/tools/cardecoder.h \
