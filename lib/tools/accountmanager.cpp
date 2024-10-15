@@ -24,6 +24,8 @@ public:
                        const QString &email, const QString &accessJwt, const QString &refreshJwt,
                        const QString &thread_gate_type, const AccountStatus status);
 
+    void getProfile();
+
 private:
     AccountManager *q;
 
@@ -134,6 +136,11 @@ void AccountManager::Private::updateAccount(const QString &uuid, const QString &
     m_account.status = status;
 }
 
+void AccountManager::Private::getProfile()
+{
+    //
+}
+
 AccountManager::AccountManager(QObject *parent) : QObject { parent }
 {
     qDebug().noquote() << this << "AccountManager()";
@@ -222,6 +229,57 @@ void AccountManager::updateAccount(const QString &service, const QString &identi
                 uuid, service, identifier, password, did, handle, email, accessJwt, refreshJwt,
                 "everybody", authorized ? AccountStatus::Authorized : AccountStatus::Unauthorized);
     }
+}
+
+void AccountManager::removeAccount(const QString &uuid)
+{
+    if (!dIndex.contains(uuid)) {
+        return;
+    }
+    int i = dIndex.value(uuid);
+    delete dList.at(i);
+    dList.removeAt(i);
+
+    // refresh index
+    dIndex.clear();
+    for (int i = 0; i < dList.count(); i++) {
+        dIndex[dList.at(i)->getAccount().uuid] = i;
+    }
+}
+
+void AccountManager::updateAccountProfile(const QString &uuid)
+{
+    if (!dIndex.contains(uuid)) {
+        return;
+    }
+    dList.at(dIndex.value(uuid))->getProfile();
+}
+
+int AccountManager::getMainAccountIndex() const
+{
+    return 0;
+}
+
+void AccountManager::setMainAccount(const QString &uuid)
+{
+    for (const auto d : qAsConst(dList)) {
+        if (d->getAccount().uuid == uuid) {
+            // true
+        } else {
+            // false
+        }
+    }
+}
+
+bool AccountManager::checkAllAccountsReady() const
+{
+    int ready_count = 0;
+    for (const auto d : dList) {
+        if (d->getAccount().status == AccountStatus::Authorized) {
+            ready_count++;
+        }
+    }
+    return (!dList.isEmpty() && dList.count() == ready_count);
 }
 
 QStringList AccountManager::getUuids() const

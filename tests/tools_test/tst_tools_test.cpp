@@ -4,11 +4,9 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 
-#include "common.h"
 #include "tools/base32.h"
 #include "tools/leb128.h"
 #include "tools/cardecoder.h"
-#include "tools/accountmanager.h"
 
 class tools_test : public QObject
 {
@@ -25,7 +23,6 @@ private slots:
     void test_base32();
     void test_Leb128();
     void test_CarDecoder();
-    void test_AccountManager();
 };
 
 tools_test::tools_test()
@@ -189,51 +186,6 @@ void tools_test::test_CarDecoder()
     // qDebug().nospace().noquote() << "header:" << QJsonDocument(decoder.headerJson()).toJson();
 
     repo.close();
-}
-
-void tools_test::test_AccountManager()
-{
-    QString temp_path = Common::appDataFolder() + "/account.json";
-    if (QFile::exists(temp_path)) {
-        QFile::remove(temp_path);
-    }
-
-    AccountManager *manager = AccountManager::getInstance();
-    AtProtocolInterface::AccountData account;
-    QList<AtProtocolInterface::AccountData> actuals;
-
-    manager->updateAccount("/account/account1", "id1", "password1", "did:plc:account1",
-                           "account1.relog.tech", "account1@relog.tech", "accessJwt_account1",
-                           "refreshJwt_account1", true);
-    manager->updateAccount("/account/account2", "id2", "password2", "did:plc:account2",
-                           "account2.relog.tech", "account2@relog.tech", "accessJwt_account2",
-                           "refreshJwt_account2", true);
-
-    QStringList uuids = manager->getUuids();
-
-    QVERIFY(uuids.count() == 2);
-
-    account = manager->getAccount(uuids.at(0));
-    QVERIFY(account.service == "/account/account1");
-    QVERIFY(account.password == "password1");
-    QVERIFY(account.did == "did:plc:account1");
-    QVERIFY(account.handle == "account1.relog.tech");
-    QVERIFY(account.email == "account1@relog.tech");
-    QVERIFY(account.accessJwt == "accessJwt_account1");
-    QVERIFY(account.refreshJwt == "refreshJwt_account1");
-
-    account = manager->getAccount(uuids.at(1));
-    QVERIFY(account.service == "/account/account2");
-    QVERIFY(account.password == "password2");
-    QVERIFY(account.did == "did:plc:account2");
-    QVERIFY(account.handle == "account2.relog.tech");
-    QVERIFY(account.email == "account2@relog.tech");
-    QVERIFY(account.accessJwt == "accessJwt_account2");
-    QVERIFY(account.refreshJwt == "refreshJwt_account2");
-
-    QJsonDocument doc = manager->save();
-
-    Common::saveJsonDocument(doc, QStringLiteral("account.json"));
 }
 
 QTEST_MAIN(tools_test)

@@ -24,6 +24,11 @@ public:
     void updateAccount(const QString &service, const QString &identifier, const QString &password,
                        const QString &did, const QString &handle, const QString &email,
                        const QString &accessJwt, const QString &refreshJwt, const bool authorized);
+    void removeAccount(const QString &uuid);
+    void updateAccountProfile(const QString &uuid);
+    int getMainAccountIndex() const;
+    void setMainAccount(const QString &uuid);
+    bool checkAllAccountsReady() const;
 
     QStringList getUuids() const;
 signals:

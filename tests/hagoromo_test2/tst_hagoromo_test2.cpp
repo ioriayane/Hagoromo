@@ -15,6 +15,7 @@
 #include "list/listslistmodel.h"
 #include "list/listitemlistmodel.h"
 #include "list/listfeedlistmodel.h"
+#include "tools/accountmanager.h"
 
 class hagoromo_test : public QObject
 {
@@ -32,6 +33,7 @@ private slots:
     void test_FeedGeneratorListModel();
     void test_FeedGeneratorLink();
     void test_AccountListModel();
+    void test_AccountManager();
     void test_ListsListModel();
     void test_ListsListModel_search();
     void test_ListsListModel_error();
@@ -289,6 +291,75 @@ void hagoromo_test::test_AccountListModel()
     QVERIFY2(model2.item(row, AccountListModel::RefreshJwtRole).toString()
                      == "refreshJwt_account2_refresh",
              model2.item(row, AccountListModel::RefreshJwtRole).toString().toLocal8Bit());
+}
+
+void hagoromo_test::test_AccountManager()
+{
+
+    QString temp_path = Common::appDataFolder() + "/account.json";
+    if (QFile::exists(temp_path)) {
+        QFile::remove(temp_path);
+    }
+
+    AccountManager *manager = AccountManager::getInstance();
+    AtProtocolInterface::AccountData account;
+
+    manager->updateAccount(m_service + "/account/account1", "id1", "password1", "did:plc:account1",
+                           "account1.relog.tech", "account1@relog.tech", "accessJwt_account1",
+                           "refreshJwt_account1", false);
+    manager->updateAccount(m_service + "/account/account2", "id2", "password2", "did:plc:account2",
+                           "account2.relog.tech", "account2@relog.tech", "accessJwt_account2",
+                           "refreshJwt_account2", false);
+
+    QStringList uuids = manager->getUuids();
+
+    QVERIFY(uuids.count() == 2);
+
+    account = manager->getAccount(uuids.at(0));
+    QVERIFY(account.service == m_service + "/account/account1");
+    QVERIFY(account.password == "password1");
+    QVERIFY(account.did == "did:plc:account1");
+    QVERIFY(account.handle == "account1.relog.tech");
+    QVERIFY(account.email == "account1@relog.tech");
+    QVERIFY(account.accessJwt == "accessJwt_account1");
+    QVERIFY(account.refreshJwt == "refreshJwt_account1");
+
+    account = manager->getAccount(uuids.at(1));
+    QVERIFY(account.service == m_service + "/account/account2");
+    QVERIFY(account.password == "password2");
+    QVERIFY(account.did == "did:plc:account2");
+    QVERIFY(account.handle == "account2.relog.tech");
+    QVERIFY(account.email == "account2@relog.tech");
+    QVERIFY(account.accessJwt == "accessJwt_account2");
+    QVERIFY(account.refreshJwt == "refreshJwt_account2");
+
+    QVERIFY(manager->checkAllAccountsReady() == false);
+
+    QJsonDocument doc = manager->save();
+    Common::saveJsonDocument(doc, QStringLiteral("account.json"));
+
+    manager->removeAccount(manager->getUuids().at(0));
+    QVERIFY(manager->getUuids().count() == 1);
+
+    account = manager->getAccount(manager->getUuids().at(0));
+    QVERIFY(account.service == m_service + "/account/account2");
+    QVERIFY(account.password == "password2");
+    QVERIFY(account.did == "did:plc:account2");
+    QVERIFY(account.handle == "account2.relog.tech");
+    QVERIFY(account.email == "account2@relog.tech");
+    QVERIFY(account.accessJwt == "accessJwt_account2");
+    QVERIFY(account.refreshJwt == "refreshJwt_account2");
+
+    manager->clear();
+    QVERIFY(manager->getUuids().isEmpty());
+
+    // {
+    //     QSignalSpy spy(&model2, SIGNAL(updatedAccount(int, const QString &)));
+    //     model2.load();
+    //     spy.wait(10 * 1000);
+    //     spy.wait(10 * 1000);
+    //     QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    // }
 }
 
 void hagoromo_test::test_ListsListModel()
