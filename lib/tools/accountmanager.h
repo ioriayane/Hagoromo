@@ -13,6 +13,8 @@ class AccountManager : public QObject
     explicit AccountManager(QObject *parent = nullptr);
     ~AccountManager();
 
+    Q_PROPERTY(bool allAccountsReady READ allAccountsReady WRITE setAllAccountsReady NOTIFY
+                       allAccountsReadyChanged FINAL)
 public:
     static AccountManager *getInstance();
     void clear();
@@ -28,16 +30,28 @@ public:
     void updateAccountProfile(const QString &uuid);
     int getMainAccountIndex() const;
     void setMainAccount(const QString &uuid);
-    bool checkAllAccountsReady() const;
+    bool checkAllAccountsReady();
+    int indexAt(const QString &uuid);
 
     QStringList getUuids() const;
+    bool allAccountsReady() const;
+    void setAllAccountsReady(bool newAllAccountsReady);
+
 signals:
+    void errorOccured(const QString &code, const QString &message);
+    void updatedSession(const QString &uuid);
+    void updatedAccount(const QString &uuid);
+    void finished();
+    void allAccountsReadyChanged();
 
 private:
     class Private;
     QList<Private *> dList;
     QHash<QString, int> dIndex;
     Q_DISABLE_COPY_MOVE(AccountManager)
+
+    bool allAccountTried() const;
+    bool m_allAccountsReady;
 };
 
 #endif // ACCOUNTMANAGER_H

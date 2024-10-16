@@ -1,5 +1,11 @@
 #include "accountmanager.h"
 #include "encryption.h"
+#include "extension/com/atproto/server/comatprotoservercreatesessionex.h"
+#include "extension/com/atproto/server/comatprotoserverrefreshsessionex.h"
+#include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
+#include "atprotocol/app/bsky/actor/appbskyactorgetprofile.h"
+#include "extension/directory/plc/directoryplc.h"
+#include "tools/pinnedpostcache.h"
 
 #include <QDebug>
 #include <QJsonArray>
@@ -8,6 +14,11 @@
 
 using AtProtocolInterface::AccountData;
 using AtProtocolInterface::AccountStatus;
+using AtProtocolInterface::AppBskyActorGetProfile;
+using AtProtocolInterface::ComAtprotoRepoGetRecordEx;
+using AtProtocolInterface::ComAtprotoServerCreateSessionEx;
+using AtProtocolInterface::ComAtprotoServerRefreshSessionEx;
+using AtProtocolInterface::DirectoryPlc;
 
 class AccountManager::Private : public QObject
 {
@@ -24,7 +35,11 @@ public:
                        const QString &email, const QString &accessJwt, const QString &refreshJwt,
                        const QString &thread_gate_type, const AccountStatus status);
 
+    void createSession();
+    void refreshSession(bool initial = false);
     void getProfile();
+    void getServiceEndpoint(const QString &did, const QString &service,
+                            std::function<void(const QString &service_endpoint)> callback);
 
 private:
     AccountManager *q;
@@ -33,7 +48,7 @@ private:
     Encryption m_encryption;
 };
 
-AccountManager::Private::Private(AccountManager *parent)
+AccountManager::Private::Private(AccountManager *parent) : q(parent)
 {
     qDebug().noquote() << this << "AccountManager::Private()";
 }
@@ -104,9 +119,9 @@ void AccountManager::Private::load(const QJsonObject &object)
     m_account.post_gate_quote_enabled = object.value("post_gate_quote_enabled").toBool(true);
 
     if (temp_refresh.isEmpty()) {
-        // createSession(m_accountList.count() - 1);
+        createSession();
     } else {
-        // refreshSession(m_accountList.count() - 1, true);
+        refreshSession(true);
     }
 }
 
@@ -136,9 +151,140 @@ void AccountManager::Private::updateAccount(const QString &uuid, const QString &
     m_account.status = status;
 }
 
+void AccountManager::Private::createSession()
+{
+    ComAtprotoServerCreateSessionEx *session = new ComAtprotoServerCreateSessionEx(this);
+    connect(session, &ComAtprotoServerCreateSessionEx::finished, [=](bool success) {
+        //        qDebug() << session << session->service() << session->did() <<
+        //        session->handle()
+        //                 << session->email() << session->accessJwt() << session->refreshJwt();
+        //        qDebug() << service << identifier << password;
+        if (success) {
+            qDebug() << "Create session" << session->did() << session->handle();
+            m_account.did = session->did();
+            m_account.handle = session->handle();
+            m_account.email = session->email();
+            m_account.accessJwt = session->accessJwt();
+            m_account.refreshJwt = session->refreshJwt();
+            m_account.status = AccountStatus::Authorized;
+
+            emit q->updatedSession(m_account.uuid);
+
+            // 詳細を取得
+            getProfile();
+        } else {
+            qDebug() << "Fail createSession.";
+            m_account.status = AccountStatus::Unauthorized;
+            emit q->errorOccured(session->errorCode(), session->errorMessage());
+        }
+        q->checkAllAccountsReady();
+        if (q->allAccountTried()) {
+            emit q->finished();
+        }
+        session->deleteLater();
+    });
+    session->setAccount(m_account);
+    session->createSession(m_account.identifier, m_account.password, QString());
+}
+
+void AccountManager::Private::refreshSession(bool initial)
+{
+
+    ComAtprotoServerRefreshSessionEx *session = new ComAtprotoServerRefreshSessionEx(this);
+    connect(session, &ComAtprotoServerRefreshSessionEx::finished, [=](bool success) {
+        if (success) {
+            qDebug() << "Refresh session" << session->did() << session->handle()
+                     << session->email();
+            m_account.did = session->did();
+            m_account.handle = session->handle();
+            m_account.email = session->email();
+            m_account.accessJwt = session->accessJwt();
+            m_account.refreshJwt = session->refreshJwt();
+            m_account.status = AccountStatus::Authorized;
+
+            // 詳細を取得
+            getProfile();
+        } else {
+            if (initial) {
+                // 初期化時のみ（つまりloadから呼ばれたときだけは失敗したらcreateSessionで再スタート）
+                qDebug() << "Initial refresh session fail.";
+                m_account.status = AccountStatus::Unknown;
+                createSession();
+            } else {
+                m_account.status = AccountStatus::Unauthorized;
+                emit q->errorOccured(session->errorCode(), session->errorMessage());
+            }
+        }
+        emit q->updatedSession(m_account.uuid);
+        // emit dataChanged(index(row), index(row));
+        q->checkAllAccountsReady();
+        if (q->allAccountTried()) {
+            emit q->finished();
+        }
+        session->deleteLater();
+    });
+    session->setAccount(m_account);
+    session->refreshSession();
+}
+
 void AccountManager::Private::getProfile()
 {
-    //
+
+    getServiceEndpoint(m_account.did, m_account.service, [=](const QString &service_endpoint) {
+        m_account.service_endpoint = service_endpoint;
+        qDebug().noquote() << "Update service endpoint" << m_account.service << "->"
+                           << m_account.service_endpoint;
+
+        AppBskyActorGetProfile *profile = new AppBskyActorGetProfile(this);
+        connect(profile, &AppBskyActorGetProfile::finished, [=](bool success) {
+            if (success) {
+                AtProtocolType::AppBskyActorDefs::ProfileViewDetailed detail =
+                        profile->profileViewDetailed();
+                qDebug() << "Update profile detailed" << detail.displayName << detail.description;
+                m_account.displayName = detail.displayName;
+                m_account.description = detail.description;
+                m_account.avatar = detail.avatar;
+                m_account.banner = detail.banner;
+
+                q->save();
+
+                emit q->updatedAccount(m_account.uuid);
+                // emit dataChanged(index(row), index(row));
+
+                qDebug() << "Update pinned post" << detail.pinnedPost.uri;
+                PinnedPostCache::getInstance()->update(m_account.did, detail.pinnedPost.uri);
+            } else {
+                emit q->errorOccured(profile->errorCode(), profile->errorMessage());
+            }
+            profile->deleteLater();
+        });
+        profile->setAccount(m_account);
+        profile->getProfile(m_account.did);
+    });
+}
+
+void AccountManager::Private::getServiceEndpoint(const QString &did, const QString &service,
+                                                 std::function<void(const QString &)> callback)
+{
+    if (did.isEmpty()) {
+        callback(service);
+        return;
+    }
+    if (!service.startsWith("https://bsky.social")) {
+        callback(service);
+        return;
+    }
+
+    DirectoryPlc *plc = new DirectoryPlc(this);
+    connect(plc, &DirectoryPlc::finished, this, [=](bool success) {
+        if (success) {
+            callback(plc->serviceEndpoint());
+        } else {
+            callback(service);
+        }
+        plc->deleteLater();
+    });
+    plc->directory(did);
 }
 
 AccountManager::AccountManager(QObject *parent) : QObject { parent }
@@ -188,11 +334,14 @@ void AccountManager::load(QJsonDocument &doc)
                 dList.append(new AccountManager::Private(this));
                 dIndex[uuid] = dList.count() - 1;
             }
-            dList.last()->load(item.toObject());
+            dList.at(dIndex[uuid])->load(item.toObject());
         }
         if (!has_main) {
             // mainになっているものがない
         }
+    }
+    if (dList.isEmpty()) {
+        emit finished();
     }
 }
 
@@ -229,6 +378,7 @@ void AccountManager::updateAccount(const QString &service, const QString &identi
                 uuid, service, identifier, password, did, handle, email, accessJwt, refreshJwt,
                 "everybody", authorized ? AccountStatus::Authorized : AccountStatus::Unauthorized);
     }
+    // save();
 }
 
 void AccountManager::removeAccount(const QString &uuid)
@@ -271,7 +421,7 @@ void AccountManager::setMainAccount(const QString &uuid)
     }
 }
 
-bool AccountManager::checkAllAccountsReady() const
+bool AccountManager::checkAllAccountsReady()
 {
     int ready_count = 0;
     for (const auto d : dList) {
@@ -279,7 +429,13 @@ bool AccountManager::checkAllAccountsReady() const
             ready_count++;
         }
     }
-    return (!dList.isEmpty() && dList.count() == ready_count);
+    setAllAccountsReady(!dList.isEmpty() && dList.count() == ready_count);
+    return allAccountsReady();
+}
+
+int AccountManager::indexAt(const QString &uuid)
+{
+    return dIndex.value(uuid, -1);
 }
 
 QStringList AccountManager::getUuids() const
@@ -289,4 +445,28 @@ QStringList AccountManager::getUuids() const
         uuids.append(d->getAccount().uuid);
     }
     return uuids;
+}
+
+bool AccountManager::allAccountTried() const
+{
+    int count = 0;
+    for (const auto d : dList) {
+        if (d->getAccount().status != AccountStatus::Unknown) {
+            count++;
+        }
+    }
+    return (dList.count() == count);
+}
+
+bool AccountManager::allAccountsReady() const
+{
+    return m_allAccountsReady;
+}
+
+void AccountManager::setAllAccountsReady(bool newAllAccountsReady)
+{
+    if (m_allAccountsReady == newAllAccountsReady)
+        return;
+    m_allAccountsReady = newAllAccountsReady;
+    emit allAccountsReadyChanged();
 }

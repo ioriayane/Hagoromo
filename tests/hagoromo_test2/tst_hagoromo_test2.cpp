@@ -335,8 +335,10 @@ void hagoromo_test::test_AccountManager()
 
     QVERIFY(manager->checkAllAccountsReady() == false);
 
-    QJsonDocument doc = manager->save();
-    Common::saveJsonDocument(doc, QStringLiteral("account.json"));
+    {
+        QJsonDocument doc = manager->save();
+        Common::saveJsonDocument(doc, QStringLiteral("account.json"));
+    }
 
     manager->removeAccount(manager->getUuids().at(0));
     QVERIFY(manager->getUuids().count() == 1);
@@ -353,13 +355,13 @@ void hagoromo_test::test_AccountManager()
     manager->clear();
     QVERIFY(manager->getUuids().isEmpty());
 
-    // {
-    //     QSignalSpy spy(&model2, SIGNAL(updatedAccount(int, const QString &)));
-    //     model2.load();
-    //     spy.wait(10 * 1000);
-    //     spy.wait(10 * 1000);
-    //     QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
-    // }
+    {
+        QJsonDocument doc = Common::loadJsonDocument(QStringLiteral("account.json"));
+        QSignalSpy spy(manager, SIGNAL(finished()));
+        manager->load(doc);
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
 }
 
 void hagoromo_test::test_ListsListModel()
