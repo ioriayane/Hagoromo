@@ -6,6 +6,7 @@
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofile.h"
 #include "extension/directory/plc/directoryplc.h"
 #include "tools/pinnedpostcache.h"
+#include "common.h"
 
 #include <QDebug>
 #include <QJsonArray>
@@ -313,7 +314,7 @@ void AccountManager::clear()
     dIndex.clear();
 }
 
-QJsonDocument AccountManager::save() const
+void AccountManager::save() const
 {
     QJsonArray account_array;
 
@@ -321,11 +322,13 @@ QJsonDocument AccountManager::save() const
         account_array.append(d->save());
     }
 
-    return QJsonDocument(account_array);
+    Common::saveJsonDocument(QJsonDocument(account_array), QStringLiteral("account.json"));
 }
 
-void AccountManager::load(QJsonDocument &doc)
+void AccountManager::load()
 {
+    QJsonDocument doc = Common::loadJsonDocument(QStringLiteral("account.json"));
+
     if (doc.isArray()) {
         bool has_main = false;
         for (const auto &item : doc.array()) {
@@ -360,7 +363,7 @@ void AccountManager::updateAccount(const QString &service, const QString &identi
                                    const bool authorized)
 {
     bool updated = false;
-    for (const auto d : dList) {
+    for (const auto d : qAsConst(dList)) {
         // for (const auto &uuid : d.keys()) {
         AccountData account = d->getAccount();
         if (account.service == service && account.identifier == identifier) {
@@ -378,7 +381,7 @@ void AccountManager::updateAccount(const QString &service, const QString &identi
                 uuid, service, identifier, password, did, handle, email, accessJwt, refreshJwt,
                 "everybody", authorized ? AccountStatus::Authorized : AccountStatus::Unauthorized);
     }
-    // save();
+    save();
 }
 
 void AccountManager::removeAccount(const QString &uuid)
@@ -424,7 +427,7 @@ void AccountManager::setMainAccount(const QString &uuid)
 bool AccountManager::checkAllAccountsReady()
 {
     int ready_count = 0;
-    for (const auto d : dList) {
+    for (const auto d : qAsConst(dList)) {
         if (d->getAccount().status == AccountStatus::Authorized) {
             ready_count++;
         }

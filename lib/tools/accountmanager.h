@@ -19,8 +19,8 @@ public:
     static AccountManager *getInstance();
     void clear();
 
-    QJsonDocument save() const;
-    void load(QJsonDocument &doc);
+    void save() const;
+    void load();
 
     AtProtocolInterface::AccountData getAccount(const QString &uuid) const;
     void updateAccount(const QString &service, const QString &identifier, const QString &password,
