@@ -66,7 +66,6 @@ HEADERS += \
     $$PWD/chat/chatmessagelistmodel.h \
     $$PWD/column/columnlistmodel.h \
     $$PWD/column/feedtypelistmodel.h \
-    $$PWD/common.h \
     $$PWD/controls/calendartablemodel.h \
     $$PWD/controls/embedimagelistmodel.h \
     $$PWD/controls/languagelistmodel.h \

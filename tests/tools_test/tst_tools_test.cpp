@@ -28,7 +28,7 @@ private slots:
 tools_test::tools_test()
 {
     QCoreApplication::setOrganizationName(QStringLiteral("relog"));
-    QCoreApplication::setApplicationName(QStringLiteral("Hagoromo"));
+    QCoreApplication::setApplicationName(QStringLiteral("Hagoromo_unittest"));
 }
 
 tools_test::~tools_test() { }

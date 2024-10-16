@@ -258,7 +258,8 @@ HEADERS += \
     $$PWD/tools/listitemscache.h \
     $$PWD/tools/opengraphprotocol.h \
     $$PWD/tools/pinnedpostcache.h \
-    $$PWD/tools/qstringex.h
+    $$PWD/tools/qstringex.h \
+    common.h
 
 RESOURCES += \
     $$PWD/lib.qrc
