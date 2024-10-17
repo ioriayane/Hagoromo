@@ -17,30 +17,64 @@ class AccountManager : public QObject
                        allAccountsReadyChanged FINAL)
 public:
     static AccountManager *getInstance();
-    void clear();
 
+    enum AccountManagerRoles {
+        UnknownRole,
+        UuidRole,
+        IsMainRole,
+        ServiceRole,
+        ServiceEndpointRole,
+        IdentifierRole,
+        PasswordRole,
+        DidRole,
+        HandleRole,
+        EmailRole,
+        AccessJwtRole,
+        RefreshJwtRole,
+        DisplayNameRole,
+        DescriptionRole,
+        AvatarRole,
+        PostLanguagesRole,
+        ThreadGateTypeRole,
+        ThreadGateOptionsRole,
+        PostGateQuoteEnabledRole,
+        StatusRole,
+        AuthorizedRole,
+    };
+
+    void clear();
     void save() const;
     void load();
 
+    void update(int row, AccountManager::AccountManagerRoles role, const QVariant &value);
+
     AtProtocolInterface::AccountData getAccount(const QString &uuid) const;
-    void updateAccount(const QString &service, const QString &identifier, const QString &password,
-                       const QString &did, const QString &handle, const QString &email,
-                       const QString &accessJwt, const QString &refreshJwt, const bool authorized);
+    void updateAccount(const QString &uuid, const QString &service, const QString &identifier,
+                       const QString &password, const QString &did, const QString &handle,
+                       const QString &email, const QString &accessJwt, const QString &refreshJwt,
+                       const bool authorized);
     void removeAccount(const QString &uuid);
     void updateAccountProfile(const QString &uuid);
     int getMainAccountIndex() const;
-    void setMainAccount(const QString &uuid);
+    void setMainAccount(int row);
     bool checkAllAccountsReady();
     int indexAt(const QString &uuid);
 
     QStringList getUuids() const;
+    QString getUuid(int row) const;
     bool allAccountsReady() const;
     void setAllAccountsReady(bool newAllAccountsReady);
+    int count() const;
+
+    void createSession(int row);
+    void refreshSession(int row, bool initial = false);
+    void getProfile(int row);
 
 signals:
     void errorOccured(const QString &code, const QString &message);
     void updatedSession(const QString &uuid);
     void updatedAccount(const QString &uuid);
+    void countChanged();
     void finished();
     void allAccountsReadyChanged();
 

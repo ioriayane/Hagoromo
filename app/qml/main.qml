@@ -467,11 +467,11 @@ ApplicationWindow {
     // アカウント管理で内容が変更されたときにカラムとインデックスの関係が崩れるのでuuidで確認する
     AccountListModel {
         id: accountListModel
-        onUpdatedSession: (row, uuid) => {
-                              console.log("onUpdatedSession:" + row + ", " + uuid)
+        onUpdatedSession: (uuid) => {
+                              console.log("onUpdatedSession:" + uuid)
                           }
-        onUpdatedAccount: (row, uuid) => {
-                              console.log("onUpdatedAccount:" + row + ", " + uuid)
+        onUpdatedAccount: (uuid) => {
+                              console.log("onUpdatedAccount:" + uuid)
                               // カラムを更新しにいく
                               repeater.updateAccount(uuid)
                           }

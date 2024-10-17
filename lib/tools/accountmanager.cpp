@@ -30,6 +30,8 @@ public:
     QJsonObject save() const;
     void load(const QJsonObject &object);
 
+    bool update(AccountManager::AccountManagerRoles role, const QVariant &value);
+
     AccountData getAccount() const;
     void updateAccount(const QString &uuid, const QString &service, const QString &identifier,
                        const QString &password, const QString &did, const QString &handle,
@@ -41,6 +43,7 @@ public:
     void getProfile();
     void getServiceEndpoint(const QString &did, const QString &service,
                             std::function<void(const QString &service_endpoint)> callback);
+    void setMain(bool is);
 
 private:
     AccountManager *q;
@@ -124,6 +127,53 @@ void AccountManager::Private::load(const QJsonObject &object)
     } else {
         refreshSession(true);
     }
+}
+
+bool AccountManager::Private::update(AccountManagerRoles role, const QVariant &value)
+{
+    bool need_save = false;
+
+    if (role == UuidRole)
+        m_account.uuid = value.toString();
+    else if (role == ServiceRole)
+        m_account.service = value.toString();
+    else if (role == ServiceEndpointRole)
+        m_account.service_endpoint = value.toString();
+    else if (role == IdentifierRole)
+        m_account.identifier = value.toString();
+    else if (role == PasswordRole)
+        m_account.password = value.toString();
+    else if (role == DidRole)
+        m_account.did = value.toString();
+    else if (role == HandleRole)
+        m_account.handle = value.toString();
+    else if (role == EmailRole)
+        m_account.email = value.toString();
+    else if (role == AccessJwtRole)
+        m_account.accessJwt = value.toString();
+    else if (role == RefreshJwtRole)
+        m_account.refreshJwt = value.toString();
+
+    else if (role == DisplayNameRole)
+        m_account.displayName = value.toString();
+    else if (role == DescriptionRole)
+        m_account.description = value.toString();
+    else if (role == AvatarRole)
+        m_account.avatar = value.toString();
+
+    else if (role == PostLanguagesRole) {
+        m_account.post_languages = value.toStringList();
+        need_save = true;
+    } else if (role == ThreadGateTypeRole) {
+        m_account.thread_gate_type = value.toString();
+        need_save = true;
+    } else if (role == ThreadGateOptionsRole) {
+        m_account.thread_gate_options = value.toStringList();
+        need_save = true;
+    } else if (role == PostGateQuoteEnabledRole) {
+        m_account.post_gate_quote_enabled = value.toBool();
+    }
+    return need_save;
 }
 
 AccountData AccountManager::Private::getAccount() const
@@ -217,7 +267,7 @@ void AccountManager::Private::refreshSession(bool initial)
             }
         }
         emit q->updatedSession(m_account.uuid);
-        // emit dataChanged(index(row), index(row));
+
         q->checkAllAccountsReady();
         if (q->allAccountTried()) {
             emit q->finished();
@@ -250,7 +300,6 @@ void AccountManager::Private::getProfile()
                 q->save();
 
                 emit q->updatedAccount(m_account.uuid);
-                // emit dataChanged(index(row), index(row));
 
                 qDebug() << "Update pinned post" << detail.pinnedPost.uri;
                 PinnedPostCache::getInstance()->update(m_account.did, detail.pinnedPost.uri);
@@ -288,7 +337,12 @@ void AccountManager::Private::getServiceEndpoint(const QString &did, const QStri
     plc->directory(did);
 }
 
-AccountManager::AccountManager(QObject *parent) : QObject { parent }
+void AccountManager::Private::setMain(bool is)
+{
+    m_account.is_main = is;
+}
+
+AccountManager::AccountManager(QObject *parent) : QObject { parent }, m_allAccountsReady(false)
 {
     qDebug().noquote() << this << "AccountManager()";
 }
@@ -312,6 +366,7 @@ void AccountManager::clear()
     }
     dList.clear();
     dIndex.clear();
+    emit countChanged();
 }
 
 void AccountManager::save() const
@@ -336,15 +391,28 @@ void AccountManager::load()
             if (!dIndex.contains(uuid)) {
                 dList.append(new AccountManager::Private(this));
                 dIndex[uuid] = dList.count() - 1;
+
+                emit countChanged();
             }
             dList.at(dIndex[uuid])->load(item.toObject());
         }
-        if (!has_main) {
+        if (!has_main && !dList.isEmpty()) {
             // mainになっているものがない
+            dList.at(0)->setMain(true);
         }
     }
     if (dList.isEmpty()) {
         emit finished();
+    }
+}
+
+void AccountManager::update(int row, AccountManagerRoles role, const QVariant &value)
+{
+    if (row < 0 || row >= count())
+        return;
+
+    if (dList.at(row)->update(role, value)) {
+        save();
     }
 }
 
@@ -356,32 +424,32 @@ AccountData AccountManager::getAccount(const QString &uuid) const
     return dList.at(dIndex.value(uuid))->getAccount();
 }
 
-void AccountManager::updateAccount(const QString &service, const QString &identifier,
-                                   const QString &password, const QString &did,
-                                   const QString &handle, const QString &email,
+void AccountManager::updateAccount(const QString &uuid, const QString &service,
+                                   const QString &identifier, const QString &password,
+                                   const QString &did, const QString &handle, const QString &email,
                                    const QString &accessJwt, const QString &refreshJwt,
                                    const bool authorized)
 {
-    bool updated = false;
-    for (const auto d : qAsConst(dList)) {
-        // for (const auto &uuid : d.keys()) {
-        AccountData account = d->getAccount();
-        if (account.service == service && account.identifier == identifier) {
-            d->updateAccount(account.uuid, service, identifier, password, did, handle, email,
-                             accessJwt, refreshJwt, account.thread_gate_type,
-                             authorized ? AccountStatus::Authorized : AccountStatus::Unauthorized);
-        }
-    }
-    if (!updated) {
+    if (!uuid.isEmpty() && dIndex.contains(uuid)) {
+        AccountData account = dList.at(dIndex[uuid])->getAccount();
+        dList.at(dIndex[uuid])
+                ->updateAccount(account.uuid, service, identifier, password, did, handle, email,
+                                accessJwt, refreshJwt, account.thread_gate_type,
+                                authorized ? AccountStatus::Authorized
+                                           : AccountStatus::Unauthorized);
+    } else {
         // append
-        QString uuid = QUuid::createUuid().toString(QUuid::WithoutBraces);
+        QString new_uuid = QUuid::createUuid().toString(QUuid::WithoutBraces);
         dList.append(new AccountManager::Private(this));
-        dIndex[uuid] = dList.count() - 1;
+        dIndex[new_uuid] = dList.count() - 1;
         dList.last()->updateAccount(
-                uuid, service, identifier, password, did, handle, email, accessJwt, refreshJwt,
+                new_uuid, service, identifier, password, did, handle, email, accessJwt, refreshJwt,
                 "everybody", authorized ? AccountStatus::Authorized : AccountStatus::Unauthorized);
+
+        emit countChanged();
     }
     save();
+    checkAllAccountsReady();
 }
 
 void AccountManager::removeAccount(const QString &uuid)
@@ -398,6 +466,9 @@ void AccountManager::removeAccount(const QString &uuid)
     for (int i = 0; i < dList.count(); i++) {
         dIndex[dList.at(i)->getAccount().uuid] = i;
     }
+
+    emit countChanged();
+    checkAllAccountsReady();
 }
 
 void AccountManager::updateAccountProfile(const QString &uuid)
@@ -410,18 +481,30 @@ void AccountManager::updateAccountProfile(const QString &uuid)
 
 int AccountManager::getMainAccountIndex() const
 {
+    if (dList.isEmpty())
+        return -1;
+
+    for (int i = 0; i < dList.count(); i++) {
+        if (dList.at(i)->getAccount().is_main) {
+            return i;
+        }
+    }
     return 0;
 }
 
-void AccountManager::setMainAccount(const QString &uuid)
+void AccountManager::setMainAccount(int row)
 {
-    for (const auto d : qAsConst(dList)) {
-        if (d->getAccount().uuid == uuid) {
-            // true
-        } else {
-            // false
+    if (row < 0 || row >= count())
+        return;
+
+    for (int i = 0; i < dList.count(); i++) {
+        bool new_val = (row == i);
+        if (dList.at(i)->getAccount().is_main != new_val) {
+            dList.at(i)->setMain(new_val);
         }
     }
+
+    save();
 }
 
 bool AccountManager::checkAllAccountsReady()
@@ -450,6 +533,13 @@ QStringList AccountManager::getUuids() const
     return uuids;
 }
 
+QString AccountManager::getUuid(int row) const
+{
+    if (row < 0 || row >= count())
+        return QString();
+    return dList.at(row)->getAccount().uuid;
+}
+
 bool AccountManager::allAccountTried() const
 {
     int count = 0;
@@ -472,4 +562,30 @@ void AccountManager::setAllAccountsReady(bool newAllAccountsReady)
         return;
     m_allAccountsReady = newAllAccountsReady;
     emit allAccountsReadyChanged();
+}
+
+int AccountManager::count() const
+{
+    return dList.count();
+}
+
+void AccountManager::createSession(int row)
+{
+    if (row < 0 || row >= count())
+        return;
+    dList.at(row)->createSession();
+}
+
+void AccountManager::refreshSession(int row, bool initial)
+{
+    if (row < 0 || row >= count())
+        return;
+    dList.at(row)->refreshSession(initial);
+}
+
+void AccountManager::getProfile(int row)
+{
+    if (row < 0 || row >= count())
+        return;
+    dList.at(row)->getProfile();
 }

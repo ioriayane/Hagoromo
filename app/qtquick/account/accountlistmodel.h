@@ -3,6 +3,7 @@
 
 #include "atprotocol/accessatprotocol.h"
 #include "tools/encryption.h"
+#include "tools/accountmanager.h"
 
 #include <QAbstractListModel>
 #include <QObject>
@@ -13,10 +14,10 @@ class AccountListModel : public QAbstractListModel
     Q_OBJECT
 
     Q_PROPERTY(int count READ count NOTIFY countChanged CONSTANT)
-    Q_PROPERTY(bool allAccountsReady READ allAccountsReady WRITE setAllAccountsReady NOTIFY
-                       allAccountsReadyChanged FINAL)
+    Q_PROPERTY(bool allAccountsReady READ allAccountsReady NOTIFY allAccountsReadyChanged FINAL)
 public:
     explicit AccountListModel(QObject *parent = nullptr);
+    ~AccountListModel();
 
     // モデルで提供する項目のルールID的な（QML側へ公開するために大文字で始めること）
     enum AccountListModelRoles {
@@ -61,7 +62,6 @@ public:
     Q_INVOKABLE int indexAt(const QString &uuid);
     Q_INVOKABLE int getMainAccountIndex() const;
     Q_INVOKABLE void setMainAccount(int row);
-    Q_INVOKABLE bool checkAllAccountsReady();
     Q_INVOKABLE void refreshAccountSession(const QString &uuid);
     Q_INVOKABLE void refreshAccountProfile(const QString &uuid);
 
@@ -72,12 +72,11 @@ public:
 
     int count() const;
     bool allAccountsReady() const;
-    void setAllAccountsReady(bool newAllAccountsReady);
 
 signals:
     void errorOccured(const QString &code, const QString &message);
-    void updatedSession(int row, const QString &uuid);
-    void updatedAccount(int row, const QString &uuid);
+    void updatedSession(const QString &uuid);
+    void updatedAccount(const QString &uuid);
     void countChanged();
     void finished();
 
@@ -91,16 +90,13 @@ private:
     QVariant m_accountTemp;
     QTimer m_timer;
     Encryption m_encryption;
-    bool m_allAccountsReady;
+    QHash<AccountListModelRoles, AccountManager::AccountManagerRoles> m_roleTo;
 
     QString appDataFolder() const;
 
     void createSession(int row);
     void refreshSession(int row, bool initial = false);
     void getProfile(int row);
-    void getServiceEndpoint(const QString &did, const QString &service,
-                            std::function<void(const QString &service_endpoint)> callback);
-    bool allAccountTried() const;
 };
 
 #endif // ACCOUNTLISTMODEL_H

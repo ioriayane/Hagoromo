@@ -272,11 +272,10 @@ void hagoromo_test::test_AccountListModel()
 
     AccountListModel model2;
     {
-        QSignalSpy spy(&model2, SIGNAL(updatedAccount(int, const QString &)));
+        QSignalSpy spy(&model2, SIGNAL(finished()));
         model2.load();
-        spy.wait(10 * 1000);
-        spy.wait(10 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        spy.wait();
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
     QVERIFY2(model2.rowCount() == 2, QString::number(model2.rowCount()).toLocal8Bit());
     int row = 0;
@@ -291,6 +290,78 @@ void hagoromo_test::test_AccountListModel()
     QVERIFY2(model2.item(row, AccountListModel::RefreshJwtRole).toString()
                      == "refreshJwt_account2_refresh",
              model2.item(row, AccountListModel::RefreshJwtRole).toString().toLocal8Bit());
+
+    // model.update(0, AccountListModel::UuidRole, "UuidRole");
+    // model.update(0, AccountListModel::IsMainRole, "IsMainRole");
+    model.update(0, AccountListModel::ServiceRole, "ServiceRole");
+    model.update(0, AccountListModel::ServiceEndpointRole, "ServiceEndpointRole");
+    model.update(0, AccountListModel::IdentifierRole, "IdentifierRole");
+    model.update(0, AccountListModel::PasswordRole, "PasswordRole");
+    model.update(0, AccountListModel::DidRole, "DidRole");
+    model.update(0, AccountListModel::HandleRole, "HandleRole");
+    model.update(0, AccountListModel::EmailRole, "EmailRole");
+    model.update(0, AccountListModel::AccessJwtRole, "AccessJwtRole");
+    model.update(0, AccountListModel::RefreshJwtRole, "RefreshJwtRole");
+    model.update(0, AccountListModel::DisplayNameRole, "DisplayNameRole");
+    model.update(0, AccountListModel::DescriptionRole, "DescriptionRole");
+    model.update(0, AccountListModel::AvatarRole, "AvatarRole");
+    model.update(0, AccountListModel::PostLanguagesRole,
+                 QStringList() << "PostLanguagesRole1"
+                               << "PostLanguagesRole2");
+    model.update(0, AccountListModel::ThreadGateTypeRole, "ThreadGateTypeRole");
+    model.update(0, AccountListModel::ThreadGateOptionsRole,
+                 QStringList() << "ThreadGateOptionsRole1"
+                               << "ThreadGateOptionsRole2");
+    model.update(0, AccountListModel::PostGateQuoteEnabledRole, true);
+
+    // QVERIFY2(model.item(0, AccountListModel::UuidRole).toString() == "UuidRole",
+    //          model.item(0, AccountListModel::UuidRole).toString().toLocal8Bit());
+    // QVERIFY2(model.item(0, AccountListModel::IsMainRole).toString() == "IsMainRole",
+    //          model.item(0, AccountListModel::IsMainRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::ServiceRole).toString() == "ServiceRole",
+             model.item(0, AccountListModel::ServiceRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::ServiceEndpointRole).toString()
+                     == "ServiceEndpointRole",
+             model.item(0, AccountListModel::ServiceEndpointRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::IdentifierRole).toString() == "IdentifierRole",
+             model.item(0, AccountListModel::IdentifierRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::PasswordRole).toString() == "PasswordRole",
+             model.item(0, AccountListModel::PasswordRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::DidRole).toString() == "DidRole",
+             model.item(0, AccountListModel::DidRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::HandleRole).toString() == "HandleRole",
+             model.item(0, AccountListModel::HandleRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::EmailRole).toString() == "EmailRole",
+             model.item(0, AccountListModel::EmailRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::AccessJwtRole).toString() == "AccessJwtRole",
+             model.item(0, AccountListModel::AccessJwtRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::RefreshJwtRole).toString() == "RefreshJwtRole",
+             model.item(0, AccountListModel::RefreshJwtRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::DisplayNameRole).toString() == "DisplayNameRole",
+             model.item(0, AccountListModel::DisplayNameRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::DescriptionRole).toString() == "DescriptionRole",
+             model.item(0, AccountListModel::DescriptionRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::AvatarRole).toString() == "AvatarRole",
+             model.item(0, AccountListModel::AvatarRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::PostLanguagesRole).toStringList()
+                     == QStringList() << "PostLanguagesRole1"
+                                      << "PostLanguagesRole2",
+             model.item(0, AccountListModel::PostLanguagesRole)
+                     .toStringList()
+                     .join(",")
+                     .toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::ThreadGateTypeRole).toString() == "ThreadGateTypeRole",
+             model.item(0, AccountListModel::ThreadGateTypeRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::ThreadGateOptionsRole).toStringList()
+                     == QStringList() << "ThreadGateOptionsRole1"
+                                      << "ThreadGateOptionsRole2",
+             model.item(0, AccountListModel::ThreadGateOptionsRole)
+                     .toStringList()
+                     .join(",")
+                     .toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::PostGateQuoteEnabledRole).toBool() == true,
+             QString::number(model.item(0, AccountListModel::PostGateQuoteEnabledRole).toBool())
+                     .toLocal8Bit());
 }
 
 void hagoromo_test::test_AccountManager()
@@ -304,12 +375,12 @@ void hagoromo_test::test_AccountManager()
     AccountManager *manager = AccountManager::getInstance();
     AtProtocolInterface::AccountData account;
 
-    manager->updateAccount(m_service + "/account/account1", "id1", "password1", "did:plc:account1",
-                           "account1.relog.tech", "account1@relog.tech", "accessJwt_account1",
-                           "refreshJwt_account1", false);
-    manager->updateAccount(m_service + "/account/account2", "id2", "password2", "did:plc:account2",
-                           "account2.relog.tech", "account2@relog.tech", "accessJwt_account2",
-                           "refreshJwt_account2", false);
+    manager->updateAccount(QString(), m_service + "/account/account1", "id1", "password1",
+                           "did:plc:account1", "account1.relog.tech", "account1@relog.tech",
+                           "accessJwt_account1", "refreshJwt_account1", false);
+    manager->updateAccount(QString(), m_service + "/account/account2", "id2", "password2",
+                           "did:plc:account2", "account2.relog.tech", "account2@relog.tech",
+                           "accessJwt_account2", "refreshJwt_account2", false);
 
     QStringList uuids = manager->getUuids();
 
