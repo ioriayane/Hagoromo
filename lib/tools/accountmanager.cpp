@@ -220,7 +220,6 @@ void AccountManager::Private::createSession()
             m_account.email = session->email();
             m_account.accessJwt = session->accessJwt();
             m_account.refreshJwt = session->refreshJwt();
-            m_account.status = AccountStatus::Authorized;
 
             // 詳細を取得
             getProfile();
@@ -228,10 +227,11 @@ void AccountManager::Private::createSession()
             qDebug() << "Fail createSession.";
             m_account.status = AccountStatus::Unauthorized;
             emit q->errorOccured(session->errorCode(), session->errorMessage());
-        }
-        q->checkAllAccountsReady();
-        if (q->allAccountTried()) {
-            emit q->finished();
+
+            q->checkAllAccountsReady();
+            if (q->allAccountTried()) {
+                emit q->finished();
+            }
         }
         session->deleteLater();
     });
@@ -252,7 +252,6 @@ void AccountManager::Private::refreshSession(bool initial)
             m_account.email = session->email();
             m_account.accessJwt = session->accessJwt();
             m_account.refreshJwt = session->refreshJwt();
-            m_account.status = AccountStatus::Authorized;
 
             // 詳細を取得
             getProfile();
@@ -265,12 +264,12 @@ void AccountManager::Private::refreshSession(bool initial)
             } else {
                 m_account.status = AccountStatus::Unauthorized;
                 emit q->errorOccured(session->errorCode(), session->errorMessage());
-            }
-        }
 
-        q->checkAllAccountsReady();
-        if (q->allAccountTried()) {
-            emit q->finished();
+                q->checkAllAccountsReady();
+                if (q->allAccountTried()) {
+                    emit q->finished();
+                }
+            }
         }
         session->deleteLater();
     });
@@ -296,6 +295,7 @@ void AccountManager::Private::getProfile()
                 m_account.description = detail.description;
                 m_account.avatar = detail.avatar;
                 m_account.banner = detail.banner;
+                m_account.status = AccountStatus::Authorized;
 
                 q->save();
 
@@ -306,6 +306,12 @@ void AccountManager::Private::getProfile()
             } else {
                 emit q->errorOccured(profile->errorCode(), profile->errorMessage());
             }
+
+            q->checkAllAccountsReady();
+            if (q->allAccountTried()) {
+                emit q->finished();
+            }
+
             profile->deleteLater();
         });
         profile->setAccount(m_account);
