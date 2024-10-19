@@ -33,5 +33,7 @@
         <file>data/profile/3.1/com.atproto.repo.putRecord</file>
         <file>response/profile/3.2/xrpc/com.atproto.repo.getRecord</file>
         <file>data/profile/3.2/com.atproto.repo.putRecord</file>
+        <file>response/account/account1/xrpc/com.atproto.repo.describeRepo</file>
+        <file>response/account/account2/xrpc/com.atproto.repo.describeRepo</file>
     </qresource>
 </RCC>

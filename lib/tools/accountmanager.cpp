@@ -4,7 +4,9 @@
 #include "extension/com/atproto/server/comatprotoserverrefreshsessionex.h"
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofile.h"
+#include "atprotocol/com/atproto/repo/comatprotorepodescriberepo.h"
 #include "extension/directory/plc/directoryplc.h"
+#include "atprotocol/lexicons_func_unknown.h"
 #include "tools/pinnedpostcache.h"
 #include "common.h"
 
@@ -16,6 +18,7 @@
 using AtProtocolInterface::AccountData;
 using AtProtocolInterface::AccountStatus;
 using AtProtocolInterface::AppBskyActorGetProfile;
+using AtProtocolInterface::ComAtprotoRepoDescribeRepo;
 using AtProtocolInterface::ComAtprotoRepoGetRecordEx;
 using AtProtocolInterface::ComAtprotoServerCreateSessionEx;
 using AtProtocolInterface::ComAtprotoServerRefreshSessionEx;
@@ -320,21 +323,29 @@ void AccountManager::Private::getServiceEndpoint(const QString &did, const QStri
         callback(service);
         return;
     }
-    if (!service.startsWith("https://bsky.social")) {
-        callback(service);
-        return;
-    }
+    // if (!service.startsWith("https://bsky.social")) {
+    //     callback(service);
+    //     return;
+    // }
 
-    DirectoryPlc *plc = new DirectoryPlc(this);
-    connect(plc, &DirectoryPlc::finished, this, [=](bool success) {
+    ComAtprotoRepoDescribeRepo *repo = new ComAtprotoRepoDescribeRepo(this);
+    connect(repo, &ComAtprotoRepoDescribeRepo::finished, this, [=](bool success) {
         if (success) {
-            callback(plc->serviceEndpoint());
+            AtProtocolType::DirectoryPlcDefs::DidDoc doc =
+                    AtProtocolType::LexiconsTypeUnknown::fromQVariant<
+                            AtProtocolType::DirectoryPlcDefs::DidDoc>(repo->didDoc());
+            if (!doc.service.isEmpty()) {
+                callback(doc.service.first().serviceEndpoint);
+            } else {
+                callback(service);
+            }
         } else {
             callback(service);
         }
-        plc->deleteLater();
+        repo->deleteLater();
     });
-    plc->directory(did);
+    repo->setAccount(m_account);
+    repo->describeRepo(did);
 }
 
 void AccountManager::Private::setMain(bool is)
