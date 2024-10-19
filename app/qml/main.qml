@@ -457,9 +457,6 @@ ApplicationWindow {
     // アカウント管理で内容が変更されたときにカラムとインデックスの関係が崩れるのでuuidで確認する
     AccountListModel {
         id: accountListModel
-        onUpdatedSession: (uuid) => {
-                              console.log("onUpdatedSession:" + uuid)
-                          }
         onUpdatedAccount: (uuid) => {
                               console.log("onUpdatedAccount:" + uuid)
                               // カラムを更新しにいく

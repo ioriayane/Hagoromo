@@ -75,7 +75,6 @@ public:
 
 signals:
     void errorOccured(const QString &code, const QString &message);
-    void updatedSession(const QString &uuid);
     void updatedAccount(const QString &uuid);
     void countChanged();
     void finished();

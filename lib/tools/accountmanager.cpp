@@ -222,8 +222,6 @@ void AccountManager::Private::createSession()
             m_account.refreshJwt = session->refreshJwt();
             m_account.status = AccountStatus::Authorized;
 
-            emit q->updatedSession(m_account.uuid);
-
             // 詳細を取得
             getProfile();
         } else {
@@ -269,7 +267,6 @@ void AccountManager::Private::refreshSession(bool initial)
                 emit q->errorOccured(session->errorCode(), session->errorMessage());
             }
         }
-        emit q->updatedSession(m_account.uuid);
 
         q->checkAllAccountsReady();
         if (q->allAccountTried()) {

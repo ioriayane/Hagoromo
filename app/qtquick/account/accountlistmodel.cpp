@@ -56,21 +56,12 @@ AccountListModel::AccountListModel(QObject *parent) : QAbstractListModel { paren
     AccountManager *manager = AccountManager::getInstance();
 
     connect(manager, &AccountManager::errorOccured, this, &AccountListModel::errorOccured);
-    connect(manager, &AccountManager::updatedSession, this, &AccountListModel::updatedSession);
     connect(manager, &AccountManager::updatedAccount, this, &AccountListModel::updatedAccount);
     connect(manager, &AccountManager::countChanged, this, &AccountListModel::countChanged);
     connect(manager, &AccountManager::finished, this, &AccountListModel::finished);
     connect(manager, &AccountManager::allAccountsReadyChanged, this,
             &AccountListModel::allAccountsReadyChanged);
 
-    // 各カラムがアカウント情報をAccountManagerから取得するようになれば↓の2つをQMLへ投げる必要はなくなる
-    // dataChangedは必要
-    connect(this, &AccountListModel::updatedSession, this, [=](const QString &uuid) {
-        int row = manager->indexAt(uuid);
-        if (row >= 0) {
-            emit dataChanged(index(row), index(row));
-        }
-    });
     connect(this, &AccountListModel::updatedAccount, this, [=](const QString &uuid) {
         int row = manager->indexAt(uuid);
         if (row >= 0) {
@@ -84,7 +75,6 @@ AccountListModel::~AccountListModel()
     AccountManager *manager = AccountManager::getInstance();
 
     disconnect(manager, &AccountManager::errorOccured, this, &AccountListModel::errorOccured);
-    disconnect(manager, &AccountManager::updatedSession, this, &AccountListModel::updatedSession);
     disconnect(manager, &AccountManager::updatedAccount, this, &AccountListModel::updatedAccount);
     disconnect(manager, &AccountManager::countChanged, this, &AccountListModel::countChanged);
     disconnect(manager, &AccountManager::finished, this, &AccountListModel::finished);
