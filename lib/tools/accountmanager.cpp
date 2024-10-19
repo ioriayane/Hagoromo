@@ -424,12 +424,13 @@ AccountData AccountManager::getAccount(const QString &uuid) const
     return dList.at(dIndex.value(uuid))->getAccount();
 }
 
-void AccountManager::updateAccount(const QString &uuid, const QString &service,
-                                   const QString &identifier, const QString &password,
-                                   const QString &did, const QString &handle, const QString &email,
-                                   const QString &accessJwt, const QString &refreshJwt,
-                                   const bool authorized)
+QString AccountManager::updateAccount(const QString &uuid, const QString &service,
+                                      const QString &identifier, const QString &password,
+                                      const QString &did, const QString &handle,
+                                      const QString &email, const QString &accessJwt,
+                                      const QString &refreshJwt, const bool authorized)
 {
+    QString ret;
     if (!uuid.isEmpty() && dIndex.contains(uuid)) {
         AccountData account = dList.at(dIndex[uuid])->getAccount();
         dList.at(dIndex[uuid])
@@ -437,6 +438,7 @@ void AccountManager::updateAccount(const QString &uuid, const QString &service,
                                 accessJwt, refreshJwt, account.thread_gate_type,
                                 authorized ? AccountStatus::Authorized
                                            : AccountStatus::Unauthorized);
+        ret = uuid;
     } else {
         // append
         QString new_uuid = QUuid::createUuid().toString(QUuid::WithoutBraces);
@@ -446,10 +448,12 @@ void AccountManager::updateAccount(const QString &uuid, const QString &service,
                 new_uuid, service, identifier, password, did, handle, email, accessJwt, refreshJwt,
                 "everybody", authorized ? AccountStatus::Authorized : AccountStatus::Unauthorized);
 
+        ret = new_uuid;
         emit countChanged();
     }
     save();
     checkAllAccountsReady();
+    return ret;
 }
 
 void AccountManager::removeAccount(const QString &uuid)

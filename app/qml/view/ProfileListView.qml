@@ -47,9 +47,7 @@ ScrollView {
                             }
                         }
             function reflectAccount() {
-                recordOperator.setAccount(rootListView.model.service, rootListView.model.did,
-                                          rootListView.model.handle, rootListView.model.email,
-                                          rootListView.model.accessJwt, rootListView.model.refreshJwt)
+                recordOperator.setAccount(rootListView.model.uuid)
             }
         }
 

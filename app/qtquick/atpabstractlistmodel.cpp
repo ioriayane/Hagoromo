@@ -4,6 +4,7 @@
 #include "atprotocol/lexicons_func_unknown.h"
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
 #include "extension/com/atproto/repo/comatprotorepoputrecordex.h"
+#include "tools/accountmanager.h"
 #include "tools/labelerprovider.h"
 #include "common.h"
 #include "operation/translator.h"
@@ -64,19 +65,12 @@ void AtpAbstractListModel::clear()
 
 AtProtocolInterface::AccountData AtpAbstractListModel::account() const
 {
-    return m_account;
+    return AccountManager::getInstance()->getAccount(m_account.uuid);
 }
 
-void AtpAbstractListModel::setAccount(const QString &service, const QString &did,
-                                      const QString &handle, const QString &email,
-                                      const QString &accessJwt, const QString &refreshJwt)
+void AtpAbstractListModel::setAccount(const QString &uuid)
 {
-    m_account.service = service;
-    m_account.did = did;
-    m_account.handle = handle;
-    m_account.email = email;
-    m_account.accessJwt = accessJwt;
-    m_account.refreshJwt = refreshJwt;
+    m_account.uuid = uuid;
 }
 
 QString AtpAbstractListModel::getTranslation(const QString &cid) const
@@ -1240,6 +1234,11 @@ void AtpAbstractListModel::setLoadingInterval(int newLoadingInterval)
     m_loadingInterval = newLoadingInterval;
     m_timer.setInterval(m_loadingInterval);
     emit loadingIntervalChanged();
+}
+
+QString AtpAbstractListModel::uuid() const
+{
+    return account().uuid;
 }
 
 QString AtpAbstractListModel::service() const

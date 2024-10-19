@@ -36,10 +36,10 @@ Item {
         function rowCount() {
             return rootListView.model.rowCount()
         }
-        function setAccount(service, did, handle, email, accessJwt, refreshJwt) {
-            accountDid = did
-            searchProfileListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
-            rootListView.model.setAccount(service, did, handle, email, accessJwt, refreshJwt)
+        function setAccount(uuid) {
+            searchProfileListModel.setAccount(uuid)
+            rootListView.model.setAccount(uuid)
+            accountDid = rootListView.model.did
         }
         function getLatest() {
             rootListView.model.getLatest()

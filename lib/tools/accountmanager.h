@@ -49,10 +49,10 @@ public:
     void update(int row, AccountManager::AccountManagerRoles role, const QVariant &value);
 
     AtProtocolInterface::AccountData getAccount(const QString &uuid) const;
-    void updateAccount(const QString &uuid, const QString &service, const QString &identifier,
-                       const QString &password, const QString &did, const QString &handle,
-                       const QString &email, const QString &accessJwt, const QString &refreshJwt,
-                       const bool authorized);
+    QString updateAccount(const QString &uuid, const QString &service, const QString &identifier,
+                          const QString &password, const QString &did, const QString &handle,
+                          const QString &email, const QString &accessJwt, const QString &refreshJwt,
+                          const bool authorized);
     void removeAccount(const QString &uuid);
     void updateAccountProfile(const QString &uuid);
     int getMainAccountIndex() const;

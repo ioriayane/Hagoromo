@@ -26,11 +26,10 @@ Dialog {
     signal errorOccured(string account_uuid, string code, string message)
 
     onOpened: {
-        if(account.service.length === 0){
+        if(account.uuid.length === 0){
             return
         }
-        listBlocksListModel.setAccount(account.service, account.did, account.handle,
-                                       account.email, account.accessJwt, account.refreshJwt)
+        listBlocksListModel.setAccount(account.uuid)
         listBlocksListModel.getLatest()
 
         listScrollView.currentIndex = -1

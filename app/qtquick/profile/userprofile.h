@@ -62,9 +62,7 @@ public:
     explicit UserProfile(QObject *parent = nullptr);
     ~UserProfile();
 
-    Q_INVOKABLE void setAccount(const QString &service, const QString &did, const QString &handle,
-                                const QString &email, const QString &accessJwt,
-                                const QString &refreshJwt);
+    Q_INVOKABLE void setAccount(const QString &uuid);
     Q_INVOKABLE void getProfile(const QString &did);
 
     bool running() const;

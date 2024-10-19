@@ -2,6 +2,7 @@
 #include "extension/directory/plc/directoryplc.h"
 #include "atprotocol/chat/bsky/convo/chatbskyconvoupdateread.h"
 #include "tools/labelerprovider.h"
+#include "tools/accountmanager.h"
 
 using AtProtocolInterface::ChatBskyConvoUpdateRead;
 using AtProtocolInterface::DirectoryPlc;
@@ -19,19 +20,12 @@ void AtpChatAbstractListModel::clear()
 
 AtProtocolInterface::AccountData AtpChatAbstractListModel::account() const
 {
-    return m_account;
+    return AccountManager::getInstance()->getAccount(m_account.uuid);
 }
 
-void AtpChatAbstractListModel::setAccount(const QString &service, const QString &did,
-                                          const QString &handle, const QString &email,
-                                          const QString &accessJwt, const QString &refreshJwt)
+void AtpChatAbstractListModel::setAccount(const QString &uuid)
 {
-    m_account.service = service;
-    m_account.did = did;
-    m_account.handle = handle;
-    m_account.email = email;
-    m_account.accessJwt = accessJwt;
-    m_account.refreshJwt = refreshJwt;
+    m_account.uuid = uuid;
 }
 
 void AtpChatAbstractListModel::setServiceEndpoint(const QString &service_endpoint)

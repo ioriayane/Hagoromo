@@ -3,9 +3,9 @@
 #include <QJsonDocument>
 
 #include "webserver.h"
-
 #include "timeline/searchpostlistmodel.h"
 #include "profile/searchprofilelistmodel.h"
+#include "tools/accountmanager.h"
 
 class search_test : public QObject
 {
@@ -47,8 +47,12 @@ void search_test::cleanupTestCase() { }
 
 void search_test::test_SearchPostListModel()
 {
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service, "id", "pass", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", "handle",
+            "email", "accessJwt", "refreshJwt", true);
+
     SearchPostListModel model;
-    model.setAccount(m_service, QString(), QString(), QString(), "dummy", QString());
+    model.setAccount(uuid);
     model.setText("epub");
 
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
@@ -61,8 +65,12 @@ void search_test::test_SearchPostListModel()
 
 void search_test::test_SearchProfileListModel()
 {
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service, "id", "pass", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", "handle",
+            "email", "accessJwt", "refreshJwt", true);
+
     SearchProfileListModel model;
-    model.setAccount(m_service, QString(), QString(), QString(), "dummy", QString());
+    model.setAccount(uuid);
     model.setText("epub");
 
     QSignalSpy spy(&model, SIGNAL(runningChanged()));

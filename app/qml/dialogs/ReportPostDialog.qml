@@ -165,8 +165,7 @@ Dialog {
                 font.pointSize: AdjustedValues.f10
                 text: qsTr("Send report")
                 onClicked: {
-                    reporter.setAccount(account.service, account.did, account.handle,
-                                        account.email, account.accessJwt, account.refreshJwt)
+                    reporter.setAccount(account.uuid)
                     reporter.reportPost(targetUri, targetCid, reportTextArea.text,
                                         [labelerDidComboBox.currentValue],
                                         reportTypeButtonGroup.checkedButton.reason)

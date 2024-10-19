@@ -22,9 +22,7 @@ public:
     Q_INVOKABLE void clear();
 
     AtProtocolInterface::AccountData account() const;
-    Q_INVOKABLE void setAccount(const QString &service, const QString &did, const QString &handle,
-                                const QString &email, const QString &accessJwt,
-                                const QString &refreshJwt);
+    Q_INVOKABLE void setAccount(const QString &uuid);
     void setServiceEndpoint(const QString &service_endpoint);
 
     virtual Q_INVOKABLE bool getLatest() = 0;

@@ -185,8 +185,7 @@ bool ListsListModel::addRemoveFromList(const int row, const QString &did)
                 setRunning(false);
                 ope->deleteLater();
             });
-    ope->setAccount(account().service, account().did, account().handle, account().email,
-                    account().accessJwt, account().refreshJwt);
+    ope->setAccount(account().uuid);
     if (status == SearchStatusTypeContains) {
         // delete
         // uriのレコードを消す（リストに登録しているユーザーの情報）
@@ -264,8 +263,7 @@ void ListsListModel::block(const int row)
                 }
                 ope->deleteLater();
             });
-    ope->setAccount(account().service, account().did, account().handle, account().email,
-                    account().accessJwt, account().refreshJwt);
+    ope->setAccount(account().uuid);
     if (blocked.toBool()) {
         // -> unblock
         ope->deleteBlockList(item(row, ListsListModel::BlockedUriRole).toString());

@@ -33,7 +33,7 @@ void ListLink::getList(const QString &uri)
             setRunning(false);
             list->deleteLater();
         });
-        list->setAccount(m_account);
+        list->setAccount(account());
         list->getList(at_uri, 0, QString());
     });
 }

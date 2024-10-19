@@ -1,6 +1,5 @@
 #include "logfeedlistmodel.h"
 #include "log/logmanager.h"
-#include "atprotocol/lexicons.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -16,7 +15,7 @@ LogFeedListModel::LogFeedListModel(QObject *parent)
 
 bool LogFeedListModel::getLatest()
 {
-    if (running() || did().isEmpty() || selectCondition().isEmpty()) {
+    if (running() || targetDid().isEmpty() || selectCondition().isEmpty()) {
         emit finished(false);
         return false;
     }
@@ -61,15 +60,15 @@ bool LogFeedListModel::getLatest()
         manager->deleteLater();
     });
     manager->setAccount(account());
-    emit manager->selectRecords(did(), static_cast<int>(feedType()), selectCondition(), QString(),
-                                0);
+    emit manager->selectRecords(targetDid(), static_cast<int>(feedType()), selectCondition(),
+                                QString(), 0);
 
     return true;
 }
 
 bool LogFeedListModel::getNext()
 {
-    if (running() || did().isEmpty() || selectCondition().isEmpty()) {
+    if (running() || targetDid().isEmpty() || selectCondition().isEmpty()) {
         emit finished(false);
         return false;
     }
@@ -92,8 +91,8 @@ bool LogFeedListModel::getNext()
         manager->deleteLater();
     });
     manager->setAccount(account());
-    emit manager->selectRecords(did(), static_cast<int>(feedType()), selectCondition(), m_cursor,
-                                0);
+    emit manager->selectRecords(targetDid(), static_cast<int>(feedType()), selectCondition(),
+                                m_cursor, 0);
 
     return true;
 }
@@ -132,27 +131,27 @@ void LogFeedListModel::setFeedType(LogFeedListModelFeedType newFeedType)
 
 QString LogFeedListModel::targetDid() const
 {
-    return account().did;
+    return m_targetDid;
 }
 
 void LogFeedListModel::setTargetDid(const QString &newTargetDid)
 {
-    if (account().did == newTargetDid)
+    if (m_targetDid == newTargetDid)
         return;
-    setAccount(service(), newTargetDid, handle(), email(), accessJwt(), refreshJwt());
+    m_targetDid = newTargetDid;
     emit targetDidChanged();
 }
 
 QString LogFeedListModel::targetHandle() const
 {
-    return account().handle;
+    return m_targetHandle;
 }
 
 void LogFeedListModel::setTargetHandle(const QString &newTargetHandle)
 {
-    if (account().handle == newTargetHandle)
+    if (m_targetHandle == newTargetHandle)
         return;
-    setAccount(service(), did(), newTargetHandle, email(), accessJwt(), refreshJwt());
+    m_targetHandle = newTargetHandle;
     emit targetHandleChanged();
 }
 

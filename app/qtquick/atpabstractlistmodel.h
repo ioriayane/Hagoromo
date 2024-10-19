@@ -52,6 +52,7 @@ class AtpAbstractListModel : public QAbstractListModel
     Q_PROPERTY(bool displayPinnedPost READ displayPinnedPost WRITE setDisplayPinnedPost NOTIFY
                        displayPinnedPostChanged)
 
+    Q_PROPERTY(QString uuid READ uuid NOTIFY uuidChanged CONSTANT)
     Q_PROPERTY(QString service READ service CONSTANT)
     Q_PROPERTY(QString did READ did CONSTANT)
     Q_PROPERTY(QString handle READ handle CONSTANT)
@@ -133,9 +134,7 @@ public:
     Q_INVOKABLE void clear();
 
     AtProtocolInterface::AccountData account() const;
-    Q_INVOKABLE void setAccount(const QString &service, const QString &did, const QString &handle,
-                                const QString &email, const QString &accessJwt,
-                                const QString &refreshJwt);
+    Q_INVOKABLE void setAccount(const QString &uuid);
     virtual Q_INVOKABLE int indexOf(const QString &cid) const = 0;
     virtual Q_INVOKABLE QString getRecordText(const QString &cid) = 0;
     virtual Q_INVOKABLE QString getOfficialUrl() const = 0;
@@ -160,6 +159,7 @@ public:
     bool displayPinnedPost() const;
     void setDisplayPinnedPost(bool newDisplayPinnedPost);
 
+    QString uuid() const;
     QString service() const;
     QString did() const;
     QString handle() const;
@@ -179,6 +179,8 @@ signals:
     void visibleContainingMutedWordChanged();
     void pinnedPostChanged();
     void displayPinnedPostChanged();
+
+    void uuidChanged();
 
 public slots:
     virtual Q_INVOKABLE bool getLatest() = 0;

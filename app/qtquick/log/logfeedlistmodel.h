@@ -55,6 +55,8 @@ protected:
 private:
     QString m_selectCondition;
     LogFeedListModelFeedType m_feedType;
+    QString m_targetDid;
+    QString m_targetHandle;
     QString m_targetAvatar;
 };
 

@@ -307,12 +307,7 @@ ApplicationWindow {
         property string updateSequence: "" // threadgate, postgate
         onOpened: {
             selectThreadGateDialog.ready = false
-            postDialog.recordOperator.setAccount(selectThreadGateDialog.account.service,
-                                                 selectThreadGateDialog.account.did,
-                                                 selectThreadGateDialog.account.handle,
-                                                 selectThreadGateDialog.account.email,
-                                                 selectThreadGateDialog.account.accessJwt,
-                                                 selectThreadGateDialog.account.refreshJwt)
+            postDialog.recordOperator.setAccount(selectThreadGateDialog.account.uuid)
             postDialog.recordOperator.clear()
             postDialog.recordOperator.requestPostGate(postUri)
         }
@@ -347,12 +342,7 @@ ApplicationWindow {
                 updateSequence = "threadgate"
             }
 
-            postDialog.recordOperator.setAccount(selectThreadGateDialog.account.service,
-                                                 selectThreadGateDialog.account.did,
-                                                 selectThreadGateDialog.account.handle,
-                                                 selectThreadGateDialog.account.email,
-                                                 selectThreadGateDialog.account.accessJwt,
-                                                 selectThreadGateDialog.account.refreshJwt)
+            postDialog.recordOperator.setAccount(selectThreadGateDialog.account.uuid)
             postDialog.recordOperator.clear()
             if(updateSequence === "threadgate"){
                 console.log("Update threadgate")
@@ -538,13 +528,7 @@ ApplicationWindow {
                 currentAccountIndex -= 1
                 load(true)
             }else{
-                setAccount(accountListModel.item(currentAccountIndex, AccountListModel.ServiceRole),
-                           accountListModel.item(currentAccountIndex, AccountListModel.DidRole),
-                           handle,
-                           "email",
-                           accessJwt,
-                           accountListModel.item(currentAccountIndex, AccountListModel.RefreshJwtRole)
-                           )
+                setAccount(accountListModel.item(currentAccountIndex, AccountListModel.UuidRole))
                 actor = did
                 searchTarget = "#cache"
                 if(listsListModel.getLatest()){

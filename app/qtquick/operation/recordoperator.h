@@ -29,9 +29,8 @@ public:
     };
     Q_ENUM(ListPurpose);
 
-    Q_INVOKABLE void setAccount(const QString &service, const QString &did, const QString &handle,
-                                const QString &email, const QString &accessJwt,
-                                const QString &refreshJwt);
+    AtProtocolInterface::AccountData account();
+    Q_INVOKABLE void setAccount(const QString &uuid);
     Q_INVOKABLE void setText(const QString &text);
     Q_INVOKABLE void setReply(const QString &parent_cid, const QString &parent_uri,
                               const QString &root_cid, const QString &root_uri);
