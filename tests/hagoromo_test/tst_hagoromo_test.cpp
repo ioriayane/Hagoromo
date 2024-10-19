@@ -2743,8 +2743,9 @@ void hagoromo_test::test_NotificationListModel_warn()
 void hagoromo_test::test_TimelineListModel_next()
 {
     QString uuid = AccountManager::getInstance()->updateAccount(
-            QString(), m_service + "/timeline/next", "id", "pass", "did:plc:test",
-            "ioriayane.bsky.social", "email", "accessJwt", "refreshJwt", true);
+            QString(), m_service + "/timeline/next", "id", "pass",
+            "did:plc:ipj5qejfoqu6eukvt72uhyit", "ioriayane.bsky.social", "email", "accessJwt",
+            "refreshJwt", true);
 
     int row = 0;
     TimelineListModel model;
@@ -3209,19 +3210,19 @@ void hagoromo_test::test_SearchPostListModel_text()
     SearchPostListModel model;
     model.setAccount(uuid);
 
-    QVERIFY2(model.replaceSearchCommand("from:me") == "from:hogehoge.bsky.sockal",
+    QVERIFY2(model.replaceSearchCommand("from:me") == "from:hogehoge.bsky.social",
              model.text().toLocal8Bit());
 
     QVERIFY2(model.replaceSearchCommand("fuga  from:me hoge")
-                     == "fuga  from:hogehoge.bsky.sockal hoge",
+                     == "fuga  from:hogehoge.bsky.social hoge",
              model.text().toLocal8Bit());
 
     QVERIFY2(model.replaceSearchCommand("fuga\tfrom:me\thoge")
-                     == "fuga from:hogehoge.bsky.sockal hoge",
+                     == "fuga from:hogehoge.bsky.social hoge",
              model.text().toLocal8Bit());
 
     QVERIFY2(model.replaceSearchCommand(QString("fuga%1from:me%1hoge").arg(QChar(0x3000)))
-                     == "fuga from:hogehoge.bsky.sockal hoge",
+                     == "fuga from:hogehoge.bsky.social hoge",
              model.text().toLocal8Bit());
 }
 
