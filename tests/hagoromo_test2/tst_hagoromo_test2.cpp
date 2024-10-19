@@ -285,6 +285,8 @@ void hagoromo_test::test_FeedGeneratorLink()
 
 void hagoromo_test::test_AccountListModel()
 {
+    AccountManager::getInstance()->clear();
+
     QString temp_path = Common::appDataFolder() + "/account.json";
     if (QFile::exists(temp_path)) {
         QFile::remove(temp_path);
@@ -391,6 +393,8 @@ void hagoromo_test::test_AccountListModel()
     QVERIFY2(model.item(0, AccountListModel::PostGateQuoteEnabledRole).toBool() == true,
              QString::number(model.item(0, AccountListModel::PostGateQuoteEnabledRole).toBool())
                      .toLocal8Bit());
+
+    // TODO: account: service_endpointの保存
 }
 
 void hagoromo_test::test_AccountManager()
@@ -404,6 +408,7 @@ void hagoromo_test::test_AccountManager()
     AccountManager *manager = AccountManager::getInstance();
     AtProtocolInterface::AccountData account;
 
+    manager->clear();
     manager->updateAccount(QString(), m_service + "/account/account1", "id1", "password1",
                            "did:plc:account1", "account1.relog.tech", "account1@relog.tech",
                            "accessJwt_account1", "refreshJwt_account1", false);
