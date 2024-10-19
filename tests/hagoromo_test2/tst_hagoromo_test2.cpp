@@ -456,20 +456,17 @@ void hagoromo_test::test_AccountManager()
     QVERIFY(manager->getUuids().isEmpty());
 
     {
-        QSignalSpy spy(manager, SIGNAL(updatedAccount(const QString &)));
+        QSignalSpy spy(manager, SIGNAL(finished()));
         manager->load();
         spy.wait(10 * 1000);
-        spy.wait(10 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
 
-    account = manager->getAccount(uuids.at(0));
-    QVERIFY(account.service == m_service + "/account/account1");
-    QVERIFY(account.service_endpoint == "http://localhost:%1/response/account/account1");
-    QVERIFY(account.did == "did:plc:account1_refresh");
+    uuids = manager->getUuids();
+    QVERIFY(manager->count() == 1);
 
-    account = manager->getAccount(uuids.at(1));
-    QVERIFY(account.service == m_service + "/account/account2");
+    account = manager->getAccount(uuids.at(0));
+    QVERIFY2(account.service == m_service + "/account/account2", account.service.toLocal8Bit());
     QVERIFY(account.service_endpoint == "http://localhost:%1/response/account/account2");
     QVERIFY(account.did == "did:plc:account2_refresh");
 }
