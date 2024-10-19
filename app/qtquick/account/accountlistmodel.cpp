@@ -64,7 +64,7 @@ AccountListModel::AccountListModel(QObject *parent) : QAbstractListModel { paren
 
     connect(this, &AccountListModel::updatedAccount, this, [=](const QString &uuid) {
         int row = manager->indexAt(uuid);
-        if (row >= 0) {
+        if (row < 0 || row >= count()) {
             emit dataChanged(index(row), index(row));
         }
     });
@@ -150,6 +150,9 @@ QVariant AccountListModel::item(int row, AccountListModelRoles role) const
 
 void AccountListModel::update(int row, AccountListModelRoles role, const QVariant &value)
 {
+    if (row < 0 || row >= count())
+        return;
+
     AccountManager::getInstance()->update(
             row, m_roleTo.value(role, AccountManager::AccountManagerRoles::UnknownRole), value);
 
@@ -188,9 +191,10 @@ void AccountListModel::updateAccount(const QString &service, const QString &iden
 
 void AccountListModel::removeAccount(int row)
 {
-    AccountManager *manager = AccountManager::getInstance();
-    if (row < 0 || row >= manager->count())
+    if (row < 0 || row >= count())
         return;
+
+    AccountManager *manager = AccountManager::getInstance();
 
     beginRemoveRows(QModelIndex(), row, row);
     manager->removeAccount(manager->getUuid(row));
@@ -220,15 +224,17 @@ int AccountListModel::getMainAccountIndex() const
 
 void AccountListModel::setMainAccount(int row)
 {
-    AccountManager::getInstance()->setMainAccount(row);
+    if (row < 0 || row >= count())
+        return;
 
+    AccountManager::getInstance()->setMainAccount(row);
     emit dataChanged(index(0), index(AccountManager::getInstance()->count() - 1));
 }
 
 void AccountListModel::refreshAccountSession(const QString &uuid)
 {
     int row = indexAt(uuid);
-    if (row < 0)
+    if (row < 0 || row >= count())
         return;
     refreshSession(row);
 }
@@ -236,7 +242,7 @@ void AccountListModel::refreshAccountSession(const QString &uuid)
 void AccountListModel::refreshAccountProfile(const QString &uuid)
 {
     int row = indexAt(uuid);
-    if (row < 0)
+    if (row < 0 || row >= count())
         return;
     getProfile(row);
 }
@@ -251,14 +257,16 @@ void AccountListModel::load()
     AccountManager *manager = AccountManager::getInstance();
 
     if (manager->count() > 0) {
-        beginRemoveRows(QModelIndex(), 0, count() - 1);
+        beginRemoveRows(QModelIndex(), 0, manager->count() - 1);
         manager->clear();
         endRemoveRows();
     }
 
     manager->load();
-    beginInsertRows(QModelIndex(), 0, manager->count() - 1);
-    endInsertRows();
+    if (manager->count() > 0) {
+        beginInsertRows(QModelIndex(), 0, manager->count() - 1);
+        endInsertRows();
+    }
 }
 
 QVariant AccountListModel::account(int row) const
