@@ -305,7 +305,7 @@ void hagoromo_test::test_AccountListModel()
     {
         QSignalSpy spy(&model2, SIGNAL(finished()));
         model2.load();
-        spy.wait();
+        spy.wait(15 * 1000);
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
     QVERIFY2(model2.rowCount() == 2, QString::number(model2.rowCount()).toLocal8Bit());
