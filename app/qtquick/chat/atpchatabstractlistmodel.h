@@ -23,7 +23,6 @@ public:
 
     AtProtocolInterface::AccountData account() const;
     Q_INVOKABLE void setAccount(const QString &uuid);
-    void setServiceEndpoint(const QString &service_endpoint);
 
     virtual Q_INVOKABLE bool getLatest() = 0;
     virtual Q_INVOKABLE bool getNext() = 0;

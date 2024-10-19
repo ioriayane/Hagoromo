@@ -28,11 +28,6 @@ void AtpChatAbstractListModel::setAccount(const QString &uuid)
     m_account.uuid = uuid;
 }
 
-void AtpChatAbstractListModel::setServiceEndpoint(const QString &service_endpoint)
-{
-    m_account.service_endpoint = service_endpoint;
-}
-
 void AtpChatAbstractListModel::updateRead(const QString &convoId, const QString &messageId)
 {
     if (convoId.isEmpty())
@@ -68,7 +63,7 @@ void AtpChatAbstractListModel::setRunning(bool newRunning)
 
 void AtpChatAbstractListModel::getServiceEndpoint(std::function<void()> callback)
 {
-    if (!m_account.service_endpoint.isEmpty()) {
+    if (!account().service_endpoint.isEmpty()) {
         callback();
         return;
     }
@@ -77,22 +72,22 @@ void AtpChatAbstractListModel::getServiceEndpoint(std::function<void()> callback
         return;
     }
     if (!account().service.startsWith("https://bsky.social")) {
-        m_account.service_endpoint = m_account.service;
-        qDebug().noquote() << "Update service endpoint(chat)" << m_account.service << "->"
-                           << m_account.service_endpoint;
+        account().service_endpoint = account().service;
+        qDebug().noquote() << "Update service endpoint(chat)" << account().service << "->"
+                           << account().service_endpoint;
         callback();
         return;
     }
 
     DirectoryPlc *plc = new DirectoryPlc(this);
     connect(plc, &DirectoryPlc::finished, this, [=](bool success) {
+        QString service_endpoint = account().service;
         if (success && !plc->serviceEndpoint().isEmpty()) {
-            m_account.service_endpoint = plc->serviceEndpoint();
-        } else {
-            m_account.service_endpoint = m_account.service;
+            service_endpoint = plc->serviceEndpoint();
         }
-        qDebug().noquote() << "Update service endpoint(chat)" << m_account.service << "->"
-                           << m_account.service_endpoint;
+        AccountManager::getInstance()->updateServiceEndpoint(account().uuid, service_endpoint);
+        qDebug().noquote() << "Update service endpoint(chat)" << account().service << "->"
+                           << account().service_endpoint;
         callback();
         plc->deleteLater();
     });

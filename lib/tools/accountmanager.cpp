@@ -483,6 +483,12 @@ void AccountManager::updateAccountProfile(const QString &uuid)
     dList.at(dIndex.value(uuid))->getProfile();
 }
 
+void AccountManager::updateServiceEndpoint(const QString &uuid, const QString &service_endpoint)
+{
+    update(indexAt(uuid), AccountManager::AccountManagerRoles::ServiceEndpointRole,
+           service_endpoint);
+}
+
 int AccountManager::getMainAccountIndex() const
 {
     if (dList.isEmpty())

@@ -80,8 +80,8 @@ void chat_test::test_ChatListModel()
     QString uuid = AccountManager::getInstance()->updateAccount(
             QString(), m_service + "/list", "id", "pass", "did:plc:ipj5qejfoqu6eukvt72uhyit",
             "handle", "email", "accessJwt", "refreshJwt", true);
+    AccountManager::getInstance()->updateServiceEndpoint(uuid, m_service + "/list");
     model.setAccount(uuid);
-    model.setServiceEndpoint(m_service + "/list");
 
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
@@ -143,8 +143,8 @@ void chat_test::test_ChatMessageListModel()
     QString uuid = AccountManager::getInstance()->updateAccount(
             QString(), m_service + "/message/1", "id", "pass", "did:plc:ipj5qejfoqu6eukvt72uhyit",
             "handle", "email", "accessJwt", "refreshJwt", true);
+    AccountManager::getInstance()->updateServiceEndpoint(uuid, m_service + "/message/1");
     model.setAccount(uuid);
-    model.setServiceEndpoint(m_service + "/message/1");
 
     model.setConvoId("3ksrqt7eebs2b");
     model.setAutoLoading(false);
@@ -270,8 +270,8 @@ void chat_test::test_ChatMessageListModelByMembers()
     QString uuid = AccountManager::getInstance()->updateAccount(
             QString(), m_service + "/message/2", "id", "pass", "did:plc:ipj5qejfoqu6eukvt72uhyit",
             "handle", "email", "accessJwt", "refreshJwt", true);
+    AccountManager::getInstance()->updateServiceEndpoint(uuid, m_service + "/message/2");
     model.setAccount(uuid);
-    model.setServiceEndpoint(m_service + "/message/2");
 
     model.setMemberDids(QStringList() << "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
 

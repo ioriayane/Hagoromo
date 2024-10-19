@@ -55,6 +55,7 @@ public:
                           const bool authorized);
     void removeAccount(const QString &uuid);
     void updateAccountProfile(const QString &uuid);
+    void updateServiceEndpoint(const QString &uuid, const QString &service_endpoint);
     int getMainAccountIndex() const;
     void setMainAccount(int row);
     bool checkAllAccountsReady();
