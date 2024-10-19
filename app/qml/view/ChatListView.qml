@@ -39,7 +39,7 @@ Item {
         function setAccount(uuid) {
             searchProfileListModel.setAccount(uuid)
             rootListView.model.setAccount(uuid)
-            accountDid = rootListView.model.did
+            accountDid = searchProfileListModel.did
         }
         function getLatest() {
             rootListView.model.getLatest()
