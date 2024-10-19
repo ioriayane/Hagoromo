@@ -64,7 +64,8 @@ AccountListModel::AccountListModel(QObject *parent) : QAbstractListModel { paren
 
     connect(this, &AccountListModel::updatedAccount, this, [=](const QString &uuid) {
         int row = manager->indexAt(uuid);
-        if (row < 0 || row >= count()) {
+        qDebug().noquote() << "AccountListModel::updatedAccount:" << uuid << row;
+        if (row >= 0 && row < count()) {
             emit dataChanged(index(row), index(row));
         }
     });
