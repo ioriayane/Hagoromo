@@ -464,7 +464,10 @@ ApplicationWindow {
                           }
         onFinished: {
             console.log("onFinished:" + allAccountsReady + ", count=" + columnManageModel.rowCount())
-            if(rowCount() === 0){
+            globalProgressFrame.text = ""
+            if(accountDialog.visible === true){
+                // ダイアログが開いているときはアカウント追加のたびに呼ばれるので何もしない
+            }else if(rowCount() === 0){
                 accountDialog.open()
             }else if(columnManageModel.rowCount() === 0){
                 if(allAccountsReady){
@@ -1070,7 +1073,7 @@ ApplicationWindow {
             BusyIndicator {
                 Layout.preferredWidth: AdjustedValues.i24
                 Layout.preferredHeight: AdjustedValues.i24
-                running: globalProgressFrame.visible
+                // running: globalProgressFrame.visible
             }
             Label {
                 font.pointSize: AdjustedValues.f10
@@ -1086,7 +1089,7 @@ ApplicationWindow {
     }
 
     Component.onCompleted: {
-        if(accountListModel.count > 0){
+        if(accountListModel.count === 0){
             globalProgressFrame.text = qsTr("Loading account(s) ...")
         }
         accountListModel.load()
