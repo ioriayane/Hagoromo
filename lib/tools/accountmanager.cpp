@@ -485,6 +485,7 @@ void AccountManager::removeAccount(const QString &uuid)
         dIndex[dList.at(i)->getAccount().uuid] = i;
     }
 
+    save();
     emit countChanged();
     checkAllAccountsReady();
 }
