@@ -47,6 +47,7 @@ void LabelerListModel::load()
 
     AtProtocolInterface::AccountData account;
 
+    // TODO: account: 替えなくてもOK?
     account.service = service();
     account.handle = handle();
     account.accessJwt = accessJwt();

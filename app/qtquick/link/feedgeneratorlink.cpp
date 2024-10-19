@@ -2,6 +2,7 @@
 #include "atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerator.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofile.h"
 #include "atprotocol/lexicons_func_unknown.h"
+#include "tools/accountmanager.h"
 
 using AtProtocolInterface::AppBskyActorGetProfile;
 using AtProtocolInterface::AppBskyFeedGetFeedGenerator;
@@ -12,16 +13,14 @@ FeedGeneratorLink::FeedGeneratorLink(QObject *parent)
     m_rxHandle.setPattern(QString("^%1$").arg(REG_EXP_HANDLE));
 }
 
-void FeedGeneratorLink::setAccount(const QString &service, const QString &did,
-                                   const QString &handle, const QString &email,
-                                   const QString &accessJwt, const QString &refreshJwt)
+AtProtocolInterface::AccountData FeedGeneratorLink::account() const
 {
-    m_account.service = service;
-    m_account.did = did;
-    m_account.handle = handle;
-    m_account.email = email;
-    m_account.accessJwt = accessJwt;
-    m_account.refreshJwt = refreshJwt;
+    return AccountManager::getInstance()->getAccount(m_account.uuid);
+}
+
+void FeedGeneratorLink::setAccount(const QString &uuid)
+{
+    m_account.uuid = uuid;
 }
 
 bool FeedGeneratorLink::checkUri(const QString &uri, const QString &type) const
@@ -65,7 +64,7 @@ void FeedGeneratorLink::convertToAtUri(const QString &base_at_uri, const QString
             }
             profile->deleteLater();
         });
-        profile->setAccount(m_account);
+        profile->setAccount(account());
         profile->getProfile(user_id);
     } else {
         // did
@@ -100,7 +99,7 @@ void FeedGeneratorLink::getFeedGenerator(const QString &uri)
             setRunning(false);
             generator->deleteLater();
         });
-        generator->setAccount(m_account);
+        generator->setAccount(account());
         generator->getFeedGenerator(at_uri);
     });
 }

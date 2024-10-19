@@ -29,7 +29,7 @@ jobs:
       - name: Setup
         run: |
           qmake --version
-          cp app/qtquick/encryption_seed_template.h app/qtquick/encryption_seed.h
+          cp lib/tools/encryption_seed_template.h lib/tools/encryption_seed.h
           python -m pip install --upgrade pip jinja2
       - name: Check style
         uses: pre-commit/action@v3.0.1

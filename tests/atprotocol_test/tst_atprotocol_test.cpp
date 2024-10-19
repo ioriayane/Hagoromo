@@ -102,7 +102,7 @@ private:
 atprotocol_test::atprotocol_test()
 {
     QCoreApplication::setOrganizationName(QStringLiteral("relog"));
-    QCoreApplication::setApplicationName(QStringLiteral("Hagoromo"));
+    QCoreApplication::setApplicationName(QStringLiteral("Hagoromo_unittest"));
 
     m_listenPort = m_mockServer.listen(QHostAddress::LocalHost, 0);
     m_service = QString("http://localhost:%1/response").arg(m_listenPort);

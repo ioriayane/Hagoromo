@@ -19,6 +19,7 @@
 #include "moderation/contentfiltersettinglistmodel.h"
 #include "tools/labelerprovider.h"
 #include "controls/calendartablemodel.h"
+#include "tools/accountmanager.h"
 
 class hagoromo_test : public QObject
 {
@@ -77,7 +78,7 @@ private:
 hagoromo_test::hagoromo_test()
 {
     QCoreApplication::setOrganizationName(QStringLiteral("relog"));
-    QCoreApplication::setApplicationName(QStringLiteral("Hagoromo"));
+    QCoreApplication::setApplicationName(QStringLiteral("Hagoromo_unittest"));
 
     m_listenPort = m_mockServer.listen(QHostAddress::LocalHost, 0);
     m_service = QString("http://localhost:%1/response").arg(m_listenPort);
@@ -128,8 +129,12 @@ void hagoromo_test::test_test_TimelineListModelError()
 
 void hagoromo_test::test_TimelineListModelFacet()
 {
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/facet", "id", "pass", "did:plc:ipj5qejfoqu6eukvt72uhyit",
+            "handle", "email", "accessJwt", "refreshJwt", true);
+
     TimelineListModel model;
-    model.setAccount(m_service + "/facet", QString(), QString(), QString(), "dummy", QString());
+    model.setAccount(uuid);
     model.setDisplayInterval(0);
 
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
@@ -452,9 +457,12 @@ void hagoromo_test::test_ColumnListModelSelected()
 
 void hagoromo_test::test_NotificationListModel()
 {
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/notifications/visible", "id", "pass",
+            "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", "handle", "email", "accessJwt", "refreshJwt", true);
+
     NotificationListModel model;
-    model.setAccount(m_service + "/notifications/visible", QString(), QString(), QString(), "dummy",
-                     QString());
+    model.setAccount(uuid);
 
     {
         int i = 0;
@@ -751,9 +759,12 @@ void hagoromo_test::test_NotificationListModel()
 
 void hagoromo_test::test_NotificationListModel2()
 {
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/notifications/visible", "id", "pass",
+            "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", "handle", "email", "accessJwt", "refreshJwt", true);
+
     NotificationListModel model;
-    model.setAccount(m_service + "/notifications/visible", QString(), QString(), QString(), "dummy",
-                     QString());
+    model.setAccount(uuid);
 
     int i = 0;
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
@@ -976,10 +987,13 @@ void hagoromo_test::test_NotificationListModel2()
 
 void hagoromo_test::test_NotificationList_collecting()
 {
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/notifications/collecting/1", "id", "pass",
+            "did:plc:ipj5qejfoqu6eukvt72uhyit", "handle", "email", "accessJwt", "refreshJwt", true);
+
     int i = 0;
     NotificationListModel model;
-    model.setAccount(m_service + "/notifications/collecting/1", "did:plc:ipj5qejfoqu6eukvt72uhyit",
-                     QString(), QString(), "dummy", QString());
+    model.setAccount(uuid);
 
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
@@ -1032,9 +1046,12 @@ void hagoromo_test::test_NotificationList_collecting()
 
 void hagoromo_test::test_NotificationList_collecting_next()
 {
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/notifications/collecting/2", "id", "pass",
+            "did:plc:ipj5qejfoqu6eukvt72uhyit", "handle", "email", "accessJwt", "refreshJwt", true);
+
     NotificationListModel model;
-    model.setAccount(m_service + "/notifications/collecting/2", "did:plc:ipj5qejfoqu6eukvt72uhyit",
-                     QString(), QString(), "dummy", QString());
+    model.setAccount(uuid);
 
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
@@ -1146,9 +1163,11 @@ void hagoromo_test::test_NotificationList_collecting_next()
 
 void hagoromo_test::test_NotificationList_collecting_visibility()
 {
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/notifications/collecting/2", "id", "pass",
+            "did:plc:ipj5qejfoqu6eukvt72uhyit", "handle", "email", "accessJwt", "refreshJwt", true);
     NotificationListModel model;
-    model.setAccount(m_service + "/notifications/collecting/2", "did:plc:ipj5qejfoqu6eukvt72uhyit",
-                     QString(), QString(), "dummy", QString());
+    model.setAccount(uuid);
     model.setVisibleLike(false);
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
@@ -1263,10 +1282,12 @@ void hagoromo_test::test_NotificationList_collecting_visibility()
 
 void hagoromo_test::test_NotificationList_no_collecting()
 {
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/notifications/collecting/2", "id", "pass",
+            "did:plc:ipj5qejfoqu6eukvt72uhyit", "handle", "email", "accessJwt", "refreshJwt", true);
 
     NotificationListModel model;
-    model.setAccount(m_service + "/notifications/collecting/2", "did:plc:ipj5qejfoqu6eukvt72uhyit",
-                     QString(), QString(), "dummy", QString());
+    model.setAccount(uuid);
     model.setAggregateReactions(false);
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
@@ -1518,10 +1539,12 @@ void hagoromo_test::test_charCount()
 
 void hagoromo_test::test_TimelineListModel_quote_warn()
 {
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/timeline/warn", "id", "pass", "did:plc:test", "handle",
+            "email", "accessJwt", "refreshJwt", true);
     int row = 0;
     TimelineListModel model;
-    model.setAccount(m_service + "/timeline/warn", "did:plc:test", QString(), QString(), "dummy",
-                     QString());
+    model.setAccount(uuid);
     model.setDisplayInterval(0);
 
     LabelerProvider::getInstance()->clear();
@@ -1578,10 +1601,14 @@ void hagoromo_test::test_TimelineListModel_quote_warn()
 
 void hagoromo_test::test_TimelineListModel_quote_hide()
 {
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/timeline/hide", "id", "pass",
+            "did:plc:l4fsx4ujos7uw7n4ijq2ulgs", "ioriayane.bsky.social", "email", "accessJwt",
+            "refreshJwt", true);
+
     int row = 0;
     TimelineListModel model;
-    model.setAccount(m_service + "/timeline/hide", "did:plc:l4fsx4ujos7uw7n4ijq2ulgs",
-                     "ioriayane.bsky.social", QString(), "dummy", QString());
+    model.setAccount(uuid);
     model.setDisplayInterval(0);
 
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
@@ -1636,12 +1663,16 @@ void hagoromo_test::test_TimelineListModel_quote_hide()
 
 void hagoromo_test::test_TimelineListModel_quote_hide2()
 {
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/timeline/hide", "id", "pass",
+            "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", "ioriayane2.bsky.social", "email", "accessJwt",
+            "refreshJwt", true);
+
     // 自分のポストが引用されているのを見るイメージ
     // 自分のポストの引用はHide設定でも隠さない
     int row = 0;
     TimelineListModel model;
-    model.setAccount(m_service + "/timeline/hide", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
-                     "ioriayane2.bsky.social", QString(), "dummy", QString());
+    model.setAccount(uuid);
     model.setDisplayInterval(0);
 
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
@@ -1707,10 +1738,13 @@ void hagoromo_test::test_TimelineListModel_quote_hide2()
 
 void hagoromo_test::test_TimelineListModel_quote_label()
 {
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/timeline/labels", "id", "pass",
+            "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", "ioriayane2.bsky.social", "email", "accessJwt",
+            "refreshJwt", true);
     int row = 0;
     TimelineListModel model;
-    model.setAccount(m_service + "/timeline/labels", QString(), QString(), QString(), "dummy",
-                     QString());
+    model.setAccount(uuid);
     model.setDisplayInterval(0);
 
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
@@ -1759,10 +1793,14 @@ void hagoromo_test::test_TimelineListModel_quote_label()
 
 void hagoromo_test::test_TimelineListModel_animated_image()
 {
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/timeline/animated", "id", "pass",
+            "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", "ioriayane2.bsky.social", "email", "accessJwt",
+            "refreshJwt", true);
+
     int row = 0;
     TimelineListModel model;
-    model.setAccount(m_service + "/timeline/animated", QString(), QString(), QString(), "dummy",
-                     QString());
+    model.setAccount(uuid);
     model.setDisplayInterval(0);
 
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
@@ -1900,10 +1938,14 @@ void hagoromo_test::test_TimelineListModel_animated_image()
 
 void hagoromo_test::test_TimelineListModel_threadgate()
 {
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/timeline/threadgate", "id", "pass",
+            "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", "ioriayane2.bsky.social", "email", "accessJwt",
+            "refreshJwt", true);
+
     int row = 0;
     TimelineListModel model;
-    model.setAccount(m_service + "/timeline/threadgate", QString(), QString(), QString(), "dummy",
-                     QString());
+    model.setAccount(uuid);
     model.setDisplayInterval(0);
 
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
@@ -1976,10 +2018,14 @@ void hagoromo_test::test_TimelineListModel_threadgate()
 
 void hagoromo_test::test_TimelineListModel_hide_repost()
 {
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/timeline/hide2", "id", "pass",
+            "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", "ioriayane2.bsky.social", "email", "accessJwt",
+            "refreshJwt", true);
+
     int row = 0;
     TimelineListModel model;
-    model.setAccount(m_service + "/timeline/hide2", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
-                     "ioriayane2.bsky.social", QString(), "dummy", QString());
+    model.setAccount(uuid);
     model.setDisplayInterval(0);
 
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
@@ -2302,10 +2348,14 @@ void hagoromo_test::test_TimelineListModel_hide_repost()
 
 void hagoromo_test::test_TimelineListModel_labelers()
 {
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/timeline/labelers/1", "id", "pass",
+            "did:plc:l4fsx4ujos7uw7n4ijq2ulgs", "ioriayane.bsky.social", "email", "accessJwt",
+            "refreshJwt", true);
+
     int row = 0;
     TimelineListModel model;
-    model.setAccount(m_service + "/timeline/labelers/1", "did:plc:l4fsx4ujos7uw7n4ijq2ulgs",
-                     "ioriayane.bsky.social", QString(), "dummy", QString());
+    model.setAccount(uuid);
     model.setDisplayInterval(0);
 
     LabelerProvider::getInstance()->clear();
@@ -2478,10 +2528,14 @@ void hagoromo_test::test_TimelineListModel_labelers()
 
 void hagoromo_test::test_TimelineListModel_pinnded()
 {
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/timeline/pinned/1", "id", "pass",
+            "did:plc:l4fsx4ujos7uw7n4ijq2ulgs", "ioriayane.bsky.social", "email", "accessJwt",
+            "refreshJwt", true);
+
     int row = 0;
     TimelineListModel model;
-    model.setAccount(m_service + "/timeline/pinned/1", "did:plc:l4fsx4ujos7uw7n4ijq2ulgs",
-                     "ioriayane.bsky.social", QString(), "dummy", QString());
+    model.setAccount(uuid);
     model.setDisplayInterval(0);
     model.setDisplayPinnedPost(true);
     model.setPinnedPost("at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3kgbutwycqd2g");
@@ -2510,8 +2564,11 @@ void hagoromo_test::test_TimelineListModel_pinnded()
                 model.item(row, TimelineListModel::UriRole).toString().toLocal8Bit());
     }
 
-    model.setAccount(m_service + "/timeline/pinned/2", "did:plc:l4fsx4ujos7uw7n4ijq2ulgs",
-                     "ioriayane.bsky.social", QString(), "dummy", QString());
+    uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/timeline/pinned/2", "id", "pass",
+            "did:plc:l4fsx4ujos7uw7n4ijq2ulgs", "ioriayane.bsky.social", "email", "accessJwt",
+            "refreshJwt", true);
+    model.setAccount(uuid);
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         QVERIFY(model.getLatest());
@@ -2568,8 +2625,11 @@ void hagoromo_test::test_TimelineListModel_pinnded()
     }
 
     // re-set
-    model.setAccount(m_service + "/timeline/pinned/3", "did:plc:l4fsx4ujos7uw7n4ijq2ulgs",
-                     "ioriayane.bsky.social", QString(), "dummy", QString());
+    uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/timeline/pinned/3", "id", "pass",
+            "did:plc:l4fsx4ujos7uw7n4ijq2ulgs", "ioriayane.bsky.social", "email", "accessJwt",
+            "refreshJwt", true);
+    model.setAccount(uuid);
     model.setPinnedPost("at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3klrvkltf672n");
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
@@ -2601,8 +2661,11 @@ void hagoromo_test::test_TimelineListModel_pinnded()
     }
 
     // replace pin
-    model.setAccount(m_service + "/timeline/pinned/2", "did:plc:l4fsx4ujos7uw7n4ijq2ulgs",
-                     "ioriayane.bsky.social", QString(), "dummy", QString());
+    uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/timeline/pinned/2", "id", "pass",
+            "did:plc:l4fsx4ujos7uw7n4ijq2ulgs", "ioriayane.bsky.social", "email", "accessJwt",
+            "refreshJwt", true);
+    model.setAccount(uuid);
     model.setPinnedPost("at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3kgbutwycqd2g");
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
@@ -2636,10 +2699,12 @@ void hagoromo_test::test_TimelineListModel_pinnded()
 
 void hagoromo_test::test_NotificationListModel_warn()
 {
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/notifications/warn", "id", "pass", "did:plc:test",
+            "ioriayane.bsky.social", "email", "accessJwt", "refreshJwt", true);
     int row = 0;
     NotificationListModel model;
-    model.setAccount(m_service + "/notifications/warn", "did:plc:test", QString(), QString(),
-                     "dummy", QString());
+    model.setAccount(uuid);
     model.setDisplayInterval(0);
 
     LabelerProvider::getInstance()->clear();
@@ -2677,10 +2742,14 @@ void hagoromo_test::test_NotificationListModel_warn()
 
 void hagoromo_test::test_TimelineListModel_next()
 {
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/timeline/next", "id", "pass",
+            "did:plc:ipj5qejfoqu6eukvt72uhyit", "ioriayane.bsky.social", "email", "accessJwt",
+            "refreshJwt", true);
+
     int row = 0;
     TimelineListModel model;
-    model.setAccount(m_service + "/timeline/next", QString(), QString(), QString(), "dummy",
-                     QString());
+    model.setAccount(uuid);
     model.setDisplayInterval(0);
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
@@ -2746,9 +2815,12 @@ void hagoromo_test::test_TimelineListModel_next()
 
 void hagoromo_test::test_AnyProfileListModel()
 {
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/anyprofile", "id", "pass", "did:plc:test",
+            "ioriayane.bsky.social", "email", "accessJwt", "refreshJwt", true);
+
     AnyProfileListModel model;
-    model.setAccount(m_service + "/anyprofile", QString(), QString(), QString(), "dummy",
-                     QString());
+    model.setAccount(uuid);
     model.setTargetUri("at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3k6tpw4xr4d27");
 
     model.setType(AnyProfileListModel::AnyProfileListModelType::Like);
@@ -2774,10 +2846,13 @@ void hagoromo_test::test_AnyProfileListModel()
 
 void hagoromo_test::test_TimelineListModel_text()
 {
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/timeline/text", "id", "pass", "did:plc:test",
+            "ioriayane.bsky.social", "email", "accessJwt", "refreshJwt", true);
+
     int row = 0;
     TimelineListModel model;
-    model.setAccount(m_service + "/timeline/text", QString(), QString(), QString(), "dummy",
-                     QString());
+    model.setAccount(uuid);
     model.setDisplayInterval(0);
 
     QSignalSpy spy(&model, SIGNAL(runningChanged()));
@@ -2809,10 +2884,14 @@ void hagoromo_test::test_TimelineListModel_text()
 
 void hagoromo_test::test_TimelineListModel_reply()
 {
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/timeline/reply", "id", "pass",
+            "did:plc:ipj5qejfoqu6eukvt72uhyit", "ioriayane.bsky.social", "email", "accessJwt",
+            "refreshJwt", true);
+
     int row = 0;
     TimelineListModel model;
-    model.setAccount(m_service + "/timeline/reply", "did:plc:ipj5qejfoqu6eukvt72uhyit", QString(),
-                     QString(), "dummy", QString());
+    model.setAccount(uuid);
     model.setDisplayInterval(0);
 
     model.setVisibleReplyToUnfollowedUsers(true);
@@ -2851,8 +2930,11 @@ void hagoromo_test::test_TimelineListModel_reply()
     QVERIFY(model.item(2, TimelineListModel::CidRole)
             == "bafyreievv2yz3obnigwjix5kr2icycfkqdobrfufd3cm4wfavnjfeqhxbe_4");
 
-    model.setAccount(m_service + "/timeline/reply", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", QString(),
-                     QString(), "dummy", QString());
+    uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/timeline/reply", "id", "pass",
+            "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", "ioriayane.bsky.social", "email", "accessJwt",
+            "refreshJwt", true);
+    model.setAccount(uuid);
     model.setVisibleReplyToUnfollowedUsers(false);
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
@@ -2874,9 +2956,12 @@ void hagoromo_test::test_TimelineListModel_reply()
 
 void hagoromo_test::test_PostThreadListModel()
 {
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/postthread/1", "id", "pass",
+            "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", "ioriayane.bsky.social", "email", "accessJwt",
+            "refreshJwt", true);
     PostThreadListModel model;
-    model.setAccount(m_service + "/postthread/1", QString(), QString(), QString(), "dummy",
-                     QString());
+    model.setAccount(uuid);
     model.setDisplayInterval(0);
     model.setPostThreadUri("at://uri");
 
@@ -2907,9 +2992,12 @@ void hagoromo_test::test_PostThreadListModel()
     QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
     QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == false);
 
+    uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/postthread/2", "id", "pass",
+            "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", "ioriayane.bsky.social", "email", "accessJwt",
+            "refreshJwt", true);
     model.clear();
-    model.setAccount(m_service + "/postthread/2", QString(), QString(), QString(), "dummy",
-                     QString());
+    model.setAccount(uuid);
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
@@ -2943,9 +3031,12 @@ void hagoromo_test::test_PostThreadListModel()
     QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorTopRole).toBool() == true);
     QVERIFY(model.item(row, PostThreadListModel::ThreadConnectorBottomRole).toBool() == false);
 
+    uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/postthread/3", "id", "pass",
+            "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", "ioriayane.bsky.social", "email", "accessJwt",
+            "refreshJwt", true);
     model.clear();
-    model.setAccount(m_service + "/postthread/3", QString(), QString(), QString(), "dummy",
-                     QString());
+    model.setAccount(uuid);
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
@@ -2990,9 +3081,12 @@ void hagoromo_test::test_SystemTool_ImageClip()
 
 void hagoromo_test::test_SearchProfileListModel_suggestion()
 {
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/search_profile", "id", "pass",
+            "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", "ioriayane.bsky.social", "email", "accessJwt",
+            "refreshJwt", true);
     SearchProfileListModel model;
-    model.setAccount(m_service + "/search_profile", QString(), QString(), QString(), "dummy",
-                     QString());
+    model.setAccount(uuid);
 
     QString actual;
 
@@ -3110,22 +3204,25 @@ void hagoromo_test::test_SearchProfileListModel_suggestion()
 
 void hagoromo_test::test_SearchPostListModel_text()
 {
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/search_profile", "id", "pass", "did:plc:hogehoge",
+            "hogehoge.bsky.social", "email", "accessJwt", "refreshJwt", true);
     SearchPostListModel model;
-    model.setAccount("", "did:plc:hogehoge", "hogehoge.bsky.sockal", "", "", "");
+    model.setAccount(uuid);
 
-    QVERIFY2(model.replaceSearchCommand("from:me") == "from:hogehoge.bsky.sockal",
+    QVERIFY2(model.replaceSearchCommand("from:me") == "from:hogehoge.bsky.social",
              model.text().toLocal8Bit());
 
     QVERIFY2(model.replaceSearchCommand("fuga  from:me hoge")
-                     == "fuga  from:hogehoge.bsky.sockal hoge",
+                     == "fuga  from:hogehoge.bsky.social hoge",
              model.text().toLocal8Bit());
 
     QVERIFY2(model.replaceSearchCommand("fuga\tfrom:me\thoge")
-                     == "fuga from:hogehoge.bsky.sockal hoge",
+                     == "fuga from:hogehoge.bsky.social hoge",
              model.text().toLocal8Bit());
 
     QVERIFY2(model.replaceSearchCommand(QString("fuga%1from:me%1hoge").arg(QChar(0x3000)))
-                     == "fuga from:hogehoge.bsky.sockal hoge",
+                     == "fuga from:hogehoge.bsky.social hoge",
              model.text().toLocal8Bit());
 }
 

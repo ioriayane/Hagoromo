@@ -768,8 +768,7 @@ bool NotificationListModel::repost(int row)
                 setRunningRepost(row, false);
                 ope->deleteLater();
             });
-    ope->setAccount(account().service, account().did, account().handle, account().email,
-                    account().accessJwt, account().refreshJwt);
+    ope->setAccount(account().uuid);
     if (!current)
         ope->repost(item(row, CidRole).toString(), item(row, UriRole).toString());
     else
@@ -800,8 +799,7 @@ bool NotificationListModel::like(int row)
                 setRunningLike(row, false);
                 ope->deleteLater();
             });
-    ope->setAccount(account().service, account().did, account().handle, account().email,
-                    account().accessJwt, account().refreshJwt);
+    ope->setAccount(account().uuid);
     if (!current)
         ope->like(item(row, CidRole).toString(), item(row, UriRole).toString());
     else
@@ -906,8 +904,7 @@ bool NotificationListModel::detachQuote(int row)
                 }
                 ope->deleteLater();
             });
-    ope->setAccount(account().service, account().did, account().handle, account().email,
-                    account().accessJwt, account().refreshJwt);
+    ope->setAccount(account().uuid);
     ope->updateDetachedStatusOfQuote(detached, target_uri, detach_uri);
     return true;
 }

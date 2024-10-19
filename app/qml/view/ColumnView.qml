@@ -675,16 +675,12 @@ ColumnLayout {
     }
 
     function reflect(){
+        // TODO: account: 不要では？
         // StackViewに積まれているViewに反映
         for(var i=0; i<columnStackView.depth; i++){
             console.log("Reflect : " + i + ", " + account.handle)
             var item = columnStackView.get(i)
-            item.model.setAccount(account.service,
-                                  account.did,
-                                  account.handle,
-                                  account.email,
-                                  account.accessJwt,
-                                  account.refreshJwt)
+            item.model.setAccount(account.uuid)
         }
     }
 
@@ -880,12 +876,7 @@ ColumnLayout {
                 }
                 return
             }
-            currentItem.model.setAccount(account.service,
-                                         account.did,
-                                         account.handle,
-                                         account.email,
-                                         account.accessJwt,
-                                         account.refreshJwt)
+            currentItem.model.setAccount(account.uuid)
             currentItem.model.getLatest()
         }
     }

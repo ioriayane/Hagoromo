@@ -3,6 +3,7 @@
 #include "atprotocol/app/bsky/feed/appbskyfeedgetposts.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofile.h"
 #include "atprotocol/lexicons_func_unknown.h"
+#include "tools/accountmanager.h"
 #include "tools/labelerprovider.h"
 
 using AtProtocolInterface::AppBskyActorGetProfile;
@@ -11,16 +12,10 @@ using namespace AtProtocolType;
 
 UserPost::UserPost(QObject *parent) : QObject { parent }, m_running(false), m_authorMuted(false) { }
 
-void UserPost::setAccount(const QString &service, const QString &did, const QString &handle,
-                          const QString &email, const QString &accessJwt, const QString &refreshJwt)
+void UserPost::setAccount(const QString &uuid)
 {
-    qDebug().noquote() << this << service << handle << accessJwt;
-    m_account.service = service;
-    m_account.did = did;
-    m_account.handle = handle;
-    m_account.email = email;
-    m_account.accessJwt = accessJwt;
-    m_account.refreshJwt = refreshJwt;
+    qDebug().noquote() << this << uuid;
+    m_account.uuid = uuid;
 }
 
 void UserPost::getPost(const QString &uri)
@@ -69,7 +64,7 @@ void UserPost::getPost(const QString &uri)
             setRunning(false);
             posts->deleteLater();
         });
-        posts->setAccount(m_account);
+        posts->setAccount(AccountManager::getInstance()->getAccount(m_account.uuid));
         posts->setLabelers(labelerDids());
         posts->getPosts(QStringList() << at_uri);
     });
@@ -302,7 +297,7 @@ void UserPost::convertToAtUri(const QString &base_at_uri, const QString &uri,
             }
             profile->deleteLater();
         });
-        profile->setAccount(m_account);
+        profile->setAccount(AccountManager::getInstance()->getAccount(m_account.uuid));
         profile->getProfile(user_id);
     }
 }

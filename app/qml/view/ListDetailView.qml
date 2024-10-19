@@ -50,9 +50,9 @@ ColumnLayout {
         function rowCount() {
             return listItemListModel.rowCount();
         }
-        function setAccount(service, did, handle, email, accessJwt, refreshJwt) {
-            listItemListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
-            recordOperator.setAccount(service, did, handle, email, accessJwt, refreshJwt)
+        function setAccount(uuid) {
+            listItemListModel.setAccount(uuid)
+            recordOperator.setAccount(uuid)
             recordOperator.accountHandle = handle
         }
         function getLatest() {

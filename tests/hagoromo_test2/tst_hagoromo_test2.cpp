@@ -15,6 +15,7 @@
 #include "list/listslistmodel.h"
 #include "list/listitemlistmodel.h"
 #include "list/listfeedlistmodel.h"
+#include "tools/accountmanager.h"
 
 class hagoromo_test : public QObject
 {
@@ -32,6 +33,7 @@ private slots:
     void test_FeedGeneratorListModel();
     void test_FeedGeneratorLink();
     void test_AccountListModel();
+    void test_AccountManager();
     void test_ListsListModel();
     void test_ListsListModel_search();
     void test_ListsListModel_error();
@@ -53,7 +55,7 @@ private:
 hagoromo_test::hagoromo_test()
 {
     QCoreApplication::setOrganizationName(QStringLiteral("relog"));
-    QCoreApplication::setApplicationName(QStringLiteral("Hagoromo"));
+    QCoreApplication::setApplicationName(QStringLiteral("Hagoromo_unittest"));
 
     m_listenPort = m_mockServer.listen(QHostAddress::LocalHost, 0);
     m_service = QString("http://localhost:%1/response").arg(m_listenPort);
@@ -108,8 +110,12 @@ void hagoromo_test::cleanupTestCase() { }
 
 void hagoromo_test::test_RecordOperator()
 {
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/facet", "id", "pass", "did:plc:hogehoge",
+            "hogehoge.bsky.social", "email", "accessJwt", "refreshJwt", true);
+
     RecordOperator ope;
-    ope.setAccount(m_service + "/facet", QString(), QString(), QString(), "dummy", QString());
+    ope.setAccount(uuid);
     QHash<QString, QString> hash =
             UnitTestCommon::loadPostHash(":/data/com.atproto.repo.createRecord_post.expect");
 
@@ -117,8 +123,12 @@ void hagoromo_test::test_RecordOperator()
     while (i.hasNext()) {
         i.next();
 
+        QString uuid = AccountManager::getInstance()->updateAccount(
+                QString(), m_service + "/facet", "id", "pass", i.key(), "handle", "email",
+                "accessJwt", "refreshJwt", true);
+
         ope.clear();
-        ope.setAccount(m_service + "/facet", i.key(), "handle", "email", "accessJwt", "refreshJwt");
+        ope.setAccount(uuid);
         ope.setText(i.value());
 
         QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
@@ -134,9 +144,12 @@ void hagoromo_test::test_RecordOperator()
 
 void hagoromo_test::test_RecordOperator_profile()
 {
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/profile/1", "id", "pass", "did:plc:ipj5qejfoqu6eukvt72uhyit",
+            "hogehoge.bsky.social", "email", "accessJwt", "refreshJwt", true);
+
     RecordOperator ope;
-    ope.setAccount(m_service + "/profile/1", "did:plc:ipj5qejfoqu6eukvt72uhyit", QString(),
-                   QString(), "dummy", QString());
+    ope.setAccount(uuid);
     {
         QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
         ope.updateProfile("", "", "description", "display_name");
@@ -148,8 +161,10 @@ void hagoromo_test::test_RecordOperator_profile()
         QVERIFY(arguments.at(0).toBool() == true);
     }
 
-    ope.setAccount(m_service + "/profile/3.1", "did:plc:ipj5qejfoqu6eukvt72uhyit", QString(),
-                   QString(), "dummy", QString());
+    uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/profile/3.1", "id", "pass", "did:plc:ipj5qejfoqu6eukvt72uhyit",
+            "hogehoge.bsky.social", "email", "accessJwt", "refreshJwt", true);
+    ope.setAccount(uuid);
     {
         QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
         ope.updatePostPinning(
@@ -163,8 +178,10 @@ void hagoromo_test::test_RecordOperator_profile()
         QVERIFY(arguments.at(0).toBool() == true);
     }
 
-    ope.setAccount(m_service + "/profile/3.2", "did:plc:ipj5qejfoqu6eukvt72uhyit", QString(),
-                   QString(), "dummy", QString());
+    uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/profile/3.2", "id", "pass", "did:plc:ipj5qejfoqu6eukvt72uhyit",
+            "hogehoge.bsky.social", "email", "accessJwt", "refreshJwt", true);
+    ope.setAccount(uuid);
     {
         QSignalSpy spy(&ope, SIGNAL(finished(bool, const QString &, const QString &)));
         ope.updatePostPinning(QString(), QString());
@@ -180,9 +197,13 @@ void hagoromo_test::test_RecordOperator_profile()
 void hagoromo_test::test_FeedGeneratorListModel()
 {
     FeedGeneratorListModel model;
-    model.setAccount(m_service + "/generator", QString(), QString(), QString(), "dummy", QString());
     model.setDisplayInterval(0);
     {
+        QString uuid = AccountManager::getInstance()->updateAccount(
+                QString(), m_service + "/generator", "id", "pass",
+                "did:plc:ipj5qejfoqu6eukvt72uhyit", "hogehoge.bsky.social", "email", "accessJwt",
+                "refreshJwt", true);
+        model.setAccount(uuid);
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
         spy.wait();
@@ -204,8 +225,11 @@ void hagoromo_test::test_FeedGeneratorListModel()
     }
     {
         // save
-        model.setAccount(m_service + "/generator/save", QString(), QString(), QString(), "dummy",
-                         QString());
+        QString uuid = AccountManager::getInstance()->updateAccount(
+                QString(), m_service + "/generator/save", "id", "pass",
+                "did:plc:ipj5qejfoqu6eukvt72uhyit", "hogehoge.bsky.social", "email", "accessJwt",
+                "refreshJwt", true);
+        model.setAccount(uuid);
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.saveGenerator(
                 "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/hot-classic");
@@ -214,8 +238,11 @@ void hagoromo_test::test_FeedGeneratorListModel()
     }
     {
         // remove
-        model.setAccount(m_service + "/generator/remove", QString(), QString(), QString(), "dummy",
-                         QString());
+        QString uuid = AccountManager::getInstance()->updateAccount(
+                QString(), m_service + "/generator/remove", "id", "pass",
+                "did:plc:ipj5qejfoqu6eukvt72uhyit", "hogehoge.bsky.social", "email", "accessJwt",
+                "refreshJwt", true);
+        model.setAccount(uuid);
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.removeGenerator(
                 "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/with-friends");
@@ -226,6 +253,10 @@ void hagoromo_test::test_FeedGeneratorListModel()
 
 void hagoromo_test::test_FeedGeneratorLink()
 {
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/generator", "id", "pass", "did:plc:ipj5qejfoqu6eukvt72uhyit",
+            "hogehoge.bsky.social", "email", "accessJwt", "refreshJwt", true);
+
     FeedGeneratorLink link;
 
     QVERIFY(link.checkUri("https://bsky.app/profile/did:plc:hoge/feed/aaaaaaaa", "feed") == true);
@@ -238,7 +269,7 @@ void hagoromo_test::test_FeedGeneratorLink()
     QVERIFY(link.checkUri("https://bsky.app/profile/handle.com/feed/aaaaaaaa", "feed") == true);
     QVERIFY(link.checkUri("https://bsky.app/profile/@handle.com/feed/aaaaaaaa", "feed") == false);
 
-    link.setAccount(m_service + "/generator", QString(), QString(), QString(), "dummy", QString());
+    link.setAccount(uuid);
     {
         QSignalSpy spy(&link, SIGNAL(runningChanged()));
         link.getFeedGenerator("https://bsky.app/profile/did:plc:hoge/feed/aaaaaaaa");
@@ -254,6 +285,8 @@ void hagoromo_test::test_FeedGeneratorLink()
 
 void hagoromo_test::test_AccountListModel()
 {
+    AccountManager::getInstance()->clear();
+
     QString temp_path = Common::appDataFolder() + "/account.json";
     if (QFile::exists(temp_path)) {
         QFile::remove(temp_path);
@@ -270,11 +303,10 @@ void hagoromo_test::test_AccountListModel()
 
     AccountListModel model2;
     {
-        QSignalSpy spy(&model2, SIGNAL(updatedAccount(int, const QString &)));
+        QSignalSpy spy(&model2, SIGNAL(finished()));
         model2.load();
-        spy.wait(10 * 1000);
-        spy.wait(10 * 1000);
-        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+        spy.wait(15 * 1000);
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
     QVERIFY2(model2.rowCount() == 2, QString::number(model2.rowCount()).toLocal8Bit());
     int row = 0;
@@ -289,14 +321,164 @@ void hagoromo_test::test_AccountListModel()
     QVERIFY2(model2.item(row, AccountListModel::RefreshJwtRole).toString()
                      == "refreshJwt_account2_refresh",
              model2.item(row, AccountListModel::RefreshJwtRole).toString().toLocal8Bit());
+
+    // model.update(0, AccountListModel::UuidRole, "UuidRole");
+    // model.update(0, AccountListModel::IsMainRole, "IsMainRole");
+    model.update(0, AccountListModel::ServiceRole, "ServiceRole");
+    model.update(0, AccountListModel::ServiceEndpointRole, "ServiceEndpointRole");
+    model.update(0, AccountListModel::IdentifierRole, "IdentifierRole");
+    model.update(0, AccountListModel::PasswordRole, "PasswordRole");
+    model.update(0, AccountListModel::DidRole, "DidRole");
+    model.update(0, AccountListModel::HandleRole, "HandleRole");
+    model.update(0, AccountListModel::EmailRole, "EmailRole");
+    model.update(0, AccountListModel::AccessJwtRole, "AccessJwtRole");
+    model.update(0, AccountListModel::RefreshJwtRole, "RefreshJwtRole");
+    model.update(0, AccountListModel::DisplayNameRole, "DisplayNameRole");
+    model.update(0, AccountListModel::DescriptionRole, "DescriptionRole");
+    model.update(0, AccountListModel::AvatarRole, "AvatarRole");
+    model.update(0, AccountListModel::PostLanguagesRole,
+                 QStringList() << "PostLanguagesRole1"
+                               << "PostLanguagesRole2");
+    model.update(0, AccountListModel::ThreadGateTypeRole, "ThreadGateTypeRole");
+    model.update(0, AccountListModel::ThreadGateOptionsRole,
+                 QStringList() << "ThreadGateOptionsRole1"
+                               << "ThreadGateOptionsRole2");
+    model.update(0, AccountListModel::PostGateQuoteEnabledRole, true);
+
+    // QVERIFY2(model.item(0, AccountListModel::UuidRole).toString() == "UuidRole",
+    //          model.item(0, AccountListModel::UuidRole).toString().toLocal8Bit());
+    // QVERIFY2(model.item(0, AccountListModel::IsMainRole).toString() == "IsMainRole",
+    //          model.item(0, AccountListModel::IsMainRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::ServiceRole).toString() == "ServiceRole",
+             model.item(0, AccountListModel::ServiceRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::ServiceEndpointRole).toString()
+                     == "ServiceEndpointRole",
+             model.item(0, AccountListModel::ServiceEndpointRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::IdentifierRole).toString() == "IdentifierRole",
+             model.item(0, AccountListModel::IdentifierRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::PasswordRole).toString() == "PasswordRole",
+             model.item(0, AccountListModel::PasswordRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::DidRole).toString() == "DidRole",
+             model.item(0, AccountListModel::DidRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::HandleRole).toString() == "HandleRole",
+             model.item(0, AccountListModel::HandleRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::EmailRole).toString() == "EmailRole",
+             model.item(0, AccountListModel::EmailRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::AccessJwtRole).toString() == "AccessJwtRole",
+             model.item(0, AccountListModel::AccessJwtRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::RefreshJwtRole).toString() == "RefreshJwtRole",
+             model.item(0, AccountListModel::RefreshJwtRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::DisplayNameRole).toString() == "DisplayNameRole",
+             model.item(0, AccountListModel::DisplayNameRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::DescriptionRole).toString() == "DescriptionRole",
+             model.item(0, AccountListModel::DescriptionRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::AvatarRole).toString() == "AvatarRole",
+             model.item(0, AccountListModel::AvatarRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::PostLanguagesRole).toStringList()
+                     == QStringList() << "PostLanguagesRole1"
+                                      << "PostLanguagesRole2",
+             model.item(0, AccountListModel::PostLanguagesRole)
+                     .toStringList()
+                     .join(",")
+                     .toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::ThreadGateTypeRole).toString() == "ThreadGateTypeRole",
+             model.item(0, AccountListModel::ThreadGateTypeRole).toString().toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::ThreadGateOptionsRole).toStringList()
+                     == QStringList() << "ThreadGateOptionsRole1"
+                                      << "ThreadGateOptionsRole2",
+             model.item(0, AccountListModel::ThreadGateOptionsRole)
+                     .toStringList()
+                     .join(",")
+                     .toLocal8Bit());
+    QVERIFY2(model.item(0, AccountListModel::PostGateQuoteEnabledRole).toBool() == true,
+             QString::number(model.item(0, AccountListModel::PostGateQuoteEnabledRole).toBool())
+                     .toLocal8Bit());
+}
+
+void hagoromo_test::test_AccountManager()
+{
+
+    QString temp_path = Common::appDataFolder() + "/account.json";
+    if (QFile::exists(temp_path)) {
+        QFile::remove(temp_path);
+    }
+
+    AccountManager *manager = AccountManager::getInstance();
+    AtProtocolInterface::AccountData account;
+
+    manager->clear();
+    manager->updateAccount(QString(), m_service + "/account/account1", "id1", "password1",
+                           "did:plc:account1", "account1.relog.tech", "account1@relog.tech",
+                           "accessJwt_account1", "refreshJwt_account1", false);
+    manager->updateAccount(QString(), m_service + "/account/account2", "id2", "password2",
+                           "did:plc:account2", "account2.relog.tech", "account2@relog.tech",
+                           "accessJwt_account2", "refreshJwt_account2", false);
+
+    QStringList uuids = manager->getUuids();
+
+    QVERIFY(uuids.count() == 2);
+
+    account = manager->getAccount(uuids.at(0));
+    QVERIFY(account.service == m_service + "/account/account1");
+    QVERIFY(account.password == "password1");
+    QVERIFY(account.did == "did:plc:account1");
+    QVERIFY(account.handle == "account1.relog.tech");
+    QVERIFY(account.email == "account1@relog.tech");
+    QVERIFY(account.accessJwt == "accessJwt_account1");
+    QVERIFY(account.refreshJwt == "refreshJwt_account1");
+
+    account = manager->getAccount(uuids.at(1));
+    QVERIFY(account.service == m_service + "/account/account2");
+    QVERIFY(account.password == "password2");
+    QVERIFY(account.did == "did:plc:account2");
+    QVERIFY(account.handle == "account2.relog.tech");
+    QVERIFY(account.email == "account2@relog.tech");
+    QVERIFY(account.accessJwt == "accessJwt_account2");
+    QVERIFY(account.refreshJwt == "refreshJwt_account2");
+
+    QVERIFY(manager->checkAllAccountsReady() == false);
+
+    manager->save();
+
+    manager->removeAccount(manager->getUuids().at(0));
+    QVERIFY(manager->getUuids().count() == 1);
+
+    account = manager->getAccount(manager->getUuids().at(0));
+    QVERIFY(account.service == m_service + "/account/account2");
+    QVERIFY(account.password == "password2");
+    QVERIFY(account.did == "did:plc:account2");
+    QVERIFY(account.handle == "account2.relog.tech");
+    QVERIFY(account.email == "account2@relog.tech");
+    QVERIFY(account.accessJwt == "accessJwt_account2");
+    QVERIFY(account.refreshJwt == "refreshJwt_account2");
+
+    manager->clear();
+    QVERIFY(manager->getUuids().isEmpty());
+
+    {
+        QSignalSpy spy(manager, SIGNAL(finished()));
+        manager->load();
+        spy.wait(10 * 1000);
+        QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    uuids = manager->getUuids();
+    QVERIFY(manager->count() == 1);
+
+    account = manager->getAccount(uuids.at(0));
+    QVERIFY2(account.service == m_service + "/account/account2", account.service.toLocal8Bit());
+    QVERIFY(account.service_endpoint == "http://localhost:%1/response/account/account2");
+    QVERIFY(account.did == "did:plc:account2_refresh");
 }
 
 void hagoromo_test::test_ListsListModel()
 {
-    ListsListModel model;
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/lists/lists", "id", "pass", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+            "hogehoge.bsky.social", "email", "accessJwt", "refreshJwt", true);
 
-    model.setAccount(m_service + "/lists/lists", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", QString(),
-                     QString(), "dummy", QString());
+    ListsListModel model;
+    model.setAccount(uuid);
 
     model.setVisibilityType(ListsListModel::VisibilityTypeAll);
     {
@@ -386,10 +568,13 @@ void hagoromo_test::test_ListsListModel()
 
 void hagoromo_test::test_ListsListModel_search()
 {
-    ListsListModel model;
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/lists/search", "id", "pass",
+            "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", "hogehoge.bsky.social", "email", "accessJwt",
+            "refreshJwt", true);
 
-    model.setAccount(m_service + "/lists/search", QString(), QString(), QString(), "dummy",
-                     QString());
+    ListsListModel model;
+    model.setAccount(uuid);
     model.setSearchTarget("did:plc:user_42");
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
@@ -444,10 +629,12 @@ void hagoromo_test::test_ListsListModel_error()
 
 void hagoromo_test::test_ListItemListModel()
 {
-    ListItemListModel model;
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/lists/list", "id", "pass", "did:plc:ipj5qejfoqu6eukvt72uhyit",
+            "hogehoge.bsky.social", "email", "accessJwt", "refreshJwt", true);
 
-    model.setAccount(m_service + "/lists/list", "did:plc:ipj5qejfoqu6eukvt72uhyit", QString(),
-                     QString(), "dummy", QString());
+    ListItemListModel model;
+    model.setAccount(uuid);
 
     model.setUri("at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/3k7igyxfizg27");
     {
@@ -515,10 +702,13 @@ void hagoromo_test::test_ListItemListModel_error()
 
 void hagoromo_test::test_ListFeedListModel()
 {
-    ListFeedListModel model;
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/lists/feed/0", "id", "pass",
+            "did:plc:l4fsx4ujos7uw7n4ijq2ulgs", "hogehoge.bsky.social", "email", "accessJwt",
+            "refreshJwt", true);
 
-    model.setAccount(m_service + "/lists/feed/0", "did:plc:l4fsx4ujos7uw7n4ijq2ulgs", QString(),
-                     QString(), "dummy", QString());
+    ListFeedListModel model;
+    model.setAccount(uuid);
     model.setUri("at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/3k7igyxfizg27");
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));

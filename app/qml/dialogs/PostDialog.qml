@@ -240,10 +240,7 @@ Dialog {
                             selectThreadGateDialog.selectedType = selectThreadGateDialog.initialType
                             selectThreadGateDialog.selectedOptions = selectThreadGateDialog.initialOptions
                             // 入力中にアカウントを切り替えるかもなので選んだ時に設定する
-                            mentionSuggestionView.setAccount(postDialog.accountModel.item(row, AccountListModel.ServiceRole),
-                                                             postDialog.accountModel.item(row, AccountListModel.DidRole),
-                                                             postDialog.accountModel.item(row, AccountListModel.HandleRole),
-                                                             postDialog.accountModel.item(row, AccountListModel.AccessJwtRole))
+                            mentionSuggestionView.setAccount(postDialog.accountModel.item(row, AccountListModel.UuidRole))
                         }
                     }
                 }
@@ -387,28 +384,13 @@ Dialog {
                         var uri = addingExternalLinkUrlText.text
                         var row = accountCombo.currentIndex
                         if(feedGeneratorLink.checkUri(uri, "feed") && !quoteValid){
-                            feedGeneratorLink.setAccount(postDialog.accountModel.item(row, AccountListModel.ServiceRole),
-                                                         postDialog.accountModel.item(row, AccountListModel.DidRole),
-                                                         postDialog.accountModel.item(row, AccountListModel.HandleRole),
-                                                         postDialog.accountModel.item(row, AccountListModel.EmailRole),
-                                                         postDialog.accountModel.item(row, AccountListModel.AccessJwtRole),
-                                                         postDialog.accountModel.item(row, AccountListModel.RefreshJwtRole))
+                            feedGeneratorLink.setAccount(postDialog.accountModel.item(row, AccountListModel.UuidRole))
                             feedGeneratorLink.getFeedGenerator(uri)
                         }else if(listLink.checkUri(uri, "lists") && !quoteValid){
-                            listLink.setAccount(postDialog.accountModel.item(row, AccountListModel.ServiceRole),
-                                                postDialog.accountModel.item(row, AccountListModel.DidRole),
-                                                postDialog.accountModel.item(row, AccountListModel.HandleRole),
-                                                postDialog.accountModel.item(row, AccountListModel.EmailRole),
-                                                postDialog.accountModel.item(row, AccountListModel.AccessJwtRole),
-                                                postDialog.accountModel.item(row, AccountListModel.RefreshJwtRole))
+                            listLink.setAccount(postDialog.accountModel.item(row, AccountListModel.UuidRole))
                             listLink.getList(uri)
                         }else if(postLink.checkUri(uri, "post") && !quoteValid && postType !== "quote"){
-                            postLink.setAccount(postDialog.accountModel.item(row, AccountListModel.ServiceRole),
-                                                postDialog.accountModel.item(row, AccountListModel.DidRole),
-                                                postDialog.accountModel.item(row, AccountListModel.HandleRole),
-                                                postDialog.accountModel.item(row, AccountListModel.EmailRole),
-                                                postDialog.accountModel.item(row, AccountListModel.AccessJwtRole),
-                                                postDialog.accountModel.item(row, AccountListModel.RefreshJwtRole))
+                            postLink.setAccount(postDialog.accountModel.item(row, AccountListModel.UuidRole))
                             postLink.getPost(uri)
                         }else{
                             externalLink.getExternalLink(uri)
@@ -672,12 +654,7 @@ Dialog {
                     text: qsTr("Post")
                     onClicked: {
                         var row = accountCombo.currentIndex;
-                        createRecord.setAccount(postDialog.accountModel.item(row, AccountListModel.ServiceRole),
-                                                postDialog.accountModel.item(row, AccountListModel.DidRole),
-                                                postDialog.accountModel.item(row, AccountListModel.HandleRole),
-                                                postDialog.accountModel.item(row, AccountListModel.EmailRole),
-                                                postDialog.accountModel.item(row, AccountListModel.AccessJwtRole),
-                                                postDialog.accountModel.item(row, AccountListModel.RefreshJwtRole))
+                        createRecord.setAccount(postDialog.accountModel.item(row, AccountListModel.UuidRole))
                         createRecord.clear()
                         createRecord.setText(postText.text)
                         createRecord.setPostLanguages(postDialog.accountModel.item(row, AccountListModel.PostLanguagesRole))

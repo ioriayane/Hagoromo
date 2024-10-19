@@ -4,6 +4,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 
+#include "tools/accountmanager.h"
 #include "webserver.h"
 #include "log/logmanager.h"
 #include "log/logoperator.h"
@@ -42,7 +43,7 @@ log_test::log_test()
     qRegisterMetaType<QList<TotalItem>>("QList<TotalItem>");
 
     QCoreApplication::setOrganizationName(QStringLiteral("relog"));
-    QCoreApplication::setApplicationName(QStringLiteral("Hagoromo"));
+    QCoreApplication::setApplicationName(QStringLiteral("Hagoromo_unittest"));
 
     m_listenPort = m_mockServer.listen(QHostAddress::LocalHost, 0);
     m_service = QString("http://localhost:%1/response").arg(m_listenPort);
@@ -604,9 +605,12 @@ void log_test::test_LogFeedListModel()
     account.handle = "log.manager.test";
     account.accessJwt = "access jwt";
 
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), account.service + "/posts/10", "id", "pass", account.did, account.handle,
+            account.email, account.accessJwt, account.refreshJwt, true);
+
     LogFeedListModel model;
-    model.setAccount(account.service + "/posts/10", account.did, account.handle, account.email,
-                     account.accessJwt, account.refreshJwt);
+    model.setAccount(uuid);
     model.setTargetDid(account.did);
     model.setTargetHandle(account.handle);
     model.setTargetAvatar("test_avatar.jpg");

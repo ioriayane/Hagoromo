@@ -74,8 +74,7 @@ void CustomFeedListModel::saveGenerator()
 {
     if (uri().isEmpty())
         return;
-    m_feedGeneratorListModel.setAccount(account().service, account().did, account().handle,
-                                        account().email, account().accessJwt, account().refreshJwt);
+    m_feedGeneratorListModel.setAccount(account().uuid);
     m_feedGeneratorListModel.saveGenerator(uri());
 }
 
@@ -83,8 +82,7 @@ void CustomFeedListModel::removeGenerator()
 {
     if (uri().isEmpty())
         return;
-    m_feedGeneratorListModel.setAccount(account().service, account().did, account().handle,
-                                        account().email, account().accessJwt, account().refreshJwt);
+    m_feedGeneratorListModel.setAccount(account().uuid);
     m_feedGeneratorListModel.removeGenerator(uri());
 }
 

@@ -39,9 +39,7 @@ public:
     Q_INVOKABLE QVariant item(int row, BlogEntryListModel::BlogEntryListModelRoles role) const;
 
     AtProtocolInterface::AccountData account() const;
-    Q_INVOKABLE void setAccount(const QString &service, const QString &did, const QString &handle,
-                                const QString &email, const QString &accessJwt,
-                                const QString &refreshJwt);
+    Q_INVOKABLE void setAccount(const QString &uuid);
 
     Q_INVOKABLE bool getLatest();
 

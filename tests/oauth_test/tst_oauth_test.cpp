@@ -43,7 +43,7 @@ private:
 oauth_test::oauth_test()
 {
     QCoreApplication::setOrganizationName(QStringLiteral("relog"));
-    QCoreApplication::setApplicationName(QStringLiteral("Hagoromo"));
+    QCoreApplication::setApplicationName(QStringLiteral("Hagoromo_unittest"));
 
     m_listenPort = m_server.listen(QHostAddress::LocalHost, 0);
     connect(&m_server, &SimpleHttpServer::received, this,

@@ -6,6 +6,7 @@
 #include "extension/directory/plc/directoryplc.h"
 #include "extension/directory/plc/directoryplclogaudit.h"
 #include "tools/labelerprovider.h"
+#include "tools/accountmanager.h"
 
 #include <QPointer>
 
@@ -38,16 +39,10 @@ UserProfile::~UserProfile()
                &UserProfile::updatedBelongingLists);
 }
 
-void UserProfile::setAccount(const QString &service, const QString &did, const QString &handle,
-                             const QString &email, const QString &accessJwt,
-                             const QString &refreshJwt)
+void UserProfile::setAccount(const QString &uuid)
 {
-    m_account.service = service;
-    m_account.did = did;
-    m_account.handle = handle;
-    m_account.email = email;
-    m_account.accessJwt = accessJwt;
-    m_account.refreshJwt = refreshJwt;
+    m_account.uuid = uuid;
+    m_account = AccountManager::getInstance()->getAccount(m_account.uuid);
 }
 
 void UserProfile::getProfile(const QString &did)
@@ -118,7 +113,7 @@ void UserProfile::getProfile(const QString &did)
             }
             profile->deleteLater();
         });
-        profile->setAccount(m_account);
+        profile->setAccount(AccountManager::getInstance()->getAccount(m_account.uuid));
         profile->setLabelers(labelerDids());
         profile->getProfile(did);
     });
@@ -367,7 +362,8 @@ QString UserProfile::formattedDescription() const
 
 void UserProfile::updatedBelongingLists(const QString &account_did, const QString &user_did)
 {
-    if (m_account.did == account_did && did() == user_did) {
+    if (AccountManager::getInstance()->getAccount(m_account.uuid).did == account_did
+        && did() == user_did) {
         setBelongingLists(ListItemsCache::getInstance()->getListNames(account_did, user_did));
     }
 }
@@ -382,8 +378,9 @@ void UserProfile::updateContentFilterLabels(std::function<void()> callback)
         callback();
         connector->deleteLater();
     });
-    provider->setAccount(m_account);
-    provider->update(m_account, connector, LabelerProvider::RefleshAuto);
+    provider->setAccount(AccountManager::getInstance()->getAccount(m_account.uuid));
+    provider->update(AccountManager::getInstance()->getAccount(m_account.uuid), connector,
+                     LabelerProvider::RefleshAuto);
 }
 
 void UserProfile::getServiceEndpoint(const QString &did,
@@ -493,12 +490,15 @@ void UserProfile::getRawProfile()
 QString UserProfile::labelsTitle(const QString &label, const bool for_image,
                                  const QString &labeler_did) const
 {
-    return LabelerProvider::getInstance()->title(m_account, label, for_image, labeler_did);
+    return LabelerProvider::getInstance()->title(
+            AccountManager::getInstance()->getAccount(m_account.uuid), label, for_image,
+            labeler_did);
 }
 
 QStringList UserProfile::labelerDids() const
 {
-    return LabelerProvider::getInstance()->labelerDids(m_account);
+    return LabelerProvider::getInstance()->labelerDids(
+            AccountManager::getInstance()->getAccount(m_account.uuid));
 }
 
 QStringList UserProfile::labels() const

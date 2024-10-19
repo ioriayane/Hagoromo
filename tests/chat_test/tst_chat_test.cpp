@@ -5,6 +5,7 @@
 #include "chat/chatlistmodel.h"
 #include "chat/chatmessagelistmodel.h"
 #include "tools/chatlogsubscriber.h"
+#include "tools/accountmanager.h"
 
 class chat_test : public QObject
 {
@@ -32,7 +33,7 @@ private:
 chat_test::chat_test()
 {
     QCoreApplication::setOrganizationName(QStringLiteral("relog"));
-    QCoreApplication::setApplicationName(QStringLiteral("Hagoromo"));
+    QCoreApplication::setApplicationName(QStringLiteral("Hagoromo_unittest"));
 
     m_listenPort = m_mockServer.listen(QHostAddress::LocalHost, 0);
     m_service = QString("http://localhost:%1/response").arg(m_listenPort);
@@ -75,9 +76,12 @@ void chat_test::test_ChatListModel()
 {
     int i = 0;
     ChatListModel model;
-    model.setAccount(m_service + "/list", "did:plc:ipj5qejfoqu6eukvt72uhyit", "handle", "email",
-                     "accessJwt", "refreshJwt");
-    model.setServiceEndpoint(m_service + "/list");
+
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/list", "id", "pass", "did:plc:ipj5qejfoqu6eukvt72uhyit",
+            "handle", "email", "accessJwt", "refreshJwt", true);
+    AccountManager::getInstance()->updateServiceEndpoint(uuid, m_service + "/list");
+    model.setAccount(uuid);
 
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
@@ -136,9 +140,11 @@ void chat_test::test_ChatMessageListModel()
     ChatMessageListModel model;
     int i = 0;
 
-    model.setAccount(m_service + "/message/1", "did:plc:ipj5qejfoqu6eukvt72uhyit", "handle",
-                     "email", "accessJwt", "refreshJwt");
-    model.setServiceEndpoint(m_service + "/message/1");
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/message/1", "id", "pass", "did:plc:ipj5qejfoqu6eukvt72uhyit",
+            "handle", "email", "accessJwt", "refreshJwt", true);
+    AccountManager::getInstance()->updateServiceEndpoint(uuid, m_service + "/message/1");
+    model.setAccount(uuid);
 
     model.setConvoId("3ksrqt7eebs2b");
     model.setAutoLoading(false);
@@ -261,9 +267,11 @@ void chat_test::test_ChatMessageListModelByMembers()
     ChatMessageListModel model;
     int i = 0;
 
-    model.setAccount(m_service + "/message/2", "did:plc:ipj5qejfoqu6eukvt72uhyit", "handle",
-                     "email", "accessJwt", "refreshJwt");
-    model.setServiceEndpoint(m_service + "/message/2");
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/message/2", "id", "pass", "did:plc:ipj5qejfoqu6eukvt72uhyit",
+            "handle", "email", "accessJwt", "refreshJwt", true);
+    AccountManager::getInstance()->updateServiceEndpoint(uuid, m_service + "/message/2");
+    model.setAccount(uuid);
 
     model.setMemberDids(QStringList() << "did:plc:mqxsuw5b5rhpwo4lw6iwlid5");
 

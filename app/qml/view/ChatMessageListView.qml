@@ -55,9 +55,9 @@ Item {
         function rowCount() {
             return rootListView.model.rowCount();
         }
-        function setAccount(service, did, handle, email, accessJwt, refreshJwt) {
-            rootListView.model.setAccount(service, did, handle, email, accessJwt, refreshJwt)
-            userPost.setAccount(service, did, handle, email, accessJwt, refreshJwt)
+        function setAccount(uuid) {
+            rootListView.model.setAccount(uuid)
+            userPost.setAccount(uuid)
         }
         function getLatest() {
             rootListView.model.getLatest()

@@ -37,7 +37,7 @@ void PostLink::getPost(const QString &uri)
             setRunning(false);
             post->deleteLater();
         });
-        post->setAccount(m_account);
+        post->setAccount(account());
         post->getPosts(QStringList() << at_uri);
     });
 }

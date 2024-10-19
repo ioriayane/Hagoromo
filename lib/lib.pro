@@ -123,11 +123,13 @@ SOURCES += \
     $$PWD/realtime/notpostselector.cpp \
     $$PWD/realtime/orpostselector.cpp \
     $$PWD/realtime/xorpostselector.cpp \
+    $$PWD/tools/accountmanager.cpp \
     $$PWD/tools/authorization.cpp \
     $$PWD/tools/base32.cpp \
     $$PWD/tools/cardecoder.cpp \
     $$PWD/tools/chatlogsubscriber.cpp \
     $$PWD/tools/configurablelabels.cpp \
+    $$PWD/tools/encryption.cpp \
     $$PWD/tools/es256.cpp \
     $$PWD/tools/imagecompressor.cpp \
     $$PWD/tools/jsonwebtoken.cpp \
@@ -240,11 +242,14 @@ HEADERS += \
     $$PWD/realtime/orpostselector.h \
     $$PWD/realtime/xorpostselector.h \
     $$PWD/search/search.h \
+    $$PWD/tools/accountmanager.h \
     $$PWD/tools/authorization.h \
     $$PWD/tools/base32.h \
     $$PWD/tools/cardecoder.h \
     $$PWD/tools/chatlogsubscriber.h \
     $$PWD/tools/configurablelabels.h \
+    $$PWD/tools/encryption.h \
+    $$PWD/tools/encryption_seed.h \
     $$PWD/tools/es256.h \
     $$PWD/tools/imagecompressor.h \
     $$PWD/tools/jsonwebtoken.h \
@@ -253,7 +258,8 @@ HEADERS += \
     $$PWD/tools/listitemscache.h \
     $$PWD/tools/opengraphprotocol.h \
     $$PWD/tools/pinnedpostcache.h \
-    $$PWD/tools/qstringex.h
+    $$PWD/tools/qstringex.h \
+    common.h
 
 RESOURCES += \
     $$PWD/lib.qrc

@@ -1,6 +1,7 @@
 #include "reporter.h"
 
 #include "extension/com/atproto/moderation/comatprotomoderationcreatereportex.h"
+#include "tools/accountmanager.h"
 
 using AtProtocolInterface::ComAtprotoModerationCreateReportEx;
 
@@ -14,15 +15,14 @@ Reporter::Reporter(QObject *parent) : QObject { parent }, m_running(false)
     m_reasonHash[ReasonMisleading] = "reasonMisleading";
 }
 
-void Reporter::setAccount(const QString &service, const QString &did, const QString &handle,
-                          const QString &email, const QString &accessJwt, const QString &refreshJwt)
+AtProtocolInterface::AccountData Reporter::account() const
 {
-    m_account.service = service;
-    m_account.did = did;
-    m_account.handle = handle;
-    m_account.email = email;
-    m_account.accessJwt = accessJwt;
-    m_account.refreshJwt = refreshJwt;
+    return AccountManager::getInstance()->getAccount(m_account.uuid);
+}
+
+void Reporter::setAccount(const QString &uuid)
+{
+    m_account.uuid = uuid;
 }
 
 void Reporter::reportPost(const QString &uri, const QString &cid, const QString &text,
@@ -42,7 +42,7 @@ void Reporter::reportPost(const QString &uri, const QString &cid, const QString 
         emit finished(success);
         report->deleteLater();
     });
-    report->setAccount(m_account);
+    report->setAccount(account());
     if (!labelers.isEmpty() && !labelers.first().isEmpty()) {
         report->appendRawHeader("atproto-proxy", labelers.first() + "#atproto_labeler");
     }
@@ -66,7 +66,7 @@ void Reporter::reportAccount(const QString &did, const QString &text, const QStr
         emit finished(success);
         report->deleteLater();
     });
-    report->setAccount(m_account);
+    report->setAccount(account());
     if (!labelers.isEmpty() && !labelers.first().isEmpty()) {
         report->appendRawHeader("atproto-proxy", labelers.first() + "#atproto_labeler");
     }
@@ -91,7 +91,7 @@ void Reporter::reportMessage(const QString &did, const QString &convo_id, const 
         emit finished(success);
         report->deleteLater();
     });
-    report->setAccount(m_account);
+    report->setAccount(account());
     report->reportMessage(did, convo_id, message_id, text, m_reasonHash[reason]);
 }
 

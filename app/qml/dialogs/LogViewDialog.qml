@@ -194,9 +194,7 @@ Dialog {
                             text: qsTr("Search")
                             onClicked: {
                                 console.log("search:" + searchText.text)
-                                logSearchFeedListModel.setAccount(account.service, account.did,
-                                                                 account.handle, account.email,
-                                                                 account.accessJwt, account.refreshJwt)
+                                logSearchFeedListModel.setAccount(account.uuid)
                                 logSearchFeedListModel.selectCondition = searchText.text
                                 logSearchFeedListModel.clear()
                                 logSearchFeedListModel.getLatest()
@@ -252,9 +250,7 @@ Dialog {
                         }
                         onClickedItem: (name) => {
                                            console.log("select:" + name)
-                                           logDailyFeedListModel.setAccount(account.service, account.did,
-                                                                            account.handle, account.email,
-                                                                            account.accessJwt, account.refreshJwt)
+                                           logDailyFeedListModel.setAccount(account.uuid)
                                            logDailyFeedListModel.selectCondition = name
                                            logDailyFeedListModel.clear()
                                            logDailyFeedListModel.getLatest()
@@ -304,9 +300,7 @@ Dialog {
                         }
                         onClickedItem: (name) => {
                                            console.log("select:" + name)
-                                           logMonthlyFeedListModel.setAccount(account.service, account.did,
-                                                                              account.handle, account.email,
-                                                                              account.accessJwt, account.refreshJwt)
+                                           logMonthlyFeedListModel.setAccount(account.uuid)
                                            logMonthlyFeedListModel.selectCondition = name
                                            logMonthlyFeedListModel.clear()
                                            logMonthlyFeedListModel.getLatest()

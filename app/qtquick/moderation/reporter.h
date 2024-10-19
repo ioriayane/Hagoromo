@@ -22,9 +22,8 @@ public:
     };
     Q_ENUM(ReportReason)
 
-    Q_INVOKABLE void setAccount(const QString &service, const QString &did, const QString &handle,
-                                const QString &email, const QString &accessJwt,
-                                const QString &refreshJwt);
+    AtProtocolInterface::AccountData account() const;
+    Q_INVOKABLE void setAccount(const QString &uuid);
     Q_INVOKABLE void reportPost(const QString &uri, const QString &cid, const QString &text,
                                 const QStringList &labelers, Reporter::ReportReason reason);
     Q_INVOKABLE void reportAccount(const QString &did, const QString &text,
