@@ -19,6 +19,7 @@ class RecordOperator : public QObject
     Q_PROPERTY(bool running READ running WRITE setRunning NOTIFY runningChanged)
     Q_PROPERTY(QString progressMessage READ progressMessage WRITE setProgressMessage NOTIFY
                        progressMessageChanged FINAL)
+    Q_PROPERTY(QString handle READ handle CONSTANT)
 
 public:
     explicit RecordOperator(QObject *parent = nullptr);
@@ -29,7 +30,7 @@ public:
     };
     Q_ENUM(ListPurpose);
 
-    AtProtocolInterface::AccountData account();
+    AtProtocolInterface::AccountData account() const;
     Q_INVOKABLE void setAccount(const QString &uuid);
     Q_INVOKABLE void setText(const QString &text);
     Q_INVOKABLE void setReply(const QString &parent_cid, const QString &parent_uri,
@@ -83,9 +84,9 @@ public:
 
     bool running() const;
     void setRunning(bool newRunning);
-
     QString progressMessage() const;
     void setProgressMessage(const QString &newProgressMessage);
+    QString handle() const;
 
 signals:
     void errorOccured(const QString &code, const QString &message);

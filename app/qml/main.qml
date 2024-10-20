@@ -457,11 +457,6 @@ ApplicationWindow {
     // アカウント管理で内容が変更されたときにカラムとインデックスの関係が崩れるのでuuidで確認する
     AccountListModel {
         id: accountListModel
-        onUpdatedAccount: (uuid) => {
-                              console.log("onUpdatedAccount:" + uuid)
-                              // カラムを更新しにいく
-                              repeater.updateAccount(uuid)
-                          }
         onFinished: {
             console.log("onFinished:" + allAccountsReady + ", count=" + columnManageModel.rowCount())
             globalProgressFrame.text = ""
@@ -876,18 +871,6 @@ ApplicationWindow {
                         max_w = (max_w < w[i]) ? w[i] : max_w
                     }
                     scrollView.contentWidth = max_w
-                }
-
-                function updateAccount(account_uuid){
-                    for(var i=0; i<repeater.count; i++){
-                        var item = repeater.itemAt(i)   //ここのitemはloader自身
-                        if(item.item.account.uuid === account_uuid){
-                            if(item.item.account.set(accountListModel, item.item.account.uuid)){
-                                console.log("Update column : col=" + i + ", a_uuid=" + item.item.account.uuid)
-                                item.item.reflect()
-                            }
-                        }
-                    }
                 }
 
                 Loader {

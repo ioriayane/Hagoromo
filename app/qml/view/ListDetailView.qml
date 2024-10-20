@@ -32,7 +32,6 @@ ColumnLayout {
 
     RecordOperator {
         id: recordOperator
-        property string accountHandle: ""
         onFinished: (success) => {
                         if(success){
                             listDetailView.back()
@@ -53,7 +52,6 @@ ColumnLayout {
         function setAccount(uuid) {
             listItemListModel.setAccount(uuid)
             recordOperator.setAccount(uuid)
-            recordOperator.accountHandle = handle
         }
         function getLatest() {
             listItemListModel.getLatest()
@@ -232,7 +230,7 @@ ColumnLayout {
                 id: listItemListModel
                 autoLoading: false
                 uri: listDetailView.listUri
-                property bool mine: (creatorHandle === recordOperator.accountHandle) &&  recordOperator.accountHandle.length > 0
+                property bool mine: (creatorHandle === recordOperator.handle) &&  recordOperator.handle.length > 0
                 onErrorOccured: (code, message) => listDetailView.errorOccured(code, message)
             }
 
