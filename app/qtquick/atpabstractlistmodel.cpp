@@ -414,7 +414,12 @@ QStringList AtpAbstractListModel::getLaunguages(const QVariant &record) const
 
 QString AtpAbstractListModel::getVia(const QVariant &record) const
 {
-    return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(record).via;
+    AppBskyFeedPost::Main post = LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(record);
+    if (!post.space_aoisora_post_via.isEmpty()) {
+        return post.space_aoisora_post_via;
+    } else {
+        return post.via;
+    }
 }
 
 QVariant AtpAbstractListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDefs::PostView &post,

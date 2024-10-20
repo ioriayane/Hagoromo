@@ -1428,6 +1428,7 @@ void copyMain(const QJsonObject &src, AppBskyFeedPost::Main &dest)
         }
         dest.createdAt = src.value("createdAt").toString();
         dest.via = src.value("via").toString();
+        dest.space_aoisora_post_via = src.value("space.aoisora.post.via").toString();
     }
 }
 }

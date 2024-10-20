@@ -990,7 +990,8 @@ struct Main
             tags; // Additional hashtags, in addition to any included in post text and facets.
     QString createdAt; // datetime , Client-declared timestamp when this post was originally
                        // created.
-    QString via; // client name(Unofficial field)
+    QString via; // client name(Unofficial field) old
+    QString space_aoisora_post_via; // client name(Unofficial field)
 };
 }
 
