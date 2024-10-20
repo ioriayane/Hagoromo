@@ -674,16 +674,6 @@ ColumnLayout {
         }
     }
 
-    function reflect(){
-        // TODO: account: 不要では？
-        // StackViewに積まれているViewに反映
-        for(var i=0; i<columnStackView.depth; i++){
-            console.log("Reflect : " + i + ", " + account.handle)
-            var item = columnStackView.get(i)
-            item.model.setAccount(account.uuid)
-        }
-    }
-
     ClickableFrame {
         id: profileFrame
         Layout.fillWidth: true

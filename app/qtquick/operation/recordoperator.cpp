@@ -32,7 +32,7 @@ RecordOperator::RecordOperator(QObject *parent)
 {
 }
 
-AtProtocolInterface::AccountData RecordOperator::account()
+AtProtocolInterface::AccountData RecordOperator::account() const
 {
     return AccountManager::getInstance()->getAccount(m_account.uuid);
 }
@@ -1284,4 +1284,9 @@ void RecordOperator::setProgressMessage(const QString &newProgressMessage)
         return;
     m_progressMessage = newProgressMessage;
     emit progressMessageChanged();
+}
+
+QString RecordOperator::handle() const
+{
+    return account().handle;
 }

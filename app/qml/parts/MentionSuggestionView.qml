@@ -17,8 +17,8 @@ Rectangle {
 
     signal selected(string handle)
 
-    function setAccount(service, did, handle, accessJwt){
-        searchProfileListModel.setAccount(service, did, handle, "", accessJwt, "")
+    function setAccount(uuid){
+        searchProfileListModel.setAccount(uuid)
     }
 
     function reload(text){
