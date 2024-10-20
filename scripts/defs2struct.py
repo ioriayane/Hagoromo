@@ -251,6 +251,9 @@ class Defs2Struct:
             # app.bsky.embed.recordWithMediaがあるのでcapitalize()は使えない
         return ''.join(dest)
 
+    def to_property_style(self, name: str) -> str:
+        return name.replace('.', '_')
+
     def to_header_path(self, namespace: str) -> str:
         srcs = namespace.split('.')
         dest = ['atprotocol']
@@ -540,13 +543,13 @@ class Defs2Struct:
                     (temp_pointer, temp_list_pointer, temp_enum) = self.output_union(namespace, type_name, property_name, properties[property_name].get('refs', []), p_comment)
                     enum_text.extend(temp_enum)
                 elif p_type == 'unknown':
-                    self.output_text[namespace].append('    QVariant %s;%s' % (property_name, p_comment, ))
+                    self.output_text[namespace].append('    QVariant %s;%s' % (self.to_property_style(property_name), p_comment, ))
                 elif p_type == 'integer':
-                    self.output_text[namespace].append('    int %s = 0;%s' % (property_name, p_comment, ))
+                    self.output_text[namespace].append('    int %s = 0;%s' % (self.to_property_style(property_name), p_comment, ))
                 elif p_type == 'boolean':
-                    self.output_text[namespace].append('    bool %s = false;%s' % (property_name, p_comment, ))
+                    self.output_text[namespace].append('    bool %s = false;%s' % (self.to_property_style(property_name), p_comment, ))
                 elif p_type == 'string':
-                    self.output_text[namespace].append('    QString %s;%s' % (property_name, p_comment, ))
+                    self.output_text[namespace].append('    QString %s;%s' % (self.to_property_style(property_name), p_comment, ))
                 elif p_type == 'array':
                     items_type = properties[property_name].get('items', {}).get('type', '')
                     if items_type == 'ref':
@@ -555,13 +558,13 @@ class Defs2Struct:
                         (temp_pointer, temp_list_pointer, temp_enum) = self.output_union(namespace, type_name, property_name, properties[property_name].get('items', {}).get('refs', []), p_comment, True)
                         enum_text.extend(temp_enum)
                     elif items_type == 'integer':
-                        self.output_text[namespace].append('    QList<int> %s;%s' % (property_name, p_comment, ))
+                        self.output_text[namespace].append('    QList<int> %s;%s' % (self.to_property_style(property_name), p_comment, ))
                     elif items_type == 'boolean':
-                        self.output_text[namespace].append('    QList<bool> %s;%s' % (property_name, p_comment, ))
+                        self.output_text[namespace].append('    QList<bool> %s;%s' % (self.to_property_style(property_name), p_comment, ))
                     elif items_type == 'string':
-                        self.output_text[namespace].append('    QList<QString> %s;%s' % (property_name, p_comment, ))
+                        self.output_text[namespace].append('    QList<QString> %s;%s' % (self.to_property_style(property_name), p_comment, ))
                 elif p_type == 'blob':
-                    self.output_text[namespace].append('    Blob %s;%s' % (property_name, p_comment, ))
+                    self.output_text[namespace].append('    Blob %s;%s' % (self.to_property_style(property_name), p_comment, ))
 
             self.output_text[namespace].append('};')
 
@@ -691,16 +694,16 @@ class Defs2Struct:
                         extend_ns = '%s::' % (self.to_namespace_style(ref_namespace), )
                         forward_type = self.history_type[ref_namespace + '#' + ref_type_name]
                     if self.check_pointer(namespace, type_name, property_name, ref_namespace, ref_type_name):
-                        self.output_func_text[namespace].append('        if (dest.%s.isNull())' % (property_name, ))
-                        self.output_func_text[namespace].append('            dest.%s = QSharedPointer<%s%s>(new %s%s());' % (property_name, extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), ))
-                        self.output_func_text[namespace].append('        %scopy%s(src.value("%s").toObject(), *dest.%s);' % (extend_ns, self.to_struct_style(ref_type_name), property_name, property_name, ))
+                        self.output_func_text[namespace].append('        if (dest.%s.isNull())' % (self.to_property_style(property_name), ))
+                        self.output_func_text[namespace].append('            dest.%s = QSharedPointer<%s%s>(new %s%s());' % (self.to_property_style(property_name), extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), ))
+                        self.output_func_text[namespace].append('        %scopy%s(src.value("%s").toObject(), *dest.%s);' % (extend_ns, self.to_struct_style(ref_type_name), property_name, self.to_property_style(property_name), ))
                     else:
                         if forward_type in ['integer', 'string', 'boolean']:
                             convert_method = ''
                         else:
                             convert_method = '.toObject()'
                         self.output_func_text[namespace].append('        %scopy%s(src.value("%s")%s, dest.%s);' % (
-                            extend_ns, self.to_struct_style(ref_type_name), property_name, convert_method, property_name,))
+                            extend_ns, self.to_struct_style(ref_type_name), property_name, convert_method, self.to_property_style(property_name),))
 
                 elif p_type == 'union':
                     value_key: str = '$type'
@@ -744,16 +747,16 @@ class Defs2Struct:
                                 self.output_func_text[namespace].append('        }')
 
                 elif p_type == 'unknown':
-                    self.output_func_text[namespace].append('        LexiconsTypeUnknown::copyUnknown(src.value("%s").toObject(), dest.%s);' % (property_name, property_name, ))
+                    self.output_func_text[namespace].append('        LexiconsTypeUnknown::copyUnknown(src.value("%s").toObject(), dest.%s);' % (property_name, self.to_property_style(property_name), ))
 
                 elif p_type == 'integer':
-                    self.output_func_text[namespace].append('        dest.%s = src.value("%s").toInt();' % (property_name, property_name, ))
+                    self.output_func_text[namespace].append('        dest.%s = src.value("%s").toInt();' % (self.to_property_style(property_name), property_name, ))
 
                 elif p_type == 'boolean':
-                    self.output_func_text[namespace].append('        dest.%s = src.value("%s").toBool();' % (property_name, property_name, ))
+                    self.output_func_text[namespace].append('        dest.%s = src.value("%s").toBool();' % (self.to_property_style(property_name), property_name, ))
 
                 elif p_type == 'string':
-                    self.output_func_text[namespace].append('        dest.%s = src.value("%s").toString();' % (property_name, property_name, ))
+                    self.output_func_text[namespace].append('        dest.%s = src.value("%s").toString();' % (self.to_property_style(property_name), property_name, ))
 
                 elif p_type == 'array':
                     items_type = properties[property_name].get('items', {}).get('type', '')
@@ -770,14 +773,14 @@ class Defs2Struct:
                         if self.check_pointer(namespace, type_name, property_name, ref_namespace, ref_type_name):
                             self.output_func_text[namespace].append('            QSharedPointer<%s%s> child = QSharedPointer<%s%s>(new %s%s());' % (extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), ))
                             self.output_func_text[namespace].append('            %s(s.toObject(), *child);' % (func_name, ))
-                            self.output_func_text[namespace].append('            dest.%s.append(child);' % (property_name, ))
+                            self.output_func_text[namespace].append('            dest.%s.append(child);' % (self.to_property_style(property_name), ))
                         else:
                             self.output_func_text[namespace].append('            %s%s child;' % (extend_ns, self.to_struct_style(ref_type_name), ))
                             if self.check_object(ref_namespace, 'copy%s' % (self.to_struct_style(ref_type_name), )):
                                 self.output_func_text[namespace].append('            %s(s.toObject(), child);' % (func_name, ))
                             else:
                                 self.output_func_text[namespace].append('            %s(s, child);' % (func_name, ))
-                            self.output_func_text[namespace].append('            dest.%s.append(child);' % (property_name, ))
+                            self.output_func_text[namespace].append('            dest.%s.append(child);' % (self.to_property_style(property_name), ))
                         self.output_func_text[namespace].append('        }')
 
                     elif items_type == 'union':
@@ -817,20 +820,20 @@ class Defs2Struct:
 
                     elif items_type == 'integer':
                         self.output_func_text[namespace].append('        for (const auto &value : src.value("%s").toArray()) {' % (property_name, ))
-                        self.output_func_text[namespace].append('            dest.%s.append(value.toInt());' % (property_name, ))
+                        self.output_func_text[namespace].append('            dest.%s.append(value.toInt());' % (self.to_property_style(property_name), ))
                         self.output_func_text[namespace].append('        }')
 
                     elif items_type == 'boolean':
                         self.output_func_text[namespace].append('        for (const auto &value : src.value("%s").toArray()) {' % (property_name, ))
-                        self.output_func_text[namespace].append('            dest.%s.append(value.toBool());' % (property_name, ))
+                        self.output_func_text[namespace].append('            dest.%s.append(value.toBool());' % (self.to_property_style(property_name), ))
                         self.output_func_text[namespace].append('        }')
 
                     elif items_type == 'string':
                         self.output_func_text[namespace].append('        for (const auto &value : src.value("%s").toArray()) {' % (property_name, ))
-                        self.output_func_text[namespace].append('            dest.%s.append(value.toString());' % (property_name, ))
+                        self.output_func_text[namespace].append('            dest.%s.append(value.toString());' % (self.to_property_style(property_name), ))
                         self.output_func_text[namespace].append('        }')
                 elif p_type == 'blob':
-                    self.output_func_text[namespace].append('        LexiconsTypeUnknown::copyBlob(src.value("%s").toObject(), dest.%s);' % (property_name, property_name, ))
+                    self.output_func_text[namespace].append('        LexiconsTypeUnknown::copyBlob(src.value("%s").toObject(), dest.%s);' % (property_name, self.to_property_style(property_name), ))
                     # self.output_text[namespace].append('    Blob %s;' % (property_name, ))
 
             self.output_func_text[namespace].append('    }')
@@ -937,7 +940,7 @@ class Defs2Struct:
                 if self.check_pointer(namespace, type_name, '', ref_namespace, ref_type_name):
                     self.output_func_text[namespace].append('            QSharedPointer<%s%s> child = QSharedPointer<%s%s>(new %s%s());' % (extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), ))
                     self.output_func_text[namespace].append('            %s(s.toObject(), *child);' % (func_name, ))
-                    self.output_func_text[namespace].append('            dest.%s.append(child);' % (property_name, ))
+                    self.output_func_text[namespace].append('            dest.%s.append(child);' % (self.to_property_style(property_name), ))
                 else:
                     self.output_func_text[namespace].append('            %s%s child;' % (extend_ns, self.to_struct_style(ref_type_name), ))
                     if self.check_object(ref_namespace, 'copy%s' % (self.to_struct_style(ref_type_name), )):

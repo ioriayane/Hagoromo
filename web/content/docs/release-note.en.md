@@ -10,6 +10,8 @@ description: This is a multi-column Bluesky client.
 
 - Add
   - Add a link to user's profile if user is registered with Linkat
+- Update
+  - Change the format of the embedded via in the post
 
 ### v0.39.0 - 2024/10/12
 
