@@ -397,7 +397,7 @@ void copyMember(const QJsonObject &src, ToolsOzoneTeamDefs::Member &dest);
 }
 // blue.linkat.defs
 namespace BlueLinkatDefs {
-void copyLinkItem(const QJsonObject &src, BlueLinkatDefs::LinkItem &dest);
+void copyCard(const QJsonObject &src, BlueLinkatDefs::Card &dest);
 }
 // blue.linkat.board
 namespace BlueLinkatBoard {

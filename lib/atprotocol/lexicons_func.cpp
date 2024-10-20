@@ -2801,11 +2801,12 @@ void copyMember(const QJsonObject &src, ToolsOzoneTeamDefs::Member &dest)
 }
 // blue.linkat.defs
 namespace BlueLinkatDefs {
-void copyLinkItem(const QJsonObject &src, BlueLinkatDefs::LinkItem &dest)
+void copyCard(const QJsonObject &src, BlueLinkatDefs::Card &dest)
 {
     if (!src.isEmpty()) {
         dest.url = src.value("url").toString();
         dest.text = src.value("text").toString();
+        dest.emoji = src.value("emoji").toString();
     }
 }
 }
@@ -2815,8 +2816,8 @@ void copyMain(const QJsonObject &src, BlueLinkatBoard::Main &dest)
 {
     if (!src.isEmpty()) {
         for (const auto &s : src.value("cards").toArray()) {
-            BlueLinkatDefs::LinkItem child;
-            BlueLinkatDefs::copyLinkItem(s.toObject(), child);
+            BlueLinkatDefs::Card child;
+            BlueLinkatDefs::copyCard(s.toObject(), child);
             dest.cards.append(child);
         }
     }
