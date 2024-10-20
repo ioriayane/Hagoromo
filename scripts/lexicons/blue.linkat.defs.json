@@ -2,18 +2,20 @@
     "lexicon": 1,
     "id": "blue.linkat.defs",
     "defs": {
-        "linkItem": {
+        "card": {
             "type": "object",
-            "required": [
-                "url",
-                "text"
-            ],
             "properties": {
                 "url": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "URL of the link"
                 },
                 "text": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Text of the card"
+                },
+                "emoji": {
+                    "type": "string",
+                    "description": "Emoji of the card"
                 }
             }
         }

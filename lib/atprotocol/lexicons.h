@@ -1983,10 +1983,11 @@ struct Member
 
 // blue.linkat.defs
 namespace BlueLinkatDefs {
-struct LinkItem
+struct Card
 {
-    QString url;
-    QString text;
+    QString url; // URL of the link
+    QString text; // Text of the card
+    QString emoji; // Emoji of the card
 };
 }
 
@@ -1994,7 +1995,7 @@ struct LinkItem
 namespace BlueLinkatBoard {
 struct Main
 {
-    QList<BlueLinkatDefs::LinkItem> cards;
+    QList<BlueLinkatDefs::Card> cards;
 };
 }
 
