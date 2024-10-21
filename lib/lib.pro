@@ -137,7 +137,8 @@ SOURCES += \
     $$PWD/tools/leb128.cpp \
     $$PWD/tools/listitemscache.cpp \
     $$PWD/tools/opengraphprotocol.cpp \
-    $$PWD/tools/pinnedpostcache.cpp
+    $$PWD/tools/pinnedpostcache.cpp \
+    tools/tid.cpp
 
 HEADERS += \
     $$PWD/atprotocol/accessatprotocol.h \
@@ -259,7 +260,8 @@ HEADERS += \
     $$PWD/tools/opengraphprotocol.h \
     $$PWD/tools/pinnedpostcache.h \
     $$PWD/tools/qstringex.h \
-    common.h
+    common.h \
+    tools/tid.h
 
 RESOURCES += \
     $$PWD/lib.qrc

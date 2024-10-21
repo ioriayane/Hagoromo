@@ -27,3 +27,15 @@ QString Base32::encode(const QByteArray &data, const bool with_padding)
 
     return result;
 }
+
+QString Base32::encode_s(qint64 num)
+{
+    static const char alphabet[] = "234567abcdefghijklmnopqrstuvwxyz";
+    QString result;
+
+    for (int i = 0; i < 13; i++) {
+        result.insert(0, QChar(alphabet[num & 0x1F]));
+        num >>= 5;
+    }
+    return result;
+}
