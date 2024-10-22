@@ -345,6 +345,17 @@ QJsonArray FeedGeneratorListModel::removeGeneratorToPreference(const QString &sr
                 }
             }
             value.insert("items", json_items_dest);
+
+        } else if (value.value("$type") == QStringLiteral("app.bsky.actor.defs#savedFeedsPref")
+                   && value.value("saved").isArray()) {
+            // 互換性維持で読み込み側はv1とv2のORなので削除も両方から実施
+            QJsonArray json_saved;
+            for (const auto &value : value.value("saved").toArray()) {
+                if (value.toString() != uri) {
+                    json_saved.append(value);
+                }
+            }
+            value.insert("saved", json_saved);
         }
         dest_preferences.append(value);
     }
