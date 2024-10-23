@@ -50,6 +50,7 @@ private:
     void test_putPreferences(const QString &path, const QByteArray &body);
     void test_putRecord(const QString &path, const QByteArray &body);
     void verifyStr(const QString &expect, const QString &actual);
+    QJsonObject copyObject(const QJsonObject &object, const QStringList &excludes);
 };
 
 hagoromo_test::hagoromo_test()
@@ -245,7 +246,7 @@ void hagoromo_test::test_FeedGeneratorListModel()
         model.setAccount(uuid);
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.removeGenerator(
-                "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/with-friends");
+                "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/whats-hot");
         spy.wait(10 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
@@ -753,14 +754,17 @@ void hagoromo_test::test_putPreferences(const QString &path, const QByteArray &b
         json_doc_expect =
                 UnitTestCommon::loadJson(":/data/generator/remove/app.bsky.actor.putPreferences");
     }
+    QJsonDocument json_doc_expect2 =
+            QJsonDocument(copyObject(json_doc_expect.object(), QStringList() << "id"));
 
     QJsonDocument json_doc = QJsonDocument::fromJson(body);
+    QJsonDocument json_doc2 = QJsonDocument(copyObject(json_doc.object(), QStringList() << "id"));
 
-    if (json_doc_expect.object() != json_doc.object()) {
+    if (json_doc_expect2.object() != json_doc2.object()) {
         qDebug().noquote().nospace() << QString("\nexpect:%1\nactual:%2\n")
-                                                .arg(json_doc_expect.toJson(), json_doc.toJson());
+                                                .arg(json_doc_expect2.toJson(), json_doc2.toJson());
     }
-    QVERIFY(json_doc_expect.object() == json_doc.object());
+    QVERIFY(json_doc_expect2.object() == json_doc2.object());
 }
 
 void hagoromo_test::test_putRecord(const QString &path, const QByteArray &body)
@@ -789,6 +793,32 @@ void hagoromo_test::verifyStr(const QString &expect, const QString &actual)
 {
     QVERIFY2(expect == actual,
              QString("\nexpect:%1\nactual:%2\n").arg(expect, actual).toLocal8Bit());
+}
+
+QJsonObject hagoromo_test::copyObject(const QJsonObject &src, const QStringList &excludes)
+{
+
+    QJsonObject dest;
+    for (const auto &key : src.keys()) {
+        if (excludes.contains(key))
+            continue;
+        if (src.value(key).isObject()) {
+            dest.insert(key, copyObject(src.value(key).toObject(), excludes));
+        } else if (src.value(key).isArray()) {
+            QJsonArray dest_array;
+            for (const auto value : src.value(key).toArray()) {
+                if (value.isObject()) {
+                    dest_array.append(copyObject(value.toObject(), excludes));
+                } else {
+                    dest_array.append(value);
+                }
+            }
+            dest.insert(key, dest_array);
+        } else {
+            dest.insert(key, src.value(key));
+        }
+    }
+    return dest;
 }
 
 QTEST_MAIN(hagoromo_test)

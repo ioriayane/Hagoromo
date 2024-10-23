@@ -7,6 +7,7 @@
 #include "tools/base32.h"
 #include "tools/leb128.h"
 #include "tools/cardecoder.h"
+#include "tools/tid.h"
 
 class tools_test : public QObject
 {
@@ -21,6 +22,8 @@ private slots:
     void cleanupTestCase();
 
     void test_base32();
+    void test_base32_s();
+    void test_tid();
     void test_Leb128();
     void test_CarDecoder();
 };
@@ -80,6 +83,24 @@ void tools_test::test_base32()
         QVERIFY2(actual == QString(), actual.toLocal8Bit());
         actual = Base32::encode(QByteArray(), true);
         QVERIFY2(actual == QString(), actual.toLocal8Bit());
+    }
+}
+
+void tools_test::test_base32_s()
+{
+    QVERIFY2(Base32::encode_s(0) == "2222222222222", Base32::encode_s(0).toLocal8Bit());
+}
+
+void tools_test::test_tid()
+{
+    QString prev = "";
+    QString current;
+
+    for (int i = 0; i < 1000; i++) {
+        current = Tid::next();
+        QVERIFY2(prev < current,
+                 QString("prev, current = %1, %2").arg(prev, current).toLocal8Bit());
+        prev = current;
     }
 }
 
