@@ -214,20 +214,15 @@ void oauth_test::test_oauth()
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
         QList<QVariant> arguments = spy.takeFirst();
         request_url = arguments.at(0).toString();
-        QVERIFY2(
-                request_url
-                        == (QStringLiteral("http://localhost:") + QString::number(m_listenPort)
-                            + QStringLiteral(
-                                    "/response/2/oauth/"
-                                    "authorize?client_id=http%3A%2F%2Flocalhost%2Ftech%2Frelog%"
-                                    "2Fhagoromo%3Fredirect_uri%3Dhttp%253A%252F%252F127.0.0.1%253A")
-                            + oauth.listenPort()
-                            + QStringLiteral(
-                                    "%252Ftech%252Frelog%"
-                                    "252Fhagoromo%252Foauth-callback&request_uri=urn%3Aietf%"
-                                    "3Aparams%3Aoauth%3Arequest_uri%3Areq-"
-                                    "05650c01604941dc674f0af9cb032aca")),
-                request_url.toLocal8Bit());
+        QVERIFY2(request_url
+                         == (QStringLiteral("http://localhost:") + QString::number(m_listenPort)
+                             + QStringLiteral(
+                                     "/response/2/oauth/"
+                                     "authorize?client_id=https%3A%2F%2Foauth.hagoromo.relog.tech%"
+                                     "2Fclient-metadata.json&request_uri=urn%3Aietf%"
+                                     "3Aparams%3Aoauth%3Arequest_uri%3Areq-"
+                                     "05650c01604941dc674f0af9cb032aca")),
+                 request_url.toLocal8Bit());
     }
 
     {
@@ -246,7 +241,7 @@ void oauth_test::test_oauth()
         QUrlQuery request_query(request.query());
         QUrl client_id(request_query.queryItemValue("client_id", QUrl::FullyDecoded));
         QUrlQuery client_query(client_id.query());
-        redirect_url = client_query.queryItemValue("redirect_uri", QUrl::FullyDecoded);
+        redirect_url = "http://127.0.0.1/tech/relog/hagoromo/oauth-callback";
         QUrlQuery redirect_query;
         redirect_query.addQueryItem("iss", "iss-hogehoge");
         redirect_query.addQueryItem("state", oauth.state());
@@ -320,6 +315,7 @@ void oauth_test::test_es256()
 
 void oauth_test::test_get(const QString &url, const QByteArray &except_data)
 {
+    qDebug() << "test_get url" << url;
     QNetworkRequest request((QUrl(url)));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
