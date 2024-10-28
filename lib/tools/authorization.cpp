@@ -137,11 +137,18 @@ void Authorization::requestOauthAuthorizationServer()
         if (success) {
             QString error_message;
             if (validateServerMetadata(server->serverMetadata(), error_message)) {
+                const QStringList scope_candidates = QStringList() << "atproto"
+                                                                   << "transition:generic"
+                                                                   << "transition:chat.bsky";
                 setPushedAuthorizationRequestEndpoint(
                         server->serverMetadata().pushed_authorization_request_endpoint);
                 setAuthorizationEndpoint(server->serverMetadata().authorization_endpoint);
                 setTokenEndopoint(server->serverMetadata().token_endpoint);
-                m_scopesSupported = server->serverMetadata().scopes_supported;
+                for (const auto &scope : scope_candidates) {
+                    if (server->serverMetadata().scopes_supported.contains(scope)) {
+                        m_scopesSupported.append(scope);
+                    }
+                }
 
                 // next step
                 par();
@@ -241,8 +248,7 @@ void Authorization::makeClientId()
     m_redirectUri.append("http://127.0.0.1");
     m_redirectUri.append(port);
     m_redirectUri.append("/tech/relog/hagoromo/oauth-callback");
-    m_clientId.append("http://localhost/tech/relog/hagoromo?redirect_uri=");
-    m_clientId.append(simplyEncode(m_redirectUri));
+    m_clientId = "https://oauth.hagoromo.relog.tech/client-metadata.json";
 }
 
 void Authorization::makeCodeChallenge()
