@@ -1071,6 +1071,32 @@ ApplicationWindow {
         visible: false
     }
 
+    DragAndDropArea {
+        anchors.fill: parent
+        anchors.margins: 5
+        enabled: accountListModel.count > 0
+                 && !imageFullView.visible
+                 && !messageDialog.visible
+                 && !logViewDialog.visible
+                 && !selectThreadGateDialog.visible
+                 && !addMutedWordDialog.visible
+                 && !editProfileDialog.visible
+                 && !addListDialog.visible
+                 && !addToListDialog.visible
+                 && !reportMessageDialog.visible
+                 && !reportAccountDialog.visible
+                 && !reportDialog.visible
+                 && !columnsettingDialog.visible
+                 && !discoverFeedsDialog.visible
+                 && !accountDialog.visible
+                 && !addColumnDialog.visible
+                 && !searchDialog.visible
+                 && !postDialog.visible
+                 && !settingDialog.visible
+        onDropped: (urls) => postDialog.openWithFiles(urls)
+    }
+
+
     Component.onCompleted: {
         if(accountListModel.count === 0){
             globalProgressFrame.text = qsTr("Loading account(s) ...")

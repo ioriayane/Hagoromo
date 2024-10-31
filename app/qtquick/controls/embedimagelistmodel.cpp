@@ -2,6 +2,8 @@
 
 #include <QTimer>
 #include <QDebug>
+#include <QFileInfo>
+#include <QUrl>
 
 EmbedImageListModel::EmbedImageListModel(QObject *parent)
     : QAbstractListModel { parent }, m_count(0), m_running(false)
@@ -80,15 +82,29 @@ void EmbedImageListModel::remove(const int row)
     }
 }
 
-void EmbedImageListModel::append(const QStringList &uris)
+bool EmbedImageListModel::append(const QStringList &uris)
 {
     if (uris.isEmpty() || running())
-        return;
+        return false;
 
     setRunning(true);
-    m_uriCue = uris;
+    m_uriCue.clear();
+
+    QStringList exts;
+    exts << "jpg"
+         << "jpeg"
+         << "png"
+         << "gif";
+    for (const auto &uri : uris) {
+        QFileInfo info(QUrl(uri).toLocalFile());
+        if (exts.contains(info.suffix().toLower())) {
+            m_uriCue.append(uri);
+        }
+    }
 
     QTimer::singleShot(10, this, &EmbedImageListModel::appendItem);
+
+    return !m_uriCue.isEmpty();
 }
 
 void EmbedImageListModel::updateAlt(const int row, const QString &alt)

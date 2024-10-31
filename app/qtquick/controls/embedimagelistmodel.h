@@ -36,7 +36,7 @@ public:
 
     Q_INVOKABLE void clear();
     Q_INVOKABLE void remove(const int row);
-    Q_INVOKABLE void append(const QStringList &uris);
+    Q_INVOKABLE bool append(const QStringList &uris);
     Q_INVOKABLE void updateAlt(const int row, const QString &alt);
 
     Q_INVOKABLE QStringList uris() const;
