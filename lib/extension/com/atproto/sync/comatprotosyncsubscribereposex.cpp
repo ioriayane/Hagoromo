@@ -162,16 +162,16 @@ void ComAtprotoSyncSubscribeReposEx::messageReceivedFromJetStream(const QByteArr
     QJsonDocument doc = QJsonDocument::fromJson(message);
     QJsonObject json_src = doc.object();
     QHash<QString, QString> commit_type_to;
-    commit_type_to["c"] = "create";
-    commit_type_to["u"] = "update";
-    commit_type_to["d"] = "delete";
+    commit_type_to["create"] = "create";
+    commit_type_to["update"] = "update";
+    commit_type_to["delete"] = "delete";
 
     if (doc.isNull() || json_src.isEmpty()) {
         qDebug().noquote() << "Invalid data";
         qDebug().noquote() << "message:" << message;
         emit errorOccured("InvalidData", "Unreadable JSON data.");
         m_webSocket.close();
-    } else if (!json_src.contains("type") || !json_src.contains("did")
+    } else if (!json_src.contains("kind") || !json_src.contains("did")
                || !json_src.contains("commit")) {
         qDebug().noquote() << "Unsupport data:" << message;
         // emit errorOccured("InvalidData", "Unanticipated data structure.");
@@ -194,7 +194,7 @@ void ComAtprotoSyncSubscribeReposEx::messageReceivedFromJetStream(const QByteArr
         json_dest.insert("commit", json_dest_commit);
 
         QJsonObject json_dest_op;
-        QString commit_type = commit_type_to.value(json_src_commit.value("type").toString());
+        QString commit_type = commit_type_to.value(json_src_commit.value("operation").toString());
         json_dest_op.insert("action", commit_type);
         json_dest_op.insert("path",
                             QString("%1/%2").arg(json_src_commit.value("collection").toString(),

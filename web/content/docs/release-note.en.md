@@ -14,6 +14,7 @@ description: This is a multi-column Bluesky client.
 - Update
   - Change the format of the embedded via in the post
   - Change the internal format of feed storage to V2
+  - Keeping up with jetstream changes
 
 ### v0.39.0 - 2024/10/12
 
