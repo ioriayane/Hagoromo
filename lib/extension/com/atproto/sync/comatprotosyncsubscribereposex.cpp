@@ -161,10 +161,10 @@ void ComAtprotoSyncSubscribeReposEx::messageReceivedFromJetStream(const QByteArr
 
     QJsonDocument doc = QJsonDocument::fromJson(message);
     QJsonObject json_src = doc.object();
-    QHash<QString, QString> commit_type_to;
-    commit_type_to["create"] = "create";
-    commit_type_to["update"] = "update";
-    commit_type_to["delete"] = "delete";
+    QHash<QString, QString> commit_kind_to;
+    commit_kind_to["create"] = "create";
+    commit_kind_to["update"] = "update";
+    commit_kind_to["delete"] = "delete";
 
     if (doc.isNull() || json_src.isEmpty()) {
         qDebug().noquote() << "Invalid data";
@@ -194,12 +194,12 @@ void ComAtprotoSyncSubscribeReposEx::messageReceivedFromJetStream(const QByteArr
         json_dest.insert("commit", json_dest_commit);
 
         QJsonObject json_dest_op;
-        QString commit_type = commit_type_to.value(json_src_commit.value("operation").toString());
-        json_dest_op.insert("action", commit_type);
+        QString commit_op = commit_kind_to.value(json_src_commit.value("operation").toString());
+        json_dest_op.insert("action", commit_op);
         json_dest_op.insert("path",
                             QString("%1/%2").arg(json_src_commit.value("collection").toString(),
                                                  json_src_commit.value("rkey").toString()));
-        if (commit_type == "delete") {
+        if (commit_op == "delete") {
             json_dest_op.insert("cid", QJsonValue());
         } else {
             json_dest_op.insert("cid", json_dest_commit);
