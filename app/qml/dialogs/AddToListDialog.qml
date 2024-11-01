@@ -27,7 +27,7 @@ Dialog {
     signal requestAddList()
 
     onOpened: {
-        if(account.service.length === 0){
+        if(account.uuid.length === 0){
             return
         }
         addListDialog.account.uuid = account.uuid
@@ -39,8 +39,7 @@ Dialog {
         addListDialog.account.avatar = account.avatar
 
         listsListModel.clear()
-        listsListModel.setAccount(account.service, account.did, account.handle,
-                                       account.email, account.accessJwt, account.refreshJwt)
+        listsListModel.setAccount(account.uuid)
         listsListModel.getLatest()
     }
     onClosed: {

@@ -8,6 +8,7 @@ class Base32
 {
 public:
     static QString encode(const QByteArray &data, const bool with_padding = false);
+    static QString encode_s(qint64 num);
 };
 
 #endif // BASE32_H

@@ -27,12 +27,11 @@ Dialog {
     signal errorOccured(string account_uuid, string code, string message)
 
     onOpened: {
-        if(account.service.length === 0){
+        if(account.uuid.length === 0){
             return
         }
 
-        feedGeneratorListModel.setAccount(account.service, account.did, account.handle,
-                                          account.email, account.accessJwt, account.refreshJwt)
+        feedGeneratorListModel.setAccount(account.uuid)
         feedGeneratorListModel.getLatest()
 
         generatorScrollView.currentIndex = -1

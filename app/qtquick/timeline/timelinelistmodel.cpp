@@ -535,8 +535,7 @@ bool TimelineListModel::deletePost(int row)
                 setRunningdeletePost(row, false);
                 ope->deleteLater();
             });
-    ope->setAccount(account().service, account().did, account().handle, account().email,
-                    account().accessJwt, account().refreshJwt);
+    ope->setAccount(account().uuid);
     ope->deletePost(item(row, UriRole).toString());
 
     return true;
@@ -564,8 +563,7 @@ bool TimelineListModel::repost(int row)
                 setRunningRepost(row, false);
                 ope->deleteLater();
             });
-    ope->setAccount(account().service, account().did, account().handle, account().email,
-                    account().accessJwt, account().refreshJwt);
+    ope->setAccount(account().uuid);
     if (!current)
         ope->repost(item(row, CidRole).toString(), item(row, UriRole).toString());
     else
@@ -597,8 +595,7 @@ bool TimelineListModel::like(int row)
                 setRunningLike(row, false);
                 ope->deleteLater();
             });
-    ope->setAccount(account().service, account().did, account().handle, account().email,
-                    account().accessJwt, account().refreshJwt);
+    ope->setAccount(account().uuid);
     if (!current)
         ope->like(item(row, CidRole).toString(), item(row, UriRole).toString());
     else
@@ -642,8 +639,7 @@ bool TimelineListModel::pin(int row)
                 setRunningPostPinning(row, false);
                 ope->deleteLater();
             });
-    ope->setAccount(account().service, account().did, account().handle, account().email,
-                    account().accessJwt, account().refreshJwt);
+    ope->setAccount(account().uuid);
     ope->updatePostPinning(pin_uri, pin_cid);
 
     return true;
@@ -742,8 +738,7 @@ bool TimelineListModel::detachQuote(int row)
                 }
                 ope->deleteLater();
             });
-    ope->setAccount(account().service, account().did, account().handle, account().email,
-                    account().accessJwt, account().refreshJwt);
+    ope->setAccount(account().uuid);
     ope->updateDetachedStatusOfQuote(detached, target_uri, detach_uri);
     return true;
 }

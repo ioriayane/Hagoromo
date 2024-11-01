@@ -8,6 +8,16 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+### v0.40.0 - 2024/11/1
+
+- Add
+  - Add a link to user's profile if user is registered with Linkat
+  - Support for accepting attached images by drag and drop
+- Update
+  - Change the format of the embedded via in the post
+  - Change the internal format of feed storage to V2
+  - Keeping up with jetstream changes
+
 ### v0.39.0 - 2024/10/12
 
 - Add

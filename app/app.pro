@@ -21,6 +21,7 @@ QML_FILES = \
     qml/controls/CalendarPicker.qml \
     qml/controls/ClickableFrame.qml \
     qml/controls/ComboBoxEx.qml \
+    qml/controls/DragAndDropArea.qml \
     qml/controls/IconButton.qml \
     qml/controls/IconLabelFrame.qml \
     qml/controls/ImageWithIndicator.qml \

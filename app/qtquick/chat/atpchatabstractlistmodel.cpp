@@ -2,6 +2,7 @@
 #include "extension/directory/plc/directoryplc.h"
 #include "atprotocol/chat/bsky/convo/chatbskyconvoupdateread.h"
 #include "tools/labelerprovider.h"
+#include "tools/accountmanager.h"
 
 using AtProtocolInterface::ChatBskyConvoUpdateRead;
 using AtProtocolInterface::DirectoryPlc;
@@ -19,24 +20,12 @@ void AtpChatAbstractListModel::clear()
 
 AtProtocolInterface::AccountData AtpChatAbstractListModel::account() const
 {
-    return m_account;
+    return AccountManager::getInstance()->getAccount(m_account.uuid);
 }
 
-void AtpChatAbstractListModel::setAccount(const QString &service, const QString &did,
-                                          const QString &handle, const QString &email,
-                                          const QString &accessJwt, const QString &refreshJwt)
+void AtpChatAbstractListModel::setAccount(const QString &uuid)
 {
-    m_account.service = service;
-    m_account.did = did;
-    m_account.handle = handle;
-    m_account.email = email;
-    m_account.accessJwt = accessJwt;
-    m_account.refreshJwt = refreshJwt;
-}
-
-void AtpChatAbstractListModel::setServiceEndpoint(const QString &service_endpoint)
-{
-    m_account.service_endpoint = service_endpoint;
+    m_account.uuid = uuid;
 }
 
 void AtpChatAbstractListModel::updateRead(const QString &convoId, const QString &messageId)
@@ -74,7 +63,7 @@ void AtpChatAbstractListModel::setRunning(bool newRunning)
 
 void AtpChatAbstractListModel::getServiceEndpoint(std::function<void()> callback)
 {
-    if (!m_account.service_endpoint.isEmpty()) {
+    if (!account().service_endpoint.isEmpty()) {
         callback();
         return;
     }
@@ -83,22 +72,22 @@ void AtpChatAbstractListModel::getServiceEndpoint(std::function<void()> callback
         return;
     }
     if (!account().service.startsWith("https://bsky.social")) {
-        m_account.service_endpoint = m_account.service;
-        qDebug().noquote() << "Update service endpoint(chat)" << m_account.service << "->"
-                           << m_account.service_endpoint;
+        account().service_endpoint = account().service;
+        qDebug().noquote() << "Update service endpoint(chat)" << account().service << "->"
+                           << account().service_endpoint;
         callback();
         return;
     }
 
     DirectoryPlc *plc = new DirectoryPlc(this);
     connect(plc, &DirectoryPlc::finished, this, [=](bool success) {
+        QString service_endpoint = account().service;
         if (success && !plc->serviceEndpoint().isEmpty()) {
-            m_account.service_endpoint = plc->serviceEndpoint();
-        } else {
-            m_account.service_endpoint = m_account.service;
+            service_endpoint = plc->serviceEndpoint();
         }
-        qDebug().noquote() << "Update service endpoint(chat)" << m_account.service << "->"
-                           << m_account.service_endpoint;
+        AccountManager::getInstance()->updateServiceEndpoint(account().uuid, service_endpoint);
+        qDebug().noquote() << "Update service endpoint(chat)" << account().service << "->"
+                           << account().service_endpoint;
         callback();
         plc->deleteLater();
     });

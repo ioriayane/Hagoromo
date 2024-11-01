@@ -43,13 +43,7 @@ Dialog {
             item.visible = (i === index)
             if(i === index){
                 if(item.model.rowCount() === 7){
-                    var service = accountModel.item(index, AccountListModel.ServiceRole)
-                    var did = accountModel.item(index, AccountListModel.DidRole)
-                    item.model.setAccount(service, did,
-                                          accountModel.item(index, AccountListModel.HandleRole),
-                                          accountModel.item(index, AccountListModel.EmailRole),
-                                          accountModel.item(index, AccountListModel.AccessJwtRole),
-                                          accountModel.item(index, AccountListModel.RefreshJwtRole))
+                    item.model.setAccount(accountModel.item(index, AccountListModel.UuidRole))
                     item.model.getLatest()
                 }
 

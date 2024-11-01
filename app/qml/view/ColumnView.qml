@@ -674,24 +674,12 @@ ColumnLayout {
         }
     }
 
-    function reflect(){
-        // StackViewに積まれているViewに反映
-        for(var i=0; i<columnStackView.depth; i++){
-            console.log("Reflect : " + i + ", " + account.handle)
-            var item = columnStackView.get(i)
-            item.model.setAccount(account.service,
-                                  account.did,
-                                  account.handle,
-                                  account.email,
-                                  account.accessJwt,
-                                  account.refreshJwt)
-        }
-    }
-
     ClickableFrame {
         id: profileFrame
         Layout.fillWidth: true
         Layout.topMargin: 1
+        contentWidth: headerLayout.implicitWidth
+        contentHeight: headerLayout.implicitHeight
         leftPadding: 0
         topPadding: 0
         rightPadding: 10
@@ -878,12 +866,7 @@ ColumnLayout {
                 }
                 return
             }
-            currentItem.model.setAccount(account.service,
-                                         account.did,
-                                         account.handle,
-                                         account.email,
-                                         account.accessJwt,
-                                         account.refreshJwt)
+            currentItem.model.setAccount(account.uuid)
             currentItem.model.getLatest()
         }
     }

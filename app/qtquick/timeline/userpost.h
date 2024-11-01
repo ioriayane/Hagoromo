@@ -39,9 +39,7 @@ class UserPost : public QObject
 public:
     explicit UserPost(QObject *parent = nullptr);
 
-    Q_INVOKABLE void setAccount(const QString &service, const QString &did, const QString &handle,
-                                const QString &email, const QString &accessJwt,
-                                const QString &refreshJwt);
+    Q_INVOKABLE void setAccount(const QString &uuid);
     Q_INVOKABLE void getPost(const QString &uri);
     Q_INVOKABLE void clear();
 

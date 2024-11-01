@@ -307,12 +307,7 @@ ApplicationWindow {
         property string updateSequence: "" // threadgate, postgate
         onOpened: {
             selectThreadGateDialog.ready = false
-            postDialog.recordOperator.setAccount(selectThreadGateDialog.account.service,
-                                                 selectThreadGateDialog.account.did,
-                                                 selectThreadGateDialog.account.handle,
-                                                 selectThreadGateDialog.account.email,
-                                                 selectThreadGateDialog.account.accessJwt,
-                                                 selectThreadGateDialog.account.refreshJwt)
+            postDialog.recordOperator.setAccount(selectThreadGateDialog.account.uuid)
             postDialog.recordOperator.clear()
             postDialog.recordOperator.requestPostGate(postUri)
         }
@@ -347,12 +342,7 @@ ApplicationWindow {
                 updateSequence = "threadgate"
             }
 
-            postDialog.recordOperator.setAccount(selectThreadGateDialog.account.service,
-                                                 selectThreadGateDialog.account.did,
-                                                 selectThreadGateDialog.account.handle,
-                                                 selectThreadGateDialog.account.email,
-                                                 selectThreadGateDialog.account.accessJwt,
-                                                 selectThreadGateDialog.account.refreshJwt)
+            postDialog.recordOperator.setAccount(selectThreadGateDialog.account.uuid)
             postDialog.recordOperator.clear()
             if(updateSequence === "threadgate"){
                 console.log("Update threadgate")
@@ -467,17 +457,12 @@ ApplicationWindow {
     // アカウント管理で内容が変更されたときにカラムとインデックスの関係が崩れるのでuuidで確認する
     AccountListModel {
         id: accountListModel
-        onUpdatedSession: (row, uuid) => {
-                              console.log("onUpdatedSession:" + row + ", " + uuid)
-                          }
-        onUpdatedAccount: (row, uuid) => {
-                              console.log("onUpdatedAccount:" + row + ", " + uuid)
-                              // カラムを更新しにいく
-                              repeater.updateAccount(uuid)
-                          }
         onFinished: {
             console.log("onFinished:" + allAccountsReady + ", count=" + columnManageModel.rowCount())
-            if(rowCount() === 0){
+            globalProgressFrame.text = ""
+            if(accountDialog.visible === true){
+                // ダイアログが開いているときはアカウント追加のたびに呼ばれるので何もしない
+            }else if(rowCount() === 0){
                 accountDialog.open()
             }else if(columnManageModel.rowCount() === 0){
                 if(allAccountsReady){
@@ -538,13 +523,7 @@ ApplicationWindow {
                 currentAccountIndex -= 1
                 load(true)
             }else{
-                setAccount(accountListModel.item(currentAccountIndex, AccountListModel.ServiceRole),
-                           accountListModel.item(currentAccountIndex, AccountListModel.DidRole),
-                           handle,
-                           "email",
-                           accessJwt,
-                           accountListModel.item(currentAccountIndex, AccountListModel.RefreshJwtRole)
-                           )
+                setAccount(accountListModel.item(currentAccountIndex, AccountListModel.UuidRole))
                 actor = did
                 searchTarget = "#cache"
                 if(listsListModel.getLatest()){
@@ -894,18 +873,6 @@ ApplicationWindow {
                     scrollView.contentWidth = max_w
                 }
 
-                function updateAccount(account_uuid){
-                    for(var i=0; i<repeater.count; i++){
-                        var item = repeater.itemAt(i)   //ここのitemはloader自身
-                        if(item.item.account.uuid === account_uuid){
-                            if(item.item.account.set(accountListModel, item.item.account.uuid)){
-                                console.log("Update column : col=" + i + ", a_uuid=" + item.item.account.uuid)
-                                item.item.reflect()
-                            }
-                        }
-                    }
-                }
-
                 Loader {
                     id: loader
                     y: {
@@ -1089,7 +1056,7 @@ ApplicationWindow {
             BusyIndicator {
                 Layout.preferredWidth: AdjustedValues.i24
                 Layout.preferredHeight: AdjustedValues.i24
-                running: globalProgressFrame.visible
+                // running: globalProgressFrame.visible
             }
             Label {
                 font.pointSize: AdjustedValues.f10
@@ -1104,8 +1071,34 @@ ApplicationWindow {
         visible: false
     }
 
+    DragAndDropArea {
+        anchors.fill: parent
+        anchors.margins: 5
+        enabled: accountListModel.count > 0
+                 && !imageFullView.visible
+                 && !messageDialog.visible
+                 && !logViewDialog.visible
+                 && !selectThreadGateDialog.visible
+                 && !addMutedWordDialog.visible
+                 && !editProfileDialog.visible
+                 && !addListDialog.visible
+                 && !addToListDialog.visible
+                 && !reportMessageDialog.visible
+                 && !reportAccountDialog.visible
+                 && !reportDialog.visible
+                 && !columnsettingDialog.visible
+                 && !discoverFeedsDialog.visible
+                 && !accountDialog.visible
+                 && !addColumnDialog.visible
+                 && !searchDialog.visible
+                 && !postDialog.visible
+                 && !settingDialog.visible
+        onDropped: (urls) => postDialog.openWithFiles(urls)
+    }
+
+
     Component.onCompleted: {
-        if(accountListModel.count > 0){
+        if(accountListModel.count === 0){
             globalProgressFrame.text = qsTr("Loading account(s) ...")
         }
         accountListModel.load()

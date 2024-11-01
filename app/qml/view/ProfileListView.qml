@@ -47,9 +47,7 @@ ScrollView {
                             }
                         }
             function reflectAccount() {
-                recordOperator.setAccount(rootListView.model.service, rootListView.model.did,
-                                          rootListView.model.handle, rootListView.model.email,
-                                          rootListView.model.accessJwt, rootListView.model.refreshJwt)
+                recordOperator.setAccount(rootListView.model.uuid)
             }
         }
 
@@ -87,6 +85,8 @@ ScrollView {
 
         delegate: ClickableFrame {
             id: profileLayout
+            contentWidth: contentRootLayout.implicitWidth
+            contentHeight: contentRootLayout.implicitHeight
             clip: true
             style: "Post"
             topPadding: 10
@@ -169,6 +169,7 @@ ScrollView {
             ]
 
             RowLayout{
+                id: contentRootLayout
                 AvatarImage {
                     id: postAvatarImage
                     Layout.preferredWidth: AdjustedValues.i36

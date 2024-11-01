@@ -21,9 +21,8 @@ class FeedGeneratorLink : public QObject
 public:
     explicit FeedGeneratorLink(QObject *parent = nullptr);
 
-    Q_INVOKABLE void setAccount(const QString &service, const QString &did, const QString &handle,
-                                const QString &email, const QString &accessJwt,
-                                const QString &refreshJwt);
+    AtProtocolInterface::AccountData account() const;
+    Q_INVOKABLE void setAccount(const QString &uuid);
     Q_INVOKABLE bool checkUri(const QString &uri, const QString &type) const;
     void convertToAtUri(const QString &base_at_uri, const QString &uri,
                         std::function<void(const QString &)> callback);
@@ -60,9 +59,8 @@ signals:
     void cidChanged();
 
 protected:
-    AtProtocolInterface::AccountData m_account;
-
 private:
+    AtProtocolInterface::AccountData m_account;
     QRegularExpression m_rxHandle;
 
     bool m_running;

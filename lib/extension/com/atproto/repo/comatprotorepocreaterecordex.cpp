@@ -28,7 +28,7 @@ void ComAtprotoRepoCreateRecordEx::post(const QString &text)
     QJsonObject json_record;
     json_record.insert("text", text);
     json_record.insert("createdAt", QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs));
-    json_record.insert("via", "Hagoromo");
+    json_record.insert("space.aoisora.post.via", "Hagoromo");
     if (!m_postLanguages.isEmpty()) {
         QJsonArray json_langs;
         for (const auto &lang : qAsConst(m_postLanguages)) {

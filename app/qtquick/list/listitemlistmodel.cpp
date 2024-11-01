@@ -126,8 +126,7 @@ void ListItemListModel::block()
         }
         ope->deleteLater();
     });
-    ope->setAccount(account().service, account().did, account().handle, account().email,
-                    account().accessJwt, account().refreshJwt);
+    ope->setAccount(account().uuid);
     if (blocked()) {
         // -> unblock
         ope->deleteBlockList(blockedUri());

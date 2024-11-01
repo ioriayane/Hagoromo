@@ -101,6 +101,7 @@ ScrollView {
 
         delegate: PostDelegate {
             Layout.preferredWidth: rootListView.width
+            layoutWidth: rootListView.width
 
             logMode: timelineView.logMode
 
@@ -110,17 +111,31 @@ ScrollView {
             onRequestAddMutedWord: (text) => timelineView.requestAddMutedWord(text)
             onRequestCopyTagToClipboard: (text) => systemTool.copyToClipboard(text)
 
+
             moderationFrame.visible: model.muted
             userFilterMatched: model.userFilterMatched
             userFilterMessage: model.userFilterMessage
 
             repostReactionAuthor.visible: model.isRepostedBy
+            replyReactionAuthor.visible: model.hasReply
+            pinnedIndicatorLabel.visible: (model.pinned && model.index === 0)
+
+            contentFilterFrame.visible: model.contentFilterMatched
+            contentMediaFilterFrame.visible: model.contentMediaFilterMatched
+            postImagePreview.visible: contentMediaFilterFrame.showContent && model.embedImages.length > 0
+
+            quoteFilterFrame.visible: model.quoteFilterMatched && !model.quoteRecordBlocked
+            blockedQuoteFrame.visible: model.quoteRecordBlocked
+
+            externalLinkFrame.visible: model.hasExternalLink && contentMediaFilterFrame.showContent
+            feedGeneratorFrame.visible: model.hasFeedGenerator && contentMediaFilterFrame.showContent
+            listLinkCardFrame.visible: model.hasListLink && contentMediaFilterFrame.showContent
+
+
             repostReactionAuthor.displayName: model.repostedByDisplayName
             repostReactionAuthor.handle: model.repostedByHandle
-            replyReactionAuthor.visible: model.hasReply
             replyReactionAuthor.displayName: model.replyParentDisplayName
             replyReactionAuthor.handle: model.replyParentHandle
-            pinnedIndicatorLabel.visible: (model.pinned && model.index === 0)
 
             postAvatarImage.source: model.avatar
             postAvatarImage.onClicked: requestViewProfile(model.did)
@@ -134,20 +149,15 @@ ScrollView {
                 }
                 return text
             }
-            contentFilterFrame.visible: model.contentFilterMatched
             contentFilterFrame.labelText: model.contentFilterMessage
-            contentMediaFilterFrame.visible: model.contentMediaFilterMatched
             contentMediaFilterFrame.labelText: model.contentMediaFilterMessage
-            postImagePreview.visible: contentMediaFilterFrame.showContent && model.embedImages.length > 0
             postImagePreview.layoutType: timelineView.imageLayoutType
             postImagePreview.embedImages: model.embedImages
             postImagePreview.embedAlts: model.embedImagesAlt
             postImagePreview.embedImageRatios: model.embedImagesRatio
             postImagePreview.onRequestViewImages: (index) => requestViewImages(index, model.embedImagesFull, model.embedImagesAlt)
 
-            quoteFilterFrame.visible: model.quoteFilterMatched && !model.quoteRecordBlocked
             quoteFilterFrame.labelText: qsTr("Quoted content warning")
-            blockedQuoteFrame.visible: model.quoteRecordBlocked
             blockedQuoteFrameLabel.text: model.quoteRecordBlockedStatus
             hasQuote: model.hasQuoteRecord && !model.quoteRecordBlocked
             quoteRecordFrame.onClicked: (mouse) => {
@@ -171,21 +181,18 @@ ScrollView {
             embedVideoFrame.onClicked: Qt.openUrlExternally(rootListView.model.getItemOfficialUrl(model.index))
             embedVideoFrame.thumbImageSource: model.videoThumbUri
 
-            externalLinkFrame.visible: model.hasExternalLink && contentMediaFilterFrame.showContent
             externalLinkFrame.onClicked: Qt.openUrlExternally(model.externalLinkUri)
             externalLinkFrame.thumbImage.source: model.externalLinkThumb
             externalLinkFrame.titleLabel.text: model.externalLinkTitle
             externalLinkFrame.uriLabel.text: model.externalLinkUri
             externalLinkFrame.descriptionLabel.text: model.externalLinkDescription
 
-            feedGeneratorFrame.visible: model.hasFeedGenerator && contentMediaFilterFrame.showContent
             feedGeneratorFrame.onClicked: requestViewFeedGenerator(model.feedGeneratorDisplayName, model.feedGeneratorUri)
             feedGeneratorFrame.avatarImage.source: model.feedGeneratorAvatar
             feedGeneratorFrame.displayNameLabel.text: model.feedGeneratorDisplayName
             feedGeneratorFrame.creatorHandleLabel.text: model.feedGeneratorCreatorHandle
             feedGeneratorFrame.likeCountLabel.text: model.feedGeneratorLikeCount
 
-            listLinkCardFrame.visible: model.hasListLink && contentMediaFilterFrame.showContent
             listLinkCardFrame.onClicked: requestViewListFeed(model.listLinkUri, model.listLinkDisplayName)
             listLinkCardFrame.avatarImage.source: model.listLinkAvatar
             listLinkCardFrame.displayNameLabel.text: model.listLinkDisplayName

@@ -8,6 +8,8 @@ libQt5Gui.so.5
 libQt5Gui.so.5.15.2
 libQt5Network.so.5
 libQt5Network.so.5.15.2
+libQt5HttpServer.so.5
+libQt5HttpServer.so.5.12.0
 libQt5Qml.so.5
 libQt5Qml.so.5.15.2
 libQt5QmlModels.so.5

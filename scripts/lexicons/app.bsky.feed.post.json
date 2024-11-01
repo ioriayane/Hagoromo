@@ -5,6 +5,10 @@
                 "properties": {
                     "via": {
                         "type": "string",
+                        "format": "client name(Unofficial field) old"
+                    },
+                    "space.aoisora.post.via": {
+                        "type": "string",
                         "format": "client name(Unofficial field)"
                     }
                 }

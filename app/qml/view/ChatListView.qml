@@ -36,10 +36,10 @@ Item {
         function rowCount() {
             return rootListView.model.rowCount()
         }
-        function setAccount(service, did, handle, email, accessJwt, refreshJwt) {
-            accountDid = did
-            searchProfileListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
-            rootListView.model.setAccount(service, did, handle, email, accessJwt, refreshJwt)
+        function setAccount(uuid) {
+            searchProfileListModel.setAccount(uuid)
+            rootListView.model.setAccount(uuid)
+            accountDid = searchProfileListModel.did
         }
         function getLatest() {
             rootListView.model.getLatest()
@@ -114,6 +114,8 @@ Item {
 
             delegate: ClickableFrame {
                 id: chatItemLayout
+                contentWidth: contentRootLayout.implicitWidth
+                contentHeight: contentRootLayout.implicitHeight
                 clip: true
                 topPadding: 10
                 leftPadding: 10
@@ -130,6 +132,7 @@ Item {
                 }
 
                 RowLayout {
+                    id: contentRootLayout
                     AvatarImage {
                         id: postAvatarImage
                         Layout.preferredWidth: AdjustedValues.i36

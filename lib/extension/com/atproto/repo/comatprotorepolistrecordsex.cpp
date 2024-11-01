@@ -27,6 +27,12 @@ void ComAtprotoRepoListRecordsEx::listWhiteWindItems(const QString &repo, const 
     listRecords(repo, "com.whtwnd.blog.entry", 10, cursor, false);
 }
 
+void ComAtprotoRepoListRecordsEx::listLinkatItems(const QString &repo, const QString &cursor)
+{
+    Q_UNUSED(cursor)
+    listRecords(repo, "blue.linkat.board", 1, QString(), false);
+}
+
 bool ComAtprotoRepoListRecordsEx::parseJson(bool success, const QString reply_json)
 {
     success = ComAtprotoRepoListRecords::parseJson(success, reply_json);

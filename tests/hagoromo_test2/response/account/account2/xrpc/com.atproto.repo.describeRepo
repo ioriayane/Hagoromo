@@ -1,0 +1,48 @@
+{
+    "handle": "account2.relog.tech",
+    "did": "did:plc:account2",
+    "didDoc": {
+        "@context": [
+            "https://www.w3.org/ns/did/v1",
+            "https://w3id.org/security/multikey/v1",
+            "https://w3id.org/security/suites/secp256k1-2019/v1"
+        ],
+        "id": "did:plc:account2",
+        "alsoKnownAs": [
+            "at://account2.relog.tech"
+        ],
+        "verificationMethod": [
+            {
+                "id": "did:plc:account2#atproto",
+                "type": "Multikey",
+                "controller": "did:plc:account2",
+                "publicKeyMultibase": "zQ3shYNo9wSChj"
+            }
+        ],
+        "service": [
+            {
+                "id": "#atproto_pds",
+                "type": "AtprotoPersonalDataServer",
+                "serviceEndpoint": "http://localhost:%1/response/account/account2"
+            }
+        ]
+    },
+    "collections": [
+        "app.bsky.actor.profile",
+        "app.bsky.feed.generator",
+        "app.bsky.feed.like",
+        "app.bsky.feed.post",
+        "app.bsky.feed.postgate",
+        "app.bsky.feed.repost",
+        "app.bsky.feed.threadgate",
+        "app.bsky.graph.block",
+        "app.bsky.graph.follow",
+        "app.bsky.graph.list",
+        "app.bsky.graph.listitem",
+        "app.bsky.graph.starterpack",
+        "blue.linkat.board",
+        "chat.bsky.actor.declaration",
+        "com.whtwnd.blog.entry"
+    ],
+    "handleIsCorrect": true
+}

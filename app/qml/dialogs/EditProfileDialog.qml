@@ -33,11 +33,10 @@ Dialog {
     signal errorOccured(string account_uuid, string code, string message)
 
     onOpened: {
-        if(account.service.length === 0){
+        if(account.uuid.length === 0){
             return
         }
-        recordOperator.setAccount(account.service, account.did, account.handle,
-                                  account.email, account.accessJwt, account.refreshJwt)
+        recordOperator.setAccount(account.uuid)
         avatarImage.source = editProfileDialog.avatar
         bannerImage.source = editProfileDialog.banner
         displayNameText.text = editProfileDialog.displayName

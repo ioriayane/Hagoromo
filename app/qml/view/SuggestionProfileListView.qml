@@ -17,6 +17,8 @@ ListView {
 
     delegate: ClickableFrame {
         id: profileLayout
+        contentWidth: contentRootLayout.implicitWidth
+        contentHeight: contentRootLayout.implicitHeight
         clip: true
         style: "Post"
         topPadding: 10
@@ -31,6 +33,7 @@ ListView {
         onClicked: suggestionProfileListView.selectedProfile(model.did)
 
         RowLayout{
+            id: contentRootLayout
             AvatarImage {
                 id: postAvatarImage
                 Layout.preferredWidth: AdjustedValues.i36

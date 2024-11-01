@@ -120,19 +120,19 @@ ColumnLayout {
         function rowCount() {
             return userProfile.handle.length;
         }
-        function setAccount(service, did, handle, email, accessJwt, refreshJwt) {
-            accountDid = did
-            recordOperator.setAccount(service, did, handle, email, accessJwt, refreshJwt)
-            userProfile.setAccount(service, did, handle, email, accessJwt, refreshJwt)
-            authorFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
-            authorBlogEntryListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
-            repostFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
-            likesFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
-            authorMediaFeedListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
-            actorFeedGeneratorListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
-            listsListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
-            followsListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
-            followersListModel.setAccount(service, did, handle, email, accessJwt, refreshJwt)
+        function setAccount(uuid) {
+            recordOperator.setAccount(uuid)
+            userProfile.setAccount(uuid)
+            authorFeedListModel.setAccount(uuid)
+            authorBlogEntryListModel.setAccount(uuid)
+            repostFeedListModel.setAccount(uuid)
+            likesFeedListModel.setAccount(uuid)
+            authorMediaFeedListModel.setAccount(uuid)
+            actorFeedGeneratorListModel.setAccount(uuid)
+            listsListModel.setAccount(uuid)
+            followsListModel.setAccount(uuid)
+            followersListModel.setAccount(uuid)
+            accountDid = authorFeedListModel.did
         }
         function getLatest() {
             userProfile.getProfile(userDid)
@@ -387,7 +387,7 @@ ColumnLayout {
             onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
             onLinkActivated: (url) => Qt.openUrlExternally(url)
 
-            onContentHeightChanged: Layout.preferredHeight = contentHeight
+            onContentHeightChanged: Layout.preferredHeight = descriptionLabel.contentHeight
             Behavior on Layout.preferredHeight {
                 NumberAnimation { duration: 500 }
             }
@@ -488,6 +488,7 @@ ColumnLayout {
                 }
             }
         }
+
         IconLabelFrame {
             id: moderationFrame
             Layout.preferredWidth: profileView.width
@@ -578,6 +579,7 @@ ColumnLayout {
             }
             blogModel: BlogEntryListModel {
                 id: authorBlogEntryListModel
+                targetHandle: userProfile.handle
                 targetDid: profileView.userDid
                 targetServiceEndpoint: userProfile.serviceEndpoint
                 onTargetServiceEndpointChanged: {

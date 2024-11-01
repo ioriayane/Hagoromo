@@ -188,7 +188,9 @@
                 "repostCount": 0,
                 "likeCount": 0,
                 "indexedAt": "2023-05-28T11:30:02.749Z",
-                "viewer": {},
+                "viewer": {
+                    "repost": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.repost/3l5jty5ef3w"
+                },
                 "labels": []
             },
             "reason": {

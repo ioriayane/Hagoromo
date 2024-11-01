@@ -1,0 +1,16 @@
+{
+    "lexicon": 1,
+    "id": "oauth.pushedAuthorizationRequest",
+    "defs": {
+        "main": {
+            "type": "procedure",
+            "output": {
+                "encoding": "application/json",
+                "schema": {
+                    "type": "ref",
+                    "ref": "oauth.defs#pushedAuthorizationResponse"
+                }
+            }
+        }
+    }
+}

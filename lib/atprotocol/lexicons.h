@@ -990,7 +990,8 @@ struct Main
             tags; // Additional hashtags, in addition to any included in post text and facets.
     QString createdAt; // datetime , Client-declared timestamp when this post was originally
                        // created.
-    QString via; // client name(Unofficial field)
+    QString via; // client name(Unofficial field) old
+    QString space_aoisora_post_via; // client name(Unofficial field)
 };
 }
 
@@ -1981,6 +1982,24 @@ struct Member
 };
 }
 
+// blue.linkat.defs
+namespace BlueLinkatDefs {
+struct Card
+{
+    QString url; // URL of the link
+    QString text; // Text of the card
+    QString emoji; // Emoji of the card
+};
+}
+
+// blue.linkat.board
+namespace BlueLinkatBoard {
+struct Main
+{
+    QList<BlueLinkatDefs::Card> cards;
+};
+}
+
 // com.whtwnd.blog.defs
 namespace ComWhtwndBlogDefs {
 struct BlogEntry
@@ -2103,6 +2122,55 @@ struct PlcAuditLogDetail
 typedef QList<PlcAuditLogDetail> PlcAuditLog;
 }
 
+// oauth.defs
+namespace OauthDefs {
+struct PushedAuthorizationResponse
+{
+    QString request_uri;
+    int expires_in = 0;
+};
+struct TokenResponse
+{
+    QString access_token;
+    QString token_type;
+    QString refresh_token;
+    QString scope;
+    QString sub;
+    int expires_in = 0;
+};
+}
+
+// wellKnown.defs
+namespace WellKnownDefs {
+struct ResourceMetadata
+{
+    QString resource;
+    QList<QString> authorization_servers;
+    QList<QString> scopes_supported;
+    QList<QString> bearer_methods_supported;
+    QString resource_documentation;
+};
+struct ServerMetadata
+{
+    QString issuer;
+    QList<QString> response_types_supported;
+    QList<QString> grant_types_supported;
+    QList<QString> code_challenge_methods_supported;
+    QList<QString> token_endpoint_auth_methods_supported;
+    QList<QString> token_endpoint_auth_signing_alg_values_supported;
+    QList<QString> scopes_supported;
+    QList<QString> subject_types_supported;
+    bool authorization_response_iss_parameter_supported = false;
+    QString pushed_authorization_request_endpoint;
+    QString token_endpoint;
+    bool require_pushed_authorization_requests = false;
+    QList<QString> dpop_signing_alg_values_supported;
+    bool require_request_uri_registration = false;
+    bool client_id_metadata_document_supported = false;
+    QString authorization_endpoint;
+};
+}
+
 }
 Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedPost::Main)
 Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedLike::Main)
@@ -2113,5 +2181,7 @@ Q_DECLARE_METATYPE(AtProtocolType::AppBskyGraphList::Main)
 Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedThreadgate::Main)
 Q_DECLARE_METATYPE(AtProtocolType::AppBskyFeedPostgate::Main)
 Q_DECLARE_METATYPE(AtProtocolType::ComWhtwndBlogEntry::Main)
+Q_DECLARE_METATYPE(AtProtocolType::BlueLinkatBoard::Main)
+Q_DECLARE_METATYPE(AtProtocolType::DirectoryPlcDefs::DidDoc)
 
 #endif // LEXICONS_H

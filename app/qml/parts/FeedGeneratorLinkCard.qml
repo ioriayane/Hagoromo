@@ -9,12 +9,16 @@ import "../controls"
 import "../compat"
 
 ClickableFrame {
+    contentWidth: contentRootLayout.implicitWidth
+    contentHeight: contentRootLayout.implicitHeight
+
     property alias avatarImage: feedGeneratorAvatarImage
     property alias displayNameLabel: feedGeneratorDisplayNameLabel
     property alias creatorHandleLabel: feedGeneratorCreatorHandleLabel
     property alias likeCountLabel: feedGeneratorLikeCountLabel
 
     ColumnLayout {
+        id: contentRootLayout
         GridLayout {
             columns: 2
             rowSpacing: 3

@@ -55,8 +55,7 @@ Dialog {
             }
         }
         listsListModel.clear()
-        listsListModel.setAccount(account.service, account.did, account.handle,
-                                  account.email, account.accessJwt, account.refreshJwt)
+        listsListModel.setAccount(account.uuid)
         listsListModel.getLatest()
     }
     onClosed: {

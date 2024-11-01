@@ -8,6 +8,7 @@
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
 #include "extension/com/atproto/repo/comatprotorepolistrecordsex.h"
 #include "extension/com/atproto/repo/comatprotorepoputrecordex.h"
+#include "tools/accountmanager.h"
 
 #include <QTimer>
 
@@ -31,16 +32,14 @@ RecordOperator::RecordOperator(QObject *parent)
 {
 }
 
-void RecordOperator::setAccount(const QString &service, const QString &did, const QString &handle,
-                                const QString &email, const QString &accessJwt,
-                                const QString &refreshJwt)
+AtProtocolInterface::AccountData RecordOperator::account() const
 {
-    m_account.service = service;
-    m_account.did = did;
-    m_account.handle = handle;
-    m_account.email = email;
-    m_account.accessJwt = accessJwt;
-    m_account.refreshJwt = refreshJwt;
+    return AccountManager::getInstance()->getAccount(m_account.uuid);
+}
+
+void RecordOperator::setAccount(const QString &uuid)
+{
+    m_account.uuid = uuid;
 }
 
 void RecordOperator::setText(const QString &text)
@@ -182,7 +181,7 @@ void RecordOperator::post()
     }
 
     LexiconsTypeUnknown::makeFacets(
-            this, m_account, m_text,
+            this, account(), m_text,
             [=](const QList<AtProtocolType::AppBskyRichtextFacet::Main> &facets) {
                 ComAtprotoRepoCreateRecordEx *create_record =
                         new ComAtprotoRepoCreateRecordEx(this);
@@ -234,7 +233,7 @@ void RecordOperator::post()
                     }
                     create_record->deleteLater();
                 });
-                create_record->setAccount(m_account);
+                create_record->setAccount(account());
                 create_record->setReply(m_replyParent.cid, m_replyParent.uri, m_replyRoot.cid,
                                         m_replyRoot.uri);
                 create_record->setQuote(m_embedQuote.cid, m_embedQuote.uri);
@@ -289,7 +288,7 @@ void RecordOperator::repost(const QString &cid, const QString &uri)
         // 成功なら、受け取ったデータでTLデータの更新をしないと値が大きくならない
         create_record->deleteLater();
     });
-    create_record->setAccount(m_account);
+    create_record->setAccount(account());
     create_record->repost(cid, uri);
 }
 
@@ -313,7 +312,7 @@ void RecordOperator::like(const QString &cid, const QString &uri)
         // 成功なら、受け取ったデータでTLデータの更新をしないと値が大きくならない
         create_record->deleteLater();
     });
-    create_record->setAccount(m_account);
+    create_record->setAccount(account());
     create_record->like(cid, uri);
 }
 
@@ -335,7 +334,7 @@ void RecordOperator::follow(const QString &did)
         setRunning(false);
         create_record->deleteLater();
     });
-    create_record->setAccount(m_account);
+    create_record->setAccount(account());
     create_record->follow(did);
 }
 
@@ -358,7 +357,7 @@ void RecordOperator::mute(const QString &did)
         setRunning(false);
         mute->deleteLater();
     });
-    mute->setAccount(m_account);
+    mute->setAccount(account());
     mute->muteActor(did);
 }
 
@@ -380,7 +379,7 @@ void RecordOperator::block(const QString &did)
         setRunning(false);
         create_record->deleteLater();
     });
-    create_record->setAccount(m_account);
+    create_record->setAccount(account());
     create_record->block(did);
 }
 
@@ -402,7 +401,7 @@ void RecordOperator::blockList(const QString &uri)
         setRunning(false);
         create_record->deleteLater();
     });
-    create_record->setAccount(m_account);
+    create_record->setAccount(account());
     create_record->blockList(uri);
 }
 
@@ -427,7 +426,7 @@ bool RecordOperator::list(const QString &name, const RecordOperator::ListPurpose
                 create_record->deleteLater();
             });
             create_record->setImageBlobs(m_embedImageBlobs);
-            create_record->setAccount(m_account);
+            create_record->setAccount(account());
             create_record->list(
                     name,
                     static_cast<AtProtocolInterface::ComAtprotoRepoCreateRecordEx::ListPurpose>(
@@ -462,7 +461,7 @@ bool RecordOperator::listItem(const QString &uri, const QString &did)
         setRunning(false);
         create_record->deleteLater();
     });
-    create_record->setAccount(m_account);
+    create_record->setAccount(account());
     create_record->listItem(uri, did);
     return true;
 }
@@ -487,7 +486,7 @@ void RecordOperator::deletePost(const QString &uri)
         setRunning(false);
         delete_record->deleteLater();
     });
-    delete_record->setAccount(m_account);
+    delete_record->setAccount(account());
     delete_record->deletePost(r_key);
 }
 
@@ -511,7 +510,7 @@ void RecordOperator::deleteLike(const QString &uri)
         setRunning(false);
         delete_record->deleteLater();
     });
-    delete_record->setAccount(m_account);
+    delete_record->setAccount(account());
     delete_record->deleteLike(r_key);
 }
 
@@ -535,7 +534,7 @@ void RecordOperator::deleteRepost(const QString &uri)
         setRunning(false);
         delete_record->deleteLater();
     });
-    delete_record->setAccount(m_account);
+    delete_record->setAccount(account());
     delete_record->deleteRepost(r_key);
 }
 
@@ -559,7 +558,7 @@ void RecordOperator::deleteFollow(const QString &uri)
         setRunning(false);
         delete_record->deleteLater();
     });
-    delete_record->setAccount(m_account);
+    delete_record->setAccount(account());
     delete_record->unfollow(r_key);
 }
 
@@ -582,7 +581,7 @@ void RecordOperator::deleteMute(const QString &did)
         setRunning(false);
         unmute->deleteLater();
     });
-    unmute->setAccount(m_account);
+    unmute->setAccount(account());
     unmute->unmuteActor(did);
 }
 
@@ -606,7 +605,7 @@ void RecordOperator::deleteBlock(const QString &uri)
         setRunning(false);
         delete_record->deleteLater();
     });
-    delete_record->setAccount(m_account);
+    delete_record->setAccount(account());
     delete_record->deleteBlock(r_key);
 }
 
@@ -630,7 +629,7 @@ void RecordOperator::deleteBlockList(const QString &uri)
         setRunning(false);
         delete_record->deleteLater();
     });
-    delete_record->setAccount(m_account);
+    delete_record->setAccount(account());
     delete_record->deleteBlockList(r_key);
 }
 
@@ -662,7 +661,7 @@ bool RecordOperator::deleteList(const QString &uri)
                                 setRunning(false);
                                 delete_record->deleteLater();
                             });
-                    delete_record->setAccount(m_account);
+                    delete_record->setAccount(account());
                     delete_record->deleteList(r_key);
                 } else {
                     setProgressMessage(QString());
@@ -713,7 +712,7 @@ bool RecordOperator::deleteListItem(const QString &uri)
         setRunning(false);
         delete_record->deleteLater();
     });
-    delete_record->setAccount(m_account);
+    delete_record->setAccount(account());
     delete_record->deleteListItem(r_key);
     return true;
 }
@@ -725,7 +724,7 @@ void RecordOperator::updateProfile(const QString &avatar_url, const QString &ban
         return;
     setRunning(true);
 
-    setProgressMessage(tr("Update profile ... (%1)").arg(m_account.handle));
+    setProgressMessage(tr("Update profile ... (%1)").arg(account().handle));
 
     QStringList images;
     QStringList alts;
@@ -770,7 +769,7 @@ void RecordOperator::updateProfile(const QString &avatar_url, const QString &ban
                         setRunning(false);
                         new_profile->deleteLater();
                     });
-                    new_profile->setAccount(m_account);
+                    new_profile->setAccount(account());
                     new_profile->profile(avatar, banner, description, display_name,
                                          old_record.pinnedPost, old_cid);
                 } else {
@@ -787,8 +786,8 @@ void RecordOperator::updateProfile(const QString &avatar_url, const QString &ban
         }
         old_profile->deleteLater();
     });
-    old_profile->setAccount(m_account);
-    old_profile->profile(m_account.did);
+    old_profile->setAccount(account());
+    old_profile->profile(account().did);
 }
 
 void RecordOperator::updatePostPinning(const QString &post_uri, const QString &post_cid)
@@ -797,7 +796,7 @@ void RecordOperator::updatePostPinning(const QString &post_uri, const QString &p
         return;
     setRunning(true);
 
-    setProgressMessage(tr("Update post pinning ... (%1)").arg(m_account.handle));
+    setProgressMessage(tr("Update post pinning ... (%1)").arg(account().handle));
 
     ComAtprotoRepoGetRecordEx *old_profile = new ComAtprotoRepoGetRecordEx(this);
     connect(old_profile, &ComAtprotoRepoGetRecordEx::finished, [=](bool success1) {
@@ -819,7 +818,7 @@ void RecordOperator::updatePostPinning(const QString &post_uri, const QString &p
             ComAtprotoRepoStrongRef::Main pinned_post;
             pinned_post.uri = post_uri;
             pinned_post.cid = post_cid;
-            new_profile->setAccount(m_account);
+            new_profile->setAccount(account());
             new_profile->profile(old_record.avatar, old_record.banner, old_record.description,
                                  old_record.displayName, pinned_post, old_cid);
         } else {
@@ -830,8 +829,8 @@ void RecordOperator::updatePostPinning(const QString &post_uri, const QString &p
         }
         old_profile->deleteLater();
     });
-    old_profile->setAccount(m_account);
-    old_profile->profile(m_account.did);
+    old_profile->setAccount(account());
+    old_profile->profile(account().did);
 }
 
 void RecordOperator::updateList(const QString &uri, const QString &avatar_url,
@@ -877,7 +876,7 @@ void RecordOperator::updateList(const QString &uri, const QString &avatar_url,
                         setRunning(false);
                         new_list->deleteLater();
                     });
-                    new_list->setAccount(m_account);
+                    new_list->setAccount(account());
                     new_list->list(avatar, old_record.purpose, description, name, r_key);
                 } else {
                     setProgressMessage(QString());
@@ -893,8 +892,8 @@ void RecordOperator::updateList(const QString &uri, const QString &avatar_url,
         }
         old_list->deleteLater();
     });
-    old_list->setAccount(m_account);
-    old_list->list(m_account.did, r_key);
+    old_list->setAccount(account());
+    old_list->list(account().did, r_key);
 }
 
 void RecordOperator::updateThreadGate(const QString &uri, const QString &threadgate_uri,
@@ -936,7 +935,7 @@ void RecordOperator::updateThreadGate(const QString &uri, const QString &threadg
         }
         delete_record->deleteLater();
     });
-    delete_record->setAccount(m_account);
+    delete_record->setAccount(account());
     delete_record->deleteThreadGate(r_key);
 }
 
@@ -971,13 +970,13 @@ void RecordOperator::updateQuoteEnabled(const QString &uri, bool enabled)
             emit finished(success2, put->uri(), put->cid());
             put->deleteLater();
         });
-        put->setAccount(m_account);
+        put->setAccount(account());
         put->postGate(uri, rule, old_record.detachedEmbeddingUris);
 
         record->deleteLater();
     });
-    record->setAccount(m_account);
-    record->postGate(m_account.did, target_rkey);
+    record->setAccount(account());
+    record->postGate(account().did, target_rkey);
 }
 
 void RecordOperator::updateDetachedStatusOfQuote(bool detached, QString target_uri,
@@ -1031,13 +1030,13 @@ void RecordOperator::updateDetachedStatusOfQuote(bool detached, QString target_u
             emit finished(success2, put->uri(), put->cid());
             put->deleteLater();
         });
-        put->setAccount(m_account);
+        put->setAccount(account());
         put->postGate(target_uri, rule, old_record.detachedEmbeddingUris);
 
         record->deleteLater();
     });
-    record->setAccount(m_account);
-    record->postGate(m_account.did, target_rkey);
+    record->setAccount(account());
+    record->postGate(account().did, target_rkey);
 }
 
 void RecordOperator::requestPostGate(const QString &uri)
@@ -1063,8 +1062,8 @@ void RecordOperator::requestPostGate(const QString &uri)
         emit finishedRequestPostGate(success, enabled, uris);
         record->deleteLater();
     });
-    record->setAccount(m_account);
-    record->postGate(m_account.did, rkey);
+    record->setAccount(account());
+    record->postGate(account().did, rkey);
 }
 
 bool RecordOperator::running() const
@@ -1122,7 +1121,7 @@ void RecordOperator::uploadBlob(std::function<void(bool)> callback)
         }
         upload_blob->deleteLater();
     });
-    upload_blob->setAccount(m_account);
+    upload_blob->setAccount(account());
     upload_blob->uploadBlob(path);
 }
 
@@ -1165,8 +1164,8 @@ bool RecordOperator::getAllListItems(const QString &list_uri, std::function<void
         }
         list->deleteLater();
     });
-    list->setAccount(m_account);
-    list->listListItems(m_account.did, cursor);
+    list->setAccount(account());
+    list->listListItems(account().did, cursor);
 }
 
 void RecordOperator::deleteAllListItems(std::function<void(bool)> callback)
@@ -1190,7 +1189,7 @@ void RecordOperator::deleteAllListItems(std::function<void(bool)> callback)
         }
         delete_record->deleteLater();
     });
-    delete_record->setAccount(m_account);
+    delete_record->setAccount(account());
     delete_record->deleteListItem(r_key);
 }
 
@@ -1239,7 +1238,7 @@ bool RecordOperator::threadGate(
         callback(success, create_record->uri(), create_record->cid());
         create_record->deleteLater();
     });
-    create_record->setAccount(m_account);
+    create_record->setAccount(account());
     create_record->threadGate(uri, type, rules);
     return true;
 }
@@ -1270,7 +1269,7 @@ void RecordOperator::postGate(const QString &uri,
         callback(success, create_record->uri(), create_record->cid());
         create_record->deleteLater();
     });
-    create_record->setAccount(m_account);
+    create_record->setAccount(account());
     create_record->postGate(uri, type, m_postGateDetachedEmbeddingUris);
 }
 
@@ -1285,4 +1284,9 @@ void RecordOperator::setProgressMessage(const QString &newProgressMessage)
         return;
     m_progressMessage = newProgressMessage;
     emit progressMessageChanged();
+}
+
+QString RecordOperator::handle() const
+{
+    return account().handle;
 }

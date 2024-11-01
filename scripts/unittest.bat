@@ -63,9 +63,13 @@ if ERRORLEVEL 1 goto TEST_FAIL
 if ERRORLEVEL 1 goto TEST_FAIL
 %BUILD_FOLDER%\tests\http_test\debug\http_test.exe
 if ERRORLEVEL 1 goto TEST_FAIL
-%BUILD_FOLDER%\tests\search_test\debug\search_test.exe
-if ERRORLEVEL 1 goto TEST_FAIL
 %BUILD_FOLDER%\tests\log_test\debug\log_test.exe
+if ERRORLEVEL 1 goto TEST_FAIL
+%BUILD_FOLDER%\tests\oauth_test\debug\oauth_test.exe
+if ERRORLEVEL 1 goto TEST_FAIL
+%BUILD_FOLDER%\tests\realtime_test\debug\realtime_test.exe
+if ERRORLEVEL 1 goto TEST_FAIL
+%BUILD_FOLDER%\tests\search_test\debug\search_test.exe
 if ERRORLEVEL 1 goto TEST_FAIL
 %BUILD_FOLDER%\tests\tools_test\debug\tools_test.exe
 if ERRORLEVEL 1 goto TEST_FAIL

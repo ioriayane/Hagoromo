@@ -10,6 +10,7 @@
 #include "realtime/abstractpostselector.h"
 #include "realtime/firehosereceiver.h"
 #include "realtime/realtimefeedlistmodel.h"
+#include "tools/accountmanager.h"
 
 using namespace RealtimeFeed;
 
@@ -45,7 +46,7 @@ realtime_test::realtime_test()
 // : m_server(QStringLiteral("name"), QWebSocketServer::SecureMode, this)
 {
     QCoreApplication::setOrganizationName(QStringLiteral("relog"));
-    QCoreApplication::setApplicationName(QStringLiteral("Hagoromo"));
+    QCoreApplication::setApplicationName(QStringLiteral("Hagoromo_unittest"));
 
     m_listenPort = m_mockServer.listen(QHostAddress::LocalHost, 0);
     m_service = QString("http://localhost:%1/response").arg(m_listenPort);
@@ -231,9 +232,12 @@ void realtime_test::test_Websock()
 
 void realtime_test::test_RealtimeFeedListModel()
 {
+    QString uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/realtime/1", "id", "pass", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+            "handle", "email", "accessJwt", "refreshJwt", true);
+
     RealtimeFeedListModel model;
-    model.setAccount(m_service + "/realtime/1", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", QString(),
-                     QString(), "dummy", QString());
+    model.setAccount(uuid);
 
     // model.setSelectorJson("{\"not\":{\"me\":{}}}");
     // model.setSelectorJson("{\"not\":{\"following\":{}}}");
@@ -284,8 +288,10 @@ void realtime_test::test_RealtimeFeedListModel()
     QVERIFY(model.item(0, TimelineListModel::RecordTextPlainRole).toString() == "reply3");
 
     qDebug().noquote() << "---------------------------";
-    model.setAccount(m_service + "/realtime/2", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", QString(),
-                     QString(), "dummy", QString());
+    uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/realtime/2", "id", "pass", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+            "handle", "email", "accessJwt", "refreshJwt", true);
+    model.setAccount(uuid);
     json_doc = loadJson(":/data/realtimemodel/recv_data_2.json");
     QVERIFY(json_doc.isObject());
     {
@@ -310,8 +316,10 @@ void realtime_test::test_RealtimeFeedListModel()
     QVERIFY(model.item(1, TimelineListModel::IsRepostedByRole).toBool() == false);
 
     qDebug().noquote() << "---------------------------";
-    model.setAccount(m_service + "/realtime/3", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5", QString(),
-                     QString(), "dummy", QString());
+    uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/realtime/3", "id", "pass", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+            "handle", "email", "accessJwt", "refreshJwt", true);
+    model.setAccount(uuid);
     json_doc = loadJson(":/data/realtimemodel/recv_data_3.json");
     recv->testReceived(json_doc.object());
     QVERIFY2(model.rowCount() == 2, QString::number(model.rowCount()).toLocal8Bit());
