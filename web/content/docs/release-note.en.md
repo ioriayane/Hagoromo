@@ -8,6 +8,9 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+- Fix
+  - Fix a case where the link card failed to send
+
 ### v0.40.0 - 2024/11/1
 
 - Add
