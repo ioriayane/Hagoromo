@@ -227,6 +227,49 @@ QList<OperationInfo> AbstractPostSelector::getOperationInfos(const QJsonObject &
     return infos;
 }
 
+int AbstractPostSelector::getNodeCount() const
+{
+    int count = 1;
+    for (auto child : children()) {
+        count += child->getNodeCount();
+    }
+    return count;
+}
+
+const AbstractPostSelector *AbstractPostSelector::itemAt(int &index) const
+{
+    if (index < 0) {
+        return nullptr;
+    } else if (index == 0) {
+        return this;
+    }
+    index--;
+    for (auto child : children()) {
+        const AbstractPostSelector *s = child->itemAt(index);
+        if (s != nullptr) {
+            return s;
+        }
+    }
+    return nullptr;
+}
+
+int AbstractPostSelector::indentAt(int &index, int current) const
+{
+    if (index < 0) {
+        return -1;
+    } else if (index == 0) {
+        return current;
+    }
+    index--;
+    for (auto child : children()) {
+        int next = child->indentAt(index, current + 1);
+        if (next > -1) {
+            return next;
+        }
+    }
+    return -1;
+}
+
 const QList<AbstractPostSelector *> &AbstractPostSelector::children() const
 {
     return m_children;

@@ -46,6 +46,10 @@ public:
     static QStringList getOperationUris(const QJsonObject &object);
     QList<OperationInfo> getOperationInfos(const QJsonObject &object);
 
+    int getNodeCount() const;
+    const AbstractPostSelector *itemAt(int &index) const;
+    int indentAt(int &index, int current = 0) const;
+
     QString did() const; // account did
     void setDid(const QString &newDid);
     QString name() const;
@@ -56,10 +60,8 @@ public:
     void setParentIsArray(bool newParentIsArray);
     bool ready() const;
     void setReady(bool newReady);
-
     QString handle() const;
     void setHandle(const QString &newHandle);
-
     QString displayName() const;
     void setDisplayName(const QString &newDisplayName);
 
