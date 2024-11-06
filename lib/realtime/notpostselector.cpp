@@ -4,7 +4,7 @@ namespace RealtimeFeed {
 
 NotPostSelector::NotPostSelector(QObject *parent) : AbstractPostSelector { parent }
 {
-    setName("not");
+    setType("not");
 }
 
 bool NotPostSelector::judge(const QJsonObject &object)

@@ -145,7 +145,7 @@ void FirehoseReceiver::removeSelector(QObject *parent)
         auto s = m_selectorHash[parent];
         m_selectorHash.remove(parent);
         if (s) {
-            qDebug().quote() << "removeSelector" << s << s->name();
+            qDebug().quote() << "removeSelector" << s << s->type();
             s->deleteLater();
         }
         qDebug().quote() << "remain count" << m_selectorHash.count();

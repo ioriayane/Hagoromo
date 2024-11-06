@@ -52,8 +52,8 @@ public:
 
     QString did() const; // account did
     void setDid(const QString &newDid);
-    QString name() const;
-    void setName(const QString &newName);
+    QString type() const;
+    void setType(const QString &newType);
     bool isArray() const;
     void setIsArray(bool newIsArray);
     bool parentIsArray() const;
@@ -84,7 +84,7 @@ private:
     QString m_did; // of account
     QString m_handle; // of account
     QString m_displayName; // of account
-    QString m_name;
+    QString m_type;
     bool m_isArray;
     bool m_parentIsArray;
     bool m_ready;

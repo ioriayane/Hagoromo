@@ -4,7 +4,7 @@ namespace RealtimeFeed {
 
 FollowingPostSelector::FollowingPostSelector(QObject *parent) : AbstractPostSelector { parent }
 {
-    setName("following");
+    setType("following");
 }
 
 bool FollowingPostSelector::judge(const QJsonObject &object)

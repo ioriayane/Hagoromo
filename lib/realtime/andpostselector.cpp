@@ -4,7 +4,7 @@ namespace RealtimeFeed {
 
 AndPostSelector::AndPostSelector(QObject *parent) : AbstractPostSelector { parent }
 {
-    setName("and");
+    setType("and");
     setIsArray(true);
 }
 

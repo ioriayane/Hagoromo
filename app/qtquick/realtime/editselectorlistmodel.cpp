@@ -36,7 +36,7 @@ QVariant EditSelectorListModel::item(int row, EditSelectorListModelRoles role) c
     }
 
     if (role == NameRole) {
-        return s->name();
+        return s->type();
     } else if (role == IndentRole) {
         index = row;
         return m_selector->indentAt(index, 0);

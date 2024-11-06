@@ -20,7 +20,7 @@ AbstractPostSelector::AbstractPostSelector(QObject *parent)
 
 AbstractPostSelector::~AbstractPostSelector()
 {
-    qDebug().noquote() << this << "~AbstractPostSelector()" << name() << did();
+    qDebug().noquote() << this << "~AbstractPostSelector()" << type() << did();
 }
 
 QString AbstractPostSelector::toString()
@@ -28,7 +28,7 @@ QString AbstractPostSelector::toString()
 
     QString ret;
     ret += parentIsArray() ? "{" : "";
-    ret += QString("\"%1\":").arg(name());
+    ret += QString("\"%1\":").arg(type());
     ret += isArray() ? "[" : "{";
     int i = 0;
     for (auto child : children()) {
@@ -368,14 +368,14 @@ void AbstractPostSelector::setIsArray(bool newIsArray)
     m_isArray = newIsArray;
 }
 
-QString AbstractPostSelector::name() const
+QString AbstractPostSelector::type() const
 {
-    return m_name;
+    return m_type;
 }
 
-void AbstractPostSelector::setName(const QString &newName)
+void AbstractPostSelector::setType(const QString &newType)
 {
-    m_name = newName;
+    m_type = newType;
 }
 
 QString AbstractPostSelector::did() const

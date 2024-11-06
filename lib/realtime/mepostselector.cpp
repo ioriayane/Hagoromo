@@ -4,7 +4,7 @@ namespace RealtimeFeed {
 
 MePostSelector::MePostSelector(QObject *parent) : AbstractPostSelector { parent }
 {
-    setName("me");
+    setType("me");
 }
 
 bool MePostSelector::judge(const QJsonObject &object)

@@ -4,7 +4,7 @@ namespace RealtimeFeed {
 
 XorPostSelector::XorPostSelector(QObject *parent) : AbstractPostSelector { parent }
 {
-    setName("xor");
+    setType("xor");
     setIsArray(true);
 }
 
