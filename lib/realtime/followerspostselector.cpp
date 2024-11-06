@@ -5,6 +5,7 @@ namespace RealtimeFeed {
 FollowersPostSelector::FollowersPostSelector(QObject *parent) : AbstractPostSelector { parent }
 {
     setType("followers");
+    setDisplayType("Followers");
 }
 
 bool FollowersPostSelector::judge(const QJsonObject &object)

@@ -35,8 +35,10 @@ QVariant EditSelectorListModel::item(int row, EditSelectorListModelRoles role) c
         return QVariant();
     }
 
-    if (role == NameRole) {
+    if (role == TypeRole) {
         return s->type();
+    } else if (role == DisplayTypeRole) {
+        return s->displayType();
     } else if (role == IndentRole) {
         index = row;
         return m_selector->indentAt(index, 0);
@@ -48,7 +50,8 @@ QHash<int, QByteArray> EditSelectorListModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
 
-    roles[NameRole] = "name";
+    roles[TypeRole] = "type";
+    roles[DisplayTypeRole] = "displayType";
     roles[IndentRole] = "indent";
 
     return roles;

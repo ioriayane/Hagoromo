@@ -5,6 +5,7 @@ namespace RealtimeFeed {
 OrPostSelector::OrPostSelector(QObject *parent) : AbstractPostSelector { parent }
 {
     setType("or");
+    setDisplayType("OR");
     setIsArray(true);
 }
 

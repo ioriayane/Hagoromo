@@ -65,6 +65,9 @@ public:
     QString displayName() const;
     void setDisplayName(const QString &newDisplayName);
 
+    QString displayType() const;
+    void setDisplayType(const QString &newDisplayType);
+
 signals:
     void selected(const QJsonObject &object);
 
@@ -85,6 +88,7 @@ private:
     QString m_handle; // of account
     QString m_displayName; // of account
     QString m_type;
+    QString m_displayType;
     bool m_isArray;
     bool m_parentIsArray;
     bool m_ready;

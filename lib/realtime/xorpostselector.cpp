@@ -5,6 +5,7 @@ namespace RealtimeFeed {
 XorPostSelector::XorPostSelector(QObject *parent) : AbstractPostSelector { parent }
 {
     setType("xor");
+    setDisplayType("XOR");
     setIsArray(true);
 }
 

@@ -335,6 +335,16 @@ QString AbstractPostSelector::extractRkey(const QString &path) const
     }
 }
 
+QString AbstractPostSelector::displayType() const
+{
+    return m_displayType;
+}
+
+void AbstractPostSelector::setDisplayType(const QString &newDisplayType)
+{
+    m_displayType = newDisplayType;
+}
+
 bool AbstractPostSelector::ready() const
 {
     return m_ready;
