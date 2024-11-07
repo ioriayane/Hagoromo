@@ -12,6 +12,7 @@ public:
     explicit MePostSelector(QObject *parent = nullptr);
 
     virtual bool judge(const QJsonObject &object);
+    virtual QStringList canContain() const;
 };
 
 }

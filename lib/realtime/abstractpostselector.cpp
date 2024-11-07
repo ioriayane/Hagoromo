@@ -249,7 +249,7 @@ int AbstractPostSelector::getNodeCount() const
     return count;
 }
 
-const AbstractPostSelector *AbstractPostSelector::itemAt(int &index) const
+AbstractPostSelector *AbstractPostSelector::itemAt(int &index)
 {
     if (index < 0) {
         return nullptr;
@@ -258,7 +258,7 @@ const AbstractPostSelector *AbstractPostSelector::itemAt(int &index) const
     }
     index--;
     for (auto child : children()) {
-        const AbstractPostSelector *s = child->itemAt(index);
+        AbstractPostSelector *s = child->itemAt(index);
         if (s != nullptr) {
             return s;
         }

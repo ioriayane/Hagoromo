@@ -31,6 +31,7 @@ private slots:
     void test_Websock();
     void test_RealtimeFeedListModel();
     void test_EditSelectorListModel();
+    void test_EditSelectorListModel_append();
 
 private:
     QList<UserInfo> extractFromArray(const QJsonArray &array) const;
@@ -620,6 +621,77 @@ void realtime_test::test_EditSelectorListModel()
              model.item(6, EditSelectorListModel::EditSelectorListModelRoles::CanContainRole)
                      .toString()
                      .toLocal8Bit());
+}
+
+void realtime_test::test_EditSelectorListModel_append()
+{
+    EditSelectorListModel model;
+
+    model.appendChild(-1, "me");
+    QVERIFY2(model.rowCount() == 1, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY2(model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "me",
+             model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+
+    // don't append
+    model.appendChild(0, "not");
+    QVERIFY2(model.rowCount() == 1, QString::number(model.rowCount()).toLocal8Bit());
+
+    model.clear();
+
+    qDebug() << "----";
+
+    model.appendChild(-1, "and");
+    QVERIFY2(model.rowCount() == 1, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY2(model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "and",
+             model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+
+    model.appendChild(0, "following");
+    QVERIFY2(model.item(1, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "following",
+             model.item(1, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+
+    model.appendChild(0, "or");
+    QVERIFY2(model.item(2, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "or",
+             model.item(2, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+
+    model.appendChild(2, "followers");
+    QVERIFY2(model.item(3, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "followers",
+             model.item(3, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+
+    model.appendChild(0, "xor");
+    QVERIFY2(model.item(4, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "xor",
+             model.item(4, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+
+    model.appendChild(2, "following");
+    QVERIFY2(model.item(4, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "following",
+             model.item(4, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+    QVERIFY2(model.item(5, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "xor",
+             model.item(5, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+
+    // qDebug().noquote() << model.toJson();
 }
 
 QList<UserInfo> realtime_test::extractFromArray(const QJsonArray &array) const

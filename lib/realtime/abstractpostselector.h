@@ -48,7 +48,7 @@ public:
     QList<OperationInfo> getOperationInfos(const QJsonObject &object);
 
     int getNodeCount() const;
-    const AbstractPostSelector *itemAt(int &index) const;
+    AbstractPostSelector *itemAt(int &index);
     int indentAt(int &index, int current = 0) const;
 
     QString did() const; // account did

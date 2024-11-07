@@ -48,6 +48,55 @@ QVariant EditSelectorListModel::item(int row, EditSelectorListModelRoles role) c
     return QVariant();
 }
 
+void EditSelectorListModel::appendChild(int row, const QString &type)
+{
+    if (m_selector == nullptr) {
+        QJsonObject json;
+        json.insert(type, QJsonObject());
+        m_selector = AbstractPostSelector::create(json, this);
+        if (m_selector != nullptr) {
+            emit dataChanged(index(0), index(0));
+        }
+    } else {
+        int i = row;
+        AbstractPostSelector *s = m_selector->itemAt(i);
+        if (s == nullptr) {
+            return;
+        }
+        if (!s->canContain().contains(type)) {
+            return;
+        }
+        QJsonObject json;
+        json.insert(type, QJsonObject());
+        s->appendChildSelector(AbstractPostSelector::create(json, s));
+        emit dataChanged(index(row), index(rowCount() - 1));
+    }
+}
+
+void EditSelectorListModel::clear()
+{
+    if (m_selector != nullptr) {
+        int count = rowCount();
+        if (count > 0) {
+            beginRemoveRows(QModelIndex(), 0, rowCount() - 1);
+        }
+        m_selector->deleteLater();
+        m_selector = nullptr;
+        if (count > 0) {
+            endRemoveRows();
+        }
+    }
+}
+
+QString EditSelectorListModel::toJson() const
+{
+    if (m_selector == nullptr) {
+        return QString();
+    } else {
+        return m_selector->toString();
+    }
+}
+
 QHash<int, QByteArray> EditSelectorListModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
@@ -76,6 +125,8 @@ void EditSelectorListModel::loadSelector()
         m_selector = nullptr;
     }
     m_selector = AbstractPostSelector::create(json, this);
+
+    emit dataChanged(index(0), index(rowCount() - 1));
 }
 
 QString EditSelectorListModel::selectorJson() const

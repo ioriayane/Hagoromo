@@ -28,7 +28,10 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     Q_INVOKABLE QVariant item(int row,
                               EditSelectorListModel::EditSelectorListModelRoles role) const;
+    Q_INVOKABLE void appendChild(int row, const QString &type);
+    Q_INVOKABLE void clear();
 
+    QString toJson() const;
     QString selectorJson() const;
     void setSelectorJson(const QString &newSelectorJson);
 
