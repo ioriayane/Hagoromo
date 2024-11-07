@@ -13,6 +13,11 @@ bool MePostSelector::judge(const QJsonObject &object)
     return (ready() && isTarget(object) && isMy(object));
 }
 
+bool MePostSelector::validate() const
+{
+    return true;
+}
+
 QStringList MePostSelector::canContain() const
 {
     return QStringList();

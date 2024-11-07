@@ -55,6 +55,7 @@ void EditSelectorListModel::appendChild(int row, const QString &type)
         json.insert(type, QJsonObject());
         m_selector = AbstractPostSelector::create(json, this);
         if (m_selector != nullptr) {
+            setValid(validate());
             emit dataChanged(index(0), index(0));
         }
     } else {
@@ -69,6 +70,7 @@ void EditSelectorListModel::appendChild(int row, const QString &type)
         QJsonObject json;
         json.insert(type, QJsonObject());
         s->appendChildSelector(AbstractPostSelector::create(json, s));
+        setValid(validate());
         emit dataChanged(index(row), index(rowCount() - 1));
     }
 }
@@ -85,6 +87,16 @@ void EditSelectorListModel::clear()
         if (count > 0) {
             endRemoveRows();
         }
+        setValid(validate());
+    }
+}
+
+bool EditSelectorListModel::validate() const
+{
+    if (m_selector == nullptr) {
+        return false;
+    } else {
+        return m_selector->validate();
     }
 }
 
@@ -126,6 +138,8 @@ void EditSelectorListModel::loadSelector()
     }
     m_selector = AbstractPostSelector::create(json, this);
 
+    setValid(validate());
+
     emit dataChanged(index(0), index(rowCount() - 1));
 }
 
@@ -142,4 +156,17 @@ void EditSelectorListModel::setSelectorJson(const QString &newSelectorJson)
     emit selectorJsonChanged();
 
     loadSelector();
+}
+
+bool EditSelectorListModel::valid() const
+{
+    return m_valid;
+}
+
+void EditSelectorListModel::setValid(bool newValid)
+{
+    if (m_valid == newValid)
+        return;
+    m_valid = newValid;
+    emit validChanged();
 }

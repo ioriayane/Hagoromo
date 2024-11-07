@@ -355,10 +355,12 @@ void realtime_test::test_EditSelectorListModel()
     QVERIFY2(model.rowCount() == 0, QString::number(model.rowCount()).toLocal8Bit());
     QVERIFY(model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
             == QVariant());
+    QVERIFY(model.valid() == false);
 
     //----
     model.setSelectorJson("{\"me\":{}}");
     QVERIFY2(model.rowCount() == 1, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == true);
     QVERIFY2(model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
                      == "me",
              model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
@@ -377,6 +379,7 @@ void realtime_test::test_EditSelectorListModel()
     //----
     model.setSelectorJson("{\"not\":{\"me\":{}}}");
     QVERIFY2(model.rowCount() == 2, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == true);
     QVERIFY2(model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
                      == "not",
              model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
@@ -406,6 +409,7 @@ void realtime_test::test_EditSelectorListModel()
     //----
     model.setSelectorJson("{\"or\": [{\"following\": {}},{\"followers\": {}}]}");
     QVERIFY2(model.rowCount() == 3, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == true);
     QVERIFY2(model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
                      == "or",
              model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
@@ -446,6 +450,7 @@ void realtime_test::test_EditSelectorListModel()
     //----
     model.setSelectorJson("{\"and\": [{\"followers\": {}},{\"following\": {}},{\"me\":{}}]}");
     QVERIFY2(model.rowCount() == 4, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == true);
     QVERIFY2(model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
                      == "and",
              model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
@@ -498,6 +503,7 @@ void realtime_test::test_EditSelectorListModel()
     model.setSelectorJson("{\"and\": [{\"not\": {\"following\": {}}},{\"xor\": [{\"following\": "
                           "{}},{\"not\": {\"followers\": {}}}]},{\"following\": {}}]}");
     QVERIFY2(model.rowCount() == 8, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == true);
     QVERIFY2(model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
                      == "and",
              model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
@@ -629,6 +635,7 @@ void realtime_test::test_EditSelectorListModel_append()
 
     model.appendChild(-1, "me");
     QVERIFY2(model.rowCount() == 1, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == true);
     QVERIFY2(model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
                      == "me",
              model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
@@ -638,6 +645,7 @@ void realtime_test::test_EditSelectorListModel_append()
     // don't append
     model.appendChild(0, "not");
     QVERIFY2(model.rowCount() == 1, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == true);
 
     model.clear();
 
@@ -645,6 +653,7 @@ void realtime_test::test_EditSelectorListModel_append()
 
     model.appendChild(-1, "and");
     QVERIFY2(model.rowCount() == 1, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == false);
     QVERIFY2(model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
                      == "and",
              model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
@@ -652,6 +661,8 @@ void realtime_test::test_EditSelectorListModel_append()
                      .toLocal8Bit());
 
     model.appendChild(0, "following");
+    QVERIFY2(model.rowCount() == 2, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == true);
     QVERIFY2(model.item(1, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
                      == "following",
              model.item(1, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
@@ -659,6 +670,8 @@ void realtime_test::test_EditSelectorListModel_append()
                      .toLocal8Bit());
 
     model.appendChild(0, "or");
+    QVERIFY2(model.rowCount() == 3, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == false);
     QVERIFY2(model.item(2, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
                      == "or",
              model.item(2, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
@@ -666,6 +679,8 @@ void realtime_test::test_EditSelectorListModel_append()
                      .toLocal8Bit());
 
     model.appendChild(2, "followers");
+    QVERIFY2(model.rowCount() == 4, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == true);
     QVERIFY2(model.item(3, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
                      == "followers",
              model.item(3, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
@@ -673,6 +688,8 @@ void realtime_test::test_EditSelectorListModel_append()
                      .toLocal8Bit());
 
     model.appendChild(0, "xor");
+    QVERIFY2(model.rowCount() == 5, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == false);
     QVERIFY2(model.item(4, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
                      == "xor",
              model.item(4, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
@@ -680,6 +697,8 @@ void realtime_test::test_EditSelectorListModel_append()
                      .toLocal8Bit());
 
     model.appendChild(2, "following");
+    QVERIFY2(model.rowCount() == 6, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == false);
     QVERIFY2(model.item(4, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
                      == "following",
              model.item(4, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)

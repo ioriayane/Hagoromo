@@ -21,4 +21,11 @@ bool OrPostSelector::judge(const QJsonObject &object)
     return false;
 }
 
+bool OrPostSelector::validate() const
+{
+    if (!AbstractPostSelector::validate()) {
+        return false;
+    }
+    return !children().isEmpty();
+}
 }

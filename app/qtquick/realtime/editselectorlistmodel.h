@@ -11,6 +11,7 @@ class EditSelectorListModel : public QAbstractListModel
 
     Q_PROPERTY(QString selectorJson READ selectorJson WRITE setSelectorJson NOTIFY
                        selectorJsonChanged FINAL)
+    Q_PROPERTY(bool valid READ valid WRITE setValid NOTIFY validChanged FINAL)
 public:
     explicit EditSelectorListModel(QObject *parent = nullptr);
 
@@ -31,12 +32,17 @@ public:
     Q_INVOKABLE void appendChild(int row, const QString &type);
     Q_INVOKABLE void clear();
 
+    bool validate() const;
     QString toJson() const;
+
     QString selectorJson() const;
     void setSelectorJson(const QString &newSelectorJson);
+    bool valid() const;
+    void setValid(bool newValid);
 
 signals:
     void selectorJsonChanged();
+    void validChanged();
 
 protected:
     QHash<int, QByteArray> roleNames() const;
@@ -46,6 +52,7 @@ private:
 
     RealtimeFeed::AbstractPostSelector *m_selector;
     QString m_selectorJson;
+    bool m_valid;
 };
 
 #endif // EDITSELECTORLISTMODEL_H

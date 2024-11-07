@@ -22,4 +22,11 @@ bool NotPostSelector::judge(const QJsonObject &object)
     return !(children().at(0)->judge(object));
 }
 
+bool NotPostSelector::validate() const
+{
+    if (!AbstractPostSelector::validate()) {
+        return false;
+    }
+    return !children().isEmpty();
+}
 }

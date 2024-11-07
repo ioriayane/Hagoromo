@@ -44,6 +44,16 @@ QString AbstractPostSelector::toString()
     return ret;
 }
 
+bool AbstractPostSelector::validate() const
+{
+    for (auto child : children()) {
+        if (!child->validate()) {
+            return false;
+        }
+    }
+    return true;
+}
+
 AbstractPostSelector *AbstractPostSelector::create(const QJsonObject &selector, QObject *parent)
 {
     AbstractPostSelector *current = nullptr;

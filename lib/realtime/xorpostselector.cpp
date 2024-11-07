@@ -22,4 +22,11 @@ bool XorPostSelector::judge(const QJsonObject &object)
     return (count % 2 == 1);
 }
 
+bool XorPostSelector::validate() const
+{
+    if (!AbstractPostSelector::validate()) {
+        return false;
+    }
+    return !children().isEmpty();
+}
 }

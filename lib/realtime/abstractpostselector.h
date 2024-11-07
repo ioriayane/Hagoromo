@@ -33,6 +33,7 @@ public:
 
     virtual bool judge(const QJsonObject &object) = 0;
     virtual QString toString();
+    virtual bool validate() const;
 
     static AbstractPostSelector *create(const QJsonObject &selector, QObject *parent);
     void appendChildSelector(AbstractPostSelector *child);
