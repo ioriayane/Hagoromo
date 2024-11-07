@@ -100,8 +100,21 @@ void AbstractPostSelector::appendChildSelector(AbstractPostSelector *child)
         return;
     if (m_children.contains(child))
         return;
+    if (!canContain().contains(child->type()))
+        return;
     child->setParentIsArray(isArray());
     m_children.append(child);
+}
+
+QStringList AbstractPostSelector::canContain() const
+{
+    return QStringList() << "following"
+                         << "followers"
+                         << "me"
+                         << "and"
+                         << "or"
+                         << "not"
+                         << "xor";
 }
 
 bool AbstractPostSelector::needFollowing() const

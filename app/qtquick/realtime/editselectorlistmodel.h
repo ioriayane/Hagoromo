@@ -19,6 +19,7 @@ public:
         ModelData = Qt::UserRole + 1,
         TypeRole,
         DisplayTypeRole,
+        CanContainRole,
         IndentRole,
     };
     Q_ENUM(EditSelectorListModelRoles)

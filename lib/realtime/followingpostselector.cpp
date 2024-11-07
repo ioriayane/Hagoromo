@@ -44,6 +44,11 @@ bool FollowingPostSelector::judge(const QJsonObject &object)
     return isTarget(object) && m_following.contains(getRepo(object));
 }
 
+QStringList FollowingPostSelector::canContain() const
+{
+    return QStringList();
+}
+
 void FollowingPostSelector::setFollowing(const QList<UserInfo> &following)
 {
     AbstractPostSelector::setFollowing(following);

@@ -601,6 +601,25 @@ void realtime_test::test_EditSelectorListModel()
              model.item(6, EditSelectorListModel::EditSelectorListModelRoles::DisplayTypeRole)
                      .toString()
                      .toLocal8Bit());
+
+    QVERIFY2(model.item(0, EditSelectorListModel::EditSelectorListModelRoles::CanContainRole)
+                             .toStringList()
+                     == QStringList() << "following"
+                                      << "followers"
+                                      << "me"
+                                      << "and"
+                                      << "or"
+                                      << "not"
+                                      << "xor",
+             model.item(0, EditSelectorListModel::EditSelectorListModelRoles::CanContainRole)
+                     .toString()
+                     .toLocal8Bit());
+    QVERIFY2(model.item(6, EditSelectorListModel::EditSelectorListModelRoles::CanContainRole)
+                             .toStringList()
+                     == QStringList(),
+             model.item(6, EditSelectorListModel::EditSelectorListModelRoles::CanContainRole)
+                     .toString()
+                     .toLocal8Bit());
 }
 
 QList<UserInfo> realtime_test::extractFromArray(const QJsonArray &array) const
