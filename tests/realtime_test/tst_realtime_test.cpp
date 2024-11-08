@@ -710,7 +710,24 @@ void realtime_test::test_EditSelectorListModel_append()
                      .toString()
                      .toLocal8Bit());
 
+    model.remove(2);
+    QVERIFY2(model.rowCount() == 3, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == false);
+
+    model.appendChild(2, "following");
+    QVERIFY2(model.rowCount() == 4, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == true);
+    QVERIFY2(model.item(3, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "following",
+             model.item(3, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+
     // qDebug().noquote() << model.toJson();
+
+    model.remove(0);
+    QVERIFY2(model.rowCount() == 0, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == false);
 }
 
 QList<UserInfo> realtime_test::extractFromArray(const QJsonArray &array) const

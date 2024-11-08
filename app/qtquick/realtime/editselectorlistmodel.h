@@ -30,6 +30,7 @@ public:
     Q_INVOKABLE QVariant item(int row,
                               EditSelectorListModel::EditSelectorListModelRoles role) const;
     Q_INVOKABLE void appendChild(int row, const QString &type);
+    Q_INVOKABLE void remove(int row);
     Q_INVOKABLE void clear();
 
     bool validate() const;

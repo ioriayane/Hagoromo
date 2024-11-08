@@ -75,20 +75,41 @@ void EditSelectorListModel::appendChild(int row, const QString &type)
     }
 }
 
+void EditSelectorListModel::remove(int row)
+{
+    if (m_selector == nullptr)
+        return;
+
+    if (row == 0) {
+        clear();
+    } else {
+        int i = row;
+        AbstractPostSelector *s = m_selector->itemAt(i);
+        if (s == nullptr) {
+            return;
+        }
+        int remove_count = s->getNodeCount();
+        beginRemoveRows(QModelIndex(), row, row + remove_count - 1);
+        m_selector->remove(s);
+        endRemoveRows();
+    }
+}
+
 void EditSelectorListModel::clear()
 {
-    if (m_selector != nullptr) {
-        int count = rowCount();
-        if (count > 0) {
-            beginRemoveRows(QModelIndex(), 0, rowCount() - 1);
-        }
-        m_selector->deleteLater();
-        m_selector = nullptr;
-        if (count > 0) {
-            endRemoveRows();
-        }
-        setValid(validate());
+    if (m_selector == nullptr)
+        return;
+
+    int count = rowCount();
+    if (count > 0) {
+        beginRemoveRows(QModelIndex(), 0, rowCount() - 1);
     }
+    m_selector->deleteLater();
+    m_selector = nullptr;
+    if (count > 0) {
+        endRemoveRows();
+    }
+    setValid(validate());
 }
 
 bool EditSelectorListModel::validate() const

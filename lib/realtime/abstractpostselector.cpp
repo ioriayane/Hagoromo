@@ -276,6 +276,23 @@ AbstractPostSelector *AbstractPostSelector::itemAt(int &index)
     return nullptr;
 }
 
+bool AbstractPostSelector::remove(AbstractPostSelector *s)
+{
+    bool removed = false;
+    if (m_children.contains(s)) {
+        m_children.removeOne(s);
+        s->deleteLater();
+        removed = true;
+    } else {
+        for (auto child : children()) {
+            removed = child->remove(s);
+            if (removed)
+                break;
+        }
+    }
+    return removed;
+}
+
 int AbstractPostSelector::indentAt(int &index, int current) const
 {
     if (index < 0) {

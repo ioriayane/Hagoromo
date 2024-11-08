@@ -50,6 +50,7 @@ public:
 
     int getNodeCount() const;
     AbstractPostSelector *itemAt(int &index);
+    bool remove(AbstractPostSelector *s);
     int indentAt(int &index, int current = 0) const;
 
     QString did() const; // account did
