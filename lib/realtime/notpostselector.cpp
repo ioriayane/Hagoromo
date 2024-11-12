@@ -22,6 +22,15 @@ bool NotPostSelector::judge(const QJsonObject &object)
     return !(children().at(0)->judge(object));
 }
 
+QStringList NotPostSelector::canContain() const
+{
+    if (children().length() == 0) {
+        return AbstractPostSelector::canContain();
+    } else {
+        return QStringList();
+    }
+}
+
 bool NotPostSelector::validate() const
 {
     if (!AbstractPostSelector::validate()) {

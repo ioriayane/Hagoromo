@@ -19,6 +19,7 @@ enum class FeedComponentType : int {
 
     PostThread = 100,
     DiscoverFeeds = 101,
+    EditRealtimeFeed = 102,
 };
 
 // QMLではマジックナンバーになるので変更しないこと

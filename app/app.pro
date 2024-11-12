@@ -53,6 +53,7 @@ QML_FILES = \
     qml/dialogs/MutedAccountsDialog.qml \
     qml/dialogs/MutedListsDialog.qml \
     qml/dialogs/PostDialog.qml \
+    qml/dialogs/RealtimeFeedEditorDialog.qml \
     qml/dialogs/ReportAccountDialog.qml \
     qml/dialogs/ReportMessageDialog.qml \
     qml/dialogs/ReportPostDialog.qml \
@@ -86,6 +87,7 @@ QML_FILES = \
     qml/parts/ProfileTabButton.qml \
     qml/parts/QuoteRecord.qml \
     qml/parts/ReactionAuthor.qml \
+    qml/parts/SelectorDelegate.qml \
     qml/parts/SelfLabelPopup.qml \
     qml/parts/SideBar.qml \
     qml/parts/TagLabel.qml \

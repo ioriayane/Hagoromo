@@ -127,6 +127,16 @@ QStringList AbstractPostSelector::canContain() const
                          << "xor";
 }
 
+bool AbstractPostSelector::has(const QString &type) const
+{
+    for (auto child : children()) {
+        if (child->type() == type) {
+            return true;
+        }
+    }
+    return false;
+}
+
 bool AbstractPostSelector::needFollowing() const
 {
     for (auto child : children()) {

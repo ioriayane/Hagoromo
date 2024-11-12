@@ -5,7 +5,7 @@
 using namespace RealtimeFeed;
 
 EditSelectorListModel::EditSelectorListModel(QObject *parent)
-    : QAbstractListModel { parent }, m_selector(nullptr)
+    : QAbstractListModel { parent }, m_selector(nullptr), m_count(0)
 {
 }
 
@@ -39,8 +39,8 @@ QVariant EditSelectorListModel::item(int row, EditSelectorListModelRoles role) c
         return s->type();
     } else if (role == DisplayTypeRole) {
         return s->displayType();
-    } else if (role == CanContainRole) {
-        return s->canContain();
+    } else if (role == CanHaveRole) {
+        return !s->canContain().isEmpty();
     } else if (role == IndentRole) {
         index = row;
         return m_selector->indentAt(index, 0);
@@ -55,8 +55,9 @@ void EditSelectorListModel::appendChild(int row, const QString &type)
         json.insert(type, QJsonObject());
         m_selector = AbstractPostSelector::create(json, this);
         if (m_selector != nullptr) {
+            beginInsertRows(QModelIndex(), 0, 0);
             setValid(validate());
-            emit dataChanged(index(0), index(0));
+            endInsertRows();
         }
     } else {
         int i = row;
@@ -67,12 +68,23 @@ void EditSelectorListModel::appendChild(int row, const QString &type)
         if (!s->canContain().contains(type)) {
             return;
         }
+        if (s->has(type) && (type == "following" || type == "followers" || type == "me")) {
+            // already exist
+            return;
+        }
+        int s_child_count = s->getNodeCount();
+        beginInsertRows(QModelIndex(), row + s_child_count, row + s_child_count);
         QJsonObject json;
         json.insert(type, QJsonObject());
         s->appendChildSelector(AbstractPostSelector::create(json, s));
         setValid(validate());
-        emit dataChanged(index(row), index(rowCount() - 1));
+        endInsertRows();
+
+        if (s->type() == "not") {
+            emit dataChanged(index(row), index(row));
+        }
     }
+    setCount(rowCount());
 }
 
 void EditSelectorListModel::remove(int row)
@@ -92,7 +104,13 @@ void EditSelectorListModel::remove(int row)
         beginRemoveRows(QModelIndex(), row, row + remove_count - 1);
         m_selector->remove(s);
         endRemoveRows();
+
+        // TODO 親を取得しないといけない
+        // if (s->type() == "not") {
+        //     emit dataChanged(index(row), index(row));
+        // }
     }
+    setCount(rowCount());
 }
 
 void EditSelectorListModel::clear()
@@ -110,6 +128,7 @@ void EditSelectorListModel::clear()
         endRemoveRows();
     }
     setValid(validate());
+    setCount(rowCount());
 }
 
 bool EditSelectorListModel::validate() const
@@ -136,7 +155,7 @@ QHash<int, QByteArray> EditSelectorListModel::roleNames() const
 
     roles[TypeRole] = "type";
     roles[DisplayTypeRole] = "displayType";
-    roles[CanContainRole] = "canContain";
+    roles[CanHaveRole] = "canHave";
     roles[IndentRole] = "indent";
 
     return roles;
@@ -160,7 +179,7 @@ void EditSelectorListModel::loadSelector()
     m_selector = AbstractPostSelector::create(json, this);
 
     setValid(validate());
-
+    setCount(rowCount());
     emit dataChanged(index(0), index(rowCount() - 1));
 }
 
@@ -190,4 +209,17 @@ void EditSelectorListModel::setValid(bool newValid)
         return;
     m_valid = newValid;
     emit validChanged();
+}
+
+int EditSelectorListModel::count() const
+{
+    return m_count;
+}
+
+void EditSelectorListModel::setCount(int newCount)
+{
+    if (m_count == newCount)
+        return;
+    m_count = newCount;
+    emit countChanged();
 }

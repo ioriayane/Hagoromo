@@ -609,7 +609,7 @@ void realtime_test::test_EditSelectorListModel()
                      .toString()
                      .toLocal8Bit());
 
-    QVERIFY2(model.item(0, EditSelectorListModel::EditSelectorListModelRoles::CanContainRole)
+    QVERIFY2(model.item(0, EditSelectorListModel::EditSelectorListModelRoles::CanHaveRole)
                              .toStringList()
                      == QStringList() << "following"
                                       << "followers"
@@ -618,13 +618,13 @@ void realtime_test::test_EditSelectorListModel()
                                       << "or"
                                       << "not"
                                       << "xor",
-             model.item(0, EditSelectorListModel::EditSelectorListModelRoles::CanContainRole)
+             model.item(0, EditSelectorListModel::EditSelectorListModelRoles::CanHaveRole)
                      .toString()
                      .toLocal8Bit());
-    QVERIFY2(model.item(6, EditSelectorListModel::EditSelectorListModelRoles::CanContainRole)
+    QVERIFY2(model.item(6, EditSelectorListModel::EditSelectorListModelRoles::CanHaveRole)
                              .toStringList()
                      == QStringList(),
-             model.item(6, EditSelectorListModel::EditSelectorListModelRoles::CanContainRole)
+             model.item(6, EditSelectorListModel::EditSelectorListModelRoles::CanHaveRole)
                      .toString()
                      .toLocal8Bit());
 }

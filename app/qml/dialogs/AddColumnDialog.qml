@@ -27,6 +27,7 @@ Dialog {
 
     signal openSatisticsAndLogs(string account_uid)
     signal openDiscoverFeeds(string account_uuid)
+    signal openRealtimeFeedEditor(string account_uuid)
     signal errorOccured(string account_uuid, string code, string message)
 
     onOpened: {
@@ -42,7 +43,7 @@ Dialog {
             var item = repeater.itemAt(i)
             item.visible = (i === index)
             if(i === index){
-                if(item.model.rowCount() === 7){
+                if(item.model.rowCount() === 8){
                     item.model.setAccount(accountModel.item(index, AccountListModel.UuidRole))
                     item.model.getLatest()
                 }
@@ -144,12 +145,18 @@ Dialog {
                                     height: implicitHeight * AdjustedValues.ratio
                                     highlighted: ListView.isCurrentItem
                                     onClicked: {
+                                        var uuid = ""
                                         if(model.feedType === 101){
                                             if(!typeList.model.running){
-                                                var uuid = accountModel.item(accountList.currentIndex, AccountListModel.UuidRole)
+                                                uuid = accountModel.item(accountList.currentIndex, AccountListModel.UuidRole)
                                                 console.log("index=" + accountList.currentIndex + "," + uuid)
                                                 addColumnDialog.openDiscoverFeeds(uuid)
                                             }
+                                        }else if(model.feedType === 102){
+                                            // realtime feed作成
+                                            uuid = accountModel.item(accountList.currentIndex, AccountListModel.UuidRole)
+                                            console.log("index=" + accountList.currentIndex + "," + uuid)
+                                            addColumnDialog.openRealtimeFeedEditor(uuid)
                                         }else{
                                             typeList.currentIndex = model.index
 
@@ -173,6 +180,8 @@ Dialog {
                                                     return "../images/notification.png"
                                                 }else if(model.feedType === 101){
                                                     return "../images/feed.png"
+                                                }else if(model.feedType === 102){
+                                                    return "../images/add.png"
                                                 }else{
                                                     return "../images/account_icon.png"
                                                 }

@@ -38,6 +38,7 @@ public:
     static AbstractPostSelector *create(const QJsonObject &selector, QObject *parent);
     void appendChildSelector(AbstractPostSelector *child);
     virtual QStringList canContain() const;
+    virtual bool has(const QString &type) const;
     virtual bool needFollowing() const;
     virtual bool needFollowers() const;
 

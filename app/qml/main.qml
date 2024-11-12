@@ -156,6 +156,13 @@ ApplicationWindow {
                                      addColumnDialog.reject()
                                  }
                              }
+        onOpenRealtimeFeedEditor: (account_uuid) => {
+                                      console.log("onOpenRealtimeFeedEditor:" + account_uuid)
+                                      if(realtimeFeedEditorDialog.account.set(accountListModel, account_uuid)){
+                                          realtimeFeedEditorDialog.open()
+                                      }
+                                  }
+
         onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
     }
 
@@ -446,6 +453,9 @@ ApplicationWindow {
                                        }
                                    }
         onHoveredLinkChanged: hoveredLinkFrame.text = hoveredLink
+    }
+    RealtimeFeedEditorDialog {
+        id: realtimeFeedEditorDialog
     }
 
     MessageDialog {

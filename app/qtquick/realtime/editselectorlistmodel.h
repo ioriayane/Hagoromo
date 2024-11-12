@@ -12,6 +12,7 @@ class EditSelectorListModel : public QAbstractListModel
     Q_PROPERTY(QString selectorJson READ selectorJson WRITE setSelectorJson NOTIFY
                        selectorJsonChanged FINAL)
     Q_PROPERTY(bool valid READ valid WRITE setValid NOTIFY validChanged FINAL)
+    Q_PROPERTY(int count READ count WRITE setCount NOTIFY countChanged FINAL)
 public:
     explicit EditSelectorListModel(QObject *parent = nullptr);
 
@@ -20,7 +21,7 @@ public:
         ModelData = Qt::UserRole + 1,
         TypeRole,
         DisplayTypeRole,
-        CanContainRole,
+        CanHaveRole,
         IndentRole,
     };
     Q_ENUM(EditSelectorListModelRoles)
@@ -41,9 +42,14 @@ public:
     bool valid() const;
     void setValid(bool newValid);
 
+    int count() const;
+    void setCount(int newCount);
+
 signals:
     void selectorJsonChanged();
     void validChanged();
+
+    void countChanged();
 
 protected:
     QHash<int, QByteArray> roleNames() const;
@@ -54,6 +60,7 @@ private:
     RealtimeFeed::AbstractPostSelector *m_selector;
     QString m_selectorJson;
     bool m_valid;
+    int m_count;
 };
 
 #endif // EDITSELECTORLISTMODEL_H
