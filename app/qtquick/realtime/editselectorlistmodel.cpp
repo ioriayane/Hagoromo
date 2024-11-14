@@ -102,13 +102,15 @@ void EditSelectorListModel::remove(int row)
         }
         int remove_count = s->getNodeCount();
         beginRemoveRows(QModelIndex(), row, row + remove_count - 1);
-        m_selector->remove(s);
+        AbstractPostSelector *s_parent = m_selector->remove(s);
         endRemoveRows();
 
-        // TODO 親を取得しないといけない
-        // if (s->type() == "not") {
-        //     emit dataChanged(index(row), index(row));
-        // }
+        if (s_parent != nullptr && s_parent->type() == "not") {
+            int parent_row = m_selector->index(s_parent);
+            if (parent_row >= 0 && parent_row < rowCount()) {
+                emit dataChanged(index(parent_row), index(parent_row));
+            }
+        }
     }
     setCount(rowCount());
 }

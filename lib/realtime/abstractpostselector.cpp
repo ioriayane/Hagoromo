@@ -286,21 +286,38 @@ AbstractPostSelector *AbstractPostSelector::itemAt(int &index)
     return nullptr;
 }
 
-bool AbstractPostSelector::remove(AbstractPostSelector *s)
+// 消せたら自分を返す（つまり消したやつの親）
+AbstractPostSelector *AbstractPostSelector::remove(AbstractPostSelector *s)
 {
-    bool removed = false;
+    AbstractPostSelector *ret = nullptr;
     if (m_children.contains(s)) {
         m_children.removeOne(s);
         s->deleteLater();
-        removed = true;
+        ret = this;
     } else {
         for (auto child : children()) {
-            removed = child->remove(s);
-            if (removed)
+            ret = child->remove(s);
+            if (ret != nullptr)
                 break;
         }
     }
-    return removed;
+    return ret;
+}
+
+int AbstractPostSelector::index(AbstractPostSelector *s, int index) const
+{
+    if (s == this) {
+        return index;
+    }
+    index++;
+    for (auto child : children()) {
+        int i = child->index(s, index);
+        if (i >= 0) {
+            return i;
+        }
+        index += child->getNodeCount();
+    }
+    return -1;
 }
 
 int AbstractPostSelector::indentAt(int &index, int current) const
