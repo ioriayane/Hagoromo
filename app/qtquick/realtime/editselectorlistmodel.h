@@ -13,6 +13,7 @@ class EditSelectorListModel : public QAbstractListModel
                        selectorJsonChanged FINAL)
     Q_PROPERTY(bool valid READ valid WRITE setValid NOTIFY validChanged FINAL)
     Q_PROPERTY(int count READ count WRITE setCount NOTIFY countChanged FINAL)
+    Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged FINAL)
 public:
     explicit EditSelectorListModel(QObject *parent = nullptr);
 
@@ -33,6 +34,7 @@ public:
     Q_INVOKABLE void appendChild(int row, const QString &type);
     Q_INVOKABLE void remove(int row);
     Q_INVOKABLE void clear();
+    Q_INVOKABLE void save(const QString &uuid);
 
     bool validate() const;
     QString toJson() const;
@@ -45,11 +47,16 @@ public:
     int count() const;
     void setCount(int newCount);
 
+    QString name() const;
+    void setName(const QString &newName);
+
 signals:
     void selectorJsonChanged();
     void validChanged();
 
     void countChanged();
+
+    void nameChanged();
 
 protected:
     QHash<int, QByteArray> roleNames() const;
@@ -61,6 +68,7 @@ private:
     QString m_selectorJson;
     bool m_valid;
     int m_count;
+    QString m_name;
 };
 
 #endif // EDITSELECTORLISTMODEL_H

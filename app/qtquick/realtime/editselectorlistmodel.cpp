@@ -1,11 +1,12 @@
 #include "editselectorlistmodel.h"
+#include "tools/accountmanager.h"
 
 #include <QJsonDocument>
 
 using namespace RealtimeFeed;
 
 EditSelectorListModel::EditSelectorListModel(QObject *parent)
-    : QAbstractListModel { parent }, m_selector(nullptr), m_count(0)
+    : QAbstractListModel { parent }, m_selector(nullptr), m_valid(false), m_count(0)
 {
 }
 
@@ -112,6 +113,7 @@ void EditSelectorListModel::remove(int row)
             }
         }
     }
+    setValid(validate());
     setCount(rowCount());
 }
 
@@ -131,6 +133,12 @@ void EditSelectorListModel::clear()
     }
     setValid(validate());
     setCount(rowCount());
+}
+
+void EditSelectorListModel::save(const QString &uuid)
+{
+    AccountManager *manager = AccountManager::getInstance();
+    manager->updateRealtimeFeedRule(uuid, name(), toJson());
 }
 
 bool EditSelectorListModel::validate() const
@@ -224,4 +232,17 @@ void EditSelectorListModel::setCount(int newCount)
         return;
     m_count = newCount;
     emit countChanged();
+}
+
+QString EditSelectorListModel::name() const
+{
+    return m_name;
+}
+
+void EditSelectorListModel::setName(const QString &newName)
+{
+    if (m_name == newName)
+        return;
+    m_name = newName;
+    emit nameChanged();
 }

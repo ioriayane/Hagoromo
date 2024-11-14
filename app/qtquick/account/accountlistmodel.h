@@ -40,6 +40,7 @@ public:
         ThreadGateTypeRole,
         ThreadGateOptionsRole,
         PostGateQuoteEnabledRole,
+        RealtimeFeedRulesRole,
         StatusRole,
         AuthorizedRole,
     };

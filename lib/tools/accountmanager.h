@@ -38,6 +38,7 @@ public:
         ThreadGateTypeRole,
         ThreadGateOptionsRole,
         PostGateQuoteEnabledRole,
+        RealtimeFeedRulesRole,
         StatusRole,
         AuthorizedRole,
     };
@@ -56,6 +57,7 @@ public:
     void removeAccount(const QString &uuid);
     void updateAccountProfile(const QString &uuid);
     void updateServiceEndpoint(const QString &uuid, const QString &service_endpoint);
+    void updateRealtimeFeedRule(const QString &uuid, const QString &name, const QString &condition);
     int getMainAccountIndex() const;
     void setMainAccount(int row);
     bool checkAllAccountsReady();

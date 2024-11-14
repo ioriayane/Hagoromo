@@ -30,6 +30,18 @@ Dialog {
             handle: account.handle
         }
         RowLayout {
+            Label {
+                font.pointSize: AdjustedValues.f10
+                text: qsTr("Name") + " :"
+            }
+            TextField {
+                id: ruleNameTextField
+                Layout.preferredWidth: 200 * AdjustedValues.ratio
+                font.pointSize: AdjustedValues.f10
+                // placeholderText: qsTr("Name of rule")
+            }
+        }
+        RowLayout {
             spacing: 10
             states: [
                 State {
@@ -60,6 +72,7 @@ Dialog {
                         clip: true
                         model: EditSelectorListModel {
                             id: editSelectorListModel
+                            name: ruleNameTextField.text
                         }
 
                         header: SelectorDelegate {
@@ -123,32 +136,38 @@ Dialog {
                 CheckBox {
                     topPadding: parent.adjustedPadding
                     bottomPadding: parent.adjustedPadding
+                    font.pointSize: AdjustedValues.f10
                     text: qsTr("Has embeded")
                 }
                 CheckBox {
                     topPadding: parent.adjustedPadding
                     bottomPadding: parent.adjustedPadding
+                    font.pointSize: AdjustedValues.f10
                     text: qsTr("Has quote")
                 }
                 // CheckBox {
                 //     topPadding: parent.adjustedPadding
                 //     bottomPadding: parent.adjustedPadding
+                // font.pointSize: AdjustedValues.f10
                 //     text: qsTr("Contains hashtag")
                 // }
                 // TextField {
                 //     Layout.leftMargin: AdjustedValues.s20
                 //     topPadding: parent.adjustedPadding
                 //     // bottomPadding: parent.adjustedPadding
+                // font.pointSize: AdjustedValues.f10
                 // }
                 // CheckBox {
                 //     topPadding: parent.adjustedPadding
                 //     bottomPadding: parent.adjustedPadding
+                // font.pointSize: AdjustedValues.f10
                 //     text: qsTr("Contains word")
                 // }
                 // TextField {
                 //     Layout.leftMargin: AdjustedValues.s20
                 //     topPadding: parent.adjustedPadding
                 //     // bottomPadding: parent.adjustedPadding
+                // font.pointSize: AdjustedValues.f10
                 // }
                 Item {
                     id: detailArea
@@ -170,9 +189,12 @@ Dialog {
             }
             Button {
                 font.pointSize: AdjustedValues.f10
-                // enabled: accountList.currentIndex >= 0
+                enabled: editSelectorListModel.valid && ruleNameTextField.text.length > 0
                 text: qsTr("Submit")
-                // onClicked: addColumnDialog.accept()
+                onClicked: {
+                    editSelectorListModel.save(realtimeFeedEditorDialog.account.uuid)
+                    realtimeFeedEditorDialog.accept()
+                }
             }
         }
 
