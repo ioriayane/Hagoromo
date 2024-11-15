@@ -79,10 +79,10 @@ RowLayout {
                     text: qsTr("OR")
                     onTriggered: selectorDelegate.appendChild(selectorDelegate.index, "or")
                 }
-                Action {
-                    text: qsTr("NOT")
-                    onTriggered: selectorDelegate.appendChild(selectorDelegate.index, "not")
-                }
+                // Action {
+                //     text: qsTr("NOT")
+                //     onTriggered: selectorDelegate.appendChild(selectorDelegate.index, "not")
+                // }
                 Action {
                     text: qsTr("XOR")
                     onTriggered: selectorDelegate.appendChild(selectorDelegate.index, "xor")
