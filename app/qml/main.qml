@@ -156,10 +156,12 @@ ApplicationWindow {
                                      addColumnDialog.reject()
                                  }
                              }
-        onOpenRealtimeFeedEditor: (account_uuid) => {
-                                      console.log("onOpenRealtimeFeedEditor:" + account_uuid)
+        onOpenRealtimeFeedEditor: (account_uuid, display_name, condition) => {
+                                      console.log("onOpenRealtimeFeedEditor:" + account_uuid
+                                                  + ", display_name:" + display_name
+                                                  + ", condition:" + condition)
                                       if(realtimeFeedEditorDialog.account.set(accountListModel, account_uuid)){
-                                          realtimeFeedEditorDialog.open()
+                                          realtimeFeedEditorDialog.setupAndOpen(display_name, condition)
                                       }
                                   }
 

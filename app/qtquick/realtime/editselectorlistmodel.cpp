@@ -182,15 +182,15 @@ void EditSelectorListModel::loadSelector()
         return;
     }
 
-    if (m_selector != nullptr) {
-        m_selector->deleteLater();
-        m_selector = nullptr;
+    clear();
+    AbstractPostSelector *temp = AbstractPostSelector::create(json, this);
+    if (temp != nullptr) {
+        beginInsertRows(QModelIndex(), 0, temp->getNodeCount() - 1);
+        m_selector = temp;
+        endInsertRows();
     }
-    m_selector = AbstractPostSelector::create(json, this);
-
     setValid(validate());
     setCount(rowCount());
-    emit dataChanged(index(0), index(rowCount() - 1));
 }
 
 QString EditSelectorListModel::selectorJson() const

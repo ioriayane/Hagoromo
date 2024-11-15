@@ -23,6 +23,13 @@ Dialog {
         id: account
     }
 
+    function setupAndOpen(display_name, condition){
+        ruleNameTextField.text = display_name
+        editSelectorListModel.clear()
+        editSelectorListModel.selectorJson = condition
+        realtimeFeedEditorDialog.open()
+    }
+
     ColumnLayout {
         AccountLayout {
             Layout.fillWidth: true

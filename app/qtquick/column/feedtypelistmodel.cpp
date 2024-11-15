@@ -36,6 +36,8 @@ QVariant FeedTypeListModel::item(int row, FeedTypeListModelRoles role) const
         return m_feedTypeItemList.at(row).group;
     else if (role == FeedTypeRole)
         return static_cast<int>(m_feedTypeItemList.at(row).type);
+    else if (role == EditableRole)
+        return m_feedTypeItemList.at(row).editable;
 
     else if (m_feedTypeItemList.at(row).type == FeedComponentType::ListFeed) {
         if (role == DisplayNameRole)
@@ -178,6 +180,7 @@ bool FeedTypeListModel::getLatest()
         item.type = FeedComponentType::RealtimeFeed;
         item.generator.displayName = rule.name;
         item.generator.uri = rule.condition;
+        item.editable = true;
         beginInsertRows(QModelIndex(), rule_insert_pos, rule_insert_pos);
         m_feedTypeItemList.insert(rule_insert_pos, item);
         endInsertRows();
@@ -207,6 +210,19 @@ bool FeedTypeListModel::getNext()
     return true;
 }
 
+void FeedTypeListModel::removeRealtimeFeedRule(int row)
+{
+    if (row < 0 || row >= m_feedTypeItemList.count())
+        return;
+
+    AccountManager *manager = AccountManager::getInstance();
+    manager->removeRealtimeFeedRule(account().uuid,
+                                    m_feedTypeItemList.at(row).generator.displayName);
+    beginRemoveRows(QModelIndex(), row, row);
+    m_feedTypeItemList.removeAt(row);
+    endRemoveRows();
+}
+
 QHash<int, QByteArray> FeedTypeListModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
@@ -217,6 +233,7 @@ QHash<int, QByteArray> FeedTypeListModel::roleNames() const
     roles[AvatarRole] = "avatar";
     roles[UriRole] = "uri";
     roles[CreatorDisplayNameRole] = "creatorDisplayName";
+    roles[EditableRole] = "editable";
 
     return roles;
 }

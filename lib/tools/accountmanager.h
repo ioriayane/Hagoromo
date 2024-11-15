@@ -59,6 +59,7 @@ public:
     void updateServiceEndpoint(const QString &uuid, const QString &service_endpoint);
     void updateRealtimeFeedRule(const QString &uuid, const QString &name, const QString &condition);
     QList<AtProtocolInterface::RealtimeFeedRule> getRealtimeFeedRules(const QString &uuid);
+    void removeRealtimeFeedRule(const QString &uuid, const QString &name);
     int getMainAccountIndex() const;
     void setMainAccount(int row);
     bool checkAllAccountsReady();

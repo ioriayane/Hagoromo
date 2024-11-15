@@ -42,6 +42,7 @@ public:
                        const QString &thread_gate_type, const AccountStatus status);
     void updateRealtimeFeedRule(const QString &name, const QString &condition);
     QList<AtProtocolInterface::RealtimeFeedRule> getRealtimeFeedRules() const;
+    void removeRealtimeFeedRule(const QString &name);
     void createSession();
     void refreshSession(bool initial = false);
     void getProfile();
@@ -247,6 +248,17 @@ void AccountManager::Private::updateRealtimeFeedRule(const QString &name, const 
 QList<AtProtocolInterface::RealtimeFeedRule> AccountManager::Private::getRealtimeFeedRules() const
 {
     return m_account.realtime_feed_rules;
+}
+
+void AccountManager::Private::removeRealtimeFeedRule(const QString &name)
+{
+    QList<AtProtocolInterface::RealtimeFeedRule> temp;
+    for (auto &rule : m_account.realtime_feed_rules) {
+        if (rule.name != name) {
+            temp.append(rule);
+        }
+    }
+    m_account.realtime_feed_rules = temp;
 }
 
 void AccountManager::Private::createSession()
@@ -567,6 +579,16 @@ AccountManager::getRealtimeFeedRules(const QString &uuid)
         return QList<AtProtocolInterface::RealtimeFeedRule>();
 
     return dList.at(row)->getRealtimeFeedRules();
+}
+
+void AccountManager::removeRealtimeFeedRule(const QString &uuid, const QString &name)
+{
+    int row = indexAt(uuid);
+    if (row < 0 || row >= count())
+        return;
+
+    dList.at(row)->removeRealtimeFeedRule(name);
+    save();
 }
 
 int AccountManager::getMainAccountIndex() const

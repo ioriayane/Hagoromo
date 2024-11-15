@@ -27,7 +27,7 @@ Dialog {
 
     signal openSatisticsAndLogs(string account_uid)
     signal openDiscoverFeeds(string account_uuid)
-    signal openRealtimeFeedEditor(string account_uuid)
+    signal openRealtimeFeedEditor(string account_uuid, string display_name, string condition)
     signal errorOccured(string account_uuid, string code, string message)
 
     onOpened: {
@@ -144,25 +144,33 @@ Dialog {
                                     width: typeList.width - typeScroll.ScrollBar.vertical.width
                                     height: implicitHeight * AdjustedValues.ratio
                                     highlighted: ListView.isCurrentItem
-                                    onClicked: {
-                                        var uuid = ""
-                                        if(model.feedType === 101){
-                                            if(!typeList.model.running){
-                                                uuid = accountModel.item(accountList.currentIndex, AccountListModel.UuidRole)
-                                                console.log("index=" + accountList.currentIndex + "," + uuid)
-                                                addColumnDialog.openDiscoverFeeds(uuid)
-                                            }
-                                        }else if(model.feedType === 102){
-                                            // realtime feed作成
-                                            uuid = accountModel.item(accountList.currentIndex, AccountListModel.UuidRole)
-                                            console.log("index=" + accountList.currentIndex + "," + uuid)
-                                            addColumnDialog.openRealtimeFeedEditor(uuid)
-                                        }else{
-                                            typeList.currentIndex = model.index
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        acceptedButtons: Qt.LeftButton | Qt.RightButton
+                                        onClicked: {
+                                            var uuid = ""
+                                            if(mouse.button === Qt.RightButton && model.editable){
+                                                itemRightMenu.open()
+                                            }else{
+                                                if(model.feedType === 101){
+                                                    if(!typeList.model.running){
+                                                        uuid = accountModel.item(accountList.currentIndex, AccountListModel.UuidRole)
+                                                        console.log("index=" + accountList.currentIndex + "," + uuid)
+                                                        addColumnDialog.openDiscoverFeeds(uuid)
+                                                    }
+                                                }else if(model.feedType === 102){
+                                                    // realtime feed作成
+                                                    uuid = accountModel.item(accountList.currentIndex, AccountListModel.UuidRole)
+                                                    console.log("index=" + accountList.currentIndex + "," + uuid)
+                                                    addColumnDialog.openRealtimeFeedEditor(uuid, "", "")
+                                                }else{
+                                                    typeList.currentIndex = model.index
 
-                                            addColumnDialog.selectedType = model.feedType
-                                            addColumnDialog.selectedName = model.displayName
-                                            addColumnDialog.selectedUri = model.uri
+                                                    addColumnDialog.selectedType = model.feedType
+                                                    addColumnDialog.selectedName = model.displayName
+                                                    addColumnDialog.selectedUri = model.uri
+                                                }
+                                            }
                                         }
                                     }
                                     RowLayout {
@@ -199,6 +207,22 @@ Dialog {
                                         Item {
                                             Layout.fillWidth: true
                                             Layout.preferredHeight: 1
+                                        }
+                                    }
+                                    MenuEx {
+                                        id: itemRightMenu
+                                        x: parent.width / 2
+                                        y: parent.height / 2
+                                        Action {
+                                            text: qsTr("Edit")
+                                            onTriggered: {
+                                                var uuid = accountModel.item(accountList.currentIndex, AccountListModel.UuidRole)
+                                                addColumnDialog.openRealtimeFeedEditor(uuid, model.displayName, model.uri)
+                                            }
+                                        }
+                                        Action {
+                                            text: qsTr("Remove")
+                                            onTriggered: typeList.model.removeRealtimeFeedRule(model.index)
                                         }
                                     }
                                 }
