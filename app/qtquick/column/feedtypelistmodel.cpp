@@ -4,6 +4,7 @@
 #include "atprotocol/app/bsky/actor/appbskyactorgetpreferences.h"
 #include "atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerators.h"
 #include "atprotocol/app/bsky/graph/appbskygraphgetlists.h"
+#include "tools/accountmanager.h"
 
 using AtProtocolInterface::AppBskyActorGetPreferences;
 using AtProtocolInterface::AppBskyFeedGetFeedGenerators;
@@ -160,6 +161,28 @@ bool FeedTypeListModel::getLatest()
     setRunning(true);
 
     clear();
+
+    AccountManager *manager = AccountManager::getInstance();
+    const QList<AtProtocolInterface::RealtimeFeedRule> rules =
+            manager->getRealtimeFeedRules(account().uuid);
+    int rule_insert_pos = 0;
+    for (const auto &item : m_feedTypeItemList) {
+        if (item.type == FeedComponentType::EditRealtimeFeed) {
+            break;
+        }
+        rule_insert_pos++;
+    }
+    for (const auto &rule : rules) {
+        FeedTypeItem item;
+        item.group = tr("Realtime Feeds");
+        item.type = FeedComponentType::RealtimeFeed;
+        item.generator.displayName = rule.name;
+        item.generator.uri = rule.condition;
+        beginInsertRows(QModelIndex(), rule_insert_pos, rule_insert_pos);
+        m_feedTypeItemList.insert(rule_insert_pos, item);
+        endInsertRows();
+        rule_insert_pos++;
+    }
 
     AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
     connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {

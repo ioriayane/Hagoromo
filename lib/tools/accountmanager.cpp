@@ -41,7 +41,7 @@ public:
                        const QString &email, const QString &accessJwt, const QString &refreshJwt,
                        const QString &thread_gate_type, const AccountStatus status);
     void updateRealtimeFeedRule(const QString &name, const QString &condition);
-
+    QList<AtProtocolInterface::RealtimeFeedRule> getRealtimeFeedRules() const;
     void createSession();
     void refreshSession(bool initial = false);
     void getProfile();
@@ -242,6 +242,11 @@ void AccountManager::Private::updateRealtimeFeedRule(const QString &name, const 
         rule.condition = condition;
         m_account.realtime_feed_rules.append(rule);
     }
+}
+
+QList<AtProtocolInterface::RealtimeFeedRule> AccountManager::Private::getRealtimeFeedRules() const
+{
+    return m_account.realtime_feed_rules;
 }
 
 void AccountManager::Private::createSession()
@@ -552,6 +557,16 @@ void AccountManager::updateRealtimeFeedRule(const QString &uuid, const QString &
 
     dList.at(row)->updateRealtimeFeedRule(name, condition);
     save();
+}
+
+QList<AtProtocolInterface::RealtimeFeedRule>
+AccountManager::getRealtimeFeedRules(const QString &uuid)
+{
+    int row = indexAt(uuid);
+    if (row < 0 || row >= count())
+        return QList<AtProtocolInterface::RealtimeFeedRule>();
+
+    return dList.at(row)->getRealtimeFeedRules();
 }
 
 int AccountManager::getMainAccountIndex() const
