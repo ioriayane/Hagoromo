@@ -47,6 +47,7 @@ public:
     Q_INVOKABLE bool getLatest();
     Q_INVOKABLE bool getNext();
 
+    Q_INVOKABLE void reloadRealtimeFeedRules();
     Q_INVOKABLE void removeRealtimeFeedRule(int row);
 
 protected:

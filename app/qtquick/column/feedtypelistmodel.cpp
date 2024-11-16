@@ -163,29 +163,7 @@ bool FeedTypeListModel::getLatest()
     setRunning(true);
 
     clear();
-
-    AccountManager *manager = AccountManager::getInstance();
-    const QList<AtProtocolInterface::RealtimeFeedRule> rules =
-            manager->getRealtimeFeedRules(account().uuid);
-    int rule_insert_pos = 0;
-    for (const auto &item : m_feedTypeItemList) {
-        if (item.type == FeedComponentType::EditRealtimeFeed) {
-            break;
-        }
-        rule_insert_pos++;
-    }
-    for (const auto &rule : rules) {
-        FeedTypeItem item;
-        item.group = tr("Realtime Feeds");
-        item.type = FeedComponentType::RealtimeFeed;
-        item.generator.displayName = rule.name;
-        item.generator.uri = rule.condition;
-        item.editable = true;
-        beginInsertRows(QModelIndex(), rule_insert_pos, rule_insert_pos);
-        m_feedTypeItemList.insert(rule_insert_pos, item);
-        endInsertRows();
-        rule_insert_pos++;
-    }
+    reloadRealtimeFeedRules();
 
     AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
     connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
@@ -208,6 +186,42 @@ bool FeedTypeListModel::getLatest()
 bool FeedTypeListModel::getNext()
 {
     return true;
+}
+
+void FeedTypeListModel::reloadRealtimeFeedRules()
+{
+
+    AccountManager *manager = AccountManager::getInstance();
+    const QList<AtProtocolInterface::RealtimeFeedRule> rules =
+            manager->getRealtimeFeedRules(account().uuid);
+    int rule_insert_pos = 0;
+    QHash<QString, int> rule_pos; // QHash<name, pos>
+    for (const auto &item : m_feedTypeItemList) {
+        if (item.type == FeedComponentType::RealtimeFeed && item.editable) {
+            rule_pos[item.generator.displayName] = rule_insert_pos;
+        } else if (item.type == FeedComponentType::EditRealtimeFeed) {
+            break;
+        }
+        rule_insert_pos++;
+    }
+    for (const auto &rule : rules) {
+        if (rule_pos.contains(rule.name)) {
+            int pos = rule_pos[rule.name];
+            m_feedTypeItemList[pos].generator.uri = rule.condition;
+            emit dataChanged(index(pos), index(pos));
+        } else {
+            FeedTypeItem item;
+            item.group = tr("Realtime Feeds");
+            item.type = FeedComponentType::RealtimeFeed;
+            item.generator.displayName = rule.name;
+            item.generator.uri = rule.condition;
+            item.editable = true;
+            beginInsertRows(QModelIndex(), rule_insert_pos, rule_insert_pos);
+            m_feedTypeItemList.insert(rule_insert_pos, item);
+            endInsertRows();
+            rule_insert_pos++;
+        }
+    }
 }
 
 void FeedTypeListModel::removeRealtimeFeedRule(int row)

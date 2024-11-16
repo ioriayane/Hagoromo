@@ -458,6 +458,7 @@ ApplicationWindow {
     }
     RealtimeFeedEditorDialog {
         id: realtimeFeedEditorDialog
+        onAccepted: addColumnDialog.reloadRealtimeFeedRules()
     }
 
     MessageDialog {

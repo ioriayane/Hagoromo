@@ -57,6 +57,19 @@ Dialog {
             }
         }
     }
+    // ルールを作成したり更新したときに反映する
+    function reloadRealtimeFeedRules(){
+        var index = accountList.currentIndex
+        console.log("reloadRealtimeFeedRules index=" + index)
+        for(var i=0; i<repeater.count; i++){
+            var item = repeater.itemAt(i)
+            item.visible = (i === index)
+            if(i === index){
+                console.log("reloadRealtimeFeedRules i=" + i)
+                item.model.reloadRealtimeFeedRules()
+            }
+        }
+    }
 
     ColumnLayout {
         RowLayout {
