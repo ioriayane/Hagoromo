@@ -24,6 +24,10 @@ public:
         DisplayTypeRole,
         CanHaveRole,
         IndentRole,
+        HasImageRole,
+        ImageCountRole,
+        HasMovieRole,
+        HasQuoteRole,
     };
     Q_ENUM(EditSelectorListModelRoles)
 
@@ -31,6 +35,9 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     Q_INVOKABLE QVariant item(int row,
                               EditSelectorListModel::EditSelectorListModelRoles role) const;
+    Q_INVOKABLE void update(int row, EditSelectorListModel::EditSelectorListModelRoles role,
+                            const QVariant &value);
+
     Q_INVOKABLE void appendChild(int row, const QString &type);
     Q_INVOKABLE void remove(int row);
     Q_INVOKABLE void clear();
@@ -43,19 +50,15 @@ public:
     void setSelectorJson(const QString &newSelectorJson);
     bool valid() const;
     void setValid(bool newValid);
-
     int count() const;
     void setCount(int newCount);
-
     QString name() const;
     void setName(const QString &newName);
 
 signals:
     void selectorJsonChanged();
     void validChanged();
-
     void countChanged();
-
     void nameChanged();
 
 protected:

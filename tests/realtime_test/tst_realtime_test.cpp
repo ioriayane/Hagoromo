@@ -32,6 +32,7 @@ private slots:
     void test_RealtimeFeedListModel();
     void test_EditSelectorListModel();
     void test_EditSelectorListModel_append();
+    void test_EditSelectorListModel_save();
 
 private:
     QList<UserInfo> extractFromArray(const QJsonArray &array) const;
@@ -728,6 +729,61 @@ void realtime_test::test_EditSelectorListModel_append()
     model.remove(0);
     QVERIFY2(model.rowCount() == 0, QString::number(model.rowCount()).toLocal8Bit());
     QVERIFY(model.valid() == false);
+}
+
+void realtime_test::test_EditSelectorListModel_save()
+{
+
+    EditSelectorListModel model;
+
+    model.appendChild(-1, "me");
+    QVERIFY(model.count() == 1);
+    model.update(0, EditSelectorListModel::HasImageRole, true);
+    QVERIFY(model.item(0, EditSelectorListModel::HasImageRole).toBool() == true);
+    model.update(0, EditSelectorListModel::ImageCountRole, 3);
+    QVERIFY(model.item(0, EditSelectorListModel::ImageCountRole).toInt() == 3);
+    QVERIFY(model.toJson() == "{\"me\":{\"image\":{\"has\":true,\"count\":3}}}");
+    model.update(0, EditSelectorListModel::HasImageRole, false);
+    QVERIFY(model.item(0, EditSelectorListModel::HasImageRole).toBool() == false);
+    QVERIFY(model.toJson() == "{\"me\":{}}");
+
+    model.update(0, EditSelectorListModel::HasMovieRole, true);
+    QVERIFY(model.item(0, EditSelectorListModel::HasMovieRole).toBool() == true);
+    QVERIFY(model.toJson() == "{\"me\":{\"movie\":{\"has\":true}}}");
+    model.update(0, EditSelectorListModel::HasMovieRole, false);
+    QVERIFY(model.item(0, EditSelectorListModel::HasMovieRole).toBool() == false);
+    QVERIFY(model.toJson() == "{\"me\":{}}");
+
+    qDebug().noquote() << model.toJson();
+
+    model.update(0, EditSelectorListModel::HasQuoteRole, true);
+    QVERIFY(model.item(0, EditSelectorListModel::HasQuoteRole).toBool() == true);
+    QVERIFY(model.toJson() == "{\"me\":{\"quote\":{\"has\":true}}}");
+    model.update(0, EditSelectorListModel::HasQuoteRole, false);
+    QVERIFY(model.item(0, EditSelectorListModel::HasQuoteRole).toBool() == false);
+
+    model.update(0, EditSelectorListModel::HasImageRole, true);
+    model.update(0, EditSelectorListModel::HasMovieRole, true);
+    model.update(0, EditSelectorListModel::HasQuoteRole, true);
+    QVERIFY(model.item(0, EditSelectorListModel::HasImageRole).toBool() == true);
+    QVERIFY(model.item(0, EditSelectorListModel::HasMovieRole).toBool() == true);
+    QVERIFY(model.item(0, EditSelectorListModel::HasQuoteRole).toBool() == true);
+    QVERIFY(model.toJson()
+            == "{\"me\":{\"image\":{\"has\":true,\"count\":3},\"movie\":{\"has\":true},\"quote\":{"
+               "\"has\":true}}}");
+
+    qDebug().noquote() << model.toJson();
+    qDebug() << model.toJson();
+
+    model.clear();
+
+    model.setSelectorJson("{\"or\":[{\"and\":[{\"following\":{\"image\":{\"has\":true,\"count\":4}}"
+                          "},{\"followers\":{\"movie\":{\"has\":true}}}]},{\"me\":{}},{\"not\":{"
+                          "\"following\":{\"quote\":{\"has\":true}}}}]}");
+    QVERIFY(model.toJson()
+            == "{\"or\":[{\"and\":[{\"following\":{\"image\":{\"has\":true,\"count\":4}}"
+               "},{\"followers\":{\"movie\":{\"has\":true}}}]},{\"me\":{}},{\"not\":{"
+               "\"following\":{\"quote\":{\"has\":true}}}}]}");
 }
 
 QList<UserInfo> realtime_test::extractFromArray(const QJsonArray &array) const

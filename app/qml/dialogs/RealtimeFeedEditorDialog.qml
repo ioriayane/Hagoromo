@@ -24,6 +24,7 @@ Dialog {
     }
 
     function setupAndOpen(display_name, condition){
+        editSelectorListView.currentIndex = -1
         ruleNameTextField.text = display_name
         editSelectorListModel.selectorJson = condition
         realtimeFeedEditorDialog.open()
@@ -108,9 +109,20 @@ Dialog {
                             displayType: model.displayType
                             useAppendButton: model.canHave
                             highlighted:  model.index === editSelectorListView.currentIndex
-                            onClicked: editSelectorListView.currentIndex = model.index
+                            onClicked: {
+                                editSelectorListView.currentIndex = model.index
+                                editSelectorListView.updateDetailInfo(model.index)
+                            }
                             onAppendChild: (row, type) => editSelectorListModel.appendChild(row, type)
                             onRemove: (row) => editSelectorListModel.remove(row)
+                        }
+
+                        function updateDetailInfo(index){
+                            hasImageCheckBox.checked = editSelectorListModel.item(index, EditSelectorListModel.HasImageRole)
+                            imageCountComboBox.currentIndex = -1
+                            imageCountComboBox.setByValue(editSelectorListModel.item(index, EditSelectorListModel.ImageCountRole))
+                            hasMovieCheckBox.checked = editSelectorListModel.item(index, EditSelectorListModel.HasMovieRole)
+                            hasQuoteCheckBox.checked = editSelectorListModel.item(index, EditSelectorListModel.HasQuoteRole)
                         }
                     }
                 }
@@ -131,7 +143,7 @@ Dialog {
             }
             ColumnLayout {
                 id: selectorDetailLayout
-                Layout.preferredWidth: 200
+                Layout.preferredWidth: 200 * AdjustedValues.ratio
                 spacing: 0
                 visible: false
                 property int adjustedPadding: 6 * AdjustedValues.ratio
@@ -140,16 +152,52 @@ Dialog {
                     text: qsTr("Detail")
                 }
                 CheckBox {
+                    id: hasImageCheckBox
                     topPadding: parent.adjustedPadding
                     bottomPadding: parent.adjustedPadding
                     font.pointSize: AdjustedValues.f10
-                    text: qsTr("Has embeded")
+                    text: qsTr("Has image(s)")
+                    onCheckedChanged: editSelectorListModel.update(editSelectorListView.currentIndex,
+                                                                   EditSelectorListModel.HasImageRole,
+                                                                   checked)
+                }
+                ComboBoxEx {
+                    id: imageCountComboBox
+                    Layout.leftMargin: 10 * AdjustedValues.ratio
+                    topPadding: parent.adjustedPadding
+                    bottomPadding: parent.adjustedPadding
+                    font.pointSize: AdjustedValues.f10
+                    enabled: hasImageCheckBox.checked
+                    model: ListModel {
+                        ListElement { value: 0; text: qsTr("0") }
+                        ListElement { value: 1; text: qsTr("1") }
+                        ListElement { value: 2; text: qsTr("2") }
+                        ListElement { value: 3; text: qsTr("3") }
+                        ListElement { value: 4; text: qsTr("4") }
+                    }
+                    onActivated: (index) => editSelectorListModel.update(editSelectorListView.currentIndex,
+                                                                         EditSelectorListModel.ImageCountRole,
+                                                                         currentValue)
                 }
                 CheckBox {
+                    id: hasMovieCheckBox
+                    topPadding: parent.adjustedPadding
+                    bottomPadding: parent.adjustedPadding
+                    font.pointSize: AdjustedValues.f10
+                    text: qsTr("Has movie")
+                    onCheckedChanged: editSelectorListModel.update(editSelectorListView.currentIndex,
+                                                                   EditSelectorListModel.HasMovieRole,
+                                                                   checked)
+                }
+                CheckBox {
+                    id: hasQuoteCheckBox
                     topPadding: parent.adjustedPadding
                     bottomPadding: parent.adjustedPadding
                     font.pointSize: AdjustedValues.f10
                     text: qsTr("Has quote")
+                    onCheckedChanged: editSelectorListModel.update(editSelectorListView.currentIndex,
+                                                                   EditSelectorListModel.HasQuoteRole,
+                                                                   checked)
                 }
                 // CheckBox {
                 //     topPadding: parent.adjustedPadding

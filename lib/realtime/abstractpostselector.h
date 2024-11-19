@@ -73,6 +73,16 @@ public:
     QString displayType() const;
     void setDisplayType(const QString &newDisplayType);
 
+    int imageCount() const;
+    void setImageCount(int newImageCount);
+    bool hasMovie() const;
+    void setHasMovie(bool newHasMovie);
+    bool hasQuote() const;
+    void setHasQuote(bool newHasQuote);
+
+    bool hasImage() const;
+    void setHasImage(bool newHasImage);
+
 signals:
     void selected(const QJsonObject &object);
 
@@ -97,6 +107,11 @@ private:
     bool m_isArray;
     bool m_parentIsArray;
     bool m_ready;
+
+    bool m_hasImage;
+    int m_imageCount;
+    bool m_hasMovie;
+    bool m_hasQuote;
 };
 }
 

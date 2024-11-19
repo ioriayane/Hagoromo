@@ -45,8 +45,42 @@ QVariant EditSelectorListModel::item(int row, EditSelectorListModelRoles role) c
     } else if (role == IndentRole) {
         index = row;
         return m_selector->indentAt(index, 0);
+    } else if (role == HasImageRole) {
+        return s->hasImage();
+    } else if (role == ImageCountRole) {
+        return s->imageCount();
+    } else if (role == HasMovieRole) {
+        return s->hasMovie();
+    } else if (role == HasQuoteRole) {
+        return s->hasQuote();
     }
     return QVariant();
+}
+
+void EditSelectorListModel::update(int row, EditSelectorListModelRoles role, const QVariant &value)
+{
+    if (row < 0 || row >= count())
+        return;
+    if (m_selector == nullptr) {
+        return;
+    }
+    int i = row;
+    AbstractPostSelector *s = m_selector->itemAt(i);
+    if (s == nullptr) {
+        return;
+    }
+
+    if (role == HasImageRole) {
+        s->setHasImage(value.toBool());
+    } else if (role == ImageCountRole) {
+        s->setImageCount(value.toInt());
+    } else if (role == HasMovieRole) {
+        s->setHasMovie(value.toBool());
+    } else if (role == HasQuoteRole) {
+        s->setHasQuote(value.toBool());
+    }
+
+    emit dataChanged(index(row), index(row));
 }
 
 void EditSelectorListModel::appendChild(int row, const QString &type)
@@ -167,6 +201,10 @@ QHash<int, QByteArray> EditSelectorListModel::roleNames() const
     roles[DisplayTypeRole] = "displayType";
     roles[CanHaveRole] = "canHave";
     roles[IndentRole] = "indent";
+    roles[HasImageRole] = "hasImage";
+    roles[ImageCountRole] = "imageCount";
+    roles[HasMovieRole] = "hasMovie";
+    roles[HasQuoteRole] = "hasQuote";
 
     return roles;
 }

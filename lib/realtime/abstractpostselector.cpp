@@ -14,7 +14,14 @@
 namespace RealtimeFeed {
 
 AbstractPostSelector::AbstractPostSelector(QObject *parent)
-    : QObject { parent }, m_isArray(false), m_parentIsArray(true), m_ready(false)
+    : QObject { parent },
+      m_isArray(false),
+      m_parentIsArray(true),
+      m_ready(false),
+      m_hasImage(false),
+      m_imageCount(0),
+      m_hasMovie(false),
+      m_hasQuote(false)
 {
 }
 
@@ -30,6 +37,23 @@ QString AbstractPostSelector::toString()
     ret += parentIsArray() ? "{" : "";
     ret += QString("\"%1\":").arg(type());
     ret += isArray() ? "[" : "{";
+    if (!isArray()) {
+        QString temp;
+        if (hasImage()) {
+            temp += QString("\"image\":{\"has\":true,\"count\":%1}").arg(imageCount());
+        }
+        if (hasMovie()) {
+            if (!temp.isEmpty())
+                temp += ",";
+            temp += QString("\"movie\":{\"has\":true}");
+        }
+        if (hasQuote()) {
+            if (!temp.isEmpty())
+                temp += ",";
+            temp += QString("\"quote\":{\"has\":true}");
+        }
+        ret += temp;
+    }
     int i = 0;
     for (auto child : children()) {
         if (i > 0) {
@@ -75,7 +99,7 @@ AbstractPostSelector *AbstractPostSelector::create(const QJsonObject &selector, 
         key = "following";
         current = new FollowingPostSelector(parent);
     } else if (selector.contains("followers")) {
-        key = "follower";
+        key = "followers";
         current = new FollowersPostSelector(parent);
     } else if (selector.contains("me")) {
         key = "me";
@@ -100,6 +124,12 @@ AbstractPostSelector *AbstractPostSelector::create(const QJsonObject &selector, 
         if (child != nullptr) {
             current->appendChildSelector(child);
         }
+    } else {
+        QJsonObject child_selector = selector.value(key).toObject();
+        current->setHasImage(child_selector.value("image").toObject().value("has").toBool(false));
+        current->setImageCount(child_selector.value("image").toObject().value("count").toInt(0));
+        current->setHasMovie(child_selector.value("movie").toObject().value("has").toBool(false));
+        current->setHasQuote(child_selector.value("quote").toObject().value("has").toBool(false));
     }
     return current;
 }
@@ -400,6 +430,46 @@ QString AbstractPostSelector::extractRkey(const QString &path) const
     } else {
         return QString();
     }
+}
+
+bool AbstractPostSelector::hasImage() const
+{
+    return m_hasImage;
+}
+
+void AbstractPostSelector::setHasImage(bool newHasImage)
+{
+    m_hasImage = newHasImage;
+}
+
+bool AbstractPostSelector::hasQuote() const
+{
+    return m_hasQuote;
+}
+
+void AbstractPostSelector::setHasQuote(bool newHasQuote)
+{
+    m_hasQuote = newHasQuote;
+}
+
+bool AbstractPostSelector::hasMovie() const
+{
+    return m_hasMovie;
+}
+
+void AbstractPostSelector::setHasMovie(bool newHasMovie)
+{
+    m_hasMovie = newHasMovie;
+}
+
+int AbstractPostSelector::imageCount() const
+{
+    return m_imageCount;
+}
+
+void AbstractPostSelector::setImageCount(int newImageCount)
+{
+    m_imageCount = newImageCount;
 }
 
 QString AbstractPostSelector::displayType() const
