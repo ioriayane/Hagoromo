@@ -16,6 +16,7 @@ public:
     virtual QStringList canContain() const;
     virtual void setFollowing(const QList<UserInfo> &following);
     virtual void setFollowers(const QList<UserInfo> &followers) { Q_UNUSED(followers) }
+    virtual void setListMembers(const QList<UserInfo> &members) { Q_UNUSED(members) }
     virtual UserInfo getUser(const QString &did) const;
 
     virtual bool needFollowing() const;

@@ -44,6 +44,7 @@ public:
 
     virtual void setFollowing(const QList<UserInfo> &following);
     virtual void setFollowers(const QList<UserInfo> &followers);
+    virtual void setListMembers(const QList<UserInfo> &members);
     virtual UserInfo getUser(const QString &did) const;
 
     static QStringList getOperationUris(const QJsonObject &object);
