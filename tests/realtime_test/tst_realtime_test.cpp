@@ -776,6 +776,19 @@ void realtime_test::test_EditSelectorListModel_save()
     qDebug() << model.toJson();
 
     model.clear();
+    model.appendChild(-1, "list");
+    QVERIFY(model.count() == 1);
+
+    QString uri = "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/3kgybwfpfag2i";
+    QString name = "illust";
+    model.update(0, EditSelectorListModel::ListUriRole, uri);
+    model.update(0, EditSelectorListModel::ListNameRole, name);
+    QVERIFY(model.item(0, EditSelectorListModel::ListUriRole).toString() == uri);
+    QVERIFY(model.item(0, EditSelectorListModel::ListNameRole).toString() == name);
+    QVERIFY(model.toJson()
+            == QString("{\"list\":{\"uri\":\"%1\",\"name\":\"%2\"}}").arg(uri, name));
+
+    model.clear();
 
     model.setSelectorJson("{\"or\":[{\"and\":[{\"following\":{\"image\":{\"has\":true,\"count\":4}}"
                           "},{\"followers\":{\"movie\":{\"has\":true}}}]},{\"me\":{}},{\"not\":{"

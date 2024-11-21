@@ -24,6 +24,8 @@ public:
         DisplayTypeRole,
         CanHaveRole,
         IndentRole,
+        ListUriRole,
+        ListNameRole,
         HasImageRole,
         ImageCountRole,
         HasMovieRole,
@@ -37,6 +39,7 @@ public:
                               EditSelectorListModel::EditSelectorListModelRoles role) const;
     Q_INVOKABLE void update(int row, EditSelectorListModel::EditSelectorListModelRoles role,
                             const QVariant &value);
+    Q_INVOKABLE void updateList(int row, const QString &name, const QString &uri);
 
     Q_INVOKABLE void appendChild(int row, const QString &type);
     Q_INVOKABLE void remove(int row);

@@ -6,6 +6,7 @@
 #include "followingpostselector.h"
 #include "followerspostselector.h"
 #include "mepostselector.h"
+#include "listpostsselector.h"
 
 #include <QJsonObject>
 #include <QJsonArray>
@@ -39,7 +40,13 @@ QString AbstractPostSelector::toString()
     ret += isArray() ? "[" : "{";
     if (!isArray()) {
         QString temp;
+        if (!listUri().isEmpty()) {
+            temp += QString("\"uri\":\"%1\"").arg(listUri());
+            temp += QString(",\"name\":\"%1\"").arg(listName());
+        }
         if (hasImage()) {
+            if (!temp.isEmpty())
+                temp += ",";
             temp += QString("\"image\":{\"has\":true,\"count\":%1}").arg(imageCount());
         }
         if (hasMovie()) {
@@ -104,8 +111,9 @@ AbstractPostSelector *AbstractPostSelector::create(const QJsonObject &selector, 
     } else if (selector.contains("me")) {
         key = "me";
         current = new MePostSelector(parent);
-    } else if (selector.contains("lists")) {
-        key = "lists";
+    } else if (selector.contains("list")) {
+        key = "list";
+        current = new ListPostsSelector(parent);
     }
 
     if (current == nullptr)
@@ -126,6 +134,10 @@ AbstractPostSelector *AbstractPostSelector::create(const QJsonObject &selector, 
         }
     } else {
         QJsonObject child_selector = selector.value(key).toObject();
+        if (key == "list") {
+            current->setListUri(child_selector.value("uri").toString());
+            current->setListName(child_selector.value("name").toString());
+        }
         current->setHasImage(child_selector.value("image").toObject().value("has").toBool(false));
         current->setImageCount(child_selector.value("image").toObject().value("count").toInt(0));
         current->setHasMovie(child_selector.value("movie").toObject().value("has").toBool(false));
@@ -150,6 +162,7 @@ QStringList AbstractPostSelector::canContain() const
 {
     return QStringList() << "following"
                          << "followers"
+                         << "list"
                          << "me"
                          << "and"
                          << "or"
@@ -430,6 +443,26 @@ QString AbstractPostSelector::extractRkey(const QString &path) const
     } else {
         return QString();
     }
+}
+
+QString AbstractPostSelector::listName() const
+{
+    return m_listName;
+}
+
+void AbstractPostSelector::setListName(const QString &newListName)
+{
+    m_listName = newListName;
+}
+
+QString AbstractPostSelector::listUri() const
+{
+    return m_listUri;
+}
+
+void AbstractPostSelector::setListUri(const QString &newListUri)
+{
+    m_listUri = newListUri;
 }
 
 bool AbstractPostSelector::hasImage() const

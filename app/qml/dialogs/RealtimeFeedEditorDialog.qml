@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls.Material 2.15
 
 import tech.relog.hagoromo.realtime.editselectorlistmodel 1.0
+import tech.relog.hagoromo.listslistmodel 1.0
 import tech.relog.hagoromo.singleton 1.0
 
 import "../controls"
@@ -24,6 +25,11 @@ Dialog {
     }
 
     function setupAndOpen(display_name, condition){
+        listComboBox.currentIndex = -1
+        listsListModel.clear()
+        listsListModel.setAccount(account.uuid)
+        listsListModel.getLatest()
+
         editSelectorListView.currentIndex = -1
         ruleNameTextField.text = display_name
         editSelectorListModel.selectorJson = condition
@@ -106,9 +112,9 @@ Dialog {
                             indent: model.indent
                             index: model.index
                             type: model.type
-                            displayType: model.displayType
+                            displayType: model.displayType + ((model.listName.length > 0) ? (" : " + model.listName) : "")
                             useAppendButton: model.canHave
-                            highlighted:  model.index === editSelectorListView.currentIndex
+                            highlighted:  (model.index === editSelectorListView.currentIndex)
                             onClicked: {
                                 editSelectorListView.currentIndex = model.index
                                 editSelectorListView.updateDetailInfo(model.index)
@@ -123,6 +129,9 @@ Dialog {
                             imageCountComboBox.setByValue(editSelectorListModel.item(index, EditSelectorListModel.ImageCountRole))
                             hasMovieCheckBox.checked = editSelectorListModel.item(index, EditSelectorListModel.HasMovieRole)
                             hasQuoteCheckBox.checked = editSelectorListModel.item(index, EditSelectorListModel.HasQuoteRole)
+
+                            listComboBox.currentIndex = -1
+                            listComboBox.setByValue(editSelectorListModel.item(index, EditSelectorListModel.ListUriRole))
                         }
                     }
                 }
@@ -135,7 +144,7 @@ Dialog {
             }
             ColumnLayout {
                 id: dummyDetailLayout
-                Layout.preferredWidth: 200
+                Layout.preferredWidth: 200 * AdjustedValues.ratio
                 Item {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
@@ -150,6 +159,30 @@ Dialog {
                 Label {
                     font.pointSize: AdjustedValues.f10
                     text: qsTr("Detail")
+                }
+                Label {
+                    visible: listComboBox.visible
+                    font.pointSize: AdjustedValues.f10
+                    text: qsTr("List")
+                }
+                ComboBoxEx {
+                    id: listComboBox
+                    visible: (editSelectorListView.currentItem &&
+                              editSelectorListView.currentItem.type === "list")
+                    Layout.leftMargin: 10 * AdjustedValues.ratio
+                    Layout.fillWidth: true
+                    topPadding: parent.adjustedPadding
+                    bottomPadding: parent.adjustedPadding
+                    font.pointSize: AdjustedValues.f10
+                    textRole: "name"
+                    valueRole: "uri"
+                    model: ListsListModel {
+                        id: listsListModel
+                        actor: realtimeFeedEditorDialog.account.did
+                    }
+                    onActivated: (index) => editSelectorListModel.updateList(editSelectorListView.currentIndex,
+                                                                             currentText,
+                                                                             currentValue)
                 }
                 CheckBox {
                     id: hasImageCheckBox
@@ -225,6 +258,21 @@ Dialog {
                 // }
                 Item {
                     id: detailArea
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                }
+            }
+            ColumnLayout {
+                id: listDetailLayout
+                Layout.preferredWidth: 200 * AdjustedValues.ratio
+                spacing: 0
+                visible: false
+                property int adjustedPadding: 6 * AdjustedValues.ratio
+                Label {
+                    font.pointSize: AdjustedValues.f10
+                    text: qsTr("Detail")
+                }
+                Item {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                 }

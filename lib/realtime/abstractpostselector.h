@@ -79,9 +79,13 @@ public:
     void setHasMovie(bool newHasMovie);
     bool hasQuote() const;
     void setHasQuote(bool newHasQuote);
-
     bool hasImage() const;
     void setHasImage(bool newHasImage);
+    QString listUri() const;
+    void setListUri(const QString &newListUri);
+
+    QString listName() const;
+    void setListName(const QString &newListName);
 
 signals:
     void selected(const QJsonObject &object);
@@ -112,6 +116,8 @@ private:
     int m_imageCount;
     bool m_hasMovie;
     bool m_hasQuote;
+    QString m_listUri;
+    QString m_listName;
 };
 }
 
