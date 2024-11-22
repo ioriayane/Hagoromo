@@ -33,4 +33,9 @@ void ListPostsSelector::setListMembers(const QList<UserInfo> &members)
         m_members[user.did] = user;
     }
 }
+
+bool ListPostsSelector::needListMembers() const
+{
+    return true;
+}
 }

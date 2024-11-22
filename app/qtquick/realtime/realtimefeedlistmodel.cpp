@@ -3,6 +3,7 @@
 #include "atprotocol/app/bsky/feed/appbskyfeedgetposts.h"
 #include "atprotocol/app/bsky/graph/appbskygraphgetfollows.h"
 #include "atprotocol/app/bsky/graph/appbskygraphgetfollowers.h"
+#include "atprotocol/app/bsky/graph/appbskygraphgetlist.h"
 #include "atprotocol/app/bsky/feed/appbskyfeedgetpostthread.h"
 
 using namespace RealtimeFeed;
@@ -10,6 +11,7 @@ using AtProtocolInterface::AppBskyFeedGetPosts;
 using AtProtocolInterface::AppBskyFeedGetPostThread;
 using AtProtocolInterface::AppBskyGraphGetFollowers;
 using AtProtocolInterface::AppBskyGraphGetFollows;
+using AtProtocolInterface::AppBskyGraphGetList;
 
 RealtimeFeedListModel::RealtimeFeedListModel(QObject *parent)
     : TimelineListModel { parent }, m_receiving(false)
@@ -76,12 +78,16 @@ bool RealtimeFeedListModel::getLatest()
 
     m_followings.clear();
     m_followers.clear();
+    m_list_members.clear();
     if (selector->needFollowing()) {
         m_cursor = "___start___";
         getFollowing();
     } else if (selector->needFollowers()) {
         m_cursor = "___start___";
         getFollowers();
+    } else if (selector->needListMembers()) {
+        m_cursor = "___start___";
+        getListMembers();
     } else {
         finishGetting(selector);
     }
@@ -155,7 +161,12 @@ void RealtimeFeedListModel::getFollowers()
         return;
     }
     if (m_cursor.isEmpty()) {
-        finishGetting(selector);
+        if (selector->needListMembers()) {
+            m_cursor = "___start___";
+            getListMembers();
+        } else {
+            finishGetting(selector);
+        }
         return;
     } else if (m_cursor == "___start___") {
         m_cursor.clear();
@@ -182,6 +193,40 @@ void RealtimeFeedListModel::getFollowers()
     profiles->getFollowers(account().did, 100, m_cursor);
 }
 
+void RealtimeFeedListModel::getListMembers()
+{
+    AbstractPostSelector *selector = FirehoseReceiver::getInstance()->getSelector(this);
+    if (selector == nullptr) {
+        setRunning(false);
+        return;
+    }
+    if (m_cursor.isEmpty()) {
+        finishGetting(selector);
+        return;
+    } else if (m_cursor == "___start___") {
+        m_cursor.clear();
+    }
+    AppBskyGraphGetList *list = new AppBskyGraphGetList(this);
+    connect(list, &AppBskyGraphGetList::finished, this, [=](bool success) {
+        m_cursor.clear();
+        if (success) {
+            if (!list->itemsList().isEmpty()) {
+                // list members
+                copyListMembers(list->itemsList());
+                // next
+                m_cursor = list->cursor();
+            }
+            QTimer::singleShot(0, this, &RealtimeFeedListModel::getListMembers);
+        } else {
+            emit errorOccured(list->errorCode(), list->errorMessage());
+            setRunning(false);
+        }
+        list->deleteLater();
+    });
+    list->setAccount(account());
+    list->getList(selector->listUri(), 100, m_cursor);
+}
+
 void RealtimeFeedListModel::finishGetting(RealtimeFeed::AbstractPostSelector *selector)
 {
     setRunning(false);
@@ -198,8 +243,10 @@ void RealtimeFeedListModel::finishGetting(RealtimeFeed::AbstractPostSelector *se
         // qDebug().noquote() << "Followers" << users;
         qDebug().noquote() << "Following count : " << m_followings.count();
         qDebug().noquote() << "Followers count : " << m_followers.count();
+        qDebug().noquote() << "Members count : " << m_list_members.count();
         selector->setFollowing(m_followings);
         selector->setFollowers(m_followers);
+        selector->setListMembers(m_list_members);
         selector->setReady(true);
 #ifdef HAGOROMO_UNIT_TEST
         qDebug().noquote()
@@ -231,6 +278,21 @@ void RealtimeFeedListModel::copyFollows(
             } else {
                 m_followers.append(user);
             }
+        }
+    }
+}
+
+void RealtimeFeedListModel::copyListMembers(
+        const QList<AtProtocolType::AppBskyGraphDefs::ListItemView> &items)
+{
+    for (const auto &item : items) {
+        if (item.subject) {
+            RealtimeFeed::UserInfo user;
+            user.did = item.subject->did;
+            user.handle = item.subject->handle;
+            user.display_name = item.subject->displayName;
+            user.rkey = item.uri.split("/").last();
+            m_list_members.append(user);
         }
     }
 }

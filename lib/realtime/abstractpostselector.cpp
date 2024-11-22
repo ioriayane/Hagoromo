@@ -200,6 +200,16 @@ bool AbstractPostSelector::needFollowers() const
     return false;
 }
 
+bool AbstractPostSelector::needListMembers() const
+{
+    for (auto child : children()) {
+        if (child->needListMembers()) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void AbstractPostSelector::setFollowing(const QList<UserInfo> &following)
 {
     for (auto child : children()) {

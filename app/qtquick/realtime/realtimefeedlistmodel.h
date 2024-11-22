@@ -30,15 +30,18 @@ signals:
 private:
     void getFollowing();
     void getFollowers();
+    void getListMembers();
     void finishGetting(RealtimeFeed::AbstractPostSelector *selector);
     void copyFollows(const QList<AtProtocolType::AppBskyActorDefs::ProfileView> &follows,
                      bool is_following);
+    void copyListMembers(const QList<AtProtocolType::AppBskyGraphDefs::ListItemView> &items);
     void getPostThread();
 
     bool m_runningCue;
     QList<RealtimeFeed::OperationInfo> m_cueGetPostThread;
     QList<RealtimeFeed::UserInfo> m_followings;
     QList<RealtimeFeed::UserInfo> m_followers;
+    QList<RealtimeFeed::UserInfo> m_list_members;
 
     QString m_cursor;
     QString m_selectorJson;

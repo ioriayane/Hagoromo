@@ -14,5 +14,9 @@
         <file>data/realtimemodel/recv_data_3.json</file>
         <file>response/realtime/3/xrpc/app.bsky.feed.getPostThread</file>
         <file>data/realtimemodel/recv_data_4.json</file>
+        <file>response/realtime/1/xrpc/app.bsky.graph.getList</file>
+        <file>response/realtime/1/xrpc/app.bsky.graph.getList_3kjx74oi4ii2w</file>
+        <file>data/realtimemodel/recv_data_5.json</file>
+        <file>response/realtime/4/xrpc/app.bsky.feed.getPostThread</file>
     </qresource>
 </RCC>

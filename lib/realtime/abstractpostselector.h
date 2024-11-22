@@ -41,6 +41,7 @@ public:
     virtual bool has(const QString &type) const;
     virtual bool needFollowing() const;
     virtual bool needFollowers() const;
+    virtual bool needListMembers() const;
 
     virtual void setFollowing(const QList<UserInfo> &following);
     virtual void setFollowers(const QList<UserInfo> &followers);
