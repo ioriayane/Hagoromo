@@ -34,14 +34,16 @@ private:
     void finishGetting(RealtimeFeed::AbstractPostSelector *selector);
     void copyFollows(const QList<AtProtocolType::AppBskyActorDefs::ProfileView> &follows,
                      bool is_following);
-    void copyListMembers(const QList<AtProtocolType::AppBskyGraphDefs::ListItemView> &items);
+    void copyListMembers(const QString &list_uri,
+                         const QList<AtProtocolType::AppBskyGraphDefs::ListItemView> &items);
     void getPostThread();
 
     bool m_runningCue;
     QList<RealtimeFeed::OperationInfo> m_cueGetPostThread;
     QList<RealtimeFeed::UserInfo> m_followings;
     QList<RealtimeFeed::UserInfo> m_followers;
-    QList<RealtimeFeed::UserInfo> m_list_members;
+    QMap<QString, QList<RealtimeFeed::UserInfo>> m_list_members; // QMap<list_uri, List<UserInfo>>
+    QStringList m_get_list_cue;
 
     QString m_cursor;
     QString m_selectorJson;

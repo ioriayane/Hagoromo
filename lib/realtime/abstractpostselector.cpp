@@ -224,11 +224,20 @@ void AbstractPostSelector::setFollowers(const QList<UserInfo> &followers)
     }
 }
 
-void AbstractPostSelector::setListMembers(const QList<UserInfo> &members)
+void AbstractPostSelector::setListMembers(const QString &list_uri, const QList<UserInfo> &members)
 {
     for (auto child : children()) {
-        child->setListMembers(members);
+        child->setListMembers(list_uri, members);
     }
+}
+
+QStringList AbstractPostSelector::getListUris() const
+{
+    QStringList uris;
+    for (auto child : children()) {
+        uris.append(child->getListUris());
+    }
+    return uris;
 }
 
 UserInfo AbstractPostSelector::getUser(const QString &did) const

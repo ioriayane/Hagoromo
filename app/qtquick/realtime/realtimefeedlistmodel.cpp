@@ -79,6 +79,7 @@ bool RealtimeFeedListModel::getLatest()
     m_followings.clear();
     m_followers.clear();
     m_list_members.clear();
+    m_get_list_cue = selector->getListUris();
     if (selector->needFollowing()) {
         m_cursor = "___start___";
         getFollowing();
@@ -124,6 +125,9 @@ void RealtimeFeedListModel::getFollowing()
         if (selector->needFollowers()) {
             m_cursor = "___start___";
             getFollowers();
+        } else if (selector->needListMembers()) {
+            m_cursor = "___start___";
+            getListMembers();
         } else {
             finishGetting(selector);
         }
@@ -195,14 +199,27 @@ void RealtimeFeedListModel::getFollowers()
 
 void RealtimeFeedListModel::getListMembers()
 {
+    // リストはキャッシュを使いたいが、キャッシュにはハンドルなどがないので普通に取得した方が早い
+    // ルールの中にリストが複数ある場合があるので、各リストのセレクターごとに取得しないといけない
+
     AbstractPostSelector *selector = FirehoseReceiver::getInstance()->getSelector(this);
     if (selector == nullptr) {
         setRunning(false);
         return;
     }
-    if (m_cursor.isEmpty()) {
-        finishGetting(selector);
-        return;
+    QString list_uri = m_get_list_cue.isEmpty() ? QString() : m_get_list_cue.first();
+    if (m_cursor.isEmpty() || list_uri.isEmpty()) {
+        if (!m_get_list_cue.isEmpty()) {
+            m_get_list_cue.pop_front();
+        }
+        if (m_get_list_cue.isEmpty()) {
+            finishGetting(selector);
+            return;
+        } else {
+            // Next list
+            list_uri = m_get_list_cue.first();
+            m_cursor.clear();
+        }
     } else if (m_cursor == "___start___") {
         m_cursor.clear();
     }
@@ -212,7 +229,7 @@ void RealtimeFeedListModel::getListMembers()
         if (success) {
             if (!list->itemsList().isEmpty()) {
                 // list members
-                copyListMembers(list->itemsList());
+                copyListMembers(list_uri, list->itemsList());
                 // next
                 m_cursor = list->cursor();
             }
@@ -224,7 +241,7 @@ void RealtimeFeedListModel::getListMembers()
         list->deleteLater();
     });
     list->setAccount(account());
-    list->getList(selector->listUri(), 100, m_cursor);
+    list->getList(list_uri, 100, m_cursor);
 }
 
 void RealtimeFeedListModel::finishGetting(RealtimeFeed::AbstractPostSelector *selector)
@@ -243,10 +260,13 @@ void RealtimeFeedListModel::finishGetting(RealtimeFeed::AbstractPostSelector *se
         // qDebug().noquote() << "Followers" << users;
         qDebug().noquote() << "Following count : " << m_followings.count();
         qDebug().noquote() << "Followers count : " << m_followers.count();
-        qDebug().noquote() << "Members count : " << m_list_members.count();
         selector->setFollowing(m_followings);
         selector->setFollowers(m_followers);
-        selector->setListMembers(m_list_members);
+        for (const auto &list_uri : m_list_members.keys()) {
+            qDebug().noquote() << "Members count : " << m_list_members.value(list_uri).count()
+                               << list_uri;
+            selector->setListMembers(list_uri, m_list_members.value(list_uri));
+        }
         selector->setReady(true);
 #ifdef HAGOROMO_UNIT_TEST
         qDebug().noquote()
@@ -283,7 +303,7 @@ void RealtimeFeedListModel::copyFollows(
 }
 
 void RealtimeFeedListModel::copyListMembers(
-        const QList<AtProtocolType::AppBskyGraphDefs::ListItemView> &items)
+        const QString &list_uri, const QList<AtProtocolType::AppBskyGraphDefs::ListItemView> &items)
 {
     for (const auto &item : items) {
         if (item.subject) {
@@ -292,7 +312,7 @@ void RealtimeFeedListModel::copyListMembers(
             user.handle = item.subject->handle;
             user.display_name = item.subject->displayName;
             user.rkey = item.uri.split("/").last();
-            m_list_members.append(user);
+            m_list_members[list_uri].append(user);
         }
     }
 }

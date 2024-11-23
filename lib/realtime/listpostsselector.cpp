@@ -26,9 +26,11 @@ QStringList RealtimeFeed::ListPostsSelector::canContain() const
     return QStringList();
 }
 
-void ListPostsSelector::setListMembers(const QList<UserInfo> &members)
+void ListPostsSelector::setListMembers(const QString &list_uri, const QList<UserInfo> &members)
 {
-    AbstractPostSelector::setListMembers(members);
+    if (list_uri != listUri())
+        return;
+
     for (const auto &user : members) {
         m_members[user.did] = user;
     }
@@ -37,5 +39,10 @@ void ListPostsSelector::setListMembers(const QList<UserInfo> &members)
 bool ListPostsSelector::needListMembers() const
 {
     return true;
+}
+
+QStringList ListPostsSelector::getListUris() const
+{
+    return QStringList() << listUri();
 }
 }

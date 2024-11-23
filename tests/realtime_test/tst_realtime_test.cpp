@@ -809,15 +809,38 @@ void realtime_test::test_EditSelectorListModel_save()
     QVERIFY(model.toJson()
             == QString("{\"list\":{\"uri\":\"%1\",\"name\":\"%2\"}}").arg(uri, name));
 
-    model.clear();
+    QString json;
 
-    model.setSelectorJson("{\"or\":[{\"and\":[{\"following\":{\"image\":{\"has\":true,\"count\":4}}"
-                          "},{\"followers\":{\"movie\":{\"has\":true}}}]},{\"me\":{}},{\"not\":{"
-                          "\"following\":{\"quote\":{\"has\":true}}}}]}");
-    QVERIFY(model.toJson()
-            == "{\"or\":[{\"and\":[{\"following\":{\"image\":{\"has\":true,\"count\":4}}"
-               "},{\"followers\":{\"movie\":{\"has\":true}}}]},{\"me\":{}},{\"not\":{"
-               "\"following\":{\"quote\":{\"has\":true}}}}]}");
+    json = "{\"or\":[{\"and\":[{\"following\":{\"image\":{\"has\":true,\"count\":4}}"
+           "},{\"followers\":{\"movie\":{\"has\":true}}}]},{\"me\":{}},{\"not\":{"
+           "\"following\":{\"quote\":{\"has\":true}}}}]}";
+    model.clear();
+    model.setSelectorJson(json);
+    QVERIFY(model.toJson() == json);
+
+    json = "{\"and\":[{\"following\":{}},{\"list\":{\"uri\":\"at://"
+           "did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/"
+           "3kflf2r3lwg2x\",\"name\":\"ice\"}}]}";
+    model.clear();
+    model.setSelectorJson(json);
+    QVERIFY(model.toJson() == json);
+
+    json = "{\"or\":[{\"and\":[{\"following\":{\"image\":{\"has\":true,\"count\":3}}},{\"list\":{"
+           "\"uri\":\"at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/"
+           "3kflf2r3lwg2x\",\"name\":\"ice\"}}]},{\"me\":{}},{\"and\":[{\"followers\":{}},{"
+           "\"list\":{\"uri\":\"at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/"
+           "3kflbnc4c4o2x\",\"name\":\"list\"}}]}]}";
+
+    QJsonObject json_obj = QJsonDocument::fromJson(json.toUtf8()).object();
+    QVERIFY(json_obj.isEmpty() == false);
+    AbstractPostSelector *selector = AbstractPostSelector::create(json_obj, this);
+    QVERIFY(selector != nullptr);
+    QVERIFY(selector->toString() == json);
+    QVERIFY(selector->getListUris()
+            == QStringList()
+                    << "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/3kflf2r3lwg2x"
+                    << "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/3kflbnc4c4o2x");
+    selector->deleteLater();
 }
 
 QList<UserInfo> realtime_test::extractFromArray(const QJsonArray &array) const

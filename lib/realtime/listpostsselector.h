@@ -16,9 +16,10 @@ public:
     virtual QStringList canContain() const;
     virtual void setFollowing(const QList<UserInfo> &following) { Q_UNUSED(following) }
     virtual void setFollowers(const QList<UserInfo> &followers) { Q_UNUSED(followers) }
-    virtual void setListMembers(const QList<UserInfo> &members);
+    virtual void setListMembers(const QString &list_uri, const QList<UserInfo> &members);
 
     virtual bool needListMembers() const;
+    virtual QStringList getListUris() const;
 
 private:
     QHash<QString, UserInfo> m_members;

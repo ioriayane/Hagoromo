@@ -45,7 +45,8 @@ public:
 
     virtual void setFollowing(const QList<UserInfo> &following);
     virtual void setFollowers(const QList<UserInfo> &followers);
-    virtual void setListMembers(const QList<UserInfo> &members);
+    virtual void setListMembers(const QString &list_uri, const QList<UserInfo> &members);
+    virtual QStringList getListUris() const;
     virtual UserInfo getUser(const QString &did) const;
 
     static QStringList getOperationUris(const QJsonObject &object);
@@ -85,7 +86,6 @@ public:
     void setHasImage(bool newHasImage);
     QString listUri() const;
     void setListUri(const QString &newListUri);
-
     QString listName() const;
     void setListName(const QString &newListName);
 
