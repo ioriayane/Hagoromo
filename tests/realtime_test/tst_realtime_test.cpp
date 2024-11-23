@@ -825,11 +825,12 @@ void realtime_test::test_EditSelectorListModel_save()
     model.setSelectorJson(json);
     QVERIFY(model.toJson() == json);
 
-    json = "{\"or\":[{\"and\":[{\"following\":{\"image\":{\"has\":true,\"count\":3}}},{\"list\":{"
-           "\"uri\":\"at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/"
-           "3kflf2r3lwg2x\",\"name\":\"ice\"}}]},{\"me\":{}},{\"and\":[{\"followers\":{}},{"
-           "\"list\":{\"uri\":\"at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/"
-           "3kflbnc4c4o2x\",\"name\":\"list\"}}]}]}";
+    json = "{\"and\":[{\"list\":{\"uri\":\"at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
+           "app.bsky.graph.list/3kflf2r3lwg2x\",\"name\":\"ice\"}},{\"list\":{\"uri\":\"at://"
+           "did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/"
+           "3kflbnc4c4o2x\",\"name\":\"list\"}},{\"or\":[{\"list\":{\"uri\":\"at://"
+           "did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/"
+           "3kflf2r3lwg2x\",\"name\":\"ice\"}}]}]}";
 
     QJsonObject json_obj = QJsonDocument::fromJson(json.toUtf8()).object();
     QVERIFY(json_obj.isEmpty() == false);

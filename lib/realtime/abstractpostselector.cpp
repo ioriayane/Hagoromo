@@ -237,6 +237,7 @@ QStringList AbstractPostSelector::getListUris() const
     for (auto child : children()) {
         uris.append(child->getListUris());
     }
+    uris.removeDuplicates();
     return uris;
 }
 
