@@ -36,6 +36,15 @@ void ListPostsSelector::setListMembers(const QString &list_uri, const QList<User
     }
 }
 
+UserInfo ListPostsSelector::getUser(const QString &did) const
+{
+    if (m_members.contains(did)) {
+        return m_members.value(did);
+    } else {
+        return AbstractPostSelector::getUser(did);
+    }
+}
+
 bool ListPostsSelector::needListMembers() const
 {
     return true;

@@ -17,6 +17,7 @@ public:
     virtual void setFollowing(const QList<UserInfo> &following) { Q_UNUSED(following) }
     virtual void setFollowers(const QList<UserInfo> &followers) { Q_UNUSED(followers) }
     virtual void setListMembers(const QString &list_uri, const QList<UserInfo> &members);
+    virtual UserInfo getUser(const QString &did) const;
 
     virtual bool needListMembers() const;
     virtual QStringList getListUris() const;

@@ -80,6 +80,7 @@ bool RealtimeFeedListModel::getLatest()
     m_followers.clear();
     m_list_members.clear();
     m_get_list_cue = selector->getListUris();
+    m_get_list_cue.removeDuplicates();
     if (selector->needFollowing()) {
         m_cursor = "___start___";
         getFollowing();
