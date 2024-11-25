@@ -1,10 +1,10 @@
 {
     "list": {
-        "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/3kcj52ovctd2h",
+        "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/3kcj52ovctd2h",
         "cid": "bafyreigoq76diabpln2v7tk23c5d4nyd2rlh3p6slkynaceubo2nfdzq6m",
         "name": "My Accounts",
         "purpose": "app.bsky.graph.defs#curatelist",
-        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/bafkreieunbmmvw6afrei2rgkcrkvmx6o7xl3fmstdcld3lysks5zf7bcre@jpeg",
+        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreieunbmmvw6afrei2rgkcrkvmx6o7xl3fmstdcld3lysks5zf7bcre@jpeg",
         "listItemCount": 4,
         "indexedAt": "2024-04-16T12:33:37.936Z",
         "labels": [],
@@ -12,10 +12,10 @@
             "muted": false
         },
         "creator": {
-            "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+            "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
             "handle": "ioriayane.relog.tech",
             "displayName": "IoriAYANE",
-            "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy@jpeg",
+            "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy@jpeg",
             "associated": {
                 "chat": {
                     "allowIncoming": "following"

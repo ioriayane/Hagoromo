@@ -1,10 +1,10 @@
 {
     "list": {
-        "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/3kcj52ovctd2h",
+        "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/3kcj52ovctd2h",
         "cid": "bafyreigoq76diabpln2v7tk23c5d4nyd2rlh3p6slkynaceubo2nfdzq6m",
         "name": "My Accounts",
         "purpose": "app.bsky.graph.defs#curatelist",
-        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/bafkreieunbmmvw6afrei2rgkcrkvmx6o7xl3fmstdcld3lysks5zf7bcre@jpeg",
+        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreieunbmmvw6afrei2rgkcrkvmx6o7xl3fmstdcld3lysks5zf7bcre@jpeg",
         "listItemCount": 4,
         "indexedAt": "2024-04-16T12:33:37.936Z",
         "labels": [],
@@ -12,10 +12,10 @@
             "muted": false
         },
         "creator": {
-            "did": "did:plc:ipj5qejfoqu6eukvt72uhyit",
+            "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
             "handle": "ioriayane.relog.tech",
             "displayName": "IoriAYANE",
-            "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy@jpeg",
+            "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy@jpeg",
             "associated": {
                 "chat": {
                     "allowIncoming": "following"
@@ -51,30 +51,6 @@
                 "createdAt": "2023-05-09T10:03:30.995Z",
                 "description": "@ioriayane.relog.tech のテスト用のサブアカウントです。\nhttps://github.com/ioriayane/Hagoromo/blob/main/README.md#%E6%A6%82%E8%A6%81",
                 "indexedAt": "2024-05-02T04:33:31.638Z"
-            }
-        },
-        {
-            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.listitem/3kjx6xdqy6u2a",
-            "subject": {
-                "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5_list",
-                "handle": "ioriayane2.bsky.social_list",
-                "displayName": "iori2",
-                "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg",
-                "associated": {
-                    "chat": {
-                        "allowIncoming": "following"
-                    }
-                },
-                "viewer": {
-                    "muted": false,
-                    "blockedBy": false,
-                    "following": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3l7vcpp5s7m2r",
-                    "followedBy": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.follow/3l7vkxvrumq2y"
-                },
-                "labels": [],
-                "createdAt": "2023-07-13T14:28:42.522Z",
-                "description": "ioriayane.relog.tech のテスト用アカウントの2つ目です.",
-                "indexedAt": "2024-09-27T17:52:05.244Z"
             }
         }
     ]

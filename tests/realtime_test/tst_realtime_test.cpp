@@ -247,7 +247,7 @@ void realtime_test::test_RealtimeFeedListModel()
     // model.setSelectorJson("{\"not\":{\"following\":{}}}");
     // model.setSelectorJson("{\"not\":{\"followers\":{}}}");
     model.setSelectorJson("{\"or\": [{\"following\": {}},{\"followers\": {}},{\"list\": "
-                          "{\"uri\":\"at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/"
+                          "{\"uri\":\"at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/"
                           "3kcj52ovctd2h\",\"name\":\"My Accounts\"}}]}");
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
@@ -321,6 +321,8 @@ void realtime_test::test_RealtimeFeedListModel()
     QVERIFY(model.item(1, TimelineListModel::RecordTextPlainRole).toString() == "reply3");
     QVERIFY(model.item(1, TimelineListModel::IsRepostedByRole).toBool() == false);
 
+    // /////////////////
+
     qDebug().noquote() << "---------------------------";
     uuid = AccountManager::getInstance()->updateAccount(
             QString(), m_service + "/realtime/3", "id", "pass", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
@@ -350,11 +352,23 @@ void realtime_test::test_RealtimeFeedListModel()
     QVERIFY(model.item(0, TimelineListModel::RecordTextPlainRole).toString() == "post 3");
     QVERIFY(model.item(0, TimelineListModel::IsRepostedByRole).toBool() == false);
 
+    // ///////////////////
+
     qDebug().noquote() << "---------------------------";
     uuid = AccountManager::getInstance()->updateAccount(
             QString(), m_service + "/realtime/4", "id", "pass", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
             "handle", "email", "accessJwt", "refreshJwt", true);
     model.setAccount(uuid);
+    json_doc = loadJson(":/data/realtimemodel/recv_data_5.json");
+    recv->testReceived(json_doc.object());
+    QVERIFY2(model.rowCount() == 3, QString::number(model.rowCount()).toLocal8Bit());
+
+    qDebug().noquote() << "---------------------------";
+    json_doc = loadJson(":/data/realtimemodel/recv_data_6.json");
+    recv->testReceived(json_doc.object());
+    QVERIFY2(model.rowCount() == 3, QString::number(model.rowCount()).toLocal8Bit());
+
+    qDebug().noquote() << "---------------------------";
     json_doc = loadJson(":/data/realtimemodel/recv_data_5.json");
     QVERIFY(json_doc.isObject());
     {

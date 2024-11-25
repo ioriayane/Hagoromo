@@ -3,7 +3,7 @@
     "blocks": [
         {
             "cid": "bafyreigoon4vpg3axqlvrzyxcpmwh4ihra4hbqd5uh3e774bbjjnla5ajq5",
-            "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5_list/app.bsky.feed.post/3kx6ffqxzkj2u5",
+            "uri": "at://did:plc:mqahczljun4uuyrhwrob6bsg/app.bsky.feed.post/3kx6ffqxzkj2u5",
             "value": {
                 "$type": "app.bsky.feed.post",
                 "createdAt": "2024-08-13T16:42:18.723Z",
@@ -26,7 +26,7 @@
     ],
     "prev": null,
     "rebase": false,
-    "repo": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5_list",
+    "repo": "did:plc:mqahczljun4uuyrhwrob6bsg",
     "rev": "3ktudvq2uqs2k3",
     "seq": 557371056,
     "since": "3ktuarhlcjc2z",

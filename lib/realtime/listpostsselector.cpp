@@ -13,6 +13,38 @@ bool RealtimeFeed::ListPostsSelector::judge(const QJsonObject &object)
     if (!ready())
         return false;
 
+    // 自分のリストの更新データのときに追加・削除する
+    if (isMy(object)) {
+        QJsonObject op = getOperation(object, "app.bsky.graph.listitem");
+        if (!op.isEmpty()) {
+            QString action = op.value("action").toString();
+            if (action == "create") {
+                QString path = op.value("path").toString();
+                QJsonObject block = getBlock(object, path);
+                if (!block.isEmpty()) {
+                    QString list_uri = block.value("value").toObject().value("list").toString();
+                    QString subject = block.value("value").toObject().value("subject").toString();
+                    if (list_uri == listUri() && !m_members.contains(subject)) {
+                        UserInfo user;
+                        user.did = subject;
+                        user.rkey = extractRkey(path);
+                        m_members[user.did] = user;
+                    }
+                }
+            } else if (action == "delete") {
+                QString rkey = extractRkey(op.value("path").toString());
+                if (!rkey.isEmpty()) {
+                    for (const auto &user : qAsConst(m_members)) {
+                        if (user.rkey == rkey) {
+                            m_members.remove(user.did);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     return isTarget(object) && m_members.contains(getRepo(object));
 }
 
