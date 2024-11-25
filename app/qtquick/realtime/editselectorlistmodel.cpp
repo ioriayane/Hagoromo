@@ -228,6 +228,8 @@ QHash<int, QByteArray> EditSelectorListModel::roleNames() const
 
 void EditSelectorListModel::loadSelector()
 {
+    clear();
+
     if (selectorJson().isEmpty()) {
         return;
     }
@@ -237,7 +239,6 @@ void EditSelectorListModel::loadSelector()
         return;
     }
 
-    clear();
     AbstractPostSelector *temp = AbstractPostSelector::create(json, this);
     if (temp != nullptr) {
         beginInsertRows(QModelIndex(), 0, temp->getNodeCount() - 1);
@@ -255,7 +256,7 @@ QString EditSelectorListModel::selectorJson() const
 
 void EditSelectorListModel::setSelectorJson(const QString &newSelectorJson)
 {
-    if (m_selectorJson == newSelectorJson)
+    if (m_selectorJson == newSelectorJson && !newSelectorJson.isEmpty())
         return;
     m_selectorJson = newSelectorJson;
     emit selectorJsonChanged();
