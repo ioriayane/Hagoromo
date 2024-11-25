@@ -171,28 +171,30 @@ Dialog {
                                     MouseArea {
                                         anchors.fill: parent
                                         acceptedButtons: Qt.LeftButton | Qt.RightButton
-                                        onClicked: {
-                                            var uuid = ""
-                                            if(mouse.button === Qt.RightButton && model.editable){
-                                                itemRightMenu.open()
-                                            }else{
-                                                if(model.feedType === 101){
-                                                    if(!typeList.model.running){
-                                                        uuid = accountModel.item(accountList.currentIndex, AccountListModel.UuidRole)
-                                                        console.log("index=" + accountList.currentIndex + "," + uuid)
-                                                        addColumnDialog.openDiscoverFeeds(uuid)
-                                                    }
-                                                }else if(model.feedType === 102){
-                                                    // realtime feed作成
-                                                    uuid = accountModel.item(accountList.currentIndex, AccountListModel.UuidRole)
-                                                    console.log("index=" + accountList.currentIndex + "," + uuid)
-                                                    addColumnDialog.openRealtimeFeedEditor(uuid, "", "")
-                                                }else{
-                                                    typeList.currentIndex = model.index
-                                                    delegateRoot.changeSelecting()
-                                                }
-                                            }
-                                        }
+                                        onClicked: (mouse) => {
+                                                       var uuid = ""
+                                                       if(mouse.button === Qt.RightButton && model.editable){
+                                                           itemRightMenu.x = mouse.x
+                                                           itemRightMenu.y = mouse.y
+                                                           itemRightMenu.open()
+                                                       }else{
+                                                           if(model.feedType === 101){
+                                                               if(!typeList.model.running){
+                                                                   uuid = accountModel.item(accountList.currentIndex, AccountListModel.UuidRole)
+                                                                   console.log("index=" + accountList.currentIndex + "," + uuid)
+                                                                   addColumnDialog.openDiscoverFeeds(uuid)
+                                                               }
+                                                           }else if(model.feedType === 102){
+                                                               // realtime feed作成
+                                                               uuid = accountModel.item(accountList.currentIndex, AccountListModel.UuidRole)
+                                                               console.log("index=" + accountList.currentIndex + "," + uuid)
+                                                               addColumnDialog.openRealtimeFeedEditor(uuid, "", "")
+                                                           }else{
+                                                               typeList.currentIndex = model.index
+                                                               delegateRoot.changeSelecting()
+                                                           }
+                                                       }
+                                                   }
                                     }
                                     RowLayout {
                                         anchors.fill: parent
@@ -232,8 +234,6 @@ Dialog {
                                     }
                                     MenuEx {
                                         id: itemRightMenu
-                                        x: parent.width / 2
-                                        y: parent.height / 2
                                         Action {
                                             text: qsTr("Edit")
                                             onTriggered: {

@@ -45,9 +45,13 @@ RowLayout {
             acceptedButtons: Qt.LeftButton | Qt.RightButton
             onClicked: (mouse) => {
                            if(mouse.button === Qt.RightButton){
+                               itemRightMenu.x = mouse.x
+                               itemRightMenu.y = mouse.y
                                itemRightMenu.open()
                            }else{
                                if(selectorDelegate.useAppendButton){
+                                   itemLeftMenu.x = mouse.x
+                                   itemLeftMenu.y = mouse.y
                                    itemLeftMenu.open()
                                }else{
                                    selectorDelegate.clicked()
@@ -69,47 +73,45 @@ RowLayout {
                 anchors.fill: parent
                 source: "../images/add.png"
             }
-            MenuEx {
-                id: itemLeftMenu
-                Action {
-                    text: qsTr("AND")
-                    onTriggered: selectorDelegate.appendChild(selectorDelegate.index, "and")
-                }
-                Action {
-                    text: qsTr("OR")
-                    onTriggered: selectorDelegate.appendChild(selectorDelegate.index, "or")
-                }
-                // Action {
-                //     text: qsTr("NOT")
-                //     onTriggered: selectorDelegate.appendChild(selectorDelegate.index, "not")
-                // }
-                Action {
-                    text: qsTr("XOR")
-                    onTriggered: selectorDelegate.appendChild(selectorDelegate.index, "xor")
-                }
-                MenuSeparator {}
-                Action {
-                    text: qsTr("Following")
-                    onTriggered: selectorDelegate.appendChild(selectorDelegate.index, "following")
-                }
-                Action {
-                    text: qsTr("Followers")
-                    onTriggered: selectorDelegate.appendChild(selectorDelegate.index, "followers")
-                }
-                Action {
-                    text: qsTr("List")
-                    onTriggered: selectorDelegate.appendChild(selectorDelegate.index, "list")
-                }
-                Action {
-                    text: qsTr("Me")
-                    onTriggered: selectorDelegate.appendChild(selectorDelegate.index, "me")
-                }
+        }
+        MenuEx {
+            id: itemLeftMenu
+            Action {
+                text: qsTr("AND")
+                onTriggered: selectorDelegate.appendChild(selectorDelegate.index, "and")
+            }
+            Action {
+                text: qsTr("OR")
+                onTriggered: selectorDelegate.appendChild(selectorDelegate.index, "or")
+            }
+            // Action {
+            //     text: qsTr("NOT")
+            //     onTriggered: selectorDelegate.appendChild(selectorDelegate.index, "not")
+            // }
+            Action {
+                text: qsTr("XOR")
+                onTriggered: selectorDelegate.appendChild(selectorDelegate.index, "xor")
+            }
+            MenuSeparator {}
+            Action {
+                text: qsTr("Following")
+                onTriggered: selectorDelegate.appendChild(selectorDelegate.index, "following")
+            }
+            Action {
+                text: qsTr("Followers")
+                onTriggered: selectorDelegate.appendChild(selectorDelegate.index, "followers")
+            }
+            Action {
+                text: qsTr("List")
+                onTriggered: selectorDelegate.appendChild(selectorDelegate.index, "list")
+            }
+            Action {
+                text: qsTr("Me")
+                onTriggered: selectorDelegate.appendChild(selectorDelegate.index, "me")
             }
         }
         MenuEx {
             id: itemRightMenu
-            x: parent.width / 2
-            y: parent.height / 2
             Action {
                 text: qsTr("Remove")
                 onTriggered: selectorDelegate.remove(selectorDelegate.index)
