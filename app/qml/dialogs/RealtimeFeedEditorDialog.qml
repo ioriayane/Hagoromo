@@ -207,6 +207,7 @@ Dialog {
                         ListElement { value: 2; text: qsTr("2") }
                         ListElement { value: 3; text: qsTr("3") }
                         ListElement { value: 4; text: qsTr("4") }
+                        ListElement { value: -1; text: qsTr(">=1") }
                     }
                     onActivated: (index) => editSelectorListModel.update(editSelectorListView.currentIndex,
                                                                          EditSelectorListModel.ImageCountRole,

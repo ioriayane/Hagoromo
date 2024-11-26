@@ -97,6 +97,8 @@ protected:
 
     bool isTarget(const QJsonObject &object) const;
     bool isMy(const QJsonObject &object) const;
+    bool matchImageCondition(const QJsonObject &object) const;
+    bool matchMovieCondition(const QJsonObject &object) const;
     QString getRepo(const QJsonObject &object) const;
     QJsonObject getOperation(const QJsonObject &object, const QString &id) const;
     QJsonObject getBlock(const QJsonObject &object, const QString &path) const;
@@ -115,7 +117,7 @@ private:
     bool m_ready;
 
     bool m_hasImage;
-    int m_imageCount;
+    int m_imageCount; // -1: >=1, 0: nothing only, 1~4: match count
     bool m_hasMovie;
     bool m_hasQuote;
     QString m_listUri;

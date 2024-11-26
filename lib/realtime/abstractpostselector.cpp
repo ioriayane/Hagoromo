@@ -434,6 +434,44 @@ bool AbstractPostSelector::isMy(const QJsonObject &object) const
     return (!did().isEmpty() && getRepo(object) == did());
 }
 
+bool AbstractPostSelector::matchImageCondition(const QJsonObject &object) const
+{
+    if (!hasImage())
+        return true;
+
+    int count = 0;
+    for (const auto item : object.value("blocks").toArray()) {
+        const QJsonObject embed =
+                item.toObject().value("value").toObject().value("embed").toObject();
+        if (embed.value("$type").toString() != "app.bsky.embed.images")
+            continue;
+        count += embed.value("images").toArray().count();
+    }
+    if (imageCount() < 0) {
+        return (count > 0);
+    } else {
+        return (count == imageCount());
+    }
+}
+
+bool AbstractPostSelector::matchMovieCondition(const QJsonObject &object) const
+{
+    if (!hasMovie())
+        return true;
+
+    int count = 0;
+    for (const auto item : object.value("blocks").toArray()) {
+        const QJsonObject embed =
+                item.toObject().value("value").toObject().value("embed").toObject();
+        if (embed.value("$type").toString() != "app.bsky.embed.video")
+            continue;
+        if (!embed.value("video").isNull())
+            count++;
+    }
+
+    return (count > 0);
+}
+
 QString AbstractPostSelector::getRepo(const QJsonObject &object) const
 {
     return object.value("repo").toString();

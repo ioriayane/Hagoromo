@@ -45,7 +45,7 @@ bool FollowersPostSelector::judge(const QJsonObject &object)
             }
         }
     }
-    return isTarget(object) && m_followers.contains(getRepo(object));
+    return isTarget(object) && m_followers.contains(getRepo(object)) && matchImageCondition(object);
 }
 
 bool FollowersPostSelector::validate() const

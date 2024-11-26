@@ -45,7 +45,7 @@ bool RealtimeFeed::ListPostsSelector::judge(const QJsonObject &object)
         }
     }
 
-    return isTarget(object) && m_members.contains(getRepo(object));
+    return isTarget(object) && m_members.contains(getRepo(object)) && matchImageCondition(object);
 }
 
 bool RealtimeFeed::ListPostsSelector::validate() const
