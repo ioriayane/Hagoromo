@@ -76,12 +76,12 @@ Dialog {
                 }
 
                 ScrollView {
-                    Layout.preferredWidth: 350
-                    Layout.preferredHeight: 300
+                    Layout.preferredWidth: 300 * AdjustedValues.ratio
+                    Layout.preferredHeight: 300 * AdjustedValues.ratio
+                    //ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+                    ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
                     ListView {
                         id: editSelectorListView
-                        //ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-                        //ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
                         clip: true
                         model: EditSelectorListModel {
                             id: editSelectorListModel
@@ -146,7 +146,7 @@ Dialog {
             }
             ColumnLayout {
                 id: dummyDetailLayout
-                Layout.preferredWidth: 200 * AdjustedValues.ratio
+                Layout.preferredWidth: 250 * AdjustedValues.ratio
                 Item {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
@@ -154,7 +154,7 @@ Dialog {
             }
             ColumnLayout {
                 id: selectorDetailLayout
-                Layout.preferredWidth: 200 * AdjustedValues.ratio
+                Layout.preferredWidth: 250 * AdjustedValues.ratio
                 spacing: 0
                 visible: false
                 property int adjustedPadding: 6 * AdjustedValues.ratio
@@ -186,81 +186,99 @@ Dialog {
                                                                              currentText,
                                                                              currentValue)
                 }
-                CheckBox {
-                    id: hasImageCheckBox
-                    topPadding: parent.adjustedPadding
-                    bottomPadding: parent.adjustedPadding
-                    font.pointSize: AdjustedValues.f10
-                    ButtonGroup.group: embedButtonGroup
-                    text: qsTr("Has image(s)")
-                    onCheckedChanged: {
-                        if(checked){
-                            hasMovieCheckBox.checked = false
+                RowLayout {
+                    CheckBox {
+                        id: hasImageCheckBox
+                        topPadding: parent.adjustedPadding
+                        bottomPadding: parent.adjustedPadding
+                        font.pointSize: AdjustedValues.f10
+                        ButtonGroup.group: embedButtonGroup
+                        text: qsTr("Image")
+                        onCheckedChanged: {
+                            if(checked){
+                                hasMovieCheckBox.checked = false
+                            }
+                            editSelectorListModel.update(editSelectorListView.currentIndex,
+                                                         EditSelectorListModel.HasImageRole,
+                                                         checked)
                         }
-                        editSelectorListModel.update(editSelectorListView.currentIndex,
-                                                     EditSelectorListModel.HasImageRole,
-                                                     checked)
                     }
-                }
-                ComboBoxEx {
-                    id: imageCountComboBox
-                    Layout.leftMargin: 10 * AdjustedValues.ratio
-                    topPadding: parent.adjustedPadding
-                    bottomPadding: parent.adjustedPadding
-                    font.pointSize: AdjustedValues.f10
-                    enabled: hasImageCheckBox.checked
-                    model: ListModel {
-                        ListElement { value: 0; text: qsTr("0") }
-                        ListElement { value: 1; text: qsTr("1") }
-                        ListElement { value: 2; text: qsTr("2") }
-                        ListElement { value: 3; text: qsTr("3") }
-                        ListElement { value: 4; text: qsTr("4") }
-                        ListElement { value: -1; text: qsTr(">=1") }
-                    }
-                    onActivated: (index) => editSelectorListModel.update(editSelectorListView.currentIndex,
-                                                                         EditSelectorListModel.ImageCountRole,
-                                                                         currentValue)
-                }
-                CheckBox {
-                    id: hasMovieCheckBox
-                    topPadding: parent.adjustedPadding
-                    bottomPadding: parent.adjustedPadding
-                    font.pointSize: AdjustedValues.f10
-                    ButtonGroup.group: embedButtonGroup
-                    text: qsTr("Has movie")
-                    onCheckedChanged: {
-                        if(checked){
-                            hasImageCheckBox.checked = false
+                    ComboBoxEx {
+                        id: imageCountComboBox
+                        topPadding: parent.adjustedPadding
+                        bottomPadding: parent.adjustedPadding
+                        font.pointSize: AdjustedValues.f10
+                        enabled: hasImageCheckBox.checked
+                        model: ListModel {
+                            ListElement { value: 0; text: qsTr("0") }
+                            ListElement { value: 1; text: qsTr("1") }
+                            ListElement { value: 2; text: qsTr("2") }
+                            ListElement { value: 3; text: qsTr("3") }
+                            ListElement { value: 4; text: qsTr("4") }
+                            ListElement { value: -1; text: qsTr(">=1") }
                         }
-                        editSelectorListModel.update(editSelectorListView.currentIndex,
-                                                     EditSelectorListModel.HasMovieRole,
-                                                     checked)
+                        onActivated: (index) => editSelectorListModel.update(editSelectorListView.currentIndex,
+                                                                             EditSelectorListModel.ImageCountRole,
+                                                                             currentValue)
                     }
                 }
-                ComboBoxEx {
-                    id: movieCountComboBox
-                    Layout.leftMargin: 10 * AdjustedValues.ratio
-                    topPadding: parent.adjustedPadding
-                    bottomPadding: parent.adjustedPadding
-                    font.pointSize: AdjustedValues.f10
-                    enabled: hasMovieCheckBox.checked
-                    model: ListModel {
-                        ListElement { value: 0; text: qsTr("0") }
-                        ListElement { value: 1; text: qsTr("1") }
+                RowLayout {
+                    CheckBox {
+                        id: hasMovieCheckBox
+                        topPadding: parent.adjustedPadding
+                        bottomPadding: parent.adjustedPadding
+                        font.pointSize: AdjustedValues.f10
+                        ButtonGroup.group: embedButtonGroup
+                        text: qsTr("Movie")
+                        onCheckedChanged: {
+                            if(checked){
+                                hasImageCheckBox.checked = false
+                            }
+                            editSelectorListModel.update(editSelectorListView.currentIndex,
+                                                         EditSelectorListModel.HasMovieRole,
+                                                         checked)
+                        }
                     }
-                    onActivated: (index) => editSelectorListModel.update(editSelectorListView.currentIndex,
-                                                                         EditSelectorListModel.MovieCountRole,
-                                                                         currentValue)
+                    ComboBoxEx {
+                        id: movieCountComboBox
+                        topPadding: parent.adjustedPadding
+                        bottomPadding: parent.adjustedPadding
+                        font.pointSize: AdjustedValues.f10
+                        enabled: hasMovieCheckBox.checked
+                        model: ListModel {
+                            ListElement { value: 0; text: qsTr("0") }
+                            ListElement { value: 1; text: qsTr("1") }
+                        }
+                        onActivated: (index) => editSelectorListModel.update(editSelectorListView.currentIndex,
+                                                                             EditSelectorListModel.MovieCountRole,
+                                                                             currentValue)
+                    }
                 }
-                CheckBox {
-                    id: hasQuoteCheckBox
-                    topPadding: parent.adjustedPadding
-                    bottomPadding: parent.adjustedPadding
-                    font.pointSize: AdjustedValues.f10
-                    text: qsTr("Has quote")
-                    onCheckedChanged: editSelectorListModel.update(editSelectorListView.currentIndex,
-                                                                   EditSelectorListModel.HasQuoteRole,
-                                                                   checked)
+                RowLayout {
+                    CheckBox {
+                        id: hasQuoteCheckBox
+                        topPadding: parent.adjustedPadding
+                        bottomPadding: parent.adjustedPadding
+                        font.pointSize: AdjustedValues.f10
+                        text: qsTr("Quote")
+                        onCheckedChanged: editSelectorListModel.update(editSelectorListView.currentIndex,
+                                                                       EditSelectorListModel.HasQuoteRole,
+                                                                       checked)
+                    }
+                    ComboBoxEx {
+                        id: quoteComboBox
+                        topPadding: parent.adjustedPadding
+                        bottomPadding: parent.adjustedPadding
+                        font.pointSize: AdjustedValues.f10
+                        enabled: hasQuoteCheckBox.checked
+                        model: ListModel {
+                            ListElement { value: 0; text: qsTr("Exclude") }
+                            ListElement { value: 1; text: qsTr("Only") }
+                        }
+                        // onActivated: (index) => editSelectorListModel.update(editSelectorListView.currentIndex,
+                        //                                                      EditSelectorListModel.MovieCountRole,
+                        //                                                      currentValue)
+                    }
                 }
                 // CheckBox {
                 //     topPadding: parent.adjustedPadding
@@ -288,21 +306,6 @@ Dialog {
                 // }
                 Item {
                     id: detailArea
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                }
-            }
-            ColumnLayout {
-                id: listDetailLayout
-                Layout.preferredWidth: 200 * AdjustedValues.ratio
-                spacing: 0
-                visible: false
-                property int adjustedPadding: 6 * AdjustedValues.ratio
-                Label {
-                    font.pointSize: AdjustedValues.f10
-                    text: qsTr("Detail")
-                }
-                Item {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                 }
