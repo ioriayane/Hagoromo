@@ -10,7 +10,8 @@ MePostSelector::MePostSelector(QObject *parent) : AbstractPostSelector { parent 
 
 bool MePostSelector::judge(const QJsonObject &object)
 {
-    return (ready() && isTarget(object) && isMy(object));
+    return (ready() && isTarget(object) && isMy(object) && matchImageCondition(object)
+            && matchMovieCondition(object));
 }
 
 bool MePostSelector::validate() const

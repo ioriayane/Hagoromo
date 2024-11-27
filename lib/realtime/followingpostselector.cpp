@@ -41,7 +41,8 @@ bool FollowingPostSelector::judge(const QJsonObject &object)
         }
     }
 
-    return isTarget(object) && m_following.contains(getRepo(object)) && matchImageCondition(object);
+    return isTarget(object) && m_following.contains(getRepo(object)) && matchImageCondition(object)
+            && matchMovieCondition(object);
 }
 
 bool FollowingPostSelector::validate() const

@@ -29,6 +29,7 @@ public:
         HasImageRole,
         ImageCountRole,
         HasMovieRole,
+        MovieCountRole,
         HasQuoteRole,
     };
     Q_ENUM(EditSelectorListModelRoles)

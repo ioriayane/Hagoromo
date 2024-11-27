@@ -55,6 +55,8 @@ QVariant EditSelectorListModel::item(int row, EditSelectorListModelRoles role) c
         return s->imageCount();
     } else if (role == HasMovieRole) {
         return s->hasMovie();
+    } else if (role == MovieCountRole) {
+        return s->movieCount();
     } else if (role == HasQuoteRole) {
         return s->hasQuote();
     }
@@ -84,6 +86,8 @@ void EditSelectorListModel::update(int row, EditSelectorListModelRoles role, con
         s->setImageCount(value.toInt());
     } else if (role == HasMovieRole) {
         s->setHasMovie(value.toBool());
+    } else if (role == MovieCountRole) {
+        s->setMovieCount(value.toInt());
     } else if (role == HasQuoteRole) {
         s->setHasQuote(value.toBool());
     }
@@ -221,6 +225,7 @@ QHash<int, QByteArray> EditSelectorListModel::roleNames() const
     roles[HasImageRole] = "hasImage";
     roles[ImageCountRole] = "imageCount";
     roles[HasMovieRole] = "hasMovie";
+    roles[MovieCountRole] = "movieCount";
     roles[HasQuoteRole] = "hasQuote";
 
     return roles;

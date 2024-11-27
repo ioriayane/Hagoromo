@@ -128,6 +128,8 @@ Dialog {
                             imageCountComboBox.currentIndex = -1
                             imageCountComboBox.setByValue(editSelectorListModel.item(index, EditSelectorListModel.ImageCountRole))
                             hasMovieCheckBox.checked = editSelectorListModel.item(index, EditSelectorListModel.HasMovieRole)
+                            movieCountComboBox.currentIndex = -1
+                            movieCountComboBox.setByValue(editSelectorListModel.item(index, EditSelectorListModel.MovieCountRole))
                             hasQuoteCheckBox.checked = editSelectorListModel.item(index, EditSelectorListModel.HasQuoteRole)
 
                             listComboBox.currentIndex = -1
@@ -222,6 +224,21 @@ Dialog {
                     onCheckedChanged: editSelectorListModel.update(editSelectorListView.currentIndex,
                                                                    EditSelectorListModel.HasMovieRole,
                                                                    checked)
+                }
+                ComboBoxEx {
+                    id: movieCountComboBox
+                    Layout.leftMargin: 10 * AdjustedValues.ratio
+                    topPadding: parent.adjustedPadding
+                    bottomPadding: parent.adjustedPadding
+                    font.pointSize: AdjustedValues.f10
+                    enabled: hasMovieCheckBox.checked
+                    model: ListModel {
+                        ListElement { value: 0; text: qsTr("0") }
+                        ListElement { value: 1; text: qsTr("1") }
+                    }
+                    onActivated: (index) => editSelectorListModel.update(editSelectorListView.currentIndex,
+                                                                         EditSelectorListModel.MovieCountRole,
+                                                                         currentValue)
                 }
                 CheckBox {
                     id: hasQuoteCheckBox

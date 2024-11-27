@@ -22,6 +22,7 @@ AbstractPostSelector::AbstractPostSelector(QObject *parent)
       m_hasImage(false),
       m_imageCount(0),
       m_hasMovie(false),
+      m_movieCount(0),
       m_hasQuote(false)
 {
 }
@@ -52,7 +53,7 @@ QString AbstractPostSelector::toString()
         if (hasMovie()) {
             if (!temp.isEmpty())
                 temp += ",";
-            temp += QString("\"movie\":{\"has\":true}");
+            temp += QString("\"movie\":{\"has\":true,\"count\":%1}").arg(movieCount());
         }
         if (hasQuote()) {
             if (!temp.isEmpty())
@@ -141,6 +142,7 @@ AbstractPostSelector *AbstractPostSelector::create(const QJsonObject &selector, 
         current->setHasImage(child_selector.value("image").toObject().value("has").toBool(false));
         current->setImageCount(child_selector.value("image").toObject().value("count").toInt(0));
         current->setHasMovie(child_selector.value("movie").toObject().value("has").toBool(false));
+        current->setMovieCount(child_selector.value("movie").toObject().value("count").toInt(0));
         current->setHasQuote(child_selector.value("quote").toObject().value("has").toBool(false));
     }
     return current;
@@ -469,7 +471,7 @@ bool AbstractPostSelector::matchMovieCondition(const QJsonObject &object) const
             count++;
     }
 
-    return (count > 0);
+    return (count == movieCount());
 }
 
 QString AbstractPostSelector::getRepo(const QJsonObject &object) const
@@ -508,6 +510,16 @@ QString AbstractPostSelector::extractRkey(const QString &path) const
     } else {
         return QString();
     }
+}
+
+int AbstractPostSelector::movieCount() const
+{
+    return m_movieCount;
+}
+
+void AbstractPostSelector::setMovieCount(int newMovieCount)
+{
+    m_movieCount = newMovieCount;
 }
 
 QString AbstractPostSelector::listName() const

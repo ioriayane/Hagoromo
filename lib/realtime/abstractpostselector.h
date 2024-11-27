@@ -88,6 +88,8 @@ public:
     void setListUri(const QString &newListUri);
     QString listName() const;
     void setListName(const QString &newListName);
+    int movieCount() const;
+    void setMovieCount(int newMovieCount);
 
 signals:
     void selected(const QJsonObject &object);
@@ -119,6 +121,7 @@ private:
     bool m_hasImage;
     int m_imageCount; // -1: >=1, 0: nothing only, 1~4: match count
     bool m_hasMovie;
+    int m_movieCount; // 0: nothing only, 1: match count
     bool m_hasQuote;
     QString m_listUri;
     QString m_listName;
