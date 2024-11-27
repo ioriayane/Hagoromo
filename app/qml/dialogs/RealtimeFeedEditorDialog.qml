@@ -191,10 +191,16 @@ Dialog {
                     topPadding: parent.adjustedPadding
                     bottomPadding: parent.adjustedPadding
                     font.pointSize: AdjustedValues.f10
+                    ButtonGroup.group: embedButtonGroup
                     text: qsTr("Has image(s)")
-                    onCheckedChanged: editSelectorListModel.update(editSelectorListView.currentIndex,
-                                                                   EditSelectorListModel.HasImageRole,
-                                                                   checked)
+                    onCheckedChanged: {
+                        if(checked){
+                            hasMovieCheckBox.checked = false
+                        }
+                        editSelectorListModel.update(editSelectorListView.currentIndex,
+                                                     EditSelectorListModel.HasImageRole,
+                                                     checked)
+                    }
                 }
                 ComboBoxEx {
                     id: imageCountComboBox
@@ -220,10 +226,16 @@ Dialog {
                     topPadding: parent.adjustedPadding
                     bottomPadding: parent.adjustedPadding
                     font.pointSize: AdjustedValues.f10
+                    ButtonGroup.group: embedButtonGroup
                     text: qsTr("Has movie")
-                    onCheckedChanged: editSelectorListModel.update(editSelectorListView.currentIndex,
-                                                                   EditSelectorListModel.HasMovieRole,
-                                                                   checked)
+                    onCheckedChanged: {
+                        if(checked){
+                            hasImageCheckBox.checked = false
+                        }
+                        editSelectorListModel.update(editSelectorListView.currentIndex,
+                                                     EditSelectorListModel.HasMovieRole,
+                                                     checked)
+                    }
                 }
                 ComboBoxEx {
                     id: movieCountComboBox
