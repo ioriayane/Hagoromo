@@ -174,6 +174,10 @@ Dialog {
                                         onClicked: (mouse) => {
                                                        var uuid = ""
                                                        if(mouse.button === Qt.RightButton && model.editable){
+                                                           // select item
+                                                           typeList.currentIndex = model.index
+                                                           delegateRoot.changeSelecting()
+                                                           // open menu
                                                            itemRightMenu.x = mouse.x
                                                            itemRightMenu.y = mouse.y
                                                            itemRightMenu.open()
@@ -190,6 +194,7 @@ Dialog {
                                                                console.log("index=" + accountList.currentIndex + "," + uuid)
                                                                addColumnDialog.openRealtimeFeedEditor(uuid, "", "")
                                                            }else{
+                                                               // select item
                                                                typeList.currentIndex = model.index
                                                                delegateRoot.changeSelecting()
                                                            }
