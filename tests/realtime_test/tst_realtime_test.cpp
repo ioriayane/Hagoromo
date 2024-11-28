@@ -645,21 +645,13 @@ void realtime_test::test_EditSelectorListModel()
                      .toString()
                      .toLocal8Bit());
 
-    QVERIFY2(model.item(0, EditSelectorListModel::EditSelectorListModelRoles::CanHaveRole)
-                             .toStringList()
-                     == QStringList() << "following"
-                                      << "followers"
-                                      << "me"
-                                      << "and"
-                                      << "or"
-                                      << "not"
-                                      << "xor",
+    QVERIFY2(model.item(0, EditSelectorListModel::EditSelectorListModelRoles::CanHaveRole).toBool()
+                     == true,
              model.item(0, EditSelectorListModel::EditSelectorListModelRoles::CanHaveRole)
                      .toString()
                      .toLocal8Bit());
-    QVERIFY2(model.item(6, EditSelectorListModel::EditSelectorListModelRoles::CanHaveRole)
-                             .toStringList()
-                     == QStringList(),
+    QVERIFY2(model.item(6, EditSelectorListModel::EditSelectorListModelRoles::CanHaveRole).toBool()
+                     == false,
              model.item(6, EditSelectorListModel::EditSelectorListModelRoles::CanHaveRole)
                      .toString()
                      .toLocal8Bit());
@@ -784,7 +776,7 @@ void realtime_test::test_EditSelectorListModel_save()
 
     model.update(0, EditSelectorListModel::HasMovieRole, true);
     QVERIFY(model.item(0, EditSelectorListModel::HasMovieRole).toBool() == true);
-    QVERIFY(model.toJson() == "{\"me\":{\"movie\":{\"has\":true}}}");
+    QVERIFY(model.toJson() == "{\"me\":{\"movie\":{\"has\":true,\"count\":0}}}");
     model.update(0, EditSelectorListModel::HasMovieRole, false);
     QVERIFY(model.item(0, EditSelectorListModel::HasMovieRole).toBool() == false);
     QVERIFY(model.toJson() == "{\"me\":{}}");
