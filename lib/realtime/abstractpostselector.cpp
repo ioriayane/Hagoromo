@@ -445,9 +445,15 @@ bool AbstractPostSelector::matchImageCondition(const QJsonObject &object) const
     for (const auto item : object.value("blocks").toArray()) {
         const QJsonObject embed =
                 item.toObject().value("value").toObject().value("embed").toObject();
-        if (embed.value("$type").toString() != "app.bsky.embed.images")
-            continue;
-        count += embed.value("images").toArray().count();
+        const QString type = embed.value("$type").toString();
+        if (type == "app.bsky.embed.images") {
+            count += embed.value("images").toArray().count();
+        } else if (type == "app.bsky.embed.recordWithMedia") {
+            const QJsonObject media = embed.value("media").toObject();
+            if (media.value("$type").toString() == "app.bsky.embed.images") {
+                count += media.value("images").toArray().count();
+            }
+        }
     }
     if (imageCount() < 0) {
         return (count > 0);
@@ -465,10 +471,19 @@ bool AbstractPostSelector::matchMovieCondition(const QJsonObject &object) const
     for (const auto item : object.value("blocks").toArray()) {
         const QJsonObject embed =
                 item.toObject().value("value").toObject().value("embed").toObject();
-        if (embed.value("$type").toString() != "app.bsky.embed.video")
-            continue;
-        if (!embed.value("video").isNull())
-            count++;
+        const QString type = embed.value("$type").toString();
+        if (type == "app.bsky.embed.video") {
+            if (!embed.value("video").isNull()) {
+                count++;
+            }
+        } else if (type == "app.bsky.embed.recordWithMedia") {
+            const QJsonObject media = embed.value("media").toObject();
+            if (media.value("$type").toString() == "app.bsky.embed.video") {
+                if (!media.value("video").isNull()) {
+                    count++;
+                }
+            }
+        }
     }
 
     return (count == movieCount());
