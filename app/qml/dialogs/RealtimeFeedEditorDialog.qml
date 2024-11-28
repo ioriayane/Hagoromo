@@ -325,7 +325,7 @@ Dialog {
             Button {
                 font.pointSize: AdjustedValues.f10
                 enabled: editSelectorListModel.valid && ruleNameTextField.text.length > 0
-                text: qsTr("Submit")
+                text: qsTr("Save")
                 onClicked: {
                     editSelectorListModel.save(realtimeFeedEditorDialog.account.uuid)
                     realtimeFeedEditorDialog.accept()
