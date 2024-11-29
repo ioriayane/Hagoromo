@@ -796,7 +796,8 @@ void realtime_test::test_EditSelectorListModel_save()
     QVERIFY(model.item(0, EditSelectorListModel::HasMovieRole).toBool() == true);
     QVERIFY(model.item(0, EditSelectorListModel::HasQuoteRole).toBool() == true);
     QVERIFY(model.toJson()
-            == "{\"me\":{\"image\":{\"has\":true,\"count\":3},\"movie\":{\"has\":true},\"quote\":{"
+            == "{\"me\":{\"image\":{\"has\":true,\"count\":3},\"movie\":{\"has\":true,\"count\":0},"
+               "\"quote\":{"
                "\"has\":true}}}");
 
     qDebug().noquote() << model.toJson();
@@ -818,7 +819,7 @@ void realtime_test::test_EditSelectorListModel_save()
     QString json;
 
     json = "{\"or\":[{\"and\":[{\"following\":{\"image\":{\"has\":true,\"count\":4}}"
-           "},{\"followers\":{\"movie\":{\"has\":true}}}]},{\"me\":{}},{\"not\":{"
+           "},{\"followers\":{\"movie\":{\"has\":true,\"count\":0}}}]},{\"me\":{}},{\"not\":{"
            "\"following\":{\"quote\":{\"has\":true}}}}]}";
     model.clear();
     model.setSelectorJson(json);
