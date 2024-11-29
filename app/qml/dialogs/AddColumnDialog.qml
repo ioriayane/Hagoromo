@@ -247,7 +247,7 @@ Dialog {
                                             }
                                         }
                                         Action {
-                                            text: qsTr("Remove")
+                                            text: qsTr("Delete")
                                             onTriggered: typeList.model.removeRealtimeFeedRule(model.index)
                                         }
                                     }

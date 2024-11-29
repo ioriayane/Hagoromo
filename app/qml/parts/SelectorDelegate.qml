@@ -113,7 +113,7 @@ RowLayout {
         MenuEx {
             id: itemRightMenu
             Action {
-                text: qsTr("Remove")
+                text: qsTr("Delete")
                 onTriggered: selectorDelegate.remove(selectorDelegate.index)
             }
         }

@@ -108,31 +108,35 @@
         <translation>カラムタイプ</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AddColumnDialog.qml" line="238"/>
+        <location filename="../qml/dialogs/AddColumnDialog.qml" line="243"/>
         <source>Edit</source>
         <translation>編集</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AddColumnDialog.qml" line="245"/>
-        <source>Remove</source>
+        <location filename="../qml/dialogs/AddColumnDialog.qml" line="250"/>
+        <source>Delete</source>
         <translation>削除</translation>
+    </message>
+    <message>
+        <source>Remove</source>
+        <translation type="vanished">削除</translation>
     </message>
     <message>
         <source>Discover Feeds</source>
         <translation type="vanished">カスタムフィードの検索</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AddColumnDialog.qml" line="279"/>
+        <location filename="../qml/dialogs/AddColumnDialog.qml" line="284"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AddColumnDialog.qml" line="288"/>
+        <location filename="../qml/dialogs/AddColumnDialog.qml" line="293"/>
         <source>Logs</source>
         <translation>ログ</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/AddColumnDialog.qml" line="298"/>
+        <location filename="../qml/dialogs/AddColumnDialog.qml" line="303"/>
         <source>Add</source>
         <translation>追加</translation>
     </message>
@@ -3121,8 +3125,12 @@ Why should this message be reviewed?</source>
     </message>
     <message>
         <location filename="../qml/parts/SelectorDelegate.qml" line="116"/>
-        <source>Remove</source>
+        <source>Delete</source>
         <translation>削除</translation>
+    </message>
+    <message>
+        <source>Remove</source>
+        <translation type="vanished">削除</translation>
     </message>
 </context>
 <context>
