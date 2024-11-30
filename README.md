@@ -20,7 +20,7 @@
 - [OpenSSL 1.1.1q](http://www.openssl.org/)
 - [cpp-httplib](https://github.com/yhirose/cpp-httplib)
 - [zlib](https://github.com/madler/zlib)
-- [Qt HTTP Server](https://code.qt.io/cgit/qt-extensions/qthttpserver.git/)(for unit test only)
+- [Qt HTTP Server](https://code.qt.io/cgit/qt-extensions/qthttpserver.git/)
 
 ## ダウンロード
 
@@ -172,7 +172,7 @@ This is a multi-column [Bluesky](https://blueskyweb.xyz/) client.
 - [OpenSSL 1.1.1q](http://www.openssl.org/)
 - [cpp-httplib](https://github.com/yhirose/cpp-httplib)
 - [zlib](https://github.com/madler/zlib)
-- [Qt HTTP Server](https://code.qt.io/cgit/qt-extensions/qthttpserver.git/)(for unit test only)
+- [Qt HTTP Server](https://code.qt.io/cgit/qt-extensions/qthttpserver.git/)
 
 ## Download
 
