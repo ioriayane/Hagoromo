@@ -7,7 +7,7 @@ weight: 30
 
 This is a function that uses [Jetstream](https://docs.bsky.app/blog/jetstream) to display posts as they are posted.
 
-Unlike the usual timeline, where you get a batch of posts at regular intervals, you can enjoy a more realistic feed.
+Unlike the usual timeline, where posts are collected together at regular intervals, you can enjoy a more realistic feed.
 
 ## How to add to the column
 
@@ -30,7 +30,7 @@ You can choose from the following preset feeds, or feeds that you have created y
 
 The icon shown in the red circle in the realtime feed column indicates the status of the post.
 
-{{< figure src="../images/realtime-column-status.en.png" width="50%" >}}
+{{< figure src="../images/realtime-column-status.en.png" width="80%" >}}
 
 - `Green` : Receiving normally
 - `Gray` : Receiving stopped due to some kind of trouble
@@ -57,7 +57,7 @@ If you select `Create Realtime Feed` in the dialog for adding columns, the editi
 
 The conditions are constructed by selecting from two types of items: operation items and account items.
 
-{{< figure src="../images/realtime-add-condition-item.en.png" width="30%" >}}
+{{< figure src="../images/realtime-add-condition-item.en.png" width="50%" >}}
 
 - Operation items
   - `AND`
@@ -68,6 +68,10 @@ The conditions are constructed by selecting from two types of items: operation i
   - `Followers`
   - `List`
   - `Me`
+
+You can delete items from the menu that appears when you right-click. 
+
+{{< figure src="../images/realtime-delete-condition-item.en.png" width="40%" >}}
 
 #### About operation items
 
@@ -89,7 +93,7 @@ The following additional conditions can be set as detailed settings for account 
   - Selection items
     - `0` : Posts without images attached
     - `1`～`4` : Post with only the selected number of images attached
-    - `\>=1` : Posts with images attached
+    - `>=1` : Posts with images attached
   - Videos are exclusive.
   - If you set this, reposts will be excluded from the feed.
 - Video
@@ -107,3 +111,9 @@ The following additional conditions can be set as detailed settings for account 
   - Selection items
     - `Only` : Only reposts
     - `Exclude` : Exclude reposts
+
+## Editing and deleting Realtime feeds
+
+To edit or delete the realtime feed you have created, use the menu that appears when you right-click.
+
+{{< figure src="../images/realtime-edit-delete.en.png" width="80%" >}}

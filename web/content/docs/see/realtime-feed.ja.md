@@ -7,7 +7,7 @@ weight: 30
 
 [Jetstream](https://docs.bsky.app/blog/jetstream)を使用してポストの表示を随時行う機能です。
 
-通常のタイムラインのように一定のタイミングでまとめて取得する方法とことなり、よりリアルなフィードが楽しめます。
+通常のタイムラインのように一定のタイミングでまとめてポストを取得する方法と異なり、よりリアルなフィードが楽しめます。
 
 ## カラムへの追加方法
 
@@ -30,7 +30,7 @@ weight: 30
 
 リアルタイムフィードのカラムは赤丸で示すアイコンがポストの受信状態を示します。
 
-{{< figure src="../images/realtime-column-status.ja.png" width="50%" >}}
+{{< figure src="../images/realtime-column-status.ja.png" width="80%" >}}
 
 - `緑` : 正常に受信中
 - `灰` : 何らかのトラブルで受信停止中
@@ -57,7 +57,7 @@ weight: 30
 
 条件には演算アイテムとアカウントアイテムの2種類から選択して構築します。
 
-{{< figure src="../images/realtime-add-condition-item.ja.png" width="30%" >}}
+{{< figure src="../images/realtime-add-condition-item.ja.png" width="50%" >}}
 
 - 演算アイテム
   - `AND`
@@ -68,6 +68,10 @@ weight: 30
   - `フォロワー`
   - `リスト`
   - `自分`
+
+右クリックで表示されるメニューからアイテムの削除ができます。 
+
+{{< figure src="../images/realtime-delete-condition-item.ja.png" width="40%" >}}
 
 #### 演算アイテムについて
 
@@ -89,7 +93,7 @@ weight: 30
   - 選択項目
     - `0` : 画像が添付されていないポスト
     - `1`～`4` : 画像が選択した枚数だけ添付されているポスト
-    - `\>=1` : 画像が添付されているポスト
+    - `>=1` : 画像が添付されているポスト
   - 動画とは排他
   - 設定するとリポストがフィードから除外されます
 - 動画
@@ -107,3 +111,9 @@ weight: 30
   - 選択項目
     - `のみ` : リポストのみ
     - `除外` : リポストを除外
+
+## リアルタイムフィードの編集と削除
+
+作成したリアルタイムフィードの編集または削除は、右クリックで表示されるメニューから実施します。
+
+{{< figure src="../images/realtime-edit-delete.ja.png" width="80%" >}}
