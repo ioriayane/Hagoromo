@@ -239,7 +239,7 @@ Dialog {
                         bottomPadding: parent.adjustedPadding
                         font.pointSize: AdjustedValues.f10
                         ButtonGroup.group: embedButtonGroup
-                        text: qsTr("Movie")
+                        text: qsTr("Video")
                         onCheckedChanged: {
                             if(checked){
                                 hasImageCheckBox.checked = false

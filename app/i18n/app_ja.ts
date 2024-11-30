@@ -2581,9 +2581,8 @@ Please recreate AppPassword in the official application.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="242"/>
         <source>Movie</source>
-        <translation>動画</translation>
+        <translation type="vanished">動画</translation>
     </message>
     <message>
         <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="273"/>
@@ -2601,6 +2600,11 @@ Please recreate AppPassword in the official application.</source>
         <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="311"/>
         <source>Only</source>
         <translation>のみ</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="242"/>
+        <source>Video</source>
+        <translation>動画</translation>
     </message>
     <message>
         <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="299"/>
