@@ -5,7 +5,7 @@ namespace RealtimeFeed {
 ListPostsSelector::ListPostsSelector(QObject *parent) : AbstractPostSelector { parent }
 {
     setType("list");
-    setDisplayType("List");
+    setDisplayType(tr("List"));
 }
 
 bool RealtimeFeed::ListPostsSelector::judge(const QJsonObject &object)
