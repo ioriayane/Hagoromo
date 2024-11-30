@@ -124,14 +124,24 @@ Dialog {
                         }
 
                         function updateDetailInfo(index){
+                            // image
                             hasImageCheckBox.checked = editSelectorListModel.item(index, EditSelectorListModel.HasImageRole)
                             imageCountComboBox.currentIndex = -1
                             imageCountComboBox.setByValue(editSelectorListModel.item(index, EditSelectorListModel.ImageCountRole))
+                            // movie
                             hasMovieCheckBox.checked = editSelectorListModel.item(index, EditSelectorListModel.HasMovieRole)
                             movieCountComboBox.currentIndex = -1
                             movieCountComboBox.setByValue(editSelectorListModel.item(index, EditSelectorListModel.MovieCountRole))
+                            // quote
                             hasQuoteCheckBox.checked = editSelectorListModel.item(index, EditSelectorListModel.HasQuoteRole)
+                            quoteComboBox.currentIndex = -1
+                            quoteComboBox.setByValue(editSelectorListModel.item(index, EditSelectorListModel.QuoteConditionRole))
+                            // repost
+                            isRepostCheckBox.checked = editSelectorListModel.item(index, EditSelectorListModel.IsRepostRole)
+                            repostComboBox.currentIndex = -1
+                            repostComboBox.setByValue(editSelectorListModel.item(index, EditSelectorListModel.RepostConditionRole))
 
+                            // list
                             listComboBox.currentIndex = -1
                             listComboBox.setByValue(editSelectorListModel.item(index, EditSelectorListModel.ListUriRole))
                         }
@@ -272,12 +282,38 @@ Dialog {
                         font.pointSize: AdjustedValues.f10
                         enabled: hasQuoteCheckBox.checked
                         model: ListModel {
-                            ListElement { value: 0; text: qsTr("Exclude") }
-                            ListElement { value: 1; text: qsTr("Only") }
+                            ListElement { value: 0; text: qsTr("Only") }
+                            ListElement { value: 1; text: qsTr("Exclude") }
                         }
-                        // onActivated: (index) => editSelectorListModel.update(editSelectorListView.currentIndex,
-                        //                                                      EditSelectorListModel.MovieCountRole,
-                        //                                                      currentValue)
+                        onActivated: (index) => editSelectorListModel.update(editSelectorListView.currentIndex,
+                                                                             EditSelectorListModel.QuoteConditionRole,
+                                                                             currentValue)
+                    }
+                }
+                RowLayout {
+                    CheckBox {
+                        id: isRepostCheckBox
+                        topPadding: parent.adjustedPadding
+                        bottomPadding: parent.adjustedPadding
+                        font.pointSize: AdjustedValues.f10
+                        text: qsTr("Repost")
+                        onCheckedChanged: editSelectorListModel.update(editSelectorListView.currentIndex,
+                                                                       EditSelectorListModel.IsRepostRole,
+                                                                       checked)
+                    }
+                    ComboBoxEx {
+                        id: repostComboBox
+                        topPadding: parent.adjustedPadding
+                        bottomPadding: parent.adjustedPadding
+                        font.pointSize: AdjustedValues.f10
+                        enabled: isRepostCheckBox.checked
+                        model: ListModel {
+                            ListElement { value: 0; text: qsTr("Only") }
+                            ListElement { value: 1; text: qsTr("Exclude") }
+                        }
+                        onActivated: (index) => editSelectorListModel.update(editSelectorListView.currentIndex,
+                                                                             EditSelectorListModel.RepostConditionRole,
+                                                                             currentValue)
                     }
                 }
                 // CheckBox {

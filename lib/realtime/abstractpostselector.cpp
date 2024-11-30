@@ -23,7 +23,10 @@ AbstractPostSelector::AbstractPostSelector(QObject *parent)
       m_imageCount(0),
       m_hasMovie(false),
       m_movieCount(0),
-      m_hasQuote(false)
+      m_hasQuote(false),
+      m_quoteCondition(0),
+      m_isRepost(false),
+      m_repostCondition(0)
 {
 }
 
@@ -58,7 +61,12 @@ QString AbstractPostSelector::toString()
         if (hasQuote()) {
             if (!temp.isEmpty())
                 temp += ",";
-            temp += QString("\"quote\":{\"has\":true}");
+            temp += QString("\"quote\":{\"has\":true,\"condition\":%1}").arg(quoteCondition());
+        }
+        if (isRepost()) {
+            if (!temp.isEmpty())
+                temp += ",";
+            temp += QString("\"repost\":{\"is\":true,\"condition\":%1}").arg(repostCondition());
         }
         ret += temp;
     }
@@ -144,6 +152,11 @@ AbstractPostSelector *AbstractPostSelector::create(const QJsonObject &selector, 
         current->setHasMovie(child_selector.value("movie").toObject().value("has").toBool(false));
         current->setMovieCount(child_selector.value("movie").toObject().value("count").toInt(0));
         current->setHasQuote(child_selector.value("quote").toObject().value("has").toBool(false));
+        current->setQuoteCondition(
+                child_selector.value("quote").toObject().value("condition").toInt(0));
+        current->setIsRepost(child_selector.value("repost").toObject().value("is").toBool(false));
+        current->setRepostCondition(
+                child_selector.value("repost").toObject().value("condition").toInt(0));
     }
     return current;
 }
@@ -489,6 +502,35 @@ bool AbstractPostSelector::matchMovieCondition(const QJsonObject &object) const
     return (count == movieCount());
 }
 
+bool AbstractPostSelector::matchQuoteCondition(const QJsonObject &object) const
+{
+    if (!hasQuote())
+        return true;
+
+    bool has = false;
+    for (const auto item : object.value("blocks").toArray()) {
+        const QJsonObject embed =
+                item.toObject().value("value").toObject().value("embed").toObject();
+        const QString type = embed.value("$type").toString();
+        if (type == "app.bsky.embed.record" || type == "app.bsky.embed.recordWithMedia") {
+            has = true;
+            break;
+        }
+    }
+    return (quoteCondition() == 0) ? has : !has; // only : exclude
+}
+
+bool AbstractPostSelector::matchRepostCondition(const QJsonObject &object) const
+{
+    if (!isRepost())
+        return true;
+
+    QJsonObject op = getOperation(object, "app.bsky.feed.repost");
+    bool is = !op.isEmpty();
+
+    return (repostCondition() == 0) ? is : !is; // only : exclude
+}
+
 QString AbstractPostSelector::getRepo(const QJsonObject &object) const
 {
     return object.value("repo").toString();
@@ -525,6 +567,36 @@ QString AbstractPostSelector::extractRkey(const QString &path) const
     } else {
         return QString();
     }
+}
+
+int AbstractPostSelector::repostCondition() const
+{
+    return m_repostCondition;
+}
+
+void AbstractPostSelector::setRepostCondition(int newRepostCondition)
+{
+    m_repostCondition = newRepostCondition;
+}
+
+bool AbstractPostSelector::isRepost() const
+{
+    return m_isRepost;
+}
+
+void AbstractPostSelector::setIsRepost(bool newIsRepost)
+{
+    m_isRepost = newIsRepost;
+}
+
+int AbstractPostSelector::quoteCondition() const
+{
+    return m_quoteCondition;
+}
+
+void AbstractPostSelector::setQuoteCondition(int newQuoteCondition)
+{
+    m_quoteCondition = newQuoteCondition;
 }
 
 int AbstractPostSelector::movieCount() const

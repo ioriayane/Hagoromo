@@ -59,6 +59,12 @@ QVariant EditSelectorListModel::item(int row, EditSelectorListModelRoles role) c
         return s->movieCount();
     } else if (role == HasQuoteRole) {
         return s->hasQuote();
+    } else if (role == QuoteConditionRole) {
+        return s->quoteCondition();
+    } else if (role == IsRepostRole) {
+        return s->isRepost();
+    } else if (role == RepostConditionRole) {
+        return s->repostCondition();
     }
     return QVariant();
 }
@@ -90,6 +96,12 @@ void EditSelectorListModel::update(int row, EditSelectorListModelRoles role, con
         s->setMovieCount(value.toInt());
     } else if (role == HasQuoteRole) {
         s->setHasQuote(value.toBool());
+    } else if (role == QuoteConditionRole) {
+        s->setQuoteCondition(value.toInt());
+    } else if (role == IsRepostRole) {
+        s->setIsRepost(value.toBool());
+    } else if (role == RepostConditionRole) {
+        s->setRepostCondition(value.toInt());
     }
 
     emit dataChanged(index(row), index(row));
@@ -227,6 +239,9 @@ QHash<int, QByteArray> EditSelectorListModel::roleNames() const
     roles[HasMovieRole] = "hasMovie";
     roles[MovieCountRole] = "movieCount";
     roles[HasQuoteRole] = "hasQuote";
+    roles[QuoteConditionRole] = "quoteCondition";
+    roles[IsRepostRole] = "isRepost";
+    roles[RepostConditionRole] = "repostCondition";
 
     return roles;
 }

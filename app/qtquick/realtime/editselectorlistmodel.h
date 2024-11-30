@@ -31,6 +31,9 @@ public:
         HasMovieRole,
         MovieCountRole,
         HasQuoteRole,
+        QuoteConditionRole,
+        IsRepostRole,
+        RepostConditionRole,
     };
     Q_ENUM(EditSelectorListModelRoles)
 

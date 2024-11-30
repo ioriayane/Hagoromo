@@ -82,7 +82,7 @@
     <message>
         <location filename="../qml/dialogs/AccountDialog.qml" line="229"/>
         <source>Remove account</source>
-        <translation>アカウントを削除</translation>
+        <translation>アカウントを解除</translation>
     </message>
     <message>
         <location filename="../qml/dialogs/AccountDialog.qml" line="239"/>
@@ -2534,79 +2534,86 @@ Please recreate AppPassword in the official application.</source>
         <translation>条件</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="163"/>
+        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="173"/>
         <source>Detail</source>
         <translation>詳細</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="168"/>
+        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="178"/>
         <source>List</source>
         <translation>リスト</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="196"/>
+        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="206"/>
         <source>Image</source>
         <translation>画像</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="213"/>
-        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="249"/>
+        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="223"/>
+        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="259"/>
         <source>0</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="214"/>
-        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="250"/>
+        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="224"/>
+        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="260"/>
         <source>1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="215"/>
+        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="225"/>
         <source>2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="216"/>
+        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="226"/>
         <source>3</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="217"/>
+        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="227"/>
         <source>4</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="218"/>
+        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="228"/>
         <source>&gt;=1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="232"/>
+        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="242"/>
         <source>Movie</source>
         <translation>動画</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="263"/>
+        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="273"/>
         <source>Quote</source>
         <translation>引用</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="275"/>
+        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="286"/>
+        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="312"/>
         <source>Exclude</source>
         <translation>除外</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="276"/>
+        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="285"/>
+        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="311"/>
         <source>Only</source>
         <translation>のみ</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="318"/>
+        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="299"/>
+        <source>Repost</source>
+        <translation>リポスト</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="354"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="328"/>
+        <location filename="../qml/dialogs/RealtimeFeedEditorDialog.qml" line="364"/>
         <source>Save</source>
         <translation>保存</translation>
     </message>

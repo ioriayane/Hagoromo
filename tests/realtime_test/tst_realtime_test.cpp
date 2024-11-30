@@ -785,20 +785,24 @@ void realtime_test::test_EditSelectorListModel_save()
 
     model.update(0, EditSelectorListModel::HasQuoteRole, true);
     QVERIFY(model.item(0, EditSelectorListModel::HasQuoteRole).toBool() == true);
-    QVERIFY(model.toJson() == "{\"me\":{\"quote\":{\"has\":true}}}");
+    QVERIFY(model.toJson() == "{\"me\":{\"quote\":{\"has\":true,\"condition\":0}}}");
     model.update(0, EditSelectorListModel::HasQuoteRole, false);
     QVERIFY(model.item(0, EditSelectorListModel::HasQuoteRole).toBool() == false);
 
     model.update(0, EditSelectorListModel::HasImageRole, true);
     model.update(0, EditSelectorListModel::HasMovieRole, true);
     model.update(0, EditSelectorListModel::HasQuoteRole, true);
+    model.update(0, EditSelectorListModel::IsRepostRole, true);
     QVERIFY(model.item(0, EditSelectorListModel::HasImageRole).toBool() == true);
     QVERIFY(model.item(0, EditSelectorListModel::HasMovieRole).toBool() == true);
     QVERIFY(model.item(0, EditSelectorListModel::HasQuoteRole).toBool() == true);
-    QVERIFY(model.toJson()
-            == "{\"me\":{\"image\":{\"has\":true,\"count\":3},\"movie\":{\"has\":true,\"count\":0},"
-               "\"quote\":{"
-               "\"has\":true}}}");
+    QVERIFY(model.item(0, EditSelectorListModel::IsRepostRole).toBool() == true);
+    QVERIFY2(model.toJson()
+                     == "{\"me\":{\"image\":{\"has\":true,\"count\":3},"
+                        "\"movie\":{\"has\":true,"
+                        "\"count\":0},\"quote\":{\"has\":true,\"condition\":0},"
+                        "\"repost\":{\"is\":true,\"condition\":0}}}",
+             model.toJson().toLocal8Bit());
 
     qDebug().noquote() << model.toJson();
     qDebug() << model.toJson();
@@ -820,13 +824,14 @@ void realtime_test::test_EditSelectorListModel_save()
 
     json = "{\"or\":[{\"and\":[{\"following\":{\"image\":{\"has\":true,\"count\":4}}"
            "},{\"followers\":{\"movie\":{\"has\":true,\"count\":0}}}]},{\"me\":{}},{\"not\":{"
-           "\"following\":{\"quote\":{\"has\":true}}}}]}";
+           "\"following\":{\"quote\":{\"has\":true,\"condition\":1},"
+           "\"repost\":{\"is\":true,\"condition\":1}}}}]}";
     model.clear();
     model.setSelectorJson(json);
     QVERIFY(model.toJson() == json);
 
-    json = "{\"and\":[{\"following\":{}},{\"list\":{\"uri\":\"at://"
-           "did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/"
+    json = "{\"and\":[{\"following\":{}},"
+           "{\"list\":{\"uri\":\"at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/"
            "3kflf2r3lwg2x\",\"name\":\"ice\"}}]}";
     model.clear();
     model.setSelectorJson(json);

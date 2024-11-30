@@ -72,7 +72,6 @@ public:
     void setHandle(const QString &newHandle);
     QString displayName() const;
     void setDisplayName(const QString &newDisplayName);
-
     QString displayType() const;
     void setDisplayType(const QString &newDisplayType);
 
@@ -90,6 +89,12 @@ public:
     void setListName(const QString &newListName);
     int movieCount() const;
     void setMovieCount(int newMovieCount);
+    int quoteCondition() const;
+    void setQuoteCondition(int newQuoteCondition);
+    bool isRepost() const;
+    void setIsRepost(bool newIsRepost);
+    int repostCondition() const;
+    void setRepostCondition(int newRepostCondition);
 
 signals:
     void selected(const QJsonObject &object);
@@ -101,6 +106,8 @@ protected:
     bool isMy(const QJsonObject &object) const;
     bool matchImageCondition(const QJsonObject &object) const;
     bool matchMovieCondition(const QJsonObject &object) const;
+    bool matchQuoteCondition(const QJsonObject &object) const;
+    bool matchRepostCondition(const QJsonObject &object) const;
     QString getRepo(const QJsonObject &object) const;
     QJsonObject getOperation(const QJsonObject &object, const QString &id) const;
     QJsonObject getBlock(const QJsonObject &object, const QString &path) const;
@@ -123,6 +130,9 @@ private:
     bool m_hasMovie;
     int m_movieCount; // 0: nothing only, 1: match count
     bool m_hasQuote;
+    int m_quoteCondition; // 0: only, 1: exclude
+    bool m_isRepost;
+    int m_repostCondition; // 0: only, 1: exclude
     QString m_listUri;
     QString m_listName;
 };
