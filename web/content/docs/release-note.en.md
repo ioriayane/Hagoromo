@@ -13,6 +13,7 @@ description: This is a multi-column Bluesky client.
 - Fix
   - Fix a case where the link card failed to send
   - Fix the display of video thumbnails in the quote post
+  - Fix a bug that prevented posts with videos that had been given moderation labels from being hidden
 
 ### v0.40.0 - 2024/11/1
 

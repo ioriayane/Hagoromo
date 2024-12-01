@@ -123,6 +123,7 @@ ScrollView {
             contentFilterFrame.visible: model.contentFilterMatched
             contentMediaFilterFrame.visible: model.contentMediaFilterMatched
             postImagePreview.visible: contentMediaFilterFrame.showContent && model.embedImages.length > 0
+            embedVideoFrame.visible: contentMediaFilterFrame.showContent && model.hasVideo
 
             quoteFilterFrame.visible: model.quoteFilterMatched && !model.quoteRecordBlocked
             blockedQuoteFrame.visible: model.quoteRecordBlocked
@@ -177,7 +178,6 @@ ScrollView {
             quoteRecordFrame.quoteRecordEmbedVideoFrame.visible: model.quoteRecordHasVideo
             quoteRecordFrame.quoteRecordEmbedVideoFrame.thumbImageSource: model.quoteRecordVideoThumb
             quoteRecordFrame.quoteRecordEmbedVideoFrame.onClicked: Qt.openUrlExternally(rootListView.model.getItemOfficialUrl(model.index))
-            embedVideoFrame.visible: model.hasVideo
             embedVideoFrame.onClicked: Qt.openUrlExternally(rootListView.model.getItemOfficialUrl(model.index))
             embedVideoFrame.thumbImageSource: model.videoThumbUri
 
