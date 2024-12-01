@@ -173,6 +173,24 @@ QString copyVideoFromPostView(const AppBskyFeedDefs::PostView &post, const CopyI
         default:
             return QString();
         }
+    } else if (post.embed_type
+               == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedRecordWithMedia_View
+               // && post.embed_AppBskyEmbedRecordWithMedia_View.media_type
+               //         == AppBskyEmbedRecordWithMedia::ViewMediaType::
+               //                 media_AppBskyEmbedVideo_View
+    ) {
+        switch (type) {
+        case AtProtocolType::LexiconsTypeUnknown::CopyImageType::Thumb:
+            return convertVideoThumb(post.embed_AppBskyEmbedRecordWithMedia_View
+                                             .media_AppBskyEmbedVideo_View.thumbnail);
+        case AtProtocolType::LexiconsTypeUnknown::CopyImageType::Alt:
+            return post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedVideo_View.alt;
+        case AtProtocolType::LexiconsTypeUnknown::CopyImageType::FullSize:
+            return post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedVideo_View
+                    .playlist;
+        default:
+            return QString();
+        }
     }
     return QString();
 }
