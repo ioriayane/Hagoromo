@@ -58,6 +58,7 @@
 #include "qtquick/blog/blogentrylistmodel.h"
 #include "qtquick/controls/calendartablemodel.h"
 #include "qtquick/realtime/realtimefeedlistmodel.h"
+#include "qtquick/realtime/editselectorlistmodel.h"
 
 #include "tools/encryption.h"
 #include "tools/translatorchanger.h"
@@ -187,6 +188,8 @@ int main(int argc, char *argv[])
                                         "BlogEntryListModel");
     qmlRegisterType<RealtimeFeedListModel>("tech.relog.hagoromo.realtime.realtimefeedlistmodel", 1,
                                            0, "RealtimeFeedListModel");
+    qmlRegisterType<EditSelectorListModel>("tech.relog.hagoromo.realtime.editselectorlistmodel", 1,
+                                           0, "EditSelectorListModel");
 
     qmlRegisterType<CalendarTableModel>("tech.relog.hagoromo.controls.calendartablemodel", 1, 0,
                                         "CalendarTableModel");

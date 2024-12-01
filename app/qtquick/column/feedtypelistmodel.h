@@ -12,6 +12,7 @@ struct FeedTypeItem
     FeedComponentType type = FeedComponentType::Timeline;
     AtProtocolType::AppBskyFeedDefs::GeneratorView generator;
     AtProtocolType::AppBskyGraphDefs::ListView list;
+    bool editable = false;
 };
 
 class FeedTypeListModel : public AtpAbstractListModel
@@ -29,6 +30,7 @@ public:
         AvatarRole,
         UriRole,
         CreatorDisplayNameRole,
+        EditableRole,
     };
     Q_ENUM(FeedTypeListModelRoles)
 
@@ -44,6 +46,9 @@ public:
     Q_INVOKABLE void clear();
     Q_INVOKABLE bool getLatest();
     Q_INVOKABLE bool getNext();
+
+    Q_INVOKABLE void reloadRealtimeFeedRules();
+    Q_INVOKABLE void removeRealtimeFeedRule(int row);
 
 protected:
     QHash<int, QByteArray> roleNames() const;

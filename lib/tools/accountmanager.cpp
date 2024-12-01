@@ -40,7 +40,9 @@ public:
                        const QString &password, const QString &did, const QString &handle,
                        const QString &email, const QString &accessJwt, const QString &refreshJwt,
                        const QString &thread_gate_type, const AccountStatus status);
-
+    void updateRealtimeFeedRule(const QString &name, const QString &condition);
+    QList<AtProtocolInterface::RealtimeFeedRule> getRealtimeFeedRules() const;
+    void removeRealtimeFeedRule(const QString &name);
     void createSession();
     void refreshSession(bool initial = false);
     void getProfile();
@@ -97,6 +99,17 @@ QJsonObject AccountManager::Private::save() const
     }
     account_item["post_gate_quote_enabled"] = m_account.post_gate_quote_enabled;
 
+    if (!m_account.realtime_feed_rules.isEmpty()) {
+        QJsonArray realtime_feed_rules;
+        for (const auto &rule : m_account.realtime_feed_rules) {
+            QJsonObject json_rule;
+            json_rule.insert("name", rule.name);
+            json_rule.insert("condition", rule.condition);
+            realtime_feed_rules.append(json_rule);
+        }
+        account_item["realtime_feed_rules"] = realtime_feed_rules;
+    }
+
     return account_item;
 }
 
@@ -124,6 +137,15 @@ void AccountManager::Private::load(const QJsonObject &object)
         m_account.thread_gate_options.append(value.toString());
     }
     m_account.post_gate_quote_enabled = object.value("post_gate_quote_enabled").toBool(true);
+
+    for (const auto &value : object.value("realtime_feed_rules").toArray()) {
+        if (value.toObject().contains("name") && value.toObject().contains("condition")) {
+            AtProtocolInterface::RealtimeFeedRule rule;
+            rule.name = value.toObject().value("name").toString();
+            rule.condition = value.toObject().value("condition").toString();
+            m_account.realtime_feed_rules.append(rule);
+        }
+    }
 
     if (temp_refresh.isEmpty()) {
         createSession();
@@ -203,6 +225,40 @@ void AccountManager::Private::updateAccount(const QString &uuid, const QString &
     m_account.refreshJwt = refreshJwt;
     m_account.thread_gate_type = thread_gate_type;
     m_account.status = status;
+}
+
+void AccountManager::Private::updateRealtimeFeedRule(const QString &name, const QString &condition)
+{
+    bool exist = false;
+    for (auto &rule : m_account.realtime_feed_rules) {
+        if (rule.name == name) {
+            rule.condition = condition;
+            exist = true;
+            break;
+        }
+    }
+    if (!exist) {
+        AtProtocolInterface::RealtimeFeedRule rule;
+        rule.name = name;
+        rule.condition = condition;
+        m_account.realtime_feed_rules.append(rule);
+    }
+}
+
+QList<AtProtocolInterface::RealtimeFeedRule> AccountManager::Private::getRealtimeFeedRules() const
+{
+    return m_account.realtime_feed_rules;
+}
+
+void AccountManager::Private::removeRealtimeFeedRule(const QString &name)
+{
+    QList<AtProtocolInterface::RealtimeFeedRule> temp;
+    for (auto &rule : m_account.realtime_feed_rules) {
+        if (rule.name != name) {
+            temp.append(rule);
+        }
+    }
+    m_account.realtime_feed_rules = temp;
 }
 
 void AccountManager::Private::createSession()
@@ -502,6 +558,37 @@ void AccountManager::updateServiceEndpoint(const QString &uuid, const QString &s
 {
     update(indexAt(uuid), AccountManager::AccountManagerRoles::ServiceEndpointRole,
            service_endpoint);
+}
+
+void AccountManager::updateRealtimeFeedRule(const QString &uuid, const QString &name,
+                                            const QString &condition)
+{
+    int row = indexAt(uuid);
+    if (row < 0 || row >= count() || name.isEmpty() || condition.isEmpty())
+        return;
+
+    dList.at(row)->updateRealtimeFeedRule(name, condition);
+    save();
+}
+
+QList<AtProtocolInterface::RealtimeFeedRule>
+AccountManager::getRealtimeFeedRules(const QString &uuid)
+{
+    int row = indexAt(uuid);
+    if (row < 0 || row >= count())
+        return QList<AtProtocolInterface::RealtimeFeedRule>();
+
+    return dList.at(row)->getRealtimeFeedRules();
+}
+
+void AccountManager::removeRealtimeFeedRule(const QString &uuid, const QString &name)
+{
+    int row = indexAt(uuid);
+    if (row < 0 || row >= count())
+        return;
+
+    dList.at(row)->removeRealtimeFeedRule(name);
+    save();
 }
 
 int AccountManager::getMainAccountIndex() const

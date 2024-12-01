@@ -4,6 +4,7 @@
 #include "atprotocol/app/bsky/actor/appbskyactorgetpreferences.h"
 #include "atprotocol/app/bsky/feed/appbskyfeedgetfeedgenerators.h"
 #include "atprotocol/app/bsky/graph/appbskygraphgetlists.h"
+#include "tools/accountmanager.h"
 
 using AtProtocolInterface::AppBskyActorGetPreferences;
 using AtProtocolInterface::AppBskyFeedGetFeedGenerators;
@@ -35,6 +36,8 @@ QVariant FeedTypeListModel::item(int row, FeedTypeListModelRoles role) const
         return m_feedTypeItemList.at(row).group;
     else if (role == FeedTypeRole)
         return static_cast<int>(m_feedTypeItemList.at(row).type);
+    else if (role == EditableRole)
+        return m_feedTypeItemList.at(row).editable;
 
     else if (m_feedTypeItemList.at(row).type == FeedComponentType::ListFeed) {
         if (role == DisplayNameRole)
@@ -87,7 +90,7 @@ void FeedTypeListModel::clear()
     // デフォルトで追加した状態にするアイテムを増減させるときは
     // AddColumnDialog.qmlのchangeColumnTypeView()を
     // 修正しないとカスタムフィードなどが読み込まれない
-    beginInsertRows(QModelIndex(), 0, 6);
+    beginInsertRows(QModelIndex(), 0, 7);
     {
         FeedTypeItem item;
         item.group = tr("Default Feeds");
@@ -137,6 +140,14 @@ void FeedTypeListModel::clear()
     }
     {
         FeedTypeItem item;
+        item.group = tr("Realtime Feeds");
+        item.type = FeedComponentType::EditRealtimeFeed;
+        item.generator.displayName = tr("Create Realtime Feed");
+        item.generator.uri = "";
+        m_feedTypeItemList.append(item);
+    }
+    {
+        FeedTypeItem item;
         item.group = tr("Chat");
         item.type = FeedComponentType::ChatList;
         item.generator.displayName = tr("Chat list");
@@ -152,6 +163,7 @@ bool FeedTypeListModel::getLatest()
     setRunning(true);
 
     clear();
+    reloadRealtimeFeedRules();
 
     AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
     connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
@@ -176,6 +188,55 @@ bool FeedTypeListModel::getNext()
     return true;
 }
 
+void FeedTypeListModel::reloadRealtimeFeedRules()
+{
+
+    AccountManager *manager = AccountManager::getInstance();
+    const QList<AtProtocolInterface::RealtimeFeedRule> rules =
+            manager->getRealtimeFeedRules(account().uuid);
+    int rule_insert_pos = 0;
+    QHash<QString, int> rule_pos; // QHash<name, pos>
+    for (const auto &item : m_feedTypeItemList) {
+        if (item.type == FeedComponentType::RealtimeFeed && item.editable) {
+            rule_pos[item.generator.displayName] = rule_insert_pos;
+        } else if (item.type == FeedComponentType::EditRealtimeFeed) {
+            break;
+        }
+        rule_insert_pos++;
+    }
+    for (const auto &rule : rules) {
+        if (rule_pos.contains(rule.name)) {
+            int pos = rule_pos[rule.name];
+            m_feedTypeItemList[pos].generator.uri = rule.condition;
+            emit dataChanged(index(pos), index(pos));
+        } else {
+            FeedTypeItem item;
+            item.group = tr("Realtime Feeds");
+            item.type = FeedComponentType::RealtimeFeed;
+            item.generator.displayName = rule.name;
+            item.generator.uri = rule.condition;
+            item.editable = true;
+            beginInsertRows(QModelIndex(), rule_insert_pos, rule_insert_pos);
+            m_feedTypeItemList.insert(rule_insert_pos, item);
+            endInsertRows();
+            rule_insert_pos++;
+        }
+    }
+}
+
+void FeedTypeListModel::removeRealtimeFeedRule(int row)
+{
+    if (row < 0 || row >= m_feedTypeItemList.count())
+        return;
+
+    AccountManager *manager = AccountManager::getInstance();
+    manager->removeRealtimeFeedRule(account().uuid,
+                                    m_feedTypeItemList.at(row).generator.displayName);
+    beginRemoveRows(QModelIndex(), row, row);
+    m_feedTypeItemList.removeAt(row);
+    endRemoveRows();
+}
+
 QHash<int, QByteArray> FeedTypeListModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
@@ -186,6 +247,7 @@ QHash<int, QByteArray> FeedTypeListModel::roleNames() const
     roles[AvatarRole] = "avatar";
     roles[UriRole] = "uri";
     roles[CreatorDisplayNameRole] = "creatorDisplayName";
+    roles[EditableRole] = "editable";
 
     return roles;
 }

@@ -78,6 +78,8 @@ QVariant ListsListModel::item(int row, ListsListModelRoles role) const
         return m_listItemUriHash.value(current.cid, QString());
     } else if (role == CheckedRole) {
         return m_checkedHash.value(current.cid, false);
+    } else if (role == TextRole) {
+        return current.name;
     }
 
     return QVariant();
@@ -360,6 +362,8 @@ QHash<int, QByteArray> ListsListModel::roleNames() const
     roles[SearchStatusRole] = "searchStatus";
     roles[ListItemUriRole] = "listItemUri";
     roles[CheckedRole] = "checked";
+
+    roles[TextRole] = "text";
 
     return roles;
 }

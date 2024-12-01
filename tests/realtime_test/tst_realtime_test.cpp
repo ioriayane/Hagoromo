@@ -10,6 +10,7 @@
 #include "realtime/abstractpostselector.h"
 #include "realtime/firehosereceiver.h"
 #include "realtime/realtimefeedlistmodel.h"
+#include "realtime/editselectorlistmodel.h"
 #include "tools/accountmanager.h"
 
 using namespace RealtimeFeed;
@@ -29,6 +30,9 @@ private slots:
     void test_FirehoseReceiver();
     void test_Websock();
     void test_RealtimeFeedListModel();
+    void test_EditSelectorListModel();
+    void test_EditSelectorListModel_append();
+    void test_EditSelectorListModel_save();
 
 private:
     QList<UserInfo> extractFromArray(const QJsonArray &array) const;
@@ -242,11 +246,13 @@ void realtime_test::test_RealtimeFeedListModel()
     // model.setSelectorJson("{\"not\":{\"me\":{}}}");
     // model.setSelectorJson("{\"not\":{\"following\":{}}}");
     // model.setSelectorJson("{\"not\":{\"followers\":{}}}");
-    model.setSelectorJson("{\"or\": [{\"following\": {}},{\"followers\": {}}]}");
+    model.setSelectorJson("{\"or\": [{\"following\": {}},{\"followers\": {}},{\"list\": "
+                          "{\"uri\":\"at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/"
+                          "3kcj52ovctd2h\",\"name\":\"My Accounts\"}}]}");
     {
         QSignalSpy spy(&model, SIGNAL(runningChanged()));
         model.getLatest();
-        spy.wait(10 * 1000);
+        spy.wait(20 * 1000);
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
 
@@ -315,6 +321,8 @@ void realtime_test::test_RealtimeFeedListModel()
     QVERIFY(model.item(1, TimelineListModel::RecordTextPlainRole).toString() == "reply3");
     QVERIFY(model.item(1, TimelineListModel::IsRepostedByRole).toBool() == false);
 
+    // /////////////////
+
     qDebug().noquote() << "---------------------------";
     uuid = AccountManager::getInstance()->updateAccount(
             QString(), m_service + "/realtime/3", "id", "pass", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
@@ -343,6 +351,509 @@ void realtime_test::test_RealtimeFeedListModel()
             == "bafyreigoon4vpg3axqlvrzyxcpmwh4ihra4hbqd5uh3e774bbjjnla5ajq3");
     QVERIFY(model.item(0, TimelineListModel::RecordTextPlainRole).toString() == "post 3");
     QVERIFY(model.item(0, TimelineListModel::IsRepostedByRole).toBool() == false);
+
+    // ///////////////////
+
+    qDebug().noquote() << "---------------------------";
+    uuid = AccountManager::getInstance()->updateAccount(
+            QString(), m_service + "/realtime/4", "id", "pass", "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+            "handle", "email", "accessJwt", "refreshJwt", true);
+    model.setAccount(uuid);
+    json_doc = loadJson(":/data/realtimemodel/recv_data_5.json");
+    recv->testReceived(json_doc.object());
+    QVERIFY2(model.rowCount() == 3, QString::number(model.rowCount()).toLocal8Bit());
+
+    qDebug().noquote() << "---------------------------";
+    json_doc = loadJson(":/data/realtimemodel/recv_data_6.json");
+    recv->testReceived(json_doc.object());
+    QVERIFY2(model.rowCount() == 3, QString::number(model.rowCount()).toLocal8Bit());
+
+    qDebug().noquote() << "---------------------------";
+    json_doc = loadJson(":/data/realtimemodel/recv_data_5.json");
+    QVERIFY(json_doc.isObject());
+    {
+        QSignalSpy spy(&model, SIGNAL(rowsInserted(const QModelIndex &, int, int)));
+        recv->testReceived(json_doc.object());
+        spy.wait();
+        QVERIFY(spy.count() == 1);
+    }
+    QVERIFY2(model.rowCount() == 4, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.item(0, TimelineListModel::CidRole).toString()
+            == "bafyreigoon4vpg3axqlvrzyxcpmwh4ihra4hbqd5uh3e774bbjjnla5ajq5");
+    QVERIFY(model.item(0, TimelineListModel::RecordTextPlainRole).toString() == "post 5");
+    QVERIFY(model.item(0, TimelineListModel::IsRepostedByRole).toBool() == false);
+}
+
+void realtime_test::test_EditSelectorListModel()
+{
+    EditSelectorListModel model;
+
+    QVERIFY2(model.rowCount() == 0, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+            == QVariant());
+    QVERIFY(model.valid() == false);
+
+    //----
+    model.setSelectorJson("{\"me\":{}}");
+    QVERIFY2(model.rowCount() == 1, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == true);
+    QVERIFY2(model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "me",
+             model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+    QVERIFY(model.item(1, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+            == QVariant());
+
+    QVERIFY2(model.item(0, EditSelectorListModel::EditSelectorListModelRoles::IndentRole).toInt()
+                     == 0,
+             QString::number(
+                     model.item(0, EditSelectorListModel::EditSelectorListModelRoles::IndentRole)
+                             .toInt())
+                     .toLocal8Bit());
+
+    //----
+    model.setSelectorJson("{\"not\":{\"me\":{}}}");
+    QVERIFY2(model.rowCount() == 2, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == true);
+    QVERIFY2(model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "not",
+             model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+    QVERIFY2(model.item(1, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "me",
+             model.item(1, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+    QVERIFY(model.item(2, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+            == QVariant());
+
+    QVERIFY2(model.item(0, EditSelectorListModel::EditSelectorListModelRoles::IndentRole).toInt()
+                     == 0,
+             QString::number(
+                     model.item(0, EditSelectorListModel::EditSelectorListModelRoles::IndentRole)
+                             .toInt())
+                     .toLocal8Bit());
+    QVERIFY2(model.item(1, EditSelectorListModel::EditSelectorListModelRoles::IndentRole).toInt()
+                     == 1,
+             QString::number(
+                     model.item(1, EditSelectorListModel::EditSelectorListModelRoles::IndentRole)
+                             .toInt())
+                     .toLocal8Bit());
+
+    //----
+    model.setSelectorJson("{\"or\": [{\"following\": {}},{\"followers\": {}}]}");
+    QVERIFY2(model.rowCount() == 3, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == true);
+    QVERIFY2(model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "or",
+             model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+    QVERIFY2(model.item(1, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "following",
+             model.item(1, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+    QVERIFY2(model.item(2, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "followers",
+             model.item(2, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+    QVERIFY(model.item(3, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+            == QVariant());
+
+    QVERIFY2(model.item(0, EditSelectorListModel::EditSelectorListModelRoles::IndentRole).toInt()
+                     == 0,
+             QString::number(
+                     model.item(0, EditSelectorListModel::EditSelectorListModelRoles::IndentRole)
+                             .toInt())
+                     .toLocal8Bit());
+    QVERIFY2(model.item(1, EditSelectorListModel::EditSelectorListModelRoles::IndentRole).toInt()
+                     == 1,
+             QString::number(
+                     model.item(1, EditSelectorListModel::EditSelectorListModelRoles::IndentRole)
+                             .toInt())
+                     .toLocal8Bit());
+    QVERIFY2(model.item(2, EditSelectorListModel::EditSelectorListModelRoles::IndentRole).toInt()
+                     == 1,
+             QString::number(
+                     model.item(1, EditSelectorListModel::EditSelectorListModelRoles::IndentRole)
+                             .toInt())
+                     .toLocal8Bit());
+
+    //----
+    model.setSelectorJson("{\"and\": [{\"followers\": {}},{\"following\": {}},{\"me\":{}}]}");
+    QVERIFY2(model.rowCount() == 4, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == true);
+    QVERIFY2(model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "and",
+             model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+    QVERIFY2(model.item(1, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "followers",
+             model.item(1, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+    QVERIFY2(model.item(2, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "following",
+             model.item(2, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+    QVERIFY2(model.item(3, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "me",
+             model.item(3, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+    QVERIFY(model.item(4, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+            == QVariant());
+
+    QVERIFY2(model.item(0, EditSelectorListModel::EditSelectorListModelRoles::IndentRole).toInt()
+                     == 0,
+             QString::number(
+                     model.item(0, EditSelectorListModel::EditSelectorListModelRoles::IndentRole)
+                             .toInt())
+                     .toLocal8Bit());
+    QVERIFY2(model.item(1, EditSelectorListModel::EditSelectorListModelRoles::IndentRole).toInt()
+                     == 1,
+             QString::number(
+                     model.item(1, EditSelectorListModel::EditSelectorListModelRoles::IndentRole)
+                             .toInt())
+                     .toLocal8Bit());
+    QVERIFY2(model.item(2, EditSelectorListModel::EditSelectorListModelRoles::IndentRole).toInt()
+                     == 1,
+             QString::number(
+                     model.item(2, EditSelectorListModel::EditSelectorListModelRoles::IndentRole)
+                             .toInt())
+                     .toLocal8Bit());
+    QVERIFY2(model.item(3, EditSelectorListModel::EditSelectorListModelRoles::IndentRole).toInt()
+                     == 1,
+             QString::number(
+                     model.item(3, EditSelectorListModel::EditSelectorListModelRoles::IndentRole)
+                             .toInt())
+                     .toLocal8Bit());
+
+    //----
+    model.setSelectorJson("{\"and\": [{\"not\": {\"following\": {}}},{\"xor\": [{\"following\": "
+                          "{}},{\"not\": {\"followers\": {}}}]},{\"following\": {}}]}");
+    QVERIFY2(model.rowCount() == 8, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == true);
+    QVERIFY2(model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "and",
+             model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+    QVERIFY2(model.item(1, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "not",
+             model.item(1, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+    QVERIFY2(model.item(2, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "following",
+             model.item(2, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+    QVERIFY2(model.item(3, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "xor",
+             model.item(3, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+    QVERIFY2(model.item(4, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "following",
+             model.item(4, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+    QVERIFY2(model.item(5, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "not",
+             model.item(5, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+    QVERIFY2(model.item(6, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "followers",
+             model.item(6, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+    QVERIFY2(model.item(7, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "following",
+             model.item(7, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+    QVERIFY(model.item(8, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+            == QVariant());
+
+    QVERIFY2(model.item(0, EditSelectorListModel::EditSelectorListModelRoles::IndentRole).toInt()
+                     == 0,
+             QString::number(
+                     model.item(0, EditSelectorListModel::EditSelectorListModelRoles::IndentRole)
+                             .toInt())
+                     .toLocal8Bit());
+    QVERIFY2(model.item(1, EditSelectorListModel::EditSelectorListModelRoles::IndentRole).toInt()
+                     == 1,
+             QString::number(
+                     model.item(1, EditSelectorListModel::EditSelectorListModelRoles::IndentRole)
+                             .toInt())
+                     .toLocal8Bit());
+    QVERIFY2(model.item(2, EditSelectorListModel::EditSelectorListModelRoles::IndentRole).toInt()
+                     == 2,
+             QString::number(
+                     model.item(2, EditSelectorListModel::EditSelectorListModelRoles::IndentRole)
+                             .toInt())
+                     .toLocal8Bit());
+    QVERIFY2(model.item(3, EditSelectorListModel::EditSelectorListModelRoles::IndentRole).toInt()
+                     == 1,
+             QString::number(
+                     model.item(3, EditSelectorListModel::EditSelectorListModelRoles::IndentRole)
+                             .toInt())
+                     .toLocal8Bit());
+    QVERIFY2(model.item(4, EditSelectorListModel::EditSelectorListModelRoles::IndentRole).toInt()
+                     == 2,
+             QString::number(
+                     model.item(4, EditSelectorListModel::EditSelectorListModelRoles::IndentRole)
+                             .toInt())
+                     .toLocal8Bit());
+    QVERIFY2(model.item(5, EditSelectorListModel::EditSelectorListModelRoles::IndentRole).toInt()
+                     == 2,
+             QString::number(
+                     model.item(5, EditSelectorListModel::EditSelectorListModelRoles::IndentRole)
+                             .toInt())
+                     .toLocal8Bit());
+    QVERIFY2(model.item(6, EditSelectorListModel::EditSelectorListModelRoles::IndentRole).toInt()
+                     == 3,
+             QString::number(
+                     model.item(6, EditSelectorListModel::EditSelectorListModelRoles::IndentRole)
+                             .toInt())
+                     .toLocal8Bit());
+    QVERIFY2(model.item(7, EditSelectorListModel::EditSelectorListModelRoles::IndentRole).toInt()
+                     == 1,
+             QString::number(
+                     model.item(7, EditSelectorListModel::EditSelectorListModelRoles::IndentRole)
+                             .toInt())
+                     .toLocal8Bit());
+
+    QVERIFY2(model.item(0, EditSelectorListModel::EditSelectorListModelRoles::DisplayTypeRole)
+                             .toString()
+                     == "AND",
+             model.item(0, EditSelectorListModel::EditSelectorListModelRoles::DisplayTypeRole)
+                     .toString()
+                     .toLocal8Bit());
+    QVERIFY2(model.item(6, EditSelectorListModel::EditSelectorListModelRoles::DisplayTypeRole)
+                             .toString()
+                     == "Followers",
+             model.item(6, EditSelectorListModel::EditSelectorListModelRoles::DisplayTypeRole)
+                     .toString()
+                     .toLocal8Bit());
+
+    QVERIFY2(model.item(0, EditSelectorListModel::EditSelectorListModelRoles::CanHaveRole).toBool()
+                     == true,
+             model.item(0, EditSelectorListModel::EditSelectorListModelRoles::CanHaveRole)
+                     .toString()
+                     .toLocal8Bit());
+    QVERIFY2(model.item(6, EditSelectorListModel::EditSelectorListModelRoles::CanHaveRole).toBool()
+                     == false,
+             model.item(6, EditSelectorListModel::EditSelectorListModelRoles::CanHaveRole)
+                     .toString()
+                     .toLocal8Bit());
+}
+
+void realtime_test::test_EditSelectorListModel_append()
+{
+    EditSelectorListModel model;
+
+    model.appendChild(-1, "me");
+    QVERIFY2(model.rowCount() == 1, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == true);
+    QVERIFY2(model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "me",
+             model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+
+    // don't append
+    model.appendChild(0, "not");
+    QVERIFY2(model.rowCount() == 1, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == true);
+
+    model.clear();
+
+    qDebug() << "----";
+
+    model.appendChild(-1, "and");
+    QVERIFY2(model.rowCount() == 1, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == false);
+    QVERIFY2(model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "and",
+             model.item(0, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+
+    model.appendChild(0, "following");
+    QVERIFY2(model.rowCount() == 2, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == true);
+    QVERIFY2(model.item(1, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "following",
+             model.item(1, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+
+    model.appendChild(0, "or");
+    QVERIFY2(model.rowCount() == 3, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == false);
+    QVERIFY2(model.item(2, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "or",
+             model.item(2, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+
+    model.appendChild(2, "followers");
+    QVERIFY2(model.rowCount() == 4, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == true);
+    QVERIFY2(model.item(3, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "followers",
+             model.item(3, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+
+    model.appendChild(0, "xor");
+    QVERIFY2(model.rowCount() == 5, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == false);
+    QVERIFY2(model.item(4, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "xor",
+             model.item(4, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+
+    model.appendChild(2, "following");
+    QVERIFY2(model.rowCount() == 6, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == false);
+    QVERIFY2(model.item(4, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "following",
+             model.item(4, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+    QVERIFY2(model.item(5, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "xor",
+             model.item(5, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+
+    model.remove(2);
+    QVERIFY2(model.rowCount() == 3, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == false);
+
+    model.appendChild(2, "following");
+    QVERIFY2(model.rowCount() == 4, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == true);
+    QVERIFY2(model.item(3, EditSelectorListModel::EditSelectorListModelRoles::TypeRole).toString()
+                     == "following",
+             model.item(3, EditSelectorListModel::EditSelectorListModelRoles::TypeRole)
+                     .toString()
+                     .toLocal8Bit());
+
+    // qDebug().noquote() << model.toJson();
+
+    model.remove(0);
+    QVERIFY2(model.rowCount() == 0, QString::number(model.rowCount()).toLocal8Bit());
+    QVERIFY(model.valid() == false);
+}
+
+void realtime_test::test_EditSelectorListModel_save()
+{
+
+    EditSelectorListModel model;
+
+    model.appendChild(-1, "me");
+    QVERIFY(model.count() == 1);
+    model.update(0, EditSelectorListModel::HasImageRole, true);
+    QVERIFY(model.item(0, EditSelectorListModel::HasImageRole).toBool() == true);
+    model.update(0, EditSelectorListModel::ImageCountRole, 3);
+    QVERIFY(model.item(0, EditSelectorListModel::ImageCountRole).toInt() == 3);
+    QVERIFY(model.toJson() == "{\"me\":{\"image\":{\"has\":true,\"count\":3}}}");
+    model.update(0, EditSelectorListModel::HasImageRole, false);
+    QVERIFY(model.item(0, EditSelectorListModel::HasImageRole).toBool() == false);
+    QVERIFY(model.toJson() == "{\"me\":{}}");
+
+    model.update(0, EditSelectorListModel::HasMovieRole, true);
+    QVERIFY(model.item(0, EditSelectorListModel::HasMovieRole).toBool() == true);
+    QVERIFY(model.toJson() == "{\"me\":{\"movie\":{\"has\":true,\"count\":0}}}");
+    model.update(0, EditSelectorListModel::HasMovieRole, false);
+    QVERIFY(model.item(0, EditSelectorListModel::HasMovieRole).toBool() == false);
+    QVERIFY(model.toJson() == "{\"me\":{}}");
+
+    qDebug().noquote() << model.toJson();
+
+    model.update(0, EditSelectorListModel::HasQuoteRole, true);
+    QVERIFY(model.item(0, EditSelectorListModel::HasQuoteRole).toBool() == true);
+    QVERIFY(model.toJson() == "{\"me\":{\"quote\":{\"has\":true,\"condition\":0}}}");
+    model.update(0, EditSelectorListModel::HasQuoteRole, false);
+    QVERIFY(model.item(0, EditSelectorListModel::HasQuoteRole).toBool() == false);
+
+    model.update(0, EditSelectorListModel::HasImageRole, true);
+    model.update(0, EditSelectorListModel::HasMovieRole, true);
+    model.update(0, EditSelectorListModel::HasQuoteRole, true);
+    model.update(0, EditSelectorListModel::IsRepostRole, true);
+    QVERIFY(model.item(0, EditSelectorListModel::HasImageRole).toBool() == true);
+    QVERIFY(model.item(0, EditSelectorListModel::HasMovieRole).toBool() == true);
+    QVERIFY(model.item(0, EditSelectorListModel::HasQuoteRole).toBool() == true);
+    QVERIFY(model.item(0, EditSelectorListModel::IsRepostRole).toBool() == true);
+    QVERIFY2(model.toJson()
+                     == "{\"me\":{\"image\":{\"has\":true,\"count\":3},"
+                        "\"movie\":{\"has\":true,"
+                        "\"count\":0},\"quote\":{\"has\":true,\"condition\":0},"
+                        "\"repost\":{\"is\":true,\"condition\":0}}}",
+             model.toJson().toLocal8Bit());
+
+    qDebug().noquote() << model.toJson();
+    qDebug() << model.toJson();
+
+    model.clear();
+    model.appendChild(-1, "list");
+    QVERIFY(model.count() == 1);
+
+    QString uri = "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.list/3kgybwfpfag2i";
+    QString name = "illust";
+    model.update(0, EditSelectorListModel::ListUriRole, uri);
+    model.update(0, EditSelectorListModel::ListNameRole, name);
+    QVERIFY(model.item(0, EditSelectorListModel::ListUriRole).toString() == uri);
+    QVERIFY(model.item(0, EditSelectorListModel::ListNameRole).toString() == name);
+    QVERIFY(model.toJson()
+            == QString("{\"list\":{\"uri\":\"%1\",\"name\":\"%2\"}}").arg(uri, name));
+
+    QString json;
+
+    json = "{\"or\":[{\"and\":[{\"following\":{\"image\":{\"has\":true,\"count\":4}}"
+           "},{\"followers\":{\"movie\":{\"has\":true,\"count\":0}}}]},{\"me\":{}},{\"not\":{"
+           "\"following\":{\"quote\":{\"has\":true,\"condition\":1},"
+           "\"repost\":{\"is\":true,\"condition\":1}}}}]}";
+    model.clear();
+    model.setSelectorJson(json);
+    QVERIFY(model.toJson() == json);
+
+    json = "{\"and\":[{\"following\":{}},"
+           "{\"list\":{\"uri\":\"at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/"
+           "3kflf2r3lwg2x\",\"name\":\"ice\"}}]}";
+    model.clear();
+    model.setSelectorJson(json);
+    QVERIFY(model.toJson() == json);
+
+    json = "{\"and\":[{\"list\":{\"uri\":\"at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
+           "app.bsky.graph.list/3kflf2r3lwg2x\",\"name\":\"ice\"}},{\"list\":{\"uri\":\"at://"
+           "did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/"
+           "3kflbnc4c4o2x\",\"name\":\"list\"}},{\"or\":[{\"list\":{\"uri\":\"at://"
+           "did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/"
+           "3kflf2r3lwg2x\",\"name\":\"ice\"}}]}]}";
+
+    QJsonObject json_obj = QJsonDocument::fromJson(json.toUtf8()).object();
+    QVERIFY(json_obj.isEmpty() == false);
+    AbstractPostSelector *selector = AbstractPostSelector::create(json_obj, this);
+    QVERIFY(selector != nullptr);
+    QVERIFY(selector->toString() == json);
+    QVERIFY(selector->getListUris()
+            == QStringList()
+                    << "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/3kflf2r3lwg2x"
+                    << "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/3kflbnc4c4o2x");
+    selector->deleteLater();
 }
 
 QList<UserInfo> realtime_test::extractFromArray(const QJsonArray &array) const

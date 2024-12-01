@@ -1,0 +1,36 @@
+{
+    "blobs": [
+    ],
+    "blocks": [
+        {
+            "cid": "bafyreiaqzcib4qv5xfmqxm7npn56jdday7ypdg5ggxmjeaexa6foyst5ty",
+            "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.listitem/3lbpdrhwuvm2r",
+            "value": {
+                "$type": "app.bsky.graph.listitem",
+                "createdAt": "2024-11-24T15:40:17.396Z",
+                "list": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/3kcj52ovctd2h",
+                "subject": "did:plc:mqahczljun4uuyrhwrob6bsg"
+            }
+        }
+    ],
+    "commit": {
+        "$link": "bafyreiaqzcib4qv5xfmqxm7npn56jdday7ypdg5ggxmjeaexa6foyst5ty"
+    },
+    "ops": [
+        {
+            "action": "create",
+            "cid": {
+                "$link": "bafyreiaqzcib4qv5xfmqxm7npn56jdday7ypdg5ggxmjeaexa6foyst5ty"
+            },
+            "path": "app.bsky.graph.listitem/3lbpdrhwuvm2r"
+        }
+    ],
+    "prev": null,
+    "rebase": false,
+    "repo": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+    "rev": "3lbpdb6enth24",
+    "seq": 472792116,
+    "since": "3lbpdas5den24",
+    "time": "2024-11-24T15:40:17.396Z",
+    "tooBig": false
+}

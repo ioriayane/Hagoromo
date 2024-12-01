@@ -4,7 +4,8 @@ namespace RealtimeFeed {
 
 FollowersPostSelector::FollowersPostSelector(QObject *parent) : AbstractPostSelector { parent }
 {
-    setName("followers");
+    setType("followers");
+    setDisplayType(tr("Followers"));
 }
 
 bool FollowersPostSelector::judge(const QJsonObject &object)
@@ -44,7 +45,19 @@ bool FollowersPostSelector::judge(const QJsonObject &object)
             }
         }
     }
-    return isTarget(object) && m_followers.contains(getRepo(object));
+    return isTarget(object) && m_followers.contains(getRepo(object)) && matchImageCondition(object)
+            && matchMovieCondition(object) && matchQuoteCondition(object)
+            && matchRepostCondition(object);
+}
+
+bool FollowersPostSelector::validate() const
+{
+    return true;
+}
+
+QStringList FollowersPostSelector::canContain() const
+{
+    return QStringList();
 }
 
 void FollowersPostSelector::setFollowers(const QList<UserInfo> &followers)

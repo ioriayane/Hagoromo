@@ -12,6 +12,7 @@ public:
     explicit OrPostSelector(QObject *parent = nullptr);
 
     virtual bool judge(const QJsonObject &object);
+    virtual bool validate() const;
 };
 
 }

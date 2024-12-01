@@ -1,0 +1,57 @@
+{
+    "list": {
+        "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/3kcj52ovctd2h",
+        "cid": "bafyreigoq76diabpln2v7tk23c5d4nyd2rlh3p6slkynaceubo2nfdzq6m",
+        "name": "My Accounts",
+        "purpose": "app.bsky.graph.defs#curatelist",
+        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreieunbmmvw6afrei2rgkcrkvmx6o7xl3fmstdcld3lysks5zf7bcre@jpeg",
+        "listItemCount": 4,
+        "indexedAt": "2024-04-16T12:33:37.936Z",
+        "labels": [],
+        "viewer": {
+            "muted": false
+        },
+        "creator": {
+            "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+            "handle": "ioriayane.relog.tech",
+            "displayName": "IoriAYANE",
+            "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy@jpeg",
+            "associated": {
+                "chat": {
+                    "allowIncoming": "following"
+                }
+            },
+            "viewer": {
+                "muted": false,
+                "blockedBy": false
+            },
+            "labels": [],
+            "createdAt": "2023-04-13T16:33:31.049Z",
+            "description": "Blueskyクライアントの羽衣を作ってます\nhttps://hagoromo.relog.tech/ja/\nepubを作るソフトのLeMEを作ってます。\nhttps://leme.style\nX:@ioriayane\nアイコンは X:@keikawagutiさん",
+            "indexedAt": "2024-09-28T08:03:04.941Z"
+        },
+        "description": "ioriayane series..."
+    },
+    "items": [
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.listitem/3kjx6yjg4ml23",
+            "subject": {
+                "did": "did:plc:l4fsx4ujos7uw7n4ijq2ulgs_list",
+                "handle": "ioriayane.bsky.social_list",
+                "associated": {
+                    "chat": {
+                        "allowIncoming": "following"
+                    }
+                },
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false
+                },
+                "labels": [],
+                "createdAt": "2023-05-09T10:03:30.995Z",
+                "description": "@ioriayane.relog.tech のテスト用のサブアカウントです。\nhttps://github.com/ioriayane/Hagoromo/blob/main/README.md#%E6%A6%82%E8%A6%81",
+                "indexedAt": "2024-05-02T04:33:31.638Z"
+            }
+        }
+    ]
+}

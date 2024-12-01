@@ -106,9 +106,10 @@ void FirehoseReceiver::start()
 #ifdef USE_JETSTREAM
     ComAtprotoSyncSubscribeReposEx::SubScribeMode mode =
             ComAtprotoSyncSubscribeReposEx::SubScribeMode::JetStream;
-    QUrl url(path
-             + "/subscribe?wantedCollections=app.bsky.feed.post&wantedCollections=app.bsky.feed."
-               "repost&wantedCollections=app.bsky.graph.follow");
+    QUrl url(path + "/subscribe?wantedCollections=app.bsky.feed.post"
+             + "&wantedCollections=app.bsky.feed.repost"
+             + "&wantedCollections=app.bsky.graph.follow"
+             + "&wantedCollections=app.bsky.graph.listitem");
 #else
     ComAtprotoSyncSubscribeReposEx::SubScribeMode mode =
             ComAtprotoSyncSubscribeReposEx::SubScribeMode::Firehose;
@@ -145,7 +146,7 @@ void FirehoseReceiver::removeSelector(QObject *parent)
         auto s = m_selectorHash[parent];
         m_selectorHash.remove(parent);
         if (s) {
-            qDebug().quote() << "removeSelector" << s << s->name();
+            qDebug().quote() << "removeSelector" << s << s->type();
             s->deleteLater();
         }
         qDebug().quote() << "remain count" << m_selectorHash.count();

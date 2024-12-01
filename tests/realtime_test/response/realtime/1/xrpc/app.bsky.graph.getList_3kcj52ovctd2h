@@ -1,0 +1,84 @@
+{
+    "list": {
+        "uri": "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.graph.list/3kcj52ovctd2h",
+        "cid": "bafyreigoq76diabpln2v7tk23c5d4nyd2rlh3p6slkynaceubo2nfdzq6m",
+        "name": "My Accounts",
+        "purpose": "app.bsky.graph.defs#curatelist",
+        "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreieunbmmvw6afrei2rgkcrkvmx6o7xl3fmstdcld3lysks5zf7bcre@jpeg",
+        "listItemCount": 4,
+        "indexedAt": "2024-04-16T12:33:37.936Z",
+        "labels": [],
+        "viewer": {
+            "muted": false
+        },
+        "creator": {
+            "did": "did:plc:mqxsuw5b5rhpwo4lw6iwlid5",
+            "handle": "ioriayane.relog.tech",
+            "displayName": "IoriAYANE",
+            "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy@jpeg",
+            "associated": {
+                "chat": {
+                    "allowIncoming": "following"
+                }
+            },
+            "viewer": {
+                "muted": false,
+                "blockedBy": false
+            },
+            "labels": [],
+            "createdAt": "2023-04-13T16:33:31.049Z",
+            "description": "Blueskyクライアントの羽衣を作ってます",
+            "indexedAt": "2024-09-28T08:03:04.941Z"
+        },
+        "description": "ioriayane series..."
+    },
+    "items": [
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.listitem/3kla5ayzr2c2l",
+            "subject": {
+                "did": "did:plc:ipj5qejfoqu6eukvt72uhyit_list",
+                "handle": "ioriayane.relog.tech_list",
+                "displayName": "IoriAYANE",
+                "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy@jpeg",
+                "associated": {
+                    "chat": {
+                        "allowIncoming": "following"
+                    }
+                },
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false
+                },
+                "labels": [],
+                "createdAt": "2023-04-13T16:33:31.049Z",
+                "description": "Blueskyクライアントの羽衣を作ってます",
+                "indexedAt": "2024-09-28T08:03:04.941Z"
+            }
+        },
+        {
+            "uri": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.listitem/3kjx74oi4ii2w",
+            "subject": {
+                "did": "did:plc:73l5atmh7p3fn3xigbp6ao5x_list",
+                "handle": "hagoromo.relog.tech_list",
+                "displayName": "羽衣 -Hagoromo-",
+                "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:73l5atmh7p3fn3xigbp6ao5x/bafkreif42yycinokltjrfizxgvyyw4z63a264jc4ws723pauxtc7vqo7la@jpeg",
+                "associated": {
+                    "chat": {
+                        "allowIncoming": "none"
+                    }
+                },
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false,
+                    "following": "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.graph.follow/3jymcihm43f2u",
+                    "followedBy": "at://did:plc:73l5atmh7p3fn3xigbp6ao5x/app.bsky.graph.follow/3jymch3bdnf2q"
+                },
+                "labels": [],
+                "createdAt": "2023-06-20T16:13:34.464Z",
+                "description": "マルチカラム対応のBlueskyクライアントです。",
+                "indexedAt": "2024-01-30T16:09:51.453Z"
+            }
+        }
+    ],
+    "cursor": "3kjx74oi4ii2w"
+}

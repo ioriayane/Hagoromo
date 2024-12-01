@@ -156,6 +156,15 @@ ApplicationWindow {
                                      addColumnDialog.reject()
                                  }
                              }
+        onOpenRealtimeFeedEditor: (account_uuid, display_name, condition) => {
+                                      console.log("onOpenRealtimeFeedEditor:" + account_uuid
+                                                  + ", display_name:" + display_name
+                                                  + ", condition:" + condition)
+                                      if(realtimeFeedEditorDialog.account.set(accountListModel, account_uuid)){
+                                          realtimeFeedEditorDialog.setupAndOpen(display_name, condition)
+                                      }
+                                  }
+
         onErrorOccured: (account_uuid, code, message) => appWindow.errorHandler(account_uuid, code, message)
     }
 
@@ -446,6 +455,10 @@ ApplicationWindow {
                                        }
                                    }
         onHoveredLinkChanged: hoveredLinkFrame.text = hoveredLink
+    }
+    RealtimeFeedEditorDialog {
+        id: realtimeFeedEditorDialog
+        onAccepted: addColumnDialog.reloadRealtimeFeedRules()
     }
 
     MessageDialog {
