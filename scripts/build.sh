@@ -7,6 +7,20 @@ make_dir(){
     mkdir $1
 }
 
+build_qt_http_server(){
+    pushd $(pwd)
+
+    cd "3rdparty"
+    make_dir "build-qthttpserver"
+    cd "build-qthttpserver"
+
+    ${QT_BIN_FOLDER}/qmake CONFIG+=debug_and_release ../qthttpserver/qthttpserver.pro
+
+    make && make install
+
+    popd
+}
+
 build_openssl(){
     pushd $(pwd)
 
@@ -145,8 +159,9 @@ fi
 
 VERSION_NO=$(cat app/main.cpp | grep "app.setApplicationVersion" | grep -oE "[0-9]+.[0-9]+.[0-9]+")
 
-build_openssl
-build_zlib
-build_hagoromo
-deploy_hagoromo
+build_qt_http_server
+# build_openssl
+# build_zlib
+# build_hagoromo
+# deploy_hagoromo
 # update_web
