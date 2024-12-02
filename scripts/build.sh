@@ -160,8 +160,8 @@ fi
 VERSION_NO=$(cat app/main.cpp | grep "app.setApplicationVersion" | grep -oE "[0-9]+.[0-9]+.[0-9]+")
 
 build_qt_http_server
-# build_openssl
-# build_zlib
-# build_hagoromo
-# deploy_hagoromo
+build_openssl
+build_zlib
+build_hagoromo
+deploy_hagoromo
 # update_web
