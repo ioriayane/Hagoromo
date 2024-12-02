@@ -202,7 +202,6 @@ Dialog {
                         topPadding: parent.adjustedPadding
                         bottomPadding: parent.adjustedPadding
                         font.pointSize: AdjustedValues.f10
-                        ButtonGroup.group: embedButtonGroup
                         text: qsTr("Image")
                         onCheckedChanged: {
                             if(checked){
@@ -238,7 +237,6 @@ Dialog {
                         topPadding: parent.adjustedPadding
                         bottomPadding: parent.adjustedPadding
                         font.pointSize: AdjustedValues.f10
-                        ButtonGroup.group: embedButtonGroup
                         text: qsTr("Video")
                         onCheckedChanged: {
                             if(checked){
