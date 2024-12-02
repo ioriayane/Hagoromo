@@ -645,8 +645,16 @@ QVariant AtpAbstractListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDef
             return !post.embed_AppBskyEmbedRecord_View->record_ViewRecord
                             .embeds_AppBskyEmbedVideo_View.isEmpty();
         } else if (has_with_image) {
-            return (post.embed_AppBskyEmbedRecordWithMedia_View.media_type
-                    == AppBskyEmbedRecordWithMedia::ViewMediaType::media_AppBskyEmbedVideo_View);
+            if (post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
+                        .embeds_AppBskyEmbedRecordWithMedia_View.isEmpty()) {
+                return !post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
+                                .embeds_AppBskyEmbedVideo_View.isEmpty();
+            } else {
+                return post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
+                               .embeds_AppBskyEmbedRecordWithMedia_View.first()
+                               .media_type
+                        == AppBskyEmbedRecordWithMedia::ViewMediaType::media_AppBskyEmbedVideo_View;
+            }
         } else {
             return false;
         }
@@ -658,8 +666,19 @@ QVariant AtpAbstractListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDef
                     .embeds_AppBskyEmbedVideo_View.first()
                     .playlist;
         } else if (has_with_image) {
-            return post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedVideo_View
-                    .playlist;
+            if (!post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
+                         .embeds_AppBskyEmbedVideo_View.isEmpty()) {
+                return post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
+                        .embeds_AppBskyEmbedVideo_View.first()
+                        .playlist;
+            } else if (!post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
+                                .embeds_AppBskyEmbedRecordWithMedia_View.isEmpty()) {
+                return post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
+                        .embeds_AppBskyEmbedRecordWithMedia_View.first()
+                        .media_AppBskyEmbedVideo_View.playlist;
+            } else {
+                return QString();
+            }
         } else {
             return QString();
         }
@@ -672,9 +691,19 @@ QVariant AtpAbstractListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDef
                             .embeds_AppBskyEmbedVideo_View.first()
                             .thumbnail);
         } else if (has_with_image) {
-            return AtProtocolType::LexiconsTypeUnknown::convertVideoThumb(
-                    post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedVideo_View
-                            .thumbnail);
+            if (!post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
+                         .embeds_AppBskyEmbedVideo_View.isEmpty()) {
+                return post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
+                        .embeds_AppBskyEmbedVideo_View.first()
+                        .thumbnail;
+            } else if (!post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
+                                .embeds_AppBskyEmbedRecordWithMedia_View.isEmpty()) {
+                return post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
+                        .embeds_AppBskyEmbedRecordWithMedia_View.first()
+                        .media_AppBskyEmbedVideo_View.thumbnail;
+            } else {
+                return QString();
+            }
         } else {
             return QString();
         }
@@ -686,7 +715,19 @@ QVariant AtpAbstractListModel::getQuoteItem(const AtProtocolType::AppBskyFeedDef
                     .embeds_AppBskyEmbedVideo_View.first()
                     .alt;
         } else if (has_with_image) {
-            return post.embed_AppBskyEmbedRecordWithMedia_View.media_AppBskyEmbedVideo_View.alt;
+            if (!post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
+                         .embeds_AppBskyEmbedVideo_View.isEmpty()) {
+                return post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
+                        .embeds_AppBskyEmbedVideo_View.first()
+                        .alt;
+            } else if (!post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
+                                .embeds_AppBskyEmbedRecordWithMedia_View.isEmpty()) {
+                return post.embed_AppBskyEmbedRecordWithMedia_View.record->record_ViewRecord
+                        .embeds_AppBskyEmbedRecordWithMedia_View.first()
+                        .media_AppBskyEmbedVideo_View.alt;
+            } else {
+                return QString();
+            }
         } else {
             return QString();
         }
@@ -700,8 +741,13 @@ AtpAbstractListModel::getEmbedVideoItem(const AtProtocolType::AppBskyFeedDefs::P
                                         const EmbedVideoRoles role) const
 {
     if (role == HasVideoRole) {
-        return (post.embed_type
-                == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedVideo_View);
+        return (post.embed_type == AppBskyFeedDefs::PostViewEmbedType::embed_AppBskyEmbedVideo_View)
+                || (post.embed_type
+                            == AppBskyFeedDefs::PostViewEmbedType::
+                                    embed_AppBskyEmbedRecordWithMedia_View
+                    && post.embed_AppBskyEmbedRecordWithMedia_View.media_type
+                            == AppBskyEmbedRecordWithMedia::ViewMediaType::
+                                    media_AppBskyEmbedVideo_View);
     } else if (role == VideoPlaylistRole) {
         return LexiconsTypeUnknown::copyVideoFromPostView(
                 post, LexiconsTypeUnknown::CopyImageType::FullSize);
