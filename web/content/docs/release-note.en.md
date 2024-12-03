@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+### v0.41.0 - 2024/12/3
+
 - Add
   - Add function for creating realtime feeds
 - Fix
