@@ -8,6 +8,15 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+### v0.41.0 - 2024/12/3
+
+- Add
+  - Add function for creating realtime feeds
+- Fix
+  - Fix a case where the link card failed to send
+  - Fix the display of video thumbnails in the quote post
+  - Fix a bug that prevented posts with videos that had been given moderation labels from being hidden
+
 ### v0.40.0 - 2024/11/1
 
 - Add
@@ -22,7 +31,7 @@ description: This is a multi-column Bluesky client.
 
 - Add
   - Add labels set for the account to the post thread
-  - Added a function to copy hashtags
+  - Add a function to copy hashtags
 - Update
   - Change the display format of the profile label
   - Reduces the amount of data transmitted in real-time feeds

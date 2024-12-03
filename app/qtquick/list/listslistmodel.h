@@ -36,6 +36,7 @@ public:
         SearchStatusRole,
         ListItemUriRole, // searchTargetで登録しているか確認したユーザーのListItemのレコードURI
         CheckedRole,
+        TextRole, // RealtimeFeedEditorのコンボボックス用
     };
     Q_ENUM(ListsListModelRoles);
     enum VisibilityType {

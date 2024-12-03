@@ -58,6 +58,7 @@
 #include "qtquick/blog/blogentrylistmodel.h"
 #include "qtquick/controls/calendartablemodel.h"
 #include "qtquick/realtime/realtimefeedlistmodel.h"
+#include "qtquick/realtime/editselectorlistmodel.h"
 
 #include "tools/encryption.h"
 #include "tools/translatorchanger.h"
@@ -91,7 +92,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName(QStringLiteral("relog"));
     app.setOrganizationDomain(QStringLiteral("hagoromo.relog.tech"));
     app.setApplicationName(QStringLiteral("Hagoromo"));
-    app.setApplicationVersion(QStringLiteral("0.40.0"));
+    app.setApplicationVersion(QStringLiteral("0.41.0"));
 #ifndef HAGOROMO_RELEASE_BUILD
     app.setApplicationVersion(app.applicationVersion() + "d");
 #endif
@@ -187,6 +188,8 @@ int main(int argc, char *argv[])
                                         "BlogEntryListModel");
     qmlRegisterType<RealtimeFeedListModel>("tech.relog.hagoromo.realtime.realtimefeedlistmodel", 1,
                                            0, "RealtimeFeedListModel");
+    qmlRegisterType<EditSelectorListModel>("tech.relog.hagoromo.realtime.editselectorlistmodel", 1,
+                                           0, "EditSelectorListModel");
 
     qmlRegisterType<CalendarTableModel>("tech.relog.hagoromo.controls.calendartablemodel", 1, 0,
                                         "CalendarTableModel");

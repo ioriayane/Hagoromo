@@ -195,7 +195,10 @@ bool OpenGraphProtocol::parse(const QByteArray &data, const QString &src_uri)
     QDomElement root = doc.documentElement();
     QDomElement head = root.firstChildElement("head");
 
-    setUri(src_uri);
+    {
+        QUrl uri(src_uri);
+        setUri(uri.toString(QUrl::FullyEncoded));
+    }
 
     QString temp_title;
     QString temp_description;
@@ -210,9 +213,10 @@ bool OpenGraphProtocol::parse(const QByteArray &data, const QString &src_uri)
             if (property == "og:url") {
                 if (content.startsWith("/")) {
                     QUrl uri(src_uri);
-                    setUri(uri.toString(QUrl::RemovePath) + content);
+                    setUri(uri.toString(QUrl::FullyEncoded | QUrl::RemovePath) + content);
                 } else {
-                    setUri(content);
+                    QUrl uri(content);
+                    setUri(uri.toString(QUrl::FullyEncoded));
                 }
             } else if (property == "og:title") {
                 setTitle(content);

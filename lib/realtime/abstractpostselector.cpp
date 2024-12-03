@@ -6,6 +6,7 @@
 #include "followingpostselector.h"
 #include "followerspostselector.h"
 #include "mepostselector.h"
+#include "listpostsselector.h"
 
 #include <QJsonObject>
 #include <QJsonArray>
@@ -14,13 +15,24 @@
 namespace RealtimeFeed {
 
 AbstractPostSelector::AbstractPostSelector(QObject *parent)
-    : QObject { parent }, m_isArray(false), m_parentIsArray(true), m_ready(false)
+    : QObject { parent },
+      m_isArray(false),
+      m_parentIsArray(true),
+      m_ready(false),
+      m_hasImage(false),
+      m_imageCount(0),
+      m_hasMovie(false),
+      m_movieCount(0),
+      m_hasQuote(false),
+      m_quoteCondition(0),
+      m_isRepost(false),
+      m_repostCondition(0)
 {
 }
 
 AbstractPostSelector::~AbstractPostSelector()
 {
-    qDebug().noquote() << this << "~AbstractPostSelector()" << name() << did();
+    qDebug().noquote() << this << "~AbstractPostSelector()" << type() << did();
 }
 
 QString AbstractPostSelector::toString()
@@ -28,8 +40,36 @@ QString AbstractPostSelector::toString()
 
     QString ret;
     ret += parentIsArray() ? "{" : "";
-    ret += QString("\"%1\":").arg(name());
+    ret += QString("\"%1\":").arg(type());
     ret += isArray() ? "[" : "{";
+    if (!isArray()) {
+        QString temp;
+        if (!listUri().isEmpty()) {
+            temp += QString("\"uri\":\"%1\"").arg(listUri());
+            temp += QString(",\"name\":\"%1\"").arg(listName());
+        }
+        if (hasImage()) {
+            if (!temp.isEmpty())
+                temp += ",";
+            temp += QString("\"image\":{\"has\":true,\"count\":%1}").arg(imageCount());
+        }
+        if (hasMovie()) {
+            if (!temp.isEmpty())
+                temp += ",";
+            temp += QString("\"movie\":{\"has\":true,\"count\":%1}").arg(movieCount());
+        }
+        if (hasQuote()) {
+            if (!temp.isEmpty())
+                temp += ",";
+            temp += QString("\"quote\":{\"has\":true,\"condition\":%1}").arg(quoteCondition());
+        }
+        if (isRepost()) {
+            if (!temp.isEmpty())
+                temp += ",";
+            temp += QString("\"repost\":{\"is\":true,\"condition\":%1}").arg(repostCondition());
+        }
+        ret += temp;
+    }
     int i = 0;
     for (auto child : children()) {
         if (i > 0) {
@@ -42,6 +82,16 @@ QString AbstractPostSelector::toString()
     ret += parentIsArray() ? "}" : "";
 
     return ret;
+}
+
+bool AbstractPostSelector::validate() const
+{
+    for (auto child : children()) {
+        if (!child->validate()) {
+            return false;
+        }
+    }
+    return true;
 }
 
 AbstractPostSelector *AbstractPostSelector::create(const QJsonObject &selector, QObject *parent)
@@ -65,13 +115,14 @@ AbstractPostSelector *AbstractPostSelector::create(const QJsonObject &selector, 
         key = "following";
         current = new FollowingPostSelector(parent);
     } else if (selector.contains("followers")) {
-        key = "follower";
+        key = "followers";
         current = new FollowersPostSelector(parent);
     } else if (selector.contains("me")) {
         key = "me";
         current = new MePostSelector(parent);
-    } else if (selector.contains("lists")) {
-        key = "lists";
+    } else if (selector.contains("list")) {
+        key = "list";
+        current = new ListPostsSelector(parent);
     }
 
     if (current == nullptr)
@@ -90,6 +141,22 @@ AbstractPostSelector *AbstractPostSelector::create(const QJsonObject &selector, 
         if (child != nullptr) {
             current->appendChildSelector(child);
         }
+    } else {
+        QJsonObject child_selector = selector.value(key).toObject();
+        if (key == "list") {
+            current->setListUri(child_selector.value("uri").toString());
+            current->setListName(child_selector.value("name").toString());
+        }
+        current->setHasImage(child_selector.value("image").toObject().value("has").toBool(false));
+        current->setImageCount(child_selector.value("image").toObject().value("count").toInt(0));
+        current->setHasMovie(child_selector.value("movie").toObject().value("has").toBool(false));
+        current->setMovieCount(child_selector.value("movie").toObject().value("count").toInt(0));
+        current->setHasQuote(child_selector.value("quote").toObject().value("has").toBool(false));
+        current->setQuoteCondition(
+                child_selector.value("quote").toObject().value("condition").toInt(0));
+        current->setIsRepost(child_selector.value("repost").toObject().value("is").toBool(false));
+        current->setRepostCondition(
+                child_selector.value("repost").toObject().value("condition").toInt(0));
     }
     return current;
 }
@@ -100,8 +167,32 @@ void AbstractPostSelector::appendChildSelector(AbstractPostSelector *child)
         return;
     if (m_children.contains(child))
         return;
+    if (!canContain().contains(child->type()))
+        return;
     child->setParentIsArray(isArray());
     m_children.append(child);
+}
+
+QStringList AbstractPostSelector::canContain() const
+{
+    return QStringList() << "following"
+                         << "followers"
+                         << "list"
+                         << "me"
+                         << "and"
+                         << "or"
+                         << "not"
+                         << "xor";
+}
+
+bool AbstractPostSelector::has(const QString &type) const
+{
+    for (auto child : children()) {
+        if (child->type() == type) {
+            return true;
+        }
+    }
+    return false;
 }
 
 bool AbstractPostSelector::needFollowing() const
@@ -124,6 +215,16 @@ bool AbstractPostSelector::needFollowers() const
     return false;
 }
 
+bool AbstractPostSelector::needListMembers() const
+{
+    for (auto child : children()) {
+        if (child->needListMembers()) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void AbstractPostSelector::setFollowing(const QList<UserInfo> &following)
 {
     for (auto child : children()) {
@@ -136,6 +237,23 @@ void AbstractPostSelector::setFollowers(const QList<UserInfo> &followers)
     for (auto child : children()) {
         child->setFollowers(followers);
     }
+}
+
+void AbstractPostSelector::setListMembers(const QString &list_uri, const QList<UserInfo> &members)
+{
+    for (auto child : children()) {
+        child->setListMembers(list_uri, members);
+    }
+}
+
+QStringList AbstractPostSelector::getListUris() const
+{
+    QStringList uris;
+    for (auto child : children()) {
+        uris.append(child->getListUris());
+    }
+    uris.removeDuplicates();
+    return uris;
 }
 
 UserInfo AbstractPostSelector::getUser(const QString &did) const
@@ -227,6 +345,83 @@ QList<OperationInfo> AbstractPostSelector::getOperationInfos(const QJsonObject &
     return infos;
 }
 
+int AbstractPostSelector::getNodeCount() const
+{
+    int count = 1;
+    for (auto child : children()) {
+        count += child->getNodeCount();
+    }
+    return count;
+}
+
+AbstractPostSelector *AbstractPostSelector::itemAt(int &index)
+{
+    if (index < 0) {
+        return nullptr;
+    } else if (index == 0) {
+        return this;
+    }
+    index--;
+    for (auto child : children()) {
+        AbstractPostSelector *s = child->itemAt(index);
+        if (s != nullptr) {
+            return s;
+        }
+    }
+    return nullptr;
+}
+
+// 消せたら自分を返す（つまり消したやつの親）
+AbstractPostSelector *AbstractPostSelector::remove(AbstractPostSelector *s)
+{
+    AbstractPostSelector *ret = nullptr;
+    if (m_children.contains(s)) {
+        m_children.removeOne(s);
+        s->deleteLater();
+        ret = this;
+    } else {
+        for (auto child : children()) {
+            ret = child->remove(s);
+            if (ret != nullptr)
+                break;
+        }
+    }
+    return ret;
+}
+
+int AbstractPostSelector::index(AbstractPostSelector *s, int index) const
+{
+    if (s == this) {
+        return index;
+    }
+    index++;
+    for (auto child : children()) {
+        int i = child->index(s, index);
+        if (i >= 0) {
+            return i;
+        }
+        index += child->getNodeCount();
+    }
+    return -1;
+}
+
+int AbstractPostSelector::indentAt(int &index, int current) const
+{
+    if (index < 0) {
+        return -1;
+    } else if (index == 0) {
+        return current;
+    }
+    index--;
+    for (auto child : children()) {
+        int next = child->indentAt(index, current + 1);
+        if (next > -1) {
+            return next;
+        }
+    }
+    return -1;
+}
+
 const QList<AbstractPostSelector *> &AbstractPostSelector::children() const
 {
     return m_children;
@@ -252,6 +447,88 @@ bool AbstractPostSelector::isTarget(const QJsonObject &object) const
 bool AbstractPostSelector::isMy(const QJsonObject &object) const
 {
     return (!did().isEmpty() && getRepo(object) == did());
+}
+
+bool AbstractPostSelector::matchImageCondition(const QJsonObject &object) const
+{
+    if (!hasImage())
+        return true;
+
+    int count = 0;
+    for (const auto item : object.value("blocks").toArray()) {
+        const QJsonObject embed =
+                item.toObject().value("value").toObject().value("embed").toObject();
+        const QString type = embed.value("$type").toString();
+        if (type == "app.bsky.embed.images") {
+            count += embed.value("images").toArray().count();
+        } else if (type == "app.bsky.embed.recordWithMedia") {
+            const QJsonObject media = embed.value("media").toObject();
+            if (media.value("$type").toString() == "app.bsky.embed.images") {
+                count += media.value("images").toArray().count();
+            }
+        }
+    }
+    if (imageCount() < 0) {
+        return (count > 0);
+    } else {
+        return (count == imageCount());
+    }
+}
+
+bool AbstractPostSelector::matchMovieCondition(const QJsonObject &object) const
+{
+    if (!hasMovie())
+        return true;
+
+    int count = 0;
+    for (const auto item : object.value("blocks").toArray()) {
+        const QJsonObject embed =
+                item.toObject().value("value").toObject().value("embed").toObject();
+        const QString type = embed.value("$type").toString();
+        if (type == "app.bsky.embed.video") {
+            if (!embed.value("video").isNull()) {
+                count++;
+            }
+        } else if (type == "app.bsky.embed.recordWithMedia") {
+            const QJsonObject media = embed.value("media").toObject();
+            if (media.value("$type").toString() == "app.bsky.embed.video") {
+                if (!media.value("video").isNull()) {
+                    count++;
+                }
+            }
+        }
+    }
+
+    return (count == movieCount());
+}
+
+bool AbstractPostSelector::matchQuoteCondition(const QJsonObject &object) const
+{
+    if (!hasQuote())
+        return true;
+
+    bool has = false;
+    for (const auto item : object.value("blocks").toArray()) {
+        const QJsonObject embed =
+                item.toObject().value("value").toObject().value("embed").toObject();
+        const QString type = embed.value("$type").toString();
+        if (type == "app.bsky.embed.record" || type == "app.bsky.embed.recordWithMedia") {
+            has = true;
+            break;
+        }
+    }
+    return (quoteCondition() == 0) ? has : !has; // only : exclude
+}
+
+bool AbstractPostSelector::matchRepostCondition(const QJsonObject &object) const
+{
+    if (!isRepost())
+        return true;
+
+    QJsonObject op = getOperation(object, "app.bsky.feed.repost");
+    bool is = !op.isEmpty();
+
+    return (repostCondition() == 0) ? is : !is; // only : exclude
 }
 
 QString AbstractPostSelector::getRepo(const QJsonObject &object) const
@@ -292,6 +569,116 @@ QString AbstractPostSelector::extractRkey(const QString &path) const
     }
 }
 
+int AbstractPostSelector::repostCondition() const
+{
+    return m_repostCondition;
+}
+
+void AbstractPostSelector::setRepostCondition(int newRepostCondition)
+{
+    m_repostCondition = newRepostCondition;
+}
+
+bool AbstractPostSelector::isRepost() const
+{
+    return m_isRepost;
+}
+
+void AbstractPostSelector::setIsRepost(bool newIsRepost)
+{
+    m_isRepost = newIsRepost;
+}
+
+int AbstractPostSelector::quoteCondition() const
+{
+    return m_quoteCondition;
+}
+
+void AbstractPostSelector::setQuoteCondition(int newQuoteCondition)
+{
+    m_quoteCondition = newQuoteCondition;
+}
+
+int AbstractPostSelector::movieCount() const
+{
+    return m_movieCount;
+}
+
+void AbstractPostSelector::setMovieCount(int newMovieCount)
+{
+    m_movieCount = newMovieCount;
+}
+
+QString AbstractPostSelector::listName() const
+{
+    return m_listName;
+}
+
+void AbstractPostSelector::setListName(const QString &newListName)
+{
+    m_listName = newListName;
+}
+
+QString AbstractPostSelector::listUri() const
+{
+    return m_listUri;
+}
+
+void AbstractPostSelector::setListUri(const QString &newListUri)
+{
+    m_listUri = newListUri;
+}
+
+bool AbstractPostSelector::hasImage() const
+{
+    return m_hasImage;
+}
+
+void AbstractPostSelector::setHasImage(bool newHasImage)
+{
+    m_hasImage = newHasImage;
+}
+
+bool AbstractPostSelector::hasQuote() const
+{
+    return m_hasQuote;
+}
+
+void AbstractPostSelector::setHasQuote(bool newHasQuote)
+{
+    m_hasQuote = newHasQuote;
+}
+
+bool AbstractPostSelector::hasMovie() const
+{
+    return m_hasMovie;
+}
+
+void AbstractPostSelector::setHasMovie(bool newHasMovie)
+{
+    m_hasMovie = newHasMovie;
+}
+
+int AbstractPostSelector::imageCount() const
+{
+    return m_imageCount;
+}
+
+void AbstractPostSelector::setImageCount(int newImageCount)
+{
+    m_imageCount = newImageCount;
+}
+
+QString AbstractPostSelector::displayType() const
+{
+    return m_displayType;
+}
+
+void AbstractPostSelector::setDisplayType(const QString &newDisplayType)
+{
+    m_displayType = newDisplayType;
+}
+
 bool AbstractPostSelector::ready() const
 {
     return m_ready;
@@ -325,14 +712,14 @@ void AbstractPostSelector::setIsArray(bool newIsArray)
     m_isArray = newIsArray;
 }
 
-QString AbstractPostSelector::name() const
+QString AbstractPostSelector::type() const
 {
-    return m_name;
+    return m_type;
 }
 
-void AbstractPostSelector::setName(const QString &newName)
+void AbstractPostSelector::setType(const QString &newType)
 {
-    m_name = newName;
+    m_type = newType;
 }
 
 QString AbstractPostSelector::did() const

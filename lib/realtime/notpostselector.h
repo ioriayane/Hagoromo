@@ -12,6 +12,8 @@ public:
     explicit NotPostSelector(QObject *parent = nullptr);
 
     virtual bool judge(const QJsonObject &object);
+    virtual QStringList canContain() const;
+    virtual bool validate() const;
 };
 
 }

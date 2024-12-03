@@ -283,4 +283,36 @@
         <translation type="vanished">&apos;%1&apos;に登録しているアカウント数</translation>
     </message>
 </context>
+<context>
+    <name>RealtimeFeed::FollowersPostSelector</name>
+    <message>
+        <location filename="../realtime/followerspostselector.cpp" line="8"/>
+        <source>Followers</source>
+        <translation>フォロワー</translation>
+    </message>
+</context>
+<context>
+    <name>RealtimeFeed::FollowingPostSelector</name>
+    <message>
+        <location filename="../realtime/followingpostselector.cpp" line="8"/>
+        <source>Following</source>
+        <translation>フォロー</translation>
+    </message>
+</context>
+<context>
+    <name>RealtimeFeed::ListPostsSelector</name>
+    <message>
+        <location filename="../realtime/listpostsselector.cpp" line="8"/>
+        <source>List</source>
+        <translation>リスト</translation>
+    </message>
+</context>
+<context>
+    <name>RealtimeFeed::MePostSelector</name>
+    <message>
+        <location filename="../realtime/mepostselector.cpp" line="8"/>
+        <source>Me</source>
+        <translation>自分</translation>
+    </message>
+</context>
 </TS>

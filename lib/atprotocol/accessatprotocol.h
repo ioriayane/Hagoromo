@@ -16,6 +16,12 @@ enum class AccountStatus : int {
     Authorized,
 };
 
+struct RealtimeFeedRule
+{
+    QString name;
+    QString condition;
+};
+
 struct AccountData
 {
     QString uuid; // 主にUIでカラムとの紐付け確認で使う
@@ -41,6 +47,7 @@ struct AccountData
     QString thread_gate_type; // everybody, nobody, choice
     QStringList thread_gate_options; // mentioned, followed, at://uri
     bool post_gate_quote_enabled = true;
+    QList<RealtimeFeedRule> realtime_feed_rules; //リアルタイムフィードのルールのJSON
     QStringList labeler_dids; // ラベラーのdid
 
     AccountStatus status = AccountStatus::Unknown;

@@ -4,7 +4,8 @@ namespace RealtimeFeed {
 
 XorPostSelector::XorPostSelector(QObject *parent) : AbstractPostSelector { parent }
 {
-    setName("xor");
+    setType("xor");
+    setDisplayType("XOR");
     setIsArray(true);
 }
 
@@ -21,4 +22,11 @@ bool XorPostSelector::judge(const QJsonObject &object)
     return (count % 2 == 1);
 }
 
+bool XorPostSelector::validate() const
+{
+    if (!AbstractPostSelector::validate()) {
+        return false;
+    }
+    return !children().isEmpty();
+}
 }

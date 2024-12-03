@@ -20,7 +20,8 @@
 - [OpenSSL 1.1.1q](http://www.openssl.org/)
 - [cpp-httplib](https://github.com/yhirose/cpp-httplib)
 - [zlib](https://github.com/madler/zlib)
-- [Qt HTTP Server](https://code.qt.io/cgit/qt-extensions/qthttpserver.git/)(for unit test only)
+- [Qt HTTP Server](https://code.qt.io/cgit/qt-extensions/qthttpserver.git/)
+- [Hugo 0.92.2](https://gohugo.io/)
 
 ## ダウンロード
 
@@ -53,6 +54,7 @@ REM checkout repo
 >git clone git@github.com:ioriayane/Hagoromo.git
 >cd Hagoromo
 >git submodule update -i
+>git submodule update -i .\3rdparty\qthttpserver\
 REM copy and edit encryption seed
 >copy lib\tools\encryption_seed_template.h lib\tools\encryption_seed.h
 REM build Hagoromo
@@ -70,6 +72,7 @@ OpenSSL 1.1.1q 以上を使用します。build.shでビルドします。
 $ git clone git@github.com:ioriayane/Hagoromo.git
 $ cd Hagoromo
 $ git submodule update -i
+$ git submodule update -i --recursive 3rdparty/qthttpserver/
 # setup dependent modules
 $ sudo apt-get install zlib1g-dev
 # copy and edit encryption seed
@@ -90,6 +93,7 @@ OpenSSL 1.1.1q 以上を使用します。build.shでビルドします。
 $ git clone git@github.com:ioriayane/Hagoromo.git
 $ cd Hagoromo
 $ git submodule update -i
+$ git submodule update -i --recursive 3rdparty/qthttpserver/
 # copy and edit encryption seed
 $ cp lib/tools/encryption_seed_template.h lib/tools/encryption_seed.h
 $ vi lib/tools/encryption_seed.h
@@ -172,7 +176,8 @@ This is a multi-column [Bluesky](https://blueskyweb.xyz/) client.
 - [OpenSSL 1.1.1q](http://www.openssl.org/)
 - [cpp-httplib](https://github.com/yhirose/cpp-httplib)
 - [zlib](https://github.com/madler/zlib)
-- [Qt HTTP Server](https://code.qt.io/cgit/qt-extensions/qthttpserver.git/)(for unit test only)
+- [Qt HTTP Server](https://code.qt.io/cgit/qt-extensions/qthttpserver.git/)
+- [Hugo 0.92.2](https://gohugo.io/)
 
 ## Download
 
@@ -207,6 +212,7 @@ REM checkout repo
 >git clone git@github.com:ioriayane/Hagoromo.git
 >cd Hangoromo
 >git submodule update -i
+>git submodule update -i .\3rdparty\qthttpserver\
 REM copy and edit encryption seed
 >copy lib\tools\encryption_seed_template.h lib\tools\encryption_seed.h
 REM build Hagoromo
@@ -224,6 +230,7 @@ OpenSSL 1.1.1q or higher is required. It is built in build.sh.
 $ git clone git@github.com:ioriayane/Hagoromo.git
 $ cd Hagoromo
 $ git submodule update -i
+$ git submodule update -i --recursive 3rdparty/qthttpserver/
 # setup dependent modules
 $ sudo apt-get install zlib1g-dev
 # copy and edit encryption seed
@@ -244,6 +251,7 @@ OpenSSL 1.1.1q or higher is required. It is built in build.sh.
 $ git clone git@github.com:ioriayane/Hagoromo.git
 $ cd Hagoromo
 $ git submodule update -i
+$ git submodule update -i --recursive 3rdparty/qthttpserver/
 # copy and edit encryption seed
 $ cp lib/tools/encryption_seed_template.h lib/tools/encryption_seed.h
 $ vi lib/tools/encryption_seed.h

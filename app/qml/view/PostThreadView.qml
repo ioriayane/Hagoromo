@@ -173,7 +173,7 @@ ColumnLayout {
                 quoteRecordFrame.quoteRecordEmbedVideoFrame.visible: model.quoteRecordHasVideo
                 quoteRecordFrame.quoteRecordEmbedVideoFrame.thumbImageSource: model.quoteRecordVideoThumb
                 quoteRecordFrame.quoteRecordEmbedVideoFrame.onClicked: Qt.openUrlExternally(rootListView.model.getItemOfficialUrl(model.index))
-                embedVideoFrame.visible: model.hasVideo
+                embedVideoFrame.visible: contentMediaFilterFrame.showContent && model.hasVideo
                 embedVideoFrame.onClicked: Qt.openUrlExternally(rootListView.model.getItemOfficialUrl(model.index))
                 embedVideoFrame.thumbImageSource: model.videoThumbUri
 

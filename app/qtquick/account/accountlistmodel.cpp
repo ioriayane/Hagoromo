@@ -42,6 +42,7 @@ AccountListModel::AccountListModel(QObject *parent) : QAbstractListModel { paren
     m_roleTo[ThreadGateOptionsRole] = AccountManager::AccountManagerRoles::ThreadGateOptionsRole;
     m_roleTo[PostGateQuoteEnabledRole] =
             AccountManager::AccountManagerRoles::PostGateQuoteEnabledRole;
+    m_roleTo[RealtimeFeedRulesRole] = AccountManager::AccountManagerRoles::RealtimeFeedRulesRole;
     m_roleTo[StatusRole] = AccountManager::AccountManagerRoles::StatusRole;
     m_roleTo[AuthorizedRole] = AccountManager::AccountManagerRoles::AuthorizedRole;
 

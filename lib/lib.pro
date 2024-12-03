@@ -138,6 +138,7 @@ SOURCES += \
     $$PWD/tools/listitemscache.cpp \
     $$PWD/tools/opengraphprotocol.cpp \
     $$PWD/tools/pinnedpostcache.cpp \
+    realtime/listpostsselector.cpp \
     tools/tid.cpp
 
 HEADERS += \
@@ -261,6 +262,7 @@ HEADERS += \
     $$PWD/tools/pinnedpostcache.h \
     $$PWD/tools/qstringex.h \
     common.h \
+    realtime/listpostsselector.h \
     tools/tid.h
 
 RESOURCES += \
