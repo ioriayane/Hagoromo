@@ -117,3 +117,28 @@ weight: 30
 作成したリアルタイムフィードの編集または削除は、右クリックで表示されるメニューから実施します。
 
 {{< figure src="../images/realtime-edit-delete.ja.png" width="80%" >}}
+
+### 注意事項
+
+- 編集結果は既にカラムに追加している分には反映されません。
+- 名称を変更して保存すると新規扱いになります。
+
+## フィードの条件の例
+
+プリセットのフィードを参考に紹介します。
+
+**フォロー**
+
+{{< figure src="../images/realtime-example-following.ja.png" width="20%" >}}
+
+**フォロワー**
+
+{{< figure src="../images/realtime-example-followers.ja.png" width="20%" >}}
+
+**相互フォロー**
+
+{{< figure src="../images/realtime-example-mutual-follow.ja.png" width="20%" >}}
+
+**フォローとフォロワー**
+
+{{< figure src="../images/realtime-example-following-and-followers.ja.png" width="20%" >}}

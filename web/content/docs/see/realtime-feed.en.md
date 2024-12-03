@@ -117,3 +117,28 @@ The following additional conditions can be set as detailed settings for account 
 To edit or delete the realtime feed you have created, use the menu that appears when you right-click.
 
 {{< figure src="../images/realtime-edit-delete.en.png" width="80%" >}}
+
+### Notes
+
+- The editing results will not be reflected in the columns that have already been added.
+- If you save the file with a different name, it will be treated as a new file.
+
+## Example of feed conditions
+
+The following is an introduction using the preset feed.
+
+**Following**
+
+{{< figure src="../images/realtime-example-following.en.png" width="20%" >}}
+
+**Followers**
+
+{{< figure src="../images/realtime-example-followers.en.png" width="20%" >}}
+
+**Mutual following**
+
+{{< figure src="../images/realtime-example-mutual-follow.en.png" width="20%" >}}
+
+**Following and Followers**
+
+{{< figure src="../images/realtime-example-following-and-followers.en.png" width="20%" >}}
