@@ -1,7 +1,7 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
-import QtQuick.Layouts 1.15
-import QtQuick.Controls.Material 2.15
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import QtQuick.Controls.Material
 
 import tech.relog.hagoromo.timelinelistmodel 1.0
 import tech.relog.hagoromo.systemtool 1.0
@@ -51,6 +51,7 @@ ScrollView {
         anchors.rightMargin: parent.ScrollBar.vertical.width
         spacing: 5
         maximumFlickVelocity: AdjustedValues.maximumFlickVelocity
+        synchronousDrag: true
 
         onAtYBeginningChanged: scrollPositionChanged(atYBeginning)
         onMovementStarted: scrollPositionChanged(atYBeginning)
