@@ -27,10 +27,20 @@ void SimpleHttpServer::clearTimeout()
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
 #else
 void SimpleHttpServer::missingHandler(const QHttpServerRequest &request,
-                                      QHttpServerResponder &&responder)
+                                      QHttpServerResponder &responder)
 {
     Q_UNUSED(request)
     Q_UNUSED(responder)
+}
+
+quint16 SimpleHttpServer::listen(const QHostAddress &address, quint16 port)
+{
+    auto tcpserver = new QTcpServer(this);
+    if (!tcpserver->listen(address, port) || !bind(tcpserver)) {
+        tcpserver->deleteLater();
+        return 0;
+    }
+    return tcpserver->serverPort();
 }
 #endif
 
