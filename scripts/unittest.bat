@@ -18,8 +18,8 @@ REM --- main -----------------------------
 :MAIN
 
 set JOM_BIN_FOLDER=%QT_BIN_FOLDER%\..\..\..\Tools\QtCreator\bin\jom
-set VS_SETUP_BAT="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
-set VS_REDIST_FOLDER="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC"
+set VS_SETUP_BAT="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+set VS_REDIST_FOLDER="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC"
 set BUILD_FOLDER=build-hagoromo
 
 
