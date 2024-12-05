@@ -4,7 +4,7 @@ set CWD=%CD%
 
 REM --- main -----------------------------
 
-set VS_SETUP_BAT="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+set VS_SETUP_BAT="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
 set SRC_FOLDER=../zlib
 set BUILD_FOLDER=build-zlib
 set DEPLOY_FOLDER=../../zlib
@@ -26,7 +26,7 @@ if NOT ERRORLEVEL 0 goto QUIT
 REM --- build -------
 cd %BUILD_FOLDER%
 
-cmake %SRC_FOLDER% -G "Visual Studio 16 2019" -DCMAKE_INSTALL_PREFIX="%DEPLOY_FOLDER%" -A %CMAKE_PLATFORM%
+cmake %SRC_FOLDER% -G "Visual Studio 17 2022" -DCMAKE_INSTALL_PREFIX="%DEPLOY_FOLDER%" -A %CMAKE_PLATFORM%
 if NOT ERRORLEVEL 0 goto QUIT
 
 cmake --build . --config RELEASE --target INSTALL
