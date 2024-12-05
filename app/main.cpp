@@ -83,6 +83,8 @@ int main(int argc, char *argv[])
 {
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#else
+    qputenv("QT_QUICK_FLICKABLE_WHEEL_DECELERATION", "1500");
 #endif
 
     QGuiApplication app(argc, argv);
