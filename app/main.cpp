@@ -63,10 +63,10 @@
 #include "tools/encryption.h"
 #include "tools/translatorchanger.h"
 
-void setAppFont(QGuiApplication &app)
+void setAppFont(QGuiApplication &app, QSettings &settings)
 {
     QFontDatabase db;
-    QSettings settings;
+
     QString family = settings.value("fontFamily").toString();
     if (family.isEmpty()) {
         family = SystemTool::defaultFontFamily();
@@ -83,8 +83,6 @@ int main(int argc, char *argv[])
 {
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-#else
-    qputenv("QT_QUICK_FLICKABLE_WHEEL_DECELERATION", "1500");
 #endif
 
     QGuiApplication app(argc, argv);
@@ -199,7 +197,12 @@ int main(int argc, char *argv[])
     qmlRegisterSingletonType(QUrl("qrc:/Hagoromo/qml/data/AdjustedValues.qml"),
                              "tech.relog.hagoromo.singleton", 1, 0, "AdjustedValues");
 
-    setAppFont(app);
+    QSettings settings;
+    setAppFont(app, settings);
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+#else
+    SystemTool::setFlicableWheelDeceleration(settings.value("wheelDeceleration", 1500).toInt());
+#endif
 
 #ifdef QT_NO_DEBUG
     QLoggingCategory::setFilterRules("*.debug=false\n"

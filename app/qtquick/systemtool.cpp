@@ -76,6 +76,14 @@ QString SystemTool::defaultFontFamily()
 #endif
 }
 
+void SystemTool::setFlicableWheelDeceleration(qreal deceleration)
+{
+    if (deceleration < 0)
+        return;
+    qDebug() << "deceleration" << deceleration;
+    qputenv("QT_QUICK_FLICKABLE_WHEEL_DECELERATION", QString::number(deceleration).toLocal8Bit());
+}
+
 QString SystemTool::applicationVersion() const
 {
     return QCoreApplication::applicationVersion();

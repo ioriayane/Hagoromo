@@ -35,6 +35,7 @@ Dialog {
         property real fontSizeRatio: 1.0
         property string fontFamily: ""
         property real maximumFlickVelocity: 2500
+        property real wheelDeceleration: 1500
         property string language: ""
         // Feed
         property string displayOfPosts: "sequential"
@@ -64,6 +65,7 @@ Dialog {
             fontSizeRatioSlider.value = fontSizeRatio
             setFontFamily(fontFamilyComboBox, settings.fontFamily)
             maximumFlickVelocitySlider.value = settings.maximumFlickVelocity
+            wheelDecelerationSlider.value = settings.wheelDeceleration
             languageComboBox.currentIndex = -1
             languageComboBox.setByValue(settings.language)
             // Feed
@@ -141,6 +143,11 @@ Dialog {
                 font.pointSize: AdjustedValues.f10
                 font.capitalization: Font.MixedCase
                 text: qsTr("Layout")
+            }
+            TabButton {
+                font.pointSize: AdjustedValues.f10
+                font.capitalization: Font.MixedCase
+                text: qsTr("Scroll")
             }
             TabButton {
                 font.pointSize: AdjustedValues.f10
@@ -259,35 +266,6 @@ Dialog {
                             font.family: fontFamilyComboBox.currentText
                             text: qsTr("A")
                             font.pointSize: AdjustedValues.f10 * parent.to
-                        }
-                    }
-
-                    Label {
-                        font.pointSize: AdjustedValues.f10
-                        font.family: fontFamilyComboBox.currentText
-                        text: qsTr("Scroll velocity")
-                    }
-                    RowLayout {
-                        Slider {
-                            id: maximumFlickVelocitySlider
-                            Layout.fillWidth: true
-                            from: 1000
-                            to: 5000
-                            stepSize: 100
-                            snapMode: Slider.SnapOnRelease
-                            Rectangle {
-                                x: parent.background.x + parent.handle.width / 2 + (parent.background.width - parent.handle.width) * (2500 - parent.from) / (parent.to - parent.from) - width / 2
-                                y: parent.topPadding + parent.availableHeight / 2 - parent.handle.height / 2 - height
-                                width: 10
-                                height: 10
-                                radius: 5
-                                color: Material.foreground
-                            }
-                        }
-                        Label {
-                            font.family: fontFamilyComboBox.currentText
-                            text: maximumFlickVelocitySlider.value
-                            font.pointSize: AdjustedValues.f10
                         }
                     }
 
@@ -503,6 +481,124 @@ Dialog {
                 }
             }
 
+            // Scroll
+            Frame {
+                RowLayout {
+                    anchors.fill: parent
+                    ColumnLayout {
+                        Layout.fillWidth: true
+
+                        RowLayout {
+                            Label {
+                                font.pointSize: AdjustedValues.f10
+                                text: qsTr("Scroll velocity") + ":"
+                            }
+                            Label {
+                                font.pointSize: AdjustedValues.f10
+                                text: maximumFlickVelocitySlider.value
+                            }
+                        }
+                        Slider {
+                            id: maximumFlickVelocitySlider
+                            Layout.fillWidth: true
+                            from: 1000
+                            to: 5000
+                            stepSize: 100
+                            snapMode: Slider.SnapOnRelease
+                            Rectangle {
+                                x: parent.background.x + parent.handle.width / 2 + (parent.background.width - parent.handle.width) * (2500 - parent.from) / (parent.to - parent.from) - width / 2
+                                y: parent.topPadding + parent.availableHeight / 2 - parent.handle.height / 2 - height
+                                width: 10
+                                height: 10
+                                radius: 5
+                                color: Material.foreground
+                            }
+                        }
+
+                        RowLayout {
+                            Label {
+                                font.pointSize: AdjustedValues.f10
+                                text: qsTr("Scroll deceleration") + ":"
+                            }
+                            Label {
+                                font.pointSize: AdjustedValues.f10
+                                text: wheelDecelerationSlider.value
+                            }
+                        }
+                        Slider {
+                            id: wheelDecelerationSlider
+                            Layout.fillWidth: true
+                            from: 100
+                            to: 10000
+                            stepSize: 100
+                            snapMode: Slider.SnapOnRelease
+                            Rectangle {
+                                x: parent.background.x + parent.handle.width / 2 + (parent.background.width - parent.handle.width) * (1500 - parent.from) / (parent.to - parent.from) - width / 2
+                                y: parent.topPadding + parent.availableHeight / 2 - parent.handle.height / 2 - height
+                                width: 10
+                                height: 10
+                                radius: 5
+                                color: Material.foreground
+                            }
+                        }
+                        Button {
+                            Layout.alignment: Qt.AlignRight
+                            text: qsTr("Test") + " -> "
+                            onClicked: {
+                                systemTool.setFlicableWheelDeceleration(wheelDecelerationSlider.value)
+                                scrollExampleLoader.sourceComponent = undefined
+                                scrollExampleLoader.sourceComponent = scrollExampleComponent
+                            }
+                            Component {
+                                id: scrollExampleComponent
+                                ListView {
+                                    anchors.fill: parent
+                                    clip: true
+                                    model: ListModel { }
+                                    delegate: Frame {
+                                        ColumnLayout {
+                                            Label {
+                                                Layout.preferredWidth: 150
+                                                text: model.name
+                                                font.pointSize: AdjustedValues.f10
+                                            }
+                                            Label {
+                                                Layout.preferredWidth: 150
+                                                font.pointSize: AdjustedValues.f10
+                                                text: model.post
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        Item {
+                            Layout.preferredWidth: 1
+                            Layout.fillHeight: true
+                        }
+                    }
+                    ColumnLayout {
+                        Layout.preferredWidth: 150
+                        Layout.fillHeight: true
+                        Label {
+                            text: "Example:"
+                        }
+                        Loader {
+                            id: scrollExampleLoader
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            onLoaded: {
+                                console.log("Loaded")
+                                item.maximumFlickVelocity = maximumFlickVelocitySlider.value
+                                for(var i=0; i<100; i++){
+                                    item.model.append({"name": "Name" + i, "post": "Post " + i})
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             // Translate Page
             Frame {
                 GridLayout {
@@ -629,7 +725,10 @@ Dialog {
                 flat: true
                 font.pointSize: AdjustedValues.f10
                 text: qsTr("Cancel")
-                onClicked: settingDialog.reject()
+                onClicked: {
+                    systemTool.setFlicableWheelDeceleration(settings.wheelDeceleration)
+                    settingDialog.reject()
+                }
             }
             Item {
                 Layout.fillWidth: true
@@ -642,6 +741,7 @@ Dialog {
                     // Common
                     AdjustedValues.ratio = fontSizeRatioSlider.value
                     AdjustedValues.maximumFlickVelocity = maximumFlickVelocitySlider.value
+                    systemTool.setFlicableWheelDeceleration(wheelDecelerationSlider.value)
                     // General
                     settings.theme = themeButtonGroup.checkedButton.value
                     settings.accent = accentButtonGroup.checkedButton.value
@@ -651,6 +751,7 @@ Dialog {
                         systemTool.updateFont(settings.fontFamily)
                     }
                     settings.maximumFlickVelocity = maximumFlickVelocitySlider.value
+                    settings.wheelDeceleration = wheelDecelerationSlider.value
                     settings.language = languageComboBox.currentValue
                     // Feed
                     settings.displayOfPosts = displayOfPostsGroup.checkedButton.value
