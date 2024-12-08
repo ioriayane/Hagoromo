@@ -81,9 +81,15 @@ deploy_hagoromo(){
         cp ${build_dir}/app/Hagoromo ${work_dir}/bin
         cp ${SCRIPT_FOLDER}/deploy/Hagoromo.sh ${work_dir}
         if [ $QT_VERSION == 6 ]; then
+            deploy_src_list_lib="${SCRIPT_FOLDER}/deploy/linux_lib.txt"
+            deploy_src_list_plugin="${SCRIPT_FOLDER}/deploy/linux_plugin.txt"
+            deploy_src_list_qml="${SCRIPT_FOLDER}/deploy/linux_qml.txt"
             cp "openssl/lib64/libcrypto.so.3" ${work_dir}/lib
             cp "openssl/lib64/libssl.so.3" ${work_dir}/lib
         else
+            deploy_src_list_lib="${SCRIPT_FOLDER}/deploy/linux_lib.txt"
+            deploy_src_list_plugin="${SCRIPT_FOLDER}/deploy/linux_plugin.txt"
+            deploy_src_list_qml="${SCRIPT_FOLDER}/deploy/linux_qml.txt"
             cp "openssl/lib/libcrypto.so.1.1" ${work_dir}/lib
             cp "openssl/lib/libssl.so.1.1" ${work_dir}/lib
         fi
@@ -93,11 +99,11 @@ deploy_hagoromo(){
         cp "lib/i18n/lib_ja.qm" ${work_dir}/bin/translations
         cp ${QT_BIN_FOLDER}/../translations/qt_ja.qm ${work_dir}/bin/translations
 
-        cat ${SCRIPT_FOLDER}/deploy/linux_lib.txt | xargs -i{} cp -P ${QT_BIN_FOLDER}/../lib/{} ${work_dir}/lib
-        cat ${SCRIPT_FOLDER}/deploy/linux_plugin.txt | xargs -i{} dirname {} | uniq | xargs -i{} mkdir -p ${work_dir}/bin/{}
-        cat ${SCRIPT_FOLDER}/deploy/linux_plugin.txt | xargs -i{} cp -P ${QT_BIN_FOLDER}/../plugins/{} ${work_dir}/bin/{}
-        cat ${SCRIPT_FOLDER}/deploy/linux_qml.txt | xargs -i{} dirname {} | uniq | xargs -i{} mkdir -p ${work_dir}/bin/{}
-        cat ${SCRIPT_FOLDER}/deploy/linux_qml.txt | xargs -i{} cp -P ${QT_BIN_FOLDER}/../qml/{} ${work_dir}/bin/{}
+        cat ${deploy_src_list_lib} | xargs -i{} cp -P ${QT_BIN_FOLDER}/../lib/{} ${work_dir}/lib
+        cat ${deploy_src_list_plugin} | xargs -i{} dirname {} | uniq | xargs -i{} mkdir -p ${work_dir}/bin/{}
+        cat ${deploy_src_list_plugin} | xargs -i{} cp -P ${QT_BIN_FOLDER}/../plugins/{} ${work_dir}/bin/{}
+        cat ${deploy_src_list_qml} | xargs -i{} dirname {} | uniq | xargs -i{} mkdir -p ${work_dir}/bin/{}
+        cat ${deploy_src_list_qml} | xargs -i{} cp -P ${QT_BIN_FOLDER}/../qml/{} ${work_dir}/bin/{}
 
     elif [ "${PLATFORM_TYPE}" == "mac" ]; then
         cp -r ${build_dir}/app/Hagoromo.app ${work_dir}/
