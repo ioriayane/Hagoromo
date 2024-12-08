@@ -514,9 +514,24 @@ Dialog {
                                 radius: 5
                                 color: Material.foreground
                             }
+                            Label {
+                                anchors.left: parent.left
+                                anchors.leftMargin: 5
+                                anchors.top: parent.top
+                                font.pointSize: AdjustedValues.f8
+                                text: qsTr("slow")
+                            }
+                            Label {
+                                anchors.right: parent.right
+                                anchors.rightMargin: 5
+                                anchors.top: parent.contentItem.bottom
+                                font.pointSize: AdjustedValues.f8
+                                text: qsTr("quick")
+                            }
                         }
 
                         RowLayout {
+                            Layout.topMargin: AdjustedValues.s5
                             Label {
                                 font.pointSize: AdjustedValues.f10
                                 text: qsTr("Scroll deceleration") + ":"
@@ -540,6 +555,20 @@ Dialog {
                                 height: 10
                                 radius: 5
                                 color: Material.foreground
+                            }
+                            Label {
+                                anchors.left: parent.left
+                                anchors.leftMargin: 5
+                                anchors.top: parent.top
+                                font.pointSize: AdjustedValues.f8
+                                text: qsTr("slippery")
+                            }
+                            Label {
+                                anchors.right: parent.right
+                                anchors.rightMargin: 5
+                                anchors.top: parent.contentItem.bottom
+                                font.pointSize: AdjustedValues.f8
+                                text: qsTr("sticky")
                             }
                         }
                         Button {
@@ -595,7 +624,7 @@ Dialog {
                         Label {
                             Layout.fillWidth: true
                             Layout.fillHeight: true
-                            Layout.leftMargin: 5 * AdjustedValues.ratio
+                            Layout.leftMargin: AdjustedValues.s5
                             font.pointSize: AdjustedValues.f8
                             wrapMode: Text.Wrap
                             text: qsTr("*) The settings will not be applied until Hagoromo is restarted.")
