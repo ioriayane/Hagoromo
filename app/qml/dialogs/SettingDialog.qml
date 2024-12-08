@@ -9,6 +9,7 @@ import tech.relog.hagoromo.singleton 1.0
 
 import "../controls"
 import "../compat"
+import "../parts"
 
 Dialog {
     id: settingDialog
@@ -35,7 +36,7 @@ Dialog {
         property real fontSizeRatio: 1.0
         property string fontFamily: ""
         property real maximumFlickVelocity: 2500
-        property real wheelDeceleration: 1500
+        property real wheelDeceleration: 10000
         property string language: ""
         // Feed
         property string displayOfPosts: "sequential"
@@ -528,12 +529,12 @@ Dialog {
                         Slider {
                             id: wheelDecelerationSlider
                             Layout.fillWidth: true
-                            from: 100
-                            to: 10000
-                            stepSize: 100
+                            from: 1000
+                            to: 15000
+                            stepSize: 1000
                             snapMode: Slider.SnapOnRelease
                             Rectangle {
-                                x: parent.background.x + parent.handle.width / 2 + (parent.background.width - parent.handle.width) * (1500 - parent.from) / (parent.to - parent.from) - width / 2
+                                x: parent.background.x + parent.handle.width / 2 + (parent.background.width - parent.handle.width) * (10000 - parent.from) / (parent.to - parent.from) - width / 2
                                 y: parent.topPadding + parent.availableHeight / 2 - parent.handle.height / 2 - height
                                 width: 10
                                 height: 10
@@ -543,6 +544,7 @@ Dialog {
                         }
                         Button {
                             Layout.alignment: Qt.AlignRight
+                            font.pointSize: AdjustedValues.f10
                             text: qsTr("Test") + " -> "
                             onClicked: {
                                 systemTool.setFlicableWheelDeceleration(wheelDecelerationSlider.value)
@@ -552,35 +554,58 @@ Dialog {
                             Component {
                                 id: scrollExampleComponent
                                 ListView {
+                                    id: scrollExampleListView
                                     anchors.fill: parent
                                     clip: true
                                     model: ListModel { }
                                     delegate: Frame {
-                                        ColumnLayout {
-                                            Label {
-                                                Layout.preferredWidth: 150
-                                                text: model.name
-                                                font.pointSize: AdjustedValues.f10
+                                        padding: 10
+                                        RowLayout {
+                                            spacing: 10
+                                            AvatarImage {
+                                                id: postAvatarImage
+                                                Layout.preferredWidth: AdjustedValues.i36
+                                                Layout.preferredHeight: AdjustedValues.i36
+                                                Layout.alignment: Qt.AlignTop
+                                                clip: false
                                             }
-                                            Label {
-                                                Layout.preferredWidth: 150
-                                                font.pointSize: AdjustedValues.f10
-                                                text: model.post
+                                            ColumnLayout {
+                                                property int basisWidth: scrollExampleListView.width -
+                                                                         postAvatarImage.width -
+                                                                         30
+                                                Author {
+                                                    id: postAuthor
+                                                    Layout.preferredWidth: parent.basisWidth
+                                                    layoutWidth: parent.basisWidth
+                                                    displayName: model.displayName
+                                                    handle: model.handle
+                                                }
+                                                Label {
+                                                    Layout.preferredWidth: parent.basisWidth
+                                                    font.pointSize: AdjustedValues.f10
+                                                    textFormat: Text.StyledText
+                                                    text: model.text
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
                         }
-                        Item {
-                            Layout.preferredWidth: 1
+                        Label {
+                            Layout.fillWidth: true
                             Layout.fillHeight: true
+                            Layout.leftMargin: 5 * AdjustedValues.ratio
+                            font.pointSize: AdjustedValues.f8
+                            wrapMode: Text.Wrap
+                            text: qsTr("*) The settings will not be applied until Hagoromo is restarted.")
                         }
                     }
                     ColumnLayout {
-                        Layout.preferredWidth: 150
+                        Layout.preferredWidth: 300 * AdjustedValues.ratio
                         Layout.fillHeight: true
                         Label {
+                            font.pointSize: AdjustedValues.f10
                             text: "Example:"
                         }
                         Loader {
@@ -590,8 +615,11 @@ Dialog {
                             onLoaded: {
                                 console.log("Loaded")
                                 item.maximumFlickVelocity = maximumFlickVelocitySlider.value
-                                for(var i=0; i<100; i++){
-                                    item.model.append({"name": "Name" + i, "post": "Post " + i})
+                                for(var i=0; i<50; i++){
+                                    item.model.append({"displayName": "Name " + i,
+                                                          "handle": "Handle " + i,
+                                                          "text": "Post " + i + "<br>Post " + i
+                                                      })
                                 }
                             }
                         }

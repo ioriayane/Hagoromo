@@ -201,7 +201,7 @@ int main(int argc, char *argv[])
     setAppFont(app, settings);
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
 #else
-    SystemTool::setFlicableWheelDeceleration(settings.value("wheelDeceleration", 1500).toInt());
+    SystemTool::setFlicableWheelDeceleration(settings.value("wheelDeceleration", 10000).toInt());
 #endif
 
 #ifdef QT_NO_DEBUG
