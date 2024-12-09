@@ -51,7 +51,6 @@ ScrollView {
         anchors.rightMargin: parent.ScrollBar.vertical.width
         spacing: 5
         maximumFlickVelocity: AdjustedValues.maximumFlickVelocity
-        synchronousDrag: true
 
         onAtYBeginningChanged: scrollPositionChanged(atYBeginning)
         onMovementStarted: scrollPositionChanged(atYBeginning)
