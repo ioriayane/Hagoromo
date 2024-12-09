@@ -524,7 +524,7 @@ Dialog {
                             Label {
                                 anchors.right: parent.right
                                 anchors.rightMargin: 5
-                                anchors.top: parent.contentItem.bottom
+                                anchors.top: parent.bottom
                                 font.pointSize: AdjustedValues.f8
                                 text: qsTr("quick")
                             }
@@ -566,7 +566,7 @@ Dialog {
                             Label {
                                 anchors.right: parent.right
                                 anchors.rightMargin: 5
-                                anchors.top: parent.contentItem.bottom
+                                anchors.top: parent.bottom
                                 font.pointSize: AdjustedValues.f8
                                 text: qsTr("sticky")
                             }
