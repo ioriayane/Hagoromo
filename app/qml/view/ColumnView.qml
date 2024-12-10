@@ -801,7 +801,7 @@ ColumnLayout {
                     MenuEx {
                         id: feedMenu
                         title: qsTr("Feed")
-                        enabled: (componentType === 4) && columnStackView.depth == 1
+                        enabled: (componentType === 4) && columnStackView.depth === 1
                         font.pointSize: AdjustedValues.f8
                         Action {
                             text: qsTr("Copy url")
