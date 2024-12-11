@@ -81,9 +81,9 @@ deploy_hagoromo(){
         cp ${build_dir}/app/Hagoromo ${work_dir}/bin
         cp ${SCRIPT_FOLDER}/deploy/Hagoromo.sh ${work_dir}
         if [ $QT_VERSION == 6 ]; then
-            deploy_src_list_lib="${SCRIPT_FOLDER}/deploy/linux_lib.txt"
-            deploy_src_list_plugin="${SCRIPT_FOLDER}/deploy/linux_plugin.txt"
-            deploy_src_list_qml="${SCRIPT_FOLDER}/deploy/linux_qml.txt"
+            deploy_src_list_lib="${SCRIPT_FOLDER}/deploy/linux_lib_6.txt"
+            deploy_src_list_plugin="${SCRIPT_FOLDER}/deploy/linux_plugin_6.txt"
+            deploy_src_list_qml="${SCRIPT_FOLDER}/deploy/linux_qml_6.txt"
             cp "openssl/lib64/libcrypto.so.3" ${work_dir}/lib
             cp "openssl/lib64/libssl.so.3" ${work_dir}/lib
         else
