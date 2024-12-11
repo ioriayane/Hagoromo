@@ -62,7 +62,7 @@ oauth_test::oauth_test()
 #else
                     bool exist = false;
                     for(const auto &header: request.headers().toListOfPairs()){
-                        if(header.first == "DPoP"){
+                        if(header.first.toLower() == "dpop"){
                             verify_jwt(header.second, nullptr);
                             exist = true;
                             break;
