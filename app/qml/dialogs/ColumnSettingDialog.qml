@@ -166,7 +166,7 @@ Dialog {
                         id: columnWidthSlider
                         Layout.preferredWidth: 175 * AdjustedValues.ratio
                         from: 300
-                        to: 500
+                        to: 700
                         stepSize: 50
                         snapMode: Slider.SnapOnRelease
                     }

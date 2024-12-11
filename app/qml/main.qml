@@ -124,7 +124,7 @@ ApplicationWindow {
                 column_name = qsTr("Search users")
             }
             columnManageModel.append(accountListModel.item(selectedAccountIndex, AccountListModel.UuidRole),
-                                     component_type, false, 300000, 350,
+                                     component_type, false, 300000, 400,
                                      settingDialog.settings.imageLayoutType, column_name, searchDialog.searchText, [])
             scrollView.showRightMost()
         }
@@ -139,7 +139,7 @@ ApplicationWindow {
                         "\n  selectedName=" + selectedName +
                         "\n  selectedUri=" + selectedUri)
             columnManageModel.append(accountListModel.item(selectedAccountIndex, AccountListModel.UuidRole),
-                                     selectedType, false, 300000, 400,
+                                     selectedType, false, 300000, 500,
                                      settingDialog.settings.imageLayoutType, selectedName, selectedUri, [])
             scrollView.showRightMost()
         }
@@ -208,7 +208,7 @@ ApplicationWindow {
         id: discoverFeedsDialog
         onAccepted: {
             columnManageModel.append(discoverFeedsDialog.account.uuid,
-                                     4, false, 300000, 400,
+                                     4, false, 300000, 500,
                                      settingDialog.settings.imageLayoutType, selectedName, selectedUri, [])
             scrollView.showRightMost()
         }
@@ -607,13 +607,13 @@ ApplicationWindow {
                               }
 
             onRequestViewAuthorFeed: (account_uuid, did, handle) => {
-                                         columnManageModel.append(account_uuid, 5, false, 300000, 350,
+                                         columnManageModel.append(account_uuid, 5, false, 300000, 400,
                                                                   settingDialog.settings.imageLayoutType, handle, did, [])
                                          scrollView.showRightMost()
                                      }
             onRequestViewImages: (index, paths, alts) => imageFullView.open(index, paths, alts)
             onRequestViewFeedGenerator: (account_uuid, name, uri) => {
-                                            columnManageModel.append(account_uuid, 4, false, 300000, 400,
+                                            columnManageModel.append(account_uuid, 4, false, 300000, 500,
                                                                      settingDialog.settings.imageLayoutType, name, uri, [])
                                             scrollView.showRightMost()
                                         }
@@ -627,7 +627,7 @@ ApplicationWindow {
                                       }
             onRequestViewListFeed: (account_uuid, uri, name) => {
                                        console.log("uuid=" + account_uuid + "\nuri=" + uri + "\nname=" + name)
-                                       columnManageModel.append(account_uuid, 6, false, 300000, 400,
+                                       columnManageModel.append(account_uuid, 6, false, 300000, 500,
                                                                 settingDialog.settings.imageLayoutType, name, uri, [])
                                        scrollView.showRightMost()
                                    }

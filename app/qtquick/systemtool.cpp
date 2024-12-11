@@ -53,8 +53,12 @@ QUrl SystemTool::clipImage(const QUrl &url, const int x, const int y, const int 
 
 void SystemTool::updateFont(const QString &family)
 {
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     QFontDatabase db;
     if (db.families().contains(family)) {
+#else
+    if (QFontDatabase::families().contains(family)) {
+#endif
         qDebug().noquote() << "Update font : " << QGuiApplication::font().family() << " -> "
                            << family;
         QGuiApplication::setFont(QFont(family));
@@ -74,6 +78,14 @@ QString SystemTool::defaultFontFamily()
 #else
     return QStringLiteral("Noto Sans CJK JP");
 #endif
+}
+
+void SystemTool::setFlicableWheelDeceleration(qreal deceleration)
+{
+    if (deceleration < 0)
+        return;
+    qDebug() << "deceleration" << deceleration;
+    qputenv("QT_QUICK_FLICKABLE_WHEEL_DECELERATION", QString::number(deceleration).toLocal8Bit());
 }
 
 QString SystemTool::applicationVersion() const

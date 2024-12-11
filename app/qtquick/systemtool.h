@@ -24,6 +24,7 @@ public:
                                const int height) const;
     Q_INVOKABLE void updateFont(const QString &family);
     Q_INVOKABLE static QString defaultFontFamily();
+    Q_INVOKABLE static void setFlicableWheelDeceleration(qreal deceleration);
 
     QString applicationVersion() const;
     QString qtVersion() const;

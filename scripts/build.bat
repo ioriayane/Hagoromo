@@ -18,11 +18,10 @@ REM --- main -----------------------------
 :MAIN
 
 set JOM_BIN_FOLDER=%QT_BIN_FOLDER%\..\..\..\Tools\QtCreator\bin\jom
-set VS_SETUP_BAT="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
-set VS_REDIST_FOLDER="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC"
+set VS_SETUP_BAT="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+set VS_REDIST_FOLDER="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC"
 set BUILD_FOLDER=build-hagoromo
 set DEPLOY_FOLDER=deploy-hagoromo
-set QT_HTTP_SERVER_FOLDER=3rdparty\build-qthttpserver
 
 REM --- build deps -------
 cmd.exe /c %CWD%/scripts/build_zlib.bat
@@ -37,11 +36,6 @@ if ERRORLEVEL 1 call %VS_SETUP_BAT%
 
 
 REM --- make folder -------
-if EXIST %QT_HTTP_SERVER_FOLDER% rmdir /s /q %QT_HTTP_SERVER_FOLDER%
-if NOT ERRORLEVEL 0 goto QUIT
-mkdir %QT_HTTP_SERVER_FOLDER%
-if NOT ERRORLEVEL 0 goto QUIT
-
 if EXIST %BUILD_FOLDER% rmdir /s /q %BUILD_FOLDER%
 if NOT ERRORLEVEL 0 goto QUIT
 mkdir %BUILD_FOLDER%
@@ -54,19 +48,6 @@ if NOT ERRORLEVEL 0 goto QUIT
 mkdir %DEPLOY_FOLDER%\hagoromo
 if NOT ERRORLEVEL 0 goto QUIT
 
-
-REM --- build qt http server -------
-cd %QT_HTTP_SERVER_FOLDER%
-
-qmake ..\qthttpserver\qthttpserver.pro CONFIG+=debug_and_release
-if NOT ERRORLEVEL 0 goto QUIT
-
-jom
-if NOT ERRORLEVEL 0 goto QUIT
-jom install
-if NOT ERRORLEVEL 0 goto QUIT
-
-cd %CWD%
 
 
 REM --- build -------

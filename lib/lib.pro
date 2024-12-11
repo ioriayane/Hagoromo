@@ -18,6 +18,9 @@ win32:INCLUDEPATH += $$dirname(QMAKE_QMAKE)/../../../Tools/OpenSSL/Win_x64/inclu
 }
 unix:INCLUDEPATH += ../openssl/include
 
+# build arch
+mac:QMAKE_APPLE_DEVICE_ARCHS=x86_64
+
 DEFINES += CPPHTTPLIB_ZLIB_SUPPORT # zlib support for cpp-httplib
 
 TRANSLATIONS += i18n/lib_ja.ts

@@ -43,7 +43,7 @@ http_test::http_test()
                     for (const auto key : request.headers().keys()) {
                         QString value = request.headers().value(key).toString();
 #else
-                    for(const auto &header: request.headers()){
+                    for(const auto &header: request.headers().toListOfPairs()){
                         QString value = header.second;
                         QString key = header.first;
 #endif
