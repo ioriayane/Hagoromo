@@ -31,21 +31,24 @@ ApplicationWindow {
     // 逆にこの設定はListViewの内容へ反映されない
     font.family: settingDialog.settings.fontFamily.length > 0 ? settingDialog.settings.fontFamily : font.family
 
-    property bool visibleDialogs: settingDialog.visible ||
-                                  postDialog.visible ||
-                                  searchDialog.visible ||
-                                  addColumnDialog.visible ||
-                                  accountDialog.visible ||
-                                  discoverFeedsDialog.visible ||
-                                  columnsettingDialog.visible ||
-                                  reportDialog.visible ||
-                                  reportAccountDialog.visible ||
-                                  addToListDialog.visible ||
-                                  addListDialog.visible ||
-                                  editProfileDialog.visible ||
-                                  selectThreadGateDialog.visible ||
+    property bool visibleDialogs: imageFullView.visible ||
                                   messageDialog.visible ||
-                                  imageFullView.visible
+                                  logViewDialog.visible ||
+                                  selectThreadGateDialog.visible ||
+                                  addMutedWordDialog.visible ||
+                                  editProfileDialog.visible ||
+                                  addListDialog.visible ||
+                                  addToListDialog.visible ||
+                                  reportMessageDialog.visible ||
+                                  reportAccountDialog.visible ||
+                                  reportDialog.visible ||
+                                  columnsettingDialog.visible ||
+                                  discoverFeedsDialog.visible ||
+                                  accountDialog.visible ||
+                                  addColumnDialog.visible ||
+                                  searchDialog.visible ||
+                                  postDialog.visible ||
+                                  settingDialog.visible
 
     function errorHandler(account_uuid, code, message) {
         if(code === "ExpiredToken" && account_uuid.length > 0){
@@ -1087,25 +1090,7 @@ ApplicationWindow {
     DragAndDropArea {
         anchors.fill: parent
         anchors.margins: 5
-        enabled: accountListModel.count > 0
-                 && !imageFullView.visible
-                 && !messageDialog.visible
-                 && !logViewDialog.visible
-                 && !selectThreadGateDialog.visible
-                 && !addMutedWordDialog.visible
-                 && !editProfileDialog.visible
-                 && !addListDialog.visible
-                 && !addToListDialog.visible
-                 && !reportMessageDialog.visible
-                 && !reportAccountDialog.visible
-                 && !reportDialog.visible
-                 && !columnsettingDialog.visible
-                 && !discoverFeedsDialog.visible
-                 && !accountDialog.visible
-                 && !addColumnDialog.visible
-                 && !searchDialog.visible
-                 && !postDialog.visible
-                 && !settingDialog.visible
+        enabled: accountListModel.count > 0 && !appWindow.visibleDialogs
         onDropped: (urls) => postDialog.openWithFiles(urls)
     }
 
