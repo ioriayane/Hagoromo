@@ -115,7 +115,6 @@ Dialog {
     }
     ButtonGroup {
         id: accentButtonGroup
-        buttons: accentGridLayout.children
     }
     ButtonGroup {
         id: displayOfPostsGroup
@@ -228,6 +227,7 @@ Dialog {
                                 }
                                 checkable: true
                                 property color value: Material.color(modelData)
+                                ButtonGroup.group: accentButtonGroup
                             }
                         }
                     }
