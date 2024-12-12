@@ -142,12 +142,26 @@ void atprotocol_test::initTestCase()
 {
     QVERIFY(m_listenPort != 0);
     m_account.accessJwt = "dummy";
+
+    m_account.did = "did:plc:ipj5qejfoqu6eukvt72uhyit";
+    m_account.handle = "ioriayane.relog.tech";
+    m_account.email = "iori.ayane@gmail.com";
+    m_account.accessJwt = "hoge hoge accessJwt";
+    m_account.refreshJwt = "hoge hoge refreshJwt";
+    m_account.service = m_service;
 }
 
 void atprotocol_test::cleanupTestCase() { }
 
 void atprotocol_test::test_ComAtprotoServerCreateSession()
 {
+    m_account.did.clear();
+    m_account.handle.clear();
+    m_account.email.clear();
+    m_account.accessJwt.clear();
+    m_account.refreshJwt.clear();
+    m_account.service.clear();
+
     AtProtocolInterface::ComAtprotoServerCreateSessionEx session;
     session.setService(m_service);
 
