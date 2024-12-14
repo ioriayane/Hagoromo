@@ -12,15 +12,14 @@
 
 - Windows 11 Profesional
 - Ubuntu 22.04
-- Mac 10.15
+- Mac 15.0.1(x86 on ARM)
 
 ## 使用ソフトウェア
 
-- [Qt 5.15.2](https://www.qt.io/)
-- [OpenSSL 1.1.1q](http://www.openssl.org/)
-- [cpp-httplib](https://github.com/yhirose/cpp-httplib)
-- [zlib](https://github.com/madler/zlib)
-- [Qt HTTP Server](https://code.qt.io/cgit/qt-extensions/qthttpserver.git/)
+- [Qt 6.8.1](https://www.qt.io/)
+- [OpenSSL 3.4.0](http://www.openssl.org/)
+- [cpp-httplib 0.18.1](https://github.com/yhirose/cpp-httplib)
+- [zlib 1.3.1](https://github.com/madler/zlib)
 - [Hugo 0.92.2](https://gohugo.io/)
 
 ## ダウンロード
@@ -45,7 +44,7 @@ Official site : [Qt](https://www.qt.io/)
 
 ### Windows
 
-[Microsoft Visual Studio 2019](https://visualstudio.microsoft.com/)をインストールしてください（Community Edition可）。
+[Microsoft Visual Studio 2022](https://visualstudio.microsoft.com/)をインストールしてください（Community Edition可）。
 
 改行コードをCRLFでチェックアウトしてください。
 
@@ -54,67 +53,50 @@ REM checkout repo
 >git clone git@github.com:ioriayane/Hagoromo.git
 >cd Hagoromo
 >git submodule update -i
->git submodule update -i .\3rdparty\qthttpserver\
 REM copy and edit encryption seed
 >copy lib\tools\encryption_seed_template.h lib\tools\encryption_seed.h
 REM build Hagoromo
->.\scripts\build.bat path\to\Qt\5.15.2\msvc2019_64\bin
+>.\scripts\build.bat path\to\Qt\6.8.1\msvc2022_64\bin
 REM Execute
 >deploy-hagoromo\hagoromo\Hagoromo.exe
 ```
 
 ### Ubuntu
 
-OpenSSL 1.1.1q 以上を使用します。build.shでビルドします。
+build.shでビルドします。
 
 ```bash
 # checkout repo
 $ git clone git@github.com:ioriayane/Hagoromo.git
 $ cd Hagoromo
 $ git submodule update -i
-$ git submodule update -i --recursive 3rdparty/qthttpserver/
 # setup dependent modules
 $ sudo apt-get install zlib1g-dev
 # copy and edit encryption seed
 $ cp lib/tools/encryption_seed_template.h lib/tools/encryption_seed.h
 $ vi lib/tools/encryption_seed.h
 # build Hagoromo
-$ ./scripts/build.sh linux path/to/Qt/5.15.2/gcc_64/bin
+$ ./scripts/build.sh linux path/to/Qt/6.8.1/gcc_64/bin
 # exec hagoromo
 $ ./deploy-hagoromo/hagoromo/Hagoromo.sh
 ```
 
 ### Mac
 
-OpenSSL 1.1.1q 以上を使用します。build.shでビルドします。
+build.shでビルドします。
 
 ```bash
 # checkout repo
 $ git clone git@github.com:ioriayane/Hagoromo.git
 $ cd Hagoromo
 $ git submodule update -i
-$ git submodule update -i --recursive 3rdparty/qthttpserver/
 # copy and edit encryption seed
 $ cp lib/tools/encryption_seed_template.h lib/tools/encryption_seed.h
 $ vi lib/tools/encryption_seed.h
 # build Hagoromo
-$ ./scripts/build.sh mac path/to/Qt/5.15.2/gcc_64/bin
+$ ./scripts/build.sh mac path/to/Qt/6.8.1/gcc_64/bin
 # exec hagoromo
 $ open ./deploy-hagoromo/hagoromo/Hagoromo.app
-```
-
-## Qt Creatorでのビルドについて
-
-単体テストで使用しているQt HTTP Serverのビルドとインストールが必要です。
-
-### Qt HTTP Serverのビルド方法
-
-```bash
-$ git submodule update -i --recursive 3rdparty/qthttpserver/
-$ mkdir 3rdparty/build-qthttpserver
-$ cd 3rdparty/build-qthttpserver
-$ qmake CONFIG+=debug_and_release ../qthttpserver/qthttpserver.pro
-$ make && make install
 ```
 
 ## コントリビューション
@@ -145,15 +127,15 @@ pre-commit installed at .git/hooks/pre-commit
 
 Windows
 ```cmd
-> .\scripts\unittest.bat path\to\Qt\5.15.2\msvc2019_64\bin
+> .\scripts\unittest.bat path\to\Qt\6.8.1\msvc2022_64\bin
 ```
 Ubuntu
 ```bash
-$ ./scripts/unittest.sh linux path/to/Qt/5.15.2/gcc_64/bin
+$ ./scripts/unittest.sh linux path/to/Qt/6.8.1/gcc_64/bin
 ```
 Mac
 ```bash
-$ ./scripts/unittest.sh mac path/to/Qt/5.15.2/gcc_64/bin
+$ ./scripts/unittest.sh mac path/to/Qt/6.8.1/gcc_64/bin
 ```
 
 ---
@@ -168,15 +150,14 @@ This is a multi-column [Bluesky](https://blueskyweb.xyz/) client.
 
 - Windows 11 Profesional
 - Ubuntu 22.04
-- Mac 10.15
+- Mac 15.0.1(x86 on ARM)
 
 ## Software used
 
-- [Qt 5.15.2](https://www.qt.io/)
-- [OpenSSL 1.1.1q](http://www.openssl.org/)
-- [cpp-httplib](https://github.com/yhirose/cpp-httplib)
-- [zlib](https://github.com/madler/zlib)
-- [Qt HTTP Server](https://code.qt.io/cgit/qt-extensions/qthttpserver.git/)
+- [Qt 6.8.1](https://www.qt.io/)
+- [OpenSSL 3.4.0](http://www.openssl.org/)
+- [cpp-httplib 0.18.1](https://github.com/yhirose/cpp-httplib)
+- [zlib 1.3.1](https://github.com/madler/zlib)
 - [Hugo 0.92.2](https://gohugo.io/)
 
 ## Download
@@ -196,14 +177,14 @@ Please refer to [the User's Manual](https://hagoromo.relog.tech/).
 
 ### Common
 
-Install Qt 5.15.2 for the platform you want to build.
+Install Qt 6.8.1 for the platform you want to build.
 
 Official site : [Qt](https://www.qt.io/)
 
 
 ### Windows
 
-Install [Microsoft Visual Studio 2019](https://visualstudio.microsoft.com/) (Community Edition  is also available).
+Install [Microsoft Visual Studio 2022](https://visualstudio.microsoft.com/) (Community Edition  is also available).
 
 Check out the newline code in CRLF.
 
@@ -212,67 +193,50 @@ REM checkout repo
 >git clone git@github.com:ioriayane/Hagoromo.git
 >cd Hangoromo
 >git submodule update -i
->git submodule update -i .\3rdparty\qthttpserver\
 REM copy and edit encryption seed
 >copy lib\tools\encryption_seed_template.h lib\tools\encryption_seed.h
 REM build Hagoromo
->.\scripts\build.bat path\to\Qt\5.15.2\msvc2019_64\bin
+>.\scripts\build.bat path\to\Qt\6.8.1\msvc2022_64\bin
 REM Execute
 >deploy-hagoromo\hagoromo\Hagoromo.exe
 ```
 
 ### Ubuntu
 
-OpenSSL 1.1.1q or higher is required. It is built in build.sh.
+It is built in build.sh.
 
 ```bash
 # checkout repo
 $ git clone git@github.com:ioriayane/Hagoromo.git
 $ cd Hagoromo
 $ git submodule update -i
-$ git submodule update -i --recursive 3rdparty/qthttpserver/
 # setup dependent modules
 $ sudo apt-get install zlib1g-dev
 # copy and edit encryption seed
 $ cp lib/tools/encryption_seed_template.h lib/tools/encryption_seed.h
 $ vi lib/tools/encryption_seed.h
 # build Hagoromo
-$ ./scripts/build.sh linux path/to/Qt/5.15.2/gcc_64/bin
+$ ./scripts/build.sh linux path/to/Qt/6.8.1/gcc_64/bin
 # exec hagoromo
 $ ./deploy-hagoromo/hagoromo/Hagoromo.sh
 ```
 
 ### Mac
 
-OpenSSL 1.1.1q or higher is required. It is built in build.sh.
+It is built in build.sh.
 
 ```bash
 # checkout repo
 $ git clone git@github.com:ioriayane/Hagoromo.git
 $ cd Hagoromo
 $ git submodule update -i
-$ git submodule update -i --recursive 3rdparty/qthttpserver/
 # copy and edit encryption seed
 $ cp lib/tools/encryption_seed_template.h lib/tools/encryption_seed.h
 $ vi lib/tools/encryption_seed.h
 # build Hagoromo
-$ ./scripts/build.sh mac path/to/Qt/5.15.2/gcc_64/bin
+$ ./scripts/build.sh mac path/to/Qt/6.8.1/gcc_64/bin
 # exec hagoromo
 $ open ./deploy-hagoromo/hagoromo/Hagoromo.app
-```
-
-## About building with Qt Creator
-
-You need to build and install Qt HTTP Server, which is used for unit testing.
-
-### How to build Qt HTTP Server
-
-```bash
-$ git submodule update -i --recursive 3rdparty/qthttpserver/
-$ mkdir 3rdparty/build-qthttpserver
-$ cd 3rdparty/build-qthttpserver
-$ qmake CONFIG+=debug_and_release ../qthttpserver/qthttpserver.pro
-$ make && make install
 ```
 
 ## Contribution
@@ -302,13 +266,13 @@ Please confirm that you can clear it by running it in one of the environments.
 
 Windows
 ```cmd
-> .\scripts\unittest.bat path\to\Qt\5.15.2\msvc2019_64\bin
+> .\scripts\unittest.bat path\to\Qt\6.8.1\msvc2022_64\bin
 ```
 Ubuntu
 ```bash
-$ ./scripts/unittest.sh linux path/to/Qt/5.15.2/gcc_64/bin
+$ ./scripts/unittest.sh linux path/to/Qt/6.8.1/gcc_64/bin
 ```
 Mac
 ```bash
-$ ./scripts/unittest.sh mac path/to/Qt/5.15.2/gcc_64/bin
+$ ./scripts/unittest.sh mac path/to/Qt/6.8.1/gcc_64/bin
 ```
