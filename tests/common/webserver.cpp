@@ -32,9 +32,9 @@ bool WebServer::handleRequest(const QHttpServerRequest &request, QHttpServerResp
 #else
                 QHttpHeaders headers;
                 headers.append("content-type", "application/json; charset=utf-8");
+                headers.append("ratelimit-reset", "1694914267");
                 headers.append("ratelimit-limit", "30");
                 headers.append("ratelimit-remaining", "10");
-                headers.append("ratelimit-reset", "1694914267");
                 headers.append("ratelimit-policy", "30;w=300");
 #endif
                 if (request.url().path().endsWith("/limit/xrpc/com.atproto.server.createSession")) {
