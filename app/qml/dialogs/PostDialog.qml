@@ -446,7 +446,7 @@ Dialog {
                 }
                 ExternalLinkCard {
                     Layout.preferredWidth: postText.width
-                    Layout.maximumHeight: 280 * AdjustedValues.ratio
+                    // Layout.maximumHeight: 280 * AdjustedValues.ratio
                     visible: externalLink.valid
 
                     thumbImage.source: externalLink.thumbLocal
