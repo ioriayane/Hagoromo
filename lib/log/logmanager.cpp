@@ -31,8 +31,12 @@ LogManager::LogManager(QObject *parent) : AtProtocolAccount { parent }
                 m_postViews.clear();
                 m_postViewsJson = QJsonArray();
                 for (const auto &post : view_posts) {
+                    const QStringList post_items = post.split("/");
                     if (post.startsWith("at://")) {
-                        m_cueGetPost.append(post);
+                        if (post_items.contains("app.bsky.feed.post")) {
+                            m_cueGetPost.append(post);
+                        } else if (post_items.contains("app.bsky.feed.repost")) {
+                        }
                     }
                 }
                 getPosts();

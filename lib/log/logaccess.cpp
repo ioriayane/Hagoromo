@@ -628,7 +628,7 @@ QString LogAccess::dbSelectRecords(const int kind, const QString &condition, con
 {
     QStringList bind_values;
     QString sql("SELECT uri, cid, record, createdAt, view FROM record"
-                " WHERE type = 'app.bsky.feed.post'");
+                " WHERE (type = 'app.bsky.feed.post' OR type = 'app.bsky.feed.repost')");
     if (!condition.isEmpty()) {
         if (kind == 0) {
             sql.append(" AND day == ?");
