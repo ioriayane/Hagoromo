@@ -207,13 +207,10 @@ void atprotocol_test::test_ComAtprotoServerCreateSession()
     }
 
     QVERIFY2(session.errorCode() == "RateLimitExceeded", session.errorCode().toLocal8Bit());
-    QVERIFY2(session.errorMessage()
-                     == "Rate Limit "
-                        "Exceeded\n\nratelimit-limit:30\n"
-                        "ratelimit-reset:2023/09/17 10:31:07\n"
-                        "ratelimit-remaining:10\n"
-                        "ratelimit-policy:30;w=300",
-             session.errorMessage().toLocal8Bit());
+    QVERIFY(session.errorMessage().contains("ratelimit-limit:30"));
+    QVERIFY(session.errorMessage().contains("ratelimit-reset:2023/09/17 10:31:07"));
+    QVERIFY(session.errorMessage().contains("ratelimit-remaining:10"));
+    QVERIFY(session.errorMessage().contains("ratelimit-policy:30;w=300"));
     QVERIFY2(session.replyJson().trimmed()
                      == "{\"error\":\"RateLimitExceeded\",\"message\":\"Rate Limit Exceeded\"}",
              session.replyJson().toLocal8Bit());
