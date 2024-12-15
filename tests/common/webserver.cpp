@@ -20,6 +20,7 @@ bool WebServer::handleRequest(const QHttpServerRequest &request, QHttpServerResp
         emit receivedPost(request, result, json);
         if (result) {
             if (request.url().path().endsWith("/xrpc/com.atproto.server.createSession")) {
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
                 QHttpServerResponder::HeaderList headers {
                     std::make_pair(QByteArray("content-type"),
                                    QByteArray("application/json; charset=utf-8")),
@@ -28,6 +29,14 @@ bool WebServer::handleRequest(const QHttpServerRequest &request, QHttpServerResp
                     std::make_pair(QByteArray("ratelimit-reset"), QByteArray("1694914267")),
                     std::make_pair(QByteArray("ratelimit-policy"), QByteArray("30;w=300"))
                 };
+#else
+                QHttpHeaders headers;
+                headers.append("content-type", "application/json; charset=utf-8");
+                headers.append("ratelimit-reset", "1694914267");
+                headers.append("ratelimit-limit", "30");
+                headers.append("ratelimit-remaining", "10");
+                headers.append("ratelimit-policy", "30;w=300");
+#endif
                 if (request.url().path().endsWith("/limit/xrpc/com.atproto.server.createSession")) {
                     MAKE_RESPONDER.write(json.toUtf8(), headers,
                                          QHttpServerResponder::StatusCode::Unauthorized);
@@ -80,10 +89,20 @@ bool WebServer::handleRequest(const QHttpServerRequest &request, QHttpServerResp
 
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
 #else
-void WebServer::missingHandler(const QHttpServerRequest &request, QHttpServerResponder &&responder)
+void WebServer::missingHandler(const QHttpServerRequest &request, QHttpServerResponder &responder)
 {
     Q_UNUSED(request)
     Q_UNUSED(responder)
+}
+
+quint16 WebServer::listen(const QHostAddress &address, quint16 port)
+{
+    auto tcpserver = new QTcpServer(this);
+    if (!tcpserver->listen(address, port) || !bind(tcpserver)) {
+        tcpserver->deleteLater();
+        return 0;
+    }
+    return tcpserver->serverPort();
 }
 #endif
 
@@ -117,7 +136,7 @@ bool WebServer::verifyHttpHeader(const QHttpServerRequest &request) const
         }
     }
 #else
-    for (const auto &header : request.headers()) {
+    for (const auto &header : request.headers().toListOfPairs()) {
         if (header.first.contains("atproto-accept-labelers")) {
             QList<QByteArray> dids = header.second.split(',');
             for (const auto &did : dids) {

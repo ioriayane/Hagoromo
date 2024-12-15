@@ -15,13 +15,13 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
-          version: '5.15.2'
-          # version: '6.2.*'
+          # version: '5.15.2'
+          version: '6.8.1'
           host: 'linux'
           target: 'desktop'
-          arch: 'gcc_64'
-          modules: 'qtwebglplugin'
-          # modules: 'qt5compat qtwebsockets qthttpserver'
+          arch: 'linux_gcc_64'
+          # modules: 'qtwebglplugin'
+          modules: 'qt5compat qtwebsockets qthttpserver qtshadertools qtimageformats qtscxml'
       - name: Checkout repository
         uses: actions/checkout@v4
         with:

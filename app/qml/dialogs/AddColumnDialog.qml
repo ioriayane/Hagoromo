@@ -84,8 +84,8 @@ Dialog {
                 }
                 AccountList {
                     id: accountList
-                    Layout.preferredWidth: 200 * AdjustedValues.ratio
-                    Layout.preferredHeight: 300 * AdjustedValues.ratio
+                    Layout.preferredWidth: 300 * AdjustedValues.ratio
+                    Layout.preferredHeight: 330 * AdjustedValues.ratio
                     onClicked: (index) => changeColumnTypeView(index)
                 }
             }
@@ -117,8 +117,8 @@ Dialog {
                     }
                 }
                 Item {
-                    Layout.preferredWidth: 300 * AdjustedValues.ratio
-                    Layout.preferredHeight: 300 * AdjustedValues.ratio
+                    Layout.preferredWidth: 330 * AdjustedValues.ratio
+                    Layout.preferredHeight: 330 * AdjustedValues.ratio
                     Repeater {
                         id: repeater
                         model: accountModel.count
@@ -257,7 +257,7 @@ Dialog {
                                 section.criteria: ViewSection.FullString
                                 section.delegate: Rectangle {
                                     width: typeList.width - typeScroll.ScrollBar.vertical.width
-                                    height: text.contentHeight * 1.3 * AdjustedValues.ratio
+                                    height: text.contentHeight * 1.3
                                     color: Material.color(Material.BlueGrey)
                                     required property string section
                                     Text {

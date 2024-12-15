@@ -15,6 +15,7 @@ Welcome to the multi-column, multi-account Bluesky client "Hagoromo" site!
 Hagoromo is a third-party client with the following features.
 
 - Various timelines can be arranged.
+- You can create your own real-time feed.
 - Multiple accounts can be handled.
 - You can choose an account for each column.
 - Change the look and feel of the application, including colors and font size.
@@ -27,7 +28,7 @@ The following environments have been tested.
 
 - Windows 11
 - Ubuntu 22.04
-- MacOS 10.15
+- Mac 15.0.1(x86 on ARM)
 
 ## Download
 

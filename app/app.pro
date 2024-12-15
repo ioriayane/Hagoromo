@@ -182,6 +182,9 @@ TRANSLATIONS += i18n/app_ja.ts
 win32:RC_FILE = app.rc
 mac:ICON = app.icns
 
+# build arch
+mac:QMAKE_APPLE_DEVICE_ARCHS=x86_64
+
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 CONFIG(HAGOROMO_RELEASE_BUILD):DEFINES += HAGOROMO_RELEASE_BUILD
 

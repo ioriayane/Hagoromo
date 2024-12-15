@@ -38,7 +38,6 @@ Dialog {
 
     ButtonGroup {
         id: reportTypeButtonGroup
-        buttons: reportTypeLayout.children
     }
 
     ColumnLayout {
@@ -58,6 +57,7 @@ Dialog {
             mainText: qsTr("Misleading Account")
             description: qsTr("Impersonation or false claims about identity or affiliation")
             property int reason: Reporter.ReasonMisleading
+            ButtonGroup.group: reportTypeButtonGroup
         }
         RadioButtonEx {
             Layout.rightMargin: 20
@@ -65,6 +65,7 @@ Dialog {
             mainText: qsTr("Frequently Posts Unwanted Content")
             description: qsTr("Spam; excessive mentions or replies")
             property int reason: Reporter.ReasonSpam
+            ButtonGroup.group: reportTypeButtonGroup
         }
         RadioButtonEx {
             Layout.rightMargin: 20
@@ -72,6 +73,7 @@ Dialog {
             mainText: qsTr("Name or Description Violates Community Standards")
             description: qsTr("Terms used violate community standards")
             property int reason: Reporter.ReasonViolation
+            ButtonGroup.group: reportTypeButtonGroup
         }
 
         Label {

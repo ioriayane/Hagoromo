@@ -9,6 +9,7 @@ import tech.relog.hagoromo.singleton 1.0
 
 import "../controls"
 import "../compat"
+import "../parts"
 
 Dialog {
     id: settingDialog
@@ -35,6 +36,7 @@ Dialog {
         property real fontSizeRatio: 1.0
         property string fontFamily: ""
         property real maximumFlickVelocity: 2500
+        property real wheelDeceleration: 10000
         property string language: ""
         // Feed
         property string displayOfPosts: "sequential"
@@ -64,6 +66,7 @@ Dialog {
             fontSizeRatioSlider.value = fontSizeRatio
             setFontFamily(fontFamilyComboBox, settings.fontFamily)
             maximumFlickVelocitySlider.value = settings.maximumFlickVelocity
+            wheelDecelerationSlider.value = settings.wheelDeceleration
             languageComboBox.currentIndex = -1
             languageComboBox.setByValue(settings.language)
             // Feed
@@ -112,7 +115,6 @@ Dialog {
     }
     ButtonGroup {
         id: accentButtonGroup
-        buttons: accentGridLayout.children
     }
     ButtonGroup {
         id: displayOfPostsGroup
@@ -141,6 +143,11 @@ Dialog {
                 font.pointSize: AdjustedValues.f10
                 font.capitalization: Font.MixedCase
                 text: qsTr("Layout")
+            }
+            TabButton {
+                font.pointSize: AdjustedValues.f10
+                font.capitalization: Font.MixedCase
+                text: qsTr("Scroll")
             }
             TabButton {
                 font.pointSize: AdjustedValues.f10
@@ -220,6 +227,7 @@ Dialog {
                                 }
                                 checkable: true
                                 property color value: Material.color(modelData)
+                                ButtonGroup.group: accentButtonGroup
                             }
                         }
                     }
@@ -233,7 +241,7 @@ Dialog {
                     Slider {
                         id: fontSizeRatioSlider
                         Layout.topMargin: AdjustedValues.s10
-                        Layout.preferredWidth: 390 * AdjustedValues.ratio
+                        Layout.preferredWidth: 500 * AdjustedValues.ratio
                         from: 0.6
                         to: 2.0
                         stepSize: 0.2
@@ -259,35 +267,6 @@ Dialog {
                             font.family: fontFamilyComboBox.currentText
                             text: qsTr("A")
                             font.pointSize: AdjustedValues.f10 * parent.to
-                        }
-                    }
-
-                    Label {
-                        font.pointSize: AdjustedValues.f10
-                        font.family: fontFamilyComboBox.currentText
-                        text: qsTr("Scroll velocity")
-                    }
-                    RowLayout {
-                        Slider {
-                            id: maximumFlickVelocitySlider
-                            Layout.fillWidth: true
-                            from: 1000
-                            to: 5000
-                            stepSize: 100
-                            snapMode: Slider.SnapOnRelease
-                            Rectangle {
-                                x: parent.background.x + parent.handle.width / 2 + (parent.background.width - parent.handle.width) * (2500 - parent.from) / (parent.to - parent.from) - width / 2
-                                y: parent.topPadding + parent.availableHeight / 2 - parent.handle.height / 2 - height
-                                width: 10
-                                height: 10
-                                radius: 5
-                                color: Material.foreground
-                            }
-                        }
-                        Label {
-                            font.family: fontFamilyComboBox.currentText
-                            text: maximumFlickVelocitySlider.value
-                            font.pointSize: AdjustedValues.f10
                         }
                     }
 
@@ -503,6 +482,180 @@ Dialog {
                 }
             }
 
+            // Scroll
+            Frame {
+                RowLayout {
+                    anchors.fill: parent
+                    ColumnLayout {
+                        Layout.fillWidth: true
+
+                        RowLayout {
+                            Label {
+                                font.pointSize: AdjustedValues.f10
+                                text: qsTr("Scroll velocity") + ":"
+                            }
+                            Label {
+                                font.pointSize: AdjustedValues.f10
+                                text: maximumFlickVelocitySlider.value
+                            }
+                        }
+                        Slider {
+                            id: maximumFlickVelocitySlider
+                            Layout.fillWidth: true
+                            from: 1000
+                            to: 5000
+                            stepSize: 100
+                            snapMode: Slider.SnapOnRelease
+                            Rectangle {
+                                x: parent.background.x + parent.handle.width / 2 + (parent.background.width - parent.handle.width) * (2500 - parent.from) / (parent.to - parent.from) - width / 2
+                                y: parent.topPadding + parent.availableHeight / 2 - parent.handle.height / 2 - height
+                                width: 10
+                                height: 10
+                                radius: 5
+                                color: Material.foreground
+                            }
+                            Label {
+                                anchors.left: parent.left
+                                anchors.leftMargin: 5
+                                anchors.top: parent.top
+                                font.pointSize: AdjustedValues.f8
+                                text: qsTr("slow")
+                            }
+                            Label {
+                                anchors.right: parent.right
+                                anchors.rightMargin: 5
+                                anchors.top: parent.top
+                                font.pointSize: AdjustedValues.f8
+                                text: qsTr("quick")
+                            }
+                        }
+
+                        RowLayout {
+                            Layout.topMargin: AdjustedValues.s5
+                            Label {
+                                font.pointSize: AdjustedValues.f10
+                                text: qsTr("Scroll deceleration") + ":"
+                            }
+                            Label {
+                                font.pointSize: AdjustedValues.f10
+                                text: wheelDecelerationSlider.value
+                            }
+                        }
+                        Slider {
+                            id: wheelDecelerationSlider
+                            Layout.fillWidth: true
+                            from: 1000
+                            to: 15000
+                            stepSize: 1000
+                            snapMode: Slider.SnapOnRelease
+                            Rectangle {
+                                x: parent.background.x + parent.handle.width / 2 + (parent.background.width - parent.handle.width) * (10000 - parent.from) / (parent.to - parent.from) - width / 2
+                                y: parent.topPadding + parent.availableHeight / 2 - parent.handle.height / 2 - height
+                                width: 10
+                                height: 10
+                                radius: 5
+                                color: Material.foreground
+                            }
+                            Label {
+                                anchors.left: parent.left
+                                anchors.leftMargin: 5
+                                anchors.top: parent.top
+                                font.pointSize: AdjustedValues.f8
+                                text: qsTr("slippery")
+                            }
+                            Label {
+                                anchors.right: parent.right
+                                anchors.rightMargin: 5
+                                anchors.top: parent.top
+                                font.pointSize: AdjustedValues.f8
+                                text: qsTr("sticky")
+                            }
+                        }
+                        Button {
+                            Layout.alignment: Qt.AlignRight
+                            font.pointSize: AdjustedValues.f10
+                            text: qsTr("Test") + " -> "
+                            onClicked: {
+                                systemTool.setFlicableWheelDeceleration(wheelDecelerationSlider.value)
+                                scrollExampleLoader.sourceComponent = undefined
+                                scrollExampleLoader.sourceComponent = scrollExampleComponent
+                            }
+                            Component {
+                                id: scrollExampleComponent
+                                ListView {
+                                    id: scrollExampleListView
+                                    anchors.fill: parent
+                                    clip: true
+                                    model: ListModel { }
+                                    delegate: Frame {
+                                        padding: 10
+                                        RowLayout {
+                                            spacing: 10
+                                            AvatarImage {
+                                                id: postAvatarImage
+                                                Layout.preferredWidth: AdjustedValues.i36
+                                                Layout.preferredHeight: AdjustedValues.i36
+                                                Layout.alignment: Qt.AlignTop
+                                                clip: false
+                                            }
+                                            ColumnLayout {
+                                                property int basisWidth: scrollExampleListView.width -
+                                                                         postAvatarImage.width -
+                                                                         30
+                                                Author {
+                                                    id: postAuthor
+                                                    Layout.preferredWidth: parent.basisWidth
+                                                    layoutWidth: parent.basisWidth
+                                                    displayName: model.displayName
+                                                    handle: model.handle
+                                                }
+                                                Label {
+                                                    Layout.preferredWidth: parent.basisWidth
+                                                    font.pointSize: AdjustedValues.f10
+                                                    textFormat: Text.StyledText
+                                                    text: model.text
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        Label {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            Layout.leftMargin: AdjustedValues.s5
+                            font.pointSize: AdjustedValues.f8
+                            wrapMode: Text.Wrap
+                            text: qsTr("*) The settings will not be applied until Hagoromo is restarted.")
+                        }
+                    }
+                    ColumnLayout {
+                        Layout.preferredWidth: 300 * AdjustedValues.ratio
+                        Layout.fillHeight: true
+                        Label {
+                            font.pointSize: AdjustedValues.f10
+                            text: "Example:"
+                        }
+                        Loader {
+                            id: scrollExampleLoader
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            onLoaded: {
+                                console.log("Loaded")
+                                item.maximumFlickVelocity = maximumFlickVelocitySlider.value
+                                for(var i=0; i<50; i++){
+                                    item.model.append({"displayName": "Name " + i,
+                                                          "handle": "Handle " + i,
+                                                          "text": "Post " + i + "<br>Post " + i
+                                                      })
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             // Translate Page
             Frame {
                 GridLayout {
@@ -629,7 +782,10 @@ Dialog {
                 flat: true
                 font.pointSize: AdjustedValues.f10
                 text: qsTr("Cancel")
-                onClicked: settingDialog.reject()
+                onClicked: {
+                    systemTool.setFlicableWheelDeceleration(settings.wheelDeceleration)
+                    settingDialog.reject()
+                }
             }
             Item {
                 Layout.fillWidth: true
@@ -642,6 +798,7 @@ Dialog {
                     // Common
                     AdjustedValues.ratio = fontSizeRatioSlider.value
                     AdjustedValues.maximumFlickVelocity = maximumFlickVelocitySlider.value
+                    systemTool.setFlicableWheelDeceleration(wheelDecelerationSlider.value)
                     // General
                     settings.theme = themeButtonGroup.checkedButton.value
                     settings.accent = accentButtonGroup.checkedButton.value
@@ -651,6 +808,7 @@ Dialog {
                         systemTool.updateFont(settings.fontFamily)
                     }
                     settings.maximumFlickVelocity = maximumFlickVelocitySlider.value
+                    settings.wheelDeceleration = wheelDecelerationSlider.value
                     settings.language = languageComboBox.currentValue
                     // Feed
                     settings.displayOfPosts = displayOfPostsGroup.checkedButton.value

@@ -65,7 +65,7 @@ Dialog {
 
         ListView {
             id: accountList
-            Layout.preferredWidth: 400 * AdjustedValues.ratio
+            Layout.preferredWidth: 450 * AdjustedValues.ratio
             Layout.preferredHeight: 300 * AdjustedValues.ratio
             maximumFlickVelocity: AdjustedValues.maximumFlickVelocity
 

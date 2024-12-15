@@ -17,10 +17,10 @@ import "compat"
 
 ApplicationWindow {
     id: appWindow
-    width: 800
-    height: 600
-    minimumWidth: 800
-    minimumHeight: 600 * AdjustedValues.ratioHalf
+    width: 900
+    height: 700
+    minimumWidth: 900 * AdjustedValues.ratioHalf
+    minimumHeight: 700 * AdjustedValues.ratioHalf
     visible: true
     title: "羽衣 -Hagoromo-"
 
@@ -31,21 +31,24 @@ ApplicationWindow {
     // 逆にこの設定はListViewの内容へ反映されない
     font.family: settingDialog.settings.fontFamily.length > 0 ? settingDialog.settings.fontFamily : font.family
 
-    property bool visibleDialogs: settingDialog.visible ||
-                                  postDialog.visible ||
-                                  searchDialog.visible ||
-                                  addColumnDialog.visible ||
-                                  accountDialog.visible ||
-                                  discoverFeedsDialog.visible ||
-                                  columnsettingDialog.visible ||
-                                  reportDialog.visible ||
-                                  reportAccountDialog.visible ||
-                                  addToListDialog.visible ||
-                                  addListDialog.visible ||
-                                  editProfileDialog.visible ||
-                                  selectThreadGateDialog.visible ||
+    property bool visibleDialogs: imageFullView.visible ||
                                   messageDialog.visible ||
-                                  imageFullView.visible
+                                  logViewDialog.visible ||
+                                  selectThreadGateDialog.visible ||
+                                  addMutedWordDialog.visible ||
+                                  editProfileDialog.visible ||
+                                  addListDialog.visible ||
+                                  addToListDialog.visible ||
+                                  reportMessageDialog.visible ||
+                                  reportAccountDialog.visible ||
+                                  reportDialog.visible ||
+                                  columnsettingDialog.visible ||
+                                  discoverFeedsDialog.visible ||
+                                  accountDialog.visible ||
+                                  addColumnDialog.visible ||
+                                  searchDialog.visible ||
+                                  postDialog.visible ||
+                                  settingDialog.visible
 
     function errorHandler(account_uuid, code, message) {
         if(code === "ExpiredToken" && account_uuid.length > 0){
@@ -124,7 +127,7 @@ ApplicationWindow {
                 column_name = qsTr("Search users")
             }
             columnManageModel.append(accountListModel.item(selectedAccountIndex, AccountListModel.UuidRole),
-                                     component_type, false, 300000, 350,
+                                     component_type, false, 300000, 400,
                                      settingDialog.settings.imageLayoutType, column_name, searchDialog.searchText, [])
             scrollView.showRightMost()
         }
@@ -139,7 +142,7 @@ ApplicationWindow {
                         "\n  selectedName=" + selectedName +
                         "\n  selectedUri=" + selectedUri)
             columnManageModel.append(accountListModel.item(selectedAccountIndex, AccountListModel.UuidRole),
-                                     selectedType, false, 300000, 400,
+                                     selectedType, false, 300000, 500,
                                      settingDialog.settings.imageLayoutType, selectedName, selectedUri, [])
             scrollView.showRightMost()
         }
@@ -208,7 +211,7 @@ ApplicationWindow {
         id: discoverFeedsDialog
         onAccepted: {
             columnManageModel.append(discoverFeedsDialog.account.uuid,
-                                     4, false, 300000, 400,
+                                     4, false, 300000, 500,
                                      settingDialog.settings.imageLayoutType, selectedName, selectedUri, [])
             scrollView.showRightMost()
         }
@@ -607,13 +610,13 @@ ApplicationWindow {
                               }
 
             onRequestViewAuthorFeed: (account_uuid, did, handle) => {
-                                         columnManageModel.append(account_uuid, 5, false, 300000, 350,
+                                         columnManageModel.append(account_uuid, 5, false, 300000, 400,
                                                                   settingDialog.settings.imageLayoutType, handle, did, [])
                                          scrollView.showRightMost()
                                      }
             onRequestViewImages: (index, paths, alts) => imageFullView.open(index, paths, alts)
             onRequestViewFeedGenerator: (account_uuid, name, uri) => {
-                                            columnManageModel.append(account_uuid, 4, false, 300000, 400,
+                                            columnManageModel.append(account_uuid, 4, false, 300000, 500,
                                                                      settingDialog.settings.imageLayoutType, name, uri, [])
                                             scrollView.showRightMost()
                                         }
@@ -627,7 +630,7 @@ ApplicationWindow {
                                       }
             onRequestViewListFeed: (account_uuid, uri, name) => {
                                        console.log("uuid=" + account_uuid + "\nuri=" + uri + "\nname=" + name)
-                                       columnManageModel.append(account_uuid, 6, false, 300000, 400,
+                                       columnManageModel.append(account_uuid, 6, false, 300000, 500,
                                                                 settingDialog.settings.imageLayoutType, name, uri, [])
                                        scrollView.showRightMost()
                                    }
@@ -1087,25 +1090,7 @@ ApplicationWindow {
     DragAndDropArea {
         anchors.fill: parent
         anchors.margins: 5
-        enabled: accountListModel.count > 0
-                 && !imageFullView.visible
-                 && !messageDialog.visible
-                 && !logViewDialog.visible
-                 && !selectThreadGateDialog.visible
-                 && !addMutedWordDialog.visible
-                 && !editProfileDialog.visible
-                 && !addListDialog.visible
-                 && !addToListDialog.visible
-                 && !reportMessageDialog.visible
-                 && !reportAccountDialog.visible
-                 && !reportDialog.visible
-                 && !columnsettingDialog.visible
-                 && !discoverFeedsDialog.visible
-                 && !accountDialog.visible
-                 && !addColumnDialog.visible
-                 && !searchDialog.visible
-                 && !postDialog.visible
-                 && !settingDialog.visible
+        enabled: accountListModel.count > 0 && !appWindow.visibleDialogs
         onDropped: (urls) => postDialog.openWithFiles(urls)
     }
 
