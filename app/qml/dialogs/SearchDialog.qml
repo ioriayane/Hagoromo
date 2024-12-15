@@ -69,7 +69,7 @@ Dialog {
 
         ComboBox {
             id: accountCombo
-            Layout.preferredWidth: 300 * AdjustedValues.ratio + AdjustedValues.i24
+            Layout.preferredWidth: 250 * AdjustedValues.ratio + AdjustedValues.i24
             Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
             font.pointSize: AdjustedValues.f10
             textRole: "handle"
