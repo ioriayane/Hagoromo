@@ -241,7 +241,7 @@ Dialog {
                     Slider {
                         id: fontSizeRatioSlider
                         Layout.topMargin: AdjustedValues.s10
-                        Layout.preferredWidth: 390 * AdjustedValues.ratio
+                        Layout.preferredWidth: 500 * AdjustedValues.ratio
                         from: 0.6
                         to: 2.0
                         stepSize: 0.2

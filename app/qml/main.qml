@@ -17,10 +17,10 @@ import "compat"
 
 ApplicationWindow {
     id: appWindow
-    width: 800
-    height: 600
-    minimumWidth: 800
-    minimumHeight: 600 * AdjustedValues.ratioHalf
+    width: 900
+    height: 700
+    minimumWidth: 900 * AdjustedValues.ratioHalf
+    minimumHeight: 700 * AdjustedValues.ratioHalf
     visible: true
     title: "羽衣 -Hagoromo-"
 

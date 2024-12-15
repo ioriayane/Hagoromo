@@ -152,9 +152,9 @@ Dialog {
             interactive: false
             clip: true
 
-            property int frameWidth: 600 * AdjustedValues.ratio
+            property int frameWidth: 700 * AdjustedValues.ratio
             property int frameHeight: parentHeight - 260 * AdjustedValues.ratioHalf
-            property int frameColumnWidth: 150 * AdjustedValues.ratio
+            property int frameColumnWidth: 200 * AdjustedValues.ratio
 
             Frame {
                 contentWidth: statisticsScrollView.width

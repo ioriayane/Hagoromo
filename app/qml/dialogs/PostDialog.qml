@@ -207,7 +207,7 @@ Dialog {
                 RowLayout {
                     ComboBox {
                         id: accountCombo
-                        Layout.preferredWidth: 200 * AdjustedValues.ratio + AdjustedValues.i24
+                        Layout.preferredWidth: 300 * AdjustedValues.ratio + AdjustedValues.i24
                         Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
                         enabled: !createRecord.running
                         font.pointSize: AdjustedValues.f10
@@ -312,8 +312,10 @@ Dialog {
 
                 ScrollView {
                     z: 99   // MentionSuggetionViewを最前に表示するため
-                    Layout.preferredWidth: 420 * AdjustedValues.ratio
-                    Layout.preferredHeight: 120 * AdjustedValues.ratio
+                    Layout.fillWidth: true
+                    // Layout.preferredWidth: 500 * AdjustedValues.ratio
+                    Layout.minimumWidth: 500 * AdjustedValues.ratio
+                    Layout.preferredHeight: 150 * AdjustedValues.ratio
                     TextArea {
                         id: postText
                         verticalAlignment: TextInput.AlignTop
@@ -325,7 +327,7 @@ Dialog {
                         onTextChanged: mentionSuggestionView.reload(getText(0, cursorPosition))
                         Keys.onPressed: (event) => {
                                             if(mentionSuggestionView.visible){
-                                                console.log("Key(v):" + event.key)
+                                                // console.log("Key(v):" + event.key)
                                                 if(event.key === Qt.Key_Up){
                                                     mentionSuggestionView.up()
                                                     event.accepted = true
