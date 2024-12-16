@@ -528,12 +528,32 @@ void log_test::test_LogManager_select()
         i = 0;
         QVERIFY2(
                 manager.feedViewPosts().at(i).post.uri
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kjvg2xwac32j",
+                        == "at://did:plc:ipj5qejfoqu6eukvt72uhyit/app.bsky.feed.post/3km3dft6axv2e",
                 manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        QVERIFY2(manager.feedViewPosts().at(i).reason_type
+                         == AtProtocolType::AppBskyFeedDefs::FeedViewPostReasonType::
+                                 reason_ReasonRepost,
+                 QString::number(static_cast<int>(manager.feedViewPosts().at(i).reason_type))
+                         .toLocal8Bit());
         i = 1;
         QVERIFY2(
                 manager.feedViewPosts().at(i).post.uri
-                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3kdttptwwvb2h",
+                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3km3dpeckyk2z",
+                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        i = 2;
+        QVERIFY2(
+                manager.feedViewPosts().at(i).post.uri
+                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3km2kvvjtmr2z",
+                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        i = 3;
+        QVERIFY2(
+                manager.feedViewPosts().at(i).post.uri
+                        == "at://did:plc:mqxsuw5b5rhpwo4lw6iwlid5/app.bsky.feed.post/3km2kvvjtmr2z",
+                manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
+        i = 4;
+        QVERIFY2(
+                manager.feedViewPosts().at(i).post.uri
+                        == "at://did:plc:l4fsx4ujos7uw7n4ijq2ulgs/app.bsky.feed.post/3klyzebwf7k26",
                 manager.feedViewPosts().at(i).post.uri.toLocal8Bit());
     }
 }

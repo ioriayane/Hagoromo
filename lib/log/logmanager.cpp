@@ -25,8 +25,12 @@ LogManager::LogManager(QObject *parent) : AtProtocolAccount { parent }
             [=](const QList<TotalItem> &list, const int max) { emit finishedTotals(list, max); });
     connect(&m_logAccess, &LogAccess::finishedSelection, this,
             [=](const QString &records, const QStringList &view_posts) {
+                // view_postsには基本ポストのURIがくる
+                // ただし既にDBに取得済みのViewPostが保存されているとJSONがくる
                 emit finishedSelection(records);
-                m_viewPosts = view_posts;
+
+                QJsonDocument json_records = QJsonDocument::fromJson(records.toUtf8());
+                m_viewPosts.clear();
                 m_cueGetPost.clear();
                 m_postViews.clear();
                 m_postViewsJson = QJsonArray();
@@ -35,8 +39,30 @@ LogManager::LogManager(QObject *parent) : AtProtocolAccount { parent }
                     if (post.startsWith("at://")) {
                         if (post_items.contains("app.bsky.feed.post")) {
                             m_cueGetPost.append(post);
+                            m_viewPosts.append(post); // getPostsした結果で置換する
                         } else if (post_items.contains("app.bsky.feed.repost")) {
+                            for (const auto &record :
+                                 json_records.object().value("records").toArray()) {
+                                QString uri = record.toObject().value("uri").toString();
+                                if (uri == post) {
+                                    // repostされた側のURIを取得
+                                    QString reposted_uri = record.toObject()
+                                                                   .value("value")
+                                                                   .toObject()
+                                                                   .value("subject")
+                                                                   .toObject()
+                                                                   .value("uri")
+                                                                   .toString();
+                                    if (reposted_uri.split("/").contains("app.bsky.feed.post")) {
+                                        m_cueGetPost.append(reposted_uri);
+                                        m_viewPosts.append(
+                                                reposted_uri); // getPostsした結果で置換する
+                                    }
+                                }
+                            }
                         }
+                    } else {
+                        m_viewPosts.append(post);
                     }
                 }
                 getPosts();
