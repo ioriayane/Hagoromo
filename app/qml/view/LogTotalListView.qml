@@ -14,15 +14,18 @@ ScrollView {
     property bool verticalScrollBar: false
     property int verticalScrollBarWidth: verticalScrollBar ? statisticsScrollView.ScrollBar.vertical.width : 0
     property alias model: statisticsListView.model
+    property bool selectable: false
 
     signal clickedItem(string name)
 
     ListView {
         id: statisticsListView
         anchors.fill: parent
+        currentIndex: -1
         delegate: ItemDelegate {
             width: statisticsListView.width - statisticsScrollView.verticalScrollBarWidth
             height: nameLabel.contentHeight * 2
+            highlighted: (statisticsListView.currentIndex === model.index)
             Rectangle {
                 visible: model.count > 0
                 anchors.fill: parent
@@ -49,7 +52,12 @@ ScrollView {
                     text: model.count
                 }
             }
-            onClicked: statisticsScrollView.clickedItem(model.name)
+            onClicked: {
+                if(statisticsScrollView.selectable === true){
+                    statisticsListView.currentIndex = model.index
+                }
+                statisticsScrollView.clickedItem(model.name)
+            }
         }
         section.property: "group"
         section.criteria: ViewSection.FullString

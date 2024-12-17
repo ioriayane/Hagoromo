@@ -236,6 +236,7 @@ Dialog {
                         Layout.preferredWidth: swipeView.frameColumnWidth
                         Layout.preferredHeight: swipeView.frameHeight
                         verticalScrollBar: true
+                        selectable: true
                         enabled: !logDailyFeedListModel.running &&
                                  !logMonthlyFeedListModel.running &&
                                  !logSearchFeedListModel.running
@@ -291,6 +292,7 @@ Dialog {
                         Layout.preferredWidth: swipeView.frameColumnWidth
                         Layout.preferredHeight: swipeView.frameHeight
                         verticalScrollBar: true
+                        selectable: true
                         enabled: !logDailyFeedListModel.running &&
                                  !logMonthlyFeedListModel.running &&
                                  !logSearchFeedListModel.running
