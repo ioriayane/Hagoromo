@@ -10,6 +10,8 @@ description: This is a multi-column Bluesky client.
 
 - Update
   - Change Qt version to 6.8.1 and related changes
+  - Change to include reposts in the log
+  - Improve the log UI
 
 ### v0.41.0 - 2024/12/3
 
