@@ -194,6 +194,7 @@ Dialog {
                             text: qsTr("Search")
                             onClicked: {
                                 console.log("search:" + searchText.text)
+                                notFoundLabel.visible = false
                                 logSearchFeedListModel.setAccount(account.uuid)
                                 logSearchFeedListModel.selectCondition = searchText.text
                                 logSearchFeedListModel.clear()
@@ -210,6 +211,11 @@ Dialog {
                             targetHandle: account.handle
                             targetAvatar: account.avatar
                             feedType: LogFeedListModel.WordsFeedType
+                            onRunningChanged: {
+                                if(!running){
+                                    notFoundLabel.visible = (logSearchFeedListModel.rowCount() === 0)
+                                }
+                            }
                         }
                         accountDid: account.did
                         logMode: true
@@ -222,6 +228,17 @@ Dialog {
                         onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) =>
                                                    logViewDialog.requestUpdateThreadGate(account.uuid, uri, threadgate_uri, type, rules, callback)
                         onHoveredLinkChanged: logViewDialog.hoveredLink = hoveredLink
+
+                        Frame {
+                            id: notFoundLabel
+                            anchors.top: parent.top
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            visible: false
+                            Label {
+                                font.pointSize: AdjustedValues.f10
+                                text: qsTr("Not found.")
+                            }
+                        }
                     }
                 }
             }
