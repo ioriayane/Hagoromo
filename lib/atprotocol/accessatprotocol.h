@@ -76,6 +76,7 @@ public:
     QString did() const;
     QString handle() const;
     QString email() const;
+    QString displayName() const;
     QString accessJwt() const;
     QString refreshJwt() const;
 

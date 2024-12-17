@@ -41,6 +41,8 @@ void AtProtocolAccount::setAccount(const AccountData &account)
     m_account.accessJwt = account.accessJwt;
     m_account.refreshJwt = account.refreshJwt;
     m_account.status = account.status;
+
+    m_account.displayName = account.displayName;
 }
 
 void AtProtocolAccount::setSession(const QString &did, const QString &handle, const QString &email,
@@ -95,6 +97,11 @@ QString AtProtocolAccount::handle() const
 QString AtProtocolAccount::email() const
 {
     return m_account.email;
+}
+
+QString AtProtocolAccount::displayName() const
+{
+    return m_account.displayName;
 }
 
 QString AtProtocolAccount::accessJwt() const

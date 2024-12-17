@@ -41,6 +41,7 @@ private:
     void getPosts();
     QStringList m_cueGetPost; // uri
     QStringList m_viewPosts;
+    QHash<QString, QString> m_repostedPosts; // QHash<された, した>
     QList<AtProtocolType::AppBskyFeedDefs::PostView> m_postViews;
     QJsonArray m_postViewsJson; // m_postViewsのJSON
     QList<AtProtocolType::AppBskyFeedDefs::FeedViewPost> m_feedViewPosts;
