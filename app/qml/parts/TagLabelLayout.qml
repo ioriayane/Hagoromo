@@ -9,7 +9,7 @@ Item {
     id: tagLabelLayout
     clip: true
     implicitHeight: {
-        if(repeater.count === 0){
+        if(repeater.count === 0 || tagLabelLayout.width === 0){
             return 0
         }
         var item = repeater.itemAt(repeater.count-1)
