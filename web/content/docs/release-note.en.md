@@ -12,6 +12,7 @@ description: This is a multi-column Bluesky client.
   - Change Qt version to 6.8.1 and related changes
   - Change to include reposts in the log
   - Improve the log UI
+  - Change to reflect when there is a like or repost on a post that has already been received in real-time feed
 
 ### v0.41.0 - 2024/12/3
 
