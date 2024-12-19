@@ -110,7 +110,7 @@ void FirehoseReceiver::start()
     ComAtprotoSyncSubscribeReposEx::SubScribeMode mode =
             ComAtprotoSyncSubscribeReposEx::SubScribeMode::JetStream;
     QUrl url(path + "/subscribe?wantedCollections=app.bsky.feed.post"
-             + "&wantedCollections=app.bsky.feed.repost"
+             + "&wantedCollections=app.bsky.feed.repost" + "&wantedCollections=app.bsky.feed.like"
              + "&wantedCollections=app.bsky.graph.follow"
              + "&wantedCollections=app.bsky.graph.listitem");
 #else

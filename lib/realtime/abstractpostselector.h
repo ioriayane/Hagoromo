@@ -54,7 +54,7 @@ public:
     virtual UserInfo getUser(const QString &did) const;
 
     static QStringList getOperationUris(const QJsonObject &object);
-    QList<OperationInfo> getOperationInfos(const QJsonObject &object);
+    QList<OperationInfo> getOperationInfos(const QJsonObject &object, bool like = false);
     bool isReaction(const QJsonObject &object);
     void appendReactionCandidate(const QString &uri);
 

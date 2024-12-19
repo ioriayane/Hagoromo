@@ -403,7 +403,7 @@ void TimelineListModel::update(int row, TimelineListModelRoles role, const QVari
         } else {
             current.post.likeCount--;
         }
-        if (current.post.likeCount > 0) {
+        if (current.post.likeCount < 0) {
             current.post.likeCount = 0;
         }
         emit dataChanged(index(row), index(row), QVector<int>() << role);

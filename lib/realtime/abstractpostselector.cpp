@@ -295,7 +295,7 @@ QStringList AbstractPostSelector::getOperationUris(const QJsonObject &object)
     return uris;
 }
 
-QList<OperationInfo> AbstractPostSelector::getOperationInfos(const QJsonObject &object)
+QList<OperationInfo> AbstractPostSelector::getOperationInfos(const QJsonObject &object, bool like)
 {
     QList<OperationInfo> infos;
     const QString repo = getRepo(object);
@@ -341,6 +341,29 @@ QList<OperationInfo> AbstractPostSelector::getOperationInfos(const QJsonObject &
                         infos.append(info);
                     }
                 }
+            } else if (like && path.startsWith("app.bsky.feed.like/")) {
+                const QJsonObject block = getBlock(object, path);
+                if (!block.isEmpty()) {
+                    info.cid = block.value("value")
+                                       .toObject()
+                                       .value("subject")
+                                       .toObject()
+                                       .value("cid")
+                                       .toString();
+                    info.uri = block.value("value")
+                                       .toObject()
+                                       .value("subject")
+                                       .toObject()
+                                       .value("uri")
+                                       .toString();
+                    UserInfo user_info = getUser(repo);
+
+                    if (!info.cid.isEmpty() && !info.uri.isEmpty()) {
+                        info.is_like = true;
+                        info.reposted_by = repo;
+                        infos.append(info);
+                    }
+                }
             } else {
                 info.cid = cid;
                 info.uri = QString("at://%1/%2").arg(repo, path);
@@ -371,6 +394,19 @@ bool AbstractPostSelector::isReaction(const QJsonObject &object)
         const QString cid = item.toObject().value("cid").toObject().value("$link").toString();
         if (!path.isEmpty() && !cid.isEmpty()) {
             if (path.startsWith("app.bsky.feed.repost/")) {
+                const QJsonObject block = getBlock(object, path);
+                if (!block.isEmpty()) {
+                    const QString uri = block.value("value")
+                                                .toObject()
+                                                .value("subject")
+                                                .toObject()
+                                                .value("uri")
+                                                .toString();
+                    if (m_reationCandidates.contains(uri)) {
+                        return true;
+                    }
+                }
+            } else if (path.startsWith("app.bsky.feed.like/")) {
                 const QJsonObject block = getBlock(object, path);
                 if (!block.isEmpty()) {
                     const QString uri = block.value("value")
@@ -815,5 +851,4 @@ void AbstractPostSelector::setHandle(const QString &newHandle)
     }
     m_handle = newHandle;
 }
-
 }

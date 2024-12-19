@@ -76,7 +76,7 @@ bool RealtimeFeedListModel::getLatest()
         }
     });
     connect(selector, &AbstractPostSelector::reacted, this, [=](const QJsonObject &object) {
-        const QList<OperationInfo> infos = selector->getOperationInfos(object);
+        const QList<OperationInfo> infos = selector->getOperationInfos(object, true);
         for (const auto &info : infos) {
             int i = -1;
             QList<int> rows;
