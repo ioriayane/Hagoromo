@@ -471,6 +471,16 @@ QString TimelineListModel::getItemOfficialUrl(int row) const
     return atUriToOfficialUrl(item(row, UriRole).toString(), QStringLiteral("post"));
 }
 
+QList<int> TimelineListModel::indexsOf(const QString &cid) const
+{
+    int i = -1;
+    QList<int> rows;
+    while ((i = m_cidList.indexOf(cid, i + 1)) >= 0) {
+        rows.append(i);
+    }
+    return rows;
+}
+
 bool TimelineListModel::getLatest()
 {
     if (running())
@@ -564,21 +574,35 @@ bool TimelineListModel::repost(int row)
         return false;
     setRunningRepost(row, true);
 
+    const QString target_cid = item(row, CidRole).toString();
+    const QString target_uri = item(row, UriRole).toString();
+
     RecordOperator *ope = new RecordOperator(this);
     connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
     connect(ope, &RecordOperator::finished, this,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(cid)
                 if (success) {
-                    update(row, RepostedUriRole, uri);
-                    update(row, RepostCountRole, !uri.isEmpty());
+                    const QList<int> rows = indexsOf(target_cid);
+                    bool first = true;
+                    for (const auto &r : rows) {
+                        if (first) {
+                            update(row, RepostedUriRole, uri);
+                            update(row, RepostCountRole, !uri.isEmpty());
+                            first = false;
+                        } else {
+                            emit dataChanged(index(r), index(r),
+                                             QVector<int>() << RepostedUriRole << IsRepostedRole
+                                                            << RepostCountRole);
+                        }
+                    }
                 }
                 setRunningRepost(row, false);
                 ope->deleteLater();
             });
     ope->setAccount(account().uuid);
     if (!current)
-        ope->repost(item(row, CidRole).toString(), item(row, UriRole).toString());
+        ope->repost(target_cid, target_uri);
     else
         ope->deleteRepost(item(row, RepostedUriRole).toString());
 
@@ -596,6 +620,9 @@ bool TimelineListModel::like(int row, bool do_count_up)
         return false;
     setRunningLike(row, true);
 
+    const QString target_cid = item(row, CidRole).toString();
+    const QString target_uri = item(row, UriRole).toString();
+
     RecordOperator *ope = new RecordOperator(this);
     connect(ope, &RecordOperator::errorOccured, this, &TimelineListModel::errorOccured);
     connect(ope, &RecordOperator::finished, this,
@@ -603,14 +630,25 @@ bool TimelineListModel::like(int row, bool do_count_up)
                 Q_UNUSED(cid)
 
                 if (success) {
-                    update(row, LikedUriRole, uri);
-                    if (do_count_up) {
-                        update(row, LikeCountRole, !uri.isEmpty());
-                    } else if (uri.isEmpty()) {
-                        // 減算のみ、加算はfirehose経由で実施
-                        // likeのみ、repostはユーザーの操作時に加算しないとjetstream経由は
-                        // selectorのjudge側で処理してしまうためリアクションとして加算できない
-                        update(row, LikeCountRole, false);
+                    const QList<int> rows = indexsOf(target_cid);
+                    bool first = true;
+                    for (const auto &r : rows) {
+                        if (first) {
+                            update(r, LikedUriRole, uri);
+                            if (do_count_up) {
+                                update(r, LikeCountRole, !uri.isEmpty());
+                            } else if (uri.isEmpty()) {
+                                // 減算のみ、加算はfirehose経由で実施
+                                // likeのみ、repostはユーザーの操作時に加算しないとjetstream経由は
+                                // selectorのjudge側で処理してしまうためリアクションとして加算できない
+                                update(r, LikeCountRole, false);
+                            }
+                            first = false;
+                        } else {
+                            emit dataChanged(index(r), index(r),
+                                             QVector<int>() << LikedUriRole << IsLikedRole
+                                                            << LikeCountRole);
+                        }
                     }
                 }
                 setRunningLike(row, false);
@@ -618,7 +656,7 @@ bool TimelineListModel::like(int row, bool do_count_up)
             });
     ope->setAccount(account().uuid);
     if (!current)
-        ope->like(item(row, CidRole).toString(), item(row, UriRole).toString());
+        ope->like(target_cid, target_uri);
     else
         ope->deleteLike(item(row, LikedUriRole).toString());
 

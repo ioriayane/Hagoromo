@@ -78,11 +78,7 @@ bool RealtimeFeedListModel::getLatest()
     connect(selector, &AbstractPostSelector::reacted, this, [=](const QJsonObject &object) {
         const QList<OperationInfo> infos = selector->getOperationInfos(object, true);
         for (const auto &info : infos) {
-            int i = -1;
-            QList<int> rows;
-            while ((i = m_cidList.indexOf(info.cid, i + 1)) >= 0) {
-                rows.append(i);
-            }
+            const QList<int> rows = indexsOf(info.cid);
             bool first = true;
             for (const auto row : rows) {
                 if (first) {

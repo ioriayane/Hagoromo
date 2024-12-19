@@ -166,6 +166,7 @@ public:
     virtual Q_INVOKABLE QString getRecordText(const QString &cid);
     virtual Q_INVOKABLE QString getOfficialUrl() const { return QString(); }
     virtual Q_INVOKABLE QString getItemOfficialUrl(int row) const;
+    QList<int> indexsOf(const QString &cid) const;
 
     Q_INVOKABLE bool getLatest();
     Q_INVOKABLE bool getNext();
