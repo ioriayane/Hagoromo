@@ -17,6 +17,7 @@ public:
 
     Q_INVOKABLE bool getLatest();
     Q_INVOKABLE bool getNext();
+    Q_INVOKABLE bool like(int row);
 
     QString selectorJson() const;
     void setSelectorJson(const QString &newSelectorJson);
