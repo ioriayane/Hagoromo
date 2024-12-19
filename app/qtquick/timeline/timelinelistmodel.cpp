@@ -365,12 +365,7 @@ void TimelineListModel::update(int row, TimelineListModelRoles role, const QVari
     if (role == RepostedUriRole) {
         qDebug() << "update REPOST" << value.toString();
         current.post.viewer.repost = value.toString();
-        if (current.post.viewer.repost.isEmpty())
-            current.post.repostCount--;
-        else
-            current.post.repostCount++;
-        emit dataChanged(index(row), index(row),
-                         QVector<int>() << role << IsRepostedRole << RepostCountRole);
+        emit dataChanged(index(row), index(row), QVector<int>() << role << IsRepostedRole);
     } else if (role == QuoteCountRole) {
         qDebug() << "update QUOTE" << value.toInt();
         current.post.quoteCount += value.toInt();
@@ -380,12 +375,7 @@ void TimelineListModel::update(int row, TimelineListModelRoles role, const QVari
     } else if (role == LikedUriRole) {
         qDebug() << "update LIKE" << value.toString();
         current.post.viewer.like = value.toString();
-        if (current.post.viewer.like.isEmpty())
-            current.post.likeCount--;
-        else
-            current.post.likeCount++;
-        emit dataChanged(index(row), index(row),
-                         QVector<int>() << role << IsLikedRole << LikeCountRole);
+        emit dataChanged(index(row), index(row), QVector<int>() << role << IsLikedRole);
 
     } else if (role == RepostCountRole) {
         if (value.toBool()) {
@@ -581,6 +571,7 @@ bool TimelineListModel::repost(int row)
                 Q_UNUSED(cid)
                 if (success) {
                     update(row, RepostedUriRole, uri);
+                    update(row, RepostCountRole, !uri.isEmpty());
                 }
                 setRunningRepost(row, false);
                 ope->deleteLater();
@@ -594,7 +585,7 @@ bool TimelineListModel::repost(int row)
     return true;
 }
 
-bool TimelineListModel::like(int row)
+bool TimelineListModel::like(int row, bool do_count_up)
 {
     if (row < 0 || row >= m_cidList.count())
         return false;
@@ -613,6 +604,14 @@ bool TimelineListModel::like(int row)
 
                 if (success) {
                     update(row, LikedUriRole, uri);
+                    if (do_count_up) {
+                        update(row, LikeCountRole, !uri.isEmpty());
+                    } else if (uri.isEmpty()) {
+                        // 減算のみ、加算はfirehose経由で実施
+                        // likeのみ、repostはユーザーの操作時に加算しないとjetstream経由は
+                        // selectorのjudge側で処理してしまうためリアクションとして加算できない
+                        update(row, LikeCountRole, false);
+                    }
                 }
                 setRunningLike(row, false);
                 ope->deleteLater();

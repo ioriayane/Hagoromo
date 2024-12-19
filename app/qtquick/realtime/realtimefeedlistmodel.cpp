@@ -131,6 +131,11 @@ bool RealtimeFeedListModel::getNext()
     return true;
 }
 
+bool RealtimeFeedListModel::like(int row)
+{
+    return TimelineListModel::like(row, false);
+}
+
 QString RealtimeFeedListModel::selectorJson() const
 {
     return m_selectorJson;
