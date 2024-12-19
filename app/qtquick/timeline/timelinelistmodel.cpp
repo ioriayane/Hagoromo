@@ -386,6 +386,28 @@ void TimelineListModel::update(int row, TimelineListModelRoles role, const QVari
             current.post.likeCount++;
         emit dataChanged(index(row), index(row),
                          QVector<int>() << role << IsLikedRole << LikeCountRole);
+
+    } else if (role == RepostCountRole) {
+        if (value.toBool()) {
+            current.post.repostCount++;
+        } else {
+            current.post.repostCount--;
+        }
+        if (current.post.repostCount < 0) {
+            current.post.repostCount = 0;
+        }
+        emit dataChanged(index(row), index(row), QVector<int>() << role);
+    } else if (role == LikeCountRole) {
+        if (value.toBool()) {
+            current.post.likeCount++;
+        } else {
+            current.post.likeCount--;
+        }
+        if (current.post.likeCount > 0) {
+            current.post.likeCount = 0;
+        }
+        emit dataChanged(index(row), index(row), QVector<int>() << role);
+
     } else if (role == PinnedByMeRole) {
         qDebug() << "update Pinned by me:" << value.toString();
         current.post.viewer.pinned = value.toBool();

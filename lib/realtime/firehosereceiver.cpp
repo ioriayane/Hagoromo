@@ -49,8 +49,11 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
                     } else if (!s->ready()) {
                         // no op
                     } else if (s->judge(json)) {
-                        qDebug().noquote().nospace() << QJsonDocument(json).toJson();
+                        qDebug().noquote().nospace() << "judge" << QJsonDocument(json).toJson();
                         emit s->selected(json);
+                    } else if (s->isReaction(json)) {
+                        qDebug().noquote().nospace() << "reaction" << QJsonDocument(json).toJson();
+                        emit s->reacted(json);
                     }
                 }
             });

@@ -75,6 +75,36 @@ bool RealtimeFeedListModel::getLatest()
             getPostThread();
         }
     });
+    connect(selector, &AbstractPostSelector::reacted, this, [=](const QJsonObject &object) {
+        const QList<OperationInfo> infos = selector->getOperationInfos(object);
+        for (const auto &info : infos) {
+            int i = -1;
+            QList<int> rows;
+            while ((i = m_cidList.indexOf(info.cid, i + 1)) >= 0) {
+                rows.append(i);
+            }
+            bool first = true;
+            for (const auto row : rows) {
+                if (first) {
+                    // ポストデータの実態は1つだけなのでupdateは1回だけ
+                    if (info.is_repost) {
+                        update(row, TimelineListModelRoles::RepostCountRole,
+                               info.action == OperationActionType::Create);
+                    } else if (info.is_like) {
+                        update(row, TimelineListModelRoles::LikeCountRole,
+                               info.action == OperationActionType::Create);
+                    }
+                    first = false;
+                } else {
+                    if (info.is_repost) {
+                        emit dataChanged(index(row), index(row), QVector<int>() << RepostCountRole);
+                    } else if (info.is_like) {
+                        emit dataChanged(index(row), index(row), QVector<int>() << LikeCountRole);
+                    }
+                }
+            }
+        }
+    });
 
     m_followings.clear();
     m_followers.clear();

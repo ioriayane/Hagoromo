@@ -6,6 +6,8 @@
 
 namespace RealtimeFeed {
 
+enum class OperationActionType : int { Create, Delete };
+
 struct UserInfo
 {
     QString did;
@@ -16,8 +18,10 @@ struct UserInfo
 
 struct OperationInfo
 {
+    OperationActionType action = OperationActionType::Create;
     QString cid;
     QString uri;
+    bool is_like = false;
     bool is_repost = false;
     QString reposted_by; // did
     QString reposted_by_handle;
@@ -51,6 +55,8 @@ public:
 
     static QStringList getOperationUris(const QJsonObject &object);
     QList<OperationInfo> getOperationInfos(const QJsonObject &object);
+    bool isReaction(const QJsonObject &object);
+    void appendReactionCandidate(const QString &uri);
 
     int getNodeCount() const;
     AbstractPostSelector *itemAt(int &index);
@@ -98,6 +104,7 @@ public:
 
 signals:
     void selected(const QJsonObject &object);
+    void reacted(const QJsonObject &object);
 
 protected:
     const QList<AbstractPostSelector *> &children() const;
@@ -135,6 +142,7 @@ private:
     int m_repostCondition; // 0: only, 1: exclude
     QString m_listUri;
     QString m_listName;
+    QStringList m_reationCandidates;
 };
 }
 

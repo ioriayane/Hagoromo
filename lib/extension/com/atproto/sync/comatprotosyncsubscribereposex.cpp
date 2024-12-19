@@ -173,9 +173,7 @@ void ComAtprotoSyncSubscribeReposEx::messageReceivedFromJetStream(const QByteArr
         m_webSocket.close();
     } else if (!json_src.contains("kind") || !json_src.contains("did")
                || !json_src.contains("commit")) {
-        qDebug().noquote() << "Unsupport data:" << message;
-        // emit errorOccured("InvalidData", "Unanticipated data structure.");
-        // m_webSocket.close();
+        // qDebug().noquote() << "Unsupport data:" << message;
     } else {
         payload_type = "#commit";
 
