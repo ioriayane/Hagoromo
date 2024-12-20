@@ -380,7 +380,7 @@ QList<OperationInfo> AbstractPostSelector::getOperationInfos(const QJsonObject &
     return infos;
 }
 
-bool AbstractPostSelector::isReaction(const QJsonObject &object)
+bool AbstractPostSelector::judgeReaction(const QJsonObject &object)
 {
     QList<OperationInfo> infos;
     const QString repo = getRepo(object);

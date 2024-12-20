@@ -56,7 +56,7 @@ public:
 
     static QStringList getOperationUris(const QJsonObject &object);
     QList<OperationInfo> getOperationInfos(const QJsonObject &object, bool like = false);
-    bool isReaction(const QJsonObject &object);
+    bool judgeReaction(const QJsonObject &object);
     void appendReactionCandidate(const QString &uri);
 
     int getNodeCount() const;

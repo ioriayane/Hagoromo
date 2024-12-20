@@ -49,7 +49,7 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
                     } else if (!s->ready()) {
                         // no op
                     } else {
-                        if (s->isReaction(json)) {
+                        if (s->judgeReaction(json)) {
                             qDebug().noquote().nospace()
                                     << "reaction" << QJsonDocument(json).toJson();
                             emit s->reacted(json);
