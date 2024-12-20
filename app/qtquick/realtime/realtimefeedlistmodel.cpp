@@ -69,7 +69,6 @@ bool RealtimeFeedListModel::getLatest()
     selector->setDisplayName(account().displayName);
     connect(selector, &AbstractPostSelector::selected, this, [=](const QJsonObject &object) {
         // qDebug().noquote() << QJsonDocument(object).toJson();
-
         m_cueGetPostThread.append(selector->getOperationInfos(object));
         if (!m_cueGetPostThread.isEmpty()) {
             getPostThread();
@@ -81,29 +80,36 @@ bool RealtimeFeedListModel::getLatest()
             const QList<int> rows = indexsOf(info.cid);
             bool first = true;
             for (const auto row : rows) {
-                if (first) {
-                    // ポストデータの実態は1つだけなのでupdateは1回だけ
-                    if (info.is_repost) {
+                if (info.is_repost) {
+                    if (first) {
+                        // ポストデータの実態は1つだけなのでupdateは1回だけ
                         if (info.reacted_by_did == account().did) {
                             update(row, RepostedUriRole, info.reaction_uri);
                         }
                         update(row, TimelineListModelRoles::RepostCountRole,
                                info.action == OperationActionType::Create);
-                    } else if (info.is_like) {
+                    } else {
+                        emit dataChanged(index(row), index(row), QVector<int>() << RepostCountRole);
+                    }
+                } else if (info.is_like) {
+                    if (first) {
+                        // ポストデータの実態は1つだけなのでupdateは1回だけ
                         if (info.reacted_by_did == account().did) {
                             update(row, LikedUriRole, info.reaction_uri);
                         }
                         update(row, TimelineListModelRoles::LikeCountRole,
                                info.action == OperationActionType::Create);
-                    }
-                    first = false;
-                } else {
-                    if (info.is_repost) {
-                        emit dataChanged(index(row), index(row), QVector<int>() << RepostCountRole);
-                    } else if (info.is_like) {
+                    } else {
                         emit dataChanged(index(row), index(row), QVector<int>() << LikeCountRole);
                     }
+                } else {
+                    // delete post
+                    qDebug().noquote() << "delete" << rows << info.uri << info.cid;
+                    beginRemoveRows(QModelIndex(), row, row);
+                    m_cidList.removeAt(row);
+                    endRemoveRows();
                 }
+                first = false;
             }
         }
     });

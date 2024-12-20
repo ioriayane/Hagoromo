@@ -57,7 +57,7 @@ public:
     static QStringList getOperationUris(const QJsonObject &object);
     QList<OperationInfo> getOperationInfos(const QJsonObject &object, bool like = false);
     bool judgeReaction(const QJsonObject &object);
-    void appendReactionCandidate(const QString &uri);
+    void appendReactionCandidate(const QString &uri, const QString &cid);
 
     int getNodeCount() const;
     AbstractPostSelector *itemAt(int &index);
@@ -143,7 +143,10 @@ private:
     int m_repostCondition; // 0: only, 1: exclude
     QString m_listUri;
     QString m_listName;
-    QStringList m_reationCandidates;
+    QStringList m_reationCandidates; // uri
+    QHash<QString, QString>
+            m_reationCandidatesCids; // QHash<uri, cid>
+                                     // deleteはcidが入ってこないので削除候補を保存しておく
 };
 }
 
