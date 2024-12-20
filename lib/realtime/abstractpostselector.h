@@ -23,9 +23,10 @@ struct OperationInfo
     QString uri;
     bool is_like = false;
     bool is_repost = false;
-    QString reposted_by; // did
-    QString reposted_by_handle;
-    QString reposted_by_display_name;
+    QString reaction_uri;
+    QString reacted_by_did; // did
+    QString reacted_by_handle;
+    QString reacted_by_display_name;
 };
 
 class AbstractPostSelector : public QObject

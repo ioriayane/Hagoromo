@@ -84,9 +84,15 @@ bool RealtimeFeedListModel::getLatest()
                 if (first) {
                     // ポストデータの実態は1つだけなのでupdateは1回だけ
                     if (info.is_repost) {
+                        if (info.reacted_by_did == account().did) {
+                            update(row, RepostedUriRole, info.reaction_uri);
+                        }
                         update(row, TimelineListModelRoles::RepostCountRole,
                                info.action == OperationActionType::Create);
                     } else if (info.is_like) {
+                        if (info.reacted_by_did == account().did) {
+                            update(row, LikedUriRole, info.reaction_uri);
+                        }
                         update(row, TimelineListModelRoles::LikeCountRole,
                                info.action == OperationActionType::Create);
                     }
@@ -125,6 +131,11 @@ bool RealtimeFeedListModel::getLatest()
 bool RealtimeFeedListModel::getNext()
 {
     return true;
+}
+
+bool RealtimeFeedListModel::repost(int row)
+{
+    return TimelineListModel::repost(row, false);
 }
 
 bool RealtimeFeedListModel::like(int row)
@@ -369,9 +380,9 @@ void RealtimeFeedListModel::getPostThread()
             if (ope_info.is_repost) {
                 view_post.reason_type = AtProtocolType::AppBskyFeedDefs::FeedViewPostReasonType::
                         reason_ReasonRepost;
-                view_post.reason_ReasonRepost.by.did = ope_info.reposted_by;
-                view_post.reason_ReasonRepost.by.handle = ope_info.reposted_by_handle;
-                view_post.reason_ReasonRepost.by.displayName = ope_info.reposted_by_display_name;
+                view_post.reason_ReasonRepost.by.did = ope_info.reacted_by_did;
+                view_post.reason_ReasonRepost.by.handle = ope_info.reacted_by_handle;
+                view_post.reason_ReasonRepost.by.displayName = ope_info.reacted_by_display_name;
             }
             if (post_thread->threadViewPost().parent_type
                         == AtProtocolType::AppBskyFeedDefs::ThreadViewPostParentType::

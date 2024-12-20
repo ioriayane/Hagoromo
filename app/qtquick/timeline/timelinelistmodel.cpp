@@ -563,7 +563,7 @@ bool TimelineListModel::deletePost(int row)
     return true;
 }
 
-bool TimelineListModel::repost(int row)
+bool TimelineListModel::repost(int row, bool do_count_up)
 {
     if (row < 0 || row >= m_cidList.count())
         return false;
@@ -588,7 +588,12 @@ bool TimelineListModel::repost(int row)
                     for (const auto &r : rows) {
                         if (first) {
                             update(row, RepostedUriRole, uri);
-                            update(row, RepostCountRole, !uri.isEmpty());
+                            if (do_count_up) {
+                                update(r, RepostCountRole, !uri.isEmpty());
+                            } else if (uri.isEmpty()) {
+                                // 減算のみ、加算はfirehose経由で実施
+                                update(r, RepostCountRole, false);
+                            }
                             first = false;
                         } else {
                             emit dataChanged(index(r), index(r),
@@ -639,8 +644,6 @@ bool TimelineListModel::like(int row, bool do_count_up)
                                 update(r, LikeCountRole, !uri.isEmpty());
                             } else if (uri.isEmpty()) {
                                 // 減算のみ、加算はfirehose経由で実施
-                                // likeのみ、repostはユーザーの操作時に加算しないとjetstream経由は
-                                // selectorのjudge側で処理してしまうためリアクションとして加算できない
                                 update(r, LikeCountRole, false);
                             }
                             first = false;

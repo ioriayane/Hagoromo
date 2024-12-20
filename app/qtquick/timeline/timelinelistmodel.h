@@ -171,7 +171,7 @@ public:
     Q_INVOKABLE bool getLatest();
     Q_INVOKABLE bool getNext();
     Q_INVOKABLE bool deletePost(int row);
-    Q_INVOKABLE bool repost(int row);
+    Q_INVOKABLE bool repost(int row, bool do_count_up = true);
     Q_INVOKABLE bool like(int row, bool do_count_up = true);
     Q_INVOKABLE bool pin(int row);
     Q_INVOKABLE bool muteThread(int row);

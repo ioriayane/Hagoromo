@@ -315,6 +315,7 @@ QList<OperationInfo> AbstractPostSelector::getOperationInfos(const QJsonObject &
         }
         const QString path = item.toObject().value("path").toString();
         const QString cid = item.toObject().value("cid").toObject().value("$link").toString();
+        QString uri = QString("at://%1/%2").arg(repo, path);
         if (!path.isEmpty() && !cid.isEmpty()) {
             if (path.startsWith("app.bsky.feed.repost/")) {
                 const QJsonObject block = getBlock(object, path);
@@ -335,9 +336,10 @@ QList<OperationInfo> AbstractPostSelector::getOperationInfos(const QJsonObject &
 
                     if (!info.cid.isEmpty() && !info.uri.isEmpty()) {
                         info.is_repost = true;
-                        info.reposted_by = repo;
-                        info.reposted_by_handle = user_info.handle;
-                        info.reposted_by_display_name = user_info.display_name;
+                        info.reaction_uri = uri;
+                        info.reacted_by_did = repo;
+                        info.reacted_by_handle = user_info.handle;
+                        info.reacted_by_display_name = user_info.display_name;
                         infos.append(info);
                     }
                 }
@@ -360,7 +362,8 @@ QList<OperationInfo> AbstractPostSelector::getOperationInfos(const QJsonObject &
 
                     if (!info.cid.isEmpty() && !info.uri.isEmpty()) {
                         info.is_like = true;
-                        info.reposted_by = repo;
+                        info.reaction_uri = uri;
+                        info.reacted_by_did = repo;
                         infos.append(info);
                     }
                 }
