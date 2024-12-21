@@ -13,6 +13,7 @@ description: This is a multi-column Bluesky client.
   - Change to include reposts in the log
   - Improve the log UI
   - Change to reflect when there is a like or repost on a post that has already been received in real-time feed
+  - Changes to reflect posts deleted in real-time feed
 - Fix
   - Fixed a bug where the feedback from liking or reposting in real-time feed was out of sync
 
