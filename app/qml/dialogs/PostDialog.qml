@@ -340,7 +340,7 @@ Dialog {
                                                     mentionSuggestionView.clear()
                                                 }
                                             }else{
-                                                console.log("Key(n):" + event.key)
+                                                // console.log("Key(n):" + event.key)
                                                 if(event.key === Qt.Key_Space && (event.modifiers & Qt.ControlModifier)){
                                                     mentionSuggestionView.reload(getText(0, cursorPosition))
                                                     event.accepted = true

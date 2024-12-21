@@ -295,23 +295,30 @@ QStringList AbstractPostSelector::getOperationUris(const QJsonObject &object)
     return uris;
 }
 
-QList<OperationInfo> AbstractPostSelector::getOperationInfos(const QJsonObject &object)
+QList<OperationInfo> AbstractPostSelector::getOperationInfos(const QJsonObject &object, bool like)
 {
     QList<OperationInfo> infos;
-    QString repo = getRepo(object);
+    const QString repo = getRepo(object);
     if (repo.isEmpty())
         return infos;
 
+    QString action;
     for (const auto item : object.value("ops").toArray()) {
-        if (item.toObject().value("action").toString() != "create") {
+        action = item.toObject().value("action").toString();
+        OperationInfo info;
+        if (action == "create") {
+            info.action = OperationActionType::Create;
+        } else if (action == "delete") {
+            info.action = OperationActionType::Delete;
+        } else {
             continue;
         }
-        OperationInfo info;
-        QString path = item.toObject().value("path").toString();
-        QString cid = item.toObject().value("cid").toObject().value("$link").toString();
-        if (!path.isEmpty() && !cid.isEmpty()) {
+        const QString path = item.toObject().value("path").toString();
+        if (!path.isEmpty()) {
+            const QString cid = item.toObject().value("cid").toObject().value("$link").toString();
+            QString uri = QString("at://%1/%2").arg(repo, path);
             if (path.startsWith("app.bsky.feed.repost/")) {
-                QJsonObject block = getBlock(object, path);
+                const QJsonObject block = getBlock(object, path);
                 if (!block.isEmpty()) {
                     info.cid = block.value("value")
                                        .toObject()
@@ -329,20 +336,120 @@ QList<OperationInfo> AbstractPostSelector::getOperationInfos(const QJsonObject &
 
                     if (!info.cid.isEmpty() && !info.uri.isEmpty()) {
                         info.is_repost = true;
-                        info.reposted_by = repo;
-                        info.reposted_by_handle = user_info.handle;
-                        info.reposted_by_display_name = user_info.display_name;
+                        info.reaction_uri = uri;
+                        info.reacted_by_did = repo;
+                        info.reacted_by_handle = user_info.handle;
+                        info.reacted_by_display_name = user_info.display_name;
+                        infos.append(info);
+
+                        // リポストされたポストも保存しておく
+                        appendReactionCandidate(info.uri, info.cid);
+                    }
+                }
+            } else if (like && path.startsWith("app.bsky.feed.like/")) {
+                const QJsonObject block = getBlock(object, path);
+                if (!block.isEmpty()) {
+                    info.cid = block.value("value")
+                                       .toObject()
+                                       .value("subject")
+                                       .toObject()
+                                       .value("cid")
+                                       .toString();
+                    info.uri = block.value("value")
+                                       .toObject()
+                                       .value("subject")
+                                       .toObject()
+                                       .value("uri")
+                                       .toString();
+                    UserInfo user_info = getUser(repo);
+
+                    if (!info.cid.isEmpty() && !info.uri.isEmpty()) {
+                        info.is_like = true;
+                        info.reaction_uri = uri;
+                        info.reacted_by_did = repo;
                         infos.append(info);
                     }
                 }
-            } else {
+            } else if (path.startsWith("app.bsky.feed.post/")) {
                 info.cid = cid;
-                info.uri = QString("at://%1/%2").arg(repo, path);
+                info.uri = uri;
+                // リアクション判定の対象は1カ所で良いのでここで保存する
+                // selectorのツリー構造のrootで保存することになる
+                if (info.action == OperationActionType::Create) {
+                    appendReactionCandidate(info.uri, info.cid);
+                } else if (info.action == OperationActionType::Delete) {
+                    info.cid = m_reationCandidatesCids.value(info.uri, QString());
+                }
                 infos.append(info);
             }
         }
     }
     return infos;
+}
+
+bool AbstractPostSelector::judgeReaction(const QJsonObject &object)
+{
+    QList<OperationInfo> infos;
+    const QString repo = getRepo(object);
+    if (repo.isEmpty())
+        return false;
+
+    QString action;
+    for (const auto item : object.value("ops").toArray()) {
+        action = item.toObject().value("action").toString();
+        if (action != "create" && action != "delete") {
+            continue;
+        }
+        const QString path = item.toObject().value("path").toString();
+        if (!path.isEmpty()) {
+            QString uri = QString("at://%1/%2").arg(repo, path);
+            if (path.startsWith("app.bsky.feed.repost/")) {
+                const QJsonObject block = getBlock(object, path);
+                if (!block.isEmpty()) {
+                    const QString reacted_uri = block.value("value")
+                                                        .toObject()
+                                                        .value("subject")
+                                                        .toObject()
+                                                        .value("uri")
+                                                        .toString();
+                    if (m_reationCandidates.contains(reacted_uri)) {
+                        return true;
+                    }
+                }
+            } else if (path.startsWith("app.bsky.feed.like/")) {
+                const QJsonObject block = getBlock(object, path);
+                if (!block.isEmpty()) {
+                    const QString reacted_uri = block.value("value")
+                                                        .toObject()
+                                                        .value("subject")
+                                                        .toObject()
+                                                        .value("uri")
+                                                        .toString();
+                    if (m_reationCandidates.contains(reacted_uri)) {
+                        return true;
+                    }
+                }
+            } else if (path.startsWith("app.bsky.feed.post/")) {
+                if (action == "delete" && m_reationCandidates.contains(uri)) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
+void AbstractPostSelector::appendReactionCandidate(const QString &uri, const QString &cid)
+{
+    if (m_reationCandidates.contains(uri))
+        return;
+    m_reationCandidates.push_back(uri);
+    m_reationCandidatesCids[uri] = cid;
+    if (m_reationCandidates.length() > 100) {
+        m_reationCandidatesCids.remove(m_reationCandidates.first());
+        m_reationCandidates.pop_front();
+    }
 }
 
 int AbstractPostSelector::getNodeCount() const
@@ -760,5 +867,4 @@ void AbstractPostSelector::setHandle(const QString &newHandle)
     }
     m_handle = newHandle;
 }
-
 }
