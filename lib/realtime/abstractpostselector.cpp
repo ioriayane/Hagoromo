@@ -314,9 +314,9 @@ QList<OperationInfo> AbstractPostSelector::getOperationInfos(const QJsonObject &
             continue;
         }
         const QString path = item.toObject().value("path").toString();
-        const QString cid = item.toObject().value("cid").toObject().value("$link").toString();
-        QString uri = QString("at://%1/%2").arg(repo, path);
-        if (!path.isEmpty() /*&& !cid.isEmpty()*/) {
+        if (!path.isEmpty()) {
+            const QString cid = item.toObject().value("cid").toObject().value("$link").toString();
+            QString uri = QString("at://%1/%2").arg(repo, path);
             if (path.startsWith("app.bsky.feed.repost/")) {
                 const QJsonObject block = getBlock(object, path);
                 if (!block.isEmpty()) {
@@ -342,7 +342,7 @@ QList<OperationInfo> AbstractPostSelector::getOperationInfos(const QJsonObject &
                         info.reacted_by_display_name = user_info.display_name;
                         infos.append(info);
 
-                        // リポストされたとポストも保存しておく
+                        // リポストされたポストも保存しておく
                         appendReactionCandidate(info.uri, info.cid);
                     }
                 }
@@ -401,9 +401,8 @@ bool AbstractPostSelector::judgeReaction(const QJsonObject &object)
             continue;
         }
         const QString path = item.toObject().value("path").toString();
-        const QString cid = item.toObject().value("cid").toObject().value("$link").toString();
-        QString uri = QString("at://%1/%2").arg(repo, path);
-        if (!path.isEmpty() /*&& !cid.isEmpty()*/) {
+        if (!path.isEmpty()) {
+            QString uri = QString("at://%1/%2").arg(repo, path);
             if (path.startsWith("app.bsky.feed.repost/")) {
                 const QJsonObject block = getBlock(object, path);
                 if (!block.isEmpty()) {

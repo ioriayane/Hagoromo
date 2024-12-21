@@ -143,6 +143,7 @@ private:
     int m_repostCondition; // 0: only, 1: exclude
     QString m_listUri;
     QString m_listName;
+    // リアクションを受信したときにUI側に上げるかを判断するためのポストの候補
     QStringList m_reationCandidates; // uri
     QHash<QString, QString>
             m_reationCandidatesCids; // QHash<uri, cid>
