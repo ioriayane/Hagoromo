@@ -341,6 +341,9 @@ QList<OperationInfo> AbstractPostSelector::getOperationInfos(const QJsonObject &
                         info.reacted_by_handle = user_info.handle;
                         info.reacted_by_display_name = user_info.display_name;
                         infos.append(info);
+
+                        // リポストされたとポストも保存しておく
+                        appendReactionCandidate(info.uri, info.cid);
                     }
                 }
             } else if (like && path.startsWith("app.bsky.feed.like/")) {
