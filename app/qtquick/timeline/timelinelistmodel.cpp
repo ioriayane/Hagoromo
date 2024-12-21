@@ -582,8 +582,8 @@ bool TimelineListModel::repost(int row, bool do_count_up)
     connect(ope, &RecordOperator::finished, this,
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(cid)
+                const QList<int> rows = indexsOf(target_cid);
                 if (success) {
-                    const QList<int> rows = indexsOf(target_cid);
                     bool first = true;
                     for (const auto &r : rows) {
                         if (first) {
@@ -602,7 +602,9 @@ bool TimelineListModel::repost(int row, bool do_count_up)
                         }
                     }
                 }
-                setRunningRepost(row, false);
+                for (const auto &r : rows) {
+                    setRunningRepost(r, false);
+                }
                 ope->deleteLater();
             });
     ope->setAccount(account().uuid);
@@ -634,8 +636,8 @@ bool TimelineListModel::like(int row, bool do_count_up)
             [=](bool success, const QString &uri, const QString &cid) {
                 Q_UNUSED(cid)
 
+                const QList<int> rows = indexsOf(target_cid);
                 if (success) {
-                    const QList<int> rows = indexsOf(target_cid);
                     bool first = true;
                     for (const auto &r : rows) {
                         if (first) {
@@ -654,7 +656,9 @@ bool TimelineListModel::like(int row, bool do_count_up)
                         }
                     }
                 }
-                setRunningLike(row, false);
+                for (const auto &r : rows) {
+                    setRunningLike(r, false);
+                }
                 ope->deleteLater();
             });
     ope->setAccount(account().uuid);
