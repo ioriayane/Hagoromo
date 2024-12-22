@@ -10,6 +10,7 @@ ColumnLayout {
     property alias tagsLayout: tagsLayout
     property alias labelsLayout: labelsLayout
     property alias languagesLayout: languagesLayout
+    property alias createdAtLongLabel: createdAtLongLabel
     property alias indexedAtLongLabel: indexedAtLongLabel
     property alias viaTagLabel: viaTagLabel
 
@@ -37,6 +38,13 @@ ColumnLayout {
         tagSpacing: 5
     }
 
+    Label {
+        id: createdAtLongLabel
+        Layout.topMargin: 5
+        visible: text.length > 0
+        font.pointSize: AdjustedValues.f8
+        color: Material.color(Material.Grey)
+    }
     Label {
         id: indexedAtLongLabel
         Layout.topMargin: 5

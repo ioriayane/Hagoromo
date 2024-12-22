@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+- Add
+  - When the post date and time is more than 24 hours out of sync, an archive display is added
 - Update
   - Change Qt version to 6.8.1 and related changes
   - Change to include reposts in the log

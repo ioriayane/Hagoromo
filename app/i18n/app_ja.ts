@@ -2018,7 +2018,12 @@ Please recreate AppPassword in the official application.</source>
         <translation>月毎</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/LogViewDialog.qml" line="337"/>
+        <location filename="../qml/dialogs/LogViewDialog.qml" line="239"/>
+        <source>Not found.</source>
+        <translation>見つかりませんでした。</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/LogViewDialog.qml" line="356"/>
         <source>Close</source>
         <translation>閉じる</translation>
     </message>
@@ -2282,7 +2287,7 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">リンクカード</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/PostDialog.qml" line="383"/>
+        <location filename="../qml/dialogs/PostDialog.qml" line="381"/>
         <source>Link card URL</source>
         <translation>リンクカードのURL</translation>
     </message>
@@ -2295,22 +2300,22 @@ Please recreate AppPassword in the official application.</source>
         <translation type="vanished">リンクカードかフィードカードかリストカードのURL</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/PostDialog.qml" line="382"/>
+        <location filename="../qml/dialogs/PostDialog.qml" line="380"/>
         <source>Link card URL, Custom feed URL, List URL, Post URL</source>
         <translation>リンクカード/フィードカード/リストカード/ポストのURL</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/PostDialog.qml" line="593"/>
+        <location filename="../qml/dialogs/PostDialog.qml" line="591"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/PostDialog.qml" line="665"/>
+        <location filename="../qml/dialogs/PostDialog.qml" line="663"/>
         <source>Post</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/PostDialog.qml" line="720"/>
+        <location filename="../qml/dialogs/PostDialog.qml" line="718"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
     </message>
@@ -2325,6 +2330,11 @@ Please recreate AppPassword in the official application.</source>
         <location filename="../qml/view/PostThreadView.qml" line="155"/>
         <source>Quoted content warning</source>
         <translation>閲覧注意な引用</translation>
+    </message>
+    <message>
+        <location filename="../qml/view/PostThreadView.qml" line="205"/>
+        <source>Archived from %s</source>
+        <translation>%s のアーカイブ</translation>
     </message>
 </context>
 <context>
