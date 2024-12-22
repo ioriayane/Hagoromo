@@ -6,6 +6,8 @@
 
 namespace RealtimeFeed {
 
+enum class OperationActionType : int { Create, Delete };
+
 struct UserInfo
 {
     QString did;
@@ -16,12 +18,15 @@ struct UserInfo
 
 struct OperationInfo
 {
+    OperationActionType action = OperationActionType::Create;
     QString cid;
     QString uri;
+    bool is_like = false;
     bool is_repost = false;
-    QString reposted_by; // did
-    QString reposted_by_handle;
-    QString reposted_by_display_name;
+    QString reaction_uri;
+    QString reacted_by_did; // did
+    QString reacted_by_handle;
+    QString reacted_by_display_name;
 };
 
 class AbstractPostSelector : public QObject
@@ -50,7 +55,9 @@ public:
     virtual UserInfo getUser(const QString &did) const;
 
     static QStringList getOperationUris(const QJsonObject &object);
-    QList<OperationInfo> getOperationInfos(const QJsonObject &object);
+    QList<OperationInfo> getOperationInfos(const QJsonObject &object, bool like = false);
+    bool judgeReaction(const QJsonObject &object);
+    void appendReactionCandidate(const QString &uri, const QString &cid);
 
     int getNodeCount() const;
     AbstractPostSelector *itemAt(int &index);
@@ -98,6 +105,7 @@ public:
 
 signals:
     void selected(const QJsonObject &object);
+    void reacted(const QJsonObject &object);
 
 protected:
     const QList<AbstractPostSelector *> &children() const;
@@ -135,6 +143,11 @@ private:
     int m_repostCondition; // 0: only, 1: exclude
     QString m_listUri;
     QString m_listName;
+    // リアクションを受信したときにUI側に上げるかを判断するためのポストの候補
+    QStringList m_reationCandidates; // uri
+    QHash<QString, QString>
+            m_reationCandidatesCids; // QHash<uri, cid>
+                                     // deleteはcidが入ってこないので削除候補を保存しておく
 };
 }
 

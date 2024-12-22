@@ -142,12 +142,26 @@ void atprotocol_test::initTestCase()
 {
     QVERIFY(m_listenPort != 0);
     m_account.accessJwt = "dummy";
+
+    m_account.did = "did:plc:ipj5qejfoqu6eukvt72uhyit";
+    m_account.handle = "ioriayane.relog.tech";
+    m_account.email = "iori.ayane@gmail.com";
+    m_account.accessJwt = "hoge hoge accessJwt";
+    m_account.refreshJwt = "hoge hoge refreshJwt";
+    m_account.service = m_service;
 }
 
 void atprotocol_test::cleanupTestCase() { }
 
 void atprotocol_test::test_ComAtprotoServerCreateSession()
 {
+    m_account.did.clear();
+    m_account.handle.clear();
+    m_account.email.clear();
+    m_account.accessJwt.clear();
+    m_account.refreshJwt.clear();
+    m_account.service.clear();
+
     AtProtocolInterface::ComAtprotoServerCreateSessionEx session;
     session.setService(m_service);
 
@@ -193,11 +207,10 @@ void atprotocol_test::test_ComAtprotoServerCreateSession()
     }
 
     QVERIFY2(session.errorCode() == "RateLimitExceeded", session.errorCode().toLocal8Bit());
-    QVERIFY2(session.errorMessage()
-                     == "Rate Limit "
-                        "Exceeded\n\nratelimit-limit:30\nratelimit-policy:30;w=300\nratelimit-"
-                        "remaining:10\nratelimit-reset:2023/09/17 10:31:07",
-             session.errorMessage().toLocal8Bit());
+    QVERIFY(session.errorMessage().contains("ratelimit-limit:30"));
+    QVERIFY(session.errorMessage().contains("ratelimit-reset:2023/09/17 10:31:07"));
+    QVERIFY(session.errorMessage().contains("ratelimit-remaining:10"));
+    QVERIFY(session.errorMessage().contains("ratelimit-policy:30;w=300"));
     QVERIFY2(session.replyJson().trimmed()
                      == "{\"error\":\"RateLimitExceeded\",\"message\":\"Rate Limit Exceeded\"}",
              session.replyJson().toLocal8Bit());

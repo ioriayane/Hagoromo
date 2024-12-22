@@ -8,6 +8,19 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+### v0.42.0 - 2024/12/22
+
+- Add
+  - When the post date and time is more than 24 hours out of sync, an archive display is added
+- Update
+  - Change Qt version to 6.8.1 and related changes
+  - Change to include reposts in the log
+  - Improve the log UI
+  - Change to reflect when there is a like or repost on a post that has already been received in real-time feed
+  - Changes to reflect posts deleted in real-time feed
+- Fix
+  - Fixed a bug where the feedback from liking or reposting in real-time feed was out of sync
+
 ### v0.41.0 - 2024/12/3
 
 - Add

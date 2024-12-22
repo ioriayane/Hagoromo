@@ -43,7 +43,6 @@ Dialog {
 
     ButtonGroup {
         id: reportTypeButtonGroup
-        buttons: reportTypeLayout.children
     }
 
     ColumnLayout {
@@ -73,6 +72,7 @@ Dialog {
             mainText: qsTr("Spam")
             description: qsTr("Excessive or unwanted messages")
             property int reason: Reporter.ReasonSpam
+            ButtonGroup.group: reportTypeButtonGroup
         }
         RadioButtonEx {
             Layout.rightMargin: 20
@@ -80,6 +80,7 @@ Dialog {
             mainText: qsTr("Unwanted Sexual Content")
             description: qsTr("Inappropriate messages or explicit links")
             property int reason: Reporter.ReasonSexual
+            ButtonGroup.group: reportTypeButtonGroup
         }
         RadioButtonEx {
             Layout.rightMargin: 20
@@ -87,6 +88,7 @@ Dialog {
             mainText: qsTr("Anti-Social Behavior")
             description: qsTr("Harassment, trolling, or intolerance")
             property int reason: Reporter.ReasonRude
+            ButtonGroup.group: reportTypeButtonGroup
         }
         RadioButtonEx {
             Layout.rightMargin: 20
@@ -94,6 +96,7 @@ Dialog {
             mainText: qsTr("Illegal and Urgent")
             description: qsTr("Glaring violations of law or terms of service")
             property int reason: Reporter.ReasonViolation
+            ButtonGroup.group: reportTypeButtonGroup
         }
         RadioButtonEx {
             Layout.rightMargin: 20
@@ -101,6 +104,7 @@ Dialog {
             mainText: qsTr("Other")
             description: qsTr("An issue not included in these options")
             property int reason: Reporter.ReasonOther
+            ButtonGroup.group: reportTypeButtonGroup
         }
 
         Label {

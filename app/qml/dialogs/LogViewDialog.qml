@@ -152,9 +152,9 @@ Dialog {
             interactive: false
             clip: true
 
-            property int frameWidth: 600 * AdjustedValues.ratio
+            property int frameWidth: 700 * AdjustedValues.ratio
             property int frameHeight: parentHeight - 260 * AdjustedValues.ratioHalf
-            property int frameColumnWidth: 150 * AdjustedValues.ratio
+            property int frameColumnWidth: 200 * AdjustedValues.ratio
 
             Frame {
                 contentWidth: statisticsScrollView.width
@@ -194,6 +194,7 @@ Dialog {
                             text: qsTr("Search")
                             onClicked: {
                                 console.log("search:" + searchText.text)
+                                notFoundLabel.visible = false
                                 logSearchFeedListModel.setAccount(account.uuid)
                                 logSearchFeedListModel.selectCondition = searchText.text
                                 logSearchFeedListModel.clear()
@@ -210,6 +211,11 @@ Dialog {
                             targetHandle: account.handle
                             targetAvatar: account.avatar
                             feedType: LogFeedListModel.WordsFeedType
+                            onRunningChanged: {
+                                if(!running){
+                                    notFoundLabel.visible = (logSearchFeedListModel.rowCount() === 0)
+                                }
+                            }
                         }
                         accountDid: account.did
                         logMode: true
@@ -222,6 +228,17 @@ Dialog {
                         onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) =>
                                                    logViewDialog.requestUpdateThreadGate(account.uuid, uri, threadgate_uri, type, rules, callback)
                         onHoveredLinkChanged: logViewDialog.hoveredLink = hoveredLink
+
+                        Frame {
+                            id: notFoundLabel
+                            anchors.top: parent.top
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            visible: false
+                            Label {
+                                font.pointSize: AdjustedValues.f10
+                                text: qsTr("Not found.")
+                            }
+                        }
                     }
                 }
             }
@@ -236,6 +253,7 @@ Dialog {
                         Layout.preferredWidth: swipeView.frameColumnWidth
                         Layout.preferredHeight: swipeView.frameHeight
                         verticalScrollBar: true
+                        selectable: true
                         enabled: !logDailyFeedListModel.running &&
                                  !logMonthlyFeedListModel.running &&
                                  !logSearchFeedListModel.running
@@ -291,6 +309,7 @@ Dialog {
                         Layout.preferredWidth: swipeView.frameColumnWidth
                         Layout.preferredHeight: swipeView.frameHeight
                         verticalScrollBar: true
+                        selectable: true
                         enabled: !logDailyFeedListModel.running &&
                                  !logMonthlyFeedListModel.running &&
                                  !logSearchFeedListModel.running

@@ -1,4 +1,7 @@
 
+# build arch
+mac:QMAKE_APPLE_DEVICE_ARCHS=x86_64
+
 INCLUDEPATH += $$PWD
 
 HEADERS += \

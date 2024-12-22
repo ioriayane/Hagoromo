@@ -465,7 +465,8 @@ QList<TotalItem> LogAccess::dbMakeDailyTotals(int &max) const
     QSqlQuery query(QSqlDatabase::database(m_dbConnectionName));
     if (dbSelect(query,
                  "SELECT day, count(day) FROM record"
-                 " WHERE day NOTNULL AND type = 'app.bsky.feed.post'"
+                 " WHERE day NOTNULL "
+                 " AND (type = 'app.bsky.feed.post' OR type = 'app.bsky.feed.repost')"
                  " GROUP BY day ORDER BY day DESC")) {
         while (query.next()) {
             TotalItem item;
@@ -485,7 +486,8 @@ QList<TotalItem> LogAccess::dbMakeMonthlyTotals(int &max) const
     QSqlQuery query(QSqlDatabase::database(m_dbConnectionName));
     if (dbSelect(query,
                  "SELECT month, count(month) FROM record"
-                 " WHERE month NOTNULL AND type = 'app.bsky.feed.post'"
+                 " WHERE month NOTNULL"
+                 " AND (type = 'app.bsky.feed.post' OR type = 'app.bsky.feed.repost')"
                  " GROUP BY month ORDER BY month DESC")) {
         while (query.next()) {
             TotalItem item;
@@ -628,7 +630,7 @@ QString LogAccess::dbSelectRecords(const int kind, const QString &condition, con
 {
     QStringList bind_values;
     QString sql("SELECT uri, cid, record, createdAt, view FROM record"
-                " WHERE type = 'app.bsky.feed.post'");
+                " WHERE (type = 'app.bsky.feed.post' OR type = 'app.bsky.feed.repost')");
     if (!condition.isEmpty()) {
         if (kind == 0) {
             sql.append(" AND day == ?");

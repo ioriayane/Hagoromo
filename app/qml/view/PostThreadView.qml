@@ -202,6 +202,7 @@ ColumnLayout {
                 postInformation.tagsLayout.model: postInformation.visible ? model.tags : []
                 postInformation.labelsLayout.model: postInformation.visible ? model.labels : []
                 postInformation.languagesLayout.model: postInformation.visible ? model.languages : []
+                postInformation.createdAtLongLabel.text: (model.isArchived && model.createdAt.length > 0) ? qsTr("Archived from %s").replace("%s", model.createdAt) : ""
                 postInformation.indexedAtLongLabel.text: postInformation.visible ? model.indexedAtLong : ""
                 postInformation.viaTagLabel.text: (postInformation.visible && model.via.length > 0) ? ("via:" + model.via) : ""
 

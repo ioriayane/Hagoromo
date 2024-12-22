@@ -13,8 +13,8 @@ public:
     bool handleRequest(const QHttpServerRequest &request, QTcpSocket *socket) override;
 #else
     virtual bool handleRequest(const QHttpServerRequest &request, QHttpServerResponder &responder);
-    virtual void missingHandler(const QHttpServerRequest &request,
-                                QHttpServerResponder &&responder);
+    virtual void missingHandler(const QHttpServerRequest &request, QHttpServerResponder &responder);
+    quint16 listen(const QHostAddress &address = QHostAddress::Any, quint16 port = 0);
 #endif
 
     static QString convertResoucePath(const QUrl &url);

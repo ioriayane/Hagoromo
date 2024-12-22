@@ -63,15 +63,18 @@
 #include "tools/encryption.h"
 #include "tools/translatorchanger.h"
 
-void setAppFont(QGuiApplication &app)
+void setAppFont(QGuiApplication &app, QSettings &settings)
 {
-    QFontDatabase db;
-    QSettings settings;
     QString family = settings.value("fontFamily").toString();
     if (family.isEmpty()) {
         family = SystemTool::defaultFontFamily();
     }
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+    QFontDatabase db;
     if (db.families().contains(family)) {
+#else
+    if (QFontDatabase::families().contains(family)) {
+#endif
         app.setFont(QFont(family));
         if (settings.value("fontFamily").toString() != family) {
             settings.setValue("fontFamily", family);
@@ -92,7 +95,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName(QStringLiteral("relog"));
     app.setOrganizationDomain(QStringLiteral("hagoromo.relog.tech"));
     app.setApplicationName(QStringLiteral("Hagoromo"));
-    app.setApplicationVersion(QStringLiteral("0.41.0"));
+    app.setApplicationVersion(QStringLiteral("0.42.0"));
 #ifndef HAGOROMO_RELEASE_BUILD
     app.setApplicationVersion(app.applicationVersion() + "d");
 #endif
@@ -197,7 +200,12 @@ int main(int argc, char *argv[])
     qmlRegisterSingletonType(QUrl("qrc:/Hagoromo/qml/data/AdjustedValues.qml"),
                              "tech.relog.hagoromo.singleton", 1, 0, "AdjustedValues");
 
-    setAppFont(app);
+    QSettings settings;
+    setAppFont(app, settings);
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+#else
+    SystemTool::setFlicableWheelDeceleration(settings.value("wheelDeceleration", 10000).toInt());
+#endif
 
 #ifdef QT_NO_DEBUG
     QLoggingCategory::setFilterRules("*.debug=false\n"

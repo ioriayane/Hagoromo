@@ -25,14 +25,47 @@ LogManager::LogManager(QObject *parent) : AtProtocolAccount { parent }
             [=](const QList<TotalItem> &list, const int max) { emit finishedTotals(list, max); });
     connect(&m_logAccess, &LogAccess::finishedSelection, this,
             [=](const QString &records, const QStringList &view_posts) {
+                // view_postsには基本ポストのURIがくる
+                // ただし既にDBに取得済みのViewPostが保存されているとJSONがくる
                 emit finishedSelection(records);
-                m_viewPosts = view_posts;
+
+                QJsonDocument json_records = QJsonDocument::fromJson(records.toUtf8());
+                m_viewPosts.clear();
                 m_cueGetPost.clear();
                 m_postViews.clear();
+                m_repostedPosts.clear();
                 m_postViewsJson = QJsonArray();
-                for (const auto &post : view_posts) {
-                    if (post.startsWith("at://")) {
-                        m_cueGetPost.append(post);
+                for (const auto &post_uri : view_posts) {
+                    const QStringList post_items = post_uri.split("/");
+                    if (post_uri.startsWith("at://")) {
+                        if (post_items.contains("app.bsky.feed.post")) {
+                            m_cueGetPost.append(post_uri);
+                            m_viewPosts.append(post_uri); // getPostsした結果で置換する
+                        } else if (post_items.contains("app.bsky.feed.repost")) {
+                            for (const auto &record :
+                                 json_records.object().value("records").toArray()) {
+                                QString uri = record.toObject().value("uri").toString();
+                                if (uri == post_uri) {
+                                    // repostされた側のURIを取得
+                                    QString reposted_uri = record.toObject()
+                                                                   .value("value")
+                                                                   .toObject()
+                                                                   .value("subject")
+                                                                   .toObject()
+                                                                   .value("uri")
+                                                                   .toString();
+                                    if (reposted_uri.split("/").contains("app.bsky.feed.post")) {
+                                        m_cueGetPost.append(reposted_uri);
+                                        m_viewPosts.append(
+                                                reposted_uri); // getPostsした結果で置換する
+                                        m_repostedPosts[reposted_uri] = post_uri;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        m_viewPosts.append(post_uri);
                     }
                 }
                 getPosts();
@@ -89,22 +122,28 @@ void LogManager::makeFeedViewPostList()
 {
     QList<RecordPostItem> record_post_items;
 
-    for (const auto &post_str : qAsConst(m_viewPosts)) {
-        if (post_str.startsWith("at://")) {
+    for (const auto &post_uri : qAsConst(m_viewPosts)) {
+        if (post_uri.startsWith("at://")) {
             // APIで取得したデータを探して追加する
             for (const auto &post_view : qAsConst(m_postViews)) {
-                if (post_view.uri == post_str) {
+                if (post_view.uri == post_uri) {
                     AppBskyFeedDefs::FeedViewPost feed_view_post;
                     feed_view_post.post = post_view;
+                    if (m_repostedPosts.contains(post_uri)) {
+                        feed_view_post.reason_type =
+                                AppBskyFeedDefs::FeedViewPostReasonType::reason_ReasonRepost;
+                        feed_view_post.reason_ReasonRepost.by.displayName = this->displayName();
+                        feed_view_post.reason_ReasonRepost.by.handle = this->handle();
+                    }
                     m_feedViewPosts.append(feed_view_post);
                     break;
                 }
             }
             // DBへのフィードバック用データ
             for (const auto &post_val : qAsConst(m_postViewsJson)) {
-                if (post_val.toObject().value("uri").toString() == post_str) {
+                if (post_val.toObject().value("uri").toString() == post_uri) {
                     RecordPostItem item;
-                    item.uri = post_str;
+                    item.uri = post_uri;
                     item.json = QJsonDocument(post_val.toObject()).toJson(QJsonDocument::Compact);
                     record_post_items.append(item);
                     break;
@@ -112,9 +151,15 @@ void LogManager::makeFeedViewPostList()
             }
         } else {
             // dbに保存してあったpostのデータを追加する
-            QJsonDocument doc = QJsonDocument::fromJson(post_str.toUtf8());
+            QJsonDocument doc = QJsonDocument::fromJson(post_uri.toUtf8());
             AppBskyFeedDefs::FeedViewPost feed_view_post;
             AppBskyFeedDefs::copyPostView(doc.object(), feed_view_post.post);
+            if (m_repostedPosts.contains(post_uri)) {
+                feed_view_post.reason_type =
+                        AppBskyFeedDefs::FeedViewPostReasonType::reason_ReasonRepost;
+                feed_view_post.reason_ReasonRepost.by.displayName = this->displayName();
+                feed_view_post.reason_ReasonRepost.by.handle = this->handle();
+            }
             m_feedViewPosts.append(feed_view_post);
         }
     }

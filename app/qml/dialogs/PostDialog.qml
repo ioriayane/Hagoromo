@@ -207,7 +207,7 @@ Dialog {
                 RowLayout {
                     ComboBox {
                         id: accountCombo
-                        Layout.preferredWidth: 200 * AdjustedValues.ratio + AdjustedValues.i24
+                        Layout.preferredWidth: 250 * AdjustedValues.ratio + AdjustedValues.i24
                         Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
                         enabled: !createRecord.running
                         font.pointSize: AdjustedValues.f10
@@ -312,8 +312,8 @@ Dialog {
 
                 ScrollView {
                     z: 99   // MentionSuggetionViewを最前に表示するため
-                    Layout.preferredWidth: 420 * AdjustedValues.ratio
-                    Layout.preferredHeight: 120 * AdjustedValues.ratio
+                    Layout.preferredWidth: 500 * AdjustedValues.ratio
+                    Layout.preferredHeight: 150 * AdjustedValues.ratio
                     TextArea {
                         id: postText
                         verticalAlignment: TextInput.AlignTop
@@ -325,7 +325,7 @@ Dialog {
                         onTextChanged: mentionSuggestionView.reload(getText(0, cursorPosition))
                         Keys.onPressed: (event) => {
                                             if(mentionSuggestionView.visible){
-                                                console.log("Key(v):" + event.key)
+                                                // console.log("Key(v):" + event.key)
                                                 if(event.key === Qt.Key_Up){
                                                     mentionSuggestionView.up()
                                                     event.accepted = true
@@ -340,7 +340,7 @@ Dialog {
                                                     mentionSuggestionView.clear()
                                                 }
                                             }else{
-                                                console.log("Key(n):" + event.key)
+                                                // console.log("Key(n):" + event.key)
                                                 if(event.key === Qt.Key_Space && (event.modifiers & Qt.ControlModifier)){
                                                     mentionSuggestionView.reload(getText(0, cursorPosition))
                                                     event.accepted = true
@@ -444,7 +444,7 @@ Dialog {
                 }
                 ExternalLinkCard {
                     Layout.preferredWidth: postText.width
-                    Layout.maximumHeight: 280 * AdjustedValues.ratio
+                    // Layout.maximumHeight: 280 * AdjustedValues.ratio
                     visible: externalLink.valid
 
                     thumbImage.source: externalLink.thumbLocal
