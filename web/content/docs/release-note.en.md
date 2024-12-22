@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+### v0.42.0 - 2024/12/22
+
 - Add
   - When the post date and time is more than 24 hours out of sync, an archive display is added
 - Update
