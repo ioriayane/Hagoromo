@@ -257,6 +257,13 @@ QString copyRecordText(const QVariant &value)
     return applyFacetsTo(record.text, record.facets);
 }
 
+QString copyRecordCreatedAt(const QVariant &value)
+{
+    const AppBskyFeedPost::Main record =
+            LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(value);
+    return record.createdAt;
+}
+
 QString formatDateTime(const QString &value, const bool is_long)
 {
     if (is_long)

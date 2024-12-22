@@ -328,6 +328,20 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
                 LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(current.post.record).tags);
     else if (role == ViaRole)
         return getVia(current.post.record);
+    else if (role == CreatedAtRole)
+        return LexiconsTypeUnknown::formatDateTime(
+                LexiconsTypeUnknown::copyRecordCreatedAt(current.post.record), true);
+    else if (role == IsArchivedRole) {
+        QString created_at = LexiconsTypeUnknown::copyRecordCreatedAt(current.post.record);
+        if (created_at.isEmpty() || current.post.indexedAt.isEmpty()) {
+            return false;
+        } else {
+            QDateTime created = QDateTime::fromString(created_at, Qt::ISODateWithMs);
+            QDateTime indexed = QDateTime::fromString(current.post.indexedAt, Qt::ISODateWithMs);
+            return (abs(created.toMSecsSinceEpoch() - indexed.toMSecsSinceEpoch())
+                    > (24 * 60 * 60 * 1000));
+        }
+    }
 
     else if (role == ThreadConnectedRole) {
         if (m_threadConnectorHash.contains(current.post.cid) && row > 0) {
@@ -920,6 +934,8 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[LanguagesRole] = "languages";
     roles[TagsRole] = "tags";
     roles[ViaRole] = "via";
+    roles[CreatedAtRole] = "createdAt";
+    roles[IsArchivedRole] = "isArchived";
 
     roles[ThreadConnectedRole] = "threadConnected";
     roles[ThreadConnectorTopRole] = "threadConnectorTop";

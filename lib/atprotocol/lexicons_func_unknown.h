@@ -64,6 +64,7 @@ QString copyVideoFromPostView(const AtProtocolType::AppBskyFeedDefs::PostView &p
 QStringList copyTagsFromFacets(const QList<AppBskyRichtextFacet::Main> &facets);
 bool checkPartialMatchLanguage(const QStringList &langs);
 QString copyRecordText(const QVariant &value);
+QString copyRecordCreatedAt(const QVariant &value);
 QString formatDateTime(const QString &value, const bool is_long = false);
 
 QString convertVideoThumb(const QString &url);

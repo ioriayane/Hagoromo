@@ -147,6 +147,8 @@ public:
         LanguagesRole,
         TagsRole,
         ViaRole,
+        CreatedAtRole,
+        IsArchivedRole,
 
         ThreadConnectedRole,
         ThreadConnectorTopRole,
