@@ -5,7 +5,7 @@ import glob
 import shutil
 
 def copyFile(folder: str, target_name: str, dest: str) -> None:
-    files = glob.glob(os.path.join(folder, 'x64', 'Microsoft.VC142.CRT', target_name))
+    files = glob.glob(os.path.join(folder, 'x64', 'Microsoft.VC143.CRT', target_name))
     if len(files) == 0:
         print('Not found ' + target_name)
         return
