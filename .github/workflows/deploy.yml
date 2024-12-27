@@ -1,8 +1,8 @@
 name: Deploy Hagoromo
 on:
-  pull_request:
-    branches:
-      - main
+  push:
+    tags:
+      - "v*"
 permissions:
   contents: write
   pages: write
@@ -231,10 +231,10 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: "v${{ needs.prepare.outputs.VERSION_NO }}.test"
-          name: "Ver ${{ needs.prepare.outputs.VERSION_NO }} Test"
-          # tag_name: "v${{ needs.prepare.outputs.VERSION_NO }}"
-          # release_name: "Ver ${{ needs.prepare.outputs.VERSION_NO }}"
+          # tag_name: "v${{ needs.prepare.outputs.VERSION_NO }}.test"
+          # name: "Ver ${{ needs.prepare.outputs.VERSION_NO }} Test"
+          tag_name: "v${{ needs.prepare.outputs.VERSION_NO }}"
+          release_name: "Ver ${{ needs.prepare.outputs.VERSION_NO }}"
           draft: true
           prerelease: false
           body: |
@@ -245,7 +245,7 @@ jobs:
             ./archive_for_windows/${{ needs.build-for-windows.outputs.ARCHIVE_NAME }}
             ./archive_for_mac/${{ needs.build-for-mac.outputs.ARCHIVE_NAME }}
 
-  # deploy-web-site:
-  #   needs: make-release
-  #   uses: ./.github/workflows/hugo.yml
-  #   secrets: inherit
+  deploy-web-site:
+    needs: make-release
+    uses: ./.github/workflows/hugo.yml
+    secrets: inherit

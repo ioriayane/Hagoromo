@@ -1,8 +1,5 @@
 name: Deploy web site
 on:
-  # push:
-  #   tags:
-  #     - "v*"
   workflow_dispatch:
   workflow_call:
 
