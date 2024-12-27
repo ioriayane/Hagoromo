@@ -1,9 +1,7 @@
 name: Deploy web site
 on:
-  push:
-    tags:
-      - "v*"
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
@@ -20,7 +18,7 @@ defaults:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Install Hugo CLI
         run: |
@@ -44,7 +42,7 @@ jobs:
             --minify
         working-directory: ./web
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3
         with:
           path: ./web/public
 
@@ -52,9 +50,9 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: build
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v3
+        uses: actions/deploy-pages@v4
