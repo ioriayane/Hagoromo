@@ -8,6 +8,9 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+- Update
+  - Change the video icon
+
 ### v0.42.0 - 2024/12/22
 
 - Add

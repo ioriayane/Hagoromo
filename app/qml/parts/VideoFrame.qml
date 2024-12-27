@@ -47,12 +47,8 @@ ClickableFrame {
 
         Image {
             anchors.centerIn: parent
-            width: AdjustedValues.i50
-            height: AdjustedValues.i50
-            layer.enabled: true
-            layer.effect: ColorOverlayC {
-                color: "white"
-            }
+            width: AdjustedValues.i60
+            height: AdjustedValues.i60
             source: "../images/play_large.png"
         }
     }
