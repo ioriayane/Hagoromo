@@ -1,0 +1,68 @@
+{
+    "views": [
+        {
+            "$type": "app.bsky.labeler.defs#labelerViewDetailed",
+            "uri": "at://did:plc:original_labeler_did/app.bsky.labeler.service/self",
+            "cid": "bafyreifunvpooxmpf7li54gal2dk3fceq6aga3gmnfnnsmbaaaaaaaaaaa",
+            "creator": {
+                "did": "did:plc:original_labeler_did",
+                "handle": "original_labeler_did.bsky.social",
+                "displayName": "Original Labeler Test",
+                "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:original_labeler_did/avatar@jpeg",
+                "viewer": {
+                    "muted": false,
+                    "blockedBy": false
+                },
+                "labels": [],
+                "description": "ラベラーのテスト用",
+                "indexedAt": "2024-03-14T07:47:08.042Z"
+            },
+            "likeCount": 2,
+            "viewer": {},
+            "indexedAt": "2024-03-14T07:46:11.999Z",
+            "labels": [],
+            "policies": {
+                "labelValueDefinitions": [
+                    {
+                        "adultOnly": false,
+                        "blurs": "content",
+                        "defaultSetting": "hide",
+                        "identifier": "test_label1",
+                        "locales": [
+                            {
+                                "description": "",
+                                "lang": "en",
+                                "name": "label1"
+                            },
+                            {
+                                "description": "",
+                                "lang": "ja",
+                                "name": "raberu1"
+                            }
+                        ],
+                        "severity": "inform"
+                    },
+                    {
+                        "adultOnly": false,
+                        "blurs": "none",
+                        "defaultSetting": "hide",
+                        "identifier": "test_label2",
+                        "locales": [
+                            {
+                                "description": "",
+                                "lang": "en",
+                                "name": "label2"
+                            },
+                            {
+                                "description": "",
+                                "lang": "ja",
+                                "name": "raberu2"
+                            }
+                        ],
+                        "severity": "inform"
+                    }
+                ]
+            }
+        }
+    ]
+}

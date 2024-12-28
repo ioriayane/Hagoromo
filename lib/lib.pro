@@ -141,8 +141,9 @@ SOURCES += \
     $$PWD/tools/listitemscache.cpp \
     $$PWD/tools/opengraphprotocol.cpp \
     $$PWD/tools/pinnedpostcache.cpp \
-    realtime/listpostsselector.cpp \
-    tools/tid.cpp
+    $$PWD/realtime/listpostsselector.cpp \
+    $$PWD/tools/labelprovider.cpp \
+    $$PWD/tools/tid.cpp
 
 HEADERS += \
     $$PWD/atprotocol/accessatprotocol.h \
@@ -264,9 +265,10 @@ HEADERS += \
     $$PWD/tools/opengraphprotocol.h \
     $$PWD/tools/pinnedpostcache.h \
     $$PWD/tools/qstringex.h \
-    common.h \
-    realtime/listpostsselector.h \
-    tools/tid.h
+    $$PWD/common.h \
+    $$PWD/realtime/listpostsselector.h \
+    $$PWD/tools/labelprovider.h \
+    $$PWD/tools/tid.h
 
 RESOURCES += \
     $$PWD/lib.qrc
