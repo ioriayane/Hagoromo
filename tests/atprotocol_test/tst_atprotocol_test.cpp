@@ -1649,7 +1649,8 @@ void atprotocol_test::test_LabelProvider()
         provider->update(QStringList() << "did:plc:original_labeler_did"
                                        << "did:plc:ar7c4by46qjdydhdevvrndac",
                          account, connector2);
-        spy.wait(10000);
+        spy.wait();
+        spy.wait();
         QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
     }
 
