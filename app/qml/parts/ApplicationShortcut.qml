@@ -4,6 +4,7 @@ Item {
     id: item
     property alias postDialogShortcut: postDialogShortcut
     property alias searchDialogShortcut: searchDialogShortcut
+    property alias addColumnDialogShortcut: addColumnDialogShortcut
 
     signal showColumn(int index)  // -1:一番右、1~9
     signal showLeftColumn()
@@ -22,6 +23,13 @@ Item {
         enabled: item.enabled
         context: Qt.ApplicationShortcut
         sequence: "s"
+    }
+    // Add column
+    Shortcut {
+        id: addColumnDialogShortcut
+        enabled: item.enabled
+        context: Qt.ApplicationShortcut
+        sequence: "c"
     }
     // カラムの移動
     Shortcut { enabled: item.enabled; context: Qt.ApplicationShortcut; sequence: "1"; onActivated: showColumn(1) }

@@ -86,6 +86,7 @@ ApplicationWindow {
         enabled: !appWindow.visibleDialogs
         postDialogShortcut.onActivated: postDialog.open()
         searchDialogShortcut.onActivated: searchDialog.open()
+        addColumnDialogShortcut.onActivated: addColumnDialog.open()
         onShowLeftColumn: scrollView.showLeft()
         onShowRightColumn: scrollView.showRight()
         onShowColumn: (index) => {
