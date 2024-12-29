@@ -1,5 +1,4 @@
 #include "postthreadlistmodel.h"
-#include "atprotocol/lexicons_func_unknown.h"
 #include "atprotocol/app/bsky/feed/appbskyfeedgetpostthread.h"
 
 using AtProtocolInterface::AppBskyFeedGetPostThread;
@@ -8,7 +7,6 @@ using namespace AtProtocolType;
 PostThreadListModel::PostThreadListModel(QObject *parent)
     : TimelineListModel { parent }, m_labelConnector(this)
 {
-
     connect(&m_labelConnector, &LabelConnector::finished, this,
             &PostThreadListModel::finishedConnector);
 }

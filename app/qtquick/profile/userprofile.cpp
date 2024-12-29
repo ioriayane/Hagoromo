@@ -17,6 +17,7 @@ using AtProtocolInterface::DirectoryPlcLogAudit;
 
 UserProfile::UserProfile(QObject *parent)
     : QObject { parent },
+      m_labelConnector(this),
       m_running(false),
       m_followersCount(0),
       m_followsCount(0),
@@ -31,10 +32,12 @@ UserProfile::UserProfile(QObject *parent)
     QPointer<UserProfile> alive = this;
     connect(ListItemsCache::getInstance(), &ListItemsCache::updated, this,
             &UserProfile::updatedBelongingLists);
+    connect(&m_labelConnector, &LabelConnector::finished, this, &UserProfile::finishedConnector);
 }
 
 UserProfile::~UserProfile()
 {
+    disconnect(&m_labelConnector, &LabelConnector::finished, this, &UserProfile::finishedConnector);
     disconnect(ListItemsCache::getInstance(), &ListItemsCache::updated, this,
                &UserProfile::updatedBelongingLists);
 }
@@ -51,6 +54,7 @@ void UserProfile::getProfile(const QString &did)
         return;
     setRunning(true);
 
+    m_labelDetails.clear();
     updateContentFilterLabels([=]() {
         AppBskyActorGetProfile *profile = new AppBskyActorGetProfile(this);
         connect(profile, &AppBskyActorGetProfile::finished, [=](bool success) {
@@ -82,12 +86,21 @@ void UserProfile::getProfile(const QString &did)
                     setLabels(QStringList());
                 } else {
                     QStringList labels;
+                    QStringList labelers;
+                    m_labelDetails = detail.labels;
                     for (const auto &label : qAsConst(detail.labels)) {
                         if (label.val == QStringLiteral("!no-unauthenticated"))
                             continue;
                         labels.append(label.val);
+                        if (!label.src.isEmpty() && !labelers.contains(label.src)) {
+                            labelers.append(label.src);
+                        }
                     }
                     setLabels(labels);
+                    if (!labelers.isEmpty()) {
+                        LabelProvider::getInstance()->update(labelers, m_account,
+                                                             &m_labelConnector);
+                    }
                 }
                 setBelongingLists(
                         ListItemsCache::getInstance()->getListNames(m_account.did, detail.did));
@@ -365,6 +378,21 @@ void UserProfile::updatedBelongingLists(const QString &account_did, const QStrin
         && did() == user_did) {
         setBelongingLists(ListItemsCache::getInstance()->getListNames(account_did, user_did));
     }
+}
+
+void UserProfile::finishedConnector(const QString &labeler_did)
+{
+    LabelProvider *provider = LabelProvider::getInstance();
+    LabelData label_data;
+
+    QStringList labels;
+    for (const auto &label : m_labelDetails) {
+        if (label.val == QStringLiteral("!no-unauthenticated"))
+            continue;
+        label_data = provider->getLabel(label.src, label.val);
+        labels.append(label_data.name);
+    }
+    setLabels(labels);
 }
 
 void UserProfile::updateContentFilterLabels(std::function<void()> callback)
