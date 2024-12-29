@@ -10,6 +10,7 @@ description: This is a multi-column Bluesky client.
 
 - Update
   - Change the video icon
+  - Change the label display content
 
 ### v0.42.0 - 2024/12/22
 

@@ -4,7 +4,7 @@
 #include "atprotocol/accessatprotocol.h"
 // #include "atprotocol/lexicons.h"
 #include "systemtool.h"
-#include "tools/configurablelabels.h"
+#include "tools/labelprovider.h"
 
 #include <QObject>
 
@@ -153,6 +153,7 @@ signals:
 
 public slots:
     void updatedBelongingLists(const QString &account_did, const QString &user_did);
+    void finishedConnector(const QString &labeler_did);
 
 private:
     void updateContentFilterLabels(std::function<void()> callback);
@@ -170,9 +171,11 @@ private:
 
     SystemTool m_systemTool;
     AtProtocolInterface::AccountData m_account;
+    LabelConnector m_labelConnector;
     //    AtProtocolType::AppBskyActorDefs::ProfileViewDetailed m_profile;
     bool m_running;
     QString m_formattedDescription;
+    QList<AtProtocolType::ComAtprotoLabelDefs::Label> m_labelDetails;
 
     QString m_did;
     QString m_handle;

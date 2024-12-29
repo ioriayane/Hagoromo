@@ -235,7 +235,7 @@ jobs:
           # name: "Ver ${{ needs.prepare.outputs.VERSION_NO }} Test"
           tag_name: "v${{ needs.prepare.outputs.VERSION_NO }}"
           release_name: "Ver ${{ needs.prepare.outputs.VERSION_NO }}"
-          draft: true
+          draft: false
           prerelease: false
           body: |
             ja : [更新履歴](https://hagoromo.relog.tech/ja/docs/release-note/)
