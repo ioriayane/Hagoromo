@@ -86,7 +86,6 @@ void UserProfile::getProfile(const QString &did)
                         if (label.val == QStringLiteral("!no-unauthenticated"))
                             continue;
                         labels.append(label.val);
-                        break;
                     }
                     setLabels(labels);
                 }

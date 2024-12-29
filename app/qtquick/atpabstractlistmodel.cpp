@@ -6,6 +6,7 @@
 #include "extension/com/atproto/repo/comatprotorepoputrecordex.h"
 #include "tools/accountmanager.h"
 #include "tools/labelerprovider.h"
+#include "tools/labelprovider.h"
 #include "common.h"
 #include "operation/translator.h"
 
@@ -398,11 +399,14 @@ QStringList
 AtpAbstractListModel::getLabels(const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels,
                                 bool exclude_no_unauth) const
 {
+    LabelProvider *provider = LabelProvider::getInstance();
+    LabelData label_data;
     QStringList ret;
     for (const auto &label : labels) {
         if (exclude_no_unauth && label.val == "!no-unauthenticated")
             continue;
-        ret.append(label.val);
+        label_data = provider->getLabel(label.src, label.val);
+        ret.append(label_data.name);
     }
     return ret;
 }

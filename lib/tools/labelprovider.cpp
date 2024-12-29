@@ -70,10 +70,13 @@ void LabelProvider::update(const QStringList labelers,
 
 LabelData LabelProvider::getLabel(const QString &labeler_did, const QString &id) const
 {
-    if (!m_lablers.contains(labeler_did))
-        return LabelData();
-
     LabelData ret;
+
+    if (!m_lablers.contains(labeler_did)) {
+        ret.name = id;
+        return ret;
+    }
+
     AtProtocolType::AppBskyLabelerDefs::LabelerViewDetailed labeler = m_lablers[labeler_did];
 
     ret.avatar = labeler.creator.avatar;

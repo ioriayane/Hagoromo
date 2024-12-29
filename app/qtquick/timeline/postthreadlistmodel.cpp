@@ -5,7 +5,19 @@
 using AtProtocolInterface::AppBskyFeedGetPostThread;
 using namespace AtProtocolType;
 
-PostThreadListModel::PostThreadListModel(QObject *parent) : TimelineListModel { parent } { }
+PostThreadListModel::PostThreadListModel(QObject *parent)
+    : TimelineListModel { parent }, m_labelConnector(this)
+{
+
+    connect(&m_labelConnector, &LabelConnector::finished, this,
+            &PostThreadListModel::finishedConnector);
+}
+
+PostThreadListModel::~PostThreadListModel()
+{
+    disconnect(&m_labelConnector, &LabelConnector::finished, this,
+               &PostThreadListModel::finishedConnector);
+}
 
 bool PostThreadListModel::getLatest()
 {
@@ -13,10 +25,12 @@ bool PostThreadListModel::getLatest()
         return false;
     setRunning(true);
 
+    m_postThreadCid.clear();
     updateContentFilterLabels([=]() {
         AppBskyFeedGetPostThread *thread = new AppBskyFeedGetPostThread(this);
         connect(thread, &AppBskyFeedGetPostThread::finished, [=](bool success) {
             if (success) {
+                m_postThreadCid = thread->threadViewPost().post.cid;
                 copyFrom(&thread->threadViewPost(), 0);
             } else {
                 emit errorOccured(thread->errorCode(), thread->errorMessage());
@@ -102,6 +116,24 @@ void PostThreadListModel::copyFrom(const AppBskyFeedDefs::ThreadViewPost *thread
             copyFrom(reply_view_post.get(), 2);
         }
     }
+
+    if (type == 0) {
+        // ラベラーの情報を取得してラベルの表示名を取得できるようにする
+        QStringList labelers;
+        for (const auto &label : thread_view_post->post.author.labels) {
+            if (!label.src.isEmpty() && !labelers.contains(label.src)) {
+                labelers.append(label.src);
+            }
+        }
+        for (const auto &label : thread_view_post->post.labels) {
+            if (!label.src.isEmpty() && !labelers.contains(label.src)) {
+                labelers.append(label.src);
+            }
+        }
+        if (!labelers.isEmpty()) {
+            LabelProvider::getInstance()->update(labelers, account(), &m_labelConnector);
+        }
+    }
 }
 
 QString PostThreadListModel::postThreadUri() const
@@ -115,4 +147,13 @@ void PostThreadListModel::setPostThreadUri(const QString &newPostThreadUri)
         return;
     m_postThreadUri = newPostThreadUri;
     emit postThreadUriChanged();
+}
+
+void PostThreadListModel::finishedConnector(const QString &labeler_did)
+{
+    int row = m_cidList.indexOf(m_postThreadCid);
+    if (row < 0)
+        return;
+
+    emit dataChanged(index(row), index(row), QVector<int>() << LabelsRole << AuthorLabelsRole);
 }
