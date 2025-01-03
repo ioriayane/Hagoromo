@@ -1177,6 +1177,17 @@ struct SkeletonSearchActor
 {
     QString did; // did
 };
+struct SkeletonSearchStarterPack
+{
+    QString uri; // at-uri
+};
+struct TrendingTopic
+{
+    QString topic;
+    QString displayName;
+    QString description;
+    QString link;
+};
 }
 
 // app.bsky.unspecced.getTaggedSuggestions
@@ -1303,6 +1314,7 @@ struct ConvoView
     DeletedMessageView lastMessage_DeletedMessageView;
     // union end : lastMessage
     bool muted = false;
+    bool opened = false;
     int unreadCount = 0;
 };
 struct LogBeginConvo
@@ -1383,6 +1395,11 @@ struct StatusAttr
     bool applied = false;
     QString ref;
 };
+struct ThreatSignature
+{
+    QString property;
+    QString value;
+};
 struct AccountView
 {
     QString did; // did
@@ -1395,6 +1412,7 @@ struct AccountView
     QString emailConfirmedAt; // datetime
     QString inviteNote;
     QString deactivatedAt; // datetime
+    QList<ThreatSignature> threatSignatures;
 };
 struct RepoRef
 {
@@ -1650,6 +1668,9 @@ enum class ModEventViewDetailEventType : int {
     event_ModEventResolveAppeal,
     event_ModEventDivert,
     event_ModEventTag,
+    event_AccountEvent,
+    event_IdentityEvent,
+    event_RecordEvent,
 };
 enum class ModEventViewDetailSubjectType : int {
     none,
@@ -1668,6 +1689,11 @@ enum class SubjectStatusViewSubjectType : int {
     subject_ComAtprotoAdminDefs_RepoRef,
     subject_ComAtprotoRepoStrongRef_Main,
 };
+enum class SubjectStatusViewHostingType : int {
+    none,
+    hosting_AccountHosting,
+    hosting_RecordHosting,
+};
 enum class ModEventViewEventType : int {
     none,
     event_ModEventTakedown,
@@ -1685,6 +1711,9 @@ enum class ModEventViewEventType : int {
     event_ModEventResolveAppeal,
     event_ModEventDivert,
     event_ModEventTag,
+    event_AccountEvent,
+    event_IdentityEvent,
+    event_RecordEvent,
 };
 enum class ModEventViewSubjectType : int {
     none,
@@ -1699,6 +1728,7 @@ struct ModEventTakedown
             0; // Indicates how long the takedown should be in effect before automatically expiring.
     bool acknowledgeAccountSubjects = false; // If true, all other reports on content authored by
                                              // this account will be resolved (acknowledged).
+    QList<QString> policies; // Names/Keywords of the policies that drove the decision.
 };
 struct ModEventReverseTakedown
 {
@@ -1726,6 +1756,8 @@ struct ModEventLabel
 struct ModEventAcknowledge
 {
     QString comment;
+    bool acknowledgeAccountSubjects = false; // If true, all other reports on content authored by
+                                             // this account will be resolved (acknowledged).
 };
 struct ModEventEscalate
 {
@@ -1743,7 +1775,8 @@ struct ModEventUnmute
 struct ModEventMuteReporter
 {
     QString comment;
-    int durationInHours = 0; // Indicates how long the account should remain muted.
+    int durationInHours = 0; // Indicates how long the account should remain muted. Falsy value here
+                             // means a permanent mute.
 };
 struct ModEventUnmuteReporter
 {
@@ -1770,6 +1803,29 @@ struct ModEventTag
                            // won't be duplicated.
     QString comment; // Additional comment about added/removed tags.
 };
+struct AccountEvent
+{
+    QString comment;
+    bool active = false; // Indicates that the account has a repository which can be fetched from
+                         // the host that emitted this event.
+    QString status;
+    QString timestamp; // datetime
+};
+struct IdentityEvent
+{
+    QString comment;
+    QString handle; // handle
+    QString pdsHost; // uri
+    bool tombstone = false;
+    QString timestamp; // datetime
+};
+struct RecordEvent
+{
+    QString comment;
+    QString op;
+    QString cid; // cid
+    QString timestamp; // datetime
+};
 struct ModEventView
 {
     int id = 0;
@@ -1790,6 +1846,9 @@ struct ModEventView
     ModEventResolveAppeal event_ModEventResolveAppeal;
     ModEventDivert event_ModEventDivert;
     ModEventTag event_ModEventTag;
+    AccountEvent event_AccountEvent;
+    IdentityEvent event_IdentityEvent;
+    RecordEvent event_RecordEvent;
     // union end : event
     // union start : subject
     ModEventViewSubjectType subject_type = ModEventViewSubjectType::none;
@@ -1803,6 +1862,22 @@ struct ModEventView
     QString creatorHandle;
     QString subjectHandle;
 };
+struct AccountHosting
+{
+    QString status;
+    QString updatedAt; // datetime
+    QString createdAt; // datetime
+    QString deletedAt; // datetime
+    QString deactivatedAt; // datetime
+    QString reactivatedAt; // datetime
+};
+struct RecordHosting
+{
+    QString status;
+    QString updatedAt; // datetime
+    QString createdAt; // datetime
+    QString deletedAt; // datetime
+};
 typedef QString SubjectReviewState;
 struct SubjectStatusView
 {
@@ -1812,6 +1887,11 @@ struct SubjectStatusView
     ComAtprotoAdminDefs::RepoRef subject_ComAtprotoAdminDefs_RepoRef;
     ComAtprotoRepoStrongRef::Main subject_ComAtprotoRepoStrongRef_Main;
     // union end : subject
+    // union start : hosting
+    SubjectStatusViewHostingType hosting_type = SubjectStatusViewHostingType::none;
+    AccountHosting hosting_AccountHosting;
+    RecordHosting hosting_RecordHosting;
+    // union end : hosting
     QList<QString> subjectBlobCids;
     QString subjectRepoHandle;
     QString updatedAt; // datetime , Timestamp referencing when the last update was made to the
@@ -1849,6 +1929,7 @@ struct RepoView
     bool invitesDisabled = false;
     QString inviteNote;
     QString deactivatedAt; // datetime
+    QList<ComAtprotoAdminDefs::ThreatSignature> threatSignatures;
 };
 struct RepoViewNotFound
 {
@@ -1912,6 +1993,9 @@ struct ModEventViewDetail
     ModEventResolveAppeal event_ModEventResolveAppeal;
     ModEventDivert event_ModEventDivert;
     ModEventTag event_ModEventTag;
+    AccountEvent event_AccountEvent;
+    IdentityEvent event_IdentityEvent;
+    RecordEvent event_RecordEvent;
     // union end : event
     // union start : subject
     ModEventViewDetailSubjectType subject_type = ModEventViewDetailSubjectType::none;
@@ -1942,6 +2026,7 @@ struct RepoViewDetail
     QString inviteNote;
     QString emailConfirmedAt; // datetime
     QString deactivatedAt; // datetime
+    QList<ComAtprotoAdminDefs::ThreatSignature> threatSignatures;
 };
 struct RecordViewDetail
 {
@@ -1965,6 +2050,58 @@ struct ServiceConfig
 struct ViewerConfig
 {
     QString role;
+};
+}
+
+// tools.ozone.set.defs
+namespace ToolsOzoneSetDefs {
+struct Set
+{
+    QString name;
+    QString description;
+};
+struct SetView
+{
+    QString name;
+    QString description;
+    int setSize = 0;
+    QString createdAt; // datetime
+    QString updatedAt; // datetime
+};
+}
+
+// tools.ozone.setting.defs
+namespace ToolsOzoneSettingDefs {
+struct Option
+{
+    QString key; // nsid
+    QString did; // did
+    QVariant value;
+    QString description;
+    QString createdAt; // datetime
+    QString updatedAt; // datetime
+    QString managerRole;
+    QString scope;
+    QString createdBy; // did
+    QString lastUpdatedBy; // did
+};
+}
+
+// tools.ozone.signature.defs
+namespace ToolsOzoneSignatureDefs {
+struct SigDetail
+{
+    QString property;
+    QString value;
+};
+}
+
+// tools.ozone.signature.findRelatedAccounts
+namespace ToolsOzoneSignatureFindRelatedAccounts {
+struct RelatedAccount
+{
+    ComAtprotoAdminDefs::AccountView account;
+    QList<ToolsOzoneSignatureDefs::SigDetail> similarities;
 };
 }
 

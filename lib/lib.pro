@@ -64,6 +64,7 @@ SOURCES += \
     $$PWD/atprotocol/app/bsky/labeler/appbskylabelergetservices.cpp \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationlistnotifications.cpp \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationupdateseen.cpp \
+    $$PWD/atprotocol/app/bsky/unspecced/appbskyunspeccedgetconfig.cpp \
     $$PWD/atprotocol/app/bsky/unspecced/appbskyunspeccedgetpopularfeedgenerators.cpp \
     $$PWD/atprotocol/chat/bsky/actor/chatbskyactordeleteaccount.cpp \
     $$PWD/atprotocol/chat/bsky/actor/chatbskyactorexportaccountdata.cpp \
@@ -184,6 +185,7 @@ HEADERS += \
     $$PWD/atprotocol/app/bsky/labeler/appbskylabelergetservices.h \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationlistnotifications.h \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationupdateseen.h \
+    $$PWD/atprotocol/app/bsky/unspecced/appbskyunspeccedgetconfig.h \
     $$PWD/atprotocol/app/bsky/unspecced/appbskyunspeccedgetpopularfeedgenerators.h \
     $$PWD/atprotocol/chat/bsky/actor/chatbskyactordeleteaccount.h \
     $$PWD/atprotocol/chat/bsky/actor/chatbskyactorexportaccountdata.h \
