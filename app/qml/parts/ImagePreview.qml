@@ -67,7 +67,7 @@ Frame {
                 property bool isWide: false
                 property bool isTall: false
                 Layout.preferredWidth: isWide ? imagePreviewLayout.layoutWidth : imagePreviewLayout.cellWidth
-                Layout.preferredHeight: isTall ? (imagePreviewLayout.layoutWidth * (
+                Layout.preferredHeight: isTall ? parseInt(imagePreviewLayout.layoutWidth * (
                                                       model.index < embedImageRatios.length ? parseFloat(embedImageRatios[model.index]) : (sourceSize.height / sourceSize.width)
                                                       )
                                                   ) : imagePreviewLayout.cellWidth
