@@ -167,7 +167,7 @@ void atprotocol_test::test_ComAtprotoServerCreateSession()
 
     {
         QSignalSpy spy(&session, SIGNAL(finished(bool)));
-        session.createSession("hoge", "fuga", QString());
+        session.createSession("hoge", "fuga", QString(), false);
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
         QList<QVariant> arguments = spy.takeFirst();
@@ -199,7 +199,7 @@ void atprotocol_test::test_ComAtprotoServerCreateSession()
 
     {
         QSignalSpy spy(&session, SIGNAL(finished(bool)));
-        session.createSession("hoge", "fuga", QString());
+        session.createSession("hoge", "fuga", QString(), false);
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
         QList<QVariant> arguments = spy.takeFirst();
@@ -1869,7 +1869,7 @@ void atprotocol_test::test_ServiceUrl()
 
     {
         QSignalSpy spy(&session, SIGNAL(finished(bool)));
-        session.createSession("hoge", "fuga", QString());
+        session.createSession("hoge", "fuga", QString(), false);
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
         QList<QVariant> arguments = spy.takeFirst();

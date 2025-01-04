@@ -11,7 +11,7 @@ public:
     explicit ComAtprotoServerCreateSession(QObject *parent = nullptr);
 
     void createSession(const QString &identifier, const QString &password,
-                       const QString &authFactorToken);
+                       const QString &authFactorToken, const bool allowTakendown);
 
     const QString &accessJwt() const;
     const QString &refreshJwt() const;

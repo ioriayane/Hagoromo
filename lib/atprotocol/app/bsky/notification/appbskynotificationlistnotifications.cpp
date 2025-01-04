@@ -13,11 +13,15 @@ AppBskyNotificationListNotifications::AppBskyNotificationListNotifications(QObje
 {
 }
 
-void AppBskyNotificationListNotifications::listNotifications(const int limit, const bool priority,
+void AppBskyNotificationListNotifications::listNotifications(const QList<QString> &reasons,
+                                                             const int limit, const bool priority,
                                                              const QString &cursor,
                                                              const QString &seenAt)
 {
     QUrlQuery url_query;
+    for (const auto &value : reasons) {
+        url_query.addQueryItem(QStringLiteral("reasons"), value);
+    }
     if (limit > 0) {
         url_query.addQueryItem(QStringLiteral("limit"), QString::number(limit));
     }

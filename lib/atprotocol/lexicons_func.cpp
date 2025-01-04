@@ -1668,6 +1668,22 @@ void copySkeletonSearchActor(const QJsonObject &src,
         dest.did = src.value("did").toString();
     }
 }
+void copySkeletonSearchStarterPack(const QJsonObject &src,
+                                   AppBskyUnspeccedDefs::SkeletonSearchStarterPack &dest)
+{
+    if (!src.isEmpty()) {
+        dest.uri = src.value("uri").toString();
+    }
+}
+void copyTrendingTopic(const QJsonObject &src, AppBskyUnspeccedDefs::TrendingTopic &dest)
+{
+    if (!src.isEmpty()) {
+        dest.topic = src.value("topic").toString();
+        dest.displayName = src.value("displayName").toString();
+        dest.description = src.value("description").toString();
+        dest.link = src.value("link").toString();
+    }
+}
 }
 // app.bsky.unspecced.getTaggedSuggestions
 namespace AppBskyUnspeccedGetTaggedSuggestions {
@@ -1814,6 +1830,7 @@ void copyConvoView(const QJsonObject &src, ChatBskyConvoDefs::ConvoView &dest)
                                                       dest.lastMessage_DeletedMessageView);
         }
         dest.muted = src.value("muted").toBool();
+        dest.opened = src.value("opened").toBool();
         dest.unreadCount = src.value("unreadCount").toInt();
     }
 }
@@ -1901,6 +1918,13 @@ void copyStatusAttr(const QJsonObject &src, ComAtprotoAdminDefs::StatusAttr &des
         dest.ref = src.value("ref").toString();
     }
 }
+void copyThreatSignature(const QJsonObject &src, ComAtprotoAdminDefs::ThreatSignature &dest)
+{
+    if (!src.isEmpty()) {
+        dest.property = src.value("property").toString();
+        dest.value = src.value("value").toString();
+    }
+}
 void copyAccountView(const QJsonObject &src, ComAtprotoAdminDefs::AccountView &dest)
 {
     if (!src.isEmpty()) {
@@ -1918,6 +1942,11 @@ void copyAccountView(const QJsonObject &src, ComAtprotoAdminDefs::AccountView &d
         dest.emailConfirmedAt = src.value("emailConfirmedAt").toString();
         dest.inviteNote = src.value("inviteNote").toString();
         dest.deactivatedAt = src.value("deactivatedAt").toString();
+        for (const auto &s : src.value("threatSignatures").toArray()) {
+            ThreatSignature child;
+            copyThreatSignature(s.toObject(), child);
+            dest.threatSignatures.append(child);
+        }
     }
 }
 void copyRepoRef(const QJsonObject &src, ComAtprotoAdminDefs::RepoRef &dest)
@@ -2233,6 +2262,9 @@ void copyModEventTakedown(const QJsonObject &src, ToolsOzoneModerationDefs::ModE
         dest.comment = src.value("comment").toString();
         dest.durationInHours = src.value("durationInHours").toInt();
         dest.acknowledgeAccountSubjects = src.value("acknowledgeAccountSubjects").toBool();
+        for (const auto &value : src.value("policies").toArray()) {
+            dest.policies.append(value.toString());
+        }
     }
 }
 void copyModEventReverseTakedown(const QJsonObject &src,
@@ -2274,6 +2306,7 @@ void copyModEventAcknowledge(const QJsonObject &src,
 {
     if (!src.isEmpty()) {
         dest.comment = src.value("comment").toString();
+        dest.acknowledgeAccountSubjects = src.value("acknowledgeAccountSubjects").toBool();
     }
 }
 void copyModEventEscalate(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventEscalate &dest)
@@ -2341,6 +2374,34 @@ void copyModEventTag(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventT
             dest.remove.append(value.toString());
         }
         dest.comment = src.value("comment").toString();
+    }
+}
+void copyAccountEvent(const QJsonObject &src, ToolsOzoneModerationDefs::AccountEvent &dest)
+{
+    if (!src.isEmpty()) {
+        dest.comment = src.value("comment").toString();
+        dest.active = src.value("active").toBool();
+        dest.status = src.value("status").toString();
+        dest.timestamp = src.value("timestamp").toString();
+    }
+}
+void copyIdentityEvent(const QJsonObject &src, ToolsOzoneModerationDefs::IdentityEvent &dest)
+{
+    if (!src.isEmpty()) {
+        dest.comment = src.value("comment").toString();
+        dest.handle = src.value("handle").toString();
+        dest.pdsHost = src.value("pdsHost").toString();
+        dest.tombstone = src.value("tombstone").toBool();
+        dest.timestamp = src.value("timestamp").toString();
+    }
+}
+void copyRecordEvent(const QJsonObject &src, ToolsOzoneModerationDefs::RecordEvent &dest)
+{
+    if (!src.isEmpty()) {
+        dest.comment = src.value("comment").toString();
+        dest.op = src.value("op").toString();
+        dest.cid = src.value("cid").toString();
+        dest.timestamp = src.value("timestamp").toString();
     }
 }
 void copyModEventView(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventView &dest)
@@ -2431,6 +2492,21 @@ void copyModEventView(const QJsonObject &src, ToolsOzoneModerationDefs::ModEvent
             ToolsOzoneModerationDefs::copyModEventTag(src.value("event").toObject(),
                                                       dest.event_ModEventTag);
         }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#accountEvent")) {
+            dest.event_type = ToolsOzoneModerationDefs::ModEventViewEventType::event_AccountEvent;
+            ToolsOzoneModerationDefs::copyAccountEvent(src.value("event").toObject(),
+                                                       dest.event_AccountEvent);
+        }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#identityEvent")) {
+            dest.event_type = ToolsOzoneModerationDefs::ModEventViewEventType::event_IdentityEvent;
+            ToolsOzoneModerationDefs::copyIdentityEvent(src.value("event").toObject(),
+                                                        dest.event_IdentityEvent);
+        }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#recordEvent")) {
+            dest.event_type = ToolsOzoneModerationDefs::ModEventViewEventType::event_RecordEvent;
+            ToolsOzoneModerationDefs::copyRecordEvent(src.value("event").toObject(),
+                                                      dest.event_RecordEvent);
+        }
         QString subject_type = src.value("subject").toObject().value("$type").toString();
         if (subject_type == QStringLiteral("com.atproto.admin.defs#repoRef")) {
             dest.subject_type = ToolsOzoneModerationDefs::ModEventViewSubjectType::
@@ -2459,6 +2535,26 @@ void copyModEventView(const QJsonObject &src, ToolsOzoneModerationDefs::ModEvent
         dest.subjectHandle = src.value("subjectHandle").toString();
     }
 }
+void copyAccountHosting(const QJsonObject &src, ToolsOzoneModerationDefs::AccountHosting &dest)
+{
+    if (!src.isEmpty()) {
+        dest.status = src.value("status").toString();
+        dest.updatedAt = src.value("updatedAt").toString();
+        dest.createdAt = src.value("createdAt").toString();
+        dest.deletedAt = src.value("deletedAt").toString();
+        dest.deactivatedAt = src.value("deactivatedAt").toString();
+        dest.reactivatedAt = src.value("reactivatedAt").toString();
+    }
+}
+void copyRecordHosting(const QJsonObject &src, ToolsOzoneModerationDefs::RecordHosting &dest)
+{
+    if (!src.isEmpty()) {
+        dest.status = src.value("status").toString();
+        dest.updatedAt = src.value("updatedAt").toString();
+        dest.createdAt = src.value("createdAt").toString();
+        dest.deletedAt = src.value("deletedAt").toString();
+    }
+}
 void copySubjectReviewState(const QJsonValue &src,
                             ToolsOzoneModerationDefs::SubjectReviewState &dest)
 {
@@ -2481,6 +2577,19 @@ void copySubjectStatusView(const QJsonObject &src,
                     subject_ComAtprotoRepoStrongRef_Main;
             ComAtprotoRepoStrongRef::copyMain(src.value("subject").toObject(),
                                               dest.subject_ComAtprotoRepoStrongRef_Main);
+        }
+        QString hosting_type = src.value("hosting").toObject().value("$type").toString();
+        if (hosting_type == QStringLiteral("tools.ozone.moderation.defs#accountHosting")) {
+            dest.hosting_type =
+                    ToolsOzoneModerationDefs::SubjectStatusViewHostingType::hosting_AccountHosting;
+            ToolsOzoneModerationDefs::copyAccountHosting(src.value("hosting").toObject(),
+                                                         dest.hosting_AccountHosting);
+        }
+        if (hosting_type == QStringLiteral("tools.ozone.moderation.defs#recordHosting")) {
+            dest.hosting_type =
+                    ToolsOzoneModerationDefs::SubjectStatusViewHostingType::hosting_RecordHosting;
+            ToolsOzoneModerationDefs::copyRecordHosting(src.value("hosting").toObject(),
+                                                        dest.hosting_RecordHosting);
         }
         for (const auto &value : src.value("subjectBlobCids").toArray()) {
             dest.subjectBlobCids.append(value.toString());
@@ -2522,6 +2631,11 @@ void copyRepoView(const QJsonObject &src, ToolsOzoneModerationDefs::RepoView &de
         dest.invitesDisabled = src.value("invitesDisabled").toBool();
         dest.inviteNote = src.value("inviteNote").toString();
         dest.deactivatedAt = src.value("deactivatedAt").toString();
+        for (const auto &s : src.value("threatSignatures").toArray()) {
+            ComAtprotoAdminDefs::ThreatSignature child;
+            ComAtprotoAdminDefs::copyThreatSignature(s.toObject(), child);
+            dest.threatSignatures.append(child);
+        }
     }
 }
 void copyRepoViewNotFound(const QJsonObject &src, ToolsOzoneModerationDefs::RepoViewNotFound &dest)
@@ -2683,6 +2797,24 @@ void copyModEventViewDetail(const QJsonObject &src,
             ToolsOzoneModerationDefs::copyModEventTag(src.value("event").toObject(),
                                                       dest.event_ModEventTag);
         }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#accountEvent")) {
+            dest.event_type =
+                    ToolsOzoneModerationDefs::ModEventViewDetailEventType::event_AccountEvent;
+            ToolsOzoneModerationDefs::copyAccountEvent(src.value("event").toObject(),
+                                                       dest.event_AccountEvent);
+        }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#identityEvent")) {
+            dest.event_type =
+                    ToolsOzoneModerationDefs::ModEventViewDetailEventType::event_IdentityEvent;
+            ToolsOzoneModerationDefs::copyIdentityEvent(src.value("event").toObject(),
+                                                        dest.event_IdentityEvent);
+        }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#recordEvent")) {
+            dest.event_type =
+                    ToolsOzoneModerationDefs::ModEventViewDetailEventType::event_RecordEvent;
+            ToolsOzoneModerationDefs::copyRecordEvent(src.value("event").toObject(),
+                                                      dest.event_RecordEvent);
+        }
         QString subject_type = src.value("subject").toObject().value("$type").toString();
         if (subject_type == QStringLiteral("tools.ozone.moderation.defs#repoView")) {
             dest.subject_type =
@@ -2746,6 +2878,11 @@ void copyRepoViewDetail(const QJsonObject &src, ToolsOzoneModerationDefs::RepoVi
         dest.inviteNote = src.value("inviteNote").toString();
         dest.emailConfirmedAt = src.value("emailConfirmedAt").toString();
         dest.deactivatedAt = src.value("deactivatedAt").toString();
+        for (const auto &s : src.value("threatSignatures").toArray()) {
+            ComAtprotoAdminDefs::ThreatSignature child;
+            ComAtprotoAdminDefs::copyThreatSignature(s.toObject(), child);
+            dest.threatSignatures.append(child);
+        }
     }
 }
 void copyRecordViewDetail(const QJsonObject &src, ToolsOzoneModerationDefs::RecordViewDetail &dest)
@@ -2782,6 +2919,69 @@ void copyViewerConfig(const QJsonObject &src, ToolsOzoneServerGetConfig::ViewerC
 {
     if (!src.isEmpty()) {
         dest.role = src.value("role").toString();
+    }
+}
+}
+// tools.ozone.set.defs
+namespace ToolsOzoneSetDefs {
+void copySet(const QJsonObject &src, ToolsOzoneSetDefs::Set &dest)
+{
+    if (!src.isEmpty()) {
+        dest.name = src.value("name").toString();
+        dest.description = src.value("description").toString();
+    }
+}
+void copySetView(const QJsonObject &src, ToolsOzoneSetDefs::SetView &dest)
+{
+    if (!src.isEmpty()) {
+        dest.name = src.value("name").toString();
+        dest.description = src.value("description").toString();
+        dest.setSize = src.value("setSize").toInt();
+        dest.createdAt = src.value("createdAt").toString();
+        dest.updatedAt = src.value("updatedAt").toString();
+    }
+}
+}
+// tools.ozone.setting.defs
+namespace ToolsOzoneSettingDefs {
+void copyOption(const QJsonObject &src, ToolsOzoneSettingDefs::Option &dest)
+{
+    if (!src.isEmpty()) {
+        dest.key = src.value("key").toString();
+        dest.did = src.value("did").toString();
+        LexiconsTypeUnknown::copyUnknown(src.value("value").toObject(), dest.value);
+        dest.description = src.value("description").toString();
+        dest.createdAt = src.value("createdAt").toString();
+        dest.updatedAt = src.value("updatedAt").toString();
+        dest.managerRole = src.value("managerRole").toString();
+        dest.scope = src.value("scope").toString();
+        dest.createdBy = src.value("createdBy").toString();
+        dest.lastUpdatedBy = src.value("lastUpdatedBy").toString();
+    }
+}
+}
+// tools.ozone.signature.defs
+namespace ToolsOzoneSignatureDefs {
+void copySigDetail(const QJsonObject &src, ToolsOzoneSignatureDefs::SigDetail &dest)
+{
+    if (!src.isEmpty()) {
+        dest.property = src.value("property").toString();
+        dest.value = src.value("value").toString();
+    }
+}
+}
+// tools.ozone.signature.findRelatedAccounts
+namespace ToolsOzoneSignatureFindRelatedAccounts {
+void copyRelatedAccount(const QJsonObject &src,
+                        ToolsOzoneSignatureFindRelatedAccounts::RelatedAccount &dest)
+{
+    if (!src.isEmpty()) {
+        ComAtprotoAdminDefs::copyAccountView(src.value("account").toObject(), dest.account);
+        for (const auto &s : src.value("similarities").toArray()) {
+            ToolsOzoneSignatureDefs::SigDetail child;
+            ToolsOzoneSignatureDefs::copySigDetail(s.toObject(), child);
+            dest.similarities.append(child);
+        }
     }
 }
 }
