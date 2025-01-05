@@ -84,3 +84,21 @@ The scrolling velocity of the columns may be too fast or too slow for your envir
 - If too slow: Adjust to the right
 
 The default value is 2500.
+
+- Scroll velocity
+  - Sets the initial speed when flicking with the mouse wheel or touchpad, etc.
+    - Adjust to the right (faster): If it is too slow
+    - Adjust to the left (slower): If it is too fast
+  - Default: 2500
+- Scroll deceleration
+  - Sets how easily the scroll stops after it has started moving.
+    - Adjust to the right (higher): Stops immediately
+    - Adjust to low (left): Skips a lot
+  - Default: 10000
+- Test button
+  - After adjusting the slide bar, press this button to refresh the sample list.
+  - Adjusting the slide bar alone will not have any effect.
+
+**Note**
+
+After making adjustments, press the `OK` button in the settings dialog and then restart Hagoromo.
