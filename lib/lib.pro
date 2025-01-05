@@ -64,6 +64,7 @@ SOURCES += \
     $$PWD/atprotocol/app/bsky/labeler/appbskylabelergetservices.cpp \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationlistnotifications.cpp \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationupdateseen.cpp \
+    $$PWD/atprotocol/app/bsky/unspecced/appbskyunspeccedgetconfig.cpp \
     $$PWD/atprotocol/app/bsky/unspecced/appbskyunspeccedgetpopularfeedgenerators.cpp \
     $$PWD/atprotocol/chat/bsky/actor/chatbskyactordeleteaccount.cpp \
     $$PWD/atprotocol/chat/bsky/actor/chatbskyactorexportaccountdata.cpp \
@@ -141,8 +142,9 @@ SOURCES += \
     $$PWD/tools/listitemscache.cpp \
     $$PWD/tools/opengraphprotocol.cpp \
     $$PWD/tools/pinnedpostcache.cpp \
-    realtime/listpostsselector.cpp \
-    tools/tid.cpp
+    $$PWD/realtime/listpostsselector.cpp \
+    $$PWD/tools/labelprovider.cpp \
+    $$PWD/tools/tid.cpp
 
 HEADERS += \
     $$PWD/atprotocol/accessatprotocol.h \
@@ -183,6 +185,7 @@ HEADERS += \
     $$PWD/atprotocol/app/bsky/labeler/appbskylabelergetservices.h \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationlistnotifications.h \
     $$PWD/atprotocol/app/bsky/notification/appbskynotificationupdateseen.h \
+    $$PWD/atprotocol/app/bsky/unspecced/appbskyunspeccedgetconfig.h \
     $$PWD/atprotocol/app/bsky/unspecced/appbskyunspeccedgetpopularfeedgenerators.h \
     $$PWD/atprotocol/chat/bsky/actor/chatbskyactordeleteaccount.h \
     $$PWD/atprotocol/chat/bsky/actor/chatbskyactorexportaccountdata.h \
@@ -264,9 +267,10 @@ HEADERS += \
     $$PWD/tools/opengraphprotocol.h \
     $$PWD/tools/pinnedpostcache.h \
     $$PWD/tools/qstringex.h \
-    common.h \
-    realtime/listpostsselector.h \
-    tools/tid.h
+    $$PWD/common.h \
+    $$PWD/realtime/listpostsselector.h \
+    $$PWD/tools/labelprovider.h \
+    $$PWD/tools/tid.h
 
 RESOURCES += \
     $$PWD/lib.qrc

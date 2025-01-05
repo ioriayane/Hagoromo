@@ -1,0 +1,251 @@
+name: Deploy Hagoromo
+on:
+  push:
+    tags:
+      - "v*"
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+concurrency:
+    group: deploy_app
+    cancel-in-progress: true
+jobs:
+  prepare:
+    runs-on: ubuntu-22.04
+    outputs:
+      VERSION_NO: ${{ steps.tag_check.outputs.VERSION_NO }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Tag check
+        id: tag_check
+        run: |
+          tag="${{ github.ref_name }}"
+          tag="v0.42.0" # debug
+          version_no=$(cat app/main.cpp | grep "app.setApplicationVersion" | grep -oE "[0-9]+.[0-9]+.[0-9]+")
+          echo "VERSION_NO=${version_no}" >> "$GITHUB_OUTPUT"
+
+          echo "Version No: $version_no"
+          echo "Tag: $tag"
+
+          if [[ "$tag" = "v${version_no}" ]]; then
+              ret=0
+              echo ok
+          else
+              ret=1
+              echo Please format the tag as "vX.Y.Z".
+          fi
+          exit $ret
+
+  build-for-linux:
+    runs-on: ubuntu-22.04
+    needs: prepare
+    outputs:
+      ARCHIVE_NAME: ${{ steps.build.outputs.ARCHIVE_NAME }}
+    steps:
+      - name: Install dependencies (linux)
+        run: sudo apt install ninja-build
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          aqtversion: '==3.1.*'
+          version: '6.8.1'
+          host: 'linux'
+          target: 'desktop'
+          arch: 'linux_gcc_64'
+          modules: 'qt5compat qtwebsockets qthttpserver qtshadertools qtimageformats qtscxml'
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - name: Build for Ubuntu
+        id: build
+        env:
+          VERSION_NO: ${{ needs.prepare.outputs.VERSION_NO }}
+        run: |
+          echo "::group::Build hagoromo"
+          echo "#ifndef ENCRYPTION_SEED_H" > ./lib/tools/encryption_seed.h
+          echo "#define ENCRYPTION_SEED_H" >> ./lib/tools/encryption_seed.h
+          echo "#define ENCRYPT_SEED \"${{ secrets.HAGOROMO_ENCRYPT_SEED_FOR_LINUX }}\"" >> ./lib/tools/encryption_seed.h
+          echo "#endif // ENCRYPTION_SEED_H" >> ./lib/tools/encryption_seed.h
+          scripts/build.sh linux ${QT_ROOT_DIR}/bin
+          echo "::endgroup::"
+
+          # echo "Make for Ubuntu"
+          # mkdir -p deploy-hagoromo/hagoromo
+          # echo "for linux" > deploy-hagoromo/hagoromo/hagoromo.txt
+          # cd deploy-hagoromo
+          # zip -r hagoromo_${VERSION_NO}_linux.zip hagoromo/
+          # cd ..
+
+          ls -l deploy-hagoromo
+          echo "ARCHIVE_NAME=hagoromo_${VERSION_NO}_linux.zip" >> "$GITHUB_OUTPUT"
+      - name: Upload a archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: archive_for_linux
+          path: "deploy-hagoromo/${{ steps.build.outputs.ARCHIVE_NAME }}"
+
+  build-for-windows:
+    runs-on: windows-latest
+    needs: prepare
+    outputs:
+      ARCHIVE_NAME: ${{ steps.build.outputs.ARCHIVE_NAME }}
+    steps:
+      - name: Configure build for x86_64
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x86_64
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          aqtversion: '==3.1.*'
+          version: '6.8.1'
+          host: 'windows'
+          target: 'desktop'
+          arch: 'win64_msvc2022_64'
+          modules: 'qt5compat qtwebsockets qthttpserver qtshadertools qtimageformats qtscxml'
+          tools: 'tools_opensslv3_x64 tools_opensslv3_src tools_ninja tools_qtcreator_gui,qt.tools.qtcreator_gui'
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - name: Build for Windows
+        id: build
+        env:
+          VERSION_NO: ${{ needs.prepare.outputs.VERSION_NO }}
+        run: |
+          echo "::group::Build zlib"
+          cd 3rdparty
+          mkdir build-zlib
+          cd build-zlib
+          cmake ../zlib -G "Visual Studio 17 2022" -DCMAKE_INSTALL_PREFIX="../../zlib" -A x64
+          cmake --build . --config RELEASE --target INSTALL
+          cd ../..
+          echo "::endgroup::"
+
+          echo "::group::Build hagoromo"
+          $PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
+          echo "#ifndef ENCRYPTION_SEED_H" > .\lib\tools\encryption_seed.h
+          echo "#define ENCRYPTION_SEED_H" >> .\lib\tools\encryption_seed.h
+          echo "#define ENCRYPT_SEED ""${{ secrets.HAGOROMO_ENCRYPT_SEED_FOR_WINDOWS }}""" >> .\lib\tools\encryption_seed.h
+          echo "#endif // ENCRYPTION_SEED_H" >> .\lib\tools\encryption_seed.h
+          $env:Path+=(";" + $env:QT_ROOT_DIR + "\..\..\Tools\QtCreator\bin\jom")
+          mkdir build-hagoromo
+          mkdir deploy-hagoromo/hagoromo
+          cd build-hagoromo
+          qmake ..\Hagoromo.pro CONFIG+=HAGOROMO_RELEASE_BUILD
+          # nmake
+          jom
+          cd ..
+          echo "::endgroup::"
+
+          echo "::group::Deploy hagoromo"
+          Copy-Item build-hagoromo\app\release\Hagoromo.exe deploy-hagoromo\hagoromo\
+          Copy-Item build-hagoromo\app\release\*.dll deploy-hagoromo\hagoromo\
+          windeployqt --qmldir app\qml deploy-hagoromo\hagoromo\Hagoromo.exe
+          python3 scripts\copymsvcfiles.py ($env:VSINSTALLDIR + "VC\Redist\MSVC") deploy-hagoromo\hagoromo\
+          Copy-Item build-hagoromo\app\release\translations\*.qm deploy-hagoromo\hagoromo\translations\
+          Compress-Archive -Path deploy-hagoromo\hagoromo -DestinationPath ("deploy-hagoromo\hagoromo_" + $env:VERSION_NO + "_windows.zip")
+          echo "::endgroup::"
+
+          # echo "Make for Windows"
+          # mkdir deploy-hagoromo/hagoromo
+          # echo "for windows" > deploy-hagoromo/hagoromo/hagoromo.txt
+          # Compress-Archive -Path deploy-hagoromo\hagoromo -DestinationPath ("deploy-hagoromo\hagoromo_" + $env:VERSION_NO + "_windows.zip")
+
+          ls .\deploy-hagoromo\
+          echo ("ARCHIVE_NAME=hagoromo_" + $env:VERSION_NO + "_windows.zip") >> "$env:GITHUB_OUTPUT"
+      - name: Upload a archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: archive_for_windows
+          path: "deploy-hagoromo/${{ steps.build.outputs.ARCHIVE_NAME }}"
+
+
+  build-for-mac:
+    runs-on: macos-latest
+    needs: prepare
+    outputs:
+      ARCHIVE_NAME: ${{ steps.build.outputs.ARCHIVE_NAME }}
+    steps:
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          aqtversion: '==3.1.*'
+          version: '6.8.1'
+          host: 'mac'
+          target: 'desktop'
+          arch: 'clang_64'
+          modules: 'qt5compat qthttpserver qtimageformats qtscxml qtshadertools qtwebsockets'
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - name: Build for Mac
+        id: build
+        env:
+          VERSION_NO: ${{ needs.prepare.outputs.VERSION_NO }}
+        run: |
+          echo "::group::Build hagoromo"
+          echo "#ifndef ENCRYPTION_SEED_H" > ./lib/tools/encryption_seed.h
+          echo "#define ENCRYPTION_SEED_H" >> ./lib/tools/encryption_seed.h
+          echo "#define ENCRYPT_SEED \"${{ secrets.HAGOROMO_ENCRYPT_SEED_FOR_MAC }}\"" >> ./lib/tools/encryption_seed.h
+          echo "#endif // ENCRYPTION_SEED_H" >> ./lib/tools/encryption_seed.h
+          ./scripts/build.sh mac ${Qt6_DIR}/bin
+          echo "::endgroup::"
+
+          # echo "Make for Mac"
+          # mkdir -p deploy-hagoromo/hagoromo
+          # echo "for mac" > deploy-hagoromo/hagoromo/hagoromo.txt
+          # cd deploy-hagoromo
+          # zip -r hagoromo_${VERSION_NO}_mac.zip hagoromo/
+          # cd ..
+
+          ls -l deploy-hagoromo
+          echo "ARCHIVE_NAME=hagoromo_${VERSION_NO}_mac.zip" >> "$GITHUB_OUTPUT"
+      - name: Upload a archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: archive_for_mac
+          path: "deploy-hagoromo/${{ steps.build.outputs.ARCHIVE_NAME }}"
+
+  make-release:
+    runs-on: ubuntu-22.04
+    needs: [prepare, build-for-linux, build-for-windows, build-for-mac]
+    steps:
+      - name: Download archives
+        uses: actions/download-artifact@v4
+      - name: Information
+        run: |
+          find . -type f
+          echo "Make release : ${{ needs.build-for-linux.outputs.ARCHIVE_NAME }}"
+          echo "Make release : ${{ needs.build-for-windows.outputs.ARCHIVE_NAME }}"
+          echo "Make release : ${{ needs.build-for-mac.outputs.ARCHIVE_NAME }}"
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          # tag_name: "v${{ needs.prepare.outputs.VERSION_NO }}.test"
+          # name: "Ver ${{ needs.prepare.outputs.VERSION_NO }} Test"
+          tag_name: "v${{ needs.prepare.outputs.VERSION_NO }}"
+          release_name: "Ver ${{ needs.prepare.outputs.VERSION_NO }}"
+          draft: false
+          prerelease: false
+          body: |
+            ja : [更新履歴](https://hagoromo.relog.tech/ja/docs/release-note/)
+            en : [Release Note](https://hagoromo.relog.tech/docs/release-note/)
+          files: |
+            ./archive_for_linux/${{ needs.build-for-linux.outputs.ARCHIVE_NAME }}
+            ./archive_for_windows/${{ needs.build-for-windows.outputs.ARCHIVE_NAME }}
+            ./archive_for_mac/${{ needs.build-for-mac.outputs.ARCHIVE_NAME }}
+
+  deploy-web-site:
+    needs: make-release
+    uses: ./.github/workflows/hugo.yml
+    secrets: inherit

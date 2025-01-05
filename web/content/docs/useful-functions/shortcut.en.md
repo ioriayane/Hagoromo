@@ -12,6 +12,7 @@ description: This is a multi-column Bluesky client.
 |---|---|
 |`n`|Open Post dialog|
 |`s`|Open Search dialog|
+|`c`|Open Add Column dialog|
 |`1`～`9`|Display columns according to number|
 |`Ctrl`+`←`|Display first column|
 |`Ctrl`+`→`|Display last column|

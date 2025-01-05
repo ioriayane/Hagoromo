@@ -292,7 +292,7 @@ void AccountManager::Private::createSession()
         session->deleteLater();
     });
     session->setAccount(m_account);
-    session->createSession(m_account.identifier, m_account.password, QString());
+    session->createSession(m_account.identifier, m_account.password, QString(), false);
 }
 
 void AccountManager::Private::refreshSession(bool initial)

@@ -14,7 +14,8 @@ ComAtprotoServerCreateSession::ComAtprotoServerCreateSession(QObject *parent)
 
 void ComAtprotoServerCreateSession::createSession(const QString &identifier,
                                                   const QString &password,
-                                                  const QString &authFactorToken)
+                                                  const QString &authFactorToken,
+                                                  const bool allowTakendown)
 {
     QJsonObject json_obj;
     if (!identifier.isEmpty()) {
@@ -26,6 +27,7 @@ void ComAtprotoServerCreateSession::createSession(const QString &identifier,
     if (!authFactorToken.isEmpty()) {
         json_obj.insert(QStringLiteral("authFactorToken"), authFactorToken);
     }
+    json_obj.insert(QStringLiteral("allowTakendown"), allowTakendown);
 
     QJsonDocument json_doc(json_obj);
 

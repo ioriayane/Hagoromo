@@ -227,6 +227,9 @@ namespace AppBskyUnspeccedDefs {
 void copySkeletonSearchPost(const QJsonObject &src, AppBskyUnspeccedDefs::SkeletonSearchPost &dest);
 void copySkeletonSearchActor(const QJsonObject &src,
                              AppBskyUnspeccedDefs::SkeletonSearchActor &dest);
+void copySkeletonSearchStarterPack(const QJsonObject &src,
+                                   AppBskyUnspeccedDefs::SkeletonSearchStarterPack &dest);
+void copyTrendingTopic(const QJsonObject &src, AppBskyUnspeccedDefs::TrendingTopic &dest);
 }
 // app.bsky.unspecced.getTaggedSuggestions
 namespace AppBskyUnspeccedGetTaggedSuggestions {
@@ -268,6 +271,7 @@ void copyMetadata(const QJsonObject &src, ChatBskyModerationGetActorMetadata::Me
 // com.atproto.admin.defs
 namespace ComAtprotoAdminDefs {
 void copyStatusAttr(const QJsonObject &src, ComAtprotoAdminDefs::StatusAttr &dest);
+void copyThreatSignature(const QJsonObject &src, ComAtprotoAdminDefs::ThreatSignature &dest);
 void copyAccountView(const QJsonObject &src, ComAtprotoAdminDefs::AccountView &dest);
 void copyRepoRef(const QJsonObject &src, ComAtprotoAdminDefs::RepoRef &dest);
 void copyRepoBlobRef(const QJsonObject &src, ComAtprotoAdminDefs::RepoBlobRef &dest);
@@ -366,7 +370,12 @@ void copyModEventResolveAppeal(const QJsonObject &src,
                                ToolsOzoneModerationDefs::ModEventResolveAppeal &dest);
 void copyModEventDivert(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventDivert &dest);
 void copyModEventTag(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventTag &dest);
+void copyAccountEvent(const QJsonObject &src, ToolsOzoneModerationDefs::AccountEvent &dest);
+void copyIdentityEvent(const QJsonObject &src, ToolsOzoneModerationDefs::IdentityEvent &dest);
+void copyRecordEvent(const QJsonObject &src, ToolsOzoneModerationDefs::RecordEvent &dest);
 void copyModEventView(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventView &dest);
+void copyAccountHosting(const QJsonObject &src, ToolsOzoneModerationDefs::AccountHosting &dest);
+void copyRecordHosting(const QJsonObject &src, ToolsOzoneModerationDefs::RecordHosting &dest);
 void copySubjectReviewState(const QJsonValue &src,
                             ToolsOzoneModerationDefs::SubjectReviewState &dest);
 void copySubjectStatusView(const QJsonObject &src,
@@ -390,6 +399,24 @@ void copyRecordViewDetail(const QJsonObject &src, ToolsOzoneModerationDefs::Reco
 namespace ToolsOzoneServerGetConfig {
 void copyServiceConfig(const QJsonObject &src, ToolsOzoneServerGetConfig::ServiceConfig &dest);
 void copyViewerConfig(const QJsonObject &src, ToolsOzoneServerGetConfig::ViewerConfig &dest);
+}
+// tools.ozone.set.defs
+namespace ToolsOzoneSetDefs {
+void copySet(const QJsonObject &src, ToolsOzoneSetDefs::Set &dest);
+void copySetView(const QJsonObject &src, ToolsOzoneSetDefs::SetView &dest);
+}
+// tools.ozone.setting.defs
+namespace ToolsOzoneSettingDefs {
+void copyOption(const QJsonObject &src, ToolsOzoneSettingDefs::Option &dest);
+}
+// tools.ozone.signature.defs
+namespace ToolsOzoneSignatureDefs {
+void copySigDetail(const QJsonObject &src, ToolsOzoneSignatureDefs::SigDetail &dest);
+}
+// tools.ozone.signature.findRelatedAccounts
+namespace ToolsOzoneSignatureFindRelatedAccounts {
+void copyRelatedAccount(const QJsonObject &src,
+                        ToolsOzoneSignatureFindRelatedAccounts::RelatedAccount &dest);
 }
 // tools.ozone.team.defs
 namespace ToolsOzoneTeamDefs {

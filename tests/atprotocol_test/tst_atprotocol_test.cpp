@@ -22,12 +22,11 @@
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
 #include "extension/com/atproto/repo/comatprotorepoputrecordex.h"
 #include "extension/com/atproto/server/comatprotoservercreatesessionex.h"
-#include "extension/directory/plc/directoryplclogaudit.h"
-#include "extension/directory/plc/directoryplc.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "tools/opengraphprotocol.h"
 #include "tools/configurablelabels.h"
 #include "tools/labelerprovider.h"
+#include "tools/labelprovider.h"
 #include "tools/listitemscache.h"
 #include "tools/pinnedpostcache.h"
 #include "unittest_common.h"
@@ -58,6 +57,7 @@ private slots:
     void test_ConfigurableLabels_mutedword();
     void test_ConfigurableLabels_contains_mutedword();
     void test_LabelerProvider();
+    void test_LabelProvider();
     void test_ComAtprotoRepoCreateRecord_post();
     void test_ComAtprotoRepoCreateRecord_threadgate();
     void test_ComAtprotoRepoCreateRecord_postgate();
@@ -167,7 +167,7 @@ void atprotocol_test::test_ComAtprotoServerCreateSession()
 
     {
         QSignalSpy spy(&session, SIGNAL(finished(bool)));
-        session.createSession("hoge", "fuga", QString());
+        session.createSession("hoge", "fuga", QString(), false);
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
         QList<QVariant> arguments = spy.takeFirst();
@@ -199,7 +199,7 @@ void atprotocol_test::test_ComAtprotoServerCreateSession()
 
     {
         QSignalSpy spy(&session, SIGNAL(finished(bool)));
-        session.createSession("hoge", "fuga", QString());
+        session.createSession("hoge", "fuga", QString(), false);
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
         QList<QVariant> arguments = spy.takeFirst();
@@ -1618,6 +1618,77 @@ void atprotocol_test::test_LabelerProvider()
             == true);
 }
 
+void atprotocol_test::test_LabelProvider()
+{
+    AtProtocolInterface::AccountData account;
+    QStringList labeler_dids;
+    LabelProvider *provider = LabelProvider::getInstance();
+
+    LabelConnector *connector1 = new LabelConnector(this);
+    LabelConnector *connector2 = new LabelConnector(this);
+
+    account.did = "did:plc:user";
+    account.handle = "user_handle";
+    account.accessJwt = "dummy_jwt";
+    account.service_endpoint =
+            QString("http://localhost:%1/response/labels/provider/10").arg(m_listenPort);
+
+    QString labeler_did;
+    QString id;
+    LabelData label;
+
+    labeler_dids << "did:plc:ar7c4by46qjdydhdevvrndac"
+                 << "did:plc:original_labeler_did";
+    {
+        QSignalSpy spy(connector2, SIGNAL(finished(const QString &)));
+        account.service =
+                QString("http://localhost:%1/response/labels/provider/11").arg(m_listenPort);
+        provider->update(QStringList() << "did:plc:original_labeler_did", account, connector1);
+        account.service =
+                QString("http://localhost:%1/response/labels/provider/12").arg(m_listenPort);
+        provider->update(QStringList() << "did:plc:original_labeler_did"
+                                       << "did:plc:ar7c4by46qjdydhdevvrndac",
+                         account, connector2);
+        spy.wait();
+        spy.wait();
+        QVERIFY2(spy.count() == 2, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    }
+
+    labeler_did = "did:plc:original_labeler_did";
+    id = "test_label2";
+    provider->setLanguage("en");
+    label = provider->getLabel(labeler_did, id);
+    QVERIFY2(label.name == "label2", label.name.toLocal8Bit());
+    QVERIFY2(label.avatar
+                     == "https://cdn.bsky.app/img/avatar/plain/did:plc:original_labeler_did/"
+                        "avatar@jpeg",
+             label.name.toLocal8Bit());
+    provider->setLanguage("ja");
+    label = provider->getLabel(labeler_did, id);
+    QVERIFY2(label.name == "raberu2", label.name.toLocal8Bit());
+    provider->setLanguage("unknown");
+    label = provider->getLabel(labeler_did, id);
+    QVERIFY2(label.name == "label2", label.name.toLocal8Bit());
+
+    labeler_did = "did:plc:ar7c4by46qjdydhdevvrndac";
+    id = "extremist";
+    label = provider->getLabel(labeler_did, id);
+    QVERIFY2(label.name == "Extremist", label.name.toLocal8Bit());
+    QVERIFY2(label.avatar == "", label.name.toLocal8Bit());
+
+    // 3連続で3カ所からリクエストしたときに、下記のようにするとgetServicesが3回発行されて
+    // 3回目のリクエスト元に対しては3回コールバック必要
+    // 1回目
+    // did:plc:labeler_1
+    // 2回目
+    // did:plc:labeler_1
+    // did:plc:labeler_2
+    // 3回目
+    // did:plc:labeler_1
+    // did:plc:labeler_2
+    // did:plc:labeler_3
+}
+
 void atprotocol_test::test_ComAtprotoRepoCreateRecord_post()
 {
     AtProtocolInterface::ComAtprotoRepoCreateRecordEx createrecord;
@@ -1798,7 +1869,7 @@ void atprotocol_test::test_ServiceUrl()
 
     {
         QSignalSpy spy(&session, SIGNAL(finished(bool)));
-        session.createSession("hoge", "fuga", QString());
+        session.createSession("hoge", "fuga", QString(), false);
         spy.wait();
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
         QList<QVariant> arguments = spy.takeFirst();
