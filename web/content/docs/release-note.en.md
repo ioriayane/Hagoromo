@@ -8,6 +8,9 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+- Fix
+  - Fix a case where hiding content using content filter settings did not work
+
 ### v0.43.0 - 2025/1/5
 
 - Add
