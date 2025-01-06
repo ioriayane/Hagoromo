@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2024
 
+### v0.43.0 - 2025/1/5
+
 - Add
   - Add a shortcut to open `Add column` dialog
 - Update

@@ -24,7 +24,7 @@ jobs:
         id: tag_check
         run: |
           tag="${{ github.ref_name }}"
-          tag="v0.42.0" # debug
+          # tag="v0.42.0" # debug
           version_no=$(cat app/main.cpp | grep "app.setApplicationVersion" | grep -oE "[0-9]+.[0-9]+.[0-9]+")
           echo "VERSION_NO=${version_no}" >> "$GITHUB_OUTPUT"
 
