@@ -287,14 +287,14 @@
 <context>
     <name>AtpAbstractListModel</name>
     <message>
-        <location filename="../qtquick/atpabstractlistmodel.cpp" line="629"/>
-        <location filename="../qtquick/atpabstractlistmodel.cpp" line="636"/>
+        <location filename="../qtquick/atpabstractlistmodel.cpp" line="633"/>
+        <location filename="../qtquick/atpabstractlistmodel.cpp" line="640"/>
         <source>Blocked</source>
         <translation>ブロック中</translation>
     </message>
     <message>
-        <location filename="../qtquick/atpabstractlistmodel.cpp" line="632"/>
-        <location filename="../qtquick/atpabstractlistmodel.cpp" line="639"/>
+        <location filename="../qtquick/atpabstractlistmodel.cpp" line="636"/>
+        <location filename="../qtquick/atpabstractlistmodel.cpp" line="643"/>
         <source>Detached by author</source>
         <translation>投稿者によって切り離し済み</translation>
     </message>
@@ -707,32 +707,37 @@ Please recreate AppPassword in the official application.</source>
         <translation>コンテンツフィルター</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ContentFilterSettingDialog.qml" line="98"/>
+        <location filename="../qml/dialogs/ContentFilterSettingDialog.qml" line="99"/>
         <source>Enable adult content</source>
         <translation>アダルトコンテンツを有効化</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ContentFilterSettingDialog.qml" line="177"/>
+        <location filename="../qml/dialogs/ContentFilterSettingDialog.qml" line="180"/>
         <source>Hide</source>
         <translation>非表示</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ContentFilterSettingDialog.qml" line="188"/>
+        <location filename="../qml/dialogs/ContentFilterSettingDialog.qml" line="192"/>
         <source>Warn</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ContentFilterSettingDialog.qml" line="199"/>
+        <location filename="../qml/dialogs/ContentFilterSettingDialog.qml" line="192"/>
+        <source>Badge</source>
+        <translation>バッジ</translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/ContentFilterSettingDialog.qml" line="204"/>
         <source>Show</source>
         <translation>表示</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ContentFilterSettingDialog.qml" line="216"/>
+        <location filename="../qml/dialogs/ContentFilterSettingDialog.qml" line="222"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/ContentFilterSettingDialog.qml" line="228"/>
+        <location filename="../qml/dialogs/ContentFilterSettingDialog.qml" line="234"/>
         <source>Apply</source>
         <translation>適用</translation>
     </message>
@@ -3644,13 +3649,13 @@ Why should this message be reviewed?</source>
         <translation type="vanished">羽衣</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="124"/>
-        <location filename="../qml/main.qml" line="627"/>
+        <location filename="../qml/main.qml" line="125"/>
+        <location filename="../qml/main.qml" line="628"/>
         <source>Search posts</source>
         <translation>検索(ポスト)</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="127"/>
+        <location filename="../qml/main.qml" line="128"/>
         <source>Search users</source>
         <translation>検索(ユーザー)</translation>
     </message>
@@ -3659,33 +3664,33 @@ Why should this message be reviewed?</source>
         <translation type="vanished">リプライできるユーザーの更新中 ...</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="180"/>
+        <location filename="../qml/main.qml" line="181"/>
         <source>Authentication error</source>
         <translation>認証エラー</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="181"/>
+        <location filename="../qml/main.qml" line="182"/>
         <source>Some accounts require you to log in again.</source>
         <translation>いくつかのアカウントでログインが必要です。</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="365"/>
-        <location filename="../qml/main.qml" line="370"/>
+        <location filename="../qml/main.qml" line="366"/>
+        <location filename="../qml/main.qml" line="371"/>
         <source>Updating &apos;Edit interaction settings&apos; ...</source>
         <translation>投稿への反応の設定を更新中 ...</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="546"/>
+        <location filename="../qml/main.qml" line="547"/>
         <source>Loading lists</source>
         <translation>リストの読み込み中</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="607"/>
+        <location filename="../qml/main.qml" line="608"/>
         <source>Chat</source>
         <translation>チャット</translation>
     </message>
     <message>
-        <location filename="../qml/main.qml" line="1100"/>
+        <location filename="../qml/main.qml" line="1101"/>
         <source>Loading account(s) ...</source>
         <translation>アカウント情報の読み込み中 ...</translation>
     </message>
