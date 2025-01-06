@@ -283,18 +283,29 @@ ConfigurableLabelStatus ConfigurableLabels::visibility(const QString &label, con
     ConfigurableLabelStatus result = ConfigurableLabelStatus::Unknown;
     if (m_labels.contains(key)) {
         for (const auto &item : m_labels.value(key)) {
-            if (item.values.contains(label) && item.foldable_range == foldable_range) {
-                // 画像用のラベルの検索か、それ以外か。どちらか一方のみ。つまり、一致しているときだけ。
-                if (item.is_adult_imagery) {
-                    if (m_enableAdultContent) {
+            if (item.values.contains(label)) {
+                if (item.foldable_range == foldable_range) {
+                    // 画像用のラベルの検索か、それ以外か。どちらか一方のみ。つまり、一致しているときだけ。
+                    if (item.is_adult_imagery) {
+                        if (m_enableAdultContent) {
+                            result = item.status;
+                        } else {
+                            result = ConfigurableLabelStatus::Hide;
+                        }
+                    } else {
+                        result = item.status;
+                    }
+                    break;
+                } else if (item.foldable_range == ConfigurableLabelFoldableRange::None) {
+                    if (item.status == ConfigurableLabelStatus::Hide) {
                         result = item.status;
                     } else {
-                        result = ConfigurableLabelStatus::Hide;
+                        // getServicesのblursがnoneで設定が非表示以外のときは表示
+                        // ラベラー的に隠さない設定なので
+                        result = ConfigurableLabelStatus::Show;
                     }
-                } else {
-                    result = item.status;
+                    break;
                 }
-                break;
             }
         }
     }
