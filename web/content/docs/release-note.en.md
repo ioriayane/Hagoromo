@@ -10,6 +10,7 @@ description: This is a multi-column Bluesky client.
 
 - Fix
   - Fix a case where hiding content using content filter settings did not work
+  - Fix a bug that prevented the correct management of targets when the second or subsequent account was set as the main account
 
 ### v0.43.0 - 2025/1/5
 
