@@ -8,7 +8,8 @@ on:
         type: boolean
         default: false
     outputs:
-      ARCHIVE_NAME: ${{ jobs.build-for-windows.outputs.ARCHIVE_NAME }}
+      ARCHIVE_NAME:
+        value: ${{ jobs.build-for-windows.outputs.ARCHIVE_NAME }}
 
 concurrency:
     group: unit_test
