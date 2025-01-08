@@ -46,7 +46,7 @@ jobs:
     # needs: make-release
     uses: ./.github/workflows/build_win.yml
     secrets: inherit
-    inputs:
+    with:
       upload: false
 
   make-release:
