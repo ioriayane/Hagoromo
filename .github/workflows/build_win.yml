@@ -12,7 +12,7 @@ on:
         value: ${{ jobs.build-for-windows.outputs.ARCHIVE_NAME }}
 
 concurrency:
-    group: unit_test
+    group: build_for_windows
     cancel-in-progress: true
 
 jobs:
