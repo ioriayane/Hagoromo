@@ -58,14 +58,14 @@ jobs:
 
           ls -l deploy-hagoromo
           echo "ARCHIVE_NAME=hagoromo_${VERSION_NO}_mac.zip" >> "$GITHUB_OUTPUT"
-      - name: Unit test
-        if: ${{ inputs.unit_test == true }}
-        env:
-          TZ: "Asia/Tokyo"
-        run: scripts/unittest.sh mac ${QT_ROOT_DIR}/bin
       - name: Upload a archive
         if: ${{ inputs.upload == true }}
         uses: actions/upload-artifact@v4
         with:
           name: archive_for_mac
           path: "deploy-hagoromo/${{ steps.build.outputs.ARCHIVE_NAME }}"
+      - name: Unit test
+        if: ${{ inputs.unit_test == true }}
+        env:
+          TZ: "Asia/Tokyo"
+        run: scripts/unittest.sh mac ${QT_ROOT_DIR}/bin

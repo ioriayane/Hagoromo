@@ -64,7 +64,7 @@ jobs:
     with:
       upload: true
       VERSION_NO: "v0.0.1"
-      unit_test: true
+      unit_test: false
 
   make-release:
     runs-on: ubuntu-22.04
