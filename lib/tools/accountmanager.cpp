@@ -465,6 +465,9 @@ void AccountManager::load()
                 emit countChanged();
             }
             dList.at(dIndex[uuid])->load(item.toObject());
+            if (dList.at(dIndex[uuid])->getAccount().is_main) {
+                has_main = true;
+            }
         }
         if (!has_main && !dList.isEmpty()) {
             // mainになっているものがない
