@@ -41,3 +41,24 @@ jobs:
         env:
           TZ: "Asia/Tokyo"
         run: scripts/unittest.sh linux ${QT_ROOT_DIR}/bin
+
+  build-for-windows:
+    # needs: make-release
+    uses: ./.github/workflows/build_win.yml
+    secrets: inherit
+    inputs:
+      upload: false
+
+  make-release:
+    runs-on: ubuntu-22.04
+    # needs: [prepare, build-for-linux, build-for-windows, build-for-mac]
+    needs: [build-for-windows]
+    steps:
+      - name: Download archives
+        uses: actions/download-artifact@v4
+      - name: Information
+        run: |
+          find . -type f
+          echo "Make release : ${{ needs.build-for-linux.outputs.ARCHIVE_NAME }}"
+          echo "Make release : ${{ needs.build-for-windows.outputs.ARCHIVE_NAME }}"
+          echo "Make release : ${{ needs.build-for-mac.outputs.ARCHIVE_NAME }}"
