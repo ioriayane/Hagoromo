@@ -17,7 +17,6 @@ on:
 jobs:
   build-for-linux:
     runs-on: ubuntu-22.04
-    needs: prepare
     outputs:
       ARCHIVE_NAME: ${{ steps.build.outputs.ARCHIVE_NAME }}
     steps:
