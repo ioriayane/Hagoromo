@@ -7,75 +7,26 @@ concurrency:
     group: unit_test
     cancel-in-progress: true
 jobs:
-  # unit_test:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Install dependencies (linux)
-  #       run: sudo apt install ninja-build
-  #     - name: Install Qt
-  #       uses: jurplel/install-qt-action@v4
-  #       with:
-  #         # version: '5.15.2'
-  #         version: '6.8.1'
-  #         host: 'linux'
-  #         target: 'desktop'
-  #         arch: 'linux_gcc_64'
-  #         # modules: 'qtwebglplugin'
-  #         modules: 'qt5compat qtwebsockets qthttpserver qtshadertools qtimageformats qtscxml'
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
-  #       with:
-  #         submodules: recursive
-  #     - name: Setup
-  #       run: |
-  #         qmake --version
-  #         cp lib/tools/encryption_seed_template.h lib/tools/encryption_seed.h
-  #         python -m pip install --upgrade pip jinja2
-  #     # - name: Check style
-  #     #   uses: pre-commit/action@v3.0.1
-  #     #   with:
-  #     #     extra_args: --all-files
-  #     - name: Build
-  #       run: scripts/build.sh linux ${QT_ROOT_DIR}/bin
-  #     - name: Unit test
-  #       env:
-  #         TZ: "Asia/Tokyo"
-  #       run: scripts/unittest.sh linux ${QT_ROOT_DIR}/bin
-
-  build-for-linux:
+  linux:
     uses: ./.github/workflows/build_linux.yml
     secrets: inherit
     with:
-      upload: true
+      upload: false
       VERSION_NO: "v0.0.1"
       unit_test: true
 
-  build-for-windows:
+  windows:
     uses: ./.github/workflows/build_win.yml
     secrets: inherit
     with:
-      upload: true
+      upload: false
       VERSION_NO: "v0.0.1"
       unit_test: true
 
-  build-for-mac:
+  mac:
     uses: ./.github/workflows/build_mac.yml
     secrets: inherit
     with:
-      upload: true
+      upload: false
       VERSION_NO: "v0.0.1"
       unit_test: true
-
-  make-release:
-    runs-on: ubuntu-22.04
-    # needs: [prepare, build-for-linux, build-for-windows, build-for-mac]
-    needs: [build-for-linux, build-for-windows, build-for-mac]
-    steps:
-      - name: Download archives
-        uses: actions/download-artifact@v4
-      - name: Information
-        run: |
-          find . -type f
-          echo "Make release : ${{ needs.build-for-linux.outputs.ARCHIVE_NAME }}"
-          echo "Make release : ${{ needs.build-for-windows.outputs.ARCHIVE_NAME }}"
-          echo "Make release : ${{ needs.build-for-mac.outputs.ARCHIVE_NAME }}"
