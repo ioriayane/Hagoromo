@@ -6,10 +6,12 @@ on:
       upload:
         required: true
         type: boolean
-        default: false
       VERSION_NO:
         required: true
         type: string
+      unit_test:
+        type: boolean
+        default: false
     outputs:
       ARCHIVE_NAME:
         value: ${{ jobs.build-for-windows.outputs.ARCHIVE_NAME }}
@@ -42,7 +44,7 @@ jobs:
       - name: Build for Windows
         id: build
         env:
-          VERSION_NO: ${{ github.event.inputs.VERSION_NO }}
+          VERSION_NO: ${{ inputs.VERSION_NO }}
         run: |
           echo "::group::Build zlib"
           cd 3rdparty
@@ -85,8 +87,13 @@ jobs:
 
           ls .\deploy-hagoromo\
           echo ("ARCHIVE_NAME=hagoromo_" + $env:VERSION_NO + "_windows.zip") >> "$env:GITHUB_OUTPUT"
+      - name: Unit test
+        if: ${{ inputs.unit_test == true }}
+        env:
+          TZ: "Asia/Tokyo"
+        run: echo "Unit test for Windows"
       - name: Upload a archive
-        if: ${{ github.event.inputs.upload == true }}
+        if: ${{ inputs.upload == true }}
         uses: actions/upload-artifact@v4
         with:
           name: archive_for_windows

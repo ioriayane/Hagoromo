@@ -6,10 +6,12 @@ on:
       upload:
         required: true
         type: boolean
-        default: false
       VERSION_NO:
         required: true
         type: string
+      unit_test:
+        type: boolean
+        default: false
     outputs:
       ARCHIVE_NAME:
         value: ${{ jobs.build-for-mac.outputs.ARCHIVE_NAME }}
@@ -37,14 +39,14 @@ jobs:
       - name: Build for Mac
         id: build
         env:
-          VERSION_NO: ${{ github.event.inputs.VERSION_NO }}
+          VERSION_NO: ${{ inputs.VERSION_NO }}
         run: |
           echo "::group::Build hagoromo"
           echo "#ifndef ENCRYPTION_SEED_H" > ./lib/tools/encryption_seed.h
           echo "#define ENCRYPTION_SEED_H" >> ./lib/tools/encryption_seed.h
           echo "#define ENCRYPT_SEED \"${{ secrets.HAGOROMO_ENCRYPT_SEED_FOR_MAC }}\"" >> ./lib/tools/encryption_seed.h
           echo "#endif // ENCRYPTION_SEED_H" >> ./lib/tools/encryption_seed.h
-          ./scripts/build.sh mac ${Qt6_DIR}/bin
+          ./scripts/build.sh mac ${QT_ROOT_DIR}/bin
           echo "::endgroup::"
 
           # echo "Make for Mac"
@@ -56,8 +58,13 @@ jobs:
 
           ls -l deploy-hagoromo
           echo "ARCHIVE_NAME=hagoromo_${VERSION_NO}_mac.zip" >> "$GITHUB_OUTPUT"
+      - name: Unit test
+        if: ${{ inputs.unit_test == true }}
+        env:
+          TZ: "Asia/Tokyo"
+        run: scripts/unittest.sh mac ${QT_ROOT_DIR}/bin
       - name: Upload a archive
-        if: ${{ github.event.inputs.upload == true }}
+        if: ${{ inputs.upload == true }}
         uses: actions/upload-artifact@v4
         with:
           name: archive_for_mac
