@@ -30,3 +30,10 @@ jobs:
       upload: false
       VERSION_NO: "v0.0.1"
       unit_test: true
+
+  result:
+    runs-on: ubuntu-22.04
+    needs: [linux, windows, mac]
+    steps:
+      - name: Information
+        run: echo "Finish"
