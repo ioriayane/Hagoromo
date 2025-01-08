@@ -7,13 +7,12 @@ on:
         required: true
         type: boolean
         default: false
+      VERSION_NO:
+        required: true
+        type: string
     outputs:
       ARCHIVE_NAME:
         value: ${{ jobs.build-for-windows.outputs.ARCHIVE_NAME }}
-
-concurrency:
-    group: build_for_windows
-    cancel-in-progress: true
 
 jobs:
   build-for-windows:
@@ -43,7 +42,7 @@ jobs:
       - name: Build for Windows
         id: build
         env:
-          VERSION_NO: ${{ needs.prepare.outputs.VERSION_NO }}
+          VERSION_NO: ${{ github.event.inputs.VERSION_NO }}
         run: |
           echo "::group::Build zlib"
           cd 3rdparty

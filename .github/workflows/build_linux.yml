@@ -1,0 +1,67 @@
+name: Build for Linux
+on:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      upload:
+        required: true
+        type: boolean
+        default: false
+      VERSION_NO:
+        required: true
+        type: string
+    outputs:
+      ARCHIVE_NAME:
+        value: ${{ jobs.build-for-linux.outputs.ARCHIVE_NAME }}
+
+jobs:
+  build-for-linux:
+    runs-on: ubuntu-22.04
+    needs: prepare
+    outputs:
+      ARCHIVE_NAME: ${{ steps.build.outputs.ARCHIVE_NAME }}
+    steps:
+      - name: Install dependencies (linux)
+        run: sudo apt install ninja-build
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          aqtversion: '==3.1.*'
+          version: '6.8.1'
+          host: 'linux'
+          target: 'desktop'
+          arch: 'linux_gcc_64'
+          modules: 'qt5compat qtwebsockets qthttpserver qtshadertools qtimageformats qtscxml'
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - name: Build for Ubuntu
+        id: build
+        env:
+          VERSION_NO: ${{ github.event.inputs.VERSION_NO }}
+        run: |
+          echo "::group::Build hagoromo"
+          echo "#ifndef ENCRYPTION_SEED_H" > ./lib/tools/encryption_seed.h
+          echo "#define ENCRYPTION_SEED_H" >> ./lib/tools/encryption_seed.h
+          echo "#define ENCRYPT_SEED \"${{ secrets.HAGOROMO_ENCRYPT_SEED_FOR_LINUX }}\"" >> ./lib/tools/encryption_seed.h
+          echo "#endif // ENCRYPTION_SEED_H" >> ./lib/tools/encryption_seed.h
+          scripts/build.sh linux ${QT_ROOT_DIR}/bin
+          echo "::endgroup::"
+
+          # echo "Make for Ubuntu"
+          # mkdir -p deploy-hagoromo/hagoromo
+          # echo "for linux" > deploy-hagoromo/hagoromo/hagoromo.txt
+          # cd deploy-hagoromo
+          # zip -r hagoromo_${VERSION_NO}_linux.zip hagoromo/
+          # cd ..
+
+          ls -l deploy-hagoromo
+          echo "ARCHIVE_NAME=hagoromo_${VERSION_NO}_linux.zip" >> "$GITHUB_OUTPUT"
+      - name: Upload a archive
+        if: ${{ github.event.inputs.upload == true }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: archive_for_linux
+          path: "deploy-hagoromo/${{ steps.build.outputs.ARCHIVE_NAME }}"

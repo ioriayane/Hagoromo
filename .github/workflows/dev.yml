@@ -42,17 +42,31 @@ jobs:
           TZ: "Asia/Tokyo"
         run: scripts/unittest.sh linux ${QT_ROOT_DIR}/bin
 
+  build-for-linux:
+    uses: ./.github/workflows/build_linux.yml
+    secrets: inherit
+    with:
+      upload: true
+      VERSION_NO: "v0.0.1"
+
   build-for-windows:
-    # needs: make-release
     uses: ./.github/workflows/build_win.yml
     secrets: inherit
     with:
-      upload: false
+      upload: true
+      VERSION_NO: "v0.0.1"
+
+  build-for-mac:
+    uses: ./.github/workflows/build_mac.yml
+    secrets: inherit
+    with:
+      upload: true
+      VERSION_NO: "v0.0.1"
 
   make-release:
     runs-on: ubuntu-22.04
     # needs: [prepare, build-for-linux, build-for-windows, build-for-mac]
-    needs: [build-for-windows]
+    needs: [build-for-linux, build-for-windows, build-for-mac]
     steps:
       - name: Download archives
         uses: actions/download-artifact@v4
