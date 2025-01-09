@@ -19,8 +19,8 @@ jobs:
     uses: ./.github/workflows/build_win.yml
     secrets: inherit
     with:
-      upload: true
-      VERSION_NO: "0.43.0"
+      upload: false
+      VERSION_NO: "0.0.1"
       unit_test: true
 
   mac:
