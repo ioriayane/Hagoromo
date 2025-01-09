@@ -4,14 +4,13 @@ set CWD=%CD%
 
 REM --- main -----------------------------
 
-IF [%VS_SETUP_BAT%] == [] set VS_SETUP_BAT="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+IF "!VS_SETUP_BAT!"=="" set VS_SETUP_BAT="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
 set SRC_FOLDER=../zlib
 set BUILD_FOLDER=build-zlib
 set DEPLOY_FOLDER=../../zlib
 set CMAKE_PLATFORM=x64
 
 echo VS_SETUP_BAT=%VS_SETUP_BAT%
-
 
 REM --- check path -------
 nmake /? /c
