@@ -18,10 +18,13 @@ REM --- main -----------------------------
 :MAIN
 
 set JOM_BIN_FOLDER=%QT_BIN_FOLDER%\..\..\..\Tools\QtCreator\bin\jom
-set VS_SETUP_BAT="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
-set VS_REDIST_FOLDER="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC"
+IF [%VS_SETUP_BAT%] == [] set VS_SETUP_BAT="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+IF [%VS_REDIST_FOLDER%] == [] set VS_REDIST_FOLDER="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC"
 set BUILD_FOLDER=build-hagoromo
 set DEPLOY_FOLDER=deploy-hagoromo
+
+echo VS_SETUP_BAT=%VS_SETUP_BAT%
+echo VS_REDIST_FOLDER=%VS_REDIST_FOLDER%
 
 REM --- build deps -------
 cmd.exe /c %CWD%/scripts/build_zlib.bat

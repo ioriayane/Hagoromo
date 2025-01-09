@@ -46,38 +46,15 @@ jobs:
         env:
           VERSION_NO: ${{ inputs.VERSION_NO }}
         run: |
-          echo "::group::Build zlib"
-          cd 3rdparty
-          mkdir build-zlib
-          cd build-zlib
-          cmake ../zlib -G "Visual Studio 17 2022" -DCMAKE_INSTALL_PREFIX="../../zlib" -A x64
-          cmake --build . --config RELEASE --target INSTALL
-          cd ../..
-          echo "::endgroup::"
-
           echo "::group::Build hagoromo"
           $PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
           echo "#ifndef ENCRYPTION_SEED_H" > .\lib\tools\encryption_seed.h
           echo "#define ENCRYPTION_SEED_H" >> .\lib\tools\encryption_seed.h
           echo "#define ENCRYPT_SEED ""${{ secrets.HAGOROMO_ENCRYPT_SEED_FOR_WINDOWS }}""" >> .\lib\tools\encryption_seed.h
           echo "#endif // ENCRYPTION_SEED_H" >> .\lib\tools\encryption_seed.h
-          $env:Path+=(";" + $env:QT_ROOT_DIR + "\..\..\Tools\QtCreator\bin\jom")
-          mkdir build-hagoromo
-          mkdir deploy-hagoromo/hagoromo
-          cd build-hagoromo
-          qmake ..\Hagoromo.pro CONFIG+=HAGOROMO_RELEASE_BUILD
-          # nmake
-          jom
-          cd ..
-          echo "::endgroup::"
-
-          echo "::group::Deploy hagoromo"
-          Copy-Item build-hagoromo\app\release\Hagoromo.exe deploy-hagoromo\hagoromo\
-          Copy-Item build-hagoromo\app\release\*.dll deploy-hagoromo\hagoromo\
-          windeployqt --qmldir app\qml deploy-hagoromo\hagoromo\Hagoromo.exe
-          python3 scripts\copymsvcfiles.py ($env:VSINSTALLDIR + "VC\Redist\MSVC") deploy-hagoromo\hagoromo\
-          Copy-Item build-hagoromo\app\release\translations\*.qm deploy-hagoromo\hagoromo\translations\
-          Compress-Archive -Path deploy-hagoromo\hagoromo -DestinationPath ("deploy-hagoromo\hagoromo_" + $env:VERSION_NO + "_windows.zip")
+          $env:VS_SETUP_BAT=("""" + $env:VSINSTALLDIR + "VC\Auxiliary\Build\vcvarsall.bat"" x86_amd64")
+          $env:VS_REDIST_FOLDER=("""" + $env:VSINSTALLDIR + "VC\Redist\MSVC""")
+          scripts\build.bat $env:QT_ROOT_DIR\bin
           echo "::endgroup::"
 
           # echo "Make for Windows"
