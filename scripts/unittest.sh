@@ -50,8 +50,13 @@ VERSION_NO=$(cat app/main.cpp | grep "app.setApplicationVersion" | grep -oE "[0-
 
 build_hagoromo
 
+if [ "${PLATFORM_TYPE}" == "mac" ]; then
+    mkdir -p build-hagoromo/tests/Frameworks
+    cp zlib/lib/libz.1.* build-hagoromo/tests/Frameworks
+else
 LD_LIBRARY_PATH=$ROOT_FOLDER/openssl/lib
 export LD_LIBRARY_PATH
+fi
 
 work_dir="./build-hagoromo/tests"
 do_test ${work_dir}/atprotocol_test/atprotocol_test

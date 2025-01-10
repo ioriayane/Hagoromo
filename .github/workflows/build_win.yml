@@ -1,0 +1,77 @@
+name: Build for Windows
+on:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      upload:
+        required: true
+        type: boolean
+      VERSION_NO:
+        required: true
+        type: string
+      unit_test:
+        type: boolean
+        default: false
+    outputs:
+      ARCHIVE_NAME:
+        value: ${{ jobs.build-for-windows.outputs.ARCHIVE_NAME }}
+
+jobs:
+  build-for-windows:
+    runs-on: windows-latest
+    outputs:
+      ARCHIVE_NAME: ${{ steps.build.outputs.ARCHIVE_NAME }}
+    steps:
+      - name: Configure build for x86_64
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x86_64
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          aqtversion: '==3.1.*'
+          version: '6.8.1'
+          host: 'windows'
+          target: 'desktop'
+          arch: 'win64_msvc2022_64'
+          modules: 'qt5compat qtwebsockets qthttpserver qtshadertools qtimageformats qtscxml'
+          tools: 'tools_opensslv3_x64 tools_opensslv3_src tools_ninja tools_qtcreator_gui,qt.tools.qtcreator_gui'
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - name: Build for Windows
+        id: build
+        env:
+          VERSION_NO: ${{ inputs.VERSION_NO }}
+        run: |
+          echo "::group::Build hagoromo"
+          $PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
+          echo "#ifndef ENCRYPTION_SEED_H" > .\lib\tools\encryption_seed.h
+          echo "#define ENCRYPTION_SEED_H" >> .\lib\tools\encryption_seed.h
+          echo "#define ENCRYPT_SEED ""${{ secrets.HAGOROMO_ENCRYPT_SEED_FOR_WINDOWS }}""" >> .\lib\tools\encryption_seed.h
+          echo "#endif // ENCRYPTION_SEED_H" >> .\lib\tools\encryption_seed.h
+          $env:VS_SETUP_BAT=("""" + $env:VSINSTALLDIR + "VC\Auxiliary\Build\vcvarsall.bat"" x86_amd64")
+          $env:VS_REDIST_FOLDER=("""" + $env:VSINSTALLDIR + "VC\Redist\MSVC""")
+          scripts\build.bat $env:QT_ROOT_DIR\bin
+          echo "::endgroup::"
+
+          # echo "Make for Windows"
+          # mkdir deploy-hagoromo/hagoromo
+          # echo "for windows" > deploy-hagoromo/hagoromo/hagoromo.txt
+          # Compress-Archive -Path deploy-hagoromo\hagoromo -DestinationPath ("deploy-hagoromo\hagoromo_" + $env:VERSION_NO + "_windows.zip")
+
+          ls .\deploy-hagoromo\
+          echo ("ARCHIVE_NAME=hagoromo_" + $env:VERSION_NO + "_windows.zip") >> "$env:GITHUB_OUTPUT"
+      - name: Upload a archive
+        if: ${{ inputs.upload == true }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: archive_for_windows
+          path: "deploy-hagoromo/${{ steps.build.outputs.ARCHIVE_NAME }}"
+      - name: Unit test
+        if: ${{ inputs.unit_test == true }}
+        env:
+          TZ: "Asia/Tokyo"
+        run: scripts\unittest.bat $env:QT_ROOT_DIR\bin
