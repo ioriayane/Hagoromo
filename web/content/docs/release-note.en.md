@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2025
 
+### v0.44.0 - 2025/1/11
+
 - Fix
   - Fix a case where hiding content using content filter settings did not work
   - Fix a bug that prevented the correct management of targets when the second or subsequent account was set as the main account
