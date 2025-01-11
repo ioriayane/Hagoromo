@@ -5,7 +5,7 @@ DefaultContentLanguage = "en"
 
 [services]
   [services.googleAnalytics]
-    id = 'G-T8FF25K3GE'
+    id = 'G-FV3RJT16TZ'
 
 [languages]
   [languages.en]
