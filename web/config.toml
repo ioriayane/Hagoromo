@@ -3,6 +3,10 @@ theme = 'hugo-book'
 
 DefaultContentLanguage = "en"
 
+[services]
+  [services.googleAnalytics]
+    id = 'G-T8FF25K3GE'
+
 [languages]
   [languages.en]
     languageName = "English"
