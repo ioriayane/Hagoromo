@@ -6,7 +6,13 @@ description: This is a multi-column Bluesky client.
 
 # Release note
 
-## 2024
+## 2025
+
+### v0.44.0 - 2025/1/11
+
+- Fix
+  - Fix a case where hiding content using content filter settings did not work
+  - Fix a bug that prevented the correct management of targets when the second or subsequent account was set as the main account
 
 ### v0.43.0 - 2025/1/5
 
@@ -16,6 +22,8 @@ description: This is a multi-column Bluesky client.
   - Change the video icon
   - Change the label display content
   - Change the calculation process for adjusting the display size
+
+## 2024
 
 ### v0.42.0 - 2024/12/22
 

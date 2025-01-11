@@ -1,0 +1,71 @@
+name: Build for Mac
+on:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      upload:
+        required: true
+        type: boolean
+      VERSION_NO:
+        required: true
+        type: string
+      unit_test:
+        type: boolean
+        default: false
+    outputs:
+      ARCHIVE_NAME:
+        value: ${{ jobs.build-for-mac.outputs.ARCHIVE_NAME }}
+
+jobs:
+  build-for-mac:
+    runs-on: macos-latest
+    outputs:
+      ARCHIVE_NAME: ${{ steps.build.outputs.ARCHIVE_NAME }}
+    steps:
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          aqtversion: '==3.1.*'
+          version: '6.8.1'
+          host: 'mac'
+          target: 'desktop'
+          arch: 'clang_64'
+          modules: 'qt5compat qthttpserver qtimageformats qtscxml qtshadertools qtwebsockets'
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - name: Build for Mac
+        id: build
+        env:
+          VERSION_NO: ${{ inputs.VERSION_NO }}
+        run: |
+          echo "::group::Build hagoromo"
+          echo "#ifndef ENCRYPTION_SEED_H" > ./lib/tools/encryption_seed.h
+          echo "#define ENCRYPTION_SEED_H" >> ./lib/tools/encryption_seed.h
+          echo "#define ENCRYPT_SEED \"${{ secrets.HAGOROMO_ENCRYPT_SEED_FOR_MAC }}\"" >> ./lib/tools/encryption_seed.h
+          echo "#endif // ENCRYPTION_SEED_H" >> ./lib/tools/encryption_seed.h
+          ./scripts/build.sh mac ${QT_ROOT_DIR}/bin
+          echo "::endgroup::"
+
+          # echo "Make for Mac"
+          # mkdir -p deploy-hagoromo/hagoromo
+          # echo "for mac" > deploy-hagoromo/hagoromo/hagoromo.txt
+          # cd deploy-hagoromo
+          # zip -r hagoromo_${VERSION_NO}_mac.zip hagoromo/
+          # cd ..
+
+          ls -l deploy-hagoromo
+          echo "ARCHIVE_NAME=hagoromo_${VERSION_NO}_mac.zip" >> "$GITHUB_OUTPUT"
+      - name: Upload a archive
+        if: ${{ inputs.upload == true }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: archive_for_mac
+          path: "deploy-hagoromo/${{ steps.build.outputs.ARCHIVE_NAME }}"
+      - name: Unit test
+        if: ${{ inputs.unit_test == true }}
+        env:
+          TZ: "Asia/Tokyo"
+        run: scripts/unittest.sh mac ${QT_ROOT_DIR}/bin

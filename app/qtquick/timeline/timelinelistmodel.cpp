@@ -993,7 +993,11 @@ bool TimelineListModel::checkVisibility(const QString &cid)
     }
     for (const auto &label : current.post.labels) {
         if (visibilityBylabeler(label.val, true, label.src) == ConfigurableLabelStatus::Hide) {
-            qDebug() << "Hide post by post's label. " << current.post.author.handle << cid;
+            qDebug() << "Hide post by post's label(media). " << current.post.author.handle << cid;
+            return false;
+        } else if (visibilityBylabeler(label.val, false, label.src)
+                   == ConfigurableLabelStatus::Hide) {
+            qDebug() << "Hide post by post's label(content). " << current.post.author.handle << cid;
             return false;
         }
     }
