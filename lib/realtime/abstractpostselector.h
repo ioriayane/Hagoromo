@@ -54,6 +54,7 @@ public:
     virtual QStringList getListUris() const;
     virtual UserInfo getUser(const QString &did) const;
 
+    static QStringList getOperationNsid(const QJsonObject &object);
     static QStringList getOperationUris(const QJsonObject &object);
     QList<OperationInfo> getOperationInfos(const QJsonObject &object, bool like = false);
     bool judgeReaction(const QJsonObject &object);

@@ -46,6 +46,7 @@ SOURCES += \
     $$PWD/operation/translator.cpp \
     $$PWD/realtime/editselectorlistmodel.cpp \
     $$PWD/realtime/realtimefeedlistmodel.cpp \
+    $$PWD/realtime/realtimefeedstatuslistmodel.cpp \
     $$PWD/systemtool.cpp \
     $$PWD/timeline/actorlikelistmodel.cpp \
     $$PWD/timeline/anyfeedlistmodel.cpp \
@@ -102,6 +103,7 @@ HEADERS += \
     $$PWD/operation/translator.h \
     $$PWD/realtime/editselectorlistmodel.h \
     $$PWD/realtime/realtimefeedlistmodel.h \
+    $$PWD/realtime/realtimefeedstatuslistmodel.h \
     $$PWD/systemtool.h \
     $$PWD/thumbnailprovider.h \
     $$PWD/timeline/actorlikelistmodel.h \

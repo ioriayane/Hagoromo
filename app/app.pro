@@ -87,6 +87,7 @@ QML_FILES = \
     qml/parts/ProfileTabButton.qml \
     qml/parts/QuoteRecord.qml \
     qml/parts/ReactionAuthor.qml \
+    qml/parts/RealtimeFeedStatus.qml \
     qml/parts/SelectorDelegate.qml \
     qml/parts/SelfLabelPopup.qml \
     qml/parts/SideBar.qml \

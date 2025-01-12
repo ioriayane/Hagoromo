@@ -4,6 +4,7 @@
 #include "abstractpostselector.h"
 #include "extension/com/atproto/sync/comatprotosyncsubscribereposex.h"
 
+#include <QElapsedTimer>
 #include <QObject>
 #include <QPointer>
 #include <QTimer>
@@ -54,20 +55,29 @@ public:
     FirehoseReceiverStatus status() const;
     void setStatus(FirehoseReceiverStatus newStatus);
 
+    QHash<QString, QString> nsidsReceivePerSecond() const;
+
 signals:
     void errorOccured(const QString &code, const QString &message);
     void connectedToService();
     void disconnectFromService();
     void receivingChanged(bool status);
     void statusChanged(FirehoseReceiverStatus newStatus);
+    void analysisChanged();
 
 private:
+    void analizeReceivingData(const QJsonObject &json);
+
     QHash<QObject *, QPointer<AbstractPostSelector>> m_selectorHash;
     AtProtocolInterface::ComAtprotoSyncSubscribeReposEx m_client;
     QTimer m_wdgTimer;
+    QElapsedTimer m_analysisTimer;
 
     QString m_serviceEndpoint;
     FirehoseReceiverStatus m_status;
+
+    QHash<QString, int> m_nsidsCount; // QHash<nsid, count>
+    QHash<QString, QString> m_nsidsReceivePerSecond; // QHash<nsid, receive/sec>
 };
 
 }

@@ -1054,6 +1054,15 @@ ApplicationWindow {
         }
     }
 
+    RealtimeFeedStatus {
+        id: realtimeFeedStatus
+        anchors.right: rootLayout.right
+        anchors.bottom: globalProgressFrame.top
+        anchors.rightMargin: 5
+        anchors.bottomMargin: 5
+
+    }
+
     Frame {
         // 何かの読み込み中の表示
         id: globalProgressFrame
