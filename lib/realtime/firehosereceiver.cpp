@@ -1,9 +1,10 @@
 #include "firehosereceiver.h"
 
 #include <QDebug>
-// #include <QJsonArray>
-// #include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonObject>
 #include <QJsonDocument>
+#include <QDateTime>
 
 #define USE_JETSTREAM
 
@@ -267,10 +268,18 @@ void FirehoseReceiver::analizeReceivingData(const QJsonObject &json)
         }
     }
     if (update) {
+        int total = 0;
+        int value = 0;
+        QDateTime date = QDateTime::fromString(json.value("time").toString(), Qt::ISODateWithMs);
         for (const auto &nsid : m_nsidsCount.keys()) {
-            m_nsidsReceivePerSecond[nsid] = QString::number(1000 * m_nsidsCount[nsid] / diff_time);
+            value = 1000 * m_nsidsCount[nsid] / diff_time;
+            total += value;
+            m_nsidsReceivePerSecond[nsid] = QString::number(value);
             m_nsidsCount[nsid] = 0;
         }
+        m_nsidsReceivePerSecond["__total"] = QString::number(total);
+        m_nsidsReceivePerSecond["__difference"] =
+                QString::number(date.msecsTo(QDateTime::currentDateTimeUtc()));
         emit analysisChanged();
         prev_time = cur_time;
     }

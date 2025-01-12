@@ -15,6 +15,24 @@ RealtimeFeedStatusListModel::RealtimeFeedStatusListModel(QObject *parent)
         m_feedStatusData[data.id] = data;
         m_feedStatusIds.append(data.id);
     }
+    {
+        FeedStatusData data;
+        data.id = "__difference";
+        data.name = "Difference";
+        data.value = "0";
+        data.unit = "msec";
+        m_feedStatusData[data.id] = data;
+        m_feedStatusIds.append(data.id);
+    }
+    {
+        FeedStatusData data;
+        data.id = "__total";
+        data.name = "Total";
+        data.value = "0";
+        data.unit = "ope/sec";
+        m_feedStatusData[data.id] = data;
+        m_feedStatusIds.append(data.id);
+    }
 
     FirehoseReceiver *receiver = FirehoseReceiver::getInstance();
     connect(receiver, &FirehoseReceiver::statusChanged, this,
@@ -96,8 +114,6 @@ void RealtimeFeedStatusListModel::update(int row, RealtimeFeedStatusListModelRol
 void RealtimeFeedStatusListModel::receiverStatusChanged(
         FirehoseReceiver::FirehoseReceiverStatus newStatus)
 {
-    qDebug().noquote() << __FILE__ << __FUNCTION__ << newStatus;
-
     const int row = m_feedStatusIds.indexOf("__status");
     if (!m_feedStatusData.contains("__status") || row < 0)
         return;
