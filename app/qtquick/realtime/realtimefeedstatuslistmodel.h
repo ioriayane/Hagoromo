@@ -45,6 +45,8 @@ protected:
     QHash<int, QByteArray> roleNames() const;
 
 private:
+    void appendStatusData(const QString &id, const QString &name, const QString &value,
+                          const QString &unit);
     QStringList m_feedStatusIds;
     QHash<QString, FeedStatusData> m_feedStatusData;
 };

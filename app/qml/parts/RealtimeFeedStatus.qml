@@ -20,14 +20,18 @@ Frame {
             }
             RowLayout {
                 Label {
+                    Layout.minimumWidth: 70 * AdjustedValues.ratio
+                    font.pointSize: AdjustedValues.f8
                     text: model.name
                 }
                 Label {
                     Layout.fillWidth: true
                     horizontalAlignment: Text.AlignRight
+                    font.pointSize: AdjustedValues.f8
                     text: model.value
                 }
                 Label {
+                    font.pointSize: AdjustedValues.f8
                     text: model.unit
                 }
             }

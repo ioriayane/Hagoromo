@@ -5,34 +5,24 @@ using namespace RealtimeFeed;
 RealtimeFeedStatusListModel::RealtimeFeedStatusListModel(QObject *parent)
     : QAbstractListModel { parent }
 {
+    appendStatusData(QStringLiteral("__status"), QStringLiteral("Status"), QStringLiteral(""),
+                     QString());
+    appendStatusData(QStringLiteral("__difference"), QStringLiteral("Difference"),
+                     QStringLiteral("0"), QStringLiteral("msec"));
+    appendStatusData(QStringLiteral("__total"), QStringLiteral("Total"), QStringLiteral("0"),
+                     QStringLiteral("ope/sec"));
 
-    {
-        FeedStatusData data;
-        data.id = "__status";
-        data.name = "Status";
-        data.value = "";
-        data.unit.clear();
-        m_feedStatusData[data.id] = data;
-        m_feedStatusIds.append(data.id);
-    }
-    {
-        FeedStatusData data;
-        data.id = "__difference";
-        data.name = "Difference";
-        data.value = "0";
-        data.unit = "msec";
-        m_feedStatusData[data.id] = data;
-        m_feedStatusIds.append(data.id);
-    }
-    {
-        FeedStatusData data;
-        data.id = "__total";
-        data.name = "Total";
-        data.value = "0";
-        data.unit = "ope/sec";
-        m_feedStatusData[data.id] = data;
-        m_feedStatusIds.append(data.id);
-    }
+    // jetstreamを使うので基本固定
+    appendStatusData(QStringLiteral("app.bsky.feed.post"), QStringLiteral("Post"),
+                     QStringLiteral("0"), QStringLiteral("ope/sec"));
+    appendStatusData(QStringLiteral("app.bsky.feed.repost"), QStringLiteral("Repost"),
+                     QStringLiteral("0"), QStringLiteral("ope/sec"));
+    appendStatusData(QStringLiteral("app.bsky.feed.like"), QStringLiteral("Like"),
+                     QStringLiteral("0"), QStringLiteral("ope/sec"));
+    appendStatusData(QStringLiteral("app.bsky.graph.follow"), QStringLiteral("Follow"),
+                     QStringLiteral("0"), QStringLiteral("ope/sec"));
+    appendStatusData(QStringLiteral("app.bsky.graph.listitem"), QStringLiteral("ListItem"),
+                     QStringLiteral("0"), QStringLiteral("ope/sec"));
 
     FirehoseReceiver *receiver = FirehoseReceiver::getInstance();
     connect(receiver, &FirehoseReceiver::statusChanged, this,
@@ -144,13 +134,7 @@ void RealtimeFeedStatusListModel::receiverAnalysisChanged()
         } else {
             // add
             beginInsertRows(QModelIndex(), rowCount(), rowCount());
-            FeedStatusData data;
-            data.id = i.key();
-            data.name = i.key();
-            data.value = i.value();
-            data.unit = QStringLiteral("ope/sec");
-            m_feedStatusData[data.id] = data;
-            m_feedStatusIds.append(data.id);
+            appendStatusData(i.key(), i.key(), i.value(), QStringLiteral("ope/sec"));
             endInsertRows();
         }
     }
@@ -165,4 +149,16 @@ QHash<int, QByteArray> RealtimeFeedStatusListModel::roleNames() const
     roles[UnitRole] = "unit";
 
     return roles;
+}
+
+void RealtimeFeedStatusListModel::appendStatusData(const QString &id, const QString &name,
+                                                   const QString &value, const QString &unit)
+{
+    FeedStatusData data;
+    data.id = id;
+    data.name = name;
+    data.value = value;
+    data.unit = unit;
+    m_feedStatusData[data.id] = data;
+    m_feedStatusIds.append(data.id);
 }
