@@ -6,23 +6,23 @@ RealtimeFeedStatusListModel::RealtimeFeedStatusListModel(QObject *parent)
     : QAbstractListModel { parent }
 {
     appendStatusData(QStringLiteral("__status"), QStringLiteral("Status"), QStringLiteral(""),
-                     QString());
+                     QString(), QColor());
     appendStatusData(QStringLiteral("__difference"), QStringLiteral("Difference"),
-                     QStringLiteral("0"), QStringLiteral("msec"));
+                     QStringLiteral("0"), QStringLiteral("msec"), QColor());
     appendStatusData(QStringLiteral("__total"), QStringLiteral("Total"), QStringLiteral("0"),
-                     QStringLiteral("ope/sec"));
+                     QStringLiteral("ope/sec"), QColor());
 
     // jetstreamを使うので基本固定
     appendStatusData(QStringLiteral("app.bsky.feed.post"), QStringLiteral("Post"),
-                     QStringLiteral("0"), QStringLiteral("ope/sec"));
+                     QStringLiteral("0"), QStringLiteral("ope/sec"), QColor(255, 255, 0));
     appendStatusData(QStringLiteral("app.bsky.feed.repost"), QStringLiteral("Repost"),
-                     QStringLiteral("0"), QStringLiteral("ope/sec"));
+                     QStringLiteral("0"), QStringLiteral("ope/sec"), QColor(255, 0, 255));
     appendStatusData(QStringLiteral("app.bsky.feed.like"), QStringLiteral("Like"),
-                     QStringLiteral("0"), QStringLiteral("ope/sec"));
+                     QStringLiteral("0"), QStringLiteral("ope/sec"), QColor(0, 255, 255));
     appendStatusData(QStringLiteral("app.bsky.graph.follow"), QStringLiteral("Follow"),
-                     QStringLiteral("0"), QStringLiteral("ope/sec"));
+                     QStringLiteral("0"), QStringLiteral("ope/sec"), QColor(255, 0, 0));
     appendStatusData(QStringLiteral("app.bsky.graph.listitem"), QStringLiteral("ListItem"),
-                     QStringLiteral("0"), QStringLiteral("ope/sec"));
+                     QStringLiteral("0"), QStringLiteral("ope/sec"), QColor(0, 255, 0));
 
     FirehoseReceiver *receiver = FirehoseReceiver::getInstance();
     connect(receiver, &FirehoseReceiver::statusChanged, this,
@@ -66,6 +66,10 @@ QVariant RealtimeFeedStatusListModel::item(int row, RealtimeFeedStatusListModelR
         return data.value;
     else if (role == UnitRole)
         return data.unit;
+    else if (role == UseColorRole)
+        return (!data.id.startsWith("_"));
+    else if (role == ColorRole)
+        return data.color;
 
     return QVariant();
 }
@@ -134,7 +138,8 @@ void RealtimeFeedStatusListModel::receiverAnalysisChanged()
         } else {
             // add
             beginInsertRows(QModelIndex(), rowCount(), rowCount());
-            appendStatusData(i.key(), i.key(), i.value(), QStringLiteral("ope/sec"));
+            appendStatusData(i.key(), i.key(), i.value(), QStringLiteral("ope/sec"),
+                             QColor(128, 128, 128));
             endInsertRows();
         }
     }
@@ -147,18 +152,22 @@ QHash<int, QByteArray> RealtimeFeedStatusListModel::roleNames() const
     roles[NameRole] = "name";
     roles[ValueRole] = "value";
     roles[UnitRole] = "unit";
+    roles[UseColorRole] = "useColor";
+    roles[ColorRole] = "color";
 
     return roles;
 }
 
 void RealtimeFeedStatusListModel::appendStatusData(const QString &id, const QString &name,
-                                                   const QString &value, const QString &unit)
+                                                   const QString &value, const QString &unit,
+                                                   const QColor &color)
 {
     FeedStatusData data;
     data.id = id;
     data.name = name;
     data.value = value;
     data.unit = unit;
+    data.color = color;
     m_feedStatusData[data.id] = data;
     m_feedStatusIds.append(data.id);
 }

@@ -2,6 +2,7 @@
 #define REALTIMEFEEDSTATUSLISTMODEL_H
 
 #include <QAbstractListModel>
+#include <QColor>
 
 #include "realtime/firehosereceiver.h"
 
@@ -11,6 +12,7 @@ struct FeedStatusData
     QString name;
     QString value;
     QString unit;
+    QColor color;
 };
 
 class RealtimeFeedStatusListModel : public QAbstractListModel
@@ -26,6 +28,8 @@ public:
         NameRole,
         ValueRole,
         UnitRole,
+        UseColorRole,
+        ColorRole,
     };
     Q_ENUM(RealtimeFeedStatusListModelRoles)
 
@@ -46,7 +50,7 @@ protected:
 
 private:
     void appendStatusData(const QString &id, const QString &name, const QString &value,
-                          const QString &unit);
+                          const QString &unit, const QColor &color);
     QStringList m_feedStatusIds;
     QHash<QString, FeedStatusData> m_feedStatusData;
 };
