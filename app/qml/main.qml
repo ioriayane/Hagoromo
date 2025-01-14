@@ -1060,7 +1060,7 @@ ApplicationWindow {
         anchors.bottom: globalProgressFrame.top
         anchors.rightMargin: 5
         anchors.bottomMargin: 5
-
+        theme: settingDialog.settings.theme
     }
 
     Frame {

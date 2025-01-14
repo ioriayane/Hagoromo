@@ -8,6 +8,9 @@ import tech.relog.hagoromo.realtime.realtimefeedstatusgraph 1.0
 import tech.relog.hagoromo.singleton 1.0
 
 Frame {
+    id: realtimeFeedStatusFrame
+    property int theme: 0
+
     background: Rectangle {
         radius: 3
         border.width: 1
@@ -16,19 +19,22 @@ Frame {
     }
 
     RowLayout {
-        spacing: 0
+        spacing: 10
         RealtimeFeedStatusGraph {
             Layout.preferredWidth: paramLayout.implicitWidth * 1.5
             Layout.preferredHeight: paramLayout.implicitHeight
+            visible: graphControlLabel.checked
+            theme: realtimeFeedStatusFrame.theme
         }
         ColumnLayout {
             id: paramLayout
             Repeater {
                 model: RealtimeFeedStatusListModel {
+                    theme: realtimeFeedStatusFrame.theme
                 }
                 RowLayout {
                     Label {
-                        Layout.minimumWidth: 70 * AdjustedValues.ratio
+                        Layout.minimumWidth: 100 * AdjustedValues.ratio
                         font.pointSize: AdjustedValues.f8
                         text: model.name
                         color: model.useColor ? model.color : Material.foreground
@@ -40,9 +46,22 @@ Frame {
                         text: model.value
                     }
                     Label {
-                        font.pointSize: AdjustedValues.f8
+                        font.pointSize: AdjustedValues.f6
                         text: model.unit
                     }
+                }
+            }
+            Label {
+                id: graphControlLabel
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignRight
+                font.pointSize: AdjustedValues.f8
+                text: (checked ? "■" : "□")+"History"
+                color: Material.color(Material.Blue)
+                property bool checked: false
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: graphControlLabel.checked = !graphControlLabel.checked
                 }
             }
         }

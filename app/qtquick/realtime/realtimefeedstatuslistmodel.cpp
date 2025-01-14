@@ -3,7 +3,7 @@
 using namespace RealtimeFeed;
 
 RealtimeFeedStatusListModel::RealtimeFeedStatusListModel(QObject *parent)
-    : QAbstractListModel { parent }
+    : QAbstractListModel { parent }, m_theme(0)
 {
     appendStatusData(QStringLiteral("__status"), QStringLiteral("Status"), QStringLiteral(""),
                      QString(), QColor());
@@ -23,6 +23,8 @@ RealtimeFeedStatusListModel::RealtimeFeedStatusListModel(QObject *parent)
                      QStringLiteral("0"), QStringLiteral("ope/sec"), QColor(255, 0, 0));
     appendStatusData(QStringLiteral("app.bsky.graph.listitem"), QStringLiteral("ListItem"),
                      QStringLiteral("0"), QStringLiteral("ope/sec"), QColor(0, 255, 0));
+
+    updateColorByTheme();
 
     FirehoseReceiver *receiver = FirehoseReceiver::getInstance();
     connect(receiver, &FirehoseReceiver::statusChanged, this,
@@ -170,4 +172,39 @@ void RealtimeFeedStatusListModel::appendStatusData(const QString &id, const QStr
     data.color = color;
     m_feedStatusData[data.id] = data;
     m_feedStatusIds.append(data.id);
+}
+
+void RealtimeFeedStatusListModel::updateColorByTheme()
+{
+    if (theme() == 0) {
+        // Light
+        m_feedStatusData["app.bsky.feed.post"].color = QColor(0x3F, 0x51, 0xB5); // Indigo
+        m_feedStatusData["app.bsky.feed.repost"].color = QColor(0x4C, 0xAF, 0x50); // Green
+        m_feedStatusData["app.bsky.feed.like"].color = QColor(0xE9, 0x1E, 0x63); // Pink
+        m_feedStatusData["app.bsky.graph.follow"].color = QColor(0x03, 0xA9, 0xF4); // LightBlue
+        m_feedStatusData["app.bsky.graph.listitem"].color = QColor(0xFF, 0x98, 0x0); // Orange
+    } else {
+        // Dark
+        m_feedStatusData["app.bsky.feed.post"].color = QColor(0x9F, 0xA8, 0xDA);
+        m_feedStatusData["app.bsky.feed.repost"].color = QColor(0xA5, 0xD6, 0xA7);
+        m_feedStatusData["app.bsky.feed.like"].color = QColor(0xF4, 0x8F, 0xB1);
+        m_feedStatusData["app.bsky.graph.follow"].color = QColor(0x81, 0xD4, 0xFA);
+        m_feedStatusData["app.bsky.graph.listitem"].color = QColor(0xFF, 0xCC, 0x80);
+    }
+    emit dataChanged(index(0), index(rowCount() - 1));
+}
+
+int RealtimeFeedStatusListModel::theme() const
+{
+    return m_theme;
+}
+
+void RealtimeFeedStatusListModel::setTheme(int newTheme)
+{
+    if (m_theme == newTheme)
+        return;
+    m_theme = newTheme;
+    emit themeChanged();
+
+    updateColorByTheme();
 }

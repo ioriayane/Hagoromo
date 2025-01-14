@@ -18,6 +18,8 @@ struct FeedStatusData
 class RealtimeFeedStatusListModel : public QAbstractListModel
 {
     Q_OBJECT
+
+    Q_PROPERTY(int theme READ theme WRITE setTheme NOTIFY themeChanged FINAL)
 public:
     explicit RealtimeFeedStatusListModel(QObject *parent = nullptr);
     ~RealtimeFeedStatusListModel();
@@ -41,9 +43,15 @@ public:
                             RealtimeFeedStatusListModel::RealtimeFeedStatusListModelRoles role,
                             const QVariant &value);
 
+    int theme() const;
+    void setTheme(int newTheme);
+
 public slots:
     void receiverStatusChanged(RealtimeFeed::FirehoseReceiver::FirehoseReceiverStatus newStatus);
     void receiverAnalysisChanged();
+
+signals:
+    void themeChanged();
 
 protected:
     QHash<int, QByteArray> roleNames() const;
@@ -51,8 +59,10 @@ protected:
 private:
     void appendStatusData(const QString &id, const QString &name, const QString &value,
                           const QString &unit, const QColor &color);
+    void updateColorByTheme();
     QStringList m_feedStatusIds;
     QHash<QString, FeedStatusData> m_feedStatusData;
+    int m_theme;
 };
 
 #endif // REALTIMEFEEDSTATUSLISTMODEL_H
