@@ -276,6 +276,21 @@ UserInfo AbstractPostSelector::getUser(const QString &did) const
     return info;
 }
 
+QStringList AbstractPostSelector::getOperationNsid(const QJsonObject &object)
+{
+    QStringList nsids;
+    if (!object.contains("repo"))
+        return nsids;
+
+    for (const auto item : object.value("ops").toArray()) {
+        QStringList path_items = item.toObject().value("path").toString().split("/");
+        if (path_items.length() == 2) {
+            nsids.append(path_items.first());
+        }
+    }
+    return nsids;
+}
+
 QStringList AbstractPostSelector::getOperationUris(const QJsonObject &object)
 {
     QStringList uris;

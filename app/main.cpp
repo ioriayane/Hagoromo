@@ -59,6 +59,8 @@
 #include "qtquick/controls/calendartablemodel.h"
 #include "qtquick/realtime/realtimefeedlistmodel.h"
 #include "qtquick/realtime/editselectorlistmodel.h"
+#include "qtquick/realtime/realtimefeedstatuslistmodel.h"
+#include "qtquick/realtime/realtimefeedstatusgraph.h"
 
 #include "tools/encryption.h"
 #include "tools/translatorchanger.h"
@@ -193,6 +195,11 @@ int main(int argc, char *argv[])
                                            0, "RealtimeFeedListModel");
     qmlRegisterType<EditSelectorListModel>("tech.relog.hagoromo.realtime.editselectorlistmodel", 1,
                                            0, "EditSelectorListModel");
+    qmlRegisterType<RealtimeFeedStatusListModel>(
+            "tech.relog.hagoromo.realtime.realtimefeedstatuslistmodel", 1, 0,
+            "RealtimeFeedStatusListModel");
+    qmlRegisterType<RealtimeFeedStatusGraph>("tech.relog.hagoromo.realtime.realtimefeedstatusgraph",
+                                             1, 0, "RealtimeFeedStatusGraph");
 
     qmlRegisterType<CalendarTableModel>("tech.relog.hagoromo.controls.calendartablemodel", 1, 0,
                                         "CalendarTableModel");

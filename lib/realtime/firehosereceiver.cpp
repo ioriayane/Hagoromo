@@ -1,9 +1,10 @@
 #include "firehosereceiver.h"
 
 #include <QDebug>
-// #include <QJsonArray>
-// #include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonObject>
 #include <QJsonDocument>
+#include <QDateTime>
 
 #define USE_JETSTREAM
 
@@ -26,6 +27,7 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
     m_serviceEndpoint = "wss://bsky.network";
 #endif
     m_wdgTimer.setInterval(60 * 1000);
+    m_analysisTimer.start();
 
     connect(&m_client, &ComAtprotoSyncSubscribeReposEx::errorOccured,
             [this](const QString &error, const QString &message) {
@@ -43,6 +45,7 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
                 if (type != "#commit")
                     return;
                 // qDebug().noquote() << "commitDataReceived:" << type << !json.isEmpty();
+                analizeReceivingData(json);
                 for (auto s : qAsConst(m_selectorHash)) {
                     if (!s) {
                         // already deleted
@@ -247,5 +250,43 @@ void FirehoseReceiver::setStatus(FirehoseReceiver::FirehoseReceiverStatus newSta
         return;
     m_status = newStatus;
     emit statusChanged(m_status);
+}
+
+void FirehoseReceiver::analizeReceivingData(const QJsonObject &json)
+{
+    static qint64 prev_time = 0;
+    qint64 cur_time = m_analysisTimer.elapsed();
+
+    const qint64 diff_time = (cur_time - prev_time);
+    const bool update = (diff_time > 1000);
+    const QStringList nsids = AbstractPostSelector::getOperationNsid(json);
+    for (const auto &nsid : nsids) {
+        if (!m_nsidsCount.contains(nsid)) {
+            m_nsidsCount[nsid] = 1;
+        } else {
+            m_nsidsCount[nsid]++;
+        }
+    }
+    if (update) {
+        int total = 0;
+        int value = 0;
+        QDateTime date = QDateTime::fromString(json.value("time").toString(), Qt::ISODateWithMs);
+        for (const auto &nsid : m_nsidsCount.keys()) {
+            value = 1000 * m_nsidsCount[nsid] / diff_time;
+            total += value;
+            m_nsidsReceivePerSecond[nsid] = QString::number(value);
+            m_nsidsCount[nsid] = 0;
+        }
+        m_nsidsReceivePerSecond["__total"] = QString::number(total);
+        m_nsidsReceivePerSecond["__difference"] =
+                QString::number(date.msecsTo(QDateTime::currentDateTimeUtc()));
+        emit analysisChanged();
+        prev_time = cur_time;
+    }
+}
+
+QHash<QString, QString> FirehoseReceiver::nsidsReceivePerSecond() const
+{
+    return m_nsidsReceivePerSecond;
 }
 }
