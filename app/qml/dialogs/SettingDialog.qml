@@ -52,6 +52,7 @@ Dialog {
         property string translateApiKey: ""
         property string translateTargetLanguage: "JA"
         // About
+        property bool displayRealtimeFeedStatus: false
         property bool displayVersionInfoInMainArea: true
 
         Component.onCompleted: load()
@@ -85,6 +86,7 @@ Dialog {
             translateTargetLanguageCombo.currentIndex = -1
             translateTargetLanguageCombo.setByValue(settings.translateTargetLanguage)
             // About
+            displayRealtimeFeedStatusCheckBox.checked = settings.displayRealtimeFeedStatus
             displayVersionInfoInMainAreaCheckBox.checked = settings.displayVersionInfoInMainArea
         }
 
@@ -766,13 +768,21 @@ Dialog {
                         text: "© 2023 Iori Ayane"
                     }
                 }
-                CheckBox {
-                    id: displayVersionInfoInMainAreaCheckBox
+                ColumnLayout {
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
-                    font.pointSize: AdjustedValues.f8
-                    bottomPadding: 1
-                    text: qsTr("Display version info in main area")
+                    CheckBox {
+                        id: displayRealtimeFeedStatusCheckBox
+                        font.pointSize: AdjustedValues.f8
+                        bottomPadding: 1
+                        text: qsTr("Display the status of Realtime feed")
+                    }
+                    CheckBox {
+                        id: displayVersionInfoInMainAreaCheckBox
+                        font.pointSize: AdjustedValues.f8
+                        bottomPadding: 1
+                        text: qsTr("Display version info in main area")
+                    }
                 }
             }
         }
@@ -824,6 +834,7 @@ Dialog {
                     settings.translateApiKey = encryption.encrypt(translateApiKeyText.text)
                     settings.translateTargetLanguage = translateTargetLanguageCombo.currentValue
                     // About
+                    settings.displayRealtimeFeedStatus = displayRealtimeFeedStatusCheckBox.checked
                     settings.displayVersionInfoInMainArea = displayVersionInfoInMainAreaCheckBox.checked
 
                     settingDialog.accept()

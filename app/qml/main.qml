@@ -1054,39 +1054,40 @@ ApplicationWindow {
         }
     }
 
-    RealtimeFeedStatus {
-        id: realtimeFeedStatus
-        anchors.right: rootLayout.right
-        anchors.bottom: globalProgressFrame.top
-        anchors.rightMargin: 5
-        anchors.bottomMargin: 5
-        theme: settingDialog.settings.theme
-    }
-
-    Frame {
-        // 何かの読み込み中の表示
-        id: globalProgressFrame
+    ColumnLayout {
         anchors.right: rootLayout.right
         anchors.bottom: rootLayout.bottom
         anchors.rightMargin: 5
         anchors.bottomMargin: scrollView.ScrollBar.horizontal.height + 5
-        visible: globalProgressFrame.text.length > 0
-        background: Rectangle {
-            radius: 3
-            border.width: 1
-            border.color: Material.frameColor
-            color: Material.backgroundColor
+
+        RealtimeFeedStatus {
+            id: realtimeFeedStatus
+            Layout.alignment: Qt.AlignRight
+            visible: settingDialog.settings.displayRealtimeFeedStatus
+            theme: settingDialog.settings.theme
         }
-        property string text: ""
-        RowLayout {
-            BusyIndicator {
-                Layout.preferredWidth: AdjustedValues.i24
-                Layout.preferredHeight: AdjustedValues.i24
-                // running: globalProgressFrame.visible
+        Frame {
+            // 何かの読み込み中の表示
+            id: globalProgressFrame
+            Layout.alignment: Qt.AlignRight
+            visible: globalProgressFrame.text.length > 0
+            background: Rectangle {
+                radius: 3
+                border.width: 1
+                border.color: Material.frameColor
+                color: Material.backgroundColor
             }
-            Label {
-                font.pointSize: AdjustedValues.f10
-                text: globalProgressFrame.text
+            property string text: ""
+            RowLayout {
+                BusyIndicator {
+                    Layout.preferredWidth: AdjustedValues.i24
+                    Layout.preferredHeight: AdjustedValues.i24
+                    // running: globalProgressFrame.visible
+                }
+                Label {
+                    font.pointSize: AdjustedValues.f10
+                    text: globalProgressFrame.text
+                }
             }
         }
     }
