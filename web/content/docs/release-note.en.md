@@ -8,6 +8,9 @@ description: This is a multi-column Bluesky client.
 
 ## 2025
 
+- Add
+  - Add a function to display the status of the real-time feed
+
 ### v0.44.0 - 2025/1/11
 
 - Fix
