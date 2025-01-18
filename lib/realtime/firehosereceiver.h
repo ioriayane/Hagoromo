@@ -7,6 +7,7 @@
 #include <QElapsedTimer>
 #include <QObject>
 #include <QPointer>
+#include <QThread>
 #include <QTimer>
 
 namespace RealtimeFeed {
@@ -72,6 +73,7 @@ private:
     AtProtocolInterface::ComAtprotoSyncSubscribeReposEx m_client;
     QTimer m_wdgTimer;
     QElapsedTimer m_analysisTimer;
+    QThread m_clientThread;
 
     QString m_serviceEndpoint;
     FirehoseReceiverStatus m_status;

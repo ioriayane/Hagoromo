@@ -23,6 +23,7 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
 {
 #ifdef USE_JETSTREAM
     m_serviceEndpoint = "wss://jetstream2.us-west.bsky.network";
+    m_serviceEndpoint = "ws://localhost:8765";
 #else
     m_serviceEndpoint = "wss://bsky.network";
 #endif
@@ -83,11 +84,16 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
         emit receivingChanged(false);
         stop();
     });
+
+    m_client.moveToThread(&m_clientThread);
+    m_clientThread.start();
 }
 
 FirehoseReceiver::~FirehoseReceiver()
 {
     qDebug() << this << "~FirehoseReceiver()";
+    m_clientThread.quit();
+    m_clientThread.wait();
     stop();
 }
 
