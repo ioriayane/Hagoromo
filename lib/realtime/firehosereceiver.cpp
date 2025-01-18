@@ -24,7 +24,7 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
 {
 #ifdef USE_JETSTREAM
     m_serviceEndpoint = "wss://jetstream2.us-west.bsky.network";
-    m_serviceEndpoint = "ws://localhost:19283";
+    // m_serviceEndpoint = "ws://localhost:19283";
 #else
     m_serviceEndpoint = "wss://bsky.network";
 #endif
