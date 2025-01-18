@@ -24,7 +24,7 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
 {
 #ifdef USE_JETSTREAM
     m_serviceEndpoint = "wss://jetstream2.us-west.bsky.network";
-    m_serviceEndpoint = "ws://localhost:8765";
+    m_serviceEndpoint = "ws://localhost:19283";
 #else
     m_serviceEndpoint = "wss://bsky.network";
 #endif
@@ -79,7 +79,6 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
 
     connect(&m_wdgTimer, &QTimer::timeout, [this]() {
         if (m_wdgCounter < 12) {
-            qDebug() << "m_wdgCounter:" << m_wdgCounter;
             m_wdgCounter++;
         } else {
             qDebug().noquote() << "FirehoseTimeout : Nothing was received via Websocket within the "
