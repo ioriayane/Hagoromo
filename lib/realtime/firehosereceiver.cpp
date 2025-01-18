@@ -19,6 +19,7 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
       forUnittest(false)
 #endif
       ,
+      m_wdgCounter(0),
       m_status(FirehoseReceiverStatus::Disconnected)
 {
 #ifdef USE_JETSTREAM
@@ -27,7 +28,7 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
 #else
     m_serviceEndpoint = "wss://bsky.network";
 #endif
-    m_wdgTimer.setInterval(60 * 1000);
+    m_wdgTimer.setInterval(10 * 1000);
     m_analysisTimer.start();
 
     connect(&m_client, &ComAtprotoSyncSubscribeReposEx::errorOccured,
@@ -39,8 +40,7 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
             });
     connect(&m_client, &ComAtprotoSyncSubscribeReposEx::received,
             [=](const QString &type, const QJsonObject &json) {
-                m_wdgTimer.stop();
-                m_wdgTimer.start();
+                m_wdgCounter = 0;
                 emit receivingChanged(true);
 
                 if (type != "#commit")
@@ -78,13 +78,19 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
     });
 
     connect(&m_wdgTimer, &QTimer::timeout, [this]() {
-        qDebug().noquote() << "FirehoseTimeout : Nothing was received via Websocket within the "
-                              "specified time.";
-        setStatus(FirehoseReceiverStatus::Error);
-        emit errorOccured("FirehoseTimeout",
-                          "Nothing was received via Websocket within the specified time.");
-        emit receivingChanged(false);
-        stop();
+        if (m_wdgCounter < 12) {
+            qDebug() << "m_wdgCounter:" << m_wdgCounter;
+            m_wdgCounter++;
+        } else {
+            qDebug().noquote() << "FirehoseTimeout : Nothing was received via Websocket within the "
+                                  "specified time."
+                               << m_wdgCounter;
+            setStatus(FirehoseReceiverStatus::Error);
+            emit errorOccured("FirehoseTimeout",
+                              "Nothing was received via Websocket within the specified time.");
+            emit receivingChanged(false);
+            stop();
+        }
     });
 
     m_client.moveToThread(&m_clientThread);
@@ -135,6 +141,7 @@ void FirehoseReceiver::start()
 #endif
     qDebug().noquote() << "Connect to" << url.toString();
     m_client.open(url, mode);
+    m_wdgCounter = 0;
     m_wdgTimer.start();
 }
 

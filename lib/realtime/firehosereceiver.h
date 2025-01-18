@@ -73,6 +73,7 @@ private:
     QHash<QObject *, QPointer<AbstractPostSelector>> m_selectorHash;
     AtProtocolInterface::ComAtprotoSyncSubscribeReposEx m_client;
     QTimer m_wdgTimer;
+    int m_wdgCounter;
     QElapsedTimer m_analysisTimer;
     QThread m_clientThread;
     QMutex m_selectorMutex;
