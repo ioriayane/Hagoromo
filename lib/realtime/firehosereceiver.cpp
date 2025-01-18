@@ -47,6 +47,7 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
                     return;
                 // qDebug().noquote() << "commitDataReceived:" << type << !json.isEmpty();
                 analizeReceivingData(json);
+                m_selectorMutex.lock();
                 for (auto s : qAsConst(m_selectorHash)) {
                     if (!s) {
                         // already deleted
@@ -64,6 +65,7 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
                         }
                     }
                 }
+                m_selectorMutex.unlock();
             });
     connect(&m_client, &ComAtprotoSyncSubscribeReposEx::connectedToService, [this]() {
         setStatus(FirehoseReceiverStatus::Connected);
@@ -149,15 +151,18 @@ void FirehoseReceiver::appendSelector(AbstractPostSelector *selector)
 {
     if (selector == nullptr)
         return;
-    if (m_selectorHash.contains(selector))
-        return;
-    m_selectorHash[selector->parent()] = selector;
+    m_selectorMutex.lock();
+    if (!m_selectorHash.contains(selector)) {
+        m_selectorHash[selector->parent()] = selector;
+    }
+    m_selectorMutex.unlock();
 }
 
 void FirehoseReceiver::removeSelector(QObject *parent)
 {
     if (parent == nullptr)
         return;
+    m_selectorMutex.lock();
     if (m_selectorHash.contains(parent)) {
         auto s = m_selectorHash[parent];
         m_selectorHash.remove(parent);
@@ -177,30 +182,30 @@ void FirehoseReceiver::removeSelector(QObject *parent)
         qDebug().quote() << "stop";
         stop();
     }
+    m_selectorMutex.unlock();
 }
 
 void FirehoseReceiver::removeAllSelector()
 {
+    m_selectorMutex.lock();
     for (auto s : qAsConst(m_selectorHash)) {
         if (s) {
             s->deleteLater();
         }
     }
     m_selectorHash.clear();
+    m_selectorMutex.unlock();
     stop();
 }
 
-AbstractPostSelector *FirehoseReceiver::getSelector(QObject *parent)
+AbstractPostSelector *FirehoseReceiver::getSelector(QObject *parent) const
 {
     if (parent == nullptr)
         return nullptr;
-    if (m_selectorHash.contains(parent)) {
-        return m_selectorHash[parent];
-    }
-    return nullptr;
+    return m_selectorHash.value(parent, nullptr);
 }
 
-bool FirehoseReceiver::containsSelector(QObject *parent)
+bool FirehoseReceiver::containsSelector(QObject *parent) const
 {
     return m_selectorHash.contains(parent);
 }

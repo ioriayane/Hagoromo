@@ -5,6 +5,7 @@
 #include "extension/com/atproto/sync/comatprotosyncsubscribereposex.h"
 
 #include <QElapsedTimer>
+#include <QMutex>
 #include <QObject>
 #include <QPointer>
 #include <QThread>
@@ -40,8 +41,8 @@ public:
     void appendSelector(AbstractPostSelector *selector);
     void removeSelector(QObject *parent);
     void removeAllSelector();
-    AbstractPostSelector *getSelector(QObject *parent);
-    bool containsSelector(QObject *parent);
+    AbstractPostSelector *getSelector(QObject *parent) const;
+    bool containsSelector(QObject *parent) const;
     int countSelector() const;
     bool selectorIsReady(QObject *parent);
 
@@ -74,6 +75,7 @@ private:
     QTimer m_wdgTimer;
     QElapsedTimer m_analysisTimer;
     QThread m_clientThread;
+    QMutex m_selectorMutex;
 
     QString m_serviceEndpoint;
     FirehoseReceiverStatus m_status;
