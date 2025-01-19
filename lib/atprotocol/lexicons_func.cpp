@@ -923,6 +923,7 @@ void copyGeneratorView(const QJsonObject &src, AppBskyFeedDefs::GeneratorView &d
             dest.labels.append(child);
         }
         copyGeneratorViewerState(src.value("viewer").toObject(), dest.viewer);
+        dest.contentMode = src.value("contentMode").toString();
         dest.indexedAt = src.value("indexedAt").toString();
     }
 }
@@ -1327,6 +1328,7 @@ void copyMain(const QJsonObject &src, AppBskyFeedGenerator::Main &dest)
             ComAtprotoLabelDefs::copySelfLabels(src.value("labels").toObject(),
                                                 dest.labels_ComAtprotoLabelDefs_SelfLabels);
         }
+        dest.contentMode = src.value("contentMode").toString();
         dest.createdAt = src.value("createdAt").toString();
     }
 }
@@ -2008,6 +2010,15 @@ void copyInfo(const QJsonObject &src, ComAtprotoLabelSubscribeLabels::Info &dest
     if (!src.isEmpty()) {
         dest.name = src.value("name").toString();
         dest.message = src.value("message").toString();
+    }
+}
+}
+// com.atproto.lexicon.schema
+namespace ComAtprotoLexiconSchema {
+void copyMain(const QJsonObject &src, ComAtprotoLexiconSchema::Main &dest)
+{
+    if (!src.isEmpty()) {
+        dest.lexicon = src.value("lexicon").toInt();
     }
 }
 }
