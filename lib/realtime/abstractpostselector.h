@@ -108,6 +108,9 @@ signals:
     void selected(const QJsonObject &object);
     void reacted(const QJsonObject &object);
 
+public slots:
+    void judgeSelectionAndReaction(const QJsonObject &object);
+
 protected:
     const QList<AbstractPostSelector *> &children() const;
 

@@ -11,6 +11,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QDebug>
+#include <QJsonDocument>
 
 namespace RealtimeFeed {
 
@@ -699,6 +700,19 @@ int AbstractPostSelector::repostCondition() const
 void AbstractPostSelector::setRepostCondition(int newRepostCondition)
 {
     m_repostCondition = newRepostCondition;
+}
+
+// スレッドとして実行する場合にまとめて実行するスロット
+void AbstractPostSelector::judgeSelectionAndReaction(const QJsonObject &object)
+{
+    if (judgeReaction(object)) {
+        qDebug().noquote().nospace() << "reaction" << QJsonDocument(object).toJson();
+        emit reacted(object);
+    }
+    if (judge(object)) {
+        qDebug().noquote().nospace() << "judge" << QJsonDocument(object).toJson();
+        emit selected(object);
+    }
 }
 
 bool AbstractPostSelector::isRepost() const

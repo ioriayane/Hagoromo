@@ -69,8 +69,10 @@ signals:
 
 private:
     void analizeReceivingData(const QJsonObject &json);
+    void removeThreadSelector(QObject *parent);
 
     QHash<QObject *, QPointer<AbstractPostSelector>> m_selectorHash;
+    QHash<QObject *, QPointer<QThread>> m_selectorThreadHash;
     AtProtocolInterface::ComAtprotoSyncSubscribeReposEx m_client;
     QTimer m_wdgTimer;
     int m_wdgCounter;
