@@ -286,6 +286,10 @@ namespace ComAtprotoLabelSubscribeLabels {
 void copyLabels(const QJsonObject &src, ComAtprotoLabelSubscribeLabels::Labels &dest);
 void copyInfo(const QJsonObject &src, ComAtprotoLabelSubscribeLabels::Info &dest);
 }
+// com.atproto.lexicon.schema
+namespace ComAtprotoLexiconSchema {
+void copyMain(const QJsonObject &src, ComAtprotoLexiconSchema::Main &dest);
+}
 // com.atproto.moderation.defs
 namespace ComAtprotoModerationDefs {
 void copyReasonType(const QJsonValue &src, ComAtprotoModerationDefs::ReasonType &dest);

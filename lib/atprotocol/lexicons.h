@@ -636,6 +636,7 @@ struct GeneratorView
     bool acceptsInteractions = false;
     QList<ComAtprotoLabelDefs::Label> labels;
     GeneratorViewerState viewer;
+    QString contentMode;
     QString indexedAt; // datetime
 };
 struct ViewerState
@@ -913,6 +914,7 @@ struct Main
     MainLabelsType labels_type = MainLabelsType::none;
     ComAtprotoLabelDefs::SelfLabels labels_ComAtprotoLabelDefs_SelfLabels; // Self-label values
     // union end : labels
+    QString contentMode;
     QString createdAt; // datetime
 };
 }
@@ -1437,6 +1439,15 @@ struct Info
 {
     QString name;
     QString message;
+};
+}
+
+// com.atproto.lexicon.schema
+namespace ComAtprotoLexiconSchema {
+struct Main
+{
+    int lexicon = 0; // Indicates the 'version' of the Lexicon language. Must be '1' for the current
+                     // atproto/Lexicon schema system.
 };
 }
 
