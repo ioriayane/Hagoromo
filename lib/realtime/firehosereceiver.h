@@ -5,8 +5,10 @@
 #include "extension/com/atproto/sync/comatprotosyncsubscribereposex.h"
 
 #include <QElapsedTimer>
+#include <QMutex>
 #include <QObject>
 #include <QPointer>
+#include <QThread>
 #include <QTimer>
 
 namespace RealtimeFeed {
@@ -39,8 +41,8 @@ public:
     void appendSelector(AbstractPostSelector *selector);
     void removeSelector(QObject *parent);
     void removeAllSelector();
-    AbstractPostSelector *getSelector(QObject *parent);
-    bool containsSelector(QObject *parent);
+    AbstractPostSelector *getSelector(QObject *parent) const;
+    bool containsSelector(QObject *parent) const;
     int countSelector() const;
     bool selectorIsReady(QObject *parent);
 
@@ -71,7 +73,10 @@ private:
     QHash<QObject *, QPointer<AbstractPostSelector>> m_selectorHash;
     AtProtocolInterface::ComAtprotoSyncSubscribeReposEx m_client;
     QTimer m_wdgTimer;
+    int m_wdgCounter;
     QElapsedTimer m_analysisTimer;
+    QThread m_clientThread;
+    QMutex m_selectorMutex;
 
     QString m_serviceEndpoint;
     FirehoseReceiverStatus m_status;

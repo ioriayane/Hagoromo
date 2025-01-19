@@ -19,14 +19,16 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
       forUnittest(false)
 #endif
       ,
+      m_wdgCounter(0),
       m_status(FirehoseReceiverStatus::Disconnected)
 {
 #ifdef USE_JETSTREAM
     m_serviceEndpoint = "wss://jetstream2.us-west.bsky.network";
+    // m_serviceEndpoint = "ws://localhost:19283";
 #else
     m_serviceEndpoint = "wss://bsky.network";
 #endif
-    m_wdgTimer.setInterval(60 * 1000);
+    m_wdgTimer.setInterval(10 * 1000);
     m_analysisTimer.start();
 
     connect(&m_client, &ComAtprotoSyncSubscribeReposEx::errorOccured,
@@ -38,14 +40,14 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
             });
     connect(&m_client, &ComAtprotoSyncSubscribeReposEx::received,
             [=](const QString &type, const QJsonObject &json) {
-                m_wdgTimer.stop();
-                m_wdgTimer.start();
+                m_wdgCounter = 0;
                 emit receivingChanged(true);
 
                 if (type != "#commit")
                     return;
                 // qDebug().noquote() << "commitDataReceived:" << type << !json.isEmpty();
                 analizeReceivingData(json);
+                m_selectorMutex.lock();
                 for (auto s : qAsConst(m_selectorHash)) {
                     if (!s) {
                         // already deleted
@@ -63,6 +65,7 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
                         }
                     }
                 }
+                m_selectorMutex.unlock();
             });
     connect(&m_client, &ComAtprotoSyncSubscribeReposEx::connectedToService, [this]() {
         setStatus(FirehoseReceiverStatus::Connected);
@@ -75,19 +78,29 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
     });
 
     connect(&m_wdgTimer, &QTimer::timeout, [this]() {
-        qDebug().noquote() << "FirehoseTimeout : Nothing was received via Websocket within the "
-                              "specified time.";
-        setStatus(FirehoseReceiverStatus::Error);
-        emit errorOccured("FirehoseTimeout",
-                          "Nothing was received via Websocket within the specified time.");
-        emit receivingChanged(false);
-        stop();
+        if (m_wdgCounter < 12) {
+            m_wdgCounter++;
+        } else {
+            qDebug().noquote() << "FirehoseTimeout : Nothing was received via Websocket within the "
+                                  "specified time."
+                               << m_wdgCounter;
+            setStatus(FirehoseReceiverStatus::Error);
+            emit errorOccured("FirehoseTimeout",
+                              "Nothing was received via Websocket within the specified time.");
+            emit receivingChanged(false);
+            stop();
+        }
     });
+
+    m_client.moveToThread(&m_clientThread);
+    m_clientThread.start();
 }
 
 FirehoseReceiver::~FirehoseReceiver()
 {
     qDebug() << this << "~FirehoseReceiver()";
+    m_clientThread.quit();
+    m_clientThread.wait();
     stop();
 }
 
@@ -127,6 +140,7 @@ void FirehoseReceiver::start()
 #endif
     qDebug().noquote() << "Connect to" << url.toString();
     m_client.open(url, mode);
+    m_wdgCounter = 0;
     m_wdgTimer.start();
 }
 
@@ -143,15 +157,18 @@ void FirehoseReceiver::appendSelector(AbstractPostSelector *selector)
 {
     if (selector == nullptr)
         return;
-    if (m_selectorHash.contains(selector))
-        return;
-    m_selectorHash[selector->parent()] = selector;
+    m_selectorMutex.lock();
+    if (!m_selectorHash.contains(selector)) {
+        m_selectorHash[selector->parent()] = selector;
+    }
+    m_selectorMutex.unlock();
 }
 
 void FirehoseReceiver::removeSelector(QObject *parent)
 {
     if (parent == nullptr)
         return;
+    m_selectorMutex.lock();
     if (m_selectorHash.contains(parent)) {
         auto s = m_selectorHash[parent];
         m_selectorHash.remove(parent);
@@ -171,30 +188,30 @@ void FirehoseReceiver::removeSelector(QObject *parent)
         qDebug().quote() << "stop";
         stop();
     }
+    m_selectorMutex.unlock();
 }
 
 void FirehoseReceiver::removeAllSelector()
 {
+    m_selectorMutex.lock();
     for (auto s : qAsConst(m_selectorHash)) {
         if (s) {
             s->deleteLater();
         }
     }
     m_selectorHash.clear();
+    m_selectorMutex.unlock();
     stop();
 }
 
-AbstractPostSelector *FirehoseReceiver::getSelector(QObject *parent)
+AbstractPostSelector *FirehoseReceiver::getSelector(QObject *parent) const
 {
     if (parent == nullptr)
         return nullptr;
-    if (m_selectorHash.contains(parent)) {
-        return m_selectorHash[parent];
-    }
-    return nullptr;
+    return m_selectorHash.value(parent, nullptr);
 }
 
-bool FirehoseReceiver::containsSelector(QObject *parent)
+bool FirehoseReceiver::containsSelector(QObject *parent) const
 {
     return m_selectorHash.contains(parent);
 }
