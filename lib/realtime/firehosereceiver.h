@@ -66,9 +66,11 @@ signals:
     void receivingChanged(bool status);
     void statusChanged(FirehoseReceiverStatus newStatus);
     void analysisChanged();
+    void judgeSelectionAndReaction(const QJsonObject &object);
 
 private:
     void analizeReceivingData(const QJsonObject &json);
+    void appendThreadSelector(AbstractPostSelector *selector);
     void removeThreadSelector(QObject *parent);
 
     QHash<QObject *, QPointer<AbstractPostSelector>> m_selectorHash;

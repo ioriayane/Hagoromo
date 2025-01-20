@@ -47,26 +47,7 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
                     return;
                 // qDebug().noquote() << "commitDataReceived:" << type << !json.isEmpty();
                 analizeReceivingData(json);
-                m_selectorMutex.lock();
-                for (auto s : qAsConst(m_selectorHash)) {
-                    if (!s) {
-                        // already deleted
-                    } else if (!s->ready()) {
-                        // no op
-                    } else {
-                        emit s->judgeSelectionAndReaction(json);
-                        // if (s->judgeReaction(json)) {
-                        //     qDebug().noquote().nospace()
-                        //             << "reaction" << QJsonDocument(json).toJson();
-                        //     emit s->reacted(json);
-                        // }
-                        // if (s->judge(json)) {
-                        //     qDebug().noquote().nospace() << "judge" <<
-                        //     QJsonDocument(json).toJson(); emit s->selected(json);
-                        // }
-                    }
-                }
-                m_selectorMutex.unlock();
+                emit judgeSelectionAndReaction(json); // スレッドのselectorへ通知
             });
     connect(&m_client, &ComAtprotoSyncSubscribeReposEx::connectedToService, [this]() {
         setStatus(FirehoseReceiverStatus::Connected);
@@ -160,11 +141,9 @@ void FirehoseReceiver::appendSelector(AbstractPostSelector *selector)
         return;
     m_selectorMutex.lock();
     if (!m_selectorHash.contains(selector)) {
+        qDebug().quote() << "appendSelector" << selector << selector->type();
         m_selectorHash[selector->parent()] = selector;
-        auto t = new QThread(selector->parent());
-        m_selectorThreadHash[selector->parent()] = t;
-        selector->moveToThread(t);
-        t->start();
+        appendThreadSelector(selector);
     }
     m_selectorMutex.unlock();
 }
@@ -308,6 +287,17 @@ void FirehoseReceiver::analizeReceivingData(const QJsonObject &json)
         emit analysisChanged();
         prev_time = cur_time;
     }
+}
+
+void FirehoseReceiver::appendThreadSelector(AbstractPostSelector *selector)
+{
+    auto t = new QThread(selector->parent());
+    m_selectorThreadHash[selector->parent()] = t;
+    selector->moveToThread(t);
+    t->start();
+
+    connect(this, &FirehoseReceiver::judgeSelectionAndReaction, selector,
+            &AbstractPostSelector::judgeSelectionAndReaction);
 }
 
 void FirehoseReceiver::removeThreadSelector(QObject *parent)
