@@ -142,7 +142,7 @@ void FirehoseReceiver::appendSelector(AbstractPostSelector *selector)
     m_selectorMutex.lock();
     if (!m_selectorHash.contains(selector)) {
         qDebug().quote() << "appendSelector" << selector << selector->type();
-        m_selectorHash[selector->parent()] = selector;
+        m_selectorHash[selector->key()] = selector;
         appendThreadSelector(selector);
     }
     m_selectorMutex.unlock();
@@ -158,7 +158,7 @@ void FirehoseReceiver::removeSelector(QObject *parent)
         m_selectorHash.remove(parent);
         if (s) {
             qDebug().quote() << "removeSelector" << s << s->type();
-            removeThreadSelector(s->parent());
+            removeThreadSelector(s->key());
             s->deleteLater();
         }
         qDebug().quote() << "remain count" << m_selectorHash.count();
@@ -182,7 +182,7 @@ void FirehoseReceiver::removeAllSelector()
     m_selectorMutex.lock();
     for (auto s : qAsConst(m_selectorHash)) {
         if (s) {
-            removeThreadSelector(s->parent());
+            removeThreadSelector(s->key());
             s->deleteLater();
         }
     }
@@ -291,8 +291,8 @@ void FirehoseReceiver::analizeReceivingData(const QJsonObject &json)
 
 void FirehoseReceiver::appendThreadSelector(AbstractPostSelector *selector)
 {
-    auto t = new QThread(selector->parent());
-    m_selectorThreadHash[selector->parent()] = t;
+    auto t = new QThread();
+    m_selectorThreadHash[selector->key()] = t;
     selector->moveToThread(t);
     t->start();
 

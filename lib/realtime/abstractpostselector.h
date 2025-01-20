@@ -104,6 +104,8 @@ public:
     int repostCondition() const;
     void setRepostCondition(int newRepostCondition);
 
+    QObject *key() const;
+
 signals:
     void selected(const QJsonObject &object);
     void reacted(const QJsonObject &object);
@@ -136,6 +138,7 @@ private:
     bool m_isArray;
     bool m_parentIsArray;
     bool m_ready;
+    QObject *m_key;
 
     bool m_hasImage;
     int m_imageCount; // -1: >=1, 0: nothing only, 1~4: match count
