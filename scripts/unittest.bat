@@ -79,5 +79,6 @@ if ERRORLEVEL 1 goto TEST_FAIL
 goto QUIT
 :TEST_FAIL
 echo !!!!!!! Fail !!!!!!!
+exit /b 1
 
 :QUIT
