@@ -69,7 +69,7 @@ signals:
     void judgeSelectionAndReaction(const QJsonObject &object);
 
 private:
-    void analizeReceivingData(const QJsonObject &json);
+    void analizeReceivingData(const QJsonObject &json, const qsizetype size);
     void appendThreadSelector(AbstractPostSelector *selector);
     void removeThreadSelector(QObject *parent);
 
@@ -87,6 +87,7 @@ private:
 
     QHash<QString, int> m_nsidsCount; // QHash<nsid, count>
     QHash<QString, QString> m_nsidsReceivePerSecond; // QHash<nsid, receive/sec>
+    qsizetype m_receivedDataSize; // byte
 };
 
 }
