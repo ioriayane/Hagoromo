@@ -34,12 +34,12 @@ Frame {
                 }
                 RowLayout {
                     Label {
-                        Layout.minimumWidth: 100 * AdjustedValues.ratio
                         font.pointSize: AdjustedValues.f8
                         text: model.name
                         color: model.useColor ? model.color : Material.foreground
                     }
                     Label {
+                        Layout.minimumWidth: 50 * AdjustedValues.ratio
                         Layout.fillWidth: true
                         horizontalAlignment: Text.AlignRight
                         font.pointSize: AdjustedValues.f8
