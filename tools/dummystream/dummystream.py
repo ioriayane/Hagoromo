@@ -9,12 +9,13 @@ async def handler(websocket):
             while True:
                 # await asyncio.sleep(0.01)
                 # 500000 : 2000 ope/sec
-                # 1000000 : 1000 ope/sec
                 # 600000 : 1666 ope/sec
                 # 700000 : 1428 ope/sec
                 # 800000 : 1250 ope/sec
+                # 1000000 : 1000 ope/sec
+                # 100000000 : 10 ope/sec
                 time_start = time.perf_counter_ns()
-                while time.perf_counter_ns() - time_start < 800000:
+                while time.perf_counter_ns() - time_start < 100000000:
                     pass
 
                 dt_now = datetime.now()

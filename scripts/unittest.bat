@@ -19,11 +19,9 @@ REM --- main -----------------------------
 
 set JOM_BIN_FOLDER=%QT_BIN_FOLDER%\..\..\..\Tools\QtCreator\bin\jom
 IF "!VS_SETUP_BAT!"=="" set VS_SETUP_BAT="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
-IF "!VS_REDIST_FOLDER!"=="" set VS_REDIST_FOLDER="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC"
 set BUILD_FOLDER=build-hagoromo
 
 echo VS_SETUP_BAT=%VS_SETUP_BAT%
-echo VS_REDIST_FOLDER=%VS_REDIST_FOLDER%
 
 REM --- check path -------
 qmake -v
@@ -56,28 +54,29 @@ REM windeployqt --qmldir app\qml %BUILD_FOLDER%\atprotocol_test\debug\atprotocol
 
 REM --- run -------
 %BUILD_FOLDER%\tests\atprotocol_test\debug\atprotocol_test.exe
-if ERRORLEVEL 1 goto TEST_FAIL
+if not ERRORLEVEL 0 goto TEST_FAIL
 %BUILD_FOLDER%\tests\chat_test\debug\chat_test.exe
-if ERRORLEVEL 1 goto TEST_FAIL
+if not ERRORLEVEL 0 goto TEST_FAIL
 %BUILD_FOLDER%\tests\hagoromo_test\debug\hagoromo_test.exe
-if ERRORLEVEL 1 goto TEST_FAIL
+if not ERRORLEVEL 0 goto TEST_FAIL
 %BUILD_FOLDER%\tests\hagoromo_test2\debug\hagoromo_test2.exe
-if ERRORLEVEL 1 goto TEST_FAIL
+if not ERRORLEVEL 0 goto TEST_FAIL
 %BUILD_FOLDER%\tests\http_test\debug\http_test.exe
-if ERRORLEVEL 1 goto TEST_FAIL
+if not ERRORLEVEL 0 goto TEST_FAIL
 %BUILD_FOLDER%\tests\log_test\debug\log_test.exe
-if ERRORLEVEL 1 goto TEST_FAIL
+if not ERRORLEVEL 0 goto TEST_FAIL
 %BUILD_FOLDER%\tests\oauth_test\debug\oauth_test.exe
-if ERRORLEVEL 1 goto TEST_FAIL
+if not ERRORLEVEL 0 goto TEST_FAIL
 %BUILD_FOLDER%\tests\realtime_test\debug\realtime_test.exe
-if ERRORLEVEL 1 goto TEST_FAIL
+if not ERRORLEVEL 0 goto TEST_FAIL
 %BUILD_FOLDER%\tests\search_test\debug\search_test.exe
-if ERRORLEVEL 1 goto TEST_FAIL
+if not ERRORLEVEL 0 goto TEST_FAIL
 %BUILD_FOLDER%\tests\tools_test\debug\tools_test.exe
-if ERRORLEVEL 1 goto TEST_FAIL
+if not ERRORLEVEL 0 goto TEST_FAIL
 
 goto QUIT
 :TEST_FAIL
 echo !!!!!!! Fail !!!!!!!
+exit /b 1
 
 :QUIT

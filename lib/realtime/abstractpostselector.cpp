@@ -15,10 +15,10 @@
 namespace RealtimeFeed {
 
 AbstractPostSelector::AbstractPostSelector(QObject *parent)
-    : QObject { parent },
-      m_isArray(false),
+    : m_isArray(false),
       m_parentIsArray(true),
       m_ready(false),
+      m_key(parent),
       m_hasImage(false),
       m_imageCount(0),
       m_hasMovie(false),
@@ -33,6 +33,9 @@ AbstractPostSelector::AbstractPostSelector(QObject *parent)
 AbstractPostSelector::~AbstractPostSelector()
 {
     qDebug().noquote() << this << "~AbstractPostSelector()" << type() << did();
+    for (auto child : children()) {
+        delete child;
+    }
 }
 
 QString AbstractPostSelector::toString()
@@ -691,6 +694,11 @@ QString AbstractPostSelector::extractRkey(const QString &path) const
     }
 }
 
+QObject *AbstractPostSelector::key() const
+{
+    return m_key;
+}
+
 int AbstractPostSelector::repostCondition() const
 {
     return m_repostCondition;
@@ -699,6 +707,17 @@ int AbstractPostSelector::repostCondition() const
 void AbstractPostSelector::setRepostCondition(int newRepostCondition)
 {
     m_repostCondition = newRepostCondition;
+}
+
+// スレッドとして実行する場合にまとめて実行するスロット
+void AbstractPostSelector::judgeSelectionAndReaction(const QJsonObject &object)
+{
+    if (judgeReaction(object)) {
+        emit reacted(object);
+    }
+    if (judge(object)) {
+        emit selected(object);
+    }
 }
 
 bool AbstractPostSelector::isRepost() const
