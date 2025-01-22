@@ -136,7 +136,7 @@ void ComAtprotoSyncSubscribeReposEx::messageReceivedFromFirehose(const QByteArra
                 qDebug().noquote() << QJsonDocument(json).toJson();
             } else {
                 // payload
-                emit received(payload_type, json);
+                emit received(payload_type, json, message.length());
             }
         } else {
             // decode error
@@ -220,7 +220,7 @@ void ComAtprotoSyncSubscribeReposEx::messageReceivedFromJetStream(const QByteArr
         }
         json_dest.insert("blocks", json_dest_blocks);
 
-        emit received(payload_type, json_dest);
+        emit received(payload_type, json_dest, message.length());
     }
 }
 }

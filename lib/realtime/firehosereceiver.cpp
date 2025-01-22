@@ -20,7 +20,8 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
 #endif
       ,
       m_wdgCounter(0),
-      m_status(FirehoseReceiverStatus::Disconnected)
+      m_status(FirehoseReceiverStatus::Disconnected),
+      m_receivedDataSize(0)
 {
 #ifdef USE_JETSTREAM
     m_serviceEndpoint = "wss://jetstream2.us-west.bsky.network";
@@ -39,14 +40,14 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
                 emit receivingChanged(false);
             });
     connect(&m_client, &ComAtprotoSyncSubscribeReposEx::received,
-            [=](const QString &type, const QJsonObject &json) {
+            [=](const QString &type, const QJsonObject &json, const qsizetype size) {
                 m_wdgCounter = 0;
                 emit receivingChanged(true);
 
                 if (type != "#commit")
                     return;
                 // qDebug().noquote() << "commitDataReceived:" << type << !json.isEmpty();
-                analizeReceivingData(json);
+                analizeReceivingData(json, size);
                 emit judgeSelectionAndReaction(json); // スレッドのselectorへ通知
             });
     connect(&m_client, &ComAtprotoSyncSubscribeReposEx::connectedToService, [this]() {
@@ -256,7 +257,7 @@ void FirehoseReceiver::setStatus(FirehoseReceiver::FirehoseReceiverStatus newSta
     emit statusChanged(m_status);
 }
 
-void FirehoseReceiver::analizeReceivingData(const QJsonObject &json)
+void FirehoseReceiver::analizeReceivingData(const QJsonObject &json, const qsizetype size)
 {
     static qint64 prev_time = 0;
     qint64 cur_time = m_analysisTimer.elapsed();
@@ -271,6 +272,8 @@ void FirehoseReceiver::analizeReceivingData(const QJsonObject &json)
             m_nsidsCount[nsid]++;
         }
     }
+    m_receivedDataSize += size;
+
     if (update) {
         int total = 0;
         int value = 0;
@@ -284,6 +287,9 @@ void FirehoseReceiver::analizeReceivingData(const QJsonObject &json)
         m_nsidsReceivePerSecond["__total"] = QString::number(total);
         m_nsidsReceivePerSecond["__difference"] =
                 QString::number(date.msecsTo(QDateTime::currentDateTimeUtc()));
+        m_nsidsReceivePerSecond["__bit_per_sec"] =
+                QString::number(m_receivedDataSize * 8 / diff_time / 1000.0, 'f', 1);
+        m_receivedDataSize = 0;
         emit analysisChanged();
         prev_time = cur_time;
     }

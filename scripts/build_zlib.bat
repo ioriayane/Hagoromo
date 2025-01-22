@@ -4,7 +4,7 @@ set CWD=%CD%
 
 REM --- main -----------------------------
 
-IF "!VS_SETUP_BAT!"=="" set VS_SETUP_BAT="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+IF not defined  VS_SETUP_BAT set VS_SETUP_BAT="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
 set SRC_FOLDER=../zlib
 set BUILD_FOLDER=build-zlib
 set DEPLOY_FOLDER=../../zlib

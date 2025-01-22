@@ -18,7 +18,7 @@ REM --- main -----------------------------
 :MAIN
 
 set JOM_BIN_FOLDER=%QT_BIN_FOLDER%\..\..\..\Tools\QtCreator\bin\jom
-IF "!VS_SETUP_BAT!"=="" set VS_SETUP_BAT="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+IF not defined  VS_SETUP_BAT set VS_SETUP_BAT="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
 set BUILD_FOLDER=build-hagoromo
 
 echo VS_SETUP_BAT=%VS_SETUP_BAT%

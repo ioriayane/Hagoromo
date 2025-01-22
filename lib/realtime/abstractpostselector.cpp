@@ -320,6 +320,7 @@ QList<OperationInfo> AbstractPostSelector::getOperationInfos(const QJsonObject &
     if (repo.isEmpty())
         return infos;
 
+    const QString time = object.value("time").toString();
     QString action;
     for (const auto item : object.value("ops").toArray()) {
         action = item.toObject().value("action").toString();
@@ -331,25 +332,17 @@ QList<OperationInfo> AbstractPostSelector::getOperationInfos(const QJsonObject &
         } else {
             continue;
         }
+        info.time = time;
         const QString path = item.toObject().value("path").toString();
         if (!path.isEmpty()) {
             const QString cid = item.toObject().value("cid").toObject().value("$link").toString();
             QString uri = QString("at://%1/%2").arg(repo, path);
             if (path.startsWith("app.bsky.feed.repost/")) {
-                const QJsonObject block = getBlock(object, path);
+                const auto block = getBlock(object, path);
+                const auto subject = block.value("value").toObject().value("subject").toObject();
                 if (!block.isEmpty()) {
-                    info.cid = block.value("value")
-                                       .toObject()
-                                       .value("subject")
-                                       .toObject()
-                                       .value("cid")
-                                       .toString();
-                    info.uri = block.value("value")
-                                       .toObject()
-                                       .value("subject")
-                                       .toObject()
-                                       .value("uri")
-                                       .toString();
+                    info.cid = subject.value("cid").toString();
+                    info.uri = subject.value("uri").toString();
                     UserInfo user_info = getUser(repo);
 
                     if (!info.cid.isEmpty() && !info.uri.isEmpty()) {
@@ -366,19 +359,10 @@ QList<OperationInfo> AbstractPostSelector::getOperationInfos(const QJsonObject &
                 }
             } else if (like && path.startsWith("app.bsky.feed.like/")) {
                 const QJsonObject block = getBlock(object, path);
+                const auto subject = block.value("value").toObject().value("subject").toObject();
                 if (!block.isEmpty()) {
-                    info.cid = block.value("value")
-                                       .toObject()
-                                       .value("subject")
-                                       .toObject()
-                                       .value("cid")
-                                       .toString();
-                    info.uri = block.value("value")
-                                       .toObject()
-                                       .value("subject")
-                                       .toObject()
-                                       .value("uri")
-                                       .toString();
+                    info.cid = subject.value("cid").toString();
+                    info.uri = subject.value("uri").toString();
                     UserInfo user_info = getUser(repo);
 
                     if (!info.cid.isEmpty() && !info.uri.isEmpty()) {
