@@ -71,12 +71,27 @@ bool RealtimeFeedListModel::getLatest()
         // qDebug().noquote() << QJsonDocument(object).toJson();
         m_cueGetPostThread.append(selector->getOperationInfos(object));
         if (!m_cueGetPostThread.isEmpty()) {
+#ifdef QT_DEBUG
+            {
+                QDateTime date =
+                        QDateTime::fromString(m_cueGetPostThread.first().time, Qt::ISODateWithMs);
+                qDebug().noquote()
+                        << "DIFF" << QString::number(date.msecsTo(QDateTime::currentDateTimeUtc()));
+            }
+#endif
             getPostThread();
         }
     });
     connect(selector, &AbstractPostSelector::reacted, this, [=](const QJsonObject &object) {
         const QList<OperationInfo> infos = selector->getOperationInfos(object, true);
         for (const auto &info : infos) {
+#ifdef QT_DEBUG
+            {
+                QDateTime date = QDateTime::fromString(info.time, Qt::ISODateWithMs);
+                qDebug().noquote()
+                        << "DIFF" << QString::number(date.msecsTo(QDateTime::currentDateTimeUtc()));
+            }
+#endif
             const QList<int> rows = indexsOf(info.cid);
             bool first = true;
             for (const auto row : rows) {
