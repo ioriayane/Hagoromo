@@ -59,7 +59,12 @@ cd %BUILD_FOLDER%
 qmake ..\Hagoromo.pro CONFIG+=HAGOROMO_RELEASE_BUILD
 if NOT ERRORLEVEL 0 goto QUIT
 
+jom /version
+if NOT ERRORLEVEL 0 (
+nmake
+) else (
 jom
+)
 if NOT ERRORLEVEL 0 goto QUIT
 
 cd %CWD%
