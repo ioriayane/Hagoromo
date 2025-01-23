@@ -15,10 +15,10 @@
 namespace RealtimeFeed {
 
 AbstractPostSelector::AbstractPostSelector(QObject *parent)
-    : QObject { parent },
-      m_isArray(false),
+    : m_isArray(false),
       m_parentIsArray(true),
       m_ready(false),
+      m_key(parent),
       m_hasImage(false),
       m_imageCount(0),
       m_hasMovie(false),
@@ -33,6 +33,9 @@ AbstractPostSelector::AbstractPostSelector(QObject *parent)
 AbstractPostSelector::~AbstractPostSelector()
 {
     qDebug().noquote() << this << "~AbstractPostSelector()" << type() << did();
+    for (auto child : children()) {
+        delete child;
+    }
 }
 
 QString AbstractPostSelector::toString()
@@ -276,6 +279,21 @@ UserInfo AbstractPostSelector::getUser(const QString &did) const
     return info;
 }
 
+QStringList AbstractPostSelector::getOperationNsid(const QJsonObject &object)
+{
+    QStringList nsids;
+    if (!object.contains("repo"))
+        return nsids;
+
+    for (const auto item : object.value("ops").toArray()) {
+        QStringList path_items = item.toObject().value("path").toString().split("/");
+        if (path_items.length() == 2) {
+            nsids.append(path_items.first());
+        }
+    }
+    return nsids;
+}
+
 QStringList AbstractPostSelector::getOperationUris(const QJsonObject &object)
 {
     QStringList uris;
@@ -302,6 +320,7 @@ QList<OperationInfo> AbstractPostSelector::getOperationInfos(const QJsonObject &
     if (repo.isEmpty())
         return infos;
 
+    const QString time = object.value("time").toString();
     QString action;
     for (const auto item : object.value("ops").toArray()) {
         action = item.toObject().value("action").toString();
@@ -313,25 +332,17 @@ QList<OperationInfo> AbstractPostSelector::getOperationInfos(const QJsonObject &
         } else {
             continue;
         }
+        info.time = time;
         const QString path = item.toObject().value("path").toString();
         if (!path.isEmpty()) {
             const QString cid = item.toObject().value("cid").toObject().value("$link").toString();
             QString uri = QString("at://%1/%2").arg(repo, path);
             if (path.startsWith("app.bsky.feed.repost/")) {
-                const QJsonObject block = getBlock(object, path);
+                const auto block = getBlock(object, path);
+                const auto subject = block.value("value").toObject().value("subject").toObject();
                 if (!block.isEmpty()) {
-                    info.cid = block.value("value")
-                                       .toObject()
-                                       .value("subject")
-                                       .toObject()
-                                       .value("cid")
-                                       .toString();
-                    info.uri = block.value("value")
-                                       .toObject()
-                                       .value("subject")
-                                       .toObject()
-                                       .value("uri")
-                                       .toString();
+                    info.cid = subject.value("cid").toString();
+                    info.uri = subject.value("uri").toString();
                     UserInfo user_info = getUser(repo);
 
                     if (!info.cid.isEmpty() && !info.uri.isEmpty()) {
@@ -348,19 +359,10 @@ QList<OperationInfo> AbstractPostSelector::getOperationInfos(const QJsonObject &
                 }
             } else if (like && path.startsWith("app.bsky.feed.like/")) {
                 const QJsonObject block = getBlock(object, path);
+                const auto subject = block.value("value").toObject().value("subject").toObject();
                 if (!block.isEmpty()) {
-                    info.cid = block.value("value")
-                                       .toObject()
-                                       .value("subject")
-                                       .toObject()
-                                       .value("cid")
-                                       .toString();
-                    info.uri = block.value("value")
-                                       .toObject()
-                                       .value("subject")
-                                       .toObject()
-                                       .value("uri")
-                                       .toString();
+                    info.cid = subject.value("cid").toString();
+                    info.uri = subject.value("uri").toString();
                     UserInfo user_info = getUser(repo);
 
                     if (!info.cid.isEmpty() && !info.uri.isEmpty()) {
@@ -676,6 +678,11 @@ QString AbstractPostSelector::extractRkey(const QString &path) const
     }
 }
 
+QObject *AbstractPostSelector::key() const
+{
+    return m_key;
+}
+
 int AbstractPostSelector::repostCondition() const
 {
     return m_repostCondition;
@@ -684,6 +691,17 @@ int AbstractPostSelector::repostCondition() const
 void AbstractPostSelector::setRepostCondition(int newRepostCondition)
 {
     m_repostCondition = newRepostCondition;
+}
+
+// スレッドとして実行する場合にまとめて実行するスロット
+void AbstractPostSelector::judgeSelectionAndReaction(const QJsonObject &object)
+{
+    if (judgeReaction(object)) {
+        emit reacted(object);
+    }
+    if (judge(object)) {
+        emit selected(object);
+    }
 }
 
 bool AbstractPostSelector::isRepost() const

@@ -27,6 +27,7 @@ struct OperationInfo
     QString reacted_by_did; // did
     QString reacted_by_handle;
     QString reacted_by_display_name;
+    QString time;
 };
 
 class AbstractPostSelector : public QObject
@@ -54,6 +55,7 @@ public:
     virtual QStringList getListUris() const;
     virtual UserInfo getUser(const QString &did) const;
 
+    static QStringList getOperationNsid(const QJsonObject &object);
     static QStringList getOperationUris(const QJsonObject &object);
     QList<OperationInfo> getOperationInfos(const QJsonObject &object, bool like = false);
     bool judgeReaction(const QJsonObject &object);
@@ -103,9 +105,14 @@ public:
     int repostCondition() const;
     void setRepostCondition(int newRepostCondition);
 
+    QObject *key() const;
+
 signals:
     void selected(const QJsonObject &object);
     void reacted(const QJsonObject &object);
+
+public slots:
+    void judgeSelectionAndReaction(const QJsonObject &object);
 
 protected:
     const QList<AbstractPostSelector *> &children() const;
@@ -132,6 +139,7 @@ private:
     bool m_isArray;
     bool m_parentIsArray;
     bool m_ready;
+    QObject *m_key;
 
     bool m_hasImage;
     int m_imageCount; // -1: >=1, 0: nothing only, 1~4: match count
