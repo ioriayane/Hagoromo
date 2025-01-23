@@ -60,7 +60,7 @@ qmake ..\Hagoromo.pro CONFIG+=HAGOROMO_RELEASE_BUILD
 if NOT ERRORLEVEL 0 goto QUIT
 
 jom /version
-if NOT ERRORLEVEL 0 (
+if ERRORLEVEL 1 (
 nmake
 ) else (
 jom
