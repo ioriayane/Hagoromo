@@ -294,13 +294,15 @@ void hagoromo_test::test_AccountListModel()
     }
 
     AccountListModel model;
+    QString uuid1, uuid2;
+    QString s_endpoint1, s_endpoint2;
 
-    model.updateAccount(m_service + "/account/account1", "id1", "password1", "did:plc:account1",
-                        "account1.relog.tech", "account1@relog.tech", "accessJwt_account1",
-                        "refreshJwt_account1", true);
-    model.updateAccount(m_service + "/account/account2", "id2", "password2", "did:plc:account2",
-                        "account2.relog.tech", "account2@relog.tech", "accessJwt_account2",
-                        "refreshJwt_account2", true);
+    uuid1 = model.updateAccount(m_service + "/account/account1", "id1", "password1",
+                                "did:plc:account1", "account1.relog.tech", "account1@relog.tech",
+                                "accessJwt_account1", "refreshJwt_account1", true);
+    uuid2 = model.updateAccount(m_service + "/account/account2", "id2", "password2",
+                                "did:plc:account2", "account2.relog.tech", "account2@relog.tech",
+                                "accessJwt_account2", "refreshJwt_account2", true);
 
     AccountListModel model2;
     {
@@ -468,7 +470,9 @@ void hagoromo_test::test_AccountManager()
 
     account = manager->getAccount(uuids.at(0));
     QVERIFY2(account.service == m_service + "/account/account2", account.service.toLocal8Bit());
-    QVERIFY(account.service_endpoint == "http://localhost:%1/response/account/account2");
+    QVERIFY(account.service_endpoint
+            == QString("http://localhost:%1/response/account/account2")
+                       .arg(QString::number(m_listenPort)));
     QVERIFY(account.did == "did:plc:account2_refresh");
 }
 
