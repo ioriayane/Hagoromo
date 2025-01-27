@@ -8,6 +8,9 @@ description: This is a multi-column Bluesky client.
 
 ## 2025
 
+- Update
+  - Change the API access destination to the same as the official one
+
 ### v0.45.0 - 2025/1/23
 
 - Add
