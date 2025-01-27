@@ -1649,6 +1649,7 @@ void atprotocol_test::test_LabelProvider()
         provider->update(QStringList() << "did:plc:original_labeler_did", account, connector1);
         account.service =
                 QString("http://localhost:%1/response/labels/provider/12").arg(m_listenPort);
+        account.service_endpoint = account.service;
         provider->update(QStringList() << "did:plc:original_labeler_did"
                                        << "did:plc:ar7c4by46qjdydhdevvrndac",
                          account, connector2);
