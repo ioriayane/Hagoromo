@@ -161,16 +161,16 @@ void AccountListModel::update(int row, AccountListModelRoles role, const QVarian
     emit dataChanged(index(row), index(row));
 }
 
-void AccountListModel::updateAccount(const QString &service, const QString &identifier,
-                                     const QString &password, const QString &did,
-                                     const QString &handle, const QString &email,
-                                     const QString &accessJwt, const QString &refreshJwt,
-                                     const bool authorized)
+QString AccountListModel::updateAccount(const QString &service, const QString &identifier,
+                                        const QString &password, const QString &did,
+                                        const QString &handle, const QString &email,
+                                        const QString &accessJwt, const QString &refreshJwt,
+                                        const bool authorized)
 {
     AccountManager *manager = AccountManager::getInstance();
     const QStringList uuids = manager->getUuids();
+    QString ret_uuid;
 
-    bool updated = false;
     for (const auto &uuid : uuids) {
         int i = manager->indexAt(uuid);
         const AtProtocolInterface::AccountData account = manager->getAccount(uuid);
@@ -178,17 +178,18 @@ void AccountListModel::updateAccount(const QString &service, const QString &iden
             // update
             manager->updateAccount(uuid, service, identifier, password, did, handle, email,
                                    accessJwt, refreshJwt, authorized);
-            updated = true;
+            ret_uuid = uuid;
             emit dataChanged(index(i), index(i));
         }
     }
-    if (!updated) {
+    if (ret_uuid.isEmpty()) {
         // append
         beginInsertRows(QModelIndex(), count(), count());
-        manager->updateAccount(QString(), service, identifier, password, did, handle, email,
-                               accessJwt, refreshJwt, authorized);
+        ret_uuid = manager->updateAccount(QString(), service, identifier, password, did, handle,
+                                          email, accessJwt, refreshJwt, authorized);
         endInsertRows();
     }
+    return ret_uuid;
 }
 
 void AccountListModel::removeAccount(int row)

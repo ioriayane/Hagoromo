@@ -72,10 +72,16 @@ void AtProtocolAccount::setLabelers(const QStringList &dids)
 
 QString AtProtocolAccount::service() const
 {
-    if (m_account.service.endsWith("/")) {
-        return m_account.service.chopped(1);
+    QString s;
+    if (!m_account.service_endpoint.isEmpty()) {
+        s = m_account.service_endpoint;
     } else {
-        return m_account.service;
+        s = m_account.service;
+    }
+    if (s.endsWith("/")) {
+        return s.chopped(1);
+    } else {
+        return s;
     }
 }
 

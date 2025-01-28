@@ -53,11 +53,11 @@ public:
     Q_INVOKABLE void update(int row, AccountListModel::AccountListModelRoles role,
                             const QVariant &value);
 
-    Q_INVOKABLE void updateAccount(const QString &service, const QString &identifier,
-                                   const QString &password, const QString &did,
-                                   const QString &handle, const QString &email,
-                                   const QString &accessJwt, const QString &refreshJwt,
-                                   const bool authorized);
+    Q_INVOKABLE QString updateAccount(const QString &service, const QString &identifier,
+                                      const QString &password, const QString &did,
+                                      const QString &handle, const QString &email,
+                                      const QString &accessJwt, const QString &refreshJwt,
+                                      const bool authorized);
     Q_INVOKABLE void removeAccount(int row);
     Q_INVOKABLE void updateAccountProfile(const QString &service, const QString &identifier);
     Q_INVOKABLE int indexAt(const QString &uuid);
