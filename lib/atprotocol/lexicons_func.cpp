@@ -1003,6 +1003,12 @@ void copyPostView(const QJsonObject &src, AppBskyFeedDefs::PostView &dest)
         copyThreadgateView(src.value("threadgate").toObject(), dest.threadgate);
     }
 }
+void copyThreadContext(const QJsonObject &src, AppBskyFeedDefs::ThreadContext &dest)
+{
+    if (!src.isEmpty()) {
+        dest.rootAuthorLike = src.value("rootAuthorLike").toString();
+    }
+}
 void copyNotFoundPost(const QJsonObject &src, AppBskyFeedDefs::NotFoundPost &dest)
 {
     if (!src.isEmpty()) {
@@ -1133,6 +1139,7 @@ void copyThreadViewPost(const QJsonObject &src, AppBskyFeedDefs::ThreadViewPost 
                 dest.replies_BlockedPost.append(child);
             }
         }
+        copyThreadContext(src.value("threadContext").toObject(), dest.threadContext);
     }
 }
 void copySkeletonReasonRepost(const QJsonObject &src, AppBskyFeedDefs::SkeletonReasonRepost &dest)
@@ -2571,6 +2578,29 @@ void copySubjectReviewState(const QJsonValue &src,
 {
     dest = src.toString();
 }
+void copyAccountStats(const QJsonObject &src, ToolsOzoneModerationDefs::AccountStats &dest)
+{
+    if (!src.isEmpty()) {
+        dest.reportCount = src.value("reportCount").toInt();
+        dest.appealCount = src.value("appealCount").toInt();
+        dest.suspendCount = src.value("suspendCount").toInt();
+        dest.escalateCount = src.value("escalateCount").toInt();
+        dest.takedownCount = src.value("takedownCount").toInt();
+    }
+}
+void copyRecordsStats(const QJsonObject &src, ToolsOzoneModerationDefs::RecordsStats &dest)
+{
+    if (!src.isEmpty()) {
+        dest.totalReports = src.value("totalReports").toInt();
+        dest.reportedCount = src.value("reportedCount").toInt();
+        dest.escalatedCount = src.value("escalatedCount").toInt();
+        dest.appealedCount = src.value("appealedCount").toInt();
+        dest.subjectCount = src.value("subjectCount").toInt();
+        dest.pendingCount = src.value("pendingCount").toInt();
+        dest.processedCount = src.value("processedCount").toInt();
+        dest.takendownCount = src.value("takendownCount").toInt();
+    }
+}
 void copySubjectStatusView(const QJsonObject &src,
                            ToolsOzoneModerationDefs::SubjectStatusView &dest)
 {
@@ -2622,6 +2652,8 @@ void copySubjectStatusView(const QJsonObject &src,
         for (const auto &value : src.value("tags").toArray()) {
             dest.tags.append(value.toString());
         }
+        copyAccountStats(src.value("accountStats").toObject(), dest.accountStats);
+        copyRecordsStats(src.value("recordsStats").toObject(), dest.recordsStats);
     }
 }
 void copyModeration(const QJsonObject &src, ToolsOzoneModerationDefs::Moderation &dest)

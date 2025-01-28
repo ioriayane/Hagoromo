@@ -678,6 +678,10 @@ struct PostView
     QList<ComAtprotoLabelDefs::Label> labels;
     ThreadgateView threadgate;
 };
+struct ThreadContext
+{
+    QString rootAuthorLike; // at-uri
+};
 struct NotFoundPost
 {
     QString uri; // at-uri
@@ -740,6 +744,7 @@ struct ThreadViewPost
     QList<NotFoundPost> replies_NotFoundPost;
     QList<BlockedPost> replies_BlockedPost;
     // union end : replies
+    ThreadContext threadContext;
 };
 struct SkeletonReasonRepost
 {
@@ -1890,6 +1895,25 @@ struct RecordHosting
     QString deletedAt; // datetime
 };
 typedef QString SubjectReviewState;
+struct AccountStats
+{
+    int reportCount = 0; // Total number of reports on the account
+    int appealCount = 0; // Total number of appeals against a moderation action on the account
+    int suspendCount = 0; // Number of times the account was suspended
+    int escalateCount = 0; // Number of times the account was escalated
+    int takedownCount = 0; // Number of times the account was taken down
+};
+struct RecordsStats
+{
+    int totalReports = 0; // Cumulative sum of the number of reports on the items in the set
+    int reportedCount = 0; // Number of items that were reported at least once
+    int escalatedCount = 0; // Number of items that were escalated at least once
+    int appealedCount = 0; // Number of items that were appealed at least once
+    int subjectCount = 0; // Total number of item in the set
+    int pendingCount = 0; // Number of item currently in "reviewOpen" or "reviewEscalated" state
+    int processedCount = 0; // Number of item currently in "reviewNone" or "reviewClosed" state
+    int takendownCount = 0; // Number of item currently taken down
+};
 struct SubjectStatusView
 {
     int id = 0;
@@ -1924,6 +1948,9 @@ struct SubjectStatusView
                            // appeal was resolved by moderators.
     QString suspendUntil; // datetime
     QList<QString> tags;
+    AccountStats accountStats; // Statistics related to the account subject
+    RecordsStats recordsStats; // Statistics related to the record subjects authored by the
+                               // subject's account
 };
 struct Moderation
 {

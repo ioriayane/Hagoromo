@@ -121,6 +121,7 @@ void copyGeneratorView(const QJsonObject &src, AppBskyFeedDefs::GeneratorView &d
 void copyViewerState(const QJsonObject &src, AppBskyFeedDefs::ViewerState &dest);
 void copyThreadgateView(const QJsonObject &src, AppBskyFeedDefs::ThreadgateView &dest);
 void copyPostView(const QJsonObject &src, AppBskyFeedDefs::PostView &dest);
+void copyThreadContext(const QJsonObject &src, AppBskyFeedDefs::ThreadContext &dest);
 void copyNotFoundPost(const QJsonObject &src, AppBskyFeedDefs::NotFoundPost &dest);
 void copyBlockedPost(const QJsonObject &src, AppBskyFeedDefs::BlockedPost &dest);
 void copyReplyRef(const QJsonObject &src, AppBskyFeedDefs::ReplyRef &dest);
@@ -382,6 +383,8 @@ void copyAccountHosting(const QJsonObject &src, ToolsOzoneModerationDefs::Accoun
 void copyRecordHosting(const QJsonObject &src, ToolsOzoneModerationDefs::RecordHosting &dest);
 void copySubjectReviewState(const QJsonValue &src,
                             ToolsOzoneModerationDefs::SubjectReviewState &dest);
+void copyAccountStats(const QJsonObject &src, ToolsOzoneModerationDefs::AccountStats &dest);
+void copyRecordsStats(const QJsonObject &src, ToolsOzoneModerationDefs::RecordsStats &dest);
 void copySubjectStatusView(const QJsonObject &src,
                            ToolsOzoneModerationDefs::SubjectStatusView &dest);
 void copyModeration(const QJsonObject &src, ToolsOzoneModerationDefs::Moderation &dest);
