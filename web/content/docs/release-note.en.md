@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2025
 
+- Add
+  - Add a video tab to user's profile
 - Update
   - Change the API access destination to the same as the official one
 
