@@ -37,6 +37,8 @@ bool AuthorFeedListModel::getLatest()
             filter_type = "posts_with_media";
         } else if (filter() == AuthorFeedListModelFilterType::PostsAndAuthorThreads) {
             filter_type = "posts_and_author_threads";
+        } else if (filter() == AuthorFeedListModelFilterType::PostsWithVideo) {
+            filter_type = "posts_with_video";
         } else {
             filter_type = "posts_with_replies";
         }

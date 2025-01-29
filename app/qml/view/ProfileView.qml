@@ -128,6 +128,7 @@ ColumnLayout {
             repostFeedListModel.setAccount(uuid)
             likesFeedListModel.setAccount(uuid)
             authorMediaFeedListModel.setAccount(uuid)
+            authorVideoFeedListModel.setAccount(uuid)
             actorFeedGeneratorListModel.setAccount(uuid)
             listsListModel.setAccount(uuid)
             followsListModel.setAccount(uuid)
@@ -590,7 +591,7 @@ ColumnLayout {
             }
 
             accountDid: profileView.accountDid
-            imageLayoutType: settings.imageLayoutType
+            imageLayoutType: profileView.imageLayoutType
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -630,7 +631,7 @@ ColumnLayout {
                 onErrorOccured: (code, message) => profileView.errorOccured(code, message)
             }
             accountDid: profileView.accountDid
-            imageLayoutType: settings.imageLayoutType
+            imageLayoutType: profileView.imageLayoutType
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -670,7 +671,7 @@ ColumnLayout {
                 onErrorOccured: (code, message) => profileView.errorOccured(code, message)
             }
             accountDid: profileView.accountDid
-            imageLayoutType: settings.imageLayoutType
+            imageLayoutType: profileView.imageLayoutType
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
@@ -709,7 +710,46 @@ ColumnLayout {
                 onErrorOccured: (code, message) => profileView.errorOccured(code, message)
             }
             accountDid: profileView.accountDid
-            imageLayoutType: settings.imageLayoutType
+            imageLayoutType: profileView.imageLayoutType
+
+            onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
+                            profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
+            onRequestQuote: (cid, uri, avatar, display_name, handle, indexed_at, text) =>
+                            profileView.requestQuote(cid, uri, avatar, display_name, handle, indexed_at, text)
+
+            onRequestViewThread: (uri) => profileView.requestViewThread(uri)
+            onRequestViewQuotes: (uri) => profileView.requestViewQuotes(uri)
+            onRequestViewImages: (index, paths, alts) => profileView.requestViewImages(index, paths, alts)
+            onRequestViewProfile: (did) => {
+                                      if(did !== profileView.userDid){
+                                          profileView.requestViewProfile(did)
+                                      }
+                                  }
+            onRequestViewFeedGenerator: (name, uri) => profileView.requestViewFeedGenerator(name, uri)
+            onRequestViewListFeed: (uri, name) => profileView.requestViewListFeed(uri, name)
+            onRequestViewLikedBy: (uri) => profileView.requestViewLikedBy(uri)
+            onRequestViewRepostedBy: (uri) => profileView.requestViewRepostedBy(uri)
+            onRequestViewSearchPosts: (text) => profileView.requestViewSearchPosts(text)
+            onRequestReportPost: (uri, cid) => profileView.requestReportPost(uri, cid)
+            onRequestAddMutedWord: (text) => profileView.requestAddMutedWord(text)
+            onRequestUpdateThreadGate: (uri, threadgate_uri, type, rules, callback) => profileView.requestUpdateThreadGate(uri, threadgate_uri, type, rules, callback)
+            onHoveredLinkChanged: profileView.hoveredLink = hoveredLink
+            onScrollPositionChanged: (top) => userProfileColumnLayout.viewChange(top)
+        }
+
+        TimelineView {
+            Layout.fillWidth: true
+            model: AuthorFeedListModel {
+                id: authorVideoFeedListModel
+                autoLoading: false
+                displayInterval: 0
+                authorDid: profileView.userDid
+                filter: AuthorFeedListModel.PostsWithVideo
+
+                onErrorOccured: (code, message) => profileView.errorOccured(code, message)
+            }
+            accountDid: profileView.accountDid
+            imageLayoutType: profileView.imageLayoutType
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             profileView.requestReply(cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)
