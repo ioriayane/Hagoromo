@@ -145,6 +145,7 @@ public:
         ThreadGateRulesRole,
 
         LabelsRole,
+        LabelIconsRole,
         LanguagesRole,
         TagsRole,
         ViaRole,

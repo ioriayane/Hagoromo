@@ -323,6 +323,8 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
 
     } else if (role == LabelsRole)
         return getLabels(current.post.labels);
+    else if (role == LabelIconsRole)
+        return getLabelIcons(current.post.labels);
     else if (role == LanguagesRole)
         return getLaunguages(current.post.record);
     else if (role == TagsRole)
@@ -934,6 +936,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[ThreadGateRulesRole] = "threadGateRules";
 
     roles[LabelsRole] = "labels";
+    roles[LabelIconsRole] = "labelIcons";
     roles[LanguagesRole] = "languages";
     roles[TagsRole] = "tags";
     roles[ViaRole] = "via";
