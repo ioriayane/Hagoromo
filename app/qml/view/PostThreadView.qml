@@ -133,6 +133,7 @@ ColumnLayout {
                 postAuthor.handle: model.handle
                 postAuthor.indexedAt: isBasisPost ? "" : model.indexedAt
                 authorLabels.model: isBasisPost ? model.authorLabels : []
+                authorLabels.iconSources: isBasisPost ? model.authorLabelIcons : []
                 recordText.text: {
                     var text = model.recordText
                     if(model.recordTextTranslation.length > 0){

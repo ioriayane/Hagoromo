@@ -26,6 +26,7 @@ Item {
     property alias model: repeater.model
     property alias count: repeater.count
     property string iconSource: "../images/label.png"
+    property var iconSources: []
     property real fontPointSize: AdjustedValues.f10
 
     Repeater {
@@ -75,7 +76,21 @@ Item {
             }
             anchors.leftMargin: lineStatus !== 2 ? 0 : repeater.parent.columnSpacing
             text: model.modelData
-            source: repeater.parent.iconSource
+            source: {
+                if(repeater.parent.iconSources.length === repeater.count){
+                    var path = repeater.parent.iconSources[model.index]
+                    if(!path){
+                        enableLayer = true
+                        return repeater.parent.iconSource
+                    }else{
+                        enableLayer = false
+                        return path
+                    }
+                }else{
+                    enableLayer = true
+                    return repeater.parent.iconSource
+                }
+            }
             spacing: repeater.parent.tagSpacing
             fontPointSize: tagLabelLayout.fontPointSize
         }
