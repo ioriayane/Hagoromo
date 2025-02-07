@@ -267,16 +267,13 @@ Dialog {
                                     ? Material.accent : Material.foreground
                         onClicked: {
                             var row = accountCombo.currentIndex;
-                            selectThreadGateDialog.account.service = postDialog.accountModel.item(row, AccountListModel.ServiceRole)
-                            selectThreadGateDialog.account.did = postDialog.accountModel.item(row, AccountListModel.DidRole)
-                            selectThreadGateDialog.account.handle = postDialog.accountModel.item(row, AccountListModel.HandleRole)
-                            selectThreadGateDialog.account.email = postDialog.accountModel.item(row, AccountListModel.EmailRole)
-                            selectThreadGateDialog.account.accessJwt = postDialog.accountModel.item(row, AccountListModel.AccessJwtRole)
-                            selectThreadGateDialog.account.refreshJwt = postDialog.accountModel.item(row, AccountListModel.RefreshJwtRole)
-                            selectThreadGateDialog.initialQuoteEnabled = selectThreadGateDialog.selectedQuoteEnabled
-                            selectThreadGateDialog.initialType = selectThreadGateDialog.selectedType
-                            selectThreadGateDialog.initialOptions = selectThreadGateDialog.selectedOptions
-                            selectThreadGateDialog.open()
+                            if(selectThreadGateDialog.account.set(postDialog.accountModel,
+                                                                  postDialog.accountModel.item(row, AccountListModel.UuidRole))){
+                                selectThreadGateDialog.initialQuoteEnabled = selectThreadGateDialog.selectedQuoteEnabled
+                                selectThreadGateDialog.initialType = selectThreadGateDialog.selectedType
+                                selectThreadGateDialog.initialOptions = selectThreadGateDialog.selectedOptions
+                                selectThreadGateDialog.open()
+                            }
                         }
                     }
 
