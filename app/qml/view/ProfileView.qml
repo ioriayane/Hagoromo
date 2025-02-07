@@ -371,6 +371,7 @@ ColumnLayout {
             Layout.rightMargin: 5
             visible: count > 0
             model: userProfile.labels
+            iconSources: userProfile.labelIcons
         }
         Label {
             id: descriptionLabel

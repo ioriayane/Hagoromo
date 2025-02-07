@@ -153,5 +153,7 @@ void PostThreadListModel::finishedConnector(const QString &labeler_did)
     if (row < 0)
         return;
 
-    emit dataChanged(index(row), index(row), QVector<int>() << LabelsRole << AuthorLabelsRole);
+    emit dataChanged(index(row), index(row),
+                     QVector<int>() << LabelsRole << LabelIconsRole << AuthorLabelsRole
+                                    << AuthorLabelIconsRole);
 }

@@ -46,6 +46,7 @@ public:
         HandleRole,
         AvatarRole,
         AuthorLabelsRole,
+        AuthorLabelIconsRole,
         MutedRole,
         RecordTextRole,
         RecordTextPlainRole,
@@ -144,6 +145,7 @@ public:
         ThreadGateRulesRole,
 
         LabelsRole,
+        LabelIconsRole,
         LanguagesRole,
         TagsRole,
         ViaRole,

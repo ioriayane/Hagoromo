@@ -206,6 +206,8 @@ protected:
     bool getQuoteFilterMatched(const AtProtocolType::AppBskyFeedDefs::PostView &post) const;
     QStringList getLabels(const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels,
                           bool exclude_no_unauth = false) const;
+    QStringList getLabelIcons(const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels,
+                              bool exclude_no_unauth = false) const;
     QStringList getLaunguages(const QVariant &record) const;
     QString getVia(const QVariant &record) const;
 

@@ -133,6 +133,7 @@ ColumnLayout {
                 postAuthor.handle: model.handle
                 postAuthor.indexedAt: isBasisPost ? "" : model.indexedAt
                 authorLabels.model: isBasisPost ? model.authorLabels : []
+                authorLabels.iconSources: isBasisPost ? model.authorLabelIcons : []
                 recordText.text: {
                     var text = model.recordText
                     if(model.recordTextTranslation.length > 0){
@@ -201,6 +202,7 @@ ColumnLayout {
                 postInformation.visible: isBasisPost
                 postInformation.tagsLayout.model: postInformation.visible ? model.tags : []
                 postInformation.labelsLayout.model: postInformation.visible ? model.labels : []
+                postInformation.labelsLayout.iconSources: postInformation.visible ? model.labelIcons : []
                 postInformation.languagesLayout.model: postInformation.visible ? model.languages : []
                 postInformation.createdAtLongLabel.text: (model.isArchived && model.createdAt.length > 0) ? qsTr("Archived from %s").replace("%s", model.createdAt) : ""
                 postInformation.indexedAtLongLabel.text: postInformation.visible ? model.indexedAtLong : ""

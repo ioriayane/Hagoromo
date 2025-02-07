@@ -48,6 +48,8 @@ class UserProfile : public QObject
     Q_PROPERTY(QString blockingUri READ blockingUri WRITE setBlockingUri NOTIFY blockingUriChanged)
 
     Q_PROPERTY(QStringList labels READ labels WRITE setLabels NOTIFY labelsChanged FINAL)
+    Q_PROPERTY(QStringList labelIcons READ labelIcons WRITE setLabelIcons NOTIFY labelIconsChanged
+                       FINAL)
     Q_PROPERTY(QStringList belongingLists READ belongingLists WRITE setBelongingLists NOTIFY
                        belongingListsChanged)
     Q_PROPERTY(QString pinnedPost READ pinnedPost WRITE setPinnedPost NOTIFY pinnedPostChanged)
@@ -103,6 +105,8 @@ public:
     void setBlockingUri(const QString &newBlockingUri);
     QStringList labels() const;
     void setLabels(const QStringList &newLabels);
+    QStringList labelIcons() const;
+    void setLabelIcons(const QStringList &newLabelIcons);
     QStringList belongingLists() const;
     void setBelongingLists(const QStringList &newBelongingLists);
 
@@ -143,6 +147,7 @@ signals:
     void userFilterTitleChanged();
 
     void labelsChanged();
+    void labelIconsChanged();
     void belongingListsChanged();
     void formattedDescriptionChanged();
     void pinnedPostChanged();
@@ -203,6 +208,7 @@ private:
     QStringList m_handleHistory;
     bool m_associatedChatAllow;
     QStringList m_labels;
+    QStringList m_labelIcons;
 };
 
 #endif // USERPROFILE_H

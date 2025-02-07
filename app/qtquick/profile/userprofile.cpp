@@ -84,6 +84,7 @@ void UserProfile::getProfile(const QString &did)
                 setBlockingUri(detail.viewer.blocking);
                 if (detail.labels.isEmpty()) {
                     setLabels(QStringList());
+                    setLabelIcons(QStringList());
                 } else {
                     QStringList labels;
                     QStringList labelers;
@@ -386,13 +387,16 @@ void UserProfile::finishedConnector(const QString &labeler_did)
     LabelData label_data;
 
     QStringList labels;
+    QStringList icons;
     for (const auto &label : m_labelDetails) {
         if (label.val == QStringLiteral("!no-unauthenticated"))
             continue;
         label_data = provider->getLabel(label.src, label.val);
         labels.append(label_data.name);
+        icons.append(label_data.avatar);
     }
     setLabels(labels);
+    setLabelIcons(icons);
 }
 
 void UserProfile::updateContentFilterLabels(std::function<void()> callback)
@@ -539,6 +543,19 @@ void UserProfile::setLabels(const QStringList &newLabels)
         return;
     m_labels = newLabels;
     emit labelsChanged();
+}
+
+QStringList UserProfile::labelIcons() const
+{
+    return m_labelIcons;
+}
+
+void UserProfile::setLabelIcons(const QStringList &newLabelIcons)
+{
+    if (m_labelIcons == newLabelIcons)
+        return;
+    m_labelIcons = newLabelIcons;
+    emit labelIconsChanged();
 }
 
 QStringList UserProfile::belongingLists() const

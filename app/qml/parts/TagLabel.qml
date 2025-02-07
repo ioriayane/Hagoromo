@@ -17,6 +17,7 @@ Rectangle {
     property alias text: label.text
     property alias fontPointSize: label.font.pointSize
     property int spacing: 0
+    property bool enableLayer: true
 
     Image {
         id: image
@@ -26,7 +27,7 @@ Rectangle {
         height: label.contentHeight
         visible: status !== Image.Null
         source: "../images/label.png"
-        layer.enabled: true
+        layer.enabled: tagLabel.enableLayer
         layer.effect: ColorOverlayC {
             color: Material.foreground
         }
