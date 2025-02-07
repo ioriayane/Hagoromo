@@ -1218,6 +1218,11 @@ bool RecordOperator::threadGate(
                 rule.type = AtProtocolType::ThreadGateAllowType::Followed;
                 rule.uri.clear();
                 rules.append(rule);
+            } else if (cmd == "follower") {
+                type = AtProtocolType::ThreadGateType::Choice;
+                rule.type = AtProtocolType::ThreadGateAllowType::Follower;
+                rule.uri.clear();
+                rules.append(rule);
             } else if (cmd.startsWith("at://")) {
                 type = AtProtocolType::ThreadGateType::Choice;
                 rule.type = AtProtocolType::ThreadGateAllowType::List;

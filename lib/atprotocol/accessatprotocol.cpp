@@ -405,6 +405,8 @@ QJsonObject AccessAtProtocol::makeThreadGateJsonObject(
                 json_rule.insert("$type", "app.bsky.feed.threadgate#mentionRule");
             } else if (allow.type == ThreadGateAllowType::Followed) {
                 json_rule.insert("$type", "app.bsky.feed.threadgate#followingRule");
+            } else if (allow.type == ThreadGateAllowType::Follower) {
+                json_rule.insert("$type", "app.bsky.feed.threadgate#followerRule");
             } else if (allow.type == ThreadGateAllowType::List && allow.uri.startsWith("at://")) {
                 json_rule.insert("$type", "app.bsky.feed.threadgate#listRule");
                 json_rule.insert("list", allow.uri);
