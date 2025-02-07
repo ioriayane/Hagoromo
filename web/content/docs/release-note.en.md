@@ -13,6 +13,9 @@ description: This is a multi-column Bluesky client.
 - Update
   - Change the API access destination to the same as the official one
   - Change to display the label icons assigned by the labeler
+  - Change so that you can choose followers with reply restrictions
+- Fix
+  - Fix a bug where the list would not load when setting reply restrictions from the post dialog
 
 ### v0.45.0 - 2025/1/23
 
