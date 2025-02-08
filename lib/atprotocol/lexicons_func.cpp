@@ -278,6 +278,54 @@ void copyLabelersPref(const QJsonObject &src, AppBskyActorDefs::LabelersPref &de
         }
     }
 }
+void copyPostInteractionSettingsPref(const QJsonObject &src,
+                                     AppBskyActorDefs::PostInteractionSettingsPref &dest)
+{
+    if (!src.isEmpty()) {
+        // array<union> threadgateAllowRules
+        for (const auto &value : src.value("threadgateAllowRules").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type == QStringLiteral("app.bsky.feed.threadgate#mentionRule")) {
+                AppBskyFeedThreadgate::MentionRule child;
+                AppBskyFeedThreadgate::copyMentionRule(value.toObject(), child);
+                dest.threadgateAllowRules_AppBskyFeedThreadgate_MentionRule.append(child);
+            }
+        }
+        for (const auto &value : src.value("threadgateAllowRules").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type == QStringLiteral("app.bsky.feed.threadgate#followerRule")) {
+                AppBskyFeedThreadgate::FollowerRule child;
+                AppBskyFeedThreadgate::copyFollowerRule(value.toObject(), child);
+                dest.threadgateAllowRules_AppBskyFeedThreadgate_FollowerRule.append(child);
+            }
+        }
+        for (const auto &value : src.value("threadgateAllowRules").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type == QStringLiteral("app.bsky.feed.threadgate#followingRule")) {
+                AppBskyFeedThreadgate::FollowingRule child;
+                AppBskyFeedThreadgate::copyFollowingRule(value.toObject(), child);
+                dest.threadgateAllowRules_AppBskyFeedThreadgate_FollowingRule.append(child);
+            }
+        }
+        for (const auto &value : src.value("threadgateAllowRules").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type == QStringLiteral("app.bsky.feed.threadgate#listRule")) {
+                AppBskyFeedThreadgate::ListRule child;
+                AppBskyFeedThreadgate::copyListRule(value.toObject(), child);
+                dest.threadgateAllowRules_AppBskyFeedThreadgate_ListRule.append(child);
+            }
+        }
+        // array<union> postgateEmbeddingRules
+        for (const auto &value : src.value("postgateEmbeddingRules").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type == QStringLiteral("app.bsky.feed.postgate#disableRule")) {
+                AppBskyFeedPostgate::DisableRule child;
+                AppBskyFeedPostgate::copyDisableRule(value.toObject(), child);
+                dest.postgateEmbeddingRules_AppBskyFeedPostgate_DisableRule.append(child);
+            }
+        }
+    }
+}
 void copyPreferences(const QJsonArray &src, AppBskyActorDefs::Preferences &dest)
 {
     if (!src.isEmpty()) {
@@ -331,6 +379,11 @@ void copyPreferences(const QJsonArray &src, AppBskyActorDefs::Preferences &dest)
                 AppBskyActorDefs::LabelersPref child;
                 AppBskyActorDefs::copyLabelersPref(value.toObject(), child);
                 dest.labelersPref.append(child);
+            } else if (value_type
+                       == QStringLiteral("app.bsky.actor.defs#postInteractionSettingsPref")) {
+                AppBskyActorDefs::PostInteractionSettingsPref child;
+                AppBskyActorDefs::copyPostInteractionSettingsPref(value.toObject(), child);
+                dest.postInteractionSettingsPref.append(child);
             }
         }
     }
@@ -544,6 +597,96 @@ void copyMain(const QJsonObject &src, ComAtprotoRepoStrongRef::Main &dest)
     if (!src.isEmpty()) {
         dest.uri = src.value("uri").toString();
         dest.cid = src.value("cid").toString();
+    }
+}
+}
+// app.bsky.feed.threadgate
+namespace AppBskyFeedThreadgate {
+void copyMentionRule(const QJsonObject &src, AppBskyFeedThreadgate::MentionRule &dest)
+{
+    if (!src.isEmpty()) { }
+}
+void copyFollowerRule(const QJsonObject &src, AppBskyFeedThreadgate::FollowerRule &dest)
+{
+    if (!src.isEmpty()) { }
+}
+void copyFollowingRule(const QJsonObject &src, AppBskyFeedThreadgate::FollowingRule &dest)
+{
+    if (!src.isEmpty()) { }
+}
+void copyListRule(const QJsonObject &src, AppBskyFeedThreadgate::ListRule &dest)
+{
+    if (!src.isEmpty()) {
+        dest.list = src.value("list").toString();
+    }
+}
+void copyMain(const QJsonObject &src, AppBskyFeedThreadgate::Main &dest)
+{
+    if (!src.isEmpty()) {
+        dest.post = src.value("post").toString();
+        // array<union> allow
+        for (const auto &value : src.value("allow").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type == QStringLiteral("app.bsky.feed.threadgate#mentionRule")) {
+                AppBskyFeedThreadgate::MentionRule child;
+                AppBskyFeedThreadgate::copyMentionRule(value.toObject(), child);
+                dest.allow_MentionRule.append(child);
+            }
+        }
+        for (const auto &value : src.value("allow").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type == QStringLiteral("app.bsky.feed.threadgate#followerRule")) {
+                AppBskyFeedThreadgate::FollowerRule child;
+                AppBskyFeedThreadgate::copyFollowerRule(value.toObject(), child);
+                dest.allow_FollowerRule.append(child);
+            }
+        }
+        for (const auto &value : src.value("allow").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type == QStringLiteral("app.bsky.feed.threadgate#followingRule")) {
+                AppBskyFeedThreadgate::FollowingRule child;
+                AppBskyFeedThreadgate::copyFollowingRule(value.toObject(), child);
+                dest.allow_FollowingRule.append(child);
+            }
+        }
+        for (const auto &value : src.value("allow").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type == QStringLiteral("app.bsky.feed.threadgate#listRule")) {
+                AppBskyFeedThreadgate::ListRule child;
+                AppBskyFeedThreadgate::copyListRule(value.toObject(), child);
+                dest.allow_ListRule.append(child);
+            }
+        }
+        dest.createdAt = src.value("createdAt").toString();
+        for (const auto &value : src.value("hiddenReplies").toArray()) {
+            dest.hiddenReplies.append(value.toString());
+        }
+    }
+}
+}
+// app.bsky.feed.postgate
+namespace AppBskyFeedPostgate {
+void copyDisableRule(const QJsonObject &src, AppBskyFeedPostgate::DisableRule &dest)
+{
+    if (!src.isEmpty()) { }
+}
+void copyMain(const QJsonObject &src, AppBskyFeedPostgate::Main &dest)
+{
+    if (!src.isEmpty()) {
+        dest.createdAt = src.value("createdAt").toString();
+        dest.post = src.value("post").toString();
+        for (const auto &value : src.value("detachedEmbeddingUris").toArray()) {
+            dest.detachedEmbeddingUris.append(value.toString());
+        }
+        // array<union> embeddingRules
+        for (const auto &value : src.value("embeddingRules").toArray()) {
+            QString value_type = value.toObject().value("$type").toString();
+            if (value_type == QStringLiteral("app.bsky.feed.postgate#disableRule")) {
+                AppBskyFeedPostgate::DisableRule child;
+                AppBskyFeedPostgate::copyDisableRule(value.toObject(), child);
+                dest.embeddingRules_DisableRule.append(child);
+            }
+        }
     }
 }
 }
@@ -1003,6 +1146,12 @@ void copyPostView(const QJsonObject &src, AppBskyFeedDefs::PostView &dest)
         copyThreadgateView(src.value("threadgate").toObject(), dest.threadgate);
     }
 }
+void copyThreadContext(const QJsonObject &src, AppBskyFeedDefs::ThreadContext &dest)
+{
+    if (!src.isEmpty()) {
+        dest.rootAuthorLike = src.value("rootAuthorLike").toString();
+    }
+}
 void copyNotFoundPost(const QJsonObject &src, AppBskyFeedDefs::NotFoundPost &dest)
 {
     if (!src.isEmpty()) {
@@ -1133,6 +1282,7 @@ void copyThreadViewPost(const QJsonObject &src, AppBskyFeedDefs::ThreadViewPost 
                 dest.replies_BlockedPost.append(child);
             }
         }
+        copyThreadContext(src.value("threadContext").toObject(), dest.threadContext);
     }
 }
 void copySkeletonReasonRepost(const QJsonObject &src, AppBskyFeedDefs::SkeletonReasonRepost &dest)
@@ -1434,32 +1584,6 @@ void copyMain(const QJsonObject &src, AppBskyFeedPost::Main &dest)
     }
 }
 }
-// app.bsky.feed.postgate
-namespace AppBskyFeedPostgate {
-void copyDisableRule(const QJsonObject &src, AppBskyFeedPostgate::DisableRule &dest)
-{
-    if (!src.isEmpty()) { }
-}
-void copyMain(const QJsonObject &src, AppBskyFeedPostgate::Main &dest)
-{
-    if (!src.isEmpty()) {
-        dest.createdAt = src.value("createdAt").toString();
-        dest.post = src.value("post").toString();
-        for (const auto &value : src.value("detachedEmbeddingUris").toArray()) {
-            dest.detachedEmbeddingUris.append(value.toString());
-        }
-        // array<union> embeddingRules
-        for (const auto &value : src.value("embeddingRules").toArray()) {
-            QString value_type = value.toObject().value("$type").toString();
-            if (value_type == QStringLiteral("app.bsky.feed.postgate#disableRule")) {
-                AppBskyFeedPostgate::DisableRule child;
-                AppBskyFeedPostgate::copyDisableRule(value.toObject(), child);
-                dest.embeddingRules_DisableRule.append(child);
-            }
-        }
-    }
-}
-}
 // app.bsky.feed.repost
 namespace AppBskyFeedRepost {
 void copyMain(const QJsonObject &src, AppBskyFeedRepost::Main &dest)
@@ -1467,58 +1591,6 @@ void copyMain(const QJsonObject &src, AppBskyFeedRepost::Main &dest)
     if (!src.isEmpty()) {
         ComAtprotoRepoStrongRef::copyMain(src.value("subject").toObject(), dest.subject);
         dest.createdAt = src.value("createdAt").toString();
-    }
-}
-}
-// app.bsky.feed.threadgate
-namespace AppBskyFeedThreadgate {
-void copyMentionRule(const QJsonObject &src, AppBskyFeedThreadgate::MentionRule &dest)
-{
-    if (!src.isEmpty()) { }
-}
-void copyFollowingRule(const QJsonObject &src, AppBskyFeedThreadgate::FollowingRule &dest)
-{
-    if (!src.isEmpty()) { }
-}
-void copyListRule(const QJsonObject &src, AppBskyFeedThreadgate::ListRule &dest)
-{
-    if (!src.isEmpty()) {
-        dest.list = src.value("list").toString();
-    }
-}
-void copyMain(const QJsonObject &src, AppBskyFeedThreadgate::Main &dest)
-{
-    if (!src.isEmpty()) {
-        dest.post = src.value("post").toString();
-        // array<union> allow
-        for (const auto &value : src.value("allow").toArray()) {
-            QString value_type = value.toObject().value("$type").toString();
-            if (value_type == QStringLiteral("app.bsky.feed.threadgate#mentionRule")) {
-                AppBskyFeedThreadgate::MentionRule child;
-                AppBskyFeedThreadgate::copyMentionRule(value.toObject(), child);
-                dest.allow_MentionRule.append(child);
-            }
-        }
-        for (const auto &value : src.value("allow").toArray()) {
-            QString value_type = value.toObject().value("$type").toString();
-            if (value_type == QStringLiteral("app.bsky.feed.threadgate#followingRule")) {
-                AppBskyFeedThreadgate::FollowingRule child;
-                AppBskyFeedThreadgate::copyFollowingRule(value.toObject(), child);
-                dest.allow_FollowingRule.append(child);
-            }
-        }
-        for (const auto &value : src.value("allow").toArray()) {
-            QString value_type = value.toObject().value("$type").toString();
-            if (value_type == QStringLiteral("app.bsky.feed.threadgate#listRule")) {
-                AppBskyFeedThreadgate::ListRule child;
-                AppBskyFeedThreadgate::copyListRule(value.toObject(), child);
-                dest.allow_ListRule.append(child);
-            }
-        }
-        dest.createdAt = src.value("createdAt").toString();
-        for (const auto &value : src.value("hiddenReplies").toArray()) {
-            dest.hiddenReplies.append(value.toString());
-        }
     }
 }
 }
@@ -2310,6 +2382,7 @@ void copyModEventLabel(const QJsonObject &src, ToolsOzoneModerationDefs::ModEven
         for (const auto &value : src.value("negateLabelVals").toArray()) {
             dest.negateLabelVals.append(value.toString());
         }
+        dest.durationInHours = src.value("durationInHours").toInt();
     }
 }
 void copyModEventAcknowledge(const QJsonObject &src,
@@ -2415,6 +2488,14 @@ void copyRecordEvent(const QJsonObject &src, ToolsOzoneModerationDefs::RecordEve
         dest.timestamp = src.value("timestamp").toString();
     }
 }
+void copyModEventPriorityScore(const QJsonObject &src,
+                               ToolsOzoneModerationDefs::ModEventPriorityScore &dest)
+{
+    if (!src.isEmpty()) {
+        dest.comment = src.value("comment").toString();
+        dest.score = src.value("score").toInt();
+    }
+}
 void copyModEventView(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventView &dest)
 {
     if (!src.isEmpty()) {
@@ -2518,6 +2599,12 @@ void copyModEventView(const QJsonObject &src, ToolsOzoneModerationDefs::ModEvent
             ToolsOzoneModerationDefs::copyRecordEvent(src.value("event").toObject(),
                                                       dest.event_RecordEvent);
         }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#modEventPriorityScore")) {
+            dest.event_type =
+                    ToolsOzoneModerationDefs::ModEventViewEventType::event_ModEventPriorityScore;
+            ToolsOzoneModerationDefs::copyModEventPriorityScore(src.value("event").toObject(),
+                                                                dest.event_ModEventPriorityScore);
+        }
         QString subject_type = src.value("subject").toObject().value("$type").toString();
         if (subject_type == QStringLiteral("com.atproto.admin.defs#repoRef")) {
             dest.subject_type = ToolsOzoneModerationDefs::ModEventViewSubjectType::
@@ -2571,6 +2658,29 @@ void copySubjectReviewState(const QJsonValue &src,
 {
     dest = src.toString();
 }
+void copyAccountStats(const QJsonObject &src, ToolsOzoneModerationDefs::AccountStats &dest)
+{
+    if (!src.isEmpty()) {
+        dest.reportCount = src.value("reportCount").toInt();
+        dest.appealCount = src.value("appealCount").toInt();
+        dest.suspendCount = src.value("suspendCount").toInt();
+        dest.escalateCount = src.value("escalateCount").toInt();
+        dest.takedownCount = src.value("takedownCount").toInt();
+    }
+}
+void copyRecordsStats(const QJsonObject &src, ToolsOzoneModerationDefs::RecordsStats &dest)
+{
+    if (!src.isEmpty()) {
+        dest.totalReports = src.value("totalReports").toInt();
+        dest.reportedCount = src.value("reportedCount").toInt();
+        dest.escalatedCount = src.value("escalatedCount").toInt();
+        dest.appealedCount = src.value("appealedCount").toInt();
+        dest.subjectCount = src.value("subjectCount").toInt();
+        dest.pendingCount = src.value("pendingCount").toInt();
+        dest.processedCount = src.value("processedCount").toInt();
+        dest.takendownCount = src.value("takendownCount").toInt();
+    }
+}
 void copySubjectStatusView(const QJsonObject &src,
                            ToolsOzoneModerationDefs::SubjectStatusView &dest)
 {
@@ -2610,6 +2720,7 @@ void copySubjectStatusView(const QJsonObject &src,
         dest.createdAt = src.value("createdAt").toString();
         copySubjectReviewState(src.value("reviewState"), dest.reviewState);
         dest.comment = src.value("comment").toString();
+        dest.priorityScore = src.value("priorityScore").toInt();
         dest.muteUntil = src.value("muteUntil").toString();
         dest.muteReportingUntil = src.value("muteReportingUntil").toString();
         dest.lastReviewedBy = src.value("lastReviewedBy").toString();
@@ -2622,6 +2733,8 @@ void copySubjectStatusView(const QJsonObject &src,
         for (const auto &value : src.value("tags").toArray()) {
             dest.tags.append(value.toString());
         }
+        copyAccountStats(src.value("accountStats").toObject(), dest.accountStats);
+        copyRecordsStats(src.value("recordsStats").toObject(), dest.recordsStats);
     }
 }
 void copyModeration(const QJsonObject &src, ToolsOzoneModerationDefs::Moderation &dest)
@@ -2825,6 +2938,12 @@ void copyModEventViewDetail(const QJsonObject &src,
                     ToolsOzoneModerationDefs::ModEventViewDetailEventType::event_RecordEvent;
             ToolsOzoneModerationDefs::copyRecordEvent(src.value("event").toObject(),
                                                       dest.event_RecordEvent);
+        }
+        if (event_type == QStringLiteral("tools.ozone.moderation.defs#modEventPriorityScore")) {
+            dest.event_type = ToolsOzoneModerationDefs::ModEventViewDetailEventType::
+                    event_ModEventPriorityScore;
+            ToolsOzoneModerationDefs::copyModEventPriorityScore(src.value("event").toObject(),
+                                                                dest.event_ModEventPriorityScore);
         }
         QString subject_type = src.value("subject").toObject().value("$type").toString();
         if (subject_type == QStringLiteral("tools.ozone.moderation.defs#repoView")) {

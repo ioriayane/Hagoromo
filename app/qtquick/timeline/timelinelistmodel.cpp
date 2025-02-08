@@ -152,6 +152,8 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
         return current.post.author.avatar;
     else if (role == AuthorLabelsRole)
         return getLabels(current.post.author.labels, true);
+    else if (role == AuthorLabelIconsRole)
+        return getLabelIcons(current.post.author.labels, true);
     else if (role == MutedRole)
         return current.post.author.viewer.muted;
     else if (role == RecordTextRole)
@@ -321,6 +323,8 @@ QVariant TimelineListModel::item(int row, TimelineListModelRoles role) const
 
     } else if (role == LabelsRole)
         return getLabels(current.post.labels);
+    else if (role == LabelIconsRole)
+        return getLabelIcons(current.post.labels);
     else if (role == LanguagesRole)
         return getLaunguages(current.post.record);
     else if (role == TagsRole)
@@ -834,6 +838,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[HandleRole] = "handle";
     roles[AvatarRole] = "avatar";
     roles[AuthorLabelsRole] = "authorLabels";
+    roles[AuthorLabelIconsRole] = "authorLabelIcons";
     roles[MutedRole] = "muted";
     roles[RecordTextRole] = "recordText";
     roles[RecordTextPlainRole] = "recordTextPlain";
@@ -931,6 +936,7 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
     roles[ThreadGateRulesRole] = "threadGateRules";
 
     roles[LabelsRole] = "labels";
+    roles[LabelIconsRole] = "labelIcons";
     roles[LanguagesRole] = "languages";
     roles[TagsRole] = "tags";
     roles[ViaRole] = "via";

@@ -411,6 +411,22 @@ AtpAbstractListModel::getLabels(const QList<AtProtocolType::ComAtprotoLabelDefs:
     return ret;
 }
 
+QStringList
+AtpAbstractListModel::getLabelIcons(const QList<AtProtocolType::ComAtprotoLabelDefs::Label> &labels,
+                                    bool exclude_no_unauth) const
+{
+    LabelProvider *provider = LabelProvider::getInstance();
+    LabelData label_data;
+    QStringList ret;
+    for (const auto &label : labels) {
+        if (exclude_no_unauth && label.val == "!no-unauthenticated")
+            continue;
+        label_data = provider->getLabel(label.src, label.val);
+        ret.append(label_data.avatar);
+    }
+    return ret;
+}
+
 QStringList AtpAbstractListModel::getLaunguages(const QVariant &record) const
 {
     return LexiconsTypeUnknown::fromQVariant<AppBskyFeedPost::Main>(record).langs;

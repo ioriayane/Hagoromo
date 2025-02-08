@@ -112,10 +112,23 @@ ColumnLayout {
             }
         }
         ProfileTabButton {
-            id: feedButton
+            id: videoButton
             Layout.fillWidth: true
             ButtonGroup.group: group
             value: 4
+            source: "../images/video.png"
+            iconColor: Material.color(Material.Blue)
+            onWidthChanged: {
+                if(checked){
+                    moveIndicator(videoButton)
+                }
+            }
+        }
+        ProfileTabButton {
+            id: feedButton
+            Layout.fillWidth: true
+            ButtonGroup.group: group
+            value: 5
             source: "../images/feed.png"
             onWidthChanged: {
                 if(checked){
@@ -127,7 +140,7 @@ ColumnLayout {
             id: listButton
             Layout.fillWidth: true
             ButtonGroup.group: group
-            value: 5
+            value: 6
             source: "../images/list.png"
             onWidthChanged: {
                 if(checked){
@@ -142,7 +155,7 @@ ColumnLayout {
             id: followButton
             Layout.fillWidth: true
             ButtonGroup.group: group
-            value: 6
+            value: 7
             contentItem: RowLayout {
                 spacing: 1
                 Item {
@@ -179,7 +192,7 @@ ColumnLayout {
             id: followedButton
             Layout.fillWidth: true
             ButtonGroup.group: group
-            value: 7
+            value: 8
             contentItem: RowLayout {
                 spacing: 1
                 Item {

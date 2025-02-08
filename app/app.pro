@@ -169,6 +169,7 @@ IMAGE_FILES += \
     qml/images/terminal.png \
     qml/images/thread.png \
     qml/images/translate.png \
+    qml/images/video.png \
     qml/images/visibility_off.png \
     qml/images/visibility_on.png
 

@@ -27,6 +27,7 @@ enum ThreadGateType : int {
 enum ThreadGateAllowType : int {
     Mentioned,
     Followed,
+    Follower,
     List,
 };
 struct ThreadGateAllow
@@ -189,8 +190,89 @@ struct Main
 // A URI with a content-hash fingerprint.
 }
 
+// app.bsky.feed.threadgate
+namespace AppBskyFeedThreadgate {
+enum class MainAllowType : int {
+    none,
+    allow_MentionRule,
+    allow_FollowerRule,
+    allow_FollowingRule,
+    allow_ListRule,
+};
+struct MentionRule
+{
+};
+struct FollowerRule
+{
+};
+struct FollowingRule
+{
+};
+struct ListRule
+{
+    QString list; // at-uri
+};
+struct Main
+{
+    QString post; // at-uri , Reference (AT-URI) to the post record.
+    // union start : allow
+    MainAllowType allow_type = MainAllowType::none;
+    QList<MentionRule> allow_MentionRule; // List of rules defining who can reply to this post. If
+                                          // value is an empty array, no one can reply. If value is
+                                          // undefined, anyone can reply.
+    QList<FollowerRule> allow_FollowerRule; // List of rules defining who can reply to this post. If
+                                            // value is an empty array, no one can reply. If value
+                                            // is undefined, anyone can reply.
+    QList<FollowingRule> allow_FollowingRule; // List of rules defining who can reply to this post.
+                                              // If value is an empty array, no one can reply. If
+                                              // value is undefined, anyone can reply.
+    QList<ListRule> allow_ListRule; // List of rules defining who can reply to this post. If value
+                                    // is an empty array, no one can reply. If value is undefined,
+                                    // anyone can reply.
+    // union end : allow
+    QString createdAt; // datetime
+    QList<QString> hiddenReplies; // List of hidden reply URIs.
+};
+}
+
+// app.bsky.feed.postgate
+namespace AppBskyFeedPostgate {
+enum class MainEmbeddingRulesType : int {
+    none,
+    embeddingRules_DisableRule,
+};
+struct DisableRule
+{
+};
+struct Main
+{
+    QString createdAt; // datetime
+    QString post; // at-uri , Reference (AT-URI) to the post record.
+    QList<QString> detachedEmbeddingUris; // List of AT-URIs embedding this post that the author has
+                                          // detached from.
+    // union start : embeddingRules
+    MainEmbeddingRulesType embeddingRules_type = MainEmbeddingRulesType::none;
+    QList<DisableRule>
+            embeddingRules_DisableRule; // List of rules defining who can embed this post. If value
+                                        // is an empty array or is undefined, no particular rules
+                                        // apply and anyone can embed.
+    // union end : embeddingRules
+};
+}
+
 // app.bsky.actor.defs
 namespace AppBskyActorDefs {
+enum class PostInteractionSettingsPrefThreadgateAllowRulesType : int {
+    none,
+    threadgateAllowRules_AppBskyFeedThreadgate_MentionRule,
+    threadgateAllowRules_AppBskyFeedThreadgate_FollowerRule,
+    threadgateAllowRules_AppBskyFeedThreadgate_FollowingRule,
+    threadgateAllowRules_AppBskyFeedThreadgate_ListRule,
+};
+enum class PostInteractionSettingsPrefPostgateEmbeddingRulesType : int {
+    none,
+    postgateEmbeddingRules_AppBskyFeedPostgate_DisableRule,
+};
 struct ProfileAssociatedChat
 {
     QString allowIncoming;
@@ -362,6 +444,56 @@ struct LabelersPref
 {
     QList<LabelerPrefItem> labelers;
 };
+struct PostInteractionSettingsPref
+{
+    // union start : threadgateAllowRules
+    PostInteractionSettingsPrefThreadgateAllowRulesType threadgateAllowRules_type =
+            PostInteractionSettingsPrefThreadgateAllowRulesType::none;
+    QList<AppBskyFeedThreadgate::MentionRule>
+            threadgateAllowRules_AppBskyFeedThreadgate_MentionRule; // Matches threadgate record.
+                                                                    // List of rules defining who
+                                                                    // can reply to this users
+                                                                    // posts. If value is an empty
+                                                                    // array, no one can reply. If
+                                                                    // value is undefined, anyone
+                                                                    // can reply.
+    QList<AppBskyFeedThreadgate::FollowerRule>
+            threadgateAllowRules_AppBskyFeedThreadgate_FollowerRule; // Matches threadgate record.
+                                                                     // List of rules defining who
+                                                                     // can reply to this users
+                                                                     // posts. If value is an empty
+                                                                     // array, no one can reply. If
+                                                                     // value is undefined, anyone
+                                                                     // can reply.
+    QList<AppBskyFeedThreadgate::FollowingRule>
+            threadgateAllowRules_AppBskyFeedThreadgate_FollowingRule; // Matches threadgate record.
+                                                                      // List of rules defining who
+                                                                      // can reply to this users
+                                                                      // posts. If value is an empty
+                                                                      // array, no one can reply. If
+                                                                      // value is undefined, anyone
+                                                                      // can reply.
+    QList<AppBskyFeedThreadgate::ListRule>
+            threadgateAllowRules_AppBskyFeedThreadgate_ListRule; // Matches threadgate record. List
+                                                                 // of rules defining who can reply
+                                                                 // to this users posts. If value is
+                                                                 // an empty array, no one can
+                                                                 // reply. If value is undefined,
+                                                                 // anyone can reply.
+    // union end : threadgateAllowRules
+    // union start : postgateEmbeddingRules
+    PostInteractionSettingsPrefPostgateEmbeddingRulesType postgateEmbeddingRules_type =
+            PostInteractionSettingsPrefPostgateEmbeddingRulesType::none;
+    QList<AppBskyFeedPostgate::DisableRule>
+            postgateEmbeddingRules_AppBskyFeedPostgate_DisableRule; // Matches postgate record. List
+                                                                    // of rules defining who can
+                                                                    // embed this users posts. If
+                                                                    // value is an empty array or is
+                                                                    // undefined, no particular
+                                                                    // rules apply and anyone can
+                                                                    // embed.
+    // union end : postgateEmbeddingRules
+};
 struct Preferences
 {
     // union start : preferences
@@ -377,6 +509,7 @@ struct Preferences
     QList<AppBskyActorDefs::HiddenPostsPref> hiddenPostsPref;
     QList<AppBskyActorDefs::BskyAppStatePref> bskyAppStatePref;
     QList<AppBskyActorDefs::LabelersPref> labelersPref;
+    QList<AppBskyActorDefs::PostInteractionSettingsPref> postInteractionSettingsPref;
     // union end : preferences
 };
 }
@@ -678,6 +811,10 @@ struct PostView
     QList<ComAtprotoLabelDefs::Label> labels;
     ThreadgateView threadgate;
 };
+struct ThreadContext
+{
+    QString rootAuthorLike; // at-uri
+};
 struct NotFoundPost
 {
     QString uri; // at-uri
@@ -740,6 +877,7 @@ struct ThreadViewPost
     QList<NotFoundPost> replies_NotFoundPost;
     QList<BlockedPost> replies_BlockedPost;
     // union end : replies
+    ThreadContext threadContext;
 };
 struct SkeletonReasonRepost
 {
@@ -997,66 +1135,12 @@ struct Main
 };
 }
 
-// app.bsky.feed.postgate
-namespace AppBskyFeedPostgate {
-enum class MainEmbeddingRulesType : int {
-    none,
-    embeddingRules_DisableRule,
-};
-struct DisableRule
-{
-};
-struct Main
-{
-    QString createdAt; // datetime
-    QString post; // at-uri , Reference (AT-URI) to the post record.
-    QList<QString> detachedEmbeddingUris; // List of AT-URIs embedding this post that the author has
-                                          // detached from.
-    // union start : embeddingRules
-    MainEmbeddingRulesType embeddingRules_type = MainEmbeddingRulesType::none;
-    QList<DisableRule> embeddingRules_DisableRule;
-    // union end : embeddingRules
-};
-}
-
 // app.bsky.feed.repost
 namespace AppBskyFeedRepost {
 struct Main
 {
     ComAtprotoRepoStrongRef::Main subject;
     QString createdAt; // datetime
-};
-}
-
-// app.bsky.feed.threadgate
-namespace AppBskyFeedThreadgate {
-enum class MainAllowType : int {
-    none,
-    allow_MentionRule,
-    allow_FollowingRule,
-    allow_ListRule,
-};
-struct MentionRule
-{
-};
-struct FollowingRule
-{
-};
-struct ListRule
-{
-    QString list; // at-uri
-};
-struct Main
-{
-    QString post; // at-uri , Reference (AT-URI) to the post record.
-    // union start : allow
-    MainAllowType allow_type = MainAllowType::none;
-    QList<MentionRule> allow_MentionRule;
-    QList<FollowingRule> allow_FollowingRule;
-    QList<ListRule> allow_ListRule;
-    // union end : allow
-    QString createdAt; // datetime
-    QList<QString> hiddenReplies; // List of hidden reply URIs.
 };
 }
 
@@ -1682,6 +1766,7 @@ enum class ModEventViewDetailEventType : int {
     event_AccountEvent,
     event_IdentityEvent,
     event_RecordEvent,
+    event_ModEventPriorityScore,
 };
 enum class ModEventViewDetailSubjectType : int {
     none,
@@ -1725,6 +1810,7 @@ enum class ModEventViewEventType : int {
     event_AccountEvent,
     event_IdentityEvent,
     event_RecordEvent,
+    event_ModEventPriorityScore,
 };
 enum class ModEventViewSubjectType : int {
     none,
@@ -1763,6 +1849,8 @@ struct ModEventLabel
     QString comment;
     QList<QString> createLabelVals;
     QList<QString> negateLabelVals;
+    int durationInHours = 0; // Indicates how long the label will remain on the subject. Only
+                             // applies on labels that are being added.
 };
 struct ModEventAcknowledge
 {
@@ -1837,6 +1925,11 @@ struct RecordEvent
     QString cid; // cid
     QString timestamp; // datetime
 };
+struct ModEventPriorityScore
+{
+    QString comment;
+    int score = 0;
+};
 struct ModEventView
 {
     int id = 0;
@@ -1860,6 +1953,7 @@ struct ModEventView
     AccountEvent event_AccountEvent;
     IdentityEvent event_IdentityEvent;
     RecordEvent event_RecordEvent;
+    ModEventPriorityScore event_ModEventPriorityScore;
     // union end : event
     // union start : subject
     ModEventViewSubjectType subject_type = ModEventViewSubjectType::none;
@@ -1890,6 +1984,25 @@ struct RecordHosting
     QString deletedAt; // datetime
 };
 typedef QString SubjectReviewState;
+struct AccountStats
+{
+    int reportCount = 0; // Total number of reports on the account
+    int appealCount = 0; // Total number of appeals against a moderation action on the account
+    int suspendCount = 0; // Number of times the account was suspended
+    int escalateCount = 0; // Number of times the account was escalated
+    int takedownCount = 0; // Number of times the account was taken down
+};
+struct RecordsStats
+{
+    int totalReports = 0; // Cumulative sum of the number of reports on the items in the set
+    int reportedCount = 0; // Number of items that were reported at least once
+    int escalatedCount = 0; // Number of items that were escalated at least once
+    int appealedCount = 0; // Number of items that were appealed at least once
+    int subjectCount = 0; // Total number of item in the set
+    int pendingCount = 0; // Number of item currently in "reviewOpen" or "reviewEscalated" state
+    int processedCount = 0; // Number of item currently in "reviewNone" or "reviewClosed" state
+    int takendownCount = 0; // Number of item currently taken down
+};
 struct SubjectStatusView
 {
     int id = 0;
@@ -1911,6 +2024,8 @@ struct SubjectStatusView
                        // event was emitted on the subject
     SubjectReviewState reviewState;
     QString comment; // Sticky comment on the subject.
+    int priorityScore = 0; // Numeric value representing the level of priority. Higher score means
+                           // higher priority.
     QString muteUntil; // datetime
     QString muteReportingUntil; // datetime
     QString lastReviewedBy; // did
@@ -1924,6 +2039,9 @@ struct SubjectStatusView
                            // appeal was resolved by moderators.
     QString suspendUntil; // datetime
     QList<QString> tags;
+    AccountStats accountStats; // Statistics related to the account subject
+    RecordsStats recordsStats; // Statistics related to the record subjects authored by the
+                               // subject's account
 };
 struct Moderation
 {
@@ -2007,6 +2125,7 @@ struct ModEventViewDetail
     AccountEvent event_AccountEvent;
     IdentityEvent event_IdentityEvent;
     RecordEvent event_RecordEvent;
+    ModEventPriorityScore event_ModEventPriorityScore;
     // union end : event
     // union start : subject
     ModEventViewDetailSubjectType subject_type = ModEventViewDetailSubjectType::none;

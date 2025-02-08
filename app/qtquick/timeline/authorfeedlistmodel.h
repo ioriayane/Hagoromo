@@ -19,6 +19,7 @@ public:
         PostsNoReplies,
         PostsWithMedia,
         PostsAndAuthorThreads,
+        PostsWithVideo,
     };
     Q_ENUM(AuthorFeedListModelFilterType)
 

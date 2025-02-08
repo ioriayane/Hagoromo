@@ -44,16 +44,20 @@ Dialog {
             group.buttons[i].checked = (group.buttons[i].value === initialType)
         }
         mentionedCheckBox.checked = false
+        followerCheckBox.checked = false
         followedCheckBox.checked = false
         for(i=0; i<initialOptions.length; i++){
             if(initialOptions[i] === "mentioned"){
                 mentionedCheckBox.checked = true
+            }else if(initialOptions[i] === "follower"){
+                followerCheckBox.checked = true
             }else if(initialOptions[i] === "followed"){
                 followedCheckBox.checked = true
             }else{
                 listsListModel.setInitialSelected(initialOptions[i])
             }
         }
+        console.log("SelectThreadGateDialog : " + account.uuid)
         listsListModel.clear()
         listsListModel.setAccount(account.uuid)
         listsListModel.getLatest()
@@ -67,6 +71,7 @@ Dialog {
         }
         choiceRadioButton.checked = false
         mentionedCheckBox.checked = false
+        followerCheckBox.checked = false
         followedCheckBox.checked = false
     }
 
@@ -134,6 +139,7 @@ Dialog {
                 property int checkedCount: {
                     var count = 0
                     count += mentionedCheckBox.checked ? 1 : 0
+                    count += followerCheckBox.checked ? 1 : 0
                     count += followedCheckBox.checked ? 1 : 0
                     count += listsListModel.checkedCount
                     return count
@@ -150,13 +156,23 @@ Dialog {
                     property string value: "mentioned"
                 }
                 CheckBox {
+                    id: followerCheckBox
+                    leftPadding: 15
+                    topPadding: AdjustedValues.s10
+                    bottomPadding: AdjustedValues.s10
+                    font.pointSize: AdjustedValues.f10
+                    enabled: checked || choiceLayout.checkedCount < 5
+                    text: qsTr("Follower")
+                    property string value: "follower"
+                }
+                CheckBox {
                     id: followedCheckBox
                     leftPadding: 15
                     topPadding: AdjustedValues.s10
                     bottomPadding: AdjustedValues.s10
                     font.pointSize: AdjustedValues.f10
                     enabled: checked || choiceLayout.checkedCount < 5
-                    text: qsTr("Followed users")
+                    text: qsTr("Following")
                     property string value: "followed"
                 }
 
@@ -254,6 +270,9 @@ Dialog {
                         var o_i = 0
                         if(mentionedCheckBox.checked){
                             selectThreadGateDialog.selectedOptions[o_i++] = "mentioned"
+                        }
+                        if(followerCheckBox.checked){
+                            selectThreadGateDialog.selectedOptions[o_i++] = "follower"
                         }
                         if(followedCheckBox.checked){
                             selectThreadGateDialog.selectedOptions[o_i++] = "followed"

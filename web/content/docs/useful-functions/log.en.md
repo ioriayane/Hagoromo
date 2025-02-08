@@ -70,4 +70,3 @@ Enter the search keyword in the edit box and press the `Search` button.
   - The content selected in the month list is displayed.
 
 *If there are self-reposts in the same month, there will be a discrepancy between the number of posts in the month list and the actual number of posts displayed.*
-

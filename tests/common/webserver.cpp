@@ -77,6 +77,7 @@ bool WebServer::handleRequest(const QHttpServerRequest &request, QHttpServerResp
                 mime_type = "application/vnd.ipld.car";
             }
             if (WebServer::readFile(path, data)) {
+                data.replace("{{SERVER_PORT_NO}}", QString::number(request.localPort()).toUtf8());
                 MAKE_RESPONDER.write(data, mime_type.toUtf8(),
                                      QHttpServerResponder::StatusCode::Ok);
             } else {
