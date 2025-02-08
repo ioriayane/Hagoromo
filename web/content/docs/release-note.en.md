@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2025
 
+### v0.46.0 - 2025/2/8
+
 - Add
   - Add a video tab to user's profile
 - Update
