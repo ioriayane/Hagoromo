@@ -88,6 +88,18 @@ void SystemTool::setFlicableWheelDeceleration(qreal deceleration)
     qputenv("QT_QUICK_FLICKABLE_WHEEL_DECELERATION", QString::number(deceleration).toLocal8Bit());
 }
 
+QStringList SystemTool::possibleRealtimeFeedServiceEndpoints() const
+{
+    return QStringList() << "wss://jetstream1.us-east.bsky.network"
+                         << "wss://jetstream2.us-east.bsky.network"
+                         << "wss://jetstream1.us-west.bsky.network"
+                         << "wss://jetstream2.us-west.bsky.network"
+#ifdef QT_DEBUG
+                         << "ws://localhost:19283"
+#endif
+            ;
+}
+
 QString SystemTool::applicationVersion() const
 {
     return QCoreApplication::applicationVersion();
