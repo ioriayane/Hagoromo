@@ -42,6 +42,8 @@ void copyNux(const QJsonObject &src, AppBskyActorDefs::Nux &dest);
 void copyBskyAppStatePref(const QJsonObject &src, AppBskyActorDefs::BskyAppStatePref &dest);
 void copyLabelerPrefItem(const QJsonObject &src, AppBskyActorDefs::LabelerPrefItem &dest);
 void copyLabelersPref(const QJsonObject &src, AppBskyActorDefs::LabelersPref &dest);
+void copyPostInteractionSettingsPref(const QJsonObject &src,
+                                     AppBskyActorDefs::PostInteractionSettingsPref &dest);
 void copyPreferences(const QJsonArray &src, AppBskyActorDefs::Preferences &dest);
 }
 // app.bsky.graph.defs
@@ -70,6 +72,19 @@ void copyLabelValueDefinition(const QJsonObject &src,
 // com.atproto.repo.strongRef
 namespace ComAtprotoRepoStrongRef {
 void copyMain(const QJsonObject &src, ComAtprotoRepoStrongRef::Main &dest);
+}
+// app.bsky.feed.threadgate
+namespace AppBskyFeedThreadgate {
+void copyMentionRule(const QJsonObject &src, AppBskyFeedThreadgate::MentionRule &dest);
+void copyFollowerRule(const QJsonObject &src, AppBskyFeedThreadgate::FollowerRule &dest);
+void copyFollowingRule(const QJsonObject &src, AppBskyFeedThreadgate::FollowingRule &dest);
+void copyListRule(const QJsonObject &src, AppBskyFeedThreadgate::ListRule &dest);
+void copyMain(const QJsonObject &src, AppBskyFeedThreadgate::Main &dest);
+}
+// app.bsky.feed.postgate
+namespace AppBskyFeedPostgate {
+void copyDisableRule(const QJsonObject &src, AppBskyFeedPostgate::DisableRule &dest);
+void copyMain(const QJsonObject &src, AppBskyFeedPostgate::Main &dest);
 }
 // app.bsky.actor.profile
 namespace AppBskyActorProfile {
@@ -173,21 +188,9 @@ void copyEntity(const QJsonObject &src, AppBskyFeedPost::Entity &dest);
 void copyReplyRef(const QJsonObject &src, AppBskyFeedPost::ReplyRef &dest);
 void copyMain(const QJsonObject &src, AppBskyFeedPost::Main &dest);
 }
-// app.bsky.feed.postgate
-namespace AppBskyFeedPostgate {
-void copyDisableRule(const QJsonObject &src, AppBskyFeedPostgate::DisableRule &dest);
-void copyMain(const QJsonObject &src, AppBskyFeedPostgate::Main &dest);
-}
 // app.bsky.feed.repost
 namespace AppBskyFeedRepost {
 void copyMain(const QJsonObject &src, AppBskyFeedRepost::Main &dest);
-}
-// app.bsky.feed.threadgate
-namespace AppBskyFeedThreadgate {
-void copyMentionRule(const QJsonObject &src, AppBskyFeedThreadgate::MentionRule &dest);
-void copyFollowingRule(const QJsonObject &src, AppBskyFeedThreadgate::FollowingRule &dest);
-void copyListRule(const QJsonObject &src, AppBskyFeedThreadgate::ListRule &dest);
-void copyMain(const QJsonObject &src, AppBskyFeedThreadgate::Main &dest);
 }
 // app.bsky.graph.block
 namespace AppBskyGraphBlock {
@@ -378,6 +381,8 @@ void copyModEventTag(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventT
 void copyAccountEvent(const QJsonObject &src, ToolsOzoneModerationDefs::AccountEvent &dest);
 void copyIdentityEvent(const QJsonObject &src, ToolsOzoneModerationDefs::IdentityEvent &dest);
 void copyRecordEvent(const QJsonObject &src, ToolsOzoneModerationDefs::RecordEvent &dest);
+void copyModEventPriorityScore(const QJsonObject &src,
+                               ToolsOzoneModerationDefs::ModEventPriorityScore &dest);
 void copyModEventView(const QJsonObject &src, ToolsOzoneModerationDefs::ModEventView &dest);
 void copyAccountHosting(const QJsonObject &src, ToolsOzoneModerationDefs::AccountHosting &dest);
 void copyRecordHosting(const QJsonObject &src, ToolsOzoneModerationDefs::RecordHosting &dest);
