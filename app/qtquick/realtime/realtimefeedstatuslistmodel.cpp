@@ -5,6 +5,10 @@ using namespace RealtimeFeed;
 RealtimeFeedStatusListModel::RealtimeFeedStatusListModel(QObject *parent)
     : QAbstractListModel { parent }, m_theme(0)
 {
+    FirehoseReceiver *receiver = FirehoseReceiver::getInstance();
+
+    appendStatusData(QStringLiteral("__endpoint"), QStringLiteral(""), receiver->serviceEndpoint(),
+                     QString(), QColor());
     appendStatusData(QStringLiteral("__status"), QStringLiteral("Status"), QStringLiteral(""),
                      QString(), QColor());
     appendStatusData(QStringLiteral("__difference"), QStringLiteral("Difference"),
@@ -28,11 +32,12 @@ RealtimeFeedStatusListModel::RealtimeFeedStatusListModel(QObject *parent)
 
     updateColorByTheme();
 
-    FirehoseReceiver *receiver = FirehoseReceiver::getInstance();
     connect(receiver, &FirehoseReceiver::statusChanged, this,
             &RealtimeFeedStatusListModel::receiverStatusChanged);
     connect(receiver, &FirehoseReceiver::analysisChanged, this,
             &RealtimeFeedStatusListModel::receiverAnalysisChanged);
+    connect(receiver, &FirehoseReceiver::serviceEndpointChanged, this,
+            &RealtimeFeedStatusListModel::serviceEndpointChanged);
 
     receiverStatusChanged(receiver->status());
 }
@@ -164,6 +169,17 @@ void RealtimeFeedStatusListModel::receiverAnalysisChanged()
             endInsertRows();
         }
     }
+}
+
+void RealtimeFeedStatusListModel::serviceEndpointChanged(const QString &endpoint)
+{
+    const int row = m_feedStatusIds.indexOf("__endpoint");
+    if (!m_feedStatusData.contains("__endpoint") || row < 0)
+        return;
+
+    m_feedStatusData[""].value = endpoint;
+
+    emit dataChanged(index(row), index(row), QVector<int>() << ValueRole);
 }
 
 QHash<int, QByteArray> RealtimeFeedStatusListModel::roleNames() const

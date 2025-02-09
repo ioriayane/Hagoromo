@@ -72,6 +72,7 @@ signals:
     void statusChanged(FirehoseReceiverStatus newStatus);
     void analysisChanged();
     void judgeSelectionAndReaction(const QJsonObject &object);
+    void serviceEndpointChanged(const QString &endpoint);
 
 private:
     void analizeReceivingData(const QJsonObject &json, const qsizetype size);

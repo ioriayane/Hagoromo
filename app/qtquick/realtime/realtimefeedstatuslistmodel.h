@@ -49,6 +49,7 @@ public:
 public slots:
     void receiverStatusChanged(RealtimeFeed::FirehoseReceiver::FirehoseReceiverStatus newStatus);
     void receiverAnalysisChanged();
+    void serviceEndpointChanged(const QString &endpoint);
 
 signals:
     void themeChanged();

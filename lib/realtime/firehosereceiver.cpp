@@ -269,6 +269,8 @@ void FirehoseReceiver::setServiceEndpoint(const QString &newServiceEndpoint)
     if (m_serviceEndpoint == newServiceEndpoint)
         return;
     m_serviceEndpoint = newServiceEndpoint;
+
+    emit serviceEndpointChanged(m_serviceEndpoint);
 }
 
 void FirehoseReceiver::changeServiceEndpoint(const QString &newServiceEndpoint)
@@ -276,6 +278,8 @@ void FirehoseReceiver::changeServiceEndpoint(const QString &newServiceEndpoint)
     if (m_serviceEndpoint == newServiceEndpoint)
         return;
     m_serviceEndpoint = newServiceEndpoint;
+
+    emit serviceEndpointChanged(m_serviceEndpoint);
 
     if (status() == FirehoseReceiver::FirehoseReceiverStatus::Connected) {
         // 今現在、接続している場合のみ停止→開始をする
