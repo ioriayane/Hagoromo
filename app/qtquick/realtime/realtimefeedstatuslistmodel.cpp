@@ -7,8 +7,6 @@ RealtimeFeedStatusListModel::RealtimeFeedStatusListModel(QObject *parent)
 {
     FirehoseReceiver *receiver = FirehoseReceiver::getInstance();
 
-    appendStatusData(QStringLiteral("__endpoint"), QStringLiteral(""), receiver->serviceEndpoint(),
-                     QString(), QColor());
     appendStatusData(QStringLiteral("__status"), QStringLiteral("Status"), QStringLiteral(""),
                      QString(), QColor());
     appendStatusData(QStringLiteral("__difference"), QStringLiteral("Difference"),
@@ -37,8 +35,9 @@ RealtimeFeedStatusListModel::RealtimeFeedStatusListModel(QObject *parent)
     connect(receiver, &FirehoseReceiver::analysisChanged, this,
             &RealtimeFeedStatusListModel::receiverAnalysisChanged);
     connect(receiver, &FirehoseReceiver::serviceEndpointChanged, this,
-            &RealtimeFeedStatusListModel::serviceEndpointChanged);
+            &RealtimeFeedStatusListModel::serviceEndpointChangedInFirehose);
 
+    setServiceEndpoint(receiver->serviceEndpoint());
     receiverStatusChanged(receiver->status());
 }
 
@@ -171,15 +170,9 @@ void RealtimeFeedStatusListModel::receiverAnalysisChanged()
     }
 }
 
-void RealtimeFeedStatusListModel::serviceEndpointChanged(const QString &endpoint)
+void RealtimeFeedStatusListModel::serviceEndpointChangedInFirehose(const QString &endpoint)
 {
-    const int row = m_feedStatusIds.indexOf("__endpoint");
-    if (!m_feedStatusData.contains("__endpoint") || row < 0)
-        return;
-
-    m_feedStatusData[""].value = endpoint;
-
-    emit dataChanged(index(row), index(row), QVector<int>() << ValueRole);
+    setServiceEndpoint(endpoint);
 }
 
 QHash<int, QByteArray> RealtimeFeedStatusListModel::roleNames() const
@@ -242,4 +235,17 @@ void RealtimeFeedStatusListModel::setTheme(int newTheme)
     emit themeChanged();
 
     updateColorByTheme();
+}
+
+QString RealtimeFeedStatusListModel::serviceEndpoint() const
+{
+    return m_serviceEndpoint;
+}
+
+void RealtimeFeedStatusListModel::setServiceEndpoint(const QString &newServiceEndpoint)
+{
+    if (m_serviceEndpoint == newServiceEndpoint)
+        return;
+    m_serviceEndpoint = newServiceEndpoint;
+    emit serviceEndpointChanged();
 }

@@ -90,7 +90,9 @@ void setRealtimeFeedEndpoint(const QSettings &settings)
     RealtimeFeed::FirehoseReceiver *receiver = RealtimeFeed::FirehoseReceiver::getInstance();
     if (receiver == nullptr)
         return;
-    QString endpoint = settings.value("realtimeServiceEndpoint").toString();
+    QString endpoint =
+            settings.value("realtimeServiceEndpoint", "wss://jetstream1.us-west.bsky.network")
+                    .toString();
     qDebug() << "Load realtime feed endpoint :" << endpoint;
     receiver->setServiceEndpoint(endpoint);
 }

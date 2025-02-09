@@ -281,7 +281,8 @@ void FirehoseReceiver::changeServiceEndpoint(const QString &newServiceEndpoint)
 
     emit serviceEndpointChanged(m_serviceEndpoint);
 
-    if (status() == FirehoseReceiver::FirehoseReceiverStatus::Connected) {
+    if (status() == FirehoseReceiver::FirehoseReceiverStatus::Connected
+        || status() == FirehoseReceiver::FirehoseReceiverStatus::Connecting) {
         // 今現在、接続している場合のみ停止→開始をする
         // そのためstate()の確認のあとにstop()をする必要がある
         qDebug().noquote() << "Change firehose endpoint and restart:" << m_serviceEndpoint;

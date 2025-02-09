@@ -17,51 +17,58 @@ Frame {
         border.color: Material.frameColor
         color: Material.backgroundColor
     }
-
-    RowLayout {
-        spacing: 10
-        RealtimeFeedStatusGraph {
-            Layout.preferredWidth: paramLayout.implicitWidth * 1.5
-            Layout.preferredHeight: paramLayout.implicitHeight
-            visible: graphControlLabel.checked
-            theme: realtimeFeedStatusFrame.theme
+    ColumnLayout {
+        Label {
+            Layout.alignment: Qt.AlignRight
+            font.pointSize: AdjustedValues.f8
+            text: realtimeFeedStatusListModel.serviceEndpoint.replace("wss://", "")
         }
-        ColumnLayout {
-            id: paramLayout
-            Repeater {
-                model: RealtimeFeedStatusListModel {
-                    theme: realtimeFeedStatusFrame.theme
-                }
-                RowLayout {
-                    Label {
-                        font.pointSize: AdjustedValues.f8
-                        text: model.name
-                        color: model.useColor ? model.color : Material.foreground
-                    }
-                    Label {
-                        Layout.minimumWidth: 50 * AdjustedValues.ratio
-                        Layout.fillWidth: true
-                        horizontalAlignment: Text.AlignRight
-                        font.pointSize: AdjustedValues.f8
-                        text: model.value
-                    }
-                    Label {
-                        font.pointSize: AdjustedValues.f6
-                        text: model.unit
-                    }
-                }
+        RowLayout {
+            spacing: 10
+            RealtimeFeedStatusGraph {
+                Layout.preferredWidth: paramLayout.implicitWidth * 1.5
+                Layout.preferredHeight: paramLayout.implicitHeight
+                visible: graphControlLabel.checked
+                theme: realtimeFeedStatusFrame.theme
             }
-            Label {
-                id: graphControlLabel
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                font.pointSize: AdjustedValues.f8
-                text: (checked ? "■" : "□")+"History"
-                color: Material.color(Material.Blue)
-                property bool checked: false
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: graphControlLabel.checked = !graphControlLabel.checked
+            ColumnLayout {
+                id: paramLayout
+                Repeater {
+                    model: RealtimeFeedStatusListModel {
+                        id: realtimeFeedStatusListModel
+                        theme: realtimeFeedStatusFrame.theme
+                    }
+                    RowLayout {
+                        Label {
+                            font.pointSize: AdjustedValues.f8
+                            text: model.name
+                            color: model.useColor ? model.color : Material.foreground
+                        }
+                        Label {
+                            Layout.minimumWidth: 50 * AdjustedValues.ratio
+                            Layout.fillWidth: true
+                            horizontalAlignment: Text.AlignRight
+                            font.pointSize: AdjustedValues.f8
+                            text: model.value
+                        }
+                        Label {
+                            font.pointSize: AdjustedValues.f6
+                            text: model.unit
+                        }
+                    }
+                }
+                Label {
+                    id: graphControlLabel
+                    Layout.fillWidth: true
+                    horizontalAlignment: Text.AlignRight
+                    font.pointSize: AdjustedValues.f8
+                    text: (checked ? "■" : "□")+"History"
+                    color: Material.color(Material.Blue)
+                    property bool checked: false
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: graphControlLabel.checked = !graphControlLabel.checked
+                    }
                 }
             }
         }
