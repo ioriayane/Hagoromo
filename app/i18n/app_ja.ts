@@ -3333,7 +3333,7 @@ Why should this message be reviewed?</source>
     <message>
         <location filename="../qml/dialogs/SettingDialog.qml" line="366"/>
         <source>Endpoint of Realtime feed</source>
-        <translation>リアルタイムフィードのエンドポイント</translation>
+        <translation>リアルタイムフィードの接続先</translation>
     </message>
     <message>
         <location filename="../qml/dialogs/SettingDialog.qml" line="393"/>
