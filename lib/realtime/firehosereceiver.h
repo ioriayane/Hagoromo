@@ -30,6 +30,10 @@ public:
     enum FirehoseReceiverStatus {
         Disconnected,
         Connected,
+        Connecting,
+        HostLookup,
+        Bound,
+        Closing,
         Error,
     };
 
@@ -53,6 +57,7 @@ public:
 
     QString serviceEndpoint() const;
     void setServiceEndpoint(const QString &newServiceEndpoint);
+    void changeServiceEndpoint(const QString &newServiceEndpoint);
 
     FirehoseReceiverStatus status() const;
     void setStatus(FirehoseReceiverStatus newStatus);

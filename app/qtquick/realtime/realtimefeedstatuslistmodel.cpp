@@ -117,13 +117,30 @@ void RealtimeFeedStatusListModel::receiverStatusChanged(
         return;
 
     m_feedStatusData["__status"].value = "";
-    if (newStatus == FirehoseReceiver::FirehoseReceiverStatus::Connected) {
+    switch (newStatus) {
+    case FirehoseReceiver::FirehoseReceiverStatus::Connected:
         m_feedStatusData["__status"].value = "Connected";
-    } else if (newStatus == FirehoseReceiver::FirehoseReceiverStatus::Disconnected) {
+        break;
+    case FirehoseReceiver::FirehoseReceiverStatus::Disconnected:
         m_feedStatusData["__status"].value = "Disconnected";
-    } else {
+        break;
+    case FirehoseReceiver::FirehoseReceiverStatus::Connecting:
+        m_feedStatusData["__status"].value = "Connecting";
+        break;
+    case FirehoseReceiver::FirehoseReceiverStatus::HostLookup:
+        m_feedStatusData["__status"].value = "Looking up host";
+        break;
+    case FirehoseReceiver::FirehoseReceiverStatus::Bound:
+        m_feedStatusData["__status"].value = "Bound";
+        break;
+    case FirehoseReceiver::FirehoseReceiverStatus::Closing:
+        m_feedStatusData["__status"].value = "Closing";
+        break;
+    default:
         m_feedStatusData["__status"].value = "Error";
+        break;
     }
+
     emit dataChanged(index(row), index(row), QVector<int>() << ValueRole);
 }
 

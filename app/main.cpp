@@ -64,6 +64,7 @@
 
 #include "tools/encryption.h"
 #include "tools/translatorchanger.h"
+#include "realtime/firehosereceiver.h"
 
 void setAppFont(QGuiApplication &app, QSettings &settings)
 {
@@ -82,6 +83,16 @@ void setAppFont(QGuiApplication &app, QSettings &settings)
             settings.setValue("fontFamily", family);
         }
     }
+}
+
+void setRealtimeFeedEndpoint(const QSettings &settings)
+{
+    RealtimeFeed::FirehoseReceiver *receiver = RealtimeFeed::FirehoseReceiver::getInstance();
+    if (receiver == nullptr)
+        return;
+    QString endpoint = settings.value("realtimeServiceEndpoint").toString();
+    qDebug() << "Load realtime feed endpoint :" << endpoint;
+    receiver->setServiceEndpoint(endpoint);
 }
 
 int main(int argc, char *argv[])
@@ -209,6 +220,7 @@ int main(int argc, char *argv[])
 
     QSettings settings;
     setAppFont(app, settings);
+    setRealtimeFeedEndpoint(settings);
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
 #else
     SystemTool::setFlicableWheelDeceleration(settings.value("wheelDeceleration", 10000).toInt());

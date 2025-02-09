@@ -15,6 +15,9 @@
 #include <QQuickItem>
 #include <QPainter>
 #include "atprotocol/lexicons_func_unknown.h"
+#include "realtime/firehosereceiver.h"
+
+using namespace RealtimeFeed;
 
 SystemTool::SystemTool(QObject *parent) : QObject { parent }
 {
@@ -98,6 +101,14 @@ QStringList SystemTool::possibleRealtimeFeedServiceEndpoints() const
                          << "ws://localhost:19283"
 #endif
             ;
+}
+
+void SystemTool::changeRealtimeFeedServiceEndpoint(const QString &endpoint)
+{
+    FirehoseReceiver *receiver = FirehoseReceiver::getInstance();
+    if (receiver == nullptr)
+        return;
+    receiver->changeServiceEndpoint(endpoint);
 }
 
 QString SystemTool::applicationVersion() const

@@ -59,6 +59,31 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
         emit receivingChanged(false);
         emit disconnectFromService();
     });
+    connect(&m_client, &ComAtprotoSyncSubscribeReposEx::socketStateChanged,
+            [this](QAbstractSocket::SocketState state) {
+                switch (state) {
+                case QAbstractSocket::SocketState::ConnectedState:
+                    setStatus(FirehoseReceiverStatus::Connected);
+                    break;
+                case QAbstractSocket::SocketState::UnconnectedState:
+                    setStatus(FirehoseReceiverStatus::Disconnected);
+                    break;
+                case QAbstractSocket::SocketState::ConnectingState:
+                    setStatus(FirehoseReceiverStatus::Connecting);
+                    break;
+                case QAbstractSocket::SocketState::HostLookupState:
+                    setStatus(FirehoseReceiverStatus::HostLookup);
+                    break;
+                case QAbstractSocket::SocketState::BoundState:
+                    setStatus(FirehoseReceiverStatus::Bound);
+                    break;
+                case QAbstractSocket::SocketState::ClosingState:
+                    setStatus(FirehoseReceiverStatus::Closing);
+                    break;
+                default:
+                    break;
+                }
+            });
 
     connect(&m_wdgTimer, &QTimer::timeout, [this]() {
         if (m_wdgCounter < 12) {
@@ -241,7 +266,27 @@ QString FirehoseReceiver::serviceEndpoint() const
 
 void FirehoseReceiver::setServiceEndpoint(const QString &newServiceEndpoint)
 {
+    if (m_serviceEndpoint == newServiceEndpoint)
+        return;
     m_serviceEndpoint = newServiceEndpoint;
+}
+
+void FirehoseReceiver::changeServiceEndpoint(const QString &newServiceEndpoint)
+{
+    if (m_serviceEndpoint == newServiceEndpoint)
+        return;
+    m_serviceEndpoint = newServiceEndpoint;
+
+    if (status() == FirehoseReceiver::FirehoseReceiverStatus::Connected) {
+        // 今現在、接続している場合のみ停止→開始をする
+        // そのためstate()の確認のあとにstop()をする必要がある
+        qDebug().noquote() << "Change firehose endpoint and restart:" << m_serviceEndpoint;
+        stop();
+        start();
+    } else {
+        qDebug().noquote() << "Change firehose endpoint:" << m_serviceEndpoint;
+        stop();
+    }
 }
 
 FirehoseReceiver::FirehoseReceiverStatus FirehoseReceiver::status() const

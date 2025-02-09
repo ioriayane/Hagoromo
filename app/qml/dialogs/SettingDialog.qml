@@ -839,6 +839,7 @@ Dialog {
                     settings.displayOfPosts = displayOfPostsGroup.checkedButton.value
                     settings.updateSeenNotification = updateSeenNotificationGroup.checkedButton.value
                     settings.realtimeServiceEndpoint = realtimeServiceEndpointComboBox.currentValue
+                    systemTool.changeRealtimeFeedServiceEndpoint(settings.realtimeServiceEndpoint)
                     // Layout
                     settings.rowCount = rowCountComboBox.currentValue
                     settings.rowHeightRatio2 = rowHeightRatioSlider.value
