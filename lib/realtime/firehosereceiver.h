@@ -78,6 +78,8 @@ private:
     void analizeReceivingData(const QJsonObject &json, const qsizetype size);
     void appendThreadSelector(AbstractPostSelector *selector);
     void removeThreadSelector(QObject *parent);
+    void updateTimeOfLastReceivedData(const QJsonObject &json);
+    QString getCursorTime() const;
 
     QHash<QObject *, QPointer<AbstractPostSelector>> m_selectorHash;
     QHash<QObject *, QPointer<QThread>> m_selectorThreadHash;
@@ -94,6 +96,7 @@ private:
     QHash<QString, int> m_nsidsCount; // QHash<nsid, count>
     QHash<QString, QString> m_nsidsReceivePerSecond; // QHash<nsid, receive/sec>
     qsizetype m_receivedDataSize; // byte
+    qint64 m_timeOfReceivedData; // 最終受信時刻
 };
 
 }
