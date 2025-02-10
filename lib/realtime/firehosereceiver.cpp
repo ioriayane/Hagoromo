@@ -86,17 +86,20 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
             });
 
     connect(&m_wdgTimer, &QTimer::timeout, [this]() {
-        if (m_wdgCounter < 12) {
+        if (m_wdgCounter < 6) {
             m_wdgCounter++;
         } else {
             qDebug().noquote() << "FirehoseTimeout : Nothing was received via Websocket within the "
                                   "specified time."
                                << m_wdgCounter;
-            setStatus(FirehoseReceiverStatus::Error);
-            emit errorOccured("FirehoseTimeout",
-                              "Nothing was received via Websocket within the specified time.");
-            emit receivingChanged(false);
-            stop();
+            if (status() == FirehoseReceiver::FirehoseReceiverStatus::Connected
+                || status() == FirehoseReceiver::FirehoseReceiverStatus::Connecting) {
+                qDebug().noquote() << "Timeout, stop and start : " << status();
+                stop();
+            } else {
+                qDebug().noquote() << "Timeout, start : " << status();
+            }
+            start();
         }
     });
 
