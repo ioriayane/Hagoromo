@@ -64,6 +64,7 @@
 
 #include "tools/encryption.h"
 #include "tools/translatorchanger.h"
+#include "realtime/firehosereceiver.h"
 
 void setAppFont(QGuiApplication &app, QSettings &settings)
 {
@@ -82,6 +83,20 @@ void setAppFont(QGuiApplication &app, QSettings &settings)
             settings.setValue("fontFamily", family);
         }
     }
+}
+
+void setRealtimeFeedEndpoint(QSettings &settings)
+{
+    RealtimeFeed::FirehoseReceiver *receiver = RealtimeFeed::FirehoseReceiver::getInstance();
+    if (receiver == nullptr)
+        return;
+    if (!settings.contains("realtimeServiceEndpoint")) {
+        // キーが無い状態で起動するとなぜか翻訳のキーが消えてしまうので、ここで設定する
+        settings.setValue("realtimeServiceEndpoint", "wss://jetstream1.us-west.bsky.network");
+    }
+    QString endpoint = settings.value("realtimeServiceEndpoint").toString();
+    qDebug() << "Load realtime feed endpoint :" << endpoint;
+    receiver->setServiceEndpoint(endpoint);
 }
 
 int main(int argc, char *argv[])
@@ -209,6 +224,7 @@ int main(int argc, char *argv[])
 
     QSettings settings;
     setAppFont(app, settings);
+    setRealtimeFeedEndpoint(settings);
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
 #else
     SystemTool::setFlicableWheelDeceleration(settings.value("wheelDeceleration", 10000).toInt());

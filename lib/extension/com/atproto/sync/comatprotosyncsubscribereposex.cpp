@@ -54,9 +54,11 @@ ComAtprotoSyncSubscribeReposEx::ComAtprotoSyncSubscribeReposEx(QObject *parent)
                 QMetaEnum metaEnum = mo.enumerator(mo.indexOfEnumerator("SocketError"));
                 emit errorOccured("SocketError", QString(metaEnum.valueToKey(error)));
             });
-    connect(&m_webSocket, &QWebSocket::stateChanged, this, [](QAbstractSocket::SocketState state) {
-        qDebug().noquote() << "StateChanged:" << state;
-    });
+    connect(&m_webSocket, &QWebSocket::stateChanged, this,
+            [this](QAbstractSocket::SocketState state) {
+                qDebug().noquote() << "StateChanged:" << state;
+                emit socketStateChanged(state);
+            });
 }
 
 void ComAtprotoSyncSubscribeReposEx::open(const QUrl &url, SubScribeMode mode)

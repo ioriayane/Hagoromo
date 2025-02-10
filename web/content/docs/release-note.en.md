@@ -8,6 +8,9 @@ description: This is a multi-column Bluesky client.
 
 ## 2025
 
+- Add
+  - Add a function that allows you to select the destination of the real-time feed
+
 ### v0.46.0 - 2025/2/8
 
 - Add

@@ -28,6 +28,7 @@ signals:
     void received(const QString &type, const QJsonObject &json, const qsizetype size);
     void connectedToService();
     void disconnectFromService();
+    void socketStateChanged(QAbstractSocket::SocketState state);
 
 public slots:
     void onConnected();

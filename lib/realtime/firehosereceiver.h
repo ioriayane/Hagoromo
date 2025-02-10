@@ -30,6 +30,10 @@ public:
     enum FirehoseReceiverStatus {
         Disconnected,
         Connected,
+        Connecting,
+        HostLookup,
+        Bound,
+        Closing,
         Error,
     };
 
@@ -53,6 +57,7 @@ public:
 
     QString serviceEndpoint() const;
     void setServiceEndpoint(const QString &newServiceEndpoint);
+    void changeServiceEndpoint(const QString &newServiceEndpoint);
 
     FirehoseReceiverStatus status() const;
     void setStatus(FirehoseReceiverStatus newStatus);
@@ -67,6 +72,7 @@ signals:
     void statusChanged(FirehoseReceiverStatus newStatus);
     void analysisChanged();
     void judgeSelectionAndReaction(const QJsonObject &object);
+    void serviceEndpointChanged(const QString &endpoint);
 
 private:
     void analizeReceivingData(const QJsonObject &json, const qsizetype size);
