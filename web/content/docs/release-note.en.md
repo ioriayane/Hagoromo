@@ -10,6 +10,8 @@ description: This is a multi-column Bluesky client.
 
 - Add
   - Add a function that allows you to select the destination of the real-time feed
+- Update
+  - Change so that the real-time feed will automatically reconnect when it disconnects
 
 ### v0.46.0 - 2025/2/8
 
