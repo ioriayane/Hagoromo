@@ -201,9 +201,11 @@ ColumnLayout {
             if(top){
                 bannerImage.Layout.preferredHeight = bannerImage.isReady ? 80 : 0
                 descriptionLabel.Layout.preferredHeight = descriptionLabel.contentHeight
+                knownFollowersInfo.visible = true
             }else{
                 bannerImage.Layout.preferredHeight = 0
                 descriptionLabel.Layout.preferredHeight = 0
+                knownFollowersInfo.visible = false
             }
         }
 
@@ -489,6 +491,15 @@ ColumnLayout {
                     }
                 }
             }
+        }
+
+        KnownFollowersInfo {
+            id: knownFollowersInfo
+            Layout.preferredWidth: profileView.width
+            visible: userProfile.knownFollowerAvators.length > 0
+            model: userProfile.knownFollowerAvators
+            knownName: userProfile.knownFollowers.length > 0 ? userProfile.knownFollowers[0] : ""
+            othersCount: userProfile.knownFollowersCount - 1
         }
 
         IconLabelFrame {
