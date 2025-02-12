@@ -20,6 +20,7 @@
 #include "qtquick/timeline/quotedpostlistmodel.h"
 #include "qtquick/profile/followslistmodel.h"
 #include "qtquick/profile/followerslistmodel.h"
+#include "qtquick/profile/knownfollowerslistmodel.h"
 #include "qtquick/profile/blockslistmodel.h"
 #include "qtquick/profile/muteslistmodel.h"
 #include "qtquick/timeline/searchpostlistmodel.h"
@@ -139,6 +140,8 @@ int main(int argc, char *argv[])
                                       "FollowsListModel");
     qmlRegisterType<FollowersListModel>("tech.relog.hagoromo.followerslistmodel", 1, 0,
                                         "FollowersListModel");
+    qmlRegisterType<KnownFollowersListModel>("tech.relog.hagoromo.knownfollowerslistmodel", 1, 0,
+                                             "KnownFollowersListModel");
     qmlRegisterType<BlocksListModel>("tech.relog.hagoromo.blockslistmodel", 1, 0,
                                      "BlocksListModel");
     qmlRegisterType<MutesListModel>("tech.relog.hagoromo.muteslistmodel", 1, 0, "MutesListModel");

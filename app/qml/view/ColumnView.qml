@@ -11,6 +11,7 @@ import tech.relog.hagoromo.searchprofilelistmodel 1.0
 import tech.relog.hagoromo.customfeedlistmodel 1.0
 import tech.relog.hagoromo.authorfeedlistmodel 1.0
 import tech.relog.hagoromo.anyprofilelistmodel 1.0
+import tech.relog.hagoromo.knownfollowerslistmodel 1.0
 import tech.relog.hagoromo.listfeedlistmodel 1.0
 import tech.relog.hagoromo.postthreadlistmodel 1.0
 import tech.relog.hagoromo.quotedpostlistmodel 1.0
@@ -294,6 +295,7 @@ ColumnLayout {
 
             onRequestViewImages: (index, paths, alts) => columnView.requestViewImages(index, paths, alts)
             onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+            onRequestViewKnownFollowers: (did) => columnStackView.push(knownFollowersComponent, { "userDid": did })
             onRequestViewFeedGenerator: (name, uri) => columnView.requestViewFeedGenerator(account.uuid, name, uri)
             onRequestViewListFeed: (uri, name) => columnView.requestViewListFeed(account.uuid, uri, name)
             onRequestViewLikedBy: (uri) => columnStackView.push(likesProfilesComponent, { "targetUri": uri })
@@ -489,6 +491,22 @@ ColumnLayout {
                     columnStackView.pop()
                 }
             }
+        }
+    }
+    Component {
+        id: knownFollowersComponent
+        ProfileListView {
+            id: profileListView
+            accountDid: account.did
+            unfollowAndRemove: false
+            model: KnownFollowersListModel {
+                autoLoading: false
+                targetDid: profileListView.userDid
+
+                onErrorOccured: (code, message) => columnView.errorOccured(columnView.account.uuid, code, message)
+            }
+            onRequestViewProfile: (did) => columnStackView.push(profileComponent, { "userDid": did })
+            onHoveredLinkChanged: columnView.hoveredLink = hoveredLink
         }
     }
     Component {
