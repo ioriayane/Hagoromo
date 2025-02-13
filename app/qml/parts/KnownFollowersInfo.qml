@@ -25,7 +25,8 @@ RowLayout {
     Label {
         Layout.fillWidth: true
         font.pointSize: AdjustedValues.f8
-        text: qsTr("Followed by %1 and %2 others".replace("%1", knownName).replace("%2", othersCount))
+        font.underline: true
+        text: qsTr("Followed by %1 and %2 others").replace("%1", knownName).replace("%2", othersCount)
 
         MouseArea {
             anchors.fill: parent
