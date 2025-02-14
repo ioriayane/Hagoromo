@@ -39,6 +39,7 @@ SOURCES += \
     $$PWD/profile/blockslistmodel.cpp \
     $$PWD/profile/followerslistmodel.cpp \
     $$PWD/profile/followslistmodel.cpp \
+    $$PWD/profile/knownfollowerslistmodel.cpp \
     $$PWD/profile/muteslistmodel.cpp \
     $$PWD/profile/searchprofilelistmodel.cpp \
     $$PWD/profile/userprofile.cpp \
@@ -97,6 +98,7 @@ HEADERS += \
     $$PWD/profile/blockslistmodel.h \
     $$PWD/profile/followerslistmodel.h \
     $$PWD/profile/followslistmodel.h \
+    $$PWD/profile/knownfollowerslistmodel.h \
     $$PWD/profile/muteslistmodel.h \
     $$PWD/profile/searchprofilelistmodel.h \
     $$PWD/profile/userprofile.h \

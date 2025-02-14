@@ -43,6 +43,7 @@ ColumnLayout {
     signal requestViewQuotes(string uri)
     signal requestViewImages(int index, var paths, var alts)
     signal requestViewProfile(string did)
+    signal requestViewKnownFollowers(string did)
     signal requestViewFeedGenerator(string name, string uri)
     signal requestViewListFeed(string uri, string name)
     signal requestViewAuthorFeed(string did, string handle)
@@ -201,9 +202,11 @@ ColumnLayout {
             if(top){
                 bannerImage.Layout.preferredHeight = bannerImage.isReady ? 80 : 0
                 descriptionLabel.Layout.preferredHeight = descriptionLabel.contentHeight
+                knownFollowersInfo.visible = true
             }else{
                 bannerImage.Layout.preferredHeight = 0
                 descriptionLabel.Layout.preferredHeight = 0
+                knownFollowersInfo.visible = false
             }
         }
 
@@ -489,6 +492,16 @@ ColumnLayout {
                     }
                 }
             }
+        }
+
+        KnownFollowersInfo {
+            id: knownFollowersInfo
+            Layout.preferredWidth: profileView.width
+            visible: userProfile.knownFollowerAvators.length > 0 && userDid !== accountDid
+            model: userProfile.knownFollowerAvators
+            knownName: userProfile.knownFollowers.length > 0 ? userProfile.knownFollowers[0] : ""
+            othersCount: userProfile.knownFollowersCount - 1
+            onClicked: profileView.requestViewKnownFollowers(profileView.userDid)
         }
 
         IconLabelFrame {

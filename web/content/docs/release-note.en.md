@@ -10,6 +10,7 @@ description: This is a multi-column Bluesky client.
 
 - Add
   - Add a function that allows you to select the destination of the real-time feed
+  - Add "Followers you know" to the profile page
 - Update
   - Change so that the real-time feed will automatically reconnect when it disconnects
 
