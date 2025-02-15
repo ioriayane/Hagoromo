@@ -9,8 +9,10 @@ RealtimeFeedStatusListModel::RealtimeFeedStatusListModel(QObject *parent)
 
     appendStatusData(QStringLiteral("__status"), QStringLiteral("Status"), QStringLiteral(""),
                      QString(), QColor());
-    appendStatusData(QStringLiteral("__difference"), QStringLiteral("Difference"),
-                     QStringLiteral("0"), QStringLiteral("msec"), QColor());
+    appendStatusData(QStringLiteral("__date_time"), QStringLiteral("Date time"), QStringLiteral(""),
+                     QString(), QColor());
+    appendStatusData(QStringLiteral("__difference"), QStringLiteral("Delay"), QStringLiteral("0"),
+                     QStringLiteral("msec"), QColor());
     appendStatusData(QStringLiteral("__bit_per_sec"), QStringLiteral("Receive"),
                      QStringLiteral("0.0"), QStringLiteral("Mbps"), QColor());
     appendStatusData(QStringLiteral("__total"), QStringLiteral("Total"), QStringLiteral("0"),
