@@ -50,6 +50,7 @@ SOURCES += \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetblocks.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollowers.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollows.cpp \
+    $$PWD/atprotocol/app/bsky/graph/appbskygraphgetknownfollowers.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlist.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlistblocks.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlistmutes.cpp \
@@ -171,6 +172,7 @@ HEADERS += \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetblocks.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollowers.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollows.h \
+    $$PWD/atprotocol/app/bsky/graph/appbskygraphgetknownfollowers.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlist.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlistblocks.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlistmutes.h \

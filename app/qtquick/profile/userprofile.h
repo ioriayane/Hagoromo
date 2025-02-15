@@ -42,6 +42,13 @@ class UserProfile : public QObject
     Q_PROPERTY(bool followedBy READ followedBy WRITE setFollowedBy NOTIFY followedByChanged)
     Q_PROPERTY(
             QString followingUri READ followingUri WRITE setFollowingUri NOTIFY followingUriChanged)
+    Q_PROPERTY(QStringList knownFollowerAvators READ knownFollowerAvators WRITE
+                       setKnownFollowerAvators NOTIFY knownFollowerAvatorsChanged FINAL)
+    Q_PROPERTY(QStringList knownFollowers READ knownFollowers WRITE setKnownFollowers NOTIFY
+                       knownFollowersChanged FINAL)
+    Q_PROPERTY(int knownFollowersCount READ knownFollowersCount WRITE setKnownFollowersCount NOTIFY
+                       knownFollowersCountChanged FINAL)
+
     Q_PROPERTY(bool muted READ muted WRITE setMuted NOTIFY mutedChanged)
     Q_PROPERTY(bool blockedBy READ blockedBy WRITE setBlockedBy NOTIFY blockedByChanged)
     Q_PROPERTY(bool blocking READ blocking WRITE setBlocking NOTIFY blockingChanged)
@@ -95,6 +102,13 @@ public:
     void setFollowedBy(bool newFollowedBy);
     QString followingUri() const;
     void setFollowingUri(const QString &newFollowingUri);
+    QStringList knownFollowerAvators() const;
+    void setKnownFollowerAvators(const QStringList &newKnownFollowerAvators);
+    QStringList knownFollowers() const;
+    void setKnownFollowers(const QStringList &newKnownFollowers);
+    int knownFollowersCount() const;
+    void setKnownFollowersCount(int newKnownFollowersCount);
+
     bool muted() const;
     void setMuted(bool newMuted);
     bool blockedBy() const;
@@ -139,6 +153,9 @@ signals:
     void followingChanged();
     void followedByChanged();
     void followingUriChanged();
+    void knownFollowerAvatorsChanged();
+    void knownFollowersChanged();
+    void knownFollowersCountChanged();
     void mutedChanged();
     void blockedByChanged();
     void blockingChanged();
@@ -195,6 +212,9 @@ private:
     bool m_following;
     bool m_followedBy;
     QString m_followingUri;
+    QStringList m_knownFollowerAvators;
+    QStringList m_knownFollowers;
+    int m_knownFollowersCount;
     bool m_muted;
     bool m_blockedBy;
     bool m_blocking;
