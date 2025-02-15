@@ -88,7 +88,7 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
             });
 
     connect(&m_wdgTimer, &QTimer::timeout, [this]() {
-        if (m_wdgCounter < 6) {
+        if (m_wdgCounter < 3) {
             m_wdgCounter++;
         } else {
             qDebug().noquote() << "FirehoseTimeout : Nothing was received via Websocket within the "
@@ -141,6 +141,8 @@ void FirehoseReceiver::start()
     }
 #ifdef USE_JETSTREAM
     QString cursor = getCursorTime();
+    // cursor = QString::number(
+    //         QDateTime::fromString("2025-02-14 18:42:00", Qt::ISODate).toMSecsSinceEpoch());
     if (!cursor.isEmpty()) {
         cursor = "&cursor=" + cursor;
     }
@@ -344,6 +346,7 @@ void FirehoseReceiver::analizeReceivingData(const QJsonObject &json, const qsize
             m_nsidsCount[nsid] = 0;
         }
         m_nsidsReceivePerSecond["__total"] = QString::number(total);
+        m_nsidsReceivePerSecond["__date_time"] = date.toString("MM/dd hh:mm:ss");
         m_nsidsReceivePerSecond["__difference"] =
                 QString::number(date.msecsTo(QDateTime::currentDateTimeUtc()));
         m_nsidsReceivePerSecond["__bit_per_sec"] =
