@@ -346,7 +346,7 @@ void FirehoseReceiver::analizeReceivingData(const QJsonObject &json, const qsize
             m_nsidsCount[nsid] = 0;
         }
         m_nsidsReceivePerSecond["__total"] = QString::number(total);
-        m_nsidsReceivePerSecond["__date_time"] = date.toString("yyyy/MM/dd hh:mm:ss");
+        m_nsidsReceivePerSecond["__date_time"] = date.toString("MM/dd hh:mm:ss");
         m_nsidsReceivePerSecond["__difference"] =
                 QString::number(date.msecsTo(QDateTime::currentDateTimeUtc()));
         m_nsidsReceivePerSecond["__bit_per_sec"] =
