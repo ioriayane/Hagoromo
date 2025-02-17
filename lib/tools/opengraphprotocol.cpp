@@ -57,11 +57,16 @@ void OpenGraphProtocol::getData(const QString &url)
     QNetworkReply *reply = manager->get(request);
     connect(reply, &QNetworkReply::redirected, [=](const QUrl &r_url) {
         QUrl b_url = url;
-        qDebug() << "REDIRECT" << b_url.host() << r_url.host();
-        if (b_url.host() == r_url.host()) {
+        qDebug().noquote().nospace() << "REDIRECT " << b_url.scheme() << "://" << b_url.host()
+                                     << " -> " << r_url.scheme() << "://" << r_url.host();
+        if (b_url.scheme() != r_url.scheme()) {
+            emit reply->finished();
+        } else if (b_url.host() == r_url.host()) {
             emit reply->redirectAllowed();
         } else if (m_listOfRedirectAllowed.value(b_url.host()) == r_url.host()) {
             emit reply->redirectAllowed();
+        } else {
+            emit reply->finished();
         }
     });
     connect(reply, &QNetworkReply::errorOccurred, [=](QNetworkReply::NetworkError code) {
