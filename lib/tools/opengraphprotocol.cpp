@@ -18,6 +18,10 @@ OpenGraphProtocol::OpenGraphProtocol(QObject *parent) : QObject { parent }
             QRegularExpression::CaseInsensitiveOption);
 
     m_listOfRedirectAllowed["youtu.be"] = "www.youtube.com";
+    m_listOfRedirectAllowed["microsoft.com"] = "microsoftonline.com";
+    m_listOfRedirectAllowed["microsoftonline.com"] = "microsoft.com";
+    m_listOfRedirectAllowed["amzn.asia"] = "www.amazon.co.jp";
+    m_listOfRedirectAllowed["a.co"] = "www.amazon.com";
 }
 
 void OpenGraphProtocol::getData(const QString &url)
@@ -59,14 +63,31 @@ void OpenGraphProtocol::getData(const QString &url)
         QUrl b_url = url;
         qDebug().noquote().nospace() << "REDIRECT " << b_url.scheme() << "://" << b_url.host()
                                      << " -> " << r_url.scheme() << "://" << r_url.host();
-        if (b_url.scheme() != r_url.scheme()) {
+        if (!((b_url.scheme() == r_url.scheme())
+              || (b_url.scheme() == "http" && r_url.scheme() == "https"))) {
             emit reply->finished();
         } else if (b_url.host() == r_url.host()) {
             emit reply->redirectAllowed();
         } else if (m_listOfRedirectAllowed.value(b_url.host()) == r_url.host()) {
             emit reply->redirectAllowed();
         } else {
-            emit reply->finished();
+            QStringList b_host_parts = b_url.host().split(".");
+            QStringList r_host_parts = r_url.host().split(".");
+            if (b_host_parts.length() < 2 || r_host_parts.length() < 2) {
+                emit reply->finished();
+            } else {
+                QString b_host =
+                        b_host_parts.at(b_host_parts.length() - 2) + "." + b_host_parts.last();
+                QString r_host =
+                        r_host_parts.at(r_host_parts.length() - 2) + "." + r_host_parts.last();
+                if (b_host == r_host) {
+                    emit reply->redirectAllowed();
+                } else if (m_listOfRedirectAllowed.value(b_host) == r_host) {
+                    emit reply->redirectAllowed();
+                } else {
+                    emit reply->finished();
+                }
+            }
         }
     });
     connect(reply, &QNetworkReply::errorOccurred, [=](QNetworkReply::NetworkError code) {
@@ -219,6 +240,8 @@ bool OpenGraphProtocol::parse(const QByteArray &data, const QString &src_uri)
                 if (content.startsWith("/")) {
                     QUrl uri(src_uri);
                     setUri(uri.toString(QUrl::FullyEncoded | QUrl::RemovePath) + content);
+                } else if (content.isEmpty()) {
+                    // あえてタグを用意しているのに空はそのまま
                 } else {
                     QUrl uri(content);
                     setUri(uri.toString(QUrl::FullyEncoded));
