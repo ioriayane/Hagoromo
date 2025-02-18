@@ -45,7 +45,7 @@ struct AccountData
 
     QStringList post_languages; // BCP47形式で3つまで
     QString thread_gate_type; // everybody, nobody, choice
-    QStringList thread_gate_options; // mentioned, followed, at://uri
+    QStringList thread_gate_options; // mentioned, followed, follower, at://uri
     bool post_gate_quote_enabled = true;
     QList<RealtimeFeedRule> realtime_feed_rules; //リアルタイムフィードのルールのJSON
     QStringList labeler_dids; // ラベラーのdid
