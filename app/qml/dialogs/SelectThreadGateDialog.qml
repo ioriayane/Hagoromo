@@ -156,24 +156,24 @@ Dialog {
                     property string value: "mentioned"
                 }
                 CheckBox {
-                    id: followerCheckBox
-                    leftPadding: 15
-                    topPadding: AdjustedValues.s10
-                    bottomPadding: AdjustedValues.s10
-                    font.pointSize: AdjustedValues.f10
-                    enabled: checked || choiceLayout.checkedCount < 5
-                    text: qsTr("Follower")
-                    property string value: "follower"
-                }
-                CheckBox {
                     id: followedCheckBox
                     leftPadding: 15
                     topPadding: AdjustedValues.s10
                     bottomPadding: AdjustedValues.s10
                     font.pointSize: AdjustedValues.f10
                     enabled: checked || choiceLayout.checkedCount < 5
-                    text: qsTr("Following")
+                    text: qsTr("Users your follow")
                     property string value: "followed"
+                }
+                CheckBox {
+                    id: followerCheckBox
+                    leftPadding: 15
+                    topPadding: AdjustedValues.s10
+                    bottomPadding: AdjustedValues.s10
+                    font.pointSize: AdjustedValues.f10
+                    enabled: checked || choiceLayout.checkedCount < 5
+                    text: qsTr("Your followers")
+                    property string value: "follower"
                 }
 
                 ScrollView {
