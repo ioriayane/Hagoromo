@@ -384,6 +384,7 @@ Dialog {
                         enabled: addingExternalLinkUrlText.text.length > 0 &&
                                  !externalLink.running &&
                                  !feedGeneratorLink.running &&
+                                 !postLink.running &&
                                  !listLink.running &&
                                  !createRecord.running
                         onClicked: {
@@ -408,6 +409,7 @@ Dialog {
                             anchors.margins: 3
                             visible: externalLink.running ||
                                      feedGeneratorLink.running ||
+                                     postLink.running ||
                                      listLink.running
                         }
                         states: [
