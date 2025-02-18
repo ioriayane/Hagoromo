@@ -57,39 +57,39 @@ void OpenGraphProtocol::getData(const QString &url)
         manager->deleteLater();
     });
 
-    manager->setRedirectPolicy(QNetworkRequest::UserVerifiedRedirectPolicy);
+    // manager->setRedirectPolicy(QNetworkRequest::UserVerifiedRedirectPolicy);
     QNetworkReply *reply = manager->get(request);
-    connect(reply, &QNetworkReply::redirected, [=](const QUrl &r_url) {
-        QUrl b_url = url;
-        qDebug().noquote().nospace() << "REDIRECT " << b_url.scheme() << "://" << b_url.host()
-                                     << " -> " << r_url.scheme() << "://" << r_url.host();
-        if (!((b_url.scheme() == r_url.scheme())
-              || (b_url.scheme() == "http" && r_url.scheme() == "https"))) {
-            emit reply->finished();
-        } else if (b_url.host() == r_url.host()) {
-            emit reply->redirectAllowed();
-        } else if (m_listOfRedirectAllowed.value(b_url.host()) == r_url.host()) {
-            emit reply->redirectAllowed();
-        } else {
-            QStringList b_host_parts = b_url.host().split(".");
-            QStringList r_host_parts = r_url.host().split(".");
-            if (b_host_parts.length() < 2 || r_host_parts.length() < 2) {
-                emit reply->finished();
-            } else {
-                QString b_host =
-                        b_host_parts.at(b_host_parts.length() - 2) + "." + b_host_parts.last();
-                QString r_host =
-                        r_host_parts.at(r_host_parts.length() - 2) + "." + r_host_parts.last();
-                if (b_host == r_host) {
-                    emit reply->redirectAllowed();
-                } else if (m_listOfRedirectAllowed.value(b_host) == r_host) {
-                    emit reply->redirectAllowed();
-                } else {
-                    emit reply->finished();
-                }
-            }
-        }
-    });
+    // connect(reply, &QNetworkReply::redirected, [=](const QUrl &r_url) {
+    //     QUrl b_url = url;
+    //     qDebug().noquote().nospace() << "REDIRECT " << b_url.scheme() << "://" << b_url.host()
+    //                                  << " -> " << r_url.scheme() << "://" << r_url.host();
+    //     if (!((b_url.scheme() == r_url.scheme())
+    //           || (b_url.scheme() == "http" && r_url.scheme() == "https"))) {
+    //         emit reply->finished();
+    //     } else if (b_url.host() == r_url.host()) {
+    //         emit reply->redirectAllowed();
+    //     } else if (m_listOfRedirectAllowed.value(b_url.host()) == r_url.host()) {
+    //         emit reply->redirectAllowed();
+    //     } else {
+    //         QStringList b_host_parts = b_url.host().split(".");
+    //         QStringList r_host_parts = r_url.host().split(".");
+    //         if (b_host_parts.length() < 2 || r_host_parts.length() < 2) {
+    //             emit reply->finished();
+    //         } else {
+    //             QString b_host =
+    //                     b_host_parts.at(b_host_parts.length() - 2) + "." + b_host_parts.last();
+    //             QString r_host =
+    //                     r_host_parts.at(r_host_parts.length() - 2) + "." + r_host_parts.last();
+    //             if (b_host == r_host) {
+    //                 emit reply->redirectAllowed();
+    //             } else if (m_listOfRedirectAllowed.value(b_host) == r_host) {
+    //                 emit reply->redirectAllowed();
+    //             } else {
+    //                 emit reply->finished();
+    //             }
+    //         }
+    //     }
+    // });
     connect(reply, &QNetworkReply::errorOccurred, [=](QNetworkReply::NetworkError code) {
         qDebug() << "Reply error:" << code << reply->request().url();
     });

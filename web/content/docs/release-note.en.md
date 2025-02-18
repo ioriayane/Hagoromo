@@ -13,6 +13,7 @@ description: This is a multi-column Bluesky client.
   - Add "Followers you know" to the profile page
 - Update
   - Change so that the real-time feed will automatically reconnect when it disconnects
+  - Relaxing the conditions for redirects when obtaining OGP
 
 ### v0.46.0 - 2025/2/8
 
