@@ -789,6 +789,7 @@ class Defs2Struct:
                     elif items_type == 'union':
                         # self.output_union(namespace, type_name, property_name, properties[property_name].get('items', {}).get('refs', []), True)
                         self.output_func_text[namespace].append('        // array<union> ' + property_name)
+                        now_first = True
                         for ref_path in properties[property_name].get('items', {}).get('refs', []):
                             (ref_namespace, ref_type_name) = self.split_ref(ref_path)
                             if len(ref_type_name) == 0:
@@ -807,16 +808,23 @@ class Defs2Struct:
                                     ref_path_full = ref_path
                                 union_type_name = '%s%sType' % (self.to_struct_style(type_name), self.to_struct_style(property_name), )
 
+                                if now_first:
+                                    # 最初の要素のみunion_typeを設定
+                                    # 本当は適切な値を定義して設定するべきだが、union配列の場合は具体的な値に意味はないのキーが存在していれば最初のtypeを設定する
+                                    # 個別のループの中で見つけたときに設定しないのは空配列とキー自体がない場合を区別したいため
+                                    self.output_func_text[namespace].append('        if (src.contains("%s")) {' % (property_name, ))
+                                    self.output_func_text[namespace].append('                dest.%s_type = %s::%s::%s;' % (property_name, self.to_namespace_style(namespace), union_type_name, union_name, ))
+                                    self.output_func_text[namespace].append('        }')
+                                    now_first = False
+
                                 self.output_func_text[namespace].append('        for (const auto &value : src.value("%s").toArray()) {' % (property_name, ))
                                 self.output_func_text[namespace].append('            QString value_type = value.toObject().value("$type").toString();')
                                 self.output_func_text[namespace].append('            if (value_type == QStringLiteral("%s")) {' % (ref_path_full, ))
                                 if self.check_pointer(namespace, type_name, property_name, ref_namespace, ref_type_name):
-                                    self.output_func_text[namespace].append('                dest.%s_type = %s::%s::%s;' % (property_name, self.to_namespace_style(namespace), union_type_name, union_name, ))
                                     self.output_func_text[namespace].append('                QSharedPointer<%s%s> child = QSharedPointer<%s%s>(new %s%s());' % (extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), ))
                                     self.output_func_text[namespace].append('                %scopy%s(value.toObject(), *child);' % (extend_ns, self.to_struct_style(ref_type_name), ))
                                     self.output_func_text[namespace].append('                dest.%s.append(child);' % (union_name, ))
                                 else:
-                                    self.output_func_text[namespace].append('                dest.%s_type = %s::%s::%s;' % (property_name, self.to_namespace_style(namespace), union_type_name, union_name, ))
                                     self.output_func_text[namespace].append('                %s%s child;' % (extend_ns, self.to_struct_style(ref_type_name), ))
                                     self.output_func_text[namespace].append('                %scopy%s(value.toObject(), child);' % (extend_ns, self.to_struct_style(ref_type_name), ))
                                     self.output_func_text[namespace].append('                dest.%s.append(child);' % (union_name, ))
