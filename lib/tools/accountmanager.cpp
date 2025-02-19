@@ -351,38 +351,40 @@ void AccountManager::Private::getProfile()
                            << m_account.service_endpoint;
 
         // ここでPreferencesからThreadGateの設定を取得
+        getPostInteractionSettings([=]() {
+            AppBskyActorGetProfile *profile = new AppBskyActorGetProfile(this);
+            connect(profile, &AppBskyActorGetProfile::finished, [=](bool success) {
+                if (success) {
+                    AtProtocolType::AppBskyActorDefs::ProfileViewDetailed detail =
+                            profile->profileViewDetailed();
+                    qDebug() << "Update profile detailed" << detail.displayName
+                             << detail.description;
+                    m_account.displayName = detail.displayName;
+                    m_account.description = detail.description;
+                    m_account.avatar = detail.avatar;
+                    m_account.banner = detail.banner;
+                    m_account.status = AccountStatus::Authorized;
 
-        AppBskyActorGetProfile *profile = new AppBskyActorGetProfile(this);
-        connect(profile, &AppBskyActorGetProfile::finished, [=](bool success) {
-            if (success) {
-                AtProtocolType::AppBskyActorDefs::ProfileViewDetailed detail =
-                        profile->profileViewDetailed();
-                qDebug() << "Update profile detailed" << detail.displayName << detail.description;
-                m_account.displayName = detail.displayName;
-                m_account.description = detail.description;
-                m_account.avatar = detail.avatar;
-                m_account.banner = detail.banner;
-                m_account.status = AccountStatus::Authorized;
+                    q->save();
 
-                q->save();
+                    emit q->updatedAccount(m_account.uuid);
 
-                emit q->updatedAccount(m_account.uuid);
+                    qDebug() << "Update pinned post" << detail.pinnedPost.uri;
+                    PinnedPostCache::getInstance()->update(m_account.did, detail.pinnedPost.uri);
+                } else {
+                    emit q->errorOccured(profile->errorCode(), profile->errorMessage());
+                }
 
-                qDebug() << "Update pinned post" << detail.pinnedPost.uri;
-                PinnedPostCache::getInstance()->update(m_account.did, detail.pinnedPost.uri);
-            } else {
-                emit q->errorOccured(profile->errorCode(), profile->errorMessage());
-            }
+                q->checkAllAccountsReady();
+                if (q->allAccountTried()) {
+                    emit q->finished();
+                }
 
-            q->checkAllAccountsReady();
-            if (q->allAccountTried()) {
-                emit q->finished();
-            }
-
-            profile->deleteLater();
+                profile->deleteLater();
+            });
+            profile->setAccount(m_account);
+            profile->getProfile(m_account.did);
         });
-        profile->setAccount(m_account);
-        profile->getProfile(m_account.did);
     });
 }
 
