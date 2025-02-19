@@ -811,10 +811,12 @@ class Defs2Struct:
                                 self.output_func_text[namespace].append('            QString value_type = value.toObject().value("$type").toString();')
                                 self.output_func_text[namespace].append('            if (value_type == QStringLiteral("%s")) {' % (ref_path_full, ))
                                 if self.check_pointer(namespace, type_name, property_name, ref_namespace, ref_type_name):
+                                    self.output_func_text[namespace].append('                dest.%s_type = %s::%s::%s;' % (property_name, self.to_namespace_style(namespace), union_type_name, union_name, ))
                                     self.output_func_text[namespace].append('                QSharedPointer<%s%s> child = QSharedPointer<%s%s>(new %s%s());' % (extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), extend_ns, self.to_struct_style(ref_type_name), ))
                                     self.output_func_text[namespace].append('                %scopy%s(value.toObject(), *child);' % (extend_ns, self.to_struct_style(ref_type_name), ))
                                     self.output_func_text[namespace].append('                dest.%s.append(child);' % (union_name, ))
                                 else:
+                                    self.output_func_text[namespace].append('                dest.%s_type = %s::%s::%s;' % (property_name, self.to_namespace_style(namespace), union_type_name, union_name, ))
                                     self.output_func_text[namespace].append('                %s%s child;' % (extend_ns, self.to_struct_style(ref_type_name), ))
                                     self.output_func_text[namespace].append('                %scopy%s(value.toObject(), child);' % (extend_ns, self.to_struct_style(ref_type_name), ))
                                     self.output_func_text[namespace].append('                dest.%s.append(child);' % (union_name, ))

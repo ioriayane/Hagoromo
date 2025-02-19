@@ -286,6 +286,9 @@ void copyPostInteractionSettingsPref(const QJsonObject &src,
         for (const auto &value : src.value("threadgateAllowRules").toArray()) {
             QString value_type = value.toObject().value("$type").toString();
             if (value_type == QStringLiteral("app.bsky.feed.threadgate#mentionRule")) {
+                dest.threadgateAllowRules_type =
+                        AppBskyActorDefs::PostInteractionSettingsPrefThreadgateAllowRulesType::
+                                threadgateAllowRules_AppBskyFeedThreadgate_MentionRule;
                 AppBskyFeedThreadgate::MentionRule child;
                 AppBskyFeedThreadgate::copyMentionRule(value.toObject(), child);
                 dest.threadgateAllowRules_AppBskyFeedThreadgate_MentionRule.append(child);
@@ -294,6 +297,9 @@ void copyPostInteractionSettingsPref(const QJsonObject &src,
         for (const auto &value : src.value("threadgateAllowRules").toArray()) {
             QString value_type = value.toObject().value("$type").toString();
             if (value_type == QStringLiteral("app.bsky.feed.threadgate#followerRule")) {
+                dest.threadgateAllowRules_type =
+                        AppBskyActorDefs::PostInteractionSettingsPrefThreadgateAllowRulesType::
+                                threadgateAllowRules_AppBskyFeedThreadgate_FollowerRule;
                 AppBskyFeedThreadgate::FollowerRule child;
                 AppBskyFeedThreadgate::copyFollowerRule(value.toObject(), child);
                 dest.threadgateAllowRules_AppBskyFeedThreadgate_FollowerRule.append(child);
@@ -302,6 +308,9 @@ void copyPostInteractionSettingsPref(const QJsonObject &src,
         for (const auto &value : src.value("threadgateAllowRules").toArray()) {
             QString value_type = value.toObject().value("$type").toString();
             if (value_type == QStringLiteral("app.bsky.feed.threadgate#followingRule")) {
+                dest.threadgateAllowRules_type =
+                        AppBskyActorDefs::PostInteractionSettingsPrefThreadgateAllowRulesType::
+                                threadgateAllowRules_AppBskyFeedThreadgate_FollowingRule;
                 AppBskyFeedThreadgate::FollowingRule child;
                 AppBskyFeedThreadgate::copyFollowingRule(value.toObject(), child);
                 dest.threadgateAllowRules_AppBskyFeedThreadgate_FollowingRule.append(child);
@@ -310,6 +319,9 @@ void copyPostInteractionSettingsPref(const QJsonObject &src,
         for (const auto &value : src.value("threadgateAllowRules").toArray()) {
             QString value_type = value.toObject().value("$type").toString();
             if (value_type == QStringLiteral("app.bsky.feed.threadgate#listRule")) {
+                dest.threadgateAllowRules_type =
+                        AppBskyActorDefs::PostInteractionSettingsPrefThreadgateAllowRulesType::
+                                threadgateAllowRules_AppBskyFeedThreadgate_ListRule;
                 AppBskyFeedThreadgate::ListRule child;
                 AppBskyFeedThreadgate::copyListRule(value.toObject(), child);
                 dest.threadgateAllowRules_AppBskyFeedThreadgate_ListRule.append(child);
@@ -319,6 +331,9 @@ void copyPostInteractionSettingsPref(const QJsonObject &src,
         for (const auto &value : src.value("postgateEmbeddingRules").toArray()) {
             QString value_type = value.toObject().value("$type").toString();
             if (value_type == QStringLiteral("app.bsky.feed.postgate#disableRule")) {
+                dest.postgateEmbeddingRules_type =
+                        AppBskyActorDefs::PostInteractionSettingsPrefPostgateEmbeddingRulesType::
+                                postgateEmbeddingRules_AppBskyFeedPostgate_DisableRule;
                 AppBskyFeedPostgate::DisableRule child;
                 AppBskyFeedPostgate::copyDisableRule(value.toObject(), child);
                 dest.postgateEmbeddingRules_AppBskyFeedPostgate_DisableRule.append(child);
@@ -628,6 +643,7 @@ void copyMain(const QJsonObject &src, AppBskyFeedThreadgate::Main &dest)
         for (const auto &value : src.value("allow").toArray()) {
             QString value_type = value.toObject().value("$type").toString();
             if (value_type == QStringLiteral("app.bsky.feed.threadgate#mentionRule")) {
+                dest.allow_type = AppBskyFeedThreadgate::MainAllowType::allow_MentionRule;
                 AppBskyFeedThreadgate::MentionRule child;
                 AppBskyFeedThreadgate::copyMentionRule(value.toObject(), child);
                 dest.allow_MentionRule.append(child);
@@ -636,6 +652,7 @@ void copyMain(const QJsonObject &src, AppBskyFeedThreadgate::Main &dest)
         for (const auto &value : src.value("allow").toArray()) {
             QString value_type = value.toObject().value("$type").toString();
             if (value_type == QStringLiteral("app.bsky.feed.threadgate#followerRule")) {
+                dest.allow_type = AppBskyFeedThreadgate::MainAllowType::allow_FollowerRule;
                 AppBskyFeedThreadgate::FollowerRule child;
                 AppBskyFeedThreadgate::copyFollowerRule(value.toObject(), child);
                 dest.allow_FollowerRule.append(child);
@@ -644,6 +661,7 @@ void copyMain(const QJsonObject &src, AppBskyFeedThreadgate::Main &dest)
         for (const auto &value : src.value("allow").toArray()) {
             QString value_type = value.toObject().value("$type").toString();
             if (value_type == QStringLiteral("app.bsky.feed.threadgate#followingRule")) {
+                dest.allow_type = AppBskyFeedThreadgate::MainAllowType::allow_FollowingRule;
                 AppBskyFeedThreadgate::FollowingRule child;
                 AppBskyFeedThreadgate::copyFollowingRule(value.toObject(), child);
                 dest.allow_FollowingRule.append(child);
@@ -652,6 +670,7 @@ void copyMain(const QJsonObject &src, AppBskyFeedThreadgate::Main &dest)
         for (const auto &value : src.value("allow").toArray()) {
             QString value_type = value.toObject().value("$type").toString();
             if (value_type == QStringLiteral("app.bsky.feed.threadgate#listRule")) {
+                dest.allow_type = AppBskyFeedThreadgate::MainAllowType::allow_ListRule;
                 AppBskyFeedThreadgate::ListRule child;
                 AppBskyFeedThreadgate::copyListRule(value.toObject(), child);
                 dest.allow_ListRule.append(child);
@@ -682,6 +701,8 @@ void copyMain(const QJsonObject &src, AppBskyFeedPostgate::Main &dest)
         for (const auto &value : src.value("embeddingRules").toArray()) {
             QString value_type = value.toObject().value("$type").toString();
             if (value_type == QStringLiteral("app.bsky.feed.postgate#disableRule")) {
+                dest.embeddingRules_type =
+                        AppBskyFeedPostgate::MainEmbeddingRulesType::embeddingRules_DisableRule;
                 AppBskyFeedPostgate::DisableRule child;
                 AppBskyFeedPostgate::copyDisableRule(value.toObject(), child);
                 dest.embeddingRules_DisableRule.append(child);
@@ -824,6 +845,8 @@ void copyViewRecord(const QJsonObject &src, AppBskyEmbedRecord::ViewRecord &dest
         for (const auto &value : src.value("embeds").toArray()) {
             QString value_type = value.toObject().value("$type").toString();
             if (value_type == QStringLiteral("app.bsky.embed.images#view")) {
+                dest.embeds_type =
+                        AppBskyEmbedRecord::ViewRecordEmbedsType::embeds_AppBskyEmbedImages_View;
                 AppBskyEmbedImages::View child;
                 AppBskyEmbedImages::copyView(value.toObject(), child);
                 dest.embeds_AppBskyEmbedImages_View.append(child);
@@ -832,6 +855,8 @@ void copyViewRecord(const QJsonObject &src, AppBskyEmbedRecord::ViewRecord &dest
         for (const auto &value : src.value("embeds").toArray()) {
             QString value_type = value.toObject().value("$type").toString();
             if (value_type == QStringLiteral("app.bsky.embed.video#view")) {
+                dest.embeds_type =
+                        AppBskyEmbedRecord::ViewRecordEmbedsType::embeds_AppBskyEmbedVideo_View;
                 AppBskyEmbedVideo::View child;
                 AppBskyEmbedVideo::copyView(value.toObject(), child);
                 dest.embeds_AppBskyEmbedVideo_View.append(child);
@@ -840,6 +865,8 @@ void copyViewRecord(const QJsonObject &src, AppBskyEmbedRecord::ViewRecord &dest
         for (const auto &value : src.value("embeds").toArray()) {
             QString value_type = value.toObject().value("$type").toString();
             if (value_type == QStringLiteral("app.bsky.embed.external#view")) {
+                dest.embeds_type =
+                        AppBskyEmbedRecord::ViewRecordEmbedsType::embeds_AppBskyEmbedExternal_View;
                 AppBskyEmbedExternal::View child;
                 AppBskyEmbedExternal::copyView(value.toObject(), child);
                 dest.embeds_AppBskyEmbedExternal_View.append(child);
@@ -848,6 +875,8 @@ void copyViewRecord(const QJsonObject &src, AppBskyEmbedRecord::ViewRecord &dest
         for (const auto &value : src.value("embeds").toArray()) {
             QString value_type = value.toObject().value("$type").toString();
             if (value_type == QStringLiteral("app.bsky.embed.record#view")) {
+                dest.embeds_type =
+                        AppBskyEmbedRecord::ViewRecordEmbedsType::embeds_AppBskyEmbedRecord_View;
                 QSharedPointer<AppBskyEmbedRecord::View> child =
                         QSharedPointer<AppBskyEmbedRecord::View>(new AppBskyEmbedRecord::View());
                 AppBskyEmbedRecord::copyView(value.toObject(), *child);
@@ -857,6 +886,8 @@ void copyViewRecord(const QJsonObject &src, AppBskyEmbedRecord::ViewRecord &dest
         for (const auto &value : src.value("embeds").toArray()) {
             QString value_type = value.toObject().value("$type").toString();
             if (value_type == QStringLiteral("app.bsky.embed.recordWithMedia#view")) {
+                dest.embeds_type = AppBskyEmbedRecord::ViewRecordEmbedsType::
+                        embeds_AppBskyEmbedRecordWithMedia_View;
                 AppBskyEmbedRecordWithMedia::View child;
                 AppBskyEmbedRecordWithMedia::copyView(value.toObject(), child);
                 dest.embeds_AppBskyEmbedRecordWithMedia_View.append(child);
@@ -1259,6 +1290,8 @@ void copyThreadViewPost(const QJsonObject &src, AppBskyFeedDefs::ThreadViewPost 
         for (const auto &value : src.value("replies").toArray()) {
             QString value_type = value.toObject().value("$type").toString();
             if (value_type == QStringLiteral("app.bsky.feed.defs#threadViewPost")) {
+                dest.replies_type =
+                        AppBskyFeedDefs::ThreadViewPostRepliesType::replies_ThreadViewPost;
                 QSharedPointer<AppBskyFeedDefs::ThreadViewPost> child =
                         QSharedPointer<AppBskyFeedDefs::ThreadViewPost>(
                                 new AppBskyFeedDefs::ThreadViewPost());
@@ -1269,6 +1302,8 @@ void copyThreadViewPost(const QJsonObject &src, AppBskyFeedDefs::ThreadViewPost 
         for (const auto &value : src.value("replies").toArray()) {
             QString value_type = value.toObject().value("$type").toString();
             if (value_type == QStringLiteral("app.bsky.feed.defs#notFoundPost")) {
+                dest.replies_type =
+                        AppBskyFeedDefs::ThreadViewPostRepliesType::replies_NotFoundPost;
                 AppBskyFeedDefs::NotFoundPost child;
                 AppBskyFeedDefs::copyNotFoundPost(value.toObject(), child);
                 dest.replies_NotFoundPost.append(child);
@@ -1277,6 +1312,7 @@ void copyThreadViewPost(const QJsonObject &src, AppBskyFeedDefs::ThreadViewPost 
         for (const auto &value : src.value("replies").toArray()) {
             QString value_type = value.toObject().value("$type").toString();
             if (value_type == QStringLiteral("app.bsky.feed.defs#blockedPost")) {
+                dest.replies_type = AppBskyFeedDefs::ThreadViewPostRepliesType::replies_BlockedPost;
                 AppBskyFeedDefs::BlockedPost child;
                 AppBskyFeedDefs::copyBlockedPost(value.toObject(), child);
                 dest.replies_BlockedPost.append(child);
@@ -1359,6 +1395,7 @@ void copyMain(const QJsonObject &src, AppBskyRichtextFacet::Main &dest)
         for (const auto &value : src.value("features").toArray()) {
             QString value_type = value.toObject().value("$type").toString();
             if (value_type == QStringLiteral("app.bsky.richtext.facet#mention")) {
+                dest.features_type = AppBskyRichtextFacet::MainFeaturesType::features_Mention;
                 AppBskyRichtextFacet::Mention child;
                 AppBskyRichtextFacet::copyMention(value.toObject(), child);
                 dest.features_Mention.append(child);
@@ -1367,6 +1404,7 @@ void copyMain(const QJsonObject &src, AppBskyRichtextFacet::Main &dest)
         for (const auto &value : src.value("features").toArray()) {
             QString value_type = value.toObject().value("$type").toString();
             if (value_type == QStringLiteral("app.bsky.richtext.facet#link")) {
+                dest.features_type = AppBskyRichtextFacet::MainFeaturesType::features_Link;
                 AppBskyRichtextFacet::Link child;
                 AppBskyRichtextFacet::copyLink(value.toObject(), child);
                 dest.features_Link.append(child);
@@ -1375,6 +1413,7 @@ void copyMain(const QJsonObject &src, AppBskyRichtextFacet::Main &dest)
         for (const auto &value : src.value("features").toArray()) {
             QString value_type = value.toObject().value("$type").toString();
             if (value_type == QStringLiteral("app.bsky.richtext.facet#tag")) {
+                dest.features_type = AppBskyRichtextFacet::MainFeaturesType::features_Tag;
                 AppBskyRichtextFacet::Tag child;
                 AppBskyRichtextFacet::copyTag(value.toObject(), child);
                 dest.features_Tag.append(child);
