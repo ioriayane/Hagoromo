@@ -60,6 +60,9 @@ public:
     void updateRealtimeFeedRule(const QString &uuid, const QString &name, const QString &condition);
     QList<AtProtocolInterface::RealtimeFeedRule> getRealtimeFeedRules(const QString &uuid);
     void removeRealtimeFeedRule(const QString &uuid, const QString &name);
+    void savePostInteractionSettings(const QString &uuid, const QString &thread_gate_type,
+                                     const QStringList &thread_gate_options,
+                                     const bool post_gate_quote_enabled);
     int getMainAccountIndex() const;
     void setMainAccount(int row);
     bool checkAllAccountsReady();
@@ -78,6 +81,7 @@ public:
 signals:
     void errorOccured(const QString &code, const QString &message);
     void updatedAccount(const QString &uuid);
+    void savedPostInteractionSettings(const QString &uuid);
     void countChanged();
     void finished();
     void allAccountsReadyChanged();

@@ -55,9 +55,16 @@ Dialog {
         defaultSettingMode: true
         property int accountIndex: -1
         onAccepted: {
-            accountList.model.update(accountIndex, AccountListModel.PostGateQuoteEnabledRole, selectedQuoteEnabled)
-            accountList.model.update(accountIndex, AccountListModel.ThreadGateTypeRole, selectedType)
-            accountList.model.update(accountIndex, AccountListModel.ThreadGateOptionsRole, selectedOptions)
+            accountList.model.savePostInteractionSettings(accountIndex,
+                                                          selectedType,
+                                                          selectedOptions,
+                                                          selectedQuoteEnabled)
+        }
+        Connections {
+            target: accountList.model
+            function onSavedPostInteractionSettings(uuid) {
+                console.log("onSavedPostInteractionSettings:" + uuid)
+            }
         }
     }
 

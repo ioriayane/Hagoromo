@@ -53,6 +53,7 @@ public:
     void getServiceEndpoint(const QString &did, const QString &service,
                             std::function<void(const QString &service_endpoint)> callback);
     void getPostInteractionSettings(std::function<void()> callback);
+    void putPostInteractionSettings();
     void setMain(bool is);
 
 private:
@@ -471,6 +472,12 @@ void AccountManager::Private::getPostInteractionSettings(std::function<void()> c
     pref->getPreferences();
 }
 
+void AccountManager::Private::putPostInteractionSettings()
+{
+    //
+    emit q->savedPostInteractionSettings(m_account.uuid);
+}
+
 void AccountManager::Private::setMain(bool is)
 {
     m_account.is_main = is;
@@ -656,6 +663,22 @@ void AccountManager::removeRealtimeFeedRule(const QString &uuid, const QString &
 
     dList.at(row)->removeRealtimeFeedRule(name);
     save();
+}
+
+void AccountManager::savePostInteractionSettings(const QString &uuid,
+                                                 const QString &thread_gate_type,
+                                                 const QStringList &thread_gate_options,
+                                                 const bool post_gate_quote_enabled)
+{
+    int row = indexAt(uuid);
+    if (row < 0 || row >= count())
+        return;
+
+    dList.at(row)->update(AccountManagerRoles::ThreadGateTypeRole, thread_gate_type);
+    dList.at(row)->update(AccountManagerRoles::ThreadGateOptionsRole, thread_gate_options);
+    dList.at(row)->update(AccountManagerRoles::PostGateQuoteEnabledRole, post_gate_quote_enabled);
+
+    dList.at(row)->putPostInteractionSettings();
 }
 
 int AccountManager::getMainAccountIndex() const
