@@ -17,7 +17,9 @@ bool AppBskyActorPutPreferencesEx::parseJson(bool success, const QString reply_j
     return success;
 }
 
-QJsonArray AppBskyActorPutPreferencesEx::updatePreferencesJson(const QString &src, const QString &type, const QJsonObject &part)
+QJsonArray AppBskyActorPutPreferencesEx::updatePreferencesJson(const QString &src,
+                                                               const QString &type,
+                                                               const QJsonObject &part)
 {
     QJsonDocument json_doc = QJsonDocument::fromJson(src.toUtf8());
     QJsonObject root_object = json_doc.object();
@@ -43,14 +45,16 @@ QJsonArray AppBskyActorPutPreferencesEx::updatePreferencesJson(const QString &sr
         }
     }
 
-    if(!replaced){
+    if (!replaced) {
         dest_preferences.append(part);
     }
 
     return dest_preferences;
 }
 
-QJsonObject AppBskyActorPutPreferencesEx::makePostInteractionSettingsPref(const QString &thread_gate_type, const QStringList &thread_gate_options, const bool post_gate_quote_enabled) const
+QJsonObject AppBskyActorPutPreferencesEx::makePostInteractionSettingsPref(
+        const QString &thread_gate_type, const QStringList &thread_gate_options,
+        const bool post_gate_quote_enabled) const
 {
     QJsonObject part;
     part.insert("$type", "app.bsky.actor.defs#postInteractionSettingsPref");
@@ -61,23 +65,29 @@ QJsonObject AppBskyActorPutPreferencesEx::makePostInteractionSettingsPref(const 
         post_gate_array.append(post_gate);
         part.insert("postgateEmbeddingRules", post_gate_array);
     }
-    if(thread_gate_type == "everybody"){
+    if (thread_gate_type == "everybody") {
         // nop
-    }else {
+    } else {
         QJsonArray thread_gate_array;
-        if(thread_gate_type == "choice"){
-            for(const auto &option: thread_gate_options){
+        if (thread_gate_type == "choice") {
+            for (const auto &option : thread_gate_options) {
                 QJsonObject thread_gate;
-                if(option == "mentioned"){
+                if (option == "mentioned") {
+                    thread_gate.insert("$type", "app.bsky.feed.threadgate#mentionRule");
+                    thread_gate_array.append(thread_gate);
+                } else if (option == "followed") {
                     thread_gate.insert("$type", "app.bsky.feed.threadgate#followingRule");
-                }else if(option == "followed"){
-                    thread_gate.insert("$type", "app.bsky.feed.threadgate#followingRule");
-                }else if(option == "follower"){
+                    thread_gate_array.append(thread_gate);
+                } else if (option == "follower") {
                     thread_gate.insert("$type", "app.bsky.feed.threadgate#followerRule");
-                }else if(option.startsWith("at://")){
+                    thread_gate_array.append(thread_gate);
+                } else if (option.startsWith("at://")) {
+                    thread_gate.insert("$type", "app.bsky.feed.threadgate#listRule");
+                    thread_gate.insert("list", option);
+                    thread_gate_array.append(thread_gate);
                 }
             }
-        }else{
+        } else {
             // nobodyとかは空配列
         }
         part.insert("threadgateAllowRules", thread_gate_array);

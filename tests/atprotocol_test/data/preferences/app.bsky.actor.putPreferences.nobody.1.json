@@ -1,0 +1,9 @@
+{
+    "$type": "app.bsky.actor.defs#postInteractionSettingsPref",
+    "postgateEmbeddingRules": [
+        {
+            "$type": "app.bsky.feed.postgate#disableRule"
+        }
+    ],
+    "threadgateAllowRules": []
+}

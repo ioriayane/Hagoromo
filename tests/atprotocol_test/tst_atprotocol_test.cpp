@@ -2418,7 +2418,7 @@ void atprotocol_test::test_AppBskyActorPutPreferencesEx()
 
     QString path;
 
-    path = ":/data/labels/save/1/app.bsky.actor.putPreferences";
+    path = ":data/preferences/app.bsky.actor.putPreferences.10.json";
     QFile file(path);
     QVERIFY(file.open(QFile::ReadOnly));
 
@@ -2432,19 +2432,44 @@ void atprotocol_test::test_AppBskyActorPutPreferencesEx()
     dest_object.insert("preferences",
                        pref.updatePreferencesJson(QString(file.readAll()), type, part));
     json_doc.setObject(dest_object);
-    qDebug().noquote() << json_doc.toJson();
+    QVERIFY2(json_doc
+                     == UnitTestCommon::loadJson(
+                             ":data/preferences/app.bsky.actor.putPreferences.20.json"),
+             json_doc.toJson());
 
     json_doc.setObject(pref.makePostInteractionSettingsPref("everybody", QStringList(), true));
-    qDebug().noquote() << json_doc.toJson();
+    QVERIFY2(json_doc
+                     == UnitTestCommon::loadJson(
+                             ":data/preferences/app.bsky.actor.putPreferences.everybody.1.json"),
+             json_doc.toJson());
+    json_doc.setObject(pref.makePostInteractionSettingsPref("everybody", QStringList(), false));
+    QVERIFY2(json_doc
+                     == UnitTestCommon::loadJson(
+                             ":data/preferences/app.bsky.actor.putPreferences.everybody.2.json"),
+             json_doc.toJson());
 
+    json_doc.setObject(pref.makePostInteractionSettingsPref("nobody", QStringList(), true));
+    QVERIFY2(json_doc
+                     == UnitTestCommon::loadJson(
+                             ":data/preferences/app.bsky.actor.putPreferences.nobody.1.json"),
+             json_doc.toJson());
     json_doc.setObject(pref.makePostInteractionSettingsPref("nobody", QStringList(), false));
-    qDebug().noquote() << json_doc.toJson();
+    QVERIFY2(json_doc
+                     == UnitTestCommon::loadJson(
+                             ":data/preferences/app.bsky.actor.putPreferences.nobody.2.json"),
+             json_doc.toJson());
 
     json_doc.setObject(pref.makePostInteractionSettingsPref("choice",
-                                                            QStringList() << "follower"
-                                                                          << "at://path/to",
-                                                            false));
-    qDebug().noquote() << json_doc.toJson();
+                                                            QStringList() << "mentioned"
+                                                                          << "followed"
+                                                                          << "follower"
+                                                                          << "at://path/to/1"
+                                                                          << "at://path/to/2",
+                                                            true));
+    QVERIFY2(json_doc
+                     == UnitTestCommon::loadJson(
+                             ":data/preferences/app.bsky.actor.putPreferences.choice.1.json"),
+             json_doc.toJson());
 }
 
 void atprotocol_test::test_PlcDirectory()
