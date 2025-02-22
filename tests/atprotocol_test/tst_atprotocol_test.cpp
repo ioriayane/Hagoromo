@@ -17,6 +17,7 @@
 #include "atprotocol/app/bsky/graph/appbskygraphgetlistmutes.h"
 #include "atprotocol/app/bsky/graph/appbskygraphgetlistblocks.h"
 #include "atprotocol/app/bsky/graph/appbskygraphgetmutes.h"
+#include "extension/app/bsky/actor/appbskyactorputpreferencesex.h"
 #include "extension/com/atproto/repo/comatprotorepocreaterecordex.h"
 #include "extension/com/atproto/server/comatprotoserverrefreshsessionex.h"
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
@@ -80,6 +81,8 @@ private slots:
     void test_AppBskyGraphGetListMutes();
     void test_AppBskyGraphGetListBlocks();
     void test_AppBskyGraphGetMutes();
+
+    void test_AppBskyActorPutPreferencesEx();
 
     void test_PlcDirectory();
     void test_DirectoryPlcLogAudit();
@@ -2407,6 +2410,41 @@ void atprotocol_test::test_AppBskyGraphGetMutes()
 
     QVERIFY(api.followsList().count() == 1);
     QVERIFY(api.followsList().at(0).did == "did:plc:l4fsx4ujos7uw7n4ijq2ulgs");
+}
+
+void atprotocol_test::test_AppBskyActorPutPreferencesEx()
+{
+    AtProtocolInterface::AppBskyActorPutPreferencesEx pref;
+
+    QString path;
+
+    path = ":/data/labels/save/1/app.bsky.actor.putPreferences";
+    QFile file(path);
+    QVERIFY(file.open(QFile::ReadOnly));
+
+    QString type = "app.bsky.actor.defs#savedFeedsPref";
+    QJsonObject part;
+    part.insert("$type", type);
+    part.insert("saved", QJsonArray());
+
+    QJsonDocument json_doc;
+    QJsonObject dest_object;
+    dest_object.insert("preferences",
+                       pref.updatePreferencesJson(QString(file.readAll()), type, part));
+    json_doc.setObject(dest_object);
+    qDebug().noquote() << json_doc.toJson();
+
+    json_doc.setObject(pref.makePostInteractionSettingsPref("everybody", QStringList(), true));
+    qDebug().noquote() << json_doc.toJson();
+
+    json_doc.setObject(pref.makePostInteractionSettingsPref("nobody", QStringList(), false));
+    qDebug().noquote() << json_doc.toJson();
+
+    json_doc.setObject(pref.makePostInteractionSettingsPref("choice",
+                                                            QStringList() << "follower"
+                                                                          << "at://path/to",
+                                                            false));
+    qDebug().noquote() << json_doc.toJson();
 }
 
 void atprotocol_test::test_PlcDirectory()

@@ -112,11 +112,7 @@ void copyProfileViewDetailed(const QJsonObject &src, AppBskyActorDefs::ProfileVi
             ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
             dest.labels.append(child);
         }
-        if (src.value("pinnedPost").isString()) {
-            dest.pinnedPost.uri = src.value("pinnedPost").toString();
-        } else {
-            ComAtprotoRepoStrongRef::copyMain(src.value("pinnedPost").toObject(), dest.pinnedPost);
-        }
+        ComAtprotoRepoStrongRef::copyMain(src.value("pinnedPost").toObject(), dest.pinnedPost);
     }
 }
 void copyAdultContentPref(const QJsonObject &src, AppBskyActorDefs::AdultContentPref &dest)

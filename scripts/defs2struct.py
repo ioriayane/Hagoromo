@@ -227,6 +227,7 @@ class Defs2Struct:
             'com.atproto.repo.listRecords'
         ]
         self.need_extension = [
+            'app.bsky.actor.putPreferences',
             'com.atproto.moderation.createReport',
             'com.atproto.repo.createRecord',
             'com.atproto.repo.deleteRecord',

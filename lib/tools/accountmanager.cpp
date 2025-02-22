@@ -1,5 +1,6 @@
 #include "accountmanager.h"
 #include "encryption.h"
+#include "extension/app/bsky/actor/appbskyactorputpreferencesex.h"
 #include "extension/com/atproto/server/comatprotoservercreatesessionex.h"
 #include "extension/com/atproto/server/comatprotoserverrefreshsessionex.h"
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
@@ -22,6 +23,7 @@ using AtProtocolInterface::AccountStatus;
 using AtProtocolInterface::AppBskyActorGetPreferences;
 using AtProtocolInterface::AppBskyActorGetProfile;
 using AtProtocolInterface::AppBskyActorPutPreferences;
+using AtProtocolInterface::AppBskyActorPutPreferencesEx;
 using AtProtocolInterface::ComAtprotoRepoDescribeRepo;
 using AtProtocolInterface::ComAtprotoRepoGetRecordEx;
 using AtProtocolInterface::ComAtprotoServerCreateSessionEx;
@@ -474,8 +476,32 @@ void AccountManager::Private::getPostInteractionSettings(std::function<void()> c
 
 void AccountManager::Private::putPostInteractionSettings()
 {
-    //
-    emit q->savedPostInteractionSettings(m_account.uuid);
+    AppBskyActorGetPreferences *get_pref = new AppBskyActorGetPreferences(this);
+    connect(get_pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
+        QJsonDocument current_pref = QJsonDocument::fromJson(get_pref->replyJson().toUtf8());
+        if (success && current_pref.object().contains("preferences")) {
+
+            AppBskyActorPutPreferencesEx *put_pref = new AppBskyActorPutPreferencesEx(this);
+            connect(put_pref, &AppBskyActorPutPreferencesEx::finished, [=](bool success) {
+                if (success) {
+                    qDebug() << "finish put preferences(post interaction settings).";
+                }
+                emit q->savedPostInteractionSettings(m_account.uuid);
+                put_pref->deleteLater();
+            });
+            put_pref->setAccount(m_account);
+            put_pref->putPreferences(put_pref->updatePreferencesJson(
+                    get_pref->replyJson(), "app.bsky.actor.defs#postInteractionSettingsPref",
+                    put_pref->makePostInteractionSettingsPref(m_account.thread_gate_type,
+                                                              m_account.thread_gate_options,
+                                                              m_account.post_gate_quote_enabled)));
+        } else {
+            emit q->savedPostInteractionSettings(m_account.uuid);
+        }
+        get_pref->deleteLater();
+    });
+    get_pref->setAccount(m_account);
+    get_pref->getPreferences();
 }
 
 void AccountManager::Private::setMain(bool is)
