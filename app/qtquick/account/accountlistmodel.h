@@ -65,6 +65,7 @@ public:
     Q_INVOKABLE void setMainAccount(int row);
     Q_INVOKABLE void refreshAccountSession(const QString &uuid);
     Q_INVOKABLE void refreshAccountProfile(const QString &uuid);
+    Q_INVOKABLE void loadPostInteractionSettings(int row);
     Q_INVOKABLE void savePostInteractionSettings(int row, const QString &thread_gate_type,
                                                  const QStringList &thread_gate_options,
                                                  const bool post_gate_quote_enabled);
@@ -79,6 +80,7 @@ public:
 signals:
     void errorOccured(const QString &code, const QString &message);
     void updatedAccount(const QString &uuid);
+    void loadedPostInteractionSettings(const QString &uuid);
     void savedPostInteractionSettings(const QString &uuid);
     void countChanged();
     void finished();

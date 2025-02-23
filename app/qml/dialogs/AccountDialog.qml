@@ -52,6 +52,7 @@ Dialog {
 
     SelectThreadGateDialog {
         id: selectThreadGateDialog
+        delayMode: true
         defaultSettingMode: true
         property int accountIndex: -1
         onAccepted: {
@@ -64,6 +65,17 @@ Dialog {
             target: accountList.model
             function onSavedPostInteractionSettings(uuid) {
                 console.log("onSavedPostInteractionSettings:" + uuid)
+            }
+            function onLoadedPostInteractionSettings(uuid) {
+                console.log("onLoadedPostInteractionSettings:" + uuid)
+                if(selectThreadGateDialog.account.set(accountList.model, uuid)){
+                    var i = selectThreadGateDialog.accountIndex
+                    selectThreadGateDialog.initialQuoteEnabled = accountList.model.item(i, AccountListModel.PostGateQuoteEnabledRole)
+                    selectThreadGateDialog.initialType = accountList.model.item(i, AccountListModel.ThreadGateTypeRole)
+                    selectThreadGateDialog.initialOptions = accountList.model.item(i, AccountListModel.ThreadGateOptionsRole)
+                    selectThreadGateDialog.updateViewItems()
+                }
+                selectThreadGateDialog.ready = true
             }
         }
     }
@@ -220,13 +232,13 @@ Dialog {
                                 icon.source: "../images/thread.png"
                                 text: qsTr("Post interaction settings")
                                 onTriggered: {
+                                    selectThreadGateDialog.accountIndex = -1
                                     if(selectThreadGateDialog.account.set(accountList.model, model.uuid)){
+                                        selectThreadGateDialog.ready = false
                                         var i = model.index
-                                        selectThreadGateDialog.initialQuoteEnabled = accountList.model.item(i, AccountListModel.PostGateQuoteEnabledRole)
-                                        selectThreadGateDialog.initialType = accountList.model.item(i, AccountListModel.ThreadGateTypeRole)
-                                        selectThreadGateDialog.initialOptions = accountList.model.item(i, AccountListModel.ThreadGateOptionsRole)
                                         selectThreadGateDialog.accountIndex = i
                                         selectThreadGateDialog.open()
+                                        accountList.model.loadPostInteractionSettings(model.index)
                                     }
                                 }
                             }

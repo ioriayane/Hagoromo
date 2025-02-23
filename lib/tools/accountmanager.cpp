@@ -691,6 +691,16 @@ void AccountManager::removeRealtimeFeedRule(const QString &uuid, const QString &
     save();
 }
 
+void AccountManager::loadPostInteractionSettings(const QString &uuid)
+{
+    int row = indexAt(uuid);
+    if (row < 0 || row >= count())
+        return;
+
+    dList.at(row)->getPostInteractionSettings(
+            [=]() { emit loadedPostInteractionSettings(dList.at(row)->getAccount().uuid); });
+}
+
 void AccountManager::savePostInteractionSettings(const QString &uuid,
                                                  const QString &thread_gate_type,
                                                  const QStringList &thread_gate_options,

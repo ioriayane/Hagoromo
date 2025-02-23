@@ -58,7 +58,7 @@ QJsonObject AppBskyActorPutPreferencesEx::makePostInteractionSettingsPref(
 {
     QJsonObject part;
     part.insert("$type", "app.bsky.actor.defs#postInteractionSettingsPref");
-    if (post_gate_quote_enabled) {
+    if (!post_gate_quote_enabled) {
         QJsonArray post_gate_array;
         QJsonObject post_gate;
         post_gate.insert("$type", "app.bsky.feed.postgate#disableRule");

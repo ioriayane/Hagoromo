@@ -19,6 +19,7 @@ Dialog {
 
     bottomPadding: AdjustedValues.s10
 
+    property bool delayMode: false  // ダイアログ表示後に別で設定をロードしてから表示
     property bool defaultSettingMode: false
     property bool ready: true   // 後から変更する時はfalseにしてAcceptさせないようにする
 
@@ -37,6 +38,24 @@ Dialog {
 
     onInitialQuoteEnabledChanged: quoteEanbled.checked = initialQuoteEnabled
     onOpened: {
+        if(!delayMode){
+            updateViewItems()
+        }
+    }
+    onClosed: {
+        quoteEanbled.checked = true
+        listsListModel.clear()
+        var i
+        for(i=0; i<group.buttons.length; i++){
+            group.buttons[i].checked = false
+        }
+        choiceRadioButton.checked = false
+        mentionedCheckBox.checked = false
+        followerCheckBox.checked = false
+        followedCheckBox.checked = false
+    }
+
+    function updateViewItems() {
         var i
         quoteEanbled.checked = initialQuoteEnabled
         choiceRadioButton.checked = true
@@ -61,18 +80,6 @@ Dialog {
         listsListModel.clear()
         listsListModel.setAccount(account.uuid)
         listsListModel.getLatest()
-    }
-    onClosed: {
-        quoteEanbled.checked = true
-        listsListModel.clear()
-        var i
-        for(i=0; i<group.buttons.length; i++){
-            group.buttons[i].checked = false
-        }
-        choiceRadioButton.checked = false
-        mentionedCheckBox.checked = false
-        followerCheckBox.checked = false
-        followedCheckBox.checked = false
     }
 
     function clear(){
@@ -109,6 +116,7 @@ Dialog {
             ButtonGroup.group: group
             verticalPadding: 3
             font.pointSize: AdjustedValues.f10
+            enabled: selectThreadGateDialog.ready
             text: qsTr("Everybody")
             property string value: "everybody"
         }
@@ -116,6 +124,7 @@ Dialog {
             ButtonGroup.group: group
             verticalPadding: 3
             font.pointSize: AdjustedValues.f10
+            enabled: selectThreadGateDialog.ready
             text: qsTr("Nobody")
             property string value: "nobody"
         }
@@ -126,6 +135,7 @@ Dialog {
                 topPadding: 5
                 bottomPadding: 5
                 font.pointSize: AdjustedValues.f10
+                enabled: selectThreadGateDialog.ready
                 text: qsTr("Combine these options")
                 property string value: "choice"
             }
