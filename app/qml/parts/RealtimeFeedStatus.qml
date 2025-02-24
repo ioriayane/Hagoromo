@@ -11,6 +11,9 @@ Frame {
     id: realtimeFeedStatusFrame
     property int theme: 0
 
+    hoverEnabled: true
+    opacity: hovered ? 0.5 : 1
+
     background: Rectangle {
         radius: 3
         border.width: 1
