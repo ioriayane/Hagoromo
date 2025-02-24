@@ -950,6 +950,9 @@ AtpAbstractListModel::getThreadGateItem(const AtProtocolType::AppBskyFeedDefs::P
         if (!record.allow_FollowingRule.isEmpty()) {
             rules.append("followed");
         }
+        if (!record.allow_FollowerRule.isEmpty()) {
+            rules.append("follower");
+        }
         for (const auto &item : record.allow_ListRule) {
             rules.append(item.list);
         }
