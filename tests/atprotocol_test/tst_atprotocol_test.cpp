@@ -2437,23 +2437,23 @@ void atprotocol_test::test_AppBskyActorPutPreferencesEx()
                              ":data/preferences/app.bsky.actor.putPreferences.20.json"),
              json_doc.toJson());
 
-    json_doc.setObject(pref.makePostInteractionSettingsPref("everybody", QStringList(), true));
+    json_doc.setObject(pref.makePostInteractionSettingsPref("everybody", QStringList(), false));
     QVERIFY2(json_doc
                      == UnitTestCommon::loadJson(
                              ":data/preferences/app.bsky.actor.putPreferences.everybody.1.json"),
              json_doc.toJson());
-    json_doc.setObject(pref.makePostInteractionSettingsPref("everybody", QStringList(), false));
+    json_doc.setObject(pref.makePostInteractionSettingsPref("everybody", QStringList(), true));
     QVERIFY2(json_doc
                      == UnitTestCommon::loadJson(
                              ":data/preferences/app.bsky.actor.putPreferences.everybody.2.json"),
              json_doc.toJson());
 
-    json_doc.setObject(pref.makePostInteractionSettingsPref("nobody", QStringList(), true));
+    json_doc.setObject(pref.makePostInteractionSettingsPref("nobody", QStringList(), false));
     QVERIFY2(json_doc
                      == UnitTestCommon::loadJson(
                              ":data/preferences/app.bsky.actor.putPreferences.nobody.1.json"),
              json_doc.toJson());
-    json_doc.setObject(pref.makePostInteractionSettingsPref("nobody", QStringList(), false));
+    json_doc.setObject(pref.makePostInteractionSettingsPref("nobody", QStringList(), true));
     QVERIFY2(json_doc
                      == UnitTestCommon::loadJson(
                              ":data/preferences/app.bsky.actor.putPreferences.nobody.2.json"),
@@ -2465,7 +2465,7 @@ void atprotocol_test::test_AppBskyActorPutPreferencesEx()
                                                                           << "follower"
                                                                           << "at://path/to/1"
                                                                           << "at://path/to/2",
-                                                            true));
+                                                            false));
     QVERIFY2(json_doc
                      == UnitTestCommon::loadJson(
                              ":data/preferences/app.bsky.actor.putPreferences.choice.1.json"),
