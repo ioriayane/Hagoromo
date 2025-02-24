@@ -58,6 +58,10 @@ AccountListModel::AccountListModel(QObject *parent) : QAbstractListModel { paren
 
     connect(manager, &AccountManager::errorOccured, this, &AccountListModel::errorOccured);
     connect(manager, &AccountManager::updatedAccount, this, &AccountListModel::updatedAccount);
+    connect(manager, &AccountManager::loadedPostInteractionSettings, this,
+            &AccountListModel::loadedPostInteractionSettings);
+    connect(manager, &AccountManager::savedPostInteractionSettings, this,
+            &AccountListModel::savedPostInteractionSettings);
     connect(manager, &AccountManager::countChanged, this, &AccountListModel::countChanged);
     connect(manager, &AccountManager::finished, this, &AccountListModel::finished);
     connect(manager, &AccountManager::allAccountsReadyChanged, this,
@@ -78,6 +82,10 @@ AccountListModel::~AccountListModel()
 
     disconnect(manager, &AccountManager::errorOccured, this, &AccountListModel::errorOccured);
     disconnect(manager, &AccountManager::updatedAccount, this, &AccountListModel::updatedAccount);
+    disconnect(manager, &AccountManager::loadedPostInteractionSettings, this,
+               &AccountListModel::loadedPostInteractionSettings);
+    disconnect(manager, &AccountManager::savedPostInteractionSettings, this,
+               &AccountListModel::savedPostInteractionSettings);
     disconnect(manager, &AccountManager::countChanged, this, &AccountListModel::countChanged);
     disconnect(manager, &AccountManager::finished, this, &AccountListModel::finished);
     disconnect(manager, &AccountManager::allAccountsReadyChanged, this,
@@ -248,6 +256,31 @@ void AccountListModel::refreshAccountProfile(const QString &uuid)
     if (row < 0 || row >= count())
         return;
     getProfile(row);
+}
+
+void AccountListModel::loadPostInteractionSettings(int row)
+{
+    if (row < 0 || row >= count())
+        return;
+
+    AccountManager *manager = AccountManager::getInstance();
+
+    manager->loadPostInteractionSettings(manager->getUuid(row));
+}
+
+void AccountListModel::savePostInteractionSettings(int row, const QString &thread_gate_type,
+                                                   const QStringList &thread_gate_options,
+                                                   const bool post_gate_quote_enabled)
+{
+    if (row < 0 || row >= count())
+        return;
+
+    AccountManager *manager = AccountManager::getInstance();
+
+    manager->savePostInteractionSettings(manager->getUuid(row), thread_gate_type,
+                                         thread_gate_options, post_gate_quote_enabled);
+
+    emit dataChanged(index(row), index(row));
 }
 
 void AccountListModel::save() const

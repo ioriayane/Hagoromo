@@ -1,9 +1,12 @@
 #include "accountmanager.h"
 #include "encryption.h"
+#include "extension/app/bsky/actor/appbskyactorputpreferencesex.h"
 #include "extension/com/atproto/server/comatprotoservercreatesessionex.h"
 #include "extension/com/atproto/server/comatprotoserverrefreshsessionex.h"
 #include "extension/com/atproto/repo/comatprotorepogetrecordex.h"
 #include "atprotocol/app/bsky/actor/appbskyactorgetprofile.h"
+#include "atprotocol/app/bsky/actor/appbskyactorgetpreferences.h"
+#include "atprotocol/app/bsky/actor/appbskyactorputpreferences.h"
 #include "atprotocol/com/atproto/repo/comatprotorepodescriberepo.h"
 #include "extension/directory/plc/directoryplc.h"
 #include "atprotocol/lexicons_func_unknown.h"
@@ -17,7 +20,10 @@
 
 using AtProtocolInterface::AccountData;
 using AtProtocolInterface::AccountStatus;
+using AtProtocolInterface::AppBskyActorGetPreferences;
 using AtProtocolInterface::AppBskyActorGetProfile;
+using AtProtocolInterface::AppBskyActorPutPreferences;
+using AtProtocolInterface::AppBskyActorPutPreferencesEx;
 using AtProtocolInterface::ComAtprotoRepoDescribeRepo;
 using AtProtocolInterface::ComAtprotoRepoGetRecordEx;
 using AtProtocolInterface::ComAtprotoServerCreateSessionEx;
@@ -48,6 +54,8 @@ public:
     void getProfile();
     void getServiceEndpoint(const QString &did, const QString &service,
                             std::function<void(const QString &service_endpoint)> callback);
+    void getPostInteractionSettings(std::function<void()> callback);
+    void putPostInteractionSettings();
     void setMain(bool is);
 
 private:
@@ -85,6 +93,8 @@ QJsonObject AccountManager::Private::save() const
         account_item["post_languages"] = post_langs;
     }
 
+    // ファイルへの保存はしないでPreferencesに別ルートで保存する（保存は設定ダイアログを開いて操作したときだけなので）
+    // （とりあえずは保存しておく）
     if (m_account.thread_gate_type.isEmpty()) {
         account_item["thread_gate_type"] = "everybody";
     } else {
@@ -129,6 +139,7 @@ void AccountManager::Private::load(const QJsonObject &object)
         m_account.post_languages.append(value.toString());
     }
 
+    // 互換性のためしばらく読み込みは残す
     m_account.thread_gate_type = object.value("thread_gate_type").toString("everybody");
     if (m_account.thread_gate_type.isEmpty()) {
         m_account.thread_gate_type = "everybody";
@@ -137,6 +148,7 @@ void AccountManager::Private::load(const QJsonObject &object)
         m_account.thread_gate_options.append(value.toString());
     }
     m_account.post_gate_quote_enabled = object.value("post_gate_quote_enabled").toBool(true);
+    // ------
 
     for (const auto &value : object.value("realtime_feed_rules").toArray()) {
         if (value.toObject().contains("name") && value.toObject().contains("condition")) {
@@ -341,37 +353,41 @@ void AccountManager::Private::getProfile()
         qDebug().noquote() << "Update service endpoint" << m_account.service << "->"
                            << m_account.service_endpoint;
 
-        AppBskyActorGetProfile *profile = new AppBskyActorGetProfile(this);
-        connect(profile, &AppBskyActorGetProfile::finished, [=](bool success) {
-            if (success) {
-                AtProtocolType::AppBskyActorDefs::ProfileViewDetailed detail =
-                        profile->profileViewDetailed();
-                qDebug() << "Update profile detailed" << detail.displayName << detail.description;
-                m_account.displayName = detail.displayName;
-                m_account.description = detail.description;
-                m_account.avatar = detail.avatar;
-                m_account.banner = detail.banner;
-                m_account.status = AccountStatus::Authorized;
+        // ここでPreferencesからThreadGateの設定を取得
+        getPostInteractionSettings([=]() {
+            AppBskyActorGetProfile *profile = new AppBskyActorGetProfile(this);
+            connect(profile, &AppBskyActorGetProfile::finished, [=](bool success) {
+                if (success) {
+                    AtProtocolType::AppBskyActorDefs::ProfileViewDetailed detail =
+                            profile->profileViewDetailed();
+                    qDebug() << "Update profile detailed" << detail.displayName
+                             << detail.description;
+                    m_account.displayName = detail.displayName;
+                    m_account.description = detail.description;
+                    m_account.avatar = detail.avatar;
+                    m_account.banner = detail.banner;
+                    m_account.status = AccountStatus::Authorized;
 
-                q->save();
+                    q->save();
 
-                emit q->updatedAccount(m_account.uuid);
+                    emit q->updatedAccount(m_account.uuid);
 
-                qDebug() << "Update pinned post" << detail.pinnedPost.uri;
-                PinnedPostCache::getInstance()->update(m_account.did, detail.pinnedPost.uri);
-            } else {
-                emit q->errorOccured(profile->errorCode(), profile->errorMessage());
-            }
+                    qDebug() << "Update pinned post" << detail.pinnedPost.uri;
+                    PinnedPostCache::getInstance()->update(m_account.did, detail.pinnedPost.uri);
+                } else {
+                    emit q->errorOccured(profile->errorCode(), profile->errorMessage());
+                }
 
-            q->checkAllAccountsReady();
-            if (q->allAccountTried()) {
-                emit q->finished();
-            }
+                q->checkAllAccountsReady();
+                if (q->allAccountTried()) {
+                    emit q->finished();
+                }
 
-            profile->deleteLater();
+                profile->deleteLater();
+            });
+            profile->setAccount(m_account);
+            profile->getProfile(m_account.did);
         });
-        profile->setAccount(m_account);
-        profile->getProfile(m_account.did);
     });
 }
 
@@ -405,6 +421,87 @@ void AccountManager::Private::getServiceEndpoint(const QString &did, const QStri
     });
     repo->setAccount(m_account);
     repo->describeRepo(did);
+}
+
+void AccountManager::Private::getPostInteractionSettings(std::function<void()> callback)
+{
+    m_account.post_gate_quote_enabled = true;
+    m_account.thread_gate_type = "everybody";
+    m_account.thread_gate_options.clear();
+
+    AppBskyActorGetPreferences *pref = new AppBskyActorGetPreferences(this);
+    connect(pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
+        if (success && !pref->preferences().postInteractionSettingsPref.isEmpty()) {
+            const auto &s = pref->preferences().postInteractionSettingsPref.first();
+            if (!s.postgateEmbeddingRules_AppBskyFeedPostgate_DisableRule.isEmpty()) {
+                // 引用禁止
+                m_account.post_gate_quote_enabled = false;
+            } else {
+                m_account.post_gate_quote_enabled = true;
+            }
+            if (s.threadgateAllowRules_type
+                == AtProtocolType::AppBskyActorDefs::
+                        PostInteractionSettingsPrefThreadgateAllowRulesType::none) {
+                // 誰でも everybody
+                m_account.thread_gate_type = "everybody";
+            } else if (s.threadgateAllowRules_AppBskyFeedThreadgate_MentionRule.isEmpty()
+                       && s.threadgateAllowRules_AppBskyFeedThreadgate_FollowingRule.isEmpty()
+                       && s.threadgateAllowRules_AppBskyFeedThreadgate_FollowerRule.isEmpty()
+                       && s.threadgateAllowRules_AppBskyFeedThreadgate_ListRule.isEmpty()) {
+                // 誰も nobody
+                m_account.thread_gate_type = "nobody";
+            } else {
+                // 組み合わせ
+                m_account.thread_gate_type = "choice";
+                if (!s.threadgateAllowRules_AppBskyFeedThreadgate_MentionRule.isEmpty()) {
+                    m_account.thread_gate_options.append("mentioned");
+                }
+                if (!s.threadgateAllowRules_AppBskyFeedThreadgate_FollowingRule.isEmpty()) {
+                    m_account.thread_gate_options.append("followed");
+                }
+                if (!s.threadgateAllowRules_AppBskyFeedThreadgate_FollowerRule.isEmpty()) {
+                    m_account.thread_gate_options.append("follower");
+                }
+                for (const auto &l : s.threadgateAllowRules_AppBskyFeedThreadgate_ListRule) {
+                    m_account.thread_gate_options.append(l.list);
+                }
+            }
+        }
+        callback();
+        pref->deleteLater();
+    });
+    pref->setAccount(m_account);
+    pref->getPreferences();
+}
+
+void AccountManager::Private::putPostInteractionSettings()
+{
+    AppBskyActorGetPreferences *get_pref = new AppBskyActorGetPreferences(this);
+    connect(get_pref, &AppBskyActorGetPreferences::finished, [=](bool success) {
+        QJsonDocument current_pref = QJsonDocument::fromJson(get_pref->replyJson().toUtf8());
+        if (success && current_pref.object().contains("preferences")) {
+
+            AppBskyActorPutPreferencesEx *put_pref = new AppBskyActorPutPreferencesEx(this);
+            connect(put_pref, &AppBskyActorPutPreferencesEx::finished, [=](bool success) {
+                if (success) {
+                    qDebug() << "finish put preferences(post interaction settings).";
+                }
+                emit q->savedPostInteractionSettings(m_account.uuid);
+                put_pref->deleteLater();
+            });
+            put_pref->setAccount(m_account);
+            put_pref->putPreferences(put_pref->updatePreferencesJson(
+                    get_pref->replyJson(), "app.bsky.actor.defs#postInteractionSettingsPref",
+                    put_pref->makePostInteractionSettingsPref(m_account.thread_gate_type,
+                                                              m_account.thread_gate_options,
+                                                              m_account.post_gate_quote_enabled)));
+        } else {
+            emit q->savedPostInteractionSettings(m_account.uuid);
+        }
+        get_pref->deleteLater();
+    });
+    get_pref->setAccount(m_account);
+    get_pref->getPreferences();
 }
 
 void AccountManager::Private::setMain(bool is)
@@ -592,6 +689,32 @@ void AccountManager::removeRealtimeFeedRule(const QString &uuid, const QString &
 
     dList.at(row)->removeRealtimeFeedRule(name);
     save();
+}
+
+void AccountManager::loadPostInteractionSettings(const QString &uuid)
+{
+    int row = indexAt(uuid);
+    if (row < 0 || row >= count())
+        return;
+
+    dList.at(row)->getPostInteractionSettings(
+            [=]() { emit loadedPostInteractionSettings(dList.at(row)->getAccount().uuid); });
+}
+
+void AccountManager::savePostInteractionSettings(const QString &uuid,
+                                                 const QString &thread_gate_type,
+                                                 const QStringList &thread_gate_options,
+                                                 const bool post_gate_quote_enabled)
+{
+    int row = indexAt(uuid);
+    if (row < 0 || row >= count())
+        return;
+
+    dList.at(row)->update(AccountManagerRoles::ThreadGateTypeRole, thread_gate_type);
+    dList.at(row)->update(AccountManagerRoles::ThreadGateOptionsRole, thread_gate_options);
+    dList.at(row)->update(AccountManagerRoles::PostGateQuoteEnabledRole, post_gate_quote_enabled);
+
+    dList.at(row)->putPostInteractionSettings();
 }
 
 int AccountManager::getMainAccountIndex() const

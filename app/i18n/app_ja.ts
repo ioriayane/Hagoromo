@@ -946,7 +946,7 @@ Please recreate AppPassword in the official application.</source>
 <context>
     <name>KnownFollowersInfo</name>
     <message>
-        <location filename="../qml/parts/KnownFollowersInfo.qml" line="28"/>
+        <location filename="../qml/parts/KnownFollowersInfo.qml" line="29"/>
         <source>Followed by %1 and %2 others</source>
         <translation>%1の他%2人がフォロー中</translation>
     </message>
@@ -2318,17 +2318,17 @@ Please recreate AppPassword in the official application.</source>
         <translation>リンクカード/フィードカード/リストカード/ポストのURL</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/PostDialog.qml" line="588"/>
+        <location filename="../qml/dialogs/PostDialog.qml" line="590"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/PostDialog.qml" line="660"/>
+        <location filename="../qml/dialogs/PostDialog.qml" line="662"/>
         <source>Post</source>
         <translation>ポスト</translation>
     </message>
     <message>
-        <location filename="../qml/dialogs/PostDialog.qml" line="715"/>
+        <location filename="../qml/dialogs/PostDialog.qml" line="717"/>
         <source>Select contents</source>
         <translation>コンテンツの選択</translation>
     </message>
@@ -3101,13 +3101,21 @@ Why should this message be reviewed?</source>
     </message>
     <message>
         <location filename="../qml/dialogs/SelectThreadGateDialog.qml" line="165"/>
-        <source>Follower</source>
-        <translation>フォローされているユーザー</translation>
+        <source>Users your follow</source>
+        <translation>フォローしているユーザー</translation>
     </message>
     <message>
         <location filename="../qml/dialogs/SelectThreadGateDialog.qml" line="175"/>
+        <source>Your followers</source>
+        <translation>フォロワー</translation>
+    </message>
+    <message>
+        <source>Follower</source>
+        <translation type="vanished">フォローされているユーザー</translation>
+    </message>
+    <message>
         <source>Following</source>
-        <translation>フォローしているユーザー</translation>
+        <translation type="vanished">フォローしているユーザー</translation>
     </message>
     <message>
         <source>Followed users</source>

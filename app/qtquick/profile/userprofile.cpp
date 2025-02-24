@@ -132,7 +132,7 @@ void UserProfile::getProfile(const QString &did)
                     setAssociatedChatAllow(detail.viewer.followedBy.contains(detail.did));
                 }
 
-                //追加情報読み込み
+                // 追加情報読み込み
                 getRawProfile();
             } else {
                 emit errorOccured(profile->errorCode(), profile->errorMessage());

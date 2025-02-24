@@ -98,6 +98,7 @@ SOURCES += \
     $$PWD/atprotocol/com/atproto/sync/comatprotosyncgetrepo.cpp \
     $$PWD/atprotocol/lexicons_func.cpp \
     $$PWD/atprotocol/lexicons_func_unknown.cpp \
+    $$PWD/extension/app/bsky/actor/appbskyactorputpreferencesex.cpp \
     $$PWD/extension/com/atproto/moderation/comatprotomoderationcreatereportex.cpp \
     $$PWD/extension/com/atproto/repo/comatprotorepocreaterecordex.cpp \
     $$PWD/extension/com/atproto/repo/comatprotorepodeleterecordex.cpp \
@@ -221,6 +222,7 @@ HEADERS += \
     $$PWD/atprotocol/lexicons.h \
     $$PWD/atprotocol/lexicons_func.h \
     $$PWD/atprotocol/lexicons_func_unknown.h \
+    $$PWD/extension/app/bsky/actor/appbskyactorputpreferencesex.h \
     $$PWD/extension/com/atproto/moderation/comatprotomoderationcreatereportex.h \
     $$PWD/extension/com/atproto/repo/comatprotorepocreaterecordex.h \
     $$PWD/extension/com/atproto/repo/comatprotorepodeleterecordex.h \

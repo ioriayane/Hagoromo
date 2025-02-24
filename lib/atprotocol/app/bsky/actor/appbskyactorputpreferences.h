@@ -12,7 +12,7 @@ public:
 
     void putPreferences(const QJsonArray &preferences);
 
-private:
+protected:
     virtual bool parseJson(bool success, const QString reply_json);
 };
 

@@ -1,0 +1,27 @@
+{
+    "$type": "app.bsky.actor.defs#postInteractionSettingsPref",
+    "postgateEmbeddingRules": [
+        {
+            "$type": "app.bsky.feed.postgate#disableRule"
+        }
+    ],
+    "threadgateAllowRules": [
+        {
+            "$type": "app.bsky.feed.threadgate#mentionRule"
+        },
+        {
+            "$type": "app.bsky.feed.threadgate#followingRule"
+        },
+        {
+            "$type": "app.bsky.feed.threadgate#followerRule"
+        },
+        {
+            "$type": "app.bsky.feed.threadgate#listRule",
+            "list": "at://path/to/1"
+        },
+        {
+            "$type": "app.bsky.feed.threadgate#listRule",
+            "list": "at://path/to/2"
+        }
+    ]
+}
