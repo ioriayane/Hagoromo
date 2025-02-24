@@ -50,6 +50,7 @@ SOURCES += \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetblocks.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollowers.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollows.cpp \
+    $$PWD/atprotocol/app/bsky/graph/appbskygraphgetknownfollowers.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlist.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlistblocks.cpp \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlistmutes.cpp \
@@ -97,6 +98,7 @@ SOURCES += \
     $$PWD/atprotocol/com/atproto/sync/comatprotosyncgetrepo.cpp \
     $$PWD/atprotocol/lexicons_func.cpp \
     $$PWD/atprotocol/lexicons_func_unknown.cpp \
+    $$PWD/extension/app/bsky/actor/appbskyactorputpreferencesex.cpp \
     $$PWD/extension/com/atproto/moderation/comatprotomoderationcreatereportex.cpp \
     $$PWD/extension/com/atproto/repo/comatprotorepocreaterecordex.cpp \
     $$PWD/extension/com/atproto/repo/comatprotorepodeleterecordex.cpp \
@@ -171,6 +173,7 @@ HEADERS += \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetblocks.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollowers.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetfollows.h \
+    $$PWD/atprotocol/app/bsky/graph/appbskygraphgetknownfollowers.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlist.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlistblocks.h \
     $$PWD/atprotocol/app/bsky/graph/appbskygraphgetlistmutes.h \
@@ -219,6 +222,7 @@ HEADERS += \
     $$PWD/atprotocol/lexicons.h \
     $$PWD/atprotocol/lexicons_func.h \
     $$PWD/atprotocol/lexicons_func_unknown.h \
+    $$PWD/extension/app/bsky/actor/appbskyactorputpreferencesex.h \
     $$PWD/extension/com/atproto/moderation/comatprotomoderationcreatereportex.h \
     $$PWD/extension/com/atproto/repo/comatprotorepocreaterecordex.h \
     $$PWD/extension/com/atproto/repo/comatprotorepodeleterecordex.h \

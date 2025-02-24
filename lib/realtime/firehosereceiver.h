@@ -30,6 +30,10 @@ public:
     enum FirehoseReceiverStatus {
         Disconnected,
         Connected,
+        Connecting,
+        HostLookup,
+        Bound,
+        Closing,
         Error,
     };
 
@@ -53,6 +57,7 @@ public:
 
     QString serviceEndpoint() const;
     void setServiceEndpoint(const QString &newServiceEndpoint);
+    void changeServiceEndpoint(const QString &newServiceEndpoint);
 
     FirehoseReceiverStatus status() const;
     void setStatus(FirehoseReceiverStatus newStatus);
@@ -67,11 +72,14 @@ signals:
     void statusChanged(FirehoseReceiverStatus newStatus);
     void analysisChanged();
     void judgeSelectionAndReaction(const QJsonObject &object);
+    void serviceEndpointChanged(const QString &endpoint);
 
 private:
     void analizeReceivingData(const QJsonObject &json, const qsizetype size);
     void appendThreadSelector(AbstractPostSelector *selector);
     void removeThreadSelector(QObject *parent);
+    void updateTimeOfLastReceivedData(const QJsonObject &json);
+    QString getCursorTime() const;
 
     QHash<QObject *, QPointer<AbstractPostSelector>> m_selectorHash;
     QHash<QObject *, QPointer<QThread>> m_selectorThreadHash;
@@ -88,6 +96,7 @@ private:
     QHash<QString, int> m_nsidsCount; // QHash<nsid, count>
     QHash<QString, QString> m_nsidsReceivePerSecond; // QHash<nsid, receive/sec>
     qsizetype m_receivedDataSize; // byte
+    qint64 m_timeOfReceivedData; // 最終受信時刻
 };
 
 }

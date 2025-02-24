@@ -112,11 +112,7 @@ void copyProfileViewDetailed(const QJsonObject &src, AppBskyActorDefs::ProfileVi
             ComAtprotoLabelDefs::copyLabel(s.toObject(), child);
             dest.labels.append(child);
         }
-        if (src.value("pinnedPost").isString()) {
-            dest.pinnedPost.uri = src.value("pinnedPost").toString();
-        } else {
-            ComAtprotoRepoStrongRef::copyMain(src.value("pinnedPost").toObject(), dest.pinnedPost);
-        }
+        ComAtprotoRepoStrongRef::copyMain(src.value("pinnedPost").toObject(), dest.pinnedPost);
     }
 }
 void copyAdultContentPref(const QJsonObject &src, AppBskyActorDefs::AdultContentPref &dest)
@@ -283,6 +279,11 @@ void copyPostInteractionSettingsPref(const QJsonObject &src,
 {
     if (!src.isEmpty()) {
         // array<union> threadgateAllowRules
+        if (src.contains("threadgateAllowRules")) {
+            dest.threadgateAllowRules_type =
+                    AppBskyActorDefs::PostInteractionSettingsPrefThreadgateAllowRulesType::
+                            threadgateAllowRules_AppBskyFeedThreadgate_MentionRule;
+        }
         for (const auto &value : src.value("threadgateAllowRules").toArray()) {
             QString value_type = value.toObject().value("$type").toString();
             if (value_type == QStringLiteral("app.bsky.feed.threadgate#mentionRule")) {
@@ -316,6 +317,11 @@ void copyPostInteractionSettingsPref(const QJsonObject &src,
             }
         }
         // array<union> postgateEmbeddingRules
+        if (src.contains("postgateEmbeddingRules")) {
+            dest.postgateEmbeddingRules_type =
+                    AppBskyActorDefs::PostInteractionSettingsPrefPostgateEmbeddingRulesType::
+                            postgateEmbeddingRules_AppBskyFeedPostgate_DisableRule;
+        }
         for (const auto &value : src.value("postgateEmbeddingRules").toArray()) {
             QString value_type = value.toObject().value("$type").toString();
             if (value_type == QStringLiteral("app.bsky.feed.postgate#disableRule")) {
@@ -625,6 +631,9 @@ void copyMain(const QJsonObject &src, AppBskyFeedThreadgate::Main &dest)
     if (!src.isEmpty()) {
         dest.post = src.value("post").toString();
         // array<union> allow
+        if (src.contains("allow")) {
+            dest.allow_type = AppBskyFeedThreadgate::MainAllowType::allow_MentionRule;
+        }
         for (const auto &value : src.value("allow").toArray()) {
             QString value_type = value.toObject().value("$type").toString();
             if (value_type == QStringLiteral("app.bsky.feed.threadgate#mentionRule")) {
@@ -679,6 +688,10 @@ void copyMain(const QJsonObject &src, AppBskyFeedPostgate::Main &dest)
             dest.detachedEmbeddingUris.append(value.toString());
         }
         // array<union> embeddingRules
+        if (src.contains("embeddingRules")) {
+            dest.embeddingRules_type =
+                    AppBskyFeedPostgate::MainEmbeddingRulesType::embeddingRules_DisableRule;
+        }
         for (const auto &value : src.value("embeddingRules").toArray()) {
             QString value_type = value.toObject().value("$type").toString();
             if (value_type == QStringLiteral("app.bsky.feed.postgate#disableRule")) {
@@ -821,6 +834,10 @@ void copyViewRecord(const QJsonObject &src, AppBskyEmbedRecord::ViewRecord &dest
         dest.likeCount = src.value("likeCount").toInt();
         dest.quoteCount = src.value("quoteCount").toInt();
         // array<union> embeds
+        if (src.contains("embeds")) {
+            dest.embeds_type =
+                    AppBskyEmbedRecord::ViewRecordEmbedsType::embeds_AppBskyEmbedImages_View;
+        }
         for (const auto &value : src.value("embeds").toArray()) {
             QString value_type = value.toObject().value("$type").toString();
             if (value_type == QStringLiteral("app.bsky.embed.images#view")) {
@@ -1256,6 +1273,9 @@ void copyThreadViewPost(const QJsonObject &src, AppBskyFeedDefs::ThreadViewPost 
                                              dest.parent_BlockedPost);
         }
         // array<union> replies
+        if (src.contains("replies")) {
+            dest.replies_type = AppBskyFeedDefs::ThreadViewPostRepliesType::replies_ThreadViewPost;
+        }
         for (const auto &value : src.value("replies").toArray()) {
             QString value_type = value.toObject().value("$type").toString();
             if (value_type == QStringLiteral("app.bsky.feed.defs#threadViewPost")) {
@@ -1356,6 +1376,9 @@ void copyMain(const QJsonObject &src, AppBskyRichtextFacet::Main &dest)
     if (!src.isEmpty()) {
         copyByteSlice(src.value("index").toObject(), dest.index);
         // array<union> features
+        if (src.contains("features")) {
+            dest.features_type = AppBskyRichtextFacet::MainFeaturesType::features_Mention;
+        }
         for (const auto &value : src.value("features").toArray()) {
             QString value_type = value.toObject().value("$type").toString();
             if (value_type == QStringLiteral("app.bsky.richtext.facet#mention")) {

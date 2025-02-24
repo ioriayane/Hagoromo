@@ -20,6 +20,7 @@
 #include "qtquick/timeline/quotedpostlistmodel.h"
 #include "qtquick/profile/followslistmodel.h"
 #include "qtquick/profile/followerslistmodel.h"
+#include "qtquick/profile/knownfollowerslistmodel.h"
 #include "qtquick/profile/blockslistmodel.h"
 #include "qtquick/profile/muteslistmodel.h"
 #include "qtquick/timeline/searchpostlistmodel.h"
@@ -64,6 +65,7 @@
 
 #include "tools/encryption.h"
 #include "tools/translatorchanger.h"
+#include "realtime/firehosereceiver.h"
 
 void setAppFont(QGuiApplication &app, QSettings &settings)
 {
@@ -84,6 +86,20 @@ void setAppFont(QGuiApplication &app, QSettings &settings)
     }
 }
 
+void setRealtimeFeedEndpoint(QSettings &settings)
+{
+    RealtimeFeed::FirehoseReceiver *receiver = RealtimeFeed::FirehoseReceiver::getInstance();
+    if (receiver == nullptr)
+        return;
+    if (!settings.contains("realtimeServiceEndpoint")) {
+        // キーが無い状態で起動するとなぜか翻訳のキーが消えてしまうので、ここで設定する
+        settings.setValue("realtimeServiceEndpoint", "wss://jetstream1.us-west.bsky.network");
+    }
+    QString endpoint = settings.value("realtimeServiceEndpoint").toString();
+    qDebug() << "Load realtime feed endpoint :" << endpoint;
+    receiver->setServiceEndpoint(endpoint);
+}
+
 int main(int argc, char *argv[])
 {
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
@@ -97,7 +113,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName(QStringLiteral("relog"));
     app.setOrganizationDomain(QStringLiteral("hagoromo.relog.tech"));
     app.setApplicationName(QStringLiteral("Hagoromo"));
-    app.setApplicationVersion(QStringLiteral("0.46.0"));
+    app.setApplicationVersion(QStringLiteral("0.47.0"));
 #ifndef HAGOROMO_RELEASE_BUILD
     app.setApplicationVersion(app.applicationVersion() + "d");
 #endif
@@ -124,6 +140,8 @@ int main(int argc, char *argv[])
                                       "FollowsListModel");
     qmlRegisterType<FollowersListModel>("tech.relog.hagoromo.followerslistmodel", 1, 0,
                                         "FollowersListModel");
+    qmlRegisterType<KnownFollowersListModel>("tech.relog.hagoromo.knownfollowerslistmodel", 1, 0,
+                                             "KnownFollowersListModel");
     qmlRegisterType<BlocksListModel>("tech.relog.hagoromo.blockslistmodel", 1, 0,
                                      "BlocksListModel");
     qmlRegisterType<MutesListModel>("tech.relog.hagoromo.muteslistmodel", 1, 0, "MutesListModel");
@@ -209,6 +227,7 @@ int main(int argc, char *argv[])
 
     QSettings settings;
     setAppFont(app, settings);
+    setRealtimeFeedEndpoint(settings);
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
 #else
     SystemTool::setFlicableWheelDeceleration(settings.value("wheelDeceleration", 10000).toInt());

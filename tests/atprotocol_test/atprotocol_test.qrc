@@ -78,5 +78,12 @@
         <file>response/labels/provider/10/xrpc/app.bsky.labeler.getServices</file>
         <file>response/labels/provider/11/xrpc/app.bsky.labeler.getServices</file>
         <file>response/labels/provider/12/xrpc/app.bsky.labeler.getServices</file>
+        <file>data/preferences/app.bsky.actor.putPreferences.10.json</file>
+        <file>data/preferences/app.bsky.actor.putPreferences.20.json</file>
+        <file>data/preferences/app.bsky.actor.putPreferences.everybody.1.json</file>
+        <file>data/preferences/app.bsky.actor.putPreferences.everybody.2.json</file>
+        <file>data/preferences/app.bsky.actor.putPreferences.nobody.1.json</file>
+        <file>data/preferences/app.bsky.actor.putPreferences.nobody.2.json</file>
+        <file>data/preferences/app.bsky.actor.putPreferences.choice.1.json</file>
     </qresource>
 </RCC>

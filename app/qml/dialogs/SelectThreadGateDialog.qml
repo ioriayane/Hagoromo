@@ -19,6 +19,7 @@ Dialog {
 
     bottomPadding: AdjustedValues.s10
 
+    property bool delayMode: false  // ダイアログ表示後に別で設定をロードしてから表示
     property bool defaultSettingMode: false
     property bool ready: true   // 後から変更する時はfalseにしてAcceptさせないようにする
 
@@ -33,10 +34,30 @@ Dialog {
     Account {
         id: account
     }
+
     signal errorOccured(string account_uuid, string code, string message)
+    signal requestSaveSettings()
 
     onInitialQuoteEnabledChanged: quoteEanbled.checked = initialQuoteEnabled
     onOpened: {
+        if(!delayMode){
+            updateViewItems()
+        }
+    }
+    onClosed: {
+        quoteEanbled.checked = true
+        listsListModel.clear()
+        var i
+        for(i=0; i<group.buttons.length; i++){
+            group.buttons[i].checked = false
+        }
+        choiceRadioButton.checked = false
+        mentionedCheckBox.checked = false
+        followerCheckBox.checked = false
+        followedCheckBox.checked = false
+    }
+
+    function updateViewItems() {
         var i
         quoteEanbled.checked = initialQuoteEnabled
         choiceRadioButton.checked = true
@@ -61,18 +82,6 @@ Dialog {
         listsListModel.clear()
         listsListModel.setAccount(account.uuid)
         listsListModel.getLatest()
-    }
-    onClosed: {
-        quoteEanbled.checked = true
-        listsListModel.clear()
-        var i
-        for(i=0; i<group.buttons.length; i++){
-            group.buttons[i].checked = false
-        }
-        choiceRadioButton.checked = false
-        mentionedCheckBox.checked = false
-        followerCheckBox.checked = false
-        followedCheckBox.checked = false
     }
 
     function clear(){
@@ -109,6 +118,7 @@ Dialog {
             ButtonGroup.group: group
             verticalPadding: 3
             font.pointSize: AdjustedValues.f10
+            enabled: selectThreadGateDialog.ready
             text: qsTr("Everybody")
             property string value: "everybody"
         }
@@ -116,6 +126,7 @@ Dialog {
             ButtonGroup.group: group
             verticalPadding: 3
             font.pointSize: AdjustedValues.f10
+            enabled: selectThreadGateDialog.ready
             text: qsTr("Nobody")
             property string value: "nobody"
         }
@@ -126,6 +137,7 @@ Dialog {
                 topPadding: 5
                 bottomPadding: 5
                 font.pointSize: AdjustedValues.f10
+                enabled: selectThreadGateDialog.ready
                 text: qsTr("Combine these options")
                 property string value: "choice"
             }
@@ -133,7 +145,7 @@ Dialog {
             ColumnLayout {
                 id: choiceLayout
                 anchors.fill: parent
-                enabled: choiceRadioButton.checked
+                enabled: choiceRadioButton.checked && selectThreadGateDialog.ready
                 spacing: 0 //AdjustedValues.s20
 
                 property int checkedCount: {
@@ -156,24 +168,24 @@ Dialog {
                     property string value: "mentioned"
                 }
                 CheckBox {
-                    id: followerCheckBox
-                    leftPadding: 15
-                    topPadding: AdjustedValues.s10
-                    bottomPadding: AdjustedValues.s10
-                    font.pointSize: AdjustedValues.f10
-                    enabled: checked || choiceLayout.checkedCount < 5
-                    text: qsTr("Follower")
-                    property string value: "follower"
-                }
-                CheckBox {
                     id: followedCheckBox
                     leftPadding: 15
                     topPadding: AdjustedValues.s10
                     bottomPadding: AdjustedValues.s10
                     font.pointSize: AdjustedValues.f10
                     enabled: checked || choiceLayout.checkedCount < 5
-                    text: qsTr("Following")
+                    text: qsTr("Users your follow")
                     property string value: "followed"
+                }
+                CheckBox {
+                    id: followerCheckBox
+                    leftPadding: 15
+                    topPadding: AdjustedValues.s10
+                    bottomPadding: AdjustedValues.s10
+                    font.pointSize: AdjustedValues.f10
+                    enabled: checked || choiceLayout.checkedCount < 5
+                    text: qsTr("Your followers")
+                    property string value: "follower"
                 }
 
                 ScrollView {
@@ -255,6 +267,11 @@ Dialog {
                 font.pointSize: AdjustedValues.f10
                 text: qsTr("Apply")
                 enabled: selectThreadGateDialog.ready
+                BusyIndicator {
+                    anchors.fill: parent
+                    anchors.margins: 3
+                    visible: !parent.enabled
+                }
                 onClicked: {
                     selectThreadGateDialog.selectedQuoteEnabled = quoteEanbled.checked
                     selectThreadGateDialog.selectedType = "everybody"
@@ -283,7 +300,12 @@ Dialog {
                             }
                         }
                     }
-                    selectThreadGateDialog.accept()
+                    if(!delayMode){
+                        selectThreadGateDialog.accept()
+                    }else{
+                        selectThreadGateDialog.ready = false
+                        selectThreadGateDialog.requestSaveSettings()
+                    }
                 }
             }
         }

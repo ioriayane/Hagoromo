@@ -15,6 +15,9 @@
 #include <QQuickItem>
 #include <QPainter>
 #include "atprotocol/lexicons_func_unknown.h"
+#include "realtime/firehosereceiver.h"
+
+using namespace RealtimeFeed;
 
 SystemTool::SystemTool(QObject *parent) : QObject { parent }
 {
@@ -86,6 +89,26 @@ void SystemTool::setFlicableWheelDeceleration(qreal deceleration)
         return;
     qDebug() << "deceleration" << deceleration;
     qputenv("QT_QUICK_FLICKABLE_WHEEL_DECELERATION", QString::number(deceleration).toLocal8Bit());
+}
+
+QStringList SystemTool::possibleRealtimeFeedServiceEndpoints() const
+{
+    return QStringList() << "wss://jetstream1.us-east.bsky.network"
+                         << "wss://jetstream2.us-east.bsky.network"
+                         << "wss://jetstream1.us-west.bsky.network"
+                         << "wss://jetstream2.us-west.bsky.network"
+#ifdef QT_DEBUG
+                         << "ws://localhost:19283"
+#endif
+            ;
+}
+
+void SystemTool::changeRealtimeFeedServiceEndpoint(const QString &endpoint)
+{
+    FirehoseReceiver *receiver = FirehoseReceiver::getInstance();
+    if (receiver == nullptr)
+        return;
+    receiver->changeServiceEndpoint(endpoint);
 }
 
 QString SystemTool::applicationVersion() const

@@ -8,6 +8,18 @@ description: This is a multi-column Bluesky client.
 
 ## 2025
 
+### v0.47.0 - 2025/2/24
+
+- Add
+  - Add a function that allows you to select the destination of the real-time feed
+  - Add "Followers you know" to the profile page
+- Update
+  - Change so that the real-time feed will automatically reconnect when it disconnects
+  - Relaxing the conditions for redirects when obtaining OGP
+  - Change intaraction settings so that they can be synchronized with the official app
+- Fix
+  - Fix for cases where the current setting for post-post responses cannot be displayed correctly
+
 ### v0.46.0 - 2025/2/8
 
 - Add

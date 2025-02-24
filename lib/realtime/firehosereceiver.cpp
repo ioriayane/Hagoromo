@@ -21,7 +21,8 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
       ,
       m_wdgCounter(0),
       m_status(FirehoseReceiverStatus::Disconnected),
-      m_receivedDataSize(0)
+      m_receivedDataSize(0),
+      m_timeOfReceivedData(0)
 {
 #ifdef USE_JETSTREAM
     m_serviceEndpoint = "wss://jetstream2.us-west.bsky.network";
@@ -42,6 +43,7 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
     connect(&m_client, &ComAtprotoSyncSubscribeReposEx::received,
             [=](const QString &type, const QJsonObject &json, const qsizetype size) {
                 m_wdgCounter = 0;
+                updateTimeOfLastReceivedData(json);
                 emit receivingChanged(true);
 
                 if (type != "#commit")
@@ -59,19 +61,47 @@ FirehoseReceiver::FirehoseReceiver(QObject *parent)
         emit receivingChanged(false);
         emit disconnectFromService();
     });
+    connect(&m_client, &ComAtprotoSyncSubscribeReposEx::socketStateChanged,
+            [this](QAbstractSocket::SocketState state) {
+                switch (state) {
+                case QAbstractSocket::SocketState::ConnectedState:
+                    setStatus(FirehoseReceiverStatus::Connected);
+                    break;
+                case QAbstractSocket::SocketState::UnconnectedState:
+                    setStatus(FirehoseReceiverStatus::Disconnected);
+                    break;
+                case QAbstractSocket::SocketState::ConnectingState:
+                    setStatus(FirehoseReceiverStatus::Connecting);
+                    break;
+                case QAbstractSocket::SocketState::HostLookupState:
+                    setStatus(FirehoseReceiverStatus::HostLookup);
+                    break;
+                case QAbstractSocket::SocketState::BoundState:
+                    setStatus(FirehoseReceiverStatus::Bound);
+                    break;
+                case QAbstractSocket::SocketState::ClosingState:
+                    setStatus(FirehoseReceiverStatus::Closing);
+                    break;
+                default:
+                    break;
+                }
+            });
 
     connect(&m_wdgTimer, &QTimer::timeout, [this]() {
-        if (m_wdgCounter < 12) {
+        if (m_wdgCounter < 3) {
             m_wdgCounter++;
         } else {
             qDebug().noquote() << "FirehoseTimeout : Nothing was received via Websocket within the "
                                   "specified time."
                                << m_wdgCounter;
-            setStatus(FirehoseReceiverStatus::Error);
-            emit errorOccured("FirehoseTimeout",
-                              "Nothing was received via Websocket within the specified time.");
-            emit receivingChanged(false);
-            stop();
+            if (status() == FirehoseReceiver::FirehoseReceiverStatus::Connected
+                || status() == FirehoseReceiver::FirehoseReceiverStatus::Connecting) {
+                qDebug().noquote() << "Timeout, stop and start : " << status();
+                stop();
+            } else {
+                qDebug().noquote() << "Timeout, start : " << status();
+            }
+            start();
         }
     });
 
@@ -110,12 +140,18 @@ void FirehoseReceiver::start()
         path.resize(path.length() - 1);
     }
 #ifdef USE_JETSTREAM
+    QString cursor = getCursorTime();
+    // cursor = QString::number(
+    //         QDateTime::fromString("2025-02-14 18:42:00", Qt::ISODate).toMSecsSinceEpoch());
+    if (!cursor.isEmpty()) {
+        cursor = "&cursor=" + cursor;
+    }
     ComAtprotoSyncSubscribeReposEx::SubScribeMode mode =
             ComAtprotoSyncSubscribeReposEx::SubScribeMode::JetStream;
     QUrl url(path + "/subscribe?wantedCollections=app.bsky.feed.post"
              + "&wantedCollections=app.bsky.feed.repost" + "&wantedCollections=app.bsky.feed.like"
              + "&wantedCollections=app.bsky.graph.follow"
-             + "&wantedCollections=app.bsky.graph.listitem");
+             + "&wantedCollections=app.bsky.graph.listitem" + cursor);
 #else
     ComAtprotoSyncSubscribeReposEx::SubScribeMode mode =
             ComAtprotoSyncSubscribeReposEx::SubScribeMode::Firehose;
@@ -241,7 +277,32 @@ QString FirehoseReceiver::serviceEndpoint() const
 
 void FirehoseReceiver::setServiceEndpoint(const QString &newServiceEndpoint)
 {
+    if (m_serviceEndpoint == newServiceEndpoint)
+        return;
     m_serviceEndpoint = newServiceEndpoint;
+
+    emit serviceEndpointChanged(m_serviceEndpoint);
+}
+
+void FirehoseReceiver::changeServiceEndpoint(const QString &newServiceEndpoint)
+{
+    if (m_serviceEndpoint == newServiceEndpoint)
+        return;
+    m_serviceEndpoint = newServiceEndpoint;
+
+    emit serviceEndpointChanged(m_serviceEndpoint);
+
+    if (status() == FirehoseReceiver::FirehoseReceiverStatus::Connected
+        || status() == FirehoseReceiver::FirehoseReceiverStatus::Connecting) {
+        // 今現在、接続している場合のみ停止→開始をする
+        // そのためstate()の確認のあとにstop()をする必要がある
+        qDebug().noquote() << "Change firehose endpoint and restart:" << m_serviceEndpoint;
+        stop();
+        start();
+    } else {
+        qDebug().noquote() << "Change firehose endpoint:" << m_serviceEndpoint;
+        stop();
+    }
 }
 
 FirehoseReceiver::FirehoseReceiverStatus FirehoseReceiver::status() const
@@ -285,6 +346,7 @@ void FirehoseReceiver::analizeReceivingData(const QJsonObject &json, const qsize
             m_nsidsCount[nsid] = 0;
         }
         m_nsidsReceivePerSecond["__total"] = QString::number(total);
+        m_nsidsReceivePerSecond["__date_time"] = date.toString("MM/dd hh:mm:ss");
         m_nsidsReceivePerSecond["__difference"] =
                 QString::number(date.msecsTo(QDateTime::currentDateTimeUtc()));
         m_nsidsReceivePerSecond["__bit_per_sec"] =
@@ -319,6 +381,28 @@ void FirehoseReceiver::removeThreadSelector(QObject *parent)
         }
         t->deleteLater();
     }
+}
+
+void FirehoseReceiver::updateTimeOfLastReceivedData(const QJsonObject &json)
+{
+    m_timeOfReceivedData = QDateTime::fromString(json.value("time").toString(), Qt::ISODateWithMs)
+                                   .toMSecsSinceEpoch();
+}
+
+QString FirehoseReceiver::getCursorTime() const
+{
+    if (m_timeOfReceivedData == 0)
+        return QString();
+    qint64 now = QDateTime::currentMSecsSinceEpoch();
+    qDebug().noquote() << "getCursorTime:"
+                       << " now :" << now;
+    qDebug().noquote() << "getCursorTime:"
+                       << " time:" << m_timeOfReceivedData;
+    qDebug().noquote() << "getCursorTime:"
+                       << " diff:" << (now - m_timeOfReceivedData);
+    if ((now < m_timeOfReceivedData) || ((now - m_timeOfReceivedData) > (5 * 60 * 1000)))
+        return QString();
+    return QString::number(m_timeOfReceivedData + 1);
 }
 
 QHash<QString, QString> FirehoseReceiver::nsidsReceivePerSecond() const

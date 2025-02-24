@@ -24,6 +24,7 @@ UserProfile::UserProfile(QObject *parent)
       m_postsCount(0),
       m_following(false),
       m_followedBy(false),
+      m_knownFollowersCount(0),
       m_muted(false),
       m_blockedBy(false),
       m_blocking(false),
@@ -78,6 +79,19 @@ void UserProfile::getProfile(const QString &did)
                 setFollowing(detail.viewer.following.contains(m_account.did));
                 setFollowedBy(detail.viewer.followedBy.contains(did));
                 setFollowingUri(detail.viewer.following);
+                QStringList knownFollowerAvators;
+                QStringList knownFollowers;
+                for (const auto &f : detail.viewer.knownFollowers.followers) {
+                    if (f) {
+                        knownFollowerAvators.append(f.data()->avatar);
+                        knownFollowers.append(f.data()->displayName.isEmpty()
+                                                      ? f.data()->handle
+                                                      : f.data()->displayName);
+                    }
+                }
+                setKnownFollowerAvators(knownFollowerAvators);
+                setKnownFollowers(knownFollowers);
+                setKnownFollowersCount(detail.viewer.knownFollowers.count);
                 setMuted(detail.viewer.muted);
                 setBlockedBy(detail.viewer.blockedBy);
                 setBlocking(detail.viewer.blocking.contains(m_account.did));
@@ -118,7 +132,7 @@ void UserProfile::getProfile(const QString &did)
                     setAssociatedChatAllow(detail.viewer.followedBy.contains(detail.did));
                 }
 
-                //追加情報読み込み
+                // 追加情報読み込み
                 getRawProfile();
             } else {
                 emit errorOccured(profile->errorCode(), profile->errorMessage());
@@ -301,6 +315,45 @@ void UserProfile::setFollowingUri(const QString &newFollowingUri)
         return;
     m_followingUri = newFollowingUri;
     emit followingUriChanged();
+}
+
+QStringList UserProfile::knownFollowerAvators() const
+{
+    return m_knownFollowerAvators;
+}
+
+void UserProfile::setKnownFollowerAvators(const QStringList &newKnownFollowerAvators)
+{
+    if (m_knownFollowerAvators == newKnownFollowerAvators)
+        return;
+    m_knownFollowerAvators = newKnownFollowerAvators;
+    emit knownFollowerAvatorsChanged();
+}
+
+QStringList UserProfile::knownFollowers() const
+{
+    return m_knownFollowers;
+}
+
+void UserProfile::setKnownFollowers(const QStringList &newKnownFollowers)
+{
+    if (m_knownFollowers == newKnownFollowers)
+        return;
+    m_knownFollowers = newKnownFollowers;
+    emit knownFollowersChanged();
+}
+
+int UserProfile::knownFollowersCount() const
+{
+    return m_knownFollowersCount;
+}
+
+void UserProfile::setKnownFollowersCount(int newKnownFollowersCount)
+{
+    if (m_knownFollowersCount == newKnownFollowersCount)
+        return;
+    m_knownFollowersCount = newKnownFollowersCount;
+    emit knownFollowersCountChanged();
 }
 
 bool UserProfile::running() const

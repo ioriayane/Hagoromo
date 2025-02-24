@@ -395,9 +395,7 @@ ApplicationWindow {
             }
             function onFinishedRequestPostGate(success, quote_enabled, uris){
                 console.log("Get init quote enabled:" + quote_enabled + ", " + success)
-                if(success){
-                    selectThreadGateDialog.initialQuoteEnabled = quote_enabled
-                }
+                selectThreadGateDialog.initialQuoteEnabled = quote_enabled
                 selectThreadGateDialog.ready = true
             }
         }
