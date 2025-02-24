@@ -34,7 +34,9 @@ Dialog {
     Account {
         id: account
     }
+
     signal errorOccured(string account_uuid, string code, string message)
+    signal requestSaveSettings()
 
     onInitialQuoteEnabledChanged: quoteEanbled.checked = initialQuoteEnabled
     onOpened: {
@@ -143,7 +145,7 @@ Dialog {
             ColumnLayout {
                 id: choiceLayout
                 anchors.fill: parent
-                enabled: choiceRadioButton.checked
+                enabled: choiceRadioButton.checked && selectThreadGateDialog.ready
                 spacing: 0 //AdjustedValues.s20
 
                 property int checkedCount: {
@@ -265,6 +267,11 @@ Dialog {
                 font.pointSize: AdjustedValues.f10
                 text: qsTr("Apply")
                 enabled: selectThreadGateDialog.ready
+                BusyIndicator {
+                    anchors.fill: parent
+                    anchors.margins: 3
+                    visible: !parent.enabled
+                }
                 onClicked: {
                     selectThreadGateDialog.selectedQuoteEnabled = quoteEanbled.checked
                     selectThreadGateDialog.selectedType = "everybody"
@@ -293,7 +300,12 @@ Dialog {
                             }
                         }
                     }
-                    selectThreadGateDialog.accept()
+                    if(!delayMode){
+                        selectThreadGateDialog.accept()
+                    }else{
+                        selectThreadGateDialog.ready = false
+                        selectThreadGateDialog.requestSaveSettings()
+                    }
                 }
             }
         }

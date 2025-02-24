@@ -55,7 +55,7 @@ Dialog {
         delayMode: true
         defaultSettingMode: true
         property int accountIndex: -1
-        onAccepted: {
+        onRequestSaveSettings: {
             accountList.model.savePostInteractionSettings(accountIndex,
                                                           selectedType,
                                                           selectedOptions,
@@ -65,6 +65,8 @@ Dialog {
             target: accountList.model
             function onSavedPostInteractionSettings(uuid) {
                 console.log("onSavedPostInteractionSettings:" + uuid)
+                selectThreadGateDialog.close()
+                selectThreadGateDialog.ready = true
             }
             function onLoadedPostInteractionSettings(uuid) {
                 console.log("onLoadedPostInteractionSettings:" + uuid)
