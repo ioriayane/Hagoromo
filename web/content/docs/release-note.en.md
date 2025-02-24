@@ -14,6 +14,7 @@ description: This is a multi-column Bluesky client.
 - Update
   - Change so that the real-time feed will automatically reconnect when it disconnects
   - Relaxing the conditions for redirects when obtaining OGP
+  - Change intaraction settings so that they can be synchronized with the official app
 - Fix
   - Fix for cases where the current setting for post-post responses cannot be displayed correctly
 
