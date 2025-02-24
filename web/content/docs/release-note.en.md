@@ -8,6 +8,8 @@ description: This is a multi-column Bluesky client.
 
 ## 2025
 
+### v0.47.0 - 2025/2/24
+
 - Add
   - Add a function that allows you to select the destination of the real-time feed
   - Add "Followers you know" to the profile page
