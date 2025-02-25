@@ -148,7 +148,7 @@ bool ChatListModel::getLatest()
             convos->setAccount(account());
             convos->setService(account().service_endpoint);
             convos->setLabelers(labelerDids());
-            convos->listConvos(0, QString());
+            convos->listConvos(0, QString(), QString(), QString());
         });
     });
 
@@ -176,7 +176,7 @@ bool ChatListModel::getNext()
         });
         convos->setAccount(account());
         convos->setService(account().service_endpoint);
-        convos->listConvos(0, m_cursor);
+        convos->listConvos(0, m_cursor, QString(), QString());
     });
 
     return true;

@@ -443,7 +443,7 @@ void ChatMessageListModel::getLogCursor(std::function<void()> callback)
     });
     convos->setAccount(account());
     convos->setService(account().service_endpoint);
-    convos->listConvos(1, QString());
+    convos->listConvos(1, QString(), QString(), QString());
 }
 
 void ChatMessageListModel::setMembers(const AtProtocolType::ChatBskyConvoDefs::ConvoView &convo)
