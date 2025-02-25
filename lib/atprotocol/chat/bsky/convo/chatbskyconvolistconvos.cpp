@@ -9,7 +9,8 @@ namespace AtProtocolInterface {
 
 ChatBskyConvoListConvos::ChatBskyConvoListConvos(QObject *parent) : AccessAtProtocol { parent } { }
 
-void ChatBskyConvoListConvos::listConvos(const int limit, const QString &cursor)
+void ChatBskyConvoListConvos::listConvos(const int limit, const QString &cursor,
+                                         const QString &readState, const QString &status)
 {
     appendRawHeader("atproto-proxy", "did:web:api.bsky.chat#bsky_chat");
 
@@ -19,6 +20,12 @@ void ChatBskyConvoListConvos::listConvos(const int limit, const QString &cursor)
     }
     if (!cursor.isEmpty()) {
         url_query.addQueryItem(QStringLiteral("cursor"), cursor);
+    }
+    if (!readState.isEmpty()) {
+        url_query.addQueryItem(QStringLiteral("readState"), readState);
+    }
+    if (!status.isEmpty()) {
+        url_query.addQueryItem(QStringLiteral("status"), status);
     }
 
     get(QStringLiteral("xrpc/chat.bsky.convo.listConvos"), url_query);

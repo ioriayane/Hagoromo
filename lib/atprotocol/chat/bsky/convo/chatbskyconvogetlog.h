@@ -13,6 +13,7 @@ public:
     void getLog(const QString &cursor);
 
     const QList<AtProtocolType::ChatBskyConvoDefs::LogBeginConvo> &logsLogBeginConvoList() const;
+    const QList<AtProtocolType::ChatBskyConvoDefs::LogAcceptConvo> &logsLogAcceptConvoList() const;
     const QList<AtProtocolType::ChatBskyConvoDefs::LogLeaveConvo> &logsLogLeaveConvoList() const;
     const QList<AtProtocolType::ChatBskyConvoDefs::LogCreateMessage> &
     logsLogCreateMessageList() const;
@@ -23,6 +24,7 @@ private:
     virtual bool parseJson(bool success, const QString reply_json);
 
     QList<AtProtocolType::ChatBskyConvoDefs::LogBeginConvo> m_logsLogBeginConvoList;
+    QList<AtProtocolType::ChatBskyConvoDefs::LogAcceptConvo> m_logsLogAcceptConvoList;
     QList<AtProtocolType::ChatBskyConvoDefs::LogLeaveConvo> m_logsLogLeaveConvoList;
     QList<AtProtocolType::ChatBskyConvoDefs::LogCreateMessage> m_logsLogCreateMessageList;
     QList<AtProtocolType::ChatBskyConvoDefs::LogDeleteMessage> m_logsLogDeleteMessageList;
