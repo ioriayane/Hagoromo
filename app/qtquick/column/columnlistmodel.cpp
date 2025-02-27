@@ -348,6 +348,17 @@ int ColumnListModel::indexOf(const QString &key) const
     return -1;
 }
 
+bool ColumnListModel::contains(const QString &account_uuid, int component_type) const
+{
+    for (const auto &item : m_columnList) {
+        if (item.account_uuid == account_uuid
+            && item.component_type == static_cast<FeedComponentType>(component_type)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 // 自分のposition-1が入っているアイテムのインデックスを返す
 int ColumnListModel::getPreviousRow(const int row)
 {

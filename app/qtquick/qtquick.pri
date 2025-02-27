@@ -9,6 +9,7 @@ SOURCES += \
     $$PWD/chat/atpchatabstractlistmodel.cpp \
     $$PWD/chat/chatlistmodel.cpp \
     $$PWD/chat/chatmessagelistmodel.cpp \
+    $$PWD/chat/chatnotificationlistmodel.cpp \
     $$PWD/column/columnlistmodel.cpp \
     $$PWD/column/feedtypelistmodel.cpp \
     $$PWD/controls/calendartablemodel.cpp \
@@ -68,6 +69,7 @@ HEADERS += \
     $$PWD/chat/atpchatabstractlistmodel.h \
     $$PWD/chat/chatlistmodel.h \
     $$PWD/chat/chatmessagelistmodel.h \
+    $$PWD/chat/chatnotificationlistmodel.h \
     $$PWD/column/columnlistmodel.h \
     $$PWD/column/feedtypelistmodel.h \
     $$PWD/controls/calendartablemodel.h \

@@ -1058,6 +1058,21 @@ ApplicationWindow {
         anchors.rightMargin: 5
         anchors.bottomMargin: scrollView.ScrollBar.horizontal.height + 5
 
+        ChatNotificationFrame {
+            Layout.alignment: Qt.AlignRight
+            onRequestAddChatColumn: (uuid) => {
+                                        console.log("onRequestAddChatColumn:" + uuid)
+                                        if(columnManageModel.contains(uuid, 7)){
+                                            console.log("  already contains")
+                                        }else{
+                                            columnManageModel.append(uuid,
+                                                                     7, false, 300000, 500,
+                                                                     settingDialog.settings.imageLayoutType,
+                                                                     qsTr("Chat list"), "", [])
+                                            scrollView.showRightMost()
+                                        }
+                                    }
+        }
         RealtimeFeedStatus {
             id: realtimeFeedStatus
             Layout.alignment: Qt.AlignRight
