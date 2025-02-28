@@ -485,6 +485,7 @@ ApplicationWindow {
                     console.log("start loading columns")
                     columnManageModel.load()
                     listsListModel.load()
+                    chatNotificationFrame.start()
                 }else{
                     // 失敗しているアカウントがあるのでダイアログを出す
                     messageDialog.close()
@@ -1059,6 +1060,7 @@ ApplicationWindow {
         anchors.bottomMargin: scrollView.ScrollBar.horizontal.height + 5
 
         ChatNotificationFrame {
+            id: chatNotificationFrame
             Layout.alignment: Qt.AlignRight
             onRequestAddChatColumn: (uuid) => {
                                         console.log("onRequestAddChatColumn:" + uuid)
