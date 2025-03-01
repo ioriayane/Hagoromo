@@ -44,7 +44,10 @@ protected:
     QHash<int, QByteArray> roleNames() const;
 
 private:
+    void getChatList();
+    void appendData(const ChatNotificationData &data);
     QList<ChatNotificationData> m_chatNotificationData;
+    QStringList m_accountUuidCue;
 };
 
 #endif // CHATNOTIFICATIONLISTMODEL_H

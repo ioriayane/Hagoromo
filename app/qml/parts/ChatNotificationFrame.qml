@@ -17,26 +17,6 @@ ColumnLayout {
         model: ChatNotificationListModel {
             id: chatNotificationListModel
         }
-        // model: ListModel {
-        //     ListElement {
-        //         property string accountUuid: "4d8578fd-ce13-4ee1-90eb-c50a9248777a"
-        //         property string avator: "https://cdn.bsky.app/img/avatar/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy@jpeg"
-        //         property int unreadCount: 1
-        //         property bool visible: true
-        //     }
-        //     ListElement {
-        //         property string accountUuid: "4d8578fd-ce13-4ee1-90eb-c50a9248777a"
-        //         property string avator: "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg"
-        //         property int unreadCount: 3
-        //         property bool visible: false
-        //     }
-        //     ListElement {
-        //         property string accountUuid: "4d8578fd-ce13-4ee1-90eb-c50a9248777a"
-        //         property string avator: "https://cdn.bsky.app/img/avatar/plain/did:plc:73l5atmh7p3fn3xigbp6ao5x/bafkreif42yycinokltjrfizxgvyyw4z63a264jc4ws723pauxtc7vqo7la@jpeg"
-        //         property int unreadCount: 2
-        //         property bool visible: true
-        //     }
-        // }
 
         delegate: Frame {
             visible: model.visible

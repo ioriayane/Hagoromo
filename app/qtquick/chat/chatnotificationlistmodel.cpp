@@ -1,4 +1,8 @@
 #include "chatnotificationlistmodel.h"
+#include "tools/accountmanager.h"
+#include "atprotocol/chat/bsky/convo/chatbskyconvolistconvos.h"
+
+using AtProtocolInterface::ChatBskyConvoListConvos;
 
 ChatNotificationListModel::ChatNotificationListModel(QObject *parent)
     : AtpChatAbstractListModel { parent }
@@ -40,7 +44,15 @@ QVariant ChatNotificationListModel::item(int row, ChatNotificationListModelRoles
 
 bool ChatNotificationListModel::getLatest()
 {
-    //
+    if (running())
+        return false;
+    setRunning(true);
+
+    const auto a = AccountManager::getInstance();
+    m_accountUuidCue = a->getUuids();
+    if (!m_accountUuidCue.isEmpty()) {
+        getChatList();
+    }
     return true;
 }
 
@@ -51,39 +63,8 @@ bool ChatNotificationListModel::getNext()
 
 void ChatNotificationListModel::start()
 {
-    {
-        ChatNotificationData data;
-        data.account_uuid = "4d8578fd-ce13-4ee1-90eb-c50a9248777a";
-        data.avatar = "https://cdn.bsky.app/img/avatar/plain/did:plc:ipj5qejfoqu6eukvt72uhyit/"
-                      "bafkreifjldy2fbgjfli7dson343u2bepzwypt7vlffb45ipsll6bjklphy@jpeg";
-        data.unread_count = 3;
-        data.visible = true;
-        beginInsertRows(QModelIndex(), rowCount(), rowCount());
-        m_chatNotificationData.append(data);
-        endInsertRows();
-    }
-    {
-        ChatNotificationData data;
-        data.account_uuid = "4d8578fd-ce13-4ee1-90eb-c50a9248777a";
-        data.avatar = "https://cdn.bsky.app/img/avatar/plain/did:plc:mqxsuw5b5rhpwo4lw6iwlid5/"
-                      "bafkreiaeoiy6fqjypbhbcrb3jdlnjtpnwri5wa6jrvbwxtbtey6synwxr4@jpeg";
-        data.unread_count = 3;
-        data.visible = true;
-        beginInsertRows(QModelIndex(), rowCount(), rowCount());
-        m_chatNotificationData.append(data);
-        endInsertRows();
-    }
-    {
-        ChatNotificationData data;
-        data.account_uuid = "4d8578fd-ce13-4ee1-90eb-c50a9248777a";
-        data.avatar = "https://cdn.bsky.app/img/avatar/plain/did:plc:73l5atmh7p3fn3xigbp6ao5x/"
-                      "bafkreif42yycinokltjrfizxgvyyw4z63a264jc4ws723pauxtc7vqo7la@jpeg";
-        data.unread_count = 3;
-        data.visible = true;
-        beginInsertRows(QModelIndex(), rowCount(), rowCount());
-        m_chatNotificationData.append(data);
-        endInsertRows();
-    }
+    setLoadingInterval(60 * 1000);
+    setAutoLoading(true);
 }
 
 void ChatNotificationListModel::hideItem(int row)
@@ -106,4 +87,84 @@ QHash<int, QByteArray> ChatNotificationListModel::roleNames() const
     roles[VisibleRole] = "visible";
 
     return roles;
+}
+
+void ChatNotificationListModel::getChatList()
+{
+    if (m_accountUuidCue.isEmpty()) {
+        setRunning(false);
+        return;
+    }
+    const QString uuid = m_accountUuidCue.first();
+    m_accountUuidCue.pop_front();
+
+    const auto account = AccountManager::getInstance()->getAccount(uuid);
+    if (!account.isValid()) {
+        getChatList();
+        return;
+    }
+
+    // getServiceEndpoint([=]() {
+    // updateContentFilterLabels([=]() {
+    ChatBskyConvoListConvos *convos = new ChatBskyConvoListConvos(this);
+    connect(convos, &ChatBskyConvoListConvos::finished, this, [=](bool success) {
+        if (success) {
+            // if (m_idList.isEmpty() && m_cursor.isEmpty()) {
+            //     m_cursor = convos->cursor();
+            // }
+
+            ChatNotificationData data;
+            data.account_uuid = account.uuid;
+            data.avatar = account.avatar;
+            data.unread_count = 0;
+            data.visible = true;
+            for (auto item = convos->convosList().cbegin(); item != convos->convosList().cend();
+                 item++) {
+                data.unread_count += item->unreadCount;
+            }
+            if (data.unread_count > 0) {
+                appendData(data);
+            }
+        } else {
+            emit errorOccured(convos->errorCode(), convos->errorMessage());
+            checkScopeError(convos->errorCode(), convos->errorMessage());
+        }
+
+        QTimer::singleShot(10, this, &ChatNotificationListModel::getChatList);
+        convos->deleteLater();
+    });
+    convos->setAccount(account);
+    convos->setService(account.service_endpoint);
+    convos->setLabelers(labelerDids());
+    convos->listConvos(0, QString(), "unread", QString());
+    // });
+    // });
+}
+
+void ChatNotificationListModel::appendData(const ChatNotificationData &data)
+{
+    int row = -1;
+    for (int i = 0; i < m_chatNotificationData.count(); i++) {
+        if (m_chatNotificationData.at(i).account_uuid == data.account_uuid) {
+            row = i;
+            break;
+        }
+    }
+    if (row >= 0) {
+        if (m_chatNotificationData.at(row).visible) {
+            // 表示中
+        } else if (m_chatNotificationData[row].unread_count < data.unread_count) {
+            // 増えたら再表示
+            m_chatNotificationData[row].visible = true;
+        } else {
+            // 減ったらそのまま
+        }
+        m_chatNotificationData[row].avatar = data.avatar;
+        m_chatNotificationData[row].unread_count = data.unread_count;
+        emit dataChanged(index(row), index(row));
+    } else {
+        beginInsertRows(QModelIndex(), rowCount(), rowCount());
+        m_chatNotificationData.append(data);
+        endInsertRows();
+    }
 }
