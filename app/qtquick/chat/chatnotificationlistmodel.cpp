@@ -5,7 +5,7 @@
 using AtProtocolInterface::ChatBskyConvoListConvos;
 
 ChatNotificationListModel::ChatNotificationListModel(QObject *parent)
-    : AtpChatAbstractListModel { parent }
+    : AtpChatAbstractListModel { parent }, m_enabled(false)
 {
 }
 
@@ -49,10 +49,14 @@ bool ChatNotificationListModel::getLatest()
     setRunning(true);
 
     const auto a = AccountManager::getInstance();
+    if (!a->allAccountsReady())
+        return false;
+
     m_accountUuidCue = a->getUuids();
-    if (!m_accountUuidCue.isEmpty()) {
-        getChatList();
-    }
+    if (m_accountUuidCue.isEmpty())
+        return false;
+
+    getChatList();
     return true;
 }
 
@@ -166,5 +170,26 @@ void ChatNotificationListModel::appendData(const ChatNotificationData &data)
         beginInsertRows(QModelIndex(), rowCount(), rowCount());
         m_chatNotificationData.append(data);
         endInsertRows();
+    }
+}
+
+bool ChatNotificationListModel::enabled() const
+{
+    return m_enabled;
+}
+
+void ChatNotificationListModel::setEnabled(bool newEnabled)
+{
+    if (m_enabled == newEnabled)
+        return;
+    m_enabled = newEnabled;
+    emit enabledChanged();
+
+    if (m_enabled) {
+        getLatest();
+        setLoadingInterval(60 * 1000);
+        setAutoLoading(true);
+    } else {
+        setAutoLoading(false);
     }
 }

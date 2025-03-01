@@ -14,6 +14,9 @@ struct ChatNotificationData
 class ChatNotificationListModel : public AtpChatAbstractListModel
 {
     Q_OBJECT
+
+    Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged FINAL)
+
 public:
     explicit ChatNotificationListModel(QObject *parent = nullptr);
 
@@ -40,6 +43,12 @@ public:
     Q_INVOKABLE void start();
     Q_INVOKABLE void hideItem(int row);
 
+    bool enabled() const;
+    void setEnabled(bool newEnabled);
+
+signals:
+    void enabledChanged();
+
 protected:
     QHash<int, QByteArray> roleNames() const;
 
@@ -48,6 +57,7 @@ private:
     void appendData(const ChatNotificationData &data);
     QList<ChatNotificationData> m_chatNotificationData;
     QStringList m_accountUuidCue;
+    bool m_enabled;
 };
 
 #endif // CHATNOTIFICATIONLISTMODEL_H

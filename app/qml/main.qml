@@ -485,7 +485,6 @@ ApplicationWindow {
                     console.log("start loading columns")
                     columnManageModel.load()
                     listsListModel.load()
-                    chatNotificationFrame.start()
                 }else{
                     // 失敗しているアカウントがあるのでダイアログを出す
                     messageDialog.close()

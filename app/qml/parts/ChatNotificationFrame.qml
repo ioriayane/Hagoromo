@@ -7,15 +7,14 @@ import tech.relog.hagoromo.chatnotificationlistmodel
 import tech.relog.hagoromo.singleton 1.0
 
 ColumnLayout {
-    signal requestAddChatColumn(string uuid)
+    id: chatNotificationFrame
 
-    function start() {
-        chatNotificationListModel.start()
-    }
+    signal requestAddChatColumn(string uuid)
 
     Repeater {
         model: ChatNotificationListModel {
             id: chatNotificationListModel
+            enabled: chatNotificationFrame.enabled
         }
 
         delegate: Frame {
