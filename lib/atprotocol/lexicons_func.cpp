@@ -1927,7 +1927,7 @@ void copyConvoView(const QJsonObject &src, ChatBskyConvoDefs::ConvoView &dest)
                                                       dest.lastMessage_DeletedMessageView);
         }
         dest.muted = src.value("muted").toBool();
-        dest.opened = src.value("opened").toBool();
+        dest.status = src.value("status").toString();
         dest.unreadCount = src.value("unreadCount").toInt();
     }
 }
@@ -1938,7 +1938,28 @@ void copyLogBeginConvo(const QJsonObject &src, ChatBskyConvoDefs::LogBeginConvo 
         dest.convoId = src.value("convoId").toString();
     }
 }
+void copyLogAcceptConvo(const QJsonObject &src, ChatBskyConvoDefs::LogAcceptConvo &dest)
+{
+    if (!src.isEmpty()) {
+        dest.rev = src.value("rev").toString();
+        dest.convoId = src.value("convoId").toString();
+    }
+}
 void copyLogLeaveConvo(const QJsonObject &src, ChatBskyConvoDefs::LogLeaveConvo &dest)
+{
+    if (!src.isEmpty()) {
+        dest.rev = src.value("rev").toString();
+        dest.convoId = src.value("convoId").toString();
+    }
+}
+void copyLogMuteConvo(const QJsonObject &src, ChatBskyConvoDefs::LogMuteConvo &dest)
+{
+    if (!src.isEmpty()) {
+        dest.rev = src.value("rev").toString();
+        dest.convoId = src.value("convoId").toString();
+    }
+}
+void copyLogUnmuteConvo(const QJsonObject &src, ChatBskyConvoDefs::LogUnmuteConvo &dest)
 {
     if (!src.isEmpty()) {
         dest.rev = src.value("rev").toString();
@@ -1978,6 +1999,25 @@ void copyLogDeleteMessage(const QJsonObject &src, ChatBskyConvoDefs::LogDeleteMe
         if (message_type == QStringLiteral("chat.bsky.convo.defs#deletedMessageView")) {
             dest.message_type =
                     ChatBskyConvoDefs::LogDeleteMessageMessageType::message_DeletedMessageView;
+            ChatBskyConvoDefs::copyDeletedMessageView(src.value("message").toObject(),
+                                                      dest.message_DeletedMessageView);
+        }
+    }
+}
+void copyLogReadMessage(const QJsonObject &src, ChatBskyConvoDefs::LogReadMessage &dest)
+{
+    if (!src.isEmpty()) {
+        dest.rev = src.value("rev").toString();
+        dest.convoId = src.value("convoId").toString();
+        QString message_type = src.value("message").toObject().value("$type").toString();
+        if (message_type == QStringLiteral("chat.bsky.convo.defs#messageView")) {
+            dest.message_type = ChatBskyConvoDefs::LogReadMessageMessageType::message_MessageView;
+            ChatBskyConvoDefs::copyMessageView(src.value("message").toObject(),
+                                               dest.message_MessageView);
+        }
+        if (message_type == QStringLiteral("chat.bsky.convo.defs#deletedMessageView")) {
+            dest.message_type =
+                    ChatBskyConvoDefs::LogReadMessageMessageType::message_DeletedMessageView;
             ChatBskyConvoDefs::copyDeletedMessageView(src.value("message").toObject(),
                                                       dest.message_DeletedMessageView);
         }
@@ -2265,6 +2305,15 @@ void copyRepo(const QJsonObject &src, ComAtprotoSyncListRepos::Repo &dest)
     }
 }
 }
+// com.atproto.sync.listReposByCollection
+namespace ComAtprotoSyncListReposByCollection {
+void copyRepo(const QJsonObject &src, ComAtprotoSyncListReposByCollection::Repo &dest)
+{
+    if (!src.isEmpty()) {
+        dest.did = src.value("did").toString();
+    }
+}
+}
 // com.atproto.sync.subscribeRepos
 namespace ComAtprotoSyncSubscribeRepos {
 void copyRepoOp(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::RepoOp &dest)
@@ -2278,7 +2327,6 @@ void copyCommit(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Commit &de
 {
     if (!src.isEmpty()) {
         dest.seq = src.value("seq").toInt();
-        dest.tooBig = src.value("tooBig").toBool();
         dest.repo = src.value("repo").toString();
         dest.rev = src.value("rev").toString();
         dest.since = src.value("since").toString();
@@ -2287,6 +2335,15 @@ void copyCommit(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Commit &de
             copyRepoOp(s.toObject(), child);
             dest.ops.append(child);
         }
+        dest.time = src.value("time").toString();
+    }
+}
+void copySync(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Sync &dest)
+{
+    if (!src.isEmpty()) {
+        dest.seq = src.value("seq").toInt();
+        dest.did = src.value("did").toString();
+        dest.rev = src.value("rev").toString();
         dest.time = src.value("time").toString();
     }
 }
@@ -3057,6 +3114,20 @@ void copyRecordViewDetail(const QJsonObject &src, ToolsOzoneModerationDefs::Reco
         dest.indexedAt = src.value("indexedAt").toString();
         copyModerationDetail(src.value("moderation").toObject(), dest.moderation);
         copyRepoView(src.value("repo").toObject(), dest.repo);
+    }
+}
+void copyReporterStats(const QJsonObject &src, ToolsOzoneModerationDefs::ReporterStats &dest)
+{
+    if (!src.isEmpty()) {
+        dest.did = src.value("did").toString();
+        dest.accountReportCount = src.value("accountReportCount").toInt();
+        dest.recordReportCount = src.value("recordReportCount").toInt();
+        dest.reportedAccountCount = src.value("reportedAccountCount").toInt();
+        dest.reportedRecordCount = src.value("reportedRecordCount").toInt();
+        dest.takendownAccountCount = src.value("takendownAccountCount").toInt();
+        dest.takendownRecordCount = src.value("takendownRecordCount").toInt();
+        dest.labeledAccountCount = src.value("labeledAccountCount").toInt();
+        dest.labeledRecordCount = src.value("labeledRecordCount").toInt();
     }
 }
 }

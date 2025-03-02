@@ -55,6 +55,7 @@
 #include "qtquick/log/logfeedlistmodel.h"
 #include "qtquick/chat/chatlistmodel.h"
 #include "qtquick/chat/chatmessagelistmodel.h"
+#include "qtquick/chat/chatnotificationlistmodel.h"
 #include "qtquick/moderation/labelerlistmodel.h"
 #include "qtquick/blog/blogentrylistmodel.h"
 #include "qtquick/controls/calendartablemodel.h"
@@ -204,6 +205,8 @@ int main(int argc, char *argv[])
     qmlRegisterType<ChatListModel>("tech.relog.hagoromo.chatlistmodel", 1, 0, "ChatListModel");
     qmlRegisterType<ChatMessageListModel>("tech.relog.hagoromo.chatmessagelistmodel", 1, 0,
                                           "ChatMessageListModel");
+    qmlRegisterType<ChatNotificationListModel>("tech.relog.hagoromo.chatnotificationlistmodel", 1,
+                                               0, "ChatNotificationListModel");
 
     qmlRegisterType<LabelerListModel>("tech.relog.hagoromo.moderation.labelerlistmodel", 1, 0,
                                       "LabelerListModel");

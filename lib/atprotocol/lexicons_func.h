@@ -260,9 +260,13 @@ void copyMessageView(const QJsonObject &src, ChatBskyConvoDefs::MessageView &des
 void copyDeletedMessageView(const QJsonObject &src, ChatBskyConvoDefs::DeletedMessageView &dest);
 void copyConvoView(const QJsonObject &src, ChatBskyConvoDefs::ConvoView &dest);
 void copyLogBeginConvo(const QJsonObject &src, ChatBskyConvoDefs::LogBeginConvo &dest);
+void copyLogAcceptConvo(const QJsonObject &src, ChatBskyConvoDefs::LogAcceptConvo &dest);
 void copyLogLeaveConvo(const QJsonObject &src, ChatBskyConvoDefs::LogLeaveConvo &dest);
+void copyLogMuteConvo(const QJsonObject &src, ChatBskyConvoDefs::LogMuteConvo &dest);
+void copyLogUnmuteConvo(const QJsonObject &src, ChatBskyConvoDefs::LogUnmuteConvo &dest);
 void copyLogCreateMessage(const QJsonObject &src, ChatBskyConvoDefs::LogCreateMessage &dest);
 void copyLogDeleteMessage(const QJsonObject &src, ChatBskyConvoDefs::LogDeleteMessage &dest);
+void copyLogReadMessage(const QJsonObject &src, ChatBskyConvoDefs::LogReadMessage &dest);
 }
 // chat.bsky.convo.sendMessageBatch
 namespace ChatBskyConvoSendMessageBatch {
@@ -341,10 +345,15 @@ void copyAppPassword(const QJsonObject &src, ComAtprotoServerListAppPasswords::A
 namespace ComAtprotoSyncListRepos {
 void copyRepo(const QJsonObject &src, ComAtprotoSyncListRepos::Repo &dest);
 }
+// com.atproto.sync.listReposByCollection
+namespace ComAtprotoSyncListReposByCollection {
+void copyRepo(const QJsonObject &src, ComAtprotoSyncListReposByCollection::Repo &dest);
+}
 // com.atproto.sync.subscribeRepos
 namespace ComAtprotoSyncSubscribeRepos {
 void copyRepoOp(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::RepoOp &dest);
 void copyCommit(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Commit &dest);
+void copySync(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Sync &dest);
 void copyIdentity(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Identity &dest);
 void copyAccount(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Account &dest);
 void copyHandle(const QJsonObject &src, ComAtprotoSyncSubscribeRepos::Handle &dest);
@@ -406,6 +415,7 @@ void copyModEventViewDetail(const QJsonObject &src,
 void copyModerationDetail(const QJsonObject &src, ToolsOzoneModerationDefs::ModerationDetail &dest);
 void copyRepoViewDetail(const QJsonObject &src, ToolsOzoneModerationDefs::RepoViewDetail &dest);
 void copyRecordViewDetail(const QJsonObject &src, ToolsOzoneModerationDefs::RecordViewDetail &dest);
+void copyReporterStats(const QJsonObject &src, ToolsOzoneModerationDefs::ReporterStats &dest);
 }
 // tools.ozone.server.getConfig
 namespace ToolsOzoneServerGetConfig {

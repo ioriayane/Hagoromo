@@ -67,6 +67,7 @@ QML_FILES = \
     qml/parts/Author.qml \
     qml/parts/AvatarImage.qml \
     qml/parts/ChatErrorMessage.qml \
+    qml/parts/ChatNotificationFrame.qml \
     qml/parts/CoverFrame.qml \
     qml/parts/CursorRect.qml \
     qml/parts/CursorRectHandle.qml \

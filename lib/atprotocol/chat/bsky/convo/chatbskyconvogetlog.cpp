@@ -27,6 +27,12 @@ ChatBskyConvoGetLog::logsLogBeginConvoList() const
     return m_logsLogBeginConvoList;
 }
 
+const QList<AtProtocolType::ChatBskyConvoDefs::LogAcceptConvo> &
+ChatBskyConvoGetLog::logsLogAcceptConvoList() const
+{
+    return m_logsLogAcceptConvoList;
+}
+
 const QList<AtProtocolType::ChatBskyConvoDefs::LogLeaveConvo> &
 ChatBskyConvoGetLog::logsLogLeaveConvoList() const
 {
@@ -59,6 +65,10 @@ bool ChatBskyConvoGetLog::parseJson(bool success, const QString reply_json)
                 AtProtocolType::ChatBskyConvoDefs::LogBeginConvo data;
                 AtProtocolType::ChatBskyConvoDefs::copyLogBeginConvo(value.toObject(), data);
                 m_logsLogBeginConvoList.append(data);
+            } else if (type == QStringLiteral("chat.bsky.convo.defs#logAcceptConvo")) {
+                AtProtocolType::ChatBskyConvoDefs::LogAcceptConvo data;
+                AtProtocolType::ChatBskyConvoDefs::copyLogAcceptConvo(value.toObject(), data);
+                m_logsLogAcceptConvoList.append(data);
             } else if (type == QStringLiteral("chat.bsky.convo.defs#logLeaveConvo")) {
                 AtProtocolType::ChatBskyConvoDefs::LogLeaveConvo data;
                 AtProtocolType::ChatBskyConvoDefs::copyLogLeaveConvo(value.toObject(), data);

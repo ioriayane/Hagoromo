@@ -8,6 +8,9 @@ description: This is a multi-column Bluesky client.
 
 ## 2025
 
+- Add
+  - Add a chat notification to the bottom right of the window
+
 ### v0.47.0 - 2025/2/24
 
 - Add
