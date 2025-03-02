@@ -1061,6 +1061,8 @@ ApplicationWindow {
         ChatNotificationFrame {
             id: chatNotificationFrame
             Layout.alignment: Qt.AlignRight
+            enabled: settingDialog.settings.enableChatNotification
+            visible: enabled
             onRequestAddChatColumn: (uuid) => {
                                         console.log("onRequestAddChatColumn:" + uuid)
                                         if(columnManageModel.contains(uuid, 7)){

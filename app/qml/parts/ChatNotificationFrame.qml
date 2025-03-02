@@ -40,7 +40,7 @@ ColumnLayout {
                 }
                 Label {
                     font.pointSize: AdjustedValues.f10
-                    text: qsTr("You've got message(s)")
+                    text: qsTr("You've got message(s).")
                 }
                 Rectangle {
                     width: childrenRect.width * 2

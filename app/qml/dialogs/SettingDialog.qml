@@ -42,6 +42,7 @@ Dialog {
         property string displayOfPosts: "sequential"
         property bool updateSeenNotification: true
         property string realtimeServiceEndpoint: "wss://jetstream1.us-west.bsky.network"
+        property bool enableChatNotification: true
         // Layout
         property int rowCount: 1
         property int rowHeightRatio2: 50
@@ -76,6 +77,7 @@ Dialog {
             setRadioButton(updateSeenNotificationGroup.buttons, settings.updateSeenNotification)
             realtimeServiceEndpointComboBox.currentIndex = -1
             realtimeServiceEndpointComboBox.currentIndex = realtimeServiceEndpointComboBox.indexOfValue(settings.realtimeServiceEndpoint)
+            enableChatNotificationCheckBox.checked = settings.enableChatNotification
             // Layout
             rowCountComboBox.currentIndex = -1
             rowCountComboBox.currentIndex = rowCountComboBox.indexOfValue(settings.rowCount)
@@ -371,6 +373,15 @@ Dialog {
                         Layout.preferredHeight: implicitHeight * AdjustedValues.ratio
                         font.pointSize: AdjustedValues.f10
                         model: systemTool.possibleRealtimeFeedServiceEndpoints()
+                    }
+
+                    Label {
+                        font.pointSize: AdjustedValues.f10
+                        text: qsTr("Enable chat notification")
+                    }
+                    CheckBox {
+                        id: enableChatNotificationCheckBox
+                        font.pointSize: AdjustedValues.f10
                     }
 
                     Item {
@@ -840,6 +851,7 @@ Dialog {
                     settings.updateSeenNotification = updateSeenNotificationGroup.checkedButton.value
                     settings.realtimeServiceEndpoint = realtimeServiceEndpointComboBox.currentValue
                     systemTool.changeRealtimeFeedServiceEndpoint(settings.realtimeServiceEndpoint)
+                    settings.enableChatNotification = enableChatNotificationCheckBox.checked
                     // Layout
                     settings.rowCount = rowCountComboBox.currentValue
                     settings.rowHeightRatio2 = rowHeightRatioSlider.value

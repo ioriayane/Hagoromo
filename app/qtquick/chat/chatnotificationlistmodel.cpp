@@ -46,7 +46,6 @@ bool ChatNotificationListModel::getLatest()
 {
     if (running())
         return false;
-    setRunning(true);
 
     const auto a = AccountManager::getInstance();
     if (!a->allAccountsReady())
@@ -95,6 +94,8 @@ QHash<int, QByteArray> ChatNotificationListModel::roleNames() const
 
 void ChatNotificationListModel::getChatList()
 {
+    setRunning(true);
+
     if (m_accountUuidCue.isEmpty()) {
         setRunning(false);
         return;
@@ -180,14 +181,19 @@ bool ChatNotificationListModel::enabled() const
 
 void ChatNotificationListModel::setEnabled(bool newEnabled)
 {
+    qDebug() << __FUNCTION__ << m_enabled << "->" << newEnabled;
     if (m_enabled == newEnabled)
         return;
     m_enabled = newEnabled;
     emit enabledChanged();
 
     if (m_enabled) {
+        // 一度クリックして非表示にしたものもいったん表示に戻す
+        for (int i = 0; i < m_chatNotificationData.count(); i++) {
+            m_chatNotificationData[i].visible = true;
+        }
         getLatest();
-        setLoadingInterval(60 * 1000);
+        setLoadingInterval(30 * 1000);
         setAutoLoading(true);
     } else {
         setAutoLoading(false);
