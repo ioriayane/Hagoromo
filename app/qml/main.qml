@@ -104,6 +104,8 @@ ApplicationWindow {
 
     SettingDialog {
         id: settingDialog
+        x: parent.width / 2 - width / 2
+        y: sideBarItem.height / 2 - height / 2
         onAccepted: {
             repeater.updateSettings(2)
             translatorChanger.triggered(settingDialog.settings.language)
