@@ -1068,7 +1068,12 @@ ApplicationWindow {
             onRequestAddChatColumn: (uuid) => {
                                         console.log("onRequestAddChatColumn:" + uuid)
                                         if(columnManageModel.contains(uuid, 7)){
-                                            console.log("  already contains")
+                                            var index = columnManageModel.indexOf(uuid, 7, 0)
+                                            var position = columnManageModel.getPosition(index)
+                                            console.log("  already contains:" + index + ", " + position)
+                                            if(position >= 0){
+                                                scrollView.showColumn(position)
+                                            }
                                         }else{
                                             columnManageModel.append(uuid,
                                                                      7, false, 300000, 500,

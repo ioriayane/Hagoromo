@@ -348,6 +348,18 @@ int ColumnListModel::indexOf(const QString &key) const
     return -1;
 }
 
+int ColumnListModel::indexOf(const QString &account_uuid, int component_type, int start) const
+{
+    for (int i = start; i < m_columnList.count(); i++) {
+        if (m_columnList.at(i).account_uuid == account_uuid
+            && m_columnList.at(i).component_type
+                    == static_cast<FeedComponentType>(component_type)) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 bool ColumnListModel::contains(const QString &account_uuid, int component_type) const
 {
     for (const auto &item : m_columnList) {

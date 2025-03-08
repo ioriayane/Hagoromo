@@ -142,6 +142,7 @@ public:
     Q_INVOKABLE void removeByKey(const QString &key);
     Q_INVOKABLE bool containsKey(const QString &key) const;
     Q_INVOKABLE int indexOf(const QString &key) const;
+    Q_INVOKABLE int indexOf(const QString &account_uuid, int component_type, int start = 0) const;
     Q_INVOKABLE bool contains(const QString &account_uuid, int component_type) const;
 
     Q_INVOKABLE int getPreviousRow(const int row);
