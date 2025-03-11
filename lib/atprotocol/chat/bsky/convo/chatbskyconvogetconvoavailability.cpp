@@ -15,8 +15,6 @@ ChatBskyConvoGetConvoAvailability::ChatBskyConvoGetConvoAvailability(QObject *pa
 
 void ChatBskyConvoGetConvoAvailability::getConvoAvailability(const QList<QString> &members)
 {
-    appendRawHeader("atproto-proxy", "did:web:api.bsky.chat#bsky_chat");
-
     QUrlQuery url_query;
     for (const auto &value : members) {
         url_query.addQueryItem(QStringLiteral("members"), value);

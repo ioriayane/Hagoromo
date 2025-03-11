@@ -14,8 +14,6 @@ ChatBskyConvoUpdateAllRead::ChatBskyConvoUpdateAllRead(QObject *parent)
 
 void ChatBskyConvoUpdateAllRead::updateAllRead(const QString &status)
 {
-    appendRawHeader("atproto-proxy", "did:web:api.bsky.chat#bsky_chat");
-
     QJsonObject json_obj;
     if (!status.isEmpty()) {
         json_obj.insert(QStringLiteral("status"), status);

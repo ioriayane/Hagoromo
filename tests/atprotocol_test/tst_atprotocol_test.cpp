@@ -88,6 +88,8 @@ private slots:
     void test_DirectoryPlcLogAudit();
     void test_PinnedPostCache();
 
+    void test_atprotoProxyHttpHeader();
+
     void test_convertVideoThumb();
 
 private:
@@ -2586,6 +2588,20 @@ void atprotocol_test::test_PinnedPostCache()
     //
     PinnedPostCache::getInstance()->update("did2", "");
     QVERIFY(PinnedPostCache::getInstance()->pinned("did2", "") == false);
+}
+
+void atprotocol_test::test_atprotoProxyHttpHeader()
+{
+    AtProtocolInterface::AccountData account = m_account;
+    AtProtocolInterface::AppBskyFeedGetTimeline timeline;
+    timeline.setAccount(account);
+
+    QSignalSpy spy(&timeline, SIGNAL(finished(bool)));
+    timeline.getTimeline(QString(), 0, QString());
+    spy.wait();
+    QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
+    QList<QVariant> arguments = spy.takeFirst();
+    QVERIFY(arguments.at(0).toBool());
 }
 
 void atprotocol_test::test_convertVideoThumb()

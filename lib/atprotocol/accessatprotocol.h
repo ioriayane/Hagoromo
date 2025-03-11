@@ -129,6 +129,7 @@ protected:
 
 private:
     void setAdditionalRawHeader(QNetworkRequest &request);
+    void setAtprotoProxyHeader(QNetworkRequest &request);
 
     static HttpAccessManager *m_manager;
 
@@ -140,6 +141,9 @@ private:
     QString m_contentType;
     QHash<QString, QString> m_additionalRawHeaders;
     QString m_dPopNonce;
+    // PDSによるAPIのプロキシ先はアカウントごとに置き換えて使う可能性あり（将来的に）
+    QHash<QString, QString> m_atprotoProxyDids;
+    QStringList m_excludedAtprotoProxyEndpoints;
 };
 }
 

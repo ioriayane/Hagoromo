@@ -129,6 +129,12 @@ AccessAtProtocol::AccessAtProtocol(QObject *parent)
                            << QCoreApplication::instance();
         m_manager = new HttpAccessManager(QCoreApplication::instance());
     }
+
+    m_atprotoProxyDids["app.bsky."] = QStringLiteral("did:web:api.bsky.app#bsky_appview");
+    m_atprotoProxyDids["chat.bsky."] = QStringLiteral("did:web:api.bsky.chat#bsky_chat");
+    m_excludedAtprotoProxyEndpoints << QStringLiteral("app.bsky.video.getUploadLimits")
+                                    << QStringLiteral("app.bsky.video.uploadVideo")
+                                    << QStringLiteral("app.bsky.video.getJobStatus");
 }
 
 void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
@@ -166,6 +172,7 @@ void AccessAtProtocol::get(const QString &endpoint, const QUrlQuery &query,
         }
     }
     setAdditionalRawHeader(request);
+    setAtprotoProxyHeader(request);
 
     QPointer<AccessAtProtocol> alive = this;
     HttpReply *reply = m_manager->get(request);
@@ -233,6 +240,7 @@ void AccessAtProtocol::post(const QString &endpoint, const QByteArray &json,
                              QByteArray("Bearer ") + accessJwt().toUtf8());
     }
     setAdditionalRawHeader(request);
+    setAtprotoProxyHeader(request);
 
     QPointer<AccessAtProtocol> alive = this;
     HttpReply *reply = m_manager->post(request, json);
@@ -275,6 +283,7 @@ void AccessAtProtocol::postWithImage(const QString &endpoint, const QString &pat
     request.setRawHeader(QByteArray("Cache-Control"), QByteArray("no-cache"));
     request.setRawHeader(QByteArray("Authorization"), QByteArray("Bearer ") + accessJwt().toUtf8());
     request.setHeader(QNetworkRequest::ContentTypeHeader, mime.mimeTypeForFile(info).name());
+    setAtprotoProxyHeader(request);
 
     QFile *file = new QFile(path);
     if (!file->open(QIODevice::ReadOnly)) {
@@ -457,6 +466,23 @@ void AccessAtProtocol::setAdditionalRawHeader(QNetworkRequest &request)
     while (i.hasNext()) {
         i.next();
         request.setRawHeader(i.key().toLocal8Bit(), i.value().toLocal8Bit());
+    }
+}
+
+void AccessAtProtocol::setAtprotoProxyHeader(QNetworkRequest &request)
+{
+    if (request.url().host() == QStringLiteral("bsky.social"))
+        return;
+
+    QString endpoint = request.url().fileName();
+
+    QHashIterator<QString, QString> i(m_atprotoProxyDids);
+    while (i.hasNext()) {
+        i.next();
+        if (!endpoint.isEmpty() && !m_excludedAtprotoProxyEndpoints.contains(endpoint)
+            && endpoint.startsWith(i.key())) {
+            request.setRawHeader("atproto-proxy", i.value().toLocal8Bit());
+        }
     }
 }
 
