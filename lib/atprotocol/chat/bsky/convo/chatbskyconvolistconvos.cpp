@@ -12,8 +12,6 @@ ChatBskyConvoListConvos::ChatBskyConvoListConvos(QObject *parent) : AccessAtProt
 void ChatBskyConvoListConvos::listConvos(const int limit, const QString &cursor,
                                          const QString &readState, const QString &status)
 {
-    appendRawHeader("atproto-proxy", "did:web:api.bsky.chat#bsky_chat");
-
     QUrlQuery url_query;
     if (limit > 0) {
         url_query.addQueryItem(QStringLiteral("limit"), QString::number(limit));

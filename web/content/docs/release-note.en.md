@@ -12,6 +12,7 @@ description: This is a multi-column Bluesky client.
   - Add a chat notification to the bottom right of the window
 - Update
   - Change the layout of the settings dialog
+  - Support for atproto-proxy when accessing PDS
 
 ### v0.47.0 - 2025/2/24
 

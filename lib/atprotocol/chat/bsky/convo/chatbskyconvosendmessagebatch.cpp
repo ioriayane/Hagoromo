@@ -13,8 +13,6 @@ ChatBskyConvoSendMessageBatch::ChatBskyConvoSendMessageBatch(QObject *parent)
 
 void ChatBskyConvoSendMessageBatch::sendMessageBatch(const QJsonObject &items)
 {
-    appendRawHeader("atproto-proxy", "did:web:api.bsky.chat#bsky_chat");
-
     QJsonObject json_obj;
     if (!items.isEmpty()) {
         json_obj.insert(QStringLiteral("items"), items);

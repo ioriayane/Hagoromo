@@ -14,8 +14,6 @@ ChatBskyActorExportAccountData::ChatBskyActorExportAccountData(QObject *parent)
 
 void ChatBskyActorExportAccountData::exportAccountData()
 {
-    appendRawHeader("atproto-proxy", "did:web:api.bsky.chat#bsky_chat");
-
     QUrlQuery url_query;
 
     get(QStringLiteral("xrpc/chat.bsky.actor.exportAccountData"), url_query);

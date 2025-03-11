@@ -137,6 +137,10 @@ bool WebServer::verifyHttpHeader(const QHttpServerRequest &request) const
         }
     }
 #else
+    QStringList exclude_endopoint = QStringList()
+            << QStringLiteral("app.bsky.video.getUploadLimits")
+            << QStringLiteral("app.bsky.video.uploadVideo")
+            << QStringLiteral("app.bsky.video.getJobStatus");
     for (const auto &header : request.headers().toListOfPairs()) {
         if (header.first.contains("atproto-accept-labelers")) {
             QList<QByteArray> dids = header.second.split(',');
@@ -144,6 +148,20 @@ bool WebServer::verifyHttpHeader(const QHttpServerRequest &request) const
                 if (!did.startsWith("did:")) {
                     return false;
                 }
+            }
+        } else if (header.first.contains("atproto-proxy")) {
+            QString endpoint = request.url().fileName();
+            if (endpoint.startsWith("app.bsky.") && !exclude_endopoint.contains(endpoint)
+                && header.second == "did:web:api.bsky.app#bsky_appview") {
+
+                // ok
+            } else if (endpoint.startsWith("chat.bsky.")
+                       && header.second == "did:web:api.bsky.chat#bsky_chat") {
+                // ok
+            } else {
+                qDebug() << "Proxy Error:" << request.url().host() << endpoint << header.first
+                         << header.second;
+                return false;
             }
         }
     }

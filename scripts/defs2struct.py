@@ -154,10 +154,6 @@ class Defs2Struct:
             }
 
         self.rawHttpHeader = {
-            'chat.bsky.': {
-                'name': 'atproto-proxy',
-                'value': 'did:web:api.bsky.chat#bsky_chat'
-            }
         }
 
         self.skip_api_class_id = [

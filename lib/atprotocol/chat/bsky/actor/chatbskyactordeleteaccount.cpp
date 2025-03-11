@@ -13,8 +13,6 @@ ChatBskyActorDeleteAccount::ChatBskyActorDeleteAccount(QObject *parent)
 
 void ChatBskyActorDeleteAccount::deleteAccount()
 {
-    appendRawHeader("atproto-proxy", "did:web:api.bsky.chat#bsky_chat");
-
     post(QStringLiteral("xrpc/chat.bsky.actor.deleteAccount"), QByteArray());
 }
 
