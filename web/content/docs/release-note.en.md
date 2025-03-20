@@ -14,6 +14,7 @@ description: This is a multi-column Bluesky client.
 - Update
   - Change the layout of the settings dialog
   - Support for atproto-proxy when accessing PDS
+  - Change accounts that cannot use chat to be unselectable in the column addition dialog
 
 ### v0.47.0 - 2025/2/24
 

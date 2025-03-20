@@ -31,6 +31,7 @@ public:
         UriRole,
         CreatorDisplayNameRole,
         EditableRole,
+        EnabledRole,
     };
     Q_ENUM(FeedTypeListModelRoles)
 
