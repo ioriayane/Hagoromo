@@ -58,6 +58,8 @@ public:
     void putPostInteractionSettings();
     void setMain(bool is);
 
+    void removeScope(AtProtocolInterface::AccountScope scope);
+
 private:
     AccountManager *q;
 
@@ -158,6 +160,10 @@ void AccountManager::Private::load(const QJsonObject &object)
             m_account.realtime_feed_rules.append(rule);
         }
     }
+
+    // 当面はDMのスコープを持っている状態で始める
+    // APIを投げてInvalidaTokenになったら消す
+    m_account.scope << AtProtocolInterface::AccountScope::DirectMessage;
 
     if (temp_refresh.isEmpty()) {
         createSession();
@@ -509,6 +515,11 @@ void AccountManager::Private::setMain(bool is)
     m_account.is_main = is;
 }
 
+void AccountManager::Private::removeScope(AtProtocolInterface::AccountScope scope)
+{
+    m_account.scope.removeAll(scope);
+}
+
 AccountManager::AccountManager(QObject *parent) : QObject { parent }, m_allAccountsReady(false)
 {
     qDebug().noquote() << this << "AccountManager()";
@@ -760,6 +771,15 @@ bool AccountManager::checkAllAccountsReady()
 int AccountManager::indexAt(const QString &uuid)
 {
     return dIndex.value(uuid, -1);
+}
+
+void AccountManager::removeScope(const QString &uuid, AtProtocolInterface::AccountScope scope)
+{
+    int row = indexAt(uuid);
+    if (row < 0 || row >= count())
+        return;
+
+    dList.at(row)->removeScope(scope);
 }
 
 QStringList AccountManager::getUuids() const

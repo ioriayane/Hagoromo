@@ -120,6 +120,11 @@ QString AtProtocolAccount::refreshJwt() const
     return m_account.refreshJwt;
 }
 
+bool AtProtocolAccount::allowedScope(AccountScope scope) const
+{
+    return m_account.scope.contains(scope);
+}
+
 AccessAtProtocol::AccessAtProtocol(QObject *parent)
     : AtProtocolAccount { parent }, m_contentType("application/json")
 {

@@ -108,6 +108,10 @@ void ChatNotificationListModel::getChatList()
         getChatList();
         return;
     }
+    if (!account.scope.contains(AtProtocolInterface::AccountScope::DirectMessage)) {
+        getChatList();
+        return;
+    }
 
     // getServiceEndpoint([=]() {
     // updateContentFilterLabels([=]() {
@@ -132,7 +136,11 @@ void ChatNotificationListModel::getChatList()
             }
         } else {
             emit errorOccured(convos->errorCode(), convos->errorMessage());
-            checkScopeError(convos->errorCode(), convos->errorMessage());
+            // checkScopeError(convos->errorCode(), convos->errorMessage());
+            if (convos->errorCode() == "InvalidToken") {
+                AccountManager::getInstance()->removeScope(
+                        uuid, AtProtocolInterface::AccountScope::DirectMessage);
+            }
         }
 
         QTimer::singleShot(10, this, &ChatNotificationListModel::getChatList);

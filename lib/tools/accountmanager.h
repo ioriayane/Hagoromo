@@ -69,6 +69,8 @@ public:
     bool checkAllAccountsReady();
     int indexAt(const QString &uuid);
 
+    void removeScope(const QString &uuid, AtProtocolInterface::AccountScope scope);
+
     QStringList getUuids() const;
     QString getUuid(int row) const;
     bool allAccountsReady() const;
