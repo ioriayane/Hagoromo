@@ -8,6 +8,7 @@
 #include "atprotocol/app/bsky/actor/appbskyactorgetpreferences.h"
 #include "atprotocol/app/bsky/actor/appbskyactorputpreferences.h"
 #include "atprotocol/com/atproto/repo/comatprotorepodescriberepo.h"
+#include "atprotocol/chat/bsky/convo/chatbskyconvolistconvos.h"
 #include "extension/directory/plc/directoryplc.h"
 #include "atprotocol/lexicons_func_unknown.h"
 #include "tools/pinnedpostcache.h"
@@ -24,6 +25,7 @@ using AtProtocolInterface::AppBskyActorGetPreferences;
 using AtProtocolInterface::AppBskyActorGetProfile;
 using AtProtocolInterface::AppBskyActorPutPreferences;
 using AtProtocolInterface::AppBskyActorPutPreferencesEx;
+using AtProtocolInterface::ChatBskyConvoListConvos;
 using AtProtocolInterface::ComAtprotoRepoDescribeRepo;
 using AtProtocolInterface::ComAtprotoRepoGetRecordEx;
 using AtProtocolInterface::ComAtprotoServerCreateSessionEx;
@@ -56,6 +58,7 @@ public:
                             std::function<void(const QString &service_endpoint)> callback);
     void getPostInteractionSettings(std::function<void()> callback);
     void putPostInteractionSettings();
+    void getAccountScope(std::function<void()> callback);
     void setMain(bool is);
 
     void removeScope(AtProtocolInterface::AccountScope scope);
@@ -160,10 +163,6 @@ void AccountManager::Private::load(const QJsonObject &object)
             m_account.realtime_feed_rules.append(rule);
         }
     }
-
-    // 当面はDMのスコープを持っている状態で始める
-    // APIを投げてInvalidaTokenになったら消す
-    m_account.scope << AtProtocolInterface::AccountScope::DirectMessage;
 
     if (temp_refresh.isEmpty()) {
         createSession();
@@ -358,41 +357,43 @@ void AccountManager::Private::getProfile()
         m_account.service_endpoint = service_endpoint;
         qDebug().noquote() << "Update service endpoint" << m_account.service << "->"
                            << m_account.service_endpoint;
+        getAccountScope([=]() {
+            // ここでPreferencesからThreadGateの設定を取得
+            getPostInteractionSettings([=]() {
+                AppBskyActorGetProfile *profile = new AppBskyActorGetProfile(this);
+                connect(profile, &AppBskyActorGetProfile::finished, [=](bool success) {
+                    if (success) {
+                        AtProtocolType::AppBskyActorDefs::ProfileViewDetailed detail =
+                                profile->profileViewDetailed();
+                        qDebug() << "Update profile detailed" << detail.displayName
+                                 << detail.description;
+                        m_account.displayName = detail.displayName;
+                        m_account.description = detail.description;
+                        m_account.avatar = detail.avatar;
+                        m_account.banner = detail.banner;
+                        m_account.status = AccountStatus::Authorized;
 
-        // ここでPreferencesからThreadGateの設定を取得
-        getPostInteractionSettings([=]() {
-            AppBskyActorGetProfile *profile = new AppBskyActorGetProfile(this);
-            connect(profile, &AppBskyActorGetProfile::finished, [=](bool success) {
-                if (success) {
-                    AtProtocolType::AppBskyActorDefs::ProfileViewDetailed detail =
-                            profile->profileViewDetailed();
-                    qDebug() << "Update profile detailed" << detail.displayName
-                             << detail.description;
-                    m_account.displayName = detail.displayName;
-                    m_account.description = detail.description;
-                    m_account.avatar = detail.avatar;
-                    m_account.banner = detail.banner;
-                    m_account.status = AccountStatus::Authorized;
+                        q->save();
 
-                    q->save();
+                        emit q->updatedAccount(m_account.uuid);
 
-                    emit q->updatedAccount(m_account.uuid);
+                        qDebug() << "Update pinned post" << detail.pinnedPost.uri;
+                        PinnedPostCache::getInstance()->update(m_account.did,
+                                                               detail.pinnedPost.uri);
+                    } else {
+                        emit q->errorOccured(profile->errorCode(), profile->errorMessage());
+                    }
 
-                    qDebug() << "Update pinned post" << detail.pinnedPost.uri;
-                    PinnedPostCache::getInstance()->update(m_account.did, detail.pinnedPost.uri);
-                } else {
-                    emit q->errorOccured(profile->errorCode(), profile->errorMessage());
-                }
+                    q->checkAllAccountsReady();
+                    if (q->allAccountTried()) {
+                        emit q->finished();
+                    }
 
-                q->checkAllAccountsReady();
-                if (q->allAccountTried()) {
-                    emit q->finished();
-                }
-
-                profile->deleteLater();
+                    profile->deleteLater();
+                });
+                profile->setAccount(m_account);
+                profile->getProfile(m_account.did);
             });
-            profile->setAccount(m_account);
-            profile->getProfile(m_account.did);
         });
     });
 }
@@ -508,6 +509,27 @@ void AccountManager::Private::putPostInteractionSettings()
     });
     get_pref->setAccount(m_account);
     get_pref->getPreferences();
+}
+
+void AccountManager::Private::getAccountScope(std::function<void()> callback)
+{
+    // 現状はDMしかないのとOAuthになればこの関数必要ないはず
+    ChatBskyConvoListConvos *convos = new ChatBskyConvoListConvos(this);
+    connect(convos, &ChatBskyConvoListConvos::finished, this, [=](bool success) {
+        if (success) {
+            qDebug().noquote() << "Direct Message is allowed:" << m_account.handle;
+            if (!m_account.scope.contains(AtProtocolInterface::AccountScope::DirectMessage)) {
+                m_account.scope.append(AtProtocolInterface::AccountScope::DirectMessage);
+            }
+        } else {
+            qDebug().noquote() << "Direct Message is not allowed:" << m_account.handle;
+        }
+        callback();
+        convos->deleteLater();
+    });
+    convos->setAccount(m_account);
+    convos->setService(m_account.service_endpoint);
+    convos->listConvos(0, QString(), "unread", QString());
 }
 
 void AccountManager::Private::setMain(bool is)
