@@ -39,6 +39,7 @@ public:
         ThreadGateOptionsRole,
         PostGateQuoteEnabledRole,
         RealtimeFeedRulesRole,
+        AllowedDirectMessageRole,
         StatusRole,
         AuthorizedRole,
     };

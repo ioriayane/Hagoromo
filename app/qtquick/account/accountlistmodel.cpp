@@ -43,6 +43,8 @@ AccountListModel::AccountListModel(QObject *parent) : QAbstractListModel { paren
     m_roleTo[PostGateQuoteEnabledRole] =
             AccountManager::AccountManagerRoles::PostGateQuoteEnabledRole;
     m_roleTo[RealtimeFeedRulesRole] = AccountManager::AccountManagerRoles::RealtimeFeedRulesRole;
+    m_roleTo[AllowedDirectMessageRole] =
+            AccountManager::AccountManagerRoles::AllowedDirectMessageRole;
     m_roleTo[StatusRole] = AccountManager::AccountManagerRoles::StatusRole;
     m_roleTo[AuthorizedRole] = AccountManager::AccountManagerRoles::AuthorizedRole;
 
@@ -154,6 +156,9 @@ QVariant AccountListModel::item(int row, AccountListModelRoles role) const
         return static_cast<int>(account.status);
     else if (role == AuthorizedRole)
         return account.status == AccountStatus::Authorized;
+
+    else if (role == AllowedDirectMessageRole)
+        return account.scope.contains(AtProtocolInterface::AccountScope::DirectMessage);
 
     return QVariant();
 }
@@ -339,6 +344,7 @@ QHash<int, QByteArray> AccountListModel::roleNames() const
     roles[PostGateQuoteEnabledRole] = "postGateQuoteEnabled";
     roles[StatusRole] = "status";
     roles[AuthorizedRole] = "authorized";
+    roles[AllowedDirectMessageRole] = "allowedDirectMessage";
 
     return roles;
 }
