@@ -41,10 +41,10 @@ REM --- build -------
 cd %BUILD_FOLDER%
 
 qmake ..\Hagoromo.pro CONFIG+=debug
-if ERRORLEVEL 1 goto QUIT
+if ERRORLEVEL 1 goto TEST_FAIL
 
 jom
-if ERRORLEVEL 1 goto QUIT
+if ERRORLEVEL 1 nmake
 
 cd %CWD%
 
