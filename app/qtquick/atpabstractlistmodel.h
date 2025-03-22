@@ -52,7 +52,7 @@ class AtpAbstractListModel : public QAbstractListModel
     Q_PROPERTY(bool displayPinnedPost READ displayPinnedPost WRITE setDisplayPinnedPost NOTIFY
                        displayPinnedPostChanged)
 
-    Q_PROPERTY(QString uuid READ uuid NOTIFY uuidChanged CONSTANT)
+    Q_PROPERTY(QString uuid READ uuid NOTIFY uuidChanged)
     Q_PROPERTY(QString service READ service CONSTANT)
     Q_PROPERTY(QString did READ did CONSTANT)
     Q_PROPERTY(QString handle READ handle CONSTANT)

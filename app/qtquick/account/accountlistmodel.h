@@ -13,7 +13,7 @@ class AccountListModel : public QAbstractListModel
 {
     Q_OBJECT
 
-    Q_PROPERTY(int count READ count NOTIFY countChanged CONSTANT)
+    Q_PROPERTY(int count READ count NOTIFY countChanged)
     Q_PROPERTY(bool allAccountsReady READ allAccountsReady NOTIFY allAccountsReadyChanged FINAL)
 public:
     explicit AccountListModel(QObject *parent = nullptr);

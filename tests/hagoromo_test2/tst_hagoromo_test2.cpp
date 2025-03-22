@@ -138,7 +138,7 @@ void hagoromo_test::test_RecordOperator()
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY(arguments.at(0).type() == QVariant::Bool);
+        QVERIFY(arguments.at(0).typeId() == QMetaType::Bool);
         QVERIFY(arguments.at(0).toBool() == true);
     }
 }
@@ -158,7 +158,7 @@ void hagoromo_test::test_RecordOperator_profile()
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY(arguments.at(0).type() == QVariant::Bool);
+        QVERIFY(arguments.at(0).typeId() == QMetaType::Bool);
         QVERIFY(arguments.at(0).toBool() == true);
     }
 
@@ -175,7 +175,7 @@ void hagoromo_test::test_RecordOperator_profile()
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY(arguments.at(0).type() == QVariant::Bool);
+        QVERIFY(arguments.at(0).typeId() == QMetaType::Bool);
         QVERIFY(arguments.at(0).toBool() == true);
     }
 
@@ -190,7 +190,7 @@ void hagoromo_test::test_RecordOperator_profile()
         QVERIFY2(spy.count() == 1, QString("spy.count()=%1").arg(spy.count()).toUtf8());
 
         QList<QVariant> arguments = spy.takeFirst();
-        QVERIFY(arguments.at(0).type() == QVariant::Bool);
+        QVERIFY(arguments.at(0).typeId() == QMetaType::Bool);
         QVERIFY(arguments.at(0).toBool() == true);
     }
 }

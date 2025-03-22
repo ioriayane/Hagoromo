@@ -50,6 +50,8 @@ log_test::log_test()
 
     connect(&m_mockServer, &WebServer::receivedPost,
             [=](const QHttpServerRequest &request, bool &result, QString &json) {
+                Q_UNUSED(request)
+                Q_UNUSED(result)
                 QVERIFY(false);
             });
 }

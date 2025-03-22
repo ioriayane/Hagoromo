@@ -1529,8 +1529,8 @@ void hagoromo_test::test_charCount()
     ts.setCodec("utf-8");
 #endif
     QStringEx text = ts.readAll();
-    qDebug() << text << text.length() << text.count();
-    for (int i = 0; i < text.count(); i++) {
+    qDebug() << text << text.length();
+    for (int i = 0; i < text.size(); i++) {
         qDebug() << i << text.at(i) << text.at(i).isHighSurrogate() << text.at(i).isLowSurrogate()
                  << QString::number(text.at(i).unicode(), 16) << text.at(i).combiningClass()
                  << text.at(i).joiningType();
@@ -1825,7 +1825,7 @@ void hagoromo_test::test_TimelineListModel_animated_image()
                            .arg(folder,
                                 "bafkreiau5tvk6ddh34ztxp5q4fjyxspizsbnecv3skttpcppi4ilikbbpu_",
                                 "gif");
-    for (const auto &image_path : qAsConst(image_paths)) {
+    for (const auto &image_path : std::as_const(image_paths)) {
         QFile::setPermissions(image_path, QFile::WriteOwner | QFile::ReadOwner);
         QFile::remove(image_path);
     }
@@ -1880,7 +1880,7 @@ void hagoromo_test::test_TimelineListModel_animated_image()
                              .toLocal8Bit()
                      + "\n<>\n" + full_paths.join("\n").toLocal8Bit());
 
-    for (const auto &image_path : qAsConst(image_paths)) {
+    for (const auto &image_path : std::as_const(image_paths)) {
         QFile::setPermissions(image_path, QFile::WriteOwner | QFile::ReadOwner);
         QFile::remove(image_path);
     }
@@ -1930,7 +1930,7 @@ void hagoromo_test::test_TimelineListModel_animated_image()
                              .toLocal8Bit()
                      + "\n<>\n" + full_paths.join("\n").toLocal8Bit());
 
-    for (const auto &image_path : qAsConst(image_paths)) {
+    for (const auto &image_path : std::as_const(image_paths)) {
         QFile::setPermissions(image_path, QFile::WriteOwner | QFile::ReadOwner);
         QFile::remove(image_path);
     }
@@ -2889,7 +2889,6 @@ void hagoromo_test::test_TimelineListModel_reply()
             "did:plc:ipj5qejfoqu6eukvt72uhyit", "ioriayane.bsky.social", "email", "accessJwt",
             "refreshJwt", true);
 
-    int row = 0;
     TimelineListModel model;
     model.setAccount(uuid);
     model.setDisplayInterval(0);
@@ -3377,7 +3376,6 @@ struct CalendarTableModelTestData
 
 void hagoromo_test::test_CalendarTableModel()
 {
-    int row, column;
     CalendarTableModel model;
 
     int e_year, e_month, e_day;
