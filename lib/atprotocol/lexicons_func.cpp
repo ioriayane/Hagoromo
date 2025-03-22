@@ -610,15 +610,18 @@ void copyMain(const QJsonObject &src, ComAtprotoRepoStrongRef::Main &dest)
 namespace AppBskyFeedThreadgate {
 void copyMentionRule(const QJsonObject &src, AppBskyFeedThreadgate::MentionRule &dest)
 {
-    if (!src.isEmpty()) { }
+    Q_UNUSED(src);
+    Q_UNUSED(dest);
 }
 void copyFollowerRule(const QJsonObject &src, AppBskyFeedThreadgate::FollowerRule &dest)
 {
-    if (!src.isEmpty()) { }
+    Q_UNUSED(src);
+    Q_UNUSED(dest);
 }
 void copyFollowingRule(const QJsonObject &src, AppBskyFeedThreadgate::FollowingRule &dest)
 {
-    if (!src.isEmpty()) { }
+    Q_UNUSED(src);
+    Q_UNUSED(dest);
 }
 void copyListRule(const QJsonObject &src, AppBskyFeedThreadgate::ListRule &dest)
 {
@@ -677,7 +680,8 @@ void copyMain(const QJsonObject &src, AppBskyFeedThreadgate::Main &dest)
 namespace AppBskyFeedPostgate {
 void copyDisableRule(const QJsonObject &src, AppBskyFeedPostgate::DisableRule &dest)
 {
-    if (!src.isEmpty()) { }
+    Q_UNUSED(src);
+    Q_UNUSED(dest);
 }
 void copyMain(const QJsonObject &src, AppBskyFeedPostgate::Main &dest)
 {
@@ -1228,7 +1232,8 @@ void copyReasonRepost(const QJsonObject &src, AppBskyFeedDefs::ReasonRepost &des
 }
 void copyReasonPin(const QJsonObject &src, AppBskyFeedDefs::ReasonPin &dest)
 {
-    if (!src.isEmpty()) { }
+    Q_UNUSED(src);
+    Q_UNUSED(dest);
 }
 void copyFeedViewPost(const QJsonObject &src, AppBskyFeedDefs::FeedViewPost &dest)
 {
@@ -1313,7 +1318,8 @@ void copySkeletonReasonRepost(const QJsonObject &src, AppBskyFeedDefs::SkeletonR
 }
 void copySkeletonReasonPin(const QJsonObject &src, AppBskyFeedDefs::SkeletonReasonPin &dest)
 {
-    if (!src.isEmpty()) { }
+    Q_UNUSED(src);
+    Q_UNUSED(dest);
 }
 void copySkeletonFeedPost(const QJsonObject &src, AppBskyFeedDefs::SkeletonFeedPost &dest)
 {
@@ -2207,7 +2213,8 @@ void copyUpdateResult(const QJsonObject &src, ComAtprotoRepoApplyWrites::UpdateR
 }
 void copyDeleteResult(const QJsonObject &src, ComAtprotoRepoApplyWrites::DeleteResult &dest)
 {
-    if (!src.isEmpty()) { }
+    Q_UNUSED(src);
+    Q_UNUSED(dest);
 }
 }
 // com.atproto.repo.defs
