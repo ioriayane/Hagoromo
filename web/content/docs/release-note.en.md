@@ -10,9 +10,11 @@ description: This is a multi-column Bluesky client.
 
 - Add
   - Add a chat notification to the bottom right of the window
+  - Add a display to the account dialog to indicate whether or not chat can be used
 - Update
   - Change the layout of the settings dialog
   - Support for atproto-proxy when accessing PDS
+  - Change accounts that cannot use chat to be unselectable in the column addition dialog
 
 ### v0.47.0 - 2025/2/24
 

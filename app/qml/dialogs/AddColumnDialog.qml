@@ -160,6 +160,7 @@ Dialog {
                                     width: typeList.width - typeScroll.ScrollBar.vertical.width
                                     height: implicitHeight * AdjustedValues.ratio
                                     highlighted: ListView.isCurrentItem
+                                    enabled: model.enabled
                                     function changeSelecting(){
                                         console.log("Change selecting:" + model.feedType +
                                                     ", " + model.displayName +

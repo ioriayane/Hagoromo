@@ -39,6 +39,7 @@ public:
         ThreadGateOptionsRole,
         PostGateQuoteEnabledRole,
         RealtimeFeedRulesRole,
+        AllowedDirectMessageRole,
         StatusRole,
         AuthorizedRole,
     };
@@ -68,6 +69,8 @@ public:
     void setMainAccount(int row);
     bool checkAllAccountsReady();
     int indexAt(const QString &uuid);
+
+    void removeScope(const QString &uuid, AtProtocolInterface::AccountScope scope);
 
     QStringList getUuids() const;
     QString getUuid(int row) const;
