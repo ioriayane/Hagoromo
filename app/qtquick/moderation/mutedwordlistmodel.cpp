@@ -6,6 +6,7 @@ MutedWordListModel::MutedWordListModel(QObject *parent) : ContentFilterSettingLi
 
 int MutedWordListModel::rowCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent)
     return m_contentFilterLabels.mutedWordCount();
 }
 

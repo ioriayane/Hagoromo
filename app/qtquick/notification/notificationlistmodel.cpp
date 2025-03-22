@@ -1162,7 +1162,7 @@ void NotificationListModel::displayQueuedPostsNext()
 void NotificationListModel::refrectAggregation()
 {
     int prev_row = -1;
-    for (const auto &cid : qAsConst(m_originalCidList)) {
+    for (const auto &cid : std::as_const(m_originalCidList)) {
         if (checkVisibility(cid)) {
             // 表示させる
             if (!aggregateQueuedPosts(cid, true)) {

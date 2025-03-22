@@ -588,7 +588,7 @@ QHash<int, QByteArray> ColumnListModel::roleNames() const
 void ColumnListModel::validateIndex()
 {
     QList<int> values;
-    for (const auto &item : qAsConst(m_columnList)) {
+    for (const auto &item : std::as_const(m_columnList)) {
         if (!values.contains(item.position)) {
             values.append(item.position);
         }

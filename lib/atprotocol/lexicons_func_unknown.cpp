@@ -353,7 +353,7 @@ void makeFacets(
             QObject::connect(profiles, &AppBskyActorGetProfiles::finished, [=](bool success) {
                 QList<AtProtocolType::AppBskyRichtextFacet::Main> facets2(facets);
                 if (success) {
-                    for (const auto &item : qAsConst(profiles->profilesList())) {
+                    for (const auto &item : std::as_const(profiles->profilesList())) {
                         QString handle = item.handle;
                         handle.remove("@");
                         if (mention.contains(handle)) {
@@ -390,7 +390,7 @@ void makeFacets(
 void insertFacetsJson(QJsonObject &parent, const QList<AppBskyRichtextFacet::Main> &facets)
 {
     QJsonArray json_facets;
-    for (const auto &facet : qAsConst(facets)) {
+    for (const auto &facet : std::as_const(facets)) {
         QJsonObject json_facet;
         QJsonObject json_index;
         QJsonArray json_features;

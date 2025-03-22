@@ -142,7 +142,7 @@ void ChatMessageListModel::update(int row, ChatMessageListModelRoles role, const
     if (row < 0 || row >= m_idList.count())
         return;
 
-    auto &current = m_messageHash[m_idList.at(row)];
+    // auto &current = m_messageHash[m_idList.at(row)];
 
     if (role == RunningRole) {
         bool running = m_itemRunningHash.value(m_idList.at(row), false);

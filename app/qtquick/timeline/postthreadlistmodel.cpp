@@ -149,6 +149,7 @@ void PostThreadListModel::setPostThreadUri(const QString &newPostThreadUri)
 
 void PostThreadListModel::finishedConnector(const QString &labeler_did)
 {
+    Q_UNUSED(labeler_did)
     int row = m_cidList.indexOf(m_postThreadCid);
     if (row < 0)
         return;

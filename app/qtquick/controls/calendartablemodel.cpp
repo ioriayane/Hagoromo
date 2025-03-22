@@ -18,11 +18,13 @@ CalendarTableModel::CalendarTableModel(QObject *parent)
 
 int CalendarTableModel::rowCount(const QModelIndex &row) const
 {
+    Q_UNUSED(row)
     return 6;
 }
 
 int CalendarTableModel::columnCount(const QModelIndex &column) const
 {
+    Q_UNUSED(column)
     return 7;
 }
 

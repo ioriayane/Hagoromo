@@ -51,7 +51,7 @@ ConfigurableLabels &ConfigurableLabels::operator=(ConfigurableLabels &other)
     m_mutedWords.clear();
     m_mutedWordsHash.clear();
     m_mutedWordsTagHash.clear();
-    for (const auto &word : qAsConst(other.m_mutedWords)) {
+    for (const auto &word : std::as_const(other.m_mutedWords)) {
         m_mutedWords.append(word);
         m_mutedWordsHash[word.value] = word;
         m_mutedWordsTagHash[removeSharp(word.value)] = word;
@@ -627,7 +627,7 @@ bool ConfigurableLabels::containsMutedWords(const QString &text, const QStringLi
     } else {
         // 単語が空白で区切られる言語向け
         QStringList words = text.split(m_regSpace);
-        for (const auto &word : qAsConst(words)) {
+        for (const auto &word : std::as_const(words)) {
             if (m_mutedWordsHash.contains(word)) {
                 if (m_mutedWordsHash[word].targets.contains(MutedWordTarget::Content)) {
                     return true;
@@ -922,7 +922,7 @@ QJsonArray ConfigurableLabels::updatePreferencesJson(const QString &src_json)
     }
     {
         QMap<int, QJsonArray> muted_items;
-        for (const auto &muted_word : qAsConst(m_mutedWords)) {
+        for (const auto &muted_word : std::as_const(m_mutedWords)) {
             QJsonObject item;
             item.insert("value", muted_word.value);
             QJsonArray targets;

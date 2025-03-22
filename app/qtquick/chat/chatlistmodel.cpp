@@ -101,7 +101,7 @@ void ChatListModel::update(int row, ChatListModelRoles role, const QVariant &val
     auto &current = m_convoHash[m_idList.at(row)];
 
     if (role == MutedRole) {
-        int muted = value.toBool();
+        bool muted = value.toBool();
         if (current.muted != muted) {
             current.muted = muted;
             emit dataChanged(index(row), index(row));

@@ -781,7 +781,7 @@ void AccountManager::setMainAccount(int row)
 bool AccountManager::checkAllAccountsReady()
 {
     int ready_count = 0;
-    for (const auto d : qAsConst(dList)) {
+    for (const auto d : std::as_const(dList)) {
         if (d->getAccount().status == AccountStatus::Authorized) {
             ready_count++;
         }

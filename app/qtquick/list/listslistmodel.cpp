@@ -258,7 +258,7 @@ void ListsListModel::block(const int row)
     RecordOperator *ope = new RecordOperator(this);
     connect(ope, &RecordOperator::finished,
             [=](bool success, const QString &uri, const QString &cid) {
-                qDebug() << success << uri;
+                qDebug() << success << uri << cid;
                 if (success) {
                     update(row, ListsListModel::BlockedUriRole, uri);
                     setRunning(false);
@@ -370,11 +370,14 @@ QHash<int, QByteArray> ListsListModel::roleNames() const
 
 bool ListsListModel::aggregateQueuedPosts(const QString &cid, const bool next)
 {
+    Q_UNUSED(cid)
+    Q_UNUSED(next)
     return true;
 }
 
 bool ListsListModel::aggregated(const QString &cid) const
 {
+    Q_UNUSED(cid)
     return false;
 }
 

@@ -122,10 +122,10 @@ void LogManager::makeFeedViewPostList()
 {
     QList<RecordPostItem> record_post_items;
 
-    for (const auto &post_uri : qAsConst(m_viewPosts)) {
+    for (const auto &post_uri : std::as_const(m_viewPosts)) {
         if (post_uri.startsWith("at://")) {
             // APIで取得したデータを探して追加する
-            for (const auto &post_view : qAsConst(m_postViews)) {
+            for (const auto &post_view : std::as_const(m_postViews)) {
                 if (post_view.uri == post_uri) {
                     AppBskyFeedDefs::FeedViewPost feed_view_post;
                     feed_view_post.post = post_view;
@@ -140,7 +140,7 @@ void LogManager::makeFeedViewPostList()
                 }
             }
             // DBへのフィードバック用データ
-            for (const auto &post_val : qAsConst(m_postViewsJson)) {
+            for (const auto &post_val : std::as_const(m_postViewsJson)) {
                 if (post_val.toObject().value("uri").toString() == post_uri) {
                     RecordPostItem item;
                     item.uri = post_uri;

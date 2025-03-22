@@ -192,9 +192,12 @@ void RecordOperator::post()
                         bool ret = threadGate(
                                 last_post_uri,
                                 [=](bool success2, const QString &uri, const QString &cid) {
+                                    Q_UNUSED(uri)
+                                    Q_UNUSED(cid)
                                     postGate(last_post_uri,
                                              [=](bool success3, const QString &uri3,
                                                  const QString &cid3) {
+                                                 Q_UNUSED(success3)
                                                  m_sequentialPostsCurrent++;
                                                  if (m_sequentialPostsCurrent
                                                      >= m_sequentialPostsTotal) {
@@ -749,7 +752,7 @@ void RecordOperator::updateProfile(const QString &avatar_url, const QString &ban
                 if (success2) {
                     AtProtocolType::Blob avatar = old_record.avatar;
                     AtProtocolType::Blob banner = old_record.banner;
-                    for (const auto &blob : qAsConst(m_embedImageBlobs)) {
+                    for (const auto &blob : std::as_const(m_embedImageBlobs)) {
                         if (blob.alt == "avatar") {
                             avatar = blob;
                             avatar.alt.clear();
@@ -860,7 +863,7 @@ void RecordOperator::updateList(const QString &uri, const QString &avatar_url,
             uploadBlob([=](bool success2) {
                 if (success2) {
                     AtProtocolType::Blob avatar = old_record.avatar;
-                    for (const auto &blob : qAsConst(m_embedImageBlobs)) {
+                    for (const auto &blob : std::as_const(m_embedImageBlobs)) {
                         if (blob.alt == "avatar") {
                             avatar = blob;
                             avatar.alt.clear();
@@ -1166,6 +1169,8 @@ bool RecordOperator::getAllListItems(const QString &list_uri, std::function<void
     });
     list->setAccount(account());
     list->listListItems(account().did, cursor);
+
+    return true;
 }
 
 void RecordOperator::deleteAllListItems(std::function<void(bool)> callback)

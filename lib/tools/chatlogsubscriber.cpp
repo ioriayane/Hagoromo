@@ -87,7 +87,7 @@ void ChatLogSubscriber::Private::getLatest()
                     this->m_cursor = log->cursor();
                 }
 
-                for (auto connector : qAsConst(m_connector)) {
+                for (auto connector : std::as_const(m_connector)) {
                     if (!connector) {
                         // already deleted
                     } else {
@@ -95,7 +95,7 @@ void ChatLogSubscriber::Private::getLatest()
                     }
                 }
             } else {
-                for (auto connector : qAsConst(m_connector)) {
+                for (auto connector : std::as_const(m_connector)) {
                     if (!connector) {
                         // already deleted
                     } else {

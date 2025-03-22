@@ -217,7 +217,7 @@ void FirehoseReceiver::removeSelector(QObject *parent)
 void FirehoseReceiver::removeAllSelector()
 {
     m_selectorMutex.lock();
-    for (auto s : qAsConst(m_selectorHash)) {
+    for (auto s : std::as_const(m_selectorHash)) {
         if (s) {
             removeThreadSelector(s->key());
             s->deleteLater();
@@ -257,7 +257,7 @@ bool FirehoseReceiver::selectorIsReady(QObject *parent)
 #ifdef QT_DEBUG // HAGOROMO_UNIT_TEST
 void FirehoseReceiver::testReceived(const QJsonObject &json)
 {
-    for (auto s : qAsConst(m_selectorHash)) {
+    for (auto s : std::as_const(m_selectorHash)) {
         if (!s) {
             // already deleted
         } else if (!s->ready()) {

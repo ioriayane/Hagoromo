@@ -96,6 +96,7 @@ void AtpChatAbstractListModel::getServiceEndpoint(std::function<void()> callback
 
 void AtpChatAbstractListModel::checkScopeError(const QString &code, const QString &message)
 {
+    Q_UNUSED(message)
     if (code == "InvalidToken") {
         setAutoLoading(false);
     }

@@ -952,11 +952,14 @@ QHash<int, QByteArray> TimelineListModel::roleNames() const
 
 bool TimelineListModel::aggregateQueuedPosts(const QString &cid, const bool next)
 {
+    Q_UNUSED(cid)
+    Q_UNUSED(next)
     return true;
 }
 
 bool TimelineListModel::aggregated(const QString &cid) const
 {
+    Q_UNUSED(cid)
     return false;
 }
 
@@ -1132,7 +1135,7 @@ TimelineListModel::getReferenceTime(const AtProtocolType::AppBskyFeedDefs::FeedV
 
 void TimelineListModel::updateExtendMediaFile(const QString &parent_cid)
 {
-    const AppBskyFeedDefs::FeedViewPost &current = m_viewPostHash.value(parent_cid);
+    // const AppBskyFeedDefs::FeedViewPost &current = m_viewPostHash.value(parent_cid);
     // m_cidList.at(row));
     int row = m_cidList.indexOf(parent_cid);
     if (row >= 0) {
@@ -1359,6 +1362,8 @@ void TimelineListModel::setVisibleRepostByMe(bool newVisibleRepostByMe)
 void TimelineListModel::updatedPin(const QString &did, const QString &new_uri,
                                    const QString &old_uri)
 {
+    Q_UNUSED(did)
+    Q_UNUSED(new_uri)
     int row = m_cidList.indexOf(m_pinnedUriCid.value(old_uri));
     while (row >= 0) {
         qDebug() << "updatedPin(old)" << row << old_uri << this;

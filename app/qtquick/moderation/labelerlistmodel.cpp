@@ -16,6 +16,7 @@ LabelerListModel::LabelerListModel(QObject *parent)
 
 int LabelerListModel::rowCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent)
     return m_labelerList.count();
 }
 

@@ -53,7 +53,7 @@ QString SearchProfileListModel::replaceText(const QString &text, const int curre
         return text;
 
     QString left = text.left(current_position);
-    QString right = text.right(text.count() - current_position);
+    QString right = text.right(text.size() - current_position);
     QString extract = extractHandleBlock(left);
     QString space;
     if (right.isEmpty()) {
@@ -68,8 +68,7 @@ QString SearchProfileListModel::replaceText(const QString &text, const int curre
         return text;
     }
 
-    return QString("%1%2%3%4")
-            .arg(left.left(left.count() - extract.length()), handle, space, right);
+    return QString("%1%2%3%4").arg(left.left(left.size() - extract.length()), handle, space, right);
 }
 
 bool SearchProfileListModel::getLatest()

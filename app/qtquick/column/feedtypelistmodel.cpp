@@ -293,7 +293,7 @@ void FeedTypeListModel::getFeedDetails()
         if (success) {
             // apiで渡した順番と逆順で結果が来るので元の順番で追加する
             // 結果の仕様がいつ変わるか分からないのでAPIに投げるuriの順番で制御しない
-            for (const auto &uri : qAsConst(uris)) {
+            for (const auto &uri : std::as_const(uris)) {
                 for (const auto &generator : generators->feedsList()) {
                     if (uri == generator.uri) {
                         FeedTypeItem item;

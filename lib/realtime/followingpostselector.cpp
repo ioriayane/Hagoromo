@@ -30,7 +30,7 @@ bool FollowingPostSelector::judge(const QJsonObject &object)
             } else if (action == "delete") {
                 QString rkey = extractRkey(op.value("path").toString());
                 if (!rkey.isEmpty()) {
-                    for (const auto &user : qAsConst(m_following)) {
+                    for (const auto &user : std::as_const(m_following)) {
                         if (user.rkey == rkey) {
                             m_following.remove(user.did);
                             break;

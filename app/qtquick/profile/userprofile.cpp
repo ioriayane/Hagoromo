@@ -103,7 +103,7 @@ void UserProfile::getProfile(const QString &did)
                     QStringList labels;
                     QStringList labelers;
                     m_labelDetails = detail.labels;
-                    for (const auto &label : qAsConst(detail.labels)) {
+                    for (const auto &label : std::as_const(detail.labels)) {
                         if (label.val == QStringLiteral("!no-unauthenticated"))
                             continue;
                         labels.append(label.val);
@@ -436,6 +436,7 @@ void UserProfile::updatedBelongingLists(const QString &account_did, const QStrin
 
 void UserProfile::finishedConnector(const QString &labeler_did)
 {
+    Q_UNUSED(labeler_did)
     LabelProvider *provider = LabelProvider::getInstance();
     LabelData label_data;
 

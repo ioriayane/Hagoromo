@@ -302,7 +302,7 @@ QString OpenGraphProtocol::extractCharset(const QString &data) const
                     QString content = element.attribute("content");
                     QStringList items = content.split(";");
                     bool exist = false;
-                    for (const QString &item : qAsConst(items)) {
+                    for (const QString &item : std::as_const(items)) {
                         QStringList parts = item.trimmed().split("=");
                         if (parts.length() != 2)
                             continue;

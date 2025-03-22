@@ -8,6 +8,7 @@ LogStatisticsListModel::LogStatisticsListModel(QObject *parent)
 
 int LogStatisticsListModel::rowCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent)
     return m_totalList.count();
 }
 

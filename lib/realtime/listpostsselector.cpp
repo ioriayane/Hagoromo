@@ -34,7 +34,7 @@ bool RealtimeFeed::ListPostsSelector::judge(const QJsonObject &object)
             } else if (action == "delete") {
                 QString rkey = extractRkey(op.value("path").toString());
                 if (!rkey.isEmpty()) {
-                    for (const auto &user : qAsConst(m_members)) {
+                    for (const auto &user : std::as_const(m_members)) {
                         if (user.rkey == rkey) {
                             m_members.remove(user.did);
                             break;
