@@ -35,8 +35,7 @@ jobs:
           target: 'desktop'
           arch: 'win64_msvc2022_64'
           modules: 'qt5compat qtwebsockets qthttpserver qtshadertools qtimageformats qtscxml'
-          tools: 'tools_opensslv3_x64 tools_opensslv3_src tools_ninja'
-          # tools_qtcreator_gui,qt.tools.qtcreator_gui なぜかChecksumエラーになる
+          tools: 'tools_opensslv3_x64 tools_opensslv3_src tools_ninja tools_qtcreator_gui,qt.tools.qtcreator_gui'
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
