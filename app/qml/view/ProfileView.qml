@@ -33,6 +33,8 @@ ColumnLayout {
     property string userDid: ""     // 表示するアカウント
     property string accountDid: ""  // 認証しているアカウント
 
+    property bool autoHideDetailMode: true
+
     signal requestReply(string cid, string uri,
                         string reply_root_cid, string reply_root_uri,
                         string avatar, string display_name, string handle, string indexed_at, string text)
@@ -194,18 +196,25 @@ ColumnLayout {
         clip: true
         spacing: 0
 
-        function viewChange(top){
-            console.log("view change : " + top +
+        function viewChange(top, is_manual){
+            console.log("view change : " + top + ", " + profileView.autoHideDetailMode +
                         ", d_h=" + bannerImage.height +
                         "," + bannerImage.paintedHeight +
                         "," + bannerImage.Layout.preferredHeight)
+            if(!profileView.autoHideDetailMode && !is_manual){
+                return
+            }
             if(top){
                 bannerImage.Layout.preferredHeight = bannerImage.isReady ? 80 : 0
                 descriptionLabel.Layout.preferredHeight = descriptionLabel.contentHeight
+                serviceEndpointLayout.visible = true
+                registrationDateLayout.visible = true
                 knownFollowersInfo.visible = true
             }else{
                 bannerImage.Layout.preferredHeight = 0
                 descriptionLabel.Layout.preferredHeight = 0
+                serviceEndpointLayout.visible = false
+                registrationDateLayout.visible = false
                 knownFollowersInfo.visible = false
             }
         }
@@ -222,24 +231,35 @@ ColumnLayout {
                 NumberAnimation { duration: 500 }
             }
 
-            RowLayout {
+            ColumnLayout{
                 anchors.top: bannerImage.bottom
                 anchors.right: bannerImage.right
-
-                Label {
-                    visible: userProfile.followedBy
-                    font.pointSize: AdjustedValues.f8
-                    color: Material.accentColor
-                    text: qsTr("Follows you")
+                RowLayout {
+                    Label {
+                        visible: userProfile.followedBy
+                        font.pointSize: AdjustedValues.f8
+                        color: Material.accentColor
+                        text: qsTr("Follows you")
+                    }
+                    IconButton {
+                        id: editButton
+                        Layout.preferredHeight: AdjustedValues.b24
+                        iconText: "   "
+                        BusyIndicator {
+                            anchors.fill: parent
+                            visible: recordOperator.running || userProfile.running
+                        }
+                    }
                 }
                 IconButton {
-                    id: editButton
                     Layout.preferredHeight: AdjustedValues.b24
-                    iconText: "   "
-                    BusyIndicator {
-                        anchors.fill: parent
-                        visible: recordOperator.running || userProfile.running
-                    }
+                    Layout.alignment: Qt.AlignRight
+                    iconSource: knownFollowersInfo.visible ?
+                                    "../images/expand_content_less.png" :
+                                    "../images/expand_content_more.png"
+                    iconText: ""
+                    visible: !profileView.autoHideDetailMode
+                    onClicked: userProfileColumnLayout.viewChange(!knownFollowersInfo.visible, true)
                 }
             }
         }
@@ -313,6 +333,7 @@ ColumnLayout {
             }
         }
         RowLayout {
+            id: serviceEndpointLayout
             Layout.leftMargin: 5
             Layout.rightMargin: 5
             visible: userProfile.serviceEndpoint.length > 0
@@ -334,6 +355,7 @@ ColumnLayout {
             }
         }
         RowLayout {
+            id: registrationDateLayout
             Layout.topMargin: 2
             Layout.leftMargin: 6
             Layout.rightMargin: 5

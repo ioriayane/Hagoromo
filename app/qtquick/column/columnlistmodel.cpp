@@ -412,8 +412,6 @@ QList<int> ColumnListModel::getRowListInOrderOfPosition() const
 
 void ColumnListModel::save() const
 {
-    QSettings settings;
-
     QJsonArray column_array;
     for (const ColumnItem &item : m_columnList) {
         QJsonObject column_item;
