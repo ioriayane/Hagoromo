@@ -29,6 +29,8 @@ Dialog {
 
     SettingsC {
         id: settings
+        // globalsettings.cppで正式なデフォルト値を設定すること
+
         // General
         property int theme: Material.Light
         property color accent: Material.color(Material.Pink)
@@ -48,6 +50,7 @@ Dialog {
         property int rowHeightRatio31: 35
         property int rowHeightRatio32: 70
         property int imageLayoutType: 1
+        property bool autoHideDetailMode: true
         // Translate
         property string translateApiUrl: "https://api-free.deepl.com/v2/translate"
         property string translateApiKey: ""
@@ -84,6 +87,7 @@ Dialog {
             rowHeightRatioRangeSlider.first.value = settings.rowHeightRatio31
             rowHeightRatioRangeSlider.second.value = settings.rowHeightRatio32
             imageLayoutCombobox.setByValue(settings.imageLayoutType)
+            autoHideDetailModeCheckBox.checked = settings.autoHideDetailMode
             // Translate
             translateApiUrlText.text = settings.translateApiUrl
             translateApiKeyText.text = encryption.decrypt(settings.translateApiKey)
@@ -490,6 +494,16 @@ Dialog {
                                 Layout.leftMargin: 2
                                 font.pointSize: AdjustedValues.f8
                                 text: qsTr("Default value when adding columns.")
+                            }
+
+                            Label {
+                                id: autoHideDetailModeLabel
+                                font.pointSize: AdjustedValues.f10
+                                text: qsTr("Auto hide profile")
+                            }
+                            CheckBox {
+                                id: autoHideDetailModeCheckBox
+                                font.pointSize: AdjustedValues.f10
                             }
 
                             Item {
@@ -947,6 +961,7 @@ Dialog {
                     settings.rowHeightRatio31 = rowHeightRatioRangeSlider.first.value
                     settings.rowHeightRatio32 = rowHeightRatioRangeSlider.second.value
                     settings.imageLayoutType = imageLayoutCombobox.currentValue
+                    settings.autoHideDetailMode = autoHideDetailModeCheckBox.checked
                     // Translate
                     settings.translateApiUrl = translateApiUrlText.text
                     settings.translateApiKey = encryption.encrypt(translateApiKeyText.text)

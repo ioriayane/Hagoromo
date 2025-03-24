@@ -26,4 +26,5 @@ QtObject {
     property bool updateSeenNotification: true
     property bool sequentialDisplayOfPosts: true
     property int displayInterval: sequentialDisplayOfPosts ? 400 : 0
+    property bool autoHideDetailMode: true
 }

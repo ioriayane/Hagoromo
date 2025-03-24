@@ -276,6 +276,7 @@ ColumnLayout {
         id: profileComponent
         ProfileView {
             imageLayoutType: settings.imageLayoutType
+            autoHideDetailMode: settings.autoHideDetailMode
 
             onRequestReply: (cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text) =>
                             columnView.requestReply(account.uuid, cid, uri, reply_root_cid, reply_root_uri, avatar, display_name, handle, indexed_at, text)

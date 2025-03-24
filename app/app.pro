@@ -7,9 +7,11 @@ TARGET = Hagoromo
 
 SOURCES += \
     main.cpp \
+    tools/globalsettings.cpp \
     tools/translatorchanger.cpp
 
 HEADERS += \
+    tools/globalsettings.h \
     tools/translatorchanger.h
 
 QML_FILES = \
@@ -138,6 +140,8 @@ IMAGE_FILES += \
     qml/images/copy.png \
     qml/images/delete.png \
     qml/images/edit.png \
+    qml/images/expand_content_less.png \
+    qml/images/expand_content_more.png \
     qml/images/expand_less.png \
     qml/images/expand_more.png \
     qml/images/feed.png \
