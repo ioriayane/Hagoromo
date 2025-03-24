@@ -191,9 +191,10 @@ bool AccountManager::Private::update(AccountManagerRoles role, const QVariant &v
         m_account.handle = value.toString();
     else if (role == EmailRole)
         m_account.email = value.toString();
-    else if (role == AccessJwtRole)
+    else if (role == AccessJwtRole) {
         m_account.accessJwt = value.toString();
-    else if (role == RefreshJwtRole)
+        getAccountScope();
+    } else if (role == RefreshJwtRole)
         m_account.refreshJwt = value.toString();
 
     else if (role == DisplayNameRole)
@@ -242,6 +243,8 @@ void AccountManager::Private::updateAccount(const QString &uuid, const QString &
     m_account.refreshJwt = refreshJwt;
     m_account.thread_gate_type = thread_gate_type;
     m_account.status = status;
+
+    getAccountScope();
 }
 
 void AccountManager::Private::updateRealtimeFeedRule(const QString &name, const QString &condition)
@@ -529,6 +532,9 @@ void AccountManager::Private::getAccountScope()
         }
     } else {
         qDebug().noquote() << "Direct Message is not allowed:" << m_account.handle;
+        if (m_account.scope.contains(AtProtocolInterface::AccountScope::DirectMessage)) {
+            m_account.scope.removeAll(AtProtocolInterface::AccountScope::DirectMessage);
+        }
     }
 }
 
